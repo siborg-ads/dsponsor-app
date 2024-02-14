@@ -2117,10 +2117,27 @@
     uuid "^9.0.1"
     zod "^3.22.3"
 
+"@thirdweb-dev/auth@^4.1.32":
+  version "4.1.32"
+  resolved "https://registry.yarnpkg.com/@thirdweb-dev/auth/-/auth-4.1.32.tgz#af1a9e8696e9902767cb6406a4a42fb9772b8a53"
+  integrity sha512-SY4eVU0IhPt3nF7Sw730sQ8We+b4cP69QNmboFbRDpFIEOWNsbtn8mW0DARdZmpB3ARorvRCIvQ8O5Mcm2TU1w==
+  dependencies:
+    "@fastify/cookie" "^9.1.0"
+    "@thirdweb-dev/wallets" "2.4.10"
+    cookie "^0.5.0"
+    fastify-type-provider-zod "^1.1.9"
+    uuid "^9.0.1"
+    zod "^3.22.3"
+
 "@thirdweb-dev/chains@0.1.70":
   version "0.1.70"
   resolved "https://registry.npmjs.org/@thirdweb-dev/chains/-/chains-0.1.70.tgz"
   integrity sha512-VP+JE70wNpbFa0rnKifTxxCXZwbKROf54z7qclxfb9tT1SY0/aIhVee0PYSxPXMd82NTkFkEidGFWS7TbYoldg==
+
+"@thirdweb-dev/chains@0.1.72":
+  version "0.1.72"
+  resolved "https://registry.yarnpkg.com/@thirdweb-dev/chains/-/chains-0.1.72.tgz#ff3a54a1ba6d7cbf3814d84345c1106678a8e2ab"
+  integrity sha512-IAq66KT8HgsmP85p0ykpUZNCwSGubmadlgvCG5We8sgOFBlerX/CuFZwHh9szVbptLX6yDAg6ueN5WwgLOGyHg==
 
 "@thirdweb-dev/contracts-js@1.3.16":
   version "1.3.16"
@@ -2243,6 +2260,29 @@
     yaml "^2.3.1"
     zod "^3.22.3"
 
+"@thirdweb-dev/sdk@4.0.35":
+  version "4.0.35"
+  resolved "https://registry.yarnpkg.com/@thirdweb-dev/sdk/-/sdk-4.0.35.tgz#3ab91aa0b41f86188adcef344b06e5b7592fbede"
+  integrity sha512-DqcJzeO0qclXAN20NrR2WZlomESZZ0VAIBJWLghIFHQZ4Mv+ivIqZG3hYfjgT0EcwLAMRQv9p+7gMBSr+IWs9Q==
+  dependencies:
+    "@thirdweb-dev/chains" "0.1.72"
+    "@thirdweb-dev/contracts-js" "1.3.16"
+    "@thirdweb-dev/crypto" "0.2.0"
+    "@thirdweb-dev/generated-abis" "0.0.1"
+    "@thirdweb-dev/merkletree" "0.2.0"
+    "@thirdweb-dev/storage" "2.0.9"
+    abitype "^0.2.5"
+    bn.js "^5.2.1"
+    bs58 "^5.0.0"
+    buffer "^6.0.3"
+    eventemitter3 "^5.0.1"
+    fast-deep-equal "^3.1.3"
+    tiny-invariant "^1.2.0"
+    tweetnacl "^1.0.3"
+    uuid "^9.0.1"
+    yaml "^2.3.1"
+    zod "^3.22.3"
+
 "@thirdweb-dev/storage@2.0.9":
   version "2.0.9"
   resolved "https://registry.npmjs.org/@thirdweb-dev/storage/-/storage-2.0.9.tgz"
@@ -2252,6 +2292,44 @@
     cid-tool "^3.0.0"
     form-data "^4.0.0"
     uuid "^9.0.1"
+
+"@thirdweb-dev/wallets@2.4.10":
+  version "2.4.10"
+  resolved "https://registry.yarnpkg.com/@thirdweb-dev/wallets/-/wallets-2.4.10.tgz#2032e067f3bb1d50c079cfef03921e71585991e8"
+  integrity sha512-R05tkaHK8ByRy+Lv+B7Ak2VZHIdy823BB8Kjzwv/I2VuNYv0dHr/Z+8C6PZF0my/tRJ0/qzGXkI4uLm1UJd2Sg==
+  dependencies:
+    "@account-abstraction/contracts" "^0.5.0"
+    "@blocto/sdk" "^0.5.4"
+    "@coinbase/wallet-sdk" "^3.7.1"
+    "@google-cloud/kms" "3.0.1"
+    "@magic-ext/connect" "^6.7.2"
+    "@magic-ext/oauth" "^7.6.2"
+    "@magic-sdk/provider" "^13.6.2"
+    "@metamask/eth-sig-util" "^4.0.0"
+    "@paperxyz/embedded-wallet-service-sdk" "^1.2.5"
+    "@paperxyz/sdk-common-utilities" "^0.1.0"
+    "@safe-global/protocol-kit" "1.3.0"
+    "@safe-global/safe-ethers-adapters" "0.1.0-alpha.17"
+    "@thirdweb-dev/chains" "0.1.72"
+    "@thirdweb-dev/contracts-js" "1.3.16"
+    "@thirdweb-dev/crypto" "0.2.0"
+    "@thirdweb-dev/sdk" "4.0.35"
+    "@walletconnect/core" "^2.9.1"
+    "@walletconnect/ethereum-provider" "^2.9.1"
+    "@walletconnect/jsonrpc-utils" "^1.0.8"
+    "@walletconnect/modal" "^2.6.1"
+    "@walletconnect/types" "^2.9.1"
+    "@walletconnect/utils" "^2.10.2"
+    "@walletconnect/web3wallet" "^1.8.7"
+    asn1.js "5.4.1"
+    bn.js "5.2.0"
+    buffer "^6.0.3"
+    eth-provider "^0.13.6"
+    ethereumjs-util "^7.1.3"
+    eventemitter3 "^5.0.1"
+    key-encoder "2.0.3"
+    magic-sdk "^13.6.2"
+    web3-core "1.5.2"
 
 "@thirdweb-dev/wallets@2.4.8":
   version "2.4.8"
@@ -9054,6 +9132,11 @@ typedarray-to-buffer@^3.1.5:
   integrity sha512-zdu8XMNEDepKKR+XYOXAVPtWui0ly0NtohUscw+UmaHiAWT8hrV1rr//H6V+0DvJ3OQ19S979M0laLfX8rm82Q==
   dependencies:
     is-typedarray "^1.0.0"
+
+typescript@5.3.3:
+  version "5.3.3"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-5.3.3.tgz#b3ce6ba258e72e6305ba66f5c9b452aaee3ffe37"
+  integrity sha512-pXWcraxM0uxAS+tN0AG/BF2TyqmHO014Z070UsJ+pFvYuRSq8KH8DmWpnbXe0pEPDHXZV3FcAbJkijJ5oNEnWw==
 
 uc.micro@^1.0.1, uc.micro@^1.0.5:
   version "1.0.6"

@@ -12,27 +12,79 @@ import { useDispatch } from "react-redux";
 import { showPropatiesModal } from "../../redux/counterSlice";
 import Meta from "../../components/Meta";
 import Image from "next/image";
+import { useStorageUpload } from "@thirdweb-dev/react";
 
 const Create = () => {
-  const fileTypes = [
-    "JPG",
-    "PNG",
-    "GIF",
-    "SVG",
-    "MP4",
-    "WEBM",
-    "MP3",
-    "WAV",
-    "OGG",
-    "GLB",
-    "GLTF",
-  ];
-  const [file, setFile] = useState("");
+  const fileTypes = ["JPG", "PNG", "GIF", "SVG"];
+  const [file, setFile] = useState(null);
+  const { mutateAsync: upload, isLoading } = useStorageUpload();
+  const [uploadUrl, setUploadUrl] = useState(null);
+  const [name, setName] = useState(null);
+  const [link, setLink] = useState(null);
+  const [nameError, setNameError] = useState(null);
+  const [linkError, setLinkError] = useState(null);
+  const [ipfsLink, setIpfsLink] = useState(null);
 
-  const dispatch = useDispatch();
+  const handleLogoUpload = (file) => {
+    if (file) {
+      setFile(file);
+    }
+  };
 
-  const handleChange = (file) => {
-    setFile(file.name);
+  const isValidURL = (url) => {
+    try {
+      new URL(url);
+      return true;
+    } catch (e) {
+      return false;
+    }
+  };
+
+  const validateInputs = () => {
+    let isValid = true;
+
+    if (!name) {
+      setNameError("Name is missing.");
+      isValid = false;
+    } else {
+      setNameError(null);
+    }
+
+    if (!link || !isValidURL(link)) {
+      setLinkError("The link is missing or invalid.");
+      isValid = false;
+    } else {
+      setLinkError(null);
+    }
+
+    return isValid;
+  };
+
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(uploadUrl);
+  };
+
+  const handleSubmit = async () => {
+    if (!validateInputs()) {
+      return;
+    }
+
+    const uploadUrl = await upload({
+      data: [file],
+      options: { uploadWithGatewayUrl: true, uploadWithoutDirectory: true },
+    });
+    setUploadUrl(uploadUrl);
+    if (uploadUrl && name && link) {
+      onUpload(uploadUrl, name, link);
+    } else {
+      console.error("Missing name or link");
+    }
+  };
+
+  const onUpload = (logo, updatedName, updatedLink) => {
+    setIpfsLink(logo);
+    setName(updatedName);
+    setLink(updatedLink);
   };
 
   const popupItemData = [
@@ -86,7 +138,7 @@ const Create = () => {
 
               {file ? (
                 <p className="dark:text-jacarta-300 text-2xs mb-3">
-                  successfully uploaded : {file}
+                  successfully uploaded : {file.name}
                 </p>
               ) : (
                 <p className="dark:text-jacarta-300 text-2xs mb-3">
@@ -113,7 +165,7 @@ const Create = () => {
                 </div>
                 <div className="dark:bg-jacarta-600 bg-jacarta-50 absolute inset-4 cursor-pointer rounded opacity-0 group-hover:opacity-100 ">
                   <FileUploader
-                    handleChange={handleChange}
+                    handleChange={handleLogoUpload}
                     name="file"
                     types={fileTypes}
                     classes="file-drag"
@@ -136,9 +188,11 @@ const Create = () => {
                 type="text"
                 id="item-name"
                 className="dark:bg-jacarta-700 border-jacarta-100 hover:ring-accent/10 focus:ring-accent dark:border-jacarta-600 dark:placeholder:text-jacarta-300 w-full rounded-lg py-3 px-3 hover:ring-2 dark:text-white"
-                placeholder="Item name"
+                placeholder="Name"
+                onChange={(e) => setName(e.target.value)}
                 required
               />
+              {nameError && <p className="text-red-500">{nameError}</p>}
             </div>
 
             {/* <!-- External Link --> */}
@@ -147,7 +201,7 @@ const Create = () => {
                 htmlFor="item-external-link"
                 className="font-display text-jacarta-700 mb-2 block dark:text-white"
               >
-                External link
+                External link<span className="text-red">*</span>
               </label>
               <p className="dark:text-jacarta-300 text-2xs mb-3">
                 We will include a link to this URL on this {"item's"} detail
@@ -158,11 +212,14 @@ const Create = () => {
                 type="url"
                 id="item-external-link"
                 className="dark:bg-jacarta-700 border-jacarta-100 hover:ring-accent/10 focus:ring-accent dark:border-jacarta-600 dark:placeholder:text-jacarta-300 w-full rounded-lg py-3 px-3 hover:ring-2 dark:text-white"
-                placeholder="https://yoursite.io/item/123"
+                placeholder="https://yoursite.com"
+                onChange={(e) => setLink(e.target.value)}
               />
+              {linkError && <p className="text-red-500">{linkError}</p>}
             </div>
 
             {/* <!-- Description --> */}
+            {/* 
             <div className="mb-6">
               <label
                 htmlFor="item-description"
@@ -182,8 +239,10 @@ const Create = () => {
                 placeholder="Provide a detailed description of your item."
               ></textarea>
             </div>
+            */}
 
             {/* <!-- Collection --> */}
+            {/* 
             <div className="relative">
               <div>
                 <label className="font-display text-jacarta-700 mb-2 block dark:text-white">
@@ -217,8 +276,8 @@ const Create = () => {
                   </p>
                 </div>
               </div>
+              
 
-              {/* dropdown */}
               <div className="dropdown my-1 cursor-pointer">
                 <Collection_dropdown2
                   data={collectionDropdown2_data}
@@ -226,8 +285,10 @@ const Create = () => {
                 />
               </div>
             </div>
+            */}
 
             {/* <!-- Properties --> */}
+            {/* 
             {popupItemData.map(({ id, name, text, icon }) => {
               return (
                 <div
@@ -268,10 +329,6 @@ const Create = () => {
             })}
 
             <Proparties_modal />
-
-            {/* <!-- Properties --> */}
-
-            {/* <!-- Unlockable Content --> */}
             <div className="dark:border-jacarta-600 border-jacarta-100 relative border-b py-6">
               <div className="flex items-center justify-between">
                 <div className="flex">
@@ -304,8 +361,10 @@ const Create = () => {
                 />
               </div>
             </div>
+            */}
 
             {/* <!-- Explicit & Sensitive Content --> */}
+            {/* 
             <div className="dark:border-jacarta-600 border-jacarta-100 relative mb-6 border-b py-6">
               <div className="flex items-center justify-between">
                 <div className="flex">
@@ -361,8 +420,10 @@ const Create = () => {
                 />
               </div>
             </div>
+            */}
 
             {/* <!-- Supply --> */}
+            {/* 
             <div className="mb-6">
               <label
                 htmlFor="item-supply"
@@ -407,8 +468,10 @@ const Create = () => {
                 placeholder="1"
               />
             </div>
+            */}
 
             {/* <!-- Blockchain --> */}
+            {/* 
             <div className="mb-6">
               <label
                 htmlFor="item-supply"
@@ -417,13 +480,14 @@ const Create = () => {
                 Blockchain
               </label>
 
-              {/* dropdown */}
               <div className="dropdown relative mb-4 cursor-pointer ">
                 <Collection_dropdown2 data={EthereumDropdown2_data} />
               </div>
             </div>
+            */}
 
             {/* <!-- Freeze metadata --> */}
+            {/* 
             <div className="mb-6">
               <div className="mb-2 flex items-center space-x-2">
                 <label
@@ -472,14 +536,49 @@ const Create = () => {
                 placeholder="To freeze your metadata, you must create your item first."
               />
             </div>
+            */}
 
             {/* <!-- Submit --> */}
             <button
-              disabled
-              className="bg-accent-lighter cursor-default rounded-full py-3 px-8 text-center font-semibold text-white transition-all"
+              onClick={handleSubmit}
+              className="bg-accent cursor-default rounded-full py-3 px-8 text-center font-semibold text-white transition-all"
             >
               Create
             </button>
+            {!uploadUrl && <></>}
+          </div>
+          <div className="flex justify-center gap-2">
+            {file && !uploadUrl && isLoading && (
+              <div className="flex items-center">
+                <div className="inline-block mr-2 h-4 w-4 animate-spin rounded-full border border-solid border-current border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]"></div>
+                Uploading...
+              </div>
+            )}
+            {uploadUrl && (
+              <div className={`${uploadUrl && "flex flex-col gap-4"}`}>
+                <div className="flex items-center gap-2">
+                  <p className="font-light">
+                    The item has been uploaded to IPFS.
+                  </p>
+                  <button onClick={copyToClipboard}>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      strokeWidth={1.5}
+                      stroke="currentColor"
+                      className="w-5 h-5 text-gray-500 active:text-black"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M15.666 3.888A2.25 2.25 0 0 0 13.5 2.25h-3c-1.03 0-1.9.693-2.166 1.638m7.332 0c.055.194.084.4.084.612v0a.75.75 0 0 1-.75.75H9a.75.75 0 0 1-.75-.75v0c0-.212.03-.418.084-.612m7.332 0c.646.049 1.288.11 1.927.184 1.1.128 1.907 1.077 1.907 2.185V19.5a2.25 2.25 0 0 1-2.25 2.25H6.75A2.25 2.25 0 0 1 4.5 19.5V6.257c0-1.108.806-2.057 1.907-2.185a48.208 48.208 0 0 1 1.927-.184"
+                      />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </section>
