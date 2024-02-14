@@ -413,7 +413,7 @@ export default function Header01() {
                 </li> */}
 
                 {/* page */}
-                <li className="js-nav-dropdown group relative">
+                {/* <li className="js-nav-dropdown group relative">
                   <button className="dropdown-toggle text-jacarta-700 font-display hover:text-accent focus:text-accent dark:hover:text-accent dark:focus:text-accent flex items-center justify-between py-3.5 text-base dark:text-white lg:px-5 w-full">
                     <span className={isParentPageActive(page.pages, route.asPath) ? "text-accent dark:text-accent" : ""}>Pages</span>
                     <i className="lg:hidden">
@@ -433,7 +433,7 @@ export default function Header01() {
                       </li>
                     ))}
                   </ul>
-                </li>
+                </li> */}
 
                 {/* explore */}
                 <li className="js-nav-dropdown nav-item dropdown group relative">
@@ -462,7 +462,7 @@ export default function Header01() {
                 </li>
 
                 {/* resource */}
-                <li className="js-nav-dropdown group relative">
+                {/* <li className="js-nav-dropdown group relative">
                   <button className="dropdown-toggle text-jacarta-700 font-display hover:text-accent focus:text-accent dark:hover:text-accent dark:focus:text-accent flex items-center justify-between py-3.5 text-base dark:text-white lg:px-5 w-full">
                     <span className={isParentPageActive(resource.pages, route.asPath) ? "text-accent dark:text-accent" : ""}>Resources</span>
                     <i className="lg:hidden">
@@ -484,7 +484,7 @@ export default function Header01() {
                       </li>
                     ))}
                   </ul>
-                </li>
+                </li> */}
 
                 {/* create */}
                 <li className="group">

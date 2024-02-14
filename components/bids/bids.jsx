@@ -8,7 +8,7 @@ import Image from "next/image";
 const Bids = ({ classes = "pt-10 pb-24", bgWhite }) => {
   return (
     <section className={classes}>
-      {/* <!-- Hot Bids --> */}
+      {/* <!-- Hot Offers --> */}
       {bgWhite && (
         <picture className="pointer-events-none absolute inset-0 -z-10 dark:hidden">
           <Image
@@ -23,7 +23,7 @@ const Bids = ({ classes = "pt-10 pb-24", bgWhite }) => {
       )}
       <div className="container">
         <HeadLine
-          text="Hot Bids"
+          text="Hot Offers"
           image="https://cdn.jsdelivr.net/npm/emoji-datasource-apple@7.0.2/img/apple/64/1f525.png"
           classes="font-display text-jacarta-700 mb-8 text-center text-3xl dark:text-white"
         />
@@ -33,7 +33,7 @@ const Bids = ({ classes = "pt-10 pb-24", bgWhite }) => {
           <BidsCarousel />
         </div>
       </div>
-      {/* <!-- end hot bids --> */}
+      {/* <!-- end hot Offers --> */}
     </section>
   );
 };

@@ -13,67 +13,38 @@ const footer = () => {
             <div className="col-span-3 md:col-span-4">
               {/* <!-- Logo --> */}
               <Link href="#" className="mb-6 inline-block">
-                <Image
-                  width={130}
-                  height={28}
-                  src="/images/logo.png"
-                  className="max-h-7 dark:hidden"
-                  alt="Xhibiter | NFT Marketplace"
-                />
+                <Image width={80} height={80} src="/images/logo.png" className=" dark:hidden" alt="d>sponsor | Media sponsoring Marketplace" />
               </Link>
 
               <Link href="#" className=" mb-6 inline-block">
-                <Image
-                  width={130}
-                  height={28}
-                  src="/images/logo_white.png"
-                  className="hidden max-h-7 dark:block mb-6"
-                  alt="Xhibiter | NFT Marketplace"
-                />
+                <Image width={80} height={80} src="/images/logo_white.png" className="hidden  dark:block mb-6" alt="d>sponsor | Media sponsoring Marketplace" />
               </Link>
-              <p className="dark:text-jacarta-300 mb-12">
-                Create, sell and collect truly rare digital artworks. Powered by
-                blockchain technology.
-              </p>
+              <p className="dark:text-jacarta-300 mb-12">Investing in the Potential of independent media</p>
 
               {/* <!-- Socials --> */}
-              <div className="flex space-x-5">
+              {/* <div className="flex space-x-5">
                 {socialIcons.map((item) => {
                   const { id, href, text } = item;
                   return (
-                    <Link
-                      href={href}
-                      key={id}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="group cursor-pointer"
-                    >
+                    <Link href={href} key={id} target="_blank" rel="noopener noreferrer" className="group cursor-pointer">
                       <svg className="icon group-hover:fill-accent fill-jacarta-300 h-5 w-5 dark:group-hover:fill-white">
                         <use xlinkHref={`/icons.svg#icon-${text}`}></use>
                       </svg>
                     </Link>
                   );
                 })}
-              </div>
+              </div> */}
             </div>
 
             {footerMenuList.map((single) => (
-              <div
-                className={`col-span-full sm:col-span-3 md:col-span-2 ${single.diffClass}`}
-                key={single.id}
-              >
-                <h3 className="font-display text-jacarta-700 mb-6 text-sm dark:text-white">
-                  {single.title}
-                </h3>
+              <div className={`col-span-full sm:col-span-3 md:col-span-2 ${single.diffClass}`} key={single.id}>
+                <h3 className="font-display text-jacarta-700 mb-6 text-sm dark:text-white">{single.title}</h3>
                 <ul className="dark:text-jacarta-300 flex flex-col space-y-1">
                   {single.list.map((item) => {
                     const { id, href, text } = item;
                     return (
                       <li key={id}>
-                        <Link
-                          href={href}
-                          className="hover:text-accent dark:hover:text-white"
-                        >
+                        <Link href={href} className="hover:text-accent dark:hover:text-white">
                           {text}
                         </Link>
                       </li>
@@ -86,30 +57,17 @@ const footer = () => {
 
           <div className="flex flex-col items-center justify-between space-y-2 py-8 sm:flex-row sm:space-y-0">
             <span className="dark:text-jacarta-400 text-sm">
-              <span>© {new Date().getFullYear()} Xhibiter — Made by</span>
-              <Link
-                href="https://themeforest.net/user/ib-themes"
-                className="hover:text-accent dark:hover:text-white"
-              >
-                {" "}
-                ib-themes
-              </Link>
+              <span>© {new Date().getFullYear()} d&gt;sponsor </span>
             </span>
 
             <ul className="dark:text-jacarta-400 flex flex-wrap space-x-4 text-sm">
               <li>
-                <Link
-                  href="/tarms"
-                  className="hover:text-accent dark:hover:text-white"
-                >
+                <Link href="/tarms" className="hover:text-accent dark:hover:text-white">
                   Terms and conditions
                 </Link>
               </li>
               <li>
-                <Link
-                  href="/tarms"
-                  className="hover:text-accent dark:hover:text-white"
-                >
+                <Link href="/tarms" className="hover:text-accent dark:hover:text-white">
                   Privacy policy
                 </Link>
               </li>
