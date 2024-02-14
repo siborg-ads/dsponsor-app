@@ -499,7 +499,7 @@ export default function Header01() {
             {/* End menu for desktop */}
 
             <div className="ml-8 hidden items-center lg:flex xl:ml-12">
-              <WalletButton />
+              {/* <WalletButton /> */}
               {/* End metamask Wallet */}
               <ConnectWallet theme={"dark"} modalSize={"wide"} />
               {/* <div className="js-nav-dropdown group-dropdown relative">
