@@ -13,6 +13,9 @@ import { showPropatiesModal } from "../../redux/counterSlice";
 import Meta from "../../components/Meta";
 import Image from "next/image";
 import { useStorageUpload } from "@thirdweb-dev/react";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import { useAddress } from "@thirdweb-dev/react";
 
 const Create = () => {
   const fileTypes = ["JPG", "PNG", "GIF", "SVG"];
@@ -23,11 +26,22 @@ const Create = () => {
   const [link, setLink] = useState(null);
   const [nameError, setNameError] = useState(null);
   const [linkError, setLinkError] = useState(null);
+  const [descriptionError, setDescriptionError] = useState(null);
+  const [startDateError, setStartDateError] = useState(null);
+  const [endDateError, setEndDateError] = useState(null);
   const [ipfsLink, setIpfsLink] = useState(null);
+  const [description, setDescription] = useState(null);
+  const [startDate, setStartDate] = useState(new Date());
+  const [endDate, setEndDate] = useState(new Date());
+  const [json, setJson] = useState(null);
+  const [previewImage, setPreviewImage] = useState(null);
+
+  const address = useAddress();
 
   const handleLogoUpload = (file) => {
     if (file) {
       setFile(file);
+      setPreviewImage(URL.createObjectURL(file));
     }
   };
 
@@ -57,6 +71,21 @@ const Create = () => {
       setLinkError(null);
     }
 
+    if (!description) {
+      setDescriptionError("Description is missing.");
+      isValid = false;
+    }
+
+    if (!startDate) {
+      setDateError("Start date is missing.");
+      isValid = false;
+    }
+
+    if (!endDate) {
+      setDateError("End date is missing.");
+      isValid = false;
+    }
+
     return isValid;
   };
 
@@ -79,6 +108,18 @@ const Create = () => {
     } else {
       console.error("Missing name or link");
     }
+
+    setJson(
+      JSON.stringify({
+        name: name,
+        description: description,
+        image: ipfsLink,
+        external_link: link,
+        collaborators: [address],
+        validFromDate: startDate,
+        validToDate: endDate,
+      })
+    );
   };
 
   const onUpload = (logo, updatedName, updatedLink) => {
@@ -175,7 +216,6 @@ const Create = () => {
                 </div>
               </div>
             </div>
-
             {/* <!-- Name --> */}
             <div className="mb-6">
               <label
@@ -194,7 +234,6 @@ const Create = () => {
               />
               {nameError && <p className="text-red-500">{nameError}</p>}
             </div>
-
             {/* <!-- External Link --> */}
             <div className="mb-6">
               <label
@@ -219,7 +258,6 @@ const Create = () => {
             </div>
 
             {/* <!-- Description --> */}
-            {/* 
             <div className="mb-6">
               <label
                 htmlFor="item-description"
@@ -236,10 +274,63 @@ const Create = () => {
                 className="dark:bg-jacarta-700 border-jacarta-100 hover:ring-accent/10 focus:ring-accent dark:border-jacarta-600 dark:placeholder:text-jacarta-300 w-full rounded-lg py-3 px-3 hover:ring-2 dark:text-white"
                 rows="4"
                 required
+                onChange={(e) => setDescription(e.target.value)}
                 placeholder="Provide a detailed description of your item."
               ></textarea>
+              {descriptionError && (
+                <p className="text-red-500">{descriptionError}</p>
+              )}
             </div>
-            */}
+
+            {/* <!-- Offer preview --> */}
+            {previewImage && (
+              <div className="mb-6">
+                <label
+                  htmlFor="item-description"
+                  className="font-display text-jacarta-700 mb-2 block dark:text-white"
+                >
+                  Offer preview
+                </label>
+                <p className="dark:text-jacarta-300 text-2xs mb-3">
+                  Your offer will look like this.
+                </p>
+                <Image
+                  src={previewImage}
+                  width={300}
+                  height={100}
+                  alt="Preview"
+                />
+              </div>
+            )}
+
+            {/* <!-- Validity period --> */}
+            <div className="mb-6">
+              <label
+                htmlFor="item-description"
+                className="font-display text-jacarta-700 mb-2 block dark:text-white"
+              >
+                Validity period
+              </label>
+              <p className="dark:text-jacarta-300 text-2xs mb-3">
+                Choose the start and end date for the item.
+              </p>
+              <div className="flex gap-4 items-center text-jacarta-700 dark:text-white">
+                <DatePicker
+                  selected={startDate}
+                  onChange={(date) => setStartDate(date)}
+                  className="text-jacarta-700 dark:text-white"
+                />
+                <DatePicker
+                  selected={endDate}
+                  onChange={(date) => setEndDate(date)}
+                  className="text-jacarta-700 dark:text-white"
+                />
+              </div>
+              {startDateError && (
+                <p className="text-red-500">{startDateError}</p>
+              )}
+              {endDateError && <p className="text-red-500">{endDateError}</p>}
+            </div>
 
             {/* <!-- Collection --> */}
             {/* 
@@ -286,7 +377,6 @@ const Create = () => {
               </div>
             </div>
             */}
-
             {/* <!-- Properties --> */}
             {/* 
             {popupItemData.map(({ id, name, text, icon }) => {
@@ -362,7 +452,6 @@ const Create = () => {
               </div>
             </div>
             */}
-
             {/* <!-- Explicit & Sensitive Content --> */}
             {/* 
             <div className="dark:border-jacarta-600 border-jacarta-100 relative mb-6 border-b py-6">
@@ -421,7 +510,6 @@ const Create = () => {
               </div>
             </div>
             */}
-
             {/* <!-- Supply --> */}
             {/* 
             <div className="mb-6">
@@ -469,7 +557,6 @@ const Create = () => {
               />
             </div>
             */}
-
             {/* <!-- Blockchain --> */}
             {/* 
             <div className="mb-6">
@@ -485,7 +572,6 @@ const Create = () => {
               </div>
             </div>
             */}
-
             {/* <!-- Freeze metadata --> */}
             {/* 
             <div className="mb-6">
@@ -537,7 +623,6 @@ const Create = () => {
               />
             </div>
             */}
-
             {/* <!-- Submit --> */}
             <button
               onClick={handleSubmit}
