@@ -7,12 +7,12 @@ import { v4 as uuidv4 } from "uuid";
 import { useRouter } from "next/router";
 import { isChildrenPageActive, isParentPageActive } from "../../utils/daynamicNavigation";
 import { useEffect, useState } from "react";
-import WalletButton from "../wallet-btn/WalletButton";
-import { ConnectWallet } from "@thirdweb-dev/react";
+import { ConnectWallet, useAddress } from "@thirdweb-dev/react";
 
 export default function Header01() {
   const [toggle, setToggle] = useState(false);
   const [isCollapse, setCollapse] = useState(null);
+    const address = useAddress();
 
   // window resize
   useEffect(() => {
@@ -494,6 +494,16 @@ export default function Header01() {
                     </button>
                   </Link>
                 </li>
+                {address ? ( <li className="group">
+                  <Link href="/profile/user_avatar">
+                    <button className="text-jacarta-700 font-display hover:text-accent focus:text-accent dark:hover:text-accent dark:focus:text-accent flex items-center justify-between py-3.5 text-base dark:text-white lg:px-5">
+                      <span className={isChildrenPageActive(route.asPath, "/profile/user_avatar") ? "text-accent dark:text-accent" : ""}>My profil</span>
+                    </button>
+                  </Link>
+                </li>): ""}
+               <li className="group">
+                <ConnectWallet theme={"dark"} modalSize={"wide"} />
+               </li>
               </ul>
             </nav>
             {/* End menu for desktop */}
@@ -501,7 +511,7 @@ export default function Header01() {
             <div className="ml-8 hidden items-center lg:flex xl:ml-12">
               {/* <WalletButton /> */}
               {/* End metamask Wallet */}
-              <ConnectWallet theme={"dark"} modalSize={"wide"} />
+              
               {/* <div className="js-nav-dropdown group-dropdown relative">
                 <button className="dropdown-toggle border-jacarta-100 hover:bg-accent focus:bg-accent group dark:hover:bg-accent ml-2 flex h-10 w-10 items-center justify-center rounded-full border bg-white transition-colors hover:border-transparent focus:border-transparent dark:border-transparent dark:bg-white/[.15]">
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width={24} height={24} className="fill-jacarta-700 h-4 w-4 transition-colors group-hover:fill-white group-focus:fill-white dark:fill-white">
