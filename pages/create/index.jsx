@@ -13,7 +13,7 @@ import {
   Web3Button,
 } from "@thirdweb-dev/react";
 import { Mumbai, Polygon } from "@thirdweb-dev/chains";
-import { useToken } from "wagmi";
+// import { useToken } from "wagmi";
 
 const Create = () => {
   const fileTypes = ["JPG", "PNG", "GIF", "SVG"];
@@ -22,11 +22,14 @@ const Create = () => {
   const [uploadUrl, setUploadUrl] = useState(null);
   const [name, setName] = useState(null);
   const [link, setLink] = useState(null);
+  const [imageError, setImageError] = useState(null);
   const [nameError, setNameError] = useState(null);
   const [linkError, setLinkError] = useState(null);
   const [descriptionError, setDescriptionError] = useState(null);
   const [startDateError, setStartDateError] = useState(null);
   const [endDateError, setEndDateError] = useState(null);
+  const [currencyError, setCurrencyError] = useState(null);
+  const [royaltyError, setRoyaltyError] = useState(null);
   const [ipfsLink, setIpfsLink] = useState(null);
   const [description, setDescription] = useState(null);
   const [startDate, setStartDate] = useState(new Date());
@@ -34,7 +37,7 @@ const Create = () => {
   const [previewImage, setPreviewImage] = useState(null);
   const [selectedNumber, setSelectedNumber] = useState(1);
   const [selectedUnitPrice, setSelectedUnitPrice] = useState(200);
-  const [selectedCurrency, setSelectedCurrency] = useState("EUR");
+  const [selectedCurrency, setSelectedCurrency] = useState(null);
   const [customContract, setCustomContract] = useState(null);
   const [selectedRoyalties, setSelectedRoyalties] = useState(10);
   const [jsonIpfsLink, setJsonIpfsLink] = useState(null);
@@ -92,6 +95,13 @@ const Create = () => {
   const validateInputs = () => {
     let isValid = true;
 
+    if (!file) {
+      setImageError("Image is missing.");
+      isValid = false;
+    } else {
+      setImageError(null);
+    }
+
     if (!name) {
       setNameError("Name is missing.");
       isValid = false;
@@ -109,16 +119,54 @@ const Create = () => {
     if (!description) {
       setDescriptionError("Description is missing.");
       isValid = false;
+    } else {
+      setDescriptionError(null);
     }
 
+    const currentDate = new Date();
+    const yesterday = new Date(currentDate.setDate(currentDate.getDate() - 1));
+
     if (!startDate) {
-      setDateError("Start date is missing.");
+      setStartDateError("Start date is missing.");
       isValid = false;
+    } else if (new Date(startDate) < yesterday) {
+      setStartDateError("Start date cannot be in the past.");
+      isValid = false;
+    } else {
+      setStartDateError(null);
     }
 
     if (!endDate) {
-      setDateError("End date is missing.");
+      setEndDateError("End date is missing.");
       isValid = false;
+    } else if (new Date(endDate) < yesterday) {
+      setEndDateError("End date cannot be in the past.");
+      isValid = false;
+    } else {
+      setEndDateError(null);
+    }
+
+    if (selectedUnitPrice < 0) {
+      setCurrencyError("Unit price is missing or invalid.");
+      isValid = false;
+    } else {
+      setCurrencyError(null);
+    }
+
+    if (!selectedCurrency) {
+      setCurrencyError("Currency is missing or invalid.");
+      isValid = false;
+    } else {
+      setCurrencyError(null);
+    }
+
+    if (selectedRoyalties < 0 || selectedRoyalties > 100) {
+      setRoyaltyError(
+        "Royalties are missing or invalid. They should be between 0% and 100%."
+      );
+      isValid = false;
+    } else {
+      setRoyaltyError(null);
     }
 
     return isValid;
@@ -193,43 +241,32 @@ const Create = () => {
     },
   ];
 
-  const { result: JEURToken } = useToken({
-    address: "0xd409F17095a370800A9C352124C6a1e82695203E",
-    chainId: Mumbai.chainId,
-  }); // add others
+  //const { result: JEURToken } = useToken({
+  //  address: "0xd409F17095a370800A9C352124C6a1e82695203E",
+  //  chainId: Mumbai.chainId,
+  //}); // add others
 
-  const { result: customToken } = useToken({
-    address: customContract,
-    chainId: Mumbai.chainId,
-  });
+  //const { result: customToken } = useToken({
+  //  address: customContract,
+  //  chainId: Mumbai.chainId,
+  //});
 
   const selectedCurrencyContract = useCallback(() => {
     switch (selectedCurrency) {
       case "JEUR":
-        return new Array(
-          "0xd409F17095a370800A9C352124C6a1e82695203E",
-          JEURToken.decimals
-        ); // on mumbai
+        return "0xd409F17095a370800A9C352124C6a1e82695203E", 18; // on mumbai
       case "USDC":
-        return new Array("0x1", decimals); // to change
+        return "0x1", 18; // to change
       case "MATIC":
-        return new Array("0x2", decimals); // to change
+        return "0x2", 18; // to change
       case "WETH":
-        return new Array("0x3", decimals); // to change
+        return "0x3"; // to change
       case "custom":
-        return new Array(customContract, customToken.decimals);
+        return customContract;
       default:
-        return new Array(
-          "0xd409F17095a370800A9C352124C6a1e82695203E",
-          JEURToken.decimals
-        ); // JEUR by default (to change)
+        return "0xd409F17095a370800A9C352124C6a1e82695203E"; // JEUR by default (to change)
     }
-  }, [
-    JEURToken.decimals,
-    customContract,
-    customToken.decimals,
-    selectedCurrency,
-  ]);
+  }, [customContract, selectedCurrency]);
 
   useEffect(() => {
     setArgs([
@@ -244,10 +281,7 @@ const Create = () => {
         royaltyBps: selectedRoyalties * 100, // royalties
         currencies: [selectedCurrencyContract(selectedCurrency)], // accepted token
         prices: [selectedUnitPrice * 10 ** 18], // prices with decimals
-        allowedTokenIds: Array.from(
-          { length: selectedNumber + 1 },
-          (_, i) => i
-        ), // allowed token ids
+        allowedTokenIds: Array.from({ length: selectedNumber }, (_, i) => i), // allowed token ids
       }),
       JSON.stringify({
         name: name, // name
@@ -270,13 +304,6 @@ const Create = () => {
     selectedUnitPrice,
   ]);
 
-  console.log(
-    new Array(
-      Object.values(JSON.parse(args[0])),
-      Object.values(JSON.parse(args[1]))
-    )
-  );
-
   return (
     <div>
       <Meta title="Create || Xhibiter | NFT Marketplace Next.js Template" />
@@ -297,23 +324,25 @@ const Create = () => {
             Create
           </h1>
 
-          <div className="flex flex-col justify-center gap-2 mb-10">
-            <p className="text-center text-red-500">dev only</p>
-            <div className="flex gap-10 justify-center">
-              <button
-                className="bg-accent cursor-default rounded-full py-3 px-8 text-center font-semibold text-white transition-all"
-                onClick={() => switchChain(Polygon.chainId)}
-              >
-                Polygon
-              </button>
-              <button
-                className="bg-accent cursor-default rounded-full py-3 px-8 text-center font-semibold text-white transition-all"
-                onClick={() => switchChain(Mumbai.chainId)}
-              >
-                Mumbai
-              </button>
+          {address && (
+            <div className="flex flex-col justify-center gap-2 mb-10">
+              <p className="text-center text-red-500">dev only</p>
+              <div className="flex gap-10 justify-center">
+                <button
+                  className="bg-accent cursor-default rounded-full py-3 px-8 text-center font-semibold text-white transition-all"
+                  onClick={() => switchChain(Polygon.chainId)}
+                >
+                  Polygon
+                </button>
+                <button
+                  className="bg-accent cursor-default rounded-full py-3 px-8 text-center font-semibold text-white transition-all"
+                  onClick={() => switchChain(Mumbai.chainId)}
+                >
+                  Mumbai
+                </button>
+              </div>
             </div>
-          </div>
+          )}
 
           <div className="mx-auto max-w-[48.125rem]">
             {/* <!-- File Upload --> */}
@@ -361,7 +390,9 @@ const Create = () => {
                   />
                 </div>
               </div>
+              {imageError && <p className="text-red-500">{imageError}</p>}
             </div>
+
             {/* <!-- Name --> */}
             <div className="mb-6">
               <label
@@ -538,7 +569,7 @@ const Create = () => {
                     checked={selectedCurrency === "JEUR"}
                     onChange={handleCurrencyChange}
                   />
-                  <label htmlFor="eur">JEUR</label>
+                  <label htmlFor="jeur">JEUR</label>
                 </div>
 
                 <div className="flex items-center gap-1">
@@ -601,6 +632,7 @@ const Create = () => {
                 You&apos;ll earn up to 1600 USDC. As d&gt;sponsor charges a fee
                 of 4%, sponsors will pay 208 USDC.
               </p>
+              {currencyError && <p className="text-red-500">{currencyError}</p>}
             </div>
 
             {/* <!-- Royalties --> */}
@@ -623,12 +655,14 @@ const Create = () => {
                   id="numberInput"
                   type="number"
                   min="0"
+                  max="100"
                   value={selectedRoyalties}
                   onChange={handleRoyaltiesChange}
                   placeholder="Royalties"
                 />
                 <span>%</span>
               </div>
+              {royaltyError && <p className="text-red-500">{royaltyError}</p>}
             </div>
 
             {/* <!-- Collection --> */}
