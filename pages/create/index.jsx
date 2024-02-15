@@ -1,22 +1,19 @@
-import React, { useState } from "react";
-import Tippy from "@tippyjs/react";
-import "tippy.js/dist/tippy.css"; // optional
-import Collection_dropdown2 from "../../components/dropdown/collection_dropdown2";
-import {
-  collectionDropdown2_data,
-  EthereumDropdown2_data,
-} from "../../data/dropdown";
+import React, { useEffect, useState, useCallback } from "react";
 import { FileUploader } from "react-drag-drop-files";
-import Proparties_modal from "../../components/modal/proparties_modal";
-import { useDispatch } from "react-redux";
-import { showPropatiesModal } from "../../redux/counterSlice";
 import Meta from "../../components/Meta";
 import Image from "next/image";
 import { useStorageUpload } from "@thirdweb-dev/react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { useAddress, useSwitchChain } from "@thirdweb-dev/react";
+import {
+  useAddress,
+  useSwitchChain,
+  useContract,
+  useContractWrite,
+  Web3Button,
+} from "@thirdweb-dev/react";
 import { Mumbai, Polygon } from "@thirdweb-dev/chains";
+import { useToken } from "wagmi";
 
 const Create = () => {
   const fileTypes = ["JPG", "PNG", "GIF", "SVG"];
@@ -34,13 +31,15 @@ const Create = () => {
   const [description, setDescription] = useState(null);
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
-  const [json, setJson] = useState(null);
   const [previewImage, setPreviewImage] = useState(null);
   const [selectedNumber, setSelectedNumber] = useState(1);
   const [selectedUnitPrice, setSelectedUnitPrice] = useState(200);
   const [selectedCurrency, setSelectedCurrency] = useState("EUR");
   const [customContract, setCustomContract] = useState(null);
   const [selectedRoyalties, setSelectedRoyalties] = useState(10);
+  const [jsonIpfsLink, setJsonIpfsLink] = useState(null);
+  const [validate, setValidate] = useState(false);
+  const [args, setArgs] = useState([]);
 
   const handleNumberChange = (e) => {
     setSelectedNumber(parseInt(e.target.value, 10));
@@ -64,6 +63,15 @@ const Create = () => {
 
   const address = useAddress();
   const switchChain = useSwitchChain();
+  const { contract } = useContract(
+    "0xE3aE42A640C0C00F8e0cB6C3B1Df50a0b45d6B44"
+  ); // dsponsor admin mumbai contract address
+
+  const {
+    mutateAsync,
+    isLoading: isLoadingContractWrite,
+    error,
+  } = useContractWrite(contract, "createDSponsorNFTAndOffer");
 
   const handleLogoUpload = (file) => {
     if (file) {
@@ -117,7 +125,7 @@ const Create = () => {
   };
 
   const copyToClipboard = () => {
-    navigator.clipboard.writeText(uploadUrl);
+    navigator.clipboard.writeText(jsonIpfsLink);
   };
 
   const handleSubmit = async () => {
@@ -129,6 +137,7 @@ const Create = () => {
       data: [file],
       options: { uploadWithGatewayUrl: true, uploadWithoutDirectory: true },
     });
+
     setUploadUrl(uploadUrl);
     if (uploadUrl && name && link) {
       onUpload(uploadUrl, name, link);
@@ -136,20 +145,26 @@ const Create = () => {
       console.error("Missing name or link");
     }
 
-    setJson(
-      JSON.stringify({
-        name: name,
-        description: description,
-        image: ipfsLink,
-        external_link: link,
-        collaborators: [address],
-        validFromDate: startDate,
-        validToDate: endDate,
-      })
-    );
-  };
+    const json = JSON.stringify({
+      name: name,
+      description: description,
+      image: uploadUrl,
+      external_link: link,
+      collaborators: [address],
+      validFromDate: startDate,
+      validToDate: endDate,
+    });
 
-  console.log("json", json);
+    // upload json to IPFS
+    const jsonUrl = await upload({
+      data: [json],
+      options: { uploadWithGatewayUrl: true, uploadWithoutDirectory: true },
+    });
+
+    setJsonIpfsLink(jsonUrl);
+
+    setValidate(true);
+  };
 
   const onUpload = (logo, updatedName, updatedLink) => {
     setIpfsLink(logo);
@@ -177,6 +192,90 @@ const Create = () => {
       icon: "stats-icon",
     },
   ];
+
+  const { result: JEURToken } = useToken({
+    address: "0xd409F17095a370800A9C352124C6a1e82695203E",
+    chainId: Mumbai.chainId,
+  }); // add others
+
+  const { result: customToken } = useToken({
+    address: customContract,
+    chainId: Mumbai.chainId,
+  });
+
+  const selectedCurrencyContract = useCallback(() => {
+    switch (selectedCurrency) {
+      case "JEUR":
+        return new Array(
+          "0xd409F17095a370800A9C352124C6a1e82695203E",
+          JEURToken.decimals
+        ); // on mumbai
+      case "USDC":
+        return new Array("0x1", decimals); // to change
+      case "MATIC":
+        return new Array("0x2", decimals); // to change
+      case "WETH":
+        return new Array("0x3", decimals); // to change
+      case "custom":
+        return new Array(customContract, customToken.decimals);
+      default:
+        return new Array(
+          "0xd409F17095a370800A9C352124C6a1e82695203E",
+          JEURToken.decimals
+        ); // JEUR by default (to change)
+    }
+  }, [
+    JEURToken.decimals,
+    customContract,
+    customToken.decimals,
+    selectedCurrency,
+  ]);
+
+  useEffect(() => {
+    setArgs([
+      JSON.stringify({
+        name: name, // name
+        symbol: "DSPONSORNFT", // symbol
+        baseURI: "https://api.dsponsor.com/tokenMetadata/", // baseURI
+        contractURI: jsonIpfsLink, // contractURI from json
+        maxSupply: selectedNumber, // max supply
+        forwarder: "0x0000000000000000000000000000000000000000", // forwarder
+        initialOwner: address, // owner
+        royaltyBps: selectedRoyalties * 100, // royalties
+        currencies: [selectedCurrencyContract(selectedCurrency)], // accepted token
+        prices: [selectedUnitPrice * 10 ** 18], // prices with decimals
+        allowedTokenIds: Array.from(
+          { length: selectedNumber + 1 },
+          (_, i) => i
+        ), // allowed token ids
+      }),
+      JSON.stringify({
+        name: name, // name
+        ruleURI: jsonIpfsLink, // rulesURI
+        options: {
+          admins: [address], // admin
+          validators: [], // validator
+          adParameters: ["squareLogoURL", "linkURL"], // ad parameters
+        },
+      }),
+    ]);
+  }, [
+    address,
+    jsonIpfsLink,
+    name,
+    selectedCurrency,
+    selectedCurrencyContract,
+    selectedNumber,
+    selectedRoyalties,
+    selectedUnitPrice,
+  ]);
+
+  console.log(
+    new Array(
+      Object.values(JSON.parse(args[0])),
+      Object.values(JSON.parse(args[1]))
+    )
+  );
 
   return (
     <div>
@@ -433,13 +532,13 @@ const Create = () => {
                 <div className="flex items-center gap-1">
                   <input
                     type="radio"
-                    id="eur"
+                    id="jeur"
                     name="currency"
-                    value="EUR"
-                    checked={selectedCurrency === "EUR"}
+                    value="JEUR"
+                    checked={selectedCurrency === "JEUR"}
                     onChange={handleCurrencyChange}
                   />
-                  <label htmlFor="eur">EUR</label>
+                  <label htmlFor="eur">JEUR</label>
                 </div>
 
                 <div className="flex items-center gap-1">
@@ -824,22 +923,60 @@ const Create = () => {
             </div>
             */}
             {/* <!-- Submit --> */}
-            <button
-              onClick={handleSubmit}
-              className="bg-accent cursor-default rounded-full py-3 px-8 text-center font-semibold text-white transition-all"
-            >
-              Create Ad Space Offer
-            </button>
-            {!uploadUrl && <></>}
+            <div className="flex items-center gap-4">
+              {!validate && (
+                <button
+                  className="bg-accent cursor-default rounded-full py-3 px-8 text-center font-semibold text-white transition-all"
+                  onClick={handleSubmit}
+                >
+                  Validate
+                </button>
+              )}
+              {validate && (
+                <button
+                  className="bg-accent cursor-default rounded-full py-3 px-8 text-center font-semibold text-white transition-all"
+                  onClick={handleSubmit}
+                >
+                  Revalidate
+                </button>
+              )}
+              {validate && (
+                <Web3Button
+                  contractAddress="0xE3aE42A640C0C00F8e0cB6C3B1Df50a0b45d6B44"
+                  action={() =>
+                    mutateAsync({
+                      args: [
+                        Object.values(JSON.parse(args[0])),
+                        Object.values(JSON.parse(args[1])),
+                      ],
+                    })
+                  }
+                  style={{
+                    backgroundColor: "#6366F1", // bg-accent
+                    cursor: "default", // cursor-default
+                    borderRadius: "9999px", // rounded-full
+                    padding: "1rem 2rem", // py-3 px-8
+                    textAlign: "center", // text-center
+                    fontWeight: "600", // font-semibold
+                    color: "#ffffff", // text-white
+                    transition: "all", // transition-all
+                  }}
+                  className="bg-accent cursor-default rounded-full py-3 px-8 text-center font-semibold text-white transition-all"
+                >
+                  Create Ad Space Offer
+                </Web3Button>
+              )}
+            </div>
+            {!jsonIpfsLink && <></>}
             <div className="flex justify-start gap-2 mt-4">
-              {file && !uploadUrl && isLoading && (
+              {file && !jsonIpfsLink && isLoading && (
                 <div className="flex items-center">
                   <div className="inline-block mr-2 h-4 w-4 animate-spin rounded-full border border-solid border-current border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]"></div>
                   Uploading...
                 </div>
               )}
-              {uploadUrl && (
-                <div className={`${uploadUrl && "flex flex-col gap-4"}`}>
+              {jsonIpfsLink && (
+                <div className={`${jsonIpfsLink && "flex flex-col gap-4"}`}>
                   <div className="flex items-center gap-2">
                     <p className="font-light">
                       The item has been uploaded to IPFS.
