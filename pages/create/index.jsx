@@ -15,7 +15,8 @@ import Image from "next/image";
 import { useStorageUpload } from "@thirdweb-dev/react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { useAddress } from "@thirdweb-dev/react";
+import { useAddress, useSwitchChain } from "@thirdweb-dev/react";
+import { Mumbai, Polygon } from "@thirdweb-dev/chains";
 
 const Create = () => {
   const fileTypes = ["JPG", "PNG", "GIF", "SVG"];
@@ -35,8 +36,34 @@ const Create = () => {
   const [endDate, setEndDate] = useState(new Date());
   const [json, setJson] = useState(null);
   const [previewImage, setPreviewImage] = useState(null);
+  const [selectedNumber, setSelectedNumber] = useState(1);
+  const [selectedUnitPrice, setSelectedUnitPrice] = useState(200);
+  const [selectedCurrency, setSelectedCurrency] = useState("EUR");
+  const [customContract, setCustomContract] = useState(null);
+  const [selectedRoyalties, setSelectedRoyalties] = useState(10);
+
+  const handleNumberChange = (e) => {
+    setSelectedNumber(parseInt(e.target.value, 10));
+  };
+
+  const handleUnitPriceChange = (e) => {
+    setSelectedUnitPrice(parseInt(e.target.value, 10));
+  };
+
+  const handleCurrencyChange = (event) => {
+    setSelectedCurrency(event.target.value);
+  };
+
+  const handleCustomContractChange = (event) => {
+    setCustomContract(event.target.value);
+  };
+
+  const handleRoyaltiesChange = (e) => {
+    setSelectedRoyalties(parseInt(e.target.value, 10));
+  };
 
   const address = useAddress();
+  const switchChain = useSwitchChain();
 
   const handleLogoUpload = (file) => {
     if (file) {
@@ -122,6 +149,8 @@ const Create = () => {
     );
   };
 
+  console.log("json", json);
+
   const onUpload = (logo, updatedName, updatedLink) => {
     setIpfsLink(logo);
     setName(updatedName);
@@ -168,6 +197,24 @@ const Create = () => {
           <h1 className="font-display text-jacarta-700 py-16 text-center text-4xl font-medium dark:text-white">
             Create
           </h1>
+
+          <div className="flex flex-col justify-center gap-2 mb-10">
+            <p className="text-center text-red-500">dev only</p>
+            <div className="flex gap-10 justify-center">
+              <button
+                className="bg-accent cursor-default rounded-full py-3 px-8 text-center font-semibold text-white transition-all"
+                onClick={() => switchChain(Polygon.chainId)}
+              >
+                Polygon
+              </button>
+              <button
+                className="bg-accent cursor-default rounded-full py-3 px-8 text-center font-semibold text-white transition-all"
+                onClick={() => switchChain(Mumbai.chainId)}
+              >
+                Mumbai
+              </button>
+            </div>
+          </div>
 
           <div className="mx-auto max-w-[48.125rem]">
             {/* <!-- File Upload --> */}
@@ -242,11 +289,6 @@ const Create = () => {
               >
                 External link<span className="text-red">*</span>
               </label>
-              <p className="dark:text-jacarta-300 text-2xs mb-3">
-                We will include a link to this URL on this {"item's"} detail
-                page, so that users can click to learn more about it. You are
-                welcome to link to your own webpage with more details.
-              </p>
               <input
                 type="url"
                 id="item-external-link"
@@ -263,12 +305,8 @@ const Create = () => {
                 htmlFor="item-description"
                 className="font-display text-jacarta-700 mb-2 block dark:text-white"
               >
-                Description
+                Description<span className="text-red">*</span>
               </label>
-              <p className="dark:text-jacarta-300 text-2xs mb-3">
-                The description will be included on the {"item's"} detail page
-                underneath its image. Markdown syntax is supported.
-              </p>
               <textarea
                 id="item-description"
                 className="dark:bg-jacarta-700 border-jacarta-100 hover:ring-accent/10 focus:ring-accent dark:border-jacarta-600 dark:placeholder:text-jacarta-300 w-full rounded-lg py-3 px-3 hover:ring-2 dark:text-white"
@@ -309,27 +347,189 @@ const Create = () => {
                 htmlFor="item-description"
                 className="font-display text-jacarta-700 mb-2 block dark:text-white"
               >
-                Validity period
+                Validity period<span className="text-red">*</span>
               </label>
-              <p className="dark:text-jacarta-300 text-2xs mb-3">
-                Choose the start and end date for the item.
-              </p>
               <div className="flex gap-4 items-center text-jacarta-700 dark:text-white">
-                <DatePicker
-                  selected={startDate}
-                  onChange={(date) => setStartDate(date)}
-                  className="text-jacarta-700 dark:text-white"
-                />
-                <DatePicker
-                  selected={endDate}
-                  onChange={(date) => setEndDate(date)}
-                  className="text-jacarta-700 dark:text-white"
-                />
+                <div className="flex flex-col justify-center items-center gap-1">
+                  <DatePicker
+                    selected={startDate}
+                    onChange={(date) => setStartDate(date)}
+                    className="text-jacarta-700 dark:text-white"
+                  />
+                  <span className="text-jacarta-700 dark:text-white">
+                    Start date
+                  </span>
+                </div>
+                <div className="flex flex-col justify-center items-center gap-1">
+                  <DatePicker
+                    selected={endDate}
+                    onChange={(date) => setEndDate(date)}
+                    className="text-jacarta-700 dark:text-white"
+                  />
+                  <span className="text-jacarta-700 dark:text-white">
+                    End date
+                  </span>
+                </div>
               </div>
               {startDateError && (
                 <p className="text-red-500">{startDateError}</p>
               )}
               {endDateError && <p className="text-red-500">{endDateError}</p>}
+            </div>
+
+            {/* <!-- Number of ad spaces --> */}
+            <div className="mb-6">
+              <label
+                htmlFor="item-description"
+                className="font-display text-jacarta-700 mb-2 block dark:text-white"
+              >
+                Number of ad spaces for this offer
+                <span className="text-red">*</span>
+              </label>
+              <p className="dark:text-jacarta-300 text-2xs mb-3">
+                Warning: d&gt;sponsor works with a fixed supply of ad spaces.
+                You won&apos;t be able to modify this value. Max : 25
+              </p>
+              <div className="flex gap-4 items-center text-jacarta-700 dark:text-white">
+                <label htmlFor="numberSelect">Select a number:</label>
+                <select
+                  id="numberSelect"
+                  value={selectedNumber}
+                  onChange={handleNumberChange}
+                >
+                  {[...Array(25)].map((_, index) => (
+                    <option key={index + 1} value={index + 1}>
+                      {index + 1}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            {/* <!-- Unit selling price --> */}
+            <div className="mb-6">
+              <label
+                htmlFor="item-description"
+                className="font-display text-jacarta-700 mb-2 block dark:text-white"
+              >
+                Unit selling price
+                <span className="text-red">*</span>
+              </label>
+              <p className="dark:text-jacarta-300 text-2xs mb-3">
+                EUR payment means you&apos;ll receive JEUR tokens (1 JEUR = 1€).
+                USD payment means you&apos;ll receive JUSD tokens (1 JUSD = 1$).
+                You&apos;ll be able to cash out via wire transfer with a service
+                like MtPelerin. You can change the pricing later.
+              </p>
+              <div className="flex gap-4 items-center text-jacarta-700 dark:text-white">
+                <input
+                  id="numberInput"
+                  type="number"
+                  min="1"
+                  value={selectedUnitPrice}
+                  onChange={handleUnitPriceChange}
+                  placeholder="Unit selling price"
+                />
+                <div className="flex items-center gap-1">
+                  <input
+                    type="radio"
+                    id="eur"
+                    name="currency"
+                    value="EUR"
+                    checked={selectedCurrency === "EUR"}
+                    onChange={handleCurrencyChange}
+                  />
+                  <label htmlFor="eur">EUR</label>
+                </div>
+
+                <div className="flex items-center gap-1">
+                  <input
+                    type="radio"
+                    id="usdc"
+                    name="currency"
+                    value="USDC"
+                    checked={selectedCurrency === "USDC"}
+                    onChange={handleCurrencyChange}
+                  />
+                  <label htmlFor="usdc">USDC</label>
+                </div>
+
+                <div className="flex items-center gap-1">
+                  <input
+                    type="radio"
+                    id="matic"
+                    name="currency"
+                    value="MATIC"
+                    checked={selectedCurrency === "MATIC"}
+                    onChange={handleCurrencyChange}
+                  />
+                  <label htmlFor="matic">MATIC</label>
+                </div>
+
+                <div className="flex items-center gap-1">
+                  <input
+                    type="radio"
+                    id="weth"
+                    name="currency"
+                    value="WETH"
+                    checked={selectedCurrency === "WETH"}
+                    onChange={handleCurrencyChange}
+                  />
+                  <label htmlFor="weth">WETH</label>
+                </div>
+
+                <div className="flex items-center gap-1">
+                  <input
+                    type="radio"
+                    id="custom"
+                    name="currency"
+                    value="custom"
+                    checked={selectedCurrency === "custom"}
+                    onChange={handleCurrencyChange}
+                  />
+                  <label htmlFor="custom">Custom</label>
+                  <input
+                    className="ml-2"
+                    type="text"
+                    id="customContract"
+                    name="customContract"
+                    placeholder="Contract address"
+                    onChange={handleCustomContractChange}
+                  />
+                </div>
+              </div>
+              <p className="dark:text-jacarta-300 text-2xs mt-3">
+                You&apos;ll earn up to 1600 USDC. As d&gt;sponsor charges a fee
+                of 4%, sponsors will pay 208 USDC.
+              </p>
+            </div>
+
+            {/* <!-- Royalties --> */}
+            <div className="mb-6">
+              <label
+                htmlFor="item-description"
+                className="font-display text-jacarta-700 mb-2 block dark:text-white"
+              >
+                Royalties
+                <span className="text-red">*</span>
+              </label>
+              <p className="dark:text-jacarta-300 text-2xs mb-3">
+                Sponsors can sell an ad space ownership on the marketplace.
+                Define the fee you want to get from secondary sales. Sponsors
+                might refuse to buy an ad space if your royalty fee is too high.
+                You can change this value pricing later.
+              </p>
+              <div className="flex gap-4 items-center text-jacarta-700 dark:text-white">
+                <input
+                  id="numberInput"
+                  type="number"
+                  min="0"
+                  value={selectedRoyalties}
+                  onChange={handleRoyaltiesChange}
+                  placeholder="Royalties"
+                />
+                <span>%</span>
+              </div>
             </div>
 
             {/* <!-- Collection --> */}
@@ -628,42 +828,42 @@ const Create = () => {
               onClick={handleSubmit}
               className="bg-accent cursor-default rounded-full py-3 px-8 text-center font-semibold text-white transition-all"
             >
-              Create
+              Create Ad Space Offer
             </button>
             {!uploadUrl && <></>}
-          </div>
-          <div className="flex justify-center gap-2">
-            {file && !uploadUrl && isLoading && (
-              <div className="flex items-center">
-                <div className="inline-block mr-2 h-4 w-4 animate-spin rounded-full border border-solid border-current border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]"></div>
-                Uploading...
-              </div>
-            )}
-            {uploadUrl && (
-              <div className={`${uploadUrl && "flex flex-col gap-4"}`}>
-                <div className="flex items-center gap-2">
-                  <p className="font-light">
-                    The item has been uploaded to IPFS.
-                  </p>
-                  <button onClick={copyToClipboard}>
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      strokeWidth={1.5}
-                      stroke="currentColor"
-                      className="w-5 h-5 text-gray-500 active:text-black"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M15.666 3.888A2.25 2.25 0 0 0 13.5 2.25h-3c-1.03 0-1.9.693-2.166 1.638m7.332 0c.055.194.084.4.084.612v0a.75.75 0 0 1-.75.75H9a.75.75 0 0 1-.75-.75v0c0-.212.03-.418.084-.612m7.332 0c.646.049 1.288.11 1.927.184 1.1.128 1.907 1.077 1.907 2.185V19.5a2.25 2.25 0 0 1-2.25 2.25H6.75A2.25 2.25 0 0 1 4.5 19.5V6.257c0-1.108.806-2.057 1.907-2.185a48.208 48.208 0 0 1 1.927-.184"
-                      />
-                    </svg>
-                  </button>
+            <div className="flex justify-start gap-2 mt-4">
+              {file && !uploadUrl && isLoading && (
+                <div className="flex items-center">
+                  <div className="inline-block mr-2 h-4 w-4 animate-spin rounded-full border border-solid border-current border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]"></div>
+                  Uploading...
                 </div>
-              </div>
-            )}
+              )}
+              {uploadUrl && (
+                <div className={`${uploadUrl && "flex flex-col gap-4"}`}>
+                  <div className="flex items-center gap-2">
+                    <p className="font-light">
+                      The item has been uploaded to IPFS.
+                    </p>
+                    <button onClick={copyToClipboard}>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        strokeWidth={1.5}
+                        stroke="currentColor"
+                        className="w-5 h-5 text-gray-500 active:text-black"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M15.666 3.888A2.25 2.25 0 0 0 13.5 2.25h-3c-1.03 0-1.9.693-2.166 1.638m7.332 0c.055.194.084.4.084.612v0a.75.75 0 0 1-.75.75H9a.75.75 0 0 1-.75-.75v0c0-.212.03-.418.084-.612m7.332 0c.646.049 1.288.11 1.927.184 1.1.128 1.907 1.077 1.907 2.185V19.5a2.25 2.25 0 0 1-2.25 2.25H6.75A2.25 2.25 0 0 1 4.5 19.5V6.257c0-1.108.806-2.057 1.907-2.185a48.208 48.208 0 0 1 1.927-.184"
+                        />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </section>
