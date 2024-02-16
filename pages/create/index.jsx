@@ -2,7 +2,6 @@ import React, { useEffect, useState, useCallback } from "react";
 import { FileUploader } from "react-drag-drop-files";
 import Meta from "../../components/Meta";
 import Image from "next/image";
-import { useStorageUpload } from "@thirdweb-dev/react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import {
@@ -11,9 +10,14 @@ import {
   useContract,
   useContractWrite,
   Web3Button,
+  useStorageUpload,
+  useTokenDecimals,
+  CheckoutWithCard,
+  CheckoutWithEth,
 } from "@thirdweb-dev/react";
 import { Mumbai, Polygon } from "@thirdweb-dev/chains";
-// import { useToken } from "wagmi";
+
+const { BigNumber } = require("ethers");
 
 const Create = () => {
   const fileTypes = ["JPG", "PNG", "GIF", "SVG"];
@@ -209,7 +213,7 @@ const Create = () => {
       options: { uploadWithGatewayUrl: true, uploadWithoutDirectory: true },
     });
 
-    setJsonIpfsLink(jsonUrl);
+    setJsonIpfsLink(jsonUrl[0]);
 
     setValidate(true);
   };
@@ -241,26 +245,41 @@ const Create = () => {
     },
   ];
 
-  //const { result: JEURToken } = useToken({
-  //  address: "0xd409F17095a370800A9C352124C6a1e82695203E",
-  //  chainId: Mumbai.chainId,
-  //}); // add others
+  const { contract: JEURTokenContract } = useContract(
+    "0xd409F17095a370800A9C352124C6a1e82695203E",
+    "token"
+  ); // mumbai
 
-  //const { result: customToken } = useToken({
-  //  address: customContract,
-  //  chainId: Mumbai.chainId,
-  //});
+  const { contract: USDCTokenContract } = useContract(
+    "0xe6b8a5CF854791412c1f6EFC7CAf629f5Df1c747",
+    "token"
+  ); // mumbai
+
+  const { contract: WETHTokenContract } = useContract(
+    "0xA6FA4fB5f76172d178d61B04b0ecd319C5d1C0aa",
+    "token"
+  ); // mumbai
+
+  const { contract: customTokenContract } = useContract(
+    customContract,
+    "token"
+  );
+
+  const { data: JEURdecimals } = useTokenDecimals(JEURTokenContract);
+  const { data: USDCDecimals } = useTokenDecimals(USDCTokenContract);
+  const { data: WETHDecimals } = useTokenDecimals(WETHTokenContract);
+  const { data: customDecimals } = useTokenDecimals(customTokenContract);
 
   const selectedCurrencyContract = useCallback(() => {
     switch (selectedCurrency) {
       case "JEUR":
-        return "0xd409F17095a370800A9C352124C6a1e82695203E", 18; // on mumbai
+        return "0xd409F17095a370800A9C352124C6a1e82695203E"; // on mumbai
       case "USDC":
-        return "0x1", 18; // to change
+        return "0xe6b8a5CF854791412c1f6EFC7CAf629f5Df1c747";
       case "MATIC":
-        return "0x2", 18; // to change
+        return "0x2"; // to change
       case "WETH":
-        return "0x3"; // to change
+        return "0xA6FA4fB5f76172d178d61B04b0ecd319C5d1C0aa"; // on mumbai
       case "custom":
         return customContract;
       default:
@@ -268,7 +287,34 @@ const Create = () => {
     }
   }, [customContract, selectedCurrency]);
 
-  useEffect(() => {
+  const getDecimals = useCallback(
+    (currency) => {
+      switch (currency) {
+        case "JEUR":
+          return JEURdecimals;
+        case "USDC":
+          return USDCDecimals;
+        case "MATIC":
+          return 18;
+        case "WETH":
+          return WETHDecimals;
+        case "custom":
+          return customDecimals;
+        default:
+          return JEURdecimals; // JEUR by default (to change)
+      }
+    },
+    [JEURdecimals, USDCDecimals, WETHDecimals, customDecimals]
+  );
+
+  const updateArgs = useCallback(() => {
+    if (!selectedCurrency) return;
+    if (!selectedUnitPrice) return;
+    if (!selectedNumber) return;
+    if (!selectedRoyalties) return;
+    if (!name) return;
+    if (!jsonIpfsLink) return;
+
     setArgs([
       JSON.stringify({
         name: name, // name
@@ -280,12 +326,16 @@ const Create = () => {
         initialOwner: address, // owner
         royaltyBps: selectedRoyalties * 100, // royalties
         currencies: [selectedCurrencyContract(selectedCurrency)], // accepted token
-        prices: [selectedUnitPrice * 10 ** 18], // prices with decimals
+        prices: [
+          BigNumber.from(selectedUnitPrice).mul(
+            BigNumber.from(10).pow(getDecimals(selectedCurrency))
+          ),
+        ], // prices with decimals
         allowedTokenIds: Array.from({ length: selectedNumber }, (_, i) => i), // allowed token ids
       }),
       JSON.stringify({
         name: name, // name
-        ruleURI: jsonIpfsLink, // rulesURI
+        rulesURI: jsonIpfsLink, // rulesURI
         options: {
           admins: [address], // admin
           validators: [], // validator
@@ -295,6 +345,7 @@ const Create = () => {
     ]);
   }, [
     address,
+    getDecimals,
     jsonIpfsLink,
     name,
     selectedCurrency,
@@ -303,6 +354,10 @@ const Create = () => {
     selectedRoyalties,
     selectedUnitPrice,
   ]);
+
+  useEffect(() => {
+    updateArgs();
+  }, [updateArgs]);
 
   return (
     <div>
@@ -343,6 +398,39 @@ const Create = () => {
               </div>
             </div>
           )}
+
+          <div className="flex flex-col justify-center gap-2 mb-10 max-w-xl mx-auto">
+            <p className="text-center text-red-500">buy nft test</p>
+            <div className="flex gap-10 justify-center">
+              <CheckoutWithCard
+                clientId="9fe05bd603270a5b7b9a0d57596e4b0a"
+                configs={{
+                  // Registered contract ID
+                  contractId: "9581760b-fc73-409f-9c5f-ec1e24ce42fd",
+                  // Buyer wallet address
+                  walletAddress: address,
+                }}
+                onPaymentSuccess={(result) => {
+                  console.log("Payment successful:", result);
+                }}
+              />
+            </div>
+          </div>
+
+          {/*<div className="flex flex-col justify-center gap-2 mb-10">
+            <p className="text-center text-red-500">buy nft test</p>
+            <div className="flex gap-10 justify-center">
+              <CheckoutWithEth
+                configs={{
+                  contractId: "9581760b-fc73-409f-9c5f-ec1e24ce42fd",
+                  walletAddress: address,
+                }}
+                onPaymentSuccess={(result) => {
+                  console.log("Payment successful.", result);
+                }}
+              />
+            </div>
+            </div>*/}
 
           <div className="mx-auto max-w-[48.125rem]">
             {/* <!-- File Upload --> */}
@@ -960,7 +1048,7 @@ const Create = () => {
             <div className="flex items-center gap-4">
               {!validate && (
                 <button
-                  className="bg-accent cursor-default rounded-full py-3 px-8 text-center font-semibold text-white transition-all"
+                  className="bg-accent cursor-pointer rounded-full py-3 px-8 text-center font-semibold text-white transition-all"
                   onClick={handleSubmit}
                 >
                   Validate
@@ -968,7 +1056,7 @@ const Create = () => {
               )}
               {validate && (
                 <button
-                  className="bg-accent cursor-default rounded-full py-3 px-8 text-center font-semibold text-white transition-all"
+                  className="bg-accent cursor-pointer rounded-full py-3 px-8 text-center font-semibold text-white transition-all"
                   onClick={handleSubmit}
                 >
                   Revalidate
@@ -985,17 +1073,7 @@ const Create = () => {
                       ],
                     })
                   }
-                  style={{
-                    backgroundColor: "#6366F1", // bg-accent
-                    cursor: "default", // cursor-default
-                    borderRadius: "9999px", // rounded-full
-                    padding: "1rem 2rem", // py-3 px-8
-                    textAlign: "center", // text-center
-                    fontWeight: "600", // font-semibold
-                    color: "#ffffff", // text-white
-                    transition: "all", // transition-all
-                  }}
-                  className="bg-accent cursor-default rounded-full py-3 px-8 text-center font-semibold text-white transition-all"
+                  className="!bg-accent !cursor-pointer !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all"
                 >
                   Create Ad Space Offer
                 </Web3Button>
