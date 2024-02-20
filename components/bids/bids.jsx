@@ -11,22 +11,11 @@ const Bids = ({ classes = "pt-10 pb-24", bgWhite }) => {
       {/* <!-- Hot Offers --> */}
       {bgWhite && (
         <picture className="pointer-events-none absolute inset-0 -z-10 dark:hidden">
-          <Image
-            width={1519}
-            height={773}
-            priority
-            src="/images/gradient_light.jpg"
-            alt="gradient"
-            className="h-full w-full object-cover"
-          />
+          <Image width={1519} height={773} priority src="/images/gradient_light.jpg" alt="gradient" className="h-full w-full object-cover" />
         </picture>
       )}
       <div className="container">
-        <HeadLine
-          text="Hot Offers"
-          image="https://cdn.jsdelivr.net/npm/emoji-datasource-apple@7.0.2/img/apple/64/1f525.png"
-          classes="font-display text-jacarta-700 mb-8 text-center text-3xl dark:text-white"
-        />
+        <HeadLine text="Hot Offers" image="https://cdn.jsdelivr.net/npm/emoji-datasource-apple@7.0.2/img/apple/64/1f525.png" classes="font-display text-jacarta-700 mb-8 text-center text-3xl dark:text-white" />
 
         <div className="relative">
           {/* <!-- Slider --> */}

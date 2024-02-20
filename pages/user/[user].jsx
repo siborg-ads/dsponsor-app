@@ -13,7 +13,7 @@ import Meta from "../../components/Meta";
 const User = () => {
   const router = useRouter();
   const pid = router.query.user;
-
+console.log(router);
   const [likesImage, setLikesImage] = useState(false);
   const [copied, setCopied] = useState(false);
 
@@ -120,7 +120,7 @@ const User = () => {
                       Joined December {joinYear}
                     </span>
 
-                    <div className="mt-6 flex items-center justify-center space-x-2.5 relative">
+                    {/* <div className="mt-6 flex items-center justify-center space-x-2.5 relative">
                       <div className="dark:border-jacarta-600 dark:hover:bg-jacarta-600 border-jacarta-100 hover:bg-jacarta-100 dark:bg-jacarta-700 rounded-xl border bg-white">
                         <div className="js-likes relative inline-flex h-10 w-10 cursor-pointer items-center justify-center text-sm">
                           <button onClick={() => handleLikes()}>
@@ -140,7 +140,7 @@ const User = () => {
                       <Social_dropdown />
 
                       <Auctions_dropdown classes="dark:border-jacarta-600 dark:hover:bg-jacarta-600 border-jacarta-100 dropdown hover:bg-jacarta-100 dark:bg-jacarta-700 rounded-xl border bg-white relative" />
-                    </div>
+                    </div> */}
                   </div>
                 </div>
               </section>

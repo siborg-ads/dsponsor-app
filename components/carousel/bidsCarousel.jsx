@@ -11,8 +11,27 @@ import { MdKeyboardArrowRight, MdKeyboardArrowLeft } from "react-icons/md";
 import { bidsModalShow } from "../../redux/counterSlice";
 import { useDispatch } from "react-redux";
 import Likes from "../likes";
+import { execute } from "../../.graphclient";
+import { gql } from "@apollo/client"; 
 
 const BidsCarousel = () => {
+  const GET_DATA = gql`
+    query MyQuery {
+      newDSponsorNFTs {
+        contractAddr
+        owner
+      }
+      updateOffers {
+        offerId
+        nftContract
+      }
+    }
+  `;
+   async function main() {
+     const resultat = await execute(GET_DATA, {});
+    console.log(resultat);
+   }
+   main();
   const dispatch = useDispatch();
   const handleclick = () => {
     console.log("clicked on ");
@@ -45,7 +64,8 @@ const BidsCarousel = () => {
         className=" card-slider-4-columns !py-5"
       >
         {bidsData.map((item) => {
-          const { id, image, title, bid_number, eth_number, react_number } =
+          const image = "/images/products/item_2.jpg";
+          const { id, title, bid_number, eth_number, react_number } =
             item;
           const itemLink = image
             .split("/")

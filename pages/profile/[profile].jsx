@@ -2,28 +2,10 @@ import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import UserId from "../../components/userId";
 import Meta from "../../components/Meta";
-import { execute } from "../../.graphclient";
-import { gql } from "@apollo/client"; 
+
 
 const Edit_user = () => {
-  const GET_DATA = gql`
-    query MyQuery {
-      newDSponsorNFTs {
-        contractAddr
-        owner
-      }
-      updateOffers {
-        offerId
-        nftContract
-      }
-    }
-  `;
-  async function main() {
-    const resultat = await execute(GET_DATA, {});
-    console.log(resultat);
-  }
-
-  main();
+  
 
   const [profilePhoto, setProfilePhoto] = useState();
   const [coverePhoto, setCoverePhoto] = useState();

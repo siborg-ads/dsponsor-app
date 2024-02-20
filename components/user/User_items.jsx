@@ -8,11 +8,11 @@ import Explore_collection_item from "../collectrions/explore_collection_item";
 const User_items = () => {
   const [itemActive, setItemActive] = useState(1);
   const tabItem = [
-    {
-      id: 1,
-      text: "on sale",
-      icon: "on-sale",
-    },
+    // {
+    //   id: 1,
+    //   text: "on sale",
+    //   icon: "on-sale",
+    // },
     {
       id: 2,
       text: "owned",
@@ -23,11 +23,11 @@ const User_items = () => {
       text: "created(20)",
       icon: "created",
     },
-    {
-      id: 4,
-      text: "collections",
-      icon: "listing",
-    },
+    // {
+    //   id: 4,
+    //   text: "collections",
+    //   icon: "listing",
+    // },
     {
       id: 5,
       text: "Activity",
