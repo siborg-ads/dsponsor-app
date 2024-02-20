@@ -12,7 +12,7 @@ const Explore_collection_item = ({ itemFor }) => {
   useEffect(() => {
     if (itemFor === "userPage") {
       setItemData(Feature_collections_data.slice(0, 4));
-      console.log(itemData);
+  
     } else {
       setItemData(sortedCollectionData);
     }

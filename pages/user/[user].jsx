@@ -13,7 +13,7 @@ import Meta from "../../components/Meta";
 const User = () => {
   const router = useRouter();
   const pid = router.query.user;
-console.log(router);
+
   const [likesImage, setLikesImage] = useState(false);
   const [copied, setCopied] = useState(false);
 

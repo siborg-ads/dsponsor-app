@@ -12,7 +12,7 @@ const Post = ({ url }) => {
         {case_studies_data
           .filter((item) => item.routePath === url)
           .map((item) => {
-            console.log(item.routePath);
+            
             const { id, img, title } = item;
             return (
               <div className="container" key={id}>
