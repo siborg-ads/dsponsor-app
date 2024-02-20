@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@apollo/client": "^3.9.5",
     "@emotion/react": "^11.9.3",
     "@emotion/styled": "^11.9.3",
     "@material-tailwind/react": "^1.2.4",
@@ -42,6 +43,7 @@
     "uuid": "^9.0.0"
   },
   "devDependencies": {
+    "@graphprotocol/client-cli": "^3.0.0",
     "autoprefixer": "10.4.5",
     "eslint": "8.17.0",
     "eslint-config-next": "13.2.3",
