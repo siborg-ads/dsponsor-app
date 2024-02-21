@@ -8,8 +8,16 @@ import { MetaMaskProvider } from "metamask-react";
 import Meta from "../components/Meta";
 import UserContext from "../components/UserContext";
 import { useRef } from "react";
-import { ThirdwebProvider, ConnectWallet, metamaskWallet, coinbaseWallet, walletConnect, localWallet, embeddedWallet } from "@thirdweb-dev/react";
-import { Mumbai } from "@thirdweb-dev/chains";
+import {
+  ThirdwebProvider,
+  ConnectWallet,
+  metamaskWallet,
+  coinbaseWallet,
+  walletConnect,
+  localWallet,
+  embeddedWallet,
+} from "@thirdweb-dev/react";
+import { Mumbai, Polygon } from "@thirdweb-dev/chains";
 
 if (typeof window !== "undefined") {
   require("bootstrap/dist/js/bootstrap");
@@ -31,6 +39,10 @@ function MyApp({ Component, pageProps }) {
       <ThirdwebProvider
         activeChain={Mumbai}
         clientId="6f375d41f2a33f1f08f6042a65d49ec9"
+        authConfig={{
+          domain: "dsponsor.com",
+          authUrl: "/api/auth",
+        }}
         switchToActiveChain={true}
         supportedWallets={[
           metamaskWallet(),
