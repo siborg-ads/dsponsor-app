@@ -64,7 +64,7 @@ const Top_collection = () => {
         </picture>
         <div className="container">
           <div className="font-display text-jacarta-700 mb-12 text-center text-lg sm:text-3xl dark:text-white flex justify-center items-center gap-x-3">
-            <HeadLine text="Top collections over" classes="inline" />
+            <HeadLine text="Top creators over" classes="inline" />
 
             <div className="dropdown cursor-pointer relative">
               <button

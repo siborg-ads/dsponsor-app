@@ -7,12 +7,12 @@ import { v4 as uuidv4 } from "uuid";
 import { useRouter } from "next/router";
 import { isChildrenPageActive, isParentPageActive } from "../../utils/daynamicNavigation";
 import { useEffect, useState } from "react";
-import WalletButton from "../wallet-btn/WalletButton";
-import { ConnectWallet } from "@thirdweb-dev/react";
+import { ConnectWallet, useAddress } from "@thirdweb-dev/react";
 
 export default function Header01() {
   const [toggle, setToggle] = useState(false);
   const [isCollapse, setCollapse] = useState(null);
+  const address = useAddress();
 
   // window resize
   useEffect(() => {
@@ -413,7 +413,7 @@ export default function Header01() {
                 </li> */}
 
                 {/* page */}
-                <li className="js-nav-dropdown group relative">
+                {/* <li className="js-nav-dropdown group relative">
                   <button className="dropdown-toggle text-jacarta-700 font-display hover:text-accent focus:text-accent dark:hover:text-accent dark:focus:text-accent flex items-center justify-between py-3.5 text-base dark:text-white lg:px-5 w-full">
                     <span className={isParentPageActive(page.pages, route.asPath) ? "text-accent dark:text-accent" : ""}>Pages</span>
                     <i className="lg:hidden">
@@ -433,36 +433,19 @@ export default function Header01() {
                       </li>
                     ))}
                   </ul>
-                </li>
+                </li> */}
 
                 {/* explore */}
-                <li className="js-nav-dropdown nav-item dropdown group relative">
-                  <button className="dropdown-toggle text-jacarta-700 font-display hover:text-accent focus:text-accent dark:hover:text-accent dark:focus:text-accent flex items-center justify-between py-3.5 text-base dark:text-white lg:px-5 w-full">
-                    <span className={isParentPageActive(explore.pages, route.asPath) ? "text-accent dark:text-accent" : ""}>Explore</span>
-                    <i className="lg:hidden">
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width={24} height={24} className="h-4 w-4 dark:fill-white">
-                        <path fill="none" d="M0 0h24v24H0z" />
-                        <path d="M12 13.172l4.95-4.95 1.414 1.414L12 16 5.636 9.636 7.05 8.222z" />
-                      </svg>
-                    </i>
-                  </button>
-                  <ul
-                    className="dropdown-menu dark:bg-jacarta-800 -left-6 top-[85%] z-10 hidden grid-flow-col grid-rows-5 gap-x-4 whitespace-nowrap rounded-xl bg-white transition-all will-change-transform group-hover:visible group-hover:opacity-100 lg:invisible lg:absolute lg:!grid lg:translate-y-4 lg:py-8 lg:px-5 lg:opacity-0 lg:shadow-2xl lg:group-hover:translate-y-2 relative"
-                    aria-labelledby="navDropdown-1"
-                  >
-                    {explore?.pages?.map((page) => (
-                      <li key={page.id}>
-                        <Link href="/" className="dark:hover:bg-jacarta-600 hover:text-accent focus:text-accent hover:bg-jacarta-50 flex items-center rounded-xl px-5 py-2 transition-colors">
-                          <span className="bg-light-base mr-3 rounded-xl p-[0.375rem]">{page?.icon}</span>
-                          <span className="font-display text-jacarta-700 text-sm dark:text-white">{page?.name}</span>
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
+                <li className="group">
+                  <Link href="/collections-wide">
+                    <button className="text-jacarta-700 font-display hover:text-accent focus:text-accent dark:hover:text-accent dark:focus:text-accent flex items-center justify-between py-3.5 text-base dark:text-white lg:px-5">
+                      <span className={isChildrenPageActive(route.asPath, "/collections-wide") ? "text-accent dark:text-accent" : ""}>Explore</span>
+                    </button>
+                  </Link>
                 </li>
 
                 {/* resource */}
-                <li className="js-nav-dropdown group relative">
+                {/* <li className="js-nav-dropdown group relative">
                   <button className="dropdown-toggle text-jacarta-700 font-display hover:text-accent focus:text-accent dark:hover:text-accent dark:focus:text-accent flex items-center justify-between py-3.5 text-base dark:text-white lg:px-5 w-full">
                     <span className={isParentPageActive(resource.pages, route.asPath) ? "text-accent dark:text-accent" : ""}>Resources</span>
                     <i className="lg:hidden">
@@ -484,7 +467,7 @@ export default function Header01() {
                       </li>
                     ))}
                   </ul>
-                </li>
+                </li> */}
 
                 {/* create */}
                 <li className="group">
@@ -494,14 +477,28 @@ export default function Header01() {
                     </button>
                   </Link>
                 </li>
+                {address ? (
+                  <li className="group">
+                    <Link href={`/user/${address}`}>
+                      <button className="text-jacarta-700 font-display hover:text-accent focus:text-accent dark:hover:text-accent dark:focus:text-accent flex items-center justify-between py-3.5 text-base dark:text-white lg:px-5">
+                        <span className={isChildrenPageActive(route.asPath, `/user/${address}`) ? "text-accent dark:text-accent" : ""}>Manage Spaces</span>
+                      </button>
+                    </Link>
+                  </li>
+                ) : (
+                  ""
+                )}
+                <li className="group">
+                  <ConnectWallet theme={"dark"} modalSize={"wide"} />
+                </li>
               </ul>
             </nav>
             {/* End menu for desktop */}
 
             <div className="ml-8 hidden items-center lg:flex xl:ml-12">
-              <WalletButton />
+              {/* <WalletButton /> */}
               {/* End metamask Wallet */}
-              <ConnectWallet theme={"dark"} modalSize={"wide"} />
+
               {/* <div className="js-nav-dropdown group-dropdown relative">
                 <button className="dropdown-toggle border-jacarta-100 hover:bg-accent focus:bg-accent group dark:hover:bg-accent ml-2 flex h-10 w-10 items-center justify-center rounded-full border bg-white transition-colors hover:border-transparent focus:border-transparent dark:border-transparent dark:bg-white/[.15]">
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width={24} height={24} className="fill-jacarta-700 h-4 w-4 transition-colors group-hover:fill-white group-focus:fill-white dark:fill-white">
