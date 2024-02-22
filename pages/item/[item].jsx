@@ -166,8 +166,8 @@ const Item = () => {
                     <div className="dark:bg-jacarta-700 dark:border-jacarta-600 border-jacarta-100 rounded-2lg border bg-white p-8">
                       <div className="mb-8 sm:flex sm:flex-wrap">
                         <span className="dark:text-jacarta-300 text-jacarta-400 text-sm">
-                          Buying the ad space give you the exclusive right to submit an ad. The media still has the power to validate or reject ad assets. You're free to change the ad at anytime. And free to resell on
-                          the open market your ad space.{" "}
+                          Buying the ad space give you the exclusive right to submit an ad. The media still has the power to validate or reject ad assets. You re free to change the ad at anytime. And free to resell
+                          on the open market your ad space.{" "}
                         </span>
                       </div>
                       {address ? (

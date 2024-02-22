@@ -41,7 +41,7 @@ function MyApp({ Component, pageProps }) {
         clientId="6f375d41f2a33f1f08f6042a65d49ec9"
         authConfig={{
           domain: "dsponsor.com",
-          authUrl: "/api/auth",
+         
         }}
         switchToActiveChain={true}
         supportedWallets={[
