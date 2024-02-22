@@ -12,30 +12,24 @@ import { bidsModalShow } from "../../redux/counterSlice";
 import { useDispatch } from "react-redux";
 import Likes from "../likes";
 import { execute } from "../../.graphclient";
-import { gql } from "@apollo/client"; 
+import { gql } from "@apollo/client";
+import { GetAllAdsOffers } from "../../data/services/AdsOffersService";
+import { useEffect, useState } from "react";
 
 const BidsCarousel = () => {
-  const GET_DATA = gql`
-    query MyQuery {
-      newDSponsorNFTs {
-        contractAddr
-        owner
-      }
-      updateOffers {
-        offerId
-        nftContract
-      }
-    }
-  `;
-   async function main() {
-     const resultat = await execute(GET_DATA, {});
-    console.log(resultat);
-   }
-   main();
-  const dispatch = useDispatch();
-  const handleclick = () => {
-    console.log("clicked on ");
-  };
+  const [ici, setIci] = useState(null);
+  useEffect(() => {
+    const fetchAdsOffers = async () => {
+      const result = await GetAllAdsOffers(); // Attendre que la promesse soit résolue
+      // Log le résultat réel
+      setIci(result); // Mettre à jour l'état avec le résultat
+    };
+
+    fetchAdsOffers();
+  }, []); // Le tableau vide indique que cet effet ne dépend d'aucune variable et ne s'exécutera qu'une fois après le premier rendu
+
+  // Le tableau vide indique que cet effet ne dépend d'aucune variable et ne s'exécutera qu'une fois après le premier rendu
+
   return (
     <>
       <Swiper
@@ -65,13 +59,8 @@ const BidsCarousel = () => {
       >
         {bidsData.map((item) => {
           const image = "/images/products/item_2.jpg";
-          const { id, title, bid_number, eth_number, react_number } =
-            item;
-          const itemLink = image
-            .split("/")
-            .slice(-1)
-            .toString()
-            .replace(".jpg", "");
+          const { id, title, bid_number, eth_number, react_number } = item;
+          const itemLink = image.split("/").slice(-1).toString().replace(".jpg", "");
           return (
             <SwiperSlide className="text-white" key={id}>
               <article>
@@ -79,60 +68,32 @@ const BidsCarousel = () => {
                   <figure>
                     {/* {`item/${itemLink}`} */}
                     <Link href={"/item/" + itemLink}>
-                      <Image
-                        src={image}
-                        alt={title}
-                        height={230}
-                        width={230}
-                        className="rounded-[0.625rem] w-full lg:h-[230px] object-cover"
-                        loading="lazy"
-                      />
+                      <Image src={image} alt={title} height={230} width={230} className="rounded-[0.625rem] w-full lg:h-[230px] object-cover" loading="lazy" />
                     </Link>
                   </figure>
                   <div className="mt-4 flex items-center justify-between">
                     <Link href={"/item/" + itemLink}>
-                      <span className="font-display text-jacarta-700 hover:text-accent text-base dark:text-white">
-                        {title}
-                      </span>
+                      <span className="font-display text-jacarta-700 hover:text-accent text-base dark:text-white">{title}</span>
                     </Link>
                     <span className="dark:border-jacarta-600 border-jacarta-100 flex items-center whitespace-nowrap rounded-md border py-1 px-2">
                       <Tippy content={<span>ETH</span>}>
-                        <Image
-                          width={12}
-                          height={12}
-                          src="/images/eth-icon.svg"
-                          alt="icon"
-                          className="w-3 h-3 mr-1"
-                        />
+                        <Image width={12} height={12} src="/images/eth-icon.svg" alt="icon" className="w-3 h-3 mr-1" />
                       </Tippy>
 
-                      <span className="text-green text-sm font-medium tracking-tight">
-                        {eth_number} ETH
-                      </span>
+                      <span className="text-green text-sm font-medium tracking-tight">{eth_number} ETH</span>
                     </span>
                   </div>
                   <div className="mt-2 text-sm">
-                    <span className="dark:text-jacarta-300 text-jacarta-500">
-                      Current Bid
-                    </span>
-                    <span className="dark:text-jacarta-100 text-jacarta-700">
-                      {bid_number} ETH
-                    </span>
+                    <span className="dark:text-jacarta-300 text-jacarta-500">Current Bid</span>
+                    <span className="dark:text-jacarta-100 text-jacarta-700">{bid_number} ETH</span>
                   </div>
 
                   <div className="mt-8 flex items-center justify-between">
-                    <button
-                      type="button"
-                      className="text-accent font-display text-sm font-semibold"
-                      onClick={() => dispatch(bidsModalShow())}
-                    >
+                    <button type="button" className="text-accent font-display text-sm font-semibold" onClick={() => dispatch(bidsModalShow())}>
                       Place bid
                     </button>
 
-                    <Likes
-                      like={react_number}
-                      classes="flex items-center space-x-1"
-                    />
+                    <Likes like={react_number} classes="flex items-center space-x-1" />
                   </div>
                 </div>
               </article>
