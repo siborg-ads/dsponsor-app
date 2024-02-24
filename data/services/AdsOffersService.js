@@ -1,4 +1,3 @@
-
 import { execute } from "../../.graphclient";
 import { gql } from "@apollo/client";
 import AdsOffersMapper from "../mappers/AdsOffersMapper";
@@ -6,7 +5,7 @@ import AdsOffersMapper from "../mappers/AdsOffersMapper";
 export const GetAllAdsOffers = async () => {
   const GET_DATA = gql`
     query MyQuery {
-      newDSponsorNFTs(first: 2) {
+      newDSponsorNFTs {
         contractURI
         id
         maxSupply
@@ -21,9 +20,6 @@ export const GetAllAdsOffers = async () => {
   `;
   const resultat = await execute(GET_DATA, {});
   const mapperResult = AdsOffersMapper(resultat);
-  
-   
+
   return resultat;
 };
-
-

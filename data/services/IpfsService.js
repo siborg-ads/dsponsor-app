@@ -3,12 +3,13 @@ import axios from "axios";
 
 export const fetchDataFromIPFS = async (ipfsLink) => {
   try {
-    const url = ipfsLink;
-    const response = await axios.get(url);
+   
+    new URL(ipfsLink); 
 
-    return response.data; // Retourne le contenu du fichier IPFS
+    const response = await axios.get(ipfsLink);
+    return response.data; 
   } catch (error) {
     console.error("Erreur lors de la récupération des données IPFS:", error);
-    throw error;
+    return null; 
   }
 };

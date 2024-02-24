@@ -1,54 +1,41 @@
 import AdsOfferModel from "../models/AdsOffersModel";
 import { fetchDataFromIPFS } from "../services/ipfsService";
+import { ethers } from "ethers"; // Assurez-vous d'avoir installé ethers
 
 const AdsOffersMapper = async (graphData) => {
   const data = graphData.data.newDSponsorNFTs;
-
   const mappedData = [];
 
   for (const element of data) {
-
     const IPFSLink = element.contractURI;
     const destructuredIPFSResult = await fetchDataFromIPFS(IPFSLink);
 
-    console.log(element);
+    try {
+      if (!element || !destructuredIPFSResult) {
+        throw new Error("L'élément ou le résultat IPFS est null.");
+      }
 
-    const adsOffer = new AdsOfferModel({
-      id: "",
-      Name: element.name,
-      OwnerAddress: element.owner,
-      OwnerName: element.ownerName,
-      Image: destructuredIPFSResult.image[0],
-      Price: element.prices,
-      Maxsupply: element.maxSupply,
-      ExternalLink: destructuredIPFSResult.external_link,
-      Description: destructuredIPFSResult.description,
-      Currency: element.currency,
-      Royalties: element.royaltyBps / 100,
-      NumberTokenAllowed: element.allowedTokenIds.length,
-    });
+      const adsOffer = new AdsOfferModel({
+        id: "",
+        Name: element.name || "Default",
+        OwnerAddress: element.owner || "Default",
+        OwnerName: element.ownerName || "Default",
+        Image: destructuredIPFSResult.image && destructuredIPFSResult.image[0] ? destructuredIPFSResult.image[0] : "Default",
+        Maxsupply: element.maxSupply || 0,
+        ExternalLink: destructuredIPFSResult.external_link || "Default",
+        Description: destructuredIPFSResult.description || "Default",
+        CurrencyAddress: element.currencies[0] || "Default",
+        CurrencyName: destructuredIPFSResult.currencyName || "Default",
+        Price: destructuredIPFSResult.price || 0,
+        Royalties: element.royaltyBps ? element.royaltyBps / 100 : 0,
+        NumberTokenAllowed: element.allowedTokenIds ? element.allowedTokenIds.length : 0,
+      });
 
-    mappedData.push(adsOffer);
+      mappedData.push(adsOffer);
+    } catch (error) {
+      console.error("Une erreur est survenue:", error);
+    }
   }
-  console.log(mappedData);
 };
-
-const PrepareTokenName = (tokenAddress) => {
-  const { ethers } = require("ethers");
-  const provider = new ethers.providers.JsonRpcProvider("YOUR_PROVIDER_URL");
-  const tokenAbi = ["function name() view returns (string)"];
-  const tokenContract = new ethers.Contract(tokenAddress, tokenAbi, provider);
-  return tokenContract.name();
-};
-
-const GetTokenName = async(tokenAddress) => {
-  try {
-    const name = await PrepareTokenName(tokenAddress);
-    console.log("Le nom du token est :", name);
-    return name;
-  } catch (error) {
-    console.error("Impossible de récupérer le nom du token :", error);
-  }
-}
 
 export default AdsOffersMapper;
