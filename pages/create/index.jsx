@@ -54,6 +54,7 @@ const Create = () => {
 
   const handleUnitPriceChange = (e) => {
     setSelectedUnitPrice(parseInt(e.target.value, 10));
+
   };
 
   const handleCurrencyChange = (event) => {
@@ -205,6 +206,8 @@ const Create = () => {
       collaborators: [address],
       validFromDate: startDate,
       validToDate: endDate,
+      currencyName: selectedCurrency,
+      price: selectedUnitPrice,
     });
 
     // upload json to IPFS
