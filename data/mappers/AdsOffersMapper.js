@@ -3,6 +3,7 @@ import { fetchDataFromIPFS } from "../services/ipfsService";
 import { ethers } from "ethers"; // Assurez-vous d'avoir installé ethers
 
 const AdsOffersMapper = async (graphData) => {
+  console.log("graphData", graphData);
   const data = graphData.data.newDSponsorNFTs;
   const mappedData = [];
 
@@ -16,7 +17,7 @@ const AdsOffersMapper = async (graphData) => {
       }
 
       const adsOffer = new AdsOfferModel({
-        id: "",
+        id: element.id || 0,
         Name: element.name || "Default",
         OwnerAddress: element.owner || "Default",
         OwnerName: element.ownerName || "Default",
@@ -36,6 +37,7 @@ const AdsOffersMapper = async (graphData) => {
       console.error("Une erreur est survenue:", error);
     }
   }
+  return mappedData;
 };
 
 export default AdsOffersMapper;

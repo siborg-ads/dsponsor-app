@@ -20,6 +20,32 @@ export const GetAllAdsOffers = async () => {
   `;
   const resultat = await execute(GET_DATA, {});
   const mapperResult = AdsOffersMapper(resultat);
+  return mapperResult;
+};
 
-  return resultat;
+export const GetAdOfferById = async (adId) => {
+  const GET_AD_OFFER = gql`
+    query GetAdOffer($id: ID!) {
+      newDSponsorNFTs(where: { id: $id }) {
+        contractURI
+        id
+        maxSupply
+        name
+        owner
+        prices
+        currencies
+        allowedTokenIds
+        royaltyBps
+      }
+    }
+  `;
+  const variables = {
+    id: adId,
+  };
+
+  const resultat = await execute(GET_AD_OFFER, variables);
+
+  const mapperResult = AdsOffersMapper(resultat);
+
+  return mapperResult;
 };

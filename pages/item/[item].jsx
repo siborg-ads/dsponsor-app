@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { items_data } from "../../data/items_data";
 import Auctions_dropdown from "../../components/dropdown/Auctions_dropdown";
@@ -15,12 +15,30 @@ import { bidsModalShow } from "../../redux/counterSlice";
 import { useAddress, darkTheme } from "@thirdweb-dev/react";
 import { ConnectWallet } from "@thirdweb-dev/react";
 import Image from "next/image";
+import { GetAdOfferById } from "../../data/services/AdsOffersService";
+
+
 
 const Item = () => {
   const dispatch = useDispatch();
   const router = useRouter();
   const pid = router.query.item;
-  const address = useAddress();
+const [data, setData] = useState([]);
+
+  useEffect(() => {
+    
+    if (pid) {
+      const fetchAdsOffers = async () => {
+        console.log("pid", pid);
+        const result = await GetAdOfferById(pid);
+        setData(result);
+      };
+
+      fetchAdsOffers();
+    }
+  }, [pid]); 
+
+
 
   const [imageModal, setImageModal] = useState(false);
 
@@ -166,8 +184,8 @@ const Item = () => {
                     <div className="dark:bg-jacarta-700 dark:border-jacarta-600 border-jacarta-100 rounded-2lg border bg-white p-8">
                       <div className="mb-8 sm:flex sm:flex-wrap">
                         <span className="dark:text-jacarta-300 text-jacarta-400 text-sm">
-                          Buying the ad space give you the exclusive right to submit an ad. The media still has the power to validate or reject ad assets. You re free to change the ad at anytime. And free to resell
-                          on the open market your ad space.{" "}
+                          Buying the ad space give you the exclusive right to submit an ad. The media still has the power to validate or reject ad assets. You re free to change the ad at anytime. And free to resell on
+                          the open market your ad space.{" "}
                         </span>
                       </div>
                       {address ? (

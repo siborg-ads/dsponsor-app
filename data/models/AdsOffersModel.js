@@ -6,7 +6,6 @@ class AdsOfferModel {
     this.ownerAddress = OwnerAddress;
     this.ownerName = OwnerName;
     this.image = Image;
-    this.price = Price;
     this.maxSupply = Maxsupply;
     this.externalLink = ExternalLink;
     this.description = Description;
