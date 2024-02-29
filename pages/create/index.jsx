@@ -71,9 +71,7 @@ const Create = () => {
 
   const address = useAddress();
   const switchChain = useSwitchChain();
-  const { contract } = useContract(
-    "0xE3aE42A640C0C00F8e0cB6C3B1Df50a0b45d6B44"
-  ); // dsponsor admin mumbai contract address
+  const { contract } = useContract("0xA82B4bBc8e6aC3C100bBc769F4aE0360E9ac9FC3"); // dsponsor admin mumbai contract address
 
   const {
     mutateAsync,
@@ -324,16 +322,13 @@ const Create = () => {
         symbol: "DSPONSORNFT", // symbol
         baseURI: "https://api.dsponsor.com/tokenMetadata/", // baseURI
         contractURI: jsonIpfsLink, // contractURI from json
+        minter: address,
         maxSupply: selectedNumber, // max supply
         forwarder: "0x0000000000000000000000000000000000000000", // forwarder
         initialOwner: address, // owner
         royaltyBps: selectedRoyalties * 100, // royalties
         currencies: [selectedCurrencyContract(selectedCurrency)], // accepted token
-        prices: [
-          BigNumber.from(selectedUnitPrice).mul(
-            BigNumber.from(10).pow(getDecimals(selectedCurrency))
-          ),
-        ], // prices with decimals
+        prices: [BigNumber.from(selectedUnitPrice).mul(BigNumber.from(10).pow(getDecimals(selectedCurrency)))], // prices with decimals
         allowedTokenIds: Array.from({ length: selectedNumber }, (_, i) => i), // allowed token ids
       }),
       JSON.stringify({
@@ -368,34 +363,19 @@ const Create = () => {
       {/* <!-- Create --> */}
       <section className="relative py-24">
         <picture className="pointer-events-none absolute inset-0 -z-10 dark:hidden">
-          <Image
-            width={1519}
-            height={773}
-            priority
-            src="/images/gradient_light.jpg"
-            alt="gradient"
-            className="h-full w-full object-cover"
-          />
+          <Image width={1519} height={773} priority src="/images/gradient_light.jpg" alt="gradient" className="h-full w-full object-cover" />
         </picture>
         <div className="container">
-          <h1 className="font-display text-jacarta-700 py-16 text-center text-4xl font-medium dark:text-white">
-            Create
-          </h1>
+          <h1 className="font-display text-jacarta-700 py-16 text-center text-4xl font-medium dark:text-white">Create</h1>
 
           {address && (
             <div className="flex flex-col justify-center gap-2 mb-10">
               <p className="text-center text-red-500">dev only</p>
               <div className="flex gap-10 justify-center">
-                <button
-                  className="bg-accent cursor-default rounded-full py-3 px-8 text-center font-semibold text-white transition-all"
-                  onClick={() => switchChain(Polygon.chainId)}
-                >
+                <button className="bg-accent cursor-default rounded-full py-3 px-8 text-center font-semibold text-white transition-all" onClick={() => switchChain(Polygon.chainId)}>
                   Polygon
                 </button>
-                <button
-                  className="bg-accent cursor-default rounded-full py-3 px-8 text-center font-semibold text-white transition-all"
-                  onClick={() => switchChain(Mumbai.chainId)}
-                >
+                <button className="bg-accent cursor-default rounded-full py-3 px-8 text-center font-semibold text-white transition-all" onClick={() => switchChain(Mumbai.chainId)}>
                   Mumbai
                 </button>
               </div>
@@ -443,42 +423,18 @@ const Create = () => {
                 <span className="text-red">*</span>
               </label>
 
-              {file ? (
-                <p className="dark:text-jacarta-300 text-2xs mb-3">
-                  successfully uploaded : {file.name}
-                </p>
-              ) : (
-                <p className="dark:text-jacarta-300 text-2xs mb-3">
-                  Drag or choose your file to upload
-                </p>
-              )}
+              {file ? <p className="dark:text-jacarta-300 text-2xs mb-3">successfully uploaded : {file.name}</p> : <p className="dark:text-jacarta-300 text-2xs mb-3">Drag or choose your file to upload</p>}
 
               <div className="dark:bg-jacarta-700 dark:border-jacarta-600 border-jacarta-100 group relative flex max-w-md flex-col items-center justify-center rounded-lg border-2 border-dashed bg-white py-20 px-5 text-center">
                 <div className="relative z-10 cursor-pointer">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    width="24"
-                    height="24"
-                    className="fill-jacarta-500 mb-4 inline-block dark:fill-white"
-                  >
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" className="fill-jacarta-500 mb-4 inline-block dark:fill-white">
                     <path fill="none" d="M0 0h24v24H0z" />
                     <path d="M16 13l6.964 4.062-2.973.85 2.125 3.681-1.732 1-2.125-3.68-2.223 2.15L16 13zm-2-7h2v2h5a1 1 0 0 1 1 1v4h-2v-3H10v10h4v2H9a1 1 0 0 1-1-1v-5H6v-2h2V9a1 1 0 0 1 1-1h5V6zM4 14v2H2v-2h2zm0-4v2H2v-2h2zm0-4v2H2V6h2zm0-4v2H2V2h2zm4 0v2H6V2h2zm4 0v2h-2V2h2zm4 0v2h-2V2h2z" />
                   </svg>
-                  <p className="dark:text-jacarta-300 mx-auto max-w-xs text-xs">
-                    JPG, PNG, GIF, SVG, MP4, WEBM, MP3, WAV, OGG, GLB, GLTF. Max
-                    size: 100 MB
-                  </p>
+                  <p className="dark:text-jacarta-300 mx-auto max-w-xs text-xs">JPG, PNG, GIF, SVG, MP4, WEBM, MP3, WAV, OGG, GLB, GLTF. Max size: 100 MB</p>
                 </div>
                 <div className="dark:bg-jacarta-600 bg-jacarta-50 absolute inset-4 cursor-pointer rounded opacity-0 group-hover:opacity-100 ">
-                  <FileUploader
-                    handleChange={handleLogoUpload}
-                    name="file"
-                    types={fileTypes}
-                    classes="file-drag"
-                    maxSize={100}
-                    minSize={0}
-                  />
+                  <FileUploader handleChange={handleLogoUpload} name="file" types={fileTypes} classes="file-drag" maxSize={100} minSize={0} />
                 </div>
               </div>
               {imageError && <p className="text-red-500">{imageError}</p>}
@@ -486,10 +442,7 @@ const Create = () => {
 
             {/* <!-- Name --> */}
             <div className="mb-6">
-              <label
-                htmlFor="item-name"
-                className="font-display text-jacarta-700 mb-2 block dark:text-white"
-              >
+              <label htmlFor="item-name" className="font-display text-jacarta-700 mb-2 block dark:text-white">
                 Name<span className="text-red">*</span>
               </label>
               <input
@@ -504,10 +457,7 @@ const Create = () => {
             </div>
             {/* <!-- External Link --> */}
             <div className="mb-6">
-              <label
-                htmlFor="item-external-link"
-                className="font-display text-jacarta-700 mb-2 block dark:text-white"
-              >
+              <label htmlFor="item-external-link" className="font-display text-jacarta-700 mb-2 block dark:text-white">
                 External link<span className="text-red">*</span>
               </label>
               <input
@@ -522,10 +472,7 @@ const Create = () => {
 
             {/* <!-- Description --> */}
             <div className="mb-6">
-              <label
-                htmlFor="item-description"
-                className="font-display text-jacarta-700 mb-2 block dark:text-white"
-              >
+              <label htmlFor="item-description" className="font-display text-jacarta-700 mb-2 block dark:text-white">
                 Description<span className="text-red">*</span>
               </label>
               <textarea
@@ -536,88 +483,49 @@ const Create = () => {
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="Provide a detailed description of your item."
               ></textarea>
-              {descriptionError && (
-                <p className="text-red-500">{descriptionError}</p>
-              )}
+              {descriptionError && <p className="text-red-500">{descriptionError}</p>}
             </div>
 
             {/* <!-- Offer preview --> */}
             {previewImage && (
               <div className="mb-6">
-                <label
-                  htmlFor="item-description"
-                  className="font-display text-jacarta-700 mb-2 block dark:text-white"
-                >
+                <label htmlFor="item-description" className="font-display text-jacarta-700 mb-2 block dark:text-white">
                   Offer preview
                 </label>
-                <p className="dark:text-jacarta-300 text-2xs mb-3">
-                  Your offer will look like this.
-                </p>
-                <Image
-                  src={previewImage}
-                  width={300}
-                  height={100}
-                  alt="Preview"
-                />
+                <p className="dark:text-jacarta-300 text-2xs mb-3">Your offer will look like this.</p>
+                <Image src={previewImage} width={300} height={100} alt="Preview" />
               </div>
             )}
 
             {/* <!-- Validity period --> */}
             <div className="mb-6">
-              <label
-                htmlFor="item-description"
-                className="font-display text-jacarta-700 mb-2 block dark:text-white"
-              >
+              <label htmlFor="item-description" className="font-display text-jacarta-700 mb-2 block dark:text-white">
                 Validity period<span className="text-red">*</span>
               </label>
               <div className="flex gap-4 items-center text-jacarta-700 dark:text-white">
                 <div className="flex flex-col justify-center items-center gap-1">
-                  <DatePicker
-                    selected={startDate}
-                    onChange={(date) => setStartDate(date)}
-                    className="text-jacarta-700 dark:text-white"
-                  />
-                  <span className="text-jacarta-700 dark:text-white">
-                    Start date
-                  </span>
+                  <DatePicker selected={startDate} onChange={(date) => setStartDate(date)} className="text-jacarta-700 dark:text-white" />
+                  <span className="text-jacarta-700 dark:text-white">Start date</span>
                 </div>
                 <div className="flex flex-col justify-center items-center gap-1">
-                  <DatePicker
-                    selected={endDate}
-                    onChange={(date) => setEndDate(date)}
-                    className="text-jacarta-700 dark:text-white"
-                  />
-                  <span className="text-jacarta-700 dark:text-white">
-                    End date
-                  </span>
+                  <DatePicker selected={endDate} onChange={(date) => setEndDate(date)} className="text-jacarta-700 dark:text-white" />
+                  <span className="text-jacarta-700 dark:text-white">End date</span>
                 </div>
               </div>
-              {startDateError && (
-                <p className="text-red-500">{startDateError}</p>
-              )}
+              {startDateError && <p className="text-red-500">{startDateError}</p>}
               {endDateError && <p className="text-red-500">{endDateError}</p>}
             </div>
 
             {/* <!-- Number of ad spaces --> */}
             <div className="mb-6">
-              <label
-                htmlFor="item-description"
-                className="font-display text-jacarta-700 mb-2 block dark:text-white"
-              >
+              <label htmlFor="item-description" className="font-display text-jacarta-700 mb-2 block dark:text-white">
                 Number of ad spaces for this offer
                 <span className="text-red">*</span>
               </label>
-              <p className="dark:text-jacarta-300 text-2xs mb-3">
-                Warning: d&gt;sponsor works with a fixed supply of ad spaces.
-                You won&apos;t be able to modify this value. Max : 25
-              </p>
+              <p className="dark:text-jacarta-300 text-2xs mb-3">Warning: d&gt;sponsor works with a fixed supply of ad spaces. You won&apos;t be able to modify this value. Max : 25</p>
               <div className="flex gap-4 items-center text-jacarta-700 dark:text-white">
                 <label htmlFor="numberSelect">Select a number:</label>
-                <select
-                  id="numberSelect"
-                  value={selectedNumber}
-                  onChange={handleNumberChange}
-                >
+                <select id="numberSelect" value={selectedNumber} onChange={handleNumberChange}>
                   {[...Array(25)].map((_, index) => (
                     <option key={index + 1} value={index + 1}>
                       {index + 1}
@@ -629,128 +537,58 @@ const Create = () => {
 
             {/* <!-- Unit selling price --> */}
             <div className="mb-6">
-              <label
-                htmlFor="item-description"
-                className="font-display text-jacarta-700 mb-2 block dark:text-white"
-              >
+              <label htmlFor="item-description" className="font-display text-jacarta-700 mb-2 block dark:text-white">
                 Unit selling price
                 <span className="text-red">*</span>
               </label>
               <p className="dark:text-jacarta-300 text-2xs mb-3">
-                EUR payment means you&apos;ll receive JEUR tokens (1 JEUR = 1€).
-                USD payment means you&apos;ll receive JUSD tokens (1 JUSD = 1$).
-                You&apos;ll be able to cash out via wire transfer with a service
-                like MtPelerin. You can change the pricing later.
+                EUR payment means you&apos;ll receive JEUR tokens (1 JEUR = 1€). USD payment means you&apos;ll receive JUSD tokens (1 JUSD = 1$). You&apos;ll be able to cash out via wire transfer with a service like
+                MtPelerin. You can change the pricing later.
               </p>
               <div className="flex gap-4 items-center text-jacarta-700 dark:text-white">
-                <input
-                  id="numberInput"
-                  type="number"
-                  min="1"
-                  value={selectedUnitPrice}
-                  onChange={handleUnitPriceChange}
-                  placeholder="Unit selling price"
-                />
+                <input id="numberInput" type="number" min="1" value={selectedUnitPrice} onChange={handleUnitPriceChange} placeholder="Unit selling price" />
                 <div className="flex items-center gap-1">
-                  <input
-                    type="radio"
-                    id="jeur"
-                    name="currency"
-                    value="JEUR"
-                    checked={selectedCurrency === "JEUR"}
-                    onChange={handleCurrencyChange}
-                  />
+                  <input type="radio" id="jeur" name="currency" value="JEUR" checked={selectedCurrency === "JEUR"} onChange={handleCurrencyChange} />
                   <label htmlFor="jeur">JEUR</label>
                 </div>
 
                 <div className="flex items-center gap-1">
-                  <input
-                    type="radio"
-                    id="usdc"
-                    name="currency"
-                    value="USDC"
-                    checked={selectedCurrency === "USDC"}
-                    onChange={handleCurrencyChange}
-                  />
+                  <input type="radio" id="usdc" name="currency" value="USDC" checked={selectedCurrency === "USDC"} onChange={handleCurrencyChange} />
                   <label htmlFor="usdc">USDC</label>
                 </div>
 
                 <div className="flex items-center gap-1">
-                  <input
-                    type="radio"
-                    id="matic"
-                    name="currency"
-                    value="MATIC"
-                    checked={selectedCurrency === "MATIC"}
-                    onChange={handleCurrencyChange}
-                  />
+                  <input type="radio" id="matic" name="currency" value="MATIC" checked={selectedCurrency === "MATIC"} onChange={handleCurrencyChange} />
                   <label htmlFor="matic">MATIC</label>
                 </div>
 
                 <div className="flex items-center gap-1">
-                  <input
-                    type="radio"
-                    id="weth"
-                    name="currency"
-                    value="WETH"
-                    checked={selectedCurrency === "WETH"}
-                    onChange={handleCurrencyChange}
-                  />
+                  <input type="radio" id="weth" name="currency" value="WETH" checked={selectedCurrency === "WETH"} onChange={handleCurrencyChange} />
                   <label htmlFor="weth">WETH</label>
                 </div>
 
                 <div className="flex items-center gap-1">
-                  <input
-                    type="radio"
-                    id="custom"
-                    name="currency"
-                    value="custom"
-                    checked={selectedCurrency === "custom"}
-                    onChange={handleCurrencyChange}
-                  />
+                  <input type="radio" id="custom" name="currency" value="custom" checked={selectedCurrency === "custom"} onChange={handleCurrencyChange} />
                   <label htmlFor="custom">Custom</label>
-                  <input
-                    className="ml-2"
-                    type="text"
-                    id="customContract"
-                    name="customContract"
-                    placeholder="Contract address"
-                    onChange={handleCustomContractChange}
-                  />
+                  <input className="ml-2" type="text" id="customContract" name="customContract" placeholder="Contract address" onChange={handleCustomContractChange} />
                 </div>
               </div>
-              <p className="dark:text-jacarta-300 text-2xs mt-3">
-                You&apos;ll earn up to 1600 USDC. As d&gt;sponsor charges a fee
-                of 4%, sponsors will pay 208 USDC.
-              </p>
+              <p className="dark:text-jacarta-300 text-2xs mt-3">You&apos;ll earn up to 1600 USDC. As d&gt;sponsor charges a fee of 4%, sponsors will pay 208 USDC.</p>
               {currencyError && <p className="text-red-500">{currencyError}</p>}
             </div>
 
             {/* <!-- Royalties --> */}
             <div className="mb-6">
-              <label
-                htmlFor="item-description"
-                className="font-display text-jacarta-700 mb-2 block dark:text-white"
-              >
+              <label htmlFor="item-description" className="font-display text-jacarta-700 mb-2 block dark:text-white">
                 Royalties
                 <span className="text-red">*</span>
               </label>
               <p className="dark:text-jacarta-300 text-2xs mb-3">
-                Sponsors can sell an ad space ownership on the marketplace.
-                Define the fee you want to get from secondary sales. Sponsors
-                might refuse to buy an ad space if your royalty fee is too high.
-                You can change this value pricing later.
+                Sponsors can sell an ad space ownership on the marketplace. Define the fee you want to get from secondary sales. Sponsors might refuse to buy an ad space if your royalty fee is too high. You can change
+                this value pricing later.
               </p>
               <div className="flex gap-4 items-center text-jacarta-700 dark:text-white">
-                <input
-                  id="numberInput"
-                  type="number"
-                  min="0"
-                  max="100"
-                  value={selectedRoyalties}
-                  onChange={handleRoyaltiesChange}
-                  placeholder="Royalties"
-                />
+                <input id="numberInput" type="number" min="0" max="100" value={selectedRoyalties} onChange={handleRoyaltiesChange} placeholder="Royalties" />
                 <span>%</span>
               </div>
               {royaltyError && <p className="text-red-500">{royaltyError}</p>}
@@ -1050,30 +888,21 @@ const Create = () => {
             {/* <!-- Submit --> */}
             <div className="flex items-center gap-4">
               {!validate && (
-                <button
-                  className="bg-accent cursor-pointer rounded-full py-3 px-8 text-center font-semibold text-white transition-all"
-                  onClick={handleSubmit}
-                >
+                <button className="bg-accent cursor-pointer rounded-full py-3 px-8 text-center font-semibold text-white transition-all" onClick={handleSubmit}>
                   Validate
                 </button>
               )}
               {validate && (
-                <button
-                  className="bg-accent cursor-pointer rounded-full py-3 px-8 text-center font-semibold text-white transition-all"
-                  onClick={handleSubmit}
-                >
+                <button className="bg-accent cursor-pointer rounded-full py-3 px-8 text-center font-semibold text-white transition-all" onClick={handleSubmit}>
                   Revalidate
                 </button>
               )}
               {validate && (
                 <Web3Button
-                  contractAddress="0xE3aE42A640C0C00F8e0cB6C3B1Df50a0b45d6B44"
+                  contractAddress="0xA82B4bBc8e6aC3C100bBc769F4aE0360E9ac9FC3"
                   action={() =>
                     mutateAsync({
-                      args: [
-                        Object.values(JSON.parse(args[0])),
-                        Object.values(JSON.parse(args[1])),
-                      ],
+                      args: [Object.values(JSON.parse(args[0])), Object.values(JSON.parse(args[1]))],
                     })
                   }
                   className="!bg-accent !cursor-pointer !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all"
@@ -1093,18 +922,9 @@ const Create = () => {
               {jsonIpfsLink && (
                 <div className={`${jsonIpfsLink && "flex flex-col gap-4"}`}>
                   <div className="flex items-center gap-2">
-                    <p className="font-light">
-                      The item has been uploaded to IPFS.
-                    </p>
+                    <p className="font-light">The item has been uploaded to IPFS.</p>
                     <button onClick={copyToClipboard}>
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        strokeWidth={1.5}
-                        stroke="currentColor"
-                        className="w-5 h-5 text-gray-500 active:text-black"
-                      >
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 text-gray-500 active:text-black">
                         <path
                           strokeLinecap="round"
                           strokeLinejoin="round"

@@ -19,6 +19,7 @@ export const GetAllAdsOffers = async () => {
     }
   `;
   const resultat = await execute(GET_DATA, {});
+console.log(resultat);
   const mapperResult = AdsOffersMapper(resultat);
   return mapperResult;
 };
