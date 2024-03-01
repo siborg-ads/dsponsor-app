@@ -3,7 +3,6 @@ import { fetchDataFromIPFS } from "../services/ipfsService";
 import { ethers } from "ethers"; // Assurez-vous d'avoir installé ethers
 
 const AdsOffersMapper = async (graphData) => {
-  console.log("graphData", graphData);
   const data = graphData.data.newDSponsorNFTs;
   const mappedData = [];
 

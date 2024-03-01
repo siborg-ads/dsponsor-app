@@ -20,12 +20,12 @@ const BidsCarousel = () => {
   const [data, setData] = useState([]);
   useEffect(() => {
     const fetchAdsOffers = async () => {
-      const result = await GetAllAdsOffers(); 
-      setData(result); 
+      const result = await GetAllAdsOffers();
+      setData(result);
     };
 
     fetchAdsOffers();
-  }, []); 
+  }, []);
 
   return (
     <>
