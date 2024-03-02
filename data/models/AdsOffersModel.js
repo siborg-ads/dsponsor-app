@@ -1,8 +1,10 @@
 
 class AdsOfferModel {
-  constructor({ id, Name, OwnerAddress, OwnerName, Image, Maxsupply, ExternalLink, Description, CurrencyAddress, Price ,  CurrencyName, Royalties, NumberTokenAllowed }) {
+  constructor({ id, OfferId, Name,ContractAddress, OwnerAddress, BigIntPrice, OwnerName, Image, Maxsupply, ExternalLink, Description, CurrencyAddress, Price ,  CurrencyName, Royalties, NumberTokenAllowed }) {
     this.id = id;
+    this.offerId = OfferId;
     this.name = Name;
+    this.contractAddress = ContractAddress;
     this.ownerAddress = OwnerAddress;
     this.ownerName = OwnerName;
     this.image = Image;
@@ -12,6 +14,7 @@ class AdsOfferModel {
     this.currencyAddress = CurrencyAddress;
     this.currencyName = CurrencyName;
     this.price = Price;
+    this.bigIntPrice = BigIntPrice;
     this.royalties = Royalties;
     this.numberTokenAllowed = NumberTokenAllowed;
 

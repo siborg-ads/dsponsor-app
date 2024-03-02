@@ -4,17 +4,7 @@ import Meta from "../../components/Meta";
 import Image from "next/image";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import {
-  useAddress,
-  useSwitchChain,
-  useContract,
-  useContractWrite,
-  Web3Button,
-  useStorageUpload,
-  useTokenDecimals,
-  CheckoutWithCard,
-  CheckoutWithEth,
-} from "@thirdweb-dev/react";
+import { useAddress, useSwitchChain, useContract, useContractWrite, Web3Button, useStorageUpload, useTokenDecimals, CheckoutWithCard, CheckoutWithEth } from "@thirdweb-dev/react";
 import { Mumbai, Polygon } from "@thirdweb-dev/chains";
 
 const { BigNumber } = require("ethers");
@@ -53,8 +43,11 @@ const Create = () => {
   };
 
   const handleUnitPriceChange = (e) => {
-    setSelectedUnitPrice(parseInt(e.target.value, 10));
-
+    const price = parseFloat(e.target.value);
+    if (!isNaN(price)) {
+      // Vérifiez que la valeur convertie est un nombre
+      setSelectedUnitPrice(price);
+    }
   };
 
   const handleCurrencyChange = (event) => {
@@ -72,12 +65,8 @@ const Create = () => {
   const address = useAddress();
   const switchChain = useSwitchChain();
   const { contract } = useContract("0xA82B4bBc8e6aC3C100bBc769F4aE0360E9ac9FC3"); // dsponsor admin mumbai contract address
-
-  const {
-    mutateAsync,
-    isLoading: isLoadingContractWrite,
-    error,
-  } = useContractWrite(contract, "createDSponsorNFTAndOffer");
+  console.log(contract);
+  const { mutateAsync, isLoading: isLoadingContractWrite, error } = useContractWrite(contract, "createDSponsorNFTAndOffer");
 
   const handleLogoUpload = (file) => {
     if (file) {
@@ -149,8 +138,8 @@ const Create = () => {
       setEndDateError(null);
     }
 
-    if (selectedUnitPrice < 0) {
-      setCurrencyError("Unit price is missing or invalid.");
+    if (selectedUnitPrice < 0.01) {
+      setCurrencyError("Unit price must be at least 0.01.");
       isValid = false;
     } else {
       setCurrencyError(null);
@@ -164,9 +153,7 @@ const Create = () => {
     }
 
     if (selectedRoyalties < 0 || selectedRoyalties > 100) {
-      setRoyaltyError(
-        "Royalties are missing or invalid. They should be between 0% and 100%."
-      );
+      setRoyaltyError("Royalties are missing or invalid. They should be between 0% and 100%.");
       isValid = false;
     } else {
       setRoyaltyError(null);
@@ -246,29 +233,20 @@ const Create = () => {
     },
   ];
 
-  const { contract: JEURTokenContract } = useContract(
-    "0xd409F17095a370800A9C352124C6a1e82695203E",
-    "token"
-  ); // mumbai
+  const { contract: JEURTokenContract } = useContract("0xd409F17095a370800A9C352124C6a1e82695203E", "token"); // mumbai
 
-  const { contract: USDCTokenContract } = useContract(
-    "0xe6b8a5CF854791412c1f6EFC7CAf629f5Df1c747",
-    "token"
-  ); // mumbai
+  const { contract: USDCTokenContract } = useContract("0xe6b8a5CF854791412c1f6EFC7CAf629f5Df1c747", "token");
+  
+  const { contract: MaticTokenContract } = useContract("0x0000000000000000000000000000000000001010", "token");
 
-  const { contract: WETHTokenContract } = useContract(
-    "0xA6FA4fB5f76172d178d61B04b0ecd319C5d1C0aa",
-    "token"
-  ); // mumbai
+  const { contract: WETHTokenContract } = useContract("0xA6FA4fB5f76172d178d61B04b0ecd319C5d1C0aa", "token"); // mumbai
 
-  const { contract: customTokenContract } = useContract(
-    customContract,
-    "token"
-  );
+  const { contract: customTokenContract } = useContract(customContract, "token");
 
   const { data: JEURdecimals } = useTokenDecimals(JEURTokenContract);
   const { data: USDCDecimals } = useTokenDecimals(USDCTokenContract);
   const { data: WETHDecimals } = useTokenDecimals(WETHTokenContract);
+  const { data: MaticDecimals } = useTokenDecimals(MaticTokenContract);
   const { data: customDecimals } = useTokenDecimals(customTokenContract);
 
   const selectedCurrencyContract = useCallback(() => {
@@ -278,7 +256,7 @@ const Create = () => {
       case "USDC":
         return "0xe6b8a5CF854791412c1f6EFC7CAf629f5Df1c747";
       case "MATIC":
-        return "0x2"; // to change
+        return "0x0000000000000000000000000000000000001010"; // to change
       case "WETH":
         return "0xA6FA4fB5f76172d178d61B04b0ecd319C5d1C0aa"; // on mumbai
       case "custom":
@@ -296,7 +274,7 @@ const Create = () => {
         case "USDC":
           return USDCDecimals;
         case "MATIC":
-          return 18;
+          return MaticDecimals;
         case "WETH":
           return WETHDecimals;
         case "custom":
@@ -305,7 +283,7 @@ const Create = () => {
           return JEURdecimals; // JEUR by default (to change)
       }
     },
-    [JEURdecimals, USDCDecimals, WETHDecimals, customDecimals]
+    [JEURdecimals, USDCDecimals, WETHDecimals, MaticDecimals, customDecimals]
   );
 
   const updateArgs = useCallback(() => {
@@ -341,17 +319,7 @@ const Create = () => {
         },
       }),
     ]);
-  }, [
-    address,
-    getDecimals,
-    jsonIpfsLink,
-    name,
-    selectedCurrency,
-    selectedCurrencyContract,
-    selectedNumber,
-    selectedRoyalties,
-    selectedUnitPrice,
-  ]);
+  }, [address, getDecimals, jsonIpfsLink, name, selectedCurrency, selectedCurrencyContract, selectedNumber, selectedRoyalties, selectedUnitPrice]);
 
   useEffect(() => {
     updateArgs();
@@ -546,7 +514,7 @@ const Create = () => {
                 MtPelerin. You can change the pricing later.
               </p>
               <div className="flex gap-4 items-center text-jacarta-700 dark:text-white">
-                <input id="numberInput" type="number" min="1" value={selectedUnitPrice} onChange={handleUnitPriceChange} placeholder="Unit selling price" />
+                <input id="numberInput" type="number" min="0.01" step="0.01" value={selectedUnitPrice} onChange={handleUnitPriceChange} placeholder="Unit selling price" />
                 <div className="flex items-center gap-1">
                   <input type="radio" id="jeur" name="currency" value="JEUR" checked={selectedCurrency === "JEUR"} onChange={handleCurrencyChange} />
                   <label htmlFor="jeur">JEUR</label>

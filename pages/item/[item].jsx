@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/router";
 import { items_data } from "../../data/items_data";
 import Auctions_dropdown from "../../components/dropdown/Auctions_dropdown";
@@ -17,6 +17,7 @@ import { ConnectWallet } from "@thirdweb-dev/react";
 import Image from "next/image";
 import { GetAdOfferById } from "../../data/services/AdsOffersService";
 import { useAddress, darkTheme, useTokenBalance, useContract, useSwitchChain, useContractWrite, Web3Button, useStorageUpload, useTokenDecimals, CheckoutWithCard, CheckoutWithEth } from "@thirdweb-dev/react";
+import { ethers } from "ethers";
 
 const Item = () => {
   const dispatch = useDispatch();
@@ -33,8 +34,18 @@ const Item = () => {
   const [link, setLink] = useState(null);
   const [linkError, setLinkError] = useState(null);
   const [uploadUrl, setUploadUrl] = useState(null);
-  const [jsonIpfsLink, setJsonIpfsLink] = useState();
+  const [jsonIpfsLink, setJsonIpfsLink] = useState(null);
+  const [args, setArgs] = useState([]);
+  const [amountToApprove, setAmountToApprove] = useState(null);
 
+  const { contract } = useContract(data[0]?.currencyAddress, "token");
+  const { data: tokenBalance, isLoading, error } = useTokenBalance(contract, address);
+  const { contract: DsponsorAdminContract } = useContract("0xA82B4bBc8e6aC3C100bBc769F4aE0360E9ac9FC3");
+  const { mutateAsync: uploadToIPFS, isLoading: isUploading } = useStorageUpload();
+  const { mutateAsync, isLoadingMintAndSubmit } = useContractWrite(DsponsorAdminContract, "mintAndSubmit");
+  const { contract: tokenContract } = useContract(data[0]?.currencyAddress, "token");
+  const { mutateAsync: approve, isLoading: isLoadingApprove } = useContractWrite(tokenContract, "approve");
+  
   useEffect(() => {
     if (pid) {
       const fetchAdsOffers = async () => {
@@ -85,13 +96,84 @@ const Item = () => {
     setFile(e.target.files[0]);
   };
 
-  const { mutateAsync: uploadToIPFS, isLoading: isUploading } = useStorageUpload();
+  const handleLinkChange = (e) => {
+    setArgs({
+      tokenId: data[0]?.maxSupply, // Convertir en BigNumber
+      // Assurez-vous que 'to', 'currency', et 'tokenData' sont correctement définis
+      to: address,
+      currency: data[0]?.currencyAddress,
+      tokenData: "jsonIpfsLink",
+      offerId: 4, // Convertir en BigNumber
+      // Les tableaux 'adParameters' et 'adDatas' ne nécessitent pas de conversion
+      adParameters: ["squareLogo", "URL"],
+      adDatas: ["jsonIpfsLink", "link"],
+      referralAdditionalInformation: "",
+    });
+    console.log("data", data);
+    console.log("args", args[0]);
+  };
+  const updateArgs = useCallback(() => {
+    if (!address) return;
+    if (!link) return;
+    if (!jsonIpfsLink) return;
 
+    setArgs({
+      tokenId: data[0]?.maxSupply, // Convertir en BigNumber
+      // Assurez-vous que 'to', 'currency', et 'tokenData' sont correctement définis
+      to: address,
+      currency: data[0]?.currencyAddress,
+      tokenData: jsonIpfsLink,
+      offerId: 4, // Convertir en BigNumber
+      // Les tableaux 'adParameters' et 'adDatas' ne nécessitent pas de conversion
+      adParameters: ["squareLogo", "URL"],
+      adDatas: [jsonIpfsLink, link],
+      referralAdditionalInformation: "",
+    });
+  }, [address, jsonIpfsLink, link, data]);
+
+  useEffect(() => {
+    updateArgs();
+  }, [updateArgs]);
+
+const handleApprove = async () => {
+ 
+  try {
+    await approve({args: ["0xA82B4bBc8e6aC3C100bBc769F4aE0360E9ac9FC3", amountToApprove]});
+    console.log("Approvation réussie");
+  } catch (error) {
+    console.error("Erreur d'approbation:", error);
+  }
+};
+useEffect(() => {
+  if (data[0]?.price) {
+   const priceAsString = data[0].price.toString();
+   const amountToApprove = ethers.utils.parseUnits(priceAsString, 6);
+  
+   setAmountToApprove(amountToApprove);
+  }
+}, [data]);
   const handleSubmit = async () => {
     if (!validateInputs()) {
       return;
     }
+   console.log("Approving with args:", ["0xA82B4bBc8e6aC3C100bBc769F4aE0360E9ac9FC3", amountToApprove]);
     // IPFS upload
+    await uploadJsonToIPFS();
+    let userBalance = checkUserBalance(tokenBalance, data[0]?.price);
+    console.log("userBalance", userBalance);
+    console.log("jsonIpfsLink", jsonIpfsLink);
+    if (userBalance ) {
+       try {
+        await handleApprove();
+        
+      } catch (error) {
+        console.error("Erreur d'approbation des tokens:", error);
+      }
+    }
+    }
+ 
+
+  const uploadJsonToIPFS = async () => {
     const uploadUrl = await uploadToIPFS({
       data: [file],
       options: { uploadWithGatewayUrl: true, uploadWithoutDirectory: true },
@@ -106,16 +188,12 @@ const Item = () => {
       data: [json],
       options: { uploadWithGatewayUrl: true, uploadWithoutDirectory: true },
     });
-    console.log("ici", jsonUrl[0]);
+
     setJsonIpfsLink(jsonUrl[0]);
   };
 
-  const { contract } = useContract(data[0]?.currencyAddress, "token");
-  const { data: tokenBalance, isLoading, error } = useTokenBalance(contract, address);
-
   const checkUserBalance = (tokenAddressBalance, priceToken) => {
     try {
-     
       const parsedTokenBalance = parseFloat(tokenAddressBalance.displayValue);
       const parsedPriceToken = parseFloat(priceToken);
       console.log("parsedTokenBalance", parsedTokenBalance);
@@ -277,13 +355,21 @@ const Item = () => {
                   </span>
                 </div>
                 <Link href="#">
-                  <button
-                    className="bg-accent shadow-accent-volume hover:bg-accent-dark inline-block w-full rounded-full py-3 px-8 text-center font-semibold text-white transition-all"
-                    onClick={checkUserBalance(tokenBalance, price)}
-                  >
-                    check user balance
+                  <button className="bg-accent shadow-accent-volume hover:bg-accent-dark inline-block w-full rounded-full py-3 px-8 text-center font-semibold text-white transition-all" onClick={handleLinkChange}>
+                    TA MERE EN STRING
                   </button>
                 </Link>
+                <Web3Button
+                  contractAddress="0xA82B4bBc8e6aC3C100bBc769F4aE0360E9ac9FC3"
+                  action={() =>
+                    mutateAsync({
+                      args: [args],
+                    })
+                  }
+                  className="!bg-accent !cursor-pointer !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all"
+                >
+                  Mint NFT
+                </Web3Button>
                 {address ? (
                   <Link href="#">
                     <button className="bg-accent shadow-accent-volume hover:bg-accent-dark inline-block w-full rounded-full py-3 px-8 text-center font-semibold text-white transition-all" onClick={handleSubmit}>
