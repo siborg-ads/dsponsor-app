@@ -1,18 +1,13 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/router";
-import { items_data } from "../../data/items_data";
-import Auctions_dropdown from "../../components/dropdown/Auctions_dropdown";
 import { FileUploader } from "react-drag-drop-files";
 import Link from "next/link";
 import Tippy from "@tippyjs/react";
 import "tippy.js/dist/tippy.css";
-import Items_Countdown_timer from "../../components/items_countdown_timer";
 import { ItemsTabs } from "../../components/component";
 import More_items from "./more_items";
-import Likes from "../../components/likes";
 import Meta from "../../components/Meta";
 import { useDispatch } from "react-redux";
-import { bidsModalShow } from "../../redux/counterSlice";
 import { ConnectWallet } from "@thirdweb-dev/react";
 import Image from "next/image";
 import { GetAdOfferById } from "../../data/services/AdsOffersService";
@@ -45,7 +40,7 @@ const Item = () => {
   const { mutateAsync, isLoadingMintAndSubmit } = useContractWrite(DsponsorAdminContract, "mintAndSubmit");
   const { contract: tokenContract } = useContract(data[0]?.currencyAddress, "token");
   const { mutateAsync: approve, isLoading: isLoadingApprove } = useContractWrite(tokenContract, "approve");
-  
+
   useEffect(() => {
     if (pid) {
       const fetchAdsOffers = async () => {
@@ -92,39 +87,19 @@ const Item = () => {
       setPreviewImage(URL.createObjectURL(file));
     }
   };
-  const handleFileChange = (e) => {
-    setFile(e.target.files[0]);
-  };
 
-  const handleLinkChange = (e) => {
-    setArgs({
-      tokenId: data[0]?.maxSupply, // Convertir en BigNumber
-      // Assurez-vous que 'to', 'currency', et 'tokenData' sont correctement définis
-      to: address,
-      currency: data[0]?.currencyAddress,
-      tokenData: "jsonIpfsLink",
-      offerId: 4, // Convertir en BigNumber
-      // Les tableaux 'adParameters' et 'adDatas' ne nécessitent pas de conversion
-      adParameters: ["squareLogo", "URL"],
-      adDatas: ["jsonIpfsLink", "link"],
-      referralAdditionalInformation: "",
-    });
-    console.log("data", data);
-    console.log("args", args[0]);
-  };
   const updateArgs = useCallback(() => {
     if (!address) return;
     if (!link) return;
     if (!jsonIpfsLink) return;
 
     setArgs({
-      tokenId: data[0]?.maxSupply, // Convertir en BigNumber
-      // Assurez-vous que 'to', 'currency', et 'tokenData' sont correctement définis
+      // tokenId: parseInt(data[0]?.maxSupply) + 1,
+      tokenId: 1,
       to: address,
       currency: data[0]?.currencyAddress,
       tokenData: jsonIpfsLink,
-      offerId: 4, // Convertir en BigNumber
-      // Les tableaux 'adParameters' et 'adDatas' ne nécessitent pas de conversion
+      offerId: 4,
       adParameters: ["squareLogo", "URL"],
       adDatas: [jsonIpfsLink, link],
       referralAdditionalInformation: "",
@@ -135,43 +110,46 @@ const Item = () => {
     updateArgs();
   }, [updateArgs]);
 
-const handleApprove = async () => {
- 
-  try {
-    await approve({args: ["0xA82B4bBc8e6aC3C100bBc769F4aE0360E9ac9FC3", amountToApprove]});
-    console.log("Approvation réussie");
-  } catch (error) {
-    console.error("Erreur d'approbation:", error);
-  }
-};
-useEffect(() => {
-  if (data[0]?.price) {
-   const priceAsString = data[0].price.toString();
-   const amountToApprove = ethers.utils.parseUnits(priceAsString, 6);
-  
-   setAmountToApprove(amountToApprove);
-  }
-}, [data]);
+  useEffect(() => {
+    if (data[0]?.price) {
+      const priceAsString = data[0].price.toString();
+      const amountToApprove = ethers.utils.parseUnits(priceAsString, 6);
+
+      console.log("amountToApprove", amountToApprove);
+
+      setAmountToApprove(amountToApprove);
+    }
+  }, [data]);
+
+  const handleApprove = async () => {
+    try {
+      const allowance = await tokenContract.call("allowance", [address, "0xA82B4bBc8e6aC3C100bBc769F4aE0360E9ac9FC3"]);
+
+      console.log(allowance);
+      await approve({ args: ["0xA82B4bBc8e6aC3C100bBc769F4aE0360E9ac9FC3", amountToApprove] });
+      console.log("Approvation réussie");
+    } catch (error) {
+      console.error("Erreur d'approbation:", error);
+    }
+  };
+
   const handleSubmit = async () => {
     if (!validateInputs()) {
       return;
     }
-   console.log("Approving with args:", ["0xA82B4bBc8e6aC3C100bBc769F4aE0360E9ac9FC3", amountToApprove]);
     // IPFS upload
     await uploadJsonToIPFS();
     let userBalance = checkUserBalance(tokenBalance, data[0]?.price);
     console.log("userBalance", userBalance);
     console.log("jsonIpfsLink", jsonIpfsLink);
-    if (userBalance ) {
-       try {
+    if (userBalance) {
+      try {
         await handleApprove();
-        
       } catch (error) {
         console.error("Erreur d'approbation des tokens:", error);
       }
     }
-    }
- 
+  };
 
   const uploadJsonToIPFS = async () => {
     const uploadUrl = await uploadToIPFS({
@@ -354,11 +332,6 @@ useEffect(() => {
                     market your ad space.{" "}
                   </span>
                 </div>
-                <Link href="#">
-                  <button className="bg-accent shadow-accent-volume hover:bg-accent-dark inline-block w-full rounded-full py-3 px-8 text-center font-semibold text-white transition-all" onClick={handleLinkChange}>
-                    TA MERE EN STRING
-                  </button>
-                </Link>
                 <Web3Button
                   contractAddress="0xA82B4bBc8e6aC3C100bBc769F4aE0360E9ac9FC3"
                   action={() =>
@@ -373,7 +346,7 @@ useEffect(() => {
                 {address ? (
                   <Link href="#">
                     <button className="bg-accent shadow-accent-volume hover:bg-accent-dark inline-block w-full rounded-full py-3 px-8 text-center font-semibold text-white transition-all" onClick={handleSubmit}>
-                      Buy and ad spaces
+                      Upload IPFS
                     </button>
                   </Link>
                 ) : (
