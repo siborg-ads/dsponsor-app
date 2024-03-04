@@ -94,12 +94,11 @@ const Item = () => {
     if (!jsonIpfsLink) return;
 
     setArgs({
-      // tokenId: parseInt(data[0]?.maxSupply) + 1,
-      tokenId: 1,
+      tokenId: parseInt(data[0]?.maxSupply) + 1,
       to: address,
       currency: data[0]?.currencyAddress,
       tokenData: jsonIpfsLink,
-      offerId: 4,
+      offerId: data[0]?.offerId,
       adParameters: ["squareLogo", "URL"],
       adDatas: [jsonIpfsLink, link],
       referralAdditionalInformation: "",
@@ -125,7 +124,6 @@ const Item = () => {
     try {
       const allowance = await tokenContract.call("allowance", [address, "0xA82B4bBc8e6aC3C100bBc769F4aE0360E9ac9FC3"]);
 
-      console.log(allowance);
       await approve({ args: ["0xA82B4bBc8e6aC3C100bBc769F4aE0360E9ac9FC3", amountToApprove] });
       console.log("Approvation réussie");
     } catch (error) {
