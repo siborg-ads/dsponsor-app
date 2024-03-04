@@ -235,7 +235,7 @@ const Create = () => {
 
   const { contract: JEURTokenContract } = useContract("0xd409F17095a370800A9C352124C6a1e82695203E", "token"); // mumbai
 
-  const { contract: USDCTokenContract } = useContract("0xe6b8a5CF854791412c1f6EFC7CAf629f5Df1c747", "token");
+  const { contract: USDCTokenContract } = useContract("0x9999f7Fea5938fD3b1E26A12c3f2fb024e194f97", "token");
   
   const { contract: MaticTokenContract } = useContract("0x0000000000000000000000000000000000001010", "token");
 
@@ -254,7 +254,7 @@ const Create = () => {
       case "JEUR":
         return "0xd409F17095a370800A9C352124C6a1e82695203E"; // on mumbai
       case "USDC":
-        return "0xe6b8a5CF854791412c1f6EFC7CAf629f5Df1c747";
+        return "0x9999f7Fea5938fD3b1E26A12c3f2fb024e194f97";
       case "MATIC":
         return "0x0000000000000000000000000000000000001010"; // to change
       case "WETH":
