@@ -1,0 +1,16 @@
+{
+  "chainName": "Matic Mumbai Testnet",
+  "chainId": 80001,
+  "rpc": "https://polygon-mumbai-bor-rpc.publicnode.com",
+  "nativeSymbol": "MATIC",
+  "contracts": {
+    "DSponsorAdmin": "0xA82B4bBc8e6aC3C100bBc769F4aE0360E9ac9FC3"
+  },
+  "assets": {
+    "JEUR": "0xd409F17095a370800A9C352124C6a1e82695203E",
+    "USDC": "0x9999f7Fea5938fD3b1E26A12c3f2fb024e194f97",
+    "WETH": "0xA6FA4fB5f76172d178d61B04b0ecd319C5d1C0aa",
+    "WNATIVE": "0x9c3c9283d3e44854697cd22d3faa240cfb032889",
+    "NATIVE": "0x0000000000000000000000000000000000001010"
+  }
+}
