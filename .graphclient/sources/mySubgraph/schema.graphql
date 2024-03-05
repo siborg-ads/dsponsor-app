@@ -782,6 +782,7 @@ type NewDSponsorNFT {
   baseURI: String!
   contractURI: String!
   maxSupply: BigInt!
+  minter: Bytes!
   forwarder: Bytes!
   royaltyBps: BigInt!
   currencies: [Bytes!]!
@@ -911,6 +912,16 @@ input NewDSponsorNFT_filter {
   maxSupply_lte: BigInt
   maxSupply_in: [BigInt!]
   maxSupply_not_in: [BigInt!]
+  minter: Bytes
+  minter_not: Bytes
+  minter_gt: Bytes
+  minter_lt: Bytes
+  minter_gte: Bytes
+  minter_lte: Bytes
+  minter_in: [Bytes!]
+  minter_not_in: [Bytes!]
+  minter_contains: Bytes
+  minter_not_contains: Bytes
   forwarder: Bytes
   forwarder_not: Bytes
   forwarder_gt: Bytes
@@ -988,6 +999,7 @@ enum NewDSponsorNFT_orderBy {
   baseURI
   contractURI
   maxSupply
+  minter
   forwarder
   royaltyBps
   currencies

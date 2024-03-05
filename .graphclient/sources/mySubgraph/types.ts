@@ -771,6 +771,7 @@ export type NewDSponsorNFT = {
   baseURI: Scalars['String'];
   contractURI: Scalars['String'];
   maxSupply: Scalars['BigInt'];
+  minter: Scalars['Bytes'];
   forwarder: Scalars['Bytes'];
   royaltyBps: Scalars['BigInt'];
   currencies: Array<Scalars['Bytes']>;
@@ -900,6 +901,16 @@ export type NewDSponsorNFT_filter = {
   maxSupply_lte?: InputMaybe<Scalars['BigInt']>;
   maxSupply_in?: InputMaybe<Array<Scalars['BigInt']>>;
   maxSupply_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  minter?: InputMaybe<Scalars['Bytes']>;
+  minter_not?: InputMaybe<Scalars['Bytes']>;
+  minter_gt?: InputMaybe<Scalars['Bytes']>;
+  minter_lt?: InputMaybe<Scalars['Bytes']>;
+  minter_gte?: InputMaybe<Scalars['Bytes']>;
+  minter_lte?: InputMaybe<Scalars['Bytes']>;
+  minter_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  minter_not_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  minter_contains?: InputMaybe<Scalars['Bytes']>;
+  minter_not_contains?: InputMaybe<Scalars['Bytes']>;
   forwarder?: InputMaybe<Scalars['Bytes']>;
   forwarder_not?: InputMaybe<Scalars['Bytes']>;
   forwarder_gt?: InputMaybe<Scalars['Bytes']>;
@@ -977,6 +988,7 @@ export type NewDSponsorNFT_orderBy =
   | 'baseURI'
   | 'contractURI'
   | 'maxSupply'
+  | 'minter'
   | 'forwarder'
   | 'royaltyBps'
   | 'currencies'

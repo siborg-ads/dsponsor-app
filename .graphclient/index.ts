@@ -789,6 +789,7 @@ export type NewDSponsorNFT = {
   baseURI: Scalars['String'];
   contractURI: Scalars['String'];
   maxSupply: Scalars['BigInt'];
+  minter: Scalars['Bytes'];
   forwarder: Scalars['Bytes'];
   royaltyBps: Scalars['BigInt'];
   currencies: Array<Scalars['Bytes']>;
@@ -918,6 +919,16 @@ export type NewDSponsorNFT_filter = {
   maxSupply_lte?: InputMaybe<Scalars['BigInt']>;
   maxSupply_in?: InputMaybe<Array<Scalars['BigInt']>>;
   maxSupply_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  minter?: InputMaybe<Scalars['Bytes']>;
+  minter_not?: InputMaybe<Scalars['Bytes']>;
+  minter_gt?: InputMaybe<Scalars['Bytes']>;
+  minter_lt?: InputMaybe<Scalars['Bytes']>;
+  minter_gte?: InputMaybe<Scalars['Bytes']>;
+  minter_lte?: InputMaybe<Scalars['Bytes']>;
+  minter_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  minter_not_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  minter_contains?: InputMaybe<Scalars['Bytes']>;
+  minter_not_contains?: InputMaybe<Scalars['Bytes']>;
   forwarder?: InputMaybe<Scalars['Bytes']>;
   forwarder_not?: InputMaybe<Scalars['Bytes']>;
   forwarder_gt?: InputMaybe<Scalars['Bytes']>;
@@ -995,6 +1006,7 @@ export type NewDSponsorNFT_orderBy =
   | 'baseURI'
   | 'contractURI'
   | 'maxSupply'
+  | 'minter'
   | 'forwarder'
   | 'royaltyBps'
   | 'currencies'
@@ -3529,6 +3541,7 @@ export type NewDSponsorNFTResolvers<ContextType = MeshContext, ParentType extend
   baseURI?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   contractURI?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   maxSupply?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
+  minter?: Resolver<ResolversTypes['Bytes'], ParentType, ContextType>;
   forwarder?: Resolver<ResolversTypes['Bytes'], ParentType, ContextType>;
   royaltyBps?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
   currencies?: Resolver<Array<ResolversTypes['Bytes']>, ParentType, ContextType>;
@@ -3839,7 +3852,8 @@ export type DirectiveResolvers<ContextType = MeshContext> = ResolversObject<{
 export type MeshContext = MySubgraphTypes.Context & BaseMeshContext;
 
 
-const baseDir = pathModule.join(typeof __dirname === 'string' ? __dirname : '/', '..');
+import { fileURLToPath } from '@graphql-mesh/utils';
+const baseDir = pathModule.join(pathModule.dirname(fileURLToPath(import.meta.url)), '..');
 
 const importFn: ImportFn = <T>(moduleId: string) => {
   const relativeModuleId = (pathModule.isAbsolute(moduleId) ? pathModule.relative(baseDir, moduleId) : moduleId).split('\\').join('/').replace(baseDir + '/', '');
@@ -3881,7 +3895,7 @@ const mySubgraphTransforms = [];
 const additionalTypeDefs = [] as any[];
 const mySubgraphHandler = new GraphqlHandler({
               name: "mySubgraph",
-              config: {"endpoint":"https://api.studio.thegraph.com/proxy/65744/dsponsor-mumbai/0.0.1"},
+              config: {"endpoint":"https://api.studio.thegraph.com/proxy/65744/dsponsor-mumbai/0.0.4"},
               baseDir,
               cache,
               pubsub,

@@ -4,17 +4,7 @@ import Meta from "../../components/Meta";
 import Image from "next/image";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import {
-  useAddress,
-  useSwitchChain,
-  useContract,
-  useContractWrite,
-  Web3Button,
-  useStorageUpload,
-  useTokenDecimals,
-  CheckoutWithCard,
-  CheckoutWithEth,
-} from "@thirdweb-dev/react";
+import { useAddress, useSwitchChain, useContract, useContractWrite, Web3Button, useStorageUpload, useTokenDecimals, CheckoutWithCard, CheckoutWithEth } from "@thirdweb-dev/react";
 import { Mumbai, Polygon } from "@thirdweb-dev/chains";
 
 const { BigNumber } = require("ethers");
@@ -53,8 +43,11 @@ const Create = () => {
   };
 
   const handleUnitPriceChange = (e) => {
-    setSelectedUnitPrice(parseInt(e.target.value, 10));
-
+    const price = parseFloat(e.target.value);
+    if (!isNaN(price)) {
+      // Vérifiez que la valeur convertie est un nombre
+      setSelectedUnitPrice(price);
+    }
   };
 
   const handleCurrencyChange = (event) => {
@@ -71,15 +64,9 @@ const Create = () => {
 
   const address = useAddress();
   const switchChain = useSwitchChain();
-  const { contract } = useContract(
-    "0xE3aE42A640C0C00F8e0cB6C3B1Df50a0b45d6B44"
-  ); // dsponsor admin mumbai contract address
-
-  const {
-    mutateAsync,
-    isLoading: isLoadingContractWrite,
-    error,
-  } = useContractWrite(contract, "createDSponsorNFTAndOffer");
+  const { contract } = useContract("0xA82B4bBc8e6aC3C100bBc769F4aE0360E9ac9FC3"); // dsponsor admin mumbai contract address
+  console.log(contract);
+  const { mutateAsync, isLoading: isLoadingContractWrite, error } = useContractWrite(contract, "createDSponsorNFTAndOffer");
 
   const handleLogoUpload = (file) => {
     if (file) {
@@ -151,8 +138,8 @@ const Create = () => {
       setEndDateError(null);
     }
 
-    if (selectedUnitPrice < 0) {
-      setCurrencyError("Unit price is missing or invalid.");
+    if (selectedUnitPrice < 0.01) {
+      setCurrencyError("Unit price must be at least 0.01.");
       isValid = false;
     } else {
       setCurrencyError(null);
@@ -166,9 +153,7 @@ const Create = () => {
     }
 
     if (selectedRoyalties < 0 || selectedRoyalties > 100) {
-      setRoyaltyError(
-        "Royalties are missing or invalid. They should be between 0% and 100%."
-      );
+      setRoyaltyError("Royalties are missing or invalid. They should be between 0% and 100%.");
       isValid = false;
     } else {
       setRoyaltyError(null);
@@ -248,29 +233,20 @@ const Create = () => {
     },
   ];
 
-  const { contract: JEURTokenContract } = useContract(
-    "0xd409F17095a370800A9C352124C6a1e82695203E",
-    "token"
-  ); // mumbai
+  const { contract: JEURTokenContract } = useContract("0xd409F17095a370800A9C352124C6a1e82695203E", "token"); // mumbai
 
-  const { contract: USDCTokenContract } = useContract(
-    "0xe6b8a5CF854791412c1f6EFC7CAf629f5Df1c747",
-    "token"
-  ); // mumbai
+  const { contract: USDCTokenContract } = useContract("0x9999f7Fea5938fD3b1E26A12c3f2fb024e194f97", "token");
+  
+  const { contract: MaticTokenContract } = useContract("0x0000000000000000000000000000000000001010", "token");
 
-  const { contract: WETHTokenContract } = useContract(
-    "0xA6FA4fB5f76172d178d61B04b0ecd319C5d1C0aa",
-    "token"
-  ); // mumbai
+  const { contract: WETHTokenContract } = useContract("0xA6FA4fB5f76172d178d61B04b0ecd319C5d1C0aa", "token"); // mumbai
 
-  const { contract: customTokenContract } = useContract(
-    customContract,
-    "token"
-  );
+  const { contract: customTokenContract } = useContract(customContract, "token");
 
   const { data: JEURdecimals } = useTokenDecimals(JEURTokenContract);
   const { data: USDCDecimals } = useTokenDecimals(USDCTokenContract);
   const { data: WETHDecimals } = useTokenDecimals(WETHTokenContract);
+  const { data: MaticDecimals } = useTokenDecimals(MaticTokenContract);
   const { data: customDecimals } = useTokenDecimals(customTokenContract);
 
   const selectedCurrencyContract = useCallback(() => {
@@ -278,9 +254,9 @@ const Create = () => {
       case "JEUR":
         return "0xd409F17095a370800A9C352124C6a1e82695203E"; // on mumbai
       case "USDC":
-        return "0xe6b8a5CF854791412c1f6EFC7CAf629f5Df1c747";
+        return "0x9999f7Fea5938fD3b1E26A12c3f2fb024e194f97";
       case "MATIC":
-        return "0x2"; // to change
+        return "0x0000000000000000000000000000000000001010"; // to change
       case "WETH":
         return "0xA6FA4fB5f76172d178d61B04b0ecd319C5d1C0aa"; // on mumbai
       case "custom":
@@ -298,7 +274,7 @@ const Create = () => {
         case "USDC":
           return USDCDecimals;
         case "MATIC":
-          return 18;
+          return MaticDecimals;
         case "WETH":
           return WETHDecimals;
         case "custom":
@@ -307,7 +283,7 @@ const Create = () => {
           return JEURdecimals; // JEUR by default (to change)
       }
     },
-    [JEURdecimals, USDCDecimals, WETHDecimals, customDecimals]
+    [JEURdecimals, USDCDecimals, WETHDecimals, MaticDecimals, customDecimals]
   );
 
   const updateArgs = useCallback(() => {
@@ -324,16 +300,13 @@ const Create = () => {
         symbol: "DSPONSORNFT", // symbol
         baseURI: "https://api.dsponsor.com/tokenMetadata/", // baseURI
         contractURI: jsonIpfsLink, // contractURI from json
+        minter: address,
         maxSupply: selectedNumber, // max supply
         forwarder: "0x0000000000000000000000000000000000000000", // forwarder
         initialOwner: address, // owner
         royaltyBps: selectedRoyalties * 100, // royalties
         currencies: [selectedCurrencyContract(selectedCurrency)], // accepted token
-        prices: [
-          BigNumber.from(selectedUnitPrice).mul(
-            BigNumber.from(10).pow(getDecimals(selectedCurrency))
-          ),
-        ], // prices with decimals
+        prices: [BigNumber.from(selectedUnitPrice).mul(BigNumber.from(10).pow(getDecimals(selectedCurrency)))], // prices with decimals
         allowedTokenIds: Array.from({ length: selectedNumber }, (_, i) => i), // allowed token ids
       }),
       JSON.stringify({
@@ -346,17 +319,7 @@ const Create = () => {
         },
       }),
     ]);
-  }, [
-    address,
-    getDecimals,
-    jsonIpfsLink,
-    name,
-    selectedCurrency,
-    selectedCurrencyContract,
-    selectedNumber,
-    selectedRoyalties,
-    selectedUnitPrice,
-  ]);
+  }, [address, getDecimals, jsonIpfsLink, name, selectedCurrency, selectedCurrencyContract, selectedNumber, selectedRoyalties, selectedUnitPrice]);
 
   useEffect(() => {
     updateArgs();
@@ -368,34 +331,19 @@ const Create = () => {
       {/* <!-- Create --> */}
       <section className="relative py-24">
         <picture className="pointer-events-none absolute inset-0 -z-10 dark:hidden">
-          <Image
-            width={1519}
-            height={773}
-            priority
-            src="/images/gradient_light.jpg"
-            alt="gradient"
-            className="h-full w-full object-cover"
-          />
+          <Image width={1519} height={773} priority src="/images/gradient_light.jpg" alt="gradient" className="h-full w-full object-cover" />
         </picture>
         <div className="container">
-          <h1 className="font-display text-jacarta-700 py-16 text-center text-4xl font-medium dark:text-white">
-            Create
-          </h1>
+          <h1 className="font-display text-jacarta-700 py-16 text-center text-4xl font-medium dark:text-white">Create</h1>
 
           {address && (
             <div className="flex flex-col justify-center gap-2 mb-10">
               <p className="text-center text-red-500">dev only</p>
               <div className="flex gap-10 justify-center">
-                <button
-                  className="bg-accent cursor-default rounded-full py-3 px-8 text-center font-semibold text-white transition-all"
-                  onClick={() => switchChain(Polygon.chainId)}
-                >
+                <button className="bg-accent cursor-default rounded-full py-3 px-8 text-center font-semibold text-white transition-all" onClick={() => switchChain(Polygon.chainId)}>
                   Polygon
                 </button>
-                <button
-                  className="bg-accent cursor-default rounded-full py-3 px-8 text-center font-semibold text-white transition-all"
-                  onClick={() => switchChain(Mumbai.chainId)}
-                >
+                <button className="bg-accent cursor-default rounded-full py-3 px-8 text-center font-semibold text-white transition-all" onClick={() => switchChain(Mumbai.chainId)}>
                   Mumbai
                 </button>
               </div>
@@ -443,42 +391,18 @@ const Create = () => {
                 <span className="text-red">*</span>
               </label>
 
-              {file ? (
-                <p className="dark:text-jacarta-300 text-2xs mb-3">
-                  successfully uploaded : {file.name}
-                </p>
-              ) : (
-                <p className="dark:text-jacarta-300 text-2xs mb-3">
-                  Drag or choose your file to upload
-                </p>
-              )}
+              {file ? <p className="dark:text-jacarta-300 text-2xs mb-3">successfully uploaded : {file.name}</p> : <p className="dark:text-jacarta-300 text-2xs mb-3">Drag or choose your file to upload</p>}
 
               <div className="dark:bg-jacarta-700 dark:border-jacarta-600 border-jacarta-100 group relative flex max-w-md flex-col items-center justify-center rounded-lg border-2 border-dashed bg-white py-20 px-5 text-center">
                 <div className="relative z-10 cursor-pointer">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    width="24"
-                    height="24"
-                    className="fill-jacarta-500 mb-4 inline-block dark:fill-white"
-                  >
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" className="fill-jacarta-500 mb-4 inline-block dark:fill-white">
                     <path fill="none" d="M0 0h24v24H0z" />
                     <path d="M16 13l6.964 4.062-2.973.85 2.125 3.681-1.732 1-2.125-3.68-2.223 2.15L16 13zm-2-7h2v2h5a1 1 0 0 1 1 1v4h-2v-3H10v10h4v2H9a1 1 0 0 1-1-1v-5H6v-2h2V9a1 1 0 0 1 1-1h5V6zM4 14v2H2v-2h2zm0-4v2H2v-2h2zm0-4v2H2V6h2zm0-4v2H2V2h2zm4 0v2H6V2h2zm4 0v2h-2V2h2zm4 0v2h-2V2h2z" />
                   </svg>
-                  <p className="dark:text-jacarta-300 mx-auto max-w-xs text-xs">
-                    JPG, PNG, GIF, SVG, MP4, WEBM, MP3, WAV, OGG, GLB, GLTF. Max
-                    size: 100 MB
-                  </p>
+                  <p className="dark:text-jacarta-300 mx-auto max-w-xs text-xs">JPG, PNG, GIF, SVG, MP4, WEBM, MP3, WAV, OGG, GLB, GLTF. Max size: 100 MB</p>
                 </div>
                 <div className="dark:bg-jacarta-600 bg-jacarta-50 absolute inset-4 cursor-pointer rounded opacity-0 group-hover:opacity-100 ">
-                  <FileUploader
-                    handleChange={handleLogoUpload}
-                    name="file"
-                    types={fileTypes}
-                    classes="file-drag"
-                    maxSize={100}
-                    minSize={0}
-                  />
+                  <FileUploader handleChange={handleLogoUpload} name="file" types={fileTypes} classes="file-drag" maxSize={100} minSize={0} />
                 </div>
               </div>
               {imageError && <p className="text-red-500">{imageError}</p>}
@@ -486,10 +410,7 @@ const Create = () => {
 
             {/* <!-- Name --> */}
             <div className="mb-6">
-              <label
-                htmlFor="item-name"
-                className="font-display text-jacarta-700 mb-2 block dark:text-white"
-              >
+              <label htmlFor="item-name" className="font-display text-jacarta-700 mb-2 block dark:text-white">
                 Name<span className="text-red">*</span>
               </label>
               <input
@@ -504,10 +425,7 @@ const Create = () => {
             </div>
             {/* <!-- External Link --> */}
             <div className="mb-6">
-              <label
-                htmlFor="item-external-link"
-                className="font-display text-jacarta-700 mb-2 block dark:text-white"
-              >
+              <label htmlFor="item-external-link" className="font-display text-jacarta-700 mb-2 block dark:text-white">
                 External link<span className="text-red">*</span>
               </label>
               <input
@@ -522,10 +440,7 @@ const Create = () => {
 
             {/* <!-- Description --> */}
             <div className="mb-6">
-              <label
-                htmlFor="item-description"
-                className="font-display text-jacarta-700 mb-2 block dark:text-white"
-              >
+              <label htmlFor="item-description" className="font-display text-jacarta-700 mb-2 block dark:text-white">
                 Description<span className="text-red">*</span>
               </label>
               <textarea
@@ -536,88 +451,49 @@ const Create = () => {
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="Provide a detailed description of your item."
               ></textarea>
-              {descriptionError && (
-                <p className="text-red-500">{descriptionError}</p>
-              )}
+              {descriptionError && <p className="text-red-500">{descriptionError}</p>}
             </div>
 
             {/* <!-- Offer preview --> */}
             {previewImage && (
               <div className="mb-6">
-                <label
-                  htmlFor="item-description"
-                  className="font-display text-jacarta-700 mb-2 block dark:text-white"
-                >
+                <label htmlFor="item-description" className="font-display text-jacarta-700 mb-2 block dark:text-white">
                   Offer preview
                 </label>
-                <p className="dark:text-jacarta-300 text-2xs mb-3">
-                  Your offer will look like this.
-                </p>
-                <Image
-                  src={previewImage}
-                  width={300}
-                  height={100}
-                  alt="Preview"
-                />
+                <p className="dark:text-jacarta-300 text-2xs mb-3">Your offer will look like this.</p>
+                <Image src={previewImage} width={300} height={100} alt="Preview" />
               </div>
             )}
 
             {/* <!-- Validity period --> */}
             <div className="mb-6">
-              <label
-                htmlFor="item-description"
-                className="font-display text-jacarta-700 mb-2 block dark:text-white"
-              >
+              <label htmlFor="item-description" className="font-display text-jacarta-700 mb-2 block dark:text-white">
                 Validity period<span className="text-red">*</span>
               </label>
               <div className="flex gap-4 items-center text-jacarta-700 dark:text-white">
                 <div className="flex flex-col justify-center items-center gap-1">
-                  <DatePicker
-                    selected={startDate}
-                    onChange={(date) => setStartDate(date)}
-                    className="text-jacarta-700 dark:text-white"
-                  />
-                  <span className="text-jacarta-700 dark:text-white">
-                    Start date
-                  </span>
+                  <DatePicker selected={startDate} onChange={(date) => setStartDate(date)} className="text-jacarta-700 dark:text-white" />
+                  <span className="text-jacarta-700 dark:text-white">Start date</span>
                 </div>
                 <div className="flex flex-col justify-center items-center gap-1">
-                  <DatePicker
-                    selected={endDate}
-                    onChange={(date) => setEndDate(date)}
-                    className="text-jacarta-700 dark:text-white"
-                  />
-                  <span className="text-jacarta-700 dark:text-white">
-                    End date
-                  </span>
+                  <DatePicker selected={endDate} onChange={(date) => setEndDate(date)} className="text-jacarta-700 dark:text-white" />
+                  <span className="text-jacarta-700 dark:text-white">End date</span>
                 </div>
               </div>
-              {startDateError && (
-                <p className="text-red-500">{startDateError}</p>
-              )}
+              {startDateError && <p className="text-red-500">{startDateError}</p>}
               {endDateError && <p className="text-red-500">{endDateError}</p>}
             </div>
 
             {/* <!-- Number of ad spaces --> */}
             <div className="mb-6">
-              <label
-                htmlFor="item-description"
-                className="font-display text-jacarta-700 mb-2 block dark:text-white"
-              >
+              <label htmlFor="item-description" className="font-display text-jacarta-700 mb-2 block dark:text-white">
                 Number of ad spaces for this offer
                 <span className="text-red">*</span>
               </label>
-              <p className="dark:text-jacarta-300 text-2xs mb-3">
-                Warning: d&gt;sponsor works with a fixed supply of ad spaces.
-                You won&apos;t be able to modify this value. Max : 25
-              </p>
+              <p className="dark:text-jacarta-300 text-2xs mb-3">Warning: d&gt;sponsor works with a fixed supply of ad spaces. You won&apos;t be able to modify this value. Max : 25</p>
               <div className="flex gap-4 items-center text-jacarta-700 dark:text-white">
                 <label htmlFor="numberSelect">Select a number:</label>
-                <select
-                  id="numberSelect"
-                  value={selectedNumber}
-                  onChange={handleNumberChange}
-                >
+                <select id="numberSelect" value={selectedNumber} onChange={handleNumberChange}>
                   {[...Array(25)].map((_, index) => (
                     <option key={index + 1} value={index + 1}>
                       {index + 1}
@@ -629,451 +505,81 @@ const Create = () => {
 
             {/* <!-- Unit selling price --> */}
             <div className="mb-6">
-              <label
-                htmlFor="item-description"
-                className="font-display text-jacarta-700 mb-2 block dark:text-white"
-              >
+              <label htmlFor="item-description" className="font-display text-jacarta-700 mb-2 block dark:text-white">
                 Unit selling price
                 <span className="text-red">*</span>
               </label>
               <p className="dark:text-jacarta-300 text-2xs mb-3">
-                EUR payment means you&apos;ll receive JEUR tokens (1 JEUR = 1€).
-                USD payment means you&apos;ll receive JUSD tokens (1 JUSD = 1$).
-                You&apos;ll be able to cash out via wire transfer with a service
-                like MtPelerin. You can change the pricing later.
+                EUR payment means you&apos;ll receive JEUR tokens (1 JEUR = 1€). USD payment means you&apos;ll receive JUSD tokens (1 JUSD = 1$). You&apos;ll be able to cash out via wire transfer with a service like
+                MtPelerin. You can change the pricing later.
               </p>
               <div className="flex gap-4 items-center text-jacarta-700 dark:text-white">
-                <input
-                  id="numberInput"
-                  type="number"
-                  min="1"
-                  value={selectedUnitPrice}
-                  onChange={handleUnitPriceChange}
-                  placeholder="Unit selling price"
-                />
+                <input id="numberInput" type="number" min="0.01" step="0.01" value={selectedUnitPrice} onChange={handleUnitPriceChange} placeholder="Unit selling price" />
                 <div className="flex items-center gap-1">
-                  <input
-                    type="radio"
-                    id="jeur"
-                    name="currency"
-                    value="JEUR"
-                    checked={selectedCurrency === "JEUR"}
-                    onChange={handleCurrencyChange}
-                  />
+                  <input type="radio" id="jeur" name="currency" value="JEUR" checked={selectedCurrency === "JEUR"} onChange={handleCurrencyChange} />
                   <label htmlFor="jeur">JEUR</label>
                 </div>
 
                 <div className="flex items-center gap-1">
-                  <input
-                    type="radio"
-                    id="usdc"
-                    name="currency"
-                    value="USDC"
-                    checked={selectedCurrency === "USDC"}
-                    onChange={handleCurrencyChange}
-                  />
+                  <input type="radio" id="usdc" name="currency" value="USDC" checked={selectedCurrency === "USDC"} onChange={handleCurrencyChange} />
                   <label htmlFor="usdc">USDC</label>
                 </div>
 
                 <div className="flex items-center gap-1">
-                  <input
-                    type="radio"
-                    id="matic"
-                    name="currency"
-                    value="MATIC"
-                    checked={selectedCurrency === "MATIC"}
-                    onChange={handleCurrencyChange}
-                  />
+                  <input type="radio" id="matic" name="currency" value="MATIC" checked={selectedCurrency === "MATIC"} onChange={handleCurrencyChange} />
                   <label htmlFor="matic">MATIC</label>
                 </div>
 
                 <div className="flex items-center gap-1">
-                  <input
-                    type="radio"
-                    id="weth"
-                    name="currency"
-                    value="WETH"
-                    checked={selectedCurrency === "WETH"}
-                    onChange={handleCurrencyChange}
-                  />
+                  <input type="radio" id="weth" name="currency" value="WETH" checked={selectedCurrency === "WETH"} onChange={handleCurrencyChange} />
                   <label htmlFor="weth">WETH</label>
                 </div>
 
                 <div className="flex items-center gap-1">
-                  <input
-                    type="radio"
-                    id="custom"
-                    name="currency"
-                    value="custom"
-                    checked={selectedCurrency === "custom"}
-                    onChange={handleCurrencyChange}
-                  />
+                  <input type="radio" id="custom" name="currency" value="custom" checked={selectedCurrency === "custom"} onChange={handleCurrencyChange} />
                   <label htmlFor="custom">Custom</label>
-                  <input
-                    className="ml-2"
-                    type="text"
-                    id="customContract"
-                    name="customContract"
-                    placeholder="Contract address"
-                    onChange={handleCustomContractChange}
-                  />
+                  <input className="ml-2" type="text" id="customContract" name="customContract" placeholder="Contract address" onChange={handleCustomContractChange} />
                 </div>
               </div>
-              <p className="dark:text-jacarta-300 text-2xs mt-3">
-                You&apos;ll earn up to 1600 USDC. As d&gt;sponsor charges a fee
-                of 4%, sponsors will pay 208 USDC.
-              </p>
+              <p className="dark:text-jacarta-300 text-2xs mt-3">You&apos;ll earn up to 1600 USDC. As d&gt;sponsor charges a fee of 4%, sponsors will pay 208 USDC.</p>
               {currencyError && <p className="text-red-500">{currencyError}</p>}
             </div>
 
             {/* <!-- Royalties --> */}
             <div className="mb-6">
-              <label
-                htmlFor="item-description"
-                className="font-display text-jacarta-700 mb-2 block dark:text-white"
-              >
+              <label htmlFor="item-description" className="font-display text-jacarta-700 mb-2 block dark:text-white">
                 Royalties
                 <span className="text-red">*</span>
               </label>
               <p className="dark:text-jacarta-300 text-2xs mb-3">
-                Sponsors can sell an ad space ownership on the marketplace.
-                Define the fee you want to get from secondary sales. Sponsors
-                might refuse to buy an ad space if your royalty fee is too high.
-                You can change this value pricing later.
+                Sponsors can sell an ad space ownership on the marketplace. Define the fee you want to get from secondary sales. Sponsors might refuse to buy an ad space if your royalty fee is too high. You can change
+                this value pricing later.
               </p>
               <div className="flex gap-4 items-center text-jacarta-700 dark:text-white">
-                <input
-                  id="numberInput"
-                  type="number"
-                  min="0"
-                  max="100"
-                  value={selectedRoyalties}
-                  onChange={handleRoyaltiesChange}
-                  placeholder="Royalties"
-                />
+                <input id="numberInput" type="number" min="0" max="100" value={selectedRoyalties} onChange={handleRoyaltiesChange} placeholder="Royalties" />
                 <span>%</span>
               </div>
               {royaltyError && <p className="text-red-500">{royaltyError}</p>}
             </div>
 
-            {/* <!-- Collection --> */}
-            {/* 
-            <div className="relative">
-              <div>
-                <label className="font-display text-jacarta-700 mb-2 block dark:text-white">
-                  Collection
-                </label>
-                <div className="mb-3 flex items-center space-x-2">
-                  <p className="dark:text-jacarta-300 text-2xs">
-                    This is the collection where your item will appear.
-                    <Tippy
-                      theme="tomato-theme"
-                      content={
-                        <span>
-                          Moving items to a different collection may take up to
-                          30 minutes.
-                        </span>
-                      }
-                    >
-                      <span className="inline-block">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          viewBox="0 0 24 24"
-                          width="24"
-                          height="24"
-                          className="dark:fill-jacarta-300 fill-jacarta-500 ml-1 -mb-[3px] h-4 w-4"
-                        >
-                          <path fill="none" d="M0 0h24v24H0z"></path>
-                          <path d="M12 22C6.477 22 2 17.523 2 12S6.477 2 12 2s10 4.477 10 10-4.477 10-10 10zm0-2a8 8 0 1 0 0-16 8 8 0 0 0 0 16zM11 7h2v2h-2V7zm0 4h2v6h-2v-6z"></path>
-                        </svg>
-                      </span>
-                    </Tippy>
-                  </p>
-                </div>
-              </div>
-              
-
-              <div className="dropdown my-1 cursor-pointer">
-                <Collection_dropdown2
-                  data={collectionDropdown2_data}
-                  collection={true}
-                />
-              </div>
-            </div>
-            */}
-            {/* <!-- Properties --> */}
-            {/* 
-            {popupItemData.map(({ id, name, text, icon }) => {
-              return (
-                <div
-                  key={id}
-                  className="dark:border-jacarta-600 border-jacarta-100 relative border-b py-6"
-                >
-                  <div className="flex items-center justify-between">
-                    <div className="flex">
-                      <svg className="icon fill-jacarta-700 mr-2 mt-px h-4 w-4 shrink-0 dark:fill-white">
-                        <use xlinkHref={`/icons.svg#icon-${icon}`}></use>
-                      </svg>
-
-                      <div>
-                        <label className="font-display text-jacarta-700 block dark:text-white">
-                          {name}
-                        </label>
-                        <p className="dark:text-jacarta-300">{text}</p>
-                      </div>
-                    </div>
-                    <button
-                      className="group dark:bg-jacarta-700 hover:bg-accent border-accent flex h-12 w-12 shrink-0 items-center justify-center rounded-lg border bg-white hover:border-transparent"
-                      onClick={() => dispatch(showPropatiesModal())}
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 24 24"
-                        width="24"
-                        height="24"
-                        className="fill-accent group-hover:fill-white"
-                      >
-                        <path fill="none" d="M0 0h24v24H0z" />
-                        <path d="M11 11V5h2v6h6v2h-6v6h-2v-6H5v-2z" />
-                      </svg>
-                    </button>
-                  </div>
-                </div>
-              );
-            })}
-
-            <Proparties_modal />
-            <div className="dark:border-jacarta-600 border-jacarta-100 relative border-b py-6">
-              <div className="flex items-center justify-between">
-                <div className="flex">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    width="24"
-                    height="24"
-                    className="fill-accent mr-2 mt-px h-4 w-4 shrink-0"
-                  >
-                    <path fill="none" d="M0 0h24v24H0z" />
-                    <path d="M7 10h13a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V11a1 1 0 0 1 1-1h1V9a7 7 0 0 1 13.262-3.131l-1.789.894A5 5 0 0 0 7 9v1zm-2 2v8h14v-8H5zm5 3h4v2h-4v-2z" />
-                  </svg>
-
-                  <div>
-                    <label className="font-display text-jacarta-700 block dark:text-white">
-                      Unlockable Content
-                    </label>
-                    <p className="dark:text-jacarta-300">
-                      Include unlockable content that can only be revealed by
-                      the owner of the item.
-                    </p>
-                  </div>
-                </div>
-                <input
-                  type="checkbox"
-                  value="checkbox"
-                  name="check"
-                  className="checked:bg-accent checked:focus:bg-accent checked:hover:bg-accent after:bg-jacarta-400 bg-jacarta-100 relative h-6 w-[2.625rem] cursor-pointer appearance-none rounded-full border-none after:absolute after:top-[0.1875rem] after:left-[0.1875rem] after:h-[1.125rem] after:w-[1.125rem] after:rounded-full after:transition-all checked:bg-none checked:after:left-[1.3125rem] checked:after:bg-white focus:ring-transparent focus:ring-offset-0"
-                />
-              </div>
-            </div>
-            */}
-            {/* <!-- Explicit & Sensitive Content --> */}
-            {/* 
-            <div className="dark:border-jacarta-600 border-jacarta-100 relative mb-6 border-b py-6">
-              <div className="flex items-center justify-between">
-                <div className="flex">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    width="24"
-                    height="24"
-                    className="fill-jacarta-700 mr-2 mt-px h-4 w-4 shrink-0 dark:fill-white"
-                  >
-                    <path fill="none" d="M0 0h24v24H0z" />
-                    <path d="M12.866 3l9.526 16.5a1 1 0 0 1-.866 1.5H2.474a1 1 0 0 1-.866-1.5L11.134 3a1 1 0 0 1 1.732 0zM11 16v2h2v-2h-2zm0-7v5h2V9h-2z" />
-                  </svg>
-
-                  <div>
-                    <label className="font-display text-jacarta-700 dark:text-white">
-                      Explicit & Sensitive Content
-                    </label>
-
-                    <p className="dark:text-jacarta-300">
-                      Set this item as explicit and sensitive content.
-                      <Tippy
-                        content={
-                          <span>
-                            Setting your asset as explicit and sensitive
-                            content, like pornography and other not safe for
-                            work (NSFW) content, will protect users with safe
-                            search while browsing Xhibiter
-                          </span>
-                        }
-                      >
-                        <span className="inline-block">
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 24 24"
-                            width="24"
-                            height="24"
-                            className="dark:fill-jacarta-300 fill-jacarta-500 ml-2 -mb-[2px] h-4 w-4"
-                          >
-                            <path fill="none" d="M0 0h24v24H0z"></path>
-                            <path d="M12 22C6.477 22 2 17.523 2 12S6.477 2 12 2s10 4.477 10 10-4.477 10-10 10zm0-2a8 8 0 1 0 0-16 8 8 0 0 0 0 16zM11 7h2v2h-2V7zm0 4h2v6h-2v-6z"></path>
-                          </svg>
-                        </span>
-                      </Tippy>
-                    </p>
-                  </div>
-                </div>
-                <input
-                  type="checkbox"
-                  value="checkbox"
-                  name="check"
-                  className="checked:bg-accent checked:focus:bg-accent checked:hover:bg-accent after:bg-jacarta-400 bg-jacarta-100 relative h-6 w-[2.625rem] cursor-pointer appearance-none rounded-full border-none after:absolute after:top-[0.1875rem] after:left-[0.1875rem] after:h-[1.125rem] after:w-[1.125rem] after:rounded-full after:transition-all checked:bg-none checked:after:left-[1.3125rem] checked:after:bg-white focus:ring-transparent focus:ring-offset-0"
-                />
-              </div>
-            </div>
-            */}
-            {/* <!-- Supply --> */}
-            {/* 
-            <div className="mb-6">
-              <label
-                htmlFor="item-supply"
-                className="font-display text-jacarta-700 mb-2 block dark:text-white"
-              >
-                Supply
-              </label>
-
-              <div className="mb-3 flex items-center space-x-2">
-                <p className="dark:text-jacarta-300 text-2xs">
-                  The number of items that can be minted. No gas cost to you!
-                  <Tippy
-                    content={
-                      <span>
-                        Setting your asset as explicit and sensitive content,
-                        like pornography and other not safe for work (NSFW)
-                        content, will protect users with safe search while
-                        browsing Xhibiter.
-                      </span>
-                    }
-                  >
-                    <span className="inline-block">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 24 24"
-                        width="24"
-                        height="24"
-                        className="dark:fill-jacarta-300 fill-jacarta-500 ml-1 -mb-[3px] h-4 w-4"
-                      >
-                        <path fill="none" d="M0 0h24v24H0z"></path>
-                        <path d="M12 22C6.477 22 2 17.523 2 12S6.477 2 12 2s10 4.477 10 10-4.477 10-10 10zm0-2a8 8 0 1 0 0-16 8 8 0 0 0 0 16zM11 7h2v2h-2V7zm0 4h2v6h-2v-6z"></path>
-                      </svg>
-                    </span>
-                  </Tippy>
-                </p>
-              </div>
-
-              <input
-                type="text"
-                id="item-supply"
-                className="dark:bg-jacarta-700 border-jacarta-100 hover:ring-accent/10 focus:ring-accent dark:border-jacarta-600 dark:placeholder:text-jacarta-300 w-full rounded-lg py-3 px-3 hover:ring-2 dark:text-white"
-                placeholder="1"
-              />
-            </div>
-            */}
-            {/* <!-- Blockchain --> */}
-            {/* 
-            <div className="mb-6">
-              <label
-                htmlFor="item-supply"
-                className="font-display text-jacarta-700 mb-2 block dark:text-white"
-              >
-                Blockchain
-              </label>
-
-              <div className="dropdown relative mb-4 cursor-pointer ">
-                <Collection_dropdown2 data={EthereumDropdown2_data} />
-              </div>
-            </div>
-            */}
-            {/* <!-- Freeze metadata --> */}
-            {/* 
-            <div className="mb-6">
-              <div className="mb-2 flex items-center space-x-2">
-                <label
-                  htmlFor="item-freeze-metadata"
-                  className="font-display text-jacarta-700 block dark:text-white"
-                >
-                  Freeze metadata
-                </label>
-
-                <Tippy
-                  content={
-                    <span className="bg-jacarta-300">
-                      Setting your asset as explicit and sensitive content, like
-                      pornography and other not safe for work (NSFW) content,
-                      will protect users with safe search while browsing
-                      Xhibiter.
-                    </span>
-                  }
-                >
-                  <span className="inline-block">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 24 24"
-                      width="24"
-                      height="24"
-                      className="dark:fill-jacarta-300 fill-jacarta-500 mb-[2px] h-5 w-5"
-                    >
-                      <path fill="none" d="M0 0h24v24H0z"></path>
-                      <path d="M12 22C6.477 22 2 17.523 2 12S6.477 2 12 2s10 4.477 10 10-4.477 10-10 10zm0-2a8 8 0 1 0 0-16 8 8 0 0 0 0 16zM11 7h2v2h-2V7zm0 4h2v6h-2v-6z"></path>
-                    </svg>
-                  </span>
-                </Tippy>
-              </div>
-
-              <p className="dark:text-jacarta-300 text-2xs mb-3">
-                Freezing your metadata will allow you to permanently lock and
-                store all of this
-                {"item's"} content in decentralized file storage.
-              </p>
-
-              <input
-                type="text"
-                disabled
-                id="item-freeze-metadata"
-                className="dark:bg-jacarta-700 bg-jacarta-50 border-jacarta-100 dark:border-jacarta-600 dark:placeholder:text-jacarta-300 w-full rounded-lg py-3 px-3 dark:text-white"
-                placeholder="To freeze your metadata, you must create your item first."
-              />
-            </div>
-            */}
             {/* <!-- Submit --> */}
             <div className="flex items-center gap-4">
               {!validate && (
-                <button
-                  className="bg-accent cursor-pointer rounded-full py-3 px-8 text-center font-semibold text-white transition-all"
-                  onClick={handleSubmit}
-                >
+                <button className="bg-accent cursor-pointer rounded-full py-3 px-8 text-center font-semibold text-white transition-all" onClick={handleSubmit}>
                   Validate
                 </button>
               )}
               {validate && (
-                <button
-                  className="bg-accent cursor-pointer rounded-full py-3 px-8 text-center font-semibold text-white transition-all"
-                  onClick={handleSubmit}
-                >
+                <button className="bg-accent cursor-pointer rounded-full py-3 px-8 text-center font-semibold text-white transition-all" onClick={handleSubmit}>
                   Revalidate
                 </button>
               )}
               {validate && (
                 <Web3Button
-                  contractAddress="0xE3aE42A640C0C00F8e0cB6C3B1Df50a0b45d6B44"
+                  contractAddress="0xA82B4bBc8e6aC3C100bBc769F4aE0360E9ac9FC3"
                   action={() =>
                     mutateAsync({
-                      args: [
-                        Object.values(JSON.parse(args[0])),
-                        Object.values(JSON.parse(args[1])),
-                      ],
+                      args: [Object.values(JSON.parse(args[0])), Object.values(JSON.parse(args[1]))],
                     })
                   }
                   className="!bg-accent !cursor-pointer !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all"
@@ -1093,18 +599,9 @@ const Create = () => {
               {jsonIpfsLink && (
                 <div className={`${jsonIpfsLink && "flex flex-col gap-4"}`}>
                   <div className="flex items-center gap-2">
-                    <p className="font-light">
-                      The item has been uploaded to IPFS.
-                    </p>
+                    <p className="font-light">The item has been uploaded to IPFS.</p>
                     <button onClick={copyToClipboard}>
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        strokeWidth={1.5}
-                        stroke="currentColor"
-                        className="w-5 h-5 text-gray-500 active:text-black"
-                      >
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 text-gray-500 active:text-black">
                         <path
                           strokeLinecap="round"
                           strokeLinejoin="round"

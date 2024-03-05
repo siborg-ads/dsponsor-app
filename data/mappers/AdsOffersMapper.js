@@ -3,10 +3,11 @@ import { fetchDataFromIPFS } from "../services/ipfsService";
 import { ethers } from "ethers"; // Assurez-vous d'avoir installé ethers
 
 const AdsOffersMapper = async (graphData) => {
-  const data = graphData.data.newDSponsorNFTs;
+  
+  
   const mappedData = [];
 
-  for (const element of data) {
+  for (const element of graphData) {
     const IPFSLink = element.contractURI;
     const destructuredIPFSResult = await fetchDataFromIPFS(IPFSLink);
 
@@ -16,8 +17,10 @@ const AdsOffersMapper = async (graphData) => {
       }
 
       const adsOffer = new AdsOfferModel({
-        id: "",
+        id: element.id || 0,
+        OfferId: element.offerId || 0,
         Name: element.name || "Default",
+        ContractAddress: element.contractAddr || "Default",
         OwnerAddress: element.owner || "Default",
         OwnerName: element.ownerName || "Default",
         Image: destructuredIPFSResult.image && destructuredIPFSResult.image[0] ? destructuredIPFSResult.image[0] : "Default",
@@ -27,6 +30,7 @@ const AdsOffersMapper = async (graphData) => {
         CurrencyAddress: element.currencies[0] || "Default",
         CurrencyName: destructuredIPFSResult.currencyName || "Default",
         Price: destructuredIPFSResult.price || 0,
+        BigIntPrice: element.prices || 0,
         Royalties: element.royaltyBps ? element.royaltyBps / 100 : 0,
         NumberTokenAllowed: element.allowedTokenIds ? element.allowedTokenIds.length : 0,
       });
@@ -36,6 +40,8 @@ const AdsOffersMapper = async (graphData) => {
       console.error("Une erreur est survenue:", error);
     }
   }
+ 
+  return mappedData;
 };
 
 export default AdsOffersMapper;
