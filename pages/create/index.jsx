@@ -518,11 +518,19 @@ const Create = () => {
                         </label>
                         <div className="flex gap-4 items-center text-jacarta-700 dark:text-white">
                           <div className="flex flex-col justify-center items-center gap-1">
-                            <DatePicker selected={startDate} onChange={(date) => setStartDate(date)} className="text-jacarta-700 dark:text-white" />
+                            <DatePicker
+                              selected={startDate}
+                              onChange={(date) => setStartDate(date)}
+                              className="dark:bg-jacarta-700 border-jacarta-100 hover:ring-accent/10 focus:ring-accent dark:border-jacarta-600 dark:placeholder:text-jacarta-300 w-full rounded-lg py-3 px-3 hover:ring-2 dark:text-white"
+                            />
                             <span className="text-jacarta-700 dark:text-white">Start date</span>
                           </div>
                           <div className="flex flex-col justify-center items-center gap-1">
-                            <DatePicker selected={endDate} onChange={(date) => setEndDate(date)} className="text-jacarta-700 dark:text-white" />
+                            <DatePicker
+                              selected={endDate}
+                              onChange={(date) => setEndDate(date)}
+                              className="dark:bg-jacarta-700 border-jacarta-100 hover:ring-accent/10 focus:ring-accent dark:border-jacarta-600 dark:placeholder:text-jacarta-300 w-full rounded-lg py-3 px-3 hover:ring-2 dark:text-white"
+                            />
                             <span className="text-jacarta-700 dark:text-white">End date</span>
                           </div>
                         </div>
@@ -537,9 +545,14 @@ const Create = () => {
                           <span className="text-red">*</span>
                         </label>
                         <p className="dark:text-jacarta-300 text-2xs mb-3">Warning: d&gt;sponsor works with a fixed supply of ad spaces. You won&apos;t be able to modify this value. Max : 25</p>
-                        <div className="flex gap-4 items-center text-jacarta-700 dark:text-white">
+                        <div className="flex gap-4 justify-center items-center w-full text-jacarta-700 dark:text-white">
                           <label htmlFor="numberSelect">Select a number:</label>
-                          <select id="numberSelect" value={selectedNumber} onChange={handleNumberChange}>
+                          <select
+                            id="numberSelect"
+                            value={selectedNumber}
+                            onChange={handleNumberChange}
+                            className="dark:bg-jacarta-700 border-jacarta-100 hover:ring-accent/10 focus:ring-accent dark:border-jacarta-600 dark:placeholder:text-jacarta-300  rounded-lg py-3 px-15 hover:ring-2 dark:text-white"
+                          >
                             {[...Array(25)].map((_, index) => (
                               <option key={index + 1} value={index + 1}>
                                 {index + 1}
@@ -564,34 +577,39 @@ const Create = () => {
                           EUR payment means you&apos;ll receive JEUR tokens (1 JEUR = 1€). USD payment means you&apos;ll receive JUSD tokens (1 JUSD = 1$). You&apos;ll be able to cash out via wire transfer with a service
                           like MtPelerin. You can change the pricing later.
                         </p>
-                        <div className="flex flex-col gap-4 items-center text-jacarta-700 dark:text-white">
-                          <input id="numberInput" type="number" min="0.01" step="0.01" value={selectedUnitPrice} onChange={handleUnitPriceChange} placeholder="Unit selling price" />
+                        <div className="flex  gap-4 items-center text-jacarta-700 dark:text-white">
+                          <input
+                            id="numberInput"
+                            type="number"
+                            min="0.01"
+                            step="0.01"
+                            value={selectedUnitPrice}
+                            onChange={handleUnitPriceChange}
+                            placeholder="Unit selling price"
+                            className="dark:bg-jacarta-700 border-jacarta-100 hover:ring-accent/10 focus:ring-accent dark:border-jacarta-600 dark:placeholder:text-jacarta-300  rounded-lg py-3 px-3 hover:ring-2 dark:text-white"
+                          />
                           <div className="flex gap-4">
-                            <div className="flex items-center gap-1">
-                              <input type="radio" id="jeur" name="currency" value="JEUR" checked={selectedCurrency === "JEUR"} onChange={handleCurrencyChange} />
-                              <label htmlFor="jeur">JEUR</label>
-                            </div>
-
-                            <div className="flex items-center gap-1">
-                              <input type="radio" id="usdc" name="currency" value="USDC" checked={selectedCurrency === "USDC"} onChange={handleCurrencyChange} />
-                              <label htmlFor="usdc">USDC</label>
-                            </div>
-
-                            <div className="flex items-center gap-1">
-                              <input type="radio" id="matic" name="currency" value="MATIC" checked={selectedCurrency === "MATIC"} onChange={handleCurrencyChange} />
-                              <label htmlFor="matic">MATIC</label>
-                            </div>
-
-                            <div className="flex items-center gap-1">
-                              <input type="radio" id="weth" name="currency" value="WETH" checked={selectedCurrency === "WETH"} onChange={handleCurrencyChange} />
-                              <label htmlFor="weth">WETH</label>
-                            </div>
-
-                            <div className="flex items-center gap-1">
-                              <input type="radio" id="custom" name="currency" value="custom" checked={selectedCurrency === "custom"} onChange={handleCurrencyChange} />
-                              <label htmlFor="custom">Custom</label>
-                              <input className="ml-2" type="text" id="customContract" name="customContract" placeholder="Contract address" onChange={handleCustomContractChange} />
-                            </div>
+                            <select
+                              id="currency"
+                              value={selectedCurrency}
+                              onChange={handleCurrencyChange}
+                              className="dark:bg-jacarta-700 border-jacarta-100 hover:ring-accent/10 focus:ring-accent dark:border-jacarta-600 dark:placeholder:text-jacarta-300 w-full rounded-lg py-3 px-5 hover:ring-2 dark:text-white"
+                            >
+                              <option value="JEUR">JEUR</option>
+                              <option value="USDC">USDC</option>
+                              <option value="MATIC">MATIC</option>
+                              <option value="WETH">WETH</option>
+                              <option value="custom">Custom</option>
+                            </select>
+                            {selectedCurrency === "custom" && (
+                              <input
+                                type="text"
+                                value={customContract}
+                                onChange={handleCustomContractChange}
+                                placeholder="Contract address"
+                                className="dark:bg-jacarta-700 border-jacarta-100 hover:ring-accent/10 focus:ring-accent dark:border-jacarta-600 dark:placeholder:text-jacarta-300 w-full rounded-lg py-3 px-3 hover:ring-2 dark:text-white"
+                              />
+                            )}
                           </div>
                         </div>
                         <p className="dark:text-jacarta-300 text-2xs mt-3">You&apos;ll earn up to 1600 USDC. As d&gt;sponsor charges a fee of 4%, sponsors will pay 208 USDC.</p>
@@ -609,7 +627,16 @@ const Create = () => {
                           change this value pricing later.
                         </p>
                         <div className="flex  gap-4 items-center text-jacarta-700 dark:text-white">
-                          <input id="numberInput" type="number" min="0" max="100" value={selectedRoyalties} onChange={handleRoyaltiesChange} placeholder="Royalties" />
+                          <input
+                            id="numberInput"
+                            type="number"
+                            min="0"
+                            max="100"
+                            value={selectedRoyalties}
+                            onChange={handleRoyaltiesChange}
+                            placeholder="Royalties"
+                            className="dark:bg-jacarta-700 border-jacarta-100 hover:ring-accent/10 focus:ring-accent dark:border-jacarta-600 dark:placeholder:text-jacarta-300  rounded-lg py-3 px-15 hover:ring-2 dark:text-white"
+                          />
                           <span>%</span>
                         </div>
                         {royaltyError && <p className="text-red-500">{royaltyError}</p>}
