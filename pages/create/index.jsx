@@ -7,6 +7,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import { useAddress, useSwitchChain, useContract, useContractWrite, Web3Button, useStorageUpload, useTokenDecimals, CheckoutWithCard, CheckoutWithEth } from "@thirdweb-dev/react";
 import { Mumbai, Polygon } from "@thirdweb-dev/chains";
 import styles from "../../styles/createPage/style.module.scss";
+import PreviewModal from "../../components/modal/previewModal";
 const { BigNumber } = require("ethers");
 
 const Create = () => {
@@ -37,6 +38,7 @@ const Create = () => {
   const [jsonIpfsLink, setJsonIpfsLink] = useState(null);
   const [validate, setValidate] = useState(false);
   const [args, setArgs] = useState([]);
+  const [showPreviewModal, setShowPreviewModal] = useState(false);
 
   const handleNumberChange = (e) => {
     setSelectedNumber(parseInt(e.target.value, 10));
@@ -166,7 +168,11 @@ const Create = () => {
   const copyToClipboard = () => {
     navigator.clipboard.writeText(jsonIpfsLink);
   };
-
+  const handlePreviewModal = () => {
+    setShowPreviewModal(!showPreviewModal);
+    
+  };
+  
   const handleSubmit = async () => {
     if (!validateInputs()) {
       return;
@@ -493,18 +499,7 @@ const Create = () => {
                         </div>
                         {imageError && <p className="text-red-500">{imageError}</p>}
                       </div>
-                      {/* <!-- Offer preview --> */}
-                      <div className={`${isOfferPreviewDisplayed ? "flex" : "hidden"} justify-center`}>
-                        {previewImage && (
-                          <div className="mb-6  flex-col items-center ">
-                            <label htmlFor="item-description" className="font-display text-jacarta-700 mb-2 block dark:text-white">
-                              Offer preview
-                            </label>
-                            <p className="dark:text-jacarta-300 text-2xs mb-3">Your offer will look like this.</p>
-                            <Image src={previewImage} width={300} height={100} alt="Preview" />
-                          </div>
-                        )}
-                      </div>
+                      
                     </div>
                   </div>
                   {/* Step 3 */}
@@ -661,6 +656,9 @@ const Create = () => {
                   <button type="button" onClick={handleNextClick} className={`${styles.form__nav__next} ${currentSlide === numSteps - 1 ? "disabled" : ""}`}>
                     Next
                   </button>
+                  <button type="button" className="bg-accent cursor-pointer rounded-full py-3 px-8 text-center font-semibold text-white transition-all" onClick={handlePreviewModal}>
+                    Show preview
+                  </button>
                 </div>
               </form>
             </div>
@@ -718,6 +716,26 @@ const Create = () => {
           )}
         </div>
       </section>
+      <div className={showPreviewModal ? "modal fade show block" : "modal fade"}>
+        <PreviewModal
+          handlePreviewModal={handlePreviewModal}
+          handleSubmit={handleSubmit}
+          name={name}
+          link={link}
+          file={file}
+          description={description}
+          startDate={startDate}
+          endDate={endDate}
+          selectedNumber={selectedNumber}
+          selectedUnitPrice={selectedUnitPrice}
+          selectedCurrency={selectedCurrency}
+          customContract={customContract}
+          selectedRoyalties={selectedRoyalties}
+          previewImage={previewImage}
+          validate={validate}
+
+        />
+      </div>
       {/* <!-- end create --> */}
     </div>
   );
