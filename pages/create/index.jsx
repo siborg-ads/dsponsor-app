@@ -17,14 +17,7 @@ const Create = () => {
   const [uploadUrl, setUploadUrl] = useState(null);
   const [name, setName] = useState(null);
   const [link, setLink] = useState(null);
-  const [imageError, setImageError] = useState(null);
-  const [nameError, setNameError] = useState(null);
-  const [linkError, setLinkError] = useState(null);
-  const [descriptionError, setDescriptionError] = useState(null);
-  const [startDateError, setStartDateError] = useState(null);
-  const [endDateError, setEndDateError] = useState(null);
-  const [currencyError, setCurrencyError] = useState(null);
-  const [royaltyError, setRoyaltyError] = useState(null);
+  const [errors, setErrors] = useState({});
   const [ipfsLink, setIpfsLink] = useState(null);
   const [description, setDescription] = useState(null);
   const [startDate, setStartDate] = useState(new Date());
@@ -32,7 +25,7 @@ const Create = () => {
   const [previewImage, setPreviewImage] = useState(null);
   const [selectedNumber, setSelectedNumber] = useState(1);
   const [selectedUnitPrice, setSelectedUnitPrice] = useState(200);
-  const [selectedCurrency, setSelectedCurrency] = useState(null);
+  const [selectedCurrency, setSelectedCurrency] = useState("JEUR");
   const [customContract, setCustomContract] = useState(null);
   const [selectedRoyalties, setSelectedRoyalties] = useState(10);
   const [jsonIpfsLink, setJsonIpfsLink] = useState(null);
@@ -47,7 +40,6 @@ const Create = () => {
   const handleUnitPriceChange = (e) => {
     const price = parseFloat(e.target.value);
     if (!isNaN(price)) {
-      // Vérifiez que la valeur convertie est un nombre
       setSelectedUnitPrice(price);
     }
   };
@@ -89,79 +81,66 @@ const Create = () => {
 
   const validateInputs = () => {
     let isValid = true;
+    let newErrors = {}; // Objet pour stocker les nouvelles erreurs
 
     if (!file) {
-      setImageError("Image is missing.");
+      newErrors.imageError = "Image is missing.";
       isValid = false;
-    } else {
-      setImageError(null);
     }
 
     if (!name) {
-      setNameError("Name is missing.");
+      newErrors.nameError = "Name is missing.";
       isValid = false;
-    } else {
-      setNameError(null);
     }
 
     if (!link || !isValidURL(link)) {
-      setLinkError("The link is missing or invalid.");
+      newErrors.linkError = "The link is missing or invalid.";
       isValid = false;
-    } else {
-      setLinkError(null);
     }
 
     if (!description) {
-      setDescriptionError("Description is missing.");
+      newErrors.descriptionError = "Description is missing.";
       isValid = false;
-    } else {
-      setDescriptionError(null);
     }
 
     const currentDate = new Date();
     const yesterday = new Date(currentDate.setDate(currentDate.getDate() - 1));
 
     if (!startDate) {
-      setStartDateError("Start date is missing.");
+      newErrors.startDateError = "Start date is missing.";
       isValid = false;
     } else if (new Date(startDate) < yesterday) {
-      setStartDateError("Start date cannot be in the past.");
+      newErrors.startDateError = "Start date cannot be in the past.";
       isValid = false;
-    } else {
-      setStartDateError(null);
     }
 
     if (!endDate) {
-      setEndDateError("End date is missing.");
+      newErrors.endDateError = "End date is missing.";
       isValid = false;
     } else if (new Date(endDate) < yesterday) {
-      setEndDateError("End date cannot be in the past.");
+      newErrors.endDateError = "End date cannot be in the past.";
       isValid = false;
-    } else {
-      setEndDateError(null);
     }
 
     if (selectedUnitPrice < 0.01) {
-      setCurrencyError("Unit price must be at least 0.01.");
+      newErrors.unitPriceError = "Unit price must be at least 0.01.";
       isValid = false;
-    } else {
-      setCurrencyError(null);
     }
-
-    if (!selectedCurrency) {
-      setCurrencyError("Currency is missing or invalid.");
+    if (selectedNumber < 0) {
+      newErrors.numberError = "Number of ad spaces is missing or invalid.";
       isValid = false;
-    } else {
-      setCurrencyError(null);
+    }
+    if (!selectedCurrency) {
+      newErrors.currencyError = "Currency is missing or invalid.";
+      isValid = false;
     }
 
     if (selectedRoyalties < 0 || selectedRoyalties > 100) {
-      setRoyaltyError("Royalties are missing or invalid. They should be between 0% and 100%.");
+      newErrors.royaltyError = "Royalties are missing or invalid. They should be between 0% and 100%.";
       isValid = false;
-    } else {
-      setRoyaltyError(null);
     }
-
+setValidate(isValid);
+    setErrors(newErrors);
     return isValid;
   };
 
@@ -170,9 +149,9 @@ const Create = () => {
   };
   const handlePreviewModal = () => {
     setShowPreviewModal(!showPreviewModal);
-    
+    validateInputs();
   };
-  
+
   const handleSubmit = async () => {
     if (!validateInputs()) {
       return;
@@ -209,8 +188,20 @@ const Create = () => {
     });
 
     setJsonIpfsLink(jsonUrl[0]);
+    const preparedArgs = {
+      // Supposons que `args` est préparé correctement et contient toutes les données nécessaires
+      args: [Object.values(JSON.parse(args[0])), Object.values(JSON.parse(args[1]))],
+    };
+    try {
+      const result = await mutateAsync(preparedArgs);
+      console.log("Mutation successful", result);
 
-    setValidate(true);
+      // Gérer le succès, par exemple en naviguant vers une nouvelle page ou en affichant un message de succès
+    } catch (error) {
+      console.error("Failed to write contract", error);
+      // Gérer l'erreur, par exemple en affichant un message d'erreur
+    }
+
   };
 
   const onUpload = (logo, updatedName, updatedLink) => {
@@ -219,26 +210,7 @@ const Create = () => {
     setLink(updatedLink);
   };
 
-  const popupItemData = [
-    {
-      id: 1,
-      name: "proparties",
-      text: "Textual traits that show up as rectangles.",
-      icon: "proparties-icon",
-    },
-    {
-      id: 2,
-      name: "levels",
-      text: "Numerical traits that show as a progress bar.",
-      icon: "level-icon",
-    },
-    {
-      id: 3,
-      name: "stats",
-      text: "Numerical traits that just show as numbers.",
-      icon: "stats-icon",
-    },
-  ];
+
 
   const { contract: JEURTokenContract } = useContract("0xd409F17095a370800A9C352124C6a1e82695203E", "token"); // mumbai
 
@@ -338,19 +310,17 @@ const Create = () => {
   const bulletsRef = useRef([]);
   const [isOfferPreviewDisplayed, setIsOfferPreviewDisplayed] = useState(false);
 
-  // Puisque nous avons trois étapes dans le slider
   const numSteps = 4;
 
   const animateSlider = () => {
     if (stepContainerRef.current) {
       const stepWidth = 750 - 20;
-      console.log(currentSlide);
       if (currentSlide === 1 && previewImage) setIsOfferPreviewDisplayed(true);
       if (currentSlide !== 1 && previewImage) setIsOfferPreviewDisplayed(false);
 
       stepContainerRef.current.style.transform = `translateX(${-stepWidth * currentSlide}px)`;
     }
-    // Ajuster les indicateurs d'étape active
+
     bulletsRef.current.forEach((bullet, index) => {
       if (bullet) {
         bullet.classList.toggle(styles["form__bullet--active"], index === currentSlide);
@@ -438,7 +408,6 @@ const Create = () => {
                           onChange={(e) => setName(e.target.value)}
                           required
                         />
-                        {nameError && <p className="text-red-500">{nameError}</p>}
                       </div>
                       {/* <!-- Description --> */}
                       <div className="mb-6">
@@ -453,7 +422,6 @@ const Create = () => {
                           onChange={(e) => setDescription(e.target.value)}
                           placeholder="Provide a detailed description of your item."
                         ></textarea>
-                        {descriptionError && <p className="text-red-500">{descriptionError}</p>}
                       </div>
                     </div>
                   </div>
@@ -474,7 +442,6 @@ const Create = () => {
                           placeholder="https://yoursite.com"
                           onChange={(e) => setLink(e.target.value)}
                         />
-                        {linkError && <p className="text-red-500">{linkError}</p>}
                       </div>
                       {/* <!-- File Upload --> */}
                       <div className="mb-6 flex items-center justify-center flex-col">
@@ -483,7 +450,11 @@ const Create = () => {
                           <span className="text-red">*</span>
                         </label>
 
-                        {file ? <p className="dark:text-jacarta-300 text-2xs mb-3">successfully uploaded : {file.name}</p> : <p className="dark:text-jacarta-300 text-2xs mb-3">Drag or choose your file to upload</p>}
+                        {file ? (
+                          <p className="dark:text-jacarta-300 text-2xs mb-3">successfully uploaded : {file.name}</p>
+                        ) : (
+                          <p className="dark:text-jacarta-300 text-jacarta-400 text-2xs mb-3">Drag or choose your file to upload</p>
+                        )}
 
                         <div className="dark:bg-jacarta-700 dark:border-jacarta-600 border-jacarta-100 group relative flex max-w-md flex-col items-center justify-center rounded-lg border-2 border-dashed bg-white py-20 px-5 text-center">
                           <div className="relative z-10 cursor-pointer px-16">
@@ -497,9 +468,7 @@ const Create = () => {
                             <FileUploader handleChange={handleLogoUpload} name="file" types={fileTypes} classes="file-drag" maxSize={100} minSize={0} />
                           </div>
                         </div>
-                        {imageError && <p className="text-red-500">{imageError}</p>}
                       </div>
-                      
                     </div>
                   </div>
                   {/* Step 3 */}
@@ -529,8 +498,6 @@ const Create = () => {
                             <span className="text-jacarta-700 dark:text-white">End date</span>
                           </div>
                         </div>
-                        {startDateError && <p className="text-red-500">{startDateError}</p>}
-                        {endDateError && <p className="text-red-500">{endDateError}</p>}
                       </div>
 
                       {/* <!-- Number of ad spaces --> */}
@@ -539,7 +506,7 @@ const Create = () => {
                           Number of ad spaces for this offer
                           <span className="text-red">*</span>
                         </label>
-                        <p className="dark:text-jacarta-300 text-2xs mb-3">Warning: d&gt;sponsor works with a fixed supply of ad spaces. You won&apos;t be able to modify this value. Max : 25</p>
+                        <p className="dark:text-jacarta-300 text-jacarta-400 text-2xs mb-3">Warning: d&gt;sponsor works with a fixed supply of ad spaces. You won&apos;t be able to modify this value. Max : 25</p>
                         <div className="flex gap-4 justify-center items-center w-full text-jacarta-700 dark:text-white">
                           <label htmlFor="numberSelect">Select a number:</label>
                           <select
@@ -568,7 +535,7 @@ const Create = () => {
                           Unit selling price
                           <span className="text-red">*</span>
                         </label>
-                        <p className="dark:text-jacarta-300 text-2xs mb-3">
+                        <p className="dark:text-jacarta-300 text-jacarta-400 text-2xs mb-3">
                           EUR payment means you&apos;ll receive JEUR tokens (1 JEUR = 1€). USD payment means you&apos;ll receive JUSD tokens (1 JUSD = 1$). You&apos;ll be able to cash out via wire transfer with a service
                           like MtPelerin. You can change the pricing later.
                         </p>
@@ -607,8 +574,7 @@ const Create = () => {
                             )}
                           </div>
                         </div>
-                        <p className="dark:text-jacarta-300 text-2xs mt-3">You&apos;ll earn up to 1600 USDC. As d&gt;sponsor charges a fee of 4%, sponsors will pay 208 USDC.</p>
-                        {currencyError && <p className="text-red-500">{currencyError}</p>}
+                        <p className="dark:text-jacarta-300 text-jacarta-400 text-2xs mt-3">You&apos;ll earn up to 1600 USDC. As d&gt;sponsor charges a fee of 4%, sponsors will pay 208 USDC.</p>
                       </div>
 
                       {/* <!-- Royalties --> */}
@@ -617,7 +583,7 @@ const Create = () => {
                           Royalties
                           <span className="text-red">*</span>
                         </label>
-                        <p className="dark:text-jacarta-300 text-2xs mb-3">
+                        <p className="dark:text-jacarta-300 text-jacarta-400  text-2xs mb-3">
                           Sponsors can sell an ad space ownership on the marketplace. Define the fee you want to get from secondary sales. Sponsors might refuse to buy an ad space if your royalty fee is too high. You can
                           change this value pricing later.
                         </p>
@@ -634,7 +600,6 @@ const Create = () => {
                           />
                           <span>%</span>
                         </div>
-                        {royaltyError && <p className="text-red-500">{royaltyError}</p>}
                       </div>
                     </div>
                   </div>
@@ -653,12 +618,15 @@ const Create = () => {
                   <button type="button" onClick={handlePrevClick} className={`${styles.form__nav__prev} ${currentSlide === 0 ? "disabled" : ""}`}>
                     Back
                   </button>
-                  <button type="button" onClick={handleNextClick} className={`${styles.form__nav__next} ${currentSlide === numSteps - 1 ? "disabled" : ""}`}>
-                    Next
-                  </button>
-                  <button type="button" className="bg-accent cursor-pointer rounded-full py-3 px-8 text-center font-semibold text-white transition-all" onClick={handlePreviewModal}>
-                    Show preview
-                  </button>
+                  {currentSlide === numSteps - 1 ? (
+                    <button type="button" className="bg-accent cursor-pointer rounded-full py-3 px-3 text-end font-semibold text-white transition-all" onClick={handlePreviewModal}>
+                      Show preview
+                    </button>
+                  ) : (
+                    <button type="button" onClick={handleNextClick} className={`${styles.form__nav__next} ${currentSlide === numSteps - 1 ? "disabled" : ""}`}>
+                      Next
+                    </button>
+                  )}
                 </div>
               </form>
             </div>
@@ -716,26 +684,29 @@ const Create = () => {
           )}
         </div>
       </section>
-      <div className={showPreviewModal ? "modal fade show block" : "modal fade"}>
-        <PreviewModal
-          handlePreviewModal={handlePreviewModal}
-          handleSubmit={handleSubmit}
-          name={name}
-          link={link}
-          file={file}
-          description={description}
-          startDate={startDate}
-          endDate={endDate}
-          selectedNumber={selectedNumber}
-          selectedUnitPrice={selectedUnitPrice}
-          selectedCurrency={selectedCurrency}
-          customContract={customContract}
-          selectedRoyalties={selectedRoyalties}
-          previewImage={previewImage}
-          validate={validate}
+      {showPreviewModal && (
+        <div className="modal fade show bloc">
+          <PreviewModal
+            handlePreviewModal={handlePreviewModal}
+            handleSubmit={handleSubmit}
+            name={name}
+            link={link}
+            file={file}
+            description={description}
+            startDate={startDate}
+            endDate={endDate}
+            selectedNumber={selectedNumber}
+            selectedUnitPrice={selectedUnitPrice}
+            selectedCurrency={selectedCurrency}
+            customContract={customContract}
+            selectedRoyalties={selectedRoyalties}
+            previewImage={previewImage}
+            validate={validate}
+            errors={errors}
+          />
+        </div>
+      )}
 
-        />
-      </div>
       {/* <!-- end create --> */}
     </div>
   );

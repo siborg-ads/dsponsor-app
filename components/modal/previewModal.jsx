@@ -19,11 +19,13 @@ const PreviewModal = ({
   selectedRoyalties,
   previewImage,
   validate,
+  errors,
 }) => {
   const formatDate = (date) => {
     return date.toLocaleDateString();
   };
-  const { mutateAsync: upload, isLoading } = useStorageUpload();
+  console.log(validate);
+  console.log(errors);
 
   return (
     <div>
@@ -43,27 +45,36 @@ const PreviewModal = ({
 
           <div className="modal-body p-6 flex gap-4 items-center justify-center">
             <div>
-              <p className="font-display text-jacarta-700  mb-2 block dark:text-white">
-                {" "}
-                <span>Name: {name}</span>{" "}
+              <p className="font-display text-jacarta-700 mb-2 block dark:text-white">
+                <span>Name : {!errors.nameError ? name : <span className="text-red">{errors.nameError}</span>}</span>
               </p>
-              <p className="font-display text-jacarta-700  mb-2 block dark:text-white">Description: {description}</p>
-              <p className="font-display text-jacarta-700  mb-2 block dark:text-white">
-                Link:{" "}
-                <a href={link} target="_blank" rel="noopener noreferrer">
-                  {link}
-                </a>
+              <p className="font-display text-jacarta-700 mb-2 block dark:text-white">Description: {!errors.descriptionError ? description : <span className="text-red">{errors.descriptionError}</span>}</p>
+              <p className="font-display text-jacarta-700 mb-2 block dark:text-white">
+                Link :{" "}
+                {!errors.linkError ? (
+                  <a href={link} target="_blank" rel="noopener noreferrer">
+                    {link}
+                  </a>
+                ) : (
+                  <span className="text-red">{errors.linkError}</span>
+                )}
               </p>
-              <p className="font-display text-jacarta-700  mb-2 block dark:text-white">
-                {" "}
-                <span>Start Date: {formatDate(startDate)}</span>{" "}
+              <p className="font-display text-jacarta-700 mb-2 block dark:text-white">
+                Image preview : <span className="text-red">{errors.imageError}</span>
               </p>
-              <p className="font-display text-jacarta-700  mb-2 block dark:text-white">End Date: {formatDate(endDate)}</p>
-              <p className="font-display text-jacarta-700  mb-2 block dark:text-white">Number of Items: {selectedNumber}</p>
-              <p className="font-display text-jacarta-700  mb-2 block dark:text-white">Unit Price: {selectedUnitPrice}</p>
-              <p className="font-display text-jacarta-700  mb-2 block dark:text-white">Currency: {selectedCurrency}</p>
-              <p className="font-display text-jacarta-700  mb-2 block dark:text-white">Custom Contract: {customContract}</p>
-              <p className="font-display text-jacarta-700  mb-2 block dark:text-white">Royalties: {selectedRoyalties}%</p>
+              <p className="font-display text-jacarta-700 mb-2 block dark:text-white">
+                <span>Start Date : {!errors.startDateError ? formatDate(startDate) : <span className="text-red">{errors.startDateError}</span>}</span>
+              </p>
+              <p className="font-display text-jacarta-700 mb-2 block dark:text-white">End Date : {!errors.endDateError ? formatDate(endDate) : <span className="text-red">{errors.endDateError}</span>}</p>
+              <p className="font-display text-jacarta-700 mb-2 block dark:text-white">Number of Items : {!errors.numberError ? `${selectedNumber}` : <span className="text-red">{errors.numberError}</span>}</p>
+              <p className="font-display text-jacarta-700 mb-2 block dark:text-white">Unit Price : {!errors.unitPriceError ? ` ${selectedUnitPrice}` : <span className="text-red">{errors.unitPriceError}</span>}</p>
+              {customContract ? (
+                <p className="font-display text-jacarta-700 mb-2 block dark:text-white">Custom Contract : {!errors.currencyError ? customContract : <span className="text-red">{errors.currencyError}</span>}</p>
+              ) : (
+                <p className="font-display text-jacarta-700 mb-2 block dark:text-white">Currency : {!errors.currencyError ? ` ${selectedCurrency}` : <span className="text-red">{errors.currencyError}</span>}</p>
+              )}
+
+              <p className="font-display text-jacarta-700 mb-2 block dark:text-white">Royalties : {!errors.royaltyError ? `${selectedRoyalties}%` : <span className="text-red">{errors.royaltyError}</span>}</p>
             </div>
             <div>
               {previewImage && (
@@ -71,8 +82,8 @@ const PreviewModal = ({
                   <label htmlFor="item-description" className="font-display text-jacarta-700 text-center mb-2 block dark:text-white">
                     Offer preview
                   </label>
-                  <div style={{ width: "300px", height: "200px", position: "relative" }}>
-                    <Image src={previewImage} width={300} height={200} alt="Preview" className="object-contain" />
+                  <div style={{ width: "300px", height: "300px", position: "relative" }}>
+                    <Image src={previewImage} width={300} height={200} alt="Preview" className="object-contain h-full" />
                   </div>
                 </div>
               )}
@@ -82,16 +93,7 @@ const PreviewModal = ({
           <div className="modal-footer">
             <div className="flex items-center justify-center space-x-4">
               <div className="flex items-center gap-4">
-                {!validate && (
-                  <button className="bg-accent cursor-pointer rounded-full py-3 px-8 text-center font-semibold text-white transition-all" onClick={handleSubmit}>
-                    Validate
-                  </button>
-                )}
-                {validate && (
-                  <button className="bg-accent cursor-pointer rounded-full py-3 px-8 text-center font-semibold text-white transition-all" onClick={handleSubmit}>
-                    Revalidate
-                  </button>
-                )}
+               
                 {validate && (
                   <Web3Button
                     contractAddress="0xA82B4bBc8e6aC3C100bBc769F4aE0360E9ac9FC3"
