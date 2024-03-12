@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import HeadLine from "../headLine";
 import Auctions_category_data from "../../data/auctions_category_data";
 import Tippy from "@tippyjs/react";
-import Countdown_timer from "../Countdown_timer";
+
 import Auctions_dropdown from "../dropdown/Auctions_dropdown";
 import Link from "next/link";
 import { bidsModalShow } from "../../redux/counterSlice";
@@ -104,7 +104,7 @@ const Auctions_categories = () => {
                           height={800}
                         />
                       </Link>
-                      <Countdown_timer time={+auction_timer} />
+                     
                     </figure>
                     <div className="mt-7 flex items-center justify-between">
                       <Link href={/item/ + itemLink}>

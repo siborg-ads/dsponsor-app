@@ -4242,8 +4242,6 @@ html {
     background-color: rgba(244, 244, 246, var(--tw-bg-opacity));
   }
 
-  
-
   .hover\:bg-jacarta-100:hover {
     --tw-bg-opacity: 1;
     background-color: rgba(231, 232, 236, var(--tw-bg-opacity));
@@ -5617,7 +5615,11 @@ html {
   position: relative;
   z-index: 99999;
 }
-
+.btn-disabled {
+  background-color: rgb(156 163 175);
+  pointer-events: none !important;
+  cursor: pointer !important;
+}
 @layer utilities {
   .swiper-button-next::after,
   .swiper-button-prev::after,

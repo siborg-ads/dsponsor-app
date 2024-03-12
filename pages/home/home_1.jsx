@@ -4,7 +4,7 @@ import {
   Bids,
   Top_collection,
   Tranding_category,
-  NewseLatter,
+ 
 } from "../../components/component";
 import Meta from "../../components/Meta";
 
@@ -16,7 +16,7 @@ const Home_1 = () => {
       <Bids />
       <Top_collection />
       <Tranding_category />
-      <NewseLatter />
+      
     </main>
   );
 };
