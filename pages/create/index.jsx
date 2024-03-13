@@ -8,10 +8,15 @@ import { useAddress, useSwitchChain, useContract, useContractWrite, Web3Button, 
 import { Mumbai, Polygon } from "@thirdweb-dev/chains";
 import styles from "../../styles/createPage/style.module.scss";
 import PreviewModal from "../../components/modal/previewModal";
+import Step_1_Create from "../../components/sliderForm/PageCreate/Step_1_Create";
+import Step_2_Create from "../../components/sliderForm/PageCreate/Step_2_Create";
+import Step_3_Create from "../../components/sliderForm/PageCreate/Step_3_Create";
+import Step_4_Create from "../../components/sliderForm/PageCreate/Step_4_Create";
+import SliderForm from "../../components/sliderForm/sliderForm";
+
 const { BigNumber } = require("ethers");
 
 const Create = () => {
-  const fileTypes = ["JPG", "PNG", "SVG"];
   const [file, setFile] = useState(null);
   const { mutateAsync: upload, isLoading } = useStorageUpload();
   const [name, setName] = useState(null);
@@ -29,6 +34,7 @@ const Create = () => {
   const [validate, setValidate] = useState(false);
   const [showPreviewModal, setShowPreviewModal] = useState(false);
   const [successFullUpload, setSuccessFullUpload] = useState(false);
+  const stepsRef = useRef([]);
 
   const handleNumberChange = (e) => {
     setSelectedNumber(parseInt(e.target.value, 10));
@@ -274,70 +280,11 @@ const Create = () => {
     [JEURdecimals, USDCDecimals, WETHDecimals, MaticDecimals, customDecimals]
   );
 
-  const [currentSlide, setCurrentSlide] = useState(0);
-  const stepContainerRef = useRef(null);
-  const stepsRef = useRef([]);
-  const bulletsRef = useRef([]);
-  const [isOfferPreviewDisplayed, setIsOfferPreviewDisplayed] = useState(false);
+ 
+  
+  
 
-  const numSteps = 4;
-
-  const animateSlider = () => {
-    if (stepContainerRef.current) {
-      const stepWidth = 750 - 20;
-      if (currentSlide === 1 && previewImage) setIsOfferPreviewDisplayed(true);
-      if (currentSlide !== 1 && previewImage) setIsOfferPreviewDisplayed(false);
-
-      stepContainerRef.current.style.transform = `translateX(${-stepWidth * currentSlide}px)`;
-    }
-
-    bulletsRef.current.forEach((bullet, index) => {
-      if (bullet) {
-        bullet.classList.toggle(styles["form__bullet--active"], index === currentSlide);
-      }
-    });
-  };
-
-  useEffect(() => {
-    const updateDimensions = () => {
-      if (stepContainerRef.current) {
-        const stepWidth = 750 - 20;
-
-        stepsRef.current.forEach((step) => {
-          if (step) {
-            step.style.width = `${stepWidth}px`;
-          }
-        });
-
-        stepContainerRef.current.style.width = `${stepWidth * numSteps}px`;
-
-        animateSlider();
-      }
-    };
-
-    updateDimensions();
-    window.addEventListener("resize", updateDimensions);
-
-    return () => {
-      window.removeEventListener("resize", updateDimensions);
-    };
-  }, [currentSlide, numSteps]);
-
-  const handleNextClick = () => {
-    if (currentSlide < numSteps - 1) {
-      setCurrentSlide(currentSlide + 1);
-    }
-  };
-
-  const handlePrevClick = () => {
-    if (currentSlide > 0) {
-      setCurrentSlide(currentSlide - 1);
-    }
-  };
-
-  const handleBulletClick = (index) => {
-    setCurrentSlide(index);
-  };
+ 
   return (
     <div>
       <Meta title="Create || Xhibiter | NFT Marketplace Next.js Template" />
@@ -356,252 +303,36 @@ const Create = () => {
             </p>
           </div>
         </div>
-        <div className={styles.modal__container}>
-          <div className={styles.modal}>
-            <div className={styles.modal__form__container}>
-              <form className={styles.form}>
-                <div className={styles.form__step__container} ref={stepContainerRef}>
-                  {/* Step 1 */}
-                  <div ref={(el) => (stepsRef.current[0] = el)} className={styles.form__step}>
-                    <div className="pr-6 pl-2">
-                      <h3 className="mb-14">Step 1</h3>
-                      {/* <!-- Name --> */}
-                      <div className="mb-6">
-                        <label htmlFor="item-name" className="font-display text-jacarta-700 mb-2 block dark:text-white">
-                          Title<span className="text-red">*</span>
-                        </label>
-                        <input
-                          type="text"
-                          id="item-name"
-                          className="dark:bg-jacarta-700 border-jacarta-100 hover:ring-accent/10 focus:ring-accent dark:border-jacarta-600 dark:placeholder:text-jacarta-300 w-full rounded-lg py-3 px-3 hover:ring-2 dark:text-white"
-                          placeholder="Name"
-                          onChange={(e) => setName(e.target.value)}
-                          required
-                        />
-                      </div>
-                      {/* <!-- Description --> */}
-                      <div className="mb-6">
-                        <label htmlFor="item-description" className="font-display text-jacarta-700 mb-2 block dark:text-white">
-                          Description<span className="text-red">*</span>
-                        </label>
-                        <textarea
-                          id="item-description"
-                          className="dark:bg-jacarta-700 border-jacarta-100 hover:ring-accent/10 focus:ring-accent dark:border-jacarta-600 dark:placeholder:text-jacarta-300 w-full rounded-lg py-3 px-3 hover:ring-2 dark:text-white"
-                          rows="4"
-                          required
-                          onChange={(e) => setDescription(e.target.value)}
-                          placeholder="Provide a detailed description of your item."
-                        ></textarea>
-                      </div>
-                    </div>
-                  </div>
-                  {/* Step 2 */}
-                  <div ref={(el) => (stepsRef.current[1] = el)} className={styles.form__step}>
-                    <div className="pr-6 pl-2">
-                      <h3 className="mb-14">Step 2</h3>
+        <SliderForm styles={styles} handlePreviewModal={handlePreviewModal} stepsRef={stepsRef}>
+          <Step_1_Create stepsRef={stepsRef} styles={styles} setName={setName} setDescription={setDescription} />
 
-                      {/* <!-- External Link --> */}
-                      <div className="mb-6">
-                        <label htmlFor="item-external-link" className="font-display text-jacarta-700 mb-2 block dark:text-white">
-                          Url where your ads will be displayed<span className="text-red">*</span>
-                        </label>
-                        <input
-                          type="url"
-                          id="item-external-link"
-                          className="dark:bg-jacarta-700 border-jacarta-100 hover:ring-accent/10 focus:ring-accent dark:border-jacarta-600 dark:placeholder:text-jacarta-300 w-full rounded-lg py-3 px-3 hover:ring-2 dark:text-white"
-                          placeholder="https://yoursite.com"
-                          onChange={(e) => setLink(e.target.value)}
-                        />
-                      </div>
-                      {/* <!-- File Upload --> */}
-                      <div className="mb-6 flex items-center justify-center flex-col">
-                        <label className="font-display text-jacarta-700 mb-2 block dark:text-white">
-                          Illustration
-                          <span className="text-red">*</span>
-                        </label>
+          <Step_2_Create stepsRef={stepsRef} styles={styles} setLink={setLink} file={file} handleLogoUpload={handleLogoUpload} />
 
-                        {file ? (
-                          <p className="dark:text-jacarta-300 text-2xs mb-3">successfully uploaded : {file.name}</p>
-                        ) : (
-                          <p className="dark:text-jacarta-300 text-jacarta-400 text-2xs mb-3">Drag or choose your file to upload</p>
-                        )}
+          <Step_3_Create
+            stepsRef={stepsRef}
+            styles={styles}
+            startDate={startDate}
+            setStartDate={setStartDate}
+            endDate={endDate}
+            setEndDate={setEndDate}
+            selectedNumber={selectedNumber}
+            handleNumberChange={handleNumberChange}
+          />
 
-                        <div className="dark:bg-jacarta-700 dark:border-jacarta-600 border-jacarta-100 group relative flex max-w-md flex-col items-center justify-center rounded-lg border-2 border-dashed bg-white py-20 px-5 text-center">
-                          <div className="relative z-10 cursor-pointer px-16">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" className="fill-jacarta-500 mb-4 inline-block dark:fill-white">
-                              <path fill="none" d="M0 0h24v24H0z" />
-                              <path d="M16 13l6.964 4.062-2.973.85 2.125 3.681-1.732 1-2.125-3.68-2.223 2.15L16 13zm-2-7h2v2h5a1 1 0 0 1 1 1v4h-2v-3H10v10h4v2H9a1 1 0 0 1-1-1v-5H6v-2h2V9a1 1 0 0 1 1-1h5V6zM4 14v2H2v-2h2zm0-4v2H2v-2h2zm0-4v2H2V6h2zm0-4v2H2V2h2zm4 0v2H6V2h2zm4 0v2h-2V2h2zm4 0v2h-2V2h2z" />
-                            </svg>
-                            <p className="dark:text-jacarta-300 mx-auto max-w-xs text-xs">JPG, PNG, SVG Max size: 20 MB</p>
-                          </div>
-                          <div className="dark:bg-jacarta-600 bg-jacarta-50 absolute inset-4 cursor-pointer rounded opacity-0 group-hover:opacity-100 ">
-                            <FileUploader handleChange={handleLogoUpload} name="file" types={fileTypes} classes="file-drag" maxSize={100} minSize={0} />
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  {/* Step 3 */}
-                  <div ref={(el) => (stepsRef.current[2] = el)} className={styles.form__step}>
-                    <div className="pr-6 pl-2">
-                      <h3 className="mb-14">Step 3</h3>
-                      {/* <!-- Validity period --> */}
-                      <div className="mb-6 flex flex-col items-center">
-                        <label htmlFor="item-description" className="font-display text-jacarta-700 mb-2 block dark:text-white">
-                          Validity period<span className="text-red">*</span>
-                        </label>
-                        <div className="flex gap-4 items-center text-jacarta-700 dark:text-white">
-                          <div className="flex flex-col justify-center items-center gap-1">
-                            <DatePicker
-                              selected={startDate}
-                              onChange={(date) => setStartDate(date)}
-                              className="dark:bg-jacarta-700 border-jacarta-100 hover:ring-accent/10 focus:ring-accent dark:border-jacarta-600 dark:placeholder:text-jacarta-300 w-full rounded-lg py-3 px-3 hover:ring-2 dark:text-white"
-                            />
-                            <span className="text-jacarta-700 dark:text-white">Start date</span>
-                          </div>
-                          <div className="flex flex-col justify-center items-center gap-1">
-                            <DatePicker
-                              selected={endDate}
-                              onChange={(date) => setEndDate(date)}
-                              className="dark:bg-jacarta-700 border-jacarta-100 hover:ring-accent/10 focus:ring-accent dark:border-jacarta-600 dark:placeholder:text-jacarta-300 w-full rounded-lg py-3 px-3 hover:ring-2 dark:text-white"
-                            />
-                            <span className="text-jacarta-700 dark:text-white">End date</span>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* <!-- Number of ad spaces --> */}
-                      <div className="mb-6 flex flex-col items-center">
-                        <label htmlFor="item-description" className="font-display text-jacarta-700 mb-2 block dark:text-white">
-                          Number of ad spaces for this offer
-                          <span className="text-red">*</span>
-                        </label>
-                        <p className="dark:text-jacarta-300 text-jacarta-400 text-2xs mb-3">Warning: d&gt;sponsor works with a fixed supply of ad spaces. You won&apos;t be able to modify this value. Max : 25</p>
-                        <div className="flex gap-4 justify-center items-center w-full text-jacarta-700 dark:text-white">
-                          <label htmlFor="numberSelect">Select a number:</label>
-                          <select
-                            id="numberSelect"
-                            value={selectedNumber}
-                            onChange={handleNumberChange}
-                            className="dark:bg-jacarta-700 border-jacarta-100 hover:ring-accent/10 focus:ring-accent dark:border-jacarta-600 dark:placeholder:text-jacarta-300  rounded-lg py-3 px-15 hover:ring-2 dark:text-white"
-                          >
-                            {[...Array(25)].map((_, index) => (
-                              <option key={index + 1} value={index + 1}>
-                                {index + 1}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  {/* Step 4 */}
-                  <div ref={(el) => (stepsRef.current[3] = el)} className={styles.form__step}>
-                    {/* <!-- Unit selling price --> */}
-                    <div className="pr-6 pl-2">
-                      <h3 className="mb-14">Step 4</h3>
-                      <div className="mb-6 flex flex-col items-center">
-                        <label htmlFor="item-description" className="font-display text-jacarta-700 mb-2 block dark:text-white">
-                          Unit selling price
-                          <span className="text-red">*</span>
-                        </label>
-                        <p className="dark:text-jacarta-300 text-jacarta-400 text-2xs mb-3">
-                          EUR payment means you&apos;ll receive JEUR tokens (1 JEUR = 1€). USD payment means you&apos;ll receive JUSD tokens (1 JUSD = 1$). You&apos;ll be able to cash out via wire transfer with a service
-                          like MtPelerin. You can change the pricing later.
-                        </p>
-                        <div className="flex  gap-4 items-center text-jacarta-700 dark:text-white">
-                          <input
-                            id="numberInput"
-                            type="number"
-                            min="0.01"
-                            step="0.01"
-                            value={selectedUnitPrice}
-                            onChange={handleUnitPriceChange}
-                            placeholder="Unit selling price"
-                            className="dark:bg-jacarta-700 border-jacarta-100 hover:ring-accent/10 focus:ring-accent dark:border-jacarta-600 dark:placeholder:text-jacarta-300  rounded-lg py-3 px-3 hover:ring-2 dark:text-white"
-                          />
-                          <div className="flex gap-4">
-                            <select
-                              id="currency"
-                              value={selectedCurrency}
-                              onChange={handleCurrencyChange}
-                              className="dark:bg-jacarta-700 border-jacarta-100 hover:ring-accent/10 focus:ring-accent dark:border-jacarta-600 dark:placeholder:text-jacarta-300 w-full rounded-lg py-3 px-5 hover:ring-2 dark:text-white"
-                            >
-                              <option value="JEUR">JEUR</option>
-                              <option value="USDC">USDC</option>
-                              <option value="MATIC">MATIC</option>
-                              <option value="WETH">WETH</option>
-                              <option value="custom">Custom</option>
-                            </select>
-                            {selectedCurrency === "custom" && (
-                              <input
-                                type="text"
-                                value={customContract}
-                                onChange={handleCustomContractChange}
-                                placeholder="Contract address"
-                                className="dark:bg-jacarta-700 border-jacarta-100 hover:ring-accent/10 focus:ring-accent dark:border-jacarta-600 dark:placeholder:text-jacarta-300 w-full rounded-lg py-3 px-3 hover:ring-2 dark:text-white"
-                              />
-                            )}
-                          </div>
-                        </div>
-                        <p className="dark:text-jacarta-300 text-jacarta-400 text-2xs mt-3">You&apos;ll earn up to 1600 USDC. As d&gt;sponsor charges a fee of 4%, sponsors will pay 208 USDC.</p>
-                      </div>
-
-                      {/* <!-- Royalties --> */}
-                      <div className="mb-6 flex flex-col items-center">
-                        <label htmlFor="item-description" className="font-display text-jacarta-700 mb-2 block dark:text-white">
-                          Royalties
-                          <span className="text-red">*</span>
-                        </label>
-                        <p className="dark:text-jacarta-300 text-jacarta-400  text-2xs mb-3">
-                          Sponsors can sell an ad space ownership on the marketplace. Define the fee you want to get from secondary sales. Sponsors might refuse to buy an ad space if your royalty fee is too high. You can
-                          change this value pricing later.
-                        </p>
-                        <div className="flex  gap-4 items-center text-jacarta-700 dark:text-white">
-                          <input
-                            id="numberInput"
-                            type="number"
-                            min="0"
-                            max="100"
-                            value={selectedRoyalties}
-                            onChange={handleRoyaltiesChange}
-                            placeholder="Royalties"
-                            className="dark:bg-jacarta-700 border-jacarta-100 hover:ring-accent/10 focus:ring-accent dark:border-jacarta-600 dark:placeholder:text-jacarta-300  rounded-lg py-3 px-15 hover:ring-2 dark:text-white"
-                          />
-                          <span>%</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div className={styles.form__bullet__container}>
-                  {Array.from({ length: numSteps }).map((_, index) => (
-                    <div
-                      key={index}
-                      ref={(el) => (bulletsRef.current[index] = el)}
-                      onClick={() => handleBulletClick(index)}
-                      className={`${styles.form__bullet} ${index === currentSlide ? styles["form__bullet--active"] : ""}`}
-                    ></div>
-                  ))}
-                </div>
-                <div className={`${styles.form__nav} bg-accent`}>
-                  <button type="button" onClick={handlePrevClick} className={`${styles.form__nav__prev} ${currentSlide === 0 ? "disabled" : ""}`}>
-                    Back
-                  </button>
-                  {currentSlide === numSteps - 1 ? (
-                    <button type="button" className="bg-accent cursor-pointer rounded-full py-3 px-3 text-end font-semibold text-white transition-all" onClick={handlePreviewModal}>
-                      Show preview
-                    </button>
-                  ) : (
-                    <button type="button" onClick={handleNextClick} className={`${styles.form__nav__next} ${currentSlide === numSteps - 1 ? "disabled" : ""}`}>
-                      Next
-                    </button>
-                  )}
-                </div>
-              </form>
-            </div>
-          </div>
-        </div>
+          <Step_4_Create
+            stepsRef={stepsRef}
+            styles={styles}
+            selectedUnitPrice={selectedUnitPrice}
+            handleUnitPriceChange={handleUnitPriceChange}
+            selectedCurrency={selectedCurrency}
+            handleCurrencyChange={handleCurrencyChange}
+            customContract={customContract}
+            handleCustomContractChange={handleCustomContractChange}
+            selectedRoyalties={selectedRoyalties}
+            handleRoyaltiesChange={handleRoyaltiesChange}
+          />
+        </SliderForm>
+        
       </section>
       {showPreviewModal && (
         <div className="modal fade show bloc">
