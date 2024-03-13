@@ -1,18 +1,23 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useRouter } from "next/router";
 import { FileUploader } from "react-drag-drop-files";
 import Link from "next/link";
 import Tippy from "@tippyjs/react";
 import "tippy.js/dist/tippy.css";
 import { ItemsTabs } from "../../components/component";
+import styles from "../../styles/createPage/style.module.scss";
 import More_items from "./more_items";
 import Meta from "../../components/Meta";
 import { useDispatch } from "react-redux";
 import { ConnectWallet } from "@thirdweb-dev/react";
 import Image from "next/image";
 import { GetAdOfferById } from "../../data/services/AdsOffersService";
-import { useAddress, darkTheme, useTokenBalance, useContract, useSwitchChain, useContractWrite, Web3Button, useStorageUpload, useTokenDecimals, CheckoutWithCard, CheckoutWithEth } from "@thirdweb-dev/react";
+import { useAddress, darkTheme, useTokenBalance, useContract, useContractRead, useContractWrite, Web3Button, useStorageUpload, useTokenDecimals, CheckoutWithCard, CheckoutWithEth } from "@thirdweb-dev/react";
 import { ethers } from "ethers";
+import SliderForm from "../../components/sliderForm/sliderForm";
+import Step_1_Mint from "../../components/sliderForm/PageMint/Step_1_Mint";
+import Step_2_Mint from "../../components/sliderForm/PageMint/Step_2_Mint";
+import PreviewModal from "../../components/modal/previewModal";
 
 const Item = () => {
   const dispatch = useDispatch();
@@ -32,6 +37,7 @@ const Item = () => {
   const [jsonIpfsLink, setJsonIpfsLink] = useState(null);
   const [args, setArgs] = useState([]);
   const [amountToApprove, setAmountToApprove] = useState(null);
+  const [errors, setErrors] = useState({});
 
   const { contract } = useContract(data[0]?.currencyAddress, "token");
   const { data: tokenBalance, isLoading, error } = useTokenBalance(contract, address);
@@ -40,7 +46,12 @@ const Item = () => {
   const { mutateAsync, isLoadingMintAndSubmit } = useContractWrite(DsponsorAdminContract, "mintAndSubmit");
   const { contract: tokenContract } = useContract(data[0]?.currencyAddress, "token");
   const { mutateAsync: approve, isLoading: isLoadingApprove } = useContractWrite(tokenContract, "approve");
-
+  const { data: bps } = useContractRead(DsponsorAdminContract, "bps");
+  const { data: tokenDecimals } = useTokenDecimals(tokenContract);
+  const [showPreviewModal, setShowPreviewModal] = useState(false);
+  const [validate, setValidate] = useState(false);
+  const stepsRef = useRef([]);
+  const numSteps = 2;
   useEffect(() => {
     if (pid) {
       const fetchAdsOffers = async () => {
@@ -54,21 +65,20 @@ const Item = () => {
 
   const validateInputs = () => {
     let isValid = true;
+    let newErrors = {};
 
     if (!file) {
-      setImageError("Image is missing.");
+      newErrors.imageError = "Image is missing.";
       isValid = false;
-    } else {
-      setImageError(null);
     }
 
     if (!link || !isValidURL(link)) {
-      setLinkError("The link is missing or invalid.");
+      newErrors.linkError = "The link is missing or invalid.";
       isValid = false;
-    } else {
-      setLinkError(null);
     }
-
+    console.log(isValid, "isValid");
+    setValidate(isValid);
+    setErrors(newErrors);
     return isValid;
   };
 
@@ -94,12 +104,12 @@ const Item = () => {
     if (!jsonIpfsLink) return;
 
     setArgs({
-      tokenId: parseInt(data[0]?.maxSupply) + 1,
+      tokenId: parseInt(data[0]?.maxSupply) - 1,
       to: address,
       currency: data[0]?.currencyAddress,
       tokenData: jsonIpfsLink,
       offerId: data[0]?.offerId,
-      adParameters: ["squareLogoURL"],
+      adParameters: ["squareLogoURL", "linkURL"],
       adDatas: [jsonIpfsLink, link],
       referralAdditionalInformation: "",
     });
@@ -110,20 +120,24 @@ const Item = () => {
   }, [updateArgs]);
 
   useEffect(() => {
-    if (data[0]?.price) {
-      const priceAsString = data[0].price.toString();
-      const amountToApprove = ethers.utils.parseUnits(priceAsString, 6);
+    if (data[0]?.price && bps) {
+      const price = data[0].price;
 
-      console.log("amountToApprove", amountToApprove);
+      const bpsValueHex = bps._hex;
+      const bpsValueDecimal = ethers.BigNumber.from(bpsValueHex).toNumber();
+      const bpsValuePercentage = bpsValueDecimal / 10000;
+      const priceAsNumber = price * bpsValuePercentage + price;
+      const priceAsNumberString = priceAsNumber.toString();
+      const amountToApprove = ethers.utils.parseUnits(priceAsNumberString, tokenDecimals);
 
       setAmountToApprove(amountToApprove);
     }
-  }, [data]);
+  }, [data, bps, tokenDecimals]);
 
   const handleApprove = async () => {
     try {
       const allowance = await tokenContract.call("allowance", [address, "0xA82B4bBc8e6aC3C100bBc769F4aE0360E9ac9FC3"]);
-
+      if (allowance > amountToApprove) return;
       await approve({ args: ["0xA82B4bBc8e6aC3C100bBc769F4aE0360E9ac9FC3", amountToApprove] });
       console.log("Approvation réussie");
     } catch (error) {
@@ -138,8 +152,6 @@ const Item = () => {
     // IPFS upload
     await uploadJsonToIPFS();
     let userBalance = checkUserBalance(tokenBalance, data[0]?.price);
-    console.log("userBalance", userBalance);
-    console.log("jsonIpfsLink", jsonIpfsLink);
     if (userBalance) {
       try {
         await handleApprove();
@@ -172,8 +184,7 @@ const Item = () => {
     try {
       const parsedTokenBalance = parseFloat(tokenAddressBalance.displayValue);
       const parsedPriceToken = parseFloat(priceToken);
-      console.log("parsedTokenBalance", parsedTokenBalance);
-      console.log("parsedPriceToken", parsedPriceToken);
+
       if (parsedTokenBalance >= parsedPriceToken) {
         console.log("user has enough balance");
         return true;
@@ -186,6 +197,10 @@ const Item = () => {
       return null;
     }
   };
+  const handlePreviewModal = () => {
+    setShowPreviewModal(!showPreviewModal);
+    validateInputs();
+  };
 
   if (!data || data.length === 0) {
     return <div>Chargement...</div>;
@@ -195,229 +210,155 @@ const Item = () => {
   return (
     <>
       <Meta title={`${pid} || d>sponsor | Media sponsor Marketplace `} />
+
+      <div className="pt-[5.5rem] lg:pt-24">
+        {/* <!-- Banner --> */}
+        <div className="relative h-[300px]">
+          <Image src="/images/collections/collection_banner.jpg" alt="banner" width={1519} height={300} className="w-full h-full object-center object-cover" />
+        </div>
+        {/* <!-- end banner --> */}
+
+        {/* <!-- Profile --> */}
+
+        <section key={id} className="dark:bg-jacarta-800 bg-light-base relative pb-12 pt-28">
+          {/* <!-- Avatar --> */}
+          <div className="absolute left-1/2 top-0 z-10 flex -translate-x-1/2 -translate-y-1/2 items-center justify-center">
+            <figure className="relative h-40 w-40 dark:border-jacarta-600 rounded-xl border-[5px] border-white">
+              <Image width={141} height={141} src={image} alt="{title}" className="dark:border-jacarta-600 rounded-xl border-[5px] border-white" />
+              <div className="dark:border-jacarta-600 bg-green absolute -right-3 bottom-0 flex h-6 w-6 items-center justify-center rounded-full border-2 border-white" data-tippy-content="Verified Collection">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" className="h-[.875rem] w-[.875rem] fill-white">
+                  <path fill="none" d="M0 0h24v24H0z"></path>
+                  <path d="M10 15.172l9.192-9.193 1.415 1.414L10 18l-6.364-6.364 1.414-1.414z"></path>
+                </svg>
+              </div>
+            </figure>
+          </div>
+
+          <div className="container">
+            <div className="text-center">
+              <h2 className="font-display text-jacarta-700 mb-2 text-4xl font-medium dark:text-white">{name}</h2>
+              <div className="mb-8">
+                <span className="text-jacarta-400 text-sm font-bold">Created by </span>
+                <Link href="#" className="text-accent text-sm font-bold">
+                  {ownerAddress}
+                </Link>
+              </div>
+
+              <div className="dark:bg-jacarta-800 dark:border-jacarta-600 border-jacarta-100 mb-8 inline-flex flex-wrap items-center justify-center rounded-xl border bg-white">
+                <Link href="#" key={id} className="dark:border-jacarta-600 border-jacarta-100 w-1/2 rounded-l-xl border-r py-4 hover:shadow-md sm:w-32">
+                  <div className="text-jacarta-700 mb-1 text-base font-bold dark:text-white">{price}</div>
+                  <div className="text-2xs dark:text-jacarta-400 font-medium tracking-tight">{currencyName}</div>
+                </Link>
+                <Link href="#" key={id} className="dark:border-jacarta-600 border-jacarta-100 w-1/2 rounded-l-xl border-r py-4 hover:shadow-md sm:w-32">
+                  <div className="text-jacarta-700 mb-1 text-base font-bold dark:text-white">3</div>
+                  <div className="text-2xs dark:text-jacarta-400 font-medium tracking-tight">N°</div>
+                </Link>
+                <Link href="#" key={id} className="dark:border-jacarta-600 border-jacarta-100 w-1/2 rounded-l-xl border-r py-4 hover:shadow-md sm:w-32">
+                  <div className="text-jacarta-700 mb-1 text-base font-bold dark:text-white">{royalties} %</div>
+                  <div className="text-2xs dark:text-jacarta-400 font-medium tracking-tight"> royalties</div>
+                </Link>
+              </div>
+
+              <p className="dark:text-jacarta-300 mx-auto max-w-xl text-lg">{description}</p>
+            </div>
+          </div>
+        </section>
+
+        {/* <!-- end profile --> */}
+      </div>
+
       {/*  <!-- Item --> */}
-      <section className="relative lg:mt-24 lg:pt-24 lg:pb-24 mt-24 pt-12 pb-24">
-        <picture className="pointer-events-none absolute inset-0 -z-10 dark:hidden">
-          <Image width={1519} height={773} priority src="/images/gradient_light.jpg" alt="gradient" className="h-full w-full object-cover" />
-        </picture>
+      <section className="relative lg:mt-5 lg:pt-5 lg:pb-24 mt-5 pt-12 pb-5">
         <div className="container">
           {/* <!-- Item --> */}
 
-          <div className="md:flex md:flex-wrap" key={id}>
-            {/* <!-- Image --> */}
-            <figure className="mb-8 md:w-2/5 md:flex-shrink-0 md:flex-grow-0 md:basis-auto lg:w-1/2 w-full">
-              <button className=" w-full" onClick={() => setImageModal(true)}>
-                <Image width={585} height={726} src={image} alt="image" className="rounded-2xl cursor-pointer h-full object-cover w-full" />
-              </button>
-
-              {/* <!-- Modal --> */}
-              <div className={imageModal ? "modal fade show block" : "modal fade"}>
-                <div className="modal-dialog !my-0 flex h-full max-w-4xl items-center justify-center">
-                  <Image width={582} height={722} src={image} alt="image" className="h-full object-cover w-full rounded-2xl" />
-                </div>
-
-                <button type="button" className="btn-close absolute top-6 right-6" onClick={() => setImageModal(false)}>
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" className="h-6 w-6 fill-white">
-                    <path fill="none" d="M0 0h24v24H0z" />
-                    <path d="M12 10.586l4.95-4.95 1.414 1.414-4.95 4.95 4.95 4.95-1.414 1.414-4.95-4.95-4.95 4.95-1.414-1.414 4.95-4.95-4.95-4.95L7.05 5.636z" />
-                  </svg>
+          <div key={id}>
+            <div className="md:flex md:flex-wrap">
+              {/* <!-- Image --> */}
+              {/* <figure className="mb-8 md:w-2/5 md:flex-shrink-0 md:flex-grow-0 md:basis-auto lg:w-1/2 w-full">
+                <button className=" w-full" onClick={() => setImageModal(true)}>
+                  <Image width={585} height={726} src={image} alt="image" className="rounded-2xl cursor-pointer h-full object-cover w-full" />
                 </button>
-              </div>
-              {/* <!-- end modal --> */}
-            </figure>
 
-            {/* <!-- Details --> */}
-            <div className="md:w-3/5 md:basis-auto md:pl-8 lg:w-1/2 lg:pl-[3.75rem]">
-              {/* <!-- Collection / Likes / Actions --> */}
-              <div className="mb-3 flex">
-                {/* <!-- Collection --> */}
-                <div className="flex items-center">
-                  <Link href="#" className="text-accent mr-2 text-sm font-bold">
-                    {name}
-                  </Link>
-                  <span className="dark:border-jacarta-600 bg-green inline-flex h-6 w-6 items-center justify-center rounded-full border-2 border-white" data-tippy-content="Verified Collection">
-                    <Tippy content={<span>Verified Collection</span>}>
-                      <svg className="icon h-[.875rem] w-[.875rem] fill-white">
-                        <use xlinkHref="/icons.svg#icon-right-sign"></use>
-                      </svg>
-                    </Tippy>
-                  </span>
-                </div>
-
-                {/* <!-- Likes / Actions --> */}
-                {/* <div className="ml-auto flex items-stretch space-x-2 relative">
-                  <Likes like={likes} classes="dark:bg-jacarta-700 dark:border-jacarta-600 border-jacarta-100 flex items-center space-x-1 rounded-xl border bg-white py-2 px-4" />
-
-                  
-                  <Auctions_dropdown classes="dark:border-jacarta-600 dark:hover:bg-jacarta-600 border-jacarta-100 dropdown hover:bg-jacarta-100 dark:bg-jacarta-700 rounded-xl border bg-white" />
-                </div> */}
-              </div>
-
-              <h1 className="font-display text-jacarta-700 mb-4 text-4xl font-semibold dark:text-white">{name}</h1>
-
-              <div className="mb-8 flex items-center space-x-4 whitespace-nowrap">
-                <div className="flex items-center">
-                  <Tippy content={<span>{currencyName}</span>}>
-                    <span className="-ml-1">
-                      <svg className="icon mr-1 h-4 w-4">
-                        <use xlinkHref="/icons.svg#icon-ETH"></use>
-                      </svg>
-                    </span>
-                  </Tippy>
-                  <span className="text-green text-sm font-medium tracking-tight">
-                    {price} {currencyName}
-                  </span>
-                </div>
-
-                <span className="dark:text-jacarta-300 text-jacarta-400 text-sm">
-                  {numberTokenAllowed}/{maxSupply} available
-                </span>
-              </div>
-
-              <p className="dark:text-jacarta-300 mb-10">{description}</p>
-
-              {/* <!-- Creator / Owner --> */}
-              <div className="mb-8 flex flex-wrap">
-                <div className="mr-8 mb-4 flex">
-                  <figure className="mr-4 shrink-0">
-                    <Link href="/user/avatar_6" className="relative block">
-                      <Image width={48} height={48} src={image} alt={name} className="rounded-2lg h-12 w-12" loading="lazy" />
-                      <div className="dark:border-jacarta-600 bg-green absolute -right-3 top-[60%] flex h-6 w-6 items-center justify-center rounded-full border-2 border-white" data-tippy-content="Verified Collection">
-                        <Tippy content={<span>Verified Collection</span>}>
-                          <svg className="icon h-[.875rem] w-[.875rem] fill-white">
-                            <use xlinkHref="/icons.svg#icon-right-sign"></use>
-                          </svg>
-                        </Tippy>
-                      </div>
-                    </Link>
-                  </figure>
-                  <div className="flex flex-col justify-center">
-                    <span className="text-jacarta-400 block text-sm dark:text-white">
-                      Creator <strong>{royalties}% royalties</strong>
-                    </span>
-                    <Link href="/user/avatar_6" className="text-accent block">
-                      <span className="text-sm font-bold">{name}</span>
-                    </Link>
+              
+                <div className={imageModal ? "modal fade show block" : "modal fade"}>
+                  <div className="modal-dialog !my-0 flex h-full max-w-4xl items-center justify-center">
+                    <Image width={582} height={722} src={image} alt="image" className="h-full object-cover w-full rounded-2xl" />
                   </div>
-                </div>
 
-                <div className="mb-4 flex">
-                  <figure className="mr-4 shrink-0">
-                    <Link href="/user/avatar_6" className="relative block">
-                      {/* <Image width={48} height={48} src={ownerImage} alt={ownerName} className="rounded-2lg h-12 w-12" loading="lazy" /> */}
-                      <div className="dark:border-jacarta-600 bg-green absolute -right-3 top-[60%] flex h-6 w-6 items-center justify-center rounded-full border-2 border-white" data-tippy-content="Verified Collection">
-                        <Tippy content={<span>Verified Collection</span>}>
-                          <svg className="icon h-[.875rem] w-[.875rem] fill-white">
-                            <use xlinkHref="/icons.svg#icon-right-sign"></use>
-                          </svg>
-                        </Tippy>
-                      </div>
-                    </Link>
-                  </figure>
-                  <div className="flex flex-col justify-center">
-                    <span className="text-jacarta-400 block text-sm dark:text-white">Owned by</span>
-                    <Link href="/user/avatar_6" className="text-accent block">
-                      <span className="text-sm font-bold">{ownerName}</span>
-                    </Link>
+                  <button type="button" className="btn-close absolute top-6 right-6" onClick={() => setImageModal(false)}>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" className="h-6 w-6 fill-white">
+                      <path fill="none" d="M0 0h24v24H0z" />
+                      <path d="M12 10.586l4.95-4.95 1.414 1.414-4.95 4.95 4.95 4.95-1.414 1.414-4.95-4.95-4.95 4.95-1.414-1.414 4.95-4.95-4.95-4.95L7.05 5.636z" />
+                    </svg>
+                  </button>
+                </div>
+                
+              </figure> */}
+              {/* <!-- Details --> */}
+              <div className="md:w-3/5 md:basis-auto md:pl-8 lg:w-1/2 lg:pl-[3.75rem]">
+                {/* <!-- Collection / Likes / Actions --> */}
+
+                <div className="dark:bg-jacarta-700 dark:border-jacarta-600 border-jacarta-100 rounded-2lg border bg-white p-8">
+                  <div className="mb-8 sm:flex sm:flex-wrap">
+                    <span className="dark:text-jacarta-300 text-jacarta-400 text-sm">
+                      Buying the ad space give you the exclusive right to submit an ad. The media still has the power to validate or reject ad assets. You re free to change the ad at anytime. And free to resell on the
+                      open market your ad space.{" "}
+                    </span>
                   </div>
-                </div>
-              </div>
-
-              <div className="dark:bg-jacarta-700 dark:border-jacarta-600 border-jacarta-100 rounded-2lg border bg-white p-8">
-                <div className="mb-8 sm:flex sm:flex-wrap">
-                  <span className="dark:text-jacarta-300 text-jacarta-400 text-sm">
-                    Buying the ad space give you the exclusive right to submit an ad. The media still has the power to validate or reject ad assets. You re free to change the ad at anytime. And free to resell on the open
-                    market your ad space.{" "}
-                  </span>
-                </div>
-                <Web3Button
-                  contractAddress="0xA82B4bBc8e6aC3C100bBc769F4aE0360E9ac9FC3"
-                  action={() =>
-                    mutateAsync({
-                      args: [args],
-                    })
-                  }
-                  className="!bg-accent !cursor-pointer !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all"
-                >
-                  Mint NFT
-                </Web3Button>
-                {address ? (
-                  <Link href="#">
-                    <button className="bg-accent shadow-accent-volume hover:bg-accent-dark inline-block w-full rounded-full py-3 px-8 text-center font-semibold text-white transition-all" onClick={handleSubmit}>
-                      Upload IPFS
-                    </button>
-                  </Link>
-                ) : (
-                  <div className="bg-accent shadow-accent-volume hover:bg-accent-dark inline-block w-full rounded-full px-8 text-center font-semibold text-white transition-all">
-                    <ConnectWallet
-                      theme={darkTheme({
-                        colors: {
-                          primaryButtonText: "#ffffff",
-                          primaryButtonBg: "bg-transparent",
-                        },
-                      })}
-                    />
-                    {/* <Link href="#" >
+                  <Web3Button
+                    contractAddress="0xA82B4bBc8e6aC3C100bBc769F4aE0360E9ac9FC3"
+                    action={() =>
+                      mutateAsync({
+                        args: [args],
+                      })
+                    }
+                    className="!bg-accent !cursor-pointer !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all"
+                  >
+                    Mint NFT
+                  </Web3Button>
+                  {address ? (
+                    <Link href="#">
+                      <button className="bg-accent shadow-accent-volume hover:bg-accent-dark inline-block w-full rounded-full py-3 px-8 text-center font-semibold text-white transition-all" onClick={handleSubmit}>
+                        Upload IPFS
+                      </button>
+                    </Link>
+                  ) : (
+                    <div className="bg-accent shadow-accent-volume hover:bg-accent-dark inline-block w-full rounded-full px-8 text-center font-semibold text-white transition-all">
+                      <ConnectWallet
+                        theme={darkTheme({
+                          colors: {
+                            primaryButtonText: "#ffffff",
+                            primaryButtonBg: "bg-transparent",
+                          },
+                        })}
+                      />
+                      {/* <Link href="#" >
                             <button className="bg-accent shadow-accent-volume hover:bg-accent-dark inline-block w-full rounded-full py-3 px-8 text-center font-semibold text-white transition-all">Connexion</button>
                           </Link> */}
-                  </div>
-                )}
-              </div>
-              {/* <!-- end bid --> */}
-            </div>
-            {/* <!-- upload file --> */}
-            <div className="mb-6">
-              <label className="font-display text-jacarta-700 mb-2 block dark:text-white">
-                Image, Video, Audio, or 3D Model
-                <span className="text-red">*</span>
-              </label>
-
-              {file ? <p className="dark:text-jacarta-300 text-2xs mb-3">successfully uploaded : {file.name}</p> : <p className="dark:text-jacarta-300 text-2xs mb-3">Drag or choose your file to upload</p>}
-
-              <div className="dark:bg-jacarta-700 dark:border-jacarta-600 border-jacarta-100 group relative flex max-w-md flex-col items-center justify-center rounded-lg border-2 border-dashed bg-white py-20 px-5 text-center">
-                <div className="relative z-10 cursor-pointer">
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" className="fill-jacarta-500 mb-4 inline-block dark:fill-white">
-                    <path fill="none" d="M0 0h24v24H0z" />
-                    <path d="M16 13l6.964 4.062-2.973.85 2.125 3.681-1.732 1-2.125-3.68-2.223 2.15L16 13zm-2-7h2v2h5a1 1 0 0 1 1 1v4h-2v-3H10v10h4v2H9a1 1 0 0 1-1-1v-5H6v-2h2V9a1 1 0 0 1 1-1h5V6zM4 14v2H2v-2h2zm0-4v2H2v-2h2zm0-4v2H2V6h2zm0-4v2H2V2h2zm4 0v2H6V2h2zm4 0v2h-2V2h2zm4 0v2h-2V2h2z" />
-                  </svg>
-                  <p className="dark:text-jacarta-300 mx-auto max-w-xs text-xs">JPG, PNG, GIF, SVG, MP4, WEBM, MP3, WAV, OGG, GLB, GLTF. Max size: 100 MB</p>
+                    </div>
+                  )}
                 </div>
-                <div className="dark:bg-jacarta-600 bg-jacarta-50 absolute inset-4 cursor-pointer rounded opacity-0 group-hover:opacity-100 ">
-                  <FileUploader handleChange={handleLogoUpload} name="file" types={fileTypes} classes="file-drag" maxSize={100} minSize={0} />
-                </div>
+                {/* <!-- end bid --> */}
               </div>
-              {imageError && <p className="text-red-500">{imageError}</p>}
             </div>
-            {/* <!-- preview image --> */}
-            {previewImage && (
-              <div className="mb-6">
-                <label htmlFor="item-description" className="font-display text-jacarta-700 mb-2 block dark:text-white">
-                  Offer preview
-                </label>
-                <p className="dark:text-jacarta-300 text-2xs mb-3">Your offer will look like this.</p>
-                <Image src={previewImage} width={300} height={100} alt="Preview" />
-              </div>
-            )}
-            {/* <!-- external link --> */}
-            <div className="mb-6">
-              <label htmlFor="item-external-link" className="font-display text-jacarta-700 mb-2 block dark:text-white">
-                External link<span className="text-red">*</span>
-              </label>
-              <input
-                type="url"
-                id="item-external-link"
-                className="dark:bg-jacarta-700 border-jacarta-100 hover:ring-accent/10 focus:ring-accent dark:border-jacarta-600 dark:placeholder:text-jacarta-300 w-full rounded-lg py-3 px-3 hover:ring-2 dark:text-white"
-                placeholder="https://yoursite.com"
-                onChange={(e) => setLink(e.target.value)}
-              />
-              {linkError && <p className="text-red-500">{linkError}</p>}
-            </div>
+
+            <SliderForm styles={styles} handlePreviewModal={handlePreviewModal} stepsRef={stepsRef} numSteps={numSteps}>
+              <Step_1_Mint stepsRef={stepsRef} styles={styles} file={file} handleLogoUpload={handleLogoUpload} />
+              <Step_2_Mint stepsRef={stepsRef} styles={styles} setLink={setLink} />
+            </SliderForm>
+
             {/* <!-- end details --> */}
           </div>
 
-          <ItemsTabs />
+          {/* <ItemsTabs /> */}
         </div>
       </section>
+      {showPreviewModal && (
+        <div className="modal fade show bloc">
+          <PreviewModal handlePreviewModal={handlePreviewModal} handleSubmit={handleSubmit} link={link} previewImage={previewImage} errors={errors} validate={validate} />
+        </div>
+      )}
       {/* <!-- end item --> */}
 
       <More_items />

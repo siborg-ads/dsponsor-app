@@ -6,24 +6,25 @@ import { Web3Button } from "@thirdweb-dev/react";
 const PreviewModal = ({
   handlePreviewModal,
   handleSubmit,
-  name,
-  link,
+  name = null,
+  link = null,
   file,
-  description,
-  startDate,
-  endDate,
-  selectedNumber,
-  selectedUnitPrice,
-  selectedCurrency,
-  customContract,
-  selectedRoyalties,
-  previewImage,
+  description = null,
+  startDate = null,
+  endDate = null,
+  selectedNumber = null,
+  selectedUnitPrice = null,
+  selectedCurrency = null,
+  customContract = null,
+  selectedRoyalties = null,
+  previewImage = null,
   validate,
   errors,
   successFullUpload,
   address,
 }) => {
   const formatDate = (date) => {
+    if (!date) return "";
     return date.toLocaleDateString();
   };
 
@@ -48,9 +49,11 @@ const PreviewModal = ({
               <div className="flex ">
                 <div>
                   <p className="font-display text-jacarta-700 mb-2 block dark:text-white">
-                    <span>Name : {!errors.nameError ? name : <span className="text-red">{errors.nameError}</span>}</span>
+                    {name ? (<span>Name : {!errors.nameError ? name : <span className="text-red">{errors.nameError}</span>}</span>):("")}
                   </p>
-                  <p className="font-display text-jacarta-700 mb-2 block dark:text-white">Description: {!errors.descriptionError ? description : <span className="text-red">{errors.descriptionError}</span>}</p>
+                  {description && (
+                    <p className="font-display text-jacarta-700 mb-2 block dark:text-white">Description: {!errors.descriptionError ? description : <span className="text-red">{errors.descriptionError}</span>}</p>
+                  )}
                   <p className="font-display text-jacarta-700 mb-2 block dark:text-white">
                     Link :{" "}
                     {!errors.linkError ? (
@@ -61,37 +64,50 @@ const PreviewModal = ({
                       <span className="text-red">{errors.linkError}</span>
                     )}
                   </p>
-                  {!previewImage && (
+                  {previewImage && (
                     <p className="font-display text-jacarta-700 mb-2 block dark:text-white">
                       Image preview : <span className="text-red">{errors.imageError}</span>
                     </p>
                   )}
                   <p className="font-display text-jacarta-700 mb-2 block dark:text-white">
-                    <span>Start Date : {!errors.startDateError ? formatDate(startDate) : <span className="text-red">{errors.startDateError}</span>}</span>
+                    {startDate ? <span>Start Date : {!errors.startDateError ? formatDate(startDate) : <span className="text-red">{errors.startDateError}</span>}</span> : ""}
                   </p>
-                  <p className="font-display text-jacarta-700 mb-2 block dark:text-white">End Date : {!errors.endDateError ? formatDate(endDate) : <span className="text-red">{errors.endDateError}</span>}</p>
-                  <p className="font-display text-jacarta-700 mb-2 block dark:text-white">Number of Items : {!errors.numberError ? `${selectedNumber}` : <span className="text-red">{errors.numberError}</span>}</p>
-                  <p className="font-display text-jacarta-700 mb-2 block dark:text-white">Unit Price : {!errors.unitPriceError ? ` ${selectedUnitPrice}` : <span className="text-red">{errors.unitPriceError}</span>}</p>
+                  {endDate ? (
+                    <p className="font-display text-jacarta-700 mb-2 block dark:text-white">End Date : {!errors.endDateError ? formatDate(endDate) : <span className="text-red">{errors.endDateError}</span>}</p>
+                  ) : (
+                    ""
+                  )}
+                  {selectedNumber ? (
+                    <p className="font-display text-jacarta-700 mb-2 block dark:text-white">Number of Items : {!errors.numberError ? `${selectedNumber}` : <span className="text-red">{errors.numberError}</span>}</p>
+                  ) : (
+                    ""
+                  )}
+                  {selectedUnitPrice ? (
+                    <p className="font-display text-jacarta-700 mb-2 block dark:text-white">Unit Price : {!errors.unitPriceError ? ` ${selectedUnitPrice}` : <span className="text-red">{errors.unitPriceError}</span>}</p>
+                  ) : (
+                    ""
+                  )}
                   {customContract ? (
                     <p className="font-display text-jacarta-700 mb-2 block dark:text-white">Custom Contract : {!errors.currencyError ? customContract : <span className="text-red">{errors.currencyError}</span>}</p>
                   ) : (
                     <p className="font-display text-jacarta-700 mb-2 block dark:text-white">Currency : {!errors.currencyError ? ` ${selectedCurrency}` : <span className="text-red">{errors.currencyError}</span>}</p>
                   )}
-
-                  <p className="font-display text-jacarta-700 mb-2 block dark:text-white">Royalties : {!errors.royaltyError ? `${selectedRoyalties}%` : <span className="text-red">{errors.royaltyError}</span>}</p>
-                </div>
-                <div>
-                  {previewImage && (
-                    <div className="mb-6  flex-col items-center justify-center ">
-                      <label htmlFor="item-description" className="font-display text-jacarta-700 text-center mb-2 block dark:text-white">
-                        Image preview :
-                      </label>
-                      <div style={{ width: "300px", height: "300px", position: "relative" }}>
-                        <Image src={previewImage} width={300} height={200} alt="Preview" className="object-contain h-full" />
-                      </div>
-                    </div>
+                  {selectedRoyalties ? (
+                    <p className="font-display text-jacarta-700 mb-2 block dark:text-white">Royalties : {!errors.royaltyError ? `${selectedRoyalties}%` : <span className="text-red">{errors.royaltyError}</span>}</p>
+                  ) : (
+                    ""
                   )}
                 </div>
+                {previewImage && (
+                  <div className="mb-6  flex-col items-center justify-center ">
+                    <label htmlFor="item-description" className="font-display text-jacarta-700 text-center mb-2 block dark:text-white">
+                      Image preview :
+                    </label>
+                    <div style={{ width: "300px", height: "300px", position: "relative" }}>
+                      <Image src={previewImage} width={300} height={200} alt="Preview" className="object-contain h-full" />
+                    </div>
+                  </div>
+                )}
               </div>
             ) : (
               <div className="flex gap-2">

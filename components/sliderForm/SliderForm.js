@@ -3,13 +3,13 @@ import DatePicker from "react-datepicker";
 
 import { FileUploader } from "react-drag-drop-files";
 
-const SliderForm = ({ styles, handlePreviewModal, stepsRef, children }) => {
+const SliderForm = ({ styles, handlePreviewModal, stepsRef, numSteps, children }) => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const stepContainerRef = useRef(null);
-  
+
   const bulletsRef = useRef([]);
 
-  const numSteps = 4;
+  
 
   const animateSlider = () => {
     if (stepContainerRef.current) {
@@ -26,7 +26,8 @@ const SliderForm = ({ styles, handlePreviewModal, stepsRef, children }) => {
   };
 
   useEffect(() => {
-    const updateDimensions = () => {
+    console.log(stepsRef, "stepsRef");
+        const updateDimensions = () => {
       if (stepContainerRef.current) {
         const stepWidth = 750 - 20;
 
@@ -51,8 +52,10 @@ const SliderForm = ({ styles, handlePreviewModal, stepsRef, children }) => {
   }, [currentSlide, numSteps]);
 
   const handleNextClick = () => {
+    
     if (currentSlide < numSteps - 1) {
       setCurrentSlide(currentSlide + 1);
+      
     }
   };
 
