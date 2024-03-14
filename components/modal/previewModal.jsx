@@ -8,7 +8,6 @@ const PreviewModal = ({
   handleSubmit,
   name = null,
   link = null,
-  file,
   description = null,
   startDate = null,
   endDate = null,
@@ -22,6 +21,8 @@ const PreviewModal = ({
   errors,
   successFullUpload,
   address,
+  buttonTitle,
+  modalTitle,
 }) => {
   const formatDate = (date) => {
     if (!date) return "";
@@ -34,7 +35,7 @@ const PreviewModal = ({
         <div className="modal-content">
           <div className="modal-header">
             <h5 className="modal-title" id="placeBidLabel">
-              Offer Preview
+              {modalTitle}
             </h5>
             <button type="button" className="btn-close" onClick={() => handlePreviewModal()}>
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" className="fill-jacarta-700 h-6 w-6 dark:fill-white">
@@ -48,9 +49,7 @@ const PreviewModal = ({
             {!successFullUpload ? (
               <div className="flex ">
                 <div>
-                  <p className="font-display text-jacarta-700 mb-2 block dark:text-white">
-                    {name ? (<span>Name : {!errors.nameError ? name : <span className="text-red">{errors.nameError}</span>}</span>):("")}
-                  </p>
+                  <p className="font-display text-jacarta-700 mb-2 block dark:text-white">{name ? <span>Name : {!errors.nameError ? name : <span className="text-red">{errors.nameError}</span>}</span> : ""}</p>
                   {description && (
                     <p className="font-display text-jacarta-700 mb-2 block dark:text-white">Description: {!errors.descriptionError ? description : <span className="text-red">{errors.descriptionError}</span>}</p>
                   )}
@@ -61,12 +60,12 @@ const PreviewModal = ({
                         {link}
                       </a>
                     ) : (
-                      <span className="text-red">{errors.linkError}</span>
+                      <span className="text-red"> {errors.linkError}</span>
                     )}
                   </p>
-                  {previewImage && (
+                  {!previewImage && (
                     <p className="font-display text-jacarta-700 mb-2 block dark:text-white">
-                      Image preview : <span className="text-red">{errors.imageError}</span>
+                      Image preview : <span className="text-red"> {errors.imageError}</span>
                     </p>
                   )}
                   <p className="font-display text-jacarta-700 mb-2 block dark:text-white">
@@ -89,14 +88,17 @@ const PreviewModal = ({
                   )}
                   {customContract ? (
                     <p className="font-display text-jacarta-700 mb-2 block dark:text-white">Custom Contract : {!errors.currencyError ? customContract : <span className="text-red">{errors.currencyError}</span>}</p>
-                  ) : (
+                  ) : selectedCurrency ? (
                     <p className="font-display text-jacarta-700 mb-2 block dark:text-white">Currency : {!errors.currencyError ? ` ${selectedCurrency}` : <span className="text-red">{errors.currencyError}</span>}</p>
+                  ) : (
+                    ""
                   )}
                   {selectedRoyalties ? (
                     <p className="font-display text-jacarta-700 mb-2 block dark:text-white">Royalties : {!errors.royaltyError ? `${selectedRoyalties}%` : <span className="text-red">{errors.royaltyError}</span>}</p>
                   ) : (
                     ""
                   )}
+                 
                 </div>
                 {previewImage && (
                   <div className="mb-6  flex-col items-center justify-center ">
@@ -132,7 +134,7 @@ const PreviewModal = ({
                     className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate ? "btn-disabled" : "!bg-accent !cursor-pointer"} `}
                     disabled={!validate}
                   >
-                    Create Ad Space Offer
+                    {buttonTitle}
                   </Web3Button>
                 ) : (
                   <Link href={`/user/${address}`}>

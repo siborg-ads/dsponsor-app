@@ -354,6 +354,8 @@ const Create = () => {
             errors={errors}
             successFullUpload={successFullUpload}
             address={address}
+            buttonTitle="Offer Preview"
+            modalTitle="Ad Space Offer "
           />
         </div>
       )}
