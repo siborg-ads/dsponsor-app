@@ -38,6 +38,7 @@ const Item = () => {
   const [args, setArgs] = useState([]);
   const [amountToApprove, setAmountToApprove] = useState(null);
   const [errors, setErrors] = useState({});
+   const [successFullUpload, setSuccessFullUpload] = useState(false);
 
   const { contract } = useContract(data[0]?.currencyAddress, "token");
   const { data: tokenBalance, isLoading, error } = useTokenBalance(contract, address);
@@ -98,26 +99,8 @@ const Item = () => {
     }
   };
 
-  const updateArgs = useCallback(() => {
-    if (!address) return;
-    if (!link) return;
-    if (!jsonIpfsLink) return;
-
-    setArgs({
-      tokenId: parseInt(data[0]?.maxSupply) - 1,
-      to: address,
-      currency: data[0]?.currencyAddress,
-      tokenData: jsonIpfsLink,
-      offerId: data[0]?.offerId,
-      adParameters: ["squareLogoURL", "linkURL"],
-      adDatas: [jsonIpfsLink, link],
-      referralAdditionalInformation: "",
-    });
-  }, [address, jsonIpfsLink, link, data]);
-
-  useEffect(() => {
-    updateArgs();
-  }, [updateArgs]);
+ 
+ 
 
   useEffect(() => {
     if (data[0]?.price && bps) {
@@ -158,7 +141,45 @@ const Item = () => {
       } catch (error) {
         console.error("Erreur d'approbation des tokens:", error);
       }
+      try{
+        // const uploadUrl = await uploadToIPFS({
+        //   data: [file],
+        //   options: { uploadWithGatewayUrl: true, uploadWithoutDirectory: true },
+        // });
+        
+
+        // const json = JSON.stringify({
+        //   image: uploadUrl,
+        //   external_link: link,
+        // });
+        // const jsonUrl = await uploadToIPFS({
+        //   data: [json],
+        //   options: { uploadWithGatewayUrl: true, uploadWithoutDirectory: true },
+        // });
+
+        const jsonIpfsLink = "jsonUrl[0]";
+
+      const args =  [{
+      tokenId: parseInt(data[0]?.maxSupply) - 1,
+      to: address,
+      currency: data[0]?.currencyAddress,
+      tokenData: jsonIpfsLink,
+      offerId: data[0]?.offerId,
+      adParameters: ["squareLogoURL", "linkURL"],
+      adDatas: [jsonIpfsLink, link],
+      referralAdditionalInformation: "",
+    }];
+    
+     await mutateAsync({ args: args[0] });
+     setSuccessFullUpload(true);
+      }
+      catch (error) {
+        console.error("Erreur de soumission du token:", error);
+        setSuccessFullUpload(false);
+      }
     }
+
+
   };
 
   const uploadJsonToIPFS = async () => {
@@ -356,7 +377,7 @@ const Item = () => {
       </section>
       {showPreviewModal && (
         <div className="modal fade show bloc">
-          <PreviewModal handlePreviewModal={handlePreviewModal} handleSubmit={handleSubmit} link={link} previewImage={previewImage} errors={errors} validate={validate} />
+          <PreviewModal handlePreviewModal={handlePreviewModal} handleSubmit={handleSubmit} link={link} previewImage={previewImage} errors={errors} successFullUpload={successFullUpload} validate={validate} />
         </div>
       )}
       {/* <!-- end item --> */}
