@@ -282,7 +282,12 @@ const Create = () => {
 
  
   const numSteps = 4;
-  
+  const successFullUploadModal = {
+    
+    body: "Your offer has been created successfully",
+    buttonTitle: "Close",
+    hrefButton: "/",
+  };
 
  
   return (
@@ -356,6 +361,7 @@ const Create = () => {
             address={address}
             buttonTitle="Offer Preview"
             modalTitle="Ad Space Offer "
+            successFullUploadModal={successFullUploadModal}
           />
         </div>
       )}

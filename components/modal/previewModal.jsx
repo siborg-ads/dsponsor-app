@@ -23,11 +23,13 @@ const PreviewModal = ({
   address,
   buttonTitle,
   modalTitle,
+  successFullUploadModal,
 }) => {
   const formatDate = (date) => {
     if (!date) return "";
     return date.toLocaleDateString();
   };
+  console.log("successFullUploadModal", successFullUploadModal.title);
 
   return (
     <div>
@@ -98,7 +100,6 @@ const PreviewModal = ({
                   ) : (
                     ""
                   )}
-                 
                 </div>
                 {previewImage && (
                   <div className="mb-6  flex-col items-center justify-center ">
@@ -113,7 +114,7 @@ const PreviewModal = ({
               </div>
             ) : (
               <div className="flex gap-2">
-                <p>Your offer has been successfully validated </p>
+                <p>{successFullUploadModal.body} </p>
                 <div className="dark:border-jacarta-600 bg-green   flex h-6 w-6 items-center justify-center rounded-full border-2 border-white" data-tippy-content="Verified Collection">
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" className="h-[.875rem] w-[.875rem] fill-white">
                     <path fill="none" d="M0 0h24v24H0z"></path>
@@ -137,8 +138,8 @@ const PreviewModal = ({
                     {buttonTitle}
                   </Web3Button>
                 ) : (
-                  <Link href={`/user/${address}`}>
-                    <button className="!rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all !bg-accent !cursor-pointer">Manage Spaces</button>
+                  <Link href={hrefButton}>
+                    <button className="!rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all !bg-accent !cursor-pointer">{successFullUploadModal.buttonTitle}</button>
                   </Link>
                 )}
               </div>
