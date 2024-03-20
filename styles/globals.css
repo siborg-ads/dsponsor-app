@@ -2559,6 +2559,10 @@ html {
     --tw-border-opacity: 1;
     border-color: rgba(255, 255, 255, var(--tw-border-opacity));
   }
+  .border-green {
+    --tw-border-opacity: 1;
+    border-color: rgba(16, 185, 129, var(--tw-bg-opacity));
+  }
 
   .border-jacarta-200 {
     --tw-border-opacity: 1;

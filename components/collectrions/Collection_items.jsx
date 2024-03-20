@@ -7,8 +7,7 @@ import FilterCategoryItem from "../categories/filterCategoryItem";
 
 const Collection_items = () => {
   const [itemsTabs, setItemsTabs] = useState(1);
-  const [categoryItemData, setCategoryItemData] =
-    useState(trendingCategoryData);
+  const [categoryItemData, setCategoryItemData] = useState(trendingCategoryData);
 
   const collectionItemsTabs = [
     {
@@ -16,24 +15,12 @@ const Collection_items = () => {
       text: "Items",
       icon: "items",
     },
-    {
-      id: 2,
-      text: "Activity",
-      icon: "activities",
-    },
   ];
   return (
     <>
-      <section className="relative py-24">
+      <section className="relative py-8">
         <picture className="pointer-events-none absolute inset-0 -z-10 dark:hidden">
-          <Image
-            width={1519}
-            height={773}
-            priority
-            src="/images/gradient_light.jpg"
-            alt="gradient"
-            className="h-full w-full object-cover"
-          />
+          <Image width={1519} height={773} priority src="/images/gradient_light.jpg" alt="gradient" className="h-full w-full object-cover" />
         </picture>
         <div className="container">
           {/* <!-- Tabs Nav --> */}
@@ -41,11 +28,7 @@ const Collection_items = () => {
             <TabList className="nav nav-tabs dark:border-jacarta-600 border-jacarta-100 mb-12 flex items-center justify-center border-b">
               {collectionItemsTabs.map(({ id, text, icon }) => {
                 return (
-                  <Tab
-                    className="nav-item"
-                    key={id}
-                    onClick={() => setItemsTabs(id)}
-                  >
+                  <Tab className="nav-item" key={id} onClick={() => setItemsTabs(id)}>
                     <button
                       className={
                         itemsTabs === id
@@ -56,9 +39,7 @@ const Collection_items = () => {
                       <svg className="icon icon-items mr-1 h-5 w-5 fill-current">
                         <use xlinkHref={`/icons.svg#icon-${icon}`}></use>
                       </svg>
-                      <span className="font-display text-base font-medium">
-                        {text}
-                      </span>
+                      <span className="font-display text-base font-medium">{text}</span>
                     </button>
                   </Tab>
                 );

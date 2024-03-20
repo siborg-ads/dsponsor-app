@@ -79,7 +79,6 @@ export const GetAdOfferById = async (adId) => {
  const resultat_1 = await execute(GET_AD_OFFER, variables_1);
  const newDSponsorNFTs = resultat_1.data?.newDSponsorNFTs || [];
 
- // Pour chaque NewDSponsorNFT, enrichissez-le avec l'offerId en exécutant la seconde requête
  for (const nft of newDSponsorNFTs) {
    const variables_2 = { addressContract: nft.contractAddr };
    const resultat_2 = await execute(GET_OFFERID_AD_OFFER, variables_2);

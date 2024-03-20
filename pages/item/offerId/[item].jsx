@@ -1,58 +1,47 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useRouter } from "next/router";
-import { FileUploader } from "react-drag-drop-files";
 import Link from "next/link";
-import Tippy from "@tippyjs/react";
 import "tippy.js/dist/tippy.css";
-import { ItemsTabs } from "../../components/component";
 import styles from "../../styles/createPage/style.module.scss";
-import More_items from "./more_items";
-import Meta from "../../components/Meta";
-import { useDispatch } from "react-redux";
-import { ConnectWallet } from "@thirdweb-dev/react";
+import More_items from "../more_items";
+import Meta from "../../../components/Meta";
 import Image from "next/image";
-import { GetAdOfferById } from "../../data/services/AdsOffersService";
-import { useAddress, darkTheme, useTokenBalance, useContract, useContractRead, useContractWrite, Web3Button, useStorageUpload, useTokenDecimals, CheckoutWithCard, CheckoutWithEth } from "@thirdweb-dev/react";
+import { GetAdOfferById } from "../../../data/services/AdsOffersService";
+import { useAddress, darkTheme, useTokenBalance, useContract, useContractRead, useContractWrite, useStorageUpload, useTokenDecimals, CheckoutWithCard, CheckoutWithEth } from "@thirdweb-dev/react";
 import { ethers } from "ethers";
-import SliderForm from "../../components/sliderForm/sliderForm";
-import Step_1_Mint from "../../components/sliderForm/PageMint/Step_1_Mint";
-import Step_2_Mint from "../../components/sliderForm/PageMint/Step_2_Mint";
-import PreviewModal from "../../components/modal/previewModal";
+import SliderForm from "../../../components/sliderForm/sliderForm";
+import Step_1_Mint from "../../../components/sliderForm/PageMint/Step_1_Mint";
+import Step_2_Mint from "../../../components/sliderForm/PageMint/Step_2_Mint";
+import PreviewModal from "../../../components/modal/previewModal";
 
 const Item = () => {
-  const dispatch = useDispatch();
   const router = useRouter();
   const pid = router.query.item;
   const [data, setData] = useState([]);
-  const [imageModal, setImageModal] = useState(false);
   const address = useAddress();
-
   const [file, setFile] = useState(null);
   const [previewImage, setPreviewImage] = useState(null);
-  const fileTypes = ["JPG", "PNG", "GIF", "SVG"];
-  const [imageError, setImageError] = useState(null);
   const [link, setLink] = useState(null);
-  const [linkError, setLinkError] = useState(null);
-  const [uploadUrl, setUploadUrl] = useState(null);
-  const [jsonIpfsLink, setJsonIpfsLink] = useState(null);
-  const [args, setArgs] = useState([]);
+  const [tokenId, setTokenId] = useState(null);
   const [amountToApprove, setAmountToApprove] = useState(null);
   const [errors, setErrors] = useState({});
-   const [successFullUpload, setSuccessFullUpload] = useState(false);
-
+  const [successFullUpload, setSuccessFullUpload] = useState(false);
   const { contract } = useContract(data[0]?.currencyAddress, "token");
   const { data: tokenBalance, isLoading, error } = useTokenBalance(contract, address);
   const { contract: DsponsorAdminContract } = useContract("0xA82B4bBc8e6aC3C100bBc769F4aE0360E9ac9FC3");
+  const { contract: DsponsorNFTContract } = useContract(data[0]?.contractAddress);
   const { mutateAsync: uploadToIPFS, isLoading: isUploading } = useStorageUpload();
   const { mutateAsync, isLoadingMintAndSubmit } = useContractWrite(DsponsorAdminContract, "mintAndSubmit");
   const { contract: tokenContract } = useContract(data[0]?.currencyAddress, "token");
   const { mutateAsync: approve, isLoading: isLoadingApprove } = useContractWrite(tokenContract, "approve");
   const { data: bps } = useContractRead(DsponsorAdminContract, "bps");
+  const { data: isAllowedToMint } = useContractRead(DsponsorNFTContract, "tokenIdIsAllowedToMint", "4");
   const { data: tokenDecimals } = useTokenDecimals(tokenContract);
   const [showPreviewModal, setShowPreviewModal] = useState(false);
   const [validate, setValidate] = useState(false);
   const stepsRef = useRef([]);
   const numSteps = 2;
+
   useEffect(() => {
     if (pid) {
       const fetchAdsOffers = async () => {
@@ -99,9 +88,6 @@ const Item = () => {
     }
   };
 
- 
- 
-
   useEffect(() => {
     if (data[0]?.price && bps) {
       const price = data[0].price;
@@ -141,64 +127,41 @@ const Item = () => {
       } catch (error) {
         console.error("Erreur d'approbation des tokens:", error);
       }
-      try{
-        // const uploadUrl = await uploadToIPFS({
-        //   data: [file],
-        //   options: { uploadWithGatewayUrl: true, uploadWithoutDirectory: true },
-        // });
-        
+      try {
+        const uploadUrl = await uploadToIPFS({
+          data: [file],
+          options: { uploadWithGatewayUrl: true, uploadWithoutDirectory: true },
+        });
 
-        // const json = JSON.stringify({
-        //   image: uploadUrl,
-        //   external_link: link,
-        // });
-        // const jsonUrl = await uploadToIPFS({
-        //   data: [json],
-        //   options: { uploadWithGatewayUrl: true, uploadWithoutDirectory: true },
-        // });
+        const json = JSON.stringify({
+          image: uploadUrl,
+          external_link: link,
+        });
+        const jsonUrl = await uploadToIPFS({
+          data: [json],
+          options: { uploadWithGatewayUrl: true, uploadWithoutDirectory: true },
+        });
 
         const jsonIpfsLink = "jsonUrl[0]";
 
-      const args =  [{
-      tokenId: parseInt(data[0]?.maxSupply) - 1,
-      to: address,
-      currency: data[0]?.currencyAddress,
-      tokenData: jsonIpfsLink,
-      offerId: data[0]?.offerId,
-      adParameters: ["squareLogoURL", "linkURL"],
-      adDatas: [jsonIpfsLink, link],
-      referralAdditionalInformation: "",
-    }];
-    
-     await mutateAsync({ args: args[0] });
-     setSuccessFullUpload(true);
-      }
-      catch (error) {
+        const args = {
+          tokenId: parseInt(data[0]?.maxSupply) - 1,
+          to: address,
+          currency: data[0]?.currencyAddress,
+          tokenData: jsonIpfsLink,
+          offerId: data[0]?.offerId,
+          adParameters: ["squareLogoURL", "linkURL"],
+          adDatas: [jsonIpfsLink, link],
+          referralAdditionalInformation: "",
+        };
+
+        await mutateAsync({ args: [args] });
+        setSuccessFullUpload(true);
+      } catch (error) {
         console.error("Erreur de soumission du token:", error);
         setSuccessFullUpload(false);
       }
     }
-
-
-  };
-
-  const uploadJsonToIPFS = async () => {
-    const uploadUrl = await uploadToIPFS({
-      data: [file],
-      options: { uploadWithGatewayUrl: true, uploadWithoutDirectory: true },
-    });
-    setUploadUrl(uploadUrl);
-
-    const json = JSON.stringify({
-      image: uploadUrl,
-      external_link: link,
-    });
-    const jsonUrl = await uploadToIPFS({
-      data: [json],
-      options: { uploadWithGatewayUrl: true, uploadWithoutDirectory: true },
-    });
-
-    setJsonIpfsLink(jsonUrl[0]);
   };
 
   const checkUserBalance = (tokenAddressBalance, priceToken) => {
@@ -244,8 +207,8 @@ const Item = () => {
         <section key={id} className="dark:bg-jacarta-800 bg-light-base relative pb-12 pt-28">
           {/* <!-- Avatar --> */}
           <div className="absolute left-1/2 top-0 z-10 flex -translate-x-1/2 -translate-y-1/2 items-center justify-center">
-            <figure className="relative h-40 w-40 dark:border-jacarta-600 rounded-xl border-[5px] border-white">
-              <Image width={141} height={141} src={image} alt="{title}" className="dark:border-jacarta-600 rounded-xl border-[5px] border-white" />
+            <figure className="relative h-36 w-36 dark:border-jacarta-600 rounded-xl border-[5px] border-white ">
+              <Image width={141} height={141} src={image} alt="{title}" className="h-full object-cover" />
               <div className="dark:border-jacarta-600 bg-green absolute -right-3 bottom-0 flex h-6 w-6 items-center justify-center rounded-full border-2 border-white" data-tippy-content="Verified Collection">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" className="h-[.875rem] w-[.875rem] fill-white">
                   <path fill="none" d="M0 0h24v24H0z"></path>
@@ -266,15 +229,15 @@ const Item = () => {
               </div>
 
               <div className="dark:bg-jacarta-800 dark:border-jacarta-600 border-jacarta-100 mb-8 inline-flex flex-wrap items-center justify-center rounded-xl border bg-white">
-                <Link href="#" key={id} className="dark:border-jacarta-600 border-jacarta-100 w-1/2 rounded-l-xl border-r py-4 hover:shadow-md sm:w-32">
+                <Link href="#" className="dark:border-jacarta-600 border-jacarta-100 w-1/2 rounded-l-xl border-r py-4 hover:shadow-md sm:w-32">
                   <div className="text-jacarta-700 mb-1 text-base font-bold dark:text-white">{price}</div>
                   <div className="text-2xs dark:text-jacarta-400 font-medium tracking-tight">{currencyName}</div>
                 </Link>
-                <Link href="#" key={id} className="dark:border-jacarta-600 border-jacarta-100 w-1/2 rounded-l-xl border-r py-4 hover:shadow-md sm:w-32">
+                <Link href="#" className="dark:border-jacarta-600 border-jacarta-100 w-1/2 rounded-l-xl border-r py-4 hover:shadow-md sm:w-32">
                   <div className="text-jacarta-700 mb-1 text-base font-bold dark:text-white">3</div>
                   <div className="text-2xs dark:text-jacarta-400 font-medium tracking-tight">N°</div>
                 </Link>
-                <Link href="#" key={id} className="dark:border-jacarta-600 border-jacarta-100 w-1/2 rounded-l-xl border-r py-4 hover:shadow-md sm:w-32">
+                <Link href="#" className="dark:border-jacarta-600 border-jacarta-100 w-1/2 rounded-l-xl border-r py-4 hover:shadow-md sm:w-32">
                   <div className="text-jacarta-700 mb-1 text-base font-bold dark:text-white">{royalties} %</div>
                   <div className="text-2xs dark:text-jacarta-400 font-medium tracking-tight"> royalties</div>
                 </Link>
@@ -293,81 +256,37 @@ const Item = () => {
         <div className="container">
           {/* <!-- Item --> */}
 
-          <div key={id}>
-            <div className="md:flex md:flex-wrap">
-              {/* <!-- Image --> */}
-              {/* <figure className="mb-8 md:w-2/5 md:flex-shrink-0 md:flex-grow-0 md:basis-auto lg:w-1/2 w-full">
-                <button className=" w-full" onClick={() => setImageModal(true)}>
-                  <Image width={585} height={726} src={image} alt="image" className="rounded-2xl cursor-pointer h-full object-cover w-full" />
-                </button>
+          <div>
+            {isAllowedToMint ? (
+              <div>
+                <div className="flex justify-center">
+                  {/* <!-- Details --> */}
+                  <div className="w-9/12 ">
+                    {/* <!-- Collection / Likes / Actions --> */}
 
-              
-                <div className={imageModal ? "modal fade show block" : "modal fade"}>
-                  <div className="modal-dialog !my-0 flex h-full max-w-4xl items-center justify-center">
-                    <Image width={582} height={722} src={image} alt="image" className="h-full object-cover w-full rounded-2xl" />
-                  </div>
-
-                  <button type="button" className="btn-close absolute top-6 right-6" onClick={() => setImageModal(false)}>
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" className="h-6 w-6 fill-white">
-                      <path fill="none" d="M0 0h24v24H0z" />
-                      <path d="M12 10.586l4.95-4.95 1.414 1.414-4.95 4.95 4.95 4.95-1.414 1.414-4.95-4.95-4.95 4.95-1.414-1.414 4.95-4.95-4.95-4.95L7.05 5.636z" />
-                    </svg>
-                  </button>
-                </div>
-                
-              </figure> */}
-              {/* <!-- Details --> */}
-              <div className="md:w-3/5 md:basis-auto md:pl-8 lg:w-1/2 lg:pl-[3.75rem]">
-                {/* <!-- Collection / Likes / Actions --> */}
-
-                <div className="dark:bg-jacarta-700 dark:border-jacarta-600 border-jacarta-100 rounded-2lg border bg-white p-8">
-                  <div className="mb-8 sm:flex sm:flex-wrap">
-                    <span className="dark:text-jacarta-300 text-jacarta-400 text-sm">
-                      Buying the ad space give you the exclusive right to submit an ad. The media still has the power to validate or reject ad assets. You re free to change the ad at anytime. And free to resell on the
-                      open market your ad space.{" "}
-                    </span>
-                  </div>
-                  <Web3Button
-                    contractAddress="0xA82B4bBc8e6aC3C100bBc769F4aE0360E9ac9FC3"
-                    action={() =>
-                      mutateAsync({
-                        args: [args],
-                      })
-                    }
-                    className="!bg-accent !cursor-pointer !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all"
-                  >
-                    Mint NFT
-                  </Web3Button>
-                  {address ? (
-                    <Link href="#">
-                      <button className="bg-accent shadow-accent-volume hover:bg-accent-dark inline-block w-full rounded-full py-3 px-8 text-center font-semibold text-white transition-all" onClick={handleSubmit}>
-                        Upload IPFS
-                      </button>
-                    </Link>
-                  ) : (
-                    <div className="bg-accent shadow-accent-volume hover:bg-accent-dark inline-block w-full rounded-full px-8 text-center font-semibold text-white transition-all">
-                      <ConnectWallet
-                        theme={darkTheme({
-                          colors: {
-                            primaryButtonText: "#ffffff",
-                            primaryButtonBg: "bg-transparent",
-                          },
-                        })}
-                      />
-                      {/* <Link href="#" >
-                            <button className="bg-accent shadow-accent-volume hover:bg-accent-dark inline-block w-full rounded-full py-3 px-8 text-center font-semibold text-white transition-all">Connexion</button>
-                          </Link> */}
+                    <div className="dark:bg-jacarta-700 dark:border-jacarta-600 border-jacarta-100 rounded-2lg border bg-white p-8">
+                      <div className=" sm:flex sm:flex-wrap">
+                        <span className="dark:text-jacarta-300 text-jacarta-400 text-sm">
+                          Buying the ad space give you the exclusive right to submit an ad. The media still has the power to validate or reject ad assets. You re free to change the ad at anytime. And free to resell on
+                          the open market your ad space.{" "}
+                        </span>
+                      </div>
                     </div>
-                  )}
+                    {/* <!-- end bid --> */}
+                  </div>
                 </div>
-                {/* <!-- end bid --> */}
-              </div>
-            </div>
 
-            <SliderForm styles={styles} handlePreviewModal={handlePreviewModal} stepsRef={stepsRef} numSteps={numSteps}>
-              <Step_1_Mint stepsRef={stepsRef} styles={styles} file={file} handleLogoUpload={handleLogoUpload} />
-              <Step_2_Mint stepsRef={stepsRef} styles={styles} setLink={setLink} />
-            </SliderForm>
+                <SliderForm styles={styles} handlePreviewModal={handlePreviewModal} stepsRef={stepsRef} numSteps={numSteps}>
+                  <Step_1_Mint stepsRef={stepsRef} styles={styles} file={file} handleLogoUpload={handleLogoUpload} />
+                  <Step_2_Mint stepsRef={stepsRef} styles={styles} setLink={setLink} />
+                </SliderForm>
+              </div>
+            ) : (
+              //Message to say that the NFT is not allowed to mint
+              <div className="flex justify-center">
+                <p>Sorry, someone already mint this NFT</p>
+              </div>
+            )}
 
             {/* <!-- end details --> */}
           </div>
@@ -377,7 +296,17 @@ const Item = () => {
       </section>
       {showPreviewModal && (
         <div className="modal fade show bloc">
-          <PreviewModal handlePreviewModal={handlePreviewModal} handleSubmit={handleSubmit} link={link} previewImage={previewImage} errors={errors} successFullUpload={successFullUpload} validate={validate} />
+          <PreviewModal
+            handlePreviewModal={handlePreviewModal}
+            handleSubmit={handleSubmit}
+            link={link}
+            previewImage={previewImage}
+            errors={errors}
+            successFullUpload={successFullUpload}
+            validate={validate}
+            buttonTitle="Mint"
+            modalTitle="Mint NFT Preview"
+          />
         </div>
       )}
       {/* <!-- end item --> */}
