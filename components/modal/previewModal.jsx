@@ -38,6 +38,7 @@ const PreviewModal = ({
           <div className="modal-header">
             <h5 className="modal-title" id="placeBidLabel">
               {modalTitle}
+              {modalTitle}
             </h5>
             <button type="button" className="btn-close" onClick={() => handlePreviewModal()}>
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" className="fill-jacarta-700 h-6 w-6 dark:fill-white">
@@ -100,6 +101,7 @@ const PreviewModal = ({
                   ) : (
                     ""
                   )}
+                 
                 </div>
                 {previewImage && (
                   <div className="mb-6  flex-col items-center justify-center ">
