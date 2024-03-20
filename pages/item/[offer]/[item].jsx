@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import Link from "next/link";
 import "tippy.js/dist/tippy.css";
 import styles from "../../../styles/createPage/style.module.scss";
-import More_items from ".././more_items";
+
 import Meta from "../../../components/Meta";
 import Image from "next/image";
 import { GetAdOfferById } from "../../../data/services/AdsOffersService";
@@ -391,9 +391,7 @@ const Item = () => {
           />
         </div>
       )}
-      {/* <!-- end item --> */}
-
-      <More_items />
+      
     </>
   );
 };

@@ -29,15 +29,12 @@ const PreviewModal = ({
     if (!date) return "";
     return date.toLocaleDateString();
   };
-  console.log("successFullUploadModal", successFullUploadModal.title);
-
   return (
     <div>
       <div className="modal-dialog max-w-2xl">
         <div className="modal-content">
           <div className="modal-header">
             <h5 className="modal-title" id="placeBidLabel">
-              {modalTitle}
               {modalTitle}
             </h5>
             <button type="button" className="btn-close" onClick={() => handlePreviewModal()}>
@@ -101,7 +98,6 @@ const PreviewModal = ({
                   ) : (
                     ""
                   )}
-                 
                 </div>
                 {previewImage && (
                   <div className="mb-6  flex-col items-center justify-center ">
