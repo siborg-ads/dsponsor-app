@@ -366,7 +366,7 @@ export default function Header01() {
               <Image src={Logo} height={80} width={80} alt="Xhibiter | NFT Marketplace" className=" h-auto " />
               <span>d&gt;sponsor</span>
             </div>
-            <div className="hidden dark:block flex justify-center items-center text-white font-semibold">
+            <div className="hidden dark:flex flex justify-center items-center text-white font-semibold">
               <Image src={WhiteLogo} height={80} width={80} alt="Xhibiter | NFT Marketplace" />
               <span>d&gt;sponsor</span>
             </div>

@@ -63,12 +63,12 @@ const BidsCarousel = () => {
                 <div className="dark:bg-jacarta-700 dark:border-jacarta-700 border-jacarta-100 rounded-2xl block border bg-white p-[1.1875rem] transition-shadow hover:shadow-lg text-jacarta-500">
                   <figure>
                     {/* {`item/${itemLink}`} */}
-                    <Link href={`item/${id}`}>
+                    <Link href={`/item/${id}/1`}>
                       <Image src={image} alt="" height={230} width={230} className="rounded-[0.625rem] w-full lg:h-[230px] object-cover" loading="lazy" />
                     </Link>
                   </figure>
                   <div className="mt-4 flex items-center justify-between">
-                    <Link href={`item/${id}`}>
+                    <Link href={`/item/${id}/1`}>
                       <span className="font-display text-jacarta-700 hover:text-accent text-base dark:text-white">{name}</span>
                     </Link>
                     <span className="dark:border-jacarta-600 border-jacarta-100 flex items-center whitespace-nowrap rounded-md border py-1 px-2">

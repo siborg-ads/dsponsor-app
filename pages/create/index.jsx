@@ -281,8 +281,13 @@ const Create = () => {
   );
 
  
-  
-  
+  const numSteps = 4;
+  const successFullUploadModal = {
+    
+    body: "Your offer has been created successfully",
+    buttonTitle: "Close",
+    hrefButton: "/",
+  };
 
  
   return (
@@ -303,7 +308,7 @@ const Create = () => {
             </p>
           </div>
         </div>
-        <SliderForm styles={styles} handlePreviewModal={handlePreviewModal} stepsRef={stepsRef}>
+        <SliderForm styles={styles} handlePreviewModal={handlePreviewModal} stepsRef={stepsRef} numSteps={numSteps}>
           <Step_1_Create stepsRef={stepsRef} styles={styles} setName={setName} setDescription={setDescription} />
 
           <Step_2_Create stepsRef={stepsRef} styles={styles} setLink={setLink} file={file} handleLogoUpload={handleLogoUpload} />
@@ -332,7 +337,6 @@ const Create = () => {
             handleRoyaltiesChange={handleRoyaltiesChange}
           />
         </SliderForm>
-        
       </section>
       {showPreviewModal && (
         <div className="modal fade show bloc">
@@ -355,6 +359,9 @@ const Create = () => {
             errors={errors}
             successFullUpload={successFullUpload}
             address={address}
+            buttonTitle="Offer Preview"
+            modalTitle="Ad Space Offer "
+            successFullUploadModal={successFullUploadModal}
           />
         </div>
       )}

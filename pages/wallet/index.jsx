@@ -1,5 +1,5 @@
 import React from "react";
-import ImageTitle from "../../components/imageTitle";
+
 import { wallet_data } from "../../data/wallet_data";
 import Link from "next/link";
 import Meta from "../../components/Meta";
@@ -13,7 +13,7 @@ const Wallet = () => {
       <div className="pt-[5.5rem] lg:pt-24">
         {/* <!-- Wallet --> */}
 
-        <ImageTitle text="Connect your wallet" image={bgImage} />
+        
 
         <section className="dark:bg-jacarta-800 relative pb-20 pt-28">
           <picture className="pointer-events-none absolute inset-0 -z-10 dark:hidden">
