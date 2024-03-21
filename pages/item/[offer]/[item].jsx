@@ -162,7 +162,7 @@ const Item = () => {
           currency: data[0]?.currencyAddress,
           tokenData: jsonIpfsLink,
           offerId: data[0]?.offerId,
-          adParameters: ["squareLogoURL", "linkURL"],
+          adParameters: ["logoURL", "linkURL"],
           adDatas: [jsonIpfsLink, link],
           referralAdditionalInformation: "",
         };
