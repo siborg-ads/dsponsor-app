@@ -6,6 +6,7 @@ import Tippy from "@tippyjs/react";
 import Recently_added_dropdown from "../dropdown/recently_added_dropdown";
 import { useSelector, useDispatch } from "react-redux";
 import { updateTrendingCategoryItemData } from "../../redux/counterSlice";
+import Review_adProposal_data from "./review_adProposal_items";
 
 const Trending_categories_items = () => {
   const [itemdata, setItemdata] = useState(trendingCategoryData);
@@ -15,9 +16,7 @@ const Trending_categories_items = () => {
 
   const handleFilter = (category) => {
     if (category !== "all") {
-      setItemdata(
-        trendingCategoryData.filter((item) => item.category === category)
-      );
+      setItemdata(trendingCategoryData.filter((item) => item.category === category));
     } else {
       setItemdata(trendingCategoryData);
     }
@@ -86,13 +85,7 @@ const Trending_categories_items = () => {
                           : "dark:border-jacarta-600 dark:bg-jacarta-900 dark:hover:bg-accent group hover:bg-accent border-jacarta-100 font-display text-jacarta-500 flex h-9 items-center rounded-lg border bg-white px-4 text-sm font-semibold transition-colors hover:border-transparent hover:text-white dark:text-white dark:hover:border-transparent dark:hover:text-white capitalize"
                       }
                     >
-                      <svg
-                        className={
-                          filterVal === id
-                            ? "icon mr-1 h-4 w-4 transition-colors fill-white"
-                            : "icon fill-jacarta-700 dark:fill-jacarta-100 mr-1 h-4 w-4 transition-colors group-hover:fill-white"
-                        }
-                      >
+                      <svg className={filterVal === id ? "icon mr-1 h-4 w-4 transition-colors fill-white" : "icon fill-jacarta-700 dark:fill-jacarta-100 mr-1 h-4 w-4 transition-colors group-hover:fill-white"}>
                         <use xlinkHref={`/icons.svg#icon-${svg}`}></use>
                       </svg>
                       <span>{text}</span>
@@ -108,7 +101,7 @@ const Trending_categories_items = () => {
       </div>
 
       {/* <!-- Grid --> */}
-      <CategoryItem />
+      <Review_adProposal_data />
     </>
   );
 };
