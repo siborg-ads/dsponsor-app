@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
-import Activity_item from "../collectrions/Activity_item";
+import Activity_item from "../collectrions/validated-refused_items";
 import Image from "next/image";
 import Trending_categories_items from "../categories/trending_categories_items";
 import Review_adProposal_items from "../collectrions/review_adProposal_items";
@@ -8,7 +8,6 @@ import Review_adProposal_items from "../collectrions/review_adProposal_items";
 const User_items = () => {
   const [itemActive, setItemActive] = useState(1);
   const tabItem = [
-  
     {
       id: 1,
       text: "review",
@@ -19,7 +18,7 @@ const User_items = () => {
       text: "owned",
       icon: "owned",
     },
-    
+
     {
       id: 3,
       text: "Activity",
@@ -80,7 +79,6 @@ const User_items = () => {
                 <Review_adProposal_items itemFor="userPage" />
               </div>
             </TabPanel>
-            
           </Tabs>
         </div>
       </section>

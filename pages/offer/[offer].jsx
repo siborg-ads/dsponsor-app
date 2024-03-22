@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import "tippy.js/dist/tippy.css";
-
+import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import Meta from "../../components/Meta";
 import Image from "next/image";
 import { GetAdOfferById } from "../../data/services/AdsOffersService";
@@ -12,6 +12,7 @@ import Tippy from "@tippyjs/react";
 import "tippy.js/dist/tippy.css";
 import { ItemsTabs } from "../../components/component";
 import Review_carousel from "../../components/carousel/review_carousel";
+import Validated_refused_items from "../../components/collectrions/validated_refused_items";
 
 const Offer = () => {
   const router = useRouter();
@@ -19,29 +20,13 @@ const Offer = () => {
   const offerAddress = router.query.offer;
 
   const [data, setData] = useState([]);
-  const address = useAddress();
-  const [file, setFile] = useState(null);
+
   const [imageModal, setImageModal] = useState(false);
-  const [previewImage, setPreviewImage] = useState(null);
-  const [link, setLink] = useState(null);
-  const [amountToApprove, setAmountToApprove] = useState(null);
-  const [errors, setErrors] = useState({});
-  const [successFullUpload, setSuccessFullUpload] = useState(false);
-  const { contract } = useContract(data[0]?.currencyAddress, "token");
-  const { data: tokenBalance, isLoading, error } = useTokenBalance(contract, address);
+
   const { contract: DsponsorAdminContract } = useContract("0xA82B4bBc8e6aC3C100bBc769F4aE0360E9ac9FC3");
-  const { contract: DsponsorNFTContract } = useContract(data[0]?.contractAddress);
-  const { mutateAsync: uploadToIPFS, isLoading: isUploading } = useStorageUpload();
-  const { mutateAsync, isLoadingMintAndSubmit } = useContractWrite(DsponsorAdminContract, "mintAndSubmit");
-  const { contract: tokenContract } = useContract(data[0]?.currencyAddress, "token");
-  const { mutateAsync: approve, isLoading: isLoadingApprove } = useContractWrite(tokenContract, "approve");
-  const { data: bps } = useContractRead(DsponsorAdminContract, "bps");
-  const { data: tokenDecimals } = useTokenDecimals(tokenContract);
-  const [showPreviewModal, setShowPreviewModal] = useState(false);
-  const [validate, setValidate] = useState(false);
-  const stepsRef = useRef([]);
-  const numSteps = 2;
-  const [args, setArgs] = useState({});
+
+  const { mutateAsync, isLoadingMintAndSubmit } = useContractWrite(DsponsorAdminContract, "reviewAdProposal");
+  const [successFullUpload, setSuccessFullUpload] = useState(false);
 
   useEffect(() => {
     if (offerAddress) {
@@ -54,29 +39,36 @@ const Offer = () => {
     }
   }, [offerAddress, router]);
 
-  const handleSubmit = async () => {
-    console.log(args, "ici");
-    // try {
-
-    //   const args = {
-    //     tokenId: tokenIdString,
-    //     to: address,
-    //     currency: data[0]?.currencyAddress,
-    //     tokenData: jsonIpfsLink,
-    //     offerId: data[0]?.offerId,
-    //     adParameters: ["logoURL", "linkURL"],
-    //     adDatas: [jsonIpfsLink, link],
-    //     referralAdditionalInformation: "",
-    //   };
-    //   console.log(args);
-
-    //   await mutateAsync({ args: [args] });
-    //   setSuccessFullUpload(true);
-    // } catch (error) {
-    //   console.error("Erreur de soumission du token:", error);
-    //   setSuccessFullUpload(false);
-    // }
+  const handleSubmit = async (submissionArgs) => {
+    console.log(submissionArgs, "ici");
+    try {
+      await mutateAsync({ args: [args] });
+      setSuccessFullUpload(true);
+    } catch (error) {
+      console.error("Erreur de validation du token:", error);
+      setSuccessFullUpload(false);
+    }
   };
+
+  const [itemActive, setItemActive] = useState(1);
+  const tabItem = [
+    {
+      id: 1,
+      text: "Pending",
+      icon: "owned",
+    },
+    {
+      id: 2,
+      text: "Validated",
+      icon: "owned",
+    },
+
+    {
+      id: 3,
+      text: "Refused",
+      icon: "activity",
+    },
+  ];
 
   if (!data || data.length === 0) {
     return <div>Chargement...</div>;
@@ -183,27 +175,6 @@ const Offer = () => {
                     </Link>
                   </div>
                 </div>
-
-                <div className="mb-4 flex">
-                  <figure className="mr-4 shrink-0">
-                    <Link href="/user/avatar_6" className="relative block">
-                      {/* <Image width={48} height={48} src={ownerImage} alt={ownerName} className="rounded-2lg h-12 w-12" loading="lazy" /> */}
-                      <div className="dark:border-jacarta-600 bg-green absolute -right-3 top-[60%] flex h-6 w-6 items-center justify-center rounded-full border-2 border-white" data-tippy-content="Verified Collection">
-                        <Tippy content={<span>Verified Collection</span>}>
-                          <svg className="icon h-[.875rem] w-[.875rem] fill-white">
-                            <use xlinkHref="/icons.svg#icon-right-sign"></use>
-                          </svg>
-                        </Tippy>
-                      </div>
-                    </Link>
-                  </figure>
-                  <div className="flex flex-col justify-center">
-                    <span className="text-jacarta-400 block text-sm dark:text-white">Owned by</span>
-                    <Link href="/user/avatar_6" className="text-accent block">
-                      <span className="text-sm font-bold">{ownerName}</span>
-                    </Link>
-                  </div>
-                </div>
               </div>
 
               <div className="dark:bg-jacarta-700 dark:border-jacarta-600 border-jacarta-100 rounded-2lg border bg-white p-8">
@@ -218,10 +189,51 @@ const Offer = () => {
           </div>
         </div>
       </section>
-      {/* <!-- end item --> */}
-      <div className="container mb-12 relative">
-        <Review_carousel handleSubmit={handleSubmit} setArgs={setArgs} />
+      <div className="container">
+        {/* <!-- Tabs Nav --> */}
+        <Tabs className="tabs">
+          <TabList className="nav nav-tabs scrollbar-custom mb-12 flex items-center justify-start overflow-x-auto overflow-y-hidden border-b border-jacarta-100 pb-px dark:border-jacarta-600 md:justify-center">
+            {tabItem.map(({ id, text, icon }) => {
+              return (
+                <Tab className="nav-item" role="presentation" key={id} onClick={() => setItemActive(id)}>
+                  <button
+                    className={
+                      itemActive === id
+                        ? "nav-link hover:text-jacarta-700 text-jacarta-400 relative flex items-center whitespace-nowrap py-3 px-6 dark:hover:text-white active"
+                        : "nav-link hover:text-jacarta-700 text-jacarta-400 relative flex items-center whitespace-nowrap py-3 px-6 dark:hover:text-white"
+                    }
+                  >
+                    <svg className="icon mr-1 h-5 w-5 fill-current">
+                      <use xlinkHref={`/icons.svg#icon-${icon}`}></use>
+                    </svg>
+                    <span className="font-display text-base font-medium">{text}</span>
+                  </button>
+                </Tab>
+              );
+            })}
+          </TabList>
+
+          <TabPanel>
+            <div className="container mb-12 relative p-0">
+              {/* <!-- Filter --> */}
+              <Review_carousel handleSubmit={handleSubmit} />
+            </div>
+          </TabPanel>
+          <TabPanel>
+            <div className="container mb-12 relative p-0">
+              {/* <!-- Filter --> */}
+              <Validated_refused_items statut={true} />
+            </div>
+          </TabPanel>
+          <TabPanel>
+            <div className="container mb-12 relative p-0">
+              {/* <!-- Filter --> */}
+              <Validated_refused_items statut={false} />
+            </div>
+          </TabPanel>
+        </Tabs>
       </div>
+
       {/* <ItemsTabs /> */}
       <div className="container mb-12">
         <ItemsTabs />

@@ -18,10 +18,11 @@ import { useEffect, useState } from "react";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import { Web3Button } from "@thirdweb-dev/react";
 
-const Review_carousel = ({ handleSubmit, setArgs }) => {
+const Review_carousel = ({ handleSubmit }) => {
   const [data, setData] = useState([]);
   const [validate, setValidate] = useState({});
   const [comments, setComments] = useState({});
+
   useEffect(() => {
     const fetchAdsOffers = async () => {
       const result = await GetAllAdsOffers();
@@ -56,18 +57,25 @@ const Review_carousel = ({ handleSubmit, setArgs }) => {
       [id]: value,
     }));
   };
-  const handleItemSubmit = async (id) => {
+  const handleItemSubmit = async (id, offerId, tokenId, proposalId, approuved) => {
     const submissionArgs = {
-      comment: comments[id],
+      offerId: offerId,
+      tokenId: tokenId,
+      proposalId: proposalId,
+      adParameter: "linkURL",
+      validated: approuved,
+      reason: comments[id],
+
       // Ajoutez d'autres champs nécessaires ici
     };
-    await setArgs(submissionArgs);
 
-    await handleSubmit();
+    await handleSubmit(submissionArgs);
   };
+  
 
   return (
     <>
+    
       <Swiper
         modules={[Navigation, Pagination, Scrollbar]}
         spaceBetween={30}
@@ -80,7 +88,7 @@ const Review_carousel = ({ handleSubmit, setArgs }) => {
         className=" card-slider-4-columns !py-5"
       >
         {data.map((item) => {
-          const { id, name, ownerAddress, ownerName, image, maxSupply, externalLink, description, currencyName, numberTokenAllowed, price } = item;
+          const { id, name, ownerAddress, ownerName, image, maxSupply, externalLink, description, currencyName, numberTokenAllowed, price, offerId, tokenId, proposalId } = item;
           // const itemLink = image.split("/").slice(-1).toString().replace(".jpg", "");
           return (
             <SwiperSlide className="text-white" key={id}>
@@ -144,17 +152,15 @@ const Review_carousel = ({ handleSubmit, setArgs }) => {
                     <div>
                       <div className="mb-6">
                         <label htmlFor="item-description" className="font-display text-jacarta-700 mb-2 block dark:text-white">
-                          Description<span className="text-red">*</span>
+                          Comments<span className="text-red">*</span>
                         </label>
                         <textarea
                           id={id}
                           className="dark:bg-jacarta-700  border-jacarta-100 hover:ring-accent/10 focus:ring-accent dark:border-jacarta-600 dark:placeholder:text-jacarta-300 w-full rounded-lg py-3 px-3 hover:ring-2 dark:text-white"
                           rows="4"
                           required
-                          
                           onChange={(e) => handleCommentChange(id, e.target.value)}
-                          value={comments[id] || ""}
-                          placeholder="Provide a detailed description of your item."
+                          placeholder="Provide a comment of your validation."
                         ></textarea>
                       </div>
                     </div>
@@ -163,18 +169,16 @@ const Review_carousel = ({ handleSubmit, setArgs }) => {
                       <div className="flex items-start gap-4 flex-wrap">
                         <Web3Button
                           contractAddress="0xA82B4bBc8e6aC3C100bBc769F4aE0360E9ac9FC3"
-                          action={() => handleItemSubmit(id)}
+                          action={() => handleItemSubmit(id, offerId, tokenId, proposalId, true)}
                           className={` !rounded-full !min-w-[100px] !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate[item.id] ? "btn-disabled" : "!bg-accent !cursor-pointer"} `}
-                          // disabled={!validate}
                         >
                           Validate
                         </Web3Button>
 
                         <Web3Button
                           contractAddress="0xA82B4bBc8e6aC3C100bBc769F4aE0360E9ac9FC3"
-                          action={handleSubmit}
+                          action={() => handleItemSubmit(id, offerId, tokenId, proposalId, false)}
                           className={` !rounded-full !min-w-[100px] !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate[item.id] ? "btn-disabled" : "!bg-red !cursor-pointer"} `}
-                          // disabled={!validate}
                         >
                           Reject
                         </Web3Button>
