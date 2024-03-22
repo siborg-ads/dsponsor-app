@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
-import Activity_item from "../collectrions/validated-refused_items";
+
 import Image from "next/image";
 import Trending_categories_items from "../categories/trending_categories_items";
 import Review_adProposal_items from "../collectrions/review_adProposal_items";

@@ -12,7 +12,7 @@ import Meta from "../../components/Meta";
 
 const User = () => {
   const router = useRouter();
-  const pid = router.query.user;
+  const userAddress = router.query.user;
 
   const [likesImage, setLikesImage] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -58,7 +58,7 @@ const User = () => {
 
           <div className="container">
             <div className="text-center">
-              <h2 className="font-display text-jacarta-700 mb-2 text-4xl font-medium dark:text-white">Title</h2>
+              <h2 className="font-display text-jacarta-700 mb-2 text-4xl font-medium dark:text-white">UserName</h2>
               <div className="dark:bg-jacarta-700 dark:border-jacarta-600 border-jacarta-100 mb-8 inline-flex items-center justify-center rounded-full border bg-white py-1.5 px-4">
                 <Tippy content="ETH">
                   <svg className="icon h-4 w-4 mr-1">
@@ -69,7 +69,7 @@ const User = () => {
                 <Tippy hideOnClick={false} content={copied ? <span>copied</span> : <span>copy</span>}>
                   <button className="js-copy-clipboard dark:text-jacarta-200 max-w-[10rem] select-none overflow-hidden text-ellipsis whitespace-nowrap">
                     <CopyToClipboard text="userId" onCopy={() => setCopied(true)}>
-                      <span>userId</span>
+                      <span>{userAddress}</span>
                     </CopyToClipboard>
                   </button>
                 </Tippy>
@@ -77,7 +77,6 @@ const User = () => {
 
               <p className="dark:text-jacarta-300 mx-auto mb-2 max-w-xl text-lg">description</p>
               <span className="text-jacarta-400">Joined December 24th</span>
-
             </div>
           </div>
         </section>
