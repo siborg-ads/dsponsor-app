@@ -17,7 +17,6 @@ const Offer = () => {
   const router = useRouter();
 
   const offerAddress = router.query.offer;
-  console.log(offerAddress);
 
   const [data, setData] = useState([]);
   const address = useAddress();
@@ -42,6 +41,7 @@ const Offer = () => {
   const [validate, setValidate] = useState(false);
   const stepsRef = useRef([]);
   const numSteps = 2;
+  const [args, setArgs] = useState({});
 
   useEffect(() => {
     if (offerAddress) {
@@ -53,6 +53,30 @@ const Offer = () => {
       fetchAdsOffers();
     }
   }, [offerAddress, router]);
+
+  const handleSubmit = async () => {
+    console.log(args, "ici");
+    // try {
+
+    //   const args = {
+    //     tokenId: tokenIdString,
+    //     to: address,
+    //     currency: data[0]?.currencyAddress,
+    //     tokenData: jsonIpfsLink,
+    //     offerId: data[0]?.offerId,
+    //     adParameters: ["logoURL", "linkURL"],
+    //     adDatas: [jsonIpfsLink, link],
+    //     referralAdditionalInformation: "",
+    //   };
+    //   console.log(args);
+
+    //   await mutateAsync({ args: [args] });
+    //   setSuccessFullUpload(true);
+    // } catch (error) {
+    //   console.error("Erreur de soumission du token:", error);
+    //   setSuccessFullUpload(false);
+    // }
+  };
 
   if (!data || data.length === 0) {
     return <div>Chargement...</div>;
@@ -110,7 +134,6 @@ const Offer = () => {
                     </Tippy>
                   </span>
                 </div>
-
               </div>
 
               <h1 className="font-display text-jacarta-700 mb-4 text-4xl font-semibold dark:text-white">{name}</h1>
@@ -196,9 +219,9 @@ const Offer = () => {
         </div>
       </section>
       {/* <!-- end item --> */}
-    <div className="container mb-12 relative">
-      <Review_carousel/>
-    </div>
+      <div className="container mb-12 relative">
+        <Review_carousel handleSubmit={handleSubmit} setArgs={setArgs} />
+      </div>
       {/* <ItemsTabs /> */}
       <div className="container mb-12">
         <ItemsTabs />
