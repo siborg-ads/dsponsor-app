@@ -26,7 +26,8 @@ const Offer = () => {
   const { contract: DsponsorAdminContract } = useContract("0xA82B4bBc8e6aC3C100bBc769F4aE0360E9ac9FC3");
 
   const { mutateAsync, isLoadingreviewAdProposal } = useContractWrite(DsponsorAdminContract, "reviewAdProposal");
-  const [successFullUpload, setSuccessFullUpload] = useState(false);
+
+  const [successFullRefuseModal, setSuccessFullRefuseModal] = useState(false);
 
   useEffect(() => {
     if (offerAddress) {
@@ -45,7 +46,7 @@ const Offer = () => {
       await mutateAsync({
         args: [offerId, tokenId, proposalId, adParameter, validated, reason],
       });
-      setSuccessFullUpload(true);
+      setSuccessFullRefuseModal(true);
     } catch (error) {
       console.error("Erreur de validation du token:", error);
       setSuccessFullUpload(false);
@@ -218,7 +219,7 @@ const Offer = () => {
           <TabPanel>
             <div className="container mb-12 relative p-0">
               {/* <!-- Filter --> */}
-              <Review_carousel handleSubmit={handleSubmit} />
+              <Review_carousel handleSubmit={handleSubmit} successFullRefuseModal={successFullRefuseModal} />
             </div>
           </TabPanel>
           <TabPanel>

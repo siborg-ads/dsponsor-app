@@ -17,8 +17,8 @@ const OfferItem = ({item, url}) => {
             </Link>
           </figure>
           <div className="mt-4 flex items-center justify-between">
-            <Link href={url}>
-              <span className="font-display text-jacarta-700 hover:text-accent text-base dark:text-white">{name}</span>
+            <Link href={url} className="overflow-hidden text-ellipsis whitespace-nowrap">
+              <span className="font-display text-jacarta-700 hover:text-accent text-base dark:text-white ">{name}</span>
             </Link>
             <span className="dark:border-jacarta-600 border-jacarta-100 flex items-center whitespace-nowrap rounded-md border py-1 px-2">
               <Tippy content={<span>{currencyName}</span>}>
