@@ -56,7 +56,6 @@ const Item = () => {
     if (offerAddress) {
       const fetchAdsOffers = async () => {
         const result = await GetAdOfferById(offerAddress);
-        console.log(result, "result");
         setData(result);
       };
 
