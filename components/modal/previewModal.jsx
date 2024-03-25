@@ -14,6 +14,7 @@ const PreviewModal = ({
   selectedNumber = null,
   selectedUnitPrice = null,
   selectedCurrency = null,
+  selectedParameter = null,
   customContract = null,
   selectedRoyalties = null,
   previewImage = null,
@@ -24,6 +25,7 @@ const PreviewModal = ({
   buttonTitle,
   modalTitle,
   successFullUploadModal,
+  hrefButton,
 }) => {
   const formatDate = (date) => {
     if (!date) return "";
@@ -78,6 +80,11 @@ const PreviewModal = ({
                   )}
                   {selectedNumber ? (
                     <p className="font-display text-jacarta-700 mb-2 block dark:text-white">Number of Items : {!errors.numberError ? `${selectedNumber}` : <span className="text-red">{errors.numberError}</span>}</p>
+                  ) : (
+                    ""
+                  )}
+                  {selectedParameter ? (
+                    <p className="font-display text-jacarta-700 mb-2 block dark:text-white">Type of Ad : {!errors.typeAdError ? `${selectedParameter}` : <span className="text-red">{errors.typeAdError}</span>}</p>
                   ) : (
                     ""
                   )}

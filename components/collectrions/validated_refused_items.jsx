@@ -3,6 +3,7 @@ import { collection_activity_item_data } from "../../data/collection_data";
 import Link from "next/link";
 import Image from "next/image";
 import Tippy from "@tippyjs/react";
+import "tippy.js/dist/tippy.css";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 
 const Validated_refused_items = ({ statut }) => {
@@ -49,7 +50,6 @@ const Validated_refused_items = ({ statut }) => {
     } else {
       setStatutItem("refused");
     }
-   
   }, []);
 
   return (
@@ -84,7 +84,7 @@ const Validated_refused_items = ({ statut }) => {
                       <div key="2" className="dropdown-item mb-4 font-display dark:bg-jacarta-600 hover:bg-jacarta-50 block w-full rounded-xl pr-5 py-2 text-left text-sm transition-colors dark:text-white">
                         <div className="flex flex-col pl-5 justify-between">
                           <span className="mb-2">
-                            Don't forget to display the adSpaces on your website ! <br /> Copy paste this piece of code to display automatically your sponsor logo.
+                            Don&apos;t forget to display the adSpaces on your website ! <br /> Copy paste this piece of code to display automatically your sponsor logo.
                           </span>
                           <div className="flex gap-2 items-start justify-between">
                             <pre
@@ -98,7 +98,13 @@ const Validated_refused_items = ({ statut }) => {
                             >
                               <code>{`<iframe src="https://integrations.dsponsor.com/squareLogsoV1/...`}</code>
                             </pre>
-                            <Image src="/images/copy.svg" alt="icon" width={20} height={20} className="mt-2 " />
+                            <Tippy hideOnClick={false} content={copied ? <span>copied</span> : <span>copy</span>}>
+                              <div className="js-copy-clipboard cursor-pointer">
+                                <CopyToClipboard text="userId" onCopy={() => setCopied(true)}>
+                                  <Image src="/images/copy.svg" alt="icon" width={20} height={20} className="mt-2 " />
+                                </CopyToClipboard>
+                              </div>
+                            </Tippy>
                           </div>
                         </div>
                       </div>

@@ -22,6 +22,9 @@ const Review_carousel = ({ handleSubmit }) => {
   const [data, setData] = useState([]);
   const [validate, setValidate] = useState({});
   const [comments, setComments] = useState({});
+  const [refusedAdModal, setRefusedAdModal] = useState(false);
+  const [successFullRefuseModal, setSuccessFullRefuseModal] = useState(false);
+  
 
   useEffect(() => {
     const fetchAdsOffers = async () => {
@@ -59,23 +62,19 @@ const Review_carousel = ({ handleSubmit }) => {
   };
   const handleItemSubmit = async (id, offerId, tokenId, proposalId, approuved) => {
     const submissionArgs = {
-      offerId: offerId,
-      tokenId: tokenId,
-      proposalId: proposalId,
+      offerId: "23",
+      tokenId: "1",
+      proposalId: "43",
       adParameter: "linkURL",
       validated: approuved,
       reason: comments[id],
-
-      // Ajoutez d'autres champs nécessaires ici
     };
 
     await handleSubmit(submissionArgs);
   };
-  
 
   return (
     <>
-    
       <Swiper
         modules={[Navigation, Pagination, Scrollbar]}
         spaceBetween={30}
@@ -149,21 +148,6 @@ const Review_carousel = ({ handleSubmit }) => {
                         </div>
                       </div>
                     </div>
-                    <div>
-                      <div className="mb-6">
-                        <label htmlFor="item-description" className="font-display text-jacarta-700 mb-2 block dark:text-white">
-                          Comments<span className="text-red">*</span>
-                        </label>
-                        <textarea
-                          id={id}
-                          className="dark:bg-jacarta-700  border-jacarta-100 hover:ring-accent/10 focus:ring-accent dark:border-jacarta-600 dark:placeholder:text-jacarta-300 w-full rounded-lg py-3 px-3 hover:ring-2 dark:text-white"
-                          rows="4"
-                          required
-                          onChange={(e) => handleCommentChange(id, e.target.value)}
-                          placeholder="Provide a comment of your validation."
-                        ></textarea>
-                      </div>
-                    </div>
 
                     <div className="flex items-start space-x-4">
                       <div className="flex items-start gap-4 flex-wrap">
@@ -177,7 +161,7 @@ const Review_carousel = ({ handleSubmit }) => {
 
                         <Web3Button
                           contractAddress="0xA82B4bBc8e6aC3C100bBc769F4aE0360E9ac9FC3"
-                          action={() => handleItemSubmit(id, offerId, tokenId, proposalId, false)}
+                          action={() => setRefusedAdModal(true)}
                           className={` !rounded-full !min-w-[100px] !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate[item.id] ? "btn-disabled" : "!bg-red !cursor-pointer"} `}
                         >
                           Reject
@@ -195,6 +179,70 @@ const Review_carousel = ({ handleSubmit }) => {
           );
         })}
       </Swiper>
+      {refusedAdModal && (
+        <div>
+          <div className="modal-dialog max-w-2xl">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title" id="placeBidLabel">
+                  Comments
+                </h5>
+                <button type="button" className="btn-close" onClick={() => setRefusedAdModal(false)}>
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" className="fill-jacarta-700 h-6 w-6 dark:fill-white">
+                    <path fill="none" d="M0 0h24v24H0z"></path>
+                    <path d="M12 10.586l4.95-4.95 1.414 1.414-4.95 4.95 4.95 4.95-1.414 1.414-4.95-4.95-4.95 4.95-1.414-1.414 4.95-4.95-4.95-4.95L7.05 5.636z"></path>
+                  </svg>
+                </button>
+              </div>
+              <div className="modal-body p-6 flex gap-4 items-center justify-center">
+                {!successFullRefuseModal ? (
+                  <div>
+                    <div className="mb-6">
+                      <label htmlFor="item-description" className="font-display text-jacarta-700 mb-2 block dark:text-white">
+                        Comments<span className="text-red">*</span>
+                      </label>
+                      <textarea
+                        id={id}
+                        className="dark:bg-jacarta-700  border-jacarta-100 hover:ring-accent/10 focus:ring-accent dark:border-jacarta-600 dark:placeholder:text-jacarta-300 w-full rounded-lg py-3 px-3 hover:ring-2 dark:text-white"
+                        rows="4"
+                        required
+                        onChange={(e) => handleCommentChange(id, e.target.value)}
+                        placeholder="Provide a comment of your validation."
+                      ></textarea>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex gap-2">
+                    <p>Proposal ad successfull refused </p>
+                    <div className="dark:border-jacarta-600 bg-green   flex h-6 w-6 items-center justify-center rounded-full border-2 border-white" data-tippy-content="Verified Collection">
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" className="h-[.875rem] w-[.875rem] fill-white">
+                        <path fill="none" d="M0 0h24v24H0z"></path>
+                        <path d="M10 15.172l9.192-9.193 1.415 1.414L10 18l-6.364-6.364 1.414-1.414z"></path>
+                      </svg>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <div className="modal-footer">
+                <div className="flex items-center justify-center space-x-4">
+                  <div className="flex items-center gap-4">
+                    <Web3Button
+                      contractAddress="0xA82B4bBc8e6aC3C100bBc769F4aE0360E9ac9FC3"
+                      action={() => handleItemSubmit(id, offerId, tokenId, proposalId, false)}
+                      className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate ? "btn-disabled" : "!bg-red !cursor-pointer"} `}
+                      disabled={!validate}
+                    >
+                      Refuse Ad Proposal
+                    </Web3Button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* <!-- Slider Navigation --> */}
       <div className="group bids-swiper-button-prev swiper-button-prev shadow-white-volume absolute !top-1/2 !-left-4 z-10 -mt-6 flex !h-12 !w-12 cursor-pointer items-center justify-center rounded-full bg-white p-3 text-jacarta-700 text-xl sm:!-left-6 after:hidden">
         <MdKeyboardArrowLeft />

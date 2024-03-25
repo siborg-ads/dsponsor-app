@@ -14,16 +14,9 @@ const User = () => {
   const router = useRouter();
   const userAddress = router.query.user;
 
-  const [likesImage, setLikesImage] = useState(false);
+
   const [copied, setCopied] = useState(false);
 
-  const handleLikes = () => {
-    if (!likesImage) {
-      setLikesImage(true);
-    } else {
-      setLikesImage(false);
-    }
-  };
 
   useEffect(() => {
     setTimeout(() => {

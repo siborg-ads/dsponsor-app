@@ -24,6 +24,7 @@ const Item = () => {
   const router = useRouter();
 
   const offerAddress = router.query.offer;
+  console.log(offerAddress, "offerAddress");
   const [tokenIdString, setTokenIdString] = useState(null);
 
   const [data, setData] = useState([]);
@@ -55,6 +56,7 @@ const Item = () => {
     if (offerAddress) {
       const fetchAdsOffers = async () => {
         const result = await GetAdOfferById(offerAddress);
+        console.log(result, "result");
         setData(result);
       };
 
@@ -145,28 +147,18 @@ const Item = () => {
           options: { uploadWithGatewayUrl: true, uploadWithoutDirectory: true },
         });
 
-        const json = JSON.stringify({
-          image: uploadUrl,
-          external_link: link,
-        });
-        const jsonUrl = await uploadToIPFS({
-          data: [json],
-          options: { uploadWithGatewayUrl: true, uploadWithoutDirectory: true },
-        });
-
-        const jsonIpfsLink = jsonUrl[0];
-
+        
         const args = {
           tokenId: tokenIdString,
           to: address,
           currency: data[0]?.currencyAddress,
-          tokenData: jsonIpfsLink,
+          tokenData: "null",
           offerId: data[0]?.offerId,
           adParameters: ["logoURL", "linkURL"],
-          adDatas: [jsonIpfsLink, link],
+          adDatas: [uploadUrl[0], link],
           referralAdditionalInformation: "",
         };
-        console.log(args);
+        
 
         await mutateAsync({ args: [args] });
         setSuccessFullUpload(true);
@@ -388,10 +380,10 @@ const Item = () => {
             buttonTitle="Mint"
             modalTitle="Mint NFT Preview"
             successFullUploadModal={successFullUploadModal}
+            hrefButton="/"
           />
         </div>
       )}
-      
     </>
   );
 };

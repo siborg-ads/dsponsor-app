@@ -25,7 +25,7 @@ const Offer = () => {
 
   const { contract: DsponsorAdminContract } = useContract("0xA82B4bBc8e6aC3C100bBc769F4aE0360E9ac9FC3");
 
-  const { mutateAsync, isLoadingMintAndSubmit } = useContractWrite(DsponsorAdminContract, "reviewAdProposal");
+  const { mutateAsync, isLoadingreviewAdProposal } = useContractWrite(DsponsorAdminContract, "reviewAdProposal");
   const [successFullUpload, setSuccessFullUpload] = useState(false);
 
   useEffect(() => {
@@ -40,9 +40,11 @@ const Offer = () => {
   }, [offerAddress, router]);
 
   const handleSubmit = async (submissionArgs) => {
-    console.log(submissionArgs, "ici");
     try {
-      await mutateAsync({ args: [args] });
+      const { offerId, tokenId, proposalId, adParameter, validated, reason } = submissionArgs;
+      await mutateAsync({
+        args: [offerId, tokenId, proposalId, adParameter, validated, reason],
+      });
       setSuccessFullUpload(true);
     } catch (error) {
       console.error("Erreur de validation du token:", error);

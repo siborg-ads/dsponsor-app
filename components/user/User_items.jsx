@@ -1,27 +1,39 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
-
+import { GetAllAdsOffers } from "../../data/services/AdsOffersService";
 import Image from "next/image";
 import Trending_categories_items from "../categories/trending_categories_items";
 import Review_adProposal_items from "../collectrions/review_adProposal_items";
+import OfferItem from "../cards/offerItem";
 
 const User_items = () => {
+  const [data, setData] = useState([]);
   const [itemActive, setItemActive] = useState(1);
+  const offerAddress = "0x1e9cfb3a3d87d07d14a78681061c52d88225f7fd101d81ff7f76ba6353eff2af2b000000";
+  useEffect(() => {
+    const fetchAdsOffers = async () => {
+      const result = await GetAllAdsOffers();
+      console.log(result);
+      setData(result);
+    };
+
+    fetchAdsOffers();
+  }, []);
   const tabItem = [
     {
       id: 1,
-      text: "review",
+      text: "Created",
       icon: "owned",
     },
     {
       id: 2,
-      text: "owned",
+      text: "Owned",
       icon: "owned",
     },
 
     {
       id: 3,
-      text: "Activity",
+      text: "Favorite",
       icon: "activity",
     },
   ];
@@ -57,27 +69,16 @@ const User_items = () => {
 
             <TabPanel>
               <div>
-                {/* <!-- Filter --> */}
-                <Trending_categories_items />
+                <Trending_categories_items data={data} offerAddress={offerAddress} />
               </div>
             </TabPanel>
             <TabPanel>
               <div>
-                {/* <!-- Filter --> */}
-                <Trending_categories_items />
+                <Trending_categories_items data={data} offerAddress={offerAddress} />
               </div>
             </TabPanel>
             <TabPanel>
-              <div>
-                {/* <!-- Filter --> */}
-                <Trending_categories_items />
-              </div>
-            </TabPanel>
-            <TabPanel>
-              {/* <!-- Grid --> */}
-              <div className="grid grid-cols-1 gap-[1.875rem] md:grid-cols-3 lg:grid-cols-4">
-                <Review_adProposal_items itemFor="userPage" />
-              </div>
+              <Trending_categories_items data={data} offerAddress={offerAddress} />
             </TabPanel>
           </Tabs>
         </div>

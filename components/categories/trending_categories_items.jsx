@@ -7,8 +7,9 @@ import Recently_added_dropdown from "../dropdown/recently_added_dropdown";
 import { useSelector, useDispatch } from "react-redux";
 import { updateTrendingCategoryItemData } from "../../redux/counterSlice";
 import Review_adProposal_data from "./review_adProposal_items";
+import OfferItem from "../cards/offerItem";
 
-const Trending_categories_items = () => {
+const Trending_categories_items = ({ data, offerAddress }) => {
   const [itemdata, setItemdata] = useState(trendingCategoryData);
   const dispatch = useDispatch();
   const { trendingCategorySorText } = useSelector((state) => state.counter);
@@ -44,7 +45,7 @@ const Trending_categories_items = () => {
   useEffect(() => {
     dispatch(updateTrendingCategoryItemData(itemdata.slice(0, 8)));
   }, [itemdata, dispatch]);
-
+  console.log(data, "data");
   return (
     <>
       {/* <!-- Filter --> */}
@@ -101,7 +102,11 @@ const Trending_categories_items = () => {
       </div>
 
       {/* <!-- Grid --> */}
-      <Review_adProposal_data />
+      <div className="grid grid-cols-1 gap-[1.875rem] md:grid-cols-2 lg:grid-cols-4">
+        {data?.map((item, index) => {
+          return <OfferItem item={item} key={index} url={`/offer/${offerAddress}`} />;
+        })}
+      </div>
     </>
   );
 };
