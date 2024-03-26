@@ -46,8 +46,7 @@
     "sharp": "^0.32.2",
     "swiper": "^8.2.4",
     "uuid": "^9.0.0",
-    "viem": "^2.7.9",
-    "wagmi": "^2.5.7"
+    "viem": "^2.7.9"
   },
   "devDependencies": {
     "@graphprotocol/client-cli": "^3.0.0",
