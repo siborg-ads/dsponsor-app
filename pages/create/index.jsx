@@ -296,8 +296,8 @@ const Create = () => {
   const numSteps = 4;
   const successFullUploadModal = {
     body: "Your offer has been created successfully",
-    buttonTitle: "Close",
-    hrefButton: "/",
+    buttonTitle: "Manage Spaces",
+    hrefButton: `/manageSpaces/${address}`,
   };
 
   return (

@@ -5,7 +5,7 @@ import "tippy.js/dist/tippy.css";
 import BidsCarousel from "../carousel/bidsCarousel";
 import Image from "next/image";
 
-const Bids = ({ classes = "pt-10 pb-24", bgWhite }) => {
+const Bids = ({ data, classes = "pt-10 pb-24", bgWhite }) => {
   return (
     <section className={classes}>
       {/* <!-- Hot Offers --> */}
@@ -19,7 +19,7 @@ const Bids = ({ classes = "pt-10 pb-24", bgWhite }) => {
 
         <div className="relative">
           {/* <!-- Slider --> */}
-          <BidsCarousel />
+          <BidsCarousel data={data} />
         </div>
       </div>
       {/* <!-- end hot Offers --> */}

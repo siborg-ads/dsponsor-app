@@ -9,7 +9,7 @@ import { updateTrendingCategoryItemData } from "../../redux/counterSlice";
 import Review_adProposal_data from "./review_adProposal_items";
 import OfferItem from "../cards/offerItem";
 
-const Trending_categories_items = ({ data, offerAddress }) => {
+const OwnedOffers_categories_items = ({ data}) => {
   const [itemdata, setItemdata] = useState(trendingCategoryData);
   const dispatch = useDispatch();
   const { trendingCategorySorText } = useSelector((state) => state.counter);
@@ -104,11 +104,11 @@ const Trending_categories_items = ({ data, offerAddress }) => {
       {/* <!-- Grid --> */}
       <div className="grid grid-cols-1 gap-[1.875rem] md:grid-cols-2 lg:grid-cols-4">
         {data?.map((item, index) => {
-          return <OfferItem item={item} key={index} url={`/offer/${offerAddress}`} />;
+          return <OfferItem item={item} key={index} url={`/offer/${item.offerId}`} />;
         })}
       </div>
     </>
   );
 };
 
-export default Trending_categories_items;
+export default OwnedOffers_categories_items;

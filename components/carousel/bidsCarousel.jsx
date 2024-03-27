@@ -16,19 +16,12 @@ import { gql } from "@apollo/client";
 import { GetAllAdsOffers } from "../../data/services/AdsOffersService";
 import { useEffect, useState } from "react";
 import OfferItem from "../cards/offerItem";
+import { DSponsorAdmin } from "@dsponsor/sdk";
+import { fetchDataFromIPFS } from "../../data/services/ipfsService";
 
-const BidsCarousel = () => {
-  const [data, setData] = useState([]);
-  useEffect(() => {
-    const fetchAdsOffers = async () => {
-      const result = await GetAllAdsOffers();
-      console.log(result);
-      setData(result);
-    };
+const BidsCarousel = ({data}) => {
+ 
 
-    fetchAdsOffers();
-  }, []);
-  console.log(data);
   return (
     <>
       <Swiper
@@ -59,7 +52,7 @@ const BidsCarousel = () => {
         {data.map((item, index) => {
           return (
             <SwiperSlide className="text-white" key={index}>
-              <OfferItem item={item} url={`/item/${item.id}/1`} />
+              <OfferItem item={item} url={`/offer/${item.offerId}/1`} />
             </SwiperSlide>
           );
         })}

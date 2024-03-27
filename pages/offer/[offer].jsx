@@ -5,21 +5,24 @@ import "tippy.js/dist/tippy.css";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import Meta from "../../components/Meta";
 import Image from "next/image";
-import { GetAdOfferById } from "../../data/services/AdsOffersService";
-import { useAddress, darkTheme, Web3Button, useTokenBalance, useContract, useContractRead, useContractWrite, useStorageUpload, useTokenDecimals, CheckoutWithCard, CheckoutWithEth } from "@thirdweb-dev/react";
-
+import { useContract, useContractWrite } from "@thirdweb-dev/react";
 import Tippy from "@tippyjs/react";
 import "tippy.js/dist/tippy.css";
 import { ItemsTabs } from "../../components/component";
 import Review_carousel from "../../components/carousel/review_carousel";
 import Validated_refused_items from "../../components/collectrions/validated_refused_items";
+import { DSponsorAdmin } from "@dsponsor/sdk";
+import { fetchDataFromIPFS } from "../../data/services/ipfsService";
 
 const Offer = () => {
   const router = useRouter();
 
-  const offerAddress = router.query.offer;
+  const offerId = router.query.offer;
 
-  const [data, setData] = useState([]);
+  const [offerData, setOfferData] = useState([]);
+  const [pendingProposalData, setPendingProposalData] = useState([]);
+  const [validatedProposalData, setValidatedProposalData] = useState([]);
+  const [refusedProposalData, setRefusedProposalData] = useState([]);
 
   const [imageModal, setImageModal] = useState(false);
 
@@ -30,15 +33,28 @@ const Offer = () => {
   const [successFullRefuseModal, setSuccessFullRefuseModal] = useState(false);
 
   useEffect(() => {
-    if (offerAddress) {
+    if (offerId) {
+      const admin = new DSponsorAdmin();
       const fetchAdsOffers = async () => {
-        const result = await GetAdOfferById(offerAddress);
-        setData(result);
+        const ads = await admin.getPendingAds({ offerId: offerId });
+        const offer = await admin.getOffer({ offerId: offerId });
+        const validatedAds = await admin.getValidatedAds({ offerId: offerId });
+        const refusedAds = await admin.getRejectedAds({ offerId: offerId });
+        console.log("ads", refusedAds);
+        const destructuredIPFSResult = await fetchDataFromIPFS(offer.rulesURI);
+        const combinedData = {
+          ...offer,
+          ...destructuredIPFSResult,
+        };
+        setOfferData([combinedData]);
+        setValidatedProposalData(validatedAds);
+        setRefusedProposalData(refusedAds);
+        setPendingProposalData(ads);
       };
 
       fetchAdsOffers();
     }
-  }, [offerAddress, router]);
+  }, [offerId, router]);
 
   const handleSubmit = async (submissionArgs) => {
     try {
@@ -73,10 +89,10 @@ const Offer = () => {
     },
   ];
 
-  if (!data || data.length === 0) {
+  if (!offerData || offerData.length === 0) {
     return <div>Chargement...</div>;
   }
-  const { currencyName, description, externalLink, id, image, maxSupply, name, numberTokenAllowed, ownerAddress, ownerName, price, royalties, contractAddress } = data[0];
+  const { currencyName, description, collaborators, id, image, maxSupply, name, allowedTokens, price, royalties } = offerData[0];
 
   return (
     <>
@@ -93,13 +109,13 @@ const Offer = () => {
             {/* <!-- Image --> */}
             <figure className="mb-8 md:w-2/5 md:flex-shrink-0 md:flex-grow-0 md:basis-auto lg:w-1/2 w-full flex justify-center">
               <button className=" w-full" onClick={() => setImageModal(true)} style={{ height: "450px" }}>
-                <Image width={585} height={726} src={image} alt="image" className="rounded-2xl cursor-pointer h-full object-contain w-full" />
+                <Image width={585} height={726} src={image[0]} alt="image" className="rounded-2xl cursor-pointer h-full object-contain w-full" />
               </button>
 
               {/* <!-- Modal --> */}
               <div className={imageModal ? "modal fade show block" : "modal fade"}>
                 <div className="modal-dialog !my-0 flex h-full max-w-4xl items-center justify-center">
-                  <Image width={582} height={722} src={image} alt="image" className="h-full object-cover w-full rounded-2xl" />
+                  <Image width={582} height={722} src={image[0]} alt="image" className="h-full object-cover w-full rounded-2xl" />
                 </div>
 
                 <button type="button" className="btn-close absolute top-6 right-6" onClick={() => setImageModal(false)}>
@@ -119,7 +135,7 @@ const Offer = () => {
                 {/* <!-- Collection --> */}
                 <div className="flex items-center">
                   <Link href="#" className="text-accent mr-2 text-sm font-bold">
-                    {name}
+                    {collaborators[0]}
                   </Link>
                   <span className="dark:border-jacarta-600 bg-green inline-flex h-6 w-6 items-center justify-center rounded-full border-2 border-white" data-tippy-content="Verified Collection">
                     <Tippy content={<span>Verified Collection</span>}>
@@ -148,7 +164,7 @@ const Offer = () => {
                 </div>
 
                 <span className="dark:text-jacarta-300 text-jacarta-400 text-sm">
-                  {numberTokenAllowed}/{maxSupply} available
+                  {allowedTokens.length}/{maxSupply} available
                 </span>
               </div>
 
@@ -159,7 +175,7 @@ const Offer = () => {
                 <div className="mr-8 mb-4 flex">
                   <figure className="mr-4 shrink-0">
                     <Link href="/user/avatar_6" className="relative block">
-                      <Image width={48} height={48} src={image} alt={name} className="rounded-2lg h-12 w-12 object-contain" loading="lazy" />
+                      <Image width={48} height={48} src={image[0]} alt={name} className="rounded-2lg h-12 w-12 object-contain" loading="lazy" />
                       <div className="dark:border-jacarta-600 bg-green absolute -right-3 top-[60%] flex h-6 w-6 items-center justify-center rounded-full border-2 border-white" data-tippy-content="Verified Collection">
                         <Tippy content={<span>Verified Collection</span>}>
                           <svg className="icon h-[.875rem] w-[.875rem] fill-white">
@@ -219,28 +235,28 @@ const Offer = () => {
           <TabPanel>
             <div className="container mb-12 relative p-0">
               {/* <!-- Filter --> */}
-              <Review_carousel handleSubmit={handleSubmit} successFullRefuseModal={successFullRefuseModal} />
+              <Review_carousel handleSubmit={handleSubmit} pendingProposalData={pendingProposalData} successFullRefuseModal={successFullRefuseModal} />
             </div>
           </TabPanel>
           <TabPanel>
             <div className="container mb-12 relative p-0">
               {/* <!-- Filter --> */}
-              <Validated_refused_items statut={true} />
+              <Validated_refused_items statut={true} proposalData={validatedProposalData} />
             </div>
           </TabPanel>
           <TabPanel>
             <div className="container mb-12 relative p-0">
               {/* <!-- Filter --> */}
-              <Validated_refused_items statut={false} />
+              <Validated_refused_items statut={false} proposalData={refusedProposalData} />
             </div>
           </TabPanel>
         </Tabs>
       </div>
 
       {/* <ItemsTabs /> */}
-      <div className="container mb-12">
+      {/* <div className="container mb-12">
         <ItemsTabs />
-      </div>
+      </div> */}
     </>
   );
 };

@@ -6,7 +6,7 @@ import Tippy from "@tippyjs/react";
 import "tippy.js/dist/tippy.css";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 
-const Validated_refused_items = ({ statut }) => {
+const Validated_refused_items = ({ statut, proposalData }) => {
   const [filterVal, setFilterVal] = useState(null);
   const [copied, setCopied] = useState(false);
   const [data, setData] = useState(collection_activity_item_data);
@@ -60,26 +60,28 @@ const Validated_refused_items = ({ statut }) => {
         <div className="lg:flex">
           {/* <!-- Records --> */}
           <div className="mb-10 shrink-0 basis-8/12 space-y-5 lg:mb-0 lg:pr-10">
-            {data.slice(0, 5).map((item) => {
-              const { id, image, title, price, time, category } = item;
-              const itemLink = image.split("/").slice(-1).toString().replace(".jpg", "").replace(".gif", "").replace("_sm", "").replace("avatar", "item");
+            {proposalData?.map((item) => {
+              const { id, offerId, tokenId, records, image, title, price, time, category } = item;
+
               return (
-                <div key={id} className="dark:bg-jacarta-700 gap-5 dark:border-jacarta-700 border-jacarta-100 rounded-2.5xl relative flex items-center border bg-white p-8 transition-shadow hover:shadow-lg">
+                <div key={tokenId} className="dark:bg-jacarta-700 gap-5 dark:border-jacarta-700 border-jacarta-100 rounded-2.5xl relative flex items-center border bg-white p-8 transition-shadow hover:shadow-lg">
                   <figure className=" self-start">
-                    <Image src={image} alt={title} height={75} width={75} objectFit="contain" className="rounded-2lg min-w-[75px]" loading="lazy" />
+                    <Image src={records.logoURL?.value} alt={title} height={75} width={75} objectFit="contain" className="rounded-2lg min-w-[75px]" loading="lazy" />
                   </figure>
                   <div>
-                    <h3 className="font-display text-jacarta-700 mb-1 text-base font-semibold dark:text-white">{title}</h3>
+                    <h3 className="font-display text-jacarta-700 mb-1 text-base font-semibold dark:text-white">
+                      Item n°: <span className="text-accent"> {tokenId} </span>{" "}
+                    </h3>
                     <div className="mb-4 flex flex-col">
                       <Tippy hideOnClick={false} content={copied ? <span>copied</span> : <span>copy</span>}>
-                        <button className="js-copy-clipboard text-white max-w-[20rem]  select-none overflow-hidden text-ellipsis whitespace-nowrap">
+                        <button className="js-copy-clipboard flex text-white max-w-[20rem]  select-none overflow-hidden text-ellipsis whitespace-nowrap">
                           <CopyToClipboard text="userId" onCopy={() => setCopied(true)}>
-                            <span>https://mumbai.polygonscan.com/tx/0xf9aa3225ccbe4971eddf0f654b5a7bb5979bbb0d0d965847ee441566d72c18a4</span>
+                            <span>{records.linkURL?.value}</span>
                           </CopyToClipboard>
                         </button>
                       </Tippy>
                     </div>
-                    <span className="text-jacarta-300 block text-xs mb-4">{time}</span>
+                    <span className="text-jacarta-300 block text-xs mb-4">30 Minutes 45 Seconds Ago</span>
                     {statut && (
                       <div key="2" className="dropdown-item mb-4 font-display dark:bg-jacarta-600 hover:bg-jacarta-50 block w-full rounded-xl pr-5 py-2 text-left text-sm transition-colors dark:text-white">
                         <div className="flex flex-col pl-5 justify-between">

@@ -9,15 +9,55 @@ import Tippy from "@tippyjs/react";
 import "tippy.js/dist/tippy.css"; // optional
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import Meta from "../../components/Meta";
+import { DSponsorAdmin } from "@dsponsor/sdk";
+import { fetchDataFromIPFS } from "../../data/services/ipfsService";
 
-const User = () => {
+const ManageSpaces = () => {
   const router = useRouter();
-  const userAddress = router.query.user;
+  const userAddress = router.query.manageSpaces;
 
-
+  const [createdData, setCreatedData] = useState([]);
+  const [mappedownedAdProposals, setMappedownedAdProposals] = useState([]);
   const [copied, setCopied] = useState(false);
 
+  useEffect(() => {
+    if (userAddress) {
+      const admin = new DSponsorAdmin();
+      const fetchAdsOffers = async () => {
+        const offer = await admin.getOffers({ address: userAddress });
+        const ownedAdProposals = await admin.getOwnedOfferTokens({ address: userAddress });
 
+        const mappedCreatedData = [];
+        const mappedownedAdProposals = [];
+
+        for (const element of ownedAdProposals) {
+          const IPFSLink = element.offer.rulesURI;
+          const destructuredIPFSResult = await fetchDataFromIPFS(IPFSLink);
+          const combinedData = {
+            ...element,
+            ...element.offer,
+            ...destructuredIPFSResult,
+          };
+          mappedownedAdProposals.push(combinedData);
+        }
+        console.log(mappedownedAdProposals, "mappedownedAdProposals");
+
+        for (const element of offer) {
+          const IPFSLink = element.rulesURI;
+          const destructuredIPFSResult = await fetchDataFromIPFS(IPFSLink);
+          const combinedData = {
+            ...element,
+            ...destructuredIPFSResult,
+          };
+          mappedCreatedData.push(combinedData);
+        }
+        setMappedownedAdProposals(mappedownedAdProposals);
+        setCreatedData(mappedCreatedData);
+      };
+
+      fetchAdsOffers();
+    }
+  }, [userAddress, router]);
   useEffect(() => {
     setTimeout(() => {
       setCopied(false);
@@ -74,10 +114,10 @@ const User = () => {
           </div>
         </section>
         {/* <!-- end profile --> */}
-        <User_items />
+        <User_items createdData={createdData} mappedownedAdProposals={mappedownedAdProposals} />
       </div>
     </>
   );
 };
 
-export default User;
+export default ManageSpaces;
