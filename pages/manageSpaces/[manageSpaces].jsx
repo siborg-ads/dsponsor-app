@@ -25,6 +25,7 @@ const ManageSpaces = () => {
       const admin = new DSponsorAdmin();
       const fetchAdsOffers = async () => {
         const offer = await admin.getOffers({ address: userAddress });
+        console.log(userAddress, "offer");
         const ownedAdProposals = await admin.getOwnedOfferTokens({ address: userAddress });
 
         const mappedCreatedData = [];
