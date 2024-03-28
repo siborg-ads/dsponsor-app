@@ -152,7 +152,7 @@ const Item = () => {
       return;
     }
     // IPFS upload
-
+console.log(tokenBalance, offerData[0]?.price);
     let userBalance = checkUserBalance(tokenBalance, offerData[0]?.price);
     if (userBalance) {
       try {
@@ -226,7 +226,7 @@ const Item = () => {
       <section className="relative lg:mt-24 lg:pt-12  mt-24 pt-12 pb-8">
         <div className="container flex justify-center mb-6">
           <h1 class="text-jacarta-700 font-bold font-display mb-6 text-center text-5xl dark:text-white md:text-left lg:text-6xl xl:text-6xl">{isOwner ? "Your NFT" : "Mint NFT"} </h1>
-          <span className="text-accent ml-2 text-sm font-bold">pending </span>
+          <span className="text-accent ml-2 text-sm font-bold">{isOwner ? "pending" : ""} </span>
         </div>
 
         <div className="container">

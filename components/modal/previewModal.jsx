@@ -49,66 +49,87 @@ const PreviewModal = ({
 
           <div className="modal-body p-6 flex gap-4 items-center justify-center">
             {!successFullUpload ? (
-              <div className="flex ">
+              <div className="flex gap-8">
                 <div>
-                  <p className="font-display text-jacarta-700 mb-2 block dark:text-white">{name ? <span>Name : {!errors.nameError ? name : <span className="text-red">{errors.nameError}</span>}</span> : ""}</p>
-                  {description && (
-                    <p className="font-display text-jacarta-700 mb-2 block dark:text-white">Description: {!errors.descriptionError ? description : <span className="text-red">{errors.descriptionError}</span>}</p>
-                  )}
-                  <p className="font-display text-jacarta-700 mb-2 block dark:text-white">
-                    Link :{" "}
-                    {!errors.linkError ? (
-                      <a href={link} target="_blank" rel="noopener noreferrer">
-                        {link}
-                      </a>
+                  <p className="font-display mb-2 block dark:text-white">
+                    {name ? (
+                      <span className="dark:text-jacarta-300 text-jacarta-400 text-sm">
+                        Name : {!errors.nameError ? <span className="dark:text-white text-md ml-2"> {name} </span> : <span className="text-red">{errors.nameError}</span>}
+                      </span>
                     ) : (
-                      <span className="text-red"> {errors.linkError}</span>
+                      ""
                     )}
                   </p>
-                  {!previewImage && (
-                    <p className="font-display text-jacarta-700 mb-2 block dark:text-white">
-                      Image preview : <span className="text-red"> {errors.imageError}</span>
+                  {description && (
+                    <p className="font-display  mb-2 block text-jacarta-400 text-sm">
+                      Description: {!errors.descriptionError ? <span className="dark:text-white text-base ml-2"> {description} </span> : <span className="text-red text-md ml-2">{errors.descriptionError}</span>}
                     </p>
                   )}
-                  <p className="font-display text-jacarta-700 mb-2 block dark:text-white">
-                    {startDate ? <span>Start Date : {!errors.startDateError ? formatDate(startDate) : <span className="text-red">{errors.startDateError}</span>}</span> : ""}
+                  <p className="font-display  mb-2 block text-jacarta-400 text-sm">
+                    Link : {!errors.linkError ? <span className="dark:text-white text-base ml-2"> {link} </span> : <span className="text-red text-base ml-2"> {errors.linkError}</span>}
+                  </p>
+                  {!previewImage && (
+                    <p className="font-display  mb-2 block text-jacarta-400 text-sm">
+                      Image preview : <span className="text-red text-base ml-2"> {errors.imageError}</span>
+                    </p>
+                  )}
+                  <p className="font-display  mb-2 block text-jacarta-400 text-sm">
+                    {startDate ? (
+                      <span>Start Date : {!errors.startDateError ? <span className="dark:text-white text-base ml-2"> {formatDate(startDate)} </span> : <span className="text-red">{errors.startDateError}</span>}</span>
+                    ) : (
+                      ""
+                    )}
                   </p>
                   {endDate ? (
-                    <p className="font-display text-jacarta-700 mb-2 block dark:text-white">End Date : {!errors.endDateError ? formatDate(endDate) : <span className="text-red">{errors.endDateError}</span>}</p>
+                    <p className="font-display  mb-2 block text-jacarta-400 text-sm">
+                      End Date : {!errors.endDateError ? <span className="dark:text-white text-base ml-2"> {formatDate(endDate)} </span> : <span className="text-red">{errors.endDateError}</span>}
+                    </p>
                   ) : (
                     ""
                   )}
                   {selectedNumber ? (
-                    <p className="font-display text-jacarta-700 mb-2 block dark:text-white">Number of Items : {!errors.numberError ? `${selectedNumber}` : <span className="text-red">{errors.numberError}</span>}</p>
+                    <p className="font-display  mb-2 block text-jacarta-400 text-sm">
+                      Number of Items : {!errors.numberError ? <span className="dark:text-white text-base ml-2"> {selectedNumber} </span> : <span className="text-red">{errors.numberError}</span>}
+                    </p>
                   ) : (
                     ""
                   )}
                   {selectedParameter ? (
-                    <p className="font-display text-jacarta-700 mb-2 block dark:text-white">Type of Ad : {!errors.typeAdError ? `${selectedParameter}` : <span className="text-red">{errors.typeAdError}</span>}</p>
+                    <p className="font-display  mb-2 block text-jacarta-400 text-sm">
+                      Type of Ad : {!errors.typeAdError ? <span className="dark:text-white text-base ml-2"> {selectedParameter} </span> : <span className="text-red">{errors.typeAdError}</span>}
+                    </p>
                   ) : (
                     ""
                   )}
                   {selectedUnitPrice ? (
-                    <p className="font-display text-jacarta-700 mb-2 block dark:text-white">Unit Price : {!errors.unitPriceError ? ` ${selectedUnitPrice}` : <span className="text-red">{errors.unitPriceError}</span>}</p>
+                    <p className="font-display  mb-2 block text-jacarta-400 text-sm">
+                      Unit Price : {!errors.unitPriceError ? <span className="dark:text-white text-base ml-2"> {selectedUnitPrice} </span> : <span className="text-red">{errors.unitPriceError}</span>}
+                    </p>
                   ) : (
                     ""
                   )}
                   {customContract ? (
-                    <p className="font-display text-jacarta-700 mb-2 block dark:text-white">Custom Contract : {!errors.currencyError ? customContract : <span className="text-red">{errors.currencyError}</span>}</p>
+                    <p className="font-display  mb-2 block text-jacarta-400 text-sm">
+                      Custom Contract : {!errors.currencyError ? <span className="dark:text-white text-base ml-2"> {customContract} </span> : <span className="text-red">{errors.currencyError}</span>}
+                    </p>
                   ) : selectedCurrency ? (
-                    <p className="font-display text-jacarta-700 mb-2 block dark:text-white">Currency : {!errors.currencyError ? ` ${selectedCurrency}` : <span className="text-red">{errors.currencyError}</span>}</p>
+                    <p className="font-display  mb-2 block text-jacarta-400 text-sm">
+                      Currency : {!errors.currencyError ? <span className="dark:text-white text-base ml-2"> {selectedCurrency} </span> : <span className="text-red">{errors.currencyError}</span>}
+                    </p>
                   ) : (
                     ""
                   )}
                   {selectedRoyalties ? (
-                    <p className="font-display text-jacarta-700 mb-2 block dark:text-white">Royalties : {!errors.royaltyError ? `${selectedRoyalties}%` : <span className="text-red">{errors.royaltyError}</span>}</p>
+                    <p className="font-display  mb-2 block text-jacarta-400 text-sm">
+                      Royalties : {!errors.royaltyError ? <span className="dark:text-white text-base ml-2"> {selectedRoyalties}% </span> : <span className="text-red">{errors.royaltyError}</span>}
+                    </p>
                   ) : (
                     ""
                   )}
                 </div>
                 {previewImage && (
                   <div className="mb-6  flex-col items-center justify-center ">
-                    <label htmlFor="item-description" className="font-display text-jacarta-700 text-center mb-2 block dark:text-white">
+                    <label htmlFor="item-description" className="font-display text-jacarta-400 text-sm text-center mb-2 block ">
                       Image preview :
                     </label>
                     <div style={{ width: "300px", height: "300px", position: "relative" }}>
@@ -143,7 +164,7 @@ const PreviewModal = ({
                     {buttonTitle}
                   </Web3Button>
                 ) : (
-                  <Link href={hrefButton}>
+                  <Link href={successFullUploadModal.hrefButton}>
                     <button className="!rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all !bg-accent !cursor-pointer">{successFullUploadModal.buttonTitle}</button>
                   </Link>
                 )}
