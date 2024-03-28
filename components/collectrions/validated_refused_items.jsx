@@ -51,6 +51,9 @@ const Validated_refused_items = ({ statut, proposalData }) => {
       setStatutItem("refused");
     }
   }, []);
+  if (proposalData.length === 0) {
+    return <div className="flex justify-center">{statut ? "No validated ads..." : "No refused ads..."}</div>;
+  }
 
   return (
     <>

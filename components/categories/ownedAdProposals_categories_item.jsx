@@ -45,7 +45,7 @@ const OwnedAdProposals_categories_items = ({ data }) => {
   useEffect(() => {
     dispatch(updateTrendingCategoryItemData(itemdata.slice(0, 8)));
   }, [itemdata, dispatch]);
-  console.log(data, "data");
+
   return (
     <>
       {/* <!-- Filter --> */}
@@ -104,7 +104,7 @@ const OwnedAdProposals_categories_items = ({ data }) => {
       {/* <!-- Grid --> */}
       <div className="grid grid-cols-1 gap-[1.875rem] md:grid-cols-2 lg:grid-cols-4">
         {data?.map((item, index) => {
-          return <OfferItem item={item} key={index} url={`/offer/${item.offerId}`} />;
+          return <OfferItem item={item} key={index} url={`/offer/${item.offerId}/${item.tokenId}`} />;
         })}
       </div>
     </>

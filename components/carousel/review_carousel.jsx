@@ -73,7 +73,9 @@ const Review_carousel = ({ handleSubmit, pendingProposalData, successFullRefuseM
   const closeRefuseModal = () => {
     setRefusedAdModalId(null);
   };
-
+  if (pendingProposalData.length === 0) {
+    return <div className="flex justify-center">No pendings ads...</div>;
+  }
   return (
     <>
       <Swiper

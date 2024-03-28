@@ -10,6 +10,7 @@ import "tippy.js/dist/tippy.css"; // optional
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import Meta from "../../components/Meta";
 import { DSponsorAdmin } from "@dsponsor/sdk";
+
 import { fetchDataFromIPFS } from "../../data/services/ipfsService";
 
 const ManageSpaces = () => {

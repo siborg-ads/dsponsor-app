@@ -26,12 +26,14 @@ const Item = () => {
   const router = useRouter();
 
   const offerId = router.query.offer;
+  const tokenId = router.query?.item;
 
   const [tokenIdString, setTokenIdString] = useState(null);
 
   const [data, setData] = useState([]);
   const [offerData, setOfferData] = useState([]);
   const address = useAddress();
+  const [isOwner, setIsOwner] = useState(false);
   const [file, setFile] = useState(null);
   const [imageModal, setImageModal] = useState(false);
   const [previewImage, setPreviewImage] = useState(null);
@@ -59,21 +61,30 @@ const Item = () => {
       const admin = new DSponsorAdmin();
       const fetchAdsOffers = async () => {
         const offer = await admin.getOffer({ offerId: offerId });
+
+        if (address) {
+          const mintedToken = await admin.getOwnedOfferTokens({ address: address });
+          for (const element of mintedToken) {
+            if (element.tokenId === tokenId) {
+              setIsOwner(true);
+            }
+          }
+          console.log(mintedToken, "isOwner");
+        }
         const destructuredIPFSResult = await fetchDataFromIPFS(offer.rulesURI);
         const combinedData = {
           ...offer,
           ...destructuredIPFSResult,
         };
-        console.log(combinedData, "sdk");
+
         setOfferData([combinedData]);
       };
 
       fetchAdsOffers();
     }
-    console.log(router.query);
-    const tokenId = router.query?.item;
+
     setTokenIdString(tokenId?.toString());
-  }, [offerId, router]);
+  }, [offerId, router, address, tokenId]);
 
   const validateInputs = () => {
     let isValid = true;
@@ -212,10 +223,12 @@ const Item = () => {
     <>
       <Meta title={` || d>sponsor | Media sponsor Marketplace `} />
       {/*  <!-- Item --> */}
-      <section className="relative lg:mt-24 lg:pt-24  mt-24 pt-12 pb-8">
-        <picture className="pointer-events-none absolute inset-0 -z-10 dark:hidden">
-          <Image width={1519} height={773} priority src="/images/gradient_light.jpg" alt="gradient" className="h-full w-full object-cover" />
-        </picture>
+      <section className="relative lg:mt-24 lg:pt-12  mt-24 pt-12 pb-8">
+        <div className="container flex justify-center mb-6">
+          <h1 class="text-jacarta-700 font-bold font-display mb-6 text-center text-5xl dark:text-white md:text-left lg:text-6xl xl:text-6xl">{isOwner ? "Your NFT" : "Mint NFT"} </h1>
+          <span className="text-accent ml-2 text-sm font-bold">pending </span>
+        </div>
+
         <div className="container">
           {/* <!-- Item --> */}
 
@@ -332,8 +345,12 @@ const Item = () => {
               <Step_2_Mint stepsRef={stepsRef} styles={styles} setLink={setLink} />
             </SliderForm>
           </div>
+        ) : //Message to say that the NFT is not allowed to mint
+        isOwner ? (
+          <div className="flex justify-center">
+            <p>clique ici pour resoumettre ton offre bitch</p>
+          </div>
         ) : (
-          //Message to say that the NFT is not allowed to mint
           <div className="flex justify-center">
             <p>Sorry, someone already mint this NFT</p>
           </div>

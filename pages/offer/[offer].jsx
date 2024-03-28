@@ -5,7 +5,7 @@ import "tippy.js/dist/tippy.css";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import Meta from "../../components/Meta";
 import Image from "next/image";
-import { useContract, useContractWrite } from "@thirdweb-dev/react";
+import { useContract, useContractWrite, useAddress } from "@thirdweb-dev/react";
 import Tippy from "@tippyjs/react";
 import "tippy.js/dist/tippy.css";
 import { ItemsTabs } from "../../components/component";
@@ -18,6 +18,7 @@ const Offer = () => {
   const router = useRouter();
 
   const offerId = router.query.offer;
+  const userAddress = useAddress();
 
   const [offerData, setOfferData] = useState([]);
   const [pendingProposalData, setPendingProposalData] = useState([]);
@@ -92,13 +93,17 @@ const Offer = () => {
   if (!offerData || offerData.length === 0) {
     return <div>Chargement...</div>;
   }
+
   const { currencyName, description, collaborators, id, image, maxSupply, name, allowedTokens, price, royalties } = offerData[0];
 
   return (
     <>
       <Meta title={` || d>sponsor | Media sponsor Marketplace `} />
       {/*  <!-- Item --> */}
-      <section className="relative lg:mt-24 lg:pt-24  mt-24 pt-12 pb-8">
+      <section className="relative lg:mt-24 lg:pt-12  mt-24 pt-12 pb-8">
+        <div className="container flex justify-center mb-6">
+          <h1 class="text-jacarta-700 font-bold font-display mb-6 text-center text-5xl dark:text-white md:text-left lg:text-6xl xl:text-6xl">Offer </h1>
+        </div>
         <picture className="pointer-events-none absolute inset-0 -z-10 dark:hidden">
           <Image width={1519} height={773} priority src="/images/gradient_light.jpg" alt="gradient" className="h-full w-full object-cover" />
         </picture>
@@ -208,50 +213,52 @@ const Offer = () => {
           </div>
         </div>
       </section>
-      <div className="container">
-        {/* <!-- Tabs Nav --> */}
-        <Tabs className="tabs">
-          <TabList className="nav nav-tabs scrollbar-custom mb-12 flex items-center justify-start overflow-x-auto overflow-y-hidden border-b border-jacarta-100 pb-px dark:border-jacarta-600 md:justify-center">
-            {tabItem.map(({ id, text, icon }) => {
-              return (
-                <Tab className="nav-item" role="presentation" key={id} onClick={() => setItemActive(id)}>
-                  <button
-                    className={
-                      itemActive === id
-                        ? "nav-link hover:text-jacarta-700 text-jacarta-400 relative flex items-center whitespace-nowrap py-3 px-6 dark:hover:text-white active"
-                        : "nav-link hover:text-jacarta-700 text-jacarta-400 relative flex items-center whitespace-nowrap py-3 px-6 dark:hover:text-white"
-                    }
-                  >
-                    <svg className="icon mr-1 h-5 w-5 fill-current">
-                      <use xlinkHref={`/icons.svg#icon-${icon}`}></use>
-                    </svg>
-                    <span className="font-display text-base font-medium">{text}</span>
-                  </button>
-                </Tab>
-              );
-            })}
-          </TabList>
+      {userAddress === collaborators[0] && (
+        <div className="container">
+          {/* <!-- Tabs Nav --> */}
+          <Tabs className="tabs">
+            <TabList className="nav nav-tabs scrollbar-custom mb-12 flex items-center justify-start overflow-x-auto overflow-y-hidden border-b border-jacarta-100 pb-px dark:border-jacarta-600 md:justify-center">
+              {tabItem.map(({ id, text, icon }) => {
+                return (
+                  <Tab className="nav-item" role="presentation" key={id} onClick={() => setItemActive(id)}>
+                    <button
+                      className={
+                        itemActive === id
+                          ? "nav-link hover:text-jacarta-700 text-jacarta-400 relative flex items-center whitespace-nowrap py-3 px-6 dark:hover:text-white active"
+                          : "nav-link hover:text-jacarta-700 text-jacarta-400 relative flex items-center whitespace-nowrap py-3 px-6 dark:hover:text-white"
+                      }
+                    >
+                      <svg className="icon mr-1 h-5 w-5 fill-current">
+                        <use xlinkHref={`/icons.svg#icon-${icon}`}></use>
+                      </svg>
+                      <span className="font-display text-base font-medium">{text}</span>
+                    </button>
+                  </Tab>
+                );
+              })}
+            </TabList>
 
-          <TabPanel>
-            <div className="container mb-12 relative p-0">
-              {/* <!-- Filter --> */}
-              <Review_carousel handleSubmit={handleSubmit} pendingProposalData={pendingProposalData} successFullRefuseModal={successFullRefuseModal} />
-            </div>
-          </TabPanel>
-          <TabPanel>
-            <div className="container mb-12 relative p-0">
-              {/* <!-- Filter --> */}
-              <Validated_refused_items statut={true} proposalData={validatedProposalData} />
-            </div>
-          </TabPanel>
-          <TabPanel>
-            <div className="container mb-12 relative p-0">
-              {/* <!-- Filter --> */}
-              <Validated_refused_items statut={false} proposalData={refusedProposalData} />
-            </div>
-          </TabPanel>
-        </Tabs>
-      </div>
+            <TabPanel>
+              <div className="container mb-12 relative p-0">
+                {/* <!-- Filter --> */}
+                <Review_carousel handleSubmit={handleSubmit} pendingProposalData={pendingProposalData} successFullRefuseModal={successFullRefuseModal} />
+              </div>
+            </TabPanel>
+            <TabPanel>
+              <div className="container mb-12 relative p-0">
+                {/* <!-- Filter --> */}
+                <Validated_refused_items statut={true} proposalData={validatedProposalData} />
+              </div>
+            </TabPanel>
+            <TabPanel>
+              <div className="container mb-12 relative p-0">
+                {/* <!-- Filter --> */}
+                <Validated_refused_items statut={false} proposalData={refusedProposalData} />
+              </div>
+            </TabPanel>
+          </Tabs>
+        </div>
+      )}
 
       {/* <ItemsTabs /> */}
       {/* <div className="container mb-12">

@@ -12,7 +12,7 @@ const hero = () => {
       </picture>
 
       <div className="container h-full mx-auto">
-        <div className="grid h-full items-center gap-4 md:grid-cols-12">
+        <div className="grid h-full items-center gap-4 ">
           <div className="col-span-6 flex h-full flex-col items-center justify-center py-10 md:items-start md:py-20 xl:col-span-6">
             <h1 className="text-jacarta-700 font-bold font-display mb-6 text-center text-5xl dark:text-white md:text-left lg:text-6xl xl:text-7xl">Unlock Smarter Monetization with d&gt;sponsor</h1>
             <p className="dark:text-jacarta-200 mb-8 text-center text-lg md:text-left">Leverage audience engagement into investment opportunities. A new Web3 model for an enhanced media and creator economy.</p>
@@ -29,13 +29,6 @@ const hero = () => {
             </div>
           </div>
 
-          {/* <!-- Hero image --> */}
-          <div className="col-span-6 xl:col-span-6">
-            <div className="relative text-center md:pl-8 md:text-right">
-              <Image width={560} height={560} src="/images/hero/hero.jpg" alt="hero" className="hero-img mt-8 inline-block w-72 rotate-[8deg] sm:w-full lg:w-[24rem] xl:w-[35rem]" />
-              <Image width={740} height={602} src="/images/hero/3D_elements.png" alt="floating image" className="animate-fly absolute top-0 md:-right-[10%] " />
-            </div>
-          </div>
         </div>
       </div>
     </section>
