@@ -6,6 +6,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { useAddress, useSwitchChain, useContract, useContractWrite, Web3Button, useStorageUpload, useTokenDecimals, CheckoutWithCard, CheckoutWithEth } from "@thirdweb-dev/react";
 import { Mumbai, Polygon } from "@thirdweb-dev/chains";
+import { ethers } from "ethers";
 import styles from "../../styles/createPage/style.module.scss";
 import PreviewModal from "../../components/modal/previewModal";
 import Step_1_Create from "../../components/sliderForm/PageCreate/Step_1_Create";
@@ -34,14 +35,21 @@ const Create = () => {
   const [validate, setValidate] = useState(false);
   const [showPreviewModal, setShowPreviewModal] = useState(false);
   const [successFullUpload, setSuccessFullUpload] = useState(false);
+  const [selectedParameter, setSelectedParameter] = useState(["logoURL", "linkURL"]);
   const stepsRef = useRef([]);
 
   const handleNumberChange = (e) => {
     setSelectedNumber(parseInt(e.target.value, 10));
   };
+  const handleParameterChange = (e) => {
+    setSelectedParameter(e.target.value);
+  };
 
   const handleUnitPriceChange = (e) => {
     const price = parseFloat(e.target.value);
+    
+    
+    
     if (!isNaN(price)) {
       setSelectedUnitPrice(price);
     }
@@ -68,7 +76,6 @@ const Create = () => {
     if (file) {
       setFile(file);
       setPreviewImage(URL.createObjectURL(file));
-      setIsOfferPreviewDisplayed(true);
     }
   };
 
@@ -132,6 +139,11 @@ const Create = () => {
       newErrors.numberError = "Number of ad spaces is missing or invalid.";
       isValid = false;
     }
+    if (!selectedParameter) {
+      newErrors.typeAdError = "Type of ad spaces is missing or invalid.";
+      isValid = false;
+    }
+
     if (!selectedCurrency) {
       newErrors.currencyError = "Currency is missing or invalid.";
       isValid = false;
@@ -167,25 +179,26 @@ const Create = () => {
       console.error("Missing name or link");
     }
 
-    const json = JSON.stringify({
-      name: name,
-      description: description,
-      image: uploadUrl,
-      external_link: link,
-      collaborators: [address],
-      validFromDate: startDate,
-      validToDate: endDate,
-      currencyName: selectedCurrency,
-      price: selectedUnitPrice,
-    });
+     const json = JSON.stringify({
+       name: name,
+       description: description,
+       image: uploadUrl,
+       external_link: link,
+       collaborators: [address],
+       validFromDate: startDate,
+       validToDate: endDate,
+       currencyName: selectedCurrency,
+       price: selectedUnitPrice,
+     });
 
-    // upload json to IPFS
-    const jsonUrl = await upload({
-      data: [json],
-      options: { uploadWithGatewayUrl: true, uploadWithoutDirectory: true },
-    });
+     // upload json to IPFS
+     const jsonUrl = await upload({
+       data: [json],
+       options: { uploadWithGatewayUrl: true, uploadWithoutDirectory: true },
+     });
 
-    const jsonIpfsLink = jsonUrl[0];
+     const jsonIpfsLink = jsonUrl[0];
+
 
     const args = [
       JSON.stringify({
@@ -199,7 +212,7 @@ const Create = () => {
         initialOwner: address, // owner
         royaltyBps: selectedRoyalties * 100, // royalties
         currencies: [selectedCurrencyContract(selectedCurrency)], // accepted token
-        prices: [BigNumber.from(selectedUnitPrice).mul(BigNumber.from(10).pow(getDecimals(selectedCurrency)))], // prices with decimals
+        prices: [ethers.utils.parseUnits(selectedUnitPrice.toString(), getDecimals(selectedCurrency))], // prices with decimals
         allowedTokenIds: Array.from({ length: selectedNumber }, (_, i) => i), // allowed token ids
       }),
       JSON.stringify({
@@ -208,12 +221,12 @@ const Create = () => {
         options: {
           admins: [address], // admin
           validators: [], // validator
-          adParameters: ["squareLogoURL", "linkURL"], // ad parameters
+          adParameters: selectedParameter, // ad parameters
         },
       }),
     ];
     const preparedArgs = [Object.values(JSON.parse(args[0])), Object.values(JSON.parse(args[1]))];
-
+    console.log("preparedArgs", preparedArgs);
     try {
       await mutateAsync({ args: preparedArgs });
       setSuccessFullUpload(true);
@@ -280,16 +293,13 @@ const Create = () => {
     [JEURdecimals, USDCDecimals, WETHDecimals, MaticDecimals, customDecimals]
   );
 
- 
   const numSteps = 4;
   const successFullUploadModal = {
-    
     body: "Your offer has been created successfully",
     buttonTitle: "Close",
     hrefButton: "/",
   };
 
- 
   return (
     <div>
       <Meta title="Create || Xhibiter | NFT Marketplace Next.js Template" />
@@ -322,6 +332,8 @@ const Create = () => {
             setEndDate={setEndDate}
             selectedNumber={selectedNumber}
             handleNumberChange={handleNumberChange}
+            selectedParameter={selectedParameter}
+            handleParameterChange={handleParameterChange}
           />
 
           <Step_4_Create
@@ -355,13 +367,15 @@ const Create = () => {
             customContract={customContract}
             selectedRoyalties={selectedRoyalties}
             previewImage={previewImage}
+            selectedParameter={selectedParameter}
             validate={validate}
             errors={errors}
             successFullUpload={successFullUpload}
             address={address}
-            buttonTitle="Offer Preview"
+            buttonTitle="Create ad space offer"
             modalTitle="Ad Space Offer "
             successFullUploadModal={successFullUploadModal}
+            hrefButton="/"
           />
         </div>
       )}

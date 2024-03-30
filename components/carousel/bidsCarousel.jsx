@@ -15,18 +15,20 @@ import { execute } from "../../.graphclient";
 import { gql } from "@apollo/client";
 import { GetAllAdsOffers } from "../../data/services/AdsOffersService";
 import { useEffect, useState } from "react";
+import OfferItem from "../cards/offerItem";
 
 const BidsCarousel = () => {
   const [data, setData] = useState([]);
   useEffect(() => {
     const fetchAdsOffers = async () => {
       const result = await GetAllAdsOffers();
+      console.log(result);
       setData(result);
     };
 
     fetchAdsOffers();
   }, []);
-
+  console.log(data);
   return (
     <>
       <Swiper
@@ -54,42 +56,10 @@ const BidsCarousel = () => {
         }}
         className=" card-slider-4-columns !py-5"
       >
-        {data.map((item) => {
-          const { id, name, ownerAddress, ownerName, image, maxSupply, externalLink, description, currencyName, numberTokenAllowed, price } = item;
-          // const itemLink = image.split("/").slice(-1).toString().replace(".jpg", "");
+        {data.map((item, index) => {
           return (
-            <SwiperSlide className="text-white" key={id}>
-              <article>
-                <div className="dark:bg-jacarta-700 dark:border-jacarta-700 border-jacarta-100 rounded-2xl block border bg-white p-[1.1875rem] transition-shadow hover:shadow-lg text-jacarta-500">
-                  <figure>
-                    {/* {`item/${itemLink}`} */}
-                    <Link href={`/item/${id}/1`}>
-                      <Image src={image} alt="" height={230} width={230} className="rounded-[0.625rem] w-full lg:h-[230px] object-cover" loading="lazy" />
-                    </Link>
-                  </figure>
-                  <div className="mt-4 flex items-center justify-between">
-                    <Link href={`/item/${id}/1`}>
-                      <span className="font-display text-jacarta-700 hover:text-accent text-base dark:text-white">{name}</span>
-                    </Link>
-                    <span className="dark:border-jacarta-600 border-jacarta-100 flex items-center whitespace-nowrap rounded-md border py-1 px-2">
-                      <Tippy content={<span>{currencyName}</span>}>
-                        <Image width={12} height={12} src="/images/eth-icon.svg" alt="icon" className="w-3 h-3 mr-1" />
-                      </Tippy>
-
-                      <span className="text-green text-sm font-medium tracking-tight">
-                        {price} {currencyName}
-                      </span>
-                    </span>
-                  </div>
-                  <div className="mt-2 text-sm">
-                    <span className="dark:text-jacarta-300 text-jacarta-500">
-                      {numberTokenAllowed}/{maxSupply}
-                    </span>
-                  </div>
-
-                  <div className="mt-8 flex items-center justify-between">{/* <Likes like={react_number} classes="flex items-center space-x-1" /> */}</div>
-                </div>
-              </article>
+            <SwiperSlide className="text-white" key={index}>
+              <OfferItem item={item} url={`/item/${item.id}/1`} />
             </SwiperSlide>
           );
         })}
