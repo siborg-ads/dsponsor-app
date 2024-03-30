@@ -3,10 +3,8 @@ import { useRouter } from "next/router";
 import Link from "next/link";
 import "tippy.js/dist/tippy.css";
 import styles from "../../../styles/createPage/style.module.scss";
-
 import Meta from "../../../components/Meta";
 import Image from "next/image";
-import { GetAdOfferById } from "../../../data/services/AdsOffersService";
 import { useAddress, darkTheme, Web3Button, useTokenBalance, useContract, useContractRead, useContractWrite, useStorageUpload, useTokenDecimals, CheckoutWithCard, CheckoutWithEth } from "@thirdweb-dev/react";
 import { ethers } from "ethers";
 import SliderForm from "../../../components/sliderForm/sliderForm";
