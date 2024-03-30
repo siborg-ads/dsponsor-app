@@ -6,9 +6,10 @@ import { FileUploader } from "react-drag-drop-files";
 
 const Step_1_Create = ({ stepsRef, styles, setName, setDescription }) => {
   return (
-    <div ref={(el) => (stepsRef.current[0] = el)} className={styles.form__step}>
+    <div ref={(el) => (stepsRef.current[1] = el)} className={styles.form__step}>
       <div className="pr-6 pl-2">
-        <h3 className="mb-14">Step 1</h3>
+        <h3 className="mb-2">Step 2 : Name & Description</h3>
+        <p className="text-center pt-2  mb-14 dark:text-white">Provide offer&apos;s name and a brief description.</p>
         {/* <!-- Name --> */}
         <div className="mb-6">
           <label htmlFor="item-name" className="font-display text-jacarta-700 mb-2 block dark:text-white">
@@ -32,9 +33,10 @@ const Step_1_Create = ({ stepsRef, styles, setName, setDescription }) => {
             id="item-description"
             className="dark:bg-jacarta-700 border-jacarta-100 hover:ring-accent/10 focus:ring-accent dark:border-jacarta-600 dark:placeholder:text-jacarta-300 w-full rounded-lg py-3 px-3 hover:ring-2 dark:text-white"
             rows="4"
+            maxLength="250"
             required
             onChange={(e) => setDescription(e.target.value)}
-            placeholder="This is a description of the offer."
+            placeholder="This is a description of the offer. characters limit : 250"
           ></textarea>
         </div>
       </div>

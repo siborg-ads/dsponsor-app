@@ -1258,10 +1258,10 @@
   dependencies:
     "@jridgewell/trace-mapping" "0.3.9"
 
-"@dsponsor/sdk@^1.6.3":
-  version "1.6.3"
-  resolved "https://registry.npmjs.org/@dsponsor/sdk/-/sdk-1.6.3.tgz"
-  integrity sha512-HIHACnqTd3BI1J0gFctmGf4WSRdA7DDBDZ611Ozv3fcXIT4mBQRFivTCW/YyI03H54yd8qh2oN55/YvUo9S1tA==
+"@dsponsor/sdk@^2.1.0-beta.2":
+  version "2.1.0-beta.2"
+  resolved "https://registry.npmjs.org/@dsponsor/sdk/-/sdk-2.1.0-beta.2.tgz"
+  integrity sha512-kukrs0yQ1yjx8Bdhm9jR7EcrOoGLR0Uhy4LkgFzGOA9ANK+TcZqOjD2QEV5IUBCBx43T9VGbKnYS0eq8T+a5uw==
   dependencies:
     "@apollo/client" "^3.9.9"
     ethers "^6.11.1"

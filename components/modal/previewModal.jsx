@@ -52,19 +52,15 @@ const PreviewModal = ({
               <div className="flex gap-8">
                 <div>
                   <p className="font-display mb-2 block dark:text-white">
-                    {name ? (
-                      <span className="dark:text-jacarta-300 text-jacarta-400 text-sm">
-                        Name : {!errors.nameError ? <span className="dark:text-white text-md ml-2"> {name} </span> : <span className="text-red">{errors.nameError}</span>}
-                      </span>
-                    ) : (
-                      ""
-                    )}
+                    <span className="dark:text-jacarta-300 text-jacarta-400 text-sm">
+                      Name : {!errors.nameError ? <span className="dark:text-white text-base ml-2"> {name} </span> : <span className="text-red text-base ml-2">{errors.nameError}</span>}
+                    </span>
                   </p>
-                  {description && (
-                    <p className="font-display  mb-2 block text-jacarta-400 text-sm">
-                      Description: {!errors.descriptionError ? <span className="dark:text-white text-base ml-2"> {description} </span> : <span className="text-red text-md ml-2">{errors.descriptionError}</span>}
-                    </p>
-                  )}
+
+                  <p className="font-display  mb-2 block text-jacarta-400 text-sm">
+                    Description: {!errors.descriptionError ? <span className="dark:text-white text-base ml-2"> {description} </span> : <span className="text-red text-base ml-2">{errors.descriptionError}</span>}
+                  </p>
+
                   <p className="font-display  mb-2 block text-jacarta-400 text-sm">
                     Link : {!errors.linkError ? <span className="dark:text-white text-base ml-2"> {link} </span> : <span className="text-red text-base ml-2"> {errors.linkError}</span>}
                   </p>
@@ -141,6 +137,8 @@ const PreviewModal = ({
             ) : (
               <div className="flex gap-2">
                 <p>{successFullUploadModal.body} </p>
+                {successFullUploadModal.subBody && <p>{successFullUploadModal.subBody} </p>}
+
                 <div className="dark:border-jacarta-600 bg-green   flex h-6 w-6 items-center justify-center rounded-full border-2 border-white" data-tippy-content="Verified Collection">
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" className="h-[.875rem] w-[.875rem] fill-white">
                     <path fill="none" d="M0 0h24v24H0z"></path>
@@ -156,7 +154,7 @@ const PreviewModal = ({
               <div className="flex items-center gap-4">
                 {!successFullUpload ? (
                   <Web3Button
-                    contractAddress="0xA82B4bBc8e6aC3C100bBc769F4aE0360E9ac9FC3"
+                    contractAddress="0xdf42633BD40e8f46942e44a80F3A58d0Ec971f09"
                     action={handleSubmit}
                     className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate ? "btn-disabled" : "!bg-accent !cursor-pointer"} `}
                     disabled={!validate}

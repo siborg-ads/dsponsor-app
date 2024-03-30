@@ -17,24 +17,17 @@ const Home_1 = () => {
     const fetchAdsOffers = async () => {
       const mappedData = [];
 
-      const ads = await admin.getOffers();
-      for (const element of ads) {
-        const IPFSLink = element.rulesURI;
-        const destructuredIPFSResult = await fetchDataFromIPFS(IPFSLink);
-        setOfferNFTContract(element.nftContract);
-
-        const combinedData = {
-          ...element,
-          ...destructuredIPFSResult,
-        };
-        mappedData.push(combinedData);
-      }
-
-      setData(mappedData);
+      const ads = await admin.getOffers(
+        {
+          limit: 10,
+        },
+        { includeMetadata: true, includePrices: true, includeAllowedTokens: true }
+      );
+     const data = ads.filter((item) => Number(item.offerId) !== 1);
+      setData(data);
     };
     fetchAdsOffers();
   }, []);
-  console.log(DsponsorNFTContract, "sdk");
   return (
     <main>
       <Meta title="Home 1" />

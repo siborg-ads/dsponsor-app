@@ -3,11 +3,50 @@ import DatePicker from "react-datepicker";
 
 import { FileUploader } from "react-drag-drop-files";
 
-const Step_4_Create = ({ stepsRef, styles, selectedUnitPrice, handleUnitPriceChange, selectedCurrency, handleCurrencyChange, customContract, handleCustomContractChange, selectedRoyalties, handleRoyaltiesChange }) => {
+const Step_4_Create = ({
+  stepsRef,
+  styles,
+  startDate,
+  setStartDate,
+  endDate,
+  setEndDate,
+  selectedUnitPrice,
+  handleUnitPriceChange,
+  selectedCurrency,
+  handleCurrencyChange,
+  customContract,
+  handleCustomContractChange,
+  selectedRoyalties,
+  handleRoyaltiesChange,
+}) => {
   return (
     <div ref={(el) => (stepsRef.current[3] = el)} className={styles.form__step}>
       <div className="pr-6 pl-2">
-        <h3 className="mb-14">Step 4</h3>
+        <h3 className="mb-2">Step 4 : Validity & Financials</h3>
+        <p className="text-center pt-2  mb-14 dark:text-white"> Set offer&apos;s end date, currency, and royalties.</p>
+        <div className="mb-6 flex flex-col items-center">
+          <label htmlFor="item-description" className="font-display text-jacarta-700 mb-2 block dark:text-white">
+            Validity period<span className="text-red">*</span>
+          </label>
+          <div className="flex gap-4 items-center text-jacarta-700 dark:text-white">
+            <div className="flex flex-col justify-center items-center gap-1">
+              <DatePicker
+                selected={startDate}
+                onChange={(date) => setStartDate(date)}
+                className="dark:bg-jacarta-700 border-jacarta-100 hover:ring-accent/10 focus:ring-accent dark:border-jacarta-600 dark:placeholder:text-jacarta-300 w-full rounded-lg py-3 px-3 hover:ring-2 dark:text-white"
+              />
+              <span className="text-jacarta-700 dark:text-white">Start date</span>
+            </div>
+            <div className="flex flex-col justify-center items-center gap-1">
+              <DatePicker
+                selected={endDate}
+                onChange={(date) => setEndDate(date)}
+                className="dark:bg-jacarta-700 border-jacarta-100 hover:ring-accent/10 focus:ring-accent dark:border-jacarta-600 dark:placeholder:text-jacarta-300 w-full rounded-lg py-3 px-3 hover:ring-2 dark:text-white"
+              />
+              <span className="text-jacarta-700 dark:text-white">End date</span>
+            </div>
+          </div>
+        </div>
         <div className="mb-6 flex flex-col items-center">
           <label htmlFor="item-description" className="font-display text-jacarta-700 mb-2 block dark:text-white">
             Unit selling price
@@ -35,9 +74,8 @@ const Step_4_Create = ({ stepsRef, styles, selectedUnitPrice, handleUnitPriceCha
                 onChange={handleCurrencyChange}
                 className="dark:bg-jacarta-700 border-jacarta-100 hover:ring-accent/10 focus:ring-accent dark:border-jacarta-600 dark:placeholder:text-jacarta-300 w-full rounded-lg py-3 px-5 hover:ring-2 dark:text-white"
               >
-                <option value="JEUR">JEUR</option>
                 <option value="USDC">USDC</option>
-                <option value="MATIC">MATIC</option>
+                <option value="ETH">ETH</option>
                 <option value="WETH">WETH</option>
                 <option value="custom">Custom</option>
               </select>
@@ -70,6 +108,7 @@ const Step_4_Create = ({ stepsRef, styles, selectedUnitPrice, handleUnitPriceCha
               id="numberInput"
               type="number"
               min="0"
+              step="0.01"
               max="100"
               value={selectedRoyalties}
               onChange={handleRoyaltiesChange}
