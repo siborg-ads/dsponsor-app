@@ -2,7 +2,7 @@ import { useState } from "react";
 import DatePicker from "react-datepicker";
 
 import { FileUploader } from "react-drag-drop-files";
- const fileTypes = ["JPG", "PNG", "SVG"];
+const fileTypes = ["JPG", "PNG", "SVG"];
 const Step_2_Create = ({ stepsRef, styles, setLink, file, handleLogoUpload }) => {
   return (
     <div ref={(el) => (stepsRef.current[1] = el)} className={styles.form__step}>
@@ -18,7 +18,7 @@ const Step_2_Create = ({ stepsRef, styles, setLink, file, handleLogoUpload }) =>
             type="url"
             id="item-external-link"
             className="dark:bg-jacarta-700 border-jacarta-100 hover:ring-accent/10 focus:ring-accent dark:border-jacarta-600 dark:placeholder:text-jacarta-300 w-full rounded-lg py-3 px-3 hover:ring-2 dark:text-white"
-            placeholder="https://yoursite.com"
+            placeholder="Provide an url for your offer. Eg.  https://yoursite.com"
             onChange={(e) => setLink(e.target.value)}
           />
         </div>
