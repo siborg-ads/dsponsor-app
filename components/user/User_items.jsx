@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
-import { GetAllAdsOffers } from "../../data/services/AdsOffersService";
 import Image from "next/image";
 import OwnedOffers_categories_items from "../categories/ownedOffers_categories_items";
 import Review_adProposal_items from "../collectrions/review_adProposal_items";

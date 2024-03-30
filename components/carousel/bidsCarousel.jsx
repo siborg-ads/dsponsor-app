@@ -13,11 +13,11 @@ import { useDispatch } from "react-redux";
 import Likes from "../likes";
 import { execute } from "../../.graphclient";
 import { gql } from "@apollo/client";
-import { GetAllAdsOffers } from "../../data/services/AdsOffersService";
+
 import { useEffect, useState } from "react";
 import OfferItem from "../cards/offerItem";
 import { DSponsorAdmin } from "@dsponsor/sdk";
-import { fetchDataFromIPFS } from "../../data/services/ipfsService";
+
 
 const BidsCarousel = ({data}) => {
  

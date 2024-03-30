@@ -7,7 +7,7 @@ import "tippy.js/dist/tippy.css";
 import Link from "next/link";
 import Tippy from "@tippyjs/react";
 import { MdKeyboardArrowRight, MdKeyboardArrowLeft } from "react-icons/md";
-import { GetAllAdsOffers } from "../../data/services/AdsOffersService";
+
 import { useEffect, useState } from "react";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import { Web3Button } from "@thirdweb-dev/react";
