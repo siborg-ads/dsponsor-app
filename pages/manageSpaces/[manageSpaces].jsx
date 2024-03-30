@@ -28,7 +28,7 @@ const ManageSpaces = () => {
         const offer = await admin.getOffers({ address: userAddress });
         console.log(userAddress, "offer");
         const ownedAdProposals = await admin.getOwnedOfferTokens({ address: userAddress });
-
+        console.log(ownedAdProposals, "ownedAdProposals");
         const mappedCreatedData = [];
         const mappedownedAdProposals = [];
 
@@ -42,7 +42,7 @@ const ManageSpaces = () => {
           };
           mappedownedAdProposals.push(combinedData);
         }
-        console.log(mappedownedAdProposals, "mappedownedAdProposals");
+       
 
         for (const element of offer) {
           const IPFSLink = element.rulesURI;

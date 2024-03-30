@@ -9,7 +9,7 @@ import { updateTrendingCategoryItemData } from "../../redux/counterSlice";
 import Review_adProposal_data from "./review_adProposal_items";
 import OfferItem from "../cards/offerItem";
 
-const OwnedOffers_categories_items = ({ data}) => {
+const OwnedOffers_categories_items = ({ data }) => {
   const [itemdata, setItemdata] = useState(trendingCategoryData);
   const dispatch = useDispatch();
   const { trendingCategorySorText } = useSelector((state) => state.counter);
@@ -45,7 +45,6 @@ const OwnedOffers_categories_items = ({ data}) => {
   useEffect(() => {
     dispatch(updateTrendingCategoryItemData(itemdata.slice(0, 8)));
   }, [itemdata, dispatch]);
-  console.log(data, "data");
   return (
     <>
       {/* <!-- Filter --> */}

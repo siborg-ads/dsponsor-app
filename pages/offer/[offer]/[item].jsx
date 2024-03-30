@@ -55,7 +55,7 @@ const Item = () => {
   const [validate, setValidate] = useState(false);
   const stepsRef = useRef([]);
   const numSteps = 2;
-
+console.log(tokenBalance, "tokenContract");
   useEffect(() => {
     if (offerId) {
       const admin = new DSponsorAdmin();
@@ -152,7 +152,7 @@ const Item = () => {
       return;
     }
     // IPFS upload
-console.log(tokenBalance, offerData[0]?.price);
+console.log(tokenBalance, offerData[0]?.price, "tokenBalance");
     let userBalance = checkUserBalance(tokenBalance, offerData[0]?.price);
     if (userBalance) {
       try {
@@ -190,7 +190,7 @@ console.log(tokenBalance, offerData[0]?.price);
     try {
       const parsedTokenBalance = parseFloat(tokenAddressBalance.displayValue);
       const parsedPriceToken = parseFloat(priceToken);
-
+      console.log(parsedTokenBalance, parsedPriceToken, "checkUserBalance");
       if (parsedTokenBalance >= parsedPriceToken) {
         console.log("user has enough balance");
         return true;

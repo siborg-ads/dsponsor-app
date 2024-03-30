@@ -10,6 +10,7 @@ import Review_adProposal_data from "./review_adProposal_items";
 import OfferItem from "../cards/offerItem";
 
 const OwnedAdProposals_categories_items = ({ data }) => {
+  
   const [itemdata, setItemdata] = useState(trendingCategoryData);
   const dispatch = useDispatch();
   const { trendingCategorySorText } = useSelector((state) => state.counter);
