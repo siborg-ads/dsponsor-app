@@ -20,11 +20,11 @@ const Review_carousel = ({ handleSubmit, pendingProposalData, successFullRefuseM
   const [refusedAdModalId, setRefusedAdModalId] = useState(null);
   const [offerId, setOfferId] = useState(null);
   const [tokenId, setTokenId] = useState(null);
-  const [proposalId, setProposalId] = useState(null);
+  const [recordsProposalId, setRecordsProposalId] = useState(null);
 
   useEffect(() => {
     const initialValidateStates = {};
-    console.log("pendingProposalData", pendingProposalData.length);
+    console.log("pendingProposalData", pendingProposalData);
     pendingProposalData.forEach((item) => {
       initialValidateStates[item.tokenId] = false;
     });
@@ -51,23 +51,34 @@ const Review_carousel = ({ handleSubmit, pendingProposalData, successFullRefuseM
       [id]: value,
     }));
   };
-  const handleItemSubmit = async (offerId, tokenId, proposalId, approuved) => {
-    const submissionArgs = {
-      offerId: offerId,
-      tokenId: tokenId,
-      proposalId: proposalId,
-      adParameter: "logoURL",
-      validated: approuved,
-      reason: comments[tokenId] || "",
-    };
+  const handleItemSubmit = async (offerId, tokenId, records, approuved) => {
+    console.log(records, "records");
+    const submissionArgs = [
+      {
+        offerId: offerId,
+        tokenId: tokenId,
+        proposalId: records.linkURL.proposalId,
+        adParameter: "linkURL",
+        validated: approuved,
+        reason: comments[tokenId] || "",
+      },
+      {
+        offerId: offerId,
+        tokenId: tokenId,
+        proposalId: records.logoURL.proposalId,
+        adParameter: "logoURL",
+        validated: approuved,
+        reason: comments[tokenId] || "",
+      },
+    ];
 
     await handleSubmit(submissionArgs);
   };
-  const openRefuseModal = (offerId, tokenId, proposalId) => {
+  const openRefuseModal = (offerId, tokenId, recordsProposalId) => {
     setRefusedAdModalId(tokenId);
     setOfferId(offerId);
     setTokenId(tokenId);
-    setProposalId(proposalId);
+    setRecordsProposalId(recordsProposalId);
   };
 
   const closeRefuseModal = () => {
@@ -94,7 +105,7 @@ const Review_carousel = ({ handleSubmit, pendingProposalData, successFullRefuseM
         className=" card-slider-4-columns !py-5"
       >
         {pendingProposalData.map((item) => {
-          const { records, offerId, tokenId, proposalId } = item;
+          const { records, offerId, tokenId } = item;
 
           return (
             <div key={tokenId}>
@@ -129,7 +140,7 @@ const Review_carousel = ({ handleSubmit, pendingProposalData, successFullRefuseM
                         </Link>
                       </div>
                       <div className="flex flex-col gap-2">
-                        <div key="2" className="dropdown-item mb-4 font-display dark:bg-jacarta-600 hover:bg-jacarta-50 block w-full rounded-xl pr-5 py-2 text-left text-sm transition-colors dark:text-white">
+                        <div className="dropdown-item mb-4 font-display dark:bg-jacarta-600 hover:bg-jacarta-50 block w-full rounded-xl pr-5 py-2 text-left text-sm transition-colors dark:text-white">
                           <span className="flex items-center justify-between">
                             <span className="pl-5">I confirm that I have check the image and the linkURL </span>
                             <input
@@ -144,16 +155,16 @@ const Review_carousel = ({ handleSubmit, pendingProposalData, successFullRefuseM
                         <div className="flex items-start space-x-4">
                           <div className="flex items-start gap-4 flex-wrap">
                             <Web3Button
-                              contractAddress="0xA82B4bBc8e6aC3C100bBc769F4aE0360E9ac9FC3"
-                              action={() => handleItemSubmit(offerId, tokenId, proposalId, true)}
+                              contractAddress="0xdf42633BD40e8f46942e44a80F3A58d0Ec971f09"
+                              action={() => handleItemSubmit(offerId, tokenId, records, true)}
                               className={` !rounded-full !min-w-[100px] !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate[tokenId] ? "btn-disabled" : "!bg-accent !cursor-pointer"} `}
                             >
                               Validate
                             </Web3Button>
 
                             <Web3Button
-                              contractAddress="0xA82B4bBc8e6aC3C100bBc769F4aE0360E9ac9FC3"
-                              action={() => openRefuseModal(offerId, tokenId, proposalId)}
+                              contractAddress="0xdf42633BD40e8f46942e44a80F3A58d0Ec971f09"
+                              action={() => openRefuseModal(offerId, tokenId, records)}
                               className={` !rounded-full !min-w-[100px] !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate[tokenId] ? "btn-disabled" : "!bg-red !cursor-pointer"} `}
                             >
                               Reject
@@ -187,7 +198,7 @@ const Review_carousel = ({ handleSubmit, pendingProposalData, successFullRefuseM
             id={refusedAdModalId}
             offerId={offerId}
             tokenId={tokenId}
-            proposalId={proposalId}
+            recordsProposalId={recordsProposalId}
             comments={comments[refusedAdModalId]}
             handleCommentChange={handleCommentChange}
             handleItemSubmit={handleItemSubmit}

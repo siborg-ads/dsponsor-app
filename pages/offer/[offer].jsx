@@ -5,7 +5,7 @@ import "tippy.js/dist/tippy.css";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import Meta from "../../components/Meta";
 import Image from "next/image";
-import { useContract, useContractWrite, useAddress } from "@thirdweb-dev/react";
+import { useContract, useContractWrite, useContractRead, useAddress } from "@thirdweb-dev/react";
 import Tippy from "@tippyjs/react";
 import "tippy.js/dist/tippy.css";
 import { ItemsTabs } from "../../components/component";
@@ -13,6 +13,7 @@ import Review_carousel from "../../components/carousel/review_carousel";
 import Validated_refused_items from "../../components/collectrions/validated_refused_items";
 import { DSponsorAdmin } from "@dsponsor/sdk";
 import { fetchDataFromIPFS } from "../../data/services/ipfsService";
+import { ethers } from "ethers";
 
 const Offer = () => {
   const router = useRouter();
@@ -24,12 +25,15 @@ const Offer = () => {
   const [pendingProposalData, setPendingProposalData] = useState([]);
   const [validatedProposalData, setValidatedProposalData] = useState([]);
   const [refusedProposalData, setRefusedProposalData] = useState([]);
+  const [royalties, setRoyalties] = useState(null);
+  const [successFullUpload, setSuccessFullUpload] = useState(false);
 
   const [imageModal, setImageModal] = useState(false);
+  const { contract: DsponsorNFTContract } = useContract(offerData[0]?.nftContract);
+  const { contract: DsponsorAdminContract } = useContract("0xdf42633BD40e8f46942e44a80F3A58d0Ec971f09");
+  const { data: royaltiesInfo } = useContractRead(DsponsorNFTContract, "royaltyInfo", ["1", 100]);
 
-  const { contract: DsponsorAdminContract } = useContract("0xA82B4bBc8e6aC3C100bBc769F4aE0360E9ac9FC3");
-
-  const { mutateAsync, isLoadingreviewAdProposal } = useContractWrite(DsponsorAdminContract, "reviewAdProposal");
+  const { mutateAsync, isLoadingreviewAdProposal } = useContractWrite(DsponsorAdminContract, "reviewAdProposals");
 
   const [successFullRefuseModal, setSuccessFullRefuseModal] = useState(false);
 
@@ -41,8 +45,8 @@ const Offer = () => {
         const offer = await admin.getOffer({ offerId: offerId });
         const validatedAds = await admin.getValidatedAds({ offerId: offerId });
         const refusedAds = await admin.getRejectedAds({ offerId: offerId });
-        console.log("ads", refusedAds);
-        const destructuredIPFSResult = await fetchDataFromIPFS(offer.rulesURI);
+        console.log("ads", ads);
+        const destructuredIPFSResult = await fetchDataFromIPFS(offer.offerMetadata);
         const combinedData = {
           ...offer,
           ...destructuredIPFSResult,
@@ -56,12 +60,14 @@ const Offer = () => {
       fetchAdsOffers();
     }
   }, [offerId, router]);
+  useEffect(() => {
+    if (royaltiesInfo) setRoyalties(ethers.BigNumber.from(royaltiesInfo[1]?._hex).toNumber());
+  }, [royaltiesInfo]);
 
   const handleSubmit = async (submissionArgs) => {
     try {
-      const { offerId, tokenId, proposalId, adParameter, validated, reason } = submissionArgs;
       await mutateAsync({
-        args: [offerId, tokenId, proposalId, adParameter, validated, reason],
+        args: [submissionArgs],
       });
       setSuccessFullRefuseModal(true);
     } catch (error) {
@@ -94,7 +100,7 @@ const Offer = () => {
     return <div>Chargement...</div>;
   }
 
-  const { currencyName, description, collaborators, id, image, maxSupply, name, allowedTokens, price, royalties } = offerData[0];
+  const { currencyName, description, collaborators, id, image, maxSupply, name, allowedTokens, price } = offerData[0];
 
   return (
     <>
@@ -102,7 +108,7 @@ const Offer = () => {
       {/*  <!-- Item --> */}
       <section className="relative lg:mt-24 lg:pt-12  mt-24 pt-12 pb-8">
         <div className="container flex justify-center mb-6">
-          <h1 class="text-jacarta-700 font-bold font-display mb-6 text-center text-5xl dark:text-white md:text-left lg:text-6xl xl:text-6xl">Offer </h1>
+          <h1 className="text-jacarta-700 font-bold font-display mb-6 text-center text-5xl dark:text-white md:text-left lg:text-6xl xl:text-6xl">Offer </h1>
         </div>
         <picture className="pointer-events-none absolute inset-0 -z-10 dark:hidden">
           <Image width={1519} height={773} priority src="/images/gradient_light.jpg" alt="gradient" className="h-full w-full object-cover" />
@@ -171,41 +177,18 @@ const Offer = () => {
                 <span className="dark:text-jacarta-300 text-jacarta-400 text-sm">
                   {allowedTokens.length}/{maxSupply} available
                 </span>
+                <span className="text-jacarta-400 block text-sm dark:text-white">
+                  Creator <strong>{royalties}% royalties</strong>
+                </span>
               </div>
 
               <p className="dark:text-jacarta-300 mb-10">{description}</p>
 
-              {/* <!-- Creator / Owner --> */}
-              <div className="mb-8 flex flex-wrap">
-                <div className="mr-8 mb-4 flex">
-                  <figure className="mr-4 shrink-0">
-                    <Link href="/user/avatar_6" className="relative block">
-                      <Image width={48} height={48} src={image[0]} alt={name} className="rounded-2lg h-12 w-12 object-contain" loading="lazy" />
-                      <div className="dark:border-jacarta-600 bg-green absolute -right-3 top-[60%] flex h-6 w-6 items-center justify-center rounded-full border-2 border-white" data-tippy-content="Verified Collection">
-                        <Tippy content={<span>Verified Collection</span>}>
-                          <svg className="icon h-[.875rem] w-[.875rem] fill-white">
-                            <use xlinkHref="/icons.svg#icon-right-sign"></use>
-                          </svg>
-                        </Tippy>
-                      </div>
-                    </Link>
-                  </figure>
-                  <div className="flex flex-col justify-center">
-                    <span className="text-jacarta-400 block text-sm dark:text-white">
-                      Creator <strong>{royalties}% royalties</strong>
-                    </span>
-                    <Link href="/user/avatar_6" className="text-accent block">
-                      <span className="text-sm font-bold">{name}</span>
-                    </Link>
-                  </div>
-                </div>
-              </div>
-
               <div className="dark:bg-jacarta-700 dark:border-jacarta-600 border-jacarta-100 rounded-2lg border bg-white p-8">
                 <div className=" sm:flex sm:flex-wrap">
                   <span className="dark:text-jacarta-300 text-jacarta-400 text-sm">
-                    Buying the ad space give you the exclusive right to submit an ad. The media still has the power to validate or reject ad assets. You re free to change the ad at anytime. And free to resell on the open
-                    market your ad space.{" "}
+                    This page allows you to oversee submitted ads, offering tools to either approve or reject them. Approve ads to make them live or reject those that don't meet your standards, streamlining the content
+                    that reaches your audience while maintaining quality control on your platform.{" "}
                   </span>
                 </div>
               </div>

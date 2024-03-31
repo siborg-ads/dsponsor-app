@@ -84,7 +84,7 @@ const Validated_refused_items = ({ statut, proposalData }) => {
                         </button>
                       </Tippy>
                     </div>
-                    <span className="text-jacarta-300 block text-xs mb-4">30 Minutes 45 Seconds Ago</span>
+
                     {statut && (
                       <div key="2" className="dropdown-item mb-4 font-display dark:bg-jacarta-600 hover:bg-jacarta-50 block w-full rounded-xl pr-5 py-2 text-left text-sm transition-colors dark:text-white">
                         <div className="flex flex-col pl-5 justify-between">
