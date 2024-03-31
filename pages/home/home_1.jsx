@@ -24,6 +24,7 @@ const Home_1 = () => {
         { includeMetadata: true, includePrices: true, includeAllowedTokens: true }
       );
      const data = ads.filter((item) => Number(item.offerId) !== 1);
+     console.log(data);
       setData(data);
     };
     fetchAdsOffers();

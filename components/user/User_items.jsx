@@ -2,8 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import Image from "next/image";
 import OwnedOffers_categories_items from "../categories/ownedOffers_categories_items";
-import Review_adProposal_items from "../collectrions/review_adProposal_items";
-import OfferItem from "../cards/offerItem";
+
 import OwnedAdProposals_categories_items from "../categories/ownedAdProposals_categories_item";
 
 const User_items = ({ createdData, mappedownedAdProposals }) => {
@@ -12,12 +11,12 @@ const User_items = ({ createdData, mappedownedAdProposals }) => {
   const tabItem = [
     {
       id: 1,
-      text: "Created",
+      text: "Created Offers",
       icon: "owned",
     },
     {
       id: 2,
-      text: "Owned",
+      text: "Owned Ad Spaces",
       icon: "owned",
     },
 

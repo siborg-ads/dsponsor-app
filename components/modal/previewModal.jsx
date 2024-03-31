@@ -6,9 +6,9 @@ import { Web3Button } from "@thirdweb-dev/react";
 const PreviewModal = ({
   handlePreviewModal,
   handleSubmit,
-  name = null,
+  name = false,
   link = null,
-  description = null,
+  description = false,
   startDate = null,
   endDate = null,
   selectedNumber = null,
@@ -25,7 +25,8 @@ const PreviewModal = ({
   buttonTitle,
   modalTitle,
   successFullUploadModal,
-  hrefButton,
+  finalPrice = null,
+  protocolFees = null,
 }) => {
   const formatDate = (date) => {
     if (!date) return "";
@@ -52,14 +53,19 @@ const PreviewModal = ({
               <div className="flex gap-8">
                 <div>
                   <p className="font-display mb-2 block dark:text-white">
-                    <span className="dark:text-jacarta-300 text-jacarta-400 text-sm">
-                      Name : {!errors.nameError ? <span className="dark:text-white text-base ml-2"> {name} </span> : <span className="text-red text-base ml-2">{errors.nameError}</span>}
-                    </span>
+                    {!name ||
+                      (name.length > 0 && (
+                        <span className="dark:text-jacarta-300 text-jacarta-400 text-sm">
+                          Name : {!errors.nameError ? <span className="dark:text-white text-base ml-2"> {name} </span> : <span className="text-red text-base ml-2">{errors.nameError}</span>}
+                        </span>
+                      ))}
                   </p>
-
-                  <p className="font-display  mb-2 block text-jacarta-400 text-sm">
-                    Description: {!errors.descriptionError ? <span className="dark:text-white text-base ml-2"> {description} </span> : <span className="text-red text-base ml-2">{errors.descriptionError}</span>}
-                  </p>
+                  {!description ||
+                    (description.length > 0 && (
+                      <p className="font-display  mb-2 block text-jacarta-400 text-sm">
+                        Description: {!errors.descriptionError ? <span className="dark:text-white text-base ml-2"> {description} </span> : <span className="text-red text-base ml-2">{errors.descriptionError}</span>}
+                      </p>
+                    ))}
 
                   <p className="font-display  mb-2 block text-jacarta-400 text-sm">
                     Link : {!errors.linkError ? <span className="dark:text-white text-base ml-2"> {link} </span> : <span className="text-red text-base ml-2"> {errors.linkError}</span>}
@@ -117,7 +123,25 @@ const PreviewModal = ({
                   )}
                   {selectedRoyalties ? (
                     <p className="font-display  mb-2 block text-jacarta-400 text-sm">
-                      Royalties : {!errors.royaltyError ? <span className="dark:text-white text-base ml-2"> {selectedRoyalties}% </span> : <span className="text-red">{errors.royaltyError}</span>}
+                      Royalties : {!errors.royaltyError ? <span className="dark:text-white text-base ml-2"> {selectedRoyalties} % </span> : <span className="text-red">{errors.royaltyError}</span>}
+                    </p>
+                  ) : (
+                    ""
+                  )}
+                  {protocolFees ? (
+                    <p className="font-display  mb-2 block text-jacarta-400 text-sm">
+                      Protocol fees : <span className="dark:text-white text-base ml-2"> 4 % </span>
+                    </p>
+                  ) : (
+                    ""
+                  )}
+                  {finalPrice ? (
+                    <p className="font-display  mb-2 block text-jacarta-400 text-sm">
+                      You will pay :{" "}
+                      <span className="dark:text-accent text-base ml-2">
+                        {" "}
+                        {finalPrice} {selectedCurrency}{" "}
+                      </span>
                     </p>
                   ) : (
                     ""
@@ -135,16 +159,17 @@ const PreviewModal = ({
                 )}
               </div>
             ) : (
-              <div className="flex gap-2">
-                <p>{successFullUploadModal.body} </p>
-                {successFullUploadModal.subBody && <p>{successFullUploadModal.subBody} </p>}
-
-                <div className="dark:border-jacarta-600 bg-green   flex h-6 w-6 items-center justify-center rounded-full border-2 border-white" data-tippy-content="Verified Collection">
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" className="h-[.875rem] w-[.875rem] fill-white">
-                    <path fill="none" d="M0 0h24v24H0z"></path>
-                    <path d="M10 15.172l9.192-9.193 1.415 1.414L10 18l-6.364-6.364 1.414-1.414z"></path>
-                  </svg>
+              <div className="flex flex-col gap-2">
+                <div className="flex gap-4">
+                  <p>{successFullUploadModal.body} </p>
+                  <div className="dark:border-jacarta-600 bg-green   flex h-6 w-6 items-center justify-center rounded-full border-2 border-white" data-tippy-content="Verified Collection">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" className="h-[.875rem] w-[.875rem] fill-white">
+                      <path fill="none" d="M0 0h24v24H0z"></path>
+                      <path d="M10 15.172l9.192-9.193 1.415 1.414L10 18l-6.364-6.364 1.414-1.414z"></path>
+                    </svg>
+                  </div>
                 </div>
+                {successFullUploadModal.subBody && <p>{successFullUploadModal.subBody} </p>}
               </div>
             )}
           </div>

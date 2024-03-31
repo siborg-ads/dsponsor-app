@@ -40,7 +40,7 @@ const Create = () => {
   const [successFullUpload, setSuccessFullUpload] = useState(false);
   const [selectedParameter, setSelectedParameter] = useState(["logoURL", "linkURL"]);
   const [selectedTypeParameter, setSelectedTypeParameter] = useState(0);
-  const [name, setName] = useState(null);
+  const [name, setName] = useState(false);
   const stepsRef = useRef([]);
 
   const handleNumberChange = (e) => {
@@ -98,7 +98,7 @@ const Create = () => {
     let newErrors = {};
     console.log(name, description, link);
     if (!name) {
-      console.log("name is missing");
+      
       newErrors.nameError = "Name is missing.";
       isValid = false;
     }
@@ -281,7 +281,7 @@ const Create = () => {
         case "custom":
           return customDecimals;
         default:
-          return USDCCurrency.decimals; // JEUR by default (to change)
+          return USDCCurrency.decimals; 
       }
     },
     [USDCCurrency, ETHCurrency, WETHCurrency, customDecimals]
@@ -383,7 +383,7 @@ const Create = () => {
             buttonTitle="Create ad space offer"
             modalTitle="Ad Space Offer "
             successFullUploadModal={successFullUploadModal}
-            hrefButton="/"
+            
           />
         </div>
       )}

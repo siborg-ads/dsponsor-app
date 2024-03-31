@@ -37,23 +37,26 @@ const Item = () => {
   const [previewImage, setPreviewImage] = useState(null);
   const [link, setLink] = useState(null);
   const [amountToApprove, setAmountToApprove] = useState(null);
+  const [royalties, setRoyalties] = useState(null);
   const [errors, setErrors] = useState({});
+  const [finalPrice, setFinalPrice] = useState(null);
   const [successFullUpload, setSuccessFullUpload] = useState(false);
-  const { contract: DsponsorAdminContract } = useContract("0xA82B4bBc8e6aC3C100bBc769F4aE0360E9ac9FC3");
+  const { contract: DsponsorAdminContract } = useContract("0xdf42633BD40e8f46942e44a80F3A58d0Ec971f09");
   const { contract: DsponsorNFTContract } = useContract(offerData[0]?.nftContract);
   const { mutateAsync: uploadToIPFS, isLoading: isUploading } = useStorageUpload();
   const { mutateAsync, isLoadingMintAndSubmit } = useContractWrite(DsponsorAdminContract, "mintAndSubmit");
   const { contract: tokenContract } = useContract(offerData[0]?.currencies[0], "token");
   const { data: tokenBalance, isLoading, error } = useTokenBalance(tokenContract, address);
   const { mutateAsync: approve, isLoading: isLoadingApprove } = useContractWrite(tokenContract, "approve");
-  const { data: bps } = useContractRead(DsponsorAdminContract, "bps");
+  const { data: bps } = useContractRead(DsponsorAdminContract, "feeBps");
   const { data: isAllowedToMint } = useContractRead(DsponsorNFTContract, "tokenIdIsAllowedToMint", tokenIdString);
+  const { data: royaltiesInfo } = useContractRead(DsponsorNFTContract, "royaltyInfo", [tokenIdString, 100]);
   const { data: tokenDecimals } = useTokenDecimals(tokenContract);
   const [showPreviewModal, setShowPreviewModal] = useState(false);
   const [validate, setValidate] = useState(false);
   const stepsRef = useRef([]);
   const numSteps = 2;
-console.log(tokenBalance, "tokenContract");
+
   useEffect(() => {
     if (offerId) {
       const admin = new DSponsorAdmin();
@@ -67,14 +70,13 @@ console.log(tokenBalance, "tokenContract");
               setIsOwner(true);
             }
           }
-          console.log(mintedToken, "isOwner");
         }
-        const destructuredIPFSResult = await fetchDataFromIPFS(offer.rulesURI);
+        const destructuredIPFSResult = await fetchDataFromIPFS(offer.offerMetadata);
         const combinedData = {
           ...offer,
           ...destructuredIPFSResult,
         };
-
+        console.log(combinedData, "offer");
         setOfferData([combinedData]);
       };
 
@@ -83,6 +85,10 @@ console.log(tokenBalance, "tokenContract");
 
     setTokenIdString(tokenId?.toString());
   }, [offerId, router, address, tokenId]);
+
+  useEffect(() => {
+    if (royaltiesInfo) setRoyalties(ethers.BigNumber.from(royaltiesInfo[1]?._hex).toNumber());
+  }, [royaltiesInfo]);
 
   const validateInputs = () => {
     let isValid = true;
@@ -125,9 +131,11 @@ console.log(tokenBalance, "tokenContract");
 
       const bpsValueHex = bps._hex;
       const bpsValueDecimal = ethers.BigNumber.from(bpsValueHex).toNumber();
+
       const bpsValuePercentage = bpsValueDecimal / 10000;
       const priceAsNumber = price * bpsValuePercentage + price;
       const priceAsNumberString = priceAsNumber.toString();
+      setFinalPrice(priceAsNumberString);
       const amountToApprove = ethers.utils.parseUnits(priceAsNumberString, tokenDecimals);
 
       setAmountToApprove(amountToApprove);
@@ -136,9 +144,9 @@ console.log(tokenBalance, "tokenContract");
 
   const handleApprove = async () => {
     try {
-      const allowance = await tokenContract.call("allowance", [address, "0xA82B4bBc8e6aC3C100bBc769F4aE0360E9ac9FC3"]);
+      const allowance = await tokenContract.call("allowance", [address, "0xdf42633BD40e8f46942e44a80F3A58d0Ec971f09"]);
       if (allowance > amountToApprove) return;
-      await approve({ args: ["0xA82B4bBc8e6aC3C100bBc769F4aE0360E9ac9FC3", amountToApprove] });
+      await approve({ args: ["0xdf42633BD40e8f46942e44a80F3A58d0Ec971f09", amountToApprove] });
       console.log("Approvation réussie");
     } catch (error) {
       console.error("Erreur d'approbation:", error);
@@ -150,7 +158,7 @@ console.log(tokenBalance, "tokenContract");
       return;
     }
     // IPFS upload
-console.log(tokenBalance, offerData[0]?.price, "tokenBalance");
+
     let userBalance = checkUserBalance(tokenBalance, offerData[0]?.price);
     if (userBalance) {
       try {
@@ -186,9 +194,9 @@ console.log(tokenBalance, offerData[0]?.price, "tokenBalance");
 
   const checkUserBalance = (tokenAddressBalance, priceToken) => {
     try {
+      
       const parsedTokenBalance = parseFloat(tokenAddressBalance.displayValue);
       const parsedPriceToken = parseFloat(priceToken);
-      console.log(parsedTokenBalance, parsedPriceToken, "checkUserBalance");
       if (parsedTokenBalance >= parsedPriceToken) {
         console.log("user has enough balance");
         return true;
@@ -206,16 +214,17 @@ console.log(tokenBalance, offerData[0]?.price, "tokenBalance");
     validateInputs();
   };
   const successFullUploadModal = {
-    title: "Mint NFT",
-    body: "Your NFT has been minted successfully",
-    buttonTitle: "Close",
-    hrefButton: "/",
+    title: "Ad Space",
+    body: "Congratulations, you own this ad space.",
+    subBody: "You can submit your ad at any time in your manageSpaces section. The media still has the power to validate or reject ad assets.",
+    buttonTitle: "Manage Spaces",
+    hrefButton: `/manageSpaces/${address}`,
   };
 
   if (!offerData || offerData.length === 0) {
     return <div>Chargement...</div>;
   }
-  const { currencyName, description, externalLink, id, image, maxSupply, name, collaborators, allowedTokens, ownerAddress, ownerName, price, royalties, nftContract } = offerData[0];
+  const { currencyName, description, externalLink, id, image, maxSupply, name, collaborators, allowedTokens, ownerAddress, ownerName, price, nftContract } = offerData[0];
 
   return (
     <>
@@ -223,7 +232,7 @@ console.log(tokenBalance, offerData[0]?.price, "tokenBalance");
       {/*  <!-- Item --> */}
       <section className="relative lg:mt-24 lg:pt-12  mt-24 pt-12 pb-8">
         <div className="container flex justify-center mb-6">
-          <h1 class="text-jacarta-700 font-bold font-display mb-6 text-center text-5xl dark:text-white md:text-left lg:text-6xl xl:text-6xl">{isOwner ? "Your NFT" : "Mint NFT"} </h1>
+          <h1 className="text-jacarta-700 font-bold font-display mb-6 text-center text-5xl dark:text-white md:text-left lg:text-6xl xl:text-6xl">{isOwner ? "Your Ad Space" : "Buy Ad Space"} </h1>
           <span className="text-accent ml-2 text-sm font-bold">{isOwner ? "pending" : ""} </span>
         </div>
 
@@ -291,35 +300,12 @@ console.log(tokenBalance, offerData[0]?.price, "tokenBalance");
                 <span className="dark:text-jacarta-300 text-jacarta-400 text-sm">
                   {allowedTokens.length}/{maxSupply} available
                 </span>
+                <span className="text-jacarta-400 block text-sm dark:text-white">
+                  Creator <strong>{royalties}% royalties</strong>
+                </span>
               </div>
 
               <p className="dark:text-jacarta-300 mb-10">{description}</p>
-
-              {/* <!-- Creator / Owner --> */}
-              <div className="mb-8 flex flex-wrap">
-                <div className="mr-8 mb-4 flex">
-                  <figure className="mr-4 shrink-0">
-                    <Link href="/user/avatar_6" className="relative block">
-                      <Image width={48} height={48} src={image[0]} alt={name} className="rounded-2lg h-12 w-12 object-contain" loading="lazy" />
-                      <div className="dark:border-jacarta-600 bg-green absolute -right-3 top-[60%] flex h-6 w-6 items-center justify-center rounded-full border-2 border-white" data-tippy-content="Verified Collection">
-                        <Tippy content={<span>Verified Collection</span>}>
-                          <svg className="icon h-[.875rem] w-[.875rem] fill-white">
-                            <use xlinkHref="/icons.svg#icon-right-sign"></use>
-                          </svg>
-                        </Tippy>
-                      </div>
-                    </Link>
-                  </figure>
-                  <div className="flex flex-col justify-center">
-                    <span className="text-jacarta-400 block text-sm dark:text-white">
-                      Creator <strong>{royalties}% royalties</strong>
-                    </span>
-                    <Link href="/user/avatar_6" className="text-accent block">
-                      <span className="text-sm font-bold">{name}</span>
-                    </Link>
-                  </div>
-                </div>
-              </div>
 
               <div className="dark:bg-jacarta-700 dark:border-jacarta-600 border-jacarta-100 rounded-2lg border bg-white p-8">
                 <div className=" sm:flex sm:flex-wrap">
@@ -365,14 +351,20 @@ console.log(tokenBalance, offerData[0]?.price, "tokenBalance");
             handlePreviewModal={handlePreviewModal}
             handleSubmit={handleSubmit}
             link={link}
+            name={true}
+            finalPrice={finalPrice}
+            protocolFees={true}
+            description={true}
+            selectedUnitPrice={price}
+            selectedCurrency={currencyName}
+            selectedRoyalties={royalties}
             previewImage={previewImage}
             errors={errors}
             successFullUpload={successFullUpload}
             validate={validate}
-            buttonTitle="Mint"
-            modalTitle="Mint NFT Preview"
+            buttonTitle="Buy"
+            modalTitle="Ad Space Preview"
             successFullUploadModal={successFullUploadModal}
-            hrefButton="/"
           />
         </div>
       )}
