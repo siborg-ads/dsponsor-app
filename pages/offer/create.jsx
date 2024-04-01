@@ -14,7 +14,7 @@ import Step_2_Create from "../../components/sliderForm/PageCreate/Step_2_Create"
 import Step_3_Create from "../../components/sliderForm/PageCreate/Step_3_Create";
 import Step_4_Create from "../../components/sliderForm/PageCreate/Step_4_Create";
 
-import SliderForm from "../../components/sliderForm/sliderForm";
+import SliderForm from "../../components/sliderForm/SliderForm";
 import { DSponsorAdmin } from "@dsponsor/sdk";
 
 const Create = () => {

@@ -7,7 +7,7 @@ import Meta from "../../../components/Meta";
 import Image from "next/image";
 import { useAddress, darkTheme, useBalance, Web3Button, useTokenBalance, useContract, useContractRead, useContractWrite, useStorageUpload, useTokenDecimals, CheckoutWithCard, CheckoutWithEth } from "@thirdweb-dev/react";
 import { ethers } from "ethers";
-import SliderForm from "../../../components/sliderForm/sliderForm";
+import SliderForm from "../../../components/sliderForm/SliderForm";
 import Step_1_Mint from "../../../components/sliderForm/PageMint/Step_1_Mint";
 import Step_2_Mint from "../../../components/sliderForm/PageMint/Step_2_Mint";
 import Step_3_Mint from "../../../components/sliderForm/PageMint/Step_3_Mint";
@@ -71,7 +71,7 @@ const Item = () => {
             setIsOwner(true);
             }
           }
-          
+
         }
         const destructuredIPFSResult = await fetchDataFromIPFS(offer.offerMetadata);
         const combinedData = {
