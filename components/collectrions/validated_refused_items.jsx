@@ -64,7 +64,7 @@ const Validated_refused_items = ({ statut, proposalData }) => {
           {/* <!-- Records --> */}
           <div className="mb-10 shrink-0 basis-8/12 space-y-5 lg:mb-0 lg:pr-10">
             {proposalData?.map((item) => {
-              const { id, offerId, tokenId, records, image, title, price, time, category } = item;
+              const {  tokenId, records,  title} = item;
 
               return (
                 <div key={tokenId} className="dark:bg-jacarta-700 gap-5 dark:border-jacarta-700 border-jacarta-100 rounded-2.5xl relative flex items-center border bg-white p-8 transition-shadow hover:shadow-lg">
@@ -124,7 +124,7 @@ const Validated_refused_items = ({ statut, proposalData }) => {
           </div>
 
           {/* <!-- Filters --> */}
-          <aside className="basis-4/12 lg:pl-5">
+          {/* <aside className="basis-4/12 lg:pl-5">
             <form action="search" className="relative mb-12 block" onSubmit={handleSubmit}>
               <input
                 type="search"
@@ -165,7 +165,7 @@ const Validated_refused_items = ({ statut, proposalData }) => {
                 );
               })}
             </div>
-          </aside>
+          </aside> */}
         </div>
       </div>
     </>

@@ -25,7 +25,7 @@ const OfferItem = ({ item, url }) => {
             <Link href={url}>{image[0] && <Image src={image[0]} alt="" height={230} width={230} className="rounded-[0.625rem] w-full lg:h-[230px] object-contain" loading="lazy" />}</Link>
           </figure>
           <div className="mt-4 flex items-center justify-between">
-            <Link href={url} className="overflow-hidden text-ellipsis whitespace-nowrap">
+            <Link href={url} className="overflow-hidden text-ellipsis whitespace-nowrap max-w-[120px]">
               <span className="font-display max-w-[150px] text-jacarta-700 hover:text-accent text-base dark:text-white ">{name}</span>
             </Link>
             <span className="dark:border-jacarta-600 border-jacarta-100 flex items-center whitespace-nowrap rounded-md border py-1 px-2">

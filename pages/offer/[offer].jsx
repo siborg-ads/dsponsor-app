@@ -31,7 +31,7 @@ const Offer = () => {
   const [imageModal, setImageModal] = useState(false);
   const { contract: DsponsorNFTContract } = useContract(offerData[0]?.nftContract);
   const { contract: DsponsorAdminContract } = useContract("0xdf42633BD40e8f46942e44a80F3A58d0Ec971f09");
-  const { data: royaltiesInfo } = useContractRead(DsponsorNFTContract, "royaltyInfo", ["1", 100]);
+  const { data: royaltiesInfo } = useContractRead(DsponsorNFTContract, "royaltyInfo", ["0", 100]);
 
   const { mutateAsync, isLoadingreviewAdProposal } = useContractWrite(DsponsorAdminContract, "reviewAdProposals");
 
@@ -175,7 +175,7 @@ const Offer = () => {
                 </div>
 
                 <span className="dark:text-jacarta-300 text-jacarta-400 text-sm">
-                  {allowedTokens.length}/{maxSupply} available
+                  {allowedTokens.length - validatedProposalData.length - refusedProposalData.length - pendingProposalData.length}/{maxSupply} available
                 </span>
                 <span className="text-jacarta-400 block text-sm dark:text-white">
                   Creator <strong>{royalties}% royalties</strong>

@@ -9,21 +9,19 @@ import { Mumbai, Polygon } from "@thirdweb-dev/chains";
 import { ethers } from "ethers";
 import styles from "../../styles/createPage/style.module.scss";
 import PreviewModal from "../../components/modal/previewModal";
-import Step_1_Create from "../../components/sliderForm/PageCreate/Step_2_Create";
-import Step_2_Create from "../../components/sliderForm/PageCreate/Step_3_Create";
+import Step_1_Create from "../../components/sliderForm/PageCreate/Step_1_Create";
+import Step_2_Create from "../../components/sliderForm/PageCreate/Step_2_Create";
 import Step_3_Create from "../../components/sliderForm/PageCreate/Step_3_Create";
 import Step_4_Create from "../../components/sliderForm/PageCreate/Step_4_Create";
-import Step_0_Create from "../../components/sliderForm/PageCreate/Step_1_Create";
+
 import SliderForm from "../../components/sliderForm/sliderForm";
 import { DSponsorAdmin } from "@dsponsor/sdk";
-
-
 
 const Create = () => {
   const admin = new DSponsorAdmin();
   const [file, setFile] = useState(null);
   const { mutateAsync: upload, isLoading } = useStorageUpload();
-  
+
   const [link, setLink] = useState(null);
   const [errors, setErrors] = useState({});
   const [description, setDescription] = useState(null);
@@ -98,13 +96,11 @@ const Create = () => {
     let newErrors = {};
     console.log(name, description, link);
     if (!name) {
-      
       newErrors.nameError = "Name is missing.";
       isValid = false;
     }
 
     if (!link || !isValidURL(link)) {
-      
       newErrors.linkError = "The link is missing or invalid.";
       isValid = false;
     }
@@ -281,7 +277,7 @@ const Create = () => {
         case "custom":
           return customDecimals;
         default:
-          return USDCCurrency.decimals; 
+          return USDCCurrency.decimals;
       }
     },
     [USDCCurrency, ETHCurrency, WETHCurrency, customDecimals]
@@ -290,7 +286,7 @@ const Create = () => {
   const numSteps = 4;
   const successFullUploadModal = {
     body: "Your offer has been created successfully",
-    subBody: "Don't Forget To Display The AdSpaces On Your Website ! Copy Paste the link in your Offer Details To Display Automatically Your Sponsor Logo.",
+    subBody: "⚠️ Don't Forget To Display The AdSpaces On Your Website ! Copy Paste the link in your Offer Details To Display Automatically Your Sponsor Logo.",
     buttonTitle: "Manage Spaces",
     hrefButton: `/manageSpaces/${address}`,
   };
@@ -314,7 +310,7 @@ const Create = () => {
           </div>
         </div>
         <SliderForm styles={styles} handlePreviewModal={handlePreviewModal} stepsRef={stepsRef} numSteps={numSteps}>
-          <Step_0_Create
+          <Step_1_Create
             stepsRef={stepsRef}
             styles={styles}
             selectedTypeParameter={selectedTypeParameter}
@@ -323,22 +319,9 @@ const Create = () => {
             selectedParameter={selectedParameter}
             handleParameterChange={handleParameterChange}
           />
-          <Step_1_Create stepsRef={stepsRef} styles={styles} setName={setName} setDescription={setDescription} />
+          <Step_2_Create stepsRef={stepsRef} styles={styles} setName={setName} setDescription={setDescription} />
 
-          <Step_2_Create stepsRef={stepsRef} styles={styles} setLink={setLink} file={file} handleLogoUpload={handleLogoUpload} />
-
-          {/* <Step_3_Create
-            stepsRef={stepsRef}
-            styles={styles}
-            startDate={startDate}
-            setStartDate={setStartDate}
-            endDate={endDate}
-            setEndDate={setEndDate}
-            selectedNumber={selectedNumber}
-            handleNumberChange={handleNumberChange}
-            selectedParameter={selectedParameter}
-            handleParameterChange={handleParameterChange}
-          /> */}
+          <Step_3_Create stepsRef={stepsRef} styles={styles} setLink={setLink} file={file} handleLogoUpload={handleLogoUpload} />
 
           <Step_4_Create
             stepsRef={stepsRef}
@@ -383,7 +366,6 @@ const Create = () => {
             buttonTitle="Create ad space offer"
             modalTitle="Ad Space Offer "
             successFullUploadModal={successFullUploadModal}
-            
           />
         </div>
       )}

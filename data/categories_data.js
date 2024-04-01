@@ -1,6 +1,7 @@
 const tranding_category_filter = [
   {
     id: 0,
+
     text: "all",
   },
   {
@@ -38,6 +39,7 @@ const tranding_category_filter = [
 const ownedAdProposals_categories_filter = [
   {
     id: 0,
+    svg: "art",
     text: "Pending review",
   },
   {

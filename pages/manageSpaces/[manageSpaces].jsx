@@ -28,7 +28,7 @@ const ManageSpaces = () => {
         const offer = await admin.getOffers({ address: userAddress }, { includeMetadata: true, includePrices: true, includeAllowedTokens: true });
 
         const ownedAdProposals = await admin.getOwnedOfferTokens({ address: userAddress });
-        console.log(ownedAdProposals, "ownedAdProposals");
+       
 
         const mappedownedAdProposals = [];
 
@@ -64,7 +64,7 @@ const ManageSpaces = () => {
       <div className="pt-[5.5rem] lg:pt-24" key="5">
         {/* <!-- Banner --> */}
         <div className="relative h-[18.75rem]">
-          <Image width={1519} height={300} src="/images/collections/Banner-item.webp" alt="banner" className="w-full h-full object-cover" />
+          <Image width={1519} height={300} src="/images/gradient_creative.jpg" alt="banner" className="w-full h-full object-cover" />
           <div className="container relative -translate-y-4">
             <div className="font-display group hover:bg-accent absolute right-0 bottom-4 flex items-center rounded-lg bg-white py-2 px-4 text-sm">
               <Tippy content={<span className="p-2">Coming soon</span>}>

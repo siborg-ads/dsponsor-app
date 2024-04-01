@@ -4,7 +4,7 @@ import Image from "next/image";
 
 import { FileUploader } from "react-drag-drop-files";
 
-const Step_0_Create = ({ stepsRef, styles, selectedTypeParameter, selectedNumber, handleNumberChange, selectedParameter, handleParameterChange }) => {
+const Step_1_Create = ({ stepsRef, styles, selectedTypeParameter, selectedNumber, handleNumberChange, selectedParameter, handleParameterChange }) => {
   const AdParameterData = [
     {
       type: "Logo & Link",
@@ -75,4 +75,4 @@ const Step_0_Create = ({ stepsRef, styles, selectedTypeParameter, selectedNumber
   );
 };
 
-export default Step_0_Create;
+export default Step_1_Create;

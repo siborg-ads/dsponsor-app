@@ -5,11 +5,12 @@ import "tippy.js/dist/tippy.css";
 import styles from "../../../styles/createPage/style.module.scss";
 import Meta from "../../../components/Meta";
 import Image from "next/image";
-import { useAddress, darkTheme, Web3Button, useTokenBalance, useContract, useContractRead, useContractWrite, useStorageUpload, useTokenDecimals, CheckoutWithCard, CheckoutWithEth } from "@thirdweb-dev/react";
+import { useAddress, darkTheme, useBalance, Web3Button, useTokenBalance, useContract, useContractRead, useContractWrite, useStorageUpload, useTokenDecimals, CheckoutWithCard, CheckoutWithEth } from "@thirdweb-dev/react";
 import { ethers } from "ethers";
 import SliderForm from "../../../components/sliderForm/sliderForm";
 import Step_1_Mint from "../../../components/sliderForm/PageMint/Step_1_Mint";
 import Step_2_Mint from "../../../components/sliderForm/PageMint/Step_2_Mint";
+import Step_3_Mint from "../../../components/sliderForm/PageMint/Step_3_Mint";
 import PreviewModal from "../../../components/modal/previewModal";
 import { FileUploader } from "react-drag-drop-files";
 import Tippy from "@tippyjs/react";
@@ -46,7 +47,7 @@ const Item = () => {
   const { mutateAsync: uploadToIPFS, isLoading: isUploading } = useStorageUpload();
   const { mutateAsync, isLoadingMintAndSubmit } = useContractWrite(DsponsorAdminContract, "mintAndSubmit");
   const { contract: tokenContract } = useContract(offerData[0]?.currencies[0], "token");
-  const { data: tokenBalance, isLoading, error } = useTokenBalance(tokenContract, address);
+  const { data: tokenBalance, isLoading, error } = useBalance(offerData[0]?.currencies[0]);
   const { mutateAsync: approve, isLoading: isLoadingApprove } = useContractWrite(tokenContract, "approve");
   const { data: bps } = useContractRead(DsponsorAdminContract, "feeBps");
   const { data: isAllowedToMint } = useContractRead(DsponsorNFTContract, "tokenIdIsAllowedToMint", tokenIdString);
@@ -55,7 +56,7 @@ const Item = () => {
   const [showPreviewModal, setShowPreviewModal] = useState(false);
   const [validate, setValidate] = useState(false);
   const stepsRef = useRef([]);
-  const numSteps = 2;
+  const numSteps = 3;
 
   useEffect(() => {
     if (offerId) {
@@ -67,9 +68,10 @@ const Item = () => {
           const mintedToken = await admin.getOwnedOfferTokens({ address: address });
           for (const element of mintedToken) {
             if (element.tokenId === tokenId) {
-              setIsOwner(true);
+            setIsOwner(true);
             }
           }
+          
         }
         const destructuredIPFSResult = await fetchDataFromIPFS(offer.offerMetadata);
         const combinedData = {
@@ -145,6 +147,7 @@ const Item = () => {
   const handleApprove = async () => {
     try {
       const allowance = await tokenContract.call("allowance", [address, "0xdf42633BD40e8f46942e44a80F3A58d0Ec971f09"]);
+
       if (allowance > amountToApprove) return;
       await approve({ args: ["0xdf42633BD40e8f46942e44a80F3A58d0Ec971f09", amountToApprove] });
       console.log("Approvation réussie");
@@ -162,7 +165,9 @@ const Item = () => {
     let userBalance = checkUserBalance(tokenBalance, offerData[0]?.price);
     if (userBalance) {
       try {
-        await handleApprove();
+        if (offerData[0]?.currencies[0] !== "0x0000000000000000000000000000000000000000") {
+          await handleApprove();
+        }
       } catch (error) {
         console.error("Erreur d'approbation des tokens:", error);
       }
@@ -182,8 +187,11 @@ const Item = () => {
           adDatas: [uploadUrl[0], link],
           referralAdditionalInformation: "",
         };
-
-        await mutateAsync({ args: [args] });
+        if (offerData[0]?.currencies[0] === "0x0000000000000000000000000000000000000000") {
+          await mutateAsync({ args: [args], overrides: { value: amountToApprove } });
+        } else {
+          await mutateAsync({ args: [args] });
+        }
         setSuccessFullUpload(true);
       } catch (error) {
         console.error("Erreur de soumission du token:", error);
@@ -194,9 +202,9 @@ const Item = () => {
 
   const checkUserBalance = (tokenAddressBalance, priceToken) => {
     try {
-      
       const parsedTokenBalance = parseFloat(tokenAddressBalance.displayValue);
       const parsedPriceToken = parseFloat(priceToken);
+
       if (parsedTokenBalance >= parsedPriceToken) {
         console.log("user has enough balance");
         return true;
@@ -297,9 +305,7 @@ const Item = () => {
                   </span>
                 </div>
 
-                <span className="dark:text-jacarta-300 text-jacarta-400 text-sm">
-                  {allowedTokens.length}/{maxSupply} available
-                </span>
+                <span className="dark:text-jacarta-300 text-jacarta-400 text-sm">N° {tokenId}</span>
                 <span className="text-jacarta-400 block text-sm dark:text-white">
                   Creator <strong>{royalties}% royalties</strong>
                 </span>
@@ -325,14 +331,19 @@ const Item = () => {
         {isAllowedToMint ? (
           <div>
             <SliderForm styles={styles} handlePreviewModal={handlePreviewModal} stepsRef={stepsRef} numSteps={numSteps}>
-              <Step_1_Mint stepsRef={stepsRef} styles={styles} file={file} handleLogoUpload={handleLogoUpload} />
-              <Step_2_Mint stepsRef={stepsRef} styles={styles} setLink={setLink} />
+              <Step_1_Mint stepsRef={stepsRef} styles={styles} adParamaters={["logoURL", "linkURL"]} />
+              <Step_2_Mint stepsRef={stepsRef} styles={styles} file={file} handleLogoUpload={handleLogoUpload} />
+              <Step_3_Mint stepsRef={stepsRef} styles={styles} setLink={setLink} />
             </SliderForm>
           </div>
         ) : //Message to say that the NFT is not allowed to mint
         isOwner ? (
-          <div className="flex justify-center">
-            <p>clique ici pour resoumettre ton offre bitch</p>
+          <div>
+            <SliderForm styles={styles} handlePreviewModal={handlePreviewModal} stepsRef={stepsRef} numSteps={numSteps}>
+              <Step_1_Mint stepsRef={stepsRef} styles={styles} adParamaters={["logoURL", "linkURL"]} />
+              <Step_2_Mint stepsRef={stepsRef} styles={styles} file={file} handleLogoUpload={handleLogoUpload} />
+              <Step_3_Mint stepsRef={stepsRef} styles={styles} setLink={setLink} />
+            </SliderForm>
           </div>
         ) : (
           <div className="flex justify-center">

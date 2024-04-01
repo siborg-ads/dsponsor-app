@@ -48,7 +48,7 @@ const OwnedOffers_categories_items = ({ data }) => {
   return (
     <>
       {/* <!-- Filter --> */}
-      <div className="mb-8 flex flex-wrap items-center justify-between">
+      {/* <div className="mb-8 flex flex-wrap items-center justify-between">
         <ul className="flex flex-wrap items-center">
           {tranding_category_filter.map(({ id, svg, text }) => {
             if (text === "all") {
@@ -95,10 +95,10 @@ const OwnedOffers_categories_items = ({ data }) => {
               );
             }
           })}
-        </ul>
+        </ul> */}
         {/* dropdown */}
-        <Recently_added_dropdown data={sortText} dropdownFor="recently_added" />
-      </div>
+        {/* <Recently_added_dropdown data={sortText} dropdownFor="recently_added" />
+      </div> */}
 
       {/* <!-- Grid --> */}
       <div className="grid grid-cols-1 gap-[1.875rem] md:grid-cols-2 lg:grid-cols-4">
