@@ -9,11 +9,11 @@ const Wallet = () => {
   const bgImage = "/images/page-title/wallet_banner.jpg";
   return (
     <div>
-      <Meta title="Wallet || Xhibiter | NFT Marketplace Next.js Template" />
+      <Meta title="Wallet || DSponsor | smarter monetization for your content" />
       <div className="pt-[5.5rem] lg:pt-24">
         {/* <!-- Wallet --> */}
 
-        
+
 
         <section className="dark:bg-jacarta-800 relative pb-20 pt-28">
           <picture className="pointer-events-none absolute inset-0 -z-10 dark:hidden">

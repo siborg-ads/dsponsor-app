@@ -363,11 +363,11 @@ export default function Header01() {
         <div className="flex items-center px-6 py-6 xl:px-24 ">
           <Link className="shrink-0" href="/">
             <div className="dark:hidden flex justify-center items-center  font-semibold">
-              <Image src={Logo} height={80} width={80} alt="Xhibiter | NFT Marketplace" className=" h-auto " />
+              <Image src={Logo} height={80} width={80} alt="DSponsor | smarter monetization for your content" className=" h-auto " />
               <span>d&gt;sponsor</span>
             </div>
             <div className="hidden dark:flex flex justify-center items-center text-white font-semibold">
-              <Image src={WhiteLogo} height={80} width={80} alt="Xhibiter | NFT Marketplace" />
+              <Image src={WhiteLogo} height={80} width={80} alt="DSponsor | smarter monetization for your content" />
               <span>d&gt;sponsor</span>
             </div>
           </Link>
@@ -506,11 +506,11 @@ export default function Header01() {
       >
         <div className="t-0 dark:bg-jacarta-800 fixed left-0 z-10 flex w-full items-center justify-between bg-white p-6 lg:hidden">
           <div className="dark:hidden">
-            <Image src={Logo} height={28} width={130} alt="Xhibiter | NFT Marketplace" className="max-h-7 h-auto " />
+            <Image src={Logo} height={28} width={130} alt="DSponsor | smarter monetization for your content" className="max-h-7 h-auto " />
           </div>
 
           <div className="hidden dark:block">
-            <Image src={WhiteLogo} height={28} width={130} alt="Xhibiter | NFT Marketplace" />
+            <Image src={WhiteLogo} height={28} width={130} alt="DSponsor | smarter monetization for your content" />
           </div>
 
           <button

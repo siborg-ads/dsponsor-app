@@ -5,7 +5,7 @@ import Meta from "../../components/Meta";
 
 
 const Edit_user = () => {
-  
+
 
   const [profilePhoto, setProfilePhoto] = useState();
   const [coverePhoto, setCoverePhoto] = useState();
@@ -56,7 +56,7 @@ const Edit_user = () => {
 
   return (
     <div>
-      <Meta title="Profile || Xhibiter | NFT Marketplace Next.js Template" />
+      <Meta title="Profile || DSponsor | smarter monetization for your content" />
       <div className="pt-[5.5rem] lg:pt-24">
         {/* <!-- Banner --> */}
         <div className="relative">

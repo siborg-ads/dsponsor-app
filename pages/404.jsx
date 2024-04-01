@@ -6,7 +6,7 @@ import Meta from "../components/Meta";
 const Error_page = () => {
   return (
     <div>
-      <Meta title="404 || Xhibiter | NFT Marketplace Next.js Template" />
+      <Meta title="404 || DSponsor | smarter monetization for your content" />
       <div className="pt-[5.5rem] lg:pt-24">
         {/* <!-- 404 --> */}
         <section className="dark:bg-jacarta-800 relative py-16 md:py-24">

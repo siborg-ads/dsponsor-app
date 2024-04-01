@@ -28,7 +28,7 @@ const ManageSpaces = () => {
         const offer = await admin.getOffers({ address: userAddress }, { includeMetadata: true, includePrices: true, includeAllowedTokens: true });
 
         const ownedAdProposals = await admin.getOwnedOfferTokens({ address: userAddress });
-       
+
 
         const mappedownedAdProposals = [];
 
@@ -58,7 +58,7 @@ const ManageSpaces = () => {
 
   return (
     <>
-      <Meta title="User || Xhibiter | NFT Marketplace Next.js Template" />
+      <Meta title="User || DSponsor | smarter monetization for your content" />
       {/* <!-- Profile --> */}
 
       <div className="pt-[5.5rem] lg:pt-24" key="5">

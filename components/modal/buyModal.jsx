@@ -136,7 +136,7 @@ const BuyModal = () => {
                   htmlFor="buyNowTerms"
                   className="dark:text-jacarta-200 text-sm"
                 >
-                  By checking this box, I agree to {"Xhibiter's"}{" "}
+                  By checking this box, I agree to {"DSponsor's"}{" "}
                   <Link href="/tarms" className="text-accent">
                     Terms of Service
                   </Link>

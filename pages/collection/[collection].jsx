@@ -39,7 +39,7 @@ const Collection = () => {
   const { currencyName, description, externalLink, id, image, maxSupply, name, numberTokenAllowed, ownerAddress, ownerName, price, royalties } = data[0];
   return (
     <>
-      <Meta title={`${pid} || Xhibiter | NFT Marketplace Next.js Template`} />
+      <Meta title={`${pid} || DSponsor | smarter monetization for your content`} />
 
       <div className="pt-[5.5rem] lg:pt-32">
         {/* <!-- Banner --> */}
