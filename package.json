@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@apollo/client": "^3.9.5",
+    "@dsponsor/sdk": "^2.1.0-beta.4",
     "@emotion/react": "^11.9.3",
     "@emotion/styled": "^11.9.3",
     "@material-tailwind/react": "^1.2.4",
@@ -45,9 +46,9 @@
     "sass": "^1.71.1",
     "sharp": "^0.32.2",
     "swiper": "^8.2.4",
+    "thirdweb": "^5.0.3",
     "uuid": "^9.0.0",
-    "viem": "^2.7.9",
-    "wagmi": "^2.5.7"
+    "viem": "^2.7.9"
   },
   "devDependencies": {
     "@graphprotocol/client-cli": "^3.0.0",

@@ -1,41 +1,30 @@
 import React, { useState, useEffect } from "react";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
-import { GetAllAdsOffers } from "../../data/services/AdsOffersService";
 import Image from "next/image";
-import Trending_categories_items from "../categories/trending_categories_items";
-import Review_adProposal_items from "../collectrions/review_adProposal_items";
-import OfferItem from "../cards/offerItem";
+import OwnedOffers_categories_items from "../categories/ownedOffers_categories_items";
 
-const User_items = () => {
-  const [data, setData] = useState([]);
+import OwnedAdProposals_categories_items from "../categories/ownedAdProposals_categories_item";
+
+const User_items = ({ createdData, mappedownedAdProposals }) => {
   const [itemActive, setItemActive] = useState(1);
-  const offerAddress = "0x1e9cfb3a3d87d07d14a78681061c52d88225f7fd101d81ff7f76ba6353eff2af2b000000";
-  useEffect(() => {
-    const fetchAdsOffers = async () => {
-      const result = await GetAllAdsOffers();
-      console.log(result);
-      setData(result);
-    };
 
-    fetchAdsOffers();
-  }, []);
   const tabItem = [
     {
       id: 1,
-      text: "Created",
+      text: "Created Offers",
       icon: "owned",
     },
     {
       id: 2,
-      text: "Owned",
+      text: "Owned Ad Spaces",
       icon: "owned",
     },
 
-    {
-      id: 3,
-      text: "Favorite",
-      icon: "activity",
-    },
+    // {
+    //   id: 3,
+    //   text: "Favorite",
+    //   icon: "activity",
+    // },
   ];
   return (
     <>
@@ -69,17 +58,17 @@ const User_items = () => {
 
             <TabPanel>
               <div>
-                <Trending_categories_items data={data} offerAddress={offerAddress} />
+                <OwnedOffers_categories_items data={createdData} />
               </div>
             </TabPanel>
             <TabPanel>
               <div>
-                <Trending_categories_items data={data} offerAddress={offerAddress} />
+                <OwnedAdProposals_categories_items data={mappedownedAdProposals} />
               </div>
             </TabPanel>
-            <TabPanel>
-              <Trending_categories_items data={data} offerAddress={offerAddress} />
-            </TabPanel>
+            {/* <TabPanel>
+              <Trending_categories_items data={data} />
+            </TabPanel> */}
           </Tabs>
         </div>
       </section>

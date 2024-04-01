@@ -17,7 +17,7 @@ import {
   localWallet,
   embeddedWallet,
 } from "@thirdweb-dev/react";
-import { Mumbai, Polygon } from "@thirdweb-dev/chains";
+import { Mumbai, Polygon, Sepolia } from "@thirdweb-dev/chains";
 
 if (typeof window !== "undefined") {
   require("bootstrap/dist/js/bootstrap");
@@ -37,7 +37,7 @@ function MyApp({ Component, pageProps }) {
     <>
       <Meta title="Home 1" />
       <ThirdwebProvider
-        activeChain={Mumbai}
+        activeChain={Sepolia}
         clientId="6f375d41f2a33f1f08f6042a65d49ec9"
         authConfig={{
           domain: "dsponsor.com",

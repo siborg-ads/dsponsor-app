@@ -6,9 +6,9 @@ import { Web3Button } from "@thirdweb-dev/react";
 const PreviewModal = ({
   handlePreviewModal,
   handleSubmit,
-  name = null,
+  name = false,
   link = null,
-  description = null,
+  description = false,
   startDate = null,
   endDate = null,
   selectedNumber = null,
@@ -25,7 +25,8 @@ const PreviewModal = ({
   buttonTitle,
   modalTitle,
   successFullUploadModal,
-  hrefButton,
+  finalPrice = null,
+  protocolFees = null,
 }) => {
   const formatDate = (date) => {
     if (!date) return "";
@@ -49,66 +50,106 @@ const PreviewModal = ({
 
           <div className="modal-body p-6 flex gap-4 items-center justify-center">
             {!successFullUpload ? (
-              <div className="flex ">
+              <div className="flex gap-8">
                 <div>
-                  <p className="font-display text-jacarta-700 mb-2 block dark:text-white">{name ? <span>Name : {!errors.nameError ? name : <span className="text-red">{errors.nameError}</span>}</span> : ""}</p>
-                  {description && (
-                    <p className="font-display text-jacarta-700 mb-2 block dark:text-white">Description: {!errors.descriptionError ? description : <span className="text-red">{errors.descriptionError}</span>}</p>
-                  )}
-                  <p className="font-display text-jacarta-700 mb-2 block dark:text-white">
-                    Link :{" "}
-                    {!errors.linkError ? (
-                      <a href={link} target="_blank" rel="noopener noreferrer">
-                        {link}
-                      </a>
-                    ) : (
-                      <span className="text-red"> {errors.linkError}</span>
-                    )}
+                  <p className="font-display mb-2 block dark:text-white">
+                    {!name ||
+                      (name.length > 0 && (
+                        <span className="dark:text-jacarta-300 text-jacarta-400 text-sm">
+                          Name : {!errors.nameError ? <span className="dark:text-white text-base ml-2"> {name} </span> : <span className="text-red text-base ml-2">{errors.nameError}</span>}
+                        </span>
+                      ))}
+                  </p>
+                  {!description ||
+                    (description.length > 0 && (
+                      <p className="font-display  mb-2 block text-jacarta-400 text-sm">
+                        Description: {!errors.descriptionError ? <span className="dark:text-white text-base ml-2"> {description} </span> : <span className="text-red text-base ml-2">{errors.descriptionError}</span>}
+                      </p>
+                    ))}
+
+                  <p className="font-display  mb-2 block text-jacarta-400 text-sm">
+                    Link : {!errors.linkError ? <span className="dark:text-white text-base ml-2"> {link} </span> : <span className="text-red text-base ml-2"> {errors.linkError}</span>}
                   </p>
                   {!previewImage && (
-                    <p className="font-display text-jacarta-700 mb-2 block dark:text-white">
-                      Image preview : <span className="text-red"> {errors.imageError}</span>
+                    <p className="font-display  mb-2 block text-jacarta-400 text-sm">
+                      Image preview : <span className="text-red text-base ml-2"> {errors.imageError}</span>
                     </p>
                   )}
-                  <p className="font-display text-jacarta-700 mb-2 block dark:text-white">
-                    {startDate ? <span>Start Date : {!errors.startDateError ? formatDate(startDate) : <span className="text-red">{errors.startDateError}</span>}</span> : ""}
+                  <p className="font-display  mb-2 block text-jacarta-400 text-sm">
+                    {startDate ? (
+                      <span>Start Date : {!errors.startDateError ? <span className="dark:text-white text-base ml-2"> {formatDate(startDate)} </span> : <span className="text-red">{errors.startDateError}</span>}</span>
+                    ) : (
+                      ""
+                    )}
                   </p>
                   {endDate ? (
-                    <p className="font-display text-jacarta-700 mb-2 block dark:text-white">End Date : {!errors.endDateError ? formatDate(endDate) : <span className="text-red">{errors.endDateError}</span>}</p>
+                    <p className="font-display  mb-2 block text-jacarta-400 text-sm">
+                      End Date : {!errors.endDateError ? <span className="dark:text-white text-base ml-2"> {formatDate(endDate)} </span> : <span className="text-red">{errors.endDateError}</span>}
+                    </p>
                   ) : (
                     ""
                   )}
                   {selectedNumber ? (
-                    <p className="font-display text-jacarta-700 mb-2 block dark:text-white">Number of Items : {!errors.numberError ? `${selectedNumber}` : <span className="text-red">{errors.numberError}</span>}</p>
+                    <p className="font-display  mb-2 block text-jacarta-400 text-sm">
+                      Number of Items : {!errors.numberError ? <span className="dark:text-white text-base ml-2"> {selectedNumber} </span> : <span className="text-red">{errors.numberError}</span>}
+                    </p>
                   ) : (
                     ""
                   )}
                   {selectedParameter ? (
-                    <p className="font-display text-jacarta-700 mb-2 block dark:text-white">Type of Ad : {!errors.typeAdError ? `${selectedParameter}` : <span className="text-red">{errors.typeAdError}</span>}</p>
+                    <p className="font-display  mb-2 block text-jacarta-400 text-sm">
+                      Type of Ad : {!errors.typeAdError ? <span className="dark:text-white text-base ml-2"> {selectedParameter} </span> : <span className="text-red">{errors.typeAdError}</span>}
+                    </p>
                   ) : (
                     ""
                   )}
                   {selectedUnitPrice ? (
-                    <p className="font-display text-jacarta-700 mb-2 block dark:text-white">Unit Price : {!errors.unitPriceError ? ` ${selectedUnitPrice}` : <span className="text-red">{errors.unitPriceError}</span>}</p>
+                    <p className="font-display  mb-2 block text-jacarta-400 text-sm">
+                      Unit Price : {!errors.unitPriceError ? <span className="dark:text-white text-base ml-2"> {selectedUnitPrice} </span> : <span className="text-red">{errors.unitPriceError}</span>}
+                    </p>
                   ) : (
                     ""
                   )}
                   {customContract ? (
-                    <p className="font-display text-jacarta-700 mb-2 block dark:text-white">Custom Contract : {!errors.currencyError ? customContract : <span className="text-red">{errors.currencyError}</span>}</p>
+                    <p className="font-display  mb-2 block text-jacarta-400 text-sm">
+                      Custom Contract : {!errors.currencyError ? <span className="dark:text-white text-base ml-2"> {customContract} </span> : <span className="text-red">{errors.currencyError}</span>}
+                    </p>
                   ) : selectedCurrency ? (
-                    <p className="font-display text-jacarta-700 mb-2 block dark:text-white">Currency : {!errors.currencyError ? ` ${selectedCurrency}` : <span className="text-red">{errors.currencyError}</span>}</p>
+                    <p className="font-display  mb-2 block text-jacarta-400 text-sm">
+                      Currency : {!errors.currencyError ? <span className="dark:text-white text-base ml-2"> {selectedCurrency} </span> : <span className="text-red">{errors.currencyError}</span>}
+                    </p>
                   ) : (
                     ""
                   )}
                   {selectedRoyalties ? (
-                    <p className="font-display text-jacarta-700 mb-2 block dark:text-white">Royalties : {!errors.royaltyError ? `${selectedRoyalties}%` : <span className="text-red">{errors.royaltyError}</span>}</p>
+                    <p className="font-display  mb-2 block text-jacarta-400 text-sm">
+                      Royalties : {!errors.royaltyError ? <span className="dark:text-white text-base ml-2"> {selectedRoyalties} % </span> : <span className="text-red">{errors.royaltyError}</span>}
+                    </p>
+                  ) : (
+                    ""
+                  )}
+                  {protocolFees ? (
+                    <p className="font-display  mb-2 block text-jacarta-400 text-sm">
+                      Protocol fees : <span className="dark:text-white text-base ml-2"> 4 % </span>
+                    </p>
+                  ) : (
+                    ""
+                  )}
+                  {finalPrice ? (
+                    <p className="font-display  mb-2 block text-jacarta-400 text-sm">
+                      You will pay :{" "}
+                      <span className="dark:text-accent text-base ml-2">
+                        {" "}
+                        {finalPrice} {selectedCurrency}{" "}
+                      </span>
+                    </p>
                   ) : (
                     ""
                   )}
                 </div>
                 {previewImage && (
                   <div className="mb-6  flex-col items-center justify-center ">
-                    <label htmlFor="item-description" className="font-display text-jacarta-700 text-center mb-2 block dark:text-white">
+                    <label htmlFor="item-description" className="font-display text-jacarta-400 text-sm text-center mb-2 block ">
                       Image preview :
                     </label>
                     <div style={{ width: "300px", height: "300px", position: "relative" }}>
@@ -118,14 +159,17 @@ const PreviewModal = ({
                 )}
               </div>
             ) : (
-              <div className="flex gap-2">
-                <p>{successFullUploadModal.body} </p>
-                <div className="dark:border-jacarta-600 bg-green   flex h-6 w-6 items-center justify-center rounded-full border-2 border-white" data-tippy-content="Verified Collection">
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" className="h-[.875rem] w-[.875rem] fill-white">
-                    <path fill="none" d="M0 0h24v24H0z"></path>
-                    <path d="M10 15.172l9.192-9.193 1.415 1.414L10 18l-6.364-6.364 1.414-1.414z"></path>
-                  </svg>
+              <div className="flex flex-col gap-2">
+                <div className="flex gap-4">
+                  <p>{successFullUploadModal.body} </p>
+                  <div className="dark:border-jacarta-600 bg-green   flex h-6 w-6 items-center justify-center rounded-full border-2 border-white" data-tippy-content="Verified Collection">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" className="h-[.875rem] w-[.875rem] fill-white">
+                      <path fill="none" d="M0 0h24v24H0z"></path>
+                      <path d="M10 15.172l9.192-9.193 1.415 1.414L10 18l-6.364-6.364 1.414-1.414z"></path>
+                    </svg>
+                  </div>
                 </div>
+                {successFullUploadModal.subBody && <p>{successFullUploadModal.subBody} </p>}
               </div>
             )}
           </div>
@@ -135,7 +179,7 @@ const PreviewModal = ({
               <div className="flex items-center gap-4">
                 {!successFullUpload ? (
                   <Web3Button
-                    contractAddress="0xA82B4bBc8e6aC3C100bBc769F4aE0360E9ac9FC3"
+                    contractAddress="0xdf42633BD40e8f46942e44a80F3A58d0Ec971f09"
                     action={handleSubmit}
                     className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate ? "btn-disabled" : "!bg-accent !cursor-pointer"} `}
                     disabled={!validate}
@@ -143,7 +187,7 @@ const PreviewModal = ({
                     {buttonTitle}
                   </Web3Button>
                 ) : (
-                  <Link href={hrefButton}>
+                  <Link href={successFullUploadModal.hrefButton}>
                     <button className="!rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all !bg-accent !cursor-pointer">{successFullUploadModal.buttonTitle}</button>
                   </Link>
                 )}

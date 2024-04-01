@@ -4,8 +4,9 @@ import OfferTab from "./OfferTab";
 import Properties from "./Properties";
 import Activity_tab from "./Activity_tab";
 import Price_history from "./Price_history";
+import Link from "next/link";
 
-const ItemsTabs = () => {
+const ItemsTabs = ({ contractAddress, offerId }) => {
   const [tabsActive, setTabsActive] = useState(1);
   const tabsHeadText = [
     // {
@@ -74,14 +75,14 @@ const ItemsTabs = () => {
               <div className="dark:bg-jacarta-700 dark:border-jacarta-600 border-jacarta-100 rounded-t-2lg rounded-b-2lg rounded-tl-none border bg-white p-6 md:p-10">
                 <div className="mb-2 flex items-center">
                   <span className="dark:text-jacarta-300 mr-2 min-w-[9rem]">Contract Address:</span>
-                  <a href="#" className="text-accent">
-                    0x1cBB182322Aee8ce9F4F1f98d7460173ee30Af1F
-                  </a>
+                  <Link href={`https://polygonscan.com/address/${contractAddress}`} target="_blank" rel="noopener noreferrer" className="text-accent">
+                    {contractAddress}
+                  </Link>
                 </div>
                 <div className="mb-2 flex items-center">
-                  <span className="dark:text-jacarta-300 mr-2 min-w-[9rem]">Token ID:</span>
+                  <span className="dark:text-jacarta-300 mr-2 min-w-[9rem]">Offer ID:</span>
                   <span className="js-copy-clipboard text-jacarta-700 cursor-pointer select-none dark:text-white" data-tippy-content="Copy">
-                    7714
+                    {offerId}
                   </span>
                 </div>
                 <div className="mb-2 flex items-center">
@@ -90,7 +91,7 @@ const ItemsTabs = () => {
                 </div>
                 <div className="flex items-center">
                   <span className="dark:text-jacarta-300 mr-2 min-w-[9rem]">Blockchain:</span>
-                  <span className="text-jacarta-700 dark:text-white">Ethereum</span>
+                  <span className="text-jacarta-700 dark:text-white">Polygon</span>
                 </div>
               </div>
             </div>
