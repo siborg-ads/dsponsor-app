@@ -4,7 +4,7 @@ const Meta = ({ title, keyword, desc }) => {
   return (
     <div>
       <Head>
-        <title>{title} || Xhibiter NFT Marketplace Next.js Template</title>
+        <title>{title} || DSponsor - Unlock smarter monetization for your content.</title>
         <link rel="icon" href="/favicon.png" />
         <meta name="description" content={desc} />
         <meta name="keyword" content={keyword} />
@@ -14,10 +14,9 @@ const Meta = ({ title, keyword, desc }) => {
 };
 
 Meta.defaultProps = {
-  title: "Xhibiter | NFT Marketplace Next.js Template",
-  keyword:
-    "bitcoin, blockchain, crypto, crypto collectibles, crypto makretplace, cryptocurrency, digital items, market, nft, nft marketplace, nft next js, NFT react, non-fungible tokens, virtual asset, wallet",
-  desc: "The world's first and largest digital marketplace for crypto collectibles and non-fungible tokens (NFTs). Buy, sell, and discover exclusive digital items.",
+  title: "DSponsor | Unlock smarter monetization for your content.",
+  keyword: "audience engagement, web3, creator economic, NFT, creator monetization, creator economy, creator token, creator coin, creator tokenization, creator economy",
+  desc: "DSponsor is a platform that enables creators to monetize their content and engage with their audience in a smarter way."
 };
 
 export default Meta;
