@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import { trendingCategoryData } from "../../data/categories_data";
-import Activity_item from "./Activity_item";
+
 import Image from "next/image";
 import FilterCategoryItem from "../categories/filterCategoryItem";
 
@@ -51,9 +51,7 @@ const Collection_items = () => {
                 <FilterCategoryItem />
               </div>
             </TabPanel>
-            <TabPanel>
-              <Activity_item />
-            </TabPanel>
+            
           </Tabs>
         </div>
       </section>

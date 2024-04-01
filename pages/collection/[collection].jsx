@@ -7,7 +7,7 @@ import Collection_items from "../../components/collectrions/Collection_items";
 import Image from "next/image";
 import Link from "next/link";
 import Meta from "../../components/Meta";
-import { GetAdOfferById } from "../../data/services/AdsOffersService";
+
 
 const Collection = () => {
   const [likesImage, setLikesImage] = useState(false);
@@ -18,7 +18,6 @@ const Collection = () => {
   useEffect(() => {
     if (pid) {
       const fetchAdsOffers = async () => {
-        const result = await GetAdOfferById(pid);
         setData(result);
       };
 

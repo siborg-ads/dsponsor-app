@@ -4,11 +4,11 @@ import DatePicker from "react-datepicker";
 
 import { FileUploader } from "react-drag-drop-files";
 
-const Step_2_Mint = ({ stepsRef, styles, setLink}) => {
+const Step_3_Mint = ({ stepsRef, styles, setLink}) => {
   return (
-    <div ref={(el) => (stepsRef.current[1] = el)} className={styles.form__step}>
+    <div ref={(el) => (stepsRef.current[3] = el)} className={styles.form__step}>
       <div className="pr-6 pl-2">
-        <h3 className="mb-14">Step 2</h3>
+        <h3 className="mb-14">Step 2 : Ad space URL</h3>
         {/* <!-- Link --> */}
         <div className="mb-6">
           <label htmlFor="item-external-link" className="font-display text-jacarta-700 mb-2 block dark:text-white">
@@ -31,4 +31,4 @@ const Step_2_Mint = ({ stepsRef, styles, setLink}) => {
   );
 };
 
-export default Step_2_Mint;
+export default Step_3_Mint;

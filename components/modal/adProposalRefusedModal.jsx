@@ -3,7 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Web3Button } from "@thirdweb-dev/react";
 
-const AddProposalRefusedModal = ({ id, offerId, tokenId, proposalId, comments, closeRefuseModal, handleCommentChange, handleItemSubmit, setRefusedAdModal, successFullRefuseModal }) => {
+const AddProposalRefusedModal = ({ id, offerId, tokenId, recordsProposalId, comments, closeRefuseModal, handleCommentChange, handleItemSubmit, setRefusedAdModal, successFullRefuseModal }) => {
   const formatDate = (date) => {
     if (!date) return "";
     return date.toLocaleDateString();
@@ -50,26 +50,26 @@ const AddProposalRefusedModal = ({ id, offerId, tokenId, proposalId, comments, c
               </div>
             )}
           </div>
-          {!successFullRefuseModal ? (
-            <div className="modal-footer">
-              <div className="flex items-center justify-center space-x-4">
-                <div className="flex items-center gap-4">
+          <div className="modal-footer">
+            <div className="flex items-center justify-center space-x-4">
+              <div className="flex items-center gap-4">
+                {!successFullRefuseModal ? (
                   <Web3Button
-                    contractAddress="0xA82B4bBc8e6aC3C100bBc769F4aE0360E9ac9FC3"
-                    action={() => handleItemSubmit(id, offerId, tokenId, proposalId, false)}
+                    contractAddress="0xdf42633BD40e8f46942e44a80F3A58d0Ec971f09"
+                    action={() => handleItemSubmit(offerId, tokenId, recordsProposalId, false)}
                     className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!comments ? "btn-disabled" : "!bg-red !cursor-pointer"} `}
                     disabled={!comments}
                   >
                     Refuse Ad Proposal
                   </Web3Button>
-                </div>
+                ) : (
+                  <button onClick={() => closeRefuseModal()} className="!rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all !bg-accent !cursor-pointer">
+                    Close
+                  </button>
+                )}
               </div>
             </div>
-          ) : (
-            <button onClick={() => closeRefuseModal()} className="!rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all !bg-accent !cursor-pointer">
-              Close
-            </button>
-          )}
+          </div>
         </div>
       </div>
     </>
