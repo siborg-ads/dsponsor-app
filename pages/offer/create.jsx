@@ -13,43 +13,46 @@ import Step_1_Create from "../../components/sliderForm/PageCreate/Step_1_Create"
 import Step_2_Create from "../../components/sliderForm/PageCreate/Step_2_Create";
 import Step_3_Create from "../../components/sliderForm/PageCreate/Step_3_Create";
 import Step_4_Create from "../../components/sliderForm/PageCreate/Step_4_Create";
-import SliderForm from "../../components/sliderForm/sliderForm";
 
-const { BigNumber } = require("ethers");
+import SliderForm from "../../components/sliderForm/SliderForm";
+import { DSponsorAdmin } from "@dsponsor/sdk";
 
 const Create = () => {
+  const admin = new DSponsorAdmin();
   const [file, setFile] = useState(null);
   const { mutateAsync: upload, isLoading } = useStorageUpload();
-  const [name, setName] = useState(null);
+
   const [link, setLink] = useState(null);
   const [errors, setErrors] = useState({});
   const [description, setDescription] = useState(null);
   const [startDate, setStartDate] = useState(new Date());
-  const [endDate, setEndDate] = useState(new Date());
+  const [endDate, setEndDate] = useState(new Date(new Date().setFullYear(new Date().getFullYear() + 1)));
   const [previewImage, setPreviewImage] = useState(null);
   const [selectedNumber, setSelectedNumber] = useState(1);
-  const [selectedUnitPrice, setSelectedUnitPrice] = useState(200);
-  const [selectedCurrency, setSelectedCurrency] = useState("JEUR");
+  const [selectedUnitPrice, setSelectedUnitPrice] = useState(1);
+  const [selectedCurrency, setSelectedCurrency] = useState("USDC");
   const [customContract, setCustomContract] = useState(null);
   const [selectedRoyalties, setSelectedRoyalties] = useState(10);
   const [validate, setValidate] = useState(false);
   const [showPreviewModal, setShowPreviewModal] = useState(false);
   const [successFullUpload, setSuccessFullUpload] = useState(false);
   const [selectedParameter, setSelectedParameter] = useState(["logoURL", "linkURL"]);
+  const [selectedTypeParameter, setSelectedTypeParameter] = useState(0);
+  const [name, setName] = useState(false);
   const stepsRef = useRef([]);
 
   const handleNumberChange = (e) => {
     setSelectedNumber(parseInt(e.target.value, 10));
   };
   const handleParameterChange = (e) => {
-    setSelectedParameter(e.target.value);
+    setSelectedTypeParameter(e.target.value);
+    if (e.target.value === 0) setSelectedParameter(["logoURL", "linkURL"]);
+    if (e.target.value === 1) setSelectedParameter(["bannerURL", "linkURL"]);
   };
 
   const handleUnitPriceChange = (e) => {
     const price = parseFloat(e.target.value);
-    
-    
-    
+
     if (!isNaN(price)) {
       setSelectedUnitPrice(price);
     }
@@ -64,11 +67,11 @@ const Create = () => {
   };
 
   const handleRoyaltiesChange = (e) => {
-    setSelectedRoyalties(parseInt(e.target.value, 10));
+    setSelectedRoyalties(parseFloat(e.target.value));
   };
 
   const address = useAddress();
-  const { contract } = useContract("0xA82B4bBc8e6aC3C100bBc769F4aE0360E9ac9FC3"); // dsponsor admin mumbai contract address
+  const { contract } = useContract("0xdf42633BD40e8f46942e44a80F3A58d0Ec971f09"); // dsponsor admin mumbai contract address
 
   const { mutateAsync, isLoading: isLoadingContractWrite, error } = useContractWrite(contract, "createDSponsorNFTAndOffer");
 
@@ -91,12 +94,7 @@ const Create = () => {
   const validateInputs = () => {
     let isValid = true;
     let newErrors = {};
-
-    if (!file) {
-      newErrors.imageError = "Image is missing.";
-      isValid = false;
-    }
-
+    console.log(name, description, link);
     if (!name) {
       newErrors.nameError = "Name is missing.";
       isValid = false;
@@ -109,6 +107,10 @@ const Create = () => {
 
     if (!description) {
       newErrors.descriptionError = "Description is missing.";
+      isValid = false;
+    }
+    if (!file) {
+      newErrors.imageError = "Image is missing.";
       isValid = false;
     }
 
@@ -135,6 +137,7 @@ const Create = () => {
       newErrors.unitPriceError = "Unit price must be at least 0.01.";
       isValid = false;
     }
+
     if (selectedNumber < 0) {
       newErrors.numberError = "Number of ad spaces is missing or invalid.";
       isValid = false;
@@ -179,26 +182,25 @@ const Create = () => {
       console.error("Missing name or link");
     }
 
-     const json = JSON.stringify({
-       name: name,
-       description: description,
-       image: uploadUrl,
-       external_link: link,
-       collaborators: [address],
-       validFromDate: startDate,
-       validToDate: endDate,
-       currencyName: selectedCurrency,
-       price: selectedUnitPrice,
-     });
+    const json = JSON.stringify({
+      name: name,
+      description: description,
+      image: uploadUrl,
+      external_link: link,
+      collaborators: [address],
+      validFromDate: startDate,
+      validToDate: endDate,
+      currencyName: selectedCurrency,
+      price: selectedUnitPrice,
+    });
 
-     // upload json to IPFS
-     const jsonUrl = await upload({
-       data: [json],
-       options: { uploadWithGatewayUrl: true, uploadWithoutDirectory: true },
-     });
+    // upload json to IPFS
+    const jsonUrl = await upload({
+      data: [json],
+      options: { uploadWithGatewayUrl: true, uploadWithoutDirectory: true },
+    });
 
-     const jsonIpfsLink = jsonUrl[0];
-
+    const jsonIpfsLink = jsonUrl[0];
 
     const args = [
       JSON.stringify({
@@ -217,7 +219,7 @@ const Create = () => {
       }),
       JSON.stringify({
         name: name, // name
-        rulesURI: jsonIpfsLink, // rulesURI
+        offerMetadata: jsonIpfsLink, // rulesURI
         options: {
           admins: [address], // admin
           validators: [], // validator
@@ -240,64 +242,53 @@ const Create = () => {
     setLink(updatedLink);
   };
 
-  const { contract: JEURTokenContract } = useContract("0xd409F17095a370800A9C352124C6a1e82695203E", "token"); // mumbai
-
-  const { contract: USDCTokenContract } = useContract("0x9999f7Fea5938fD3b1E26A12c3f2fb024e194f97", "token");
-
-  const { contract: MaticTokenContract } = useContract("0x0000000000000000000000000000000000001010", "token");
-
-  const { contract: WETHTokenContract } = useContract("0xA6FA4fB5f76172d178d61B04b0ecd319C5d1C0aa", "token"); // mumbai
+  const USDCCurrency = admin.chain.getCurrencyAddress("USDC");
+  const ETHCurrency = admin.chain.getCurrencyAddress("ETH");
+  const WETHCurrency = admin.chain.getCurrencyAddress("WETH");
 
   const { contract: customTokenContract } = useContract(customContract, "token");
 
-  const { data: JEURdecimals } = useTokenDecimals(JEURTokenContract);
-  const { data: USDCDecimals } = useTokenDecimals(USDCTokenContract);
-  const { data: WETHDecimals } = useTokenDecimals(WETHTokenContract);
-  const { data: MaticDecimals } = useTokenDecimals(MaticTokenContract);
   const { data: customDecimals } = useTokenDecimals(customTokenContract);
 
   const selectedCurrencyContract = useCallback(() => {
     switch (selectedCurrency) {
-      case "JEUR":
-        return "0xd409F17095a370800A9C352124C6a1e82695203E"; // on mumbai
       case "USDC":
-        return "0x9999f7Fea5938fD3b1E26A12c3f2fb024e194f97";
-      case "MATIC":
-        return "0x0000000000000000000000000000000000001010"; // to change
+        return USDCCurrency.contract;
+      case "ETH":
+        return ETHCurrency.contract;
       case "WETH":
-        return "0xA6FA4fB5f76172d178d61B04b0ecd319C5d1C0aa"; // on mumbai
+        return WETHCurrency.contract;
       case "custom":
         return customContract;
       default:
-        return "0xd409F17095a370800A9C352124C6a1e82695203E"; // JEUR by default (to change)
+        return USDCCurrency.contract;
     }
-  }, [customContract, selectedCurrency]);
+  }, [USDCCurrency, ETHCurrency, WETHCurrency, customContract, selectedCurrency]);
 
   const getDecimals = useCallback(
     (currency) => {
       switch (currency) {
-        case "JEUR":
-          return JEURdecimals;
         case "USDC":
-          return USDCDecimals;
-        case "MATIC":
-          return MaticDecimals;
+          return USDCCurrency.decimals;
+        case "ETH":
+          return ETHCurrency.decimals;
         case "WETH":
-          return WETHDecimals;
+          return WETHCurrency.decimals;
         case "custom":
           return customDecimals;
         default:
-          return JEURdecimals; // JEUR by default (to change)
+          return USDCCurrency.decimals;
       }
     },
-    [JEURdecimals, USDCDecimals, WETHDecimals, MaticDecimals, customDecimals]
+    [USDCCurrency, ETHCurrency, WETHCurrency, customDecimals]
   );
 
   const numSteps = 4;
   const successFullUploadModal = {
     body: "Your offer has been created successfully",
-    buttonTitle: "Close",
-    hrefButton: "/",
+    subBody: "⚠️ Don't Forget To Display The AdSpaces On Your Website ! Copy Paste the link in your Offer Details To Display Automatically Your Sponsor Logo.",
+    buttonTitle: "Manage Spaces",
+    hrefButton: `/manageSpaces/${address}`,
   };
 
   return (
@@ -309,7 +300,7 @@ const Create = () => {
           <Image width={1519} height={773} priority src="/images/gradient_light.jpg" alt="gradient" className="h-full w-full object-cover" />
         </picture>
         <div className="container">
-          <h1 className="font-display text-jacarta-700 pt-16 pb-8 text-center text-4xl font-medium dark:text-white">Create and ad space offer</h1>
+          <h1 className="font-display text-jacarta-700 pt-16 pb-8 text-center text-4xl font-medium dark:text-white">Create ad space offer</h1>
 
           <div className="mx-auto max-w-[48.125rem]">
             <p className="text-center pt-8 pb-16 dark:text-white">
@@ -319,26 +310,26 @@ const Create = () => {
           </div>
         </div>
         <SliderForm styles={styles} handlePreviewModal={handlePreviewModal} stepsRef={stepsRef} numSteps={numSteps}>
-          <Step_1_Create stepsRef={stepsRef} styles={styles} setName={setName} setDescription={setDescription} />
+          <Step_1_Create
+            stepsRef={stepsRef}
+            styles={styles}
+            selectedTypeParameter={selectedTypeParameter}
+            selectedNumber={selectedNumber}
+            handleNumberChange={handleNumberChange}
+            selectedParameter={selectedParameter}
+            handleParameterChange={handleParameterChange}
+          />
+          <Step_2_Create stepsRef={stepsRef} styles={styles} setName={setName} setDescription={setDescription} />
 
-          <Step_2_Create stepsRef={stepsRef} styles={styles} setLink={setLink} file={file} handleLogoUpload={handleLogoUpload} />
+          <Step_3_Create stepsRef={stepsRef} styles={styles} setLink={setLink} file={file} handleLogoUpload={handleLogoUpload} />
 
-          <Step_3_Create
+          <Step_4_Create
             stepsRef={stepsRef}
             styles={styles}
             startDate={startDate}
             setStartDate={setStartDate}
             endDate={endDate}
             setEndDate={setEndDate}
-            selectedNumber={selectedNumber}
-            handleNumberChange={handleNumberChange}
-            selectedParameter={selectedParameter}
-            handleParameterChange={handleParameterChange}
-          />
-
-          <Step_4_Create
-            stepsRef={stepsRef}
-            styles={styles}
             selectedUnitPrice={selectedUnitPrice}
             handleUnitPriceChange={handleUnitPriceChange}
             selectedCurrency={selectedCurrency}
@@ -375,7 +366,6 @@ const Create = () => {
             buttonTitle="Create ad space offer"
             modalTitle="Ad Space Offer "
             successFullUploadModal={successFullUploadModal}
-            hrefButton="/"
           />
         </div>
       )}

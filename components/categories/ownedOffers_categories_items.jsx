@@ -9,7 +9,7 @@ import { updateTrendingCategoryItemData } from "../../redux/counterSlice";
 import Review_adProposal_data from "./review_adProposal_items";
 import OfferItem from "../cards/offerItem";
 
-const Trending_categories_items = ({ data, offerAddress }) => {
+const OwnedOffers_categories_items = ({ data }) => {
   const [itemdata, setItemdata] = useState(trendingCategoryData);
   const dispatch = useDispatch();
   const { trendingCategorySorText } = useSelector((state) => state.counter);
@@ -45,11 +45,10 @@ const Trending_categories_items = ({ data, offerAddress }) => {
   useEffect(() => {
     dispatch(updateTrendingCategoryItemData(itemdata.slice(0, 8)));
   }, [itemdata, dispatch]);
-  console.log(data, "data");
   return (
     <>
       {/* <!-- Filter --> */}
-      <div className="mb-8 flex flex-wrap items-center justify-between">
+      {/* <div className="mb-8 flex flex-wrap items-center justify-between">
         <ul className="flex flex-wrap items-center">
           {tranding_category_filter.map(({ id, svg, text }) => {
             if (text === "all") {
@@ -96,19 +95,19 @@ const Trending_categories_items = ({ data, offerAddress }) => {
               );
             }
           })}
-        </ul>
+        </ul> */}
         {/* dropdown */}
-        <Recently_added_dropdown data={sortText} dropdownFor="recently_added" />
-      </div>
+        {/* <Recently_added_dropdown data={sortText} dropdownFor="recently_added" />
+      </div> */}
 
       {/* <!-- Grid --> */}
       <div className="grid grid-cols-1 gap-[1.875rem] md:grid-cols-2 lg:grid-cols-4">
         {data?.map((item, index) => {
-          return <OfferItem item={item} key={index} url={`/offer/${offerAddress}`} />;
+          return <OfferItem item={item} key={index} url={`/offer/${item.offerId}`} />;
         })}
       </div>
     </>
   );
 };
 
-export default Trending_categories_items;
+export default OwnedOffers_categories_items;

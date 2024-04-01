@@ -4,43 +4,31 @@ import "swiper/css";
 import "swiper/css/navigation";
 import Image from "next/image";
 import "tippy.js/dist/tippy.css";
-import { bidsData } from "../../data/bids_data";
 import Link from "next/link";
 import Tippy from "@tippyjs/react";
 import { MdKeyboardArrowRight, MdKeyboardArrowLeft } from "react-icons/md";
-import { bidsModalShow } from "../../redux/counterSlice";
-import { useDispatch } from "react-redux";
-import Likes from "../likes";
-import { execute } from "../../.graphclient";
-import { gql } from "@apollo/client";
-import { GetAllAdsOffers } from "../../data/services/AdsOffersService";
+
 import { useEffect, useState } from "react";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import { Web3Button } from "@thirdweb-dev/react";
 import AddProposalRefusedModal from "../modal/adProposalRefusedModal";
 
-const Review_carousel = ({ handleSubmit, successFullRefuseModal }) => {
+const Review_carousel = ({ handleSubmit, pendingProposalData, successFullRefuseModal }) => {
   const [data, setData] = useState([]);
   const [validate, setValidate] = useState({});
   const [comments, setComments] = useState({});
   const [refusedAdModalId, setRefusedAdModalId] = useState(null);
   const [offerId, setOfferId] = useState(null);
   const [tokenId, setTokenId] = useState(null);
-  const [proposalId, setProposalId] = useState(null);
-
+  const [recordsProposalId, setRecordsProposalId] = useState(null);
 
   useEffect(() => {
-    const fetchAdsOffers = async () => {
-      const result = await GetAllAdsOffers();
-      setData(result);
-      const initialValidateStates = {};
-      result.forEach((item) => {
-        initialValidateStates[item.id] = false;
-      });
-      setValidate(initialValidateStates);
-    };
-
-    fetchAdsOffers();
+    const initialValidateStates = {};
+    console.log("pendingProposalData", pendingProposalData);
+    pendingProposalData.forEach((item) => {
+      initialValidateStates[item.tokenId] = false;
+    });
+    setValidate(initialValidateStates);
   }, []);
 
   const [copied, setCopied] = useState(false);
@@ -63,63 +51,80 @@ const Review_carousel = ({ handleSubmit, successFullRefuseModal }) => {
       [id]: value,
     }));
   };
-  const handleItemSubmit = async (id, offerId, tokenId, proposalId, approuved) => {
-    const submissionArgs = {
-      offerId: "23",
-      tokenId: "1",
-      proposalId: "42",
-      adParameter: "logoURL",
-      validated: approuved,
-      reason: comments[id] || "",
-    };
+  const handleItemSubmit = async (offerId, tokenId, records, approuved) => {
+    console.log(records, "records");
+    const submissionArgs = [
+      {
+        offerId: offerId,
+        tokenId: tokenId,
+        proposalId: records.linkURL.proposalId,
+        adParameter: "linkURL",
+        validated: approuved,
+        reason: comments[tokenId] || "",
+      },
+      {
+        offerId: offerId,
+        tokenId: tokenId,
+        proposalId: records.logoURL.proposalId,
+        adParameter: "logoURL",
+        validated: approuved,
+        reason: comments[tokenId] || "",
+      },
+    ];
 
     await handleSubmit(submissionArgs);
   };
-  const openRefuseModal = (id, offerId, tokenId, proposalId) => {
-    setRefusedAdModalId(id);
+  const openRefuseModal = (offerId, tokenId, recordsProposalId) => {
+    setRefusedAdModalId(tokenId);
     setOfferId(offerId);
     setTokenId(tokenId);
-    setProposalId(proposalId);
+    setRecordsProposalId(recordsProposalId);
   };
 
   const closeRefuseModal = () => {
     setRefusedAdModalId(null);
   };
-
+  if (pendingProposalData.length === 0) {
+    return <div className="flex justify-center">No pendings ads...</div>;
+  }
   return (
     <>
       <Swiper
         modules={[Navigation, Pagination, Scrollbar]}
         spaceBetween={30}
-        loop={true}
+        loop={pendingProposalData.length > 2}
         slidesPerView={2}
-        navigation={{
-          nextEl: ".bids-swiper-button-next",
-          prevEl: ".bids-swiper-button-prev",
-        }}
+        navigation={
+          pendingProposalData.length > 2
+            ? {
+                nextEl: ".bids-swiper-button-next",
+                prevEl: ".bids-swiper-button-prev",
+              }
+            : false
+        }
         className=" card-slider-4-columns !py-5"
       >
-        {data.map((item) => {
-          const { id, name, ownerAddress, ownerName, image, maxSupply, externalLink, description, currencyName, numberTokenAllowed, price, offerId, tokenId, proposalId } = item;
-          // const itemLink = image.split("/").slice(-1).toString().replace(".jpg", "");
+        {pendingProposalData.map((item) => {
+          const { records, offerId, tokenId } = item;
+
           return (
-            <div key={id}>
+            <div key={tokenId}>
               <SwiperSlide className="text-white">
                 <article>
                   <div className="dark:bg-jacarta-700 flex dark:border-jacarta-700 border-jacarta-100 rounded-2xl block border bg-white p-[1.1875rem] transition-shadow hover:shadow-lg text-jacarta-500">
-                    <div className="dark:bg-jacarta-700 max-w-[250px] dark:border-jacarta-600 border-jacarta-100   items-center justify-center rounded-lg border bg-white py-1.5 px-4">
+                    <div className="dark:bg-jacarta-700 w-[250px] dark:border-jacarta-600 border-jacarta-100   items-center justify-center rounded-lg border bg-white py-1.5 px-4">
                       <figure className="mb-4 flex flex-col">
                         <span className="dark:text-jacarta-200 mb-1">Image :</span>
-                        <Link href={`/item/${id}/1`}>
-                          <Image src={image} alt="" height={230} width={230} className="rounded-[0.625rem] w-auto   h-[150px] object-contain" loading="lazy" />
+                        <Link href={`/item/${offerId}/${tokenId}`}>
+                          <Image src={records.logoURL?.value} alt="" height={230} width={230} className="rounded-[0.625rem] w-auto   h-[150px] object-contain" loading="lazy" />
                         </Link>
                       </figure>
                       <div className="mb-4 flex flex-col">
                         <span className="dark:text-jacarta-200 mb-1">Redirection link :</span>
                         <Tippy hideOnClick={false} content={copied ? <span>copied</span> : <span>copy</span>}>
-                          <button className="js-copy-clipboard text-white max-w-[10rem] select-none overflow-hidden text-ellipsis whitespace-nowrap">
+                          <button className="js-copy-clipboard flex text-white max-w-[auto] select-none overflow-hidden text-ellipsis whitespace-nowrap">
                             <CopyToClipboard text="userId" onCopy={() => setCopied(true)}>
-                              <span>https://mumbai.polygonscan.com/tx/0xf9aa3225ccbe4971eddf0f654b5a7bb5979bbb0d0d965847ee441566d72c18a4</span>
+                              <span>{records.linkURL?.value}</span>
                             </CopyToClipboard>
                           </button>
                         </Tippy>
@@ -128,61 +133,47 @@ const Review_carousel = ({ handleSubmit, successFullRefuseModal }) => {
 
                     <div className="mt-4 flex  flex-col pl-8 justify-between">
                       <div className="flex flex-col ">
-                        <Link href={`/item/${id}/1`} className="mb-4">
-                          <span className="font-display text-jacarta-700 hover:text-accent text-base dark:text-white">Ad Proposal Owner Address</span>
-                        </Link>
-                        <div className="mb-8 flex items-center space-x-4 whitespace-nowrap">
-                          <span className="dark:border-jacarta-600 border-jacarta-100 flex items-center whitespace-nowrap rounded-md border py-1 px-2">
-                            <Tippy content={<span>{currencyName}</span>}>
-                              <Image width={12} height={12} src="/images/eth-icon.svg" alt="icon" className="w-3 h-3 mr-1" />
-                            </Tippy>
-
-                            <span className="text-green text-sm font-medium tracking-tight">
-                              {price} {currencyName}
-                            </span>
+                        <Link href={`/item/${offerId}/${tokenId}`} className="mb-4">
+                          <span className="font-display text-jacarta-700 hover:text-accent text-base dark:text-white">
+                            Item n°: <span className="text-accent"> {tokenId} </span>{" "}
                           </span>
-                          <div className=" text-sm">
-                            <span className="dark:text-jacarta-300 text-jacarta-500">
-                              {numberTokenAllowed}/{maxSupply}
-                            </span>
-                          </div>
-                        </div>
+                        </Link>
                       </div>
-                      <div>
-                        <div key="2" className="dropdown-item mb-4 font-display dark:bg-jacarta-600 hover:bg-jacarta-50 block w-full rounded-xl pr-5 py-2 text-left text-sm transition-colors dark:text-white">
+                      <div className="flex flex-col gap-2">
+                        <div className="dropdown-item mb-4 font-display dark:bg-jacarta-600 hover:bg-jacarta-50 block w-full rounded-xl pr-5 py-2 text-left text-sm transition-colors dark:text-white">
                           <span className="flex items-center justify-between">
                             <span className="pl-5">I confirm that I have check the image and the linkURL </span>
                             <input
                               type="checkbox"
                               name="check"
                               className="checked:bg-accent checked:focus:bg-accent checked:hover:bg-accent after:bg-jacarta-400 bg-jacarta-100 relative h-4 w-7 cursor-pointer appearance-none rounded-lg border-none shadow-none after:absolute after:top-0.5 after:left-0.5 after:h-3 after:w-3 after:rounded-full after:transition-all checked:bg-none checked:after:left-3.5 checked:after:bg-white focus:ring-transparent focus:ring-offset-0"
-                              onChange={() => handleInput(id)}
-                              checked={validate[item.id] || false}
+                              onChange={() => handleInput(tokenId)}
+                              checked={validate[tokenId] || false}
                             />
                           </span>
                         </div>
-                      </div>
-                      <div className="flex items-start space-x-4">
-                        <div className="flex items-start gap-4 flex-wrap">
-                          <Web3Button
-                            contractAddress="0xA82B4bBc8e6aC3C100bBc769F4aE0360E9ac9FC3"
-                            action={() => handleItemSubmit(id, offerId, tokenId, proposalId, true)}
-                            className={` !rounded-full !min-w-[100px] !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate[item.id] ? "btn-disabled" : "!bg-accent !cursor-pointer"} `}
-                          >
-                            Validate
-                          </Web3Button>
+                        <div className="flex items-start space-x-4">
+                          <div className="flex items-start gap-4 flex-wrap">
+                            <Web3Button
+                              contractAddress="0xdf42633BD40e8f46942e44a80F3A58d0Ec971f09"
+                              action={() => handleItemSubmit(offerId, tokenId, records, true)}
+                              className={` !rounded-full !min-w-[100px] !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate[tokenId] ? "btn-disabled" : "!bg-accent !cursor-pointer"} `}
+                            >
+                              Validate
+                            </Web3Button>
 
-                          <Web3Button
-                            contractAddress="0xA82B4bBc8e6aC3C100bBc769F4aE0360E9ac9FC3"
-                            action={() => openRefuseModal(id, offerId, tokenId, proposalId)}
-                            className={` !rounded-full !min-w-[100px] !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate[item.id] ? "btn-disabled" : "!bg-red !cursor-pointer"} `}
-                          >
-                            Reject
-                          </Web3Button>
+                            <Web3Button
+                              contractAddress="0xdf42633BD40e8f46942e44a80F3A58d0Ec971f09"
+                              action={() => openRefuseModal(offerId, tokenId, records)}
+                              className={` !rounded-full !min-w-[100px] !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate[tokenId] ? "btn-disabled" : "!bg-red !cursor-pointer"} `}
+                            >
+                              Reject
+                            </Web3Button>
 
-                          {/* <Link href="{hrefButton}">
+                            {/* <Link href="{hrefButton}">
                               <button className="!rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all !bg-accent !cursor-pointer">Youhou</button>
                             </Link> */}
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -207,7 +198,7 @@ const Review_carousel = ({ handleSubmit, successFullRefuseModal }) => {
             id={refusedAdModalId}
             offerId={offerId}
             tokenId={tokenId}
-            proposalId={proposalId}
+            recordsProposalId={recordsProposalId}
             comments={comments[refusedAdModalId]}
             handleCommentChange={handleCommentChange}
             handleItemSubmit={handleItemSubmit}

@@ -13,22 +13,15 @@ import { useDispatch } from "react-redux";
 import Likes from "../likes";
 import { execute } from "../../.graphclient";
 import { gql } from "@apollo/client";
-import { GetAllAdsOffers } from "../../data/services/AdsOffersService";
+
 import { useEffect, useState } from "react";
 import OfferItem from "../cards/offerItem";
+import { DSponsorAdmin } from "@dsponsor/sdk";
 
-const BidsCarousel = () => {
-  const [data, setData] = useState([]);
-  useEffect(() => {
-    const fetchAdsOffers = async () => {
-      const result = await GetAllAdsOffers();
-      console.log(result);
-      setData(result);
-    };
 
-    fetchAdsOffers();
-  }, []);
-  console.log(data);
+const BidsCarousel = ({data}) => {
+ 
+
   return (
     <>
       <Swiper
@@ -59,7 +52,7 @@ const BidsCarousel = () => {
         {data.map((item, index) => {
           return (
             <SwiperSlide className="text-white" key={index}>
-              <OfferItem item={item} url={`/item/${item.id}/1`} />
+              <OfferItem item={item} url={`/offer/${item.offerId}/${item.tokenIdAllowedToMint}`} />
             </SwiperSlide>
           );
         })}

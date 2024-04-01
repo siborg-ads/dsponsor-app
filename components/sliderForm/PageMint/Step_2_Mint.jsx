@@ -4,12 +4,12 @@ import DatePicker from "react-datepicker";
 
 import { FileUploader } from "react-drag-drop-files";
 
-const Step_1_Mint = ({ stepsRef, styles, file, handleLogoUpload }) => {
+const Step_2_Mint = ({ stepsRef, styles, file, handleLogoUpload }) => {
   const fileTypes = ["JPG", "PNG", "SVG"];
   return (
-    <div ref={(el) => (stepsRef.current[0] = el)} className={styles.form__step}>
+    <div ref={(el) => (stepsRef.current[1] = el)} className={styles.form__step}>
       <div className="pr-6 pl-2">
-        <h3 className="mb-14">Step 1</h3>
+        <h3 className="mb-14">Step 1 : Ad Space logo</h3>
         {/* <!-- File Upload --> */}
         <div className="mb-6 items-center flex flex-col">
           <label className="font-display text-jacarta-700 mb-2 block dark:text-white">
@@ -41,4 +41,4 @@ const Step_1_Mint = ({ stepsRef, styles, file, handleLogoUpload }) => {
   );
 };
 
-export default Step_1_Mint;
+export default Step_2_Mint;
