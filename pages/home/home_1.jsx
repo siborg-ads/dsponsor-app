@@ -5,12 +5,13 @@ import { useAddress, darkTheme, Web3Button, useTokenBalance, useContract, useCon
 import { fetchDataFromIPFS } from "../../data/services/ipfsService";
 import { Hero, Bids, Top_collection } from "../../components/component";
 import Meta from "../../components/Meta";
+import { getContractNFT } from "../configthirdweb/contract";
+import { readContract } from "thirdweb";
+import HowItWorks from "../../components/explication/howItWorks";
 
 const Home_1 = () => {
   const [data, setData] = useState([]);
-  const [offerNFTContract, setOfferNFTContract] = useState(null);
-  // const { data: isAllowedToMint } = useContractRead(DsponsorNFTContract, "tokenIdIsAllowedToMint", tokenIdString);
-  const { contract: DsponsorNFTContract } = useContract(offerNFTContract);
+
   useEffect(() => {
     const admin = new DSponsorAdmin();
 
@@ -23,9 +24,27 @@ const Home_1 = () => {
         },
         { includeMetadata: true, includePrices: true, includeAllowedTokens: true }
       );
-     const data = ads.filter((item) => Number(item.offerId) !== 1);
-     console.log(data);
-      setData(data);
+
+      const data = ads.filter((item) => Number(item.offerId) !== 1);
+      for (const element of data) {
+        const contract = await getContractNFT(element.nftContract);
+        for (let i = 0; i < element.allowedTokens.length; i++) {
+          const isTokenAllowed = await readContract({
+            contract: contract,
+            method: "tokenIdIsAllowedToMint",
+            params: [i],
+          });
+          if (isTokenAllowed) {
+            mappedData.push({
+              ...element,
+              tokenIdAllowedToMint: i,
+            });
+            break;
+          }
+        }
+      }
+
+      setData(mappedData);
     };
     fetchAdsOffers();
   }, []);
@@ -33,6 +52,7 @@ const Home_1 = () => {
     <main>
       <Meta title="Home 1" />
       <Hero />
+      <HowItWorks />
       <Bids data={data} />
     </main>
   );

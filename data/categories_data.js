@@ -35,6 +35,23 @@ const tranding_category_filter = [
     text: "virtual world",
   },
 ];
+const ownedAdProposals_categories_filter = [
+  {
+    id: 0,
+    text: "Pending review",
+  },
+  {
+    id: 1,
+    svg: "art",
+    text: "Validated ads",
+  },
+
+  {
+    id: 2,
+    svg: "collection",
+    text: "Refused ads",
+  },
+];
 
 const trendingCategoryData = [
   {
@@ -127,4 +144,4 @@ const trendingCategoryData = [
   },
 ];
 
-export { tranding_category_filter, trendingCategoryData };
+export { tranding_category_filter, trendingCategoryData, ownedAdProposals_categories_filter };

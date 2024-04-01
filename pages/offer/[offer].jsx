@@ -187,8 +187,8 @@ const Offer = () => {
               <div className="dark:bg-jacarta-700 dark:border-jacarta-600 border-jacarta-100 rounded-2lg border bg-white p-8">
                 <div className=" sm:flex sm:flex-wrap">
                   <span className="dark:text-jacarta-300 text-jacarta-400 text-sm">
-                    This page allows you to oversee submitted ads, offering tools to either approve or reject them. Approve ads to make them live or reject those that don't meet your standards, streamlining the content
-                    that reaches your audience while maintaining quality control on your platform.{" "}
+                    This page allows you to oversee submitted ads, offering tools to either approve or reject them. Approve ads to make them live or reject those that don&apos;t meet your standards, streamlining the
+                    content that reaches your audience while maintaining quality control on your platform.{" "}
                   </span>
                 </div>
               </div>

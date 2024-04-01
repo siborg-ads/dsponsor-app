@@ -373,16 +373,22 @@ export default function Header01() {
           </Link>
           {/* End  logo */}
 
-          
-
           <div className="js-mobile-menu dark:bg-jacarta-800 invisible fixed inset-0 z-10 ml-auto items-center bg-white opacity-0 lg:visible lg:relative lg:inset-auto lg:flex lg:bg-transparent lg:opacity-100 dark:lg:bg-transparent">
             <nav className="navbar w-full">
               <ul className="flex flex-col lg:flex-row">
+                {/* buy */}
+                <li className="group">
+                  <Link href="/#hot-offers">
+                    <button className="text-jacarta-700 font-display hover:text-accent focus:text-accent dark:hover:text-accent dark:focus:text-accent flex items-center justify-between py-3.5 text-base dark:text-white lg:px-5">
+                      <span className={isChildrenPageActive(route.asPath, "#hot-offers") ? "text-accent dark:text-accent" : ""}>Buy spaces</span>
+                    </button>
+                  </Link>
+                </li>
                 {/* create */}
                 <li className="group">
-                  <Link href="/create">
+                  <Link href="/offer/create">
                     <button className="text-jacarta-700 font-display hover:text-accent focus:text-accent dark:hover:text-accent dark:focus:text-accent flex items-center justify-between py-3.5 text-base dark:text-white lg:px-5">
-                      <span className={isChildrenPageActive(route.asPath, "/create") ? "text-accent dark:text-accent" : ""}>Create</span>
+                      <span className={isChildrenPageActive(route.asPath, "/offer/create") ? "text-accent dark:text-accent" : ""}>Create offer</span>
                     </button>
                   </Link>
                 </li>
@@ -390,7 +396,7 @@ export default function Header01() {
                   <li className="group">
                     <Link href={`/manageSpaces/${address}`}>
                       <button className="text-jacarta-700 font-display hover:text-accent focus:text-accent dark:hover:text-accent dark:focus:text-accent flex items-center justify-between py-3.5 text-base dark:text-white lg:px-5">
-                        <span className={isChildrenPageActive(route.asPath, `/user/${address}`) ? "text-accent dark:text-accent" : ""}>Manage Spaces</span>
+                        <span className={isChildrenPageActive(route.asPath, `/user/${address}`) ? "text-accent dark:text-accent" : ""}>Manage</span>
                       </button>
                     </Link>
                   </li>
@@ -518,8 +524,6 @@ export default function Header01() {
           </button>
         </div>
         {/* mobile menu top header content */}
-
-      
 
         <nav className="navbar w-full">
           <ul className="flex flex-col lg:flex-row">

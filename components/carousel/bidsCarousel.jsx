@@ -52,7 +52,7 @@ const BidsCarousel = ({data}) => {
         {data.map((item, index) => {
           return (
             <SwiperSlide className="text-white" key={index}>
-              <OfferItem item={item} url={`/offer/${item.offerId}/1`} />
+              <OfferItem item={item} url={`/offer/${item.offerId}/${item.tokenIdAllowedToMint}`} />
             </SwiperSlide>
           );
         })}

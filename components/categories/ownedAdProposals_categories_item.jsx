@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { tranding_category_filter } from "../../data/categories_data";
+import { ownedAdProposals_categories_filter } from "../../data/categories_data";
 import CategoryItem from "./categoryItem";
 import { trendingCategoryData } from "../../data/categories_data";
 import Tippy from "@tippyjs/react";
@@ -52,7 +52,7 @@ const OwnedAdProposals_categories_items = ({ data }) => {
       {/* <!-- Filter --> */}
       <div className="mb-8 flex flex-wrap items-center justify-between">
         <ul className="flex flex-wrap items-center">
-          {tranding_category_filter.map(({ id, svg, text }) => {
+          {ownedAdProposals_categories_filter.map(({ id, svg, text }) => {
             if (text === "all") {
               return (
                 <li className="my-1 mr-2.5" key={id}>

@@ -17,7 +17,7 @@ import Step_0_Create from "../../components/sliderForm/PageCreate/Step_1_Create"
 import SliderForm from "../../components/sliderForm/sliderForm";
 import { DSponsorAdmin } from "@dsponsor/sdk";
 
-const { BigNumber } = require("ethers");
+
 
 const Create = () => {
   const admin = new DSponsorAdmin();
