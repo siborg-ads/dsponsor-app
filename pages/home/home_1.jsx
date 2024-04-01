@@ -5,7 +5,7 @@ import { useAddress, darkTheme, Web3Button, useTokenBalance, useContract, useCon
 import { fetchDataFromIPFS } from "../../data/services/ipfsService";
 import { Hero, Bids, Top_collection } from "../../components/component";
 import Meta from "../../components/Meta";
-import { getContractNFT } from "../configthirdweb/contract";
+import { getContractNFT } from "../../data/services/contract";
 import { readContract } from "thirdweb";
 import HowItWorks from "../../components/explication/howItWorks";
 

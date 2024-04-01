@@ -1,6 +1,6 @@
 import { getContract } from "thirdweb";
 import { ethereum, sepolia } from "thirdweb/chains";
-import { client } from "./client";
+import { client } from "../../data/services/client";
 
 
 
@@ -439,3 +439,5 @@ const contract = getContract({
 return contract;
 };
 
+
+export default getContractNFT;
