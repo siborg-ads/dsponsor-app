@@ -17,12 +17,13 @@ const OfferItem = ({ item, url }) => {
   const { name, image, currencyName, price, validFromDate, validToDate } = item.metadata;
   const { days, hours, minutes, seconds } = useCountdown(validToDate);
 
+
   return (
     <>
       <article>
         <div className="dark:bg-jacarta-700 dark:border-jacarta-700 border-jacarta-100 rounded-2xl block border bg-white p-[1.1875rem] transition-shadow hover:shadow-lg text-jacarta-500">
           <figure>
-            <Link href={url}>{image[0] && <Image src={image[0]} alt="" height={230} width={230} className="rounded-[0.625rem] w-full lg:h-[230px] object-contain" loading="lazy" />}</Link>
+            <Link href={url}>{image?.[0] && <Image src={image?.[0]} alt="" height={230} width={230} className="rounded-[0.625rem] w-full lg:h-[230px] object-contain" loading="lazy" />}</Link>
           </figure>
           <div className="mt-4 flex items-center justify-between">
             <Link href={url} className="overflow-hidden text-ellipsis whitespace-nowrap max-w-[120px]">

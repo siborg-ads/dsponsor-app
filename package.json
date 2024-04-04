@@ -17,9 +17,9 @@
     "@material-tailwind/react": "^1.2.4",
     "@mui/material": "^5.8.7",
     "@reduxjs/toolkit": "^1.8.2",
-    "@thirdweb-dev/auth": "^4.1.32",
-    "@thirdweb-dev/react": "^4.4.5",
-    "@thirdweb-dev/sdk": "^4.0.33",
+    "@thirdweb-dev/auth": "^4.1.54",
+    "@thirdweb-dev/react": "^4.4.31",
+    "@thirdweb-dev/sdk": "^4.0.57",
     "@tippyjs/react": "^4.2.6",
     "axios": "^1.4.0",
     "bootstrap": "5.2.3",
@@ -28,7 +28,7 @@
     "graphql": "^16.8.1",
     "metamask-react": "^2.4.0",
     "moment": "^2.29.4",
-    "next": "14.1.4",
+    "next": "14.2.0-canary.56",
     "next-themes": "^0.2.0",
     "react": "18.2.0",
     "react-accessible-accordion": "^5.0.0",
@@ -46,9 +46,7 @@
     "sass": "^1.71.1",
     "sharp": "^0.32.2",
     "swiper": "^8.2.4",
-    "thirdweb": "^5.0.3",
-    "uuid": "^9.0.0",
-    "viem": "^2.7.9"
+    "thirdweb": "^5.2.0"
   },
   "devDependencies": {
     "@graphprotocol/client-cli": "^3.0.0",
