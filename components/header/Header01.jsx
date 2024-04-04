@@ -3,7 +3,7 @@ import Link from "next/link";
 import DarkMode from "../mode/DarkMode";
 import Logo from "./../../public/images/logo.png";
 import WhiteLogo from "./../../public/images/logo_white.png";
-import { v4 as uuidv4 } from "uuid";
+import { randomUUID } from "crypto";
 import { useRouter } from "next/router";
 import { isChildrenPageActive, isParentPageActive } from "../../utils/daynamicNavigation";
 import { useEffect, useState } from "react";
@@ -34,69 +34,69 @@ export default function Header01() {
     name: "Home",
     pages: [
       {
-        id: uuidv4(),
+        id: randomUUID(),
         name: "Home 1",
         path: "/",
       },
       // {
-      //   id: uuidv4(),
+      //   id: randomUUID(),
       //   name: "Home 2",
       //   path: "/home/home_2",
       // },
       // {
-      //   id: uuidv4(),
+      //   id: randomUUID(),
       //   name: "Home 3",
       //   path: "/home/home_3",
       // },
       // {
-      //   id: uuidv4(),
+      //   id: randomUUID(),
       //   name: "Home 4",
       //   path: "/home/home_4",
       // },
       // {
-      //   id: uuidv4(),
+      //   id: randomUUID(),
       //   name: "Home 5",
       //   path: "/home/home_5",
       // },
 
       // {
-      //   id: uuidv4(),
+      //   id: randomUUID(),
       //   name: "Crypto Consultant",
       //   condition: true,
       //   path: "/home/home_7",
       // },
       // {
-      //   id: uuidv4(),
+      //   id: randomUUID(),
       //   name: "NFT Game",
       //   condition: true,
       //   path: "/home/home_8",
       // },
       // {
-      //   id: uuidv4(),
+      //   id: randomUUID(),
       //   name: "Dao Platform",
       //   condition: true,
       //   path: "/home/home_9",
       // },
       // {
-      //   id: uuidv4(),
+      //   id: randomUUID(),
       //   name: "Crypto App",
       //   condition: true,
       //   path: "/home/home_10",
       // },
       // {
-      //   id: uuidv4(),
+      //   id: randomUUID(),
       //   name: "Crypto Trading",
       //   condition: true,
       //   path: "/home/home_11",
       // },
       // {
-      //   id: uuidv4(),
+      //   id: randomUUID(),
       //   name: "ICO Landing",
       //   condition: true,
       //   path: "/home/home_12",
       // },
       // {
-      //   id: uuidv4(),
+      //   id: randomUUID(),
       //   name: "NFT Aggregator",
       //   condition: true,
       //   path: "/home/home_13",
@@ -109,97 +109,97 @@ export default function Header01() {
     name: "Pages",
     pages: [
       {
-        id: uuidv4(),
+        id: randomUUID(),
         name: "Maintenance",
         condition: true,
         path: "/maintenance",
       },
       {
-        id: uuidv4(),
+        id: randomUUID(),
         name: "Case Studies",
         condition: true,
         path: "/case-studies",
       },
       {
-        id: uuidv4(),
+        id: randomUUID(),
         name: "Single Case Study",
         condition: true,
         path: "/case-studies/case_study_1",
       },
       {
-        id: uuidv4(),
+        id: randomUUID(),
         name: "Careers",
         condition: true,
         path: "/careers",
       },
       {
-        id: uuidv4(),
+        id: randomUUID(),
         name: "Item Details",
         path: "/item/item_20",
       },
       {
-        id: uuidv4(),
+        id: randomUUID(),
         name: "Collections Wide",
         path: "/collections-wide",
         condition: true,
       },
       {
-        id: uuidv4(),
+        id: randomUUID(),
         name: "Explore Collections",
         path: "/collection/explore_collection",
       },
       {
-        id: uuidv4(),
+        id: randomUUID(),
         name: "Collection",
         path: "/collection/avatar_1",
       },
       {
-        id: uuidv4(),
+        id: randomUUID(),
         name: "Activity",
         path: "/activity",
       },
       {
-        id: uuidv4(),
+        id: randomUUID(),
         name: "Rankings",
         path: "/rankings",
       },
       {
-        id: uuidv4(),
+        id: randomUUID(),
         name: "User",
         path: "/user/avatar_6",
       },
       {
-        id: uuidv4(),
+        id: randomUUID(),
         name: "Edit Profile",
         path: "/profile/user_avatar",
       },
       {
-        id: uuidv4(),
+        id: randomUUID(),
         name: "About",
         path: "/about",
       },
       {
-        id: uuidv4(),
+        id: randomUUID(),
         name: "Contact",
         path: "/contact",
       },
       {
-        id: uuidv4(),
+        id: randomUUID(),
         name: "Wallet",
         path: "/wallet",
       },
       {
-        id: uuidv4(),
+        id: randomUUID(),
         name: "Login",
         path: "/login",
       },
       {
-        id: uuidv4(),
+        id: randomUUID(),
         name: "Page 404",
         path: "/404",
       },
       {
-        id: uuidv4(),
+        id: randomUUID(),
         name: "Terms of Service",
         path: "/tarms",
       },
@@ -211,7 +211,7 @@ export default function Header01() {
     name: "Explore",
     pages: [
       {
-        id: uuidv4(),
+        id: randomUUID(),
         name: "All NFTs",
         path: "/collection/explore_collection",
         icon: (
@@ -222,7 +222,7 @@ export default function Header01() {
         ),
       },
       {
-        id: uuidv4(),
+        id: randomUUID(),
         name: "Photography",
         path: "/collection/explore_collection",
         icon: (
@@ -233,7 +233,7 @@ export default function Header01() {
         ),
       },
       {
-        id: uuidv4(),
+        id: randomUUID(),
         name: "Art",
         path: "/art",
         icon: (
@@ -244,7 +244,7 @@ export default function Header01() {
         ),
       },
       {
-        id: uuidv4(),
+        id: randomUUID(),
         name: "Sports",
         path: "/sports",
         icon: (
@@ -255,7 +255,7 @@ export default function Header01() {
         ),
       },
       {
-        id: uuidv4(),
+        id: randomUUID(),
         name: "Collectibles",
         path: "/collectibles",
         icon: (
@@ -266,7 +266,7 @@ export default function Header01() {
         ),
       },
       {
-        id: uuidv4(),
+        id: randomUUID(),
         name: "Trading Cards",
         path: "/tranding-cards",
         icon: (
@@ -277,7 +277,7 @@ export default function Header01() {
         ),
       },
       {
-        id: uuidv4(),
+        id: randomUUID(),
         name: "Domain Names",
         path: "/domain-names",
         icon: (
@@ -288,7 +288,7 @@ export default function Header01() {
         ),
       },
       {
-        id: uuidv4(),
+        id: randomUUID(),
         name: "Utility",
         path: "/utility",
         icon: (
@@ -299,7 +299,7 @@ export default function Header01() {
         ),
       },
       {
-        id: uuidv4(),
+        id: randomUUID(),
         name: "Virtual Worlds",
         path: "/virtual-worlds",
         icon: (
@@ -317,32 +317,32 @@ export default function Header01() {
     name: "Resources",
     pages: [
       {
-        id: uuidv4(),
+        id: randomUUID(),
         name: "Help Center",
         path: "/help_center",
       },
       {
-        id: uuidv4(),
+        id: randomUUID(),
         name: "Platform Status",
         path: "/platform_status",
       },
       {
-        id: uuidv4(),
+        id: randomUUID(),
         name: "Partners",
         path: "/partners",
       },
       {
-        id: uuidv4(),
+        id: randomUUID(),
         name: "Blog",
         path: "/blog",
       },
       {
-        id: uuidv4(),
+        id: randomUUID(),
         name: "Single Post",
         path: "/single_post/post_1",
       },
       {
-        id: uuidv4(),
+        id: randomUUID(),
         name: "Newsletter",
         path: "/newsletter",
       },
