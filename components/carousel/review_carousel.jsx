@@ -116,7 +116,7 @@ const Review_carousel = ({ handleSubmit, pendingProposalData, successFullRefuseM
                       <figure className="mb-4 flex flex-col">
                         <span className="dark:text-jacarta-200 mb-1">Image :</span>
                         <Link href={`/item/${offerId}/${tokenId}`}>
-                          <Image src={records.logoURL?.value} alt="" height={230} width={230} className="rounded-[0.625rem] w-auto   h-[150px] object-contain" loading="lazy" />
+                          {/* <Image src={records.logoURL?.value} alt="" height={230} width={230} className="rounded-[0.625rem] w-auto   h-[150px] object-contain" loading="lazy" /> */}
                         </Link>
                       </figure>
                       <div className="mb-4 flex flex-col">

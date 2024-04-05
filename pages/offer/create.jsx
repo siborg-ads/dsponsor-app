@@ -181,33 +181,66 @@ const Create = () => {
     } else {
       console.error("Missing name or link");
     }
+    const jsonMetadata = JSON.stringify({
+      creator: {
+        name: "",
+        description: "",
+        image: "",
+        external_link: "",
+        categories: ["dApp", "social", "media", "education"],
+      },
+      offer: {
+        name: name,
+        description: description,
+        image: uploadUrl,
+        terms: null,
+        external_link: link,
+        valid_from: startDate || "1970-01-01T00:00:00Z",
+        valid_to: endDate || "2100-01-01T00:00:00Z",
+        categories: ["Community", "NFT", "Crypto"],
+        token_metadata: {
+          name: null,
+          description: null,
+          image: null,
+          external_link: null,
+          attributes: [
+            {
+              trait_type: null,
+              value: null,
+            },
+          ],
+        },
+      },
+    });
 
-    const json = JSON.stringify({
+    const jsonContractURI = JSON.stringify({
       name: name,
       description: description,
       image: uploadUrl,
       external_link: link,
       collaborators: [address],
-      validFromDate: startDate,
-      validToDate: endDate,
-      currencyName: selectedCurrency,
-      price: selectedUnitPrice,
     });
-
     // upload json to IPFS
-    const jsonUrl = await upload({
-      data: [json],
+    const jsonMetadataURL = await upload({
+      data: [jsonMetadata],
       options: { uploadWithGatewayUrl: true, uploadWithoutDirectory: true },
     });
 
-    const jsonIpfsLink = jsonUrl[0];
+    // upload json to IPFS
+    const jsonContractURIURL = await upload({
+      data: [jsonContractURI],
+      options: { uploadWithGatewayUrl: true, uploadWithoutDirectory: true },
+    });
+
+    const jsonIpfsLinkContractURI = jsonContractURIURL[0];
+    const jsonIpfsLinkMetadata = jsonMetadataURL[0];
 
     const args = [
       JSON.stringify({
         name: name, // name
         symbol: "DSPONSORNFT", // symbol
         baseURI: "https://api.dsponsor.com/tokenMetadata/", // baseURI
-        contractURI: jsonIpfsLink, // contractURI from json
+        contractURI: jsonIpfsLinkContractURI, // contractURI from json
         minter: address,
         maxSupply: selectedNumber, // max supply
         forwarder: "0x0000000000000000000000000000000000000000", // forwarder
@@ -219,7 +252,7 @@ const Create = () => {
       }),
       JSON.stringify({
         name: name, // name
-        offerMetadata: jsonIpfsLink, // rulesURI
+        offerMetadata: jsonIpfsLinkMetadata, // rulesURI
         options: {
           admins: [address], // admin
           validators: [], // validator

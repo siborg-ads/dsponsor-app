@@ -4,18 +4,39 @@ import Image from "next/image";
 import "tippy.js/dist/tippy.css";
 import Link from "next/link";
 import Tippy from "@tippyjs/react";
-
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import { useCountdown } from "../../utils/countDown";
+import { DSponsorAdmin } from "@dsponsor/sdk";
 
 const OfferItem = ({ item, url }) => {
+  const [price, setPrice] = useState(null);
+  const [currencyToken, setCurrencyToken] = useState(null);
+  
+ 
   function formatDate(dateIsoString) {
+    if(!dateIsoString) return "date not found";
     const options = { year: "numeric", month: "long", day: "numeric" };
     return new Date(dateIsoString).toLocaleDateString("en-EN", options);
   }
+  useEffect(() => {
+    
+    try {
+      const admin = new DSponsorAdmin();
+      const currencyToken = admin.chain.getCurrencyByAddress(item.currencies[0]);
+      setCurrencyToken(currencyToken);
+      
+      const formatPrice = item.prices[0] / 10 ** currencyToken.decimals;
+      setPrice(formatPrice);
+    } catch (e) {
+      console.error("Error: Currency not found for address", item.currencies[0]);
 
-  const { name, image, currencyName, price, validFromDate, validToDate } = item.metadata;
-  const { days, hours, minutes, seconds } = useCountdown(validToDate);
+      
+    }
+  }, [ item]);
+
+  const { name = "offerName", image = ["/images/gradient_creative.jpg"], valid_from = null, valid_to = null } = item.metadata.offer ? item.metadata.offer : {};
+
+  const { days, hours, minutes, seconds } = useCountdown(valid_to);
 
   return (
     <>
@@ -29,18 +50,18 @@ const OfferItem = ({ item, url }) => {
               <span className="font-display max-w-[150px] text-jacarta-700 hover:text-accent text-base dark:text-white ">{name}</span>
             </Link>
             <span className="dark:border-jacarta-600 border-jacarta-100 flex items-center whitespace-nowrap rounded-md border py-1 px-2">
-              <Tippy content={<span>{currencyName}</span>}>
+              <Tippy content={currencyToken?.symbol ? currencyToken?.symbol : "N/A"}>
                 <Image width={12} height={12} src="/images/eth-icon.svg" alt="icon" className="w-3 h-3 mr-1" />
               </Tippy>
 
               <span className="text-green text-sm font-medium tracking-tight">
-                {price} {currencyName}
+                {price} {currencyToken?.symbol ? currencyToken?.symbol : "N/A"}
               </span>
             </span>
           </div>
           <div className="mt-2 text-xs">
             <span className="dark:text-jacarta-300 text-jacarta-500">
-              {formatDate(validFromDate)} - {formatDate(validToDate)}
+              {formatDate(valid_from)} - {formatDate(valid_to)}
             </span>
           </div>
         </div>

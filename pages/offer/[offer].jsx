@@ -45,12 +45,14 @@ const Offer = () => {
         const offer = await admin.getOffer({ offerId: offerId });
         const validatedAds = await admin.getValidatedAds({ offerId: offerId });
         const refusedAds = await admin.getRejectedAds({ offerId: offerId });
-        console.log("ads", ads);
+       
+        console.log("ads", refusedAds);
         const destructuredIPFSResult = await fetchDataFromIPFS(offer.offerMetadata);
         const combinedData = {
           ...offer,
           ...destructuredIPFSResult,
         };
+         console.log(combinedData, "offer");
         setOfferData([combinedData]);
         setValidatedProposalData(validatedAds);
         setRefusedProposalData(refusedAds);
@@ -99,8 +101,8 @@ const Offer = () => {
   if (!offerData || offerData.length === 0) {
     return <div>Chargement...</div>;
   }
-
-  const { currencyName, description, collaborators, id, image, maxSupply, name, allowedTokens, price } = offerData[0];
+ 
+  const { currencyName, description, collaborators, id, image, maxSupply, name, allowedTokens, price } = offerData[0].offer;
 
   return (
     <>
@@ -146,7 +148,7 @@ const Offer = () => {
                 {/* <!-- Collection --> */}
                 <div className="flex items-center">
                   <Link href="#" className="text-accent mr-2 text-sm font-bold">
-                    {collaborators[0]}
+                    0X000000000000215
                   </Link>
                   <span className="dark:border-jacarta-600 bg-green inline-flex h-6 w-6 items-center justify-center rounded-full border-2 border-white" data-tippy-content="Verified Collection">
                     <Tippy content={<span>Verified Collection</span>}>
@@ -175,7 +177,7 @@ const Offer = () => {
                 </div>
 
                 <span className="dark:text-jacarta-300 text-jacarta-400 text-sm">
-                  {allowedTokens.length - validatedProposalData.length - refusedProposalData.length - pendingProposalData.length}/{maxSupply} available
+                  {offerData[0].allowedTokens.length - validatedProposalData.length - refusedProposalData.length - pendingProposalData.length}/{offerData[0].allowedTokens.length} available
                 </span>
                 <span className="text-jacarta-400 block text-sm dark:text-white">
                   Creator <strong>{royalties}% royalties</strong>
@@ -196,7 +198,8 @@ const Offer = () => {
           </div>
         </div>
       </section>
-      {userAddress === collaborators[0] && (
+      {/* {userAddress === collaborators[0] && ( */}
+      {userAddress && (
         <div className="container">
           {/* <!-- Tabs Nav --> */}
           <Tabs className="tabs">

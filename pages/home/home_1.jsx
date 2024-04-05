@@ -24,16 +24,20 @@ const Home_1 = () => {
         },
         { includeMetadata: true, includePrices: true, includeAllowedTokens: true }
       );
+      
 
-      const data = ads.filter((item) => Number(item.offerId) !== 1);
-      for (const element of data) {
+      
+      for (const element of ads) {
+        if(!element.nftContract) return;
         const contract = await getContractNFT(element.nftContract);
-        for (let i = 0; i < element.allowedTokens.length; i++) {
+        for (let i = 0; i < element.allowedTokens?.length; i++) {
           const isTokenAllowed = await readContract({
             contract: contract,
             method: "tokenIdIsAllowedToMint",
             params: [i],
           });
+          const destructuredIPFSResult = await fetchDataFromIPFS(element.offerMetadata);
+
           if (isTokenAllowed) {
             mappedData.push({
               ...element,
@@ -43,7 +47,7 @@ const Home_1 = () => {
           }
         }
       }
-
+      console.log(mappedData);
       setData(mappedData);
     };
     fetchAdsOffers();

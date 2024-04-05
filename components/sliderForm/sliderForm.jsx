@@ -6,14 +6,14 @@ import { FileUploader } from "react-drag-drop-files";
 const SliderForm = ({ styles, handlePreviewModal, stepsRef, numSteps, children }) => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const stepContainerRef = useRef(null);
+  const stepFormContainerRef = useRef(null);
 
   const bulletsRef = useRef([]);
 
-  
-
   const animateSlider = () => {
-    if (stepContainerRef.current) {
-      const stepWidth = 750 - 20;
+    if (stepContainerRef.current && stepFormContainerRef) {
+      
+      const stepWidth = stepFormContainerRef.current.offsetWidth ;
 
       stepContainerRef.current.style.transform = `translateX(${-stepWidth * currentSlide}px)`;
     }
@@ -26,10 +26,10 @@ const SliderForm = ({ styles, handlePreviewModal, stepsRef, numSteps, children }
   };
 
   useEffect(() => {
-    console.log(stepsRef, "stepsRef");
-        const updateDimensions = () => {
-      if (stepContainerRef.current) {
-        const stepWidth = 750 - 20;
+    const updateDimensions = () => {
+      if (stepContainerRef.current && stepFormContainerRef) {
+        
+        const stepWidth = stepFormContainerRef.current.offsetWidth ;
 
         stepsRef.current.forEach((step) => {
           if (step) {
@@ -52,10 +52,8 @@ const SliderForm = ({ styles, handlePreviewModal, stepsRef, numSteps, children }
   }, [currentSlide, numSteps]);
 
   const handleNextClick = () => {
-    
     if (currentSlide < numSteps - 1) {
       setCurrentSlide(currentSlide + 1);
-      
     }
   };
 
@@ -72,7 +70,7 @@ const SliderForm = ({ styles, handlePreviewModal, stepsRef, numSteps, children }
   return (
     <div className={styles.modal__container}>
       <div className={`${styles.modal} dark:bg-jacarta-700 dark:border-jacarta-700 rounded-lg ring-accent/10 ring-2`}>
-        <div className={styles.modal__form__container}>
+        <div className={styles.modal__form__container} ref={stepFormContainerRef}>
           <form className={styles.form}>
             <div className={styles.form__step__container} ref={stepContainerRef}>
               {/* Steps */}

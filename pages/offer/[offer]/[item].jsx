@@ -7,7 +7,7 @@ import Meta from "../../../components/Meta";
 import Image from "next/image";
 import { useAddress, darkTheme, useBalance, Web3Button, useTokenBalance, useContract, useContractRead, useContractWrite, useStorageUpload, useTokenDecimals, CheckoutWithCard, CheckoutWithEth } from "@thirdweb-dev/react";
 import { ethers } from "ethers";
-import SliderForm from "../../../components/sliderForm/SliderForm";
+import SliderForm from "../../../components/sliderForm/sliderForm.jsx";
 import Step_1_Mint from "../../../components/sliderForm/PageMint/Step_1_Mint";
 import Step_2_Mint from "../../../components/sliderForm/PageMint/Step_2_Mint";
 import Step_3_Mint from "../../../components/sliderForm/PageMint/Step_3_Mint";
@@ -45,33 +45,40 @@ const Item = () => {
   const { contract: DsponsorAdminContract } = useContract("0xdf42633BD40e8f46942e44a80F3A58d0Ec971f09");
   const { contract: DsponsorNFTContract } = useContract(offerData[0]?.nftContract);
   const { mutateAsync: uploadToIPFS, isLoading: isUploading } = useStorageUpload();
-  const { mutateAsync, isLoadingMintAndSubmit } = useContractWrite(DsponsorAdminContract, "mintAndSubmit");
+  const { mutateAsync: mintAndSubmit } = useContractWrite(DsponsorAdminContract, "mintAndSubmit");
+  const { mutateAsync: submitAd } = useContractWrite(DsponsorAdminContract, "submitAdProposals");
   const { contract: tokenContract } = useContract(offerData[0]?.currencies[0], "token");
   const { data: tokenBalance, isLoading, error } = useBalance(offerData[0]?.currencies[0]);
   const { mutateAsync: approve, isLoading: isLoadingApprove } = useContractWrite(tokenContract, "approve");
   const { data: bps } = useContractRead(DsponsorAdminContract, "feeBps");
   const { data: isAllowedToMint } = useContractRead(DsponsorNFTContract, "tokenIdIsAllowedToMint", tokenIdString);
   const { data: royaltiesInfo } = useContractRead(DsponsorNFTContract, "royaltyInfo", [tokenIdString, 100]);
-  const { data: tokenDecimals } = useTokenDecimals(tokenContract);
   const [showPreviewModal, setShowPreviewModal] = useState(false);
   const [validate, setValidate] = useState(false);
+  const [currency, setCurrency] = useState(null);
+  const [adStatut, setAdStatut] = useState(null);
+  const [price, setPrice] = useState(null);
   const stepsRef = useRef([]);
   const numSteps = 3;
 
   useEffect(() => {
     if (offerId) {
-      const admin = new DSponsorAdmin();
       const fetchAdsOffers = async () => {
+        const admin = new DSponsorAdmin();
         const offer = await admin.getOffer({ offerId: offerId });
+        const currencyToken = admin.chain.getCurrencyByAddress(offer.currencies[0]);
+        const formatPrice = offer.prices[0] / 10 ** currencyToken.decimals;
+
+        setPrice(formatPrice);
+        setCurrency(currencyToken);
 
         if (address) {
           const mintedToken = await admin.getOwnedOfferTokens({ address: address });
           for (const element of mintedToken) {
             if (element.tokenId === tokenId) {
-            setIsOwner(true);
+              setIsOwner(true);
             }
           }
-
         }
         const destructuredIPFSResult = await fetchDataFromIPFS(offer.offerMetadata);
         const combinedData = {
@@ -89,6 +96,32 @@ const Item = () => {
   }, [offerId, router, address, tokenId]);
 
   useEffect(() => {
+    const admin = new DSponsorAdmin();
+    const fetchAdsOffers = async () => {
+      if (!offerId) return;
+      const checkAds = async (fetchFunction) => {
+        const ads = await fetchFunction;
+        return ads.some((ad) => ad.tokenId === tokenId);
+      };
+
+      if (await checkAds(admin.getRejectedAds({ offerId: offerId }))) {
+        setAdStatut(0);
+        return;
+      }
+
+      if (await checkAds(admin.getValidatedAds({ offerId: offerId }))) {
+        setAdStatut(1);
+        return;
+      }
+
+      if (await checkAds(admin.getPendingAds({ offerId: offerId }))) {
+        setAdStatut(2);
+      }
+    };
+
+    fetchAdsOffers();
+  }, [offerId, tokenId]);
+  useEffect(() => {
     if (royaltiesInfo) setRoyalties(ethers.BigNumber.from(royaltiesInfo[1]?._hex).toNumber());
   }, [royaltiesInfo]);
 
@@ -105,7 +138,6 @@ const Item = () => {
       newErrors.linkError = "The link is missing or invalid.";
       isValid = false;
     }
-    console.log(isValid, "isValid");
     setValidate(isValid);
     setErrors(newErrors);
     return isValid;
@@ -128,21 +160,21 @@ const Item = () => {
   };
 
   useEffect(() => {
-    if (offerData[0]?.price && bps) {
-      const price = offerData[0].price;
-
+    if (price && bps) {
       const bpsValueHex = bps._hex;
       const bpsValueDecimal = ethers.BigNumber.from(bpsValueHex).toNumber();
-
       const bpsValuePercentage = bpsValueDecimal / 10000;
+
       const priceAsNumber = price * bpsValuePercentage + price;
+
       const priceAsNumberString = priceAsNumber.toString();
+
       setFinalPrice(priceAsNumberString);
-      const amountToApprove = ethers.utils.parseUnits(priceAsNumberString, tokenDecimals);
+      const amountToApprove = ethers.utils.parseUnits(priceAsNumberString, currency.decimals);
 
       setAmountToApprove(amountToApprove);
     }
-  }, [data, bps, tokenDecimals]);
+  }, [data, bps, offerData, currency, price]);
 
   const handleApprove = async () => {
     try {
@@ -162,7 +194,7 @@ const Item = () => {
     }
     // IPFS upload
 
-    let userBalance = checkUserBalance(tokenBalance, offerData[0]?.price);
+    let userBalance = checkUserBalance(tokenBalance, price);
     if (userBalance) {
       try {
         if (offerData[0]?.currencies[0] !== "0x0000000000000000000000000000000000000000") {
@@ -172,12 +204,13 @@ const Item = () => {
         console.error("Erreur d'approbation des tokens:", error);
       }
       try {
-        const uploadUrl = await uploadToIPFS({
-          data: [file],
-          options: { uploadWithGatewayUrl: true, uploadWithoutDirectory: true },
-        });
+         const uploadUrl = await uploadToIPFS({
+           data: [file],
+           options: { uploadWithGatewayUrl: true, uploadWithoutDirectory: true },
+         });
+        
 
-        const args = {
+        const argsMintAndSubmit = {
           tokenId: tokenIdString,
           to: address,
           currency: offerData[0]?.currencies[0],
@@ -187,11 +220,24 @@ const Item = () => {
           adDatas: [uploadUrl[0], link],
           referralAdditionalInformation: "",
         };
-        if (offerData[0]?.currencies[0] === "0x0000000000000000000000000000000000000000") {
-          await mutateAsync({ args: [args], overrides: { value: amountToApprove } });
+        const argsAdSubmited = {
+          offerId: [offerId, offerId],
+          tokenId: [tokenIdString, tokenIdString],
+          adParameters: ["logoURL", "linkURL"],
+          data: [uploadUrl[0], link],
+        };
+        const isEthCurrency = offerData[0]?.currencies[0] === "0x0000000000000000000000000000000000000000";
+        const functionWithPossibleArgs = adStatut === 0 ? Object.values(argsAdSubmited) : argsMintAndSubmit;
+        const argsWithPossibleOverrides = isEthCurrency ? { args: [functionWithPossibleArgs], overrides: { value: amountToApprove } } : { args: [functionWithPossibleArgs] };
+
+        if (adStatut === 0) {
+          console.log("submitAd")
+          await submitAd({ args: functionWithPossibleArgs });
         } else {
-          await mutateAsync({ args: [args] });
+          console.log("mintAndSubmit");
+          await mintAndSubmit(argsWithPossibleOverrides);
         }
+
         setSuccessFullUpload(true);
       } catch (error) {
         console.error("Erreur de soumission du token:", error);
@@ -228,20 +274,33 @@ const Item = () => {
     buttonTitle: "Manage Spaces",
     hrefButton: `/manageSpaces/${address}`,
   };
+  const statutAds = {
+    pending: "🔍 Your ad is pending, wait the validation of the creator",
+    rejected: "❌ Your ad has been rejected, you can submit an other ads below",
+    accepted: "🎉 Congratulations ! Your ad has been accepted by the creator ! ",
+  };
 
   if (!offerData || offerData.length === 0) {
     return <div>Chargement...</div>;
   }
-  const { currencyName, description, externalLink, id, image, maxSupply, name, collaborators, allowedTokens, ownerAddress, ownerName, price, nftContract } = offerData[0];
+
+  const { description = "description not found", id, image, name, nftContract } = offerData[0].offer ? offerData[0].offer : {};
 
   return (
     <>
       <Meta title={` || d>sponsor | Media sponsor Marketplace `} />
       {/*  <!-- Item --> */}
       <section className="relative lg:mt-24 lg:pt-12  mt-24 pt-12 pb-8">
-        <div className="container flex justify-center mb-6">
-          <h1 className="text-jacarta-700 font-bold font-display mb-6 text-center text-5xl dark:text-white md:text-left lg:text-6xl xl:text-6xl">{isOwner ? "Your Ad Space" : "Buy Ad Space"} </h1>
-          <span className="text-accent ml-2 text-sm font-bold">{isOwner ? "pending" : ""} </span>
+        <div className="mb-8 container flex justify-center flex-col items-center ">
+          <div className=" flex justify-center ">
+            <h1 className="text-jacarta-700 font-bold font-display mb-6 text-center text-5xl dark:text-white md:text-left lg:text-6xl xl:text-6xl">{isOwner ? "Your Ad Space" : "Buy Ad Space"} </h1>
+            <span className={`ml-2 text-sm font-bold ${isOwner ? (adStatut === 0 ? "text-red" : adStatut === 1 ? "text-green" : "text-accent") : "hidden"}`}>
+              {adStatut === 0 ? "Rejected" : adStatut === 1 ? "Accepted" : "Pending"}
+            </span>
+          </div>
+          <p className={`${isOwner ? (adStatut === 0 ? "text-red" : adStatut === 1 ? "text-green" : "text-accent") : "hidden"} text-sm font-bold`}>
+            {adStatut === 0 ? statutAds.rejected : adStatut === 1 ? statutAds.accepted : statutAds.pending}
+          </p>
         </div>
 
         <div className="container">
@@ -277,7 +336,7 @@ const Item = () => {
                 {/* <!-- Collection --> */}
                 <div className="flex items-center">
                   <Link href="#" className="text-accent mr-2 text-sm font-bold">
-                    {collaborators[0]}
+                    0x00000000000000000000000000000022
                   </Link>
                   <span className="dark:border-jacarta-600 bg-green inline-flex h-6 w-6 items-center justify-center rounded-full border-2 border-white" data-tippy-content="Verified Collection">
                     <Tippy content={<span>Verified Collection</span>}>
@@ -293,7 +352,7 @@ const Item = () => {
 
               <div className="mb-8 flex items-center space-x-4 whitespace-nowrap">
                 <div className="flex items-center">
-                  <Tippy content={<span>{currencyName}</span>}>
+                  <Tippy content={<span>{currency.symbol}</span>}>
                     <span className="-ml-1">
                       <svg className="icon mr-1 h-4 w-4">
                         <use xlinkHref="/icons.svg#icon-ETH"></use>
@@ -301,7 +360,7 @@ const Item = () => {
                     </span>
                   </Tippy>
                   <span className="text-green text-sm font-medium tracking-tight">
-                    {price} {currencyName}
+                    {price} {currency.symbol}
                   </span>
                 </div>
 
@@ -367,7 +426,7 @@ const Item = () => {
             protocolFees={true}
             description={true}
             selectedUnitPrice={price}
-            selectedCurrency={currencyName}
+            selectedCurrency={currency.symbol}
             selectedRoyalties={royalties}
             previewImage={previewImage}
             errors={errors}

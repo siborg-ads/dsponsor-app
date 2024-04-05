@@ -26,10 +26,10 @@ const ManageSpaces = () => {
       const admin = new DSponsorAdmin();
       const fetchAdsOffers = async () => {
         const offer = await admin.getOffers({ address: userAddress }, { includeMetadata: true, includePrices: true, includeAllowedTokens: true });
-
+        
+        // const data = [];
         const ownedAdProposals = await admin.getOwnedOfferTokens({ address: userAddress });
-
-
+        console.log(ownedAdProposals);
         const mappedownedAdProposals = [];
 
         for (const element of ownedAdProposals) {
@@ -42,7 +42,7 @@ const ManageSpaces = () => {
           };
           mappedownedAdProposals.push(combinedData);
         }
-
+console.log(mappedownedAdProposals);
         setMappedownedAdProposals(mappedownedAdProposals);
         setCreatedData(offer);
       };

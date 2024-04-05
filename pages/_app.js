@@ -41,7 +41,6 @@ function MyApp({ Component, pageProps }) {
         clientId="6f375d41f2a33f1f08f6042a65d49ec9"
         authConfig={{
           domain: "dsponsor.com",
-         
         }}
         switchToActiveChain={true}
         supportedWallets={[
@@ -57,7 +56,7 @@ function MyApp({ Component, pageProps }) {
         ]}
       >
         <Provider store={store}>
-          <ThemeProvider enableSystem={true} attribute="class">
+          <ThemeProvider enableSystem={true} attribute="class" defaultTheme="dark">
             <MetaMaskProvider>
               <UserContext.Provider value={{ scrollRef: scrollRef }}>
                 {pid === "/login" ? (
