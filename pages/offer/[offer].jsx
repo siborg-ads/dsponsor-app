@@ -27,7 +27,8 @@ const Offer = () => {
   const [refusedProposalData, setRefusedProposalData] = useState([]);
   const [royalties, setRoyalties] = useState(null);
   const [successFullUpload, setSuccessFullUpload] = useState(false);
-
+const [currency, setCurrency] = useState(null);
+  const [price, setPrice] = useState(null);
   const [imageModal, setImageModal] = useState(false);
   const { contract: DsponsorNFTContract } = useContract(offerData[0]?.nftContract);
   const { contract: DsponsorAdminContract } = useContract("0xdf42633BD40e8f46942e44a80F3A58d0Ec971f09");
@@ -52,6 +53,15 @@ const Offer = () => {
           ...offer,
           ...destructuredIPFSResult,
         };
+        
+        try {
+          const currencyToken = admin.chain.getCurrencyByAddress(offer.currencies[0]);
+          const formatPrice = offer.prices[0] / 10 ** currencyToken.decimals;
+          setPrice(formatPrice);
+          setCurrency(currencyToken);
+        } catch (e) {
+          console.error("Error: Currency not found for address");
+        }
          console.log(combinedData, "offer");
         setOfferData([combinedData]);
         setValidatedProposalData(validatedAds);
@@ -64,7 +74,8 @@ const Offer = () => {
   }, [offerId, router]);
   useEffect(() => {
     if (royaltiesInfo) setRoyalties(ethers.BigNumber.from(royaltiesInfo[1]?._hex).toNumber());
-  }, [royaltiesInfo]);
+    
+  }, [royaltiesInfo, offerData]);
 
   const handleSubmit = async (submissionArgs) => {
     try {
@@ -102,7 +113,7 @@ const Offer = () => {
     return <div>Chargement...</div>;
   }
  
-  const { currencyName, description, collaborators, id, image, maxSupply, name, allowedTokens, price } = offerData[0].offer;
+   const { description = "description not found", id = "1", image = ["/images/gradient_creative.jpg"], name = "DefaultName", nftContract = "N/A" } = offerData[0].offer ? offerData[0].offer : {};
 
   return (
     <>
@@ -164,7 +175,7 @@ const Offer = () => {
 
               <div className="mb-8 flex items-center space-x-4 whitespace-nowrap">
                 <div className="flex items-center">
-                  <Tippy content={<span>{currencyName}</span>}>
+                  <Tippy content={<span>{currency?.symbol ? currency?.symbol : "N/A"}</span>}>
                     <span className="-ml-1">
                       <svg className="icon mr-1 h-4 w-4">
                         <use xlinkHref="/icons.svg#icon-ETH"></use>
@@ -172,7 +183,7 @@ const Offer = () => {
                     </span>
                   </Tippy>
                   <span className="text-green text-sm font-medium tracking-tight">
-                    {price} {currencyName}
+                    {price} {currency?.symbol ? currency?.symbol : "N/A"}
                   </span>
                 </div>
 

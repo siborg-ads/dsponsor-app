@@ -66,11 +66,15 @@ const Item = () => {
       const fetchAdsOffers = async () => {
         const admin = new DSponsorAdmin();
         const offer = await admin.getOffer({ offerId: offerId });
-        const currencyToken = admin.chain.getCurrencyByAddress(offer.currencies[0]);
-        const formatPrice = offer.prices[0] / 10 ** currencyToken.decimals;
-
-        setPrice(formatPrice);
-        setCurrency(currencyToken);
+        try{
+          
+          const currencyToken = admin.chain.getCurrencyByAddress(offer.currencies[0]);
+          const formatPrice = offer.prices[0] / 10 ** currencyToken.decimals;
+          setPrice(formatPrice);
+          setCurrency(currencyToken);
+        }catch(e){
+          console.error("Error: Currency not found for address", offer.currencies[0]);
+        }
 
         if (address) {
           const mintedToken = await admin.getOwnedOfferTokens({ address: address });
@@ -121,6 +125,7 @@ const Item = () => {
 
     fetchAdsOffers();
   }, [offerId, tokenId]);
+
   useEffect(() => {
     if (royaltiesInfo) setRoyalties(ethers.BigNumber.from(royaltiesInfo[1]?._hex).toNumber());
   }, [royaltiesInfo]);
@@ -284,7 +289,7 @@ const Item = () => {
     return <div>Chargement...</div>;
   }
 
-  const { description = "description not found", id, image, name, nftContract } = offerData[0].offer ? offerData[0].offer : {};
+  const { description = "description not found", id="1", image =["/images/gradient_creative.jpg"], name ="DefaultName", nftContract ="N/A" } = offerData[0].offer ? offerData[0].offer : {};
 
   return (
     <>
@@ -352,7 +357,7 @@ const Item = () => {
 
               <div className="mb-8 flex items-center space-x-4 whitespace-nowrap">
                 <div className="flex items-center">
-                  <Tippy content={<span>{currency.symbol}</span>}>
+                  <Tippy content={<span>{currency?.symbol ? currency?.symbol : "N/A"}</span>}>
                     <span className="-ml-1">
                       <svg className="icon mr-1 h-4 w-4">
                         <use xlinkHref="/icons.svg#icon-ETH"></use>
@@ -360,7 +365,7 @@ const Item = () => {
                     </span>
                   </Tippy>
                   <span className="text-green text-sm font-medium tracking-tight">
-                    {price} {currency.symbol}
+                    {price} {currency?.symbol ? currency?.symbol : "N/A"}
                   </span>
                 </div>
 
