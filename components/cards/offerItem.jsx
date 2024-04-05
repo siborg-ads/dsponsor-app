@@ -14,7 +14,7 @@ const OfferItem = ({ item, url }) => {
     return new Date(dateIsoString).toLocaleDateString("en-EN", options);
   }
 
-  const { name, image, currencyName, price, validFromDate, validToDate } = item.metadata;
+  const { name, image = [], currencyName, price, validFromDate, validToDate } = item.metadata;
   const { days, hours, minutes, seconds } = useCountdown(validToDate);
 
   return (
