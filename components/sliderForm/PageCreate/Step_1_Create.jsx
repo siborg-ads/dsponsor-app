@@ -30,7 +30,7 @@ const Step_1_Create = ({ stepsRef, styles, selectedTypeParameter, selectedNumber
               <span className="text-red">*</span>
             </label>
             <p className="dark:text-jacarta-300 text-jacarta-400 text-2xs mb-3">Select the type of your offer</p>
-            <div className="flex gap-4 justify-center items-center w-full text-jacarta-700 dark:text-white">
+            <div className="flex flex-wrap  gap-4 justify-center items-center w-full text-jacarta-700 dark:text-white">
               <label htmlFor="numberSelect">Select ads type:</label>
               <select
                 id="numberSelect"

@@ -9,7 +9,7 @@ const Step_2_Mint = ({ stepsRef, styles, file, handleLogoUpload }) => {
   return (
     <div ref={(el) => (stepsRef.current[1] = el)} className={styles.form__step}>
       <div className="pr-6 pl-2">
-        <h3 className="mb-14">Step 1 : Ad Space logo</h3>
+        <h3 className="mb-14">Step 2 : Ad Space logo</h3>
         {/* <!-- File Upload --> */}
         <div className="mb-6 items-center flex flex-col">
           <label className="font-display text-jacarta-700 mb-2 block dark:text-white">
@@ -21,7 +21,7 @@ const Step_2_Mint = ({ stepsRef, styles, file, handleLogoUpload }) => {
             clear, relevant, and has a resolution high enough for good quality display.
           </p>
 
-          {file ? <p className="dark:text-jacarta-300 text-2xs mb-3">successfully uploaded : {file.name}</p> : <p className="dark:text-jacarta-300 text-2xs mb-3">Drag or choose your file to upload</p>}
+          {file ? <p className="text-green text-2xs mb-3">successfully uploaded : {file.name}</p> : <p className="dark:text-jacarta-300 text-2xs mb-3">Drag or choose your file to upload</p>}
 
           <div className="dark:bg-jacarta-700 dark:border-jacarta-600 border-jacarta-100 group relative flex max-w-md flex-col items-center justify-center rounded-lg border-2 border-dashed bg-white py-20 px-5 text-center">
             <div className="relative z-10 cursor-pointer">

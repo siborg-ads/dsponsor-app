@@ -56,7 +56,7 @@ const Step_4_Create = ({
             EUR payment means you&apos;ll receive JEUR tokens (1 JEUR = 1€). USD payment means you&apos;ll receive JUSD tokens (1 JUSD = 1$). You&apos;ll be able to cash out via wire transfer with a service like
             MtPelerin. You can change the pricing later.
           </p>
-          <div className="flex  gap-4 items-center text-jacarta-700 dark:text-white">
+          <div className="flex  flex-wrap   gap-4 items-center text-jacarta-700 dark:text-white">
             <input
               id="numberInput"
               type="number"

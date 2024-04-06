@@ -60,60 +60,68 @@ const Validated_refused_items = ({ statut, proposalData }) => {
       {/* <!-- Activity Tab --> */}
       <div className="tab-pane fade">
         {/* <!-- Records / Filter --> */}
+        {statut && (
+          <div key="2" className="dropdown-item mb-4 font-display dark:bg-jacarta-600 hover:bg-jacarta-50 block w-full rounded-xl pr-5 py-2 text-left text-sm transition-colors dark:text-white">
+            <div className="flex flex-wrap pl-5 gap-5">
+              <span className="mb-2 md:w-1/3 flex-grow">
+                Don&apos;t forget to display the adSpaces on your website !  Copy paste this piece of code to display automatically your sponsor logo.
+              </span>
+              <div className="flex gap-2 w-full md:w-auto items-start ">
+                <pre
+                  style={{
+                    backgroundColor: "#010101",
+                    borderRadius: "5px",
+                    fontFamily: "'Courier New', monospace",
+                    padding: "10px",
+                    overflowX: "auto",
+                  }}
+                >
+                  <code>{`<iframe src="https://integrations.dsponsor.com/squareLogsoV1/...`}</code>
+                </pre>
+                <Tippy hideOnClick={false} content={copied ? <span>copied</span> : <span>copy</span>}>
+                  <div className="js-copy-clipboard cursor-pointer">
+                    <CopyToClipboard text="userId" onCopy={() => setCopied(true)}>
+                      <Image src="/images/copy.svg" alt="icon" width={20} height={20} className="mt-2 " />
+                    </CopyToClipboard>
+                  </div>
+                </Tippy>
+              </div>
+            </div>
+          </div>
+        )}
         <div className="lg:flex">
           {/* <!-- Records --> */}
+
           <div className="mb-10 shrink-0 basis-8/12 space-y-5 lg:mb-0 lg:pr-10">
             {proposalData?.map((item) => {
-              const {  tokenId, records,  title} = item;
+              const { tokenId, records, title } = item;
 
               return (
-                <div key={tokenId} className="dark:bg-jacarta-700 gap-5 dark:border-jacarta-700 border-jacarta-100 rounded-2.5xl relative flex items-center border bg-white p-8 transition-shadow hover:shadow-lg">
-                  <figure className=" self-start">
-                    <Image src={records.logoURL?.value} alt={title} height={75} width={75} objectFit="contain" className="rounded-2lg min-w-[75px]" loading="lazy" />
-                  </figure>
-                  <div>
-                    <h3 className="font-display text-jacarta-700 mb-1 text-base font-semibold dark:text-white">
-                      Item n°: <span className="text-accent"> {tokenId} </span>{" "}
-                    </h3>
-                    <div className="mb-4 flex flex-col">
-                      <Tippy hideOnClick={false} content={copied ? <span>copied</span> : <span>copy</span>}>
-                        <button className="js-copy-clipboard flex text-white max-w-[20rem]  select-none overflow-hidden text-ellipsis whitespace-nowrap">
-                          <CopyToClipboard text="userId" onCopy={() => setCopied(true)}>
-                            <span>{records.linkURL?.value}</span>
-                          </CopyToClipboard>
-                        </button>
-                      </Tippy>
-                    </div>
-
-                    {statut && (
-                      <div key="2" className="dropdown-item mb-4 font-display dark:bg-jacarta-600 hover:bg-jacarta-50 block w-full rounded-xl pr-5 py-2 text-left text-sm transition-colors dark:text-white">
-                        <div className="flex flex-col pl-5 justify-between">
-                          <span className="mb-2">
-                            Don&apos;t forget to display the adSpaces on your website ! <br /> Copy paste this piece of code to display automatically your sponsor logo.
-                          </span>
-                          <div className="flex gap-2 items-start justify-between">
-                            <pre
-                              style={{
-                                backgroundColor: "#010101",
-                                borderRadius: "5px",
-                                fontFamily: "'Courier New', monospace",
-                                padding: "10px",
-                                overflowX: "auto",
-                              }}
-                            >
-                              <code>{`<iframe src="https://integrations.dsponsor.com/squareLogsoV1/...`}</code>
-                            </pre>
-                            <Tippy hideOnClick={false} content={copied ? <span>copied</span> : <span>copy</span>}>
-                              <div className="js-copy-clipboard cursor-pointer">
-                                <CopyToClipboard text="userId" onCopy={() => setCopied(true)}>
-                                  <Image src="/images/copy.svg" alt="icon" width={20} height={20} className="mt-2 " />
-                                </CopyToClipboard>
-                              </div>
-                            </Tippy>
-                          </div>
-                        </div>
+                <div key={tokenId} className="dark:bg-jacarta-700  gap-5 p-8 dark:border-jacarta-700 transition-shadow hover:shadow-lg border-jacarta-100 rounded-2.5xl relative flex">
+                  <div className=" relative flex items-center gap-5 flex-col sm:flex-row ">
+                    <figure className=" self-start">
+                      <Image src={records.logoURL?.value} alt={title} height={75} width={75} objectFit="contain" className="rounded-2lg min-w-[75px]" loading="lazy" />
+                    </figure>
+                    <div>
+                      <h3 className="font-display text-jacarta-700 mb-1 text-base font-semibold dark:text-white">
+                        Item n°: <span className="text-accent"> {tokenId} </span>{" "}
+                      </h3>
+                      <span>
+                        Proposals n° :{" "}
+                        <span className="text-accent">
+                          [{records.linkURL?.proposalId}-{records.logoURL?.proposalId}]
+                        </span>{" "}
+                      </span>
+                      <div className="mb-4 flex flex-col">
+                        <Tippy hideOnClick={false} content={copied ? <span>copied</span> : <span>copy</span>}>
+                          <button className="js-copy-clipboard flex min-w-[20px] text-white max-w-[20rem]  select-none overflow-hidden text-ellipsis whitespace-nowrap">
+                            <CopyToClipboard text="userId" onCopy={() => setCopied(true)}>
+                              <span>{records.linkURL?.value}</span>
+                            </CopyToClipboard>
+                          </button>
+                        </Tippy>
                       </div>
-                    )}
+                    </div>
                   </div>
                   <div className="dark:border-jacarta-600 border-jacarta-100 ml-auto rounded-full border p-3 self-start">
                     <Image width={24} height={24} src={`/images/${statutItem}.svg`} alt="icon" className="min-w-[25px]" />
@@ -124,8 +132,10 @@ const Validated_refused_items = ({ statut, proposalData }) => {
           </div>
 
           {/* <!-- Filters --> */}
+
           {/* <aside className="basis-4/12 lg:pl-5">
-            <form action="search" className="relative mb-12 block" onSubmit={handleSubmit}>
+           
+             <form action="search" className="relative mb-12 block" onSubmit={handleSubmit}>
               <input
                 type="search"
                 className="text-jacarta-700 placeholder-jacarta-500 focus:ring-accent border-jacarta-100 w-full rounded-2xl border py-[0.6875rem] px-4 pl-10 dark:border-transparent dark:bg-white/[.15] dark:text-white dark:placeholder-white"
@@ -164,7 +174,7 @@ const Validated_refused_items = ({ statut, proposalData }) => {
                   </button>
                 );
               })}
-            </div>
+            </div> 
           </aside> */}
         </div>
       </div>

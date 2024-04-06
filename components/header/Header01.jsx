@@ -134,6 +134,13 @@ export default function Header01() {
         <nav className="navbar w-full">
           <ul className="flex flex-col lg:flex-row">
             <li className="group">
+              <Link href="/" onClick={() => setToggle(false)}>
+                <button className="text-jacarta-700 font-display hover:text-accent focus:text-accent dark:hover:text-accent dark:focus:text-accent flex items-center justify-between py-3.5 text-base dark:text-white lg:px-5">
+                  <span className={isChildrenPageActive(route.asPath, "/") ? "text-accent dark:text-accent" : ""}>Home</span>
+                </button>
+              </Link>
+            </li>
+            <li className="group">
               <Link href="/#hot-offers" onClick={() => setToggle(false)}>
                 <button className="text-jacarta-700 font-display hover:text-accent focus:text-accent dark:hover:text-accent dark:focus:text-accent flex items-center justify-between py-3.5 text-base dark:text-white lg:px-5">
                   <span className={isChildrenPageActive(route.asPath, "#hot-offers") ? "text-accent dark:text-accent" : ""}>Buy spaces</span>

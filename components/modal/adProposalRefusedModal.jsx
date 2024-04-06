@@ -10,7 +10,7 @@ const AddProposalRefusedModal = ({ id, offerId, tokenId, recordsProposalId, comm
   };
   return (
     <>
-      <div className="modal-dialog max-w-2xl min-w-[450px]">
+      <div className="modal-dialog max-w-2xl sm:min-w-[450px]">
         <div className="modal-content">
           <div className="modal-header">
             <h5 className="modal-title" id="placeBidLabel">

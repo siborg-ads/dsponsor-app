@@ -173,7 +173,7 @@ const [currency, setCurrency] = useState(null);
 
               <h1 className="font-display text-jacarta-700 mb-4 text-4xl font-semibold dark:text-white">{name}</h1>
 
-              <div className="mb-8 flex items-center space-x-4 whitespace-nowrap">
+              <div className="mb-8 flex items-center flex-wrap gap-2 space-x-4 whitespace-nowrap">
                 <div className="flex items-center">
                   <Tippy content={<span>{currency?.symbol ? currency?.symbol : "N/A"}</span>}>
                     <span className="-ml-1">

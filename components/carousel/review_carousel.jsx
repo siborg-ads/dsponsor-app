@@ -93,7 +93,25 @@ const Review_carousel = ({ handleSubmit, pendingProposalData, successFullRefuseM
         modules={[Navigation, Pagination, Scrollbar]}
         spaceBetween={30}
         loop={pendingProposalData.length > 2}
-        slidesPerView={2}
+        slidesPerView="auto"
+        breakpoints={{
+          640: {
+            slidesPerView: 1,
+            spaceBetween: 20,
+          },
+          768: {
+            slidesPerView: 1,
+            spaceBetween: 20,
+          },
+          900: {
+            slidesPerView: 1,
+            spaceBetween: 20,
+          },
+          1000: {
+            slidesPerView: 2,
+            spaceBetween: 30,
+          },
+        }}
         navigation={
           pendingProposalData.length > 2
             ? {
@@ -111,12 +129,12 @@ const Review_carousel = ({ handleSubmit, pendingProposalData, successFullRefuseM
             <div key={tokenId}>
               <SwiperSlide className="text-white">
                 <article>
-                  <div className="dark:bg-jacarta-700 flex dark:border-jacarta-700 border-jacarta-100 rounded-2xl block border bg-white p-[1.1875rem] transition-shadow hover:shadow-lg text-jacarta-500">
-                    <div className="dark:bg-jacarta-700 w-[250px] dark:border-jacarta-600 border-jacarta-100   items-center justify-center rounded-lg border bg-white py-1.5 px-4">
+                  <div className="dark:bg-jacarta-700 flex dark:border-jacarta-700 border-jacarta-100 flex-col md:flex-row rounded-2xl  border bg-white p-[1.1875rem] transition-shadow hover:shadow-lg text-jacarta-500">
+                    <div className="dark:bg-jacarta-700 w-full md:w-[250px] dark:border-jacarta-600 border-jacarta-100   items-center justify-center rounded-lg border bg-white py-1.5 px-4">
                       <figure className="mb-4 flex flex-col">
                         <span className="dark:text-jacarta-200 mb-1">Image :</span>
                         <Link href={`/item/${offerId}/${tokenId}`}>
-                           <Image src={records.logoURL?.value} alt="" height={230} width={230} className="rounded-[0.625rem] w-auto   h-[150px] object-contain" loading="lazy" /> 
+                          <Image src={records.logoURL?.value} alt="logo" height={230} width={230} className="rounded-[0.625rem] w-auto   h-[150px] object-contain" loading="lazy" />
                         </Link>
                       </figure>
                       <div className="mb-4 flex flex-col">
@@ -131,7 +149,7 @@ const Review_carousel = ({ handleSubmit, pendingProposalData, successFullRefuseM
                       </div>
                     </div>
 
-                    <div className="mt-4 flex  flex-col pl-8 justify-between">
+                    <div className="mt-4 flex  flex-col md:pl-8 pl-0 justify-between">
                       <div className="flex flex-col ">
                         <Link href={`/item/${offerId}/${tokenId}`} className="mb-4">
                           <span className="font-display text-jacarta-700 hover:text-accent text-base dark:text-white">
@@ -141,7 +159,7 @@ const Review_carousel = ({ handleSubmit, pendingProposalData, successFullRefuseM
                       </div>
                       <div className="flex flex-col gap-2">
                         <div className="dropdown-item mb-4 font-display dark:bg-jacarta-600 hover:bg-jacarta-50 block w-full rounded-xl pr-5 py-2 text-left text-sm transition-colors dark:text-white">
-                          <span className="flex items-center justify-between">
+                          <span className="flex items-center justify-between gap-2">
                             <span className="pl-5">I confirm that I have check the image and the linkURL </span>
                             <input
                               type="checkbox"

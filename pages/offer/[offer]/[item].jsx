@@ -57,6 +57,7 @@ const Item = () => {
   const [validate, setValidate] = useState(false);
   const [currency, setCurrency] = useState(null);
   const [adStatut, setAdStatut] = useState(null);
+  const [offerNotFormated, setOfferNotFormated] = useState(false);
   const [price, setPrice] = useState(null);
   const stepsRef = useRef([]);
   const numSteps = 3;
@@ -74,6 +75,7 @@ const Item = () => {
           setCurrency(currencyToken);
         }catch(e){
           console.error("Error: Currency not found for address", offer.currencies[0]);
+          setOfferNotFormated(true);
         }
 
         if (address) {
@@ -392,7 +394,7 @@ const Item = () => {
       {/* <!-- end item --> */}
 
       <div>
-        {isAllowedToMint ? (
+        {isAllowedToMint && !offerNotFormated ? (
           <div>
             <SliderForm styles={styles} handlePreviewModal={handlePreviewModal} stepsRef={stepsRef} numSteps={numSteps}>
               <Step_1_Mint stepsRef={stepsRef} styles={styles} adParamaters={["logoURL", "linkURL"]} />
@@ -411,7 +413,7 @@ const Item = () => {
           </div>
         ) : (
           <div className="flex justify-center">
-            <p>Sorry, someone already mint this NFT</p>
+            <p>{!offerNotFormated ? "Sorry, someone already own this NFT" :" Offer isn't well formated to buy "}</p>
           </div>
         )}
       </div>
