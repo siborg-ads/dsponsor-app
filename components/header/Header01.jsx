@@ -3,13 +3,19 @@ import Link from "next/link";
 import DarkMode from "../mode/DarkMode";
 import Logo from "./../../public/images/logo.png";
 import WhiteLogo from "./../../public/images/logo_white.png";
-import { v4 as uuidv4 } from "uuid";
 import { useRouter } from "next/router";
 import { isChildrenPageActive, isParentPageActive } from "../../utils/daynamicNavigation";
 import { useEffect, useState } from "react";
 import { ConnectWallet, useAddress } from "@thirdweb-dev/react";
 import { useTheme } from "next-themes";
 
+function randomUUID() {
+  return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) {
+    var r = (Math.random() * 16) | 0,
+      v = c === "x" ? r : (r & 0x3) | 0x8;
+    return v.toString(16);
+  });
+}
 export default function Header01() {
   const [toggle, setToggle] = useState(false);
   const [isCollapse, setCollapse] = useState(null);
