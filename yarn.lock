@@ -1256,10 +1256,10 @@
   dependencies:
     "@jridgewell/trace-mapping" "0.3.9"
 
-"@dsponsor/sdk@^3.0.0-beta.1":
-  version "3.0.0-beta.1"
-  resolved "https://registry.npmjs.org/@dsponsor/sdk/-/sdk-3.0.0-beta.1.tgz"
-  integrity sha512-RzxxlFUcNpclN8EXH7amRhcjoWJl2fqtUzv4lh7i9HlNfbhp2IBj/mvh8uUmiTsqOpyar+QpWT1lozF4tc7P3g==
+"@dsponsor/sdk@^3.0.0":
+  version "3.0.0"
+  resolved "https://registry.npmjs.org/@dsponsor/sdk/-/sdk-3.0.0.tgz"
+  integrity sha512-xp0PldGmUH3+sqi9b76aaqM7EMBHJiUaBHb98BoLseZ0WSoihs9QYUPJvw+hExbZaegnksYeWrsP47cVTesLWA==
   dependencies:
     "@apollo/client" "^3.9.9"
     alchemy-sdk "^3.2.1"
@@ -3237,10 +3237,10 @@
   dependencies:
     glob "7.1.7"
 
-"@next/swc-darwin-arm64@14.2.0-canary.56":
+"@next/swc-win32-x64-msvc@14.2.0-canary.56":
   version "14.2.0-canary.56"
-  resolved "https://registry.npmjs.org/@next/swc-darwin-arm64/-/swc-darwin-arm64-14.2.0-canary.56.tgz"
-  integrity sha512-9d162Qzls1eDrw2a7e6IiK5bzBm2LVD5Fh2DP67rggPFqgl15hJMDfjv+vfiCbFhxaA95uv45S48Kj/X2p4Wrg==
+  resolved "https://registry.npmjs.org/@next/swc-win32-x64-msvc/-/swc-win32-x64-msvc-14.2.0-canary.56.tgz"
+  integrity sha512-FvsUo8nh9Hc6qvK0uqoinEfZbw+q16Jj6qewA0fdUQ+QY0i6ECo7c8Wsc6Jm/dGmW/CAA1zAVUX00L9h+MGyZw==
 
 "@noble/curves@^1.2.0", "@noble/curves@~1.3.0", "@noble/curves@1.3.0":
   version "1.3.0"
@@ -13380,6 +13380,11 @@ stubs@^3.0.0:
   version "3.0.0"
   resolved "https://registry.npmjs.org/stubs/-/stubs-3.0.0.tgz"
   integrity sha512-PdHt7hHUJKxvTCgbKX9C1V/ftOcjJQgz8BZwNfV5c4B6dcGqlpelTbJ999jBGZ2jYiPAwcX5dP6oBwVlBlUbxw==
+
+sturdy-websocket@^0.2.1:
+  version "0.2.1"
+  resolved "https://registry.npmjs.org/sturdy-websocket/-/sturdy-websocket-0.2.1.tgz"
+  integrity sha512-NnzSOEKyv4I83qbuKw9ROtJrrT6Z/Xt7I0HiP/e6H6GnpeTDvzwGIGeJ8slai+VwODSHQDooW2CAilJwT9SpRg==
 
 style-value-types@5.0.0:
   version "5.0.0"

@@ -23,27 +23,34 @@ const ManageSpaces = () => {
 
   useEffect(() => {
     if (userAddress) {
-      const admin = new DSponsorAdmin();
+      const admin = new DSponsorAdmin({ chain: { alchemyAPIKey: process.env.NEXT_PUBLIC_ALCHEMY_API_KEY, chainName: "ethereum-sepolia" } });
       const fetchAdsOffers = async () => {
         const offer = await admin.getOffers({ address: userAddress }, { includeMetadata: true, includePrices: true, includeAllowedTokens: true });
         
-        // const data = [];
-        // const ownedAdProposals = await admin.getOwnedOfferTokens({ address: userAddress });
-        // console.log(ownedAdProposals);
-//         const mappedownedAdProposals = [];
+        const data = [];
+        const ownedAdProposals = await admin.getOwnedOfferTokens({ address: userAddress }, {includeOffers: true});
+        // console.log({ownedAdProposals});
+        const mappedownedAdProposals = [];
 
-//         for (const element of ownedAdProposals) {
-//           const IPFSLink = element.offer.offerMetadata;
-//           const destructuredIPFSResult = await fetchDataFromIPFS(IPFSLink);
-//           const combinedData = {
-//             ...element,
-//             ...element.offer,
-//             ...destructuredIPFSResult,
-//           };
-//           mappedownedAdProposals.push(combinedData);
-//         }
+
+
+
+        for (const element of ownedAdProposals) {
+          if (!element.offer?.offerMetadata) {
+            continue;
+          }
+          const IPFSLink = element.offer.offerMetadata;
+          const destructuredIPFSResult = await fetchDataFromIPFS(IPFSLink);
+          const combinedData = {
+            ...element,
+            ...element.offer,
+            ...destructuredIPFSResult,
+          };
+          mappedownedAdProposals.push(combinedData);
+        }
 // console.log(mappedownedAdProposals);
-//         setMappedownedAdProposals(mappedownedAdProposals);
+// console.log(offer);
+        setMappedownedAdProposals(mappedownedAdProposals);
         setCreatedData(offer);
       };
 
@@ -95,7 +102,7 @@ const ManageSpaces = () => {
 
         </section>
         {/* <!-- end profile --> */}
-        <User_items createdData={createdData} mappedownedAdProposals={mappedownedAdProposals} />
+        <User_items createdData={createdData} mappedownedAdProposals={mappedownedAdProposals}  />
       </div>
     </>
   );

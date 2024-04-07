@@ -65,7 +65,7 @@ const Item = () => {
   useEffect(() => {
     if (offerId) {
       const fetchAdsOffers = async () => {
-        const admin = new DSponsorAdmin();
+        const admin = new DSponsorAdmin({ chain: { alchemyAPIKey: process.env.NEXT_PUBLIC_ALCHEMY_API_KEY, chainName: "ethereum-sepolia" } });
         const offer = await admin.getOffer({ offerId: offerId });
         try{
           

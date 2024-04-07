@@ -39,20 +39,25 @@ const tranding_category_filter = [
 const ownedAdProposals_categories_filter = [
   {
     id: 0,
-    svg: "art",
-    text: "Pending review",
-  },
-  {
-    id: 1,
-    svg: "art",
-    text: "Validated ads",
-  },
-
-  {
-    id: 2,
     svg: "collection",
-    text: "Refused ads",
-  },
+    text: "All",
+  }
+  // {
+  //   id: 1,
+  //   svg: "art",
+  //   text: "Pending review",
+  // },
+  // {
+  //   id: 2,
+  //   svg: "art",
+  //   text: "Validated ads",
+  // },
+
+  // {
+  //   id: 3,
+  //   svg: "collection",
+  //   text: "Refused ads",
+  // },
 ];
 
 const trendingCategoryData = [

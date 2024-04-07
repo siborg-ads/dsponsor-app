@@ -14,6 +14,7 @@ import Validated_refused_items from "../../components/collectrions/validated_ref
 import { DSponsorAdmin } from "@dsponsor/sdk";
 import { fetchDataFromIPFS } from "../../data/services/ipfsService";
 import { ethers } from "ethers";
+import { bufferAdParams } from "../../utils/formatedData";
 
 const Offer = () => {
   const router = useRouter();
@@ -40,14 +41,32 @@ const [currency, setCurrency] = useState(null);
 
   useEffect(() => {
     if (offerId) {
-      const admin = new DSponsorAdmin();
+      const admin = new DSponsorAdmin({ chain: { alchemyAPIKey: process.env.NEXT_PUBLIC_ALCHEMY_API_KEY, chainName: "ethereum-sepolia" } });
       const fetchAdsOffers = async () => {
         const ads = await admin.getPendingAds({ offerId: offerId });
+        console.log(ads, "ads");
+        const formattedPendingAds = [];
+
+       
+        for (let i = 0; i < ads.length; i += 2) {
+          
+          if (i + 1 < ads.length) {
+        formattedPendingAds.push({
+            groupKey: `${ads[i].proposalId}-${ads[i+1].proposalId}`,
+            ads: [ads[i], ads[i+1]]
+        });
+        }
+      }
+        console.log(formattedPendingAds, "formattedPendingAds");
         const offer = await admin.getOffer({ offerId: offerId });
         const validatedAds = await admin.getValidatedAds({ offerId: offerId });
         const refusedAds = await admin.getRejectedAds({ offerId: offerId });
+        const proposals = await admin.getAdProposals({ offerId: offerId });
+        console.log(validatedAds, "proposals");
+       const params = await admin.getAdParameters({ offerId: offerId });
+        // const normalizedParams = bufferAdParams(params);
        
-        console.log("ads", refusedAds);
+       
         const destructuredIPFSResult = await fetchDataFromIPFS(offer.offerMetadata);
         const combinedData = {
           ...offer,
@@ -66,7 +85,7 @@ const [currency, setCurrency] = useState(null);
         setOfferData([combinedData]);
         setValidatedProposalData(validatedAds);
         setRefusedProposalData(refusedAds);
-        setPendingProposalData(ads);
+        setPendingProposalData(formattedPendingAds);
       };
 
       fetchAdsOffers();

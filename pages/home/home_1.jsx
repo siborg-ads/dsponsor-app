@@ -13,14 +13,14 @@ const Home_1 = () => {
   const [data, setData] = useState([]);
 
   useEffect(() => {
-    const admin = new DSponsorAdmin();
+    const admin = new DSponsorAdmin({ chain: { alchemyAPIKey: process.env.NEXT_PUBLIC_ALCHEMY_API_KEY, chainName:"ethereum-sepolia" } });
 
     const fetchAdsOffers = async () => {
       const mappedData = [];
 
       const ads = await admin.getOffers(
         {
-          limit: 10,
+          limit: 20,
         },
         { includeMetadata: true, includePrices: true, includeAllowedTokens: true }
       );

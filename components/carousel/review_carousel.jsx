@@ -29,7 +29,7 @@ const Review_carousel = ({ handleSubmit, pendingProposalData, successFullRefuseM
       initialValidateStates[item.tokenId] = false;
     });
     setValidate(initialValidateStates);
-  }, []);
+  }, [ pendingProposalData]);
 
   const [copied, setCopied] = useState(false);
 
@@ -51,27 +51,27 @@ const Review_carousel = ({ handleSubmit, pendingProposalData, successFullRefuseM
       [id]: value,
     }));
   };
-  const handleItemSubmit = async (offerId, tokenId, records, approuved) => {
-    console.log(records, "records");
+  const handleItemSubmit = async (offerId, tokenId, item, approuved) => {
+    
     const submissionArgs = [
       {
         offerId: offerId,
         tokenId: tokenId,
-        proposalId: records.linkURL.proposalId,
-        adParameter: "linkURL",
+        proposalId: item[0].proposalId,
+        adParameter: "logoURL",
         validated: approuved,
         reason: comments[tokenId] || "",
       },
       {
         offerId: offerId,
         tokenId: tokenId,
-        proposalId: records.logoURL.proposalId,
-        adParameter: "logoURL",
+        proposalId: item[1].proposalId,
+        adParameter: "linkURL",
         validated: approuved,
         reason: comments[tokenId] || "",
       },
     ];
-
+console.log(submissionArgs);
     await handleSubmit(submissionArgs);
   };
   const openRefuseModal = (offerId, tokenId, recordsProposalId) => {
@@ -123,7 +123,7 @@ const Review_carousel = ({ handleSubmit, pendingProposalData, successFullRefuseM
         className=" card-slider-4-columns !py-5"
       >
         {pendingProposalData.map((item) => {
-          const { records, offerId, tokenId } = item;
+          const { ads } = item;
 
           return (
             <div key={tokenId}>
@@ -133,8 +133,8 @@ const Review_carousel = ({ handleSubmit, pendingProposalData, successFullRefuseM
                     <div className="dark:bg-jacarta-700 w-full md:w-[250px] dark:border-jacarta-600 border-jacarta-100   items-center justify-center rounded-lg border bg-white py-1.5 px-4">
                       <figure className="mb-4 flex flex-col">
                         <span className="dark:text-jacarta-200 mb-1">Image :</span>
-                        <Link href={`/item/${offerId}/${tokenId}`}>
-                          <Image src={records.logoURL?.value} alt="logo" height={230} width={230} className="rounded-[0.625rem] w-auto   h-[150px] object-contain" loading="lazy" />
+                        <Link href={`/item/${ads[0].offerId}/${ads[0].tokenId}`}>
+                          <Image src={ads[0].adParameters?.logoURL} alt="logo" height={230} width={230} className="rounded-[0.625rem] w-auto   h-[150px] object-contain" loading="lazy" />
                         </Link>
                       </figure>
                       <div className="mb-4 flex flex-col">
@@ -142,7 +142,7 @@ const Review_carousel = ({ handleSubmit, pendingProposalData, successFullRefuseM
                         <Tippy hideOnClick={false} content={copied ? <span>copied</span> : <span>copy</span>}>
                           <button className="js-copy-clipboard flex text-white max-w-[auto] select-none overflow-hidden text-ellipsis whitespace-nowrap">
                             <CopyToClipboard text="userId" onCopy={() => setCopied(true)}>
-                              <span>{records.linkURL?.value}</span>
+                              <span>{ads[1].adParameters?.linkURL}</span>
                             </CopyToClipboard>
                           </button>
                         </Tippy>
@@ -151,9 +151,9 @@ const Review_carousel = ({ handleSubmit, pendingProposalData, successFullRefuseM
 
                     <div className="mt-4 flex  flex-col md:pl-8 pl-0 justify-between">
                       <div className="flex flex-col ">
-                        <Link href={`/item/${offerId}/${tokenId}`} className="mb-4">
+                        <Link href={`/item/${ads[0].offerId}/${ads[0].tokenId}`} className="mb-4">
                           <span className="font-display text-jacarta-700 hover:text-accent text-base dark:text-white">
-                            Item n°: <span className="text-accent"> {tokenId} </span>{" "}
+                            Item n°: <span className="text-accent"> {ads[0].tokenId} </span>{" "}
                           </span>
                         </Link>
                       </div>
@@ -165,8 +165,8 @@ const Review_carousel = ({ handleSubmit, pendingProposalData, successFullRefuseM
                               type="checkbox"
                               name="check"
                               className="checked:bg-accent checked:focus:bg-accent checked:hover:bg-accent after:bg-jacarta-400 bg-jacarta-100 relative h-4 w-7 cursor-pointer appearance-none rounded-lg border-none shadow-none after:absolute after:top-0.5 after:left-0.5 after:h-3 after:w-3 after:rounded-full after:transition-all checked:bg-none checked:after:left-3.5 checked:after:bg-white focus:ring-transparent focus:ring-offset-0"
-                              onChange={() => handleInput(tokenId)}
-                              checked={validate[tokenId] || false}
+                              onChange={() => handleInput(ads[0].tokenId)}
+                              checked={validate[ads[0].tokenId] || false}
                             />
                           </span>
                         </div>
@@ -174,16 +174,18 @@ const Review_carousel = ({ handleSubmit, pendingProposalData, successFullRefuseM
                           <div className="flex items-start gap-4 flex-wrap">
                             <Web3Button
                               contractAddress="0xdf42633BD40e8f46942e44a80F3A58d0Ec971f09"
-                              action={() => handleItemSubmit(offerId, tokenId, records, true)}
-                              className={` !rounded-full !min-w-[100px] !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate[tokenId] ? "btn-disabled" : "!bg-accent !cursor-pointer"} `}
+                              action={() => handleItemSubmit(ads[0].offerId, ads[0].tokenId, item.ads, true)}
+                              className={` !rounded-full !min-w-[100px] !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate[ads[0].tokenId] ? "btn-disabled" : "!bg-accent !cursor-pointer"} `}
                             >
                               Validate
                             </Web3Button>
 
                             <Web3Button
                               contractAddress="0xdf42633BD40e8f46942e44a80F3A58d0Ec971f09"
-                              action={() => openRefuseModal(offerId, tokenId, records)}
-                              className={` !rounded-full !min-w-[100px] !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate[tokenId] ? "btn-disabled" : "!bg-red !cursor-pointer"} `}
+                              action={() => openRefuseModal(ads[0].offerId, ads[0].tokenId, item.ads)}
+                              className={` !rounded-full !min-w-[100px] !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${
+                                !validate[ads[0].tokenId] ? "btn-disabled" : "!bg-red !cursor-pointer"
+                              } `}
                             >
                               Reject
                             </Web3Button>
