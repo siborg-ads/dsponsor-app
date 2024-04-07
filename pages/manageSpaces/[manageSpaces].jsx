@@ -28,22 +28,22 @@ const ManageSpaces = () => {
         const offer = await admin.getOffers({ address: userAddress }, { includeMetadata: true, includePrices: true, includeAllowedTokens: true });
         
         // const data = [];
-        const ownedAdProposals = await admin.getOwnedOfferTokens({ address: userAddress });
-        console.log(ownedAdProposals);
-        const mappedownedAdProposals = [];
+        // const ownedAdProposals = await admin.getOwnedOfferTokens({ address: userAddress });
+        // console.log(ownedAdProposals);
+//         const mappedownedAdProposals = [];
 
-        for (const element of ownedAdProposals) {
-          const IPFSLink = element.offer.offerMetadata;
-          const destructuredIPFSResult = await fetchDataFromIPFS(IPFSLink);
-          const combinedData = {
-            ...element,
-            ...element.offer,
-            ...destructuredIPFSResult,
-          };
-          mappedownedAdProposals.push(combinedData);
-        }
-console.log(mappedownedAdProposals);
-        setMappedownedAdProposals(mappedownedAdProposals);
+//         for (const element of ownedAdProposals) {
+//           const IPFSLink = element.offer.offerMetadata;
+//           const destructuredIPFSResult = await fetchDataFromIPFS(IPFSLink);
+//           const combinedData = {
+//             ...element,
+//             ...element.offer,
+//             ...destructuredIPFSResult,
+//           };
+//           mappedownedAdProposals.push(combinedData);
+//         }
+// console.log(mappedownedAdProposals);
+//         setMappedownedAdProposals(mappedownedAdProposals);
         setCreatedData(offer);
       };
 

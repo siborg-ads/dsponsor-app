@@ -62,7 +62,7 @@ const [currency, setCurrency] = useState(null);
         } catch (e) {
           console.error("Error: Currency not found for address");
         }
-         console.log(combinedData, "offer");
+       
         setOfferData([combinedData]);
         setValidatedProposalData(validatedAds);
         setRefusedProposalData(refusedAds);
@@ -75,7 +75,7 @@ const [currency, setCurrency] = useState(null);
   useEffect(() => {
     if (royaltiesInfo) setRoyalties(ethers.BigNumber.from(royaltiesInfo[1]?._hex).toNumber());
     
-  }, [royaltiesInfo, offerData]);
+  }, [royaltiesInfo]);
 
   const handleSubmit = async (submissionArgs) => {
     try {
