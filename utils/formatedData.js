@@ -1,5 +1,4 @@
 export const bufferAdParams = (data) => {
-
   const buffedArray = [
     { key: "d99a7aefbfbd3125efbfbd36efbfbd64147eefbfbddb9eefbfbd62efbfbdefbfbd0639efbfbd1e1cefbfbd1f7c67efbfbdefbfbd1527", value: "logoURL" },
     { key: "efbfbdefbfbd1317efbfbd1aefbfbdefbfbd3c7fefbfbd22efbfbd5274efbfbdefbfbdefbfbd59efbfbd0defbfbd54efbfbd55efbfbdefbfbdefbfbdefbfbdefbfbdefbfbdefbfbd", value: "linkURL" },
@@ -9,18 +8,17 @@ export const bufferAdParams = (data) => {
     console.error("Invalid input data");
     return;
   }
-  console.log(data[0]);
- const adParamsData = [];
-  for(const element in data[0]){
 
-      const validParam = element.adParameter;
-      console.log(validParam);
-      const normalizedParams = Buffer.from(validParam).toString("hex");
-      const foundItem = buffedArray.find((item) => item.key === normalizedParams);
-        adParamsData.push(foundItem.value);
+  const adParamsData = [];
+  for (let i = 0; i < data.length; i++) {
+    const validParam = data[i].adParameter;
+    const normalizedParams = Buffer.from(validParam).toString("hex");
 
+    const foundItem = buffedArray.find((item) => item.key === normalizedParams);
+
+    adParamsData.push(foundItem.value);
   }
-  if (adParamsData > 1) {
+  if (adParamsData.length > 1) {
     return adParamsData;
   } else {
     console.log("No matching key found");

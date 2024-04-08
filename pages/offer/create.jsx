@@ -24,7 +24,7 @@ const Create = () => {
 
   const [link, setLink] = useState(null);
   const [errors, setErrors] = useState({});
-  const [description, setDescription] = useState(null);
+  const [description, setDescription] = useState(false);
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date(new Date().setFullYear(new Date().getFullYear() + 1)));
   const [previewImage, setPreviewImage] = useState(null);
@@ -37,6 +37,7 @@ const Create = () => {
   const [showPreviewModal, setShowPreviewModal] = useState(false);
   const [successFullUpload, setSuccessFullUpload] = useState(false);
   const [selectedParameter, setSelectedParameter] = useState(["logoURL", "linkURL"]);
+  const [displayedParameter, setDisplayedParameter] = useState("Logo Grid & Link");
   const [selectedTypeParameter, setSelectedTypeParameter] = useState(0);
   const [name, setName] = useState(false);
   const stepsRef = useRef([]);
@@ -46,8 +47,11 @@ const Create = () => {
   };
   const handleParameterChange = (e) => {
     setSelectedTypeParameter(e.target.value);
-    if (e.target.value === 0) setSelectedParameter(["logoURL", "linkURL"]);
-    if (e.target.value === 1) setSelectedParameter(["bannerURL", "linkURL"]);
+    if (e.target.value === 0){
+      setSelectedParameter(["logoURL", "linkURL"]);
+      setDisplayedParameter("Logo Grid & Link");
+    } 
+    // if (e.target.value === 1) setSelectedParameter(["bannerURL", "linkURL"]);
   };
 
   const handleUnitPriceChange = (e) => {
@@ -94,7 +98,6 @@ const Create = () => {
   const validateInputs = () => {
     let isValid = true;
     let newErrors = {};
-    console.log(name, description, link);
     if (!name) {
       newErrors.nameError = "Name is missing.";
       isValid = false;
@@ -354,7 +357,7 @@ const Create = () => {
           />
           <Step_2_Create stepsRef={stepsRef} styles={styles} setName={setName} setDescription={setDescription} />
 
-          <Step_3_Create stepsRef={stepsRef} styles={styles} setLink={setLink} file={file} handleLogoUpload={handleLogoUpload} />
+          <Step_3_Create stepsRef={stepsRef} styles={styles} setLink={setLink} link={link} file={file} handleLogoUpload={handleLogoUpload} />
 
           <Step_4_Create
             stepsRef={stepsRef}
@@ -392,6 +395,7 @@ const Create = () => {
             selectedRoyalties={selectedRoyalties}
             previewImage={previewImage}
             selectedParameter={selectedParameter}
+            displayedParameter={displayedParameter}
             validate={validate}
             errors={errors}
             successFullUpload={successFullUpload}

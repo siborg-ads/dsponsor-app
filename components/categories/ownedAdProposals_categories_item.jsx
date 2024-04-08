@@ -8,6 +8,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { updateTrendingCategoryItemData } from "../../redux/counterSlice";
 import Review_adProposal_data from "./review_adProposal_items";
 import OfferItem from "../cards/offerItem";
+import Link from "next/link";
 
 const OwnedAdProposals_categories_items = ({ data }) => {
   
@@ -103,11 +104,20 @@ const OwnedAdProposals_categories_items = ({ data }) => {
       </div>
 
       {/* <!-- Grid --> */}
-      <div className="grid grid-cols-1 gap-[1.875rem] md:grid-cols-2 lg:grid-cols-4">
-        {data?.map((item, index) => {
-          return <OfferItem item={item} key={index} isToken={true} url={`/offer/${item.offerId}/${item.tokenId}`} />;
-        })}
-      </div>
+      {data.length > 0 ? (
+        <div className="grid grid-cols-1 gap-[1.875rem] md:grid-cols-2 lg:grid-cols-4">
+          {data?.map((item, index) => {
+            return <OfferItem item={item} key={index} isToken={true} url={`/offer/${item.offerId}/${item.tokenId}`} />;
+          })}
+        </div>
+      ) : (
+        <div className="w-full flex flex-col gap-4 justify-center items-center">
+          <span>You have no ad space yet...</span>
+          <Link href="/#hot-offers" className="bg-accent shadow-accent-volume hover:bg-accent-dark w-36 rounded-full py-3 px-8 text-center font-semibold text-white transition-all">
+            Buy
+          </Link>
+        </div>
+      )}
     </>
   );
 };

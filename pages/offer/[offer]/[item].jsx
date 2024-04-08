@@ -20,6 +20,7 @@ import { useDispatch } from "react-redux";
 import { ConnectWallet } from "@thirdweb-dev/react";
 import { DSponsorAdmin } from "@dsponsor/sdk";
 import { fetchDataFromIPFS } from "../../../data/services/ipfsService";
+import { bufferAdParams } from "../../../utils/formatedData";
 
 const Item = () => {
   const router = useRouter();
@@ -36,7 +37,7 @@ const Item = () => {
   const [file, setFile] = useState(null);
   const [imageModal, setImageModal] = useState(false);
   const [previewImage, setPreviewImage] = useState(null);
-  const [link, setLink] = useState(null);
+  const [link, setLink] = useState("https://");
   const [amountToApprove, setAmountToApprove] = useState(null);
   const [royalties, setRoyalties] = useState(null);
   const [errors, setErrors] = useState({});
@@ -67,6 +68,11 @@ const Item = () => {
       const fetchAdsOffers = async () => {
         const admin = new DSponsorAdmin({ chain: { alchemyAPIKey: process.env.NEXT_PUBLIC_ALCHEMY_API_KEY, chainName: "ethereum-sepolia" } });
         const offer = await admin.getOffer({ offerId: offerId });
+        const params = await admin.getAdParameters({ offerId: offerId });
+
+        const normalizedParams = bufferAdParams(params);
+
+      
         try{
           
           const currencyToken = admin.chain.getCurrencyByAddress(offer.currencies[0]);
@@ -90,8 +96,10 @@ const Item = () => {
         const combinedData = {
           ...offer,
           ...destructuredIPFSResult,
+          normalizedParams,
         };
-        console.log(combinedData, "offer");
+       
+        console.log(combinedData, "combinedData");
         setOfferData([combinedData]);
       };
 
@@ -223,14 +231,14 @@ const Item = () => {
           currency: offerData[0]?.currencies[0],
           tokenData: "null",
           offerId: offerId,
-          adParameters: ["logoURL", "linkURL"],
+          adParameters: offerData[0]?.normalizedParams,
           adDatas: [uploadUrl[0], link],
           referralAdditionalInformation: "",
         };
         const argsAdSubmited = {
           offerId: [offerId, offerId],
           tokenId: [tokenIdString, tokenIdString],
-          adParameters: ["logoURL", "linkURL"],
+          adParameters: offerData[0]?.normalizedParams,
           data: [uploadUrl[0], link],
         };
         const isEthCurrency = offerData[0]?.currencies[0] === "0x0000000000000000000000000000000000000000";
@@ -291,7 +299,7 @@ const Item = () => {
     return <div>Chargement...</div>;
   }
 
-  const { description = "description not found", id="1", image =["/images/gradient_creative.jpg"], name ="DefaultName", nftContract ="N/A" } = offerData[0].offer ? offerData[0].offer : {};
+  const { description = "description not found", id="1", image =["/images/gradient_creative.jpg"], name ="DefaultName"} = offerData[0].offer ? offerData[0].offer : {};
 
   return (
     <>
@@ -397,30 +405,34 @@ const Item = () => {
         {isAllowedToMint && !offerNotFormated ? (
           <div>
             <SliderForm styles={styles} handlePreviewModal={handlePreviewModal} stepsRef={stepsRef} numSteps={numSteps}>
-              <Step_1_Mint stepsRef={stepsRef} styles={styles} adParamaters={["logoURL", "linkURL"]} />
+              <Step_1_Mint stepsRef={stepsRef} styles={styles} adParamaters={["Grid Logo & Link"]} />
               <Step_2_Mint stepsRef={stepsRef} styles={styles} file={file} handleLogoUpload={handleLogoUpload} />
-              <Step_3_Mint stepsRef={stepsRef} styles={styles} setLink={setLink} />
+              <Step_3_Mint stepsRef={stepsRef} styles={styles} setLink={setLink} link={link} />
             </SliderForm>
           </div>
         ) : //Message to say that the NFT is not allowed to mint
-        isOwner ? (
+        isOwner && adStatut !=2 ? (
           <div>
             <SliderForm styles={styles} handlePreviewModal={handlePreviewModal} stepsRef={stepsRef} numSteps={numSteps}>
-              <Step_1_Mint stepsRef={stepsRef} styles={styles} adParamaters={["logoURL", "linkURL"]} />
+              <Step_1_Mint stepsRef={stepsRef} styles={styles} adParamaters={["Grid Logo & Link"]} />
               <Step_2_Mint stepsRef={stepsRef} styles={styles} file={file} handleLogoUpload={handleLogoUpload} />
-              <Step_3_Mint stepsRef={stepsRef} styles={styles} setLink={setLink} />
+              <Step_3_Mint stepsRef={stepsRef} styles={styles} setLink={setLink} link={link} />
             </SliderForm>
+          </div>
+        ) : adStatut === 2 ? (
+          <div className="flex justify-center">
+            <p>Your ad proposal is currently being reviewed by the creator.</p>
           </div>
         ) : (
           <div className="flex justify-center">
-            <p>{!offerNotFormated ? "Sorry, someone already own this NFT" :" Offer isn't well formated to buy "}</p>
+            <p>{!offerNotFormated ? "Sorry, someone already own this NFT" : " Offer isn't well formated to buy "}</p>
           </div>
         )}
       </div>
 
       {/* <ItemsTabs /> */}
       <div className="container mb-12">
-        <ItemsTabs contractAddress={nftContract} offerId={offerId} />
+        <ItemsTabs contractAddress={offerData[0]?.nftContract} offerId={offerId} />
       </div>
       {showPreviewModal && (
         <div className="modal fade show bloc">
