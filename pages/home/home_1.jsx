@@ -25,10 +25,11 @@ const Home_1 = () => {
         { includeMetadata: true, includePrices: true, includeAllowedTokens: true }
       );
       
-
+const formatedAds = ads.filter(ad => ad.offerId > 11);
+console.log(formatedAds);
       
-      for (const element of ads) {
-        if(!element.nftContract) return;
+      for (const element of formatedAds) {
+        if (!element.nftContract) return;
         const contract = await getContractNFT(element.nftContract);
         for (let i = 0; i < element.allowedTokens?.length; i++) {
           const isTokenAllowed = await readContract({

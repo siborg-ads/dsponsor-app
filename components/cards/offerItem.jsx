@@ -49,6 +49,7 @@ const OfferItem = ({ item, url, isToken }) => {
       const checkAds = async (fetchFunction) => {
         if (!item.offerId) return;
         const ads = await fetchFunction;
+        console.log(ads, item.offerId , "there it is");
         return ads.some((ad) => ad.tokenId === item.tokenId);
       };
 
@@ -64,6 +65,8 @@ const OfferItem = ({ item, url, isToken }) => {
 
       if (await checkAds(admin.getPendingAds({ offerId: item.offerId }))) {
         setAdStatut(2);
+      }else{
+        setAdStatut(3);
       }
     }
     ;
@@ -109,8 +112,8 @@ const OfferItem = ({ item, url, isToken }) => {
                 {formatDate(valid_from)} - {formatDate(valid_to)}
               </span>
             ) : (
-              <span className={`${adStatut === 0 ? "text-red" : adStatut === 1 ? "text-green" : "text-accent" } text-sm font-bold`}>
-                {adStatut === 0 ? "❌ Rejected" : adStatut === 1 ? "✅ Accepted" : "🔍 Pending"}
+              <span className={`${adStatut === 0 ? "text-red" : adStatut === 1 ? "text-green" : adStatut=== 2 ? "text-accent" : "" } text-sm font-bold`}>
+                {adStatut === 0 ? "❌ Rejected" : adStatut === 1 ? "✅ Accepted" :adStatut=== 2 ? "🔍 Pending" : "Ad space available"}
               </span>
             )}
           </div>

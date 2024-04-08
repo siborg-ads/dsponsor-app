@@ -29,7 +29,6 @@ const ManageSpaces = () => {
         
         const data = [];
         const ownedAdProposals = await admin.getOwnedOfferTokens({ address: userAddress }, {includeOffers: true});
-         console.log({ownedAdProposals});
         const mappedownedAdProposals = [];
 
 

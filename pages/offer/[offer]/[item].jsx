@@ -21,6 +21,7 @@ import { ConnectWallet } from "@thirdweb-dev/react";
 import { DSponsorAdmin } from "@dsponsor/sdk";
 import { fetchDataFromIPFS } from "../../../data/services/ipfsService";
 import { bufferAdParams } from "../../../utils/formatedData";
+import  BuyModal  from "../../../components/modal/buyModal";
 
 const Item = () => {
   const router = useRouter();
@@ -60,9 +61,11 @@ const Item = () => {
   const [adStatut, setAdStatut] = useState(null);
   const [offerNotFormated, setOfferNotFormated] = useState(false);
   const [price, setPrice] = useState(null);
+  const [buyModal, setBuyModal] = useState(false);
+  const [buyMethod, setBuyMethod] = useState(false);
   const stepsRef = useRef([]);
   const numSteps = 3;
-
+  
   useEffect(() => {
     if (offerId) {
       const fetchAdsOffers = async () => {
@@ -86,8 +89,11 @@ const Item = () => {
 
         if (address) {
           const mintedToken = await admin.getOwnedOfferTokens({ address: address });
+          console.log(mintedToken, "mintedToken");
+          console.log(offer, "offer");
           for (const element of mintedToken) {
-            if (element.tokenId === tokenId) {
+            if (element.tokenId === tokenId && element.nftContractAddress.toLowerCase() == offer.nftContract) {
+              
               setIsOwner(true);
             }
           }
@@ -115,6 +121,7 @@ const Item = () => {
       if (!offerId) return;
       const checkAds = async (fetchFunction) => {
         const ads = await fetchFunction;
+        console.log(ads, "ads");
         return ads.some((ad) => ad.tokenId === tokenId);
       };
 
@@ -131,10 +138,14 @@ const Item = () => {
       if (await checkAds(admin.getPendingAds({ offerId: offerId }))) {
         setAdStatut(2);
       }
+      else {
+        setAdStatut(3);
+      }
     };
 
     fetchAdsOffers();
   }, [offerId, tokenId]);
+ 
 
   useEffect(() => {
     if (royaltiesInfo) setRoyalties(ethers.BigNumber.from(royaltiesInfo[1]?._hex).toNumber());
@@ -204,8 +215,11 @@ const Item = () => {
   };
 
   const handleSubmit = async () => {
-    if (!validateInputs()) {
-      return;
+    if(!buyMethod){
+
+      if (!validateInputs()) {
+        return;
+      }
     }
     // IPFS upload
 
@@ -231,8 +245,8 @@ const Item = () => {
           currency: offerData[0]?.currencies[0],
           tokenData: "null",
           offerId: offerId,
-          adParameters: offerData[0]?.normalizedParams,
-          adDatas: [uploadUrl[0], link],
+          adParameters:[] ,
+          adDatas: [],
           referralAdditionalInformation: "",
         };
         const argsAdSubmited = {
@@ -242,14 +256,14 @@ const Item = () => {
           data: [uploadUrl[0], link],
         };
         const isEthCurrency = offerData[0]?.currencies[0] === "0x0000000000000000000000000000000000000000";
-        const functionWithPossibleArgs = adStatut === 0 ? Object.values(argsAdSubmited) : argsMintAndSubmit;
+        const functionWithPossibleArgs = adStatut === 0 || adStatut === 3  ? Object.values(argsAdSubmited) : argsMintAndSubmit;
         const argsWithPossibleOverrides = isEthCurrency ? { args: [functionWithPossibleArgs], overrides: { value: amountToApprove } } : { args: [functionWithPossibleArgs] };
 
-        if (adStatut === 0) {
-          console.log("submitAd")
+        if (adStatut === 0 || adStatut === 3) {
+          console.log("submitAd");
           await submitAd({ args: functionWithPossibleArgs });
         } else {
-          console.log("mintAndSubmit");
+          console.log(argsWithPossibleOverrides);
           await mintAndSubmit(argsWithPossibleOverrides);
         }
 
@@ -278,14 +292,20 @@ const Item = () => {
       return null;
     }
   };
+  const handleBuyModal = () => {
+    setBuyModal(!buyModal);
+    setBuyMethod(true);
+  
+  };
   const handlePreviewModal = () => {
+    
     setShowPreviewModal(!showPreviewModal);
     validateInputs();
   };
   const successFullUploadModal = {
     title: "Ad Space",
-    body: "Congratulations, you own this ad space.",
-    subBody: "You can submit your ad at any time in your manageSpaces section. The media still has the power to validate or reject ad assets.",
+    body: "Congratulations, you proposed an ad space.",
+    subBody: "The media still has the power to validate or reject ad assets.",
     buttonTitle: "Manage Spaces",
     hrefButton: `/manageSpaces/${address}`,
   };
@@ -309,11 +329,11 @@ const Item = () => {
         <div className="mb-8 container flex justify-center flex-col items-center ">
           <div className=" flex justify-center ">
             <h1 className="text-jacarta-700 font-bold font-display mb-6 text-center text-5xl dark:text-white md:text-left lg:text-6xl xl:text-6xl">{isOwner ? "Your Ad Space" : "Buy Ad Space"} </h1>
-            <span className={`ml-2 text-sm font-bold ${isOwner ? (adStatut === 0 ? "text-red" : adStatut === 1 ? "text-green" : "text-accent") : "hidden"}`}>
-              {adStatut === 0 ? "Rejected" : adStatut === 1 ? "Accepted" : "Pending"}
+            <span className={`ml-2 text-sm font-bold ${isOwner ? (adStatut === 0 ? "text-red" : adStatut === 1 ? "text-green" : adStatut === 2 ? "text-accent" : "hidden") : "hidden"}`}>
+              {adStatut === 0 ? "Rejected" : adStatut === 1 ? "Accepted" : adStatut === 2 ? "Pending" : ""}
             </span>
           </div>
-          <p className={`${isOwner ? (adStatut === 0 ? "text-red" : adStatut === 1 ? "text-green" : "text-accent") : "hidden"} text-sm font-bold`}>
+          <p className={`${isOwner ? (adStatut === 0 ? "text-red" : adStatut === 1 ? "text-green" : adStatut === 2 ? "text-accent" : "hidden") : "hidden"} text-sm font-bold`}>
             {adStatut === 0 ? statutAds.rejected : adStatut === 1 ? statutAds.accepted : statutAds.pending}
           </p>
         </div>
@@ -387,12 +407,19 @@ const Item = () => {
 
               <p className="dark:text-jacarta-300 mb-10">{description}</p>
 
-              <div className="dark:bg-jacarta-700 dark:border-jacarta-600 border-jacarta-100 rounded-2lg border bg-white p-8">
+              <div className="dark:bg-jacarta-700 dark:border-jacarta-600 border-jacarta-100 rounded-2lg border flex flex-col gap-4 bg-white p-8">
                 <div className=" sm:flex sm:flex-wrap">
                   <span className="dark:text-jacarta-300 text-jacarta-400 text-sm">
                     Buying the ad space give you the exclusive right to submit an ad. The media still has the power to validate or reject ad assets. You re free to change the ad at anytime. And free to resell on the open
                     market your ad space.{" "}
                   </span>
+                </div>
+                <div className="w-full flex justify-center">
+                  {!isOwner && isAllowedToMint && (
+                    <button type="button" className="bg-accent shadow-accent-volume hover:bg-accent-dark w-36 rounded-full py-3 px-8 text-center font-semibold text-white transition-all" onClick={handleBuyModal}>
+                      Buy
+                    </button>
+                  )}
                 </div>
               </div>
             </div>
@@ -402,7 +429,7 @@ const Item = () => {
       {/* <!-- end item --> */}
 
       <div>
-        {isAllowedToMint && !offerNotFormated ? (
+        {!offerNotFormated && isOwner ? (
           <div>
             <SliderForm styles={styles} handlePreviewModal={handlePreviewModal} stepsRef={stepsRef} numSteps={numSteps}>
               <Step_1_Mint stepsRef={stepsRef} styles={styles} adParamaters={["Grid Logo & Link"]} />
@@ -411,7 +438,7 @@ const Item = () => {
             </SliderForm>
           </div>
         ) : //Message to say that the NFT is not allowed to mint
-        isOwner && adStatut !=2 ? (
+        (isOwner && adStatut === 3) || adStatut === 0 ? (
           <div>
             <SliderForm styles={styles} handlePreviewModal={handlePreviewModal} stepsRef={stepsRef} numSteps={numSteps}>
               <Step_1_Mint stepsRef={stepsRef} styles={styles} adParamaters={["Grid Logo & Link"]} />
@@ -425,7 +452,7 @@ const Item = () => {
           </div>
         ) : (
           <div className="flex justify-center">
-            <p>{!offerNotFormated ? "Sorry, someone already own this NFT" : " Offer isn't well formated to buy "}</p>
+            <p>{isAllowedToMint ? "" : !offerNotFormated ? "Sorry, someone already own this NFT " : "Offer isn't well formated to buy"}</p>
           </div>
         )}
       </div>
@@ -441,20 +468,23 @@ const Item = () => {
             handleSubmit={handleSubmit}
             link={link}
             name={true}
-            finalPrice={finalPrice}
-            protocolFees={true}
+           
+            
             description={true}
-            selectedUnitPrice={price}
-            selectedCurrency={currency.symbol}
-            selectedRoyalties={royalties}
+            
             previewImage={previewImage}
             errors={errors}
             successFullUpload={successFullUpload}
             validate={validate}
-            buttonTitle="Buy"
+            buttonTitle="Ad proposal"
             modalTitle="Ad Space Preview"
             successFullUploadModal={successFullUploadModal}
           />
+        </div>
+      )}
+      {buyModal && (
+        <div className="modal fade show block">
+          <BuyModal finalPrice={finalPrice} price={price} handleSubmit={handleSubmit} handleBuyModal={handleBuyModal} name={name} image={image} selectedCurrency={currency.symbol} selectedRoyalties={royalties} />
         </div>
       )}
     </>

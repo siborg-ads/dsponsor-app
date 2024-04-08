@@ -51,6 +51,7 @@ const Validated_refused_items = ({ statut, proposalData }) => {
       setStatutItem("refused");
     }
   }, []);
+  console.log(proposalData);
   if (proposalData.length === 0) {
     return <div className="flex justify-center">{statut ? "No validated ads..." : "No refused ads..."}</div>;
   }
@@ -100,7 +101,7 @@ const Validated_refused_items = ({ statut, proposalData }) => {
                 <div key={tokenId} className="dark:bg-jacarta-700  gap-5 p-8 dark:border-jacarta-700 transition-shadow hover:shadow-lg border-jacarta-100 rounded-2.5xl relative flex">
                   <div className=" relative flex items-center gap-5 flex-col sm:flex-row ">
                     <figure className=" self-start">
-                      <Image src={records.logoURL?.value} alt={title} height={75} width={75} objectFit="contain" className="rounded-2lg min-w-[75px]" loading="lazy" />
+                      <Image src={records?.logoURL} alt={title} height={75} width={75} objectFit="contain" className="rounded-2lg min-w-[75px]" loading="lazy" />
                     </figure>
                     <div>
                       <h3 className="font-display text-jacarta-700 mb-1 text-base font-semibold dark:text-white">
@@ -109,14 +110,14 @@ const Validated_refused_items = ({ statut, proposalData }) => {
                       <span>
                         Proposals n° :{" "}
                         <span className="text-accent">
-                          [{records.linkURL?.proposalId}-{records.logoURL?.proposalId}]
+                          [{records?.linkURL?.proposalId}-{records?.logoURL?.proposalId}]
                         </span>{" "}
                       </span>
                       <div className="mb-4 flex flex-col">
                         <Tippy hideOnClick={false} content={copied ? <span>copied</span> : <span>copy</span>}>
                           <button className="js-copy-clipboard flex min-w-[20px] text-white max-w-[20rem]  select-none overflow-hidden text-ellipsis whitespace-nowrap">
                             <CopyToClipboard text="userId" onCopy={() => setCopied(true)}>
-                              <span>{records.linkURL?.value}</span>
+                              <span>{records?.linkURL}</span>
                             </CopyToClipboard>
                           </button>
                         </Tippy>
