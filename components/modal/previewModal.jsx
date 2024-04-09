@@ -135,6 +135,9 @@ const PreviewModal = ({
                   ) : (
                     ""
                   )}
+                 
+                 
+                 
                 </div>
                 {previewImage && (
                   <div className="mb-6  flex-col items-center justify-center ">
