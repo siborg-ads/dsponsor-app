@@ -1,5 +1,6 @@
 import React from "react";
-import MarketplaceHeroSection from "../../components/marketplace-hero/marketplace-hero";
+import MarketplaceHeroSection from "../../components/marketplace/marketplace-hero/marketplace-hero";
+import MarketplaceHotbids from "../../components/marketplace/marketplace-hotbids/marketplace-hotbids";
 
 export default function Marketplace() {
   return (
@@ -9,6 +10,7 @@ export default function Marketplace() {
       }}
     >
       <MarketplaceHeroSection />
+      <MarketplaceHotbids />
     </section>
   );
 }

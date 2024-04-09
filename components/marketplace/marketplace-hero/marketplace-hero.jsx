@@ -1,9 +1,9 @@
 import React from "react";
 
 import Image from "next/image";
-import XWhiteIcon from "../../public/images/social-media-icons/x-social-media-white-icon.png";
-import WebWhiteIcon from "../../public/images/social-media-icons/web-icon-white.webp";
-import DiscordWhiteIcon from "../../public/images/social-media-icons/discord-white-icon.webp";
+import XWhiteIcon from "../../../public/images/social-media-icons/x-social-media-white-icon.png";
+import WebWhiteIcon from "../../../public/images/social-media-icons/web-icon-white.webp";
+import DiscordWhiteIcon from "../../../public/images/social-media-icons/discord-white-icon.webp";
 
 const MarketplaceHeroSection = () => {
   const herosection_social_links = [
@@ -38,7 +38,7 @@ const MarketplaceHeroSection = () => {
   return (
     <div className="container">
       <h1
-        className="text-4xl text-jacarta-700 font-medium font-display my-6 text-center dark:text-white"
+        className="text-5xl text-jacarta-700 font-medium font-display my-6 text-center dark:text-white"
         style={{
           lineHeight: "1.6",
         }}
