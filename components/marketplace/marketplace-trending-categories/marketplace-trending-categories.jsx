@@ -20,7 +20,7 @@ const MarketplaceTrendingCategories = () => {
       <h1 className="font-display tracking-wide mb-6	 text-center text-2xl font-medium text-jacarta-700 dark:text-white">
         Trending Categories
       </h1>
-      <div>
+      <div className="flex justify-between items-center">
         <div className="flex gap-4 my-8">
           {categories.map((category, index) => {
             const isCategorySelected = selectedCategory.name === category.name;
@@ -36,7 +36,16 @@ const MarketplaceTrendingCategories = () => {
             );
           })}
         </div>
-        <div></div>
+        <div>
+          <select
+            name=""
+            id=""
+            className="bg-jacarta-700 rounded border-none py-2"
+          >
+            <option value="">Price: Low to High</option>
+            <option value="">Price: High to Low</option>
+          </select>
+        </div>
       </div>
       <div className={"grid grid-cols-4 gap-8"}>
         <MarketplaceItemCard />
