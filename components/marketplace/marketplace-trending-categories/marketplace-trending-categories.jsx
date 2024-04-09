@@ -40,7 +40,7 @@ const MarketplaceTrendingCategories = () => {
           <select
             name=""
             id=""
-            className="bg-jacarta-700 rounded border-none py-2"
+            className="bg-jacarta-700 rounded border-none py-3 px-4 text-md font-semibold dark:text-white"
           >
             <option value="">Price: Low to High</option>
             <option value="">Price: High to Low</option>
