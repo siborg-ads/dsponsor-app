@@ -18,6 +18,7 @@ const PreviewModal = ({
   customContract = null,
   selectedRoyalties = null,
   previewImage = null,
+  displayedParameter = null,
   validate,
   errors,
   successFullUpload,
@@ -32,13 +33,14 @@ const PreviewModal = ({
     if (!date) return "";
     return date.toLocaleDateString();
   };
+  console.log(name, name.length, "ici");
   return (
     <div>
       <div className="modal-dialog max-w-2xl">
         <div className="modal-content">
           <div className="modal-header">
             <h5 className="modal-title" id="placeBidLabel">
-              {modalTitle}
+              {!successFullUpload ? modalTitle : successFullUploadModal.title}
             </h5>
             <button type="button" className="btn-close" onClick={() => handlePreviewModal()}>
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" className="fill-jacarta-700 h-6 w-6 dark:fill-white">
@@ -50,22 +52,34 @@ const PreviewModal = ({
 
           <div className="modal-body p-6 flex gap-4 items-center justify-center">
             {!successFullUpload ? (
-              <div className="flex gap-8">
+              <div className="flex gap-8 md:flex-row flex-col">
                 <div>
                   <p className="font-display mb-2 block dark:text-white">
-                    {!name ||
-                      (name.length > 0 && (
-                        <span className="dark:text-jacarta-300 text-jacarta-400 text-sm">
-                          Name : {!errors.nameError ? <span className="dark:text-white text-base ml-2"> {name} </span> : <span className="text-red text-base ml-2">{errors.nameError}</span>}
-                        </span>
-                      ))}
+                    {name.length > 0 ? (
+                      <span className="dark:text-jacarta-300 text-jacarta-400 text-sm">
+                        Name : <span className="dark:text-white text-base ml-2"> {name} </span>
+                      </span>
+                    ) : !name ? (
+                      <span className="dark:text-jacarta-300 text-jacarta-400 text-sm">
+                        Name : <span className="text-red text-base ml-2">{errors.nameError}</span>
+                      </span>
+                    ) : (
+                      ""
+                    )}
                   </p>
-                  {!description ||
-                    (description.length > 0 && (
-                      <p className="font-display  mb-2 block text-jacarta-400 text-sm">
-                        Description: {!errors.descriptionError ? <span className="dark:text-white text-base ml-2"> {description} </span> : <span className="text-red text-base ml-2">{errors.descriptionError}</span>}
-                      </p>
-                    ))}
+                  <p className="font-display mb-2 block dark:text-white">
+                    {description.length > 0 ? (
+                      <span className="dark:text-jacarta-300 text-jacarta-400 text-sm">
+                        Description : <span className="dark:text-white text-base ml-2"> {description} </span>
+                      </span>
+                    ) : !description ? (
+                      <span className="dark:text-jacarta-300 text-jacarta-400 text-sm">
+                        Description : <span className="text-red text-base ml-2">{errors.descriptionError}</span>
+                      </span>
+                    ) : (
+                      ""
+                    )}
+                  </p>
 
                   <p className="font-display  mb-2 block text-jacarta-400 text-sm">
                     Link : {!errors.linkError ? <span className="dark:text-white text-base ml-2"> {link} </span> : <span className="text-red text-base ml-2"> {errors.linkError}</span>}
@@ -98,7 +112,7 @@ const PreviewModal = ({
                   )}
                   {selectedParameter ? (
                     <p className="font-display  mb-2 block text-jacarta-400 text-sm">
-                      Type of Ad : {!errors.typeAdError ? <span className="dark:text-white text-base ml-2"> {selectedParameter} </span> : <span className="text-red">{errors.typeAdError}</span>}
+                      Type of Ad : {!errors.typeAdError ? <span className="dark:text-white text-base ml-2"> {displayedParameter} </span> : <span className="text-red">{errors.typeAdError}</span>}
                     </p>
                   ) : (
                     ""
@@ -121,31 +135,9 @@ const PreviewModal = ({
                   ) : (
                     ""
                   )}
-                  {selectedRoyalties ? (
-                    <p className="font-display  mb-2 block text-jacarta-400 text-sm">
-                      Royalties : {!errors.royaltyError ? <span className="dark:text-white text-base ml-2"> {selectedRoyalties} % </span> : <span className="text-red">{errors.royaltyError}</span>}
-                    </p>
-                  ) : (
-                    ""
-                  )}
-                  {protocolFees ? (
-                    <p className="font-display  mb-2 block text-jacarta-400 text-sm">
-                      Protocol fees : <span className="dark:text-white text-base ml-2"> 4 % </span>
-                    </p>
-                  ) : (
-                    ""
-                  )}
-                  {finalPrice ? (
-                    <p className="font-display  mb-2 block text-jacarta-400 text-sm">
-                      You will pay :{" "}
-                      <span className="dark:text-accent text-base ml-2">
-                        {" "}
-                        {finalPrice} {selectedCurrency}{" "}
-                      </span>
-                    </p>
-                  ) : (
-                    ""
-                  )}
+                 
+                 
+                 
                 </div>
                 {previewImage && (
                   <div className="mb-6  flex-col items-center justify-center ">

@@ -14,6 +14,7 @@ import Validated_refused_items from "../../components/collectrions/validated_ref
 import { DSponsorAdmin } from "@dsponsor/sdk";
 import { fetchDataFromIPFS } from "../../data/services/ipfsService";
 import { ethers } from "ethers";
+import { bufferAdParams } from "../../utils/formatedData";
 
 const Offer = () => {
   const router = useRouter();
@@ -27,7 +28,8 @@ const Offer = () => {
   const [refusedProposalData, setRefusedProposalData] = useState([]);
   const [royalties, setRoyalties] = useState(null);
   const [successFullUpload, setSuccessFullUpload] = useState(false);
-
+const [currency, setCurrency] = useState(null);
+  const [price, setPrice] = useState(null);
   const [imageModal, setImageModal] = useState(false);
   const { contract: DsponsorNFTContract } = useContract(offerData[0]?.nftContract);
   const { contract: DsponsorAdminContract } = useContract("0xdf42633BD40e8f46942e44a80F3A58d0Ec971f09");
@@ -39,22 +41,51 @@ const Offer = () => {
 
   useEffect(() => {
     if (offerId) {
-      const admin = new DSponsorAdmin();
+      const admin = new DSponsorAdmin({ chain: { alchemyAPIKey: process.env.NEXT_PUBLIC_ALCHEMY_API_KEY, chainName: "ethereum-sepolia" } });
       const fetchAdsOffers = async () => {
         const ads = await admin.getPendingAds({ offerId: offerId });
+        console.log(ads, "ads");
+        const formattedPendingAds = [];
+
+       
+        for (let i = 0; i < ads.length; i += 2) {
+          
+          if (i + 1 < ads.length) {
+        formattedPendingAds.push({
+            groupKey: `${ads[i].proposalId}-${ads[i+1].proposalId}`,
+            ads: [ads[i], ads[i+1]]
+        });
+        }
+      }
+        console.log(formattedPendingAds, "formattedPendingAds");
         const offer = await admin.getOffer({ offerId: offerId });
         const validatedAds = await admin.getValidatedAds({ offerId: offerId });
         const refusedAds = await admin.getRejectedAds({ offerId: offerId });
-        console.log("ads", ads);
+        const proposals = await admin.getAdProposals({ offerId: offerId });
+        console.log(validatedAds, "proposals");
+       const params = await admin.getAdParameters({ offerId: offerId });
+        // const normalizedParams = bufferAdParams(params);
+       
+       
         const destructuredIPFSResult = await fetchDataFromIPFS(offer.offerMetadata);
         const combinedData = {
           ...offer,
           ...destructuredIPFSResult,
         };
+        
+        try {
+          const currencyToken = admin.chain.getCurrencyByAddress(offer.currencies[0]);
+          const formatPrice = offer.prices[0] / 10 ** currencyToken.decimals;
+          setPrice(formatPrice);
+          setCurrency(currencyToken);
+        } catch (e) {
+          console.error("Error: Currency not found for address");
+        }
+       
         setOfferData([combinedData]);
         setValidatedProposalData(validatedAds);
         setRefusedProposalData(refusedAds);
-        setPendingProposalData(ads);
+        setPendingProposalData(formattedPendingAds);
       };
 
       fetchAdsOffers();
@@ -62,6 +93,7 @@ const Offer = () => {
   }, [offerId, router]);
   useEffect(() => {
     if (royaltiesInfo) setRoyalties(ethers.BigNumber.from(royaltiesInfo[1]?._hex).toNumber());
+    
   }, [royaltiesInfo]);
 
   const handleSubmit = async (submissionArgs) => {
@@ -99,8 +131,8 @@ const Offer = () => {
   if (!offerData || offerData.length === 0) {
     return <div>Chargement...</div>;
   }
-
-  const { currencyName, description, collaborators, id, image, maxSupply, name, allowedTokens, price } = offerData[0];
+ 
+   const { description = "description not found", id = "1", image = ["/images/gradient_creative.jpg"], name = "DefaultName", nftContract = "N/A" } = offerData[0].offer ? offerData[0].offer : {};
 
   return (
     <>
@@ -146,7 +178,7 @@ const Offer = () => {
                 {/* <!-- Collection --> */}
                 <div className="flex items-center">
                   <Link href="#" className="text-accent mr-2 text-sm font-bold">
-                    {collaborators[0]}
+                    0X000000000000215
                   </Link>
                   <span className="dark:border-jacarta-600 bg-green inline-flex h-6 w-6 items-center justify-center rounded-full border-2 border-white" data-tippy-content="Verified Collection">
                     <Tippy content={<span>Verified Collection</span>}>
@@ -160,9 +192,9 @@ const Offer = () => {
 
               <h1 className="font-display text-jacarta-700 mb-4 text-4xl font-semibold dark:text-white">{name}</h1>
 
-              <div className="mb-8 flex items-center space-x-4 whitespace-nowrap">
+              <div className="mb-8 flex items-center flex-wrap gap-2 space-x-4 whitespace-nowrap">
                 <div className="flex items-center">
-                  <Tippy content={<span>{currencyName}</span>}>
+                  <Tippy content={<span>{currency?.symbol ? currency?.symbol : "N/A"}</span>}>
                     <span className="-ml-1">
                       <svg className="icon mr-1 h-4 w-4">
                         <use xlinkHref="/icons.svg#icon-ETH"></use>
@@ -170,12 +202,12 @@ const Offer = () => {
                     </span>
                   </Tippy>
                   <span className="text-green text-sm font-medium tracking-tight">
-                    {price} {currencyName}
+                    {price} {currency?.symbol ? currency?.symbol : "N/A"}
                   </span>
                 </div>
 
                 <span className="dark:text-jacarta-300 text-jacarta-400 text-sm">
-                  {allowedTokens.length - validatedProposalData.length - refusedProposalData.length - pendingProposalData.length}/{maxSupply} available
+                  {offerData[0].allowedTokens.length - validatedProposalData.length - refusedProposalData.length - pendingProposalData.length}/{offerData[0].allowedTokens.length} available
                 </span>
                 <span className="text-jacarta-400 block text-sm dark:text-white">
                   Creator <strong>{royalties}% royalties</strong>
@@ -196,7 +228,8 @@ const Offer = () => {
           </div>
         </div>
       </section>
-      {userAddress === collaborators[0] && (
+      {/* {userAddress === collaborators[0] && ( */}
+      {userAddress && (
         <div className="container">
           {/* <!-- Tabs Nav --> */}
           <Tabs className="tabs">

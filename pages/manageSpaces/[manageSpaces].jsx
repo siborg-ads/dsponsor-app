@@ -23,16 +23,21 @@ const ManageSpaces = () => {
 
   useEffect(() => {
     if (userAddress) {
-      const admin = new DSponsorAdmin();
+      const admin = new DSponsorAdmin({ chain: { alchemyAPIKey: process.env.NEXT_PUBLIC_ALCHEMY_API_KEY, chainName: "ethereum-sepolia" } });
       const fetchAdsOffers = async () => {
         const offer = await admin.getOffers({ address: userAddress }, { includeMetadata: true, includePrices: true, includeAllowedTokens: true });
-
-        const ownedAdProposals = await admin.getOwnedOfferTokens({ address: userAddress });
-
-
+        
+        const data = [];
+        const ownedAdProposals = await admin.getOwnedOfferTokens({ address: userAddress }, {includeOffers: true});
         const mappedownedAdProposals = [];
 
+
+
+
         for (const element of ownedAdProposals) {
+          if (!element.offer?.offerMetadata) {
+            continue;
+          }
           const IPFSLink = element.offer.offerMetadata;
           const destructuredIPFSResult = await fetchDataFromIPFS(IPFSLink);
           const combinedData = {
@@ -42,7 +47,8 @@ const ManageSpaces = () => {
           };
           mappedownedAdProposals.push(combinedData);
         }
-
+// console.log(mappedownedAdProposals);
+// console.log(offer);
         setMappedownedAdProposals(mappedownedAdProposals);
         setCreatedData(offer);
       };
@@ -61,54 +67,20 @@ const ManageSpaces = () => {
       <Meta title="User || DSponsor | smarter monetization for your content" />
       {/* <!-- Profile --> */}
 
-      <div className="pt-[5.5rem] lg:pt-24" key="5">
+      <div className=" " key="5">
         {/* <!-- Banner --> */}
-        <div className="relative h-[18.75rem]">
-          <Image width={1519} height={300} src="/images/gradient_creative.jpg" alt="banner" className="w-full h-full object-cover" />
-          <div className="container relative -translate-y-4">
-            <div className="font-display group hover:bg-accent absolute right-0 bottom-4 flex items-center rounded-lg bg-white py-2 px-4 text-sm">
-              <Tippy content={<span className="p-2">Coming soon</span>}>
-                <div className="flex ">
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" className="fill-jacarta-400 mr-1 h-4 w-4 group-hover:fill-white">
-                    <path fill="none" d="M0 0h24v24H0z"></path>
-                    <path d="M15.728 9.686l-1.414-1.414L5 17.586V19h1.414l9.314-9.314zm1.414-1.414l1.414-1.414-1.414-1.414-1.414 1.414 1.414 1.414zM7.242 21H3v-4.243L16.435 3.322a1 1 0 0 1 1.414 0l2.829 2.829a1 1 0 0 1 0 1.414L7.243 21z"></path>
-                  </svg>
-                  <span className="text-black mt-0.5 block group-hover:text-white">Edit cover photo</span>
-                </div>
-              </Tippy>
-            </div>
-          </div>
+        <div className="relative h-[13rem]">
+          <Image width={1519} height={150} src="/images/gradient_creative.jpg" alt="banner" className="w-full h-full object-cover" />
+          
         </div>
         {/* <!-- end banner --> */}
-        <section className="dark:bg-jacarta-800 bg-light-base relative pb-12 pt-28">
+        <section className="dark:bg-jacarta-800 bg-light-base relative ">
           {/* <!-- Avatar --> */}
           <div className="absolute left-1/2 top-0 z-10 flex -translate-x-1/2 -translate-y-1/2 items-center justify-center">
-            <figure className="relative h-40 w-40 dark:border-jacarta-600 rounded-xl border-[5px] border-white">
-              <Image width={141} height={141} src="/images/avatars/avatar-manageSpaces.webp" alt="images" className="dark:border-jacarta-600 rounded-xl border-[5px] border-white w-full h-full object-contain" />
-
-              <div className="group hover:bg-accent border-jacarta-100 absolute -right-3 -bottom-2 h-8 w-8 overflow-hidden rounded-full border bg-white text-center hover:border-transparent">
-                <div className="flex h-full items-center justify-center">
-                  <Tippy content={<span className="p-2">Coming soon</span>}>
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" className="fill-jacarta-400 h-4 w-4 group-hover:fill-white">
-                      <path fill="none" d="M0 0h24v24H0z" />
-                      <path d="M15.728 9.686l-1.414-1.414L5 17.586V19h1.414l9.314-9.314zm1.414-1.414l1.414-1.414-1.414-1.414-1.414 1.414 1.414 1.414zM7.242 21H3v-4.243L16.435 3.322a1 1 0 0 1 1.414 0l2.829 2.829a1 1 0 0 1 0 1.414L7.243 21z" />
-                    </svg>
-                  </Tippy>
-                </div>
-              </div>
-
-              <div className="dark:border-jacarta-600 bg-green absolute -right-3 bottom-7 flex h-6 w-6 items-center justify-center rounded-full border-2 border-white" data-tippy-content="Verified Collection">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" className="h-[.875rem] w-[.875rem] fill-white">
-                  <path fill="none" d="M0 0h24v24H0z"></path>
-                  <path d="M10 15.172l9.192-9.193 1.415 1.414L10 18l-6.364-6.364 1.414-1.414z"></path>
-                </svg>
-              </div>
-            </figure>
-          </div>
-
+           
           <div className="container">
             <div className="text-center">
-              <div className="dark:bg-jacarta-700 dark:border-jacarta-600 border-jacarta-100 mb-8 inline-flex items-center justify-center rounded-full border bg-white py-1.5 px-4">
+              <div className="dark:bg-jacarta-700 dark:border-jacarta-600 border-jacarta-100  inline-flex items-center justify-center rounded-full border bg-white py-1.5 px-4">
                 <Tippy content="ETH">
                   <svg className="icon h-4 w-4 mr-1">
                     <use xlinkHref="/icons.svg#icon-ETH"></use>
@@ -125,9 +97,11 @@ const ManageSpaces = () => {
               </div>
             </div>
           </div>
+          </div>
+
         </section>
         {/* <!-- end profile --> */}
-        <User_items createdData={createdData} mappedownedAdProposals={mappedownedAdProposals} />
+        <User_items createdData={createdData} mappedownedAdProposals={mappedownedAdProposals}  />
       </div>
     </>
   );

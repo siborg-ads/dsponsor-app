@@ -7,13 +7,13 @@ import { FileUploader } from "react-drag-drop-files";
 const Step_1_Create = ({ stepsRef, styles, selectedTypeParameter, selectedNumber, handleNumberChange, selectedParameter, handleParameterChange }) => {
   const AdParameterData = [
     {
-      type: "Logo & Link",
+      type: "Logo Grid & Link",
       value: ["logoURL", "linkURL"],
     },
-    {
-      type: "Banner & Link",
-      value: ["bannerURL", "linkURL"],
-    },
+    // {
+    //   type: "Banner & Link",
+    //   value: ["bannerURL", "linkURL"],
+    // },
   ];
 
   return (
@@ -30,7 +30,7 @@ const Step_1_Create = ({ stepsRef, styles, selectedTypeParameter, selectedNumber
               <span className="text-red">*</span>
             </label>
             <p className="dark:text-jacarta-300 text-jacarta-400 text-2xs mb-3">Select the type of your offer</p>
-            <div className="flex gap-4 justify-center items-center w-full text-jacarta-700 dark:text-white">
+            <div className="flex flex-wrap  gap-4 justify-center items-center w-full text-jacarta-700 dark:text-white">
               <label htmlFor="numberSelect">Select ads type:</label>
               <select
                 id="numberSelect"
@@ -38,8 +38,8 @@ const Step_1_Create = ({ stepsRef, styles, selectedTypeParameter, selectedNumber
                 onChange={handleParameterChange}
                 className="dark:bg-jacarta-700 border-jacarta-100 hover:ring-accent/10 focus:ring-accent dark:border-jacarta-600 dark:placeholder:text-jacarta-300  rounded-lg py-3 px-15 hover:ring-2 dark:text-white"
               >
-                <option value={0}>Logo & Link</option>
-                <option value={1}>Banner & Link</option>
+                <option value={0}>Logo Grid & Link</option>
+                {/* <option value={1}>Banner & Link</option> */}
               </select>
             </div>
           </div>

@@ -3,7 +3,15 @@ import DatePicker from "react-datepicker";
 
 import { FileUploader } from "react-drag-drop-files";
 const fileTypes = ["JPG", "PNG", "SVG", "WEBP"];
-const Step_2_Create = ({ stepsRef, styles, setLink, file, handleLogoUpload }) => {
+const Step_2_Create = ({ stepsRef, styles, setLink, link, file, handleLogoUpload}) => {
+
+  const handleChange = (e) => {
+    let value = e.target.value;
+    if (!value.startsWith("http://") && !value.startsWith("https://") && value.trim() !== "") {
+      value = `https://${value}`;
+    }
+    setLink(value);
+  };
   return (
     <div ref={(el) => (stepsRef.current[2] = el)} className={styles.form__step}>
       <div className="pr-6 pl-2">
@@ -18,9 +26,11 @@ const Step_2_Create = ({ stepsRef, styles, setLink, file, handleLogoUpload }) =>
           <input
             type="url"
             id="item-external-link"
+          
             className="dark:bg-jacarta-700 border-jacarta-100 hover:ring-accent/10 focus:ring-accent dark:border-jacarta-600 dark:placeholder:text-jacarta-300 w-full rounded-lg py-3 px-3 hover:ring-2 dark:text-white"
             placeholder="Provide an url for your offer. Eg.  https://yoursite.com"
-            onChange={(e) => setLink(e.target.value)}
+            onChange={handleChange}
+            value={link}
           />
         </div>
         {/* <!-- File Upload --> */}
@@ -29,8 +39,8 @@ const Step_2_Create = ({ stepsRef, styles, setLink, file, handleLogoUpload }) =>
             Illustration
             <span className="text-red">*</span>
           </label>
-
-          {file ? <p className="dark:text-jacarta-300 text-2xs mb-3">successfully uploaded : {file.name}</p> : <p className="dark:text-jacarta-300 text-jacarta-400 text-2xs mb-3">Drag or choose your file to upload</p>}
+          <p className="dark:text-jacarta-300 text-jacarta-400 text-2xs mb-3">Import an image that will represent your offer</p>
+          {file ? <p className=" text-2xs mb-3 text-green">successfully uploaded : {file.name}</p> : <p className="dark:text-jacarta-300 text-jacarta-400 text-2xs mb-3">Drag or choose your file to upload</p>}
 
           <div className="dark:bg-jacarta-700 dark:border-jacarta-600 border-jacarta-100 group relative flex max-w-md flex-col items-center justify-center rounded-lg border-2 border-dashed bg-white py-20 px-5 text-center">
             <div className="relative z-10 cursor-pointer px-16">

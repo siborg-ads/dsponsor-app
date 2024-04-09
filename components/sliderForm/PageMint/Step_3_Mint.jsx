@@ -4,11 +4,19 @@ import DatePicker from "react-datepicker";
 
 import { FileUploader } from "react-drag-drop-files";
 
-const Step_3_Mint = ({ stepsRef, styles, setLink}) => {
+const Step_3_Mint = ({ stepsRef, styles, setLink, link}) => {
+
+  const handleChange = (e) => {
+    let value = e.target.value;
+    if (!value.startsWith("http://") && !value.startsWith("https://") && value.trim() !== "") {
+      value = `https://${value}`;
+    }
+    setLink(value);
+  };
   return (
     <div ref={(el) => (stepsRef.current[3] = el)} className={styles.form__step}>
       <div className="pr-6 pl-2">
-        <h3 className="mb-14">Step 2 : Ad space URL</h3>
+        <h3 className="mb-14">Step 3 : Ad space URL</h3>
         {/* <!-- Link --> */}
         <div className="mb-6">
           <label htmlFor="item-external-link" className="font-display text-jacarta-700 mb-2 block dark:text-white">
@@ -23,7 +31,9 @@ const Step_3_Mint = ({ stepsRef, styles, setLink}) => {
             id="item-external-link"
             className="dark:bg-jacarta-700 border-jacarta-100 hover:ring-accent/10 focus:ring-accent dark:border-jacarta-600 dark:placeholder:text-jacarta-300 w-full rounded-lg py-3 px-3 hover:ring-2 dark:text-white"
             placeholder="https://yoursite.com"
-            onChange={(e) => setLink(e.target.value)}
+            onChange={handleChange}
+            value={link}
+            
           />
         </div>
       </div>

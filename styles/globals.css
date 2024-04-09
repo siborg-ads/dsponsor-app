@@ -6,9 +6,7 @@ html {
 @tailwind utilities;
 
 @layer base {
-  * {
-    text-transform: capitalize;
-  }
+ 
   .light body {
     background: #fff !important;
     color: #000;

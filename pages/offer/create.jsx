@@ -14,17 +14,17 @@ import Step_2_Create from "../../components/sliderForm/PageCreate/Step_2_Create"
 import Step_3_Create from "../../components/sliderForm/PageCreate/Step_3_Create";
 import Step_4_Create from "../../components/sliderForm/PageCreate/Step_4_Create";
 
-import SliderForm from "../../components/sliderForm/SliderForm";
+import SliderForm from "../../components/sliderForm/sliderForm";
 import { DSponsorAdmin } from "@dsponsor/sdk";
 
 const Create = () => {
-  const admin = new DSponsorAdmin();
+  const admin = new DSponsorAdmin({chain:{alchemyAPIKey: process.env.NEXT_PUBLIC_ALCHEMY_API_KEY}});
   const [file, setFile] = useState(null);
   const { mutateAsync: upload, isLoading } = useStorageUpload();
 
   const [link, setLink] = useState(null);
   const [errors, setErrors] = useState({});
-  const [description, setDescription] = useState(null);
+  const [description, setDescription] = useState(false);
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date(new Date().setFullYear(new Date().getFullYear() + 1)));
   const [previewImage, setPreviewImage] = useState(null);
@@ -37,6 +37,7 @@ const Create = () => {
   const [showPreviewModal, setShowPreviewModal] = useState(false);
   const [successFullUpload, setSuccessFullUpload] = useState(false);
   const [selectedParameter, setSelectedParameter] = useState(["logoURL", "linkURL"]);
+  const [displayedParameter, setDisplayedParameter] = useState("Logo Grid & Link");
   const [selectedTypeParameter, setSelectedTypeParameter] = useState(0);
   const [name, setName] = useState(false);
   const stepsRef = useRef([]);
@@ -46,8 +47,11 @@ const Create = () => {
   };
   const handleParameterChange = (e) => {
     setSelectedTypeParameter(e.target.value);
-    if (e.target.value === 0) setSelectedParameter(["logoURL", "linkURL"]);
-    if (e.target.value === 1) setSelectedParameter(["bannerURL", "linkURL"]);
+    if (e.target.value === 0){
+      setSelectedParameter(["logoURL", "linkURL"]);
+      setDisplayedParameter("Logo Grid & Link");
+    } 
+    // if (e.target.value === 1) setSelectedParameter(["bannerURL", "linkURL"]);
   };
 
   const handleUnitPriceChange = (e) => {
@@ -94,7 +98,6 @@ const Create = () => {
   const validateInputs = () => {
     let isValid = true;
     let newErrors = {};
-    console.log(name, description, link);
     if (!name) {
       newErrors.nameError = "Name is missing.";
       isValid = false;
@@ -181,33 +184,66 @@ const Create = () => {
     } else {
       console.error("Missing name or link");
     }
+    const jsonMetadata = JSON.stringify({
+      creator: {
+        name: "",
+        description: "",
+        image: "",
+        external_link: "",
+        categories: ["dApp", "social", "media", "education"],
+      },
+      offer: {
+        name: name,
+        description: description,
+        image: uploadUrl,
+        terms: null,
+        external_link: link,
+        valid_from: startDate || "1970-01-01T00:00:00Z",
+        valid_to: endDate || "2100-01-01T00:00:00Z",
+        categories: ["Community", "NFT", "Crypto"],
+        token_metadata: {
+          name: null,
+          description: null,
+          image: null,
+          external_link: null,
+          attributes: [
+            {
+              trait_type: null,
+              value: null,
+            },
+          ],
+        },
+      },
+    });
 
-    const json = JSON.stringify({
+    const jsonContractURI = JSON.stringify({
       name: name,
       description: description,
       image: uploadUrl,
       external_link: link,
       collaborators: [address],
-      validFromDate: startDate,
-      validToDate: endDate,
-      currencyName: selectedCurrency,
-      price: selectedUnitPrice,
     });
-
     // upload json to IPFS
-    const jsonUrl = await upload({
-      data: [json],
+    const jsonMetadataURL = await upload({
+      data: [jsonMetadata],
       options: { uploadWithGatewayUrl: true, uploadWithoutDirectory: true },
     });
 
-    const jsonIpfsLink = jsonUrl[0];
+    // upload json to IPFS
+    const jsonContractURIURL = await upload({
+      data: [jsonContractURI],
+      options: { uploadWithGatewayUrl: true, uploadWithoutDirectory: true },
+    });
+
+    const jsonIpfsLinkContractURI = jsonContractURIURL[0];
+    const jsonIpfsLinkMetadata = jsonMetadataURL[0];
 
     const args = [
       JSON.stringify({
         name: name, // name
         symbol: "DSPONSORNFT", // symbol
         baseURI: "https://api.dsponsor.com/tokenMetadata/", // baseURI
-        contractURI: jsonIpfsLink, // contractURI from json
+        contractURI: jsonIpfsLinkContractURI, // contractURI from json
         minter: address,
         maxSupply: selectedNumber, // max supply
         forwarder: "0x0000000000000000000000000000000000000000", // forwarder
@@ -219,7 +255,7 @@ const Create = () => {
       }),
       JSON.stringify({
         name: name, // name
-        offerMetadata: jsonIpfsLink, // rulesURI
+        offerMetadata: jsonIpfsLinkMetadata, // rulesURI
         options: {
           admins: [address], // admin
           validators: [], // validator
@@ -321,7 +357,7 @@ const Create = () => {
           />
           <Step_2_Create stepsRef={stepsRef} styles={styles} setName={setName} setDescription={setDescription} />
 
-          <Step_3_Create stepsRef={stepsRef} styles={styles} setLink={setLink} file={file} handleLogoUpload={handleLogoUpload} />
+          <Step_3_Create stepsRef={stepsRef} styles={styles} setLink={setLink} link={link} file={file} handleLogoUpload={handleLogoUpload} />
 
           <Step_4_Create
             stepsRef={stepsRef}
@@ -359,6 +395,7 @@ const Create = () => {
             selectedRoyalties={selectedRoyalties}
             previewImage={previewImage}
             selectedParameter={selectedParameter}
+            displayedParameter={displayedParameter}
             validate={validate}
             errors={errors}
             successFullUpload={successFullUpload}

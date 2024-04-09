@@ -13,27 +13,32 @@ const Home_1 = () => {
   const [data, setData] = useState([]);
 
   useEffect(() => {
-    const admin = new DSponsorAdmin();
+    const admin = new DSponsorAdmin({ chain: { alchemyAPIKey: process.env.NEXT_PUBLIC_ALCHEMY_API_KEY, chainName:"ethereum-sepolia" } });
 
     const fetchAdsOffers = async () => {
       const mappedData = [];
 
       const ads = await admin.getOffers(
         {
-          limit: 10,
+          limit: 20,
         },
         { includeMetadata: true, includePrices: true, includeAllowedTokens: true }
       );
-
-      const data = ads.filter((item) => Number(item.offerId) !== 1);
-      for (const element of data) {
+      
+const formatedAds = ads.filter(ad => ad.offerId > 11);
+console.log(formatedAds);
+      
+      for (const element of formatedAds) {
+        if (!element.nftContract) return;
         const contract = await getContractNFT(element.nftContract);
-        for (let i = 0; i < element.allowedTokens.length; i++) {
+        for (let i = 0; i < element.allowedTokens?.length; i++) {
           const isTokenAllowed = await readContract({
             contract: contract,
             method: "tokenIdIsAllowedToMint",
             params: [i],
           });
+          const destructuredIPFSResult = await fetchDataFromIPFS(element.offerMetadata);
+
           if (isTokenAllowed) {
             mappedData.push({
               ...element,
@@ -43,7 +48,7 @@ const Home_1 = () => {
           }
         }
       }
-
+      console.log(mappedData);
       setData(mappedData);
     };
     fetchAdsOffers();
