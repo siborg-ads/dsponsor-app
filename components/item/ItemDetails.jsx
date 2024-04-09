@@ -3,9 +3,17 @@ import Image from "next/image";
 import Link from "next/link";
 import Timer from "./Timer";
 import Tabs from "../tabs/Tabs";
-import BidsModal from "../../components/modal/bidsModal";
+import { useEffect } from "react";
+import { fetchItemInfo } from "./itemFunctions";
 
 export default function ItemDetails({ id }) {
+  useEffect(() => {
+    const id =
+      "38024433996008673239128445693334039761881177377983244511636310112901938893141";
+    const assetContract = "0x2862E18c9eC0C22eCf7e6403E627631cfAbA7369";
+    fetchItemInfo(id, assetContract);
+  }, []);
+
   const item = items_data.filter((elm) => elm.id == id)[0] || items_data[0];
   return (
     <>
