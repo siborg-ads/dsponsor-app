@@ -118,11 +118,11 @@ export default function Header01() {
       >
         <div className="t-0 dark:bg-jacarta-800 left-0 z-10 flex w-full items-center justify-between bg-white p-6 lg:hidden">
           <div className="dark:hidden">
-            <Image src={Logo} height={28} width={130} alt="DSponsor | smarter monetization for your content" className="max-h-7 h-auto " />
+            <Image src={Logo} height={80} width={80} alt="DSponsor | smarter monetization for your content" className="max-h-7 h-auto " />
           </div>
 
           <div className="hidden dark:block">
-            <Image src={WhiteLogo} height={28} width={130} alt="DSponsor | smarter monetization for your content" />
+            <Image src={WhiteLogo} height={80} width={80} alt="DSponsor | smarter monetization for your content" />
           </div>
 
           <button
