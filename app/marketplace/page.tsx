@@ -1,10 +1,6 @@
 import React from "react";
-export default function Marketplace(){
-  return (
-    <section>
-      <h1 className="text-2xl text-black">
-        Hey, I am the Marketplace page!
-      </h1>
-    </section>
-  );
+import MarketplaceHeroSection from "../../components/marketplace-hero/marketplace-hero";
+
+export default function Marketplace() {
+  return <MarketplaceHeroSection />;
 }
