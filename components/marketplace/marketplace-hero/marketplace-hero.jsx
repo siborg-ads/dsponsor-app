@@ -58,7 +58,7 @@ const MarketplaceHeroSection = () => {
             >
               <Image
                 src={link.imagePath}
-                alt="Picture of the author"
+                alt="Picture of the listing card "
                 width={25}
                 height={25}
               />
