@@ -45,7 +45,7 @@ export default function Marketplace() {
       }}
     >
       <MarketplaceHeroSection />
-      <MarketplaceHotbids />
+      <MarketplaceHotbids listings={listings.listingsForBids} />
     </section>
   );
 }

@@ -5,7 +5,7 @@ import Link from "next/link";
 
 import PlaceholderImage from "../../../public/images/placeholder-square.jpg";
 
-const MarketplaceItemCard = () => {
+const MarketplaceItemCard = ({ title, price, symbol }) => {
   return (
     <div className="">
       <article>
@@ -27,13 +27,13 @@ const MarketplaceItemCard = () => {
               className="overflow-hidden text-ellipsis whitespace-nowrap max-w-[120px]"
             >
               <span className="font-display max-w-[150px] text-jacarta-700 hover:text-accent text-base dark:text-white ">
-                #Bitcoin
+                {title}
               </span>
             </Link>
           </div>
-          <div className="mt-2 text-sm">
+          <div className="mt-2 text-base font-semibold">
             <span className="dark:text-jacarta-300 text-jacarta-500">
-              1 ETH
+              {price} {symbol}
             </span>
           </div>
           <div className="">
