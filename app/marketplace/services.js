@@ -1,4 +1,9 @@
-import { readContract } from "thirdweb";
+import { readContract, getContract } from "thirdweb";
+import { sepolia } from "thirdweb/chains";
+import { erc20ContractAbi } from "./erc20-contract-abi.js"
+import { client } from "../../data/services/client";
+
+
 
 async function fetchTotalListings(contract) {
   console.log(contract, "Contract Information...");
@@ -22,6 +27,10 @@ async function fetchListingsForMarketplace(contract, totalListings) {
   const listingsForBuyNow = [];
 
   for (let i = 0; i < Number(totalListings); i++) {
+    console.log(i, "Index...")
+    if (listingsForBids.length === 4 && listingsForBuyNow.length === 4) {
+      break;
+    }
     const listingResponse = await readContract({
       contract,
       method: "listings",
@@ -63,15 +72,78 @@ async function fetchListingsForMarketplace(contract, totalListings) {
       Number(quantity) > 0 &&
       (listingType === 1 || listingType === 0)
     ) {
+      const currencyCodeOfListing = listing.currency;
+      const { decimals, symbol } = await getERC20SymbolsAndDecimals("0x94a9D9AC8a22534E3FaCa9F4e7F2E2cf85d5E4C8")
+
+      const reservePricePerToken = Number(listing.reservePricePerToken) / (10 ** decimals);
+
+      console.log(listingType, "Listing Type...")
       if (listingType === 1) {
-        listingsForBids.push(listing);
+        const winningBidResponse = await getWinningBid(contract, listingId);
+        const winningBidPricePerToken = Number(winningBidResponse.pricePerToken) / (10 ** decimals);
+        if (listingsForBids.length !== 4)
+          listingsForBids.push({
+            ...listing,
+            symbol,
+            price: Math.max(winningBidPricePerToken, reservePricePerToken),
+          });
       } else if (listingType === 0) {
-        listingsForBuyNow.push(listing);
+        const buyoutPricePerToken = Number(listing.buyoutPricePerToken) / (10 ** decimals);
+        if (listingsForBuyNow.length !== 4)
+          listingsForBuyNow.push({ ...listing, symbol, price: buyoutPricePerToken });
       }
     }
   }
 
   return { listingsForBids, listingsForBuyNow };
 }
+
+// getting the winning bid of a listing
+async function getWinningBid(contract, listingId) {
+  const winningBidResponse = await readContract({
+    contract,
+    method: "winningBid",
+    params: [listingId],
+  });
+
+
+  const winningBidObject = {
+    listingId: winningBidResponse[0],
+    bidder: winningBidResponse[1],
+    pricePerToken: winningBidResponse[2],
+    referralAdditionalInformation: winningBidResponse[3]
+  };
+
+
+  return winningBidObject
+}
+
+
+
+// Testnet ERC 20 Token Contract Address
+const getERC20SymbolsAndDecimals = async (contractAddress) => {
+  const contract = getContract({
+    client,
+    chain: sepolia,
+    address: contractAddress,
+    abi: erc20ContractAbi,
+  });
+
+
+  const decimalsResponse = await readContract({
+    contract,
+    method: "decimals",
+  });
+
+  const symbolResponse = await readContract({
+    contract,
+    method: "symbol",
+  });
+
+
+  return { symbol: symbolResponse, decimals: decimalsResponse }
+
+}
+
 
 export { fetchTotalListings, fetchListingsForMarketplace }
