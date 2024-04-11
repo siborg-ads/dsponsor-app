@@ -281,6 +281,8 @@ const Create = () => {
   const USDCCurrency = admin.chain.getCurrencyAddress("USDC");
   const ETHCurrency = admin.chain.getCurrencyAddress("ETH");
   const WETHCurrency = admin.chain.getCurrencyAddress("WETH");
+  const USDTCurrency = admin.chain.getCurrencyAddress("USDT");
+  
 
   const { contract: customTokenContract } = useContract(customContract, "token");
 
@@ -294,12 +296,14 @@ const Create = () => {
         return ETHCurrency.contract;
       case "WETH":
         return WETHCurrency.contract;
+      case "USDT":
+        return USDTCurrency.contract;
       case "custom":
         return customContract;
       default:
         return USDCCurrency.contract;
     }
-  }, [USDCCurrency, ETHCurrency, WETHCurrency, customContract, selectedCurrency]);
+  }, [USDCCurrency, ETHCurrency, WETHCurrency, USDTCurrency, customContract, selectedCurrency]);
 
   const getDecimals = useCallback(
     (currency) => {
@@ -310,19 +314,21 @@ const Create = () => {
           return ETHCurrency.decimals;
         case "WETH":
           return WETHCurrency.decimals;
+        case "USDT":
+          return USDTCurrency.decimals;
         case "custom":
           return customDecimals;
         default:
           return USDCCurrency.decimals;
       }
     },
-    [USDCCurrency, ETHCurrency, WETHCurrency, customDecimals]
+    [USDCCurrency, ETHCurrency, WETHCurrency, USDTCurrency ,customDecimals]
   );
 
   const numSteps = 4;
   const successFullUploadModal = {
     body: "Your offer has been created successfully",
-    subBody: "⚠️ Don't Forget To Display The AdSpaces On Your Website ! Copy Paste the link in your Offer Details To Display Automatically Your Sponsor Logo.",
+    subBody: "⚠️ Don't forget to display the adSpaces on your website ! copy paste the link in your offer details to display automatically your sponsor logo.",
     buttonTitle: "Manage Spaces",
     hrefButton: `/manageSpaces/${address}`,
   };

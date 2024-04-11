@@ -53,7 +53,7 @@ const Item = () => {
   const { data: tokenBalance, isLoading, error } = useBalance(offerData[0]?.currencies[0]);
   const { mutateAsync: approve, isLoading: isLoadingApprove } = useContractWrite(tokenContract, "approve");
   const { data: bps } = useContractRead(DsponsorAdminContract, "feeBps");
-  const { data: isAllowedToMint } = useContractRead(DsponsorNFTContract, "tokenIdIsAllowedToMint", tokenIdString);
+  const { data: isAllowedToMint = true } = useContractRead(DsponsorNFTContract, "tokenIdIsAllowedToMint", tokenIdString);
   const { data: royaltiesInfo } = useContractRead(DsponsorNFTContract, "royaltyInfo", [tokenIdString, 100]);
   const [showPreviewModal, setShowPreviewModal] = useState(false);
   const [validate, setValidate] = useState(false);
@@ -65,7 +65,7 @@ const Item = () => {
   const [buyMethod, setBuyMethod] = useState(false);
   const stepsRef = useRef([]);
   const numSteps = 3;
-  
+  console.log(offerNotFormated, "offerNotFormated");
   useEffect(() => {
     if (offerId) {
       const fetchAdsOffers = async () => {
@@ -121,7 +121,6 @@ const Item = () => {
       if (!offerId) return;
       const checkAds = async (fetchFunction) => {
         const ads = await fetchFunction;
-        console.log(ads, "ads");
         return ads.some((ad) => ad.tokenId === tokenId);
       };
 
@@ -310,6 +309,13 @@ const Item = () => {
     buttonTitle: "Manage Spaces",
     hrefButton: `/manageSpaces/${address}`,
   };
+  const successFullBuyModal = {
+    title: "Checkout",
+    body: "Congratulations, you purchase this ad space.",
+    subBody: "Check your ad space in your manage section to submit your ad.",
+    buttonTitle: "Manage Spaces",
+    hrefButton: `/manageSpaces/${address}`,
+  };
   const statutAds = {
     pending: "🔍 Your ad is pending, wait the validation of the creator",
     rejected: "❌ Your ad has been rejected, you can submit an other ads below",
@@ -416,7 +422,7 @@ const Item = () => {
                   </span>
                 </div>
                 <div className="w-full flex justify-center">
-                  {!isOwner && isAllowedToMint && (
+                  {!isOwner && isAllowedToMint && !offerNotFormated && (
                     <button type="button" className="bg-accent shadow-accent-volume hover:bg-accent-dark w-36 rounded-full py-3 px-8 text-center font-semibold text-white transition-all" onClick={handleBuyModal}>
                       Buy
                     </button>
@@ -430,16 +436,7 @@ const Item = () => {
       {/* <!-- end item --> */}
 
       <div>
-        {!offerNotFormated && isOwner ? (
-          <div>
-            <SliderForm styles={styles} handlePreviewModal={handlePreviewModal} stepsRef={stepsRef} numSteps={numSteps}>
-              <Step_1_Mint stepsRef={stepsRef} styles={styles} adParamaters={["Grid Logo & Link"]} />
-              <Step_2_Mint stepsRef={stepsRef} styles={styles} file={file} handleLogoUpload={handleLogoUpload} />
-              <Step_3_Mint stepsRef={stepsRef} styles={styles} setLink={setLink} link={link} />
-            </SliderForm>
-          </div>
-        ) : //Message to say that the NFT is not allowed to mint
-        (isOwner && adStatut === 3) || adStatut === 0 ? (
+        {isOwner && (adStatut === 3 || adStatut === 0) && !offerNotFormated ? (
           <div>
             <SliderForm styles={styles} handlePreviewModal={handlePreviewModal} stepsRef={stepsRef} numSteps={numSteps}>
               <Step_1_Mint stepsRef={stepsRef} styles={styles} adParamaters={["Grid Logo & Link"]} />
@@ -453,7 +450,7 @@ const Item = () => {
           </div>
         ) : (
           <div className="flex justify-center">
-            <p>{isAllowedToMint ? "" : !offerNotFormated ? "Sorry, someone already own this NFT " : "Offer isn't well formated to buy"}</p>
+            <p>{offerNotFormated ? "Offer isn't well formated to buy" : !isAllowedToMint ? "Sorry, someone already own this NFT " : ""}</p>
           </div>
         )}
       </div>
@@ -469,10 +466,7 @@ const Item = () => {
             handleSubmit={handleSubmit}
             link={link}
             name={true}
-           
-            
             description={true}
-            
             previewImage={previewImage}
             errors={errors}
             successFullUpload={successFullUpload}
@@ -485,7 +479,18 @@ const Item = () => {
       )}
       {buyModal && (
         <div className="modal fade show block">
-          <BuyModal finalPrice={finalPrice} price={price} handleSubmit={handleSubmit} handleBuyModal={handleBuyModal} name={name} image={image} selectedCurrency={currency.symbol} selectedRoyalties={royalties} />
+          <BuyModal
+            finalPrice={finalPrice}
+            successFullUpload={successFullUpload}
+            successFullBuyModal={successFullBuyModal}
+            price={price}
+            handleSubmit={handleSubmit}
+            handleBuyModal={handleBuyModal}
+            name={name}
+            image={image}
+            selectedCurrency={currency.symbol}
+            selectedRoyalties={royalties}
+          />
         </div>
       )}
     </>
