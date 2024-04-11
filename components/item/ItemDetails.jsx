@@ -3,15 +3,41 @@ import Image from "next/image";
 import Link from "next/link";
 import Timer from "./Timer";
 import Tabs from "../tabs/Tabs";
-import { useEffect } from "react";
-import { fetchItemInfo } from "./itemFunctions";
+import { useEffect, useState } from "react";
+import { getContract, Chain } from "thirdweb";
+import { sepolia } from "thirdweb/chains";
+import { client } from "../../data/services/client";
+import dSponsorMarketplaceABI from "../../lib/abi/dSponsorMarketplaceABI.json";
+import { fetchListingDetails } from "../../lib/services/listingsService";
 
 export default function ItemDetails({ id }) {
+  const abi = dSponsorMarketplaceABI.abi;
+  const [listingType, setListingType] = useState(0);
+  // const [listing, setListing] = useState([]); // TO-DO : à voir si c'est good ou  pas
+  const [endTime, setEndTime] = useState(null);
+
+  //TO-DO : this const should be global and not redefined each time
+  const contract = getContract({
+    client,
+    chain: sepolia,
+    address: "0x86aDf604B5B72d270654F3A0798cabeBC677C7fc",
+    abi: abi,
+  });
+
+  const fetchingProgess = async () => {
+    const listing = await fetchListingDetails(contract, 1);
+    // setListing(listing);
+    // const listing = await fetchListingDetails(contract, id); //later when id will be passed by props
+    if (listing.listingType == 1) {
+      setListingType(1);
+    }
+    const endTime = Number(listing.endTime);
+    const endDateFetched = new Date(endTime * 1000);
+    setEndTime(endDateFetched.getTime());
+  };
+
   useEffect(() => {
-    const id =
-      "38024433996008673239128445693334039761881177377983244511636310112901938893141";
-    const assetContract = "0x2862E18c9eC0C22eCf7e6403E627631cfAbA7369";
-    fetchItemInfo(id, assetContract);
+    fetchingProgess();
   }, []);
 
   const item = items_data.filter((elm) => elm.id == id)[0] || items_data[0];
@@ -122,7 +148,6 @@ export default function ItemDetails({ id }) {
                     </span>
                   </div>
 
-                  {/* Actions */}
                   {/* <div className="dropdown rounded-xl border border-jacarta-100 bg-white hover:bg-jacarta-100 dark:border-jacarta-600 dark:bg-jacarta-700 dark:hover:bg-jacarta-600">
                       <a
                         href="#"
@@ -304,109 +329,196 @@ export default function ItemDetails({ id }) {
               </div>
 
               {/* Bid */}
-              <div className="rounded-2lg border border-sigray-border bg-sigray-light p-8 dark:border-jacarta-600 dark:bg-jacarta-700">
-                <div className="mb-8 sm:flex sm:flex-wrap">
-                  {/* Highest bid */}
-                  <div className="sm:w-1/2 sm:pr-4 lg:pr-8">
-                    <div className="block overflow-hidden text-ellipsis whitespace-nowrap">
-                      <span className="text-sm text-jacarta-300 dark:text-jacarta-300">
-                        Highest bid by{" "}
-                      </span>
-                      <Link
-                        href={`/user/9`}
-                        className="text-sm font-bold text-sipurple"
-                      >
-                        0x695d2ef170ce69e794707eeef9497af2de25df82
-                      </Link>
-                    </div>
-                    <div className="mt-3 flex">
-                      <figure className="mr-4 shrink-0">
-                        <Link href={`/user/8`} className="relative block">
-                          <Image
-                            width={48}
-                            height={48}
-                            src="/images/avatars/avatar_4.jpg"
-                            alt="avatar"
-                            className="rounded-2lg"
-                            loading="lazy"
-                          />
+
+              {listingType == 1 && (
+                <div className="rounded-2lg border border-sigray-border bg-sigray-light p-8 dark:border-jacarta-600 dark:bg-jacarta-700">
+                  <div className="mb-8 sm:flex sm:flex-wrap">
+                    {/* Highest bid */}
+                    <div className="sm:w-1/2 sm:pr-4 lg:pr-8">
+                      <div className="block overflow-hidden text-ellipsis whitespace-nowrap">
+                        <span className="text-sm text-jacarta-300 dark:text-jacarta-300">
+                          Highest bid by{" "}
+                        </span>
+                        <Link
+                          href={`/user/9`}
+                          className="text-sm font-bold text-sipurple"
+                        >
+                          0x695d2ef170ce69e794707eeef9497af2de25df82
                         </Link>
-                      </figure>
-                      <div>
-                        <div className="flex items-center whitespace-nowrap">
-                          <span className="-ml-1" data-tippy-content="ETH">
-                            <svg
-                              version="1.1"
-                              xmlns="http://www.w3.org/2000/svg"
-                              x="0"
-                              y="0"
-                              viewBox="0 0 1920 1920"
-                              // xml:space="preserve"
-                              className="h-5 w-5"
-                            >
-                              <path
-                                fill="#8A92B2"
-                                d="M959.8 80.7L420.1 976.3 959.8 731z"
-                              ></path>
-                              <path
-                                fill="#62688F"
-                                d="M959.8 731L420.1 976.3l539.7 319.1zm539.8 245.3L959.8 80.7V731z"
-                              ></path>
-                              <path
-                                fill="#454A75"
-                                d="M959.8 1295.4l539.8-319.1L959.8 731z"
-                              ></path>
-                              <path
-                                fill="#8A92B2"
-                                d="M420.1 1078.7l539.7 760.6v-441.7z"
-                              ></path>
-                              <path
-                                fill="#62688F"
-                                d="M959.8 1397.6v441.7l540.1-760.6z"
-                              ></path>
-                            </svg>
-                          </span>
-                          <span className="text-lg font-medium leading-tight tracking-tight text-green">
-                            4.7 ETH
+                      </div>
+                      <div className="mt-3 flex">
+                        <figure className="mr-4 shrink-0">
+                          <Link href={`/user/8`} className="relative block">
+                            <Image
+                              width={48}
+                              height={48}
+                              src="/images/avatars/avatar_4.jpg"
+                              alt="avatar"
+                              className="rounded-2lg"
+                              loading="lazy"
+                            />
+                          </Link>
+                        </figure>
+                        <div>
+                          <div className="flex items-center whitespace-nowrap">
+                            <span className="-ml-1" data-tippy-content="ETH">
+                              <svg
+                                version="1.1"
+                                xmlns="http://www.w3.org/2000/svg"
+                                x="0"
+                                y="0"
+                                viewBox="0 0 1920 1920"
+                                // xml:space="preserve"
+                                className="h-5 w-5"
+                              >
+                                <path
+                                  fill="#8A92B2"
+                                  d="M959.8 80.7L420.1 976.3 959.8 731z"
+                                ></path>
+                                <path
+                                  fill="#62688F"
+                                  d="M959.8 731L420.1 976.3l539.7 319.1zm539.8 245.3L959.8 80.7V731z"
+                                ></path>
+                                <path
+                                  fill="#454A75"
+                                  d="M959.8 1295.4l539.8-319.1L959.8 731z"
+                                ></path>
+                                <path
+                                  fill="#8A92B2"
+                                  d="M420.1 1078.7l539.7 760.6v-441.7z"
+                                ></path>
+                                <path
+                                  fill="#62688F"
+                                  d="M959.8 1397.6v441.7l540.1-760.6z"
+                                ></path>
+                              </svg>
+                            </span>
+                            <span className="text-lg font-medium leading-tight tracking-tight text-green">
+                              4.7 ETH
+                            </span>
+                          </div>
+                          <span className="text-sm text-jacarta-300 dark:text-jacarta-300">
+                            ~10,864.10€
                           </span>
                         </div>
+                      </div>
+                    </div>
+
+                    {/* Countdown */}
+                    <div className="mt-4 dark:border-jacarta-600 sm:mt-0 sm:w-1/2 sm:border-l sm:border-jacarta-100 sm:pl-4 lg:pl-8">
+                      <span className="js-countdown-ends-label text-sm text-jacarta-300 dark:text-jacarta-300">
+                        Auction ends in
+                      </span>
+                      <Timer endTime={endTime} />
+                    </div>
+                  </div>
+
+                  {/* Buttons */}
+                  <div className="flex space-x-4">
+                    <a
+                      href="#"
+                      data-bs-toggle="modal"
+                      data-bs-target="#placeBidModal"
+                      className="inline-block w-full rounded-full bg-accent py-3 px-8 text-center font-semibold text-white shadow-accent-volume transition-all hover:bg-accent-dark"
+                    >
+                      Place Bid
+                    </a>
+                  </div>
+                </div>
+              )}
+
+              {/* TO-DO : to change design of this card */}
+              {listingType == 0 && (
+                <div className="rounded-2lg border border-sigray-border bg-sigray-light p-8 dark:border-jacarta-600 dark:bg-jacarta-700">
+                  <div className="mb-8 sm:flex sm:flex-wrap">
+                    {/* Highest bid */}
+                    <div className="sm:w-1/2 sm:pr-4 lg:pr-8">
+                      <div className="block overflow-hidden text-ellipsis whitespace-nowrap">
                         <span className="text-sm text-jacarta-300 dark:text-jacarta-300">
-                          ~10,864.10€
+                          Highest bid by{" "}
                         </span>
+                        <Link
+                          href={`/user/9`}
+                          className="text-sm font-bold text-sipurple"
+                        >
+                          0x695d2ef170ce69e794707eeef9497af2de25df82
+                        </Link>
+                      </div>
+                      <div className="mt-3 flex">
+                        <figure className="mr-4 shrink-0">
+                          <Link href={`/user/8`} className="relative block">
+                            <Image
+                              width={48}
+                              height={48}
+                              src="/images/avatars/avatar_4.jpg"
+                              alt="avatar"
+                              className="rounded-2lg"
+                              loading="lazy"
+                            />
+                          </Link>
+                        </figure>
+                        <div>
+                          <div className="flex items-center whitespace-nowrap">
+                            <span className="-ml-1" data-tippy-content="ETH">
+                              <svg
+                                version="1.1"
+                                xmlns="http://www.w3.org/2000/svg"
+                                x="0"
+                                y="0"
+                                viewBox="0 0 1920 1920"
+                                // xml:space="preserve"
+                                className="h-5 w-5"
+                              >
+                                <path
+                                  fill="#8A92B2"
+                                  d="M959.8 80.7L420.1 976.3 959.8 731z"
+                                ></path>
+                                <path
+                                  fill="#62688F"
+                                  d="M959.8 731L420.1 976.3l539.7 319.1zm539.8 245.3L959.8 80.7V731z"
+                                ></path>
+                                <path
+                                  fill="#454A75"
+                                  d="M959.8 1295.4l539.8-319.1L959.8 731z"
+                                ></path>
+                                <path
+                                  fill="#8A92B2"
+                                  d="M420.1 1078.7l539.7 760.6v-441.7z"
+                                ></path>
+                                <path
+                                  fill="#62688F"
+                                  d="M959.8 1397.6v441.7l540.1-760.6z"
+                                ></path>
+                              </svg>
+                            </span>
+                            <span className="text-lg font-medium leading-tight tracking-tight text-green">
+                              4.7 ETH
+                            </span>
+                          </div>
+                          <span className="text-sm text-jacarta-300 dark:text-jacarta-300">
+                            ~10,864.10€
+                          </span>
+                        </div>
                       </div>
                     </div>
                   </div>
 
-                  {/* Countdown */}
-                  <div className="mt-4 dark:border-jacarta-600 sm:mt-0 sm:w-1/2 sm:border-l sm:border-jacarta-100 sm:pl-4 lg:pl-8">
-                    <span className="js-countdown-ends-label text-sm text-jacarta-300 dark:text-jacarta-300">
-                      Auction ends in
-                    </span>
-                    <Timer />
+                  {/* Buttons */}
+                  <div className="flex space-x-4">
+                    <a
+                      href="#"
+                      data-bs-toggle="modal"
+                      data-bs-target="#placeBidModal"
+                      className="inline-block w-full rounded-full bg-accent py-3 px-8 text-center font-semibold text-white shadow-accent-volume transition-all hover:bg-accent-dark"
+                    >
+                      Buy Now For 1 ETH
+                    </a>
                   </div>
                 </div>
+              )}
 
-                {/* Buttons */}
-                <div className="flex space-x-4">
-                  <a
-                    href="#"
-                    data-bs-toggle="modal"
-                    data-bs-target="#buyNowModal"
-                    className="inline-block w-full rounded-full bg-accent py-3 px-8 text-center font-semibold text-white shadow-accent-volume transition-all hover:bg-accent-dark"
-                  >
-                    Buy Now For 4.7 ETH
-                  </a>
-                  <a
-                    href="#"
-                    data-bs-toggle="modal"
-                    data-bs-target="#placeBidModal"
-                    className="inline-block w-full rounded-full bg-accent py-3 px-8 text-center font-semibold text-white shadow-accent-volume transition-all hover:bg-accent-dark"
-                  >
-                    Place Bid
-                  </a>
-                </div>
-              </div>
               {/* end bid */}
+
               <div className="mt-4 text-center">
                 <div className="block text-base text-jacarta-300 text-white font-light">
                   Ownership Period:

@@ -63,18 +63,23 @@ const renderer = ({ days, hours, minutes, seconds, completed }) => {
   }
 };
 
-export default function Timer() {
+export default function Timer({ endTime }) {
   const [showTimer, setShowTimer] = useState(false);
-  const [remainingTime, setRemainingTime] = useState(
-    new Date(
-      new Date().getTime() +
-        Math.floor(Math.random() * 24 * 60 * 60 * 1000 * 365)
-    ).toISOString()
-  );
+  const [remainingTime, setRemainingTime] = useState(null);
+
   useEffect(() => {
     setShowTimer(true);
-  }, []);
+
+    // Calculate remaining time until endTime
+    const now = new Date().getTime();
+    const timeRemaining = endTime - now;
+    setRemainingTime(timeRemaining);
+  }, [endTime]);
   return (
-    <>{showTimer && <Countdown date={remainingTime} renderer={renderer} />}</>
+    <>
+      {showTimer && (
+        <Countdown date={Date.now() + remainingTime} renderer={renderer} />
+      )}
+    </>
   );
 }
