@@ -9,7 +9,8 @@ import Tippy from "@tippyjs/react";
 import "tippy.js/dist/tippy.css"; // optional
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import Meta from "../../components/Meta";
-import { DSponsorAdmin } from "@dsponsor/sdk";
+
+import adminInstance from "../../utils/sdkProvider";
 
 import { fetchDataFromIPFS } from "../../data/services/ipfsService";
 
@@ -23,12 +24,11 @@ const ManageSpaces = () => {
 
   useEffect(() => {
     if (userAddress) {
-      const admin = new DSponsorAdmin({ chain: { alchemyAPIKey: process.env.NEXT_PUBLIC_ALCHEMY_API_KEY, chainName: "ethereum-sepolia" } });
       const fetchAdsOffers = async () => {
-        const offer = await admin.getOffers({ address: userAddress }, { includeMetadata: true, includePrices: true, includeAllowedTokens: true });
+        const offer = await adminInstance.getOffers({ address: userAddress }, { includeMetadata: true, includePrices: true, includeAllowedTokens: true });
         
         const data = [];
-        const ownedAdProposals = await admin.getOwnedOfferTokens({ address: userAddress }, {includeOffers: true});
+        const ownedAdProposals = await adminInstance.getOwnedOfferTokens({ address: userAddress }, { includeOffers: true });
         const mappedownedAdProposals = [];
 
 

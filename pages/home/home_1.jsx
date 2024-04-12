@@ -1,6 +1,5 @@
 import React from "react";
 import { useEffect, useState } from "react";
-import { DSponsorAdmin } from "@dsponsor/sdk";
 import { useAddress, darkTheme, Web3Button, useTokenBalance, useContract, useContractRead, useContractWrite, useStorageUpload, useTokenDecimals, CheckoutWithCard, CheckoutWithEth } from "@thirdweb-dev/react";
 import { fetchDataFromIPFS } from "../../data/services/ipfsService";
 import { Hero, Bids, Top_collection } from "../../components/component";
@@ -8,17 +7,18 @@ import Meta from "../../components/Meta";
 import { getContractNFT } from "../../data/services/contract";
 import { readContract } from "thirdweb";
 import HowItWorks from "../../components/explication/howItWorks";
+import adminInstance from "../../utils/sdkProvider";
 
 const Home_1 = () => {
   const [data, setData] = useState([]);
 
   useEffect(() => {
-    const admin = new DSponsorAdmin({ chain: { alchemyAPIKey: process.env.NEXT_PUBLIC_ALCHEMY_API_KEY, chainName:"ethereum-sepolia" } });
+    
 
     const fetchAdsOffers = async () => {
       const mappedData = [];
 
-      const ads = await admin.getOffers(
+      const ads = await adminInstance.getOffers(
         {
           limit: 20,
         },
@@ -26,7 +26,7 @@ const Home_1 = () => {
       );
       
 const formatedAds = ads.filter(ad => ad.offerId > 11);
-console.log(formatedAds);
+// console.log(formatedAds);
       
       for (const element of formatedAds) {
         if (!element.nftContract) return;
@@ -48,7 +48,7 @@ console.log(formatedAds);
           }
         }
       }
-      console.log(mappedData);
+      // console.log(mappedData);
       setData(mappedData);
     };
     fetchAdsOffers();

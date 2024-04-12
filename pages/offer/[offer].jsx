@@ -11,10 +11,11 @@ import "tippy.js/dist/tippy.css";
 import { ItemsTabs } from "../../components/component";
 import Review_carousel from "../../components/carousel/review_carousel";
 import Validated_refused_items from "../../components/collectrions/validated_refused_items";
-import { DSponsorAdmin } from "@dsponsor/sdk";
+
 import { fetchDataFromIPFS } from "../../data/services/ipfsService";
 import { ethers } from "ethers";
 import { bufferAdParams } from "../../utils/formatedData";
+import adminInstance from "../../utils/sdkProvider";
 
 const Offer = () => {
   const router = useRouter();
@@ -41,9 +42,8 @@ const [currency, setCurrency] = useState(null);
 
   useEffect(() => {
     if (offerId) {
-      const admin = new DSponsorAdmin({ chain: { alchemyAPIKey: process.env.NEXT_PUBLIC_ALCHEMY_API_KEY, chainName: "ethereum-sepolia" } });
       const fetchAdsOffers = async () => {
-        const ads = await admin.getPendingAds({ offerId: offerId });
+        const ads = await adminInstance.getPendingAds({ offerId: offerId });
         console.log(ads, "ads");
         const formattedPendingAds = [];
 
@@ -58,12 +58,12 @@ const [currency, setCurrency] = useState(null);
         }
       }
         console.log(formattedPendingAds, "formattedPendingAds");
-        const offer = await admin.getOffer({ offerId: offerId });
-        const validatedAds = await admin.getValidatedAds({ offerId: offerId });
-        const refusedAds = await admin.getRejectedAds({ offerId: offerId });
-        const proposals = await admin.getAdProposals({ offerId: offerId });
+        const offer = await adminInstance.getOffer({ offerId: offerId });
+        const validatedAds = await adminInstance.getValidatedAds({ offerId: offerId });
+        const refusedAds = await adminInstance.getRejectedAds({ offerId: offerId });
+        const proposals = await adminInstance.getAdProposals({ offerId: offerId });
         console.log(validatedAds, "proposals");
-       const params = await admin.getAdParameters({ offerId: offerId });
+       const params = await adminInstance.getAdParameters({ offerId: offerId });
         // const normalizedParams = bufferAdParams(params);
        
        
@@ -74,7 +74,7 @@ const [currency, setCurrency] = useState(null);
         };
         
         try {
-          const currencyToken = admin.chain.getCurrencyByAddress(offer.currencies[0]);
+          const currencyToken = adminInstance.chain.getCurrencyByAddress(offer.currencies[0]);
           const formatPrice = offer.prices[0] / 10 ** currencyToken.decimals;
           setPrice(formatPrice);
           setCurrency(currencyToken);

@@ -6,7 +6,8 @@ import Link from "next/link";
 import Tippy from "@tippyjs/react";
 import { use, useEffect, useState } from "react";
 import { useCountdown } from "../../utils/countDown";
-import { DSponsorAdmin } from "@dsponsor/sdk";
+import adminInstance from "../../utils/sdkProvider";
+
 
 const OfferItem = ({ item, url, isToken }) => {
   const [price, setPrice] = useState(null);
@@ -23,9 +24,9 @@ const OfferItem = ({ item, url, isToken }) => {
   useEffect(() => {
     
     try {
-      const admin = new DSponsorAdmin({ chain: { alchemyAPIKey: process.env.NEXT_PUBLIC_ALCHEMY_API_KEY, chainName: "ethereum-sepolia" } });
+   
      
-      const currencyToken = admin.chain.getCurrencyByAddress(item.currencies[0]);
+      const currencyToken = adminInstance.chain.getCurrencyByAddress(item.currencies[0]);
       setCurrencyToken(currencyToken);
       
       const formatPrice = item.prices[0] / 10 ** currencyToken.decimals;
@@ -44,7 +45,6 @@ const OfferItem = ({ item, url, isToken }) => {
  
   useEffect(() => {
      if (!isToken) return;
-     const admin = new DSponsorAdmin({ chain: { alchemyAPIKey: process.env.NEXT_PUBLIC_ALCHEMY_API_KEY, chainName: "ethereum-sepolia" } });
     const fetchFunction = async () => {
       const checkAds = async (fetchFunction) => {
         if (!item.offerId) return;
@@ -53,19 +53,19 @@ const OfferItem = ({ item, url, isToken }) => {
         return ads.some((ad) => ad.tokenId === item.tokenId);
       };
 
-      if (await checkAds(admin.getRejectedAds({ offerId: item.offerId }))) {
+      if (await checkAds(adminInstance.getRejectedAds({ offerId: item.offerId }))) {
         setAdStatut(0);
         return;
       }
 
-      if (await checkAds(admin.getValidatedAds({ offerId: item.offerId }))) {
+      if (await checkAds(adminInstance.getValidatedAds({ offerId: item.offerId }))) {
         setAdStatut(1);
         return;
       }
 
-      if (await checkAds(admin.getPendingAds({ offerId: item.offerId }))) {
+      if (await checkAds(adminInstance.getPendingAds({ offerId: item.offerId }))) {
         setAdStatut(2);
-      }else{
+      } else {
         setAdStatut(3);
       }
     }

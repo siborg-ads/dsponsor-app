@@ -35,7 +35,7 @@ function MyApp({ Component, pageProps }) {
 
   return (
     <>
-      <Meta title="Home 1" />
+      <Meta title="Home" />
       <ThirdwebProvider
         activeChain={Sepolia}
         clientId="6f375d41f2a33f1f08f6042a65d49ec9"

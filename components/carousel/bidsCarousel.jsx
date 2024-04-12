@@ -16,7 +16,7 @@ import { gql } from "@apollo/client";
 
 import { useEffect, useState } from "react";
 import OfferItem from "../cards/offerItem";
-import { DSponsorAdmin } from "@dsponsor/sdk";
+
 
 
 const BidsCarousel = ({data}) => {

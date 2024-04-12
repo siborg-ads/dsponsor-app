@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import "tippy.js/dist/tippy.css";
@@ -12,16 +12,13 @@ import Step_1_Mint from "../../../components/sliderForm/PageMint/Step_1_Mint";
 import Step_2_Mint from "../../../components/sliderForm/PageMint/Step_2_Mint";
 import Step_3_Mint from "../../../components/sliderForm/PageMint/Step_3_Mint";
 import PreviewModal from "../../../components/modal/previewModal";
-import { FileUploader } from "react-drag-drop-files";
 import Tippy from "@tippyjs/react";
 import "tippy.js/dist/tippy.css";
 import { ItemsTabs } from "../../../components/component";
-import { useDispatch } from "react-redux";
-import { ConnectWallet } from "@thirdweb-dev/react";
-import { DSponsorAdmin } from "@dsponsor/sdk";
 import { fetchDataFromIPFS } from "../../../data/services/ipfsService";
 import { bufferAdParams } from "../../../utils/formatedData";
-import  BuyModal  from "../../../components/modal/buyModal";
+import BuyModal from "../../../components/modal/buyModal";
+import adminInstance from "../../../utils/sdkProvider";
 
 const Item = () => {
   const router = useRouter();
@@ -69,31 +66,27 @@ const Item = () => {
   useEffect(() => {
     if (offerId) {
       const fetchAdsOffers = async () => {
-        const admin = new DSponsorAdmin({ chain: { alchemyAPIKey: process.env.NEXT_PUBLIC_ALCHEMY_API_KEY, chainName: "ethereum-sepolia" } });
-        const offer = await admin.getOffer({ offerId: offerId });
-        const params = await admin.getAdParameters({ offerId: offerId });
+        const offer = await adminInstance.getOffer({ offerId: offerId });
+        const params = await adminInstance.getAdParameters({ offerId: offerId });
 
         const normalizedParams = bufferAdParams(params);
 
-      
-        try{
-          
-          const currencyToken = admin.chain.getCurrencyByAddress(offer.currencies[0]);
+        try {
+          const currencyToken = adminInstance.chain.getCurrencyByAddress(offer.currencies[0]);
           const formatPrice = offer.prices[0] / 10 ** currencyToken.decimals;
           setPrice(formatPrice);
           setCurrency(currencyToken);
-        }catch(e){
+        } catch (e) {
           console.error("Error: Currency not found for address", offer.currencies[0]);
           setOfferNotFormated(true);
         }
 
         if (address) {
-          const mintedToken = await admin.getOwnedOfferTokens({ address: address });
+          const mintedToken = await adminInstance.getOwnedOfferTokens({ address: address });
           console.log(mintedToken, "mintedToken");
           console.log(offer, "offer");
           for (const element of mintedToken) {
             if (element.tokenId === tokenId && element.nftContractAddress.toLowerCase() == offer.nftContract) {
-              
               setIsOwner(true);
             }
           }
@@ -104,7 +97,7 @@ const Item = () => {
           ...destructuredIPFSResult,
           normalizedParams,
         };
-       
+
         console.log(combinedData, "combinedData");
         setOfferData([combinedData]);
       };
@@ -116,7 +109,6 @@ const Item = () => {
   }, [offerId, router, address, tokenId]);
 
   useEffect(() => {
-    const admin = new DSponsorAdmin();
     const fetchAdsOffers = async () => {
       if (!offerId) return;
       const checkAds = async (fetchFunction) => {
@@ -124,27 +116,25 @@ const Item = () => {
         return ads.some((ad) => ad.tokenId === tokenId);
       };
 
-      if (await checkAds(admin.getRejectedAds({ offerId: offerId }))) {
+      if (await checkAds(adminInstance.getRejectedAds({ offerId: offerId }))) {
         setAdStatut(0);
         return;
       }
 
-      if (await checkAds(admin.getValidatedAds({ offerId: offerId }))) {
+      if (await checkAds(adminInstance.getValidatedAds({ offerId: offerId }))) {
         setAdStatut(1);
         return;
       }
 
-      if (await checkAds(admin.getPendingAds({ offerId: offerId }))) {
+      if (await checkAds(adminInstance.getPendingAds({ offerId: offerId }))) {
         setAdStatut(2);
-      }
-      else {
+      } else {
         setAdStatut(3);
       }
     };
 
     fetchAdsOffers();
   }, [offerId, tokenId]);
- 
 
   useEffect(() => {
     if (royaltiesInfo) setRoyalties(ethers.BigNumber.from(royaltiesInfo[1]?._hex).toNumber());
@@ -214,8 +204,7 @@ const Item = () => {
   };
 
   const handleSubmit = async () => {
-    if(!buyMethod){
-
+    if (!buyMethod) {
       if (!validateInputs()) {
         return;
       }
@@ -232,11 +221,10 @@ const Item = () => {
         console.error("Erreur d'approbation des tokens:", error);
       }
       try {
-         const uploadUrl = await uploadToIPFS({
-           data: [file],
-           options: { uploadWithGatewayUrl: true, uploadWithoutDirectory: true },
-         });
-        
+        const uploadUrl = await uploadToIPFS({
+          data: [file],
+          options: { uploadWithGatewayUrl: true, uploadWithoutDirectory: true },
+        });
 
         const argsMintAndSubmit = {
           tokenId: tokenIdString,
@@ -244,7 +232,7 @@ const Item = () => {
           currency: offerData[0]?.currencies[0],
           tokenData: "null",
           offerId: offerId,
-          adParameters:[] ,
+          adParameters: [],
           adDatas: [],
           referralAdditionalInformation: "",
         };
@@ -255,11 +243,11 @@ const Item = () => {
           data: [uploadUrl[0], link],
         };
         const isEthCurrency = offerData[0]?.currencies[0] === "0x0000000000000000000000000000000000000000";
-        const functionWithPossibleArgs = (adStatut === 0 || adStatut === 3  ) && !isAllowedToMint  ? Object.values(argsAdSubmited) : argsMintAndSubmit;
+        const functionWithPossibleArgs = (adStatut === 0 || adStatut === 3) && !isAllowedToMint ? Object.values(argsAdSubmited) : argsMintAndSubmit;
         const argsWithPossibleOverrides = isEthCurrency ? { args: [functionWithPossibleArgs], overrides: { value: amountToApprove } } : { args: [functionWithPossibleArgs] };
         // console.log(adStatut, "adStatut")
         // console.log(isAllowedToMint, "isAllowedToMint")
-        if ((adStatut === 0 || adStatut === 3) && (!isAllowedToMint)) {
+        if ((adStatut === 0 || adStatut === 3) && !isAllowedToMint) {
           // console.log("submitAd");
           await submitAd({ args: functionWithPossibleArgs });
         } else {
@@ -295,10 +283,8 @@ const Item = () => {
   const handleBuyModal = () => {
     setBuyModal(!buyModal);
     setBuyMethod(true);
-  
   };
   const handlePreviewModal = () => {
-    
     setShowPreviewModal(!showPreviewModal);
     validateInputs();
   };
@@ -326,7 +312,7 @@ const Item = () => {
     return <div>Chargement...</div>;
   }
 
-  const { description = "description not found", id="1", image =["/images/gradient_creative.jpg"], name ="DefaultName"} = offerData[0].offer ? offerData[0].offer : {};
+  const { description = "description not found", id = "1", image = ["/images/gradient_creative.jpg"], name = "DefaultName" } = offerData[0].offer ? offerData[0].offer : {};
 
   return (
     <>

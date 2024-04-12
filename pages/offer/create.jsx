@@ -15,10 +15,10 @@ import Step_3_Create from "../../components/sliderForm/PageCreate/Step_3_Create"
 import Step_4_Create from "../../components/sliderForm/PageCreate/Step_4_Create";
 
 import SliderForm from "../../components/sliderForm/sliderForm";
-import { DSponsorAdmin } from "@dsponsor/sdk";
+import adminInstance from "../../utils/sdkProvider";
+
 
 const Create = () => {
-  const admin = new DSponsorAdmin({chain:{alchemyAPIKey: process.env.NEXT_PUBLIC_ALCHEMY_API_KEY}});
   const [file, setFile] = useState(null);
   const { mutateAsync: upload, isLoading } = useStorageUpload();
 
@@ -75,7 +75,7 @@ const Create = () => {
   };
 
   const address = useAddress();
-  const { contract } = useContract("0xdf42633BD40e8f46942e44a80F3A58d0Ec971f09"); // dsponsor admin mumbai contract address
+  const { contract } = useContract("0xdf42633BD40e8f46942e44a80F3A58d0Ec971f09"); 
 
   const { mutateAsync, isLoading: isLoadingContractWrite, error } = useContractWrite(contract, "createDSponsorNFTAndOffer");
 
@@ -278,10 +278,10 @@ const Create = () => {
     setLink(updatedLink);
   };
 
-  const USDCCurrency = admin.chain.getCurrencyAddress("USDC");
-  const ETHCurrency = admin.chain.getCurrencyAddress("ETH");
-  const WETHCurrency = admin.chain.getCurrencyAddress("WETH");
-  const USDTCurrency = admin.chain.getCurrencyAddress("USDT");
+  const USDCCurrency = adminInstance.chain.getCurrencyAddress("USDC");
+  const ETHCurrency = adminInstance.chain.getCurrencyAddress("ETH");
+  const WETHCurrency = adminInstance.chain.getCurrencyAddress("WETH");
+  const USDTCurrency = adminInstance.chain.getCurrencyAddress("USDT");
   
 
   const { contract: customTokenContract } = useContract(customContract, "token");
