@@ -256,11 +256,12 @@ const Item = () => {
           data: [uploadUrl[0], link],
         };
         const isEthCurrency = offerData[0]?.currencies[0] === "0x0000000000000000000000000000000000000000";
-        const functionWithPossibleArgs = adStatut === 0 || adStatut === 3  ? Object.values(argsAdSubmited) : argsMintAndSubmit;
+        const functionWithPossibleArgs = (adStatut === 0 || adStatut === 3  ) && !isAllowedToMint  ? Object.values(argsAdSubmited) : argsMintAndSubmit;
         const argsWithPossibleOverrides = isEthCurrency ? { args: [functionWithPossibleArgs], overrides: { value: amountToApprove } } : { args: [functionWithPossibleArgs] };
-
-        if (adStatut === 0 || adStatut === 3) {
-          console.log("submitAd");
+        // console.log(adStatut, "adStatut")
+        // console.log(isAllowedToMint, "isAllowedToMint")
+        if ((adStatut === 0 || adStatut === 3) && (!isAllowedToMint)) {
+          // console.log("submitAd");
           await submitAd({ args: functionWithPossibleArgs });
         } else {
           console.log(argsWithPossibleOverrides);

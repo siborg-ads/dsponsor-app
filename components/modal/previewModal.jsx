@@ -36,7 +36,7 @@ const PreviewModal = ({
   console.log(name, name.length, "ici");
   return (
     <div>
-      <div className="modal-dialog max-w-2xl">
+      <div className="modal-dialog max-h-[75vh] max-w-2xl">
         <div className="modal-content">
           <div className="modal-header">
             <h5 className="modal-title" id="placeBidLabel">
