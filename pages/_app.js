@@ -8,6 +8,8 @@ import { MetaMaskProvider } from "metamask-react";
 import Meta from "../components/Meta";
 import UserContext from "../components/UserContext";
 import { useRef } from "react";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import {
   ThirdwebProvider,
   ConnectWallet,
@@ -67,6 +69,7 @@ function MyApp({ Component, pageProps }) {
                   </Layout>
                 )}
               </UserContext.Provider>
+              <ToastContainer position="top-right" autoClose={5000} />
             </MetaMaskProvider>
           </ThemeProvider>
         </Provider>

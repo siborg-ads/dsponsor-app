@@ -6,9 +6,10 @@ import { Confirm_checkout } from "../metamask/Metamask";
 import Image from "next/image";
 import { Web3Button } from "@thirdweb-dev/react";
 import { useState } from "react";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
-
-const BuyModal = ({ finalPrice,successFullUpload, successFullBuyModal, price, selectedCurrency, selectedRoyalties, name, image, handleSubmit, handleBuyModal }) => {
+const BuyModal = ({ finalPrice,successFullUpload, userBalance, successFullBuyModal, price, selectedCurrency, selectedRoyalties, name, image, handleSubmit, handleBuyModal }) => {
   const { buyModal } = useSelector((state) => state.counter);
   const dispatch = useDispatch();
   const [validate, setValidate] = useState(false);
@@ -25,7 +26,6 @@ const BuyModal = ({ finalPrice,successFullUpload, successFullBuyModal, price, se
           <div className="modal-header">
             <h5 className="modal-title" id="buyNowModalLabel">
               {!successFullUpload ? "Complete checkout" : successFullBuyModal.title}
-              
             </h5>
             <button type="button" className="btn-close" onClick={handleBuyModal}>
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" className="fill-jacarta-700 h-6 w-6 dark:fill-white">
@@ -137,8 +137,14 @@ const BuyModal = ({ finalPrice,successFullUpload, successFullBuyModal, price, se
               {!successFullUpload ? (
                 <Web3Button
                   contractAddress="0xdf42633BD40e8f46942e44a80F3A58d0Ec971f09"
-                  action={handleSubmit}
-                  className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate ? "btn-disabled" : "!bg-accent !cursor-pointer"} `}
+                  action={() => {
+                    toast.promise(handleSubmit, {
+                      pending: "Waiting transaction confirmation",
+                      success: "Transaction confirmed 👌",
+                      error: "Transaction rejected 🤯",
+                    });
+                  }}
+                  className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate || !userBalance ? "btn-disabled" : "!bg-accent !cursor-pointer"} `}
                   disabled={!validate}
                 >
                   Confirm checkout

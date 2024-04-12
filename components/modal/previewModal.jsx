@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Web3Button } from "@thirdweb-dev/react";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const PreviewModal = ({
   handlePreviewModal,
@@ -33,7 +35,7 @@ const PreviewModal = ({
     if (!date) return "";
     return date.toLocaleDateString();
   };
-  console.log(name, name.length, "ici");
+  
   return (
     <div>
       <div className="modal-dialog max-h-[75vh] max-w-2xl">
@@ -135,9 +137,6 @@ const PreviewModal = ({
                   ) : (
                     ""
                   )}
-                 
-                 
-                 
                 </div>
                 {previewImage && (
                   <div className="mb-6  flex-col items-center justify-center ">
@@ -172,7 +171,13 @@ const PreviewModal = ({
                 {!successFullUpload ? (
                   <Web3Button
                     contractAddress="0xdf42633BD40e8f46942e44a80F3A58d0Ec971f09"
-                    action={handleSubmit}
+                    action={() => {
+                      toast.promise(handleSubmit, {
+                        pending: "Waiting transaction confirmation",
+                        success: "Transaction confirmed 👌",
+                        error: "Transaction rejected 🤯",
+                      });
+                    }}
                     className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate ? "btn-disabled" : "!bg-accent !cursor-pointer"} `}
                     disabled={!validate}
                   >

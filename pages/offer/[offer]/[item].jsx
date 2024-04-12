@@ -19,6 +19,9 @@ import { fetchDataFromIPFS } from "../../../data/services/ipfsService";
 import { bufferAdParams } from "../../../utils/formatedData";
 import BuyModal from "../../../components/modal/buyModal";
 import adminInstance from "../../../utils/sdkProvider";
+import { toast } from "react-toastify";
+
+import "react-toastify/dist/ReactToastify.css";
 
 const Item = () => {
   const router = useRouter();
@@ -60,9 +63,9 @@ const Item = () => {
   const [price, setPrice] = useState(null);
   const [buyModal, setBuyModal] = useState(false);
   const [buyMethod, setBuyMethod] = useState(false);
+  const [userBalance, setUserBalance] = useState(null);
   const stepsRef = useRef([]);
   const numSteps = 3;
-  console.log(offerNotFormated, "offerNotFormated");
   useEffect(() => {
     if (offerId) {
       const fetchAdsOffers = async () => {
@@ -83,8 +86,8 @@ const Item = () => {
 
         if (address) {
           const mintedToken = await adminInstance.getOwnedOfferTokens({ address: address });
-          console.log(mintedToken, "mintedToken");
-          console.log(offer, "offer");
+          // console.log(mintedToken, "mintedToken");
+          // console.log(offer, "offer");
           for (const element of mintedToken) {
             if (element.tokenId === tokenId && element.nftContractAddress.toLowerCase() == offer.nftContract) {
               setIsOwner(true);
@@ -98,7 +101,7 @@ const Item = () => {
           normalizedParams,
         };
 
-        console.log(combinedData, "combinedData");
+         console.log(combinedData, "combinedData");
         setOfferData([combinedData]);
       };
 
@@ -135,6 +138,7 @@ const Item = () => {
 
     fetchAdsOffers();
   }, [offerId, tokenId]);
+ 
 
   useEffect(() => {
     if (royaltiesInfo) setRoyalties(ethers.BigNumber.from(royaltiesInfo[1]?._hex).toNumber());
@@ -189,6 +193,7 @@ const Item = () => {
 
       setAmountToApprove(amountToApprove);
     }
+    
   }, [data, bps, offerData, currency, price]);
 
   const handleApprove = async () => {
@@ -211,8 +216,8 @@ const Item = () => {
     }
     // IPFS upload
 
-    let userBalance = checkUserBalance(tokenBalance, price);
-    if (userBalance) {
+    
+    if (userBalance || isOwner) {
       try {
         if (offerData[0]?.currencies[0] !== "0x0000000000000000000000000000000000000000") {
           await handleApprove();
@@ -220,46 +225,57 @@ const Item = () => {
       } catch (error) {
         console.error("Erreur d'approbation des tokens:", error);
       }
-      try {
-        const uploadUrl = await uploadToIPFS({
-          data: [file],
-          options: { uploadWithGatewayUrl: true, uploadWithoutDirectory: true },
-        });
+       
+     
+         let uploadUrl;
+         try {
+           uploadUrl = await uploadToIPFS({
+             data: [file],
+             options: { uploadWithGatewayUrl: true, uploadWithoutDirectory: true },
+           });
+         } catch (error) {
+           console.error("Erreur lors de l'upload à IPFS:", error);
+           throw new Error("Upload to IPFS failed.");
+         }
+         try {
+          
 
-        const argsMintAndSubmit = {
-          tokenId: tokenIdString,
-          to: address,
-          currency: offerData[0]?.currencies[0],
-          tokenData: "null",
-          offerId: offerId,
-          adParameters: [],
-          adDatas: [],
-          referralAdditionalInformation: "",
-        };
-        const argsAdSubmited = {
-          offerId: [offerId, offerId],
-          tokenId: [tokenIdString, tokenIdString],
-          adParameters: offerData[0]?.normalizedParams,
-          data: [uploadUrl[0], link],
-        };
-        const isEthCurrency = offerData[0]?.currencies[0] === "0x0000000000000000000000000000000000000000";
-        const functionWithPossibleArgs = (adStatut === 0 || adStatut === 3) && !isAllowedToMint ? Object.values(argsAdSubmited) : argsMintAndSubmit;
-        const argsWithPossibleOverrides = isEthCurrency ? { args: [functionWithPossibleArgs], overrides: { value: amountToApprove } } : { args: [functionWithPossibleArgs] };
-        // console.log(adStatut, "adStatut")
-        // console.log(isAllowedToMint, "isAllowedToMint")
-        if ((adStatut === 0 || adStatut === 3) && !isAllowedToMint) {
-          // console.log("submitAd");
-          await submitAd({ args: functionWithPossibleArgs });
-        } else {
-          console.log(argsWithPossibleOverrides);
-          await mintAndSubmit(argsWithPossibleOverrides);
-        }
+           const argsMintAndSubmit = {
+             tokenId: tokenIdString,
+             to: address,
+             currency: offerData[0]?.currencies[0],
+             tokenData: "null",
+             offerId: offerId,
+             adParameters: [],
+             adDatas: [],
+             referralAdditionalInformation: "",
+           };
+           const argsAdSubmited = {
+             offerId: [offerId, offerId],
+             tokenId: [tokenIdString, tokenIdString],
+             adParameters: offerData[0]?.normalizedParams,
+             data: [uploadUrl[0], link],
+           };
+           const isEthCurrency = offerData[0]?.currencies[0] === "0x0000000000000000000000000000000000000000";
+           const functionWithPossibleArgs = (adStatut === 0 || adStatut === 3) && !isAllowedToMint ? Object.values(argsAdSubmited) : argsMintAndSubmit;
+           const argsWithPossibleOverrides = isEthCurrency ? { args: [functionWithPossibleArgs], overrides: { value: amountToApprove } } : { args: [functionWithPossibleArgs] };
+           // console.log(adStatut, "adStatut")
+           // console.log(isAllowedToMint, "isAllowedToMint")
+           if ((adStatut === 0 || adStatut === 3) && !isAllowedToMint) {
+             // console.log("submitAd");
 
-        setSuccessFullUpload(true);
-      } catch (error) {
-        console.error("Erreur de soumission du token:", error);
-        setSuccessFullUpload(false);
-      }
+             await submitAd({ args: functionWithPossibleArgs });
+           } else {
+             console.log("mintAndSubmit");
+             await mintAndSubmit(argsWithPossibleOverrides);
+           }
+
+           setSuccessFullUpload(true);
+         } catch (error) {
+           console.error("Erreur de soumission du token:", error);
+           setSuccessFullUpload(false);
+           throw error;
+         }
     }
   };
 
@@ -269,20 +285,22 @@ const Item = () => {
       const parsedPriceToken = parseFloat(priceToken);
 
       if (parsedTokenBalance >= parsedPriceToken) {
-        console.log("user has enough balance");
         return true;
       } else {
-        console.log("user has not enough balance");
+        toast.error("You have not enough balance to confirm checkout", { autoClose: false });
         return false;
       }
     } catch (error) {
+      toast.error("Error while checking user balance");
       console.error("Failed to fetch token balance:", error);
       return null;
     }
   };
   const handleBuyModal = () => {
-    setBuyModal(!buyModal);
-    setBuyMethod(true);
+    
+  !buyModal && setUserBalance(checkUserBalance(tokenBalance, price));
+     setBuyModal(!buyModal);
+     setBuyMethod(true);
   };
   const handlePreviewModal = () => {
     setShowPreviewModal(!showPreviewModal);
@@ -476,6 +494,7 @@ const Item = () => {
             image={image}
             selectedCurrency={currency.symbol}
             selectedRoyalties={royalties}
+            userBalance={userBalance}
           />
         </div>
       )}

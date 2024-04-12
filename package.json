@@ -43,6 +43,7 @@
     "react-modal-video": "^2.0.1",
     "react-redux": "^8.0.2",
     "react-tabs": "^6.0.1",
+    "react-toastify": "^10.0.5",
     "sass": "^1.71.1",
     "sharp": "^0.32.2",
     "swiper": "^8.2.4",
