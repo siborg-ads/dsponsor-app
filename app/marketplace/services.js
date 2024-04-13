@@ -2,11 +2,11 @@ import { readContract, getContract } from "thirdweb";
 import { sepolia } from "thirdweb/chains";
 import { erc20ContractAbi } from "./erc20-contract-abi.js"
 import { client } from "../../data/services/client";
+import { marketplaceConfig } from "./marketplace.config.js"
 
 
 
 async function fetchTotalListings(contract) {
-  console.log(contract, "Contract Information...");
   try {
     const totalListings = await readContract({
       contract: contract,
@@ -27,8 +27,7 @@ async function fetchListingsForMarketplace(contract, totalListings) {
   const listingsForBuyNow = [];
 
   for (let i = 0; i < Number(totalListings); i++) {
-    console.log(i, "Index...")
-    if (listingsForBids.length === 4 && listingsForBuyNow.length === 4) {
+    if (listingsForBids.length === 3 && listingsForBuyNow.length === 3) {
       break;
     }
     const listingResponse = await readContract({
@@ -73,30 +72,49 @@ async function fetchListingsForMarketplace(contract, totalListings) {
       (listingType === 1 || listingType === 0)
     ) {
       const currencyCodeOfListing = listing.currency;
-      const { decimals, symbol } = await getERC20SymbolsAndDecimals("0x94a9D9AC8a22534E3FaCa9F4e7F2E2cf85d5E4C8")
+      const { decimals, symbol } = await getERC20SymbolsAndDecimals(marketplaceConfig.erc20_contract_address)
 
       const reservePricePerToken = Number(listing.reservePricePerToken) / (10 ** decimals);
-
-      console.log(listingType, "Listing Type...")
+      // if the listing type is bid, get the winning bid and compare it with the reserve price
       if (listingType === 1) {
         const winningBidResponse = await getWinningBid(contract, listingId);
         const winningBidPricePerToken = Number(winningBidResponse.pricePerToken) / (10 ** decimals);
-        if (listingsForBids.length !== 4)
+        if (listingsForBids.length < 3)
           listingsForBids.push({
             ...listing,
             symbol,
             price: Math.max(winningBidPricePerToken, reservePricePerToken),
           });
-      } else if (listingType === 0) {
+      }
+
+      // if the listing type is buy now, get the buyout price
+      else if (listingType === 0) {
         const buyoutPricePerToken = Number(listing.buyoutPricePerToken) / (10 ** decimals);
-        if (listingsForBuyNow.length !== 4)
+        if (listingsForBuyNow.length < 3)
           listingsForBuyNow.push({ ...listing, symbol, price: buyoutPricePerToken });
       }
     }
   }
 
+  // Shuffle the arrays
+  shuffleArray(listingsForBids);
+  shuffleArray(listingsForBuyNow);
+
+  // Select only the first 3 elements
+  listingsForBids.splice(3);
+  listingsForBuyNow.splice(3);
+
   return { listingsForBids, listingsForBuyNow };
 }
+
+// Function to shuffle an array
+function shuffleArray(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+}
+
 
 // getting the winning bid of a listing
 async function getWinningBid(contract, listingId) {
