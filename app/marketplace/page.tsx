@@ -2,12 +2,13 @@
 
 import React, { useEffect } from "react";
 import MarketplaceHeroSection from "../../components/marketplace/marketplace-hero/marketplace-hero";
-import MarketplaceHotbids from "../../components/marketplace/marketplace-hotbids/marketplace-hotbids";
+import MarketplaceListingSection from "../../components/marketplace/marketplace-listing-section/marketplace-listing-section";
 import { marketplaceContractAbi } from "./marketplace-contact-abi";
 import { getContract, Chain } from "thirdweb";
 import { sepolia } from "thirdweb/chains";
 import { client } from "../../data/services/client";
 import { fetchTotalListings, fetchListingsForMarketplace } from "./services";
+import { marketplaceConfig } from "./marketplace.config";
 
 export default function Marketplace() {
   const [listings, setListings] = React.useState({
@@ -15,7 +16,9 @@ export default function Marketplace() {
     listingsForBuyNow: [],
   });
   useEffect(() => {
-    getMarletplaceListings("0x86aDf604B5B72d270654F3A0798cabeBC677C7fc");
+    getMarletplaceListings(
+      marketplaceConfig.dsponsor_marketplace_contract_address
+    );
   }, []);
 
   const getMarletplaceListings = async (nftContractAddress: string) => {
@@ -37,7 +40,6 @@ export default function Marketplace() {
     } as any);
   };
 
-  console.log(listings, "All Fetched Listings");
   return (
     <section
       style={{
@@ -45,7 +47,16 @@ export default function Marketplace() {
       }}
     >
       <MarketplaceHeroSection />
-      <MarketplaceHotbids listings={listings.listingsForBids} />
+      <MarketplaceListingSection
+        listings={listings.listingsForBids}
+        title={"Hot Bids"}
+        type={"bids"}
+      />
+      <MarketplaceListingSection
+        listings={listings.listingsForBuyNow}
+        title={"Buy Now"}
+        type={"buy-now"}
+      />
     </section>
   );
 }

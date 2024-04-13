@@ -3,9 +3,7 @@ import "swiper/css/navigation";
 import Image from "next/image";
 import Link from "next/link";
 
-import PlaceholderImage from "../../../public/images/placeholder-square.jpg";
-
-const MarketplaceItemCard = ({ title, price, symbol }) => {
+const MarketplaceItemCard = ({ title, price, symbol, image, type }) => {
   return (
     <div className="">
       <article>
@@ -13,10 +11,11 @@ const MarketplaceItemCard = ({ title, price, symbol }) => {
           <figure>
             <Link href={`url`}>
               <Image
-                src={PlaceholderImage}
+                src={image}
                 width={0}
                 height={0}
-                alt=""
+                layout="responsive"
+                alt={title}
                 className="rounded-[0.625rem] w-full lg:h-[230px] object-contain"
               />
             </Link>
@@ -24,7 +23,7 @@ const MarketplaceItemCard = ({ title, price, symbol }) => {
           <div className="mt-4 flex items-center justify-between">
             <Link
               href={`url`}
-              className="overflow-hidden text-ellipsis whitespace-nowrap max-w-[120px]"
+              className="overflow-hidden text-ellipsis whitespace-nowrap"
             >
               <span className="font-display max-w-[150px] text-jacarta-700 hover:text-accent text-base dark:text-white ">
                 {title}
@@ -44,7 +43,7 @@ const MarketplaceItemCard = ({ title, price, symbol }) => {
                   "linear-gradient(90deg, #7D56C9 0%, #9D66C9 50%, #CE7FCA 100%)",
               }}
             >
-              Buy Now
+              {type === "buy-now" ? `Buy Now` : `Place Bid`}
             </button>
           </div>
         </div>
