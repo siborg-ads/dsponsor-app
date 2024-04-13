@@ -3,13 +3,21 @@ import "swiper/css/navigation";
 import Image from "next/image";
 import Link from "next/link";
 
-const MarketplaceItemCard = ({ title, price, symbol, image, type }) => {
+const MarketplaceItemCard = ({
+  title,
+  price,
+  symbol,
+  image,
+  type,
+  assetContract,
+  tokenId,
+}) => {
   return (
     <div className="">
       <article>
         <div className="shadow-md dark:bg-jacarta-700 dark:border-jacarta-700 border-jacarta-100 rounded-2xl block border bg-white p-[1.1875rem] transition-shadow hover:shadow-lg text-jacarta-500">
           <figure>
-            <Link href={`url`}>
+            <Link href={`/marketplace/${assetContract}/${tokenId}`}>
               <Image
                 src={image}
                 width={0}

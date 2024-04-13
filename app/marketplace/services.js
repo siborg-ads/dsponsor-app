@@ -21,21 +21,23 @@ async function fetchTotalListings(contract) {
 
 
 // Function to fetch listings for "Hot bids" and "Buy now"
-async function fetchListingsForMarketplace(contract, totalListings) {
+async function fetchListingsForMarketplace(contract, totalListings, chainId) {
   const listingFetched = [];
   const listingsForBids = [];
   const listingsForBuyNow = [];
 
-  for (let i = 0; i < Number(totalListings); i++) {
-    if (listingsForBids.length === 3 && listingsForBuyNow.length === 3) {
-      break;
-    }
+
+  while (true) {
+    const randomIndexBoundary = Number(totalListings) - 1;
+
+    // pick a number between 0 and totalListings
+    const randomIndex = Math.floor(Math.random() * randomIndexBoundary);
+
     const listingResponse = await readContract({
       contract,
       method: "listings",
-      params: [BigInt(i)],
+      params: [BigInt(randomIndex)],
     });
-
     const listing = {
       listingId: listingResponse[0],
       tokenOwner: listingResponse[1],
@@ -52,10 +54,8 @@ async function fetchListingsForMarketplace(contract, totalListings) {
       rentalExpirationTimestamp: listingResponse[12],
       listingType: listingResponse[13],
     };
-
     // checking if the listing is active
     const now = Math.floor(Date.now() / 1000);
-
     const {
       listingId,
       tokenId,
@@ -64,7 +64,6 @@ async function fetchListingsForMarketplace(contract, totalListings) {
       quantity,
       listingType,
     } = listing;
-
     // checking if the end time is greater than time now and the quantity is greater than 0
     if (
       Number(endTime) > now &&
@@ -72,13 +71,17 @@ async function fetchListingsForMarketplace(contract, totalListings) {
       (listingType === 1 || listingType === 0)
     ) {
       const currencyCodeOfListing = listing.currency;
-      const { decimals, symbol } = await getERC20SymbolsAndDecimals(marketplaceConfig.erc20_contract_address)
-
+      const { decimals, symbol } = await getERC20SymbolsAndDecimals(listing.currency, chainId)
       const reservePricePerToken = Number(listing.reservePricePerToken) / (10 ** decimals);
       // if the listing type is bid, get the winning bid and compare it with the reserve price
       if (listingType === 1) {
         const winningBidResponse = await getWinningBid(contract, listingId);
         const winningBidPricePerToken = Number(winningBidResponse.pricePerToken) / (10 ** decimals);
+
+        // check and skip if the listing is already added
+        const isListingAlreadyAdded = listingsForBids.some((item) => item.listingId === listingId);
+        if (isListingAlreadyAdded) continue;
+
         if (listingsForBids.length < 3)
           listingsForBids.push({
             ...listing,
@@ -90,11 +93,18 @@ async function fetchListingsForMarketplace(contract, totalListings) {
       // if the listing type is buy now, get the buyout price
       else if (listingType === 0) {
         const buyoutPricePerToken = Number(listing.buyoutPricePerToken) / (10 ** decimals);
+
+        // check and skip if the listing is already added
+        const isListingAlreadyAdded = listingsForBuyNow.some((item) => item.listingId === listingId);
+        if (isListingAlreadyAdded) continue;
+
         if (listingsForBuyNow.length < 3)
           listingsForBuyNow.push({ ...listing, symbol, price: buyoutPricePerToken });
       }
     }
+    if (listingsForBids.length === 3 && listingsForBuyNow.length === 3) break;
   }
+
 
   // Shuffle the arrays
   shuffleArray(listingsForBids);
@@ -139,11 +149,13 @@ async function getWinningBid(contract, listingId) {
 
 
 // Testnet ERC 20 Token Contract Address
-const getERC20SymbolsAndDecimals = async (contractAddress) => {
+const getERC20SymbolsAndDecimals = async (currencyContractAddress, chainId) => {
+  const chain = getChainConfigFromId(chainId);
+
   const contract = getContract({
     client,
     chain: sepolia,
-    address: contractAddress,
+    address: currencyContractAddress,
     abi: erc20ContractAbi,
   });
 
@@ -163,5 +175,15 @@ const getERC20SymbolsAndDecimals = async (contractAddress) => {
 
 }
 
+// get chain configuration 
+const getChainConfigFromId = (chainId) => {
+  switch (chainId) {
+    case 11155111:
+      return sepolia;
+    default:
+      return null;
+  }
+};
 
-export { fetchTotalListings, fetchListingsForMarketplace }
+
+export { fetchTotalListings, fetchListingsForMarketplace, getChainConfigFromId }
