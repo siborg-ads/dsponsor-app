@@ -60,6 +60,8 @@ const MarketplaceListingSection = ({ listings, title, type }) => {
             title={listing.offer.name}
             image={listing.offer.image}
             price={listing.price}
+            assetContract={listing.assetContract}
+            tokenId={listing.tokenId}
             symbol={listing.symbol}
             type={type}
           />

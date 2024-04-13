@@ -1,7 +1,8 @@
 import { useQuery, gql, ApolloClient, InMemoryCache } from "@apollo/client";
 import { fetchDataFromIPFS } from "../../data/services/ipfsService";
+import { marketplaceConfig } from "./marketplace.config.js";
 const client = new ApolloClient({
-  uri: "https://api.studio.thegraph.com/proxy/65744/dsponsor-sepolia/version/latest",
+  uri: marketplaceConfig.marketplace_offer_gql_endpoint,
   cache: new InMemoryCache(),
 });
 
