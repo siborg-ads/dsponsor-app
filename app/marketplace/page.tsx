@@ -6,17 +6,13 @@ import MarketplaceListingSection from "../../components/marketplace/marketplace-
 import { marketplaceContractAbi } from "./marketplace-contact-abi";
 import { getContract, Chain } from "thirdweb";
 import { client } from "../../data/services/client";
-import {
-  fetchTotalListings,
-  fetchListingsForMarketplace,
-  getChainConfigFromId,
-} from "./services";
+import { fetchTotalListings, fetchListingsForMarketplace } from "./services";
 import { marketplaceConfig } from "./marketplace.config";
 import { useChainId } from "@thirdweb-dev/react";
+import { sepolia } from "thirdweb/chains";
 
 export default function Marketplace() {
   const chainId = useChainId();
-  const chain = getChainConfigFromId(chainId);
 
   const [listings, setListings] = React.useState({
     listingsForBids: [],
@@ -25,25 +21,30 @@ export default function Marketplace() {
 
   const getMarletplaceListings = React.useCallback(
     async (nftContractAddress: string) => {
-      if (!chain) return;
-      // Use the existing client to get the contract
+      // check if the chain is sapolia testnet
+      const isSepoliaNetwork = chainId === marketplaceConfig.sepolia_chain_id;
+
       const contract = getContract({
         client,
-        chain: chain as Chain,
+        chain: isSepoliaNetwork ? sepolia : (undefined as any),
         address: nftContractAddress,
         abi: marketplaceContractAbi as any,
       });
 
       const totalListings = await fetchTotalListings(contract);
       const { listingsForBids, listingsForBuyNow } =
-        await fetchListingsForMarketplace(contract, totalListings, chainId);
+        await fetchListingsForMarketplace(
+          contract,
+          totalListings,
+          isSepoliaNetwork
+        );
 
       setListings({
         listingsForBids,
         listingsForBuyNow,
       } as any);
     },
-    [chain, chainId]
+    [chainId]
   );
 
   useEffect(() => {
