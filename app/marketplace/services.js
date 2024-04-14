@@ -21,7 +21,7 @@ async function fetchTotalListings(contract) {
 
 
 // Function to fetch listings for "Hot bids" and "Buy now"
-async function fetchListingsForMarketplace(contract, totalListings, chainId) {
+async function fetchListingsForMarketplace(contract, totalListings, isSepoliaNetwork) {
   const listingFetched = [];
   const listingsForBids = [];
   const listingsForBuyNow = [];
@@ -71,7 +71,7 @@ async function fetchListingsForMarketplace(contract, totalListings, chainId) {
       (listingType === 1 || listingType === 0)
     ) {
       const currencyCodeOfListing = listing.currency;
-      const { decimals, symbol } = await getERC20SymbolsAndDecimals(listing.currency, chainId)
+      const { decimals, symbol } = await getERC20SymbolsAndDecimals(listing.currency, isSepoliaNetwork)
       const reservePricePerToken = Number(listing.reservePricePerToken) / (10 ** decimals);
       // if the listing type is bid, get the winning bid and compare it with the reserve price
       if (listingType === 1) {
@@ -149,12 +149,11 @@ async function getWinningBid(contract, listingId) {
 
 
 // Testnet ERC 20 Token Contract Address
-const getERC20SymbolsAndDecimals = async (currencyContractAddress, chainId) => {
-  const chain = getChainConfigFromId(chainId);
+const getERC20SymbolsAndDecimals = async (currencyContractAddress, isSepoliaNetwork) => {
 
   const contract = getContract({
     client,
-    chain: sepolia,
+    chain: isSepoliaNetwork ? sepolia : undefined,
     address: currencyContractAddress,
     abi: erc20ContractAbi,
   });
@@ -175,15 +174,5 @@ const getERC20SymbolsAndDecimals = async (currencyContractAddress, chainId) => {
 
 }
 
-// get chain configuration 
-const getChainConfigFromId = (chainId) => {
-  switch (chainId) {
-    case 11155111:
-      return sepolia;
-    default:
-      return null;
-  }
-};
 
-
-export { fetchTotalListings, fetchListingsForMarketplace, getChainConfigFromId }
+export { fetchTotalListings, fetchListingsForMarketplace }
