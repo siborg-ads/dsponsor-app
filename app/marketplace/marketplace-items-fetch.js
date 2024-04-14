@@ -1,12 +1,14 @@
 import { useQuery, gql, ApolloClient, InMemoryCache } from "@apollo/client";
 import { fetchDataFromIPFS } from "../../data/services/ipfsService";
 import { marketplaceConfig } from "./marketplace.config.js";
-const client = new ApolloClient({
-  uri: marketplaceConfig.marketplace_offer_gql_endpoint,
-  cache: new InMemoryCache(),
-});
 
-export const fetchOffer = async (nftContract, tokenId) => {
+export const fetchOffer = async (nftContract, tokenId, chainId) => {
+
+  const client = new ApolloClient({
+    uri: marketplaceConfig[chainId].marketplace_offer_gql_endpoint,
+    cache: new InMemoryCache(),
+  });
+
   const GET_TOKEN_DATA = gql`
     query($nftContract: Bytes!, $tokenId: BigInt!) {
       updateOffers(
@@ -51,12 +53,25 @@ export const fetchOffer = async (nftContract, tokenId) => {
 
 
 export const parseOfferMetadata = async (offerMetadata, tokenData) => {
-  const ipfsHash = offerMetadata.split("ipfs://")[1];
-  const httpHash = offerMetadata.split("http://")[1];
-  const metadataUrl = `https://nftstorage.link/ipfs/${ipfsHash ? ipfsHash : httpHash}`;
+
+  const isIPFSLink = offerMetadata.startsWith("ipfs://");
+  const isHTTPSLink = offerMetadata.startsWith("https://");
+
+  let metadataUrl = "";
+
+  if (isIPFSLink) {
+    // Handle IPFS link
+    const ipfsHash = offerMetadata.split("ipfs://")[1];
+    metadataUrl = `https://nftstorage.link/ipfs/${ipfsHash}`;
+
+  } else if (isHTTPSLink) {
+    // Handle HTTPS link
+    metadataUrl = offerMetadata;
+  }
 
   // fetch the metadata from the IPFS hash
   const ipfsData = await fetchDataFromIPFS(metadataUrl);
+
   const parsed_token_metadata = ipfsData.offer.token_metadata;
 
   // Replace {tokenData} with the provided tokenData parameter

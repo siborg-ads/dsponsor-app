@@ -9,7 +9,6 @@ import { client } from "../../data/services/client";
 import { fetchTotalListings, fetchListingsForMarketplace } from "./services";
 import { marketplaceConfig } from "./marketplace.config";
 import { useChainId } from "@thirdweb-dev/react";
-import { sepolia } from "thirdweb/chains";
 
 export default function Marketplace() {
   const chainId = useChainId();
@@ -22,22 +21,17 @@ export default function Marketplace() {
   const getMarletplaceListings = React.useCallback(
     async (nftContractAddress: string) => {
       // check if the chain is sapolia testnet
-      const isSepoliaNetwork = chainId === marketplaceConfig.sepolia_chain_id;
 
       const contract = getContract({
         client,
-        chain: isSepoliaNetwork ? sepolia : (undefined as any),
+        chain: marketplaceConfig[chainId].chain,
         address: nftContractAddress,
         abi: marketplaceContractAbi as any,
       });
 
       const totalListings = await fetchTotalListings(contract);
       const { listingsForBids, listingsForBuyNow } =
-        await fetchListingsForMarketplace(
-          contract,
-          totalListings,
-          isSepoliaNetwork
-        );
+        await fetchListingsForMarketplace(contract, totalListings, chainId);
 
       setListings({
         listingsForBids,
@@ -50,9 +44,9 @@ export default function Marketplace() {
   useEffect(() => {
     if (chainId)
       getMarletplaceListings(
-        marketplaceConfig.dsponsor_marketplace_contract_address
+        marketplaceConfig[chainId].dsponsor_marketplace_contract_address
       );
-  }, [getMarletplaceListings, chainId]);
+  }, [chainId]);
 
   return (
     <section

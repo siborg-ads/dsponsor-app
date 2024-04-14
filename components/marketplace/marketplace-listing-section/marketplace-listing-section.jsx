@@ -4,11 +4,14 @@ import {
   parseOfferMetadata,
 } from "../../../app/marketplace/marketplace-items-fetch";
 import MarketplaceItemCard from "../marketplace-item-card/marketplace-item-card";
+import { useChainId } from "@thirdweb-dev/react";
 
 const MarketplaceListingSection = ({ listings, title, type }) => {
+  const chainId = useChainId();
   const [listingsWithOfferInfo, setListingsWithOfferInfo] = useState([]);
 
   useEffect(() => {
+    if (!chainId) return;
     const getListingOfferInfo = async () => {
       const formattedListings = await Promise.all(
         listings.map(async (listing) => {
@@ -16,8 +19,10 @@ const MarketplaceListingSection = ({ listings, title, type }) => {
           try {
             const { tokenData, offerMetadata } = await fetchOffer(
               assetContract,
-              String(tokenId)
+              String(tokenId),
+              chainId
             );
+            console.log(tokenData, offerMetadata);
 
             const parsedOfferInformation = await parseOfferMetadata(
               offerMetadata,
@@ -30,7 +35,7 @@ const MarketplaceListingSection = ({ listings, title, type }) => {
               offer: parsedOfferInformation,
             };
           } catch (error) {
-            window.alert("Error fetching item info:", error);
+            console.log("Error fetching item info:");
             // If an error occurs, return null for this listing
             return null;
           }
@@ -46,7 +51,7 @@ const MarketplaceListingSection = ({ listings, title, type }) => {
     };
 
     getListingOfferInfo();
-  }, [listings]);
+  }, [listings, chainId]);
 
   return (
     <div className="container pt-28">
