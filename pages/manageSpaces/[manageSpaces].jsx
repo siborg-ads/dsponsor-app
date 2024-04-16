@@ -27,27 +27,38 @@ const ManageSpaces = () => {
       const fetchAdsOffers = async () => {
         const offers = await adminInstance.getOffers({ address: userAddress }, { includeMetadata: true, includePrices: true, includeAllowedTokens: true });
         const formatedOffers = offers.filter((ad) => ad.offerId > 22);
-        setCreatedData(formatedOffers);
+        
         const ownedAdProposals = await adminInstance.getOwnedOfferTokens({ address: userAddress }, { includeOffers: true });
         const mappedownedAdProposals = [];
+        const mappedOffers = [];
 
+for (const offer of formatedOffers) {
+  const isAdsPending = await adminInstance.getPendingAds({ offerId: offer.offerId });
 
-
+  const combinedData = {
+    ...offer,
+    ...(isAdsPending.length > 0 && { isPending: true }),
+  };
+  mappedOffers.push(combinedData);
+}
+    setCreatedData(mappedOffers);    
 
         for (const element of ownedAdProposals) {
           if (!element.offer?.offerMetadata) {
             continue;
           }
+          
           const IPFSLink = element.offer.offerMetadata;
           const destructuredIPFSResult = await fetchDataFromIPFS(IPFSLink);
           const combinedData = {
             ...element,
             ...element.offer,
+          
             ...destructuredIPFSResult,
           };
           mappedownedAdProposals.push(combinedData);
         }
-// console.log(mappedownedAdProposals);
+// console.log(mappedOffers);
 // console.log(offer);
 
         setMappedownedAdProposals(mappedownedAdProposals);

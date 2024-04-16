@@ -77,7 +77,7 @@ const SliderForm = ({ styles, handlePreviewModal, stepsRef, numSteps, children }
               {children}
               {/*End Steps */}
             </div>
-            <div className={styles.form__bullet__container}>
+            <div className={`${styles.form__bullet__container} sm:mt-4`}>
               {Array.from({ length: numSteps }).map((_, index) => (
                 <div
                   key={index}

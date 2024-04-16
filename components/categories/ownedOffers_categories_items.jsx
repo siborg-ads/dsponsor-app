@@ -109,7 +109,10 @@ const OwnedOffers_categories_items = ({ data }) => {
       {/* dropdown */}
       {/* <Recently_added_dropdown data={sortText} dropdownFor="recently_added" />
       </div> */}
-
+      <div className="dark:bg-jacarta-700 dark:text-jacarta-300 dark:border-jacarta-600 border-jacarta-100 rounded-2lg border bg-white p-3 flex gap-4 justify-center items-center mb-6">
+        <span className="bg-red rounded-2xl dark:text-white  px-2">!</span>
+        <span> You have 1 or more ads proposals to check on your offer </span>
+      </div>
       {/* <!-- Grid --> */}
       {data.length > 0 ? (
         <div className="grid grid-cols-1 gap-[1.875rem] md:grid-cols-2 lg:grid-cols-4">

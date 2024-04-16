@@ -1,10 +1,10 @@
 import { useState } from "react";
 import DatePicker from "react-datepicker";
+import Image from "next/image";
 
 import { FileUploader } from "react-drag-drop-files";
 const fileTypes = ["JPG", "PNG", "SVG", "WEBP"];
-const Step_2_Create = ({ stepsRef, styles, setLink, link, file, handleLogoUpload}) => {
-
+const Step_2_Create = ({ stepsRef, styles, setLink, link, file, handleLogoUpload, previewImage }) => {
   const handleChange = (e) => {
     let value = e.target.value;
     if (!value.startsWith("http://") && !value.startsWith("https://") && value.trim() !== "") {
@@ -12,6 +12,7 @@ const Step_2_Create = ({ stepsRef, styles, setLink, link, file, handleLogoUpload
     }
     setLink(value);
   };
+
   return (
     <div ref={(el) => (stepsRef.current[2] = el)} className={styles.form__step}>
       <div className="pr-6 pl-2">
@@ -26,7 +27,6 @@ const Step_2_Create = ({ stepsRef, styles, setLink, link, file, handleLogoUpload
           <input
             type="url"
             id="item-external-link"
-          
             className="dark:bg-jacarta-700 border-jacarta-100 hover:ring-accent/10 focus:ring-accent dark:border-jacarta-600 dark:placeholder:text-jacarta-300 w-full rounded-lg py-3 px-3 hover:ring-2 dark:text-white"
             placeholder="Provide an url for your offer. Eg.  https://yoursite.com"
             onChange={handleChange}
@@ -55,6 +55,11 @@ const Step_2_Create = ({ stepsRef, styles, setLink, link, file, handleLogoUpload
             </div>
           </div>
         </div>
+        {previewImage && (
+          <div className="flex justify-center mt-3">
+            <Image src={previewImage ? previewImage : "/"} width={200} height={200} alt="Preview" className="object-contain h-full" />
+          </div>
+        )}
       </div>
     </div>
   );

@@ -8,6 +8,7 @@ import "react-toastify/dist/ReactToastify.css";
 const PreviewModal = ({
   handlePreviewModal,
   handleSubmit,
+  customSymbolContract,
   name = false,
   link = null,
   description = false,
@@ -128,7 +129,7 @@ const PreviewModal = ({
                   )}
                   {customContract ? (
                     <p className="font-display  mb-2 block text-jacarta-400 text-sm">
-                      Custom Contract : {!errors.currencyError ? <span className="dark:text-white text-base ml-2"> {customContract} </span> : <span className="text-red">{errors.currencyError}</span>}
+                      Custom Contract : {!errors.currencyError ? <span className="dark:text-white text-base ml-2"> {customSymbolContract} </span> : <span className="text-red">{errors.currencyError}</span>}
                     </p>
                   ) : selectedCurrency ? (
                     <p className="font-display  mb-2 block text-jacarta-400 text-sm">

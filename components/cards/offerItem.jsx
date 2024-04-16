@@ -9,6 +9,7 @@ import { useCountdown } from "../../utils/countDown";
 import adminInstance from "../../utils/sdkProvider";
 
 
+
 const OfferItem = ({ item, url, isToken }) => {
   const [price, setPrice] = useState(null);
   const [currencyToken, setCurrencyToken] = useState(null);
@@ -79,10 +80,12 @@ const OfferItem = ({ item, url, isToken }) => {
 
   return (
     <>
-      <article>
+      <article className="relative">
+        {item.isPending && <div className="absolute -top-2 -right-2 rounded-2xl bg-red rounded-2xl dark:text-white  px-2">!</div>}
+
         <div className="dark:bg-jacarta-700 dark:border-jacarta-700 border-jacarta-100 rounded-2xl block border bg-white p-[1.1875rem] transition-shadow hover:shadow-lg text-jacarta-500">
           <figure>
-            <Link href={url}>{image  && <Image src={image} alt="" height={230} width={230} className="rounded-[0.625rem] w-full lg:h-[230px] object-contain" loading="lazy" />}</Link>
+            <Link href={url}>{image && <Image src={image} alt="" height={230} width={230} className="rounded-[0.625rem] w-full lg:h-[230px] object-contain" loading="lazy" />}</Link>
           </figure>
           <div className="mt-4 flex items-center justify-between">
             <Link href={url} className="overflow-hidden text-ellipsis whitespace-nowrap max-w-[120px]">
@@ -111,8 +114,8 @@ const OfferItem = ({ item, url, isToken }) => {
                 {formatDate(valid_from)} - {formatDate(valid_to)}
               </span>
             ) : (
-              <span className={`${adStatut === 0 ? "text-red" : adStatut === 1 ? "text-green" : adStatut=== 2 ? "text-accent" : "" } text-sm font-bold`}>
-                {adStatut === 0 ? "❌ Rejected" : adStatut === 1 ? "✅ Accepted" :adStatut=== 2 ? "🔍 Pending" : "Ad space available"}
+              <span className={`${adStatut === 0 ? "text-red" : adStatut === 1 ? "text-green" : adStatut === 2 ? "text-accent" : ""} text-sm font-bold`}>
+                {adStatut === 0 ? "❌ Rejected" : adStatut === 1 ? "✅ Accepted" : adStatut === 2 ? "🔍 Pending" : "Ad space available"}
               </span>
             )}
           </div>

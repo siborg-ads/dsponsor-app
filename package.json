@@ -16,6 +16,7 @@
     "@emotion/styled": "^11.9.3",
     "@material-tailwind/react": "^1.2.4",
     "@mui/material": "^5.8.7",
+    "@nextui-org/badge": "^2.0.25",
     "@reduxjs/toolkit": "^1.8.2",
     "@thirdweb-dev/auth": "^4.1.54",
     "@thirdweb-dev/react": "^4.4.31",

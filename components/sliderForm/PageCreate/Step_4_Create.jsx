@@ -96,7 +96,9 @@ const Step_4_Create = ({
               )}
             </div>
           </div>
-          <p className="dark:text-jacarta-300 text-jacarta-400 text-2xs mt-3">You&apos;ll earn up to 1600 USDC. As d&gt;sponsor charges a fee of 4%, sponsors will pay 208 USDC.</p>
+          <p className="dark:text-jacarta-300 text-jacarta-400 text-2xs mt-3">
+            You&apos;ll earn up to {selectedUnitPrice} {selectedCurrency}. As d&gt;sponsor charges a fee of 4%, sponsors will pay {selectedUnitPrice * 0.04 + selectedUnitPrice} {selectedCurrency}.
+          </p>
         </div>
 
         {/* <!-- Royalties --> */}

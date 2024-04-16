@@ -453,11 +453,11 @@ const Item = () => {
           <div>
             <SliderForm styles={styles} handlePreviewModal={handlePreviewModal} stepsRef={stepsRef} numSteps={numSteps}>
               <Step_1_Mint stepsRef={stepsRef} styles={styles} adParamaters={["Grid Logo & Link"]} />
-              <Step_2_Mint stepsRef={stepsRef} styles={styles} file={file} handleLogoUpload={handleLogoUpload} />
+              <Step_2_Mint stepsRef={stepsRef} styles={styles} file={file} previewImage={previewImage} handleLogoUpload={handleLogoUpload} />
               <Step_3_Mint stepsRef={stepsRef} styles={styles} setLink={setLink} link={link} />
             </SliderForm>
           </div>
-        )  : (
+        ) : (
           <div className="flex justify-center">
             <p>{offerNotFormated ? "Offer isn't well formated to buy" : !isAllowedToMint && !isOwner ? "Sorry, someone already own this NFT " : ""}</p>
           </div>
@@ -502,7 +502,6 @@ const Item = () => {
             userBalance={userBalance}
             tokenId={tokenId}
             formatTokenId={formatTokenId}
-            
           />
         </div>
       )}

@@ -4,7 +4,7 @@ import Meta from "../../components/Meta";
 import Image from "next/image";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { useAddress, useSwitchChain, useContract, useContractWrite, Web3Button, useStorageUpload, useTokenDecimals, CheckoutWithCard, CheckoutWithEth } from "@thirdweb-dev/react";
+import { useAddress, useSwitchChain, useContract, useContractWrite, Web3Button,useContractRead, useStorageUpload, useTokenDecimals, CheckoutWithCard, CheckoutWithEth } from "@thirdweb-dev/react";
 import { Mumbai, Polygon } from "@thirdweb-dev/chains";
 import { ethers } from "ethers";
 import styles from "../../styles/createPage/style.module.scss";
@@ -282,6 +282,8 @@ const Create = () => {
   
 
   const { contract: customTokenContract } = useContract(customContract, "token");
+  const { data: customSymbolContract } = useContractRead(customTokenContract, "symbol");
+ 
   
   const { data: customDecimals } = useTokenDecimals(customTokenContract);
   
@@ -361,7 +363,7 @@ const Create = () => {
           />
           <Step_2_Create stepsRef={stepsRef} styles={styles} setName={setName} setDescription={setDescription} />
 
-          <Step_3_Create stepsRef={stepsRef} styles={styles} setLink={setLink} link={link} file={file} handleLogoUpload={handleLogoUpload} />
+          <Step_3_Create stepsRef={stepsRef} styles={styles} setLink={setLink} link={link} previewImage={previewImage} file={file} handleLogoUpload={handleLogoUpload} />
 
           <Step_4_Create
             stepsRef={stepsRef}
@@ -386,6 +388,7 @@ const Create = () => {
           <PreviewModal
             handlePreviewModal={handlePreviewModal}
             handleSubmit={handleSubmit}
+            customSymbolContract={customSymbolContract}
             name={name}
             link={link}
             file={file}

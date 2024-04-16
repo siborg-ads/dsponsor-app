@@ -1,10 +1,12 @@
 import { useState } from "react";
 import DatePicker from "react-datepicker";
-// import styles from "../../../styles/createPage/style.module.scss";
+import Image from "next/image";
+
 
 import { FileUploader } from "react-drag-drop-files";
 
-const Step_2_Mint = ({ stepsRef, styles, file, handleLogoUpload }) => {
+const Step_2_Mint = ({ stepsRef, styles, file, handleLogoUpload, previewImage }) => {
+  console.log(stepsRef.current[1]);
   const fileTypes = ["JPG", "PNG", "SVG", "WEBP"];
   return (
     <div ref={(el) => (stepsRef.current[1] = el)} className={styles.form__step}>
@@ -35,6 +37,11 @@ const Step_2_Mint = ({ stepsRef, styles, file, handleLogoUpload }) => {
               <FileUploader handleChange={handleLogoUpload} name="file" types={fileTypes} classes="file-drag" maxSize={25} minSize={0} />
             </div>
           </div>
+          {previewImage && (
+            <div className="flex justify-center mt-3">
+              <Image src={previewImage ? previewImage : "/"} width={200} height={200} alt="Preview" className="object-contain h-full" />
+            </div>
+          )}
         </div>
       </div>
     </div>
