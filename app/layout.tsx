@@ -6,7 +6,9 @@ import BidsModal from "../components/modal/bidsModal";
 import BuyModal from "../components/modal/buyModal";
 import { Provider } from "react-redux";
 import { store } from "../redux/store";
-import UserContext from "../components/UserContext";
+import Header01 from "../components/header/Header01";
+import Footer from "../components/footer"
+
 import {
   ThirdwebProvider,
   ConnectWallet,
@@ -16,9 +18,8 @@ import {
   localWallet,
   embeddedWallet,
 } from "@thirdweb-dev/react";
-import { Mumbai, Polygon, Sepolia } from "@thirdweb-dev/chains";
+import { Sepolia } from "@thirdweb-dev/chains";
 import { MetaMaskProvider } from "metamask-react";
-import { Confirm_checkout } from "../components/metamask/Metamask";
 
 export default function RootLayout({
   children,
@@ -61,9 +62,14 @@ export default function RootLayout({
         >
           <Provider store={store}>
           <MetaMaskProvider>
-            <main>{children}</main>
-            <BidsModal />
-            <BuyModal />
+            
+            <main>
+              <Header01 />
+              <BidsModal />
+              <BuyModal />
+              {children}
+              <Footer/>
+            </main>
           </MetaMaskProvider>
           </Provider>
 
