@@ -95,13 +95,13 @@ const Item = () => {
             }
           }
         }
-        
+
         const combinedData = {
           ...offer,
           normalizedParams,
         };
 
-         console.log(combinedData, "combinedData");
+        console.log(combinedData, "combinedData");
         setOfferData([combinedData]);
       };
 
@@ -109,7 +109,7 @@ const Item = () => {
     }
 
     setTokenIdString(tokenId?.toString());
-  }, [offerId, router, address, tokenId]);
+  }, [offerId, router, address, tokenId, successFullUpload]);
 
   useEffect(() => {
     const fetchAdsOffers = async () => {
@@ -137,7 +137,7 @@ const Item = () => {
     };
 
     fetchAdsOffers();
-  }, [offerId, tokenId]);
+  }, [offerId, tokenId, successFullUpload]);
  
 
   useEffect(() => {
@@ -305,12 +305,13 @@ const Item = () => {
   }
 
   const handleBuyModal = () => {
-    
+    setSuccessFullUpload(false);
   !buyModal && setUserBalance(checkUserBalance(tokenBalance, price));
      setBuyModal(!buyModal);
      setBuyMethod(true);
   };
   const handlePreviewModal = () => {
+    setSuccessFullUpload(false);
     setShowPreviewModal(!showPreviewModal);
     validateInputs();
   };
@@ -448,7 +449,7 @@ const Item = () => {
       {/* <!-- end item --> */}
 
       <div>
-        {isOwner && (adStatut === 3 || adStatut === 0) && !offerNotFormated ? (
+        {isOwner && !offerNotFormated ? (
           <div>
             <SliderForm styles={styles} handlePreviewModal={handlePreviewModal} stepsRef={stepsRef} numSteps={numSteps}>
               <Step_1_Mint stepsRef={stepsRef} styles={styles} adParamaters={["Grid Logo & Link"]} />
@@ -456,11 +457,7 @@ const Item = () => {
               <Step_3_Mint stepsRef={stepsRef} styles={styles} setLink={setLink} link={link} />
             </SliderForm>
           </div>
-        ) : adStatut === 2 ? (
-          <div className="flex justify-center">
-            <p>Your ad proposal is currently being reviewed by the creator.</p>
-          </div>
-        ) : (
+        )  : (
           <div className="flex justify-center">
             <p>{offerNotFormated ? "Offer isn't well formated to buy" : !isAllowedToMint && !isOwner ? "Sorry, someone already own this NFT " : ""}</p>
           </div>

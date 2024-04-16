@@ -14,8 +14,7 @@ const OfferItem = ({ item, url, isToken }) => {
   const [currencyToken, setCurrencyToken] = useState(null);
   const [itemData, setItemData] = useState({});
   const [adStatut, setAdStatut] = useState(null);
-  
- console.log(item, "item")
+
   function formatDate(dateIsoString) {
     if(!dateIsoString) return "date not found";
     const options = { year: "numeric", month: "long", day: "numeric" };

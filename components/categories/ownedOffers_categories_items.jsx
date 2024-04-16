@@ -48,7 +48,7 @@ const OwnedOffers_categories_items = ({ data }) => {
     dispatch(updateTrendingCategoryItemData(itemdata.slice(0, 8)));
   }, [itemdata, dispatch]);
 
-  if (!data || data.length === 0) {
+  if (!data ) {
     return (
       <div className="flex w-full justify-center">
         <Image src="/images/loading-bullet.svg" alt="icon" width={60} height={60}  />

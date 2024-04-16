@@ -2104,7 +2104,24 @@ html {
       transform: rotate(1turn);
     }
   }
-
+   @keyframes slideUp {
+        from { bottom: -100%; }
+        to { bottom: 0px; } 
+    }
+    @keyframes slideDown {
+        from { bottom: 0px; }
+        to { bottom: -100%; } 
+    }
+.animated-modalSelectedItemUp {
+       
+        animation: slideUp 0.3s forwards;
+        
+    }
+    .animated-modalSelectedItemDown {
+       
+        animation: slideDown 0.3s forwards;
+        
+    }
   .animate-spin-slow {
     -webkit-animation: spin 10s linear infinite;
     animation: spin 10s linear infinite;
@@ -3441,7 +3458,13 @@ html {
   .filter {
     filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
   }
-
+.blury-background{
+  
+  background-color: rgba(54, 58, 93, 0.7);
+  backdrop-filter: blur(25px);
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+}
   .backdrop-blur {
     --tw-backdrop-blur: blur(8px);
     -webkit-backdrop-filter: var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert)

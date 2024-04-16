@@ -29,7 +29,7 @@ const Offer = () => {
   const [refusedProposalData, setRefusedProposalData] = useState([]);
   const [royalties, setRoyalties] = useState(null);
   const [successFullUpload, setSuccessFullUpload] = useState(false);
-const [currency, setCurrency] = useState(null);
+  const [currency, setCurrency] = useState(null);
   const [price, setPrice] = useState(null);
   const [imageModal, setImageModal] = useState(false);
   const { contract: DsponsorNFTContract } = useContract(offerData[0]?.nftContract);
@@ -44,35 +44,46 @@ const [currency, setCurrency] = useState(null);
     if (offerId) {
       const fetchAdsOffers = async () => {
         const ads = await adminInstance.getPendingAds({ offerId: offerId });
-        console.log(ads, "ads");
-        const formattedPendingAds = [];
 
-       
-        for (let i = 0; i < ads.length; i += 2) {
-          
-          if (i + 1 < ads.length) {
-        formattedPendingAds.push({
-            groupKey: `${ads[i].proposalId}-${ads[i+1].proposalId}`,
-            ads: [ads[i], ads[i+1]]
-        });
+        const groupedAds = {};
+
+        for (let i = 0; i < ads.length; i++) {
+          const { tokenId, proposalId, adParameters, offerId } = ads[i];
+
+          if (!groupedAds[tokenId]) {
+            groupedAds[tokenId] = {
+              tokenId: tokenId,
+              offerId: offerId,
+              proposalIds: [],
+              adParametersList: {},
+              adParametersKeys: [],
+            };
+          }
+
+          groupedAds[tokenId].proposalIds.push(proposalId);
+
+          groupedAds[tokenId].adParametersList = { ...groupedAds[tokenId].adParametersList, ...adParameters };
+          Object.keys(adParameters).forEach((key) => {
+            if (!groupedAds[tokenId].adParametersKeys.includes(key)) {
+              groupedAds[tokenId].adParametersKeys.push(key);
+            }
+          });
         }
-      }
-        console.log(formattedPendingAds, "formattedPendingAds");
+
+        const formattedPendingAds = Object.values(groupedAds);
         const offer = await adminInstance.getOffer({ offerId: offerId });
         const validatedAds = await adminInstance.getValidatedAds({ offerId: offerId });
         const refusedAds = await adminInstance.getRejectedAds({ offerId: offerId });
-        const proposals = await adminInstance.getAdProposals({ offerId: offerId });
-        console.log(validatedAds, "proposals");
-       const params = await adminInstance.getAdParameters({ offerId: offerId });
+        console.log(formattedPendingAds, "formattedPendingAds");
+        console.log(validatedAds, "validatedAds");
         // const normalizedParams = bufferAdParams(params);
-       
-       
+
         const destructuredIPFSResult = await fetchDataFromIPFS(offer.offerMetadata);
         const combinedData = {
           ...offer,
           ...destructuredIPFSResult,
         };
-        
+
         try {
           const currencyToken = adminInstance.chain.getCurrencyByAddress(offer.currencies[0]);
           const formatPrice = offer.prices[0] / 10 ** currencyToken.decimals;
@@ -81,7 +92,7 @@ const [currency, setCurrency] = useState(null);
         } catch (e) {
           console.error("Error: Currency not found for address");
         }
-       
+
         setOfferData([combinedData]);
         setValidatedProposalData(validatedAds);
         setRefusedProposalData(refusedAds);
@@ -90,13 +101,11 @@ const [currency, setCurrency] = useState(null);
 
       fetchAdsOffers();
     }
-  }, [offerId, router]);
+  }, [offerId, router, successFullRefuseModal]);
   useEffect(() => {
     if (royaltiesInfo) setRoyalties(ethers.BigNumber.from(royaltiesInfo[1]?._hex).toNumber());
-    
   }, [royaltiesInfo]);
 
-  
   const handleSubmit = async (submissionArgs) => {
     try {
       await mutateAsync({
@@ -105,7 +114,7 @@ const [currency, setCurrency] = useState(null);
       setSuccessFullRefuseModal(true);
     } catch (error) {
       console.error("Erreur de validation du token:", error);
-      setSuccessFullUpload(false);
+      setSuccessFullRefuseModal(false);
       throw error;
     }
   };
@@ -133,8 +142,8 @@ const [currency, setCurrency] = useState(null);
   if (!offerData || offerData.length === 0) {
     return <div>Chargement...</div>;
   }
- 
-   const { description = "description not found", id = "1", image = ["/images/gradient_creative.jpg"], name = "DefaultName", nftContract = "N/A" } = offerData[0].offer ? offerData[0].offer : {};
+
+  const { description = "description not found", id = "1", image = ["/images/gradient_creative.jpg"], name = "DefaultName", nftContract = "N/A" } = offerData[0].offer ? offerData[0].offer : {};
 
   return (
     <>

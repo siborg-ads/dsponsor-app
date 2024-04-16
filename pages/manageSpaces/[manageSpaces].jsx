@@ -18,16 +18,16 @@ const ManageSpaces = () => {
   const router = useRouter();
   const userAddress = router.query.manageSpaces;
 
-  const [createdData, setCreatedData] = useState([]);
-  const [mappedownedAdProposals, setMappedownedAdProposals] = useState([]);
+  const [createdData, setCreatedData] = useState(null);
+  const [mappedownedAdProposals, setMappedownedAdProposals] = useState(null);
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     if (userAddress) {
       const fetchAdsOffers = async () => {
         const offers = await adminInstance.getOffers({ address: userAddress }, { includeMetadata: true, includePrices: true, includeAllowedTokens: true });
-        
-        const data = [];
+        const formatedOffers = offers.filter((ad) => ad.offerId > 22);
+        setCreatedData(formatedOffers);
         const ownedAdProposals = await adminInstance.getOwnedOfferTokens({ address: userAddress }, { includeOffers: true });
         const mappedownedAdProposals = [];
 
@@ -49,9 +49,9 @@ const ManageSpaces = () => {
         }
 // console.log(mappedownedAdProposals);
 // console.log(offer);
-const formatedOffers = offers.filter((ad) => ad.offerId > 22);
+
         setMappedownedAdProposals(mappedownedAdProposals);
-        setCreatedData(formatedOffers);
+        
       };
 
       fetchAdsOffers();
