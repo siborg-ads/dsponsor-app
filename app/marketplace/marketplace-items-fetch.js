@@ -2,7 +2,7 @@ import { useQuery, gql, ApolloClient, InMemoryCache } from "@apollo/client";
 import { fetchDataFromIPFS } from "../../data/services/ipfsService";
 import { marketplaceConfig } from "./marketplace.config.js";
 
-export const fetchOffer = async (nftContract, tokenId, chainId) => {
+export const fetchOffer = async (nftContracts, tokenIds, chainId) => {
 
   const client = new ApolloClient({
     uri: marketplaceConfig[chainId].marketplace_offer_gql_endpoint,
@@ -10,46 +10,65 @@ export const fetchOffer = async (nftContract, tokenId, chainId) => {
   });
 
   const GET_TOKEN_DATA = gql`
-    query($nftContract: Bytes!, $tokenId: BigInt!) {
-      updateOffers(
-        orderBy: blockTimestamp
-        orderDirection: desc
-        where: { nftContract: $nftContract }
-      ) {
-        offerId
-        nftContract
-        offerMetadata
-        blockTimestamp
-      }
-      mints(
-        orderBy: blockTimestamp
-        orderDirection: desc
-        where: { tokenId: $tokenId }
-      ) {
-        tokenId
-        tokenData
-        blockTimestamp
-      }
+  query 
+  ( $nftContracts: [Bytes!],  $tokenIds: [BigInt!] )
+  {
+    updateOffers(
+      orderBy: blockTimestamp
+      orderDirection: desc
+     where: {nftContract_in: $nftContracts}
+    ) {
+      offerId
+      nftContract
+      offerMetadata
+      blockTimestamp
     }
+    mints(
+      orderBy: blockTimestamp
+      orderDirection: desc
+     where: { tokenId_in: $tokenIds }
+    ) {
+      tokenId
+      tokenData
+      blockTimestamp
+    }
+  }
   `;
   try {
     const { data, loading, error } = await client.query({
       query: GET_TOKEN_DATA,
       variables: {
-        nftContract,
-        tokenId
+        nftContracts,
+        tokenIds
       }
     });
 
-    const tokenData = data.mints[0].tokenData;
-    const offerMetadata = data.updateOffers[0].offerMetadata;
+    const updateOffers = data.updateOffers;
 
-    return { tokenData, offerMetadata };
+    // Group updateOffers by nftContract
+    const groupedOffers = {};
+    updateOffers.forEach(offer => {
+      const { nftContract, blockTimestamp } = offer;
+      if (!groupedOffers[nftContract] || blockTimestamp > groupedOffers[nftContract].blockTimestamp) {
+        groupedOffers[nftContract] = offer;
+      }
+    });
+
+    // Create an array of latestOffers for each item in updateOffers
+    const latestOffers = updateOffers.map(offer => groupedOffers[offer.nftContract]);
+
+    // Get tokenDatas and offerMetadatas
+    const tokenDatas = data.mints.map(mint => mint.tokenData);
+    const offerMetadatas = latestOffers.map(offer => offer.offerMetadata);
+
+    return { tokenDatas, offerMetadatas };
 
   } catch (error) {
-    console.error("Error fetching item info:", error);
+    console.log("Error fetching item info:", error);
+    return { tokenDatas: [], offerMetadatas: [] };
   }
 };
+
 
 
 export const parseOfferMetadata = async (offerMetadata, tokenData) => {
