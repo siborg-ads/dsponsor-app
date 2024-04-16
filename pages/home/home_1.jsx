@@ -1,7 +1,19 @@
 import React from "react";
 import { useEffect, useState } from "react";
 import { DSponsorAdmin } from "@dsponsor/sdk";
-import { useAddress, darkTheme, Web3Button, useTokenBalance, useContract, useContractRead, useContractWrite, useStorageUpload, useTokenDecimals, CheckoutWithCard, CheckoutWithEth } from "@thirdweb-dev/react";
+import {
+  useAddress,
+  darkTheme,
+  Web3Button,
+  useTokenBalance,
+  useContract,
+  useContractRead,
+  useContractWrite,
+  useStorageUpload,
+  useTokenDecimals,
+  CheckoutWithCard,
+  CheckoutWithEth,
+} from "@thirdweb-dev/react";
 import { fetchDataFromIPFS } from "../../data/services/ipfsService";
 import { Hero, Bids, Top_collection } from "../../components/component";
 import Meta from "../../components/Meta";
@@ -22,7 +34,11 @@ const Home_1 = () => {
         {
           limit: 10,
         },
-        { includeMetadata: true, includePrices: true, includeAllowedTokens: true }
+        {
+          includeMetadata: true,
+          includePrices: true,
+          includeAllowedTokens: true,
+        }
       );
 
       const data = ads.filter((item) => Number(item.offerId) !== 1);
@@ -46,6 +62,7 @@ const Home_1 = () => {
 
       setData(mappedData);
     };
+    console.log("data", data);
     fetchAdsOffers();
   }, []);
   return (
