@@ -8,7 +8,7 @@ const Step_1_Create = ({ stepsRef, styles, selectedTypeParameter, selectedNumber
   const AdParameterData = [
     {
       type: "Logo Grid & Link",
-      value: ["logoURL", "linkURL"],
+      value: ["imageURL", "linkURL"],
     },
     // {
     //   type: "Banner & Link",

@@ -2,7 +2,8 @@ import React, { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Web3Button } from "@thirdweb-dev/react";
-
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 const AddProposalRefusedModal = ({ id, offerId, tokenId, recordsProposalId, comments, closeRefuseModal, handleCommentChange, handleItemSubmit, setRefusedAdModal, successFullRefuseModal }) => {
   const formatDate = (date) => {
     if (!date) return "";
@@ -56,7 +57,13 @@ const AddProposalRefusedModal = ({ id, offerId, tokenId, recordsProposalId, comm
                 {!successFullRefuseModal ? (
                   <Web3Button
                     contractAddress="0xdf42633BD40e8f46942e44a80F3A58d0Ec971f09"
-                    action={() => handleItemSubmit(offerId, tokenId, recordsProposalId, false)}
+                    action={() =>
+                      toast.promise(handleItemSubmit(offerId, tokenId, recordsProposalId, false), {
+                        pending: "Waiting transaction confirmation",
+                        success: "Transaction confirmed 👌",
+                        error: "Transaction rejected 🤯",
+                      })
+                    }
                     className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!comments ? "btn-disabled" : "!bg-red !cursor-pointer"} `}
                     disabled={!comments}
                   >

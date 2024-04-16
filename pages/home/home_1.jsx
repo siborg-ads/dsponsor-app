@@ -25,8 +25,8 @@ const Home_1 = () => {
         { includeMetadata: true, includePrices: true, includeAllowedTokens: true }
       );
       
-const formatedAds = ads.filter(ad => ad.offerId > 11);
-// console.log(formatedAds);
+const formatedAds = ads.filter(ad => ad.offerId > 22);
+ console.log(formatedAds);
       
       for (const element of formatedAds) {
         if (!element.nftContract) return;
@@ -37,7 +37,7 @@ const formatedAds = ads.filter(ad => ad.offerId > 11);
             method: "tokenIdIsAllowedToMint",
             params: [i],
           });
-          const destructuredIPFSResult = await fetchDataFromIPFS(element.offerMetadata);
+         
 
           if (isTokenAllowed) {
             mappedData.push({

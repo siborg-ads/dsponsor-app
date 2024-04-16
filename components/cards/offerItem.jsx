@@ -15,7 +15,7 @@ const OfferItem = ({ item, url, isToken }) => {
   const [itemData, setItemData] = useState({});
   const [adStatut, setAdStatut] = useState(null);
   
- 
+ console.log(item, "item")
   function formatDate(dateIsoString) {
     if(!dateIsoString) return "date not found";
     const options = { year: "numeric", month: "long", day: "numeric" };
@@ -49,7 +49,7 @@ const OfferItem = ({ item, url, isToken }) => {
       const checkAds = async (fetchFunction) => {
         if (!item.offerId) return;
         const ads = await fetchFunction;
-        console.log(ads, item.offerId , "there it is");
+        
         return ads.some((ad) => ad.tokenId === item.tokenId);
       };
 
@@ -83,7 +83,7 @@ const OfferItem = ({ item, url, isToken }) => {
       <article>
         <div className="dark:bg-jacarta-700 dark:border-jacarta-700 border-jacarta-100 rounded-2xl block border bg-white p-[1.1875rem] transition-shadow hover:shadow-lg text-jacarta-500">
           <figure>
-            <Link href={url}>{image?.[0] && <Image src={image?.[0]} alt="" height={230} width={230} className="rounded-[0.625rem] w-full lg:h-[230px] object-contain" loading="lazy" />}</Link>
+            <Link href={url}>{image  && <Image src={image} alt="" height={230} width={230} className="rounded-[0.625rem] w-full lg:h-[230px] object-contain" loading="lazy" />}</Link>
           </figure>
           <div className="mt-4 flex items-center justify-between">
             <Link href={url} className="overflow-hidden text-ellipsis whitespace-nowrap max-w-[120px]">

@@ -66,12 +66,13 @@ const Item = () => {
   const [userBalance, setUserBalance] = useState(null);
   const stepsRef = useRef([]);
   const numSteps = 3;
+  
   useEffect(() => {
     if (offerId) {
       const fetchAdsOffers = async () => {
         const offer = await adminInstance.getOffer({ offerId: offerId });
         const params = await adminInstance.getAdParameters({ offerId: offerId });
-
+        console.log(offer, "offer");
         const normalizedParams = bufferAdParams(params);
 
         try {
@@ -94,10 +95,9 @@ const Item = () => {
             }
           }
         }
-        const destructuredIPFSResult = await fetchDataFromIPFS(offer.offerMetadata);
+        
         const combinedData = {
           ...offer,
-          ...destructuredIPFSResult,
           normalizedParams,
         };
 
@@ -224,6 +224,7 @@ const Item = () => {
         }
       } catch (error) {
         console.error("Erreur d'approbation des tokens:", error);
+        throw error;
       }
        
      
@@ -244,7 +245,7 @@ const Item = () => {
              tokenId: tokenIdString,
              to: address,
              currency: offerData[0]?.currencies[0],
-             tokenData: "null",
+             tokenData: "",
              offerId: offerId,
              adParameters: [],
              adDatas: [],
@@ -296,6 +297,13 @@ const Item = () => {
       return null;
     }
   };
+  function formatTokenId(str) {
+    if (str.length <= 6) {
+      return str; 
+    }
+    return str.slice(0, 3) + "..." + str.slice(-3);
+  }
+
   const handleBuyModal = () => {
     
   !buyModal && setUserBalance(checkUserBalance(tokenBalance, price));
@@ -330,7 +338,7 @@ const Item = () => {
     return <div>Chargement...</div>;
   }
 
-  const { description = "description not found", id = "1", image = ["/images/gradient_creative.jpg"], name = "DefaultName" } = offerData[0].offer ? offerData[0].offer : {};
+  const { description = "description not found", id = "1", image = ["/images/gradient_creative.jpg"], name = "DefaultName" } = offerData[0].metadata.offer ? offerData[0].metadata.offer : {};
 
   return (
     <>
@@ -356,13 +364,13 @@ const Item = () => {
             {/* <!-- Image --> */}
             <figure className="mb-8 md:w-2/5 md:flex-shrink-0 md:flex-grow-0 md:basis-auto lg:w-1/2 w-full flex justify-center">
               <button className=" w-full" onClick={() => setImageModal(true)} style={{ height: "450px" }}>
-                <Image width={585} height={726} src={image[0]} alt="image" className="rounded-2xl cursor-pointer h-full object-contain w-full" />
+                <Image width={585} height={726} src={image} alt="image" className="rounded-2xl cursor-pointer h-full object-contain w-full" />
               </button>
 
               {/* <!-- Modal --> */}
               <div className={imageModal ? "modal fade show block" : "modal fade"}>
                 <div className="modal-dialog !my-0 flex h-full max-w-4xl items-center justify-center">
-                  <Image width={582} height={722} src={image[0]} alt="image" className="h-full object-cover w-full rounded-2xl" />
+                  <Image width={582} height={722} src={image} alt="image" className="h-full object-cover w-full rounded-2xl" />
                 </div>
 
                 <button type="button" className="btn-close absolute top-6 right-6" onClick={() => setImageModal(false)}>
@@ -410,7 +418,7 @@ const Item = () => {
                   </span>
                 </div>
 
-                <span className="dark:text-jacarta-300 text-jacarta-400 text-sm">N° {tokenId}</span>
+                <span className="dark:text-jacarta-300 text-jacarta-400 text-sm">Space #{formatTokenId(tokenId)}</span>
                 <span className="text-jacarta-400 block text-sm dark:text-white">
                   Creator <strong>{royalties}% royalties</strong>
                 </span>
@@ -454,7 +462,7 @@ const Item = () => {
           </div>
         ) : (
           <div className="flex justify-center">
-            <p>{offerNotFormated ? "Offer isn't well formated to buy" : !isAllowedToMint ? "Sorry, someone already own this NFT " : ""}</p>
+            <p>{offerNotFormated ? "Offer isn't well formated to buy" : !isAllowedToMint && !isOwner ? "Sorry, someone already own this NFT " : ""}</p>
           </div>
         )}
       </div>
@@ -495,6 +503,9 @@ const Item = () => {
             selectedCurrency={currency.symbol}
             selectedRoyalties={royalties}
             userBalance={userBalance}
+            tokenId={tokenId}
+            formatTokenId={formatTokenId}
+            
           />
         </div>
       )}

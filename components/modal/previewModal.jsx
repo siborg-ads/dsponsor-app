@@ -137,6 +137,13 @@ const PreviewModal = ({
                   ) : (
                     ""
                   )}
+                  {selectedRoyalties ? (
+                    <p className="font-display  mb-2 block text-jacarta-400 text-sm">
+                      Royalties : {!errors.royaltyError ? <span className="dark:text-white text-base ml-2"> {selectedRoyalties} % </span> : <span className="text-red">{errors.royaltyError}</span>}
+                    </p>
+                  ) : (
+                    ""
+                  )}
                 </div>
                 {previewImage && (
                   <div className="mb-6  flex-col items-center justify-center ">

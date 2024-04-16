@@ -101,7 +101,7 @@ const Validated_refused_items = ({ statut, proposalData }) => {
                 <div key={tokenId} className="dark:bg-jacarta-700  gap-5 p-8 dark:border-jacarta-700 transition-shadow hover:shadow-lg border-jacarta-100 rounded-2.5xl relative flex">
                   <div className=" relative flex items-center gap-5 flex-col sm:flex-row ">
                     <figure className=" self-start">
-                      <Image src={records?.logoURL} alt={title} height={75} width={75} objectFit="contain" className="rounded-2lg min-w-[75px]" loading="lazy" />
+                      <Image src={records?.imageURL} alt={title} height={75} width={75} objectFit="contain" className="rounded-2lg min-w-[75px]" loading="lazy" />
                     </figure>
                     <div>
                       <h3 className="font-display text-jacarta-700 mb-1 text-base font-semibold dark:text-white">
@@ -110,7 +110,7 @@ const Validated_refused_items = ({ statut, proposalData }) => {
                       <span>
                         Proposals n° :{" "}
                         <span className="text-accent">
-                          [{records?.linkURL?.proposalId}-{records?.logoURL?.proposalId}]
+                          [{records?.linkURL?.proposalId}-{records?.imageURL?.proposalId}]
                         </span>{" "}
                       </span>
                       <div className="mb-4 flex flex-col">

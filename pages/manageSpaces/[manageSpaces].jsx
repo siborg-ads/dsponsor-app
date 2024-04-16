@@ -25,7 +25,7 @@ const ManageSpaces = () => {
   useEffect(() => {
     if (userAddress) {
       const fetchAdsOffers = async () => {
-        const offer = await adminInstance.getOffers({ address: userAddress }, { includeMetadata: true, includePrices: true, includeAllowedTokens: true });
+        const offers = await adminInstance.getOffers({ address: userAddress }, { includeMetadata: true, includePrices: true, includeAllowedTokens: true });
         
         const data = [];
         const ownedAdProposals = await adminInstance.getOwnedOfferTokens({ address: userAddress }, { includeOffers: true });
@@ -49,8 +49,9 @@ const ManageSpaces = () => {
         }
 // console.log(mappedownedAdProposals);
 // console.log(offer);
+const formatedOffers = offers.filter((ad) => ad.offerId > 22);
         setMappedownedAdProposals(mappedownedAdProposals);
-        setCreatedData(offer);
+        setCreatedData(formatedOffers);
       };
 
       fetchAdsOffers();

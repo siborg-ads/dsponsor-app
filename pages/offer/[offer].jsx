@@ -96,6 +96,7 @@ const [currency, setCurrency] = useState(null);
     
   }, [royaltiesInfo]);
 
+  
   const handleSubmit = async (submissionArgs) => {
     try {
       await mutateAsync({
@@ -105,6 +106,7 @@ const [currency, setCurrency] = useState(null);
     } catch (error) {
       console.error("Erreur de validation du token:", error);
       setSuccessFullUpload(false);
+      throw error;
     }
   };
 
@@ -152,13 +154,13 @@ const [currency, setCurrency] = useState(null);
             {/* <!-- Image --> */}
             <figure className="mb-8 md:w-2/5 md:flex-shrink-0 md:flex-grow-0 md:basis-auto lg:w-1/2 w-full flex justify-center">
               <button className=" w-full" onClick={() => setImageModal(true)} style={{ height: "450px" }}>
-                <Image width={585} height={726} src={image[0]} alt="image" className="rounded-2xl cursor-pointer h-full object-contain w-full" />
+                <Image width={585} height={726} src={image} alt="image" className="rounded-2xl cursor-pointer h-full object-contain w-full" />
               </button>
 
               {/* <!-- Modal --> */}
               <div className={imageModal ? "modal fade show block" : "modal fade"}>
                 <div className="modal-dialog !my-0 flex h-full max-w-4xl items-center justify-center">
-                  <Image width={582} height={722} src={image[0]} alt="image" className="h-full object-cover w-full rounded-2xl" />
+                  <Image width={582} height={722} src={image} alt="image" className="h-full object-cover w-full rounded-2xl" />
                 </div>
 
                 <button type="button" className="btn-close absolute top-6 right-6" onClick={() => setImageModal(false)}>

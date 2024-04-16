@@ -7,6 +7,8 @@ import "tippy.js/dist/tippy.css";
 import Link from "next/link";
 import Tippy from "@tippyjs/react";
 import { MdKeyboardArrowRight, MdKeyboardArrowLeft } from "react-icons/md";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 import { useEffect, useState } from "react";
 import { CopyToClipboard } from "react-copy-to-clipboard";
@@ -58,7 +60,7 @@ const Review_carousel = ({ handleSubmit, pendingProposalData, successFullRefuseM
         offerId: offerId,
         tokenId: tokenId,
         proposalId: item[0].proposalId,
-        adParameter: "logoURL",
+        adParameter: "imageURL",
         validated: approuved,
         reason: comments[tokenId] || "",
       },
@@ -80,7 +82,12 @@ console.log(submissionArgs);
     setTokenId(tokenId);
     setRecordsProposalId(recordsProposalId);
   };
-
+ function formatTokenId(str) {
+   if (str.length <= 6) {
+     return str;
+   }
+   return str.slice(0, 3) + "..." + str.slice(-3);
+ }
   const closeRefuseModal = () => {
     setRefusedAdModalId(null);
   };
@@ -134,7 +141,7 @@ console.log(submissionArgs);
                       <figure className="mb-4 flex flex-col">
                         <span className="dark:text-jacarta-200 mb-1">Image :</span>
                         <Link href={`/item/${ads[0].offerId}/${ads[0].tokenId}`}>
-                          <Image src={ads[0].adParameters?.logoURL} alt="logo" height={230} width={230} className="rounded-[0.625rem] w-auto   h-[150px] object-contain" loading="lazy" />
+                          <Image src={ads[0].adParameters?.imageURL} alt="logo" height={230} width={230} className="rounded-[0.625rem] w-auto   h-[150px] object-contain" loading="lazy" />
                         </Link>
                       </figure>
                       <div className="mb-4 flex flex-col">
@@ -153,7 +160,7 @@ console.log(submissionArgs);
                       <div className="flex flex-col ">
                         <Link href={`/item/${ads[0].offerId}/${ads[0].tokenId}`} className="mb-4">
                           <span className="font-display text-jacarta-700 hover:text-accent text-base dark:text-white">
-                            Item n°: <span className="text-accent"> {ads[0].tokenId} </span>{" "}
+                            Space <span className="text-accent"> #{formatTokenId(ads[0].tokenId)} </span>{" "}
                           </span>
                         </Link>
                       </div>
@@ -174,7 +181,13 @@ console.log(submissionArgs);
                           <div className="flex items-start gap-4 flex-wrap">
                             <Web3Button
                               contractAddress="0xdf42633BD40e8f46942e44a80F3A58d0Ec971f09"
-                              action={() => handleItemSubmit(ads[0].offerId, ads[0].tokenId, item.ads, true)}
+                              action={() =>
+                                toast.promise(handleItemSubmit(ads[0].offerId, ads[0].tokenId, item.ads, true), {
+                                  pending: "Waiting transaction confirmation",
+                                  success: "Transaction confirmed 👌",
+                                  error: "Transaction rejected 🤯",
+                                })
+                              }
                               className={` !rounded-full !min-w-[100px] !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate[ads[0].tokenId] ? "btn-disabled" : "!bg-accent !cursor-pointer"} `}
                             >
                               Validate
@@ -183,9 +196,7 @@ console.log(submissionArgs);
                             <Web3Button
                               contractAddress="0xdf42633BD40e8f46942e44a80F3A58d0Ec971f09"
                               action={() => openRefuseModal(ads[0].offerId, ads[0].tokenId, item.ads)}
-                              className={` !rounded-full !min-w-[100px] !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${
-                                !validate[ads[0].tokenId] ? "btn-disabled" : "!bg-red !cursor-pointer"
-                              } `}
+                              className={` !rounded-full !min-w-[100px] !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate[ads[0].tokenId] ? "btn-disabled" : "!bg-red !cursor-pointer"} `}
                             >
                               Reject
                             </Web3Button>

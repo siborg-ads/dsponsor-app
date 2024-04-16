@@ -36,7 +36,7 @@ const Create = () => {
   const [validate, setValidate] = useState(false);
   const [showPreviewModal, setShowPreviewModal] = useState(false);
   const [successFullUpload, setSuccessFullUpload] = useState(false);
-  const [selectedParameter, setSelectedParameter] = useState(["logoURL", "linkURL"]);
+  const [selectedParameter, setSelectedParameter] = useState(["imageURL", "linkURL"]);
   const [displayedParameter, setDisplayedParameter] = useState("Logo Grid & Link");
   const [selectedTypeParameter, setSelectedTypeParameter] = useState(0);
   const [name, setName] = useState(false);
@@ -48,7 +48,7 @@ const Create = () => {
   const handleParameterChange = (e) => {
     setSelectedTypeParameter(e.target.value);
     if (e.target.value === 0){
-      setSelectedParameter(["logoURL", "linkURL"]);
+      setSelectedParameter(["imageURL", "linkURL"]);
       setDisplayedParameter("Logo Grid & Link");
     } 
     // if (e.target.value === 1) setSelectedParameter(["bannerURL", "linkURL"]);
@@ -155,8 +155,8 @@ const Create = () => {
       isValid = false;
     }
 
-    if (selectedRoyalties < 0 || selectedRoyalties > 100) {
-      newErrors.royaltyError = "Royalties are missing or invalid. They should be between 0% and 100%.";
+    if (selectedRoyalties < 0.01 || selectedRoyalties > 100) {
+      newErrors.royaltyError = "Royalties are missing or invalid. They should be between 0.01% and 100%.";
       isValid = false;
     }
     setValidate(isValid);
@@ -173,104 +173,101 @@ const Create = () => {
     if (!validateInputs()) {
       return;
     }
+    try{
+      const uploadUrl = await upload({
+        data: [file],
+        options: { uploadWithGatewayUrl: true, uploadWithoutDirectory: true },
+      });
 
-    const uploadUrl = await upload({
-      data: [file],
-      options: { uploadWithGatewayUrl: true, uploadWithoutDirectory: true },
-    });
+      if (name && link) {
+        onUpload(name, link);
+      } else {
+        console.error("Missing name or link");
+      }
+      const jsonMetadata = JSON.stringify({
+        creator: {
+          name: "",
+          description: "",
+          image: "",
+          external_link: "",
+          categories: ["dApp", "social", "media", "education"],
+        },
+        offer: {
+          name: name,
+          description: description,
+          image: uploadUrl[0],
+          terms: null,
+          external_link: link,
+          valid_from: startDate || "1970-01-01T00:00:00Z",
+          valid_to: endDate || "2100-01-01T00:00:00Z",
+          categories: ["Community", "NFT", "Crypto"],
+          token_metadata: {},
+        },
+      });
 
-    if (name && link) {
-      onUpload(name, link);
-    } else {
-      console.error("Missing name or link");
-    }
-    const jsonMetadata = JSON.stringify({
-      creator: {
-        name: "",
-        description: "",
-        image: "",
-        external_link: "",
-        categories: ["dApp", "social", "media", "education"],
-      },
-      offer: {
+      const jsonContractURI = JSON.stringify({
         name: name,
         description: description,
         image: uploadUrl,
-        terms: null,
         external_link: link,
-        valid_from: startDate || "1970-01-01T00:00:00Z",
-        valid_to: endDate || "2100-01-01T00:00:00Z",
-        categories: ["Community", "NFT", "Crypto"],
-        token_metadata: {
-          name: null,
-          description: null,
-          image: null,
-          external_link: null,
-          attributes: [
-            {
-              trait_type: null,
-              value: null,
-            },
-          ],
-        },
-      },
-    });
+        collaborators: [address],
+      });
+      // upload json to IPFS
+      const jsonMetadataURL = await upload({
+        data: [jsonMetadata],
+        options: { uploadWithGatewayUrl: true, uploadWithoutDirectory: true },
+      });
 
-    const jsonContractURI = JSON.stringify({
-      name: name,
-      description: description,
-      image: uploadUrl,
-      external_link: link,
-      collaborators: [address],
-    });
-    // upload json to IPFS
-    const jsonMetadataURL = await upload({
-      data: [jsonMetadata],
-      options: { uploadWithGatewayUrl: true, uploadWithoutDirectory: true },
-    });
+      // upload json to IPFS
+      const jsonContractURIURL = await upload({
+        data: [jsonContractURI],
+        options: { uploadWithGatewayUrl: true, uploadWithoutDirectory: true },
+      });
 
-    // upload json to IPFS
-    const jsonContractURIURL = await upload({
-      data: [jsonContractURI],
-      options: { uploadWithGatewayUrl: true, uploadWithoutDirectory: true },
-    });
+      const jsonIpfsLinkContractURI = jsonContractURIURL[0];
+      const jsonIpfsLinkMetadata = jsonMetadataURL[0];
 
-    const jsonIpfsLinkContractURI = jsonContractURIURL[0];
-    const jsonIpfsLinkMetadata = jsonMetadataURL[0];
+      const args = [
+        JSON.stringify({
+          name: name, // name
+          symbol: "DSPONSORNFT", // symbol
+          baseURI: "https://api.dsponsor.com/tokenMetadata/", // baseURI
+          contractURI: jsonIpfsLinkContractURI, // contractURI from json
+          minter: address,
+          maxSupply: selectedNumber, // max supply
+          forwarder: "0x0000000000000000000000000000000000000000", // forwarder
+          initialOwner: address, // owner
+          royaltyBps: selectedRoyalties * 100, // royalties
+          currencies: [selectedCurrencyContract(selectedCurrency)], // accepted token
+          prices: [ethers.utils.parseUnits(selectedUnitPrice.toString(), getDecimals(selectedCurrency))], // prices with decimals
+          allowedTokenIds: Array.from({ length: selectedNumber }, (_, i) => i), // allowed token ids
+        }),
+        JSON.stringify({
+          name: name, // name
+          offerMetadata: jsonIpfsLinkMetadata, // rulesURI
+          options: {
+            admins: [address], // admin
+            validators: [], // validator
+            adParameters: selectedParameter, // ad parameters
+          },
+        }),
+      ];
+      const preparedArgs = [Object.values(JSON.parse(args[0])), Object.values(JSON.parse(args[1]))];
+      console.log("preparedArgs", preparedArgs);
 
-    const args = [
-      JSON.stringify({
-        name: name, // name
-        symbol: "DSPONSORNFT", // symbol
-        baseURI: "https://api.dsponsor.com/tokenMetadata/", // baseURI
-        contractURI: jsonIpfsLinkContractURI, // contractURI from json
-        minter: address,
-        maxSupply: selectedNumber, // max supply
-        forwarder: "0x0000000000000000000000000000000000000000", // forwarder
-        initialOwner: address, // owner
-        royaltyBps: selectedRoyalties * 100, // royalties
-        currencies: [selectedCurrencyContract(selectedCurrency)], // accepted token
-        prices: [ethers.utils.parseUnits(selectedUnitPrice.toString(), getDecimals(selectedCurrency))], // prices with decimals
-        allowedTokenIds: Array.from({ length: selectedNumber }, (_, i) => i), // allowed token ids
-      }),
-      JSON.stringify({
-        name: name, // name
-        offerMetadata: jsonIpfsLinkMetadata, // rulesURI
-        options: {
-          admins: [address], // admin
-          validators: [], // validator
-          adParameters: selectedParameter, // ad parameters
-        },
-      }),
-    ];
-    const preparedArgs = [Object.values(JSON.parse(args[0])), Object.values(JSON.parse(args[1]))];
-    console.log("preparedArgs", preparedArgs);
-    try {
       await mutateAsync({ args: preparedArgs });
       setSuccessFullUpload(true);
-    } catch (error) {
+
+      
+      
+
+    }catch(error){
       setSuccessFullUpload(false);
+      throw error;
     }
+
+    
+
   };
 
   const onUpload = (updatedName, updatedLink) => {
@@ -285,8 +282,9 @@ const Create = () => {
   
 
   const { contract: customTokenContract } = useContract(customContract, "token");
-
+  
   const { data: customDecimals } = useTokenDecimals(customTokenContract);
+  
 
   const selectedCurrencyContract = useCallback(() => {
     switch (selectedCurrency) {

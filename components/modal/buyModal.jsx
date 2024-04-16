@@ -9,7 +9,7 @@ import { useState } from "react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-const BuyModal = ({ finalPrice,successFullUpload, userBalance, successFullBuyModal, price, selectedCurrency, selectedRoyalties, name, image, handleSubmit, handleBuyModal }) => {
+const BuyModal = ({formatTokenId, finalPrice,successFullUpload, userBalance, successFullBuyModal, price,tokenId, selectedCurrency, selectedRoyalties, name, image, handleSubmit, handleBuyModal }) => {
   const { buyModal } = useSelector((state) => state.counter);
   const dispatch = useDispatch();
   const [validate, setValidate] = useState(false);
@@ -39,13 +39,13 @@ const BuyModal = ({ finalPrice,successFullUpload, userBalance, successFullBuyMod
           {!successFullUpload ? (
             <div className="modal-body p-6">
               <div className="mb-2 flex items-center justify-between">
-                <span className="font-display text-jacarta-700 text-sm font-semibold dark:text-white">Item</span>
+                <span className="font-display text-jacarta-700 text-sm font-semibold dark:text-white">Space #{formatTokenId(tokenId)}</span>
                 <span className="font-display text-jacarta-700 text-sm font-semibold dark:text-white">Subtotal</span>
               </div>
 
               <div className="dark:border-jacarta-600 border-jacarta-100 relative flex items-center border-t border-b py-4">
                 <figure className="mr-5 self-start">
-                  <Image width={150} height={150} src={image[0]} alt="logo" className="rounded-2lg" loading="lazy" />
+                  <Image width={150} height={150} src={image} alt="logo" className="rounded-2lg" loading="lazy" />
                 </figure>
 
                 <div>
@@ -55,12 +55,12 @@ const BuyModal = ({ finalPrice,successFullUpload, userBalance, successFullBuyMod
                   <h3 className="font-display text-jacarta-700 mb-1 text-base font-semibold dark:text-white">{name}</h3>
                   <div className="flex flex-wrap items-center">
                     <span className="dark:text-jacarta-300 text-jacarta-500 mr-1 block text-sm">Protocol fees: 4 %</span>
-                    <span data-tippy-content="The creator of this collection will receive 5% of the sale total from future sales of this item.">
+                    {/* <span data-tippy-content="The creator of this collection will receive 5% of the sale total from future sales of this item.">
                       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" className="dark:fill-jacarta-300 fill-jacarta-700 h-4 w-4">
                         <path fill="none" d="M0 0h24v24H0z" />
                         <path d="M12 22C6.477 22 2 17.523 2 12S6.477 2 12 2s10 4.477 10 10-4.477 10-10 10zm0-2a8 8 0 1 0 0-16 8 8 0 0 0 0 16zM11 7h2v2h-2V7zm0 4h2v6h-2v-6z" />
                       </svg>
-                    </span>
+                    </span> */}
                   </div>
                 </div>
 
