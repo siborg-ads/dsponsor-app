@@ -7,6 +7,7 @@ import { useRouter } from "next/router";
 import { MetaMaskProvider } from "metamask-react";
 import Meta from "../components/Meta";
 import UserContext from "../components/UserContext";
+import ChainDetector from "../components/chain-detector/ChainDetector";
 import { useRef } from "react";
 import {
   ThirdwebProvider,
@@ -41,7 +42,7 @@ function MyApp({ Component, pageProps }) {
         clientId="6f375d41f2a33f1f08f6042a65d49ec9"
         authConfig={{
           domain: "dsponsor.com",
-         
+
         }}
         switchToActiveChain={true}
         supportedWallets={[
@@ -60,6 +61,7 @@ function MyApp({ Component, pageProps }) {
           <ThemeProvider enableSystem={true} attribute="class">
             <MetaMaskProvider>
               <UserContext.Provider value={{ scrollRef: scrollRef }}>
+
                 {pid === "/login" ? (
                   <Component {...pageProps} />
                 ) : (

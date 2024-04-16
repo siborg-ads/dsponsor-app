@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import MarketplaceHeroSection from "../../components/marketplace/marketplace-hero/marketplace-hero";
 import MarketplaceListingSection from "../../components/marketplace/marketplace-listing-section/marketplace-listing-section";
 import { marketplaceContractAbi } from "./marketplace-contact-abi";
@@ -9,18 +9,24 @@ import { client } from "../../data/services/client";
 import { fetchTotalListings, fetchListingsForMarketplace } from "./services";
 import { marketplaceConfig } from "./marketplace.config";
 import { useChainId } from "@thirdweb-dev/react";
+import ChainDetector from "../../components/chain-detector/ChainDetector";
 
 export default function Marketplace() {
+  const [loading, setLoading] = useState(true);
+
   const chainId = useChainId();
 
-  const [listings, setListings] = React.useState({
+  const [listings, setListings] = useState<{
+    listingsForBids: object[];
+    listingsForBuyNow: object[];
+  }>({
     listingsForBids: [],
     listingsForBuyNow: [],
   });
 
-  const getMarletplaceListings = React.useCallback(
-    async (nftContractAddress: string) => {
-      // check if the chain is sapolia testnet
+  const getMarketplaceListings = useCallback(
+    async (nftContractAddress) => {
+      if (!chainId) return;
 
       const contract = getContract({
         client,
@@ -36,25 +42,25 @@ export default function Marketplace() {
       setListings({
         listingsForBids,
         listingsForBuyNow,
-      } as any);
+      });
+      // setLoading(false);
     },
     [chainId]
   );
 
   useEffect(() => {
-    if (chainId)
-      getMarletplaceListings(
-        marketplaceConfig[chainId].dsponsor_marketplace_contract_address
+    if (chainId) {
+      setLoading(true);
+      getMarketplaceListings(
+        marketplaceConfig[chainId]?.dsponsor_marketplace_contract_address
       );
-  }, [chainId]);
+    }
+  }, [chainId, getMarketplaceListings]);
 
   return (
-    <section
-      style={{
-        padding: "8rem 0",
-      }}
-    >
+    <section style={{ padding: "8rem 0" }}>
       <MarketplaceHeroSection />
+      <ChainDetector />
       <MarketplaceListingSection
         listings={listings.listingsForBids}
         title={"Hot Bids"}
