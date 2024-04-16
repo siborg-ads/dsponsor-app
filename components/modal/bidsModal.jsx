@@ -2,16 +2,60 @@
 import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { bidsModalHide } from "../../redux/counterSlice";
+import { prepareContractCall, sendTransaction, resolveMethod } from "thirdweb";
+import { client } from "../../data/services/client";
+import { erc20Contract } from "../../lib/config/listing.config";
+import { dSponsorMpContract } from "../../lib/config/listing.config";
+
+import { privateKeyAccount } from "thirdweb/wallets";
+import { useAddress } from "@thirdweb-dev/react";
+import { Confirm_bid } from "../metamask/Metamask";
 
 export default function BidsModal() {
   const { bidsModal } = useSelector((state) => state.counter);
   const dispatch = useDispatch();
   const [ETHAmount, setETHAmount] = useState(0.05);
+  const address = useAddress();
 
   const handleEThAmount = (e) => {
     e.preventDefault();
     setETHAmount(e.target.value);
   };
+
+  // const localAccount = privateKeyAccount({
+  //   client,
+  //   privateKey:
+  //     "",
+  // });
+
+  const confirmBid = async () => {
+    // const transaction = await prepareContractCall({
+    //   contract: erc20Contract,
+    //   method: resolveMethod("approve"),
+    //   params: ["0x86aDf604B5B72d270654F3A0798cabeBC677C7fc", "0.05"],
+    // });
+    // const { transactionHash } = await sendTransaction({
+    //   transaction: transaction,
+    //   // client: localAccount,
+    // });
+
+    // DSponsorMarketplace bid transaction
+    // const transaction = await prepareContractCall({
+    //   dSponsorMpContract,
+    //   method: resolveMethod("bid"),
+    //   params: [listingId, _pricePerToken, _referralAdditionalInformation],
+    // });
+    // console.log(transaction, "Transaction Information...");
+
+    // const { transactionHash } = await sendTransaction({
+    //   transaction,
+    //   localAccount,
+    // });
+    // console.log(transactionHash, "Transaction Hash...");
+
+    console.log("Bidding...");
+  };
+
   return (
     <div>
       <div
@@ -137,12 +181,7 @@ export default function BidsModal() {
 
             <div className="modal-footer">
               <div className="flex items-center justify-center space-x-4">
-                <button
-                  type="button"
-                  className="rounded-full bg-accent py-3 px-8 text-center font-semibold text-white shadow-accent-volume transition-all hover:bg-accent-dark"
-                >
-                  Confirm Bid
-                </button>
+                <Confirm_bid bidFunc={confirmBid} />
               </div>
             </div>
           </div>

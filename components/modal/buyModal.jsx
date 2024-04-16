@@ -4,10 +4,26 @@ import { useSelector, useDispatch } from "react-redux";
 import { buyModalHide } from "../../redux/counterSlice";
 import { Confirm_checkout } from "../metamask/Metamask";
 import Image from "next/image";
+import { prepareContractCall, sendTransaction, resolveMethod } from "thirdweb";
+import { client } from "../../data/services/client";
+import { dSponsorMpContract } from "../../lib/config/listing.config";
 
 const BuyModal = () => {
   const { buyModal } = useSelector((state) => state.counter);
   const dispatch = useDispatch();
+
+  const confirmBuy = async () => {
+    // DSponsorMarketplace bid transaction
+    // const transaction = await prepareContractCall({
+    //   dSponsorMpContract,
+    //   method: resolveMethod("buy"),
+    //   params: [_buyParams],
+    // });
+    // const { transactionHash } = await sendTransaction({
+    //   transaction,
+    //   account,
+    // });
+  };
 
   return (
     <div>
@@ -151,11 +167,11 @@ const BuyModal = () => {
             </div>
             {/* <!-- end body --> */}
 
-            {/* <div className="modal-footer">
+            <div className="modal-footer">
               <div className="flex items-center justify-center space-x-4">
-                <Confirm_checkout />
+                <Confirm_checkout buyFunc={confirmBuy} />
               </div>
-            </div> */}
+            </div>
           </div>
         </div>
       </div>
