@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { trendingCategoryData } from "../../data/categories_data";
-import Collection_category_filter from "../collectrions/collection_category_filter";
+import Collection_category_filter from "../collections/collection_category_filter";
 import CategoryItem from "./categoryItem";
 import { useDispatch } from "react-redux";
 import { updateTrendingCategoryItemData } from "../../redux/counterSlice";

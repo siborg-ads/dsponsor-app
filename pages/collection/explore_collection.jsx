@@ -4,7 +4,7 @@ import { tranding_category_filter } from "../../data/categories_data";
 import { HeadLine } from "../../components/component";
 import Feature_collections_data from "../../data/Feature_collections_data";
 import Collection_dropdown from "../../components/dropdown/collection_dropdown";
-import Explore_collection_item from "../../components/collectrions/explore_collection_item";
+import Explore_collection_item from "../../components/collections/explore_collection_item";
 import Meta from "../../components/Meta";
 import { collectCollectionData } from "../../redux/counterSlice";
 import { useDispatch } from "react-redux";
