@@ -30,6 +30,7 @@ const Item = () => {
   const offerId = router.query.offer;
   const tokenId = router.query?.item;
 
+
   const [tokenIdString, setTokenIdString] = useState(null);
 
   const [data, setData] = useState([]);
@@ -69,8 +70,15 @@ const Item = () => {
   const numSteps = 3;
   
   useEffect(() => {
+    
     if (offerId) {
+      if(tokenId.length > 6) {
+        const url = new URL(window.location.href);
+        const tokenData = url.searchParams.get("tokenData");
+        console.log(tokenData);
+      }
       const fetchAdsOffers = async () => {
+        
         const offer = await adminInstance.getOffer({ offerId: offerId });
         const params = await adminInstance.getAdParameters({ offerId: offerId });
         console.log(offer, "offer");

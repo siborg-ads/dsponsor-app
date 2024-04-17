@@ -8,13 +8,10 @@ import Image from "next/image";
 import { useContract, useContractWrite, useContractRead, useAddress } from "@thirdweb-dev/react";
 import Tippy from "@tippyjs/react";
 import "tippy.js/dist/tippy.css";
-import { ItemsTabs } from "../../components/component";
 import Review_carousel from "../../components/carousel/review_carousel";
 import Validated_refused_items from "../../components/collections/validated_refused_items";
-
 import { fetchDataFromIPFS } from "../../data/services/ipfsService";
 import { ethers } from "ethers";
-import { bufferAdParams } from "../../utils/formatedData";
 import adminInstance from "../../utils/sdkProvider";
 import OfferSkeleton from "../../components/skeleton/offerSkeleton";
 

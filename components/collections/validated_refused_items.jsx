@@ -62,11 +62,12 @@ const Validated_refused_items = ({ statut, proposalData }) => {
       <div className="tab-pane fade">
         {/* <!-- Records / Filter --> */}
         {statut && (
-          <div key="2" className="dropdown-item mb-4 font-display dark:bg-jacarta-600 hover:bg-jacarta-50 block w-full rounded-xl pr-5 py-2 text-left text-sm transition-colors dark:text-white">
-            <div className="flex flex-wrap pl-5 gap-5">
-              <span className="mb-2 md:w-1/3 flex-grow">
-                Don&apos;t forget to display the adSpaces on your website !  Copy paste this piece of code to display automatically your sponsor logo.
+          <div key="2" className="dropdown-item mb-4 p-6 dark:bg-jacarta-700 dark:border-jacarta-600 border hover:bg-jacarta-50 block w-full rounded-xl  text-left text-sm transition-colors dark:text-white">
+            <div className="flex flex-wrap  gap-5 ">
+              <span className="mb-2 md:w-1/3 flex-grow dark:text-jacarta-300 text-jacarta-400 text-sm">
+                Don&apos;t forget to display the adSpaces on your website ! Copy paste this piece of code to display automatically your sponsor logo.
               </span>
+              
               <div className="flex gap-2 w-full md:w-auto items-start ">
                 <pre
                   style={{

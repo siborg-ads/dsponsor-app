@@ -128,7 +128,15 @@ const Review_carousel = ({ handleSubmit, pendingProposalData, successFullRefuseM
   }
   return (
     <div>
-      <div className={`fixed  bottom-0 blury-background left-0 right-0 px-4 py-3 animated-modalSelectedItemUp ${selectedItems.length === 0 && "animated-modalSelectedItemDown"}`}>
+      <div className="dark:bg-jacarta-700 dark:border-jacarta-600 border-jacarta-100 rounded-2lg border bg-white p-6 mb-4">
+        <div className=" sm:flex sm:flex-wrap">
+          <span className="dark:text-jacarta-300 text-jacarta-400 text-sm">
+            Select an advertisement below to manage its status. If you approve an ad, it will be displayed on your media platform. The owner of your ad space retains the ability to submit an advertisement even if its
+            status is Pending, Approved, or Denied.{" "}
+          </span>
+        </div>
+      </div>
+      <div className={`fixed dark:border-jacarta-500 border  bottom-0 blury-background left-0 right-0 px-4 py-3 animated-modalSelectedItemUp ${selectedItems.length === 0 && "animated-modalSelectedItemDown"}`}>
         <div className="dropdown-item mb-4 font-display   block w-full rounded-xl  text-left text-sm transition-colors dark:text-white">
           <span className="flex items-center justify-center gap-6">
             <span className="mr-4">
@@ -166,7 +174,6 @@ const Review_carousel = ({ handleSubmit, pendingProposalData, successFullRefuseM
           >
             Reject
           </Web3Button>
-
         </div>
       </div>
 
@@ -176,7 +183,7 @@ const Review_carousel = ({ handleSubmit, pendingProposalData, successFullRefuseM
           console.log(adParametersList, "linkURL");
 
           return (
-            <article key={tokenId} className={`cursor-pointer  ${isSelectedItem[tokenId] ? "border-4 border-jacarta-100 rounded-2xl" : ""}`} onClick={() => handleSelection(item)}>
+            <article key={tokenId} className={`  ${isSelectedItem[tokenId] ? "border-4 border-jacarta-100 rounded-2xl" : ""}`} onClick={() => handleSelection(item)}>
               <div className="dark:bg-jacarta-700 dark:border-jacarta-700 border-jacarta-100 rounded-2xl block border bg-white p-[1.1875rem] transition-shadow hover:shadow-lg text-jacarta-500">
                 <figure className="flex justify-center">
                   <Image src={adParametersList?.imageURL ? adParametersList?.imageURL : "/"} alt="logo" height={230} width={230} className="rounded-[0.625rem] w-auto   h-[150px] object-contain" loading="lazy" />
@@ -213,7 +220,6 @@ const Review_carousel = ({ handleSubmit, pendingProposalData, successFullRefuseM
             handleItemSubmit={handleItemSubmit}
             closeRefuseModal={closeRefuseModal}
             successFullRefuseModal={successFullRefuseModal}
-           
           />
         </div>
       )}
