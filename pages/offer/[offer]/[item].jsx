@@ -19,7 +19,8 @@ import { fetchDataFromIPFS } from "../../../data/services/ipfsService";
 import { bufferAdParams } from "../../../utils/formatedData";
 import BuyModal from "../../../components/modal/buyModal";
 import adminInstance from "../../../utils/sdkProvider";
-import { toast } from "react-toastify";
+import { toast } from "react-toastify" ;
+import OfferSkeleton from "../../../components/skeleton/offerSkeleton.jsx";
 
 import "react-toastify/dist/ReactToastify.css";
 
@@ -336,7 +337,11 @@ const Item = () => {
   };
 
   if (!offerData || offerData.length === 0) {
-    return <div>Chargement...</div>;
+    return (
+      <div>
+        <OfferSkeleton />
+      </div>
+    );
   }
 
   const { description = "description not found", id = "1", image = ["/images/gradient_creative.jpg"], name = "DefaultName" } = offerData[0].metadata.offer ? offerData[0].metadata.offer : {};
@@ -363,7 +368,7 @@ const Item = () => {
 
           <div className="md:flex md:flex-wrap" key={id}>
             {/* <!-- Image --> */}
-            <figure className="mb-8 md:w-2/5 md:flex-shrink-0 md:flex-grow-0 md:basis-auto lg:w-1/2 w-full flex justify-center">
+            <figure className="mb-8 md:mb-0 md:w-2/5 md:flex-shrink-0 md:flex-grow-0 md:basis-auto lg:w-1/2 w-full flex justify-center">
               <button className=" w-full" onClick={() => setImageModal(true)} style={{ height: "450px" }}>
                 <Image width={585} height={726} src={image} alt="image" className="rounded-2xl cursor-pointer h-full object-contain w-full" />
               </button>

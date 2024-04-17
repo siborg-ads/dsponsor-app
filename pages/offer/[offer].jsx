@@ -16,6 +16,7 @@ import { fetchDataFromIPFS } from "../../data/services/ipfsService";
 import { ethers } from "ethers";
 import { bufferAdParams } from "../../utils/formatedData";
 import adminInstance from "../../utils/sdkProvider";
+import OfferSkeleton from "../../components/skeleton/offerSkeleton";
 
 const Offer = () => {
   const router = useRouter();
@@ -140,7 +141,11 @@ const Offer = () => {
   ];
 
   if (!offerData || offerData.length === 0) {
-    return <div>Chargement...</div>;
+    return (
+      <div>
+        <OfferSkeleton />
+      </div>
+    );
   }
 
   const { description = "description not found", id = "1", image = ["/images/gradient_creative.jpg"], name = "DefaultName", nftContract = "N/A" } = offerData[0].offer ? offerData[0].offer : {};

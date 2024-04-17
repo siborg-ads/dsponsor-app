@@ -20,6 +20,7 @@ import {
   embeddedWallet,
 } from "@thirdweb-dev/react";
 import { Mumbai, Polygon, Sepolia } from "@thirdweb-dev/chains";
+import { NextUIProvider } from "@nextui-org/react";
 
 if (typeof window !== "undefined") {
   require("bootstrap/dist/js/bootstrap");
@@ -60,16 +61,18 @@ function MyApp({ Component, pageProps }) {
         <Provider store={store}>
           <ThemeProvider enableSystem={true} attribute="class" defaultTheme="dark">
             <MetaMaskProvider>
-              <UserContext.Provider value={{ scrollRef: scrollRef }}>
-                {pid === "/login" ? (
-                  <Component {...pageProps} />
-                ) : (
-                  <Layout>
+              <NextUIProvider>
+                <UserContext.Provider value={{ scrollRef: scrollRef }}>
+                  {pid === "/login" ? (
                     <Component {...pageProps} />
-                  </Layout>
-                )}
-              </UserContext.Provider>
-              <ToastContainer position="top-right" autoClose={5000} />
+                  ) : (
+                    <Layout>
+                      <Component {...pageProps} />
+                    </Layout>
+                  )}
+                </UserContext.Provider>
+                <ToastContainer position="top-right" autoClose={5000} />
+              </NextUIProvider>
             </MetaMaskProvider>
           </ThemeProvider>
         </Provider>
