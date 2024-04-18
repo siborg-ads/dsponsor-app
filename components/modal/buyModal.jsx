@@ -136,7 +136,7 @@ const BuyModal = ({formatTokenId, finalPrice,successFullUpload, userBalance, suc
             <div className="flex items-center justify-center space-x-4">
               {!successFullUpload ? (
                 <Web3Button
-                  contractAddress="0xdf42633BD40e8f46942e44a80F3A58d0Ec971f09"
+                  contractAddress="0xE442802706F3603d58F34418Eac50C78C7B4E8b3"
                   action={() => {
                     toast.promise(handleSubmit, {
                       pending: "Waiting transaction confirmation",

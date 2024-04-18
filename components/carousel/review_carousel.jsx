@@ -146,7 +146,7 @@ const Review_carousel = ({ handleSubmit, pendingProposalData, successFullRefuseM
 
         <div className="flex justify-center  gap-4 flex-wrap">
           <Web3Button
-            contractAddress="0xdf42633BD40e8f46942e44a80F3A58d0Ec971f09"
+            contractAddress="0xE442802706F3603d58F34418Eac50C78C7B4E8b3"
             action={() =>
               toast.promise(handleItemSubmit(true), {
                 pending: "Waiting transaction confirmation",
@@ -160,13 +160,12 @@ const Review_carousel = ({ handleSubmit, pendingProposalData, successFullRefuseM
           </Web3Button>
 
           <Web3Button
-            contractAddress="0xdf42633BD40e8f46942e44a80F3A58d0Ec971f09"
+            contractAddress="0xE442802706F3603d58F34418Eac50C78C7B4E8b3"
             action={() => openRefuseModal()}
             className={` !rounded-full !min-w-[100px] !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate[tokenId] ? "btn-disabled" : "!bg-red !cursor-pointer"} `}
           >
             Reject
           </Web3Button>
-
         </div>
       </div>
 
@@ -213,7 +212,6 @@ const Review_carousel = ({ handleSubmit, pendingProposalData, successFullRefuseM
             handleItemSubmit={handleItemSubmit}
             closeRefuseModal={closeRefuseModal}
             successFullRefuseModal={successFullRefuseModal}
-           
           />
         </div>
       )}

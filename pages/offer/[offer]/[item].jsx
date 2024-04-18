@@ -44,7 +44,7 @@ const Item = () => {
   const [errors, setErrors] = useState({});
   const [finalPrice, setFinalPrice] = useState(null);
   const [successFullUpload, setSuccessFullUpload] = useState(false);
-  const { contract: DsponsorAdminContract } = useContract("0xdf42633BD40e8f46942e44a80F3A58d0Ec971f09");
+  const { contract: DsponsorAdminContract } = useContract("0xE442802706F3603d58F34418Eac50C78C7B4E8b3");
   const { contract: DsponsorNFTContract } = useContract(offerData[0]?.nftContract);
   const { mutateAsync: uploadToIPFS, isLoading: isUploading } = useStorageUpload();
   const { mutateAsync: mintAndSubmit } = useContractWrite(DsponsorAdminContract, "mintAndSubmit");
@@ -198,10 +198,10 @@ const Item = () => {
 
   const handleApprove = async () => {
     try {
-      const allowance = await tokenContract.call("allowance", [address, "0xdf42633BD40e8f46942e44a80F3A58d0Ec971f09"]);
+      const allowance = await tokenContract.call("allowance", [address, "0xE442802706F3603d58F34418Eac50C78C7B4E8b3"]);
 
       if (allowance > amountToApprove) return;
-      await approve({ args: ["0xdf42633BD40e8f46942e44a80F3A58d0Ec971f09", amountToApprove] });
+      await approve({ args: ["0xE442802706F3603d58F34418Eac50C78C7B4E8b3", amountToApprove] });
       console.log("Approvation réussie");
     } catch (error) {
       console.error("Erreur d'approbation:", error);

@@ -91,7 +91,7 @@ const AddProposalRefusedModal = ({ id, selectedItems, closeRefuseModal, handleCo
               <div className="flex items-center gap-4">
                 {!successFullRefuseModal ? (
                   <Web3Button
-                    contractAddress="0xdf42633BD40e8f46942e44a80F3A58d0Ec971f09"
+                    contractAddress="0xE442802706F3603d58F34418Eac50C78C7B4E8b3"
                     action={() =>
                       toast.promise(handleItemSubmit(false), {
                         pending: "Waiting transaction confirmation",
