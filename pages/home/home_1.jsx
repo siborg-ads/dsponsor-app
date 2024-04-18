@@ -9,9 +9,10 @@ import { readContract } from "thirdweb";
 import HowItWorks from "../../components/explication/howItWorks";
 import adminInstance from "../../utils/sdkProvider";
 
+
 const Home_1 = () => {
   const [data, setData] = useState([]);
-
+ 
   useEffect(() => {
     
 

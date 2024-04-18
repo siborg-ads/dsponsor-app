@@ -31,7 +31,7 @@ const Offer = () => {
   const [price, setPrice] = useState(null);
   const [imageModal, setImageModal] = useState(false);
   const { contract: DsponsorNFTContract } = useContract(offerData[0]?.nftContract);
-  const { contract: DsponsorAdminContract } = useContract("0xdf42633BD40e8f46942e44a80F3A58d0Ec971f09");
+  const { contract: DsponsorAdminContract } = useContract("0xE442802706F3603d58F34418Eac50C78C7B4E8b3");
   const { data: royaltiesInfo } = useContractRead(DsponsorNFTContract, "royaltyInfo", ["0", 100]);
 
   const { mutateAsync, isLoadingreviewAdProposal } = useContractWrite(DsponsorAdminContract, "reviewAdProposals");
