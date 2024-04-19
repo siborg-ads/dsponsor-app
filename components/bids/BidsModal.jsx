@@ -1,65 +1,55 @@
-/* eslint-disable react/no-unescaped-entities */
-import React, { useEffect, useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import { bidsModalHide } from "../../redux/counterSlice";
-import { prepareContractCall, sendTransaction, resolveMethod } from "thirdweb";
-import { client } from "../../data/services/client";
-import { erc20Contract } from "../../lib/config/listing.config";
-import { dSponsorMpContract } from "../../lib/config/listing.config";
-
-import { privateKeyAccount } from "thirdweb/wallets";
-import { useAddress } from "@thirdweb-dev/react";
+import React, { useState } from "react";
 import { Confirm_bid } from "../metamask/Metamask";
+import { useAddress } from "@thirdweb-dev/react";
+import { useMetaMask } from "metamask-react";
+import {
+  prepareContractCall,
+  resolveMethod,
+  sendTransaction,
+  toWei,
+} from "thirdweb";
+import {
+  currencyContract,
+  erc20Contract,
+} from "../../lib/config/listing.config";
+import { metamaskWallet } from "@thirdweb-dev/react";
 
-const BidsModal = () => {
-  const bidsModal = useSelector((state) => state.bids_modal);
-  const dispatch = useDispatch();
-  const [ETHAmount, setETHAmount] = useState(0.05);
+const BidsModal = ({ showBidsModal, setShowBidsModal, listing }) => {
+  console.log(account, "Metamask Account Logging");
+
+  return <></>;
+  const wallet = metamaskWallet();
+  const [ETHAmount, setETHAmount] = useState("0.005");
+
+  console.log(toWei(ETHAmount), "ETH Amount...");
+
   const address = useAddress();
+  const { listingId } = listing;
 
-  const handleEThAmount = (e) => {
-    e.preventDefault();
-    setETHAmount(e.target.value);
-  };
-
-  // const localAccount = privateKeyAccount({
-  //   client,
-  //   privateKey:
-  //     "",
-  // });
+  console.log(listingId, "Listing ID...");
 
   const confirmBid = async () => {
-    // const transaction = await prepareContractCall({
-    //   contract: erc20Contract,
-    //   method: resolveMethod("approve"),
-    //   params: ["0x86aDf604B5B72d270654F3A0798cabeBC677C7fc", "0.05"],
-    // });
-    // const { transactionHash } = await sendTransaction({
-    //   transaction: transaction,
-    //   // client: localAccount,
-    // });
+    try {
+      const transaction = prepareContractCall({
+        contract: currencyContract(listing.currency),
+        method: resolveMethod("approve"),
+        params: [
+          "0xed948545Ec9e86678979e05cbafc39ef92BBda80",
+          toWei(ETHAmount), // Convert ETH amount to wei
+        ],
+      });
 
-    // DSponsorMarketplace bid transaction
-    // const transaction = await prepareContractCall({
-    //   dSponsorMpContract,
-    //   method: resolveMethod("bid"),
-    //   params: [listingId, _pricePerToken, _referralAdditionalInformation],
-    // });
-    // console.log(transaction, "Transaction Information...");
-
-    // const { transactionHash } = await sendTransaction({
-    //   transaction,
-    //   localAccount,
-    // });
-    // console.log(transactionHash, "Transaction Hash...");
-
-    console.log("Bidding...");
+      const transactionHash = await sendTransaction({});
+      console.log(transactionHash, "Transaction Hash...");
+    } catch (error) {
+      console.error("Error:", error);
+    }
   };
 
   return (
-    <div>
+    <>
       <div
-        className={bidsModal ? "modal fade show block" : "modal hide"}
+        className={showBidsModal ? "modal fade show block" : "modal hide"}
         id="placeBidModal"
         tabIndex="-1"
         aria-labelledby="placeBidLabel"
@@ -77,7 +67,7 @@ const BidsModal = () => {
                   viewBox="0 0 24 24"
                   width="24"
                   height="24"
-                  onClick={() => setShowBidsModal(false)}
+                  // onClick={() => setShowBidsModal(false)}
                   className="h-6 w-6 fill-jacarta-700 fill-white"
                 >
                   <path fill="none" d="M0 0h24v24H0z" />
@@ -98,35 +88,35 @@ const BidsModal = () => {
                 <div className="flex flex-1 items-center self-stretch border-r border-jacarta-100 bg-jacarta-50 px-2">
                   <span>
                     {/* <svg
-                        version="1.1"
-                        xmlns="http://www.w3.org/2000/svg"
-                        x="0"
-                        y="0"
-                        viewBox="0 0 1920 1920"
-                        // xml:space="preserve"
-                        className="mr-1 h-5 w-5"
-                      >
-                        <path
-                          fill="#8A92B2"
-                          d="M959.8 80.7L420.1 976.3 959.8 731z"
-                        ></path>
-                        <path
-                          fill="#62688F"
-                          d="M959.8 731L420.1 976.3l539.7 319.1zm539.8 245.3L959.8 80.7V731z"
-                        ></path>
-                        <path
-                          fill="#454A75"
-                          d="M959.8 1295.4l539.8-319.1L959.8 731z"
-                        ></path>
-                        <path
-                          fill="#8A92B2"
-                          d="M420.1 1078.7l539.7 760.6v-441.7z"
-                        ></path>
-                        <path
-                          fill="#62688F"
-                          d="M959.8 1397.6v441.7l540.1-760.6z"
-                        ></path>
-                      </svg> */}
+                      version="1.1"
+                      xmlns="http://www.w3.org/2000/svg"
+                      x="0"
+                      y="0"
+                      viewBox="0 0 1920 1920"
+                      // xml:space="preserve"
+                      className="mr-1 h-5 w-5"
+                    >
+                      <path
+                        fill="#8A92B2"
+                        d="M959.8 80.7L420.1 976.3 959.8 731z"
+                      ></path>
+                      <path
+                        fill="#62688F"
+                        d="M959.8 731L420.1 976.3l539.7 319.1zm539.8 245.3L959.8 80.7V731z"
+                      ></path>
+                      <path
+                        fill="#454A75"
+                        d="M959.8 1295.4l539.8-319.1L959.8 731z"
+                      ></path>
+                      <path
+                        fill="#8A92B2"
+                        d="M420.1 1078.7l539.7 760.6v-441.7z"
+                      ></path>
+                      <path
+                        fill="#62688F"
+                        d="M959.8 1397.6v441.7l540.1-760.6z"
+                      ></path>
+                    </svg> */}
                     <svg className="icon icon-ETH mr-1 h-5 w-5"></svg>
                   </span>
                   <span className="font-display text-sm text-jacarta-700">
@@ -164,7 +154,7 @@ const BidsModal = () => {
                   htmlFor="terms"
                   className="text-sm text-white dark:text-jacarta-200"
                 >
-                  By checking this box, I agree to Xhibiter's{" "}
+                  By checking this box, I agree to DSponsor&apos;s{" "}
                   <a href="#" className="text-accent">
                     Terms of Service
                   </a>
@@ -181,7 +171,7 @@ const BidsModal = () => {
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

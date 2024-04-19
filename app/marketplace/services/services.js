@@ -1,8 +1,8 @@
-import { readContract, getContract, sendTransaction } from "thirdweb";
+import { readContract, getContract } from "thirdweb";
 import { sepolia } from "thirdweb/chains";
-import { erc20ContractAbi } from "./erc20-contract-abi.js"
-import { client } from "../../data/services/client";
-import { marketplaceConfig } from "./marketplace.config.js"
+import { erc20ContractAbi } from "../erc20-contract-abi.js"
+import { client } from "../../../data/services/client.js";
+import { marketplaceConfig } from "../marketplace.config.js"
 
 
 
@@ -175,6 +175,4 @@ const getERC20SymbolsAndDecimals = async (currencyContractAddress, chainId) => {
 }
 
 
-
-
-export { fetchTotalListings, fetchListingsForMarketplace }
+export { fetchTotalListings, fetchListingsForMarketplace, getERC20SymbolsAndDecimals, getWinningBid }

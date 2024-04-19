@@ -72,6 +72,7 @@ export const fetchOffer = async (nftContracts, tokenIds, chainId) => {
 
 
 export const parseOfferMetadata = async (offerMetadata, tokenData) => {
+  if (!offerMetadata) return {};
 
   const isIPFSLink = offerMetadata.startsWith("ipfs://");
   const isHTTPSLink = offerMetadata.startsWith("https://");

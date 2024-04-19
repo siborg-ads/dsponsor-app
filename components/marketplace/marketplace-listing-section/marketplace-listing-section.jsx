@@ -29,6 +29,9 @@ const MarketplaceListingSection = ({ listings, title, type }) => {
           tokenIdsToFetch,
           chainId
         );
+        console.log(listings, tokenDatas, offerMetadatas);
+
+        console.log(tokenDatas, offerMetadatas);
 
         const formattedListings = await Promise.all(
           listings.map(async (listing, index) => {
@@ -67,8 +70,8 @@ const MarketplaceListingSection = ({ listings, title, type }) => {
     return listingsWithOfferInfo.map((listing, index) => (
       <MarketplaceItemCard
         key={index}
-        title={listing.offer.name}
-        image={listing.offer.image}
+        title={listing.offer?.name}
+        image={listing.offer?.image}
         price={listing.price}
         assetContract={listing.assetContract}
         tokenId={listing.tokenId}

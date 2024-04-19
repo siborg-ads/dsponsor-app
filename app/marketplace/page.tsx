@@ -3,7 +3,7 @@
 import React, { useEffect, useState, useCallback } from "react";
 import MarketplaceHeroSection from "../../components/marketplace/marketplace-hero/marketplace-hero";
 import MarketplaceListingSection from "../../components/marketplace/marketplace-listing-section/marketplace-listing-section";
-import { marketplaceContractAbi } from "./marketplace-contact-abi";
+import marketplaceContractAbi from "./marketplace-contact-abi.json";
 import { getContract, Chain } from "thirdweb";
 import { client } from "../../data/services/client";
 import { fetchTotalListings, fetchListingsForMarketplace } from "./services";
