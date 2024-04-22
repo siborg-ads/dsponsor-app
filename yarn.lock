@@ -35,10 +35,10 @@
     "@jridgewell/gen-mapping" "^0.3.0"
     "@jridgewell/trace-mapping" "^0.3.9"
 
-"@apollo/client@^3.9.5", "@apollo/client@^3.9.9":
-  version "3.9.9"
-  resolved "https://registry.npmjs.org/@apollo/client/-/client-3.9.9.tgz"
-  integrity sha512-/sMecU/M0WK9knrguts1lSLV8xFKzIgOMVb4mi6MOxgJXjliDB8PvOtmXhTqh2cVMMR4TzXgOnb+af/690zlQw==
+"@apollo/client@^3.9.11", "@apollo/client@^3.9.5":
+  version "3.9.11"
+  resolved "https://registry.npmjs.org/@apollo/client/-/client-3.9.11.tgz"
+  integrity sha512-H7e9m7cRcFO93tokwzqrsbnfKorkpV24xU30hFH5u2g6B+c1DMo/ouyF/YrBPdrTzqxQCjTUmds/FLmJ7626GA==
   dependencies:
     "@graphql-typed-document-node/core" "^3.1.1"
     "@wry/caches" "^1.0.0"
@@ -1256,14 +1256,14 @@
   dependencies:
     "@jridgewell/trace-mapping" "0.3.9"
 
-"@dsponsor/sdk@^3.0.2":
-  version "3.0.2"
-  resolved "https://registry.npmjs.org/@dsponsor/sdk/-/sdk-3.0.2.tgz"
-  integrity sha512-f/3qOXaMa+r9lUVAAmf3xkekHrOGTsgvPFWOM3AFsTVafAFTdQmvtmyCC1Y15141PmsyNjl/4GSCWBYwTtNbrw==
+"@dsponsor/sdk@^4.0.0":
+  version "4.0.0"
+  resolved "https://registry.npmjs.org/@dsponsor/sdk/-/sdk-4.0.0.tgz"
+  integrity sha512-ro78yneFcOqEmkZxMUMSFr14FJWUMNuH4Nq7gZy9LB4r5iX4SHD488pwm9u9pK97B+kLQ7qtylC/YTnuQIVU+A==
   dependencies:
-    "@apollo/client" "^3.9.9"
+    "@apollo/client" "^3.9.11"
     alchemy-sdk "^3.2.1"
-    ethers "^6.11.1"
+    ethers "^6.12.0"
     graphql "^16.8.1"
     react "^18.2.0"
 
@@ -8201,10 +8201,10 @@ ethers@^5, "ethers@^5 || ^6", ethers@^5.7.0, ethers@^5.7.2, ethers@>=5.5.1, ethe
     "@ethersproject/web" "5.7.1"
     "@ethersproject/wordlists" "5.7.0"
 
-ethers@^6.11.1:
-  version "6.11.1"
-  resolved "https://registry.npmjs.org/ethers/-/ethers-6.11.1.tgz"
-  integrity sha512-mxTAE6wqJQAbp5QAe/+o+rXOID7Nw91OZXvgpjDa1r4fAbq2Nu314oEZSbjoRLacuCzs7kUC3clEvkCQowffGg==
+ethers@^6.12.0:
+  version "6.12.0"
+  resolved "https://registry.npmjs.org/ethers/-/ethers-6.12.0.tgz"
+  integrity sha512-zL5NlOTjML239gIvtVJuaSk0N9GQLi1Hom3ZWUszE5lDTQE/IVB62mrPkQ2W1bGcZwVGSLaetQbWNQSvI4rGDQ==
   dependencies:
     "@adraffy/ens-normalize" "1.10.1"
     "@noble/curves" "1.2.0"

@@ -25,11 +25,10 @@ const OfferItem = ({ item, url, isToken }) => {
     
     try {
    
-     
-      const currencyToken = adminInstance.chain.getCurrencyByAddress(item.currencies[0]);
+      const currencyToken = adminInstance.chain.getCurrencyByAddress(item.nftContract.prices[0].currency);
       setCurrencyToken(currencyToken);
       
-      const formatPrice = item.prices[0] / 10 ** currencyToken.decimals;
+      const formatPrice = item.nftContract.prices[0].amount / 10 ** currencyToken.decimals;
       setPrice(formatPrice);
     } catch (e) {
       console.error("Error: Currency not found for address");
@@ -38,7 +37,7 @@ const OfferItem = ({ item, url, isToken }) => {
       const data = item.offer ? item.offer : {};
       setItemData(data);
     } else {
-      const data = item.metadata.offer ? item.metadata.offer : {};
+      const data = item.offer ? item.offer : {};
       setItemData(data);
     }
   }, [ item, isToken]);

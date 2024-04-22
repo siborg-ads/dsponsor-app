@@ -2,4 +2,4 @@ sources:
   - name: mySubgraph
     handler:
       graphql:
-        endpoint: https://api.studio.thegraph.com/proxy/65744/dsponsor-mumbai/0.0.4
+        endpoint: https://api.studio.thegraph.com/proxy/65744/dsponsor-sepolia/version/latest
