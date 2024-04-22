@@ -6,7 +6,6 @@ import Tabs from "../tabs/Tabs";
 import { useEffect, useState } from "react";
 import { fetchListingDetails } from "../../lib/services/listingsService";
 import { dSponsorMpContract } from "../../lib/config/listing.config";
-import { Wallet } from "../wallet/Wallet";
 import { useConnectionStatus } from "@thirdweb-dev/react";
 import { useConnect } from "@thirdweb-dev/react";
 

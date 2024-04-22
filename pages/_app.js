@@ -61,6 +61,7 @@ function MyApp({ Component, pageProps }) {
             <MetaMaskProvider>
               <UserContext.Provider value={{ scrollRef: scrollRef }}>
 
+
                 {pid === "/login" ? (
                   <Component {...pageProps} />
                 ) : (

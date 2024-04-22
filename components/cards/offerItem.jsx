@@ -115,6 +115,13 @@ const OfferItem = ({ item, url, isToken }) => {
               <span className="font-display max-w-[150px] text-jacarta-700 hover:text-accent text-base dark:text-white ">
                 {name}
               </span>
+            <Link
+              href={url}
+              className="overflow-hidden text-ellipsis whitespace-nowrap max-w-[120px]"
+            >
+              <span className="font-display max-w-[150px] text-jacarta-700 hover:text-accent text-base dark:text-white ">
+                {name}
+              </span>
             </Link>
 
             {!isToken ? (
