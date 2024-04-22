@@ -13,9 +13,12 @@ import Step_1_Create from "../../components/sliderForm/PageCreate/Step_1_Create"
 import Step_2_Create from "../../components/sliderForm/PageCreate/Step_2_Create";
 import Step_3_Create from "../../components/sliderForm/PageCreate/Step_3_Create";
 import Step_4_Create from "../../components/sliderForm/PageCreate/Step_4_Create";
+import  contractABI  from "../../abi/dsponsorAdmin.json";
+import {contract} from "../../utils/adminContractProvider";
 
 import SliderForm from "../../components/sliderForm/sliderForm";
 import adminInstance from "../../utils/sdkProvider";
+
 
 
 const Create = () => {
@@ -41,6 +44,9 @@ const Create = () => {
   const [selectedTypeParameter, setSelectedTypeParameter] = useState(0);
   const [name, setName] = useState(false);
   const stepsRef = useRef([]);
+  const { ethers } = require("ethers");
+ 
+
 
   const handleNumberChange = (e) => {
     setSelectedNumber(parseInt(e.target.value, 10));
@@ -75,11 +81,7 @@ const Create = () => {
   };
 
   const address = useAddress();
-  const { contract } = useContract("0xE442802706F3603d58F34418Eac50C78C7B4E8b3"); 
-  console.log("contract", contract);
-
-  const { mutateAsync, isLoading: isLoadingContractWrite, error } = useContractWrite(contract, "createDSponsorNFTAndOffer");
-
+  
   const handleLogoUpload = (file) => {
     if (file) {
       setFile(file);
@@ -227,13 +229,15 @@ const Create = () => {
 
       const jsonIpfsLinkContractURI = jsonContractURIURL[0];
       const jsonIpfsLinkMetadata = jsonMetadataURL[0];
-
+   
+ 
       const args = [
         JSON.stringify({
           name: name, // name
           symbol: "DSPONSORNFT", // symbol
           baseURI: "https://api.dsponsor.com/tokenMetadata/", // baseURI
           contractURI: jsonIpfsLinkContractURI, // contractURI from json
+        
           minter: address,
           maxSupply: selectedNumber, // max supply
           forwarder: "0x0000000000000000000000000000000000000000", // forwarder
@@ -246,6 +250,7 @@ const Create = () => {
         JSON.stringify({
           name: name, // name
           offerMetadata: jsonIpfsLinkMetadata, // rulesURI
+         
           options: {
             admins: [address], // admin
             validators: [], // validator
@@ -253,17 +258,13 @@ const Create = () => {
           },
         }),
       ];
-      const preparedArgs = [Object.values(JSON.parse(args[0])), Object.values(JSON.parse(args[1]))];
-      console.log("preparedArgs", preparedArgs);
 
-      await mutateAsync({ args: preparedArgs });
+       await contract.createDSponsorNFTAndOffer(JSON.parse(args[0]), JSON.parse(args[1]));
       setSuccessFullUpload(true);
-
-      
-      
 
     }catch(error){
       setSuccessFullUpload(false);
+      console.log(error);
       throw error;
     }
 

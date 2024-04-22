@@ -21,6 +21,7 @@ import BuyModal from "../../../components/modal/buyModal";
 import adminInstance from "../../../utils/sdkProvider";
 import { toast } from "react-toastify" ;
 import OfferSkeleton from "../../../components/skeleton/offerSkeleton.jsx";
+import { GetTokenAdOffer } from "../../../data/services/TokenOffersService";
 
 import "react-toastify/dist/ReactToastify.css";
 
@@ -34,7 +35,7 @@ const Item = () => {
   const [tokenIdString, setTokenIdString] = useState(null);
 
   const [data, setData] = useState([]);
-  const [offerData, setOfferData] = useState([]);
+  const [offerData, setOfferData] = useState({});
   const address = useAddress();
   const [isOwner, setIsOwner] = useState(false);
   const [file, setFile] = useState(null);
@@ -47,12 +48,12 @@ const Item = () => {
   const [finalPrice, setFinalPrice] = useState(null);
   const [successFullUpload, setSuccessFullUpload] = useState(false);
   const { contract: DsponsorAdminContract } = useContract("0xE442802706F3603d58F34418Eac50C78C7B4E8b3");
-  const { contract: DsponsorNFTContract } = useContract(offerData[0]?.nftContract);
+  const { contract: DsponsorNFTContract } = useContract(offerData[0]?.nftContract.id);
   const { mutateAsync: uploadToIPFS, isLoading: isUploading } = useStorageUpload();
   const { mutateAsync: mintAndSubmit } = useContractWrite(DsponsorAdminContract, "mintAndSubmit");
   const { mutateAsync: submitAd } = useContractWrite(DsponsorAdminContract, "submitAdProposals");
-  const { contract: tokenContract } = useContract(offerData[0]?.currencies[0], "token");
-  const { data: tokenBalance, isLoading, error } = useBalance(offerData[0]?.currencies[0]);
+  const { contract: tokenContract } = useContract(offerData[0]?.nftContract.prices[0].currency, "token");
+  const { data: tokenBalance, isLoading, error } = useBalance(offerData[0]?.nftContract.prices[0].currency);
   const { mutateAsync: approve, isLoading: isLoadingApprove } = useContractWrite(tokenContract, "approve");
   const { data: bps } = useContractRead(DsponsorAdminContract, "feeBps");
   const { data: isAllowedToMint = true } = useContractRead(DsponsorNFTContract, "tokenIdIsAllowedToMint", tokenIdString);
@@ -78,40 +79,42 @@ const Item = () => {
         console.log(tokenData);
       }
       const fetchAdsOffers = async () => {
-        
-        const offer = await adminInstance.getOffer({ offerId: offerId });
-        const params = await adminInstance.getAdParameters({ offerId: offerId });
-        console.log(offer, "offer");
-        const normalizedParams = bufferAdParams(params);
+        const offer = await GetTokenAdOffer(offerId);
+
+        // const offer = await adminInstance.getOffer({ offerId: offerId });
+        // const params = await adminInstance.getAdParameters({ offerId: offerId });
+       
+        // const normalizedParams = bufferAdParams(params);
 
         try {
-          const currencyToken = adminInstance.chain.getCurrencyByAddress(offer.currencies[0]);
-          const formatPrice = offer.prices[0] / 10 ** currencyToken.decimals;
+          const currencyToken = adminInstance.chain.getCurrencyByAddress(offer.nftContract.prices[0].currency);
+          const formatPrice = offer.nftContract.prices[0].amount / 10 ** currencyToken.decimals;
           setPrice(formatPrice);
           setCurrency(currencyToken);
         } catch (e) {
-          console.error("Error: Currency not found for address", offer.currencies[0]);
+          console.error("Error: Currency not found for address", offer.nftContract.prices[0]);
           setOfferNotFormated(true);
         }
 
-        if (address) {
-          const mintedToken = await adminInstance.getOwnedOfferTokens({ address: address });
-          // console.log(mintedToken, "mintedToken");
-          // console.log(offer, "offer");
-          for (const element of mintedToken) {
-            if (element.tokenId === tokenId && element.nftContractAddress.toLowerCase() == offer.nftContract) {
-              setIsOwner(true);
-            }
-          }
-        }
+        // if (address) {
+        //   const mintedToken = await adminInstance.getOwnedOfferTokens({ address: address });
+        //   // console.log(mintedToken, "mintedToken");
+        //   // console.log(offer, "offer");
+        //   for (const element of mintedToken) {
+        //     if (element.tokenId === tokenId && element.nftContractAddress.toLowerCase() == offer.nftContract) {
+        //       setIsOwner(true);
+        //     }
+        //   }
+        // }
+         const destructuredIPFSResult = await fetchDataFromIPFS(offer.metadataURL);
 
         const combinedData = {
           ...offer,
-          normalizedParams,
+          ...destructuredIPFSResult,
         };
 
         console.log(combinedData, "combinedData");
-        setOfferData([combinedData]);
+        setOfferData(combinedData);
       };
 
       fetchAdsOffers();
@@ -120,33 +123,33 @@ const Item = () => {
     setTokenIdString(tokenId?.toString());
   }, [offerId, router, address, tokenId, successFullUpload]);
 
-  useEffect(() => {
-    const fetchAdsOffers = async () => {
-      if (!offerId) return;
-      const checkAds = async (fetchFunction) => {
-        const ads = await fetchFunction;
-        return ads.some((ad) => ad.tokenId === tokenId);
-      };
+  // useEffect(() => {
+  //   const fetchAdsOffers = async () => {
+  //     if (!offerId) return;
+  //     const checkAds = async (fetchFunction) => {
+  //       const ads = await fetchFunction;
+  //       return ads.some((ad) => ad.tokenId === tokenId);
+  //     };
 
-      if (await checkAds(adminInstance.getRejectedAds({ offerId: offerId }))) {
-        setAdStatut(0);
-        return;
-      }
+  //     if (await checkAds(adminInstance.getRejectedAds({ offerId: offerId }))) {
+  //       setAdStatut(0);
+  //       return;
+  //     }
 
-      if (await checkAds(adminInstance.getValidatedAds({ offerId: offerId }))) {
-        setAdStatut(1);
-        return;
-      }
+  //     if (await checkAds(adminInstance.getValidatedAds({ offerId: offerId }))) {
+  //       setAdStatut(1);
+  //       return;
+  //     }
 
-      if (await checkAds(adminInstance.getPendingAds({ offerId: offerId }))) {
-        setAdStatut(2);
-      } else {
-        setAdStatut(3);
-      }
-    };
+  //     if (await checkAds(adminInstance.getPendingAds({ offerId: offerId }))) {
+  //       setAdStatut(2);
+  //     } else {
+  //       setAdStatut(3);
+  //     }
+  //   };
 
-    fetchAdsOffers();
-  }, [offerId, tokenId, successFullUpload]);
+  //   fetchAdsOffers();
+  // }, [offerId, tokenId, successFullUpload]);
  
 
   useEffect(() => {
@@ -307,10 +310,11 @@ const Item = () => {
     }
   };
   function formatTokenId(str) {
-    if (str.length <= 6) {
+    console.log(str, "str");
+    if (str?.length <= 6) {
       return str; 
     }
-    return str.slice(0, 3) + "..." + str.slice(-3);
+    return str?.slice(0, 3) + "..." + str?.slice(-3);
   }
 
   const handleBuyModal = () => {
@@ -352,7 +356,7 @@ const Item = () => {
     );
   }
 
-  const { description = "description not found", id = "1", image = ["/images/gradient_creative.jpg"], name = "DefaultName" } = offerData[0].metadata.offer ? offerData[0].metadata.offer : {};
+  const { description = "description not found", id = "1", image = ["/images/gradient_creative.jpg"], name = "DefaultName" } = offerData.offer ? offerData.offer : {};
 
   return (
     <>
