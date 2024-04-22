@@ -35,7 +35,7 @@ const Item = () => {
   const [tokenIdString, setTokenIdString] = useState(null);
 
   const [data, setData] = useState([]);
-  const [offerData, setOfferData] = useState({});
+  const [offerData, setOfferData] = useState([]);
   const address = useAddress();
   const [isOwner, setIsOwner] = useState(false);
   const [file, setFile] = useState(null);
