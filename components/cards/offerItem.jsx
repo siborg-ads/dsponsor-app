@@ -43,36 +43,36 @@ const OfferItem = ({ item, url, isToken }) => {
   }, [ item, isToken]);
  
   useEffect(() => {
-     if (!isToken) return;
-    const fetchFunction = async () => {
-      const checkAds = async (fetchFunction) => {
-        if (!item.offerId) return;
-        const ads = await fetchFunction;
-        
-        return ads.some((ad) => ad.tokenId === item.tokenId);
-      };
+    const fetchAdsOffers = async () => {
+      if (!item) return;
 
-      if (await checkAds(adminInstance.getRejectedAds({ offerId: item.offerId }))) {
-        setAdStatut(0);
-        return;
-      }
-
-      if (await checkAds(adminInstance.getValidatedAds({ offerId: item.offerId }))) {
-        setAdStatut(1);
-        return;
-      }
-
-      if (await checkAds(adminInstance.getPendingAds({ offerId: item.offerId }))) {
-        setAdStatut(2);
-      } else {
+      if (item?.mint === null) {
         setAdStatut(3);
+        return;
       }
-    }
-    ;
-    fetchFunction();
+      if (item?.currentProposals?.length > 0) {
+        
+        if (item?.currentProposals[0]?.acceptedProposal !== null) {
+          setAdStatut(1);
+          return;
+        }
 
+        if (item?.currentProposals[0]?.pendingProposal !== null) {
+         
+          setAdStatut(2);
+        }
+         if (item?.currentProposals[0]?.rejectedProposal !== null) {
+           setAdStatut(0);
+         }
 
-  },[ item, isToken])
+      } else  {
+        setAdStatut(3);
+      } 
+      
+    };
+
+    fetchAdsOffers();
+  }, [item]);
 
 
   const { name = "offerName", image = ["/images/gradient_creative.jpg"], valid_from = null, valid_to = null } = itemData;

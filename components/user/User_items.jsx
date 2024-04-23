@@ -5,7 +5,7 @@ import OwnedOffers_categories_items from "../categories/ownedOffers_categories_i
 
 import OwnedAdProposals_categories_items from "../categories/ownedAdProposals_categories_item";
 
-const User_items = ({ createdData, mappedownedAdProposals }) => {
+const User_items = ({ createdData, mappedownedAdProposals, isPendinAdsOnOffer }) => {
   const [itemActive, setItemActive] = useState(1);
 
   const tabItem = [
@@ -58,7 +58,7 @@ const User_items = ({ createdData, mappedownedAdProposals }) => {
 
             <TabPanel>
               <div>
-                <OwnedOffers_categories_items data={createdData} />
+                <OwnedOffers_categories_items data={createdData} isPendinAdsOnOffer={isPendinAdsOnOffer} />
               </div>
             </TabPanel>
             <TabPanel>

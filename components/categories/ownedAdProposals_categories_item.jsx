@@ -115,7 +115,7 @@ const OwnedAdProposals_categories_items = ({ data }) => {
       {data.length > 0 ? (
         <div className="grid grid-cols-1 gap-[1.875rem] md:grid-cols-2 lg:grid-cols-4">
           {data?.map((item, index) => {
-            return <OfferItem item={item} key={index} isToken={true} url={`/offer/${item.offerId}/${item.tokenId}`} />;
+            return <OfferItem item={item} key={index} isToken={true} url={`/offer/${item.nftContract.adOffers[0].id}/${item.tokenId}`} />;
           })}
         </div>
       ) : (

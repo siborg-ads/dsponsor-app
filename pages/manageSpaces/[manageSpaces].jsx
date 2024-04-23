@@ -23,58 +23,54 @@ const ManageSpaces = () => {
   const [createdData, setCreatedData] = useState(null);
   const [mappedownedAdProposals, setMappedownedAdProposals] = useState(null);
   const [copied, setCopied] = useState(false);
+  const [isPendinAdsOnOffer, setIsPendinAdsOnOffer] = useState(false);
 
   useEffect(() => {
     if (userAddress) {
       const fetchAdsOffers = async () => {
         const offers = await GetAllAdOffersFromUser(userAddress);
         const ownedAdProposals = await GetAllTokenbyOfferForAUser(userAddress);
-        console.log(ownedAdProposals);
-         const mappedOffers = [];
-         for (const element of offers) {
-           const destructuredIPFSResult = await fetchDataFromIPFS(element.metadataURL);
-           const combinedData = {
-             ...element,
-             ...destructuredIPFSResult,
+        
+        const mappedOffers = [];
+        for (const element of offers) {
+          let isPending = false;
+          const destructuredIPFSResult = await fetchDataFromIPFS(element.metadataURL);
+          const pendingProposals = element.nftContract.tokens;
+           for (const isPendingAds of pendingProposals){ 
+            if(isPendingAds.currentProposals.length > 0 && isPendingAds.currentProposals[0].pendingProposal !== null){
+isPending = true;
+setIsPendinAdsOnOffer(true);
+break;
+            } 
            };
-           mappedOffers.push(combinedData);
-         }
-         console.log(mappedOffers);
-        // const offers = await adminInstance.getOffers({ address: userAddress }, { includeMetadata: true, includePrices: true, includeAllowedTokens: true });
-        // const formatedOffers = offers.filter((ad) => ad.offerId > 22);
-
-        // const ownedAdProposals = await adminInstance.getOwnedOfferTokens({ address: userAddress }, { includeOffers: true });
+          const combinedData = {
+            isPending : isPending,
+            ...element,
+            ...destructuredIPFSResult,
+          };
+          mappedOffers.push(combinedData);
+        }
+console.log(mappedOffers);
         const mappedownedAdProposals = [];
-       
+        
 
-        // for (const offer of offers) {
-        //   const isAdsPending = await adminInstance.getPendingAds({ offerId: offer.offerId });
-
-        //   const combinedData = {
-        //     ...offer,
-        //     ...(isAdsPending.length > 0 && { isPending: true }),
-        //   };
-        //   mappedOffers.push(combinedData);
-        // }
+        
         setCreatedData(mappedOffers);
 
-        // for (const element of ownedAdProposals) {
-        //   if (!element.offer?.offerMetadata) {
-        //     continue;
-        //   }
+        for (const element of ownedAdProposals) {
+          if (!element.nftContract.adOffers[0].metadataURL) {
+            continue;
+          }
 
-        //   const IPFSLink = element.offer.offerMetadata;
-        //   const destructuredIPFSResult = await fetchDataFromIPFS(IPFSLink);
-        //   const combinedData = {
-        //     ...element,
-        //     ...element.offer,
-
-        //     ...destructuredIPFSResult,
-        //   };
-        //   mappedownedAdProposals.push(combinedData);
-        // }
-        
-        // console.log(offer);
+          const IPFSLink = element.nftContract.adOffers[0].metadataURL;
+          const destructuredIPFSResult = await fetchDataFromIPFS(IPFSLink);
+          const combinedData = {
+            ...element,
+           
+            ...destructuredIPFSResult,
+          };
+          mappedownedAdProposals.push(combinedData);
+        }
 
         setMappedownedAdProposals(mappedownedAdProposals);
       };
@@ -97,37 +93,34 @@ const ManageSpaces = () => {
         {/* <!-- Banner --> */}
         <div className="relative h-[13rem]">
           <Image width={1519} height={150} src="/images/gradient_creative.jpg" alt="banner" className="w-full h-full object-cover" />
-          
         </div>
         {/* <!-- end banner --> */}
         <section className="dark:bg-jacarta-800 bg-light-base relative ">
           {/* <!-- Avatar --> */}
           <div className="absolute left-1/2 top-0 z-10 flex -translate-x-1/2 -translate-y-1/2 items-center justify-center">
-           
-          <div className="container">
-            <div className="text-center">
-              <div className="dark:bg-jacarta-700 dark:border-jacarta-600 border-jacarta-100  inline-flex items-center justify-center rounded-full border bg-white py-1.5 px-4">
-                <Tippy content="ETH">
-                  <svg className="icon h-4 w-4 mr-1">
-                    <use xlinkHref="/icons.svg#icon-ETH"></use>
-                  </svg>
-                </Tippy>
+            <div className="container">
+              <div className="text-center">
+                <div className="dark:bg-jacarta-700 dark:border-jacarta-600 border-jacarta-100  inline-flex items-center justify-center rounded-full border bg-white py-1.5 px-4">
+                  <Tippy content="ETH">
+                    <svg className="icon h-4 w-4 mr-1">
+                      <use xlinkHref="/icons.svg#icon-ETH"></use>
+                    </svg>
+                  </Tippy>
 
-                <Tippy hideOnClick={false} content={copied ? <span>copied</span> : <span>copy</span>}>
-                  <button className="js-copy-clipboard dark:text-jacarta-200 max-w-[10rem] select-none overflow-hidden text-ellipsis whitespace-nowrap">
-                    <CopyToClipboard text="userId" onCopy={() => setCopied(true)}>
-                      <span>{userAddress}</span>
-                    </CopyToClipboard>
-                  </button>
-                </Tippy>
+                  <Tippy hideOnClick={false} content={copied ? <span>copied</span> : <span>copy</span>}>
+                    <button className="js-copy-clipboard dark:text-jacarta-200 max-w-[10rem] select-none overflow-hidden text-ellipsis whitespace-nowrap">
+                      <CopyToClipboard text="userId" onCopy={() => setCopied(true)}>
+                        <span>{userAddress}</span>
+                      </CopyToClipboard>
+                    </button>
+                  </Tippy>
+                </div>
               </div>
             </div>
           </div>
-          </div>
-
         </section>
         {/* <!-- end profile --> */}
-        <User_items createdData={createdData} mappedownedAdProposals={mappedownedAdProposals}  />
+        <User_items createdData={createdData} mappedownedAdProposals={mappedownedAdProposals} isPendinAdsOnOffer={isPendinAdsOnOffer} />
       </div>
     </>
   );

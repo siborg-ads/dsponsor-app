@@ -111,9 +111,9 @@ const Item = () => {
           setOfferNotFormated(true);
         }
 
-        if (address) {
+        if (address && offer?.nftContract?.tokens[0]?.mint !== null) {
           
-            if (offer.initialCreator === address.toLowerCase() ) {
+            if (offer?.nftContract?.tokens[0]?.mint?.to === address.toLowerCase() ) {
               setIsOwner(true);
             }
         }
@@ -153,6 +153,9 @@ const Item = () => {
          if (tokenData?.currentProposals[0]?.pendingProposal !== null) {
            setAdStatut(2);
           }
+            if (tokenData?.currentProposals[0]?.rejectedProposal !== null) {
+              setAdStatut(0);
+            }
         } else  {
           setAdStatut(3);
         }
@@ -363,7 +366,7 @@ const Item = () => {
       </div>
     );
   }
-
+console.log(isOwner, "isOwner");
   const { description = "description not found", id = "1", image = ["/images/gradient_creative.jpg"], name = "DefaultName" } = offerData.offer ? offerData.offer : {};
 
   return (

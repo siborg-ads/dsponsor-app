@@ -185,6 +185,10 @@ let nftFilterIds;
       tokens(where: { id_in: $ids }) {
         nftContract {
           id
+          adOffers {
+            metadataURL
+            id
+          }
         }
         tokenId
         mint {
@@ -245,6 +249,6 @@ console.log(nftFilterIds);
   // Exécutez la requête pour obtenir tous les NFTs
   const resultat = await execute(GET_DATA, { ids: nftFilterIds });
 
-  return resultat;
+  return resultat.data.tokens;
 };
 
