@@ -2,10 +2,13 @@ import React, { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Web3Button } from "@thirdweb-dev/react";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const PreviewModal = ({
   handlePreviewModal,
   handleSubmit,
+  customSymbolContract,
   name = false,
   link = null,
   description = false,
@@ -33,7 +36,7 @@ const PreviewModal = ({
     if (!date) return "";
     return date.toLocaleDateString();
   };
-  console.log(name, name.length, "ici");
+  
   return (
     <div>
       <div className="modal-dialog max-h-[75vh] max-w-2xl">
@@ -126,7 +129,7 @@ const PreviewModal = ({
                   )}
                   {customContract ? (
                     <p className="font-display  mb-2 block text-jacarta-400 text-sm">
-                      Custom Contract : {!errors.currencyError ? <span className="dark:text-white text-base ml-2"> {customContract} </span> : <span className="text-red">{errors.currencyError}</span>}
+                      Custom Contract : {!errors.currencyError ? <span className="dark:text-white text-base ml-2"> {customSymbolContract} </span> : <span className="text-red">{errors.currencyError}</span>}
                     </p>
                   ) : selectedCurrency ? (
                     <p className="font-display  mb-2 block text-jacarta-400 text-sm">
@@ -135,9 +138,13 @@ const PreviewModal = ({
                   ) : (
                     ""
                   )}
-                 
-                 
-                 
+                  {selectedRoyalties ? (
+                    <p className="font-display  mb-2 block text-jacarta-400 text-sm">
+                      Royalties : {!errors.royaltyError ? <span className="dark:text-white text-base ml-2"> {selectedRoyalties} % </span> : <span className="text-red">{errors.royaltyError}</span>}
+                    </p>
+                  ) : (
+                    ""
+                  )}
                 </div>
                 {previewImage && (
                   <div className="mb-6  flex-col items-center justify-center ">
@@ -171,8 +178,14 @@ const PreviewModal = ({
               <div className="flex items-center gap-4">
                 {!successFullUpload ? (
                   <Web3Button
-                    contractAddress="0xdf42633BD40e8f46942e44a80F3A58d0Ec971f09"
-                    action={handleSubmit}
+                    contractAddress="0xE442802706F3603d58F34418Eac50C78C7B4E8b3"
+                    action={() => {
+                      toast.promise(handleSubmit, {
+                        pending: "Waiting transaction confirmation",
+                        success: "Transaction confirmed 👌",
+                        error: "Transaction rejected 🤯",
+                      });
+                    }}
                     className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate ? "btn-disabled" : "!bg-accent !cursor-pointer"} `}
                     disabled={!validate}
                   >

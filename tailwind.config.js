@@ -1,6 +1,7 @@
 /** @type {import('tailwindcss').Config} */
+const { nextui } = require("@nextui-org/react");
 module.exports = {
-  content: ["./pages/**/*.{js,ts,jsx,tsx}", "./components/**/*.{js,ts,jsx,tsx}"],
+  content: ["./pages/**/*.{js,ts,jsx,tsx}", "./components/**/*.{js,ts,jsx,tsx}", "./node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}"],
   darkMode: "class",
   theme: {
     screens: {
@@ -9,6 +10,7 @@ module.exports = {
       lg: "1025px",
       xl: "1202px",
     },
+
     fontFamily: {
       display: ['"CalSans-SemiBold"', "sans-serif"],
       body: ['"DM Sans"', "sans-serif"],
@@ -113,8 +115,7 @@ module.exports = {
     },
     namedGroups: ["dropdown"],
   },
-  // variants: {
-  // 	display: ['children', 'children-not'],
-  // },
-  plugins: [],
+  plugins: [nextui()],
+ 
+ 
 };

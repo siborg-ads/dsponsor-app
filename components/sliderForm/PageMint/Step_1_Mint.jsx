@@ -8,7 +8,7 @@ const Step_1_Mint = ({ stepsRef, styles, adParamaters }) => {
   return (
     <div ref={(el) => (stepsRef.current[0] = el)} className={styles.form__step}>
       <div className="pr-6 pl-2">
-        <h3 className="mb-14">Step 1 : Offer Type & Price</h3>
+        <h3 className="mb-14">Step 1 : Offer Type</h3>
 
         {/* <!-- Ad Space type --> */}
         <div className="mb-6 flex  flex-col justify-center items-center gap-4">

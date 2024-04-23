@@ -4,21 +4,20 @@ import Meta from "../../components/Meta";
 import Image from "next/image";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { useAddress, useSwitchChain, useContract, useContractWrite, Web3Button, useStorageUpload, useTokenDecimals, CheckoutWithCard, CheckoutWithEth } from "@thirdweb-dev/react";
-import { Mumbai, Polygon } from "@thirdweb-dev/chains";
-import { ethers } from "ethers";
+import { useAddress, useSwitchChain, useContract, useContractWrite, Web3Button, useContractRead, useStorageUpload, useTokenDecimals, CheckoutWithCard, CheckoutWithEth } from "@thirdweb-dev/react";
+
 import styles from "../../styles/createPage/style.module.scss";
 import PreviewModal from "../../components/modal/previewModal";
 import Step_1_Create from "../../components/sliderForm/PageCreate/Step_1_Create";
 import Step_2_Create from "../../components/sliderForm/PageCreate/Step_2_Create";
 import Step_3_Create from "../../components/sliderForm/PageCreate/Step_3_Create";
 import Step_4_Create from "../../components/sliderForm/PageCreate/Step_4_Create";
+import contractABI from "../../abi/dsponsorAdmin.json";
 
 import SliderForm from "../../components/sliderForm/sliderForm";
-import { DSponsorAdmin } from "@dsponsor/sdk";
+import adminInstance from "../../utils/sdkProvider";
 
 const Create = () => {
-  const admin = new DSponsorAdmin({chain:{alchemyAPIKey: process.env.NEXT_PUBLIC_ALCHEMY_API_KEY}});
   const [file, setFile] = useState(null);
   const { mutateAsync: upload, isLoading } = useStorageUpload();
 
@@ -36,21 +35,24 @@ const Create = () => {
   const [validate, setValidate] = useState(false);
   const [showPreviewModal, setShowPreviewModal] = useState(false);
   const [successFullUpload, setSuccessFullUpload] = useState(false);
-  const [selectedParameter, setSelectedParameter] = useState(["logoURL", "linkURL"]);
+  const [selectedParameter, setSelectedParameter] = useState(["imageURL", "linkURL"]);
   const [displayedParameter, setDisplayedParameter] = useState("Logo Grid & Link");
   const [selectedTypeParameter, setSelectedTypeParameter] = useState(0);
+  const { contract: DsponsorAdminContract } = useContract("0xE442802706F3603d58F34418Eac50C78C7B4E8b3", contractABI);
+  const { mutateAsync: createDSponsorNFTAndOffer } = useContractWrite(DsponsorAdminContract, "createDSponsorNFTAndOffer");
   const [name, setName] = useState(false);
   const stepsRef = useRef([]);
+  const { ethers } = require("ethers");
 
   const handleNumberChange = (e) => {
     setSelectedNumber(parseInt(e.target.value, 10));
   };
   const handleParameterChange = (e) => {
     setSelectedTypeParameter(e.target.value);
-    if (e.target.value === 0){
-      setSelectedParameter(["logoURL", "linkURL"]);
+    if (e.target.value === 0) {
+      setSelectedParameter(["imageURL", "linkURL"]);
       setDisplayedParameter("Logo Grid & Link");
-    } 
+    }
     // if (e.target.value === 1) setSelectedParameter(["bannerURL", "linkURL"]);
   };
 
@@ -75,9 +77,6 @@ const Create = () => {
   };
 
   const address = useAddress();
-  const { contract } = useContract("0xdf42633BD40e8f46942e44a80F3A58d0Ec971f09"); // dsponsor admin mumbai contract address
-
-  const { mutateAsync, isLoading: isLoadingContractWrite, error } = useContractWrite(contract, "createDSponsorNFTAndOffer");
 
   const handleLogoUpload = (file) => {
     if (file) {
@@ -155,8 +154,8 @@ const Create = () => {
       isValid = false;
     }
 
-    if (selectedRoyalties < 0 || selectedRoyalties > 100) {
-      newErrors.royaltyError = "Royalties are missing or invalid. They should be between 0% and 100%.";
+    if (selectedRoyalties < 0.01 || selectedRoyalties > 100) {
+      newErrors.royaltyError = "Royalties are missing or invalid. They should be between 0.01% and 100%.";
       isValid = false;
     }
     setValidate(isValid);
@@ -173,103 +172,95 @@ const Create = () => {
     if (!validateInputs()) {
       return;
     }
+    try {
+      const uploadUrl = await upload({
+        data: [file],
+        options: { uploadWithGatewayUrl: true, uploadWithoutDirectory: true },
+      });
 
-    const uploadUrl = await upload({
-      data: [file],
-      options: { uploadWithGatewayUrl: true, uploadWithoutDirectory: true },
-    });
+      if (name && link) {
+        onUpload(name, link);
+      } else {
+        console.error("Missing name or link");
+      }
+      const jsonMetadata = JSON.stringify({
+        creator: {
+          name: "",
+          description: "",
+          image: "",
+          external_link: "",
+          categories: ["dApp", "social", "media", "education"],
+        },
+        offer: {
+          name: name,
+          description: description,
+          image: uploadUrl[0],
+          terms: null,
+          external_link: link,
+          valid_from: startDate || "1970-01-01T00:00:00Z",
+          valid_to: endDate || "2100-01-01T00:00:00Z",
+          categories: ["Community", "NFT", "Crypto"],
+          token_metadata: {},
+        },
+      });
 
-    if (name && link) {
-      onUpload(name, link);
-    } else {
-      console.error("Missing name or link");
-    }
-    const jsonMetadata = JSON.stringify({
-      creator: {
-        name: "",
-        description: "",
-        image: "",
-        external_link: "",
-        categories: ["dApp", "social", "media", "education"],
-      },
-      offer: {
+      const jsonContractURI = JSON.stringify({
         name: name,
         description: description,
         image: uploadUrl,
-        terms: null,
         external_link: link,
-        valid_from: startDate || "1970-01-01T00:00:00Z",
-        valid_to: endDate || "2100-01-01T00:00:00Z",
-        categories: ["Community", "NFT", "Crypto"],
-        token_metadata: {
-          name: null,
-          description: null,
-          image: null,
-          external_link: null,
-          attributes: [
-            {
-              trait_type: null,
-              value: null,
-            },
-          ],
-        },
-      },
-    });
+        collaborators: [address],
+      });
+      // upload json to IPFS
+      const jsonMetadataURL = await upload({
+        data: [jsonMetadata],
+        options: { uploadWithGatewayUrl: true, uploadWithoutDirectory: true },
+      });
 
-    const jsonContractURI = JSON.stringify({
-      name: name,
-      description: description,
-      image: uploadUrl,
-      external_link: link,
-      collaborators: [address],
-    });
-    // upload json to IPFS
-    const jsonMetadataURL = await upload({
-      data: [jsonMetadata],
-      options: { uploadWithGatewayUrl: true, uploadWithoutDirectory: true },
-    });
+      // upload json to IPFS
+      const jsonContractURIURL = await upload({
+        data: [jsonContractURI],
+        options: { uploadWithGatewayUrl: true, uploadWithoutDirectory: true },
+      });
 
-    // upload json to IPFS
-    const jsonContractURIURL = await upload({
-      data: [jsonContractURI],
-      options: { uploadWithGatewayUrl: true, uploadWithoutDirectory: true },
-    });
+      const jsonIpfsLinkContractURI = jsonContractURIURL[0];
+      const jsonIpfsLinkMetadata = jsonMetadataURL[0];
 
-    const jsonIpfsLinkContractURI = jsonContractURIURL[0];
-    const jsonIpfsLinkMetadata = jsonMetadataURL[0];
+      const args = [
+        JSON.stringify({
+          name: name, // name
+          symbol: "DSPONSORNFT", // symbol
+          baseURI: "https://api.dsponsor.com/tokenMetadata/", // baseURI
+          contractURI: jsonIpfsLinkContractURI, // contractURI from json
 
-    const args = [
-      JSON.stringify({
-        name: name, // name
-        symbol: "DSPONSORNFT", // symbol
-        baseURI: "https://api.dsponsor.com/tokenMetadata/", // baseURI
-        contractURI: jsonIpfsLinkContractURI, // contractURI from json
-        minter: address,
-        maxSupply: selectedNumber, // max supply
-        forwarder: "0x0000000000000000000000000000000000000000", // forwarder
-        initialOwner: address, // owner
-        royaltyBps: selectedRoyalties * 100, // royalties
-        currencies: [selectedCurrencyContract(selectedCurrency)], // accepted token
-        prices: [ethers.utils.parseUnits(selectedUnitPrice.toString(), getDecimals(selectedCurrency))], // prices with decimals
-        allowedTokenIds: Array.from({ length: selectedNumber }, (_, i) => i), // allowed token ids
-      }),
-      JSON.stringify({
-        name: name, // name
-        offerMetadata: jsonIpfsLinkMetadata, // rulesURI
-        options: {
-          admins: [address], // admin
-          validators: [], // validator
-          adParameters: selectedParameter, // ad parameters
-        },
-      }),
-    ];
-    const preparedArgs = [Object.values(JSON.parse(args[0])), Object.values(JSON.parse(args[1]))];
-    console.log("preparedArgs", preparedArgs);
-    try {
-      await mutateAsync({ args: preparedArgs });
+          minter: address,
+          maxSupply: selectedNumber, // max supply
+          forwarder: "0x0000000000000000000000000000000000000000", // forwarder
+          initialOwner: address, // owner
+          royaltyBps: selectedRoyalties * 100, // royalties
+          currencies: [selectedCurrencyContract(selectedCurrency)], // accepted token
+          prices: [ethers.utils.parseUnits(selectedUnitPrice.toString(), getDecimals(selectedCurrency))], // prices with decimals
+          allowedTokenIds: Array.from({ length: selectedNumber }, (_, i) => i), // allowed token ids
+        }),
+        JSON.stringify({
+          name: name, // name
+          offerMetadata: jsonIpfsLinkMetadata, // rulesURI
+
+          options: {
+            admins: [address], // admin
+            validators: [], // validator
+            adParameters: selectedParameter, // ad parameters
+          },
+        }),
+      ];
+      const preparedArgs = [Object.values(JSON.parse(args[0])), Object.values(JSON.parse(args[1]))];
+      await createDSponsorNFTAndOffer({ args: preparedArgs });
+
       setSuccessFullUpload(true);
     } catch (error) {
       setSuccessFullUpload(false);
+      console.log(error);
+      throw error;
     }
   };
 
@@ -278,11 +269,13 @@ const Create = () => {
     setLink(updatedLink);
   };
 
-  const USDCCurrency = admin.chain.getCurrencyAddress("USDC");
-  const ETHCurrency = admin.chain.getCurrencyAddress("ETH");
-  const WETHCurrency = admin.chain.getCurrencyAddress("WETH");
+  const USDCCurrency = adminInstance.chain.getCurrencyAddress("USDC");
+  const ETHCurrency = adminInstance.chain.getCurrencyAddress("ETH");
+  const WETHCurrency = adminInstance.chain.getCurrencyAddress("WETH");
+  const USDTCurrency = adminInstance.chain.getCurrencyAddress("USDT");
 
   const { contract: customTokenContract } = useContract(customContract, "token");
+  const { data: customSymbolContract } = useContractRead(customTokenContract, "symbol");
 
   const { data: customDecimals } = useTokenDecimals(customTokenContract);
 
@@ -294,12 +287,14 @@ const Create = () => {
         return ETHCurrency.contract;
       case "WETH":
         return WETHCurrency.contract;
+      case "USDT":
+        return USDTCurrency.contract;
       case "custom":
         return customContract;
       default:
         return USDCCurrency.contract;
     }
-  }, [USDCCurrency, ETHCurrency, WETHCurrency, customContract, selectedCurrency]);
+  }, [USDCCurrency, ETHCurrency, WETHCurrency, USDTCurrency, customContract, selectedCurrency]);
 
   const getDecimals = useCallback(
     (currency) => {
@@ -310,19 +305,21 @@ const Create = () => {
           return ETHCurrency.decimals;
         case "WETH":
           return WETHCurrency.decimals;
+        case "USDT":
+          return USDTCurrency.decimals;
         case "custom":
           return customDecimals;
         default:
           return USDCCurrency.decimals;
       }
     },
-    [USDCCurrency, ETHCurrency, WETHCurrency, customDecimals]
+    [USDCCurrency, ETHCurrency, WETHCurrency, USDTCurrency, customDecimals]
   );
 
   const numSteps = 4;
   const successFullUploadModal = {
     body: "Your offer has been created successfully",
-    subBody: "⚠️ Don't Forget To Display The AdSpaces On Your Website ! Copy Paste the link in your Offer Details To Display Automatically Your Sponsor Logo.",
+    subBody: "⚠️ Don't forget to display the adSpaces on your website ! copy paste the link in your offer details to display automatically your sponsor logo.",
     buttonTitle: "Manage Spaces",
     hrefButton: `/manageSpaces/${address}`,
   };
@@ -357,7 +354,7 @@ const Create = () => {
           />
           <Step_2_Create stepsRef={stepsRef} styles={styles} setName={setName} setDescription={setDescription} />
 
-          <Step_3_Create stepsRef={stepsRef} styles={styles} setLink={setLink} link={link} file={file} handleLogoUpload={handleLogoUpload} />
+          <Step_3_Create stepsRef={stepsRef} styles={styles} setLink={setLink} link={link} previewImage={previewImage} file={file} handleLogoUpload={handleLogoUpload} />
 
           <Step_4_Create
             stepsRef={stepsRef}
@@ -382,6 +379,7 @@ const Create = () => {
           <PreviewModal
             handlePreviewModal={handlePreviewModal}
             handleSubmit={handleSubmit}
+            customSymbolContract={customSymbolContract}
             name={name}
             link={link}
             file={file}

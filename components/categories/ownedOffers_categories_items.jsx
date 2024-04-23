@@ -9,8 +9,9 @@ import { updateTrendingCategoryItemData } from "../../redux/counterSlice";
 import Review_adProposal_data from "./review_adProposal_items";
 import OfferItem from "../cards/offerItem";
 import Link from "next/link";
+import Image from "next/image";
 
-const OwnedOffers_categories_items = ({ data }) => {
+const OwnedOffers_categories_items = ({ data, isPendinAdsOnOffer }) => {
   const [itemdata, setItemdata] = useState(trendingCategoryData);
   const dispatch = useDispatch();
   const { trendingCategorySorText } = useSelector((state) => state.counter);
@@ -46,6 +47,14 @@ const OwnedOffers_categories_items = ({ data }) => {
   useEffect(() => {
     dispatch(updateTrendingCategoryItemData(itemdata.slice(0, 8)));
   }, [itemdata, dispatch]);
+
+  if (!data) {
+    return (
+      <div className="flex w-full justify-center">
+        <Image src="/images/loading-bullet.svg" alt="icon" width={60} height={60} />
+      </div>
+    );
+  }
   return (
     <>
       {/* <!-- Filter --> */}
@@ -100,12 +109,18 @@ const OwnedOffers_categories_items = ({ data }) => {
       {/* dropdown */}
       {/* <Recently_added_dropdown data={sortText} dropdownFor="recently_added" />
       </div> */}
+      {isPendinAdsOnOffer && (
+        <div className="dark:bg-jacarta-700 dark:text-jacarta-300 dark:border-jacarta-600 border-jacarta-100 rounded-2lg border bg-white p-3 flex gap-4 justify-center items-center mb-6">
+          <span className="bg-red rounded-2xl dark:text-white  px-2">!</span>
+          <span> You have 1 or more ads proposals to check on your offer </span>
+        </div>
+      )}
 
       {/* <!-- Grid --> */}
       {data.length > 0 ? (
         <div className="grid grid-cols-1 gap-[1.875rem] md:grid-cols-2 lg:grid-cols-4">
           {data?.map((item, index) => {
-            return <OfferItem item={item} key={index} url={`/offer/${item.offerId}`} />;
+            return <OfferItem item={item} key={index} url={`/offer/${item.id}`} />;
           })}
         </div>
       ) : (

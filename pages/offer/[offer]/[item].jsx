@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import "tippy.js/dist/tippy.css";
@@ -12,16 +12,20 @@ import Step_1_Mint from "../../../components/sliderForm/PageMint/Step_1_Mint";
 import Step_2_Mint from "../../../components/sliderForm/PageMint/Step_2_Mint";
 import Step_3_Mint from "../../../components/sliderForm/PageMint/Step_3_Mint";
 import PreviewModal from "../../../components/modal/previewModal";
-import { FileUploader } from "react-drag-drop-files";
 import Tippy from "@tippyjs/react";
 import "tippy.js/dist/tippy.css";
 import { ItemsTabs } from "../../../components/component";
-import { useDispatch } from "react-redux";
-import { ConnectWallet } from "@thirdweb-dev/react";
-import { DSponsorAdmin } from "@dsponsor/sdk";
 import { fetchDataFromIPFS } from "../../../data/services/ipfsService";
 import { bufferAdParams } from "../../../utils/formatedData";
-import  BuyModal  from "../../../components/modal/buyModal";
+import BuyModal from "../../../components/modal/buyModal";
+import adminInstance from "../../../utils/sdkProvider";
+import { toast } from "react-toastify";
+import OfferSkeleton from "../../../components/skeleton/offerSkeleton.jsx";
+import { GetTokenAdOffer } from "../../../data/services/TokenOffersService";
+
+import contractABI from "../../../abi/dsponsorAdmin.json";
+
+import "react-toastify/dist/ReactToastify.css";
 
 const Item = () => {
   const router = useRouter();
@@ -44,16 +48,16 @@ const Item = () => {
   const [errors, setErrors] = useState({});
   const [finalPrice, setFinalPrice] = useState(null);
   const [successFullUpload, setSuccessFullUpload] = useState(false);
-  const { contract: DsponsorAdminContract } = useContract("0xdf42633BD40e8f46942e44a80F3A58d0Ec971f09");
-  const { contract: DsponsorNFTContract } = useContract(offerData[0]?.nftContract);
+  const { contract: DsponsorAdminContract } = useContract("0xE442802706F3603d58F34418Eac50C78C7B4E8b3", contractABI);
+  const { contract: DsponsorNFTContract } = useContract(offerData?.nftContract?.id);
   const { mutateAsync: uploadToIPFS, isLoading: isUploading } = useStorageUpload();
   const { mutateAsync: mintAndSubmit } = useContractWrite(DsponsorAdminContract, "mintAndSubmit");
   const { mutateAsync: submitAd } = useContractWrite(DsponsorAdminContract, "submitAdProposals");
-  const { contract: tokenContract } = useContract(offerData[0]?.currencies[0], "token");
-  const { data: tokenBalance, isLoading, error } = useBalance(offerData[0]?.currencies[0]);
+  const { contract: tokenContract } = useContract(offerData?.nftContract?.prices[0].currency, "token");
+  const { data: tokenBalance, isLoading, error } = useBalance(offerData?.nftContract?.prices[0].currency);
   const { mutateAsync: approve, isLoading: isLoadingApprove } = useContractWrite(tokenContract, "approve");
   const { data: bps } = useContractRead(DsponsorAdminContract, "feeBps");
-  const { data: isAllowedToMint } = useContractRead(DsponsorNFTContract, "tokenIdIsAllowedToMint", tokenIdString);
+  const { data: isAllowedToMint = true } = useContractRead(DsponsorNFTContract, "tokenIdIsAllowedToMint", tokenIdString);
   const { data: royaltiesInfo } = useContractRead(DsponsorNFTContract, "royaltyInfo", [tokenIdString, 100]);
   const [showPreviewModal, setShowPreviewModal] = useState(false);
   const [validate, setValidate] = useState(false);
@@ -63,93 +67,106 @@ const Item = () => {
   const [price, setPrice] = useState(null);
   const [buyModal, setBuyModal] = useState(false);
   const [buyMethod, setBuyMethod] = useState(false);
+  const [userBalance, setUserBalance] = useState(null);
+  const [submitAdFormated, setSubmitAdFormated] = useState({});
   const stepsRef = useRef([]);
   const numSteps = 3;
-  
+
   useEffect(() => {
     if (offerId) {
+      if (tokenId.length > 6) {
+        const url = new URL(window.location.href);
+        const tokenData = url.searchParams.get("tokenData");
+        console.log(tokenData);
+      }
       const fetchAdsOffers = async () => {
-        const admin = new DSponsorAdmin({ chain: { alchemyAPIKey: process.env.NEXT_PUBLIC_ALCHEMY_API_KEY, chainName: "ethereum-sepolia" } });
-        const offer = await admin.getOffer({ offerId: offerId });
-        const params = await admin.getAdParameters({ offerId: offerId });
+        const offer = await GetTokenAdOffer(offerId, tokenId);
 
-        const normalizedParams = bufferAdParams(params);
-
-      
         try{
-          
-          const currencyToken = admin.chain.getCurrencyByAddress(offer.currencies[0]);
-          const formatPrice = offer.prices[0] / 10 ** currencyToken.decimals;
+          const params = [];
+          const tokenIdArray = [];
+          const offerIdArray = [];
+          for(const element of offer.adParameters){
+            params.push(element.base);
+            tokenIdArray.push(tokenId);
+            offerIdArray.push(offerId);
+          }
+          const submitAdFormated = {};
+          submitAdFormated.params = params;
+          submitAdFormated.tokenId = tokenIdArray;
+          submitAdFormated.offerId = offerIdArray;
+
+          setSubmitAdFormated(submitAdFormated);
+        }catch(e){
+          console.error("Error: Ad parameters not found for offer", offer);
+        }
+
+        try {
+          const currencyToken = adminInstance.chain.getCurrencyByAddress(offer.nftContract.prices[0].currency);
+          const formatPrice = offer.nftContract.prices[0].amount / 10 ** currencyToken.decimals;
           setPrice(formatPrice);
           setCurrency(currencyToken);
-        }catch(e){
-          console.error("Error: Currency not found for address", offer.currencies[0]);
+        } catch (e) {
+          console.error("Error: Currency not found for address", offer?.nftContract?.prices[0]);
           setOfferNotFormated(true);
         }
 
-        if (address) {
-          const mintedToken = await admin.getOwnedOfferTokens({ address: address });
-          console.log(mintedToken, "mintedToken");
-          console.log(offer, "offer");
-          for (const element of mintedToken) {
-            if (element.tokenId === tokenId && element.nftContractAddress.toLowerCase() == offer.nftContract) {
-              
+        if (address && offer?.nftContract?.tokens[0]?.mint !== null) {
+          
+            if (offer?.nftContract?.tokens[0]?.mint?.to === address.toLowerCase() ) {
               setIsOwner(true);
             }
-          }
         }
-        const destructuredIPFSResult = await fetchDataFromIPFS(offer.offerMetadata);
+        const destructuredIPFSResult = await fetchDataFromIPFS(offer.metadataURL);
+
         const combinedData = {
           ...offer,
           ...destructuredIPFSResult,
-          normalizedParams,
         };
-       
+
         console.log(combinedData, "combinedData");
-        setOfferData([combinedData]);
+        setOfferData(combinedData);
       };
 
       fetchAdsOffers();
     }
 
     setTokenIdString(tokenId?.toString());
-  }, [offerId, router, address, tokenId]);
+  }, [offerId, router, address, tokenId, successFullUpload]);
 
   useEffect(() => {
-    const admin = new DSponsorAdmin();
     const fetchAdsOffers = async () => {
-      if (!offerId) return;
-      const checkAds = async (fetchFunction) => {
-        const ads = await fetchFunction;
-        console.log(ads, "ads");
-        return ads.some((ad) => ad.tokenId === tokenId);
-      };
+      if (!offerData) return;
+    const tokenData = offerData?.nftContract?.tokens[0];
+       if (tokenData?.mint === null) {
+         setAdStatut(3);
+         return;
+       }
+       if(tokenData?.currentProposals?.length > 0){
 
-      if (await checkAds(admin.getRejectedAds({ offerId: offerId }))) {
-        setAdStatut(0);
-        return;
-      }
-
-      if (await checkAds(admin.getValidatedAds({ offerId: offerId }))) {
-        setAdStatut(1);
-        return;
-      }
-
-      if (await checkAds(admin.getPendingAds({ offerId: offerId }))) {
-        setAdStatut(2);
-      }
-      else {
-        setAdStatut(3);
-      }
+         if (tokenData?.currentProposals[0]?.acceptedProposal !== null) {
+           
+           setAdStatut(1);
+           return;
+         }
+   
+         if (tokenData?.currentProposals[0]?.pendingProposal !== null) {
+           setAdStatut(2);
+          }
+            if (tokenData?.currentProposals[0]?.rejectedProposal !== null) {
+              setAdStatut(0);
+            }
+        } else  {
+          setAdStatut(3);
+        }
     };
 
     fetchAdsOffers();
-  }, [offerId, tokenId]);
- 
+  }, [offerId, tokenId, successFullUpload, offerData]);
 
   useEffect(() => {
-    if (royaltiesInfo) setRoyalties(ethers.BigNumber.from(royaltiesInfo[1]?._hex).toNumber());
-  }, [royaltiesInfo]);
+    if (offerData?.nftContract?.royaltyBps) setRoyalties(offerData?.nftContract?.royaltyBps / 100);
+  }, [offerData]);
 
   const validateInputs = () => {
     let isValid = true;
@@ -204,10 +221,12 @@ const Item = () => {
 
   const handleApprove = async () => {
     try {
-      const allowance = await tokenContract.call("allowance", [address, "0xdf42633BD40e8f46942e44a80F3A58d0Ec971f09"]);
+      console.log(tokenContract, address, "tokenContract");
+      const allowance = await tokenContract.call("allowance", [address, "0xE442802706F3603d58F34418Eac50C78C7B4E8b3"]);
+      console.log(allowance);
 
       if (allowance > amountToApprove) return;
-      await approve({ args: ["0xdf42633BD40e8f46942e44a80F3A58d0Ec971f09", amountToApprove] });
+      await approve({ args: ["0xE442802706F3603d58F34418Eac50C78C7B4E8b3", amountToApprove] });
       console.log("Approvation réussie");
     } catch (error) {
       console.error("Erreur d'approbation:", error);
@@ -215,63 +234,72 @@ const Item = () => {
   };
 
   const handleSubmit = async () => {
-    if(!buyMethod){
-
+    if (!buyMethod) {
       if (!validateInputs()) {
         return;
       }
     }
     // IPFS upload
+    console.log(userBalance, "userBalance");
 
-    let userBalance = checkUserBalance(tokenBalance, price);
-    if (userBalance) {
+    if (userBalance || isOwner) {
       try {
-        if (offerData[0]?.currencies[0] !== "0x0000000000000000000000000000000000000000") {
+        if (offerData?.nftContract.prices[0].currency !== "0x0000000000000000000000000000000000000000") {
           await handleApprove();
         }
       } catch (error) {
         console.error("Erreur d'approbation des tokens:", error);
+        throw error;
+      }
+
+      let uploadUrl;
+      try {
+        uploadUrl = await uploadToIPFS({
+          data: [file],
+          options: { uploadWithGatewayUrl: true, uploadWithoutDirectory: true },
+        });
+      } catch (error) {
+        console.error("Erreur lors de l'upload à IPFS:", error);
+        throw new Error("Upload to IPFS failed.");
       }
       try {
-         const uploadUrl = await uploadToIPFS({
-           data: [file],
-           options: { uploadWithGatewayUrl: true, uploadWithoutDirectory: true },
-         });
-        
-
         const argsMintAndSubmit = {
           tokenId: tokenIdString,
           to: address,
-          currency: offerData[0]?.currencies[0],
-          tokenData: "null",
+          currency: offerData?.nftContract.prices[0].currency,
+          tokenData: "",
           offerId: offerId,
-          adParameters:[] ,
+          adParameters: [],
           adDatas: [],
           referralAdditionalInformation: "",
         };
         const argsAdSubmited = {
-          offerId: [offerId, offerId],
-          tokenId: [tokenIdString, tokenIdString],
-          adParameters: offerData[0]?.normalizedParams,
+          offerId: submitAdFormated.offerId,
+          tokenId: submitAdFormated.tokenId,
+          adParameters: submitAdFormated.params,
           data: [uploadUrl[0], link],
         };
-        const isEthCurrency = offerData[0]?.currencies[0] === "0x0000000000000000000000000000000000000000";
-        const functionWithPossibleArgs = (adStatut === 0 || adStatut === 3  ) && !isAllowedToMint  ? Object.values(argsAdSubmited) : argsMintAndSubmit;
+
+        const isEthCurrency = offerData?.nftContract.prices[0].currency === "0x0000000000000000000000000000000000000000";
+        const functionWithPossibleArgs = (adStatut === 0 || adStatut === 3) && !isAllowedToMint ? Object.values(argsAdSubmited) : argsMintAndSubmit;
         const argsWithPossibleOverrides = isEthCurrency ? { args: [functionWithPossibleArgs], overrides: { value: amountToApprove } } : { args: [functionWithPossibleArgs] };
         // console.log(adStatut, "adStatut")
         // console.log(isAllowedToMint, "isAllowedToMint")
-        if ((adStatut === 0 || adStatut === 3) && (!isAllowedToMint)) {
-          // console.log("submitAd");
-          await submitAd({ args: functionWithPossibleArgs });
+       
+        if ((adStatut === 0 || adStatut === 3) && !isAllowedToMint) {
+           console.log(argsAdSubmited, 'ici');
+
+           await submitAd({ args: functionWithPossibleArgs });
+          setSuccessFullUpload(true);
         } else {
-          console.log(argsWithPossibleOverrides);
-          await mintAndSubmit(argsWithPossibleOverrides);
+           await mintAndSubmit(argsWithPossibleOverrides);
         }
 
         setSuccessFullUpload(true);
       } catch (error) {
         console.error("Erreur de soumission du token:", error);
         setSuccessFullUpload(false);
+        throw error;
       }
     }
   };
@@ -282,24 +310,32 @@ const Item = () => {
       const parsedPriceToken = parseFloat(priceToken);
 
       if (parsedTokenBalance >= parsedPriceToken) {
-        console.log("user has enough balance");
         return true;
       } else {
-        console.log("user has not enough balance");
+        toast.error("You have not enough balance to confirm checkout", { autoClose: false });
         return false;
       }
     } catch (error) {
+      toast.error("Error while checking user balance");
       console.error("Failed to fetch token balance:", error);
       return null;
     }
   };
+  function formatTokenId(str) {
+    if (str?.length <= 6) {
+      return str;
+    }
+    return str?.slice(0, 3) + "..." + str?.slice(-3);
+  }
+
   const handleBuyModal = () => {
+    setSuccessFullUpload(false);
+    !buyModal && setUserBalance(checkUserBalance(tokenBalance, price));
     setBuyModal(!buyModal);
     setBuyMethod(true);
-  
   };
   const handlePreviewModal = () => {
-    
+    setSuccessFullUpload(false);
     setShowPreviewModal(!showPreviewModal);
     validateInputs();
   };
@@ -310,6 +346,13 @@ const Item = () => {
     buttonTitle: "Manage Spaces",
     hrefButton: `/manageSpaces/${address}`,
   };
+  const successFullBuyModal = {
+    title: "Checkout",
+    body: "Congratulations, you purchase this ad space.",
+    subBody: "Check your ad space in your manage section to submit your ad.",
+    buttonTitle: "Manage Spaces",
+    hrefButton: `/manageSpaces/${address}`,
+  };
   const statutAds = {
     pending: "🔍 Your ad is pending, wait the validation of the creator",
     rejected: "❌ Your ad has been rejected, you can submit an other ads below",
@@ -317,10 +360,14 @@ const Item = () => {
   };
 
   if (!offerData || offerData.length === 0) {
-    return <div>Chargement...</div>;
+    return (
+      <div>
+        <OfferSkeleton />
+      </div>
+    );
   }
-
-  const { description = "description not found", id="1", image =["/images/gradient_creative.jpg"], name ="DefaultName"} = offerData[0].offer ? offerData[0].offer : {};
+console.log(isOwner, "isOwner");
+  const { description = "description not found", id = "1", image = ["/images/gradient_creative.jpg"], name = "DefaultName" } = offerData.offer ? offerData.offer : {};
 
   return (
     <>
@@ -344,15 +391,15 @@ const Item = () => {
 
           <div className="md:flex md:flex-wrap" key={id}>
             {/* <!-- Image --> */}
-            <figure className="mb-8 md:w-2/5 md:flex-shrink-0 md:flex-grow-0 md:basis-auto lg:w-1/2 w-full flex justify-center">
+            <figure className="mb-8 md:mb-0 md:w-2/5 md:flex-shrink-0 md:flex-grow-0 md:basis-auto lg:w-1/2 w-full flex justify-center">
               <button className=" w-full" onClick={() => setImageModal(true)} style={{ height: "450px" }}>
-                <Image width={585} height={726} src={image[0]} alt="image" className="rounded-2xl cursor-pointer h-full object-contain w-full" />
+                <Image width={585} height={726} src={image} alt="image" className="rounded-2xl cursor-pointer h-full object-contain w-full" />
               </button>
 
               {/* <!-- Modal --> */}
               <div className={imageModal ? "modal fade show block" : "modal fade"}>
                 <div className="modal-dialog !my-0 flex h-full max-w-4xl items-center justify-center">
-                  <Image width={582} height={722} src={image[0]} alt="image" className="h-full object-cover w-full rounded-2xl" />
+                  <Image width={582} height={722} src={image} alt="image" className="h-full object-cover w-full rounded-2xl" />
                 </div>
 
                 <button type="button" className="btn-close absolute top-6 right-6" onClick={() => setImageModal(false)}>
@@ -372,7 +419,7 @@ const Item = () => {
                 {/* <!-- Collection --> */}
                 <div className="flex items-center">
                   <Link href="#" className="text-accent mr-2 text-sm font-bold">
-                    0x00000000000000000000000000000022
+                    {offerData?.initialCreator}
                   </Link>
                   <span className="dark:border-jacarta-600 bg-green inline-flex h-6 w-6 items-center justify-center rounded-full border-2 border-white" data-tippy-content="Verified Collection">
                     <Tippy content={<span>Verified Collection</span>}>
@@ -400,7 +447,7 @@ const Item = () => {
                   </span>
                 </div>
 
-                <span className="dark:text-jacarta-300 text-jacarta-400 text-sm">N° {tokenId}</span>
+                <span className="dark:text-jacarta-300 text-jacarta-400 text-sm">Space #{formatTokenId(tokenId)}</span>
                 <span className="text-jacarta-400 block text-sm dark:text-white">
                   Creator <strong>{royalties}% royalties</strong>
                 </span>
@@ -416,7 +463,7 @@ const Item = () => {
                   </span>
                 </div>
                 <div className="w-full flex justify-center">
-                  {!isOwner && isAllowedToMint && (
+                  {!isOwner && isAllowedToMint && !offerNotFormated && (
                     <button type="button" className="bg-accent shadow-accent-volume hover:bg-accent-dark w-36 rounded-full py-3 px-8 text-center font-semibold text-white transition-all" onClick={handleBuyModal}>
                       Buy
                     </button>
@@ -430,37 +477,24 @@ const Item = () => {
       {/* <!-- end item --> */}
 
       <div>
-        {!offerNotFormated && isOwner ? (
+        {isOwner && !offerNotFormated ? (
           <div>
             <SliderForm styles={styles} handlePreviewModal={handlePreviewModal} stepsRef={stepsRef} numSteps={numSteps}>
               <Step_1_Mint stepsRef={stepsRef} styles={styles} adParamaters={["Grid Logo & Link"]} />
-              <Step_2_Mint stepsRef={stepsRef} styles={styles} file={file} handleLogoUpload={handleLogoUpload} />
+              <Step_2_Mint stepsRef={stepsRef} styles={styles} file={file} previewImage={previewImage} handleLogoUpload={handleLogoUpload} />
               <Step_3_Mint stepsRef={stepsRef} styles={styles} setLink={setLink} link={link} />
             </SliderForm>
-          </div>
-        ) : //Message to say that the NFT is not allowed to mint
-        (isOwner && adStatut === 3) || adStatut === 0 ? (
-          <div>
-            <SliderForm styles={styles} handlePreviewModal={handlePreviewModal} stepsRef={stepsRef} numSteps={numSteps}>
-              <Step_1_Mint stepsRef={stepsRef} styles={styles} adParamaters={["Grid Logo & Link"]} />
-              <Step_2_Mint stepsRef={stepsRef} styles={styles} file={file} handleLogoUpload={handleLogoUpload} />
-              <Step_3_Mint stepsRef={stepsRef} styles={styles} setLink={setLink} link={link} />
-            </SliderForm>
-          </div>
-        ) : adStatut === 2 ? (
-          <div className="flex justify-center">
-            <p>Your ad proposal is currently being reviewed by the creator.</p>
           </div>
         ) : (
           <div className="flex justify-center">
-            <p>{isAllowedToMint ? "" : !offerNotFormated ? "Sorry, someone already own this NFT " : "Offer isn't well formated to buy"}</p>
+            <p>{offerNotFormated ? "Offer isn't well formated to buy" : !isAllowedToMint && !isOwner ? "Sorry, someone already own this NFT " : ""}</p>
           </div>
         )}
       </div>
 
       {/* <ItemsTabs /> */}
       <div className="container mb-12">
-        <ItemsTabs contractAddress={offerData[0]?.nftContract} offerId={offerId} />
+        <ItemsTabs contractAddress={offerData?.nftContract.id} offerId={offerId} />
       </div>
       {showPreviewModal && (
         <div className="modal fade show bloc">
@@ -469,10 +503,7 @@ const Item = () => {
             handleSubmit={handleSubmit}
             link={link}
             name={true}
-           
-            
             description={true}
-            
             previewImage={previewImage}
             errors={errors}
             successFullUpload={successFullUpload}
@@ -485,7 +516,22 @@ const Item = () => {
       )}
       {buyModal && (
         <div className="modal fade show block">
-          <BuyModal finalPrice={finalPrice} price={price} handleSubmit={handleSubmit} handleBuyModal={handleBuyModal} name={name} image={image} selectedCurrency={currency.symbol} selectedRoyalties={royalties} />
+          <BuyModal
+            finalPrice={finalPrice}
+            successFullUpload={successFullUpload}
+            successFullBuyModal={successFullBuyModal}
+            price={price}
+            initialCreator={offerData?.initialCreator}
+            handleSubmit={handleSubmit}
+            handleBuyModal={handleBuyModal}
+            name={name}
+            image={image}
+            selectedCurrency={currency.symbol}
+            selectedRoyalties={royalties}
+            userBalance={userBalance}
+            tokenId={tokenId}
+            formatTokenId={formatTokenId}
+          />
         </div>
       )}
     </>

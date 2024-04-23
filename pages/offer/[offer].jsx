@@ -8,13 +8,14 @@ import Image from "next/image";
 import { useContract, useContractWrite, useContractRead, useAddress } from "@thirdweb-dev/react";
 import Tippy from "@tippyjs/react";
 import "tippy.js/dist/tippy.css";
-import { ItemsTabs } from "../../components/component";
 import Review_carousel from "../../components/carousel/review_carousel";
-import Validated_refused_items from "../../components/collectrions/validated_refused_items";
-import { DSponsorAdmin } from "@dsponsor/sdk";
+import Validated_refused_items from "../../components/collections/validated_refused_items";
 import { fetchDataFromIPFS } from "../../data/services/ipfsService";
 import { ethers } from "ethers";
-import { bufferAdParams } from "../../utils/formatedData";
+import adminInstance from "../../utils/sdkProvider";
+import OfferSkeleton from "../../components/skeleton/offerSkeleton";
+import { GetAdOffer } from "../../data/services/TokenOffersService";
+import { contractABI } from "../../data/services/contract";
 
 const Offer = () => {
   const router = useRouter();
@@ -28,73 +29,92 @@ const Offer = () => {
   const [refusedProposalData, setRefusedProposalData] = useState([]);
   const [royalties, setRoyalties] = useState(null);
   const [successFullUpload, setSuccessFullUpload] = useState(false);
-const [currency, setCurrency] = useState(null);
+  const [currency, setCurrency] = useState(null);
   const [price, setPrice] = useState(null);
   const [imageModal, setImageModal] = useState(false);
-  const { contract: DsponsorNFTContract } = useContract(offerData[0]?.nftContract);
-  const { contract: DsponsorAdminContract } = useContract("0xdf42633BD40e8f46942e44a80F3A58d0Ec971f09");
-  const { data: royaltiesInfo } = useContractRead(DsponsorNFTContract, "royaltyInfo", ["0", 100]);
-
+  const { contract: DsponsorAdminContract } = useContract("0xE442802706F3603d58F34418Eac50C78C7B4E8b3", contractABI);
   const { mutateAsync, isLoadingreviewAdProposal } = useContractWrite(DsponsorAdminContract, "reviewAdProposals");
 
   const [successFullRefuseModal, setSuccessFullRefuseModal] = useState(false);
 
   useEffect(() => {
     if (offerId) {
-      const admin = new DSponsorAdmin({ chain: { alchemyAPIKey: process.env.NEXT_PUBLIC_ALCHEMY_API_KEY, chainName: "ethereum-sepolia" } });
       const fetchAdsOffers = async () => {
-        const ads = await admin.getPendingAds({ offerId: offerId });
-        console.log(ads, "ads");
-        const formattedPendingAds = [];
+        const offer = await GetAdOffer(offerId);
 
-       
-        for (let i = 0; i < ads.length; i += 2) {
-          
-          if (i + 1 < ads.length) {
-        formattedPendingAds.push({
-            groupKey: `${ads[i].proposalId}-${ads[i+1].proposalId}`,
-            ads: [ads[i], ads[i+1]]
-        });
+        const groupedPendingAds = {};
+        const groupedValidatedAds = {};
+        const groupedRefusedAds = {};
+
+        function processProposal(token, element, groupedAds, statusKey, statusId) {
+          if (element[statusKey] !== null) {
+            if (!groupedAds[token.tokenId]) {
+              groupedAds[token.tokenId] = {
+                tokenId: token.tokenId,
+                offerId: offerId,
+                proposalIds: [],
+                adParametersList: {},
+                adParametersKeys: [],
+              };
+              if (statusKey === "rejectedProposal") {
+                groupedAds[token.tokenId].reason = element[statusKey].rejectReason;
+              }
+            }
+            const adParamBase = element.adParameter.base;
+
+            groupedAds[token.tokenId].proposalIds.push(element[statusKey].id);
+
+            if (!groupedAds[token.tokenId].adParametersKeys.includes(adParamBase)) {
+              groupedAds[token.tokenId].adParametersKeys.push(adParamBase);
+            }
+
+            groupedAds[token.tokenId].adParametersList[adParamBase] = element[statusKey].data;
+          }
         }
-      }
-        console.log(formattedPendingAds, "formattedPendingAds");
-        const offer = await admin.getOffer({ offerId: offerId });
-        const validatedAds = await admin.getValidatedAds({ offerId: offerId });
-        const refusedAds = await admin.getRejectedAds({ offerId: offerId });
-        const proposals = await admin.getAdProposals({ offerId: offerId });
-        console.log(validatedAds, "proposals");
-       const params = await admin.getAdParameters({ offerId: offerId });
-        // const normalizedParams = bufferAdParams(params);
-       
-       
-        const destructuredIPFSResult = await fetchDataFromIPFS(offer.offerMetadata);
+
+        for (const token of offer.nftContract.tokens) {
+          if (token.mint !== null) {
+            for (const element of token.currentProposals) {
+              processProposal(token, element, groupedPendingAds, "pendingProposal");
+              processProposal(token, element, groupedValidatedAds, "acceptedProposal");
+              processProposal(token, element, groupedRefusedAds, "rejectedProposal");
+            }
+          }
+        }
+
+        const formattedPendingAds = Object.values(groupedPendingAds);
+        const formattedValidatedAds = Object.values(groupedValidatedAds);
+        const formattedRefusedAds = Object.values(groupedRefusedAds);
+        console.log(formattedRefusedAds, "formattedValidatedAds");
+
+        const destructuredIPFSResult = await fetchDataFromIPFS(offer.metadataURL);
         const combinedData = {
           ...offer,
           ...destructuredIPFSResult,
         };
-        
+
         try {
-          const currencyToken = admin.chain.getCurrencyByAddress(offer.currencies[0]);
-          const formatPrice = offer.prices[0] / 10 ** currencyToken.decimals;
+          const currencyToken = adminInstance.chain.getCurrencyByAddress(offer?.nftContract.prices[0].currency);
+          const formatPrice = offer.nftContract.prices[0].amount / 10 ** currencyToken.decimals;
+
           setPrice(formatPrice);
           setCurrency(currencyToken);
         } catch (e) {
           console.error("Error: Currency not found for address");
         }
-       
-        setOfferData([combinedData]);
-        setValidatedProposalData(validatedAds);
-        setRefusedProposalData(refusedAds);
+        setOfferData(combinedData);
+        setValidatedProposalData(formattedValidatedAds);
+        setRefusedProposalData(formattedRefusedAds);
+
         setPendingProposalData(formattedPendingAds);
       };
 
       fetchAdsOffers();
     }
-  }, [offerId, router]);
+  }, [offerId, router, successFullRefuseModal]);
   useEffect(() => {
-    if (royaltiesInfo) setRoyalties(ethers.BigNumber.from(royaltiesInfo[1]?._hex).toNumber());
-    
-  }, [royaltiesInfo]);
+    if (offerData?.nftContract?.royaltyBps) setRoyalties(offerData?.nftContract?.royaltyBps / 100);
+  }, [offerData]);
 
   const handleSubmit = async (submissionArgs) => {
     try {
@@ -104,7 +124,8 @@ const [currency, setCurrency] = useState(null);
       setSuccessFullRefuseModal(true);
     } catch (error) {
       console.error("Erreur de validation du token:", error);
-      setSuccessFullUpload(false);
+      setSuccessFullRefuseModal(false);
+      throw error;
     }
   };
 
@@ -129,10 +150,14 @@ const [currency, setCurrency] = useState(null);
   ];
 
   if (!offerData || offerData.length === 0) {
-    return <div>Chargement...</div>;
+    return (
+      <div>
+        <OfferSkeleton />
+      </div>
+    );
   }
- 
-   const { description = "description not found", id = "1", image = ["/images/gradient_creative.jpg"], name = "DefaultName", nftContract = "N/A" } = offerData[0].offer ? offerData[0].offer : {};
+
+  const { description = "description not found", id = "1", image = ["/images/gradient_creative.jpg"], name = "DefaultName", nftContract = "N/A" } = offerData.offer ? offerData.offer : {};
 
   return (
     <>
@@ -152,13 +177,13 @@ const [currency, setCurrency] = useState(null);
             {/* <!-- Image --> */}
             <figure className="mb-8 md:w-2/5 md:flex-shrink-0 md:flex-grow-0 md:basis-auto lg:w-1/2 w-full flex justify-center">
               <button className=" w-full" onClick={() => setImageModal(true)} style={{ height: "450px" }}>
-                <Image width={585} height={726} src={image[0]} alt="image" className="rounded-2xl cursor-pointer h-full object-contain w-full" />
+                <Image width={585} height={726} src={image} alt="image" className="rounded-2xl cursor-pointer h-full object-contain w-full" />
               </button>
 
               {/* <!-- Modal --> */}
               <div className={imageModal ? "modal fade show block" : "modal fade"}>
                 <div className="modal-dialog !my-0 flex h-full max-w-4xl items-center justify-center">
-                  <Image width={582} height={722} src={image[0]} alt="image" className="h-full object-cover w-full rounded-2xl" />
+                  <Image width={582} height={722} src={image} alt="image" className="h-full object-cover w-full rounded-2xl" />
                 </div>
 
                 <button type="button" className="btn-close absolute top-6 right-6" onClick={() => setImageModal(false)}>
@@ -178,7 +203,7 @@ const [currency, setCurrency] = useState(null);
                 {/* <!-- Collection --> */}
                 <div className="flex items-center">
                   <Link href="#" className="text-accent mr-2 text-sm font-bold">
-                    0X000000000000215
+                    {offerData?.initialCreator}
                   </Link>
                   <span className="dark:border-jacarta-600 bg-green inline-flex h-6 w-6 items-center justify-center rounded-full border-2 border-white" data-tippy-content="Verified Collection">
                     <Tippy content={<span>Verified Collection</span>}>
@@ -207,7 +232,7 @@ const [currency, setCurrency] = useState(null);
                 </div>
 
                 <span className="dark:text-jacarta-300 text-jacarta-400 text-sm">
-                  {offerData[0].allowedTokens.length - validatedProposalData.length - refusedProposalData.length - pendingProposalData.length}/{offerData[0].allowedTokens.length} available
+                  {/* {offerData[0].allowedTokens.length - validatedProposalData.length - refusedProposalData.length - pendingProposalData.length}/{offerData[0].allowedTokens.length} available */}
                 </span>
                 <span className="text-jacarta-400 block text-sm dark:text-white">
                   Creator <strong>{royalties}% royalties</strong>

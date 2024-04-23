@@ -96,9 +96,9 @@ const ItemsTabs = ({ contractAddress, offerId }) => {
               </div>
             </div>
           </TabPanel>
-          <TabPanel>
+          {/* <TabPanel>
             <Activity_tab />
-          </TabPanel>
+          </TabPanel> */}
           {/* <TabPanel>
             <Price_history classes="dark:bg-jacarta-700 dark:border-jacarta-600 border-jacarta-100 rounded-t-2lg rounded-b-2lg rounded-tl-none border bg-white p-6" />
           </TabPanel> */}

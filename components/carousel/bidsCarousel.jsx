@@ -16,12 +16,18 @@ import { gql } from "@apollo/client";
 
 import { useEffect, useState } from "react";
 import OfferItem from "../cards/offerItem";
-import { DSponsorAdmin } from "@dsponsor/sdk";
+
 
 
 const BidsCarousel = ({data}) => {
  
-
+//  if (!data || data.length === 0) {
+//    return (
+//      <div className="flex w-full justify-center">
+//        <Image src="/images/loading-bullet.svg" alt="icon" width={60} height={60} />
+//      </div>
+//    );
+//  }
   return (
     <>
       <Swiper
@@ -49,13 +55,20 @@ const BidsCarousel = ({data}) => {
         }}
         className=" card-slider-4-columns !py-5"
       >
-        {data.map((item, index) => {
-          return (
-            <SwiperSlide className="text-white" key={index}>
-              <OfferItem item={item} url={`/offer/${item.offerId}/${item.tokenIdAllowedToMint}`} />
-            </SwiperSlide>
-          );
-        })}
+        {data.length === 0 || !data ? (
+          <div className="flex w-full justify-center">
+            <Image src="/images/loading-bullet.svg" alt="icon" width={60} height={60} />
+          </div>
+        ) : (
+          data.map((item, index) => {
+            return (
+              <SwiperSlide className="text-white" key={index}>
+                <OfferItem item={item} url={`/offer/${item.id}/${item.tokenIdAllowedToMint}`} />
+              </SwiperSlide>
+            );
+          })
+        )}
+       
       </Swiper>
       {/* <!-- Slider Navigation --> */}
       <div className="group bids-swiper-button-prev swiper-button-prev shadow-white-volume absolute !top-1/2 !-left-4 z-10 -mt-6 flex !h-12 !w-12 cursor-pointer items-center justify-center rounded-full bg-white p-3 text-jacarta-700 text-xl sm:!-left-6 after:hidden">

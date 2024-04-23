@@ -6,15 +6,16 @@ import Link from "next/link";
 import Tippy from "@tippyjs/react";
 import { use, useEffect, useState } from "react";
 import { useCountdown } from "../../utils/countDown";
-import { DSponsorAdmin } from "@dsponsor/sdk";
+import adminInstance from "../../utils/sdkProvider";
+
+
 
 const OfferItem = ({ item, url, isToken }) => {
   const [price, setPrice] = useState(null);
   const [currencyToken, setCurrencyToken] = useState(null);
   const [itemData, setItemData] = useState({});
   const [adStatut, setAdStatut] = useState(null);
-  
- 
+
   function formatDate(dateIsoString) {
     if(!dateIsoString) return "date not found";
     const options = { year: "numeric", month: "long", day: "numeric" };
@@ -23,12 +24,11 @@ const OfferItem = ({ item, url, isToken }) => {
   useEffect(() => {
     
     try {
-      const admin = new DSponsorAdmin({ chain: { alchemyAPIKey: process.env.NEXT_PUBLIC_ALCHEMY_API_KEY, chainName: "ethereum-sepolia" } });
-     
-      const currencyToken = admin.chain.getCurrencyByAddress(item.currencies[0]);
+   
+      const currencyToken = adminInstance.chain.getCurrencyByAddress(item.nftContract.prices[0].currency);
       setCurrencyToken(currencyToken);
       
-      const formatPrice = item.prices[0] / 10 ** currencyToken.decimals;
+      const formatPrice = item.nftContract.prices[0].amount / 10 ** currencyToken.decimals;
       setPrice(formatPrice);
     } catch (e) {
       console.error("Error: Currency not found for address");
@@ -37,53 +37,54 @@ const OfferItem = ({ item, url, isToken }) => {
       const data = item.offer ? item.offer : {};
       setItemData(data);
     } else {
-      const data = item.metadata.offer ? item.metadata.offer : {};
+      const data = item.offer ? item.offer : {};
       setItemData(data);
     }
   }, [ item, isToken]);
  
   useEffect(() => {
-     if (!isToken) return;
-     const admin = new DSponsorAdmin({ chain: { alchemyAPIKey: process.env.NEXT_PUBLIC_ALCHEMY_API_KEY, chainName: "ethereum-sepolia" } });
-    const fetchFunction = async () => {
-      const checkAds = async (fetchFunction) => {
-        if (!item.offerId) return;
-        const ads = await fetchFunction;
-        console.log(ads, item.offerId , "there it is");
-        return ads.some((ad) => ad.tokenId === item.tokenId);
-      };
+    const fetchAdsOffers = async () => {
+      if (!item) return;
 
-      if (await checkAds(admin.getRejectedAds({ offerId: item.offerId }))) {
-        setAdStatut(0);
-        return;
-      }
-
-      if (await checkAds(admin.getValidatedAds({ offerId: item.offerId }))) {
-        setAdStatut(1);
-        return;
-      }
-
-      if (await checkAds(admin.getPendingAds({ offerId: item.offerId }))) {
-        setAdStatut(2);
-      }else{
+      if (item?.mint === null) {
         setAdStatut(3);
+        return;
       }
-    }
-    ;
-    fetchFunction();
+      if (item?.currentProposals?.length > 0) {
+        
+        if (item?.currentProposals[0]?.acceptedProposal !== null) {
+          setAdStatut(1);
+          return;
+        }
 
+        if (item?.currentProposals[0]?.pendingProposal !== null) {
+         
+          setAdStatut(2);
+        }
+         if (item?.currentProposals[0]?.rejectedProposal !== null) {
+           setAdStatut(0);
+         }
 
-  },[ item, isToken])
+      } else  {
+        setAdStatut(3);
+      } 
+      
+    };
+
+    fetchAdsOffers();
+  }, [item]);
 
 
   const { name = "offerName", image = ["/images/gradient_creative.jpg"], valid_from = null, valid_to = null } = itemData;
 
   return (
     <>
-      <article>
+      <article className="relative">
+        {item.isPending && <div className="absolute -top-2 -right-2 rounded-2xl bg-red rounded-2xl dark:text-white  px-2">!</div>}
+
         <div className="dark:bg-jacarta-700 dark:border-jacarta-700 border-jacarta-100 rounded-2xl block border bg-white p-[1.1875rem] transition-shadow hover:shadow-lg text-jacarta-500">
           <figure>
-            <Link href={url}>{image?.[0] && <Image src={image?.[0]} alt="" height={230} width={230} className="rounded-[0.625rem] w-full lg:h-[230px] object-contain" loading="lazy" />}</Link>
+            <Link href={url}>{image && <Image src={image} alt="" height={230} width={230} className="rounded-[0.625rem] w-full lg:h-[230px] object-contain" loading="lazy" />}</Link>
           </figure>
           <div className="mt-4 flex items-center justify-between">
             <Link href={url} className="overflow-hidden text-ellipsis whitespace-nowrap max-w-[120px]">
@@ -112,8 +113,8 @@ const OfferItem = ({ item, url, isToken }) => {
                 {formatDate(valid_from)} - {formatDate(valid_to)}
               </span>
             ) : (
-              <span className={`${adStatut === 0 ? "text-red" : adStatut === 1 ? "text-green" : adStatut=== 2 ? "text-accent" : "" } text-sm font-bold`}>
-                {adStatut === 0 ? "❌ Rejected" : adStatut === 1 ? "✅ Accepted" :adStatut=== 2 ? "🔍 Pending" : "Ad space available"}
+              <span className={`${adStatut === 0 ? "text-red" : adStatut === 1 ? "text-green" : adStatut === 2 ? "text-accent" : ""} text-sm font-bold`}>
+                {adStatut === 0 ? "❌ Rejected" : adStatut === 1 ? "✅ Accepted" : adStatut === 2 ? "🔍 Pending" : "Ad space available"}
               </span>
             )}
           </div>
