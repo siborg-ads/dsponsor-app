@@ -117,7 +117,7 @@ const OwnedOffers_categories_items = ({ data }) => {
       {data.length > 0 ? (
         <div className="grid grid-cols-1 gap-[1.875rem] md:grid-cols-2 lg:grid-cols-4">
           {data?.map((item, index) => {
-            return <OfferItem item={item} key={index} url={`/offer/${item.offerId}`} />;
+            return <OfferItem item={item} key={index} url={`/offer/${item.id}`} />;
           })}
         </div>
       ) : (

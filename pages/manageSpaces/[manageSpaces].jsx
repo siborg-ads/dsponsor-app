@@ -9,6 +9,8 @@ import Tippy from "@tippyjs/react";
 import "tippy.js/dist/tippy.css"; // optional
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import Meta from "../../components/Meta";
+import { GetAllAdOffersFromUser } from "../../data/services/AdOffersService";
+import { GetAllTokenbyOfferForAUser } from "../../data/services/TokenOffersService";
 
 import adminInstance from "../../utils/sdkProvider";
 
@@ -25,40 +27,53 @@ const ManageSpaces = () => {
   useEffect(() => {
     if (userAddress) {
       const fetchAdsOffers = async () => {
-        const offers = await adminInstance.getOffers({ address: userAddress }, { includeMetadata: true, includePrices: true, includeAllowedTokens: true });
-        const formatedOffers = offers.filter((ad) => ad.offerId > 22);
+        const offers = await GetAllAdOffersFromUser(userAddress);
+        const ownedAdProposals = await GetAllTokenbyOfferForAUser(userAddress);
+        console.log(ownedAdProposals);
+         const mappedOffers = [];
+         for (const element of offers) {
+           const destructuredIPFSResult = await fetchDataFromIPFS(element.metadataURL);
+           const combinedData = {
+             ...element,
+             ...destructuredIPFSResult,
+           };
+           mappedOffers.push(combinedData);
+         }
+         console.log(mappedOffers);
+        // const offers = await adminInstance.getOffers({ address: userAddress }, { includeMetadata: true, includePrices: true, includeAllowedTokens: true });
+        // const formatedOffers = offers.filter((ad) => ad.offerId > 22);
 
-        const ownedAdProposals = await adminInstance.getOwnedOfferTokens({ address: userAddress }, { includeOffers: true });
+        // const ownedAdProposals = await adminInstance.getOwnedOfferTokens({ address: userAddress }, { includeOffers: true });
         const mappedownedAdProposals = [];
-        const mappedOffers = [];
+       
 
-        for (const offer of formatedOffers) {
-          const isAdsPending = await adminInstance.getPendingAds({ offerId: offer.offerId });
+        // for (const offer of offers) {
+        //   const isAdsPending = await adminInstance.getPendingAds({ offerId: offer.offerId });
 
-          const combinedData = {
-            ...offer,
-            ...(isAdsPending.length > 0 && { isPending: true }),
-          };
-          mappedOffers.push(combinedData);
-        }
+        //   const combinedData = {
+        //     ...offer,
+        //     ...(isAdsPending.length > 0 && { isPending: true }),
+        //   };
+        //   mappedOffers.push(combinedData);
+        // }
         setCreatedData(mappedOffers);
 
-        for (const element of ownedAdProposals) {
-          if (!element.offer?.offerMetadata) {
-            continue;
-          }
+        // for (const element of ownedAdProposals) {
+        //   if (!element.offer?.offerMetadata) {
+        //     continue;
+        //   }
 
-          const IPFSLink = element.offer.offerMetadata;
-          const destructuredIPFSResult = await fetchDataFromIPFS(IPFSLink);
-          const combinedData = {
-            ...element,
-            ...element.offer,
+        //   const IPFSLink = element.offer.offerMetadata;
+        //   const destructuredIPFSResult = await fetchDataFromIPFS(IPFSLink);
+        //   const combinedData = {
+        //     ...element,
+        //     ...element.offer,
 
-            ...destructuredIPFSResult,
-          };
-          mappedownedAdProposals.push(combinedData);
-        }
-         console.log(mappedownedAdProposals);
+        //     ...destructuredIPFSResult,
+        //   };
+        //   mappedownedAdProposals.push(combinedData);
+        // }
+        
         // console.log(offer);
 
         setMappedownedAdProposals(mappedownedAdProposals);

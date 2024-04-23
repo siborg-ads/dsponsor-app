@@ -8,7 +8,7 @@ import { getContractNFT } from "../../data/services/contract";
 import { readContract } from "thirdweb";
 import HowItWorks from "../../components/explication/howItWorks";
 import adminInstance from "../../utils/sdkProvider";
-import {GetAllAdsOffers} from "../../data/services/AdOffersService";
+import {GetAllAdOffers} from "../../data/services/AdOffersService";
 
 
 const Home_1 = () => {
@@ -18,7 +18,7 @@ const Home_1 = () => {
     
 
     const fetchAdsOffers = async () => {
-     const data =  await GetAllAdsOffers();
+     const data =  await GetAllAdOffers();
     
 
        const mappedData = [];

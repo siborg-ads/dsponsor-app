@@ -19,9 +19,11 @@ import { fetchDataFromIPFS } from "../../../data/services/ipfsService";
 import { bufferAdParams } from "../../../utils/formatedData";
 import BuyModal from "../../../components/modal/buyModal";
 import adminInstance from "../../../utils/sdkProvider";
-import { toast } from "react-toastify" ;
+import { toast } from "react-toastify";
 import OfferSkeleton from "../../../components/skeleton/offerSkeleton.jsx";
 import { GetTokenAdOffer } from "../../../data/services/TokenOffersService";
+
+import contractABI from "../../../abi/dsponsorAdmin.json";
 
 import "react-toastify/dist/ReactToastify.css";
 
@@ -30,7 +32,6 @@ const Item = () => {
 
   const offerId = router.query.offer;
   const tokenId = router.query?.item;
-
 
   const [tokenIdString, setTokenIdString] = useState(null);
 
@@ -47,13 +48,13 @@ const Item = () => {
   const [errors, setErrors] = useState({});
   const [finalPrice, setFinalPrice] = useState(null);
   const [successFullUpload, setSuccessFullUpload] = useState(false);
-  const { contract: DsponsorAdminContract } = useContract("0xE442802706F3603d58F34418Eac50C78C7B4E8b3");
-  const { contract: DsponsorNFTContract } = useContract(offerData[0]?.nftContract.id);
+  const { contract: DsponsorAdminContract } = useContract("0xE442802706F3603d58F34418Eac50C78C7B4E8b3", contractABI);
+  const { contract: DsponsorNFTContract } = useContract(offerData?.nftContract?.id);
   const { mutateAsync: uploadToIPFS, isLoading: isUploading } = useStorageUpload();
   const { mutateAsync: mintAndSubmit } = useContractWrite(DsponsorAdminContract, "mintAndSubmit");
   const { mutateAsync: submitAd } = useContractWrite(DsponsorAdminContract, "submitAdProposals");
-  const { contract: tokenContract } = useContract(offerData[0]?.nftContract.prices[0].currency, "token");
-  const { data: tokenBalance, isLoading, error } = useBalance(offerData[0]?.nftContract.prices[0].currency);
+  const { contract: tokenContract } = useContract(offerData?.nftContract?.prices[0].currency, "token");
+  const { data: tokenBalance, isLoading, error } = useBalance(offerData?.nftContract?.prices[0].currency);
   const { mutateAsync: approve, isLoading: isLoadingApprove } = useContractWrite(tokenContract, "approve");
   const { data: bps } = useContractRead(DsponsorAdminContract, "feeBps");
   const { data: isAllowedToMint = true } = useContractRead(DsponsorNFTContract, "tokenIdIsAllowedToMint", tokenIdString);
@@ -67,24 +68,38 @@ const Item = () => {
   const [buyModal, setBuyModal] = useState(false);
   const [buyMethod, setBuyMethod] = useState(false);
   const [userBalance, setUserBalance] = useState(null);
+  const [submitAdFormated, setSubmitAdFormated] = useState({});
   const stepsRef = useRef([]);
   const numSteps = 3;
-  
+
   useEffect(() => {
-    
     if (offerId) {
-      if(tokenId.length > 6) {
+      if (tokenId.length > 6) {
         const url = new URL(window.location.href);
         const tokenData = url.searchParams.get("tokenData");
         console.log(tokenData);
       }
       const fetchAdsOffers = async () => {
-        const offer = await GetTokenAdOffer(offerId);
+        const offer = await GetTokenAdOffer(offerId, tokenId);
 
-        // const offer = await adminInstance.getOffer({ offerId: offerId });
-        // const params = await adminInstance.getAdParameters({ offerId: offerId });
-       
-        // const normalizedParams = bufferAdParams(params);
+        try{
+          const params = [];
+          const tokenIdArray = [];
+          const offerIdArray = [];
+          for(const element of offer.adParameters){
+            params.push(element.base);
+            tokenIdArray.push(tokenId);
+            offerIdArray.push(offerId);
+          }
+          const submitAdFormated = {};
+          submitAdFormated.params = params;
+          submitAdFormated.tokenId = tokenIdArray;
+          submitAdFormated.offerId = offerIdArray;
+
+          setSubmitAdFormated(submitAdFormated);
+        }catch(e){
+          console.error("Error: Ad parameters not found for offer", offer);
+        }
 
         try {
           const currencyToken = adminInstance.chain.getCurrencyByAddress(offer.nftContract.prices[0].currency);
@@ -92,21 +107,17 @@ const Item = () => {
           setPrice(formatPrice);
           setCurrency(currencyToken);
         } catch (e) {
-          console.error("Error: Currency not found for address", offer.nftContract.prices[0]);
+          console.error("Error: Currency not found for address", offer?.nftContract?.prices[0]);
           setOfferNotFormated(true);
         }
 
-        // if (address) {
-        //   const mintedToken = await adminInstance.getOwnedOfferTokens({ address: address });
-        //   // console.log(mintedToken, "mintedToken");
-        //   // console.log(offer, "offer");
-        //   for (const element of mintedToken) {
-        //     if (element.tokenId === tokenId && element.nftContractAddress.toLowerCase() == offer.nftContract) {
-        //       setIsOwner(true);
-        //     }
-        //   }
-        // }
-         const destructuredIPFSResult = await fetchDataFromIPFS(offer.metadataURL);
+        if (address) {
+          
+            if (offer.initialCreator === address.toLowerCase() ) {
+              setIsOwner(true);
+            }
+        }
+        const destructuredIPFSResult = await fetchDataFromIPFS(offer.metadataURL);
 
         const combinedData = {
           ...offer,
@@ -123,38 +134,36 @@ const Item = () => {
     setTokenIdString(tokenId?.toString());
   }, [offerId, router, address, tokenId, successFullUpload]);
 
-  // useEffect(() => {
-  //   const fetchAdsOffers = async () => {
-  //     if (!offerId) return;
-  //     const checkAds = async (fetchFunction) => {
-  //       const ads = await fetchFunction;
-  //       return ads.some((ad) => ad.tokenId === tokenId);
-  //     };
+  useEffect(() => {
+    const fetchAdsOffers = async () => {
+      if (!offerData) return;
+    const tokenData = offerData?.nftContract?.tokens[0];
+       if (tokenData?.mint === null) {
+         setAdStatut(3);
+         return;
+       }
+       if(tokenData?.currentProposals?.length > 0){
 
-  //     if (await checkAds(adminInstance.getRejectedAds({ offerId: offerId }))) {
-  //       setAdStatut(0);
-  //       return;
-  //     }
+         if (tokenData?.currentProposals[0]?.acceptedProposal !== null) {
+           
+           setAdStatut(1);
+           return;
+         }
+   
+         if (tokenData?.currentProposals[0]?.pendingProposal !== null) {
+           setAdStatut(2);
+          }
+        } else  {
+          setAdStatut(3);
+        }
+    };
 
-  //     if (await checkAds(adminInstance.getValidatedAds({ offerId: offerId }))) {
-  //       setAdStatut(1);
-  //       return;
-  //     }
-
-  //     if (await checkAds(adminInstance.getPendingAds({ offerId: offerId }))) {
-  //       setAdStatut(2);
-  //     } else {
-  //       setAdStatut(3);
-  //     }
-  //   };
-
-  //   fetchAdsOffers();
-  // }, [offerId, tokenId, successFullUpload]);
- 
+    fetchAdsOffers();
+  }, [offerId, tokenId, successFullUpload, offerData]);
 
   useEffect(() => {
-    if (royaltiesInfo) setRoyalties(ethers.BigNumber.from(royaltiesInfo[1]?._hex).toNumber());
-  }, [royaltiesInfo]);
+    if (offerData?.nftContract?.royaltyBps) setRoyalties(offerData?.nftContract?.royaltyBps / 100);
+  }, [offerData]);
 
   const validateInputs = () => {
     let isValid = true;
@@ -205,12 +214,13 @@ const Item = () => {
 
       setAmountToApprove(amountToApprove);
     }
-    
   }, [data, bps, offerData, currency, price]);
 
   const handleApprove = async () => {
     try {
+      console.log(tokenContract, address, "tokenContract");
       const allowance = await tokenContract.call("allowance", [address, "0xE442802706F3603d58F34418Eac50C78C7B4E8b3"]);
+      console.log(allowance);
 
       if (allowance > amountToApprove) return;
       await approve({ args: ["0xE442802706F3603d58F34418Eac50C78C7B4E8b3", amountToApprove] });
@@ -227,68 +237,67 @@ const Item = () => {
       }
     }
     // IPFS upload
+    console.log(userBalance, "userBalance");
 
-    
     if (userBalance || isOwner) {
       try {
-        if (offerData[0]?.currencies[0] !== "0x0000000000000000000000000000000000000000") {
+        if (offerData?.nftContract.prices[0].currency !== "0x0000000000000000000000000000000000000000") {
           await handleApprove();
         }
       } catch (error) {
         console.error("Erreur d'approbation des tokens:", error);
         throw error;
       }
+
+      let uploadUrl;
+      try {
+        uploadUrl = await uploadToIPFS({
+          data: [file],
+          options: { uploadWithGatewayUrl: true, uploadWithoutDirectory: true },
+        });
+      } catch (error) {
+        console.error("Erreur lors de l'upload à IPFS:", error);
+        throw new Error("Upload to IPFS failed.");
+      }
+      try {
+        const argsMintAndSubmit = {
+          tokenId: tokenIdString,
+          to: address,
+          currency: offerData?.nftContract.prices[0].currency,
+          tokenData: "",
+          offerId: offerId,
+          adParameters: [],
+          adDatas: [],
+          referralAdditionalInformation: "",
+        };
+        const argsAdSubmited = {
+          offerId: submitAdFormated.offerId,
+          tokenId: submitAdFormated.tokenId,
+          adParameters: submitAdFormated.params,
+          data: [uploadUrl[0], link],
+        };
+
+        const isEthCurrency = offerData?.nftContract.prices[0].currency === "0x0000000000000000000000000000000000000000";
+        const functionWithPossibleArgs = (adStatut === 0 || adStatut === 3) && !isAllowedToMint ? Object.values(argsAdSubmited) : argsMintAndSubmit;
+        const argsWithPossibleOverrides = isEthCurrency ? { args: [functionWithPossibleArgs], overrides: { value: amountToApprove } } : { args: [functionWithPossibleArgs] };
+        // console.log(adStatut, "adStatut")
+        // console.log(isAllowedToMint, "isAllowedToMint")
        
-     
-         let uploadUrl;
-         try {
-           uploadUrl = await uploadToIPFS({
-             data: [file],
-             options: { uploadWithGatewayUrl: true, uploadWithoutDirectory: true },
-           });
-         } catch (error) {
-           console.error("Erreur lors de l'upload à IPFS:", error);
-           throw new Error("Upload to IPFS failed.");
-         }
-         try {
-          
+        if ((adStatut === 0 || adStatut === 3) && !isAllowedToMint) {
+           console.log(argsAdSubmited, 'ici');
 
-           const argsMintAndSubmit = {
-             tokenId: tokenIdString,
-             to: address,
-             currency: offerData[0]?.currencies[0],
-             tokenData: "",
-             offerId: offerId,
-             adParameters: [],
-             adDatas: [],
-             referralAdditionalInformation: "",
-           };
-           const argsAdSubmited = {
-             offerId: [offerId, offerId],
-             tokenId: [tokenIdString, tokenIdString],
-             adParameters: offerData[0]?.normalizedParams,
-             data: [uploadUrl[0], link],
-           };
-           const isEthCurrency = offerData[0]?.currencies[0] === "0x0000000000000000000000000000000000000000";
-           const functionWithPossibleArgs = (adStatut === 0 || adStatut === 3) && !isAllowedToMint ? Object.values(argsAdSubmited) : argsMintAndSubmit;
-           const argsWithPossibleOverrides = isEthCurrency ? { args: [functionWithPossibleArgs], overrides: { value: amountToApprove } } : { args: [functionWithPossibleArgs] };
-           // console.log(adStatut, "adStatut")
-           // console.log(isAllowedToMint, "isAllowedToMint")
-           if ((adStatut === 0 || adStatut === 3) && !isAllowedToMint) {
-             // console.log("submitAd");
+           await submitAd({ args: functionWithPossibleArgs });
+          setSuccessFullUpload(true);
+        } else {
+           await mintAndSubmit(argsWithPossibleOverrides);
+        }
 
-             await submitAd({ args: functionWithPossibleArgs });
-           } else {
-             console.log("mintAndSubmit");
-             await mintAndSubmit(argsWithPossibleOverrides);
-           }
-
-           setSuccessFullUpload(true);
-         } catch (error) {
-           console.error("Erreur de soumission du token:", error);
-           setSuccessFullUpload(false);
-           throw error;
-         }
+        setSuccessFullUpload(true);
+      } catch (error) {
+        console.error("Erreur de soumission du token:", error);
+        setSuccessFullUpload(false);
+        throw error;
+      }
     }
   };
 
@@ -310,18 +319,17 @@ const Item = () => {
     }
   };
   function formatTokenId(str) {
-    console.log(str, "str");
     if (str?.length <= 6) {
-      return str; 
+      return str;
     }
     return str?.slice(0, 3) + "..." + str?.slice(-3);
   }
 
   const handleBuyModal = () => {
     setSuccessFullUpload(false);
-  !buyModal && setUserBalance(checkUserBalance(tokenBalance, price));
-     setBuyModal(!buyModal);
-     setBuyMethod(true);
+    !buyModal && setUserBalance(checkUserBalance(tokenBalance, price));
+    setBuyModal(!buyModal);
+    setBuyMethod(true);
   };
   const handlePreviewModal = () => {
     setSuccessFullUpload(false);
@@ -408,7 +416,7 @@ const Item = () => {
                 {/* <!-- Collection --> */}
                 <div className="flex items-center">
                   <Link href="#" className="text-accent mr-2 text-sm font-bold">
-                    0x00000000000000000000000000000022
+                    {offerData?.initialCreator}
                   </Link>
                   <span className="dark:border-jacarta-600 bg-green inline-flex h-6 w-6 items-center justify-center rounded-full border-2 border-white" data-tippy-content="Verified Collection">
                     <Tippy content={<span>Verified Collection</span>}>
@@ -483,7 +491,7 @@ const Item = () => {
 
       {/* <ItemsTabs /> */}
       <div className="container mb-12">
-        <ItemsTabs contractAddress={offerData[0]?.nftContract} offerId={offerId} />
+        <ItemsTabs contractAddress={offerData?.nftContract.id} offerId={offerId} />
       </div>
       {showPreviewModal && (
         <div className="modal fade show bloc">
@@ -510,6 +518,7 @@ const Item = () => {
             successFullUpload={successFullUpload}
             successFullBuyModal={successFullBuyModal}
             price={price}
+            initialCreator={offerData?.initialCreator}
             handleSubmit={handleSubmit}
             handleBuyModal={handleBuyModal}
             name={name}

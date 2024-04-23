@@ -96,13 +96,13 @@ const Validated_refused_items = ({ statut, proposalData }) => {
 
           <div className="mb-10 shrink-0 basis-8/12 space-y-5 lg:mb-0 lg:pr-10">
             {proposalData?.map((item) => {
-              const { tokenId, records, title } = item;
-
+              const {adParametersList, proposalIds, tokenId, reason, title } = item;
+       
               return (
                 <div key={tokenId} className="dark:bg-jacarta-700  gap-5 p-8 dark:border-jacarta-700 transition-shadow hover:shadow-lg border-jacarta-100 rounded-2.5xl relative flex">
                   <div className=" relative flex items-center gap-5 flex-col sm:flex-row ">
                     <figure className=" self-start">
-                      <Image src={records?.imageURL} alt={title} height={75} width={75} objectFit="contain" className="rounded-2lg min-w-[75px]" loading="lazy" />
+                      <Image src={adParametersList?.imageURL} alt={title} height={75} width={75} objectFit="contain" className="rounded-2lg min-w-[75px]" loading="lazy" />
                     </figure>
                     <div>
                       <h3 className="font-display text-jacarta-700 mb-1 text-base font-semibold dark:text-white">
@@ -111,18 +111,20 @@ const Validated_refused_items = ({ statut, proposalData }) => {
                       <span>
                         Proposals n° :{" "}
                         <span className="text-accent">
-                          [{records?.linkURL?.proposalId}-{records?.imageURL?.proposalId}]
+                          [{proposalIds[0]}-{proposalIds[1]}]
                         </span>{" "}
                       </span>
-                      <div className="mb-4 flex flex-col">
+                      <div className="flex flex-col">
                         <Tippy hideOnClick={false} content={copied ? <span>copied</span> : <span>copy</span>}>
                           <button className="js-copy-clipboard flex min-w-[20px] text-white max-w-[20rem]  select-none overflow-hidden text-ellipsis whitespace-nowrap">
                             <CopyToClipboard text="userId" onCopy={() => setCopied(true)}>
-                              <span>{records?.linkURL}</span>
+                              <span>{adParametersList?.linkURL}</span>
                             </CopyToClipboard>
                           </button>
                         </Tippy>
                       </div>
+                      {reason && <span className="text-jacarta-500 dark:text-jacarta-300">Reason : {reason}</span>}
+                      
                     </div>
                   </div>
                   <div className="dark:border-jacarta-600 border-jacarta-100 ml-auto rounded-full border p-3 self-start">

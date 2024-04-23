@@ -14,6 +14,8 @@ import { fetchDataFromIPFS } from "../../data/services/ipfsService";
 import { ethers } from "ethers";
 import adminInstance from "../../utils/sdkProvider";
 import OfferSkeleton from "../../components/skeleton/offerSkeleton";
+import { GetAdOffer } from "../../data/services/TokenOffersService";
+import { contractABI } from "../../data/services/contract";
 
 const Offer = () => {
   const router = useRouter();
@@ -30,10 +32,7 @@ const Offer = () => {
   const [currency, setCurrency] = useState(null);
   const [price, setPrice] = useState(null);
   const [imageModal, setImageModal] = useState(false);
-  const { contract: DsponsorNFTContract } = useContract(offerData[0]?.nftContract);
-  const { contract: DsponsorAdminContract } = useContract("0xE442802706F3603d58F34418Eac50C78C7B4E8b3");
-  const { data: royaltiesInfo } = useContractRead(DsponsorNFTContract, "royaltyInfo", ["0", 100]);
-
+  const { contract: DsponsorAdminContract } = useContract("0xE442802706F3603d58F34418Eac50C78C7B4E8b3", contractABI);
   const { mutateAsync, isLoadingreviewAdProposal } = useContractWrite(DsponsorAdminContract, "reviewAdProposals");
 
   const [successFullRefuseModal, setSuccessFullRefuseModal] = useState(false);
@@ -41,59 +40,72 @@ const Offer = () => {
   useEffect(() => {
     if (offerId) {
       const fetchAdsOffers = async () => {
-        const ads = await adminInstance.getPendingAds({ offerId: offerId });
+        const offer = await GetAdOffer(offerId);
 
-        const groupedAds = {};
+        const groupedPendingAds = {};
+        const groupedValidatedAds = {};
+        const groupedRefusedAds = {};
 
-        for (let i = 0; i < ads.length; i++) {
-          const { tokenId, proposalId, adParameters, offerId } = ads[i];
-
-          if (!groupedAds[tokenId]) {
-            groupedAds[tokenId] = {
-              tokenId: tokenId,
-              offerId: offerId,
-              proposalIds: [],
-              adParametersList: {},
-              adParametersKeys: [],
-            };
-          }
-
-          groupedAds[tokenId].proposalIds.push(proposalId);
-
-          groupedAds[tokenId].adParametersList = { ...groupedAds[tokenId].adParametersList, ...adParameters };
-          Object.keys(adParameters).forEach((key) => {
-            if (!groupedAds[tokenId].adParametersKeys.includes(key)) {
-              groupedAds[tokenId].adParametersKeys.push(key);
+        function processProposal(token, element, groupedAds, statusKey, statusId) {
+          if (element[statusKey] !== null) {
+            if (!groupedAds[token.tokenId]) {
+              groupedAds[token.tokenId] = {
+                tokenId: token.tokenId,
+                offerId: offerId,
+                proposalIds: [],
+                adParametersList: {},
+                adParametersKeys: [],
+              };
+              if (statusKey === "rejectedProposal") {
+                groupedAds[token.tokenId].reason = element[statusKey].rejectReason;
+              }
             }
-          });
+            const adParamBase = element.adParameter.base;
+
+            groupedAds[token.tokenId].proposalIds.push(element[statusKey].id);
+
+            if (!groupedAds[token.tokenId].adParametersKeys.includes(adParamBase)) {
+              groupedAds[token.tokenId].adParametersKeys.push(adParamBase);
+            }
+
+            groupedAds[token.tokenId].adParametersList[adParamBase] = element[statusKey].data;
+          }
         }
 
-        const formattedPendingAds = Object.values(groupedAds);
-        const offer = await adminInstance.getOffer({ offerId: offerId });
-        const validatedAds = await adminInstance.getValidatedAds({ offerId: offerId });
-        const refusedAds = await adminInstance.getRejectedAds({ offerId: offerId });
-        console.log(formattedPendingAds, "formattedPendingAds");
-        console.log(validatedAds, "validatedAds");
-        // const normalizedParams = bufferAdParams(params);
+        for (const token of offer.nftContract.tokens) {
+          if (token.mint !== null) {
+            for (const element of token.currentProposals) {
+              processProposal(token, element, groupedPendingAds, "pendingProposal");
+              processProposal(token, element, groupedValidatedAds, "acceptedProposal");
+              processProposal(token, element, groupedRefusedAds, "rejectedProposal");
+            }
+          }
+        }
 
-        const destructuredIPFSResult = await fetchDataFromIPFS(offer.offerMetadata);
+        const formattedPendingAds = Object.values(groupedPendingAds);
+        const formattedValidatedAds = Object.values(groupedValidatedAds);
+        const formattedRefusedAds = Object.values(groupedRefusedAds);
+        console.log(formattedRefusedAds, "formattedValidatedAds");
+
+        const destructuredIPFSResult = await fetchDataFromIPFS(offer.metadataURL);
         const combinedData = {
           ...offer,
           ...destructuredIPFSResult,
         };
 
         try {
-          const currencyToken = adminInstance.chain.getCurrencyByAddress(offer.currencies[0]);
-          const formatPrice = offer.prices[0] / 10 ** currencyToken.decimals;
+          const currencyToken = adminInstance.chain.getCurrencyByAddress(offer?.nftContract.prices[0].currency);
+          const formatPrice = offer.nftContract.prices[0].amount / 10 ** currencyToken.decimals;
+
           setPrice(formatPrice);
           setCurrency(currencyToken);
         } catch (e) {
           console.error("Error: Currency not found for address");
         }
+        setOfferData(combinedData);
+        setValidatedProposalData(formattedValidatedAds);
+        setRefusedProposalData(formattedRefusedAds);
 
-        setOfferData([combinedData]);
-        setValidatedProposalData(validatedAds);
-        setRefusedProposalData(refusedAds);
         setPendingProposalData(formattedPendingAds);
       };
 
@@ -101,8 +113,8 @@ const Offer = () => {
     }
   }, [offerId, router, successFullRefuseModal]);
   useEffect(() => {
-    if (royaltiesInfo) setRoyalties(ethers.BigNumber.from(royaltiesInfo[1]?._hex).toNumber());
-  }, [royaltiesInfo]);
+    if (offerData?.nftContract?.royaltyBps) setRoyalties(offerData?.nftContract?.royaltyBps / 100);
+  }, [offerData]);
 
   const handleSubmit = async (submissionArgs) => {
     try {
@@ -145,7 +157,7 @@ const Offer = () => {
     );
   }
 
-  const { description = "description not found", id = "1", image = ["/images/gradient_creative.jpg"], name = "DefaultName", nftContract = "N/A" } = offerData[0].offer ? offerData[0].offer : {};
+  const { description = "description not found", id = "1", image = ["/images/gradient_creative.jpg"], name = "DefaultName", nftContract = "N/A" } = offerData.offer ? offerData.offer : {};
 
   return (
     <>
@@ -191,7 +203,7 @@ const Offer = () => {
                 {/* <!-- Collection --> */}
                 <div className="flex items-center">
                   <Link href="#" className="text-accent mr-2 text-sm font-bold">
-                    0X000000000000215
+                    {offerData?.initialCreator}
                   </Link>
                   <span className="dark:border-jacarta-600 bg-green inline-flex h-6 w-6 items-center justify-center rounded-full border-2 border-white" data-tippy-content="Verified Collection">
                     <Tippy content={<span>Verified Collection</span>}>
@@ -220,7 +232,7 @@ const Offer = () => {
                 </div>
 
                 <span className="dark:text-jacarta-300 text-jacarta-400 text-sm">
-                  {offerData[0].allowedTokens.length - validatedProposalData.length - refusedProposalData.length - pendingProposalData.length}/{offerData[0].allowedTokens.length} available
+                  {/* {offerData[0].allowedTokens.length - validatedProposalData.length - refusedProposalData.length - pendingProposalData.length}/{offerData[0].allowedTokens.length} available */}
                 </span>
                 <span className="text-jacarta-400 block text-sm dark:text-white">
                   Creator <strong>{royalties}% royalties</strong>

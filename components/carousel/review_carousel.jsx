@@ -70,6 +70,7 @@ const Review_carousel = ({ handleSubmit, pendingProposalData, successFullRefuseM
     let submissionArgs = [];
     
    for (const item of selectedItems) {
+    console.log(item, "item");
      let argObject = {
        ...item,
        ...(approuved && { reason: "" }), 
@@ -78,8 +79,8 @@ const Review_carousel = ({ handleSubmit, pendingProposalData, successFullRefuseM
      submissionArgs.push(argObject);
    }
     
-   console.log(submissionArgs, "ici");
-     await handleSubmit(submissionArgs);
+  
+      await handleSubmit(submissionArgs);
   };
   const openRefuseModal = () => {
     setRefusedAdModalId(true);
@@ -94,6 +95,7 @@ const Review_carousel = ({ handleSubmit, pendingProposalData, successFullRefuseM
   const closeRefuseModal = () => {
     setRefusedAdModalId(null);
   };
+
  const handleSelection = (item) => {
    setIsSelectedItem((prevState) => ({
      ...prevState, 
@@ -180,7 +182,7 @@ const Review_carousel = ({ handleSubmit, pendingProposalData, successFullRefuseM
       <div className="grid grid-cols-1 gap-[1.875rem] md:grid-cols-2 lg:grid-cols-4">
         {pendingProposalData.map((item) => {
           const { adParametersList, tokenId, proposalIds } = item;
-          console.log(adParametersList, "linkURL");
+        
 
           return (
             <article key={tokenId} className={`  ${isSelectedItem[tokenId] ? "border-4 border-jacarta-100 rounded-2xl" : ""}`} onClick={() => handleSelection(item)}>

@@ -4,22 +4,18 @@ import Meta from "../../components/Meta";
 import Image from "next/image";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { useAddress, useSwitchChain, useContract, useContractWrite, Web3Button,useContractRead, useStorageUpload, useTokenDecimals, CheckoutWithCard, CheckoutWithEth } from "@thirdweb-dev/react";
-import { Mumbai, Polygon } from "@thirdweb-dev/chains";
-import { ethers } from "ethers";
+import { useAddress, useSwitchChain, useContract, useContractWrite, Web3Button, useContractRead, useStorageUpload, useTokenDecimals, CheckoutWithCard, CheckoutWithEth } from "@thirdweb-dev/react";
+
 import styles from "../../styles/createPage/style.module.scss";
 import PreviewModal from "../../components/modal/previewModal";
 import Step_1_Create from "../../components/sliderForm/PageCreate/Step_1_Create";
 import Step_2_Create from "../../components/sliderForm/PageCreate/Step_2_Create";
 import Step_3_Create from "../../components/sliderForm/PageCreate/Step_3_Create";
 import Step_4_Create from "../../components/sliderForm/PageCreate/Step_4_Create";
-import  contractABI  from "../../abi/dsponsorAdmin.json";
-import {contract} from "../../utils/adminContractProvider";
+import contractABI from "../../abi/dsponsorAdmin.json";
 
 import SliderForm from "../../components/sliderForm/sliderForm";
 import adminInstance from "../../utils/sdkProvider";
-
-
 
 const Create = () => {
   const [file, setFile] = useState(null);
@@ -42,21 +38,21 @@ const Create = () => {
   const [selectedParameter, setSelectedParameter] = useState(["imageURL", "linkURL"]);
   const [displayedParameter, setDisplayedParameter] = useState("Logo Grid & Link");
   const [selectedTypeParameter, setSelectedTypeParameter] = useState(0);
+  const { contract: DsponsorAdminContract } = useContract("0xE442802706F3603d58F34418Eac50C78C7B4E8b3", contractABI);
+  const { mutateAsync: createDSponsorNFTAndOffer } = useContractWrite(DsponsorAdminContract, "createDSponsorNFTAndOffer");
   const [name, setName] = useState(false);
   const stepsRef = useRef([]);
   const { ethers } = require("ethers");
- 
-
 
   const handleNumberChange = (e) => {
     setSelectedNumber(parseInt(e.target.value, 10));
   };
   const handleParameterChange = (e) => {
     setSelectedTypeParameter(e.target.value);
-    if (e.target.value === 0){
+    if (e.target.value === 0) {
       setSelectedParameter(["imageURL", "linkURL"]);
       setDisplayedParameter("Logo Grid & Link");
-    } 
+    }
     // if (e.target.value === 1) setSelectedParameter(["bannerURL", "linkURL"]);
   };
 
@@ -81,7 +77,7 @@ const Create = () => {
   };
 
   const address = useAddress();
-  
+
   const handleLogoUpload = (file) => {
     if (file) {
       setFile(file);
@@ -176,7 +172,7 @@ const Create = () => {
     if (!validateInputs()) {
       return;
     }
-    try{
+    try {
       const uploadUrl = await upload({
         data: [file],
         options: { uploadWithGatewayUrl: true, uploadWithoutDirectory: true },
@@ -229,15 +225,14 @@ const Create = () => {
 
       const jsonIpfsLinkContractURI = jsonContractURIURL[0];
       const jsonIpfsLinkMetadata = jsonMetadataURL[0];
-   
- 
+
       const args = [
         JSON.stringify({
           name: name, // name
           symbol: "DSPONSORNFT", // symbol
           baseURI: "https://api.dsponsor.com/tokenMetadata/", // baseURI
           contractURI: jsonIpfsLinkContractURI, // contractURI from json
-        
+
           minter: address,
           maxSupply: selectedNumber, // max supply
           forwarder: "0x0000000000000000000000000000000000000000", // forwarder
@@ -250,7 +245,7 @@ const Create = () => {
         JSON.stringify({
           name: name, // name
           offerMetadata: jsonIpfsLinkMetadata, // rulesURI
-         
+
           options: {
             admins: [address], // admin
             validators: [], // validator
@@ -258,18 +253,15 @@ const Create = () => {
           },
         }),
       ];
+      const preparedArgs = [Object.values(JSON.parse(args[0])), Object.values(JSON.parse(args[1]))];
+      await createDSponsorNFTAndOffer({ args: preparedArgs });
 
-       await contract.createDSponsorNFTAndOffer(JSON.parse(args[0]), JSON.parse(args[1]));
       setSuccessFullUpload(true);
-
-    }catch(error){
+    } catch (error) {
       setSuccessFullUpload(false);
       console.log(error);
       throw error;
     }
-
-    
-
   };
 
   const onUpload = (updatedName, updatedLink) => {
@@ -281,14 +273,11 @@ const Create = () => {
   const ETHCurrency = adminInstance.chain.getCurrencyAddress("ETH");
   const WETHCurrency = adminInstance.chain.getCurrencyAddress("WETH");
   const USDTCurrency = adminInstance.chain.getCurrencyAddress("USDT");
-  
 
   const { contract: customTokenContract } = useContract(customContract, "token");
   const { data: customSymbolContract } = useContractRead(customTokenContract, "symbol");
- 
-  
+
   const { data: customDecimals } = useTokenDecimals(customTokenContract);
-  
 
   const selectedCurrencyContract = useCallback(() => {
     switch (selectedCurrency) {
@@ -324,7 +313,7 @@ const Create = () => {
           return USDCCurrency.decimals;
       }
     },
-    [USDCCurrency, ETHCurrency, WETHCurrency, USDTCurrency ,customDecimals]
+    [USDCCurrency, ETHCurrency, WETHCurrency, USDTCurrency, customDecimals]
   );
 
   const numSteps = 4;

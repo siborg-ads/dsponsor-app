@@ -9,7 +9,7 @@ import { useState } from "react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-const BuyModal = ({formatTokenId, finalPrice,successFullUpload, userBalance, successFullBuyModal, price,tokenId, selectedCurrency, selectedRoyalties, name, image, handleSubmit, handleBuyModal }) => {
+const BuyModal = ({formatTokenId,initialCreator, finalPrice,successFullUpload, userBalance, successFullBuyModal, price,tokenId, selectedCurrency, selectedRoyalties, name, image, handleSubmit, handleBuyModal }) => {
   const { buyModal } = useSelector((state) => state.counter);
   const dispatch = useDispatch();
   const [validate, setValidate] = useState(false);
@@ -50,7 +50,7 @@ const BuyModal = ({formatTokenId, finalPrice,successFullUpload, userBalance, suc
 
                 <div>
                   <a href="collection.html" className="text-accent text-sm">
-                    0X0000000
+                    {initialCreator}
                   </a>
                   <h3 className="font-display text-jacarta-700 mb-1 text-base font-semibold dark:text-white">{name}</h3>
                   <div className="flex flex-wrap items-center">

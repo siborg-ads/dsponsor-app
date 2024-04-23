@@ -6,7 +6,6 @@ import Image from "next/image";
 import { FileUploader } from "react-drag-drop-files";
 
 const Step_2_Mint = ({ stepsRef, styles, file, handleLogoUpload, previewImage }) => {
-  console.log(stepsRef.current[1]);
   const fileTypes = ["JPG", "PNG", "SVG", "WEBP"];
   return (
     <div ref={(el) => (stepsRef.current[1] = el)} className={styles.form__step}>
