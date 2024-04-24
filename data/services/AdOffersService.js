@@ -6,7 +6,7 @@ export const GetAllAdOffers = async () => {
   // Requête pour récupérer tous les NewDSponsorNFTs
   const GET_DATA = gql`
     query Homepage_LastOffers {
-      adOffers(orderBy: creationTimestamp, orderDirection: desc, first: 5, where: { and: [{ disable: false }] }) {
+      adOffers(orderBy: creationTimestamp, orderDirection: desc, first: 20, where: { and: [{ disable: false }] }) {
         id # offerId
         # --> Fetch and parse https://github.com/dcast-media/dips/blob/dip-0002/antho31/dip-0002.md#example-schema-json
         # to get creator & offer info  (you may have token_metadata info too)

@@ -66,12 +66,12 @@ console.log(mappedOffers);
           const destructuredIPFSResult = await fetchDataFromIPFS(IPFSLink);
           const combinedData = {
             ...element,
-           
+            ...(element.mint.tokenData ? { tokenData: element.mint.tokenData } : {}),
             ...destructuredIPFSResult,
           };
           mappedownedAdProposals.push(combinedData);
         }
-
+        console.log(mappedownedAdProposals);
         setMappedownedAdProposals(mappedownedAdProposals);
       };
 

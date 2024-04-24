@@ -84,7 +84,7 @@ const OfferItem = ({ item, url, isToken }) => {
 
         <div className="dark:bg-jacarta-700 dark:border-jacarta-700 border-jacarta-100 rounded-2xl block border bg-white p-[1.1875rem] transition-shadow hover:shadow-lg text-jacarta-500">
           <figure>
-            <Link href={url}>{image && <Image src={image} alt="" height={230} width={230} className="rounded-[0.625rem] w-full lg:h-[230px] object-contain" loading="lazy" />}</Link>
+            <Link href={url}>{image && <Image src={image} alt="logo" height={230} width={230} className="rounded-[0.625rem] w-full lg:h-[230px] object-contain" loading="lazy" />}</Link>
           </figure>
           <div className="mt-4 flex items-center justify-between">
             <Link href={url} className="overflow-hidden text-ellipsis whitespace-nowrap max-w-[120px]">
@@ -103,11 +103,11 @@ const OfferItem = ({ item, url, isToken }) => {
               </div>
             ) : (
               <div className="dark:border-jacarta-600 border-jacarta-100 flex items-center whitespace-nowrap rounded-md border py-1 px-2">
-                <span className="text-green text-sm font-medium tracking-tight">N° : {item.tokenId}</span>
+                <span className="text-green text-sm font-medium tracking-tight"># : {item.tokenData ? item.tokenData : item.tokenId}</span>
               </div>
             )}
           </div>
-          <div className="mt-2 text-xs">
+          <div className="mt-2 text-xs flex items-center justify-between">
             {!isToken ? (
               <span className="dark:text-jacarta-300 text-jacarta-500">
                 {formatDate(valid_from)} - {formatDate(valid_to)}
@@ -117,6 +117,7 @@ const OfferItem = ({ item, url, isToken }) => {
                 {adStatut === 0 ? "❌ Rejected" : adStatut === 1 ? "✅ Accepted" : adStatut === 2 ? "🔍 Pending" : "Ad space available"}
               </span>
             )}
+            <span className="dark:text-jacarta-300 text-jacarta-500">Offer : {item.id ? item.id : item.nftContract?.adOffers[0]?.id}</span>
           </div>
         </div>
       </article>

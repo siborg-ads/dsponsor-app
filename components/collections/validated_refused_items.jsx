@@ -106,10 +106,10 @@ const Validated_refused_items = ({ statut, proposalData }) => {
                     </figure>
                     <div>
                       <h3 className="font-display text-jacarta-700 mb-1 text-base font-semibold dark:text-white">
-                        Item n°: <span className="text-accent"> {tokenId} </span>{" "}
+                        Item : <span className="text-accent"> {tokenId} </span>{" "}
                       </h3>
                       <span>
-                        Proposals n° :{" "}
+                        Proposals  :{" "}
                         <span className="text-accent">
                           [{proposalIds[0]}-{proposalIds[1]}]
                         </span>{" "}
