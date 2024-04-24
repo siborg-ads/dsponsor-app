@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, use } from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import "tippy.js/dist/tippy.css";
@@ -22,6 +22,7 @@ import adminInstance from "../../../utils/sdkProvider";
 import { toast } from "react-toastify";
 import OfferSkeleton from "../../../components/skeleton/offerSkeleton.jsx";
 import { GetTokenAdOffer } from "../../../data/services/TokenOffersService";
+import { getPossibleAdIntegrations } from "../../../utils/getAdIntegrationsWithParams";
 
 import contractABI from "../../../abi/dsponsorAdmin.json";
 
@@ -72,6 +73,8 @@ const Item = () => {
   const [tokenData, setTokenData] = useState(null);
   const [tokenMetaData, setTokenMetaData] = useState("");
   const [allowanceTrue, setAllowanceTrue] = useState(false);
+  const [adParameters, setAdParameters] = useState([]);
+  const [selectedParamsIntegration, setSelectedParamsIntegration] = useState(null);
   const stepsRef = useRef([]);
   const numSteps = 3;
 
@@ -103,24 +106,12 @@ const Item = () => {
           setTokenMetaData(tokenMetaData);
         }
 
-        try {
-          const params = [];
-          const tokenIdArray = [];
-          const offerIdArray = [];
-          for (const element of offer.adParameters) {
-            params.push(element.id);
-            tokenIdArray.push(tokenId);
-            offerIdArray.push(offerId);
-          }
-          const submitAdFormated = {};
-          submitAdFormated.params = params;
-          submitAdFormated.tokenId = tokenIdArray;
-          submitAdFormated.offerId = offerIdArray;
-
-          setSubmitAdFormated(submitAdFormated);
-        } catch (e) {
-          console.error("Error: Ad parameters not found for offer", offer);
-        }
+        
+        const adParameters = getPossibleAdIntegrations(offer.adParameters);
+        console.log(adParameters, "adParameters");
+        setAdParameters(adParameters);
+       
+       
 
         try {
           const currencyToken = adminInstance.chain.getCurrencyByAddress(offer.nftContract.prices[0].currency);
@@ -144,6 +135,29 @@ const Item = () => {
 
     setTokenIdString(tokenId?.toString());
   }, [offerId, router, address, tokenId, successFullUpload]);
+
+  useEffect(() => {
+
+    if (!selectedParamsIntegration)return;
+      try {
+        const params = [];
+        const tokenIdArray = [];
+        const offerIdArray = [];
+        for (const element of selectedParamsIntegration.requiredParams) {
+          params.push(element.id);
+          tokenIdArray.push(tokenId);
+          offerIdArray.push(offerId);
+        }
+        const submitAdFormated = {};
+        submitAdFormated.params = params;
+        submitAdFormated.tokenId = tokenIdArray;
+        submitAdFormated.offerId = offerIdArray;
+        console.log(submitAdFormated, "submitAdFormated");
+        setSubmitAdFormated(submitAdFormated);
+      } catch (e) {
+        // console.error("Error: Ad parameters not found for offer", offer);
+      }
+  }, [selectedParamsIntegration, tokenId, offerId, offerData]);
 
   useEffect(() => {
     const fetchAdsOffers = async () => {
@@ -282,7 +296,7 @@ const Item = () => {
           offerId: submitAdFormated.offerId,
           tokenId: submitAdFormated.tokenId,
           adParameters: submitAdFormated.params,
-          data: [uploadUrl[0], link, uploadUrl[0], link],
+          data: [uploadUrl[0], link ],
         };
 
         const isEthCurrency = offerData?.nftContract.prices[0].currency === "0x0000000000000000000000000000000000000000";
@@ -486,7 +500,7 @@ const Item = () => {
         {isOwner && !offerNotFormated ? (
           <div>
             <SliderForm styles={styles} handlePreviewModal={handlePreviewModal} stepsRef={stepsRef} numSteps={numSteps}>
-              <Step_1_Mint stepsRef={stepsRef} styles={styles} adParamaters={["Grid Logo & Link"]} />
+              <Step_1_Mint stepsRef={stepsRef} styles={styles} adParameters={adParameters} setSelectedParamsIntegration={setSelectedParamsIntegration} />
               <Step_2_Mint stepsRef={stepsRef} styles={styles} file={file} previewImage={previewImage} handleLogoUpload={handleLogoUpload} />
               <Step_3_Mint stepsRef={stepsRef} styles={styles} setLink={setLink} link={link} />
             </SliderForm>

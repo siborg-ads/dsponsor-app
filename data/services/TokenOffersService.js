@@ -188,8 +188,14 @@ let nftFilterIds;
           adOffers {
             metadataURL
             id
+            adParameters {
+              id # adParameter value, ex: imageURL-320x50 or linkURL
+              base # ex: imageURL or linkURL
+              variants # ex: ["320x50"]
+            }
           }
         }
+        id
         tokenId
         mint {
           revenueTransaction {

@@ -117,7 +117,7 @@ const OfferItem = ({ item, url, isToken }) => {
                 {adStatut === 0 ? "❌ Rejected" : adStatut === 1 ? "✅ Accepted" : adStatut === 2 ? "🔍 Pending" : "Ad space available"}
               </span>
             )}
-            <span className="dark:text-jacarta-300 text-jacarta-500">Offer : {item.id ? item.id : item.nftContract?.adOffers[0]?.id}</span>
+            <span className="dark:text-jacarta-300 text-jacarta-500">Offer :{item.mint ?  item.nftContract?.adOffers[0]?.id : item.id}</span>
           </div>
         </div>
       </article>
