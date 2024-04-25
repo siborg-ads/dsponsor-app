@@ -8,14 +8,10 @@ import { getContract, Chain } from "thirdweb";
 import { client } from "../../data/services/client";
 import { fetchTotalListings, fetchListingsForMarketplace } from "./services";
 import { marketplaceConfig } from "./marketplace.config";
-import { useChainId } from "@thirdweb-dev/react";
-import ChainDetector from "../../components/chain-detector/ChainDetector";
 
 export default function Marketplace() {
-  const [loading, setLoading] = useState(true);
-
-  const chainId = useChainId();
-
+  //TODO : (clean code) define it in the config file
+  const chainId = 11155111;
   const [listings, setListings] = useState<{
     listingsForBids: object[];
     listingsForBuyNow: object[];
@@ -26,8 +22,6 @@ export default function Marketplace() {
 
   const getMarketplaceListings = useCallback(
     async (nftContractAddress) => {
-      if (!chainId) return;
-
       const contract = getContract({
         client,
         chain: marketplaceConfig[chainId].chain,
@@ -43,24 +37,19 @@ export default function Marketplace() {
         listingsForBids,
         listingsForBuyNow,
       });
-      // setLoading(false);
     },
     [chainId]
   );
 
-  useEffect(() => {
-    if (chainId) {
-      setLoading(true);
-      getMarketplaceListings(
-        marketplaceConfig[chainId]?.dsponsor_marketplace_contract_address
-      );
-    }
+  useEffect(() => { 
+    getMarketplaceListings(
+      marketplaceConfig[chainId]?.dsponsor_marketplace_contract_address
+    );
   }, [chainId, getMarketplaceListings]);
 
   return (
     <section style={{ padding: "8rem 0" }}>
       <MarketplaceHeroSection />
-      <ChainDetector />
       <MarketplaceListingSection
         listings={listings.listingsForBids}
         title={"Hot Bids"}

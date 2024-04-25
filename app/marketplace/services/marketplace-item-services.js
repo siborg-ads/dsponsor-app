@@ -1,14 +1,10 @@
-import { useQuery, gql, ApolloClient, InMemoryCache } from "@apollo/client";
+import { gql, ApolloClient, InMemoryCache } from "@apollo/client";
 import { marketplaceConfig } from "../marketplace.config";
 import { fetchOffer, parseOfferMetadata } from "../marketplace-items-fetch";
 import { readContract, getContract } from "thirdweb";
 import { getERC20SymbolsAndDecimals, getWinningBid } from "./services";
 import dSponsorNFTAbi from "../dsponsor-nft-abi.json";
 import { client } from "../../../data/services/client.js";
-
-
-
-
 
 const fetchLatestListingIdOfItem = async (assetContract, tokenId, chainId, marketplaceContract) => {
 
@@ -29,10 +25,8 @@ const fetchLatestListingIdOfItem = async (assetContract, tokenId, chainId, marke
   }
 }`;
 
-
-  // execute graph ql query
   try {
-    const { data, loading, error } = await client.query({
+    const { data } = await client.query({
       query: GET_LATEST_LISTING_ID,
       variables: {
         assetContract,
@@ -59,6 +53,7 @@ const fetchLatestListingIdOfItem = async (assetContract, tokenId, chainId, marke
 
 
 const parseListingValuesToObj = (listingResponse) => {
+  // TODO: make this as a type
   const listing = {
     listingId: listingResponse[0],
     tokenOwner: listingResponse[1],
@@ -81,28 +76,12 @@ const parseListingValuesToObj = (listingResponse) => {
 
 // get marketplaceSingle listing
 const getMarketplaceSingleListing = async (contract, listingId) => {
-  console.log("contract", contract)
   const listingResponse = await readContract({
     contract,
     method: "listings",
     params: [BigInt(listingId)],
   });
-  const listing = {
-    listingId: listingResponse[0],
-    tokenOwner: listingResponse[1],
-    assetContract: listingResponse[2],
-    tokenId: listingResponse[3],
-    startTime: listingResponse[4],
-    endTime: listingResponse[5],
-    quantity: listingResponse[6],
-    currency: listingResponse[7],
-    reservePricePerToken: listingResponse[8],
-    buyoutPricePerToken: listingResponse[9],
-    tokenType: listingResponse[10],
-    transferType: listingResponse[11],
-    rentalExpirationTimestamp: listingResponse[12],
-    listingType: listingResponse[13],
-  };
+  return parseListingValuesToObj(listingResponse);
 }
 
 const getMarketplaceItemsSymbolsAndPrice = async (listing, contract, chainId) => {
@@ -132,8 +111,6 @@ const getMarketplaceItemsSymbolsAndPrice = async (listing, contract, chainId) =>
       const winningBidPricePerToken = Number(winningBidResponse.pricePerToken) / (10 ** decimals);
       const price = Math.max(winningBidPricePerToken, reservePricePerToken);
       const salePrice = BigInt(price * (10 ** decimals));
-
-      console.log("salePrice", salePrice)
       return {
         ...listing,
         symbol,
@@ -146,9 +123,6 @@ const getMarketplaceItemsSymbolsAndPrice = async (listing, contract, chainId) =>
     } else if (listingType === 0) {
       const buyoutPricePerToken = Number(listing.buyoutPricePerToken) / (10 ** decimals);
       const salePrice = listing.buyoutPricePerToken;
-
-      console.log("salePrice", salePrice)
-
       return {
         ...listing,
         symbol,
@@ -156,9 +130,7 @@ const getMarketplaceItemsSymbolsAndPrice = async (listing, contract, chainId) =>
         salePrice,
         decimals
       }
-
     }
-
   }
 }
 
@@ -167,9 +139,6 @@ const getMarketplaceItemsSymbolsAndPrice = async (listing, contract, chainId) =>
 
 
 const getRoyaltyInfo = async (listing, chainId, contractAddress) => {
-
-  console.log(listing)
-
   const dSponsorRoyaltyContract = getContract({
     client,
     chain: marketplaceConfig[chainId].chain,
@@ -186,13 +155,11 @@ const getRoyaltyInfo = async (listing, chainId, contractAddress) => {
   const royaltyAmount = royaltyInfoResponse[1];
   const royaltyAmountDecimal = Number(royaltyAmount) / (10 ** listing.decimals);
 
-
   const royaltyInfo = {
     royaltyAmount,
     royaltyAmountDecimal,
     royaltyRecipient: royaltyInfoResponse[0],
   }
-
   return royaltyInfo;
 }
 

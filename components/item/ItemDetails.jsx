@@ -2,38 +2,103 @@ import { items_data } from "../../data/items_data";
 import Image from "next/image";
 import Link from "next/link";
 import Timer from "./Timer";
-import Tabs from "../tabs/Tabs";
 import { useEffect, useState } from "react";
-import { fetchListingDetails } from "../../lib/services/listingsService";
 import { dSponsorMpContract } from "../../lib/config/listing.config";
-import { useConnectionStatus } from "@thirdweb-dev/react";
-import { useConnect } from "@thirdweb-dev/react";
+import {
+  fetchLatestListingIdOfItem,
+  getMarketplaceItemsSymbolsAndPrice,
+  getMarketplaceSingleListing,
+  getRoyaltyInfo,
+} from "../../app/marketplace/services/marketplace-item-services";
+import BidsModal from "../bids/BidsModal";
+import BuyModal from "../modal/buyModal";
+import { useTransaction } from "../../utils/useTransaction";
 
-export default function ItemDetails({ id }) {
-  const [listingType, setListingType] = useState(0);
-  const [listing, setListing] = useState([]);
-  const [endTime, setEndTime] = useState(null);
+const chainId = 11155111;
+export default function ItemDetails({ assetContract, tokenId }) {
+  const [listingInformation, setListingInformation] = useState(null);
+  const [showBidsModal, setShowBidsModal] = useState(false);
+  const [showBuyModal, setShowBuyModal] = useState(false);
 
-  const fetchingProgess = async () => {
-    const listing = await fetchListingDetails(dSponsorMpContract, 1);
-    // const listing = await fetchListingDetails(contract, id); //later when id will be passed by props
-    setListing(listing);
-    if (listing.listingType == 1) {
-      setListingType(0);
-    }
-    const endTime = Number(listing.endTime);
-    const endDateFetched = new Date(endTime * 1000);
-    setEndTime(endDateFetched.getTime());
+  //wallet & address
+  const { handleApprove, handleCreateListing } = useTransaction();
+
+  ///////////////////////////////////////////////////////
+  /////////// contracts ////////////////
+  ///////////////////////////////////////////////////////
+  const { contract: tokenContract } = useContract(listing?.currency);
+  const { contract: dsponsorMpContract } = useContract(
+    contractAddressConfig.dsponsor_marketplace_contract_address
+  );
+
+  ///////////////////////////////////////////////////////
+  /////////// funcs ////////////////
+  ///////////////////////////////////////////////////////
+
+  const { mutateAsync: approveERC20 } = useContractWrite(
+    tokenContract,
+    "approve"
+  );
+
+  const { mutateAsync: createListing } = useContractWrite(
+    dsponsorMpContract,
+    "createListing"
+  );
+
+  // function to fetch listing information
+  const fetchListingInfo = async () => {
+    const itemData = await fetchLatestListingIdOfItem(
+      assetContract,
+      tokenId,
+      chainId,
+      dSponsorMpContract
+    );
+    console.log("item Data", itemData);
+
+    const listing = await getMarketplaceSingleListing(
+      dSponsorMpContract,
+      itemData.listingId
+    );
+    console.log("listing", listing);
+    const listingWithPrice = await getMarketplaceItemsSymbolsAndPrice(
+      listing,
+      dSponsorMpContract,
+      chainId
+    );
+    const royaltyInfo = await getRoyaltyInfo(
+      listingWithPrice,
+      chainId,
+      assetContract
+    );
+
+    const updatedListingInformation = {
+      ...listingWithPrice,
+      ...itemData,
+      ...royaltyInfo,
+    };
+    console.log("updatedListingInformation", updatedListingInformation);
+    setListingInformation(updatedListingInformation);
   };
 
   useEffect(() => {
-    fetchingProgess();
+    fetchListingInfo();
+    handleApprove("0.05", tokenContract, approveERC20);
   }, []);
 
-  const item = items_data.filter((elm) => elm.id == id)[0] || items_data[0];
   return (
     <>
       <section className="relative pt-1 pb-24 lg:py-24 bg-sigray">
+        {/* TODO : rendering both modals is slow and not a good practice, make this better */}
+        <BidsModal
+          showBidsModal={showBidsModal}
+          setShowBidsModal={setShowBidsModal}
+          listing={listingInformation}
+        />
+        <BuyModal
+          showBuyModal={showBuyModal}
+          setShowBuyModal={setShowBuyModal}
+          listing={listingInformation}
+        />
         <div className="container">
           {/* Item */}
           <div className="md:flex md:flex-wrap">
@@ -43,6 +108,7 @@ export default function ItemDetails({ id }) {
                 width={540}
                 height={670}
                 src={"/images/products/item_single_large.jpg"}
+                // src={listingInformation?.offer.image}
                 alt="item"
                 className="cursor-pointer rounded-2.5xl w-[100%]"
                 data-bs-toggle="modal"
@@ -141,7 +207,7 @@ export default function ItemDetails({ id }) {
               </div>
 
               <h1 className="mb-4 font-display text-4xl font-semibold text-light-base dark:text-white">
-                {item.title ? item.title : "CryptoGuysNFT"}
+                {listingInformation?.offer.name}
               </h1>
 
               <div className="mb-8 flex items-center space-x-4 whitespace-nowrap">
@@ -190,11 +256,15 @@ export default function ItemDetails({ id }) {
                 </span>
               </div>
 
-              <p className="mb-10 text-light-base">
+              {/* <p className="mb-10 text-light-base">
                 Buying this ad space give you the exclusive right to submit an
                 ad. SiBorg team still has the power to validate or reject ad
                 assets. You are free to change the ad proposal at anytime and
                 free to resell it on the open market.
+              </p> */}
+
+              <p className="mb-10 text-light-base">
+                {listingInformation?.offer.description}
               </p>
 
               {/* Creator / Owner */}
@@ -229,7 +299,11 @@ export default function ItemDetails({ id }) {
                   </figure>
                   <div className="flex flex-col justify-center">
                     <span className="block text-sm text-jacarta-300 dark:text-white">
-                      Creator <strong>10% royalties</strong>
+                      Creator{" "}
+                      <strong>
+                        {Number(listingInformation?.royaltyAmountDecimal)}%
+                        royalties
+                      </strong>
                     </span>
                     <Link href={`/user/2`} className="block text-sipurple">
                       <span className="text-sm font-bold">@siborg</span>
@@ -278,7 +352,7 @@ export default function ItemDetails({ id }) {
 
               {/* Bid */}
 
-              {listingType == 1 && (
+              {listingInformation?.listingType == 1 && (
                 <div className="rounded-2lg border border-sigray-border bg-sigray-light p-8 dark:border-jacarta-600 dark:bg-jacarta-700">
                   <div className="mb-8 sm:flex sm:flex-wrap">
                     {/* Highest bid */}
@@ -342,7 +416,7 @@ export default function ItemDetails({ id }) {
                               </svg>
                             </span>
                             <span className="text-lg font-medium leading-tight tracking-tight text-green">
-                              {listing.price} {listing.symbol}
+                              {listingInformation.pri}
                             </span>
                           </div>
                           <span className="text-sm text-jacarta-300 dark:text-jacarta-300">
@@ -357,16 +431,16 @@ export default function ItemDetails({ id }) {
                       <span className="js-countdown-ends-label text-sm text-jacarta-300 dark:text-jacarta-300">
                         Auction ends in
                       </span>
-                      <Timer endTime={endTime} />
+                      <Timer endTime={Number(listingInformation?.endTime)} />
                     </div>
                   </div>
 
                   {/* Buttons */}
                   <div className="flex space-x-4">
                     <a
-                      href="#"
-                      data-bs-toggle="modal"
-                      data-bs-target="#placeBidModal"
+                      onClick={() => {
+                        setShowBidsModal(true);
+                      }}
                       className="inline-block w-full rounded-full bg-accent py-3 px-8 text-center font-semibold text-white shadow-accent-volume transition-all hover:bg-accent-dark"
                     >
                       Place Bid
@@ -375,8 +449,8 @@ export default function ItemDetails({ id }) {
                 </div>
               )}
 
-              {/* TO-DO : to change design of this card */}
-              {listingType === 0 && (
+              {/* TODO : to change design of this card */}
+              {listingInformation?.listingType == 0 && (
                 <div className="rounded-2lg border border-sigray-border bg-sigray-light p-8 dark:border-jacarta-600 dark:bg-jacarta-700">
                   <div className="flex items-center justify-center mb-8">
                     <figure className="mr-4 shrink-0">
@@ -406,11 +480,11 @@ export default function ItemDetails({ id }) {
                           </svg>
                         </span>
                         <span className="text-lg font-medium leading-tight tracking-tight text-green">
-                          {listing.price} {listing.symbol}
+                          {listingInformation?.price}
                         </span>
                       </div>
                       <span className="text-sm text-jacarta-300 dark:text-jacarta-300">
-                        {listing.price} {listing.symbol}
+                        {listingInformation?.price}
                       </span>
                     </div>
                   </div>
@@ -418,12 +492,12 @@ export default function ItemDetails({ id }) {
                   {/* Buttons */}
                   <div className="flex justify-center space-x-4">
                     <a
-                      href="#"
-                      data-bs-toggle="modal"
-                      data-bs-target="#buyNowModal"
+                      onClick={() => {
+                        setShowBuyModal(true);
+                      }}
                       className="inline-block w-full rounded-full bg-accent py-3 px-8 text-center font-semibold text-white shadow-accent-volume transition-all hover:bg-accent-dark"
                     >
-                      Buy Now For {listing.price} {listing.symbol}
+                      Buy Now For {listingInformation?.price}
                     </a>
                   </div>
                 </div>
@@ -431,12 +505,27 @@ export default function ItemDetails({ id }) {
 
               {/* end bid */}
 
+              {/* list for sale */}
+              {!listingInformation?.listingId && (
+                <div className="flex space-x-4">
+                  <a
+                    onClick={() => {
+                      listItem();
+                    }}
+                    className="inline-block w-full rounded-full bg-accent py-3 px-8 text-center font-semibold text-white shadow-accent-volume transition-all hover:bg-accent-dark"
+                  >
+                    List for sale /
+                  </a>
+                </div>
+              )}
+
               <div className="mt-4 text-center">
                 <div className="block text-base text-jacarta-300 text-white font-light">
                   Ownership Period:
                 </div>
                 <div className="block text-sm text-jacarta-300 font-medium">
-                  01/01/2024 - 31/12/2024
+                  {listingInformation?.offer.valid_from} -{" "}
+                  {listingInformation?.offer.valid_to}
                 </div>
               </div>
             </div>

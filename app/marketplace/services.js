@@ -22,7 +22,6 @@ async function fetchTotalListings(contract) {
 
 // Function to fetch listings for "Hot bids" and "Buy now"
 async function fetchListingsForMarketplace(contract, totalListings, chainId) {
-  const listingFetched = [];
   const listingsForBids = [];
   const listingsForBuyNow = [];
 

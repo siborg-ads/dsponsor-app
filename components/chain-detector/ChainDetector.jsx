@@ -17,7 +17,7 @@ const ChainDetector = () => {
         <div
           id="popup-modal"
           tabIndex=""
-          className="fixed top-0 right-0 left-0 z-50 flex justify-center items-center w-full md:inset-0 h-screen bg-jacarta-600 bg-opacity-70"
+          className="fixed top-0 right-0 left-0 z-50 flex justify-center items-center w-full md:inset-0 h-screen bg-jacarta-600 bg-opacity-60"
         >
           <div className="relative p-4 w-full sm:max-w-lg max-w-sm font-display">
             <div className="relative bg-jacarta-500 rounded-lg shadow dark:bg-gray-700">

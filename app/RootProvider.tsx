@@ -1,5 +1,7 @@
-"use client";
 
+"use client";
+import Header01 from "../components/header/Header01";
+import Footer from "../components/footer";
 import "../styles/globals.css";
 import { store } from "../redux/store";
 import { Provider } from "react-redux";
@@ -8,16 +10,26 @@ import { MetaMaskProvider } from "metamask-react";
 
 import {
   ThirdwebProvider,
-  ConnectWallet,
   metamaskWallet,
   coinbaseWallet,
   walletConnect,
   localWallet,
   embeddedWallet,
 } from "@thirdweb-dev/react";
-import { Mumbai, Polygon, Sepolia } from "@thirdweb-dev/chains";
+import {Sepolia } from "@thirdweb-dev/chains";
+import { useEffect } from "react";
 
 const RootProvider = ({ children }) => {
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      import("bootstrap/dist/js/bootstrap").then((bootstrap) => {
+        }).catch((error) => {
+        console.error("Failed to load Bootstrap:", error);
+      });
+    }
+  }, []);
+  
   return (
     <ThirdwebProvider
       activeChain={Sepolia}
@@ -25,7 +37,7 @@ const RootProvider = ({ children }) => {
       authConfig={{
         domain: "dsponsor.com",
       }}
-      switchToActiveChain={true}
+      // switchToActiveChain={true}
       supportedWallets={[
         metamaskWallet(),
         coinbaseWallet({ recommended: true }),
@@ -40,7 +52,9 @@ const RootProvider = ({ children }) => {
     >
       <Provider store={store}>
         <ThemeProvider enableSystem={true} attribute="class">
+          <Header01 />
           <MetaMaskProvider>{children}</MetaMaskProvider>
+          <Footer></Footer>
         </ThemeProvider>
       </Provider>
     </ThirdwebProvider>

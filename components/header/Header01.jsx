@@ -60,13 +60,6 @@ export default function Header01() {
                 alt="DSponsor | smarter monetization for your content"
                 className=" h-auto "
               />
-              <Image
-                src={Logo}
-                height={80}
-                width={80}
-                alt="DSponsor | smarter monetization for your content"
-                className=" h-auto "
-              />
               <span>d&gt;sponsor</span>
             </div>
             <div className="hidden dark:flex flex justify-center items-center text-white font-semibold">
