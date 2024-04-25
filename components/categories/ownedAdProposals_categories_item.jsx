@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import { ownedAdProposals_categories_filter } from "../../data/categories_data";
 import CategoryItem from "./categoryItem";
+import { useAddress, darkTheme, useBalance, Web3Button, useTokenBalance, useContract, useContractRead, useContractWrite, useStorageUpload, useTokenDecimals, CheckoutWithCard, CheckoutWithEth } from "@thirdweb-dev/react";
 import { trendingCategoryData } from "../../data/categories_data";
 import Tippy from "@tippyjs/react";
 import Recently_added_dropdown from "../dropdown/recently_added_dropdown";
@@ -12,13 +13,14 @@ import OfferItem from "../cards/offerItem";
 import Link from "next/link";
 import Image from "next/image";
 import { toast } from "react-toastify";
-import { Web3Button } from "@thirdweb-dev/react";
 import SliderForm from "../sliderForm/sliderForm";
 import Step_1_Mint from "../sliderForm/PageMint/Step_1_Mint";
 import Step_2_Mint from "../sliderForm/PageMint/Step_2_Mint";
 import Step_3_Mint from "../sliderForm/PageMint/Step_3_Mint";
+ import { uploadToIPFS } from "../../data/services/ipfsService";
+ import contractABI from "../../abi/dsponsorAdmin.json";
 
-import PreviewModal from "../modal/PreviewModal";
+import PreviewModal from "../modal/previewModal";
 
 const OwnedAdProposals_categories_items = ({ data }) => {
   const [itemdata, setItemdata] = useState(trendingCategoryData);
@@ -41,6 +43,10 @@ const OwnedAdProposals_categories_items = ({ data }) => {
   const [successFullUploadModal, setSuccessFullUploadModal] = useState(false);
   const stepsRef = useRef([]);
   const [numSteps, setNumSteps] = useState(2);
+ const { contract: DsponsorAdminContract } = useContract("0xE442802706F3603d58F34418Eac50C78C7B4E8b3", contractABI);
+
+ const { mutateAsync: uploadToIPFS, isLoading: isUploading } = useStorageUpload();
+const { mutateAsync: submitAd } = useContractWrite(DsponsorAdminContract, "submitAdProposals");
 
   const handleFilter = (category) => {
     if (category !== "all") {
@@ -51,8 +57,8 @@ const OwnedAdProposals_categories_items = ({ data }) => {
   };
   const handlePreviewModal = () => {
     setSuccessFullUpload(false);
-    setShowPreviewModal(!showPreviewModal);
     validateInputs();
+    setShowPreviewModal(!showPreviewModal);
   };
   const handleSelection = (item) => {
     setIsSelectedItem((prevState) => ({
@@ -73,19 +79,20 @@ const OwnedAdProposals_categories_items = ({ data }) => {
   };
   const handleLogoUpload = (file, index) => {
     if (file) {
-      const newFiles = [...files]; // Copier l'ancien tableau de fichiers
-      const newPreviewImages = [...previewImages]; // Copier l'ancien tableau d'images de prévisualisation
-      newFiles[index] = file; // Mettre à jour le fichier à l'index spécifié
-      newPreviewImages[index] = URL.createObjectURL(file); // Mettre à jour l'image de prévisualisation à l'index spécifié
-      setFiles(newFiles); // Mettre à jour l'état avec le nouveau tableau de fichiers
-      setPreviewImages(newPreviewImages); // Mettre à jour l'état avec le nouveau tableau d'images de prévisualisation
+      const newFiles = [...files]; 
+      const newPreviewImages = [...previewImages]; 
+      newFiles[index] = {file :file,
+      index: index}; 
+      newPreviewImages[index] = URL.createObjectURL(file); 
+      setFiles(newFiles);
+      setPreviewImages(newPreviewImages); 
     }
   };
   const validateInputs = () => {
     let isValid = true;
     let newErrors = {};
 
-    if (!file) {
+    if (files.length < imageURLSteps.length) {
       newErrors.imageError = "Image is missing.";
       isValid = false;
     }
@@ -141,13 +148,65 @@ const OwnedAdProposals_categories_items = ({ data }) => {
     setNumSteps(totalNumSteps);
     console.log(uniqueIdsArray, "Unique IDs");
   };
-  const handleSubmit = async () => {};
+  const handleSubmit = async () => {
+
+ 
+   if (!validateInputs()) {
+     return;
+   }
+   const selectedOfferIdItems = [];
+    const selectedTokenIdItems = [];
+    const adParametersItems = [];
+    const data= [];
+console.log(files[0].file);
+for (const file of files) {
+  let uploadUrl;
+  try {
+    uploadUrl = await uploadToIPFS({
+      data: [file.file],
+      options: { uploadWithGatewayUrl: true, uploadWithoutDirectory: true },
+    });
+  } catch (error) {
+    console.error("Erreur lors de l'upload à IPFS:", error);
+    throw new Error("Upload to IPFS failed.");
+  }
+  data.push(uploadUrl[0]);
+  data.push(link);
+}
+try{
+for (const item of selectedItems) {
+  for (const args of item.nftContract.adOffers[0].adParameters) {
+    if (args.id !== "xSpaceId" && args.id !== "xCreatorHandle") {
+      selectedOfferIdItems.push(item.nftContract.adOffers[0].id);
+      selectedTokenIdItems.push(item.tokenId);
+      adParametersItems.push(args.id);
+    }
+  }
+}
+
+
+const argsAdSubmited = {
+  offerId: selectedOfferIdItems,
+  tokenId: selectedTokenIdItems,
+  adParameters: adParametersItems,
+  data: data,
+};
+await submitAd({ args: Object.values(argsAdSubmited) });
+}catch(err){
+  console.log(err);
+  throw new Error("Upload to Blockchain failed.");
+}
+  
+
+  };
   const handleSelectionTokens = () => {
     setIsSelectionActive(!isSelectionActive);
     setShowSliderForm(false);
     setIsSelectedItem({});
     setSelectedItems([]);
     setImageURLSteps([]);
+    setPreviewImages([]);
+    setFiles([]);
     setNumSteps(2);
   };
 
@@ -270,12 +329,12 @@ const OwnedAdProposals_categories_items = ({ data }) => {
           </div>
 
           <div className="flex justify-center  gap-4 flex-wrap">
-            <button className={` !rounded-full !min-w-[100px] !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate ? "btn-disabled" : "!bg-green !cursor-pointer"} `} onClick={handleSliderForm}>
+            <button className={` !rounded-full !min-w-[100px] !py-3 !px-8 !text-center !font-semibold !text-white !transition-all !bg-green !cursor-pointer `} onClick={handleSliderForm}>
               Continue
             </button>
 
             <button
-              className={` !rounded-full !min-w-[100px] !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate ? "btn-disabled" : "!bg-red !cursor-pointer"} `}
+              className={` !rounded-full !min-w-[100px] !py-3 !px-8 !text-center !font-semibold !text-white !transition-all !bg-red !cursor-pointer `}
               onClick={handleSelectionTokens}
             >
               Close
@@ -289,15 +348,15 @@ const OwnedAdProposals_categories_items = ({ data }) => {
             <Step_1_Mint stepsRef={stepsRef} styles={styles} adParameters={adParameters} />
             {imageURLSteps.map((id, index) => (
               <Step_2_Mint
-          key={id}
-          stepsRef={stepsRef}
-          currentStep={index + 1}
-          id={id}
-          styles={styles}
-          file={files[index]}
-          previewImage={previewImages[index]}
-          handleLogoUpload={(file) => handleLogoUpload(file, index)}
-        /> 
+                key={id}
+                stepsRef={stepsRef}
+                currentStep={index + 1}
+                id={id}
+                styles={styles}
+                file={files[index]}
+                previewImage={previewImages[index]}
+                handleLogoUpload={(file) => handleLogoUpload(file, index)}
+              />
             ))}
             <Step_3_Mint stepsRef={stepsRef} styles={styles} setLink={setLink} link={link} />
           </SliderForm>
@@ -309,9 +368,10 @@ const OwnedAdProposals_categories_items = ({ data }) => {
             handlePreviewModal={handlePreviewModal}
             handleSubmit={handleSubmit}
             link={link}
+            imageURLSteps={imageURLSteps}
             name={true}
             description={true}
-            previewImage={previewImage}
+            previewImage={previewImages}
             errors={errors}
             successFullUpload={successFullUpload}
             validate={validate}

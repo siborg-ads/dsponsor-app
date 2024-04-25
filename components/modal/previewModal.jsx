@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Web3Button } from "@thirdweb-dev/react";
@@ -22,6 +22,7 @@ const PreviewModal = ({
   selectedRoyalties = null,
   previewImage = null,
   displayedParameter = null,
+  imageURLSteps,
   validate,
   errors,
   successFullUpload,
@@ -36,6 +37,7 @@ const PreviewModal = ({
     if (!date) return "";
     return date.toLocaleDateString();
   };
+
   
   return (
     <div>
@@ -87,11 +89,12 @@ const PreviewModal = ({
                   <p className="font-display  mb-2 block text-jacarta-400 text-sm">
                     Link : {!errors.linkError ? <span className="dark:text-white text-base ml-2"> {link} </span> : <span className="text-red text-base ml-2"> {errors.linkError}</span>}
                   </p>
-                  {!previewImage && (
-                    <p className="font-display  mb-2 block text-jacarta-400 text-sm">
-                      Image preview : <span className="text-red text-base ml-2"> {errors.imageError}</span>
-                    </p>
-                  )}
+                  {previewImage.filter((item) => item).length < imageURLSteps.length &&
+                    imageURLSteps.map((image, index) => (
+                      <p className="font-display  mb-2 block text-jacarta-400 text-sm" key={index}>
+                        Image preview : <span className="text-red text-base ml-2"> {errors.imageError}</span>
+                      </p>
+                    ))}
                   <p className="font-display  mb-2 block text-jacarta-400 text-sm">
                     {startDate ? (
                       <span>Start Date : {!errors.startDateError ? <span className="dark:text-white text-base ml-2"> {formatDate(startDate)} </span> : <span className="text-red">{errors.startDateError}</span>}</span>
@@ -146,16 +149,17 @@ const PreviewModal = ({
                     ""
                   )}
                 </div>
-                {previewImage && (
-                  <div className="mb-6  flex-col items-center justify-center ">
-                    <label htmlFor="item-description" className="font-display text-jacarta-400 text-sm text-center mb-2 block ">
-                      Image preview :
-                    </label>
-                    <div style={{ width: "300px", height: "300px", position: "relative" }}>
-                      <Image src={previewImage} width={300} height={200} alt="Preview" className="object-contain h-full" />
+                {previewImage &&
+                  previewImage.map((image, index) => (
+                    <div className="mb-6  flex-col items-center justify-center " key={index}>
+                      <label htmlFor="item-description" className="font-display text-jacarta-400 text-sm text-center mb-2 block ">
+                        Image preview :
+                      </label>
+                      <div style={{ width: "300px", height: "300px", position: "relative" }}>
+                        <Image src={image} width={300} height={200} alt="Preview" className="object-contain h-full" />
+                      </div>
                     </div>
-                  </div>
-                )}
+                  ))}
               </div>
             ) : (
               <div className="flex flex-col gap-2">

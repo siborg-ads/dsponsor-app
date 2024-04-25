@@ -40,9 +40,9 @@ const Item = () => {
   const [offerData, setOfferData] = useState([]);
   const address = useAddress();
   const [isOwner, setIsOwner] = useState(false);
-  const [file, setFile] = useState(null);
+  const [files, setFiles] = useState([]);
+  const [previewImages, setPreviewImages] = useState([]);
   const [imageModal, setImageModal] = useState(false);
-  const [previewImage, setPreviewImage] = useState(null);
   const [link, setLink] = useState("https://");
   const [amountToApprove, setAmountToApprove] = useState(null);
   const [royalties, setRoyalties] = useState(null);
@@ -58,7 +58,7 @@ const Item = () => {
   const { data: tokenBalance, isLoading, error } = useBalance(offerData?.nftContract?.prices[0].currency);
   const { mutateAsync: approve, isLoading: isLoadingApprove } = useContractWrite(tokenContract, "approve");
   const { data: bps } = useContractRead(DsponsorAdminContract, "feeBps");
-  const { data: isAllowedToMint = false } = useContractRead(DsponsorNFTContract, "tokenIdIsAllowedToMint", tokenId?.length < 6 ? tokenIdString : null);
+  const { data: isAllowedToMint = true } = useContractRead(DsponsorNFTContract, "tokenIdIsAllowedToMint", offerData?.nftContract?.allowList ? tokenIdString : null);
   const { data: royaltiesInfo } = useContractRead(DsponsorNFTContract, "royaltyInfo", [tokenIdString, 100]);
   const [showPreviewModal, setShowPreviewModal] = useState(false);
   const [validate, setValidate] = useState(false);
@@ -74,9 +74,10 @@ const Item = () => {
   const [tokenMetaData, setTokenMetaData] = useState("");
   const [allowanceTrue, setAllowanceTrue] = useState(false);
   const [adParameters, setAdParameters] = useState([]);
-  const [selectedParamsIntegration, setSelectedParamsIntegration] = useState(null);
+  
+  const [imageURLSteps, setImageURLSteps] = useState([]);
   const stepsRef = useRef([]);
-  const numSteps = 3;
+  const [numSteps, setNumSteps] = useState(2);
 
   useEffect(() => {
     if (offerId) {
@@ -106,10 +107,28 @@ const Item = () => {
           setTokenMetaData(tokenMetaData);
         }
 
-        
-        const adParameters = getPossibleAdIntegrations(offer.adParameters);
-        console.log(adParameters, "adParameters");
-        setAdParameters(adParameters);
+       
+        const uniqueIds = new Set();
+        for (const param of offer.adParameters) {
+          if (param.id && param.id !== "xSpaceId" && param.id !== "xCreatorHandle") {
+            uniqueIds.add(param.id);
+          }
+        }
+ const imageURLSteps = [];
+        const uniqueIdsArray = Array.from(uniqueIds);
+        setAdParameters(uniqueIdsArray);
+ uniqueIdsArray
+   .filter((id) => id.startsWith("imageURL"))
+   .map((id) => {
+     const variant = id.slice("imageURL-".length);
+     imageURLSteps.push(variant);
+   });
+ const totalNumSteps = numSteps + imageURLSteps.length;
+ console.log(imageURLSteps, "imageURLSteps");
+ setImageURLSteps(imageURLSteps);
+ setNumSteps(totalNumSteps);
+
+   
        
        
 
@@ -138,13 +157,13 @@ const Item = () => {
 
   useEffect(() => {
 
-    if (!selectedParamsIntegration)return;
+    if(!offerData)return;
       try {
         const params = [];
         const tokenIdArray = [];
         const offerIdArray = [];
-        for (const element of selectedParamsIntegration.requiredParams) {
-          params.push(element.id);
+        for (const element of offerData.nftContract.tokens[0].currentProposals) {
+          params.push(element.adParameter.id);
           tokenIdArray.push(tokenId);
           offerIdArray.push(offerId);
         }
@@ -155,9 +174,9 @@ const Item = () => {
         console.log(submitAdFormated, "submitAdFormated");
         setSubmitAdFormated(submitAdFormated);
       } catch (e) {
-        // console.error("Error: Ad parameters not found for offer", offer);
+         console.error("Error: Ad parameters not found for offer");
       }
-  }, [selectedParamsIntegration, tokenId, offerId, offerData]);
+  }, [ tokenId, offerId, offerData]);
 
   useEffect(() => {
     const fetchAdsOffers = async () => {
@@ -195,7 +214,7 @@ const Item = () => {
     let isValid = true;
     let newErrors = {};
 
-    if (!file) {
+    if (!files) {
       newErrors.imageError = "Image is missing.";
       isValid = false;
     }
@@ -220,8 +239,8 @@ const Item = () => {
 
   const handleLogoUpload = (file) => {
     if (file) {
-      setFile(file);
-      setPreviewImage(URL.createObjectURL(file));
+      setFiles([file]);
+      setPreviewImages([URL.createObjectURL(file)]);
     }
   };
 
@@ -249,7 +268,7 @@ const Item = () => {
       setAllowanceTrue(true);
     }
   };
-
+console.log(adStatut, "adStatut");
   const handleApprove = async () => {
     try {
       console.log("ici");
@@ -268,13 +287,12 @@ const Item = () => {
       }
     }
     // IPFS upload
-    console.log(userBalance, "userBalance");
 
     if (userBalance || isOwner) {
       let uploadUrl;
       try {
         uploadUrl = await uploadToIPFS({
-          data: [file],
+          data: [files[0]],
           options: { uploadWithGatewayUrl: true, uploadWithoutDirectory: true },
         });
       } catch (error) {
@@ -300,13 +318,13 @@ const Item = () => {
         };
 
         const isEthCurrency = offerData?.nftContract.prices[0].currency === "0x0000000000000000000000000000000000000000";
-        const functionWithPossibleArgs = (adStatut === 0 || adStatut === 3) && !isAllowedToMint ? Object.values(argsAdSubmited) : argsMintAndSubmit;
+        const functionWithPossibleArgs =  adStatut !== 3 && !isAllowedToMint ? Object.values(argsAdSubmited) : argsMintAndSubmit;
         const argsWithPossibleOverrides = isEthCurrency ? { args: [functionWithPossibleArgs], overrides: { value: amountToApprove } } : { args: [functionWithPossibleArgs] };
         // console.log(adStatut, "adStatut")
         // console.log(isAllowedToMint, "isAllowedToMint")
-        console.log(isAllowedToMint, "isAllowedToMint");
-        if ((adStatut === 0 || adStatut === 3) && !isAllowedToMint) {
-          console.log(argsAdSubmited, "ici");
+        console.log(argsAdSubmited, isAllowedToMint, "isAllowedToMint");
+        if ( adStatut !== 3 && !isAllowedToMint) {
+          console.log(functionWithPossibleArgs, "ici");
 
           await submitAd({ args: functionWithPossibleArgs });
           setSuccessFullUpload(true);
@@ -387,7 +405,8 @@ const Item = () => {
     );
   }
 
-  const { description = "description not found", id = "1", image = ["/images/gradient_creative.jpg"], name = "DefaultName" } = offerData.offer.token_metadata ? tokenMetaData : offerData.offer;
+
+  const { description = "description not found", id = "1", image = ["/images/gradient_creative.jpg"], name = "DefaultName" } = !Object.keys(offerData.offer.token_metadata).length === 0 ? tokenMetaData : offerData.offer;
 
   return (
     <>
@@ -413,13 +432,13 @@ const Item = () => {
             {/* <!-- Image --> */}
             <figure className="mb-8 md:mb-0 md:w-2/5 md:flex-shrink-0 md:flex-grow-0 md:basis-auto lg:w-1/2 w-full flex justify-center">
               <button className=" w-full" onClick={() => setImageModal(true)} style={{ height: "450px" }}>
-                <Image width={585} height={726} src={image} alt="image" className="rounded-2xl cursor-pointer h-full object-contain w-full" />
+                <Image width={585} height={726} src={image && image} alt="image" className="rounded-2xl cursor-pointer h-full object-contain w-full" />
               </button>
 
               {/* <!-- Modal --> */}
               <div className={imageModal ? "modal fade show block" : "modal fade"}>
                 <div className="modal-dialog !my-0 flex h-full max-w-4xl items-center justify-center">
-                  <Image width={582} height={722} src={image} alt="image" className="h-full object-cover w-full rounded-2xl" />
+                  <Image width={582} height={722} src={image && image} alt="image" className="h-full object-cover w-full rounded-2xl" />
                 </div>
 
                 <button type="button" className="btn-close absolute top-6 right-6" onClick={() => setImageModal(false)}>
@@ -474,22 +493,21 @@ const Item = () => {
               </div>
 
               <p className="dark:text-jacarta-300 mb-10">{description}</p>
-
-              <div className="dark:bg-jacarta-700 dark:border-jacarta-600 border-jacarta-100 rounded-2lg border flex flex-col gap-4 bg-white p-8">
-                <div className=" sm:flex sm:flex-wrap">
-                  <span className="dark:text-jacarta-300 text-jacarta-400 text-sm">
-                    Buying the ad space give you the exclusive right to submit an ad. The media still has the power to validate or reject ad assets. You re free to change the ad at anytime. And free to resell on the open
-                    market your ad space.{" "}
-                  </span>
-                </div>
-                <div className="w-full flex justify-center">
-                  {!isOwner && isAllowedToMint && !offerNotFormated && (
+              {!isOwner && isAllowedToMint && !offerNotFormated && !offerData.nftContract?.tokens[0]?.mint && (
+                <div className="dark:bg-jacarta-700 dark:border-jacarta-600 border-jacarta-100 rounded-2lg border flex flex-col gap-4 bg-white p-8">
+                  <div className=" sm:flex sm:flex-wrap">
+                    <span className="dark:text-jacarta-300 text-jacarta-400 text-sm">
+                      Buying the ad space give you the exclusive right to submit an ad. The media still has the power to validate or reject ad assets. You re free to change the ad at anytime. And free to resell on the
+                      open market your ad space.{" "}
+                    </span>
+                  </div>
+                  <div className="w-full flex justify-center">
                     <button type="button" className="bg-accent shadow-accent-volume hover:bg-accent-dark w-36 rounded-full py-3 px-8 text-center font-semibold text-white transition-all" onClick={handleBuyModal}>
                       Buy
                     </button>
-                  )}
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
           </div>
         </div>
@@ -500,8 +518,19 @@ const Item = () => {
         {isOwner && !offerNotFormated ? (
           <div>
             <SliderForm styles={styles} handlePreviewModal={handlePreviewModal} stepsRef={stepsRef} numSteps={numSteps}>
-              <Step_1_Mint stepsRef={stepsRef} styles={styles} adParameters={adParameters} setSelectedParamsIntegration={setSelectedParamsIntegration} />
-              <Step_2_Mint stepsRef={stepsRef} styles={styles} file={file} previewImage={previewImage} handleLogoUpload={handleLogoUpload} />
+              <Step_1_Mint stepsRef={stepsRef} styles={styles} adParameters={adParameters}  />
+              {imageURLSteps.map((id, index) => (
+                <Step_2_Mint
+                  key={id}
+                  stepsRef={stepsRef}
+                  currentStep={index + 1}
+                  id={id}
+                  styles={styles}
+                  file={files[index]}
+                  previewImage={previewImages[index]}
+                  handleLogoUpload={(file) => handleLogoUpload(file, index)}
+                />
+              ))}
               <Step_3_Mint stepsRef={stepsRef} styles={styles} setLink={setLink} link={link} />
             </SliderForm>
           </div>
@@ -524,7 +553,8 @@ const Item = () => {
             link={link}
             name={true}
             description={true}
-            previewImage={previewImage}
+            previewImage={previewImages}
+            imageURLSteps={imageURLSteps}
             errors={errors}
             successFullUpload={successFullUpload}
             validate={validate}

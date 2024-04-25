@@ -45,14 +45,14 @@ const Offer = () => {
     if (offerId) {
       const fetchAdsOffers = async () => {
         const offer = await GetAdOffer(offerId);
-        console.log(offer);
+       
         const destructuredIPFSResult = await fetchDataFromIPFS(offer.metadataURL);
         const combinedData = {
           ...offer,
           ...destructuredIPFSResult,
         };
         setOfferData(combinedData);
-        if (userAddress === offer.initialCreator) {
+        if (userAddress?.toLowerCase() === offer.initialCreator) {
           setIsOwner(true);
           const groupedPendingAds = {};
           const groupedValidatedAds = {};
@@ -118,6 +118,7 @@ const Offer = () => {
       fetchAdsOffers();
     }
   }, [offerId, router, successFullRefuseModal]);
+
   useEffect(() => {
     if (offerData?.nftContract?.royaltyBps) setRoyalties(offerData?.nftContract?.royaltyBps / 100);
   }, [offerData]);
@@ -252,52 +253,55 @@ const Offer = () => {
 
               <p className="dark:text-jacarta-300 mb-10">{description}</p>
 
-              <div className="dark:bg-jacarta-700 dark:border-jacarta-600 border-jacarta-100 rounded-2lg border bg-white p-8">
-                <div className=" sm:flex sm:flex-wrap">
-                  <span className="dark:text-jacarta-300 text-jacarta-400 text-sm">
-                    This page allows you to oversee submitted ads, offering tools to either approve or reject them. Approve ads to make them live or reject those that don&apos;t meet your standards, streamlining the
-                    content that reaches your audience while maintaining quality control on your platform.{" "}
-                  </span>
+              {isOwner && (
+                <div className="dark:bg-jacarta-700 dark:border-jacarta-600 border-jacarta-100 rounded-2lg border bg-white p-8">
+                  <div className=" sm:flex sm:flex-wrap">
+                    <span className="dark:text-jacarta-300 text-jacarta-400 text-sm">
+                      This page allows you to oversee submitted ads, offering tools to either approve or reject them. Approve ads to make them live or reject those that don&apos;t meet your standards, streamlining the
+                      content that reaches your audience while maintaining quality control on your platform.{" "}
+                    </span>
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
           </div>
         </div>
       </section>
-
-      <div className="container flex flex-col justify-center mb-6">
-        <div className="dark:bg-jacarta-700 dark:border-jacarta-600 border-jacarta-100 rounded-2lg border bg-white p-8">
-          <div className=" sm:flex sm:flex-wrap">
-            <span className="dark:text-jacarta-300 text-jacarta-400 text-sm">
-              This page allows you to oversee submitted ads, offering tools to either approve or reject them. Approve ads to make them live or reject those that don&apos;t meet your standards, streamlining the content
-              that reaches your audience while maintaining quality control on your platform.{" "}
-            </span>
-          </div>
-        </div>
-        <div className="flex justify-center mt-6">
-          <Form offerId={offerId} onUrlChange={handleUrlChange} />
-        </div>
-         {urlFromChild && <div className="grid grid-cols-1 gap-[1.875rem] md:grid-cols-2 lg:grid-cols-4">
-
-        <article className="relative">
-          <div className="dark:bg-jacarta-700 dark:border-jacarta-700 border-jacarta-100 rounded-2xl block border bg-white p-[1.1875rem] transition-shadow hover:shadow-lg text-jacarta-500">
-            <figure>
-              <Link href={urlFromChild}>{image && <Image src={image} alt="logo" height={230} width={230} className="rounded-[0.625rem] w-full lg:h-[230px] object-contain" loading="lazy" />}</Link>
-            </figure>
-            <div className="mt-4 flex items-center justify-between">
-              <Link href={urlFromChild} className="overflow-hidden text-ellipsis whitespace-nowrap max-w-[120px]">
-                <span className="font-display max-w-[150px] text-jacarta-700 hover:text-accent text-base dark:text-white ">{name}</span>
-              </Link>
-
-              <div className="dark:border-jacarta-600 border-jacarta-100 flex items-center whitespace-nowrap rounded-md border py-1 px-2">
-                <span className="text-green text-sm font-medium tracking-tight"> {tokenData}</span>
-              </div>
+      {!offerData.nftContract.allowList && (
+        <div className="container flex flex-col justify-center mb-6">
+          <div className="dark:bg-jacarta-700 dark:border-jacarta-600 border-jacarta-100 rounded-2lg border bg-white p-8">
+            <div className=" sm:flex sm:flex-wrap">
+              <span className="dark:text-jacarta-300 text-jacarta-400 text-sm">
+                You can check if a word is available for purchase by using the search bar. Simply type the word into the search bar and press enter to see if it is available. This feature allows you to quickly find out
+                if the word you are interested in is free for acquisition.{" "}
+              </span>
             </div>
-            
           </div>
-        </article>
-         </div>}
-      </div>
+          <div className="flex justify-center mt-6">
+            <Form offerId={offerId} onUrlChange={handleUrlChange} />
+          </div>
+          {urlFromChild && (
+            <div className="grid grid-cols-1 gap-[1.875rem] md:grid-cols-2 lg:grid-cols-4">
+              <article className="relative">
+                <div className="dark:bg-jacarta-700 dark:border-jacarta-700 border-jacarta-100 rounded-2xl block border bg-white p-[1.1875rem] transition-shadow hover:shadow-lg text-jacarta-500">
+                  <figure>
+                    <Link href={urlFromChild}>{image && <Image src={image} alt="logo" height={230} width={230} className="rounded-[0.625rem] w-full lg:h-[230px] object-contain" loading="lazy" />}</Link>
+                  </figure>
+                  <div className="mt-4 flex items-center justify-between">
+                    <Link href={urlFromChild} className="overflow-hidden text-ellipsis whitespace-nowrap max-w-[120px]">
+                      <span className="font-display max-w-[150px] text-jacarta-700 hover:text-accent text-base dark:text-white ">{name}</span>
+                    </Link>
+
+                    <div className="dark:border-jacarta-600 border-jacarta-100 flex items-center whitespace-nowrap rounded-md border py-1 px-2">
+                      <span className="text-green text-sm font-medium tracking-tight"> {tokenData}</span>
+                    </div>
+                  </div>
+                </div>
+              </article>
+            </div>
+          )}
+        </div>
+      )}
 
       {isOwner && (
         <div className="container">
