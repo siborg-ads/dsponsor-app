@@ -26,11 +26,11 @@ const adIntegrations = {
     platforms: ["Newsletter", "React Native", "Web"],
   },
   ClickableLogosGrid: {
-    requiredParams: ["imageURL-1:1", "linkURL"],
+    requiredParams: ["imageURL", "linkURL"],
     platforms: ["Newsletter", "React Native", "Web"],
   },
   LogosGrid: {
-    requiredParams: ["imageURL-1:1"],
+    requiredParams: ["imageURL"],
     platforms: ["Newsletter", "Print", "React Native", "Web"],
   },
   xCreatorHighlight: {
@@ -47,7 +47,7 @@ const adIntegrations = {
 function extractValidParams(adParams) {
   const params = {};
   adParams.forEach((param) => {
-    params[param.base] = param.id; // stocke l'identifiant complet, incluant la variante
+    params[param.base] = param.id; 
   });
   return params;
 }

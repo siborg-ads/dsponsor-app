@@ -5,16 +5,18 @@ import Image from "next/image";
 
 import { FileUploader } from "react-drag-drop-files";
 
-const Step_2_Mint = ({ stepsRef, styles, file, handleLogoUpload, previewImage }) => {
+const Step_2_Mint = ({ id, stepsRef, styles, file, handleLogoUpload, previewImage, currentStep }) => {
   const fileTypes = ["JPG", "PNG", "SVG", "WEBP"];
   return (
-    <div ref={(el) => (stepsRef.current[1] = el)} className={styles.form__step}>
+    <div ref={(el) => (stepsRef.current[currentStep] = el)} className={styles.form__step}>
       <div className="pr-6 pl-2">
-        <h3 className="mb-14">Step 2 : Ad Space logo</h3>
+        <h3 className="mb-14">
+          Step 2 : Ad Space Image {id}
+        </h3>
         {/* <!-- File Upload --> */}
         <div className="mb-6 items-center flex flex-col">
           <label className="font-display text-jacarta-700 mb-2 block dark:text-white">
-            Image, Video, Audio, or 3D Model
+            Image {id}
             <span className="text-red">*</span>
           </label>
           <p className="dark:text-jacarta-300 text-jacarta-400 text-2xs mb-3">
