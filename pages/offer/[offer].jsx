@@ -19,6 +19,7 @@ import { contractABI } from "../../data/services/contract";
 import { user } from "@nextui-org/react";
 import Form from "../../components/collections-wide/sidebar/collections/Form";
 
+
 const Offer = () => {
   const router = useRouter();
 
@@ -291,8 +292,8 @@ const Offer = () => {
             <div className="grid grid-cols-1 gap-[1.875rem] md:grid-cols-2 lg:grid-cols-4">
               <article className="relative">
                 <div className="dark:bg-jacarta-700 dark:border-jacarta-700 border-jacarta-100 rounded-2xl block border bg-white p-[1.1875rem] transition-shadow hover:shadow-lg text-jacarta-500">
-                  {isWordAlreadyTaken && <span className="text-red-500">This word is already taken</span>}
-                  <figure>
+                  {isWordAlreadyTaken ? <span className="text-red  ">This word is already taken ❌</span> : <span className="text-green ">This word is available 🎉</span> }
+                  <figure className="mt-2">
                     <Link href={urlFromChild}>{image && <Image src={image} alt="logo" height={230} width={230} className="rounded-[0.625rem] w-full lg:h-[230px] object-contain" loading="lazy" />}</Link>
                   </figure>
                   <div className="mt-4 flex items-center justify-between">

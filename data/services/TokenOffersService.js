@@ -200,8 +200,6 @@ let nftFilterIds;
   const GET_DATA = gql`
     query AdSpacesOwnedByUser($ids: [ID!]) {
       tokens(where: { id_in: $ids }) {
-        
-        
         id
         tokenId
 
@@ -210,7 +208,14 @@ let nftFilterIds;
           adOffers {
             metadataURL
             id
-           
+            adParameters(where: { enable: true }) {
+              enable
+              adParameter {
+                id # adParameter value, ex: imageURL-320x50 or linkURL
+                base # ex: imageURL or linkURL
+                variants # ex: ["320x50"]
+              }
+            }
           }
         }
 

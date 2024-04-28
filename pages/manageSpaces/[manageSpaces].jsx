@@ -77,7 +77,7 @@ const ManageSpaces = () => {
       if(address === userAddress) setIsOwner(true);
       fetchAdsOffers();
     }
-  }, [userAddress, router]);
+  }, [userAddress, router, address]);
   useEffect(() => {
     setTimeout(() => {
       setCopied(false);

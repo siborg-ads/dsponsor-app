@@ -57,7 +57,7 @@ const PreviewModal = ({
 
           <div className="modal-body p-6 flex gap-4 items-center justify-center">
             {!successFullUpload ? (
-              <div className="flex gap-8 md:flex-row flex-col">
+              <div className="flex flex-wrap gap-8 md:flex-row flex-col">
                 <div>
                   <p className="font-display mb-2 block dark:text-white">
                     {name.length > 0 ? (

@@ -78,12 +78,14 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
       }
     });
   };
-  const handleLogoUpload = (file, index) => {
+  const handleLogoUpload = (file, index, step) => {
+    console.log(step, "step");
     if (file) {
       const newFiles = [...files];
       const newPreviewImages = [...previewImages];
-      newFiles[index] = { file: file, index: index };
+      newFiles[index] = { file: file, index: index, offerIds: step.offerIds};
       newPreviewImages[index] = URL.createObjectURL(file);
+      console.log(newFiles, "newFiles");
       setFiles(newFiles);
       setPreviewImages(newPreviewImages);
     }
@@ -119,33 +121,47 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
     setShowSliderForm(!showSliderForm);
     console.log(selectedItems, "selectedItems");
     let adParams = [];
+    const uniqueIds = new Set();
+    const adDetails = {};
+
     for (const token of selectedItems) {
-      for (const params of token.nftContract.adOffers[0].adParameters) {
-        adParams.push(params);
+      const offers = token.nftContract.adOffers;
+      if (offers.length > 0) {
+        const offer = offers[0];
+        for (const param of offer.adParameters) {
+          const paramId = param.adParameter.id;
+          if (paramId && paramId !== "xSpaceId" && paramId !== "xCreatorHandle") {
+            uniqueIds.add(paramId);
+            adDetails[paramId] = adDetails[paramId] || new Set();
+            adDetails[paramId].add(offer.id);
+          }
+        }
       }
     }
-    const uniqueIds = new Set();
-    for (const param of adParams) {
-      if (param.id && param.id !== "xSpaceId" && param.id !== "xCreatorHandle") {
-        uniqueIds.add(param.id);
-      }
+
+    // Convert Sets back to arrays if necessary for further processing
+    for (const id in adDetails) {
+      adDetails[id] = Array.from(adDetails[id]);
     }
 
     const uniqueIdsArray = Array.from(uniqueIds);
     setAdParameters(uniqueIdsArray);
-
-    const imageURLSteps = [];
+    
+    const imageURLStep = [];
 
     uniqueIdsArray
       .filter((id) => id.startsWith("imageURL"))
       .map((id) => {
         const variant = id.slice("imageURL-".length);
-        imageURLSteps.push(variant);
+        imageURLStep.push({
+          uniqueId: variant,
+          offerIds: adDetails[id], 
+        });
       });
-    const totalNumSteps = numSteps + imageURLSteps.length;
-    setImageURLSteps(imageURLSteps);
+    const totalNumSteps = numSteps + imageURLStep.length;
+    setImageURLSteps(imageURLStep);
     setNumSteps(totalNumSteps);
-    console.log(uniqueIdsArray, "Unique IDs");
+    console.log(imageURLStep, "Unique IDs");
   };
   const handleSubmit = async () => {
     if (!validateInputs()) {
@@ -154,45 +170,52 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
     const selectedOfferIdItems = [];
     const selectedTokenIdItems = [];
     const adParametersItems = [];
-    const data = [];
-    console.log(files[0].file);
-    for (const file of files) {
-      let uploadUrl;
-      try {
-        uploadUrl = await uploadToIPFS({
-          data: [file.file],
-          options: { uploadWithGatewayUrl: true, uploadWithoutDirectory: true },
-        });
-      } catch (error) {
-        console.error("Erreur lors de l'upload à IPFS:", error);
-        throw new Error("Upload to IPFS failed.");
-      }
-      data.push(uploadUrl[0]);
-      data.push(link);
-    }
+    const dataItems = [];
+    
+  
     try {
       for (const item of selectedItems) {
         for (const args of item.nftContract.adOffers[0].adParameters) {
-          if (args.id !== "xSpaceId" && args.id !== "xCreatorHandle") {
+          if (args.adParameter.id !== "xSpaceId" && args.adParameter.id !== "xCreatorHandle") {
             selectedOfferIdItems.push(item.nftContract.adOffers[0].id);
             selectedTokenIdItems.push(item.tokenId);
-            adParametersItems.push(args.id);
+            adParametersItems.push(args.adParameter.id);
+             
+          }
+        }
+        for (const file of files) {
+          let uploadUrl;
+          if (file.offerIds.includes(item.nftContract.adOffers[0].id)) {
+            try {
+              uploadUrl = await uploadToIPFS({
+                data: [file.file],
+                options: { uploadWithGatewayUrl: true, uploadWithoutDirectory: true },
+              });
+            } catch (error) {
+              console.error("Erreur lors de l'upload à IPFS:", error);
+              throw new Error("Upload to IPFS failed.");
+            }
+            dataItems.push(uploadUrl[0]);
+            dataItems.push(link);
           }
         }
       }
+      
 
       const argsAdSubmited = {
         offerId: selectedOfferIdItems,
         tokenId: selectedTokenIdItems,
         adParameters: adParametersItems,
-        data: data,
+        data: dataItems,
       };
+      console.log(argsAdSubmited, "argsAdSubmited");
       await submitAd({ args: Object.values(argsAdSubmited) });
     } catch (err) {
       console.log(err);
       throw new Error("Upload to Blockchain failed.");
     }
   };
+ 
   const handleSelectionTokens = () => {
     setIsSelectionActive(!isSelectionActive);
     setShowSliderForm(false);
@@ -297,6 +320,7 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
                 ) : (
                   <OfferItem
                     item={item}
+                    key={index}
                     isToken={true}
                     isSelectionActive={isSelectionActive}
                     url={!item.tokenData ? `/offer/${item.nftContract.adOffers[0].id}/${item.tokenId}` : `/offer/${item.nftContract.adOffers[0].id}/${item.tokenId}?tokenData=${item.tokenData}`}
@@ -339,16 +363,17 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
         <div>
           <SliderForm styles={styles} handlePreviewModal={handlePreviewModal} stepsRef={stepsRef} numSteps={numSteps}>
             <Step_1_Mint stepsRef={stepsRef} styles={styles} adParameters={adParameters} />
-            {imageURLSteps.map((id, index) => (
+            {imageURLSteps.map((step, index) => (
               <Step_2_Mint
-                key={id}
+                key={step.uniqueId}
                 stepsRef={stepsRef}
                 currentStep={index + 1}
-                id={id}
+                offerIds={step.offerIds}
+                id={step.uniqueId}
                 styles={styles}
                 file={files[index]}
                 previewImage={previewImages[index]}
-                handleLogoUpload={(file) => handleLogoUpload(file, index)}
+                handleLogoUpload={(file) => handleLogoUpload(file, index, step)}
               />
             ))}
             <Step_3_Mint stepsRef={stepsRef} styles={styles} setLink={setLink} link={link} />

@@ -58,7 +58,7 @@ const Item = () => {
   const { data: tokenBalance, isLoading, error } = useBalance(offerData?.nftContract?.prices[0].currency);
   const { mutateAsync: approve, isLoading: isLoadingApprove } = useContractWrite(tokenContract, "approve");
   const { data: bps } = useContractRead(DsponsorAdminContract, "feeBps");
-  const { data: isAllowedToMint = true } = useContractRead(DsponsorNFTContract, "tokenIdIsAllowedToMint", offerData?.nftContract?.allowList ? tokenIdString : null);
+  const { data: isAllowedToMint = true, isLoading: isLoadingAllowedToMint } = useContractRead(DsponsorNFTContract, "tokenIdIsAllowedToMint", offerData?.nftContract?.allowList ? tokenIdString : null);
   const { data: royaltiesInfo } = useContractRead(DsponsorNFTContract, "royaltyInfo", [tokenIdString, 100]);
   const [showPreviewModal, setShowPreviewModal] = useState(false);
   const [validate, setValidate] = useState(false);
@@ -320,11 +320,9 @@ const Item = () => {
         const isEthCurrency = offerData?.nftContract.prices[0].currency === "0x0000000000000000000000000000000000000000";
         const functionWithPossibleArgs =  adStatut !== 3 && !isAllowedToMint ? Object.values(argsAdSubmited) : argsMintAndSubmit;
         const argsWithPossibleOverrides = isEthCurrency ? { args: [functionWithPossibleArgs], overrides: { value: amountToApprove } } : { args: [functionWithPossibleArgs] };
-        // console.log(adStatut, "adStatut")
-        // console.log(isAllowedToMint, "isAllowedToMint")
-        console.log(argsAdSubmited, isAllowedToMint, "isAllowedToMint");
+      
         if ( adStatut !== 3 && !isAllowedToMint) {
-          console.log(functionWithPossibleArgs, "ici");
+          
 
           await submitAd({ args: functionWithPossibleArgs });
           setSuccessFullUpload(true);
@@ -542,7 +540,7 @@ const Item = () => {
           </div>
         ) : (
           <div className="flex justify-center">
-            <p>{offerNotFormated ? "Offer isn't well formated to buy" : !isAllowedToMint && !isOwner ? "Sorry, someone already own this NFT " : ""}</p>
+            <p>{offerNotFormated ? "Offer isn't well formated to buy" : (!isAllowedToMint || offerData.nftContract?.tokens.length > 0) && !isOwner ? "Sorry, someone already own this NFT " : ""}</p>
           </div>
         )}
       </div>
