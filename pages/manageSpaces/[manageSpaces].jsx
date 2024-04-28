@@ -11,6 +11,7 @@ import { CopyToClipboard } from "react-copy-to-clipboard";
 import Meta from "../../components/Meta";
 import { GetAllAdOffersFromUser } from "../../data/services/AdOffersService";
 import { GetAllTokenbyOfferForAUser } from "../../data/services/TokenOffersService";
+import { useAddress, darkTheme, useBalance, Web3Button, useTokenBalance, useContract, useContractRead, useContractWrite, useStorageUpload, useTokenDecimals, CheckoutWithCard, CheckoutWithEth } from "@thirdweb-dev/react";
 
 import adminInstance from "../../utils/sdkProvider";
 
@@ -19,11 +20,12 @@ import { fetchDataFromIPFS } from "../../data/services/ipfsService";
 const ManageSpaces = () => {
   const router = useRouter();
   const userAddress = router.query.manageSpaces;
-
+  const address = useAddress();
   const [createdData, setCreatedData] = useState(null);
   const [mappedownedAdProposals, setMappedownedAdProposals] = useState(null);
   const [copied, setCopied] = useState(false);
   const [isPendinAdsOnOffer, setIsPendinAdsOnOffer] = useState(false);
+  const [isOwner, setIsOwner] = useState(false);
 
   useEffect(() => {
     if (userAddress) {
@@ -36,25 +38,23 @@ const ManageSpaces = () => {
           let isPending = false;
           const destructuredIPFSResult = await fetchDataFromIPFS(element.metadataURL);
           const pendingProposals = element.nftContract.tokens;
-           for (const isPendingAds of pendingProposals){ 
-            if(isPendingAds.currentProposals.length > 0 && isPendingAds.currentProposals[0].pendingProposal !== null){
-isPending = true;
-setIsPendinAdsOnOffer(true);
-break;
-            } 
-           };
+          for (const isPendingAds of pendingProposals) {
+            if (isPendingAds.currentProposals.length > 0 && isPendingAds.currentProposals[0].pendingProposal !== null) {
+              isPending = true;
+              setIsPendinAdsOnOffer(true);
+              break;
+            }
+          }
           const combinedData = {
-            isPending : isPending,
+            isPending: isPending,
             ...element,
             ...destructuredIPFSResult,
           };
           mappedOffers.push(combinedData);
         }
-console.log(mappedOffers);
+        console.log(mappedOffers);
         const mappedownedAdProposals = [];
-        
 
-        
         setCreatedData(mappedOffers);
 
         for (const element of ownedAdProposals) {
@@ -74,7 +74,7 @@ console.log(mappedOffers);
         console.log(mappedownedAdProposals);
         setMappedownedAdProposals(mappedownedAdProposals);
       };
-
+      if(address === userAddress) setIsOwner(true);
       fetchAdsOffers();
     }
   }, [userAddress, router]);
@@ -120,7 +120,7 @@ console.log(mappedOffers);
           </div>
         </section>
         {/* <!-- end profile --> */}
-        <User_items createdData={createdData} mappedownedAdProposals={mappedownedAdProposals} isPendinAdsOnOffer={isPendinAdsOnOffer} />
+        <User_items createdData={createdData} mappedownedAdProposals={mappedownedAdProposals} isPendinAdsOnOffer={isPendinAdsOnOffer} isOwner={isOwner} />
       </div>
     </>
   );

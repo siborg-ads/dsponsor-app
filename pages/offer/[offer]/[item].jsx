@@ -457,7 +457,7 @@ const Item = () => {
               <div className="mb-3 flex">
                 {/* <!-- Collection --> */}
                 <div className="flex items-center">
-                  <Link href="#" className="text-accent mr-2 text-sm font-bold">
+                  <Link href={`/manageSpaces/${offerData?.initialCreator}`} className="text-accent mr-2 text-sm font-bold">
                     {offerData?.initialCreator}
                   </Link>
                   <span className="dark:border-jacarta-600 bg-green inline-flex h-6 w-6 items-center justify-center rounded-full border-2 border-white" data-tippy-content="Verified Collection">
@@ -486,9 +486,11 @@ const Item = () => {
                   </span>
                 </div>
 
-                <span className="dark:text-jacarta-300 text-jacarta-400 text-sm">Space #{formatTokenId(tokenId)}</span>
-                <span className="text-jacarta-400 block text-sm dark:text-white">
-                  Creator <strong>{royalties}% royalties</strong>
+                <span className="dark:text-jacarta-300 text-jacarta-400 text-sm">
+                  Space # <strong className="dark:text-white">{tokenData ? tokenData : formatTokenId(tokenId)}</strong>{" "}
+                </span>
+                <span className="text-jacarta-300 block text-sm ">
+                  Creator <strong className="dark:text-white">{royalties}% royalties</strong>
                 </span>
               </div>
 
@@ -502,9 +504,13 @@ const Item = () => {
                     </span>
                   </div>
                   <div className="w-full flex justify-center">
-                    <button type="button" className="bg-accent shadow-accent-volume hover:bg-accent-dark w-36 rounded-full py-3 px-8 text-center font-semibold text-white transition-all" onClick={handleBuyModal}>
-                      Buy
-                    </button>
+                    {address ? (
+                      <button type="button" className="bg-accent shadow-accent-volume hover:bg-accent-dark w-36 rounded-full py-3 px-8 text-center font-semibold text-white transition-all" onClick={handleBuyModal}>
+                        Buy
+                      </button>
+                    ) : (
+                      <Web3Button className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all  !bg-accent !cursor-pointer `}>Connect wallet</Web3Button>
+                    )}
                   </div>
                 </div>
               )}
@@ -518,7 +524,7 @@ const Item = () => {
         {isOwner && !offerNotFormated ? (
           <div>
             <SliderForm styles={styles} handlePreviewModal={handlePreviewModal} stepsRef={stepsRef} numSteps={numSteps}>
-              <Step_1_Mint stepsRef={stepsRef} styles={styles} adParameters={adParameters}  />
+              <Step_1_Mint stepsRef={stepsRef} styles={styles} adParameters={adParameters} />
               {imageURLSteps.map((id, index) => (
                 <Step_2_Mint
                   key={id}

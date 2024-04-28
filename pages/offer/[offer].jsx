@@ -40,17 +40,18 @@ const Offer = () => {
   const [urlFromChild, setUrlFromChild] = useState("");
   const [successFullRefuseModal, setSuccessFullRefuseModal] = useState(false);
   const [tokenData, setTokenData] = useState("");
+  const [isWordAlreadyTaken, setIsWordAlreadyTaken] = useState(false);
 
   useEffect(() => {
     if (offerId) {
       const fetchAdsOffers = async () => {
         const offer = await GetAdOffer(offerId);
-       console.log(offer, "ici");
         const destructuredIPFSResult = await fetchDataFromIPFS(offer.metadataURL);
         const combinedData = {
           ...offer,
           ...destructuredIPFSResult,
         };
+        console.log(combinedData, "ici");
         setOfferData(combinedData);
         if (userAddress?.toLowerCase() === offer.initialCreator) {
           setIsOwner(true);
@@ -136,11 +137,17 @@ const Offer = () => {
     }
   };
   const handleUrlChange = (newUrl, tokenData) => {
+    setIsWordAlreadyTaken(false);
     setUrlFromChild(newUrl);
     setTokenData(tokenData);
-    console.log("URL reçue du formulaire enfant:", newUrl);
+   for(const token of offerData.nftContract.tokens){
+    if(token.mint === null)return;
+      if(tokenData.toLowerCase() === token.mint.tokenData.toLowerCase()){
+        setIsWordAlreadyTaken(true);
+      }
+   }
   };
-console.log(isOwner, "isOwner");
+
   const [itemActive, setItemActive] = useState(1);
   const tabItem = [
     {
@@ -214,7 +221,7 @@ console.log(isOwner, "isOwner");
               <div className="mb-3 flex">
                 {/* <!-- Collection --> */}
                 <div className="flex items-center">
-                  <Link href="#" className="text-accent mr-2 text-sm font-bold">
+                  <Link href={`/manageSpaces/${offerData?.initialCreator}`} className="text-accent mr-2 text-sm font-bold">
                     {offerData?.initialCreator}
                   </Link>
                   <span className="dark:border-jacarta-600 bg-green inline-flex h-6 w-6 items-center justify-center rounded-full border-2 border-white" data-tippy-content="Verified Collection">
@@ -284,6 +291,7 @@ console.log(isOwner, "isOwner");
             <div className="grid grid-cols-1 gap-[1.875rem] md:grid-cols-2 lg:grid-cols-4">
               <article className="relative">
                 <div className="dark:bg-jacarta-700 dark:border-jacarta-700 border-jacarta-100 rounded-2xl block border bg-white p-[1.1875rem] transition-shadow hover:shadow-lg text-jacarta-500">
+                  {isWordAlreadyTaken && <span className="text-red-500">This word is already taken</span>}
                   <figure>
                     <Link href={urlFromChild}>{image && <Image src={image} alt="logo" height={230} width={230} className="rounded-[0.625rem] w-full lg:h-[230px] object-contain" loading="lazy" />}</Link>
                   </figure>
@@ -303,52 +311,55 @@ console.log(isOwner, "isOwner");
         </div>
       )}
 
-      {isOwner && (
-        <div className="container">
-          {/* <!-- Tabs Nav --> */}
-          <Tabs className="tabs">
-            <TabList className="nav nav-tabs scrollbar-custom mb-12 flex items-center justify-start overflow-x-auto overflow-y-hidden border-b border-jacarta-100 pb-px dark:border-jacarta-600 md:justify-center">
-              {tabItem.map(({ id, text, icon }) => {
-                return (
-                  <Tab className="nav-item" role="presentation" key={id} onClick={() => setItemActive(id)}>
-                    <button
-                      className={
-                        itemActive === id
-                          ? "nav-link hover:text-jacarta-700 text-jacarta-400 relative flex items-center whitespace-nowrap py-3 px-6 dark:hover:text-white active"
-                          : "nav-link hover:text-jacarta-700 text-jacarta-400 relative flex items-center whitespace-nowrap py-3 px-6 dark:hover:text-white"
-                      }
-                    >
-                      <svg className="icon mr-1 h-5 w-5 fill-current">
-                        <use xlinkHref={`/icons.svg#icon-${icon}`}></use>
-                      </svg>
-                      <span className="font-display text-base font-medium">{text}</span>
-                    </button>
-                  </Tab>
-                );
-              })}
-            </TabList>
+      <div className="container">
+        {/* <!-- Tabs Nav --> */}
+        <Tabs className="tabs">
+          <TabList className="nav nav-tabs scrollbar-custom mb-12 flex items-center justify-start overflow-x-auto overflow-y-hidden border-b border-jacarta-100 pb-px dark:border-jacarta-600 md:justify-center">
+            {tabItem.map(({ id, text, icon }) => {
+              if (!isOwner && text === "Pending") return;
+              return (
+                <Tab className="nav-item" role="presentation" key={id} onClick={() => setItemActive(id)}>
+                  <button
+                    className={
+                      itemActive === id
+                        ? "nav-link hover:text-jacarta-700 text-jacarta-400 relative flex items-center whitespace-nowrap py-3 px-6 dark:hover:text-white active"
+                        : "nav-link hover:text-jacarta-700 text-jacarta-400 relative flex items-center whitespace-nowrap py-3 px-6 dark:hover:text-white"
+                    }
+                  >
+                    <svg className="icon mr-1 h-5 w-5 fill-current">
+                      <use xlinkHref={`/icons.svg#icon-${icon}`}></use>
+                    </svg>
+                    <span className="font-display text-base font-medium">{text}</span>
+                  </button>
+                </Tab>
+              );
+            })}
+          </TabList>
 
-            <TabPanel>
-              <div className="container mb-12 relative p-0">
-                {/* <!-- Filter --> */}
-                <Review_carousel handleSubmit={handleSubmit} pendingProposalData={pendingProposalData} successFullRefuseModal={successFullRefuseModal} />
-              </div>
-            </TabPanel>
-            <TabPanel>
-              <div className="container mb-12 relative p-0">
-                {/* <!-- Filter --> */}
-                <Validated_refused_items statut={true} proposalData={validatedProposalData} />
-              </div>
-            </TabPanel>
-            <TabPanel>
-              <div className="container mb-12 relative p-0">
-                {/* <!-- Filter --> */}
-                <Validated_refused_items statut={false} proposalData={refusedProposalData} />
-              </div>
-            </TabPanel>
-          </Tabs>
-        </div>
-      )}
+          {isOwner && (
+            <div>
+              <TabPanel>
+                <div className="container mb-12 relative p-0">
+                  {/* <!-- Filter --> */}
+                  <Review_carousel handleSubmit={handleSubmit} pendingProposalData={pendingProposalData} successFullRefuseModal={successFullRefuseModal} />
+                </div>
+              </TabPanel>
+            </div>
+          )}
+          <TabPanel>
+            <div className="container mb-12 relative p-0">
+              {/* <!-- Filter --> */}
+              <Validated_refused_items statut={true} proposalData={validatedProposalData} />
+            </div>
+          </TabPanel>
+          <TabPanel>
+            <div className="container mb-12 relative p-0">
+              {/* <!-- Filter --> */}
+              <Validated_refused_items statut={false} proposalData={refusedProposalData} />
+            </div>
+          </TabPanel>
+        </Tabs>
+      </div>
 
       {/* <ItemsTabs /> */}
       {/* <div className="container mb-12">

@@ -74,6 +74,11 @@ export const GetAllAdOffersFromUser = async (userAddress) => {
 
         nftContract {
           id # DSponsorNFT smart contract address
+          prices {
+            currency # ERC20 smart contract
+            amount # wei, mind decimals() function to transform in human readable value !
+            enabled
+          }
           tokens(
             # you can paginate with this type or filtering
             # where: { and: [{ tokenId_lte: "200" }, { tokenId_lte: "100" }]

@@ -22,7 +22,7 @@ import Step_3_Mint from "../sliderForm/PageMint/Step_3_Mint";
 
 import PreviewModal from "../modal/previewModal";
 
-const OwnedAdProposals_categories_items = ({ data }) => {
+const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
   const [itemdata, setItemdata] = useState(trendingCategoryData);
 
   const [filterVal, setFilterVal] = useState(0);
@@ -43,10 +43,11 @@ const OwnedAdProposals_categories_items = ({ data }) => {
   const [successFullUploadModal, setSuccessFullUploadModal] = useState(false);
   const stepsRef = useRef([]);
   const [numSteps, setNumSteps] = useState(2);
- const { contract: DsponsorAdminContract } = useContract("0xE442802706F3603d58F34418Eac50C78C7B4E8b3", contractABI);
+  const { contract: DsponsorAdminContract } = useContract("0xE442802706F3603d58F34418Eac50C78C7B4E8b3", contractABI);
+ 
+  const { mutateAsync: uploadToIPFS, isLoading: isUploading } = useStorageUpload();
+  const { mutateAsync: submitAd } = useContractWrite(DsponsorAdminContract, "submitAdProposals");
 
- const { mutateAsync: uploadToIPFS, isLoading: isUploading } = useStorageUpload();
-const { mutateAsync: submitAd } = useContractWrite(DsponsorAdminContract, "submitAdProposals");
 
   const handleFilter = (category) => {
     if (category !== "all") {
@@ -79,13 +80,12 @@ const { mutateAsync: submitAd } = useContractWrite(DsponsorAdminContract, "submi
   };
   const handleLogoUpload = (file, index) => {
     if (file) {
-      const newFiles = [...files]; 
-      const newPreviewImages = [...previewImages]; 
-      newFiles[index] = {file :file,
-      index: index}; 
-      newPreviewImages[index] = URL.createObjectURL(file); 
+      const newFiles = [...files];
+      const newPreviewImages = [...previewImages];
+      newFiles[index] = { file: file, index: index };
+      newPreviewImages[index] = URL.createObjectURL(file);
       setFiles(newFiles);
-      setPreviewImages(newPreviewImages); 
+      setPreviewImages(newPreviewImages);
     }
   };
   const validateInputs = () => {
@@ -131,7 +131,6 @@ const { mutateAsync: submitAd } = useContractWrite(DsponsorAdminContract, "submi
       }
     }
 
-    
     const uniqueIdsArray = Array.from(uniqueIds);
     setAdParameters(uniqueIdsArray);
 
@@ -149,55 +148,50 @@ const { mutateAsync: submitAd } = useContractWrite(DsponsorAdminContract, "submi
     console.log(uniqueIdsArray, "Unique IDs");
   };
   const handleSubmit = async () => {
-
- 
-   if (!validateInputs()) {
-     return;
-   }
-   const selectedOfferIdItems = [];
+    if (!validateInputs()) {
+      return;
+    }
+    const selectedOfferIdItems = [];
     const selectedTokenIdItems = [];
     const adParametersItems = [];
-    const data= [];
-console.log(files[0].file);
-for (const file of files) {
-  let uploadUrl;
-  try {
-    uploadUrl = await uploadToIPFS({
-      data: [file.file],
-      options: { uploadWithGatewayUrl: true, uploadWithoutDirectory: true },
-    });
-  } catch (error) {
-    console.error("Erreur lors de l'upload à IPFS:", error);
-    throw new Error("Upload to IPFS failed.");
-  }
-  data.push(uploadUrl[0]);
-  data.push(link);
-}
-try{
-for (const item of selectedItems) {
-  for (const args of item.nftContract.adOffers[0].adParameters) {
-    if (args.id !== "xSpaceId" && args.id !== "xCreatorHandle") {
-      selectedOfferIdItems.push(item.nftContract.adOffers[0].id);
-      selectedTokenIdItems.push(item.tokenId);
-      adParametersItems.push(args.id);
+    const data = [];
+    console.log(files[0].file);
+    for (const file of files) {
+      let uploadUrl;
+      try {
+        uploadUrl = await uploadToIPFS({
+          data: [file.file],
+          options: { uploadWithGatewayUrl: true, uploadWithoutDirectory: true },
+        });
+      } catch (error) {
+        console.error("Erreur lors de l'upload à IPFS:", error);
+        throw new Error("Upload to IPFS failed.");
+      }
+      data.push(uploadUrl[0]);
+      data.push(link);
     }
-  }
-}
+    try {
+      for (const item of selectedItems) {
+        for (const args of item.nftContract.adOffers[0].adParameters) {
+          if (args.id !== "xSpaceId" && args.id !== "xCreatorHandle") {
+            selectedOfferIdItems.push(item.nftContract.adOffers[0].id);
+            selectedTokenIdItems.push(item.tokenId);
+            adParametersItems.push(args.id);
+          }
+        }
+      }
 
-
-const argsAdSubmited = {
-  offerId: selectedOfferIdItems,
-  tokenId: selectedTokenIdItems,
-  adParameters: adParametersItems,
-  data: data,
-};
-await submitAd({ args: Object.values(argsAdSubmited) });
-}catch(err){
-  console.log(err);
-  throw new Error("Upload to Blockchain failed.");
-}
-  
-
+      const argsAdSubmited = {
+        offerId: selectedOfferIdItems,
+        tokenId: selectedTokenIdItems,
+        adParameters: adParametersItems,
+        data: data,
+      };
+      await submitAd({ args: Object.values(argsAdSubmited) });
+    } catch (err) {
+      console.log(err);
+      throw new Error("Upload to Blockchain failed.");
+    }
   };
   const handleSelectionTokens = () => {
     setIsSelectionActive(!isSelectionActive);
@@ -276,16 +270,18 @@ await submitAd({ args: Object.values(argsAdSubmited) });
       {data.length > 0 ? (
         <div className="flex flex-col justify-center items-center">
           {" "}
-          <button
-            className={`${
-              isSelectionActive
-                ? "text-accent shadow-white-volume ici hover:bg-accent-dark mb-4 hover:shadow-accent-volume  rounded-full bg-white py-3 px-8 text-center font-semibold transition-all hover:text-white"
-                : "bg-accent shadow-accent-volume hover:bg-accent-dark mb-4 rounded-full py-3 px-8 text-center font-semibold text-white transition-all"
-            }`}
-            onClick={handleSelectionTokens}
-          >
-            {showSliderForm || isSelectionActive ? "Close selection" : "Submit ad for multiple tokens"}
-          </button>
+          {isOwner && (
+            <button
+              className={`${
+                isSelectionActive
+                  ? "text-accent shadow-white-volume ici hover:bg-accent-dark mb-4 hover:shadow-accent-volume  rounded-full bg-white py-3 px-8 text-center font-semibold transition-all hover:text-white"
+                  : "bg-accent shadow-accent-volume hover:bg-accent-dark mb-4 rounded-full py-3 px-8 text-center font-semibold text-white transition-all"
+              }`}
+              onClick={handleSelectionTokens}
+            >
+              {showSliderForm || isSelectionActive ? "Close selection" : "Submit ad for multiple tokens"}
+            </button>
+          )}
           {!showSliderForm && (
             <div className={` grid grid-cols-1 gap-[1.875rem] md:grid-cols-2 lg:grid-cols-4`}>
               {data?.map((item, index) => {
@@ -333,10 +329,7 @@ await submitAd({ args: Object.values(argsAdSubmited) });
               Continue
             </button>
 
-            <button
-              className={` !rounded-full !min-w-[100px] !py-3 !px-8 !text-center !font-semibold !text-white !transition-all !bg-red !cursor-pointer `}
-              onClick={handleSelectionTokens}
-            >
+            <button className={` !rounded-full !min-w-[100px] !py-3 !px-8 !text-center !font-semibold !text-white !transition-all !bg-red !cursor-pointer `} onClick={handleSelectionTokens}>
               Close
             </button>
           </div>

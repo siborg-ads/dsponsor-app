@@ -10,7 +10,7 @@ import adminInstance from "../../utils/sdkProvider";
 
 
 
-const OfferItem = ({ item, url, isToken, isSelectionActive }) => {
+const OfferItem = ({ item, url, isToken, isSelectionActive, isOwner }) => {
   const [price, setPrice] = useState(null);
   const [currencyToken, setCurrencyToken] = useState(null);
   const [itemData, setItemData] = useState({});
@@ -73,7 +73,7 @@ const OfferItem = ({ item, url, isToken, isSelectionActive }) => {
   return (
     <>
       <article className="relative">
-        {item.isPending && <div className="absolute -top-2 -right-2 rounded-2xl bg-red rounded-2xl dark:text-white  px-2">!</div>}
+        {item.isPending && isOwner && <div className="absolute -top-2 -right-2 rounded-2xl bg-red rounded-2xl dark:text-white  px-2">!</div>}
 
         <div className="dark:bg-jacarta-700 dark:border-jacarta-700 border-jacarta-100 rounded-2xl block border bg-white p-[1.1875rem] transition-shadow hover:shadow-lg text-jacarta-500">
           <figure>
