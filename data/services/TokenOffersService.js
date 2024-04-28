@@ -78,7 +78,7 @@ export const GetTokenAdOffer = async (offerId, tokenId) => {
 
   // Exécutez la requête pour obtenir tous les NFTs
   const resultat = await execute(GET_DATA, { offerId: offerId, tokenId: tokenId});
-
+console.log(resultat);
  return resultat?.data?.adOffer;
 };
 export const GetAdOffer = async (offerId) => {

@@ -80,9 +80,10 @@ const Item = () => {
   const [numSteps, setNumSteps] = useState(2);
 
   useEffect(() => {
-    if (offerId) {
+    if (offerId && tokenId) {
       const fetchAdsOffers = async () => {
         const offer = await GetTokenAdOffer(offerId, tokenId);
+        console.log(offer, "offer");
         const destructuredIPFSResult = await fetchDataFromIPFS(offer.metadataURL);
 
         const combinedData = {
@@ -268,7 +269,7 @@ const Item = () => {
       setAllowanceTrue(true);
     }
   };
-console.log(adStatut, "adStatut");
+
   const handleApprove = async () => {
     try {
       console.log("ici");
