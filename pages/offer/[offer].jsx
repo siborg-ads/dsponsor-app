@@ -45,7 +45,7 @@ const Offer = () => {
     if (offerId) {
       const fetchAdsOffers = async () => {
         const offer = await GetAdOffer(offerId);
-       
+       console.log(offer, "ici");
         const destructuredIPFSResult = await fetchDataFromIPFS(offer.metadataURL);
         const combinedData = {
           ...offer,
@@ -117,7 +117,7 @@ const Offer = () => {
 
       fetchAdsOffers();
     }
-  }, [offerId, router, successFullRefuseModal]);
+  }, [offerId, router, successFullRefuseModal, userAddress]);
 
   useEffect(() => {
     if (offerData?.nftContract?.royaltyBps) setRoyalties(offerData?.nftContract?.royaltyBps / 100);
@@ -140,7 +140,7 @@ const Offer = () => {
     setTokenData(tokenData);
     console.log("URL reçue du formulaire enfant:", newUrl);
   };
-
+console.log(isOwner, "isOwner");
   const [itemActive, setItemActive] = useState(1);
   const tabItem = [
     {

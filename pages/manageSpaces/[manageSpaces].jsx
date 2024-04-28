@@ -30,7 +30,7 @@ const ManageSpaces = () => {
       const fetchAdsOffers = async () => {
         const offers = await GetAllAdOffersFromUser(userAddress);
         const ownedAdProposals = await GetAllTokenbyOfferForAUser(userAddress);
-        
+        console.log(ownedAdProposals);
         const mappedOffers = [];
         for (const element of offers) {
           let isPending = false;

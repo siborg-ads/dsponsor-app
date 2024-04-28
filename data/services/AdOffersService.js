@@ -63,25 +63,19 @@ export const GetAllAdOffersFromUser = async (userAddress) => {
         metadataURL
         id # offerId
         creationTimestamp # data (unix time)
-        adParameters {
-          id # adParameter value, ex: imageURL-320x50 or linkURL
-          base # ex: imageURL or linkURL
-          variants # ex: ["320x50"]
+        adParameters(where: { enable: true }) {
+          enable
+          adParameter {
+            id # adParameter value, ex: imageURL-320x50 or linkURL
+            base # ex: imageURL or linkURL
+            variants # ex: ["320x50"]
+          }
         }
 
         nftContract {
           id # DSponsorNFT smart contract address
-          prices {
-            currency # ERC20 smart contract
-            amount # wei, mind decimals() function to transform in human readable value !
-            enabled
-          }
           tokens(
-            # you can paginate with first /skip
-            first: 1000
-            # skip: 5
-
-            # ... or with this type or filtering
+            # you can paginate with this type or filtering
             # where: { and: [{ tokenId_lte: "200" }, { tokenId_lte: "100" }]
 
             orderBy: tokenId
@@ -130,6 +124,6 @@ export const GetAllAdOffersFromUser = async (userAddress) => {
 
   // Exécutez la requête pour obtenir tous les NFTs
   const resultat = await execute(GET_DATA, { userAddress: userAddress });
-
+console.log(resultat);
   return resultat?.data?.adOffers;
 };

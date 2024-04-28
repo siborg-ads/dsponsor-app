@@ -83,7 +83,7 @@ const Item = () => {
     if (offerId && tokenId) {
       const fetchAdsOffers = async () => {
         const offer = await GetTokenAdOffer(offerId, tokenId);
-        console.log(offer, "offer");
+    
         const destructuredIPFSResult = await fetchDataFromIPFS(offer.metadataURL);
 
         const combinedData = {
@@ -154,7 +154,7 @@ const Item = () => {
     }
 
     setTokenIdString(tokenId?.toString());
-  }, [offerId, router, address, tokenId, successFullUpload]);
+  }, [offerId, address, tokenId, successFullUpload]);
 
   useEffect(() => {
 
@@ -172,7 +172,6 @@ const Item = () => {
         submitAdFormated.params = params;
         submitAdFormated.tokenId = tokenIdArray;
         submitAdFormated.offerId = offerIdArray;
-        console.log(submitAdFormated, "submitAdFormated");
         setSubmitAdFormated(submitAdFormated);
       } catch (e) {
          console.error("Error: Ad parameters not found for offer");
