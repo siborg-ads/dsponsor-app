@@ -44,7 +44,7 @@ export const useTransaction = () => {
     }
   };
 
-  handleCreateListing = async (
+  const handleCreateListing = async (
     createListing,
     assetContract,
     tokenId,

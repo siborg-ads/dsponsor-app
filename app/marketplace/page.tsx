@@ -3,63 +3,59 @@
 import React, { useEffect, useState, useCallback } from "react";
 import MarketplaceHeroSection from "../../components/marketplace/marketplace-hero/marketplace-hero";
 import MarketplaceListingSection from "../../components/marketplace/marketplace-listing-section/marketplace-listing-section";
-import marketplaceContractAbi from "./marketplace-contact-abi.json";
-import { getContract, Chain } from "thirdweb";
-import { client } from "../../data/services/client";
-import { fetchTotalListings, fetchListingsForMarketplace } from "./services";
-import { marketplaceConfig } from "./marketplace.config";
+import { fetchRandomListingsForMarketplace } from "./services";
+import { defaultChainId } from "./marketplace.config";
+import { fetchAllMpListings } from "./services/marketplace-item-services";
 
 export default function Marketplace() {
-  //TODO : (clean code) define it in the config file
-  const chainId = 11155111;
+  const chainId = defaultChainId;
   const [listings, setListings] = useState<{
-    listingsForBids: object[];
-    listingsForBuyNow: object[];
+    listingsForBids: any[];
+    listingsForBuyNow: any[];
   }>({
     listingsForBids: [],
     listingsForBuyNow: [],
   });
 
-  const getMarketplaceListings = useCallback(
-    async (nftContractAddress) => {
-      const contract = getContract({
-        client,
-        chain: marketplaceConfig[chainId].chain,
-        address: nftContractAddress,
-        abi: marketplaceContractAbi as any,
-      });
 
-      const totalListings = await fetchTotalListings(contract);
+  const getMpListings = async () => {
+    try {
+      const allMpListings = await fetchAllMpListings();      
       const { listingsForBids, listingsForBuyNow } =
-        await fetchListingsForMarketplace(contract, totalListings, chainId);
+        await fetchRandomListingsForMarketplace(allMpListings, chainId);
+      
+        setListings({
+          listingsForBids,
+          listingsForBuyNow,
+        });
 
-      setListings({
-        listingsForBids,
-        listingsForBuyNow,
-      });
-    },
-    [chainId]
-  );
+    } catch (error) {
+      console.error("Error fetching marketplace listings", error);  
+    }
+    }
+
 
   useEffect(() => { 
-    getMarketplaceListings(
-      marketplaceConfig[chainId]?.dsponsor_marketplace_contract_address
-    );
-  }, [chainId, getMarketplaceListings]);
+    getMpListings();
+  }, []);
 
   return (
     <section style={{ padding: "8rem 0" }}>
       <MarketplaceHeroSection />
-      <MarketplaceListingSection
-        listings={listings.listingsForBids}
-        title={"Hot Bids"}
-        type={"bids"}
-      />
-      <MarketplaceListingSection
-        listings={listings.listingsForBuyNow}
-        title={"Buy Now"}
-        type={"buy-now"}
-      />
+      {listings.listingsForBids.length > 0 && (
+        <MarketplaceListingSection
+          listings={listings.listingsForBids}
+          title={"Hot Bids"}
+          type={"bids"}
+        />
+      )}
+      {listings.listingsForBuyNow.length > 0 && (
+        <MarketplaceListingSection
+          listings={listings.listingsForBuyNow}
+          title={"Buy Now"}
+          type={"buy-now"}
+        />
+      )}
     </section>
   );
 }

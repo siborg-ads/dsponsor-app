@@ -1,63 +1,49 @@
 import React, { useState, useEffect, useMemo } from "react";
-import {
-  fetchOffer,
-  parseOfferMetadata,
-} from "../../../app/marketplace/marketplace-items-fetch";
+import { parseOfferMetadata } from "../../../app/marketplace/marketplace-items-fetch";
 import MarketplaceItemCard from "../marketplace-item-card/marketplace-item-card";
 import Spinner from "../../spinner/Spinner";
-import { useChainId } from "@thirdweb-dev/react";
 
 const MarketplaceListingSection = ({ listings, title, type }) => {
-  // TODO : (clean code) define it in config fil
-  const chainId = 11155111;
   const [loading, setLoading] = useState(true);
   const [listingsWithOfferInfo, setListingsWithOfferInfo] = useState([]);
 
-  useEffect(() => {
-    const getListingsOfferInfo = async () => {
-      const assetContractsToFetch = listings.map(
-        (listing) => listing.assetContract
-      );
-      const tokenIdsToFetch = listings.map((listing) =>
-        String(listing.tokenId)
-      );
+  const getListingOffer = async () => {
+    try {
+      const formattedListings = await Promise.all(
+        listings.map(async (listing, index) => {
+          try {
+            const tokenData = listing.token.mint.tokenData;
+            const offerMetadata =
+              listing.token.nftContract.adOffers[0].metadataURL;
 
-      try {
-        const { tokenDatas, offerMetadatas } = await fetchOffer(
-          assetContractsToFetch,
-          tokenIdsToFetch,
-          chainId
-        );
-        const formattedListings = await Promise.all(
-          listings.map(async (listing, index) => {
-            try {
-              const tokenData = tokenDatas[index];
-              const offerMetadata = offerMetadatas[index];
-              const parsedOfferInformation = await parseOfferMetadata(
-                offerMetadata,
-                tokenData
-              );
-              return { ...listing, offer: parsedOfferInformation };
-            } catch (error) {
-              console.log("Error fetching item info:", error);
+            if (!offerMetadata) {
+              console.log("no offer metadata found for listing : ", listing);
               return null;
             }
-          })
-        );
+            const parsedOfferInformation = await parseOfferMetadata(
+              offerMetadata,
+              tokenData
+            );
+            return { ...listing, offer: parsedOfferInformation };
+          } catch (error) {
+            console.log("Error fetching item info:", error);
+            return null;
+          }
+        })
+      );
+      const filteredListings = formattedListings.filter(
+        (listing) => listing !== null
+      );
+      setListingsWithOfferInfo(filteredListings);
+      setLoading(false);
+    } catch (error) {
+      console.log("Error fetching item info:", error);
+    }
+  };
 
-        const filteredListings = formattedListings.filter(
-          (listing) => listing !== null
-        );
-        setListingsWithOfferInfo(filteredListings);
-        setLoading(false);
-      } catch (error) {
-        console.log("Error fetching item info:", error);
-        setLoading(false);
-      }
-    };
-
-    getListingsOfferInfo();
-  }, [listings, chainId]);
+  useEffect(() => {
+    getListingOffer();
+  }, []);
 
   // Memoize the rendered items to prevent unnecessary re-renders
   const renderedItems = useMemo(() => {
@@ -67,8 +53,8 @@ const MarketplaceListingSection = ({ listings, title, type }) => {
         title={listing.offer?.name}
         image={listing.offer?.image}
         price={listing.price}
-        assetContract={listing.assetContract}
-        tokenId={listing.tokenId}
+        assetContract={listing.token.nftContract.id}
+        tokenId={listing.token.tokenId}
         symbol={listing.symbol}
         type={type}
       />
