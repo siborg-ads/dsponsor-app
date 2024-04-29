@@ -16,6 +16,9 @@ import adminInstance from "../../utils/sdkProvider";
 import OfferSkeleton from "../../components/skeleton/offerSkeleton";
 import { GetAdOffer } from "../../data/services/TokenOffersService";
 import { contractABI } from "../../data/services/contract";
+import { user } from "@nextui-org/react";
+import Form from "../../components/collections-wide/sidebar/collections/Form";
+
 
 const Offer = () => {
   const router = useRouter();
@@ -32,66 +35,76 @@ const Offer = () => {
   const [currency, setCurrency] = useState(null);
   const [price, setPrice] = useState(null);
   const [imageModal, setImageModal] = useState(false);
+  const [isOwner, setIsOwner] = useState(false);
   const { contract: DsponsorAdminContract } = useContract("0xE442802706F3603d58F34418Eac50C78C7B4E8b3", contractABI);
   const { mutateAsync, isLoadingreviewAdProposal } = useContractWrite(DsponsorAdminContract, "reviewAdProposals");
-
+  const [urlFromChild, setUrlFromChild] = useState("");
   const [successFullRefuseModal, setSuccessFullRefuseModal] = useState(false);
+  const [tokenData, setTokenData] = useState("");
+  const [isWordAlreadyTaken, setIsWordAlreadyTaken] = useState(false);
 
   useEffect(() => {
     if (offerId) {
       const fetchAdsOffers = async () => {
         const offer = await GetAdOffer(offerId);
-
-        const groupedPendingAds = {};
-        const groupedValidatedAds = {};
-        const groupedRefusedAds = {};
-
-        function processProposal(token, element, groupedAds, statusKey, statusId) {
-          if (element[statusKey] !== null) {
-            if (!groupedAds[token.tokenId]) {
-              groupedAds[token.tokenId] = {
-                tokenId: token.tokenId,
-                offerId: offerId,
-                proposalIds: [],
-                adParametersList: {},
-                adParametersKeys: [],
-              };
-              if (statusKey === "rejectedProposal") {
-                groupedAds[token.tokenId].reason = element[statusKey].rejectReason;
-              }
-            }
-            const adParamBase = element.adParameter.base;
-
-            groupedAds[token.tokenId].proposalIds.push(element[statusKey].id);
-
-            if (!groupedAds[token.tokenId].adParametersKeys.includes(adParamBase)) {
-              groupedAds[token.tokenId].adParametersKeys.push(adParamBase);
-            }
-
-            groupedAds[token.tokenId].adParametersList[adParamBase] = element[statusKey].data;
-          }
-        }
-
-        for (const token of offer.nftContract.tokens) {
-          if (token.mint !== null) {
-            for (const element of token.currentProposals) {
-              processProposal(token, element, groupedPendingAds, "pendingProposal");
-              processProposal(token, element, groupedValidatedAds, "acceptedProposal");
-              processProposal(token, element, groupedRefusedAds, "rejectedProposal");
-            }
-          }
-        }
-
-        const formattedPendingAds = Object.values(groupedPendingAds);
-        const formattedValidatedAds = Object.values(groupedValidatedAds);
-        const formattedRefusedAds = Object.values(groupedRefusedAds);
-        console.log(formattedRefusedAds, "formattedValidatedAds");
-
         const destructuredIPFSResult = await fetchDataFromIPFS(offer.metadataURL);
         const combinedData = {
           ...offer,
           ...destructuredIPFSResult,
         };
+        console.log(combinedData, "ici");
+        setOfferData(combinedData);
+        if (userAddress?.toLowerCase() === offer.initialCreator) {
+          setIsOwner(true);
+          const groupedPendingAds = {};
+          const groupedValidatedAds = {};
+          const groupedRefusedAds = {};
+
+          function processProposal(token, element, groupedAds, statusKey, statusId) {
+            if (element[statusKey] !== null) {
+              if (!groupedAds[token.tokenId]) {
+                groupedAds[token.tokenId] = {
+                  tokenId: token.tokenId,
+                  offerId: offerId,
+                  proposalIds: [],
+                  adParametersList: {},
+                  adParametersKeys: [],
+                };
+                if (statusKey === "rejectedProposal") {
+                  groupedAds[token.tokenId].reason = element[statusKey].rejectReason;
+                }
+              }
+              const adParamBase = element.adParameter.id;
+
+              groupedAds[token.tokenId].proposalIds.push(element[statusKey].id);
+
+              if (!groupedAds[token.tokenId].adParametersKeys.includes(adParamBase)) {
+                groupedAds[token.tokenId].adParametersKeys.push(adParamBase);
+              }
+
+              groupedAds[token.tokenId].adParametersList[adParamBase] = element[statusKey].data;
+            }
+          }
+
+          for (const token of offer.nftContract.tokens) {
+            if (token.mint !== null) {
+              for (const element of token.currentProposals) {
+                processProposal(token, element, groupedPendingAds, "pendingProposal");
+                processProposal(token, element, groupedValidatedAds, "acceptedProposal");
+                processProposal(token, element, groupedRefusedAds, "rejectedProposal");
+              }
+            }
+          }
+
+          const formattedPendingAds = Object.values(groupedPendingAds);
+          const formattedValidatedAds = Object.values(groupedValidatedAds);
+          const formattedRefusedAds = Object.values(groupedRefusedAds);
+
+          setValidatedProposalData(formattedValidatedAds);
+          setRefusedProposalData(formattedRefusedAds);
+
+          setPendingProposalData(formattedPendingAds);
+        }
 
         try {
           const currencyToken = adminInstance.chain.getCurrencyByAddress(offer?.nftContract.prices[0].currency);
@@ -102,16 +115,12 @@ const Offer = () => {
         } catch (e) {
           console.error("Error: Currency not found for address");
         }
-        setOfferData(combinedData);
-        setValidatedProposalData(formattedValidatedAds);
-        setRefusedProposalData(formattedRefusedAds);
-
-        setPendingProposalData(formattedPendingAds);
       };
 
       fetchAdsOffers();
     }
-  }, [offerId, router, successFullRefuseModal]);
+  }, [offerId, router, successFullRefuseModal, userAddress]);
+
   useEffect(() => {
     if (offerData?.nftContract?.royaltyBps) setRoyalties(offerData?.nftContract?.royaltyBps / 100);
   }, [offerData]);
@@ -127,6 +136,17 @@ const Offer = () => {
       setSuccessFullRefuseModal(false);
       throw error;
     }
+  };
+  const handleUrlChange = (newUrl, tokenData) => {
+    setIsWordAlreadyTaken(false);
+    setUrlFromChild(newUrl);
+    setTokenData(tokenData);
+   for(const token of offerData.nftContract.tokens){
+    if(token.mint === null)return;
+      if(tokenData.toLowerCase() === token.mint.tokenData.toLowerCase()){
+        setIsWordAlreadyTaken(true);
+      }
+   }
   };
 
   const [itemActive, setItemActive] = useState(1);
@@ -202,7 +222,7 @@ const Offer = () => {
               <div className="mb-3 flex">
                 {/* <!-- Collection --> */}
                 <div className="flex items-center">
-                  <Link href="#" className="text-accent mr-2 text-sm font-bold">
+                  <Link href={`/manageSpaces/${offerData?.initialCreator}`} className="text-accent mr-2 text-sm font-bold">
                     {offerData?.initialCreator}
                   </Link>
                   <span className="dark:border-jacarta-600 bg-green inline-flex h-6 w-6 items-center justify-center rounded-full border-2 border-white" data-tippy-content="Verified Collection">
@@ -241,65 +261,106 @@ const Offer = () => {
 
               <p className="dark:text-jacarta-300 mb-10">{description}</p>
 
-              <div className="dark:bg-jacarta-700 dark:border-jacarta-600 border-jacarta-100 rounded-2lg border bg-white p-8">
-                <div className=" sm:flex sm:flex-wrap">
-                  <span className="dark:text-jacarta-300 text-jacarta-400 text-sm">
-                    This page allows you to oversee submitted ads, offering tools to either approve or reject them. Approve ads to make them live or reject those that don&apos;t meet your standards, streamlining the
-                    content that reaches your audience while maintaining quality control on your platform.{" "}
-                  </span>
+              {isOwner && (
+                <div className="dark:bg-jacarta-700 dark:border-jacarta-600 border-jacarta-100 rounded-2lg border bg-white p-8">
+                  <div className=" sm:flex sm:flex-wrap">
+                    <span className="dark:text-jacarta-300 text-jacarta-400 text-sm">
+                      This page allows you to oversee submitted ads, offering tools to either approve or reject them. Approve ads to make them live or reject those that don&apos;t meet your standards, streamlining the
+                      content that reaches your audience while maintaining quality control on your platform.{" "}
+                    </span>
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
           </div>
         </div>
       </section>
-      {/* {userAddress === collaborators[0] && ( */}
-      {userAddress && (
-        <div className="container">
-          {/* <!-- Tabs Nav --> */}
-          <Tabs className="tabs">
-            <TabList className="nav nav-tabs scrollbar-custom mb-12 flex items-center justify-start overflow-x-auto overflow-y-hidden border-b border-jacarta-100 pb-px dark:border-jacarta-600 md:justify-center">
-              {tabItem.map(({ id, text, icon }) => {
-                return (
-                  <Tab className="nav-item" role="presentation" key={id} onClick={() => setItemActive(id)}>
-                    <button
-                      className={
-                        itemActive === id
-                          ? "nav-link hover:text-jacarta-700 text-jacarta-400 relative flex items-center whitespace-nowrap py-3 px-6 dark:hover:text-white active"
-                          : "nav-link hover:text-jacarta-700 text-jacarta-400 relative flex items-center whitespace-nowrap py-3 px-6 dark:hover:text-white"
-                      }
-                    >
-                      <svg className="icon mr-1 h-5 w-5 fill-current">
-                        <use xlinkHref={`/icons.svg#icon-${icon}`}></use>
-                      </svg>
-                      <span className="font-display text-base font-medium">{text}</span>
-                    </button>
-                  </Tab>
-                );
-              })}
-            </TabList>
+      {!offerData.nftContract.allowList && (
+        <div className="container flex flex-col justify-center mb-6">
+          <div className="dark:bg-jacarta-700 dark:border-jacarta-600 border-jacarta-100 rounded-2lg border bg-white p-8">
+            <div className=" sm:flex sm:flex-wrap">
+              <span className="dark:text-jacarta-300 text-jacarta-400 text-sm">
+                You can check if a word is available for purchase by using the search bar. Simply type the word into the search bar and press enter to see if it is available. This feature allows you to quickly find out
+                if the word you are interested in is free for acquisition.{" "}
+              </span>
+            </div>
+          </div>
+          <div className="flex justify-center mt-6">
+            <Form offerId={offerId} onUrlChange={handleUrlChange} />
+          </div>
+          {urlFromChild && (
+            <div className="grid grid-cols-1 gap-[1.875rem] md:grid-cols-2 lg:grid-cols-4">
+              <article className="relative">
+                <div className="dark:bg-jacarta-700 dark:border-jacarta-700 border-jacarta-100 rounded-2xl block border bg-white p-[1.1875rem] transition-shadow hover:shadow-lg text-jacarta-500">
+                  {isWordAlreadyTaken ? <span className="text-red  ">This word is already taken ❌</span> : <span className="text-green ">This word is available 🎉</span> }
+                  <figure className="mt-2">
+                    <Link href={urlFromChild}>{image && <Image src={image} alt="logo" height={230} width={230} className="rounded-[0.625rem] w-full lg:h-[230px] object-contain" loading="lazy" />}</Link>
+                  </figure>
+                  <div className="mt-4 flex items-center justify-between">
+                    <Link href={urlFromChild} className="overflow-hidden text-ellipsis whitespace-nowrap max-w-[120px]">
+                      <span className="font-display max-w-[150px] text-jacarta-700 hover:text-accent text-base dark:text-white ">{name}</span>
+                    </Link>
 
-            <TabPanel>
-              <div className="container mb-12 relative p-0">
-                {/* <!-- Filter --> */}
-                <Review_carousel handleSubmit={handleSubmit} pendingProposalData={pendingProposalData} successFullRefuseModal={successFullRefuseModal} />
-              </div>
-            </TabPanel>
-            <TabPanel>
-              <div className="container mb-12 relative p-0">
-                {/* <!-- Filter --> */}
-                <Validated_refused_items statut={true} proposalData={validatedProposalData} />
-              </div>
-            </TabPanel>
-            <TabPanel>
-              <div className="container mb-12 relative p-0">
-                {/* <!-- Filter --> */}
-                <Validated_refused_items statut={false} proposalData={refusedProposalData} />
-              </div>
-            </TabPanel>
-          </Tabs>
+                    <div className="dark:border-jacarta-600 border-jacarta-100 flex items-center whitespace-nowrap rounded-md border py-1 px-2">
+                      <span className="text-green text-sm font-medium tracking-tight"> {tokenData}</span>
+                    </div>
+                  </div>
+                </div>
+              </article>
+            </div>
+          )}
         </div>
       )}
+
+      <div className="container">
+        {/* <!-- Tabs Nav --> */}
+        <Tabs className="tabs">
+          <TabList className="nav nav-tabs scrollbar-custom mb-12 flex items-center justify-start overflow-x-auto overflow-y-hidden border-b border-jacarta-100 pb-px dark:border-jacarta-600 md:justify-center">
+            {tabItem.map(({ id, text, icon }) => {
+              if (!isOwner && text === "Pending") return;
+              return (
+                <Tab className="nav-item" role="presentation" key={id} onClick={() => setItemActive(id)}>
+                  <button
+                    className={
+                      itemActive === id
+                        ? "nav-link hover:text-jacarta-700 text-jacarta-400 relative flex items-center whitespace-nowrap py-3 px-6 dark:hover:text-white active"
+                        : "nav-link hover:text-jacarta-700 text-jacarta-400 relative flex items-center whitespace-nowrap py-3 px-6 dark:hover:text-white"
+                    }
+                  >
+                    <svg className="icon mr-1 h-5 w-5 fill-current">
+                      <use xlinkHref={`/icons.svg#icon-${icon}`}></use>
+                    </svg>
+                    <span className="font-display text-base font-medium">{text}</span>
+                  </button>
+                </Tab>
+              );
+            })}
+          </TabList>
+
+          {isOwner && (
+            <div>
+              <TabPanel>
+                <div className="container mb-12 relative p-0">
+                  {/* <!-- Filter --> */}
+                  <Review_carousel handleSubmit={handleSubmit} pendingProposalData={pendingProposalData} successFullRefuseModal={successFullRefuseModal} />
+                </div>
+              </TabPanel>
+            </div>
+          )}
+          <TabPanel>
+            <div className="container mb-12 relative p-0">
+              {/* <!-- Filter --> */}
+              <Validated_refused_items statut={true} proposalData={validatedProposalData} />
+            </div>
+          </TabPanel>
+          <TabPanel>
+            <div className="container mb-12 relative p-0">
+              {/* <!-- Filter --> */}
+              <Validated_refused_items statut={false} proposalData={refusedProposalData} />
+            </div>
+          </TabPanel>
+        </Tabs>
+      </div>
 
       {/* <ItemsTabs /> */}
       {/* <div className="container mb-12">

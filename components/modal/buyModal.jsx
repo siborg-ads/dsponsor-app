@@ -9,15 +9,33 @@ import { useState } from "react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-const BuyModal = ({formatTokenId,initialCreator, finalPrice,successFullUpload, userBalance, successFullBuyModal, price,tokenId, selectedCurrency, selectedRoyalties, name, image, handleSubmit, handleBuyModal }) => {
+const BuyModal = ({
+  formatTokenId,
+  allowanceTrue,
+  handleApprove,
+  initialCreator,
+  finalPrice,
+  successFullUpload,
+  userBalance,
+  successFullBuyModal,
+  price,
+  tokenId,
+  selectedCurrency,
+  selectedRoyalties,
+  name,
+  image,
+  handleSubmit,
+  handleBuyModal,
+}) => {
   const { buyModal } = useSelector((state) => state.counter);
   const dispatch = useDispatch();
   const [validate, setValidate] = useState(false);
 
   const handleTermService = (e) => {
-    console.log(validate);
+   
     setValidate(e.target.checked);
   };
+
   return (
     <div>
       {/* <!-- Buy Now Modal --> */}
@@ -134,7 +152,22 @@ const BuyModal = ({formatTokenId,initialCreator, finalPrice,successFullUpload, u
 
           <div className="modal-footer">
             <div className="flex items-center justify-center space-x-4">
-              {!successFullUpload ? (
+              {allowanceTrue && !successFullUpload ? (
+                <Web3Button
+                  contractAddress="0xE442802706F3603d58F34418Eac50C78C7B4E8b3"
+                  action={() => {
+                    toast.promise(handleApprove, {
+                      pending: "Waiting for approval",
+                      success: "Approval confirmed 👌",
+                      error: "Approval rejected 🤯",
+                    });
+                  }}
+                  className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate || !userBalance ? "btn-disabled" : "!bg-accent !cursor-pointer"} `}
+                  disabled={!validate}
+                >
+                  Approve
+                </Web3Button>
+              ) : !successFullUpload ? (
                 <Web3Button
                   contractAddress="0xE442802706F3603d58F34418Eac50C78C7B4E8b3"
                   action={() => {
@@ -154,6 +187,27 @@ const BuyModal = ({formatTokenId,initialCreator, finalPrice,successFullUpload, u
                   <button className="!rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all !bg-accent !cursor-pointer">{successFullBuyModal.buttonTitle}</button>
                 </Link>
               )}
+
+              {/* {!successFullUpload ? (
+                <Web3Button
+                  contractAddress="0xE442802706F3603d58F34418Eac50C78C7B4E8b3"
+                  action={() => {
+                    toast.promise(handleSubmit, {
+                      pending: "Waiting transaction confirmation",
+                      success: "Transaction confirmed 👌",
+                      error: "Transaction rejected 🤯",
+                    });
+                  }}
+                  className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate || !userBalance ? "btn-disabled" : "!bg-accent !cursor-pointer"} `}
+                  disabled={!validate}
+                >
+                  Confirm checkout
+                </Web3Button>
+              ) : (
+                <Link href={successFullBuyModal.hrefButton}>
+                  <button className="!rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all !bg-accent !cursor-pointer">{successFullBuyModal.buttonTitle}</button>
+                </Link>
+              )} */}
             </div>
           </div>
         </div>

@@ -6,7 +6,7 @@ export const GetAllAdOffers = async () => {
   // Requête pour récupérer tous les NewDSponsorNFTs
   const GET_DATA = gql`
     query Homepage_LastOffers {
-      adOffers(orderBy: creationTimestamp, orderDirection: desc, first: 5, where: { and: [{ disable: false }] }) {
+      adOffers(orderBy: creationTimestamp, orderDirection: desc, first: 20, where: { and: [{ disable: false }] }) {
         id # offerId
         # --> Fetch and parse https://github.com/dcast-media/dips/blob/dip-0002/antho31/dip-0002.md#example-schema-json
         # to get creator & offer info  (you may have token_metadata info too)
@@ -63,10 +63,13 @@ export const GetAllAdOffersFromUser = async (userAddress) => {
         metadataURL
         id # offerId
         creationTimestamp # data (unix time)
-        adParameters {
-          id # adParameter value, ex: imageURL-320x50 or linkURL
-          base # ex: imageURL or linkURL
-          variants # ex: ["320x50"]
+        adParameters(where: { enable: true }) {
+          enable
+          adParameter {
+            id # adParameter value, ex: imageURL-320x50 or linkURL
+            base # ex: imageURL or linkURL
+            variants # ex: ["320x50"]
+          }
         }
 
         nftContract {
@@ -77,11 +80,7 @@ export const GetAllAdOffersFromUser = async (userAddress) => {
             enabled
           }
           tokens(
-            # you can paginate with first /skip
-            first: 1000
-            # skip: 5
-
-            # ... or with this type or filtering
+            # you can paginate with this type or filtering
             # where: { and: [{ tokenId_lte: "200" }, { tokenId_lte: "100" }]
 
             orderBy: tokenId
@@ -130,6 +129,6 @@ export const GetAllAdOffersFromUser = async (userAddress) => {
 
   // Exécutez la requête pour obtenir tous les NFTs
   const resultat = await execute(GET_DATA, { userAddress: userAddress });
-
+console.log(resultat);
   return resultat?.data?.adOffers;
 };
