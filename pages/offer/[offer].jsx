@@ -197,7 +197,7 @@ const Offer = () => {
             {/* <!-- Image --> */}
             <figure className="mb-8 md:w-2/5 md:flex-shrink-0 md:flex-grow-0 md:basis-auto lg:w-1/2 w-full flex justify-center">
               <button className=" w-full" onClick={() => setImageModal(true)} style={{ height: "450px" }}>
-                <Image width={585} height={726} src={image} alt="image" className="rounded-2xl cursor-pointer h-full object-contain w-full" />
+                {image && <Image width={585} height={726} src={image} alt="image" className="rounded-2xl cursor-pointer h-full object-contain w-full" />}
               </button>
 
               {/* <!-- Modal --> */}
