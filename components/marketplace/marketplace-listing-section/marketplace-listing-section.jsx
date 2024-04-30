@@ -1,39 +1,23 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { parseOfferMetadata } from "../../../app/marketplace/marketplace-items-fetch";
+import { fetchListingOffer } from "../../../app/marketplace/services";
 import MarketplaceItemCard from "../marketplace-item-card/marketplace-item-card";
 import Spinner from "../../spinner/Spinner";
 
 const MarketplaceListingSection = ({ listings, title, type }) => {
   const [loading, setLoading] = useState(true);
   const [listingsWithOfferInfo, setListingsWithOfferInfo] = useState([]);
+  const [listingOfferInfoInvalid, setListingOfferInfoInvalid] = useState(false);
 
   const getListingOffer = async () => {
     try {
       const formattedListings = await Promise.all(
-        listings.map(async (listing, index) => {
-          try {
-            const tokenData = listing.token.mint.tokenData;
-            const offerMetadata =
-              listing.token.nftContract.adOffers[0].metadataURL;
-
-            if (!offerMetadata) {
-              console.log("no offer metadata found for listing : ", listing);
-              return null;
-            }
-            const parsedOfferInformation = await parseOfferMetadata(
-              offerMetadata,
-              tokenData
-            );
-            return { ...listing, offer: parsedOfferInformation };
-          } catch (error) {
-            console.log("Error fetching item info:", error);
-            return null;
-          }
-        })
+        listings.map((listing, index) => fetchListingOffer(listing))
       );
+      console.log("formattedListings", formattedListings);
       const filteredListings = formattedListings.filter(
         (listing) => listing !== null
       );
+
       setListingsWithOfferInfo(filteredListings);
       setLoading(false);
     } catch (error) {

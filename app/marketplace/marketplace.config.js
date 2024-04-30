@@ -3,6 +3,7 @@ import { getContract } from "thirdweb";
 import marketplaceContractAbi from "../marketplace/marketplace-contact-abi.json";
 import { client } from "../../data/services/client";
 import erc20ContractAbi from "../marketplace/erc20-contract-abi.json";
+import { ApolloClient, InMemoryCache } from "@apollo/client";
 
 export const marketplaceConfig = {
   // Sepolia Testnet
@@ -36,4 +37,19 @@ export const erc20Contract = (chainId, nftCurrencyAddress) => {
   });
 };
 
+export const ERC20SymbolsAndDecimals = {
+  USDC: {
+    symbol: "USDC",
+    decimals: 6,
+  },
+  WETH: {
+    symbol: "WETH",
+    decimals: 18,
+  },
+};
 export const defaultChainId = 11155111;
+
+export const queryClient = new ApolloClient({
+  uri: marketplaceConfig[defaultChainId].marketplace_offer_gql_endpoint,
+  cache: new InMemoryCache(),
+});

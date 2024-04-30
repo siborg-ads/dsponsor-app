@@ -46,13 +46,6 @@ const hero = () => {
               >
                 Buy
               </Link>
-
-              <Link
-                href="/item/1"
-                className="text-accent shadow-white-volume ici hover:bg-accent-dark hover:shadow-accent-volume w-36 rounded-full bg-white py-3 px-8 text-center font-semibold transition-all hover:text-white"
-              >
-                Item
-              </Link>
             </div>
           </div>
         </div>
