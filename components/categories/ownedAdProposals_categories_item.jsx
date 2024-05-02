@@ -79,13 +79,13 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
     });
   };
   const handleLogoUpload = (file, index, step) => {
-    console.log(step, "step");
+
     if (file) {
       const newFiles = [...files];
       const newPreviewImages = [...previewImages];
       newFiles[index] = { file: file, index: index, offerIds: step.offerIds};
       newPreviewImages[index] = URL.createObjectURL(file);
-      console.log(newFiles, "newFiles");
+     
       setFiles(newFiles);
       setPreviewImages(newPreviewImages);
     }
@@ -363,11 +363,12 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
         <div>
           <SliderForm styles={styles} handlePreviewModal={handlePreviewModal} stepsRef={stepsRef} numSteps={numSteps}>
             <Step_1_Mint stepsRef={stepsRef} styles={styles} adParameters={adParameters} />
+            <Step_2_Mint stepsRef={stepsRef} styles={styles} setLink={setLink} link={link} />
             {imageURLSteps.map((step, index) => (
-              <Step_2_Mint
+              <Step_3_Mint
                 key={step.uniqueId}
                 stepsRef={stepsRef}
-                currentStep={index + 1}
+                currentStep={index + 2}
                 offerIds={step.offerIds}
                 id={step.uniqueId}
                 styles={styles}
@@ -376,7 +377,6 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
                 handleLogoUpload={(file) => handleLogoUpload(file, index, step)}
               />
             ))}
-            <Step_3_Mint stepsRef={stepsRef} styles={styles} setLink={setLink} link={link} />
           </SliderForm>
         </div>
       )}

@@ -9,23 +9,66 @@ const SliderForm = ({ styles, handlePreviewModal, stepsRef, numSteps, children }
   const stepFormContainerRef = useRef(null);
 
   const bulletsRef = useRef([]);
+const touchStartX = useRef(0);
+const touchCurrentX = useRef(0);
+const isDragging = useRef(false);
 
-  const animateSlider = () => {
-    if (stepContainerRef.current && stepFormContainerRef) {
-      
-      const stepWidth = stepFormContainerRef.current.offsetWidth ;
+const handleTouchStart = (e) => {
+  touchStartX.current = e.touches[0].clientX;
+  touchCurrentX.current = touchStartX.current; 
+  isDragging.current = true; 
+};
 
-      stepContainerRef.current.style.transform = `translateX(${-stepWidth * currentSlide}px)`;
+const handleTouchMove = (e) => {
+  if (!isDragging.current) return; 
+  touchCurrentX.current = e.touches[0].clientX;
+  const moveX = touchCurrentX.current - touchStartX.current;
+  const stepWidth = stepFormContainerRef.current.offsetWidth;
+  stepContainerRef.current.style.transition = "none";
+  stepContainerRef.current.style.transform = `translateX(${-stepWidth * currentSlide + moveX}px)`;
+};
+ const handleTouchEnd = () => {
+   if (!isDragging.current) return;
+   isDragging.current = false;
+   const moveX = touchCurrentX.current - touchStartX.current;
+   const threshold = 50; // Seuil pour changer de slide
+   if (Math.abs(moveX) > threshold) {
+     if (moveX > 0 && currentSlide > 0) {
+       setCurrentSlide(currentSlide - 1); // Glisser vers la droite pour revenir au slide précédent
+     } else if (moveX < 0 && currentSlide < numSteps - 1) {
+       setCurrentSlide(currentSlide + 1); // Glisser vers la gauche pour aller au slide suivant
+     }
+   }
+   // Réinitialiser la position avec une transition douce
+   stepContainerRef.current.style.transition = "transform 0.3s ease";
+   stepContainerRef.current.style.transform = `translateX(${-stepFormContainerRef.current.offsetWidth * currentSlide}px)`;
+ };
+
+ const animateSlider = () => {
+   if (stepContainerRef.current && stepFormContainerRef) {
+     const stepWidth = stepFormContainerRef.current.offsetWidth;
+     stepContainerRef.current.style.transform = `translateX(${-stepWidth * currentSlide}px)`;
+     adjustHeight(); 
+  //      const topPosition = stepFormContainerRef.current.getBoundingClientRect().top + window.pageYOffset - 150; 
+  //      window.scrollTo({ top: topPosition, behavior: "smooth" });
     }
 
-    bulletsRef.current.forEach((bullet, index) => {
-      if (bullet) {
-        bullet.classList.toggle(styles["form__bullet--active"], index === currentSlide);
-      }
-    });
-  };
+   bulletsRef.current.forEach((bullet, index) => {
+     if (bullet) {
+       bullet.classList.toggle(styles["form__bullet--active"], index === currentSlide);
+     }
+   });
+ };
 
+const adjustHeight = () => {
+  
+  const stepHeight = stepsRef.current[currentSlide].offsetHeight; 
+  stepFormContainerRef.current.style.height = `${stepHeight}px `;
+  stepContainerRef.current.style.height = `${stepHeight}px `;
+};
   useEffect(() => {
+    stepFormContainerRef.current.style.height = `auto `;
+    stepContainerRef.current.style.height = `auto `;
     const updateDimensions = () => {
       if (stepContainerRef.current && stepFormContainerRef) {
         
@@ -34,11 +77,12 @@ const SliderForm = ({ styles, handlePreviewModal, stepsRef, numSteps, children }
         stepsRef.current.forEach((step) => {
           if (step) {
             step.style.width = `${stepWidth}px`;
+            step.style.height = "100%"
           }
         });
 
         stepContainerRef.current.style.width = `${stepWidth * numSteps}px`;
-
+adjustHeight();
         animateSlider();
       }
     };
@@ -49,7 +93,7 @@ const SliderForm = ({ styles, handlePreviewModal, stepsRef, numSteps, children }
     return () => {
       window.removeEventListener("resize", updateDimensions);
     };
-  }, [currentSlide, numSteps]);
+  }, [currentSlide, numSteps, stepsRef, styles]);
 
   const handleNextClick = () => {
     if (currentSlide < numSteps - 1) {
@@ -70,7 +114,8 @@ const SliderForm = ({ styles, handlePreviewModal, stepsRef, numSteps, children }
   return (
     <div className={styles.modal__container}>
       <div className={`${styles.modal} dark:bg-jacarta-700 dark:border-jacarta-700 rounded-lg ring-accent/10 ring-2`}>
-        <div className={styles.modal__form__container} ref={stepFormContainerRef}>
+        <div className={styles.modal__form__container} ref={stepFormContainerRef} onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={handleTouchEnd}>
+          
           <form className={styles.form}>
             <div className={styles.form__step__container} ref={stepContainerRef}>
               {/* Steps */}
@@ -88,18 +133,16 @@ const SliderForm = ({ styles, handlePreviewModal, stepsRef, numSteps, children }
               ))}
             </div>
             <div className={`${styles.form__nav} bg-accent rounded-lg`}>
-              <button type="button" onClick={handlePrevClick} className={`${styles.form__nav__prev} ${currentSlide === 0 ? "disabled" : ""}`}>
+              <button type="button" onClick={handlePrevClick} className={`${styles.form__nav__prev} ${currentSlide === 0 ? "disabled opacity-25" : ""}`}>
                 Back
               </button>
-              {currentSlide === numSteps - 1 ? (
-                <button type="button" className="bg-accent cursor-pointer rounded-full py-3 px-3 text-end font-semibold text-white transition-all" onClick={handlePreviewModal}>
-                  Show preview
-                </button>
-              ) : (
-                <button type="button" onClick={handleNextClick} className={`${styles.form__nav__next} ${currentSlide === numSteps - 1 ? "disabled" : ""}`}>
-                  Next
-                </button>
-              )}
+              <button type="button" className="bg-accent cursor-pointer rounded-full min-w-[110px] !p-0 text-center font-bold text-white transition-all" onClick={handlePreviewModal}>
+                Show preview
+              </button>
+
+              <button type="button" onClick={handleNextClick} className={`${styles.form__nav__next} ${currentSlide === numSteps - 1 ? "disabled opacity-25" : ""}`}>
+                Next
+              </button>
             </div>
           </form>
         </div>

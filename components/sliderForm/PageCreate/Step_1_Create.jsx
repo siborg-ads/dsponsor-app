@@ -5,8 +5,8 @@ import Image from "next/image";
 import { FileUploader } from "react-drag-drop-files";
 import ModalHelper from "../../Helper/modalHelper";
 
-const Step_1_Create = ({ stepsRef, styles, selectedTypeParameter, setDisplayedParameter, displayedParameter, selectedNumber, setSelectedNumber, selectedIntegration, imageRatios, setImageRatios, setSelectedIntegration, setSelectedParameter }) => {
-  const [selectedIntegrationCustom, setSelectedIntegrationCustom] = useState({});
+const Step_1_Create = ({ stepsRef, styles, setDisplayedParameter, displayedParameter, selectedNumber, setSelectedNumber, selectedIntegration, imageRatios, setImageRatios, setSelectedIntegration, setSelectedParameter }) => {
+  
   const [customRatioInputShown, setCustomRatioInputShown] = useState({});
   const [validRatio, setValidRatio] = useState({});
   const [customImageRatio, setCustomImageRatio] = useState({});
