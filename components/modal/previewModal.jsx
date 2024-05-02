@@ -89,7 +89,8 @@ const PreviewModal = ({
                   <p className="font-display  mb-2 block text-jacarta-400 text-sm">
                     Link : {!errors.linkError ? <span className="dark:text-white text-base ml-2"> {link} </span> : <span className="text-red text-base ml-2"> {errors.linkError}</span>}
                   </p>
-                  {previewImage.filter((item) => item).length < imageURLSteps.length &&
+                  {imageURLSteps?.length > 0 &&
+                    previewImage.filter((item) => item).length < imageURLSteps.length &&
                     imageURLSteps.map((image, index) => (
                       <p className="font-display  mb-2 block text-jacarta-400 text-sm" key={index}>
                         Image preview : <span className="text-red text-base ml-2"> {errors.imageError}</span>
@@ -97,53 +98,68 @@ const PreviewModal = ({
                     ))}
                   <p className="font-display  mb-2 block text-jacarta-400 text-sm">
                     {startDate ? (
-                      <span>Start Date : {!errors.startDateError ? <span className="dark:text-white text-base ml-2"> {formatDate(startDate)} </span> : <span className="text-red">{errors.startDateError}</span>}</span>
+                      <span>
+                        Start Date : {!errors.startDateError ? <span className="dark:text-white text-base ml-2"> {formatDate(startDate)} </span> : <span className="text-red text-base ml-2">{errors.startDateError}</span>}
+                      </span>
                     ) : (
                       ""
                     )}
                   </p>
                   {endDate ? (
                     <p className="font-display  mb-2 block text-jacarta-400 text-sm">
-                      End Date : {!errors.endDateError ? <span className="dark:text-white text-base ml-2"> {formatDate(endDate)} </span> : <span className="text-red">{errors.endDateError}</span>}
+                      End Date : {!errors.endDateError ? <span className="dark:text-white text-base ml-2"> {formatDate(endDate)} </span> : <span className="text-red text-base ml-2">{errors.endDateError}</span>}
                     </p>
                   ) : (
                     ""
                   )}
                   {selectedNumber ? (
                     <p className="font-display  mb-2 block text-jacarta-400 text-sm">
-                      Number of Items : {!errors.numberError ? <span className="dark:text-white text-base ml-2"> {selectedNumber} </span> : <span className="text-red">{errors.numberError}</span>}
+                      Number of Items : {!errors.numberError ? <span className="dark:text-white text-base ml-2"> {selectedNumber} </span> : <span className="text-red text-base ml-2">{errors.numberError}</span>}
                     </p>
                   ) : (
                     ""
                   )}
                   {selectedParameter ? (
                     <p className="font-display  mb-2 block text-jacarta-400 text-sm">
-                      Type of Ad : {!errors.typeAdError ? <span className="dark:text-white text-base ml-2"> {displayedParameter} </span> : <span className="text-red">{errors.typeAdError}</span>}
+                      Type of Ad :{" "}
+                      {!errors.typeAdError && !errors.imageRatioError ? (
+                        displayedParameter.map((item, index) => (
+                          <span key={index} className="dark:text-white text-base ml-2">
+                            {" "}
+                            {item}{" "}
+                          </span>
+                        ))
+                      ) : (
+                        <div>
+                          {errors.typeAdError && <span className="text-red text-base ml-2">{errors.typeAdError}</span>}
+                          {errors.imageRatioError && <span className="text-red text-base ml-2">{errors.imageRatioError}</span>}
+                        </div>
+                      )}
                     </p>
                   ) : (
                     ""
                   )}
                   {selectedUnitPrice ? (
                     <p className="font-display  mb-2 block text-jacarta-400 text-sm">
-                      Unit Price : {!errors.unitPriceError ? <span className="dark:text-white text-base ml-2"> {selectedUnitPrice} </span> : <span className="text-red">{errors.unitPriceError}</span>}
+                      Unit Price : {!errors.unitPriceError ? <span className="dark:text-white text-base ml-2"> {selectedUnitPrice} </span> : <span className="text-red text-base ml-2">{errors.unitPriceError}</span>}
                     </p>
                   ) : (
                     ""
                   )}
                   {customContract ? (
                     <p className="font-display  mb-2 block text-jacarta-400 text-sm">
-                      Custom Contract : {!errors.currencyError ? <span className="dark:text-white text-base ml-2"> {customSymbolContract} </span> : <span className="text-red">{errors.currencyError}</span>}
+                      Custom Contract : {!errors.currencyError ? <span className="dark:text-white text-base ml-2"> {customSymbolContract} </span> : <span className="text-red text-base ml-2">{errors.currencyError}</span>}
                     </p>
                   ) : selectedCurrency ? (
                     <p className="font-display  mb-2 block text-jacarta-400 text-sm">
-                      Currency : {!errors.currencyError ? <span className="dark:text-white text-base ml-2"> {selectedCurrency} </span> : <span className="text-red">{errors.currencyError}</span>}
+                      Currency : {!errors.currencyError ? <span className="dark:text-white text-base ml-2"> {selectedCurrency} </span> : <span className="text-red text-base ml-2">{errors.currencyError}</span>}
                     </p>
                   ) : (
                     ""
                   )}
                   {selectedRoyalties ? (
                     <p className="font-display  mb-2 block text-jacarta-400 text-sm">
-                      Royalties : {!errors.royaltyError ? <span className="dark:text-white text-base ml-2"> {selectedRoyalties} % </span> : <span className="text-red">{errors.royaltyError}</span>}
+                      Royalties : {!errors.royaltyError ? <span className="dark:text-white text-base ml-2"> {selectedRoyalties} % </span> : <span className="text-red text-base ml-2">{errors.royaltyError}</span>}
                     </p>
                   ) : (
                     ""

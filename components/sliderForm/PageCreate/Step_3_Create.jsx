@@ -55,9 +55,9 @@ const Step_2_Create = ({ stepsRef, styles, setLink, link, file, handleLogoUpload
             </div>
           </div>
         </div>
-        {previewImage && (
+        {previewImage.length > 0 && (
           <div className="flex justify-center mt-3">
-            <Image src={previewImage ? previewImage : "/"} width={200} height={200} alt="Preview" className="object-contain h-full" />
+            <Image src={previewImage[0] ? previewImage[0] : "/"} width={200} height={200} alt="Preview" className="object-contain h-full" />
           </div>
         )}
       </div>

@@ -197,7 +197,7 @@ const Offer = () => {
             {/* <!-- Image --> */}
             <figure className="mb-8 md:w-2/5 md:flex-shrink-0 md:flex-grow-0 md:basis-auto lg:w-1/2 w-full flex justify-center">
               <button className=" w-full" onClick={() => setImageModal(true)} style={{ height: "450px" }}>
-                <Image width={585} height={726} src={image} alt="image" className="rounded-2xl cursor-pointer h-full object-contain w-full" />
+                {image && <Image width={585} height={726} src={image} alt="image" className="rounded-2xl cursor-pointer h-full object-contain w-full" />}
               </button>
 
               {/* <!-- Modal --> */}
@@ -292,7 +292,7 @@ const Offer = () => {
             <div className="grid grid-cols-1 gap-[1.875rem] md:grid-cols-2 lg:grid-cols-4">
               <article className="relative">
                 <div className="dark:bg-jacarta-700 dark:border-jacarta-700 border-jacarta-100 rounded-2xl block border bg-white p-[1.1875rem] transition-shadow hover:shadow-lg text-jacarta-500">
-                  {isWordAlreadyTaken ? <span className="text-red  ">This word is already taken ❌</span> : <span className="text-green ">This word is available 🎉</span> }
+                  {isWordAlreadyTaken ? <span className="text-red  ">This word is already taken ❌</span> : <span className="text-green ">This word is available 🎉</span>}
                   <figure className="mt-2">
                     <Link href={urlFromChild}>{image && <Image src={image} alt="logo" height={230} width={230} className="rounded-[0.625rem] w-full lg:h-[230px] object-contain" loading="lazy" />}</Link>
                   </figure>
