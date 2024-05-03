@@ -205,7 +205,7 @@ const [copied, setCopied] = useState(false);
 
               {/* <!-- Modal --> */}
               <div className={imageModal ? "modal fade show block" : "modal fade"}>
-                <div className="modal-dialog !my-0 flex h-full max-w-4xl items-center justify-center">
+                <div className="modal-dialog !my-0 flex  items-center justify-center">
                   <Image width={582} height={722} src={image} alt="image" className="h-full object-cover w-full rounded-2xl" />
                 </div>
 
@@ -254,9 +254,9 @@ const [copied, setCopied] = useState(false);
                   </span>
                 </div>
 
-                <span className="dark:text-jacarta-300 text-jacarta-400 text-sm">
-                  {/* {offerData[0].allowedTokens.length - validatedProposalData.length - refusedProposalData.length - pendingProposalData.length}/{offerData[0].allowedTokens.length} available */}
-                </span>
+                {offerData.nftContract.allowList && <span className="dark:text-jacarta-300 text-jacarta-400 text-sm">
+                  {offerData.nftContract.maxSupply - offerData.nftContract.tokens.filter((item) => item.mint != null).length }/{offerData.nftContract.maxSupply} available
+                </span>}
                 <span className="text-jacarta-400 block text-sm dark:text-white">
                   Creator <strong>{royalties}% royalties</strong>
                 </span>
@@ -365,35 +365,37 @@ const [copied, setCopied] = useState(false);
         </Tabs>
       </div>
 
-      {isOwner && <div className={"container"}>
-        <div className="dark:bg-jacarta-700 dark:border-jacarta-600 border-jacarta-100 rounded-2lg border bg-white p-8 mb-4">
-          <span className="dark:text-jacarta-300 text-jacarta-400 text-sm ">
-            You can integrate this offer on your website by using the following iframe code. Simply copy and paste the code into your website to display the offer.{" "}
-          </span>
-          <br />
-          <div className="flex gap-4 w-full md:w-auto items-start mt-2 ">
-            <pre
-              style={{
-                backgroundColor: "#010101",
-                borderRadius: "5px",
-                fontFamily: "'Courier New', monospace",
-                padding: "10px",
-                overflowX: "auto",
-              }}
-            >
-              <code> {`<iframe src="https://relayer.dsponsor.com/11155111/iframe/${offerId}?bgColor=0d102d" height="315" width="1000px" className={'h-screen w-full'} />`}</code>
-            </pre>
-            <Tippy hideOnClick={false} content={copied ? <span>copied</span> : <span>copy</span>}>
-              <div className="js-copy-clipboard cursor-pointer">
-                <CopyToClipboard text="userId" onCopy={() => setCopied(true)}>
-                  <Image src="/images/copy.svg" alt="icon" width={20} height={20} className="mt-2 min-w-[20px] " />
-                </CopyToClipboard>
-              </div>
-            </Tippy>
+      {isOwner && (
+        <div className={"container"}>
+          <div className="dark:bg-jacarta-700 dark:border-jacarta-600 border-jacarta-100 rounded-2lg border bg-white p-8 mb-4">
+            <span className="dark:text-jacarta-300 text-jacarta-400 text-sm ">
+              You can integrate this offer on your website by using the following iframe code. Simply copy and paste the code into your website to display the offer.{" "}
+            </span>
+            <br />
+            <div className="flex gap-4 w-full md:w-auto items-start mt-2 ">
+              <pre
+                style={{
+                  backgroundColor: "#010101",
+                  borderRadius: "5px",
+                  fontFamily: "'Courier New', monospace",
+                  padding: "10px",
+                  overflowX: "auto",
+                }}
+              >
+                <code> {`<iframe src="https://relayer.dsponsor.com/11155111/iframe/${offerId}?bgColor=0d102d" height="315" width="1000px" className={'h-screen w-full'} />`}</code>
+              </pre>
+              <Tippy hideOnClick={false} content={copied ? <span>copied</span> : <span>copy</span>}>
+                <div className="js-copy-clipboard cursor-pointer">
+                  <CopyToClipboard text="userId" onCopy={() => setCopied(true)}>
+                    <Image src="/images/copy.svg" alt="icon" width={20} height={20} className="mt-2 min-w-[20px] " />
+                  </CopyToClipboard>
+                </div>
+              </Tippy>
+            </div>
           </div>
+          <iframe src={`https://relayer.dsponsor.com/11155111/iframe/${offerId}?bgColor=0d102d`} height="315" width="1000px" className={"h-screen w-full"} />
         </div>
-        <iframe src={`https://relayer.dsponsor.com/11155111/iframe/${offerId}?bgColor=0d102d`} height="315" width="1000px" className={"h-screen w-full"} />
-      </div>}
+      )}
       {/* <ItemsTabs /> */}
       {/* <div className="container mb-12">
         <ItemsTabs />

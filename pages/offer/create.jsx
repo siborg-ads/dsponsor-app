@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, useCallback } from "react";
+import React, { useEffect, useState, useRef, useCallback, use } from "react";
 import { FileUploader } from "react-drag-drop-files";
 import Meta from "../../components/Meta";
 import Image from "next/image";
@@ -38,10 +38,21 @@ const Create = () => {
   const [selectedIntegration, setSelectedIntegration] = useState([]);
   const [selectedParameter, setSelectedParameter] = useState([]);
   const [displayedParameter, setDisplayedParameter] = useState([]);
+  const [customSymbol, setCustomSymbol] = useState(null);
   const [selectedTypeParameter, setSelectedTypeParameter] = useState(0);
   const { contract: DsponsorAdminContract } = useContract("0xE442802706F3603d58F34418Eac50C78C7B4E8b3", contractABI);
   const { mutateAsync: createDSponsorNFTAndOffer } = useContractWrite(DsponsorAdminContract, "createDSponsorNFTAndOffer");
    const [imageRatios, setImageRatios] = useState([]);
+    const USDCCurrency = adminInstance.chain.getCurrencyAddress("USDC");
+    const ETHCurrency = adminInstance.chain.getCurrencyAddress("ETH");
+    const WETHCurrency = adminInstance.chain.getCurrencyAddress("WETH");
+    const USDTCurrency = adminInstance.chain.getCurrencyAddress("USDT");
+
+    const { contract: customTokenContract } = useContract(customContract, "token");
+    const { data: customSymbolContract } = useContractRead(customTokenContract, "symbol");
+console.log(customSymbolContract);
+
+    const { data: customDecimals } = useTokenDecimals(customTokenContract);
   const [name, setName] = useState(false);
   const stepsRef = useRef([]);
   const { ethers } = require("ethers");
@@ -59,7 +70,13 @@ const Create = () => {
 
   const handleCurrencyChange = (event) => {
     setSelectedCurrency(event.target.value);
+    
   };
+  useEffect(() => {
+    if (customSymbolContract) {
+      setCustomSymbol(customSymbolContract);
+    }
+  }, [customSymbolContract]);
 
   const handleCustomContractChange = (event) => {
     setCustomContract(event.target.value);
@@ -94,6 +111,7 @@ const Create = () => {
       newErrors.nameError = "Name is missing.";
       isValid = false;
     }
+
 
     if (!link || !isValidURL(link)) {
       newErrors.linkError = "The link is missing or invalid.";
@@ -149,7 +167,7 @@ for(let i = 0; i < selectedIntegration.length; i++){
       isValid = false;
     }
 
-    if (!selectedCurrency) {
+    if (!selectedCurrency || !customTokenContract) {
       newErrors.currencyError = "Currency is missing or invalid.";
       isValid = false;
     }
@@ -279,15 +297,7 @@ for(let i = 0; i < selectedIntegration.length; i++){
     setLink(updatedLink);
   };
 
-  const USDCCurrency = adminInstance.chain.getCurrencyAddress("USDC");
-  const ETHCurrency = adminInstance.chain.getCurrencyAddress("ETH");
-  const WETHCurrency = adminInstance.chain.getCurrencyAddress("WETH");
-  const USDTCurrency = adminInstance.chain.getCurrencyAddress("USDT");
-
-  const { contract: customTokenContract } = useContract(customContract, "token");
-  const { data: customSymbolContract } = useContractRead(customTokenContract, "symbol");
-
-  const { data: customDecimals } = useTokenDecimals(customTokenContract);
+ 
 
   const selectedCurrencyContract = useCallback(() => {
     switch (selectedCurrency) {
@@ -386,6 +396,7 @@ for(let i = 0; i < selectedIntegration.length; i++){
             handleCustomContractChange={handleCustomContractChange}
             selectedRoyalties={selectedRoyalties}
             handleRoyaltiesChange={handleRoyaltiesChange}
+            customSymbolContract={customSymbolContract}
           />
         </SliderForm>
       </section>

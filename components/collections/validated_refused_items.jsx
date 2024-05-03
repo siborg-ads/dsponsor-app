@@ -8,6 +8,7 @@ import { CopyToClipboard } from "react-copy-to-clipboard";
 
 const Validated_refused_items = ({ statut, proposalData }) => {
   const [filterVal, setFilterVal] = useState(null);
+  const [imageModal, setImageModal] = useState(false);
   
   const [data, setData] = useState(collection_activity_item_data);
   const [statutItem, setStatutItem] = useState(null);
@@ -67,30 +68,38 @@ const Validated_refused_items = ({ statut, proposalData }) => {
               return (
                 <div key={tokenId} className="dark:bg-jacarta-700  gap-5 p-8 dark:border-jacarta-700 transition-shadow hover:shadow-lg border-jacarta-100 rounded-2.5xl relative flex">
                   <div className=" relative flex items-center gap-5 flex-col sm:flex-row ">
-                    <figure className=" self-start">
-                      <Image src={adParametersList?.imageURL} alt={title} height={75} width={75} objectFit="contain" className="rounded-2lg min-w-[75px]" loading="lazy" />
+                    <figure className="self-start">
+                      <button className=" w-full" onClick={() => setImageModal(true)}>
+                        {adParametersList?.imageURL && <Image src={adParametersList?.imageURL} alt={title} height={75} width={75} objectFit="contain" className="rounded-2lg min-w-[75px]" loading="lazy" />}
+                      </button>
+
+                      {/* <!-- Modal --> */}
+                      <div className={imageModal ? "modal fade show block" : "modal fade"}>
+                        <div className="modal-dialog !my-0 flex h-full max-w-4xl items-center justify-center">
+                          <Image src={adParametersList?.imageURL} alt={title} height={300} width={300} objectFit="contain" className="rounded-2lg min-w-[75px]" loading="lazy" />
+                        </div>
+
+                        <button type="button" className="btn-close absolute top-6 right-6" onClick={() => setImageModal(false)}>
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" className="h-6 w-6 fill-white">
+                            <path fill="none" d="M0 0h24v24H0z" />
+                            <path d="M12 10.586l4.95-4.95 1.414 1.414-4.95 4.95 4.95 4.95-1.414 1.414-4.95-4.95-4.95 4.95-1.414-1.414 4.95-4.95-4.95-4.95L7.05 5.636z" />
+                          </svg>
+                        </button>
+                      </div>
+                      {/* <!-- end modal --> */}
                     </figure>
+                   
                     <div>
                       <h3 className="font-display text-jacarta-700 mb-1 text-base font-semibold dark:text-white">
-                        Item : <span className="text-accent"> {tokenId} </span>{" "}
+                        Item : <span className="text-accent"> {parseInt(tokenId) + 1} </span>{" "}
                       </h3>
-                      <span>
-                        Proposals  :{" "}
-                        <span className="text-accent">
-                          [{proposalIds[0]}-{proposalIds[1]}]
-                        </span>{" "}
-                      </span>
+
                       <div className="flex flex-col">
-                        <Tippy hideOnClick={false} content={copied ? <span>copied</span> : <span>copy</span>}>
-                          <button className="js-copy-clipboard flex min-w-[20px] text-white max-w-[20rem]  select-none overflow-hidden text-ellipsis whitespace-nowrap">
-                            <CopyToClipboard text="userId" onCopy={() => setCopied(true)}>
-                              <span>{adParametersList?.linkURL}</span>
-                            </CopyToClipboard>
-                          </button>
-                        </Tippy>
+                        <button className="js-copy-clipboard flex min-w-[20px] text-white max-w-[20rem]  select-none overflow-hidden text-ellipsis whitespace-nowrap">
+                          <span>{adParametersList?.linkURL}</span>
+                        </button>
                       </div>
                       {reason && <span className="text-jacarta-500 dark:text-jacarta-300">Reason : {reason}</span>}
-                      
                     </div>
                   </div>
                   <div className="dark:border-jacarta-600 border-jacarta-100 ml-auto rounded-full border p-3 self-start">

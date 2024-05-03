@@ -26,13 +26,13 @@ const BuyModal = ({
   image,
   handleSubmit,
   handleBuyModal,
+  tokenData,
 }) => {
   const { buyModal } = useSelector((state) => state.counter);
   const dispatch = useDispatch();
   const [validate, setValidate] = useState(false);
 
   const handleTermService = (e) => {
-   
     setValidate(e.target.checked);
   };
 
@@ -57,7 +57,7 @@ const BuyModal = ({
           {!successFullUpload ? (
             <div className="modal-body p-6">
               <div className="mb-2 flex items-center justify-between">
-                <span className="font-display text-jacarta-700 text-sm font-semibold dark:text-white">Space #{formatTokenId(tokenId)}</span>
+                <span className="font-display text-jacarta-700 text-sm font-semibold dark:text-white">Space # {tokenData}</span>
                 <span className="font-display text-jacarta-700 text-sm font-semibold dark:text-white">Subtotal</span>
               </div>
 

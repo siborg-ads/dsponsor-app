@@ -89,7 +89,7 @@ const OfferItem = ({ item, url, isToken, isSelectionActive, isOwner }) => {
             {isSelectionActive ? (
               <span className="font-display max-w-[150px] text-jacarta-700 hover:text-accent text-base dark:text-white ">{name}</span>
             ) : (
-              <Link href={url} className="overflow-hidden text-ellipsis whitespace-nowrap max-w-[120px]">
+              <Link href={url} className="overflow-hidden text-ellipsis whitespace-nowrap max-w-[150px]">
                 <span className="font-display max-w-[150px] text-jacarta-700 hover:text-accent text-base dark:text-white ">{name}</span>
               </Link>
             )}
@@ -106,7 +106,7 @@ const OfferItem = ({ item, url, isToken, isSelectionActive, isOwner }) => {
               </div>
             ) : (
               <div className="dark:border-jacarta-600 border-jacarta-100 flex items-center whitespace-nowrap rounded-md border py-1 px-2">
-                <span className="text-green text-sm font-medium tracking-tight"># : {item.tokenData ? item.tokenData : item.tokenId}</span>
+                <span className="text-green text-sm font-medium tracking-tight"># {item.tokenData ? item.tokenData : item.tokenId}</span>
               </div>
             )}
           </div>

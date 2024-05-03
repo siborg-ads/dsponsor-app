@@ -22,6 +22,7 @@ const Review_carousel = ({ handleSubmit, pendingProposalData, successFullRefuseM
   const [tokenId, setTokenId] = useState(null);
   const [selectedItems, setSelectedItems] = useState([]);
   const [isSelectedItem, setIsSelectedItem] = useState({});
+  const [imageModal, setImageModal] = useState(false);
  
 
 
@@ -188,8 +189,43 @@ const Review_carousel = ({ handleSubmit, pendingProposalData, successFullRefuseM
             <article key={tokenId} className={`  ${isSelectedItem[tokenId] ? "border-4 border-jacarta-100 rounded-2xl" : ""}`} onClick={() => handleSelection(item)}>
               <div className="dark:bg-jacarta-700 dark:border-jacarta-700 border-jacarta-100 rounded-2xl block border bg-white p-[1.1875rem] transition-shadow hover:shadow-lg text-jacarta-500">
                 <figure className="flex justify-center">
-                  <Image src={adParametersList?.imageURL ? adParametersList?.imageURL : "/"} alt="logo" height={230} width={230} className="rounded-[0.625rem] w-auto   h-[150px] object-contain" loading="lazy" />
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setImageModal(true);
+                    }}
+                  >
+                    {adParametersList?.imageURL && (
+                      <Image
+                        src={adParametersList?.imageURL ? adParametersList?.imageURL : "/"}
+                        alt="logo"
+                        height={75}
+                        width={75}
+                        objectFit="contain"
+                        className="rounded-[0.625rem] w-auto   h-[150px] object-contain"
+                        loading="lazy"
+                      />
+                    )}
+                  </button>
+
+                  {/* <!-- Modal --> */}
+                  <div className={imageModal ? "modal fade show block" : "modal fade"} onClick={(e) => e.stopPropagation()}>
+                    <div className="modal-dialog !my-0 flex h-full max-w-4xl items-center justify-center">
+                      <Image src={adParametersList?.imageURL} alt="logo" height={250} width={250} objectFit="contain" className="rounded-2lg min-w-[75px]" loading="lazy" />
+                    </div>
+
+                    <button type="button" className="btn-close absolute top-6 right-6" onClick={() => setImageModal(false)}>
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" className="h-6 w-6 fill-white">
+                        <path fill="none" d="M0 0h24v24H0z" />
+                        <path d="M12 10.586l4.95-4.95 1.414 1.414-4.95 4.95 4.95 4.95-1.414 1.414-4.95-4.95-4.95 4.95-1.414-1.414 4.95-4.95-4.95-4.95L7.05 5.636z" />
+                      </svg>
+                    </button>
+                  </div>
+                  {/* <!-- end modal --> */}
                 </figure>
+                {/* <figure className="flex justify-center">
+                  <Image src={adParametersList?.imageURL ? adParametersList?.imageURL : "/"} alt="logo" height={230} width={230} className="rounded-[0.625rem] w-auto   h-[150px] object-contain" loading="lazy" />
+                </figure> */}
                 <div className="mt-4 flex items-center justify-between ">
                   <Link
                     href={adParametersList?.linkURL ? adParametersList.linkURL : "/"}
@@ -200,12 +236,10 @@ const Review_carousel = ({ handleSubmit, pendingProposalData, successFullRefuseM
                   </Link>
 
                   <div className="dark:border-jacarta-600 ms-14 border-jacarta-100 flex items-center whitespace-nowrap rounded-md border py-1 px-2">
-                    <span className="text-green text-sm font-medium tracking-tight">#{formatTokenId(tokenId)}</span>
+                    <span className="text-green text-sm font-medium tracking-tight"># {parseInt(tokenId) + 1}</span>
                   </div>
                 </div>
                 <div className="mt-2 text-xs flex justify-between">
-                  <span className="dark:text-jacarta-300 text-jacarta-500">Proposals : [{proposalIds.join("-")}]</span>
-
                   <span className="text-accent text-sm font-bold">🔍 Pending</span>
                 </div>
               </div>

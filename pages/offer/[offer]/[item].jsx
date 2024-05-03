@@ -544,7 +544,9 @@ const Item = () => {
             <p>
               {offerNotFormated
                 ? "Offer isn't well formated to buy"
-                : offerData.nftContract?.tokens === 0 ?"Sorry, tokenId unavailable, please provide a tokenId valid " : (!isAllowedToMint || offerData.nftContract?.tokens[0]?.mint) && !isOwner
+                : offerData.nftContract?.tokens === 0
+                ? "Sorry, tokenId unavailable, please provide a tokenId valid "
+                : (!isAllowedToMint || offerData.nftContract?.tokens[0]?.mint) && !isOwner
                 ? "Sorry, someone already own this NFT "
                 : ""}
             </p>
@@ -593,6 +595,7 @@ const Item = () => {
             selectedRoyalties={royalties}
             userBalance={userBalance}
             tokenId={tokenId}
+            tokenData={tokenData}
             formatTokenId={formatTokenId}
           />
         </div>
