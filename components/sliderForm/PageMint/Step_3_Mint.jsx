@@ -2,7 +2,7 @@ import { useState } from "react";
 import DatePicker from "react-datepicker";
 import Image from "next/image";
 import "react-datepicker/dist/react-datepicker.css";
-import ModalHelper from "../../helper/modalHelper";
+import ModalHelper from "../../Helper/modalHelper";
 
 
 import { FileUploader } from "react-drag-drop-files";
