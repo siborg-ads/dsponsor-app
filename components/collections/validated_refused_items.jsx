@@ -23,11 +23,6 @@ const Validated_refused_items = ({ statut, proposalData }) => {
     })
   );
 
-  useEffect(() => {
-    setTimeout(() => {
-      setCopied(false);
-    }, 2000);
-  }, [copied]);
 
   const [inputText, setInputText] = useState("");
 
