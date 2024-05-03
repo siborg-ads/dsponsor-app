@@ -196,11 +196,11 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
               throw new Error("Upload to IPFS failed.");
             }
             dataItems.push(uploadUrl[0]);
-            dataItems.push(link);
           }
         }
+        dataItems.push(link);
       }
-      
+     
 
       const argsAdSubmited = {
         offerId: selectedOfferIdItems,
@@ -361,7 +361,7 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
       )}
       {showSliderForm && (
         <div>
-          <SliderForm styles={styles} handlePreviewModal={handlePreviewModal} stepsRef={stepsRef} numSteps={numSteps}>
+          <SliderForm styles={styles} files={files} handlePreviewModal={handlePreviewModal} stepsRef={stepsRef} numSteps={numSteps}>
             <Step_1_Mint stepsRef={stepsRef} styles={styles} adParameters={adParameters} />
             <Step_2_Mint stepsRef={stepsRef} styles={styles} setLink={setLink} link={link} />
             {imageURLSteps.map((step, index) => (

@@ -1,12 +1,19 @@
 import { useState } from "react";
 import DatePicker from "react-datepicker";
 import Image from "next/image";
+import "react-datepicker/dist/react-datepicker.css";
+import ModalHelper from "../../helper/modalHelper";
 
 
 import { FileUploader } from "react-drag-drop-files";
 
 const Step_3_Mint = ({ id, stepsRef, offerIds, styles, file, handleLogoUpload, previewImage, currentStep }) => {
   const fileTypes = ["JPG", "PNG", "SVG", "WEBP"];
+  const modalHelper = {
+    title: "Importance of Correct Image Aspect Ratio",
+    body: "Ensuring images, especially logos, have the correct aspect ratio is crucial to prevent distortion when displayed. A distorted logo can undermine a brand’s professionalism and mislead potential clients. Maintaining the correct aspect ratio preserves the image's integrity across various platforms, supporting brand consistency and visual quality.",
+    
+  };
  
   return (
     <div ref={(el) => (stepsRef.current[currentStep] = el)} className={styles.form__step}>
@@ -14,16 +21,19 @@ const Step_3_Mint = ({ id, stepsRef, offerIds, styles, file, handleLogoUpload, p
         <h3 className="mb-14">Step 2 : Ad Space Image {id}</h3>
         {/* <!-- File Upload --> */}
         <div className="mb-6 items-center flex flex-col">
-          <label className="font-display text-jacarta-700 mb-2 block dark:text-white">
-            Image {id}
-            <span className="text-red">*</span>
-          </label>
+          <div className="flex gap-3 justify-center items-center mb-2">
+            <label className="font-display text-jacarta-700  block dark:text-white">
+              Image {id}
+              <span className="text-red">*</span>
+            </label>
+            <ModalHelper title={modalHelper.title} body={modalHelper.body} dark={false} />
+          </div>
           <p className="dark:text-jacarta-300 text-jacarta-400 text-2xs mb-3">
             Please upload a media format that visually represents the content to be displayed on the site. This element will serve as a visual cue for users to quickly identify the associated content. Make sure the
             content is clear, relevant, and has a high enough resolution for good quality display. The visual will be approved by the Media before it is displayed on their site.
           </p>
 
-          {file ? (<p className="text-green text-2xs mb-3">successfully uploaded : {file.file.name}</p>) :( <p className="dark:text-jacarta-300 text-2xs mb-3">Drag or choose your file to upload</p>)}
+          {file ? <p className="text-green text-2xs mb-3">successfully uploaded : {file.file.name}</p> : <p className="dark:text-jacarta-300 text-2xs mb-3">Drag or choose your file to upload</p>}
 
           <div
             className={`dark:bg-jacarta-700 dark:border-jacarta-600 border-jacarta-100 group relative flex max-w-md flex-col items-center justify-center rounded-lg border-2 border-dashed bg-white  px-5 text-center ${

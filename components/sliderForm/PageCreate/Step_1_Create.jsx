@@ -3,7 +3,7 @@ import DatePicker from "react-datepicker";
 import Image from "next/image";
 
 import { FileUploader } from "react-drag-drop-files";
-import ModalHelper from "../../Helper/modalHelper";
+import ModalHelper from "../../helper/modalHelper";
 
 const Step_1_Create = ({ stepsRef, styles, setDisplayedParameter, displayedParameter, selectedNumber, setSelectedNumber, selectedIntegration, imageRatios, setImageRatios, setSelectedIntegration, setSelectedParameter }) => {
   
@@ -186,7 +186,7 @@ const predefinedRatios = ["1:1", "16:9", "4:3"];
                       >
                         {integration.integrationName}
                       </label>
-                        <ModalHelper  title={integration.integrationName} body={integration.bodyDescription} image={integration.imageExemple}  />
+                        <ModalHelper dark={true} title={integration.integrationName} body={integration.bodyDescription} image={integration.imageExemple}  />
                       </div>
                       {selectedIntegration.includes(index) && (
                         <div className="flex flex-col items-center mt-4">

@@ -91,11 +91,11 @@ const PreviewModal = ({
                   </p>
                   {imageURLSteps?.length > 0 &&
                     previewImage.filter((item) => item).length < imageURLSteps.length &&
-                    imageURLSteps.map((image, index) => (
-                      <p className="font-display  mb-2 block text-jacarta-400 text-sm" key={index}>
+                    
+                      <p className="font-display  mb-2 block text-jacarta-400 text-sm" >
                         Image preview : <span className="text-red text-base ml-2"> {errors.imageError}</span>
                       </p>
-                    ))}
+                   }
                   <p className="font-display  mb-2 block text-jacarta-400 text-sm">
                     {startDate ? (
                       <span>

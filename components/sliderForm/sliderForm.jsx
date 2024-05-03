@@ -3,86 +3,84 @@ import DatePicker from "react-datepicker";
 
 import { FileUploader } from "react-drag-drop-files";
 
-const SliderForm = ({ styles, handlePreviewModal, stepsRef, numSteps, children }) => {
+const SliderForm = ({ styles, handlePreviewModal, stepsRef, numSteps, children, files }) => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const stepContainerRef = useRef(null);
   const stepFormContainerRef = useRef(null);
 
   const bulletsRef = useRef([]);
-const touchStartX = useRef(0);
-const touchCurrentX = useRef(0);
-const isDragging = useRef(false);
+  const touchStartX = useRef(0);
+  const touchCurrentX = useRef(0);
+  const isDragging = useRef(false);
 
-const handleTouchStart = (e) => {
-  touchStartX.current = e.touches[0].clientX;
-  touchCurrentX.current = touchStartX.current; 
-  isDragging.current = true; 
-};
+  const handleTouchStart = (e) => {
+    touchStartX.current = e.touches[0].clientX;
+    touchCurrentX.current = touchStartX.current;
+    isDragging.current = true;
+  };
 
-const handleTouchMove = (e) => {
-  if (!isDragging.current) return; 
-  touchCurrentX.current = e.touches[0].clientX;
-  const moveX = touchCurrentX.current - touchStartX.current;
-  const stepWidth = stepFormContainerRef.current.offsetWidth;
-  stepContainerRef.current.style.transition = "none";
-  stepContainerRef.current.style.transform = `translateX(${-stepWidth * currentSlide + moveX}px)`;
-};
- const handleTouchEnd = () => {
-   if (!isDragging.current) return;
-   isDragging.current = false;
-   const moveX = touchCurrentX.current - touchStartX.current;
-   const threshold = 50; // Seuil pour changer de slide
-   if (Math.abs(moveX) > threshold) {
-     if (moveX > 0 && currentSlide > 0) {
-       setCurrentSlide(currentSlide - 1); // Glisser vers la droite pour revenir au slide précédent
-     } else if (moveX < 0 && currentSlide < numSteps - 1) {
-       setCurrentSlide(currentSlide + 1); // Glisser vers la gauche pour aller au slide suivant
-     }
-   }
-   // Réinitialiser la position avec une transition douce
-   stepContainerRef.current.style.transition = "transform 0.3s ease";
-   stepContainerRef.current.style.transform = `translateX(${-stepFormContainerRef.current.offsetWidth * currentSlide}px)`;
- };
+  const handleTouchMove = (e) => {
+    if (!isDragging.current) return;
+    touchCurrentX.current = e.touches[0].clientX;
+    const moveX = touchCurrentX.current - touchStartX.current;
+    const stepWidth = stepFormContainerRef.current.offsetWidth;
+    stepContainerRef.current.style.transition = "none";
+    stepContainerRef.current.style.transform = `translateX(${-stepWidth * currentSlide + moveX}px)`;
+  };
+  const handleTouchEnd = () => {
+    if (!isDragging.current) return;
+    isDragging.current = false;
+    const moveX = touchCurrentX.current - touchStartX.current;
+    const threshold = 50; // Seuil pour changer de slide
+    if (Math.abs(moveX) > threshold) {
+      if (moveX > 0 && currentSlide > 0) {
+        setCurrentSlide(currentSlide - 1); // Glisser vers la droite pour revenir au slide précédent
+      } else if (moveX < 0 && currentSlide < numSteps - 1) {
+        setCurrentSlide(currentSlide + 1); // Glisser vers la gauche pour aller au slide suivant
+      }
+    }
+    // Réinitialiser la position avec une transition douce
+    stepContainerRef.current.style.transition = "transform 0.3s ease";
+    stepContainerRef.current.style.transform = `translateX(${-stepFormContainerRef.current.offsetWidth * currentSlide}px)`;
+  };
 
- const animateSlider = () => {
-   if (stepContainerRef.current && stepFormContainerRef) {
-     const stepWidth = stepFormContainerRef.current.offsetWidth;
-     stepContainerRef.current.style.transform = `translateX(${-stepWidth * currentSlide}px)`;
-     adjustHeight(); 
-  //      const topPosition = stepFormContainerRef.current.getBoundingClientRect().top + window.pageYOffset - 150; 
-  //      window.scrollTo({ top: topPosition, behavior: "smooth" });
+  const animateSlider = () => {
+    if (stepContainerRef.current && stepFormContainerRef) {
+      const stepWidth = stepFormContainerRef.current.offsetWidth;
+      stepContainerRef.current.style.transform = `translateX(${-stepWidth * currentSlide}px)`;
+      adjustHeight();
+      //      const topPosition = stepFormContainerRef.current.getBoundingClientRect().top + window.pageYOffset - 150;
+      //      window.scrollTo({ top: topPosition, behavior: "smooth" });
     }
 
-   bulletsRef.current.forEach((bullet, index) => {
-     if (bullet) {
-       bullet.classList.toggle(styles["form__bullet--active"], index === currentSlide);
-     }
-   });
- };
+    bulletsRef.current.forEach((bullet, index) => {
+      if (bullet) {
+        bullet.classList.toggle(styles["form__bullet--active"], index === currentSlide);
+      }
+    });
+  };
 
-const adjustHeight = () => {
-  
-  const stepHeight = stepsRef.current[currentSlide].offsetHeight; 
-  stepFormContainerRef.current.style.height = `${stepHeight}px `;
-  stepContainerRef.current.style.height = `${stepHeight}px `;
-};
+  const adjustHeight = () => {
+    const stepHeight = stepsRef.current[currentSlide].offsetHeight;
+    stepFormContainerRef.current.style.height = `${stepHeight}px `;
+    stepContainerRef.current.style.height = `${stepHeight}px `;
+  };
   useEffect(() => {
     stepFormContainerRef.current.style.height = `auto `;
     stepContainerRef.current.style.height = `auto `;
     const updateDimensions = () => {
       if (stepContainerRef.current && stepFormContainerRef) {
-        
-        const stepWidth = stepFormContainerRef.current.offsetWidth ;
+        const stepWidth = stepFormContainerRef.current.offsetWidth;
 
         stepsRef.current.forEach((step) => {
           if (step) {
             step.style.width = `${stepWidth}px`;
-            step.style.height = "100%"
+            step.style.height = "100%";
           }
         });
 
         stepContainerRef.current.style.width = `${stepWidth * numSteps}px`;
-adjustHeight();
+        adjustHeight();
         animateSlider();
       }
     };
@@ -93,7 +91,7 @@ adjustHeight();
     return () => {
       window.removeEventListener("resize", updateDimensions);
     };
-  }, [currentSlide, numSteps, stepsRef, styles]);
+  }, [currentSlide, numSteps, stepsRef, styles, files]);
 
   const handleNextClick = () => {
     if (currentSlide < numSteps - 1) {
@@ -115,7 +113,6 @@ adjustHeight();
     <div className={styles.modal__container}>
       <div className={`${styles.modal} dark:bg-jacarta-700 dark:border-jacarta-700 rounded-lg ring-accent/10 ring-2`}>
         <div className={styles.modal__form__container} ref={stepFormContainerRef} onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={handleTouchEnd}>
-          
           <form className={styles.form}>
             <div className={styles.form__step__container} ref={stepContainerRef}>
               {/* Steps */}
