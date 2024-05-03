@@ -23,6 +23,7 @@ import { toast } from "react-toastify";
 import OfferSkeleton from "../../../components/skeleton/offerSkeleton.jsx";
 import { GetTokenAdOffer } from "../../../data/services/TokenOffersService";
 import { getPossibleAdIntegrations } from "../../../utils/getAdIntegrationsWithParams";
+import { Divider } from "@nextui-org/react";
 
 import contractABI from "../../../abi/dsponsorAdmin.json";
 
@@ -58,7 +59,7 @@ const Item = () => {
   const { data: tokenBalance, isLoading, error } = useBalance(offerData?.nftContract?.prices[0].currency);
   const { mutateAsync: approve, isLoading: isLoadingApprove } = useContractWrite(tokenContract, "approve");
   const { data: bps } = useContractRead(DsponsorAdminContract, "feeBps");
-  const { data: isAllowedToMint = true, isLoading: isLoadingAllowedToMint } = useContractRead(DsponsorNFTContract, "tokenIdIsAllowedToMint", offerData?.nftContract?.allowList ? tokenIdString : null);
+  const { data: isAllowedToMint , isLoading: isLoadingAllowedToMint } = useContractRead(DsponsorNFTContract, "tokenIdIsAllowedToMint", offerData?.nftContract?.allowList ? tokenIdString : null);
   const { data: royaltiesInfo } = useContractRead(DsponsorNFTContract, "royaltyInfo", [tokenIdString, 100]);
   const [showPreviewModal, setShowPreviewModal] = useState(false);
   const [validate, setValidate] = useState(false);
@@ -469,7 +470,9 @@ const Item = () => {
                 </div>
               </div>
 
-              <h1 className="font-display text-jacarta-700 mb-4 text-4xl font-semibold dark:text-white">{name}</h1>
+              <Link href={`/offer/${offerId}`} className="flex">
+                <h1 className="font-display text-jacarta-700 mb-4 dark:hover:text-accent text-4xl font-semibold dark:text-white">{name}</h1>
+              </Link>
 
               <div className="mb-8 flex items-center space-x-4 whitespace-nowrap">
                 <div className="flex items-center">
@@ -494,7 +497,7 @@ const Item = () => {
               </div>
 
               <p className="dark:text-jacarta-300 mb-10">{description}</p>
-              {!isOwner && isAllowedToMint && !offerNotFormated && !offerData.nftContract?.tokens[0]?.mint && (
+              {!isOwner && !offerNotFormated && !offerData.nftContract?.tokens[0]?.mint && (
                 <div className="dark:bg-jacarta-700 dark:border-jacarta-600 border-jacarta-100 rounded-2lg border flex flex-col gap-4 bg-white p-8">
                   <div className=" sm:flex sm:flex-wrap">
                     <span className="dark:text-jacarta-300 text-jacarta-400 text-sm">
@@ -521,7 +524,9 @@ const Item = () => {
 
       <div>
         {isOwner && !offerNotFormated ? (
-          <div>
+          <div className="container">
+            <Divider className="my-4" />
+            <h2 className="text-jacarta-700 font-bold font-display mb-6 text-center text-3xl dark:text-white ">Submission </h2>
             <SliderForm styles={styles} handlePreviewModal={handlePreviewModal} stepsRef={stepsRef} numSteps={numSteps}>
               <Step_1_Mint stepsRef={stepsRef} styles={styles} adParameters={adParameters} />
               <Step_2_Mint stepsRef={stepsRef} styles={styles} setLink={setLink} link={link} />
@@ -546,7 +551,7 @@ const Item = () => {
                 ? "Offer isn't well formated to buy"
                 : offerData.nftContract?.tokens === 0
                 ? "Sorry, tokenId unavailable, please provide a tokenId valid "
-                : (!isAllowedToMint || offerData.nftContract?.tokens[0]?.mint) && !isOwner
+                : offerData.nftContract?.tokens[0]?.mint && !isOwner
                 ? "Sorry, someone already own this NFT "
                 : ""}
             </p>

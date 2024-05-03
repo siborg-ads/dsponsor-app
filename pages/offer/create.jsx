@@ -50,7 +50,7 @@ const Create = () => {
 
     const { contract: customTokenContract } = useContract(customContract, "token");
     const { data: customSymbolContract } = useContractRead(customTokenContract, "symbol");
-console.log(customSymbolContract);
+
 
     const { data: customDecimals } = useTokenDecimals(customTokenContract);
   const [name, setName] = useState(false);
@@ -362,7 +362,7 @@ for(let i = 0; i < selectedIntegration.length; i++){
             </p>
           </div>
         </div>
-        <SliderForm styles={styles} handlePreviewModal={handlePreviewModal} stepsRef={stepsRef} numSteps={numSteps}>
+        <SliderForm styles={styles} handlePreviewModal={handlePreviewModal} stepsRef={stepsRef} numSteps={numSteps} selectedIntegration={selectedIntegration}>
           <Step_1_Create
             stepsRef={stepsRef}
             styles={styles}

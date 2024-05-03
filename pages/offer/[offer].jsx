@@ -18,7 +18,7 @@ import { GetAdOffer } from "../../data/services/TokenOffersService";
 import { contractABI } from "../../data/services/contract";
 import { user } from "@nextui-org/react";
 import Form from "../../components/collections-wide/sidebar/collections/Form";
-
+import { Divider } from "@nextui-org/react";
 import "tippy.js/dist/tippy.css";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 
@@ -254,9 +254,11 @@ const [copied, setCopied] = useState(false);
                   </span>
                 </div>
 
-                {offerData.nftContract.allowList && <span className="dark:text-jacarta-300 text-jacarta-400 text-sm">
-                  {offerData.nftContract.maxSupply - offerData.nftContract.tokens.filter((item) => item.mint != null).length }/{offerData.nftContract.maxSupply} available
-                </span>}
+                {offerData.nftContract.allowList && (
+                  <span className="dark:text-jacarta-300 text-jacarta-400 text-sm">
+                    {offerData.nftContract.maxSupply - offerData.nftContract.tokens.filter((item) => item.mint != null).length}/{offerData.nftContract.maxSupply} available
+                  </span>
+                )}
                 <span className="text-jacarta-400 block text-sm dark:text-white">
                   Creator <strong>{royalties}% royalties</strong>
                 </span>
@@ -280,6 +282,8 @@ const [copied, setCopied] = useState(false);
       </section>
       {!offerData.nftContract.allowList && (
         <div className="container flex flex-col justify-center mb-6">
+          <Divider className="my-4" />
+          <h2 className="text-jacarta-700 font-bold font-display mb-6 text-center text-3xl dark:text-white md:text-left">Search </h2>
           <div className="dark:bg-jacarta-700 dark:border-jacarta-600 border-jacarta-100 rounded-2lg border bg-white p-8">
             <div className=" sm:flex sm:flex-wrap">
               <span className="dark:text-jacarta-300 text-jacarta-400 text-sm">
@@ -316,6 +320,8 @@ const [copied, setCopied] = useState(false);
       )}
 
       <div className="container">
+        <Divider className="my-4" />
+        <h2 className="text-jacarta-700 font-bold font-display mb-6 text-center text-3xl dark:text-white ">Validation </h2>
         {/* <!-- Tabs Nav --> */}
         <Tabs className="tabs">
           <TabList className="nav nav-tabs scrollbar-custom mb-12 flex items-center justify-start overflow-x-auto overflow-y-hidden border-b border-jacarta-100 pb-px dark:border-jacarta-600 md:justify-center">
@@ -366,7 +372,9 @@ const [copied, setCopied] = useState(false);
       </div>
 
       {isOwner && (
-        <div className={"container"}>
+        <div className="container">
+          <Divider className="my-4" />
+          <h2 className="text-jacarta-700 font-bold font-display mb-6 text-center text-3xl dark:text-white ">Display </h2>
           <div className="dark:bg-jacarta-700 dark:border-jacarta-600 border-jacarta-100 rounded-2lg border bg-white p-8 mb-4">
             <span className="dark:text-jacarta-300 text-jacarta-400 text-sm ">
               You can integrate this offer on your website by using the following iframe code. Simply copy and paste the code into your website to display the offer.{" "}

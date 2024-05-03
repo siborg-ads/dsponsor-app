@@ -23,7 +23,7 @@ const Home_1 = () => {
 
        const mappedData = [];
         for (const element of data) {
-        let tokenIdAllowedToMint;
+        let tokenIdAllowedToMint = false;
          const destructuredIPFSResult = await fetchDataFromIPFS(element.metadataURL);
          for (const allowtoken of element.nftContract.tokens) {
             if (allowtoken.mint === null) {
@@ -31,12 +31,17 @@ const Home_1 = () => {
               break;
             }
          }
+        
          const combinedData = {
            ...element,
           tokenIdAllowedToMint : tokenIdAllowedToMint,
            ...destructuredIPFSResult,
          };
-         mappedData.push(combinedData);
+         
+         if (!tokenIdAllowedToMint && element.nftContract.allowList === true) continue;
+        
+        mappedData.push(combinedData);
+         
         }
         console.log(mappedData);
     //   const ads = await adminInstance.getOffers(
