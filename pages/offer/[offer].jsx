@@ -362,6 +362,22 @@ const Offer = () => {
         </Tabs>
       </div>
 
+
+
+      <div className={'container'}>
+         <span className="dark:text-jacarta-300 text-jacarta-400 text-sm">
+                You can integrate this offer on your website by using the following iframe code. Simply copy and paste the code into your website to display the offer.{" "}
+        </span>
+        <br/>
+        <code className="dark:bg-jacarta-700 dark:border-jacarta-600 border-jacarta-100 rounded-2xl block border bg-white p-[1.1875rem] transition-shadow hover:shadow-lg text-jacarta-500">
+            {`<iframe src="https://relayer.dsponsor.com/11155111/iframe/${offerId}?bgColor=0d102d" height="315" width="1000px" className={'h-screen w-full'} />`}
+        </code>
+        <iframe src={`https://relayer.dsponsor.com/11155111/iframe/${offerId}?bgColor=0d102d`}
+                height="315"
+                width="1000px"
+                className={'h-screen w-full'}
+        />
+      </div>
       {/* <ItemsTabs /> */}
       {/* <div className="container mb-12">
         <ItemsTabs />
