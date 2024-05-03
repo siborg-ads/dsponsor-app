@@ -4,40 +4,77 @@ import { toWei } from "thirdweb";
 export const useTransaction = () => {
   const address = useAddress();
 
-  const handleApprove = async (ETHAmount, tokenContract, approveERC20) => {
+  const handleApprove = async (
+    amount,
+    tokenContract,
+    spender,
+    approveERC20
+  ) => {
     try {
+      console.log("amount", amount);
       const allowance = await tokenContract.call("allowance", [
         address,
-        "0xdf42633BD40e8f46942e44a80F3A58d0Ec971f09",
+        spender,
       ]);
-      if (allowance > toWei(ETHAmount)) return;
+
+      if (allowance > amount) return;
       await approveERC20({
-        args: ["0xdf42633BD40e8f46942e44a80F3A58d0Ec971f09", toWei(ETHAmount)],
+        args: [spender, amount.toString()],
       });
       console.log("Approval successful");
     } catch (error) {
       console.error("Approval error:", error);
+      throw new Error("Approval failed");
     }
   };
 
-  const handleBid = async (approveBid, listingId, ETHAmount) => {
+  const handleBid = async (bid, listingId, enteredBid) => {
+    console.log("enteredBid", enteredBid);
     try {
-      await approveBid({
-        args: [listingId, Number(toWei(ETHAmount)), ""],
+      await bid({
+        args: [listingId, enteredBid.toString(), ""],
       });
-
       console.log("bid réussie");
     } catch (error) {
       console.error("Erreur de bid:", error);
     }
   };
 
-  const handleBuy = async (approveBuy, listingId, currency, buyoutPrice) => {
+  const handleBuy = async (buy, listingId, currency, buyoutPrice) => {
     try {
-      await approveBuy({
-        args: [listingId, address, 1, currency, buyoutPrice, ""],
+      await buy({
+        args: [
+          [
+            {
+              listingId: listingId,
+              buyFor: address,
+              quantity: 1,
+              currency: currency,
+              totalPrice: buyoutPrice.toString(),
+              referralAdditionalInformation: "",
+            },
+          ],
+        ],
       });
 
+      //args
+      // {
+      //   listingId,
+      //   buyFor: user2Addr,
+      //   quantity: 1,
+      //   currency: ERC20MockAddress,
+      //   totalPrice,
+      //   referralAdditionalInformation
+      // }
+
+      // { buyParams: {
+      //   listingId,
+      //   buyFor: user2Addr,
+      //   quantity: 1,
+      //   currency: ERC20MockAddress,
+      //   totalPrice,
+      //   referralAdditionalInformation
+      // }}
       console.log("buy réussie");
     } catch (error) {
       console.error("Erreur de buy:", error);

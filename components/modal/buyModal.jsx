@@ -12,11 +12,6 @@ import ChainDetector from "../chain-detector/ChainDetector";
 import { useTransaction } from "../../utils/transactions";
 
 const BuyModal = ({ showBuyModal, setShowBuyModal, listing }) => {
-  const [ETHAmount, setETHAmount] = useState("0.05");
-  //wallet & address
-  const wallet = useWallet();
-  const { handleApprove, handleBuy } = useTransaction();
-
   ///////////////////////////////////////////////////////
   /////////// contracts ////////////////
   ///////////////////////////////////////////////////////
@@ -29,34 +24,57 @@ const BuyModal = ({ showBuyModal, setShowBuyModal, listing }) => {
   /////////// funcs ////////////////
   ///////////////////////////////////////////////////////
 
+  //TODO : define this inside of transactions.jsx handle approve function
   const { mutateAsync: approveERC20 } = useContractWrite(
     tokenContract,
     "approve"
   );
+  const { mutateAsync: buy } = useContractWrite(dsponsorMpContract, "buy");
 
-  const { mutateAsync: approveBuy } = useContractWrite(
-    dsponsorMpContract,
-    "buy"
-  );
+  ///////////////////////////////////////////////////////
+  const [approvalStatus, setApprovalStatus] = useState("idle"); // idle, inProgress, approved
+
+  //wallet & address
+  const wallet = useWallet();
+  const { handleApprove, handleBuy } = useTransaction();
+
+  ///////////////////////////////////////////////////////
+  const handleApproveButton = async () => {
+    try {
+      setApprovalStatus("inProgress");
+      await handleApprove(
+        listing?.buyoutPricePerToken,
+        tokenContract,
+        contractAddressConfig.dsponsor_marketplace_contract_address,
+        approveERC20
+      );
+      setApprovalStatus("approved");
+    } catch (error) {
+      setShowBuyModal(false);
+      console.error("Error during approval:", error);
+      setApprovalStatus("idle");
+    }
+  };
 
   const confirmBuy = async () => {
     try {
-      handleApprove(ETHAmount, tokenContract, approveERC20);
-      handleBuy(
-        approveBuy,
-        Number(listing.listingId),
+      await handleBuy(
+        buy,
+        Number(listing.id),
         listing?.currency,
         listing?.buyoutPricePerToken
       );
+      setShowBuyModal(false);
+      console.log("Item bought successfully");
     } catch (error) {
+      setShowBuyModal(false);
       console.error("Error:", error);
     }
   };
 
-  // const handleTermService = (e) => {
-  //   console.log(validate);
-  //   setValidate(e.target.checked);
-  // };
+  const handleTermService = (e) => {
+    setValidate(e.target.checked);
+  };
   return (
     <>
       <div
@@ -97,21 +115,12 @@ const BuyModal = ({ showBuyModal, setShowBuyModal, listing }) => {
 
                 {/* <!-- Body --> */}
                 <div className="modal-body p-6">
-                  <div className="mb-2 flex items-center justify-between">
-                    <span className="font-display text-jacarta-700 text-sm font-semibold text-white">
-                      Item
-                    </span>
-                    <span className="font-display text-jacarta-700 text-sm font-semibold text-white">
-                      Subtotal
-                    </span>
-                  </div>
-
                   <div className="border-jacarta-600 relative flex items-center border-t border-b py-4">
                     <figure className="mr-5 self-start">
                       <Image
                         width={150}
                         height={150}
-                        src="/images/avatars/avatar_2.jpg"
+                        src={listing?.offer?.image}
                         alt="avatar 2"
                         className="rounded-2lg"
                         loading="lazy"
@@ -123,14 +132,18 @@ const BuyModal = ({ showBuyModal, setShowBuyModal, listing }) => {
                         href="collection.html"
                         className="text-sipurple text-sm"
                       >
-                        Elon Musk #709
+                        @Siborg_user #709
                       </a>
                       <h3 className="font-display  mb-1 text-base font-semibold text-white">
                         Lazyone Panda
                       </h3>
                       <div className="flex flex-wrap items-center">
                         <span className="text-jacarta-300  mr-1 block text-sm">
-                          Creator Earnings: 5%
+                          Creator Royalties:{" "}
+                          {Number(listing?.token.nftContract.royaltyBps) / 100}%
+                        </span>
+                        <span className="block text-sm text-jacarta-300 dark:text-white">
+                          + 4% Marketplace fee
                         </span>
                         <span data-tippy-content="The creator of this collection will receive 5% of the sale total from future sales of this item.">
                           <svg
@@ -149,13 +162,13 @@ const BuyModal = ({ showBuyModal, setShowBuyModal, listing }) => {
 
                     <div className="ml-auto">
                       <span className="mb-1 flex items-center whitespace-nowrap">
-                        <span data-tippy-content="ETH">
+                        {/* <span data-tippy-content="ETH">
                           <svg className="h-4 w-4">
                             <use xlinkHref="/icons.svg#icon-ETH"></use>
                           </svg>
-                        </span>
+                        </span> */}
                         <span className="text-jacarta-100 text-sm font-medium tracking-tight">
-                          1.55 ETH
+                          {listing?.price} {listing?.symbol}
                         </span>
                       </span>
                       <div className="text-jacarta-300 text-right text-sm">
@@ -171,13 +184,13 @@ const BuyModal = ({ showBuyModal, setShowBuyModal, listing }) => {
                     </span>
                     <div className="ml-auto">
                       <span className="flex items-center whitespace-nowrap">
-                        <span data-tippy-content="ETH">
+                        {/* <span data-tippy-content="ETH">
                           <svg className="h-4 w-4">
                             <use xlinkHref="/icons.svg#icon-ETH"></use>
                           </svg>
-                        </span>
+                        </span> */}
                         <span className="text-green font-medium tracking-tight">
-                          1.55 ETH
+                          {listing?.price} {listing?.symbol}
                         </span>
                       </span>
                       <div className="text-jacarta-300 text-right">$130.82</div>
@@ -205,14 +218,47 @@ const BuyModal = ({ showBuyModal, setShowBuyModal, listing }) => {
                 {/* <!-- end body --> */}
 
                 <div className="modal-footer">
-                  <div className="flex items-center justify-center space-x-4">
-                    {/* <Confirm_bid bidFunc={confirmBid} /> */}
-                    <button
-                      className="bg-white btn btn-primary"
-                      onClick={() => confirmBuy()}
-                    >
-                      Confirm Buy
-                    </button>
+                  <div className="flex items-center justify-center space-x-4 flex-wrap">
+                    {/* Approve button */}
+                    <div>
+                      <button
+                        className={
+                          "" +
+                          (approvalStatus === "approved"
+                            ? "inline-block w-full rounded-full py-3 px-8 text-center font-semibold text-white bg-green shadow-green-volume"
+                            : approvalStatus === "idle"
+                            ? "inline-block w-full rounded-full py-3 px-8 text-center font-semibold text-white transition-all bg-accent shadow-accent-volume hover:bg-accent-dark"
+                            : "inline-block w-full rounded-full py-3 px-8 text-center font-semibold text-white transition-all bg-sibinput")
+                        }
+                        disabled={
+                          approvalStatus === "inProgress" ||
+                          approvalStatus === "approved"
+                        }
+                        onClick={() => handleApproveButton()}
+                      >
+                        {approvalStatus === "inProgress"
+                          ? "Approving in progress..."
+                          : approvalStatus === "approved"
+                          ? "Approved"
+                          : "Approve"}
+                      </button>
+                    </div>
+
+                    {/* Confirm Buy button : */}
+                    <div>
+                      <button
+                        className={
+                          "" +
+                          (approvalStatus === "approved"
+                            ? "inline-block w-full rounded-full  py-3 px-8 text-center font-semibold text-white  transition-all bg-accent shadow-accent-volume hover:bg-accent-dark "
+                            : "inline-block w-full rounded-full  py-3 px-8 text-center font-semibold text-white  transition-all bg-sibinput")
+                        }
+                        disabled={approvalStatus !== "approved"}
+                        onClick={() => confirmBuy()}
+                      >
+                        Confirm Buy
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -225,7 +271,12 @@ const BuyModal = ({ showBuyModal, setShowBuyModal, listing }) => {
                 <h5 className="modal-title text-white" id="placeBidLabel">
                   Connect Wallet First
                 </h5>
-                <button onClick={() => setShowBuyModal(false)}>
+                <button
+                  onClick={() => {
+                    setShowBuyModal(false);
+                    setApprovalStatus("idle");
+                  }}
+                >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 24 24"
@@ -239,7 +290,7 @@ const BuyModal = ({ showBuyModal, setShowBuyModal, listing }) => {
                 </button>
               </div>
               <div className="modal-body p-6">
-                <p className="text-white">
+                <p className="text-white pb-6">
                   Please connect your wallet first to confirm the bid.
                 </p>
 

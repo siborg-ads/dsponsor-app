@@ -159,12 +159,13 @@ const listingWpriceAndSymbol = async (listing, chainId) => {
     return {
       ...listing,
       symbol,
+      decimals,
       price: Math.max(winningBidPricePerToken, reservePricePerToken),
     };
   } else if (listing.listingType === "Direct") {
     const buyoutPricePerToken =
       Number(listing.buyoutPricePerToken) / 10 ** decimals;
-    return { ...listing, symbol, price: buyoutPricePerToken };
+    return { ...listing, symbol, decimals, price: buyoutPricePerToken };
   }
 };
 

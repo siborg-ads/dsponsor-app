@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   useWallet,
   ConnectWallet,
   useContractWrite,
   useContract,
+  useBalance,
 } from "@thirdweb-dev/react";
 
 import { contractAddressConfig } from "../../lib/config/listing.config";
@@ -11,13 +12,6 @@ import ChainDetector from "../chain-detector/ChainDetector";
 import { useTransaction } from "../../utils/transactions";
 
 const BidsModal = ({ showBidsModal, setShowBidsModal, listing }) => {
-  //wallet & address
-  const wallet = useWallet();
-  const { handleApprove, handleBid } = useTransaction();
-
-  // eth amount
-  const [ETHAmount, setETHAmount] = useState("0.005");
-
   ///////////////////////////////////////////////////////
   /////////// contracts ////////////////
   ///////////////////////////////////////////////////////
@@ -29,24 +23,83 @@ const BidsModal = ({ showBidsModal, setShowBidsModal, listing }) => {
   ///////////////////////////////////////////////////////
   /////////// functions ////////////////
   ///////////////////////////////////////////////////////
+
+  //TODO : define this inside of transactions.jsx handle approve function
   const { mutateAsync: approveERC20 } = useContractWrite(
     tokenContract,
     "approve"
   );
-  const { mutateAsync: approveBid } = useContractWrite(
-    dsponsorMpContract,
-    "bid"
-  );
+  const { mutateAsync: bid } = useContractWrite(dsponsorMpContract, "bid");
 
-  const confirmBid = async () => {
+  ///////////////////////////////////////////////////////
+  const [approvalStatus, setApprovalStatus] = useState("idle"); // idle, inProgress, approved
+  const [bidAmount, setBidAmount] = useState(listing?.price);
+  const [bidAmountValid, setBidAmountValid] = useState(true);
+
+  //wallet & address
+  const wallet = useWallet();
+  const balance = useBalance();
+
+  const { handleApprove, handleBid } = useTransaction();
+
+  ///////////////////////////////////////////////////////
+  const handleBidAmountInput = (e) => {
+    setBidAmount(e.target.value);
+  };
+
+  const validateBid = (enteredBid) => {
+    const minBid = listing.price * 1.05;
+    if (enteredBid < minBid.toFixed(listing.decimals)) {
+      console.log(
+        "Bid amount must be at least 5% higher than the current price. Minimum required bid: ",
+        minBid.toFixed(listing.decimals)
+      );
+      return false;
+    }
+    return true;
+  };
+
+  const handleApproveButton = async () => {
+    if (!validateBid(bidAmount)) {
+      setBidAmountValid(false);
+      return;
+    }
     try {
-      handleApprove(ETHAmount, tokenContract, approveERC20);
-      handleBid(approveBid, Number(listing.listingId), ETHAmount);
+      setBidAmountValid(true);
+      setApprovalStatus("inProgress");
+      await handleApprove(
+        bidAmount * 10 ** listing.decimals,
+        tokenContract,
+        contractAddressConfig.dsponsor_marketplace_contract_address,
+        approveERC20
+      );
+      setApprovalStatus("approved");
     } catch (error) {
-      console.error("Error:", error);
+      console.error("Error during approval:", error);
+      setApprovalStatus("idle");
     }
   };
 
+  const confirmBid = async () => {
+    try {
+      await handleBid(
+        bid,
+        Number(listing.id),
+        bidAmount * 10 ** listing.decimals
+      );
+      console.log("Bid placed successfully");
+      setShowBidsModal(false);
+    } catch (error) {
+      setShowBidsModal(false);
+      console.error("Error:", error);
+      alert("Failed to place the bid. Please try again.");
+    }
+  };
+
+  const handleTermService = (e) => {
+    console.log(validate);
+    setValidate(e.target.checked);
+  };
   return (
     <>
       <div
@@ -65,7 +118,13 @@ const BidsModal = ({ showBidsModal, setShowBidsModal, listing }) => {
                   <h5 className="modal-title text-white" id="placeBidLabel">
                     Confirm Bid
                   </h5>
-                  <button onClick={() => setShowBidsModal(false)}>
+                  <button
+                    onClick={() => {
+                      setShowBidsModal(false);
+                      setApprovalStatus("idle");
+                      setBidAmountValid(true);
+                    }}
+                  >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       viewBox="0 0 24 24"
@@ -90,7 +149,7 @@ const BidsModal = ({ showBidsModal, setShowBidsModal, listing }) => {
                   <div className="relative mb-2 flex items-center overflow-hidden rounded-lg border border-jacarta-100 dark:border-jacarta-600">
                     <div className="flex flex-1 items-center self-stretch border-r border-jacarta-100 bg-jacarta-50 px-2">
                       <span className="font-display text-sm text-jacarta-700">
-                        ETH
+                        {listing.symbol}
                       </span>
                     </div>
 
@@ -98,20 +157,35 @@ const BidsModal = ({ showBidsModal, setShowBidsModal, listing }) => {
                       type="number"
                       className="focus:ring-accent h-12 w-full flex-[3] border-0 focus:ring-inse dark:text-jacarta-700"
                       placeholder="Amount"
-                      value={ETHAmount}
-                      onChange={(e) => handleEThAmount(e)}
+                      value={bidAmount}
+                      onChange={(e) => handleBidAmountInput(e)}
                     />
 
+                    {/* TODO : recalculate this */}
                     <div className="flex flex-1 justify-end self-stretch border-l border-jacarta-100 bg-jacarta-50">
                       <span className="self-center px-2 text-sm">$130.82</span>
                     </div>
                   </div>
 
-                  <div className="text-right">
-                    <span className="text-sm text-white dark:text-jacarta-400">
-                      Balance: 0.0000 WETH
-                    </span>
+                  {/* TODO : update the error price msg  */}
+
+                  <div className="text-left">
+                    {!bidAmountValid && (
+                      <span className="text-red text-sm">
+                        Bid amount must be at least 5% higher than the current
+                        price (
+                        {(listing.price * 1.05).toFixed(listing.decimals)} or
+                        more)
+                      </span>
+                    )}
                   </div>
+
+                  {/* TODO : do balance here with the right currency */}
+                  {/* <div className="text-right">
+                      <span className="text-sm text-white dark:text-jacarta-400">
+                        Balance: {balance.data.displayValue} {balance.data.symbol}
+                      </span>
+                    </div> */}
 
                   {/* Terms */}
                   <div className="mt-4 flex items-center space-x-2">
@@ -134,14 +208,47 @@ const BidsModal = ({ showBidsModal, setShowBidsModal, listing }) => {
                 {/* end body */}
 
                 <div className="modal-footer">
-                  <div className="flex items-center justify-center space-x-4">
-                    {/* <Confirm_bid bidFunc={confirmBid} /> */}
-                    <button
-                      className="bg-white btn btn-primary"
-                      onClick={() => confirmBid()}
-                    >
-                      Confirm Bid
-                    </button>
+                  <div className="flex items-center justify-center space-x-4 flex-wrap">
+                    {/* Approve button */}
+                    <div>
+                      <button
+                        className={
+                          "" +
+                          (approvalStatus === "approved"
+                            ? "inline-block w-full rounded-full py-3 px-8 text-center font-semibold text-white bg-green shadow-green-volume"
+                            : approvalStatus === "idle"
+                            ? "inline-block w-full rounded-full py-3 px-8 text-center font-semibold text-white transition-all bg-accent shadow-accent-volume hover:bg-accent-dark"
+                            : "inline-block w-full rounded-full py-3 px-8 text-center font-semibold text-white transition-all bg-sibinput")
+                        }
+                        disabled={
+                          approvalStatus === "inProgress" ||
+                          approvalStatus === "approved"
+                        }
+                        onClick={() => handleApproveButton()}
+                      >
+                        {approvalStatus === "inProgress"
+                          ? "Approving in progress..."
+                          : approvalStatus === "approved"
+                          ? "Approved"
+                          : "Approve"}
+                      </button>
+                    </div>
+
+                    {/* Confirm Buy button : */}
+                    <div>
+                      <button
+                        className={
+                          "" +
+                          (approvalStatus === "approved"
+                            ? "inline-block w-full rounded-full  py-3 px-8 text-center font-semibold text-white  transition-all bg-accent shadow-accent-volume hover:bg-accent-dark "
+                            : "inline-block w-full rounded-full  py-3 px-8 text-center font-semibold text-white  transition-all bg-sibinput")
+                        }
+                        disabled={approvalStatus !== "approved"}
+                        onClick={() => confirmBid()}
+                      >
+                        Confirm Bid
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -168,7 +275,7 @@ const BidsModal = ({ showBidsModal, setShowBidsModal, listing }) => {
                 </button>
               </div>
               <div className="modal-body p-6">
-                <p className="text-white">
+                <p className="text-white pb-6">
                   Please connect your wallet first to confirm the bid.
                 </p>
 

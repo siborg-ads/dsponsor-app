@@ -72,7 +72,7 @@ export default function Timer({ endTime }) {
 
     // Calculate remaining time until endTime
     const now = new Date().getTime();
-    const timeRemaining = 1713438665404 - now;
+    const timeRemaining = endTime * 1000 - now;
     setRemainingTime(timeRemaining);
   }, [endTime]);
   return (

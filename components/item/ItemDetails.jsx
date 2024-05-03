@@ -4,31 +4,29 @@ import Link from "next/link";
 import Timer from "./Timer";
 import { useEffect, useState } from "react";
 import { dSponsorMpContract } from "../../lib/config/listing.config";
-import {
-  fetchLatestListingIdOfItem,
-  getMarketplaceItemsSymbolsAndPrice,
-  getMarketplaceSingleListing,
-  fetchAllMpListingsPerToken,
-  getRoyaltyInfo,
-  fetchAllMpListings,
-} from "../../app/marketplace/services/marketplace-item-services";
+// import {
+//   fetchLatestListingIdOfItem,
+//   getMarketplaceItemsSymbolsAndPrice,
+//   getMarketplaceSingleListing,
+//   fetchFirstValidListing,
+//   getRoyaltyInfo,
+//   fetchAllMpListings,
+// } from "../../app/marketplace/services/marketplace-item-services";
 import { useContractWrite, useContract } from "@thirdweb-dev/react";
+import {
+  listingWpriceAndSymbol,
+  fetchFirstValidListing,
+  fetchListingOffer,
+} from "../../app/marketplace/services";
 import BidsModal from "../bids/BidsModal";
 import BuyModal from "../modal/buyModal";
 import { useTransaction } from "../../utils/transactions";
 import { contractAddressConfig } from "../../lib/config/listing.config";
 import { defaultChainId } from "../../app/marketplace/marketplace.config";
+// import { fetchListingOffer } from "../../app/marketplace/marketplace-items-fetch";
 const chainId = defaultChainId;
 
 export default function ItemDetails({ assetContract, tokenId }) {
-  const [listingInformation, setListingInformation] = useState(null);
-  const [showBidsModal, setShowBidsModal] = useState(false);
-  const [showBuyModal, setShowBuyModal] = useState(false);
-  const [listingNotValid, setListingNotValid] = useState(false);
-
-  //wallet & address
-  const { handleApprove, handleCreateListing } = useTransaction();
-
   ///////////////////////////////////////////////////////
   /////////// contracts ////////////////
   ///////////////////////////////////////////////////////
@@ -37,70 +35,52 @@ export default function ItemDetails({ assetContract, tokenId }) {
     contractAddressConfig.dsponsor_marketplace_contract_address
   );
 
-  ///////////////////////////////////////////////////////
-  /////////// funcs ////////////////
-  ///////////////////////////////////////////////////////
-
-  // const { mutateAsync: approveERC20 } = useContractWrite(
-  //   tokenContract,
-  //   "approve"
-  // );
-
   const { mutateAsync: createListing } = useContractWrite(
     dsponsorMpContract,
     "createListing"
   );
+  /////////////////////////////////////////////////
+  const [listingInformation, setListingInformation] = useState(null);
+  const [showBidsModal, setShowBidsModal] = useState(false);
+  const [showBuyModal, setShowBuyModal] = useState(false);
+  const [listingNotValid, setListingNotValid] = useState(false);
+  const now = new Date().getTime() / 1000;
 
-  // TODO : add if else for start time
-  // function to fetch listing information
+  //wallet & address
+  const { handleApprove, handleCreateListing } = useTransaction();
+
+  const endTime = listingInformation?.endTime;
+  const endDate = new Date(endTime * 1000);
+  const options = {
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    hour: "numeric",
+    minute: "numeric",
+    second: "numeric",
+    timeZone: "UTC",
+  };
+  const formattedEndDate = endDate.toLocaleDateString("en-US", options);
+
   const fetchListingInfo = async () => {
-    // const allListings = await fetchAllMpListingsPerToken(
-    //   assetContract,
-    //   tokenId
-    // );
-    // console.log("allListings", allListings);
-
-    // const listing = await getMarketplaceSingleListing(
-    //   dSponsorMpContract,
-    //   itemData.listingId
-    // );
-    // console.log("listing", listing);
-    // const itemData = await fetchLatestListingIdOfItem(
-    //   assetContract,
-    //   tokenId,
-    //   chainId,
-    //   dSponsorMpContract
-    // );
-    // console.log("item Data", itemData);
-
     try {
-      const firstValidListingOfToken = await fetchAllMpListingsPerToken(
+      const firstValidListingOfToken = await fetchFirstValidListing(
         assetContract,
         tokenId
       );
       console.log("firstValidListingOfToken", firstValidListingOfToken);
+      const listingWithPrice = await listingWpriceAndSymbol(
+        firstValidListingOfToken,
+        chainId
+      );
+      console.log("listingWithPrice", listingWithPrice);
       if (firstValidListingOfToken.error) {
         setListingNotValid(true);
       } else {
-        const listingWithPrice = await getMarketplaceItemsSymbolsAndPrice(
-          // listing,
-          firstValidListingOfToken,
-          dSponsorMpContract,
-          chainId
-        );
-        const royaltyInfo = await getRoyaltyInfo(
-          listingWithPrice,
-          chainId,
-          assetContract
-        );
-
-        const updatedListingInformation = {
-          ...listingWithPrice,
-          ...firstValidListingOfToken,
-          ...royaltyInfo,
-        };
-        console.log("updatedListingInformation", updatedListingInformation);
-        setListingInformation(updatedListingInformation);
+        const updatedListing = await fetchListingOffer(listingWithPrice);
+        console.log("updatedListing", updatedListing);
+        setListingInformation(updatedListing);
       }
     } catch (error) {
       console.error("Error fetching listing information:", error);
@@ -109,24 +89,26 @@ export default function ItemDetails({ assetContract, tokenId }) {
 
   useEffect(() => {
     fetchListingInfo();
-    // handleApprove("0.05", tokenContract, approveERC20);
   }, []);
 
   return (
     <>
-      <section className="relative pt-1 pb-24 lg:py-24 bg-sigray">
-        {/* TODO : rendering both modals is slow and not a good practice, make this better */}
-        <BidsModal
-          showBidsModal={showBidsModal}
-          setShowBidsModal={setShowBidsModal}
-          listing={listingInformation}
-        />
-        <BuyModal
-          showBuyModal={showBuyModal}
-          setShowBuyModal={setShowBuyModal}
-          listing={listingInformation}
-        />
+      <section className="relative pb-10 pt-20 md:pt-32 h-1527 bg-sigray">
+        {listingInformation?.listingType == "Auction" ? (
+          <BidsModal
+            showBidsModal={showBidsModal}
+            setShowBidsModal={setShowBidsModal}
+            listing={listingInformation}
+          />
+        ) : (
+          <BuyModal
+            showBuyModal={showBuyModal}
+            setShowBuyModal={setShowBuyModal}
+            listing={listingInformation}
+          />
+        )}
         {listingNotValid ? (
+          // TODO : design for this
           <h1 className="mb-4 font-display text-4xl font-semibold text-light-base dark:text-white">
             Listing Not Valid
           </h1>
@@ -139,49 +121,13 @@ export default function ItemDetails({ assetContract, tokenId }) {
                 <Image
                   width={540}
                   height={670}
-                  src={"/images/products/item_single_large.jpg"}
-                  // src={listingInformation?.offer.image}
+                  // src={"/images/products/item_single_large.jpg"}
+                  src={listingInformation?.offer.image}
                   alt="item"
                   className="cursor-pointer rounded-2.5xl w-[100%]"
                   data-bs-toggle="modal"
                   data-bs-target="#imageModal"
                 />
-
-                {/* Modal */}
-                <div
-                  className="modal fade"
-                  id="imageModal"
-                  tabIndex="-1"
-                  aria-hidden="true"
-                >
-                  <div className="modal-dialog !my-0 flex h-full items-center justify-center p-4">
-                    <Image
-                      width={787}
-                      height={984}
-                      src="/images/products/item_single_full.jpg"
-                      alt="item"
-                    />
-                  </div>
-
-                  <button
-                    type="button"
-                    className="btn-close absolute top-6 right-6"
-                    data-bs-dismiss="modal"
-                    aria-label="Close"
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 24 24"
-                      width="24"
-                      height="24"
-                      className="h-6 w-6 fill-white"
-                    >
-                      <path fill="none" d="M0 0h24v24H0z" />
-                      <path d="M12 10.586l4.95-4.95 1.414 1.414-4.95 4.95 4.95 4.95-1.414 1.414-4.95-4.95-4.95 4.95-1.414-1.414 4.95-4.95-4.95-4.95L7.05 5.636z" />
-                    </svg>
-                  </button>
-                </div>
-                {/* end modal */}
               </figure>
 
               {/* Details */}
@@ -195,7 +141,7 @@ export default function ItemDetails({ assetContract, tokenId }) {
                       href={`/collections`}
                       className="mr-2 text-sm font-bold text-sipurple"
                     >
-                      {"Siborg"}
+                      {"Siborg collections"}
                     </Link>
                     <span
                       className="inline-flex h-6 w-6 items-center justify-center rounded-full border-2 border-white bg-green dark:border-jacarta-600"
@@ -243,49 +189,6 @@ export default function ItemDetails({ assetContract, tokenId }) {
                   {listingInformation?.offer.name}
                 </h1>
 
-                <div className="mb-8 flex items-center space-x-4 whitespace-nowrap">
-                  <div className="flex items-center">
-                    <span className="-ml-1" data-tippy-content="ETH">
-                      <svg
-                        version="1.1"
-                        xmlns="http://www.w3.org/2000/svg"
-                        x="0"
-                        y="0"
-                        viewBox="0 0 1920 1920"
-                        // xml:space="preserve"
-                        className="mr-1 h-4 w-4"
-                      >
-                        <path
-                          fill="#8A92B2"
-                          d="M959.8 80.7L420.1 976.3 959.8 731z"
-                        ></path>
-                        <path
-                          fill="#62688F"
-                          d="M959.8 731L420.1 976.3l539.7 319.1zm539.8 245.3L959.8 80.7V731z"
-                        ></path>
-                        <path
-                          fill="#454A75"
-                          d="M959.8 1295.4l539.8-319.1L959.8 731z"
-                        ></path>
-                        <path
-                          fill="#8A92B2"
-                          d="M420.1 1078.7l539.7 760.6v-441.7z"
-                        ></path>
-                        <path
-                          fill="#62688F"
-                          d="M959.8 1397.6v441.7l540.1-760.6z"
-                        ></path>
-                      </svg>
-                    </span>
-                  </div>
-                  <span className="text-sm text-jacarta-300 dark:text-jacarta-300">
-                    Highest bid
-                  </span>
-                  <span className="text-sm text-jacarta-300 dark:text-jacarta-300">
-                    1/1 available
-                  </span>
-                </div>
-
                 <p className="mb-10 text-light-base">
                   {listingInformation?.offer.description}
                 </p>
@@ -320,13 +223,19 @@ export default function ItemDetails({ assetContract, tokenId }) {
                         </div>
                       </Link>
                     </figure>
+                    {/* creator*/}
                     <div className="flex flex-col justify-center">
                       <span className="block text-sm text-jacarta-300 dark:text-white">
                         Creator{" "}
                         <strong>
-                          {Number(listingInformation?.royaltyAmountDecimal)}%
-                          royalties
+                          {Number(
+                            listingInformation?.token.nftContract.royaltyBps
+                          ) / 100}
+                          % royalties
                         </strong>
+                      </span>
+                      <span className="block text-sm text-jacarta-300 dark:text-white">
+                        <strong>+ 4% Marketplace fee</strong>
                       </span>
                       <Link href={`/user/2`} className="block text-sipurple">
                         <span className="text-sm font-bold">@siborg</span>
@@ -334,6 +243,7 @@ export default function ItemDetails({ assetContract, tokenId }) {
                     </div>
                   </div>
 
+                  {/* owned by*/}
                   <div className="mb-4 flex">
                     <figure className="mr-4 shrink-0">
                       <Link href={`/user/4`} className="relative block">
@@ -375,161 +285,142 @@ export default function ItemDetails({ assetContract, tokenId }) {
 
                 {/* Bid */}
 
-                {listingInformation?.listingType == 1 && (
-                  <div className="rounded-2lg border border-sigray-border bg-sigray-light p-8 dark:border-jacarta-600 dark:bg-jacarta-700">
-                    <div className="mb-8 sm:flex sm:flex-wrap">
-                      {/* Highest bid */}
-                      <div className="sm:w-1/2 sm:pr-4 lg:pr-8">
-                        <div className="block overflow-hidden text-ellipsis whitespace-nowrap">
-                          <span className="text-sm text-jacarta-300 dark:text-jacarta-300">
-                            Highest bid by{" "}
-                          </span>
-                          <Link
-                            href={`/user/9`}
-                            className="text-sm font-bold text-sipurple"
-                          >
-                            0x695d2ef170ce69e794707eeef9497af2de25df82
-                          </Link>
-                        </div>
-                        <div className="mt-3 flex">
-                          <figure className="mr-4 shrink-0">
-                            <Link href={`/user/8`} className="relative block">
-                              <Image
-                                width={48}
-                                height={48}
-                                src="/images/avatars/avatar_4.jpg"
-                                alt="avatar"
-                                className="rounded-2lg"
-                                loading="lazy"
-                              />
-                            </Link>
-                          </figure>
-                          <div>
-                            <div className="flex items-center whitespace-nowrap">
-                              <span className="-ml-1" data-tippy-content="ETH">
-                                <svg
-                                  version="1.1"
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  x="0"
-                                  y="0"
-                                  viewBox="0 0 1920 1920"
-                                  // xml:space="preserve"
-                                  className="h-5 w-5"
-                                >
-                                  <path
-                                    fill="#8A92B2"
-                                    d="M959.8 80.7L420.1 976.3 959.8 731z"
-                                  ></path>
-                                  <path
-                                    fill="#62688F"
-                                    d="M959.8 731L420.1 976.3l539.7 319.1zm539.8 245.3L959.8 80.7V731z"
-                                  ></path>
-                                  <path
-                                    fill="#454A75"
-                                    d="M959.8 1295.4l539.8-319.1L959.8 731z"
-                                  ></path>
-                                  <path
-                                    fill="#8A92B2"
-                                    d="M420.1 1078.7l539.7 760.6v-441.7z"
-                                  ></path>
-                                  <path
-                                    fill="#62688F"
-                                    d="M959.8 1397.6v441.7l540.1-760.6z"
-                                  ></path>
-                                </svg>
+                {listingInformation?.startTime > now ? (
+                  <p className="mb-10 text-light-base">
+                    This item listing will start soon.
+                  </p>
+                ) : (
+                  <>
+                    {listingInformation?.listingType == "Auction" && (
+                      <div className="rounded-2lg border border-sigray-border bg-sigray-light p-8 dark:border-jacarta-600 dark:bg-jacarta-700">
+                        <div className="mb-8 sm:flex sm:flex-wrap">
+                          {/* Highest bid */}
+                          <div className="sm:w-1/2 sm:pr-4 lg:pr-8">
+                            <div className="block overflow-hidden text-ellipsis whitespace-nowrap">
+                              <span className="text-sm text-jacarta-300 dark:text-jacarta-300">
+                                Highest bid by{" "}
                               </span>
-                              <span className="text-lg font-medium leading-tight tracking-tight text-green">
-                                {listingInformation.pri}
+                              <Link
+                                href={`/user/9`}
+                                className="text-sm font-bold text-sipurple"
+                              >
+                                0x695d2ef170ce69e794707eeef9497af2de25df82
+                              </Link>
+                            </div>
+                            <div className="mt-3 flex">
+                              <figure className="mr-4 shrink-0">
+                                <Link
+                                  href={`/user/8`}
+                                  className="relative block"
+                                >
+                                  <Image
+                                    width={48}
+                                    height={48}
+                                    src="/images/avatars/avatar_4.jpg"
+                                    alt="avatar"
+                                    className="rounded-2lg"
+                                    loading="lazy"
+                                  />
+                                </Link>
+                              </figure>
+                              <div>
+                                <div className="flex items-center whitespace-nowrap">
+                                  <span className="text-m font-medium leading-tight tracking-tight text-green">
+                                    {listingInformation.price}{" "}
+                                    {listingInformation.symbol}
+                                  </span>
+                                </div>
+                                {/** TODO : to change this, format it reall*/}
+                                <span className="text-sm text-jacarta-300 dark:text-jacarta-300">
+                                  ~10,864.10€
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Countdown */}
+                          <div className="mt-4 dark:border-jacarta-600 sm:mt-0 sm:w-1/2 sm:border-l sm:border-jacarta-100 sm:pl-4 lg:pl-8">
+                            <span className="js-countdown-ends-label text-sm text-jacarta-300 dark:text-jacarta-300">
+                              Auction ends in
+                            </span>
+                            <Timer endTime={listingInformation?.endTime} />
+                          </div>
+                        </div>
+
+                        {/* Buttons */}
+                        <div className="flex space-x-4">
+                          <a
+                            onClick={() => {
+                              setShowBidsModal(true);
+                            }}
+                            className="inline-block w-full rounded-full bg-accent py-3 px-8 text-center font-semibold text-white shadow-accent-volume transition-all hover:bg-accent-dark"
+                          >
+                            Place Bid
+                          </a>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* TODO : to change design of this card */}
+                    {listingInformation?.listingType == "Direct" && (
+                      <div className="rounded-2lg border border-sigray-border bg-sigray-light p-8 dark:border-jacarta-600 dark:bg-jacarta-700">
+                        <div className="flex items-center justify-center sm:flex-wrap mb-8">
+                          <div className="sm:w-1/2 sm:pr-4 lg:pr-8">
+                            <figure className="mr-4 shrink-0">
+                              <Link href={`/user/8`} className="relative block">
+                                <Image
+                                  width={48}
+                                  height={48}
+                                  src="/images/avatars/avatar_4.jpg"
+                                  alt="avatar"
+                                  className="rounded-2lg"
+                                  loading="lazy"
+                                />
+                              </Link>
+                            </figure>
+                            <div>
+                              <div className="flex items-center whitespace-nowrap">
+                                <span className="text-m font-medium leading-tight tracking-tight text-green">
+                                  {listingInformation.price}{" "}
+                                  {listingInformation.symbol}
+                                </span>
+                              </div>
+                              <span className="text-sm text-jacarta-300 dark:text-jacarta-300">
+                                ~10,864.10€
                               </span>
                             </div>
-                            <span className="text-sm text-jacarta-300 dark:text-jacarta-300">
-                              ~10,864.10€
+                          </div>
+                          <div className="mt-4 dark:border-jacarta-600 sm:mt-0 sm:w-1/2 sm:border-l sm:border-jacarta-100 sm:pl-4 lg:pl-8">
+                            <span className="js-countdown-ends-label text-sm text-jacarta-300 dark:text-jacarta-300">
+                              Sales ends on{" "}
+                            </span>
+                            <span className="text-m font-medium leading-tight tracking-tight text-jacarta-100">
+                              {formattedEndDate}
                             </span>
                           </div>
                         </div>
-                      </div>
 
-                      {/* Countdown */}
-                      <div className="mt-4 dark:border-jacarta-600 sm:mt-0 sm:w-1/2 sm:border-l sm:border-jacarta-100 sm:pl-4 lg:pl-8">
-                        <span className="js-countdown-ends-label text-sm text-jacarta-300 dark:text-jacarta-300">
-                          Auction ends in
-                        </span>
-                        <Timer endTime={Number(listingInformation?.endTime)} />
-                      </div>
-                    </div>
-
-                    {/* Buttons */}
-                    <div className="flex space-x-4">
-                      <a
-                        onClick={() => {
-                          setShowBidsModal(true);
-                        }}
-                        className="inline-block w-full rounded-full bg-accent py-3 px-8 text-center font-semibold text-white shadow-accent-volume transition-all hover:bg-accent-dark"
-                      >
-                        Place Bid
-                      </a>
-                    </div>
-                  </div>
-                )}
-
-                {/* TODO : to change design of this card */}
-                {listingInformation?.listingType == 0 && (
-                  <div className="rounded-2lg border border-sigray-border bg-sigray-light p-8 dark:border-jacarta-600 dark:bg-jacarta-700">
-                    <div className="flex items-center justify-center mb-8">
-                      <figure className="mr-4 shrink-0">
-                        <Link href={`/user/8`} className="relative block">
-                          <Image
-                            width={48}
-                            height={48}
-                            src="/images/avatars/avatar_4.jpg"
-                            alt="avatar"
-                            className="rounded-2lg"
-                            loading="lazy"
-                          />
-                        </Link>
-                      </figure>
-                      <div>
-                        <div className="flex items-center whitespace-nowrap">
-                          <span className="-ml-1" data-tippy-content="ETH">
-                            <svg
-                              version="1.1"
-                              xmlns="http://www.w3.org/2000/svg"
-                              x="0"
-                              y="0"
-                              viewBox="0 0 1920 1920"
-                              className="h-5 w-5"
-                            >
-                              {/* SVG paths */}
-                            </svg>
-                          </span>
-                          <span className="text-lg font-medium leading-tight tracking-tight text-green">
-                            {listingInformation?.price}
-                          </span>
+                        {/* Buttons */}
+                        <div className="flex justify-center space-x-4">
+                          <a
+                            onClick={() => {
+                              setShowBuyModal(true);
+                            }}
+                            className="inline-block w-full rounded-full bg-accent py-3 px-8 text-center font-semibold text-white shadow-accent-volume transition-all hover:bg-accent-dark"
+                          >
+                            Buy Now For {listingInformation?.price}{" "}
+                            {listingInformation?.symbol}
+                          </a>
                         </div>
-                        <span className="text-sm text-jacarta-300 dark:text-jacarta-300">
-                          {listingInformation?.price}
-                        </span>
                       </div>
-                    </div>
-
-                    {/* Buttons */}
-                    <div className="flex justify-center space-x-4">
-                      <a
-                        onClick={() => {
-                          setShowBuyModal(true);
-                        }}
-                        className="inline-block w-full rounded-full bg-accent py-3 px-8 text-center font-semibold text-white shadow-accent-volume transition-all hover:bg-accent-dark"
-                      >
-                        Buy Now For {listingInformation?.price}
-                      </a>
-                    </div>
-                  </div>
+                    )}
+                  </>
                 )}
 
                 {/* end bid */}
 
                 {/* list for sale */}
-                {!listingInformation?.listingId && (
+                {/* {!listingInformation?.listingId && (
                   <div className="flex space-x-4">
                     <a
                       onClick={() => {
@@ -540,7 +431,7 @@ export default function ItemDetails({ assetContract, tokenId }) {
                       List for sale /
                     </a>
                   </div>
-                )}
+                )} */}
 
                 <div className="mt-4 text-center">
                   <div className="block text-base text-jacarta-300 text-white font-light">
