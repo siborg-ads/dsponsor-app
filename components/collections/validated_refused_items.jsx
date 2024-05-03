@@ -8,7 +8,7 @@ import { CopyToClipboard } from "react-copy-to-clipboard";
 
 const Validated_refused_items = ({ statut, proposalData }) => {
   const [filterVal, setFilterVal] = useState(null);
-  const [copied, setCopied] = useState(false);
+  
   const [data, setData] = useState(collection_activity_item_data);
   const [statutItem, setStatutItem] = useState(null);
 
@@ -61,36 +61,7 @@ const Validated_refused_items = ({ statut, proposalData }) => {
       {/* <!-- Activity Tab --> */}
       <div className="tab-pane fade">
         {/* <!-- Records / Filter --> */}
-        {statut && (
-          <div key="2" className="dropdown-item mb-4 p-6 dark:bg-jacarta-700 dark:border-jacarta-600 border hover:bg-jacarta-50 block w-full rounded-xl  text-left text-sm transition-colors dark:text-white">
-            <div className="flex flex-wrap  gap-5 ">
-              <span className="mb-2 md:w-1/3 flex-grow dark:text-jacarta-300 text-jacarta-400 text-sm">
-                Don&apos;t forget to display the adSpaces on your website ! Copy paste this piece of code to display automatically your sponsor logo.
-              </span>
-              
-              <div className="flex gap-2 w-full md:w-auto items-start ">
-                <pre
-                  style={{
-                    backgroundColor: "#010101",
-                    borderRadius: "5px",
-                    fontFamily: "'Courier New', monospace",
-                    padding: "10px",
-                    overflowX: "auto",
-                  }}
-                >
-                  <code>{`<iframe src="https://integrations.dsponsor.com/squareLogsoV1/...`}</code>
-                </pre>
-                <Tippy hideOnClick={false} content={copied ? <span>copied</span> : <span>copy</span>}>
-                  <div className="js-copy-clipboard cursor-pointer">
-                    <CopyToClipboard text="userId" onCopy={() => setCopied(true)}>
-                      <Image src="/images/copy.svg" alt="icon" width={20} height={20} className="mt-2 " />
-                    </CopyToClipboard>
-                  </div>
-                </Tippy>
-              </div>
-            </div>
-          </div>
-        )}
+        
         <div className="lg:flex">
           {/* <!-- Records --> */}
 

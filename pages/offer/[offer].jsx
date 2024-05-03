@@ -19,13 +19,16 @@ import { contractABI } from "../../data/services/contract";
 import { user } from "@nextui-org/react";
 import Form from "../../components/collections-wide/sidebar/collections/Form";
 
+import "tippy.js/dist/tippy.css";
+import { CopyToClipboard } from "react-copy-to-clipboard";
+
 
 const Offer = () => {
   const router = useRouter();
 
   const offerId = router.query.offer;
   const userAddress = useAddress();
-
+const [copied, setCopied] = useState(false);
   const [offerData, setOfferData] = useState([]);
   const [pendingProposalData, setPendingProposalData] = useState([]);
   const [validatedProposalData, setValidatedProposalData] = useState([]);
@@ -292,7 +295,7 @@ const Offer = () => {
             <div className="grid grid-cols-1 gap-[1.875rem] md:grid-cols-2 lg:grid-cols-4">
               <article className="relative">
                 <div className="dark:bg-jacarta-700 dark:border-jacarta-700 border-jacarta-100 rounded-2xl block border bg-white p-[1.1875rem] transition-shadow hover:shadow-lg text-jacarta-500">
-                  {isWordAlreadyTaken ? <span className="text-red  ">This word is already taken ❌</span> : <span className="text-green ">This word is available 🎉</span> }
+                  {isWordAlreadyTaken ? <span className="text-red  ">This word is already taken ❌</span> : <span className="text-green ">This word is available 🎉</span>}
                   <figure className="mt-2">
                     <Link href={urlFromChild}>{image && <Image src={image} alt="logo" height={230} width={230} className="rounded-[0.625rem] w-full lg:h-[230px] object-contain" loading="lazy" />}</Link>
                   </figure>
@@ -362,22 +365,35 @@ const Offer = () => {
         </Tabs>
       </div>
 
-
-
-      <div className={'container'}>
-         <span className="dark:text-jacarta-300 text-jacarta-400 text-sm">
-                You can integrate this offer on your website by using the following iframe code. Simply copy and paste the code into your website to display the offer.{" "}
-        </span>
-        <br/>
-        <code className="dark:bg-jacarta-700 dark:border-jacarta-600 border-jacarta-100 rounded-2xl block border bg-white p-[1.1875rem] transition-shadow hover:shadow-lg text-jacarta-500">
-            {`<iframe src="https://relayer.dsponsor.com/11155111/iframe/${offerId}?bgColor=0d102d" height="315" width="1000px" className={'h-screen w-full'} />`}
-        </code>
-        <iframe src={`https://relayer.dsponsor.com/11155111/iframe/${offerId}?bgColor=0d102d`}
-                height="315"
-                width="1000px"
-                className={'h-screen w-full'}
-        />
-      </div>
+      {isOwner && <div className={"container"}>
+        <div className="dark:bg-jacarta-700 dark:border-jacarta-600 border-jacarta-100 rounded-2lg border bg-white p-8 mb-4">
+          <span className="dark:text-jacarta-300 text-jacarta-400 text-sm ">
+            You can integrate this offer on your website by using the following iframe code. Simply copy and paste the code into your website to display the offer.{" "}
+          </span>
+          <br />
+          <div className="flex gap-4 w-full md:w-auto items-start mt-2 ">
+            <pre
+              style={{
+                backgroundColor: "#010101",
+                borderRadius: "5px",
+                fontFamily: "'Courier New', monospace",
+                padding: "10px",
+                overflowX: "auto",
+              }}
+            >
+              <code> {`<iframe src="https://relayer.dsponsor.com/11155111/iframe/${offerId}?bgColor=0d102d" height="315" width="1000px" className={'h-screen w-full'} />`}</code>
+            </pre>
+            <Tippy hideOnClick={false} content={copied ? <span>copied</span> : <span>copy</span>}>
+              <div className="js-copy-clipboard cursor-pointer">
+                <CopyToClipboard text="userId" onCopy={() => setCopied(true)}>
+                  <Image src="/images/copy.svg" alt="icon" width={20} height={20} className="mt-2 min-w-[20px] " />
+                </CopyToClipboard>
+              </div>
+            </Tippy>
+          </div>
+        </div>
+        <iframe src={`https://relayer.dsponsor.com/11155111/iframe/${offerId}?bgColor=0d102d`} height="315" width="1000px" className={"h-screen w-full"} />
+      </div>}
       {/* <ItemsTabs /> */}
       {/* <div className="container mb-12">
         <ItemsTabs />

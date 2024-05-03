@@ -74,16 +74,16 @@ const Item = () => {
   const [tokenMetaData, setTokenMetaData] = useState("");
   const [allowanceTrue, setAllowanceTrue] = useState(false);
   const [adParameters, setAdParameters] = useState([]);
-  
+
   const [imageURLSteps, setImageURLSteps] = useState([]);
   const stepsRef = useRef([]);
   const [numSteps, setNumSteps] = useState(2);
-
+  
   useEffect(() => {
     if (offerId && tokenId) {
       const fetchAdsOffers = async () => {
         const offer = await GetTokenAdOffer(offerId, tokenId);
-    
+
         const destructuredIPFSResult = await fetchDataFromIPFS(offer.metadataURL);
 
         const combinedData = {
@@ -108,33 +108,31 @@ const Item = () => {
           setTokenMetaData(tokenMetaData);
         }
 
-       
         const uniqueIds = new Set();
         for (const param of offer.adParameters) {
-          if (param.id && param.id !== "xSpaceId" && param.id !== "xCreatorHandle") {
-            uniqueIds.add(param.id);
+          if (param.adParameter.id && param.adParameter.id !== "xSpaceId" && param.adParameter.id !== "xCreatorHandle") {
+            uniqueIds.add(param.adParameter.id);
           }
         }
- const imageURLSteps = [];
+        const imageURLSteps = [];
         const uniqueIdsArray = Array.from(uniqueIds);
         setAdParameters(uniqueIdsArray);
- uniqueIdsArray
-   .filter((id) => id.startsWith("imageURL"))
-   .map((id) => {
-     const variant = id.slice("imageURL-".length);
-     imageURLSteps.push(variant);
-   });
- const totalNumSteps = numSteps + imageURLSteps.length;
- console.log(imageURLSteps, "imageURLSteps");
- setImageURLSteps(imageURLSteps);
- setNumSteps(totalNumSteps);
-
-   
-       
-       
+        
+        uniqueIdsArray
+          .filter((id) => id.startsWith("imageURL"))
+          .map((id) => {
+            const variant = id.slice("imageURL-".length);
+            
+            imageURLSteps.push(variant);
+          });
+        const totalNumSteps = numSteps + imageURLSteps.length;
+        
+        setImageURLSteps(imageURLSteps);
+        setNumSteps(totalNumSteps);
 
         try {
           const currencyToken = adminInstance.chain.getCurrencyByAddress(offer.nftContract.prices[0].currency);
+        
           const formatPrice = offer.nftContract.prices[0].amount / 10 ** currencyToken.decimals;
           setPrice(formatPrice);
           setCurrency(currencyToken);
@@ -157,26 +155,25 @@ const Item = () => {
   }, [offerId, address, tokenId, successFullUpload]);
 
   useEffect(() => {
-
-    if(!offerData)return;
-      try {
-        const params = [];
-        const tokenIdArray = [];
-        const offerIdArray = [];
-        for (const element of offerData.nftContract.tokens[0].currentProposals) {
-          params.push(element.adParameter.id);
-          tokenIdArray.push(tokenId);
-          offerIdArray.push(offerId);
-        }
-        const submitAdFormated = {};
-        submitAdFormated.params = params;
-        submitAdFormated.tokenId = tokenIdArray;
-        submitAdFormated.offerId = offerIdArray;
-        setSubmitAdFormated(submitAdFormated);
-      } catch (e) {
-         console.error("Error: Ad parameters not found for offer");
+    if (!offerData) return;
+    try {
+      const params = [];
+      const tokenIdArray = [];
+      const offerIdArray = [];
+      for (const element of offerData.nftContract.tokens[0].currentProposals) {
+        params.push(element.adParameter.id);
+        tokenIdArray.push(tokenId);
+        offerIdArray.push(offerId);
       }
-  }, [ tokenId, offerId, offerData]);
+      const submitAdFormated = {};
+      submitAdFormated.params = params;
+      submitAdFormated.tokenId = tokenIdArray;
+      submitAdFormated.offerId = offerIdArray;
+      setSubmitAdFormated(submitAdFormated);
+    } catch (e) {
+      console.error("Error: Ad parameters not found for offer");
+    }
+  }, [tokenId, offerId, offerData]);
 
   useEffect(() => {
     const fetchAdsOffers = async () => {
@@ -237,12 +234,17 @@ const Item = () => {
     }
   };
 
-  const handleLogoUpload = (file) => {
-    if (file) {
-      setFiles([file]);
-      setPreviewImages([URL.createObjectURL(file)]);
-    }
-  };
+ const handleLogoUpload = (file, index) => {
+   if (file) {
+     const newFiles = [...files];
+     const newPreviewImages = [...previewImages];
+     newFiles[index] = { file: file, index: index };
+     newPreviewImages[index] = URL.createObjectURL(file);
+
+     setFiles(newFiles);
+     setPreviewImages(newPreviewImages);
+   }
+ };
 
   useEffect(() => {
     if (price && bps) {
@@ -271,7 +273,7 @@ const Item = () => {
 
   const handleApprove = async () => {
     try {
-      console.log("ici");
+      
       await approve({ args: ["0xE442802706F3603d58F34418Eac50C78C7B4E8b3", amountToApprove] });
       console.log("Approvation réussie");
       setAllowanceTrue(false);
@@ -299,12 +301,13 @@ const Item = () => {
         console.error("Erreur lors de l'upload à IPFS:", error);
         throw new Error("Upload to IPFS failed.");
       }
+      
       try {
         const argsMintAndSubmit = {
           tokenId: tokenIdString,
           to: address,
           currency: offerData?.nftContract.prices[0].currency,
-          tokenData: tokenData ? tokenData : null,
+          tokenData: tokenData ? tokenData : "",
           offerId: offerId,
           adParameters: [],
           adDatas: [],
@@ -314,19 +317,18 @@ const Item = () => {
           offerId: submitAdFormated.offerId,
           tokenId: submitAdFormated.tokenId,
           adParameters: submitAdFormated.params,
-          data: [uploadUrl[0], link ],
+          data: [uploadUrl[0], link],
         };
 
         const isEthCurrency = offerData?.nftContract.prices[0].currency === "0x0000000000000000000000000000000000000000";
-        const functionWithPossibleArgs =  adStatut !== 3 && !isAllowedToMint ? Object.values(argsAdSubmited) : argsMintAndSubmit;
+        const functionWithPossibleArgs = adStatut !== 3 && !isAllowedToMint ? Object.values(argsAdSubmited) : argsMintAndSubmit;
         const argsWithPossibleOverrides = isEthCurrency ? { args: [functionWithPossibleArgs], overrides: { value: amountToApprove } } : { args: [functionWithPossibleArgs] };
-      
-        if ( adStatut !== 3 && !isAllowedToMint) {
-          
 
+        if (adStatut !== 3 && !isAllowedToMint) {
           await submitAd({ args: functionWithPossibleArgs });
           setSuccessFullUpload(true);
         } else {
+          console.log("mintAndSubmit", argsWithPossibleOverrides);
           await mintAndSubmit(argsWithPossibleOverrides);
         }
 
@@ -402,7 +404,6 @@ const Item = () => {
       </div>
     );
   }
-
 
   const { description = "description not found", id = "1", image = ["/images/gradient_creative.jpg"], name = "DefaultName" } = !Object.keys(offerData.offer.token_metadata).length === 0 ? tokenMetaData : offerData.offer;
 
@@ -523,11 +524,12 @@ const Item = () => {
           <div>
             <SliderForm styles={styles} handlePreviewModal={handlePreviewModal} stepsRef={stepsRef} numSteps={numSteps}>
               <Step_1_Mint stepsRef={stepsRef} styles={styles} adParameters={adParameters} />
+              <Step_2_Mint stepsRef={stepsRef} styles={styles} setLink={setLink} link={link} />
               {imageURLSteps.map((id, index) => (
-                <Step_2_Mint
+                <Step_3_Mint
                   key={id}
                   stepsRef={stepsRef}
-                  currentStep={index + 1}
+                  currentStep={index + 2}
                   id={id}
                   styles={styles}
                   file={files[index]}
@@ -535,12 +537,17 @@ const Item = () => {
                   handleLogoUpload={(file) => handleLogoUpload(file, index)}
                 />
               ))}
-              <Step_3_Mint stepsRef={stepsRef} styles={styles} setLink={setLink} link={link} />
             </SliderForm>
           </div>
         ) : (
           <div className="flex justify-center">
-            <p>{offerNotFormated ? "Offer isn't well formated to buy" : (!isAllowedToMint || offerData.nftContract?.tokens.length > 0) && !isOwner ? "Sorry, someone already own this NFT " : ""}</p>
+            <p>
+              {offerNotFormated
+                ? "Offer isn't well formated to buy"
+                : offerData.nftContract?.tokens === 0 ?"Sorry, tokenId unavailable, please provide a tokenId valid " : (!isAllowedToMint || offerData.nftContract?.tokens[0]?.mint) && !isOwner
+                ? "Sorry, someone already own this NFT "
+                : ""}
+            </p>
           </div>
         )}
       </div>

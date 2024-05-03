@@ -10,24 +10,29 @@
   margin: 10px auto;
   text-align: center;
   position: relative;
-  padding-bottom: 60px;
+  padding-bottom: 100px;
   box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2), 0 30px 20px -20px rgba(0, 0, 0, 0.4);
-
+&__form__container{
+transition: height 0.3s ease-in-out;
+height: auto;
+}
   &__container {
     height: 100%;
+    transition: height 0.3s ease-in-out;
   }
 }
 
 .form {
-  overflow: hidden;
-
+ 
+overflow: hidden;
   &__step__container {
     display: flex;
-
+height: 100%;
     transition: 0.5s ease-in-out;
   }
 
   &__step {
+    
     h3 {
       opacity: 0.3;
       text-transform: uppercase;
@@ -64,7 +69,7 @@
       width: 50%;
       line-height: 50px;
       text-decoration: none;
-      padding: 0 8%;
+      padding: 0 4%;
       color: white;
       border: none;
       background: transparent;
@@ -155,6 +160,7 @@ button.btn {
   &__container {
     display: flex;
     justify-content: center;
+    
   }
 
   &--active {

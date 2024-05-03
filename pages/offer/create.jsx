@@ -18,7 +18,7 @@ import SliderForm from "../../components/sliderForm/sliderForm";
 import adminInstance from "../../utils/sdkProvider";
 
 const Create = () => {
-  const [file, setFile] = useState(null);
+  const [files, setFiles] = useState([]);
   const { mutateAsync: upload, isLoading } = useStorageUpload();
 
   const [link, setLink] = useState(null);
@@ -26,7 +26,7 @@ const Create = () => {
   const [description, setDescription] = useState(false);
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date(new Date().setFullYear(new Date().getFullYear() + 1)));
-  const [previewImage, setPreviewImage] = useState(null);
+  const [previewImages, setPreviewImages] = useState([]);
   const [selectedNumber, setSelectedNumber] = useState(1);
   const [selectedUnitPrice, setSelectedUnitPrice] = useState(1);
   const [selectedCurrency, setSelectedCurrency] = useState("USDC");
@@ -35,26 +35,19 @@ const Create = () => {
   const [validate, setValidate] = useState(false);
   const [showPreviewModal, setShowPreviewModal] = useState(false);
   const [successFullUpload, setSuccessFullUpload] = useState(false);
-  const [selectedParameter, setSelectedParameter] = useState(["imageURL", "linkURL"]);
-  const [displayedParameter, setDisplayedParameter] = useState("Logo Grid & Link");
+  const [selectedIntegration, setSelectedIntegration] = useState([]);
+  const [selectedParameter, setSelectedParameter] = useState([]);
+  const [displayedParameter, setDisplayedParameter] = useState([]);
   const [selectedTypeParameter, setSelectedTypeParameter] = useState(0);
   const { contract: DsponsorAdminContract } = useContract("0xE442802706F3603d58F34418Eac50C78C7B4E8b3", contractABI);
   const { mutateAsync: createDSponsorNFTAndOffer } = useContractWrite(DsponsorAdminContract, "createDSponsorNFTAndOffer");
+   const [imageRatios, setImageRatios] = useState([]);
   const [name, setName] = useState(false);
   const stepsRef = useRef([]);
   const { ethers } = require("ethers");
 
-  const handleNumberChange = (e) => {
-    setSelectedNumber(parseInt(e.target.value, 10));
-  };
-  const handleParameterChange = (e) => {
-    setSelectedTypeParameter(e.target.value);
-    if (e.target.value === 0) {
-      setSelectedParameter(["imageURL", "linkURL"]);
-      setDisplayedParameter("Logo Grid & Link");
-    }
-    // if (e.target.value === 1) setSelectedParameter(["bannerURL", "linkURL"]);
-  };
+ 
+
 
   const handleUnitPriceChange = (e) => {
     const price = parseFloat(e.target.value);
@@ -80,8 +73,8 @@ const Create = () => {
 
   const handleLogoUpload = (file) => {
     if (file) {
-      setFile(file);
-      setPreviewImage(URL.createObjectURL(file));
+      setFiles([file]);
+      setPreviewImages([URL.createObjectURL(file)]);
     }
   };
 
@@ -111,7 +104,7 @@ const Create = () => {
       newErrors.descriptionError = "Description is missing.";
       isValid = false;
     }
-    if (!file) {
+    if (files.length === 0) {
       newErrors.imageError = "Image is missing.";
       isValid = false;
     }
@@ -126,7 +119,14 @@ const Create = () => {
       newErrors.startDateError = "Start date cannot be in the past.";
       isValid = false;
     }
-
+    
+for(let i = 0; i < selectedIntegration.length; i++){
+      if (imageRatios[i] === "custom") {
+        console.log("ici");
+        newErrors.imageRatioError = "Image ratio is missing.";
+        isValid = false;
+      }
+    }
     if (!endDate) {
       newErrors.endDateError = "End date is missing.";
       isValid = false;
@@ -144,7 +144,7 @@ const Create = () => {
       newErrors.numberError = "Number of ad spaces is missing or invalid.";
       isValid = false;
     }
-    if (!selectedParameter) {
+    if (selectedParameter.length === 0) {
       newErrors.typeAdError = "Type of ad spaces is missing or invalid.";
       isValid = false;
     }
@@ -173,8 +173,18 @@ const Create = () => {
       return;
     }
     try {
+      let paramsFormated = [];
+      selectedParameter.forEach((param) => {
+      const a = param.split("-");
+      const b = a.splice(1, 1);
+      const c = a.join("-");
+      paramsFormated.push(c);
+      });
+      let uniqueParams = [...new Set(paramsFormated)];
+      console.log(uniqueParams);
+
       const uploadUrl = await upload({
-        data: [file],
+        data: [files[0]],
         options: { uploadWithGatewayUrl: true, uploadWithoutDirectory: true },
       });
 
@@ -249,7 +259,7 @@ const Create = () => {
           options: {
             admins: [address], // admin
             validators: [], // validator
-            adParameters: selectedParameter, // ad parameters
+            adParameters: uniqueParams, // ad parameters
           },
         }),
       ];
@@ -347,14 +357,19 @@ const Create = () => {
             stepsRef={stepsRef}
             styles={styles}
             selectedTypeParameter={selectedTypeParameter}
+            setSelectedParameter={setSelectedParameter}
             selectedNumber={selectedNumber}
-            handleNumberChange={handleNumberChange}
-            selectedParameter={selectedParameter}
-            handleParameterChange={handleParameterChange}
+            setSelectedNumber={setSelectedNumber}
+            setDisplayedParameter={setDisplayedParameter}
+            displayedParameter={displayedParameter}
+            selectedIntegration={selectedIntegration}
+            setSelectedIntegration={setSelectedIntegration}
+            imageRatios={imageRatios}
+            setImageRatios={setImageRatios}
           />
           <Step_2_Create stepsRef={stepsRef} styles={styles} setName={setName} setDescription={setDescription} />
 
-          <Step_3_Create stepsRef={stepsRef} styles={styles} setLink={setLink} link={link} previewImage={previewImage} file={file} handleLogoUpload={handleLogoUpload} />
+          <Step_3_Create stepsRef={stepsRef} styles={styles} setLink={setLink} link={link} previewImage={previewImages} file={files} handleLogoUpload={handleLogoUpload} />
 
           <Step_4_Create
             stepsRef={stepsRef}
@@ -382,7 +397,7 @@ const Create = () => {
             customSymbolContract={customSymbolContract}
             name={name}
             link={link}
-            file={file}
+            file={files}
             description={description}
             startDate={startDate}
             endDate={endDate}
@@ -391,7 +406,7 @@ const Create = () => {
             selectedCurrency={selectedCurrency}
             customContract={customContract}
             selectedRoyalties={selectedRoyalties}
-            previewImage={previewImage}
+            previewImage={previewImages}
             selectedParameter={selectedParameter}
             displayedParameter={displayedParameter}
             validate={validate}
