@@ -14,6 +14,7 @@ export default function Layout({ children }) {
       <Header01 />
       <Wallet_modal />
       <BidsModal />
+      
       <main>{children}</main>
       <Footer />
     </>
