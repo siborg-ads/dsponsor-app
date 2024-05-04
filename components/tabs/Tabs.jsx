@@ -1,12 +1,18 @@
-import React, { useState } from "react";
+import React, {useContext, useState} from "react";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import OfferTab from "./OfferTab";
 import Properties from "./Properties";
 import Activity_tab from "./Activity_tab";
 import Price_history from "./Price_history";
 import Link from "next/link";
+import { useChainId } from "@thirdweb-dev/react";
+import SDKProvider from "../../providers/SDKProvider";
+import SDKContext from "../../contexts/SDKContext";
+
 
 const ItemsTabs = ({ contractAddress, offerId }) => {
+  const {SDKChainId,getChainName} = useContext(SDKContext);
+
   const [tabsActive, setTabsActive] = useState(1);
   const tabsHeadText = [
     // {
@@ -91,7 +97,7 @@ const ItemsTabs = ({ contractAddress, offerId }) => {
                 </div>
                 <div className="flex items-center">
                   <span className="dark:text-jacarta-300 mr-2 min-w-[9rem]">Blockchain:</span>
-                  <span className="text-jacarta-700 dark:text-white">Polygon</span>
+                  <span className="text-jacarta-700 dark:text-white">{getChainName(SDKChainId)}</span>
                 </div>
               </div>
             </div>
