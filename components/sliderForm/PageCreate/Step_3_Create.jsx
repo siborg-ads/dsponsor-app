@@ -3,7 +3,7 @@ import DatePicker from "react-datepicker";
 import Image from "next/image";
 
 import { FileUploader } from "react-drag-drop-files";
-const fileTypes = ["JPG", "PNG", "SVG", "WEBP"];
+const fileTypes = ["JPG", "PNG", "WEBP"];
 const Step_2_Create = ({ stepsRef, styles, setLink, link, file, handleLogoUpload, previewImage }) => {
   const handleChange = (e) => {
     let value = e.target.value;
