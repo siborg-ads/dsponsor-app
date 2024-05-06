@@ -27,6 +27,13 @@ import { defaultChainId } from "../../app/marketplace/marketplace.config";
 const chainId = defaultChainId;
 
 export default function ItemDetails({ assetContract, tokenId }) {
+  /////////////////////////////////////////////////
+  const [listingInformation, setListingInformation] = useState(null);
+  const [showBidsModal, setShowBidsModal] = useState(false);
+  const [showBuyModal, setShowBuyModal] = useState(false);
+  const [listingNotValid, setListingNotValid] = useState(false);
+  const now = new Date().getTime() / 1000;
+
   ///////////////////////////////////////////////////////
   /////////// contracts ////////////////
   ///////////////////////////////////////////////////////
@@ -39,13 +46,6 @@ export default function ItemDetails({ assetContract, tokenId }) {
     dsponsorMpContract,
     "createListing"
   );
-  /////////////////////////////////////////////////
-  const [listingInformation, setListingInformation] = useState(null);
-  const [showBidsModal, setShowBidsModal] = useState(false);
-  const [showBuyModal, setShowBuyModal] = useState(false);
-  const [listingNotValid, setListingNotValid] = useState(false);
-  const now = new Date().getTime() / 1000;
-
   //wallet & address
   const { handleApprove, handleCreateListing } = useTransaction();
 
