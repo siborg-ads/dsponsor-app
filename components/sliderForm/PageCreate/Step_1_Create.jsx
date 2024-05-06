@@ -28,22 +28,24 @@ const predefinedRatios = ["1:1", "16:9", "4:3"];
     setSelectedNumber(parseInt(e.target.value, 10));
   };
 
-  const handleIntegrationChange = (e) => {
-    const { value, checked } = e.target;
-    const intValue = parseInt(value);
-
-    if (checked) {
-      setSelectedIntegration((prev) => [...prev, intValue]);
-      setImageRatios((prev) => ({
-        ...prev,
-        [intValue]: prev[intValue] || "1:1", 
-      }));
-      handleAddParameter(intValue);
-    } else {
-      setSelectedIntegration((prev) => prev.filter((item) => item !== intValue));
-      handleRemoveParameter(intValue);
-    }
-  };
+ const handleIntegrationChange = (e) => {
+   const { value, checked } = e.target;
+   const intValue = parseInt(value);
+setSelectedIntegration([]);
+setDisplayedParameter([]);
+setSelectedParameter([]);
+   if (checked) {
+     setSelectedIntegration([intValue]);
+     setImageRatios((prev) => ({
+       ...prev,
+       [intValue]: prev[intValue] || "1:1",
+     }));
+     handleAddParameter(intValue);
+   } else {
+     setSelectedIntegration((prev) => prev.filter((item) => item !== intValue));
+     handleRemoveParameter(intValue);
+   }
+ };
 
   const handleAddParameter = (value) => {
     const initialRatio = imageRatios[value] || "";
@@ -174,9 +176,9 @@ const predefinedRatios = ["1:1", "16:9", "4:3"];
                         document.getElementById(`checkbox-${index}`).click();
                       }}
                     >
-                      {selectedIntegration.includes(index) && <span className="absolute border-2 border-green rounded-2xl -right-3 text-green font-bold -bottom-2 z-30 w-6 h-6 flex justify-center items-center ">✓</span>}
+                      {selectedIntegration.includes(index) && <span className="absolute border-2 border-green rounded-2xl -right-3 text-green font-bold -bottom-2 z-30 w-6 h-6 flex justify-center items-center">✓</span>}
                       <input id={`checkbox-${index}`} type="checkbox" value={index} checked={selectedIntegration.includes(index)} onChange={handleIntegrationChange} className="hidden" />
-                      <div className="flex gap-3 ">
+                      <div className="flex gap-3">
                         <label
                           htmlFor={`checkbox-${index}`}
                           className={`card-label ${selectedIntegration.includes(index) ? "text-white" : "text-jacarta-700"}`}

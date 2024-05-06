@@ -7,8 +7,8 @@ const ModalHelper = ({title, body, image, dark}) => {
     <>
       <Button onPress={onOpen} className="bg-transparent !min-w-[20px] !p-0 !h-auto">
         <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 24 24">
-          <circle cx="12" cy="12" r="10" stroke={!dark ? "white" : "rgb(19 23 64)"} stroke-width="2" fill="transparent" />
-          <text x="50%" y="50%" text-anchor="middle" stroke={!dark ? "white" : "rgb(19 23 64)"} stroke-width="1px" dy=".3em" fill={!dark ? "white" : "rgb(19 23 64)"} font-size="12">
+          <circle cx="12" cy="12" r="10" stroke={!dark ? "white" : "rgb(19 23 64)"} strokeWidth="2" fill="transparent" />
+          <text x="50%" y="50%" textAnchor="middle" stroke={!dark ? "white" : "rgb(19 23 64)"} strokeWidth="1px" dy=".3em" fill={!dark ? "white" : "rgb(19 23 64)"} fontSize="12">
             i
           </text>
         </svg>

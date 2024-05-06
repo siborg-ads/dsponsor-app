@@ -24,6 +24,7 @@ import OfferSkeleton from "../../../components/skeleton/offerSkeleton.jsx";
 import { GetTokenAdOffer } from "../../../data/services/TokenOffersService";
 import { getPossibleAdIntegrations } from "../../../utils/getAdIntegrationsWithParams";
 import { Divider } from "@nextui-org/react";
+import Validation from "../../../components/offer-section/validation.jsx";
 
 import contractABI from "../../../abi/dsponsorAdmin.json";
 
@@ -59,7 +60,7 @@ const Item = () => {
   const { data: tokenBalance, isLoading, error } = useBalance(offerData?.nftContract?.prices[0].currency);
   const { mutateAsync: approve, isLoading: isLoadingApprove } = useContractWrite(tokenContract, "approve");
   const { data: bps } = useContractRead(DsponsorAdminContract, "feeBps");
-  const { data: isAllowedToMint , isLoading: isLoadingAllowedToMint } = useContractRead(DsponsorNFTContract, "tokenIdIsAllowedToMint", offerData?.nftContract?.allowList ? tokenIdString : null);
+  const { data: isAllowedToMint, isLoading: isLoadingAllowedToMint } = useContractRead(DsponsorNFTContract, "tokenIdIsAllowedToMint", offerData?.nftContract?.allowList ? tokenIdString : null);
   const { data: royaltiesInfo } = useContractRead(DsponsorNFTContract, "royaltyInfo", [tokenIdString, 100]);
   const [showPreviewModal, setShowPreviewModal] = useState(false);
   const [validate, setValidate] = useState(false);
@@ -69,17 +70,16 @@ const Item = () => {
   const [price, setPrice] = useState(null);
   const [buyModal, setBuyModal] = useState(false);
   const [buyMethod, setBuyMethod] = useState(false);
-  const [userBalance, setUserBalance] = useState(null);
+
   const [submitAdFormated, setSubmitAdFormated] = useState({});
   const [tokenData, setTokenData] = useState(null);
   const [tokenMetaData, setTokenMetaData] = useState("");
   const [allowanceTrue, setAllowanceTrue] = useState(false);
   const [adParameters, setAdParameters] = useState([]);
-
   const [imageURLSteps, setImageURLSteps] = useState([]);
   const stepsRef = useRef([]);
   const [numSteps, setNumSteps] = useState(2);
-  
+
   useEffect(() => {
     if (offerId && tokenId) {
       const fetchAdsOffers = async () => {
@@ -118,22 +118,22 @@ const Item = () => {
         const imageURLSteps = [];
         const uniqueIdsArray = Array.from(uniqueIds);
         setAdParameters(uniqueIdsArray);
-        
+
         uniqueIdsArray
           .filter((id) => id.startsWith("imageURL"))
           .map((id) => {
             const variant = id.slice("imageURL-".length);
-            
+
             imageURLSteps.push(variant);
           });
         const totalNumSteps = numSteps + imageURLSteps.length;
-        
+
         setImageURLSteps(imageURLSteps);
         setNumSteps(totalNumSteps);
 
         try {
           const currencyToken = adminInstance.chain.getCurrencyByAddress(offer.nftContract.prices[0].currency);
-        
+
           const formatPrice = offer.nftContract.prices[0].amount / 10 ** currencyToken.decimals;
           setPrice(formatPrice);
           setCurrency(currencyToken);
@@ -153,7 +153,8 @@ const Item = () => {
     }
 
     setTokenIdString(tokenId?.toString());
-  }, [offerId, address, tokenId, successFullUpload]);
+  }, [offerId, address, tokenId, successFullUpload ]);
+
 
   useEffect(() => {
     if (!offerData) return;
@@ -235,17 +236,17 @@ const Item = () => {
     }
   };
 
- const handleLogoUpload = (file, index) => {
-   if (file) {
-     const newFiles = [...files];
-     const newPreviewImages = [...previewImages];
-     newFiles[index] = { file: file, index: index };
-     newPreviewImages[index] = URL.createObjectURL(file);
+  const handleLogoUpload = (file, index) => {
+    if (file) {
+      const newFiles = [...files];
+      const newPreviewImages = [...previewImages];
+      newFiles[index] = { file: file, index: index };
+      newPreviewImages[index] = URL.createObjectURL(file);
 
-     setFiles(newFiles);
-     setPreviewImages(newPreviewImages);
-   }
- };
+      setFiles(newFiles);
+      setPreviewImages(newPreviewImages);
+    }
+  };
 
   useEffect(() => {
     if (price && bps) {
@@ -274,12 +275,16 @@ const Item = () => {
 
   const handleApprove = async () => {
     try {
-      
+      const hasEnoughBalance = checkUserBalance(tokenBalance, price);
+      if (!hasEnoughBalance) {
+        throw new Error("Not enough balance for approval.");
+      }
+
       await approve({ args: ["0xE442802706F3603d58F34418Eac50C78C7B4E8b3", amountToApprove] });
-      console.log("Approvation réussie");
       setAllowanceTrue(false);
     } catch (error) {
-      console.error("Erreur d'approbation:", error);
+      console.error("Approval failed:", error.message);
+      throw new Error("Approval failed.");
     }
   };
 
@@ -289,20 +294,25 @@ const Item = () => {
         return;
       }
     }
+    const hasEnoughBalance = checkUserBalance(tokenBalance, price);
+    if (!hasEnoughBalance) {
+      throw new Error("Not enough balance for approval.");
+    }
+
     // IPFS upload
 
-    if (userBalance || isOwner) {
+    if (hasEnoughBalance || isOwner) {
       let uploadUrl;
       try {
         uploadUrl = await uploadToIPFS({
-          data: [files[0]],
+          data: [files[0].file],
           options: { uploadWithGatewayUrl: true, uploadWithoutDirectory: true },
         });
       } catch (error) {
         console.error("Erreur lors de l'upload à IPFS:", error);
         throw new Error("Upload to IPFS failed.");
       }
-      
+
       try {
         const argsMintAndSubmit = {
           tokenId: tokenIdString,
@@ -356,7 +366,7 @@ const Item = () => {
     } catch (error) {
       toast.error("Error while checking user balance");
       console.error("Failed to fetch token balance:", error);
-      return null;
+      throw new Error("Failed to fetch token balance");
     }
   };
   function formatTokenId(str) {
@@ -369,7 +379,7 @@ const Item = () => {
   const handleBuyModal = () => {
     checkAllowance();
     setSuccessFullUpload(false);
-    !buyModal && setUserBalance(checkUserBalance(tokenBalance, price));
+
     setBuyModal(!buyModal);
     setBuyMethod(true);
   };
@@ -416,13 +426,13 @@ const Item = () => {
         <div className="mb-8 container flex justify-center flex-col items-center ">
           <div className=" flex justify-center ">
             <h1 className="text-jacarta-700 font-bold font-display mb-6 text-center text-5xl dark:text-white md:text-left lg:text-6xl xl:text-6xl">{isOwner ? "Your Ad Space" : "Buy Ad Space"} </h1>
-            <span className={`ml-2 text-sm font-bold ${isOwner ? (adStatut === 0 ? "text-red" : adStatut === 1 ? "text-green" : adStatut === 2 ? "text-accent" : "hidden") : "hidden"}`}>
+            {/* <span className={`ml-2 text-sm font-bold ${isOwner ? (adStatut === 0 ? "text-red" : adStatut === 1 ? "text-green" : adStatut === 2 ? "text-accent" : "hidden") : "hidden"}`}>
               {adStatut === 0 ? "Rejected" : adStatut === 1 ? "Accepted" : adStatut === 2 ? "Pending" : ""}
-            </span>
+            </span> */}
           </div>
-          <p className={`${isOwner ? (adStatut === 0 ? "text-red" : adStatut === 1 ? "text-green" : adStatut === 2 ? "text-accent" : "hidden") : "hidden"} text-sm font-bold`}>
+          {/* <p className={`${isOwner ? (adStatut === 0 ? "text-red" : adStatut === 1 ? "text-green" : adStatut === 2 ? "text-accent" : "hidden") : "hidden"} text-sm font-bold`}>
             {adStatut === 0 ? statutAds.rejected : adStatut === 1 ? statutAds.accepted : statutAds.pending}
-          </p>
+          </p> */}
         </div>
 
         <div className="container">
@@ -430,7 +440,7 @@ const Item = () => {
 
           <div className="md:flex md:flex-wrap" key={id}>
             {/* <!-- Image --> */}
-            <figure className="mb-8 md:mb-0 md:w-2/5 md:flex-shrink-0 md:flex-grow-0 md:basis-auto lg:w-1/2 w-full flex justify-center">
+            <figure className="mb-8 md:mb-0 md:w-2/5 md:flex-shrink-0 md:flex-grow-0 md:basis-auto lg:w-1/2 w-full flex justify-center relative">
               <button className=" w-full" onClick={() => setImageModal(true)} style={{ height: "450px" }}>
                 <Image width={585} height={726} src={image && image} alt="image" className="rounded-2xl cursor-pointer h-full object-contain w-full" />
               </button>
@@ -521,6 +531,7 @@ const Item = () => {
         </div>
       </section>
       {/* <!-- end item --> */}
+      <Validation offer={offerData} offerId={offerId} isOwner={isOwner} isToken={true} successFullUploadModal={successFullUploadModal} />
 
       <div>
         {isOwner && !offerNotFormated ? (
@@ -598,7 +609,6 @@ const Item = () => {
             image={image}
             selectedCurrency={currency.symbol}
             selectedRoyalties={royalties}
-            userBalance={userBalance}
             tokenId={tokenId}
             tokenData={tokenData}
             formatTokenId={formatTokenId}

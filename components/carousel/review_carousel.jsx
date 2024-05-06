@@ -15,14 +15,14 @@ import { CopyToClipboard } from "react-copy-to-clipboard";
 import { Web3Button } from "@thirdweb-dev/react";
 import AddProposalRefusedModal from "../modal/adProposalRefusedModal";
 
-const Review_carousel = ({ handleSubmit, pendingProposalData, successFullRefuseModal }) => {
+const Review_carousel = ({ handleSubmit, pendingProposalData, successFullRefuseModal, isToken }) => {
   const [validate, setValidate] = useState({});
   const [comments, setComments] = useState({});
   const [refusedAdModalId, setRefusedAdModalId] = useState(null);
   const [tokenId, setTokenId] = useState(null);
   const [selectedItems, setSelectedItems] = useState([]);
   const [isSelectedItem, setIsSelectedItem] = useState({});
-  const [imageModal, setImageModal] = useState(false);
+  const [modalStates, setModalStates] = useState({});
  
 
 
@@ -131,7 +131,10 @@ const Review_carousel = ({ handleSubmit, pendingProposalData, successFullRefuseM
   }
   return (
     <div>
-      <div className="dark:bg-jacarta-700 dark:border-jacarta-600 border-jacarta-100 rounded-2lg border bg-white p-6 mb-4">
+      { !isToken &&
+        <div>
+
+        <div className="dark:bg-jacarta-700 dark:border-jacarta-600 border-jacarta-100 rounded-2lg border bg-white p-6 mb-4">
         <div className=" sm:flex sm:flex-wrap">
           <span className="dark:text-jacarta-300 text-jacarta-400 text-sm">
             Select an advertisement below to manage its status. If you approve an ad, it will be displayed on your media platform. The owner of your ad space retains the ability to submit an advertisement even if its
@@ -179,6 +182,8 @@ const Review_carousel = ({ handleSubmit, pendingProposalData, successFullRefuseM
           </Web3Button>
         </div>
       </div>
+        </div> 
+      }
 
       <div className="grid grid-cols-1 gap-[1.875rem] md:grid-cols-2 lg:grid-cols-4">
         {pendingProposalData.map((item) => {
@@ -186,15 +191,10 @@ const Review_carousel = ({ handleSubmit, pendingProposalData, successFullRefuseM
         
 
           return (
-            <article key={tokenId} className={`  ${isSelectedItem[tokenId] ? "border-4 border-jacarta-100 rounded-2xl" : ""}`} onClick={() => handleSelection(item)}>
+            <article key={tokenId} className={`  ${isSelectedItem[tokenId] && !isToken ? "border-4 border-jacarta-100 rounded-2xl" : ""}`} onClick={() => handleSelection(item)}>
               <div className="dark:bg-jacarta-700 dark:border-jacarta-700 border-jacarta-100 rounded-2xl block border bg-white p-[1.1875rem] transition-shadow hover:shadow-lg text-jacarta-500">
                 <figure className="flex justify-center">
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setImageModal(true);
-                    }}
-                  >
+                  <button onClick={() => openModal(tokenId)}>
                     {adParametersList?.imageURL && (
                       <Image
                         src={adParametersList?.imageURL ? adParametersList?.imageURL : "/"}
@@ -202,19 +202,19 @@ const Review_carousel = ({ handleSubmit, pendingProposalData, successFullRefuseM
                         height={75}
                         width={75}
                         objectFit="contain"
-                        className="rounded-[0.625rem] w-auto   h-[150px] object-contain"
+                        className="rounded-[0.625rem] w-auto h-[150px] object-contain"
                         loading="lazy"
                       />
                     )}
                   </button>
 
                   {/* <!-- Modal --> */}
-                  <div className={imageModal ? "modal fade show block" : "modal fade"} onClick={(e) => e.stopPropagation()}>
+                  <div className={modalStates[tokenId] ? "modal fade show block" : "modal fade"} onClick={(e) => e.stopPropagation()}>
                     <div className="modal-dialog !my-0 flex h-full max-w-4xl items-center justify-center">
                       <Image src={adParametersList?.imageURL} alt="logo" height={250} width={250} objectFit="contain" className="rounded-2lg min-w-[75px]" loading="lazy" />
                     </div>
 
-                    <button type="button" className="btn-close absolute top-6 right-6" onClick={() => setImageModal(false)}>
+                    <button type="button" className="btn-close absolute top-6 right-6" onClick={() => closeModal(tokenId)}>
                       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" className="h-6 w-6 fill-white">
                         <path fill="none" d="M0 0h24v24H0z" />
                         <path d="M12 10.586l4.95-4.95 1.414 1.414-4.95 4.95 4.95 4.95-1.414 1.414-4.95-4.95-4.95 4.95-1.414-1.414 4.95-4.95-4.95-4.95L7.05 5.636z" />

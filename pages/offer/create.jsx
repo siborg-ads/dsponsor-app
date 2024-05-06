@@ -339,7 +339,7 @@ for(let i = 0; i < selectedIntegration.length; i++){
   const numSteps = 4;
   const successFullUploadModal = {
     body: "Your offer has been created successfully",
-    subBody: "⚠️ Don't forget to display the adSpaces on your website ! copy paste the link in your offer details to display automatically your sponsor logo.",
+    subBody: "❕On your offer management page, you will find the integration code to copy/paste onto your platform.",
     buttonTitle: "Manage Spaces",
     hrefButton: `/manageSpaces/${address}`,
   };

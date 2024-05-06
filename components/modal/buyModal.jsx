@@ -16,7 +16,7 @@ const BuyModal = ({
   initialCreator,
   finalPrice,
   successFullUpload,
-  userBalance,
+ 
   successFullBuyModal,
   price,
   tokenId,
@@ -162,7 +162,7 @@ const BuyModal = ({
                       error: "Approval rejected 🤯",
                     });
                   }}
-                  className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate || !userBalance ? "btn-disabled" : "!bg-accent !cursor-pointer"} `}
+                  className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate  ? "btn-disabled" : "!bg-accent !cursor-pointer"} `}
                   disabled={!validate}
                 >
                   Approve
@@ -177,7 +177,7 @@ const BuyModal = ({
                       error: "Transaction rejected 🤯",
                     });
                   }}
-                  className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate || !userBalance ? "btn-disabled" : "!bg-accent !cursor-pointer"} `}
+                  className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate  ? "btn-disabled" : "!bg-accent !cursor-pointer"} `}
                   disabled={!validate}
                 >
                   Confirm checkout

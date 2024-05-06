@@ -21,6 +21,7 @@ import Form from "../../components/collections-wide/sidebar/collections/Form";
 import { Divider } from "@nextui-org/react";
 import "tippy.js/dist/tippy.css";
 import { CopyToClipboard } from "react-copy-to-clipboard";
+import Validation from "../../components/offer-section/validation";
 
 
 const Offer = () => {
@@ -28,13 +29,9 @@ const Offer = () => {
 
   const offerId = router.query.offer;
   const userAddress = useAddress();
-const [copied, setCopied] = useState(false);
+  const [copied, setCopied] = useState(false);
   const [offerData, setOfferData] = useState([]);
-  const [pendingProposalData, setPendingProposalData] = useState([]);
-  const [validatedProposalData, setValidatedProposalData] = useState([]);
-  const [refusedProposalData, setRefusedProposalData] = useState([]);
   const [royalties, setRoyalties] = useState(null);
-  const [successFullUpload, setSuccessFullUpload] = useState(false);
   const [currency, setCurrency] = useState(null);
   const [price, setPrice] = useState(null);
   const [imageModal, setImageModal] = useState(false);
@@ -59,54 +56,6 @@ const [copied, setCopied] = useState(false);
         setOfferData(combinedData);
         if (userAddress?.toLowerCase() === offer.initialCreator) {
           setIsOwner(true);
-          const groupedPendingAds = {};
-          const groupedValidatedAds = {};
-          const groupedRefusedAds = {};
-
-          function processProposal(token, element, groupedAds, statusKey, statusId) {
-            if (element[statusKey] !== null) {
-              if (!groupedAds[token.tokenId]) {
-                groupedAds[token.tokenId] = {
-                  tokenId: token.tokenId,
-                  offerId: offerId,
-                  proposalIds: [],
-                  adParametersList: {},
-                  adParametersKeys: [],
-                };
-                if (statusKey === "rejectedProposal") {
-                  groupedAds[token.tokenId].reason = element[statusKey].rejectReason;
-                }
-              }
-              const adParamBase = element.adParameter.id;
-
-              groupedAds[token.tokenId].proposalIds.push(element[statusKey].id);
-
-              if (!groupedAds[token.tokenId].adParametersKeys.includes(adParamBase)) {
-                groupedAds[token.tokenId].adParametersKeys.push(adParamBase);
-              }
-
-              groupedAds[token.tokenId].adParametersList[adParamBase] = element[statusKey].data;
-            }
-          }
-
-          for (const token of offer.nftContract.tokens) {
-            if (token.mint !== null) {
-              for (const element of token.currentProposals) {
-                processProposal(token, element, groupedPendingAds, "pendingProposal");
-                processProposal(token, element, groupedValidatedAds, "acceptedProposal");
-                processProposal(token, element, groupedRefusedAds, "rejectedProposal");
-              }
-            }
-          }
-
-          const formattedPendingAds = Object.values(groupedPendingAds);
-          const formattedValidatedAds = Object.values(groupedValidatedAds);
-          const formattedRefusedAds = Object.values(groupedRefusedAds);
-
-          setValidatedProposalData(formattedValidatedAds);
-          setRefusedProposalData(formattedRefusedAds);
-
-          setPendingProposalData(formattedPendingAds);
         }
 
         try {
@@ -152,25 +101,6 @@ const [copied, setCopied] = useState(false);
    }
   };
 
-  const [itemActive, setItemActive] = useState(1);
-  const tabItem = [
-    {
-      id: 1,
-      text: "Pending",
-      icon: "owned",
-    },
-    {
-      id: 2,
-      text: "Validated",
-      icon: "owned",
-    },
-
-    {
-      id: 3,
-      text: "Refused",
-      icon: "activity",
-    },
-  ];
 
   if (!offerData || offerData.length === 0) {
     return (
@@ -319,57 +249,7 @@ const [copied, setCopied] = useState(false);
         </div>
       )}
 
-      <div className="container">
-        <Divider className="my-4" />
-        <h2 className="text-jacarta-700 font-bold font-display mb-6 text-center text-3xl dark:text-white ">Validation </h2>
-        {/* <!-- Tabs Nav --> */}
-        <Tabs className="tabs">
-          <TabList className="nav nav-tabs scrollbar-custom mb-12 flex items-center justify-start overflow-x-auto overflow-y-hidden border-b border-jacarta-100 pb-px dark:border-jacarta-600 md:justify-center">
-            {tabItem.map(({ id, text, icon }) => {
-              if (!isOwner && text === "Pending") return;
-              return (
-                <Tab className="nav-item" role="presentation" key={id} onClick={() => setItemActive(id)}>
-                  <button
-                    className={
-                      itemActive === id
-                        ? "nav-link hover:text-jacarta-700 text-jacarta-400 relative flex items-center whitespace-nowrap py-3 px-6 dark:hover:text-white active"
-                        : "nav-link hover:text-jacarta-700 text-jacarta-400 relative flex items-center whitespace-nowrap py-3 px-6 dark:hover:text-white"
-                    }
-                  >
-                    <svg className="icon mr-1 h-5 w-5 fill-current">
-                      <use xlinkHref={`/icons.svg#icon-${icon}`}></use>
-                    </svg>
-                    <span className="font-display text-base font-medium">{text}</span>
-                  </button>
-                </Tab>
-              );
-            })}
-          </TabList>
-
-          {isOwner && (
-            <div>
-              <TabPanel>
-                <div className="container mb-12 relative p-0">
-                  {/* <!-- Filter --> */}
-                  <Review_carousel handleSubmit={handleSubmit} pendingProposalData={pendingProposalData} successFullRefuseModal={successFullRefuseModal} />
-                </div>
-              </TabPanel>
-            </div>
-          )}
-          <TabPanel>
-            <div className="container mb-12 relative p-0">
-              {/* <!-- Filter --> */}
-              <Validated_refused_items statut={true} proposalData={validatedProposalData} />
-            </div>
-          </TabPanel>
-          <TabPanel>
-            <div className="container mb-12 relative p-0">
-              {/* <!-- Filter --> */}
-              <Validated_refused_items statut={false} proposalData={refusedProposalData} />
-            </div>
-          </TabPanel>
-        </Tabs>
-      </div>
+      <Validation offer={offerData} offerId={offerId} isOwner={isOwner} handleSubmit={handleSubmit} successFullRefuseModal={successFullRefuseModal} />
 
       {isOwner && (
         <div className="container">
@@ -394,7 +274,7 @@ const [copied, setCopied] = useState(false);
               </pre>
               <Tippy hideOnClick={false} content={copied ? <span>copied</span> : <span>copy</span>}>
                 <div className="js-copy-clipboard cursor-pointer">
-                  <CopyToClipboard text="userId" onCopy={() => setCopied(true)}>
+                  <CopyToClipboard text={`https://relayer.dsponsor.com/11155111/iframe/${offerId}?bgColor=0d102d`} onCopy={() => setCopied(true)}>
                     <Image src="/images/copy.svg" alt="icon" width={20} height={20} className="mt-2 min-w-[20px] " />
                   </CopyToClipboard>
                 </div>
