@@ -48,7 +48,7 @@ const Validation = ({ offer, offerId, isOwner, handleSubmit, successFullRefuseMo
             groupedAds[token.tokenId].reason = element[statusKey].rejectReason;
           }
         }
-        const adParamBase = element.adParameter.id;
+        const adParamBase = element.adParameter.base;
 
         groupedAds[token.tokenId].proposalIds.push(element[statusKey].id);
 
