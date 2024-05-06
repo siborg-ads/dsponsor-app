@@ -57,20 +57,23 @@ const Create = () => {
   const stepsRef = useRef([]);
   const { ethers } = require("ethers");
 
- 
+
 
 
   const handleUnitPriceChange = (e) => {
-    const price = parseFloat(e.target.value);
+    const { value } = e.target;
 
-    if (!isNaN(price)) {
+    // const price = parseFloat(e.target.value);
+    const price = value;
+
+    // if (!isNaN(price)) {
       setSelectedUnitPrice(price);
-    }
+    // }
   };
 
   const handleCurrencyChange = (event) => {
     setSelectedCurrency(event.target.value);
-    
+
   };
   useEffect(() => {
     if (customSymbolContract) {
@@ -83,7 +86,8 @@ const Create = () => {
   };
 
   const handleRoyaltiesChange = (e) => {
-    setSelectedRoyalties(parseFloat(e.target.value));
+    let { name, value } = e.target;
+    setSelectedRoyalties(value);
   };
 
   const address = useAddress();
@@ -137,7 +141,7 @@ const Create = () => {
       newErrors.startDateError = "Start date cannot be in the past.";
       isValid = false;
     }
-    
+
 for(let i = 0; i < selectedIntegration.length; i++){
       if (imageRatios[i] === "custom") {
         console.log("ici");
@@ -153,7 +157,7 @@ for(let i = 0; i < selectedIntegration.length; i++){
       isValid = false;
     }
 
-    if (selectedUnitPrice < 0.01) {
+    if (parseFloat(selectedUnitPrice) < 0.01) {
       newErrors.unitPriceError = "Unit price must be at least 0.01.";
       isValid = false;
     }
@@ -172,7 +176,7 @@ for(let i = 0; i < selectedIntegration.length; i++){
       isValid = false;
     }
 
-    if (selectedRoyalties < 0.01 || selectedRoyalties > 100) {
+    if (parseFloat(selectedRoyalties) < 0.01 || parseFloat(selectedRoyalties) > 100) {
       newErrors.royaltyError = "Royalties are missing or invalid. They should be between 0.01% and 100%.";
       isValid = false;
     }
@@ -297,7 +301,7 @@ for(let i = 0; i < selectedIntegration.length; i++){
     setLink(updatedLink);
   };
 
- 
+
 
   const selectedCurrencyContract = useCallback(() => {
     switch (selectedCurrency) {
