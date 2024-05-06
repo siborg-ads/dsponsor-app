@@ -39,7 +39,7 @@ const OfferItem = ({ item, url, isToken, isSelectionActive, isOwner }) => {
       setItemData(data);
     }
   }, [item, isToken]);
-console.log(itemData);
+
   // useEffect(() => {
   //   const fetchAdsOffers = async () => {
   //     if (!item) return;

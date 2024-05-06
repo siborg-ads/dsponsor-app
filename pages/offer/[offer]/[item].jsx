@@ -60,7 +60,7 @@ const Item = () => {
   const { data: tokenBalance, isLoading, error } = useBalance(offerData?.nftContract?.prices[0].currency);
   const { mutateAsync: approve, isLoading: isLoadingApprove } = useContractWrite(tokenContract, "approve");
   const { data: bps } = useContractRead(DsponsorAdminContract, "feeBps");
-  const { data: isAllowedToMint, isLoading: isLoadingAllowedToMint } = useContractRead(DsponsorNFTContract, "tokenIdIsAllowedToMint", offerData?.nftContract?.allowList ? tokenIdString : null);
+  const { data: isAllowedToMint, isLoading: isLoadingAllowedToMint } = useContractRead(DsponsorNFTContract, "tokenIdIsAllowedToMint", tokenIdString);
   const { data: royaltiesInfo } = useContractRead(DsponsorNFTContract, "royaltyInfo", [tokenIdString, 100]);
   const [showPreviewModal, setShowPreviewModal] = useState(false);
   const [validate, setValidate] = useState(false);
@@ -153,17 +153,17 @@ const Item = () => {
     }
 
     setTokenIdString(tokenId?.toString());
-  }, [offerId, address, tokenId, successFullUpload ]);
+  }, [offerId, address, tokenId, successFullUpload]);
 
-
+  
   useEffect(() => {
-    if (!offerData) return;
+    if (!offerData || !adParameters) return;
     try {
       const params = [];
       const tokenIdArray = [];
       const offerIdArray = [];
-      for (const element of offerData.nftContract.tokens[0].currentProposals) {
-        params.push(element.adParameter.id);
+      for (const element of adParameters) {
+        params.push(element);
         tokenIdArray.push(tokenId);
         offerIdArray.push(offerId);
       }
@@ -173,32 +173,18 @@ const Item = () => {
       submitAdFormated.offerId = offerIdArray;
       setSubmitAdFormated(submitAdFormated);
     } catch (e) {
-      console.error("Error: Ad parameters not found for offer");
+      console.error(e,"Error: Ad parameters not found for offer");
     }
-  }, [tokenId, offerId, offerData]);
+  }, [tokenId, offerId, offerData, adParameters]);
 
   useEffect(() => {
     const fetchAdsOffers = async () => {
       if (!offerData) return;
       const tokenData = offerData?.nftContract?.tokens[0];
-      if (tokenData?.mint === null) {
-        setAdStatut(3);
-        return;
-      }
-      if (tokenData?.currentProposals?.length > 0) {
-        if (tokenData?.currentProposals[0]?.acceptedProposal !== null) {
-          setAdStatut(1);
-          return;
-        }
-
-        if (tokenData?.currentProposals[0]?.pendingProposal !== null) {
-          setAdStatut(2);
-        }
-        if (tokenData?.currentProposals[0]?.rejectedProposal !== null) {
-          setAdStatut(0);
-        }
+      if (tokenData?.mint === null || offerData.nftContract?.tokens.length === 0) {
+        setAdStatut(0);
       } else {
-        setAdStatut(3);
+        setAdStatut(1);
       }
     };
 
@@ -268,7 +254,7 @@ const Item = () => {
   const checkAllowance = async () => {
     if (offerData?.nftContract.prices[0].currency !== "0x0000000000000000000000000000000000000000") {
       const allowance = await tokenContract.call("allowance", [address, "0xE442802706F3603d58F34418Eac50C78C7B4E8b3"]);
-      if (allowance._hex > amountToApprove._hex) return;
+      if (ethers.BigNumber.from(allowance._hex).toNumber() > ethers.BigNumber.from(amountToApprove._hex).toNumber()) return;
       setAllowanceTrue(true);
     }
   };
@@ -301,8 +287,9 @@ const Item = () => {
 
     // IPFS upload
 
-    if (hasEnoughBalance || isOwner) {
-      let uploadUrl;
+    let uploadUrl = [];
+    console.log(adStatut, "adStatut");
+    if (isOwner) {
       try {
         uploadUrl = await uploadToIPFS({
           data: [files[0].file],
@@ -312,43 +299,44 @@ const Item = () => {
         console.error("Erreur lors de l'upload à IPFS:", error);
         throw new Error("Upload to IPFS failed.");
       }
+    }
+    try {
+      const argsMintAndSubmit = {
+        tokenId: tokenIdString,
+        to: address,
+        currency: offerData?.nftContract.prices[0].currency,
+        tokenData: tokenData ? tokenData : "",
+        offerId: offerId,
+        adParameters: [],
+        adDatas: [],
+        referralAdditionalInformation: "",
+      };
+      console.log(submitAdFormated, "prout");
+      const argsAdSubmited = {
+        offerId: submitAdFormated.offerId,
+        tokenId: submitAdFormated.tokenId,
+        adParameters: submitAdFormated.params,
+        data: [uploadUrl[0], link],
+      };
 
-      try {
-        const argsMintAndSubmit = {
-          tokenId: tokenIdString,
-          to: address,
-          currency: offerData?.nftContract.prices[0].currency,
-          tokenData: tokenData ? tokenData : "",
-          offerId: offerId,
-          adParameters: [],
-          adDatas: [],
-          referralAdditionalInformation: "",
-        };
-        const argsAdSubmited = {
-          offerId: submitAdFormated.offerId,
-          tokenId: submitAdFormated.tokenId,
-          adParameters: submitAdFormated.params,
-          data: [uploadUrl[0], link],
-        };
+      const isEthCurrency = offerData?.nftContract.prices[0].currency === "0x0000000000000000000000000000000000000000";
+      const functionWithPossibleArgs = adStatut !== 0 && !isAllowedToMint ? Object.values(argsAdSubmited) : argsMintAndSubmit;
+      const argsWithPossibleOverrides = isEthCurrency ? { args: [functionWithPossibleArgs], overrides: { value: amountToApprove } } : { args: [functionWithPossibleArgs] };
 
-        const isEthCurrency = offerData?.nftContract.prices[0].currency === "0x0000000000000000000000000000000000000000";
-        const functionWithPossibleArgs = adStatut !== 3 && !isAllowedToMint ? Object.values(argsAdSubmited) : argsMintAndSubmit;
-        const argsWithPossibleOverrides = isEthCurrency ? { args: [functionWithPossibleArgs], overrides: { value: amountToApprove } } : { args: [functionWithPossibleArgs] };
-
-        if (adStatut !== 3 && !isAllowedToMint) {
-          await submitAd({ args: functionWithPossibleArgs });
-          setSuccessFullUpload(true);
-        } else {
-          console.log("mintAndSubmit", argsWithPossibleOverrides);
-          await mintAndSubmit(argsWithPossibleOverrides);
-        }
-
+      if (adStatut !== 0 && !isAllowedToMint) {
+        console.log("ici", functionWithPossibleArgs);
+        await submitAd({ args: functionWithPossibleArgs });
         setSuccessFullUpload(true);
-      } catch (error) {
-        console.error("Erreur de soumission du token:", error);
-        setSuccessFullUpload(false);
-        throw error;
+      } else {
+        console.log("mintAndSubmit", argsWithPossibleOverrides);
+        await mintAndSubmit(argsWithPossibleOverrides);
       }
+
+      setSuccessFullUpload(true);
+    } catch (error) {
+      console.error("Erreur de soumission du token:", error);
+      setSuccessFullUpload(false);
+      throw error;
     }
   };
 
@@ -416,7 +404,7 @@ const Item = () => {
     );
   }
 
-  const { description = "description not found", id = "1", image = ["/images/gradient_creative.jpg"], name = "DefaultName" } = !Object.keys(offerData.offer.token_metadata).length === 0 ? tokenMetaData : offerData.offer;
+  const { description = "description not found", id = "1", image = ["/images/gradient_creative.jpg"], name = "DefaultName" } = Object.keys(offerData.offer.token_metadata).length > 0 ? tokenMetaData : offerData.offer;
 
   return (
     <>
@@ -442,7 +430,7 @@ const Item = () => {
             {/* <!-- Image --> */}
             <figure className="mb-8 md:mb-0 md:w-2/5 md:flex-shrink-0 md:flex-grow-0 md:basis-auto lg:w-1/2 w-full flex justify-center relative">
               <button className=" w-full" onClick={() => setImageModal(true)} style={{ height: "450px" }}>
-                <Image width={585} height={726} src={image && image} alt="image" className="rounded-2xl cursor-pointer h-full object-contain w-full" />
+                <Image width={585} height={726} src={image ? image : "/images/gradient_creative.jpg"} alt="image" className="rounded-2xl cursor-pointer h-full object-contain w-full" />
               </button>
 
               {/* <!-- Modal --> */}
@@ -507,7 +495,7 @@ const Item = () => {
               </div>
 
               <p className="dark:text-jacarta-300 mb-10">{description}</p>
-              {!isOwner && !offerNotFormated && !offerData.nftContract?.tokens[0]?.mint && (
+              {!isOwner && !offerNotFormated && !offerData.nftContract?.tokens[0]?.mint && isAllowedToMint !== null && (
                 <div className="dark:bg-jacarta-700 dark:border-jacarta-600 border-jacarta-100 rounded-2lg border flex flex-col gap-4 bg-white p-8">
                   <div className=" sm:flex sm:flex-wrap">
                     <span className="dark:text-jacarta-300 text-jacarta-400 text-sm">

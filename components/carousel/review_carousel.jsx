@@ -42,6 +42,14 @@ const Review_carousel = ({ handleSubmit, pendingProposalData, successFullRefuseM
       setCopied(false);
     }, 2000);
   }, [copied]);
+  
+   const openModal = (tokenId) => {
+     setModalStates((prev) => ({ ...prev, [tokenId]: true }));
+   };
+
+   const closeModal = (tokenId) => {
+     setModalStates((prev) => ({ ...prev, [tokenId]: false }));
+   };
 
   const handleInput = (id) => {
     setValidate((currentState) => ({
