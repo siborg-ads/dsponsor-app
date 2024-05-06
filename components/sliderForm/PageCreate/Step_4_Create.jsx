@@ -18,8 +18,8 @@ const Step_4_Create = ({
   handleCustomContractChange,
   selectedRoyalties,
   handleRoyaltiesChange,
+  customSymbolContract,
 }) => {
-  
   return (
     <div ref={(el) => (stepsRef.current[3] = el)} className={styles.form__step}>
       <div className="pr-6 pl-2">
@@ -73,7 +73,7 @@ const Step_4_Create = ({
               placeholder="Unit selling price"
               className="dark:bg-jacarta-700 flex-grow border-jacarta-100 hover:ring-accent/10 focus:ring-accent dark:border-jacarta-600 dark:placeholder:text-jacarta-300  rounded-lg py-3 px-3 hover:ring-2 dark:text-white"
             />
-           
+
             <div className="flex gap-4">
               <select
                 id="currency"
@@ -93,13 +93,14 @@ const Step_4_Create = ({
                   value={customContract}
                   onChange={handleCustomContractChange}
                   placeholder="Contract address"
-                  className="dark:bg-jacarta-700 border-jacarta-100 hover:ring-accent/10 focus:ring-accent dark:border-jacarta-600 dark:placeholder:text-jacarta-300 w-full rounded-lg py-3 px-3 hover:ring-2 dark:text-white"
+                  className={`dark:bg-jacarta-700  hover:ring-accent/10 ${customSymbolContract ? "border-green": "border-red"} focus:ring-accent  dark:placeholder:text-jacarta-300 w-full rounded-lg py-3 px-3 hover:ring-2 dark:text-white`}
                 />
               )}
             </div>
           </div>
           <p className="dark:text-jacarta-300 text-jacarta-400 text-2xs mt-3">
-            You&apos;ll earn up to {selectedUnitPrice} {selectedCurrency}. As d&gt;sponsor charges a fee of 4%, sponsors will pay {selectedUnitPrice * 0.04 + selectedUnitPrice} {selectedCurrency}.
+            You&apos;ll earn up to {selectedUnitPrice} {customSymbolContract ? customSymbolContract : selectedCurrency}. As d&gt;sponsor charges a fee of 4%, sponsors will pay{" "}
+            {selectedUnitPrice * 0.04 + selectedUnitPrice} {customSymbolContract ? customSymbolContract : selectedCurrency}.
           </p>
         </div>
 

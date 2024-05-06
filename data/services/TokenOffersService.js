@@ -58,6 +58,7 @@ export const GetTokenAdOffer = async (offerId, tokenId) => {
                 variants
               }
               acceptedProposal {
+                id
                 data
               }
               pendingProposal {
@@ -65,6 +66,7 @@ export const GetTokenAdOffer = async (offerId, tokenId) => {
                 data
               }
               rejectedProposal {
+                id
                 data
                 rejectReason
               }

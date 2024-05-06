@@ -87,9 +87,12 @@ const ItemsTabs = ({ contractAddress, offerId }) => {
                 </div>
                 <div className="mb-2 flex items-center">
                   <span className="dark:text-jacarta-300 mr-2 min-w-[9rem]">Offer ID:</span>
-                  <span className="js-copy-clipboard text-jacarta-700 cursor-pointer select-none dark:text-white" data-tippy-content="Copy">
+                  <Link href={`/offer/${offerId}`} className="flex">
+
+                  <span className="js-copy-clipboard text-jacarta-700 dark:hover:text-accent cursor-pointer select-none dark:text-white" data-tippy-content="Copy">
                     {offerId}
                   </span>
+                  </Link>
                 </div>
                 <div className="mb-2 flex items-center">
                   <span className="dark:text-jacarta-300 mr-2 min-w-[9rem]">Token Standard:</span>

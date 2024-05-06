@@ -32,43 +32,43 @@ const OfferItem = ({ item, url, isToken, isSelectionActive, isOwner }) => {
       console.error("Error: Currency not found for address");
     }
     if (isToken) {
-      const data = item.offer ? item.offer : {};
+      const data = item.offer ? item.offer : null;
       setItemData(data);
     } else {
-      const data = item.offer ? item.offer : {};
+      const data = item.offer ? item.offer : null;
       setItemData(data);
     }
   }, [item, isToken]);
+console.log(itemData);
+  // useEffect(() => {
+  //   const fetchAdsOffers = async () => {
+  //     if (!item) return;
 
-  useEffect(() => {
-    const fetchAdsOffers = async () => {
-      if (!item) return;
+  //     if (item?.mint === null) {
+  //       setAdStatut(3);
+  //       return;
+  //     }
+  //     if (item?.currentProposals?.length > 0) {
+  //       if (item?.currentProposals[0]?.acceptedProposal !== null) {
+  //         setAdStatut(1);
+  //         return;
+  //       }
 
-      if (item?.mint === null) {
-        setAdStatut(3);
-        return;
-      }
-      if (item?.currentProposals?.length > 0) {
-        if (item?.currentProposals[0]?.acceptedProposal !== null) {
-          setAdStatut(1);
-          return;
-        }
+  //       if (item?.currentProposals[0]?.pendingProposal !== null) {
+  //         setAdStatut(2);
+  //       }
+  //       if (item?.currentProposals[0]?.rejectedProposal !== null) {
+  //         setAdStatut(0);
+  //       }
+  //     } else {
+  //       setAdStatut(3);
+  //     }
+  //   };
 
-        if (item?.currentProposals[0]?.pendingProposal !== null) {
-          setAdStatut(2);
-        }
-        if (item?.currentProposals[0]?.rejectedProposal !== null) {
-          setAdStatut(0);
-        }
-      } else {
-        setAdStatut(3);
-      }
-    };
+  //   fetchAdsOffers();
+  // }, [item]);
 
-    fetchAdsOffers();
-  }, [item]);
-
-  const { name = "offerName", image = ["/images/gradient_creative.jpg"], valid_from = null, valid_to = null } = itemData;
+  const { name = "offerName", image = "/images/gradient_creative.jpg", valid_from = null, valid_to = null } = itemData ? itemData : {};
 
   return (
     <>
@@ -89,7 +89,7 @@ const OfferItem = ({ item, url, isToken, isSelectionActive, isOwner }) => {
             {isSelectionActive ? (
               <span className="font-display max-w-[150px] text-jacarta-700 hover:text-accent text-base dark:text-white ">{name}</span>
             ) : (
-              <Link href={url} className="overflow-hidden text-ellipsis whitespace-nowrap max-w-[120px]">
+              <Link href={url} className="overflow-hidden text-ellipsis whitespace-nowrap max-w-[150px]">
                 <span className="font-display max-w-[150px] text-jacarta-700 hover:text-accent text-base dark:text-white ">{name}</span>
               </Link>
             )}
@@ -106,12 +106,15 @@ const OfferItem = ({ item, url, isToken, isSelectionActive, isOwner }) => {
               </div>
             ) : (
               <div className="dark:border-jacarta-600 border-jacarta-100 flex items-center whitespace-nowrap rounded-md border py-1 px-2">
-                <span className="text-green text-sm font-medium tracking-tight"># : {item.tokenData ? item.tokenData : item.tokenId}</span>
+                <span className="text-green text-sm font-medium tracking-tight"># {item.tokenData ? item.tokenData : item.tokenId}</span>
               </div>
             )}
           </div>
           <div className="mt-2 text-xs flex items-center justify-between">
-            {!isToken ? (
+            <span className="dark:text-jacarta-300 text-jacarta-500">
+              {formatDate(valid_from)} - {formatDate(valid_to)}
+            </span>
+            {/* {!isToken ? (
               <span className="dark:text-jacarta-300 text-jacarta-500">
                 {formatDate(valid_from)} - {formatDate(valid_to)}
               </span>
@@ -119,7 +122,7 @@ const OfferItem = ({ item, url, isToken, isSelectionActive, isOwner }) => {
               <span className={`${adStatut === 0 ? "text-red" : adStatut === 1 ? "text-green" : adStatut === 2 ? "text-accent" : ""} text-sm font-bold`}>
                 {adStatut === 0 ? "❌ Rejected" : adStatut === 1 ? "✅ Accepted" : adStatut === 2 ? "🔍 Pending" : "Ad space available"}
               </span>
-            )}
+            )} */}
             <span className="dark:text-jacarta-300 text-jacarta-500">Offer :{item.mint ? item.nftContract?.adOffers[0]?.id : item.id}</span>
           </div>
         </div>
