@@ -1,7 +1,7 @@
-import { useState } from "react";
+import {useState} from "react";
 import DatePicker from "react-datepicker";
 
-import { FileUploader } from "react-drag-drop-files";
+import {FileUploader} from "react-drag-drop-files";
 
 const Step_4_Create = ({
   stepsRef,
@@ -41,18 +41,6 @@ const Step_4_Create = ({
               />
               <span className="text-jacarta-700 dark:text-white">Start date</span>
             </div>
-            <div className="flex flex-col justify-center items-center gap-1">
-              <DatePicker
-                selected={endDate}
-                onChange={(date) => setEndDate(date)}
-                showMonthDropdown
-                popperPlacement="bottom-start"
-                showYearDropdown
-                className="dark:bg-jacarta-700 border-jacarta-100 hover:ring-accent/10 focus:ring-accent dark:border-jacarta-600 dark:placeholder:text-jacarta-300 w-full rounded-lg py-3 px-3 hover:ring-2 dark:text-white"
-              />
-              <span className="text-jacarta-700 dark:text-white">End date</span>
-            </div>
-          </div>
         </div>
         <div className="mb-6 flex flex-col items-center">
           <label htmlFor="item-description" className="font-display text-jacarta-700 mb-2 block dark:text-white">
@@ -115,21 +103,24 @@ const Step_4_Create = ({
             value pricing later.
           </p>
           <div className="flex  gap-4 items-center text-jacarta-700 dark:text-white">
-            <input
-              id="numberInput"
-              type="number"
-              min="0"
-              step="0.01"
-              max="100"
-              value={selectedRoyalties}
-              onChange={handleRoyaltiesChange}
-              placeholder="Royalties"
-              className="dark:bg-jacarta-700 border-jacarta-100 hover:ring-accent/10 focus:ring-accent dark:border-jacarta-600 dark:placeholder:text-jacarta-300  rounded-lg py-3 px-15 hover:ring-2 dark:text-white"
-            />
+              <input
+                  id="numberInput"
+                  type="number"
+                  min="0"
+                  inputMode="decimal"
+                  step="0.01"
+                  max="100"
+                  pattern="^\d+(?:[.,]\d+)?$"
+                  value={selectedRoyalties}
+                  onChange={handleRoyaltiesChange}
+                  placeholder="Royalties"
+                  className="dark:bg-jacarta-700 border-jacarta-100 hover:ring-accent/10 focus:ring-accent dark:border-jacarta-600 dark:placeholder:text-jacarta-300  rounded-lg py-3 px-15 hover:ring-2 dark:text-white"
+              />
             <span>%</span>
           </div>
         </div>
       </div>
+    </div>
     </div>
   );
 };
