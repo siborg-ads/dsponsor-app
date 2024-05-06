@@ -43,55 +43,8 @@ const footerMenuList = [
     list: [
       {
         id: 1,
-        href: "#",
+        href: "/",
         text: "Explore",
-      },
-      {
-        id: 2,
-        href: "#",
-        text: "About",
-      },
-      {
-        id: 3,
-        href: "#",
-        text: "Contact Us",
-      },
-      {
-        id: 4,
-        href: "#",
-        text: "Our Blog",
-      },
-      {
-        id: 5,
-        href: "#",
-        text: "FAQ",
-      },
-    ],
-  },
-  {
-    id: 3,
-    title: "My Account",
-    diffClass: "",
-    list: [
-      {
-        id: 1,
-        href: "#",
-        text: "Authors",
-      },
-      {
-        id: 2,
-        href: "#",
-        text: "Collection",
-      },
-      {
-        id: 3,
-        href: "#",
-        text: "Author Profile",
-      },
-      {
-        id: 4,
-        href: "#",
-        text: "Create Item",
       },
     ],
   },
