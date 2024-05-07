@@ -201,7 +201,7 @@ let nftFilterIds;
  }
   const GET_DATA = gql`
     query AdSpacesOwnedByUser($ids: [ID!]) {
-      tokens(where: { id_in: $ids }) {
+      tokens(where: { id_in: $ids }, first: 1000) {
         id
         tokenId
 

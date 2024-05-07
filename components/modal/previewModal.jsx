@@ -89,13 +89,11 @@ const PreviewModal = ({
                   <p className="font-display  mb-2 block text-jacarta-400 text-sm">
                     Link : {!errors.linkError ? <span className="dark:text-white text-base ml-2"> {link} </span> : <span className="text-red text-base ml-2"> {errors.linkError}</span>}
                   </p>
-                  {imageURLSteps?.length > 0 &&
-                    previewImage.filter((item) => item).length < imageURLSteps.length &&
-                    
-                      <p className="font-display  mb-2 block text-jacarta-400 text-sm" >
-                        Image preview : <span className="text-red text-base ml-2"> {errors.imageError}</span>
-                      </p>
-                   }
+                  {imageURLSteps?.length > 0 && previewImage.filter((item) => item).length < imageURLSteps.length && (
+                    <p className="font-display  mb-2 block text-jacarta-400 text-sm">
+                      Image preview : <span className="text-red text-base ml-2"> {errors.imageError}</span>
+                    </p>
+                  )}
                   <p className="font-display  mb-2 block text-jacarta-400 text-sm">
                     {startDate ? (
                       <span>
@@ -139,7 +137,7 @@ const PreviewModal = ({
                   ) : (
                     ""
                   )}
-                  {selectedUnitPrice ? (
+                  {selectedUnitPrice || errors.unitPriceError ? (
                     <p className="font-display  mb-2 block text-jacarta-400 text-sm">
                       Unit Price : {!errors.unitPriceError ? <span className="dark:text-white text-base ml-2"> {selectedUnitPrice} </span> : <span className="text-red text-base ml-2">{errors.unitPriceError}</span>}
                     </p>

@@ -133,13 +133,15 @@ const SliderForm = ({ styles, handlePreviewModal, stepsRef, numSteps, children, 
               <button type="button" onClick={handlePrevClick} className={`${styles.form__nav__prev} ${currentSlide === 0 ? "disabled opacity-25" : ""}`}>
                 Back
               </button>
-              <button type="button" className="bg-accent cursor-pointer rounded-full min-w-[110px] !p-0 text-center font-bold text-white transition-all" onClick={handlePreviewModal}>
-                Show preview
-              </button>
-
-              <button type="button" onClick={handleNextClick} className={`${styles.form__nav__next} ${currentSlide === numSteps - 1 ? "disabled opacity-25" : ""}`}>
-                Next
-              </button>
+              {currentSlide === numSteps - 1 ? (
+                <button type="button" className="bg-accent cursor-pointer rounded-full py-3 px-3 text-end font-semibold text-white transition-all" onClick={handlePreviewModal}>
+                  Show preview
+                </button>
+              ) : (
+                <button type="button" onClick={handleNextClick} className={`${styles.form__nav__next} ${currentSlide === numSteps - 1 ? "disabled" : ""}`}>
+                  Next
+                </button>
+              )}
             </div>
           </form>
         </div>

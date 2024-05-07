@@ -55,6 +55,7 @@ export const GetAllAdOffersFromUser = async (userAddress) => {
             }
           ]
         }
+        first: 1000
       ) {
         # --> Fetch and parse https://github.com/dcast-media/dips/blob/dip-0002/antho31/dip-0002.md#example-schema-json
         # to get creator & offer info  (you may have token_metadata info too)

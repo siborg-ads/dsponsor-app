@@ -20,6 +20,7 @@ import { Divider } from "@nextui-org/react";
 import "tippy.js/dist/tippy.css";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import Validation from "../../components/offer-section/validation";
+import { protocolFees } from "../../utils/constUtils";
 
 
 const Offer = () => {
@@ -170,15 +171,9 @@ const Offer = () => {
 
               <div className="mb-8 flex items-center flex-wrap gap-2 space-x-4 whitespace-nowrap">
                 <div className="flex items-center">
-                  <Tippy content={<span>{currency?.symbol ? currency?.symbol : "N/A"}</span>}>
-                    <span className="-ml-1">
-                      <svg className="icon mr-1 h-4 w-4">
-                        <use xlinkHref="/icons.svg#icon-ETH"></use>
-                      </svg>
-                    </span>
-                  </Tippy>
+                  
                   <span className="text-green text-sm font-medium tracking-tight">
-                    {price} {currency?.symbol ? currency?.symbol : "N/A"}
+                    {price * protocolFees/100 + price} {currency?.symbol ? currency?.symbol : "N/A"}
                   </span>
                 </div>
 

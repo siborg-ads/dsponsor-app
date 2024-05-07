@@ -25,6 +25,7 @@ import { GetTokenAdOffer } from "../../../data/services/TokenOffersService";
 import { getPossibleAdIntegrations } from "../../../utils/getAdIntegrationsWithParams";
 import { Divider } from "@nextui-org/react";
 import Validation from "../../../components/offer-section/validation.jsx";
+import { protocolFees } from "../../../utils/constUtils";
 
 import contractABI from "../../../abi/dsponsorAdmin.json";
 
@@ -45,7 +46,7 @@ const Item = () => {
   const [files, setFiles] = useState([]);
   const [previewImages, setPreviewImages] = useState([]);
   const [imageModal, setImageModal] = useState(false);
-  const [link, setLink] = useState("https://");
+  const [link, setLink] = useState("");
   const [amountToApprove, setAmountToApprove] = useState(null);
   const [royalties, setRoyalties] = useState(null);
   const [errors, setErrors] = useState({});
@@ -57,6 +58,8 @@ const Item = () => {
   const { mutateAsync: mintAndSubmit } = useContractWrite(DsponsorAdminContract, "mintAndSubmit");
   const { mutateAsync: submitAd } = useContractWrite(DsponsorAdminContract, "submitAdProposals");
   const { contract: tokenContract } = useContract(offerData?.nftContract?.prices[0].currency, "token");
+  const { data: symbolContract } = useContractRead(tokenContract, "symbol");
+  const { data: decimalsContract } = useContractRead(tokenContract, "decimals");
   const { data: tokenBalance, isLoading, error } = useBalance(offerData?.nftContract?.prices[0].currency);
   const { mutateAsync: approve, isLoading: isLoadingApprove } = useContractWrite(tokenContract, "approve");
   const { data: bps } = useContractRead(DsponsorAdminContract, "feeBps");
@@ -131,17 +134,6 @@ const Item = () => {
         setImageURLSteps(imageURLSteps);
         setNumSteps(totalNumSteps);
 
-        try {
-          const currencyToken = adminInstance.chain.getCurrencyByAddress(offer.nftContract.prices[0].currency);
-
-          const formatPrice = offer.nftContract.prices[0].amount / 10 ** currencyToken.decimals;
-          setPrice(formatPrice);
-          setCurrency(currencyToken);
-        } catch (e) {
-          console.error("Error: Currency not found for address", offer?.nftContract?.prices[0]);
-          setOfferNotFormated(true);
-        }
-
         if (address && offer?.nftContract?.tokens[0]?.mint !== null) {
           if (offer?.nftContract?.tokens[0]?.mint?.to === address.toLowerCase()) {
             setIsOwner(true);
@@ -153,9 +145,31 @@ const Item = () => {
     }
 
     setTokenIdString(tokenId?.toString());
-  }, [offerId, address, tokenId, successFullUpload]);
+  }, [offerId, address, tokenId, successFullUpload, isOwner]);
 
-  
+  useEffect(() => {
+    if (!offerData) return;
+    try {
+      const currencyTokenObject = {};
+      if (!decimalsContract && !symbolContract) {
+        const currencyToken = adminInstance.chain.getCurrencyByAddress(offerData.nftContract.prices[0].currency);
+        currencyTokenObject.symbol = currencyToken.symbol;
+        currencyTokenObject.decimals = currencyToken.decimals;
+      } else {
+        currencyTokenObject.symbol = symbolContract;
+        currencyTokenObject.decimals = decimalsContract;
+      }
+ console.log(currencyTokenObject);
+      const formatPrice = offerData.nftContract.prices[0].amount / 10 ** currencyTokenObject.decimals;
+      setPrice(formatPrice);
+      setCurrency(currencyTokenObject);
+      setOfferNotFormated(false);
+    } catch (e) {
+      console.error("Error: Currency not found for address", offerData?.nftContract?.prices[0]);
+      setOfferNotFormated(true);
+    }
+  }, [symbolContract, decimalsContract, offerData,  address, tokenId]);
+
   useEffect(() => {
     if (!offerData || !adParameters) return;
     try {
@@ -173,12 +187,12 @@ const Item = () => {
       submitAdFormated.offerId = offerIdArray;
       setSubmitAdFormated(submitAdFormated);
     } catch (e) {
-      console.error(e,"Error: Ad parameters not found for offer");
+      console.error(e, "Error: Ad parameters not found for offer");
     }
   }, [tokenId, offerId, offerData, adParameters]);
 
   useEffect(() => {
-    const fetchAdsOffers = async () => {
+    const fetchStatusOffers = async () => {
       if (!offerData) return;
       const tokenData = offerData?.nftContract?.tokens[0];
       if (tokenData?.mint === null || offerData.nftContract?.tokens.length === 0) {
@@ -188,7 +202,7 @@ const Item = () => {
       }
     };
 
-    fetchAdsOffers();
+    fetchStatusOffers();
   }, [offerId, tokenId, successFullUpload, offerData]);
 
   useEffect(() => {
@@ -199,7 +213,7 @@ const Item = () => {
     let isValid = true;
     let newErrors = {};
 
-    if (!files) {
+    if (files.length === 0) {
       newErrors.imageError = "Image is missing.";
       isValid = false;
     }
@@ -243,7 +257,7 @@ const Item = () => {
       const priceAsNumber = price * bpsValuePercentage + price;
 
       const priceAsNumberString = priceAsNumber.toString();
-
+      
       setFinalPrice(priceAsNumberString);
       const amountToApprove = ethers.utils.parseUnits(priceAsNumberString, currency.decimals);
 
@@ -254,7 +268,12 @@ const Item = () => {
   const checkAllowance = async () => {
     if (offerData?.nftContract.prices[0].currency !== "0x0000000000000000000000000000000000000000") {
       const allowance = await tokenContract.call("allowance", [address, "0xE442802706F3603d58F34418Eac50C78C7B4E8b3"]);
-      if (ethers.BigNumber.from(allowance._hex).toNumber() > ethers.BigNumber.from(amountToApprove._hex).toNumber()) return;
+
+      const allowanceBigNumber = ethers.BigNumber.from(allowance._hex);
+      const amountToApproveBigNumber = ethers.BigNumber.from(amountToApprove._hex);
+
+      if (allowanceBigNumber.gt(amountToApproveBigNumber)) return;
+
       setAllowanceTrue(true);
     }
   };
@@ -311,7 +330,6 @@ const Item = () => {
         adDatas: [],
         referralAdditionalInformation: "",
       };
-      console.log(submitAdFormated, "prout");
       const argsAdSubmited = {
         offerId: submitAdFormated.offerId,
         tokenId: submitAdFormated.tokenId,
@@ -403,7 +421,7 @@ const Item = () => {
       </div>
     );
   }
-
+console.log(currency?.symbol);
   const { description = "description not found", id = "1", image = ["/images/gradient_creative.jpg"], name = "DefaultName" } = Object.keys(offerData.offer.token_metadata).length > 0 ? tokenMetaData : offerData.offer;
 
   return (
@@ -474,15 +492,8 @@ const Item = () => {
 
               <div className="mb-8 flex items-center space-x-4 whitespace-nowrap">
                 <div className="flex items-center">
-                  <Tippy content={<span>{currency?.symbol ? currency?.symbol : "N/A"}</span>}>
-                    <span className="-ml-1">
-                      <svg className="icon mr-1 h-4 w-4">
-                        <use xlinkHref="/icons.svg#icon-ETH"></use>
-                      </svg>
-                    </span>
-                  </Tippy>
                   <span className="text-green text-sm font-medium tracking-tight">
-                    {price} {currency?.symbol ? currency?.symbol : "N/A"}
+                    {(price * protocolFees) / 100 + price} {currency?.symbol ? currency?.symbol : "N/A"}
                   </span>
                 </div>
 
@@ -575,7 +586,7 @@ const Item = () => {
             errors={errors}
             successFullUpload={successFullUpload}
             validate={validate}
-            buttonTitle="Ad proposal"
+            buttonTitle="Submit"
             modalTitle="Ad Space Preview"
             successFullUploadModal={successFullUploadModal}
           />

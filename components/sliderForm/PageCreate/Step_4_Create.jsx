@@ -41,86 +41,99 @@ const Step_4_Create = ({
               />
               <span className="text-jacarta-700 dark:text-white">Start date</span>
             </div>
-        </div>
-        <div className="mb-6 flex flex-col items-center">
-          <label htmlFor="item-description" className="font-display text-jacarta-700 mb-2 block dark:text-white">
-            Unit selling price
-            <span className="text-red">*</span>
-          </label>
-          <p className="dark:text-jacarta-300 text-jacarta-400 text-2xs mb-3">
-            USD payment means you&apos;ll receive USD tokens (1 USDC = 1$). You&apos;ll be able to cash out via wire transfer with a service like MtPelerin. You can change the pricing later.
-          </p>
-          <div className="flex  flex-wrap   gap-4 items-center text-jacarta-700 dark:text-white">
-            <input
-              id="numberInput"
-              type="number"
-              min="0.01"
-              step="0.01"
-              value={selectedUnitPrice}
-              onChange={handleUnitPriceChange}
-              placeholder="Unit selling price"
-              className="dark:bg-jacarta-700 flex-grow border-jacarta-100 hover:ring-accent/10 focus:ring-accent dark:border-jacarta-600 dark:placeholder:text-jacarta-300  rounded-lg py-3 px-3 hover:ring-2 dark:text-white"
-            />
-
-            <div className="flex gap-4">
-              <select
-                id="currency"
-                value={selectedCurrency}
-                onChange={handleCurrencyChange}
-                className="dark:bg-jacarta-700 min-w-[110px] border-jacarta-100 hover:ring-accent/10 focus:ring-accent dark:border-jacarta-600 dark:placeholder:text-jacarta-300 w-full rounded-lg py-3 px-5 hover:ring-2 dark:text-white"
-              >
-                <option value="USDC">USDC</option>
-                <option value="ETH">ETH</option>
-                <option value="WETH">WETH</option>
-                <option value="USDT">USDT</option>
-                <option value="custom">Custom</option>
-              </select>
-              {selectedCurrency === "custom" && (
-                <input
-                  type="text"
-                  value={customContract}
-                  onChange={handleCustomContractChange}
-                  placeholder="Contract address"
-                  className={`dark:bg-jacarta-700  hover:ring-accent/10 ${customSymbolContract ? "border-green": "border-red"} focus:ring-accent  dark:placeholder:text-jacarta-300 w-full rounded-lg py-3 px-3 hover:ring-2 dark:text-white`}
-                />
-              )}
+            <div className="flex flex-col justify-center items-center gap-1">
+              <DatePicker
+                selected={endDate}
+                onChange={(date) => setEndDate(date)}
+                showMonthDropdown
+                popperPlacement="bottom-end"
+                showYearDropdown
+                className="dark:bg-jacarta-700 border-jacarta-100 hover:ring-accent/10 focus:ring-accent dark:border-jacarta-600 dark:placeholder:text-jacarta-300 w-full rounded-lg py-3 px-3 hover:ring-2 dark:text-white"
+              />
+              <span className="text-jacarta-700 dark:text-white">End date</span>
             </div>
           </div>
-          <p className="dark:text-jacarta-300 text-jacarta-400 text-2xs mt-3">
-            You&apos;ll earn up to {selectedUnitPrice} {customSymbolContract ? customSymbolContract : selectedCurrency}. As d&gt;sponsor charges a fee of 4%, sponsors will pay{" "}
-            {selectedUnitPrice * 0.04 + selectedUnitPrice} {customSymbolContract ? customSymbolContract : selectedCurrency}.
-          </p>
-        </div>
-
-        {/* <!-- Royalties --> */}
-        <div className="mb-6 flex flex-col items-center">
-          <label htmlFor="item-description" className="font-display text-jacarta-700 mb-2 block dark:text-white">
-            Royalties
-            <span className="text-red">*</span>
-          </label>
-          <p className="dark:text-jacarta-300 text-jacarta-400  text-2xs mb-3">
-            Sponsors can sell an ad space ownership on the marketplace. Define the fee you want to get from secondary sales. Sponsors might refuse to buy an ad space if your royalty fee is too high. You can change this
-            value pricing later.
-          </p>
-          <div className="flex  gap-4 items-center text-jacarta-700 dark:text-white">
+          <div className="mb-6 flex flex-col items-center">
+            <label htmlFor="item-description" className="font-display text-jacarta-700 mb-2 block dark:text-white">
+              Unit selling price
+              <span className="text-red">*</span>
+            </label>
+            <p className="dark:text-jacarta-300 text-jacarta-400 text-2xs mb-3">
+              USD payment means you&apos;ll receive USD tokens (1 USDC = 1$). You&apos;ll be able to cash out via wire transfer with a service like MtPelerin. You can change the pricing later.
+            </p>
+            <div className="flex  flex-wrap   gap-4 items-center text-jacarta-700 dark:text-white">
               <input
-                  id="numberInput"
-                  type="number"
-                  min="0"
-                  inputMode="decimal"
-                  step="0.01"
-                  max="100"
-                  pattern="^\d+(?:[.,]\d+)?$"
-                  value={selectedRoyalties}
-                  onChange={handleRoyaltiesChange}
-                  placeholder="Royalties"
-                  className="dark:bg-jacarta-700 border-jacarta-100 hover:ring-accent/10 focus:ring-accent dark:border-jacarta-600 dark:placeholder:text-jacarta-300  rounded-lg py-3 px-15 hover:ring-2 dark:text-white"
+                id="numberInput"
+                type="number"
+                
+                step="0.01"
+                value={selectedUnitPrice}
+                onChange={handleUnitPriceChange}
+                placeholder="Unit selling price"
+                className="dark:bg-jacarta-700 flex-grow border-jacarta-100 hover:ring-accent/10 focus:ring-accent dark:border-jacarta-600 dark:placeholder:text-jacarta-300  rounded-lg py-3 px-3 hover:ring-2 dark:text-white"
               />
-            <span>%</span>
+
+              <div className="flex gap-4">
+                <select
+                  id="currency"
+                  value={selectedCurrency}
+                  onChange={handleCurrencyChange}
+                  className="dark:bg-jacarta-700 min-w-[110px] border-jacarta-100 hover:ring-accent/10 focus:ring-accent dark:border-jacarta-600 dark:placeholder:text-jacarta-300 w-full rounded-lg py-3 px-5 hover:ring-2 dark:text-white"
+                >
+                  <option value="USDC">USDC</option>
+                  <option value="ETH">ETH</option>
+                  <option value="WETH">WETH</option>
+                  <option value="USDT">USDT</option>
+                  <option value="custom">Custom</option>
+                </select>
+                {selectedCurrency === "custom" && (
+                  <input
+                    type="text"
+                    value={customContract}
+                    onChange={handleCustomContractChange}
+                    placeholder="Contract address"
+                    className={`dark:bg-jacarta-700  hover:ring-accent/10 ${
+                      customSymbolContract ? "border-green" : "border-red"
+                    } focus:ring-accent  dark:placeholder:text-jacarta-300 w-full rounded-lg py-3 px-3 hover:ring-2 dark:text-white`}
+                  />
+                )}
+              </div>
+            </div>
+            <p className="dark:text-jacarta-300 text-jacarta-400 text-2xs mt-3">
+              You&apos;ll earn up to {selectedUnitPrice} {customSymbolContract ? customSymbolContract : selectedCurrency}. As d&gt;sponsor charges a fee of 4%, sponsors will pay{" "}
+              {parseFloat(selectedUnitPrice) + (parseFloat(selectedUnitPrice) * (4/100)) } {customSymbolContract ? customSymbolContract : selectedCurrency}.
+            </p>
+          </div>
+
+          {/* <!-- Royalties --> */}
+          <div className="mb-6 flex flex-col items-center">
+            <label htmlFor="item-description" className="font-display text-jacarta-700 mb-2 block dark:text-white">
+              Royalties
+              <span className="text-red">*</span>
+            </label>
+            <p className="dark:text-jacarta-300 text-jacarta-400  text-2xs mb-3">
+              Sponsors can sell an ad space ownership on the marketplace. Define the fee you want to get from secondary sales. Sponsors might refuse to buy an ad space if your royalty fee is too high. You can change this
+              value pricing later.
+            </p>
+            <div className="flex  gap-4 items-center text-jacarta-700 dark:text-white">
+              <input
+                id="numberInput"
+                type="number"
+                min="0"
+                inputMode="decimal"
+                step="0.01"
+                max="100"
+                pattern="^\d+(?:[.,]\d+)?$"
+                value={selectedRoyalties}
+                onChange={handleRoyaltiesChange}
+                placeholder="Royalties"
+                className="dark:bg-jacarta-700 border-jacarta-100 hover:ring-accent/10 focus:ring-accent dark:border-jacarta-600 dark:placeholder:text-jacarta-300  rounded-lg py-3 px-15 hover:ring-2 dark:text-white"
+              />
+              <span>%</span>
+            </div>
           </div>
         </div>
       </div>
-    </div>
     </div>
   );
 };
