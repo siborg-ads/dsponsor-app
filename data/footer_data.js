@@ -6,33 +6,8 @@ const footerMenuList = [
     list: [
       {
         id: 1,
-        href: "#",
-        text: "All NFTs",
-      },
-      {
-        id: 2,
-        href: "#",
-        text: "art",
-      },
-      {
-        id: 3,
-        href: "#",
-        text: "music",
-      },
-      {
-        id: 4,
-        href: "#",
-        text: "domain names",
-      },
-      {
-        id: 5,
-        href: "#",
-        text: "collections",
-      },
-      {
-        id: 6,
-        href: "#",
-        text: "virtual world",
+        href: "/marketplace",
+        text: "All Offers",
       },
     ],
   },
