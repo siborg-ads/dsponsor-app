@@ -8,9 +8,6 @@ const Step_2_Mint = ({ stepsRef, styles, setLink, link}) => {
 
   const handleChange = (e) => {
     let value = e.target.value;
-    if (!value.startsWith("http://") && !value.startsWith("https://") && value.trim() !== "") {
-      value = `https://${value}`;
-    }
     setLink(value);
   };
   return (

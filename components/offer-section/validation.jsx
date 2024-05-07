@@ -40,6 +40,7 @@ const Validation = ({ offer, offerId, isOwner, handleSubmit, successFullRefuseMo
           groupedAds[token.tokenId] = {
             tokenId: token.tokenId,
             offerId: offerId,
+            tokenData: token.mint.tokenData || null,
             proposalIds: [],
             adParametersList: {},
             adParametersKeys: [],
@@ -48,7 +49,7 @@ const Validation = ({ offer, offerId, isOwner, handleSubmit, successFullRefuseMo
             groupedAds[token.tokenId].reason = element[statusKey].rejectReason;
           }
         }
-        const adParamBase = element.adParameter.base;
+        const adParamBase = element.adParameter.id;
 
         groupedAds[token.tokenId].proposalIds.push(element[statusKey].id);
 

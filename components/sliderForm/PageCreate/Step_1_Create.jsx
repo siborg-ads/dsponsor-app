@@ -160,13 +160,13 @@ setSelectedParameter([]);
         {/* <!-- Ad Space type --> */}
         <div className="mb-6 flex  flex-col justify-center items-center gap-4">
           <div className="flex flex-col items-center">
-            <label htmlFor="item-description" className="font-display text-jacarta-700 mb-2 block dark:text-white">
+            <label htmlFor="item-description" className="font-display text-jacarta-700 mb-2 block dark:text-white ">
               Type of ad spaces for this offer
               <span className="text-red">*</span>
             </label>
             <p className="dark:text-jacarta-300 text-jacarta-400 text-2xs mb-3">Select the type of your offer</p>
             <div className="flex flex-col gap-4 justify-center items-center w-full text-jacarta-700 dark:text-white">
-              <label htmlFor="adsType">Select ads type:</label>
+             
               <div id="adsType" className="flex flex-wrap justify-center gap-2">
                 {AdIntegrationData.map((integration, index) => (
                   <div key={index} className="relative ">

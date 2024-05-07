@@ -7,6 +7,8 @@ import Tippy from "@tippyjs/react";
 import { use, useEffect, useState } from "react";
 import { useCountdown } from "../../utils/countDown";
 import adminInstance from "../../utils/sdkProvider";
+import {protocolFees} from "../../utils/constUtils";
+import { useAddress, useSwitchChain, useContract, useContractWrite, Web3Button, useContractRead, useStorageUpload, useTokenDecimals, CheckoutWithCard, CheckoutWithEth } from "@thirdweb-dev/react";
 
 
 
@@ -15,6 +17,11 @@ const OfferItem = ({ item, url, isToken, isSelectionActive, isOwner }) => {
   const [currencyToken, setCurrencyToken] = useState(null);
   const [itemData, setItemData] = useState({});
   const [adStatut, setAdStatut] = useState(null);
+  const { contract: tokenContract } = useContract(!isToken && item?.nftContract?.prices[0]?.currency, "token");
+  const { data: symbolContract } = useContractRead(tokenContract, "symbol");
+  const { data: decimalsContract } = useContractRead(tokenContract, "decimals");
+  
+  
 
   function formatDate(dateIsoString) {
     if (!dateIsoString) return "date not found";
@@ -22,11 +29,23 @@ const OfferItem = ({ item, url, isToken, isSelectionActive, isOwner }) => {
     return new Date(dateIsoString).toLocaleDateString("en-EN", options);
   }
   useEffect(() => {
-    try {
-      const currencyToken = adminInstance.chain.getCurrencyByAddress(item.nftContract.prices[0].currency);
-      setCurrencyToken(currencyToken);
+  
 
-      const formatPrice = item.nftContract.prices[0].amount / 10 ** currencyToken.decimals;
+      
+
+   
+    try {
+       const currencyTokenObject = {};
+       if (!decimalsContract && !symbolContract) {
+         const currencyToken = adminInstance.chain.getCurrencyByAddress(item?.nftContract?.prices[0]?.currency);
+         currencyTokenObject.symbol = currencyToken.symbol;
+         currencyTokenObject.decimals = currencyToken.decimals;
+       } else {
+         currencyTokenObject.symbol = symbolContract;
+         currencyTokenObject.decimals = decimalsContract;
+       }
+       const formatPrice = item?.nftContract?.prices[0]?.amount / 10 ** currencyTokenObject.decimals;
+      setCurrencyToken(currencyTokenObject);
       setPrice(formatPrice);
     } catch (e) {
       console.error("Error: Currency not found for address");
@@ -38,7 +57,7 @@ const OfferItem = ({ item, url, isToken, isSelectionActive, isOwner }) => {
       const data = item.offer ? item.offer : null;
       setItemData(data);
     }
-  }, [item, isToken]);
+  }, [item, isToken,  symbolContract, decimalsContract]);
 
   // useEffect(() => {
   //   const fetchAdsOffers = async () => {
@@ -97,11 +116,9 @@ const OfferItem = ({ item, url, isToken, isSelectionActive, isOwner }) => {
             {!isToken ? (
               <div className="dark:border-jacarta-600 border-jacarta-100 flex items-center whitespace-nowrap rounded-md border py-1 px-2">
                 {" "}
-                <Tippy content={currencyToken?.symbol ? currencyToken?.symbol : "N/A"}>
-                  <Image width={12} height={12} src="/images/eth-icon.svg" alt="icon" className="w-3 h-3 mr-1" />
-                </Tippy>
+               
                 <span className="text-green text-sm font-medium tracking-tight">
-                  {price} {currencyToken?.symbol ? currencyToken?.symbol : "N/A"}
+                  {price * protocolFees/100 + price} {currencyToken?.symbol ? currencyToken?.symbol : "N/A"}
                 </span>
               </div>
             ) : (
@@ -123,7 +140,7 @@ const OfferItem = ({ item, url, isToken, isSelectionActive, isOwner }) => {
                 {adStatut === 0 ? "❌ Rejected" : adStatut === 1 ? "✅ Accepted" : adStatut === 2 ? "🔍 Pending" : "Ad space available"}
               </span>
             )} */}
-            <span className="dark:text-jacarta-300 text-jacarta-500">Offer :{item.mint ? item.nftContract?.adOffers[0]?.id : item.id}</span>
+            <span className="dark:text-jacarta-300 text-jacarta-500">Offer # {item.mint ? item.nftContract?.adOffers[0]?.id : item.id}</span>
           </div>
         </div>
       </article>

@@ -43,6 +43,7 @@ const Create = () => {
   const { contract: DsponsorAdminContract } = useContract("0xE442802706F3603d58F34418Eac50C78C7B4E8b3", contractABI);
   const { mutateAsync: createDSponsorNFTAndOffer } = useContractWrite(DsponsorAdminContract, "createDSponsorNFTAndOffer");
    const [imageRatios, setImageRatios] = useState([]);
+   const [tokenDecimals, setTokenDecimals] = useState(0);
     const USDCCurrency = adminInstance.chain.getCurrencyAddress("USDC");
     const ETHCurrency = adminInstance.chain.getCurrencyAddress("ETH");
     const WETHCurrency = adminInstance.chain.getCurrencyAddress("WETH");
@@ -50,30 +51,32 @@ const Create = () => {
 
     const { contract: customTokenContract } = useContract(customContract, "token");
     const { data: customSymbolContract } = useContractRead(customTokenContract, "symbol");
-
-
+    const { data: decimalsContract } = useContractRead(customTokenContract, "decimals");
     const { data: customDecimals } = useTokenDecimals(customTokenContract);
   const [name, setName] = useState(false);
   const stepsRef = useRef([]);
   const { ethers } = require("ethers");
 
 
-
+useEffect(() => {
+console.log(selectedCurrency);
+  setTokenDecimals(decimalsContract);
+}, [decimalsContract, selectedCurrency]);
 
   const handleUnitPriceChange = (e) => {
     const { value } = e.target;
 
-    // const price = parseFloat(e.target.value);
+   
     const price = value;
 
-    // if (!isNaN(price)) {
-      setSelectedUnitPrice(price);
-    // }
+    console.log(price);
+  
+     setSelectedUnitPrice(value === "" ? null : price);
   };
 
   const handleCurrencyChange = (event) => {
     setSelectedCurrency(event.target.value);
-
+    setCustomContract(null);
   };
   useEffect(() => {
     if (customSymbolContract) {
@@ -156,8 +159,8 @@ for(let i = 0; i < selectedIntegration.length; i++){
       newErrors.endDateError = "End date cannot be in the past.";
       isValid = false;
     }
-
-    if (parseFloat(selectedUnitPrice) < 0.01) {
+console.log(selectedUnitPrice);
+    if (parseFloat(selectedUnitPrice) < 0.01 || isNaN(selectedUnitPrice) || selectedUnitPrice === null) {
       newErrors.unitPriceError = "Unit price must be at least 0.01.";
       isValid = false;
     }
@@ -171,8 +174,12 @@ for(let i = 0; i < selectedIntegration.length; i++){
       isValid = false;
     }
 
-    if (!selectedCurrency || !customTokenContract) {
+    if (!selectedCurrency ) {
       newErrors.currencyError = "Currency is missing or invalid.";
+      isValid = false;
+    }
+    if (selectedCurrency === "custom" && customTokenContract === undefined) {
+      newErrors.currencyError = "Custom contract is missing or invalid.";
       isValid = false;
     }
 

@@ -51,6 +51,12 @@ const Validated_refused_items = ({ statut, proposalData, isToken }) => {
       setStatutItem("refused");
     }
   }, []);
+  const getImageUrl = (adParams) => {
+    if (!adParams) return "/";
+
+    const imageKey = Object.keys(adParams).find((key) => key.startsWith("imageURL"));
+    return imageKey ? adParams[imageKey] : "/";
+  };
 
   if (proposalData.length === 0) {
     return <div className="flex justify-center">{statut ? "No validated ads..." : "No refused ads..."}</div>;
@@ -73,20 +79,20 @@ const Validated_refused_items = ({ statut, proposalData, isToken }) => {
 
           <div className="mb-10 shrink-0 basis-8/12 space-y-5 lg:mb-0 lg:pr-10">
             {proposalData?.map((item) => {
-              const { adParametersList, proposalIds, tokenId, reason, title } = item;
+              const { adParametersList, proposalIds, tokenId, reason, title, tokenData } = item;
 
               return (
                 <div key={tokenId} className="dark:bg-jacarta-700  gap-5 p-8 dark:border-jacarta-700 transition-shadow hover:shadow-lg border-jacarta-100 rounded-2.5xl relative flex">
                   <div className=" relative flex items-center gap-5 flex-col sm:flex-row ">
                     <figure className="self-start">
                       <button className="w-full" onClick={() => openModal(tokenId)}>
-                        {adParametersList?.imageURL && <Image src={adParametersList?.imageURL} alt={item.title} height={75} width={75} objectFit="contain" className="rounded-2lg min-w-[75px]" loading="lazy" />}
+                        {getImageUrl(adParametersList) && <Image src={getImageUrl(adParametersList)} alt={item.title} height={75} width={75} objectFit="contain" className="rounded-2lg min-w-[75px]" loading="lazy" />}
                       </button>
 
                       {/* Modal */}
                       <div className={modalStates[tokenId] ? "modal fade show block" : "modal fade"}>
                         <div className="modal-dialog !my-0 flex h-full max-w-4xl items-center justify-center relative">
-                          <Image src={adParametersList?.imageURL} alt={item.title} height={300} width={300} objectFit="contain" className="rounded-2lg min-w-[75px]" loading="lazy" />
+                          <Image src={getImageUrl(adParametersList)} alt={item.title} height={300} width={300} objectFit="contain" className="rounded-2lg min-w-[75px]" loading="lazy" />
                         </div>
 
                         <button type="button" className="btn-close absolute top-6 right-6" onClick={() => closeModal(tokenId)}>
@@ -95,7 +101,7 @@ const Validated_refused_items = ({ statut, proposalData, isToken }) => {
                             <path d="M12 10.586l4.95-4.95 1.414 1.414-4.95 4.95 4.95 4.95-1.414 1.414-4.95-4.95-4.95 4.95-1.414-1.414 4.95-4.95-4.95-4.95L7.05 5.636z" />
                           </svg>
                         </button>
-                        <a href={adParametersList?.imageURL} download className="absolute bottom-6 right-6 btn btn-primary flex items-center justify-center p-2">
+                        <a href={getImageUrl(adParametersList)} download className="absolute bottom-6 right-6 btn btn-primary flex items-center justify-center p-2">
                           {/* SVG icon for download */}
                         </a>
                       </div>
@@ -104,7 +110,7 @@ const Validated_refused_items = ({ statut, proposalData, isToken }) => {
 
                     <div>
                       <h3 className="font-display text-jacarta-700 mb-1 text-base font-semibold dark:text-white">
-                        Item : <span className="text-accent"> {parseInt(tokenId) + 1} </span>{" "}
+                        Item : <span className="text-accent"> {tokenData ? tokenData : formatTokenId(tokenId)} </span>{" "}
                       </h3>
 
                       <div className="flex flex-col">

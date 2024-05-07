@@ -101,11 +101,7 @@ const ManageSpaces = () => {
             <div className="container">
               <div className="text-center">
                 <div className="dark:bg-jacarta-700 dark:border-jacarta-600 border-jacarta-100  inline-flex items-center justify-center rounded-full border bg-white py-1.5 px-4">
-                  <Tippy content="ETH">
-                    <svg className="icon h-4 w-4 mr-1">
-                      <use xlinkHref="/icons.svg#icon-ETH"></use>
-                    </svg>
-                  </Tippy>
+                  
 
                   <Tippy hideOnClick={false} content={copied ? <span>copied</span> : <span>copy</span>}>
                     <button className="js-copy-clipboard dark:text-jacarta-200 max-w-[10rem] select-none overflow-hidden text-ellipsis whitespace-nowrap">

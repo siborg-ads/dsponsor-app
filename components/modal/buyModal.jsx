@@ -8,6 +8,7 @@ import { Web3Button } from "@thirdweb-dev/react";
 import { useState } from "react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { protocolFees } from "../../utils/constUtils";
 
 const BuyModal = ({
   formatTokenId,
@@ -57,7 +58,7 @@ const BuyModal = ({
           {!successFullUpload ? (
             <div className="modal-body p-6">
               <div className="mb-2 flex items-center justify-between">
-                <span className="font-display text-jacarta-700 text-sm font-semibold dark:text-white">Space # {tokenData}</span>
+                <span className="font-display text-jacarta-700 text-sm font-semibold dark:text-white">Space # {tokenData ? tokenData : formatTokenId(tokenId)}</span>
                 <span className="font-display text-jacarta-700 text-sm font-semibold dark:text-white">Subtotal</span>
               </div>
 
@@ -66,32 +67,24 @@ const BuyModal = ({
                   <Image width={150} height={150} src={image} alt="logo" className="rounded-2lg" loading="lazy" />
                 </figure>
 
-                <div>
+                <div className="overflow-hidden text-ellipsis whitespace-nowrap max-w-[150px] mr-5">
                   <a href="collection.html" className="text-accent text-sm">
                     {initialCreator}
                   </a>
                   <h3 className="font-display text-jacarta-700 mb-1 text-base font-semibold dark:text-white">{name}</h3>
                   <div className="flex flex-wrap items-center">
-                    <span className="dark:text-jacarta-300 text-jacarta-500 mr-1 block text-sm">Protocol fees: 4 %</span>
-                    {/* <span data-tippy-content="The creator of this collection will receive 5% of the sale total from future sales of this item.">
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" className="dark:fill-jacarta-300 fill-jacarta-700 h-4 w-4">
-                        <path fill="none" d="M0 0h24v24H0z" />
-                        <path d="M12 22C6.477 22 2 17.523 2 12S6.477 2 12 2s10 4.477 10 10-4.477 10-10 10zm0-2a8 8 0 1 0 0-16 8 8 0 0 0 0 16zM11 7h2v2h-2V7zm0 4h2v6h-2v-6z" />
-                      </svg>
-                    </span> */}
+                    <span className="dark:text-jacarta-300 text-jacarta-500 mr-1 block text-sm">Protocol fees: {protocolFees} %</span>
+                   
                   </div>
                 </div>
 
                 <div className="ml-auto">
                   <span className="mb-1 flex items-center whitespace-nowrap">
-                    <span data-tippy-content="ETH">
-                      <svg className="h-4 w-4">
-                        <use xlinkHref="/icons.svg#icon-ETH"></use>
-                      </svg>
-                    </span>
+                  
                     <span className="dark:text-jacarta-100 text-sm font-medium tracking-tight">
-                      {price} {selectedCurrency}
+                      {price } {selectedCurrency}
                     </span>
+                   
                   </span>
                   {/* <div className="dark:text-jacarta-300 text-right text-sm">$130.82</div> */}
                 </div>
@@ -102,11 +95,7 @@ const BuyModal = ({
                 <span className="font-display text-jacarta-700 hover:text-accent font-semibold dark:text-white">Total</span>
                 <div className="ml-auto">
                   <span className="flex items-center whitespace-nowrap">
-                    <span data-tippy-content="ETH">
-                      <svg className="h-4 w-4">
-                        <use xlinkHref="/icons.svg#icon-ETH"></use>
-                      </svg>
-                    </span>
+                   
                     <span className="text-green font-medium tracking-tight">
                       {finalPrice} {selectedCurrency}
                     </span>
@@ -162,7 +151,7 @@ const BuyModal = ({
                       error: "Approval rejected 🤯",
                     });
                   }}
-                  className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate  ? "btn-disabled" : "!bg-accent !cursor-pointer"} `}
+                  className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate ? "btn-disabled" : "!bg-accent !cursor-pointer"} `}
                   disabled={!validate}
                 >
                   Approve
@@ -177,7 +166,7 @@ const BuyModal = ({
                       error: "Transaction rejected 🤯",
                     });
                   }}
-                  className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate  ? "btn-disabled" : "!bg-accent !cursor-pointer"} `}
+                  className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate ? "btn-disabled" : "!bg-accent !cursor-pointer"} `}
                   disabled={!validate}
                 >
                   Confirm checkout
