@@ -8,7 +8,7 @@ import "react-toastify/dist/ReactToastify.css";
 const PreviewModal = ({
   handlePreviewModal,
   handleSubmit,
-  customSymbolContract,
+
   name = false,
   link = null,
   description = false,
@@ -16,12 +16,14 @@ const PreviewModal = ({
   endDate = null,
   selectedNumber = null,
   selectedUnitPrice = null,
-  selectedCurrency = null,
+  symbolContract = null,
   selectedParameter = null,
   customContract = null,
+  selectedCurrency = null,
   selectedRoyalties = null,
   previewImage = null,
   displayedParameter = null,
+  terms = null,
   imageURLSteps,
   validate,
   errors,
@@ -38,7 +40,6 @@ const PreviewModal = ({
     return date.toLocaleDateString();
   };
 
-  
   return (
     <div>
       <div className="modal-dialog max-h-[75vh] max-w-2xl">
@@ -144,13 +145,9 @@ const PreviewModal = ({
                   ) : (
                     ""
                   )}
-                  {customContract ? (
+                  {symbolContract || selectedCurrency ? (
                     <p className="font-display  mb-2 block text-jacarta-400 text-sm">
-                      Custom Contract : {!errors.currencyError ? <span className="dark:text-white text-base ml-2"> {customSymbolContract} </span> : <span className="text-red text-base ml-2">{errors.currencyError}</span>}
-                    </p>
-                  ) : selectedCurrency ? (
-                    <p className="font-display  mb-2 block text-jacarta-400 text-sm">
-                      Currency : {!errors.currencyError ? <span className="dark:text-white text-base ml-2"> {selectedCurrency} </span> : <span className="text-red text-base ml-2">{errors.currencyError}</span>}
+                      Currency : {!errors.currencyError ? <span className="dark:text-white text-base ml-2"> {symbolContract} </span> : <span className="text-red text-base ml-2">{errors.currencyError}</span>}
                     </p>
                   ) : (
                     ""
@@ -158,6 +155,13 @@ const PreviewModal = ({
                   {selectedRoyalties ? (
                     <p className="font-display  mb-2 block text-jacarta-400 text-sm">
                       Royalties : {!errors.royaltyError ? <span className="dark:text-white text-base ml-2"> {selectedRoyalties} % </span> : <span className="text-red text-base ml-2">{errors.royaltyError}</span>}
+                    </p>
+                  ) : (
+                    ""
+                  )}
+                  {terms.length > 0 ? (
+                    <p className="font-display  mb-2 block text-jacarta-400 text-sm">
+                      Terms :  <span className="dark:text-white text-base ml-2"> {terms[0].name ? terms[0].name : terms[0]}  </span>
                     </p>
                   ) : (
                     ""

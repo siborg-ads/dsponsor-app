@@ -21,6 +21,7 @@ import "tippy.js/dist/tippy.css";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import Validation from "../../components/offer-section/validation";
 import { protocolFees } from "../../utils/constUtils";
+import ModalHelper from "../../components/Helper/modalHelper";
 
 
 const Offer = () => {
@@ -41,6 +42,10 @@ const Offer = () => {
   const [successFullRefuseModal, setSuccessFullRefuseModal] = useState(false);
   const [tokenData, setTokenData] = useState("");
   const [isWordAlreadyTaken, setIsWordAlreadyTaken] = useState(false);
+  const { contract: tokenContract } = useContract(offerData?.nftContract?.prices[0].currency, "token");
+  const { data: symbolContract } = useContractRead(tokenContract, "symbol");
+  const { data: decimalsContract } = useContractRead(tokenContract, "decimals");
+  
 
   useEffect(() => {
     if (offerId) {
@@ -56,21 +61,34 @@ const Offer = () => {
         if (userAddress?.toLowerCase() === offer.initialCreator) {
           setIsOwner(true);
         }
-
-        try {
-          const currencyToken = adminInstance.chain.getCurrencyByAddress(offer?.nftContract.prices[0].currency);
-          const formatPrice = offer.nftContract.prices[0].amount / 10 ** currencyToken.decimals;
-
-          setPrice(formatPrice);
-          setCurrency(currencyToken);
-        } catch (e) {
-          console.error("Error: Currency not found for address");
-        }
       };
 
       fetchAdsOffers();
     }
   }, [offerId, router, successFullRefuseModal, userAddress]);
+
+   useEffect(() => {
+     if (!offerData) return;
+     try {
+       const currencyTokenObject = {};
+       if (!decimalsContract && !symbolContract) {
+         const currencyToken = adminInstance.chain.getCurrencyByAddress(offerData.nftContract.prices[0].currency);
+         currencyTokenObject.symbol = currencyToken.symbol;
+         currencyTokenObject.decimals = currencyToken.decimals;
+       } else {
+         currencyTokenObject.symbol = symbolContract;
+         currencyTokenObject.decimals = decimalsContract;
+       }
+       console.log(currencyTokenObject);
+       const formatPrice = offerData.nftContract.prices[0].amount / 10 ** currencyTokenObject.decimals;
+       setPrice(formatPrice);
+       setCurrency(currencyTokenObject);
+      
+     } catch (e) {
+       console.error("Error: Currency not found for address", offerData?.nftContract?.prices[0]);
+     
+     }
+   }, [symbolContract, decimalsContract, offerData]);
 
   useEffect(() => {
     if (offerData?.nftContract?.royaltyBps) setRoyalties(offerData?.nftContract?.royaltyBps / 100);
@@ -108,7 +126,10 @@ const Offer = () => {
       </div>
     );
   }
-
+const modalHelper = {
+  title: "Protocol Fees",
+  body: `The protocol fees (${protocolFees}%) are used to maintain the platform and the services provided. The fees are calculated based on the price of the ad space and are automatically deducted from the total amount paid by the buyer.`,
+};
   const { description = "description not found", id = "1", image = ["/images/gradient_creative.jpg"], name = "DefaultName", nftContract = "N/A" } = offerData.offer ? offerData.offer : {};
 
   return (
@@ -172,9 +193,10 @@ const Offer = () => {
               <div className="mb-8 flex items-center flex-wrap gap-2 space-x-4 whitespace-nowrap">
                 <div className="flex items-center">
                   
-                  <span className="text-green text-sm font-medium tracking-tight">
+                  <span className="text-green text-sm font-medium tracking-tight mr-2">
                     {price * protocolFees/100 + price} {currency?.symbol ? currency?.symbol : "N/A"}
                   </span>
+                  <ModalHelper  {...modalHelper} size="small" />
                 </div>
 
                 {offerData.nftContract.allowList && (

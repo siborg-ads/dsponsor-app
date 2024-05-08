@@ -4,7 +4,7 @@ import DatePicker from "react-datepicker";
 
 import { FileUploader } from "react-drag-drop-files";
 
-const Step_1_Create = ({ stepsRef, styles, setName, setDescription }) => {
+const Step_2_Create = ({ stepsRef, styles, setName, setDescription }) => {
   return (
     <div ref={(el) => (stepsRef.current[1] = el)} className={styles.form__step}>
       <div className="pr-6 pl-2">
@@ -44,4 +44,4 @@ const Step_1_Create = ({ stepsRef, styles, setName, setDescription }) => {
   );
 };
 
-export default Step_1_Create;
+export default Step_2_Create;

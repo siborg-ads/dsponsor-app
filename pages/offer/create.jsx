@@ -38,54 +38,29 @@ const Create = () => {
   const [selectedIntegration, setSelectedIntegration] = useState([]);
   const [selectedParameter, setSelectedParameter] = useState([]);
   const [displayedParameter, setDisplayedParameter] = useState([]);
-  const [customSymbol, setCustomSymbol] = useState(null);
   const [selectedTypeParameter, setSelectedTypeParameter] = useState(0);
   const { contract: DsponsorAdminContract } = useContract("0xE442802706F3603d58F34418Eac50C78C7B4E8b3", contractABI);
   const { mutateAsync: createDSponsorNFTAndOffer } = useContractWrite(DsponsorAdminContract, "createDSponsorNFTAndOffer");
-   const [imageRatios, setImageRatios] = useState([]);
-   const [tokenDecimals, setTokenDecimals] = useState(0);
-    const USDCCurrency = adminInstance.chain.getCurrencyAddress("USDC");
-    const ETHCurrency = adminInstance.chain.getCurrencyAddress("ETH");
-    const WETHCurrency = adminInstance.chain.getCurrencyAddress("WETH");
-    const USDTCurrency = adminInstance.chain.getCurrencyAddress("USDT");
+  const [imageRatios, setImageRatios] = useState([]);
+  const [tokenDecimals, setTokenDecimals] = useState(0);
+  const [symbolContract, setSymbolContract] = useState(null);
+  const [tokenContract, setTokenContract] = useState(null);
+  const [customTokenContract, setCustomTokenContract] = useState(null);
+  const [terms, setTerms] = useState([]);
+  const [previewTerms, setPreviewTerms] = useState([]);
 
-    const { contract: customTokenContract } = useContract(customContract, "token");
-    const { data: customSymbolContract } = useContractRead(customTokenContract, "symbol");
-    const { data: decimalsContract } = useContractRead(customTokenContract, "decimals");
-    const { data: customDecimals } = useTokenDecimals(customTokenContract);
   const [name, setName] = useState(false);
   const stepsRef = useRef([]);
   const { ethers } = require("ethers");
 
-
-useEffect(() => {
-console.log(selectedCurrency);
-  setTokenDecimals(decimalsContract);
-}, [decimalsContract, selectedCurrency]);
-
   const handleUnitPriceChange = (e) => {
     const { value } = e.target;
 
-   
     const price = value;
 
     console.log(price);
-  
-     setSelectedUnitPrice(value === "" ? null : price);
-  };
 
-  const handleCurrencyChange = (event) => {
-    setSelectedCurrency(event.target.value);
-    setCustomContract(null);
-  };
-  useEffect(() => {
-    if (customSymbolContract) {
-      setCustomSymbol(customSymbolContract);
-    }
-  }, [customSymbolContract]);
-
-  const handleCustomContractChange = (event) => {
-    setCustomContract(event.target.value);
+    setSelectedUnitPrice(value === "" ? null : price);
   };
 
   const handleRoyaltiesChange = (e) => {
@@ -119,7 +94,6 @@ console.log(selectedCurrency);
       isValid = false;
     }
 
-
     if (!link || !isValidURL(link)) {
       newErrors.linkError = "The link is missing or invalid.";
       isValid = false;
@@ -145,7 +119,7 @@ console.log(selectedCurrency);
       isValid = false;
     }
 
-for(let i = 0; i < selectedIntegration.length; i++){
+    for (let i = 0; i < selectedIntegration.length; i++) {
       if (imageRatios[i] === "custom") {
         console.log("ici");
         newErrors.imageRatioError = "Image ratio is missing.";
@@ -159,9 +133,9 @@ for(let i = 0; i < selectedIntegration.length; i++){
       newErrors.endDateError = "End date cannot be in the past.";
       isValid = false;
     }
-console.log(selectedUnitPrice);
-    if (parseFloat(selectedUnitPrice) < 0.01 || isNaN(selectedUnitPrice) || selectedUnitPrice === null) {
-      newErrors.unitPriceError = "Unit price must be at least 0.01.";
+
+    if (parseFloat(selectedUnitPrice) < 1 * 10 ** -tokenDecimals || isNaN(selectedUnitPrice) || selectedUnitPrice === null) {
+      newErrors.unitPriceError = `Unit price must be at least ${1 * 10 ** -tokenDecimals}.`;
       isValid = false;
     }
 
@@ -174,10 +148,11 @@ console.log(selectedUnitPrice);
       isValid = false;
     }
 
-    if (!selectedCurrency ) {
+    if (!selectedCurrency) {
       newErrors.currencyError = "Currency is missing or invalid.";
       isValid = false;
     }
+     console.log(customTokenContract, "setCustomTokenContract");
     if (selectedCurrency === "custom" && customTokenContract === undefined) {
       newErrors.currencyError = "Custom contract is missing or invalid.";
       isValid = false;
@@ -204,10 +179,10 @@ console.log(selectedUnitPrice);
     try {
       let paramsFormated = [];
       selectedParameter.forEach((param) => {
-      const a = param.split("-");
-      const b = a.splice(1, 1);
-      const c = a.join("-");
-      paramsFormated.push(c);
+        const a = param.split("-");
+        const b = a.splice(1, 1);
+        const c = a.join("-");
+        paramsFormated.push(c);
       });
       let uniqueParams = [...new Set(paramsFormated)];
       console.log(uniqueParams);
@@ -216,6 +191,15 @@ console.log(selectedUnitPrice);
         data: [files[0]],
         options: { uploadWithGatewayUrl: true, uploadWithoutDirectory: true },
       });
+      let uploadTerms;
+      console.log(terms, files);
+      if(terms[0].name){
+
+        uploadTerms = await upload({
+          data: [terms[0]],
+          options: { uploadWithGatewayUrl: true, uploadWithoutDirectory: true },
+        });
+      }
 
       if (name && link) {
         onUpload(name, link);
@@ -234,7 +218,7 @@ console.log(selectedUnitPrice);
           name: name,
           description: description,
           image: uploadUrl[0],
-          terms: null,
+          terms: terms[0].name ? uploadTerms[0] : terms[0],
           external_link: link,
           valid_from: startDate || "1970-01-01T00:00:00Z",
           valid_to: endDate || "2100-01-01T00:00:00Z",
@@ -242,7 +226,7 @@ console.log(selectedUnitPrice);
           token_metadata: {},
         },
       });
-
+      console.log(jsonMetadata, "jsonMetadata");
       const jsonContractURI = JSON.stringify({
         name: name,
         description: description,
@@ -271,14 +255,13 @@ console.log(selectedUnitPrice);
           symbol: "DSPONSORNFT", // symbol
           baseURI: "https://api.dsponsor.com/tokenMetadata/", // baseURI
           contractURI: jsonIpfsLinkContractURI, // contractURI from json
-
           minter: address,
           maxSupply: selectedNumber, // max supply
           forwarder: "0x0000000000000000000000000000000000000000", // forwarder
           initialOwner: address, // owner
           royaltyBps: selectedRoyalties * 100, // royalties
-          currencies: [selectedCurrencyContract(selectedCurrency)], // accepted token
-          prices: [ethers.utils.parseUnits(selectedUnitPrice.toString(), getDecimals(selectedCurrency))], // prices with decimals
+          currencies: [tokenContract], // accepted token
+          prices: [ethers.utils.parseUnits(selectedUnitPrice.toString(), tokenDecimals)], // prices with decimals
           allowedTokenIds: Array.from({ length: selectedNumber }, (_, i) => i), // allowed token ids
         }),
         JSON.stringify({
@@ -293,6 +276,7 @@ console.log(selectedUnitPrice);
         }),
       ];
       const preparedArgs = [Object.values(JSON.parse(args[0])), Object.values(JSON.parse(args[1]))];
+      console.log(preparedArgs, "preparedArgs");
       await createDSponsorNFTAndOffer({ args: preparedArgs });
 
       setSuccessFullUpload(true);
@@ -307,45 +291,6 @@ console.log(selectedUnitPrice);
     setName(updatedName);
     setLink(updatedLink);
   };
-
-
-
-  const selectedCurrencyContract = useCallback(() => {
-    switch (selectedCurrency) {
-      case "USDC":
-        return USDCCurrency.contract;
-      case "ETH":
-        return ETHCurrency.contract;
-      case "WETH":
-        return WETHCurrency.contract;
-      case "USDT":
-        return USDTCurrency.contract;
-      case "custom":
-        return customContract;
-      default:
-        return USDCCurrency.contract;
-    }
-  }, [USDCCurrency, ETHCurrency, WETHCurrency, USDTCurrency, customContract, selectedCurrency]);
-
-  const getDecimals = useCallback(
-    (currency) => {
-      switch (currency) {
-        case "USDC":
-          return USDCCurrency.decimals;
-        case "ETH":
-          return ETHCurrency.decimals;
-        case "WETH":
-          return WETHCurrency.decimals;
-        case "USDT":
-          return USDTCurrency.decimals;
-        case "custom":
-          return customDecimals;
-        default:
-          return USDCCurrency.decimals;
-      }
-    },
-    [USDCCurrency, ETHCurrency, WETHCurrency, USDTCurrency, customDecimals]
-  );
 
   const numSteps = 4;
   const successFullUploadModal = {
@@ -368,8 +313,8 @@ console.log(selectedUnitPrice);
 
           <div className="mx-auto max-w-[48.125rem]">
             <p className="text-center pt-8 pb-16 dark:text-white">
-              Finance your activity by selling ad space ownerships. The sponsors, the buyers of ad spaces, will have the exclusive right to propose an ad on your media interfaces, as your website. You always have the
-              power to accept or reject the submitted ad.{" "}
+              Finance your activity by selling ad space ownerships. The sponsors, the buyers of ad spaces, will have the exclusive right to propose an ad on your media platform, such as your website. You retain full
+              control to accept or reject any ads submitted.{" "}
             </p>
           </div>
         </div>
@@ -390,7 +335,19 @@ console.log(selectedUnitPrice);
           />
           <Step_2_Create stepsRef={stepsRef} styles={styles} setName={setName} setDescription={setDescription} />
 
-          <Step_3_Create stepsRef={stepsRef} styles={styles} setLink={setLink} link={link} previewImage={previewImages} file={files} handleLogoUpload={handleLogoUpload} />
+          <Step_3_Create
+            stepsRef={stepsRef}
+            styles={styles}
+            setLink={setLink}
+            link={link}
+            terms={terms}
+            setTerms={setTerms}
+            setPreviewTerms={setPreviewTerms}
+            previewTerms={previewTerms}
+            previewImage={previewImages}
+            file={files}
+            handleLogoUpload={handleLogoUpload}
+          />
 
           <Step_4_Create
             stepsRef={stepsRef}
@@ -402,12 +359,18 @@ console.log(selectedUnitPrice);
             selectedUnitPrice={selectedUnitPrice}
             handleUnitPriceChange={handleUnitPriceChange}
             selectedCurrency={selectedCurrency}
-            handleCurrencyChange={handleCurrencyChange}
+            setSelectedCurrency={setSelectedCurrency}
             customContract={customContract}
-            handleCustomContractChange={handleCustomContractChange}
+            setCustomContract={setCustomContract}
             selectedRoyalties={selectedRoyalties}
             handleRoyaltiesChange={handleRoyaltiesChange}
-            customSymbolContract={customSymbolContract}
+            setSymbolContract={setSymbolContract}
+            setTokenDecimals={setTokenDecimals}
+            symbolContract={symbolContract}
+            setTokenContract={setTokenContract}
+            tokenDecimals={tokenDecimals}
+            tokenContract={tokenContract}
+            setCustomTokenContract={setCustomTokenContract}
           />
         </SliderForm>
       </section>
@@ -416,7 +379,6 @@ console.log(selectedUnitPrice);
           <PreviewModal
             handlePreviewModal={handlePreviewModal}
             handleSubmit={handleSubmit}
-            customSymbolContract={customSymbolContract}
             name={name}
             link={link}
             file={files}
@@ -425,10 +387,12 @@ console.log(selectedUnitPrice);
             endDate={endDate}
             selectedNumber={selectedNumber}
             selectedUnitPrice={selectedUnitPrice}
+            symbolContract={symbolContract}
             selectedCurrency={selectedCurrency}
             customContract={customContract}
             selectedRoyalties={selectedRoyalties}
             previewImage={previewImages}
+            terms={terms}
             selectedParameter={selectedParameter}
             displayedParameter={displayedParameter}
             validate={validate}
