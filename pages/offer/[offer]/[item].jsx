@@ -30,6 +30,7 @@ import { protocolFees } from "../../../utils/constUtils";
 import contractABI from "../../../abi/dsponsorAdmin.json";
 
 import "react-toastify/dist/ReactToastify.css";
+import ModalHelper from "../../../components/Helper/modalHelper.jsx";
 
 const Item = () => {
   const router = useRouter();
@@ -421,7 +422,11 @@ const Item = () => {
       </div>
     );
   }
-console.log(currency?.symbol);
+  const modalHelper = {
+    title: "Protocol Fees",
+    body: `The protocol fees (${protocolFees}%) are used to maintain the platform and the services provided. The fees are calculated based on the price of the ad space and are automatically deducted from the total amount paid by the buyer.`,
+  };
+
   const { description = "description not found", id = "1", image = ["/images/gradient_creative.jpg"], name = "DefaultName" } = Object.keys(offerData.offer.token_metadata).length > 0 ? tokenMetaData : offerData.offer;
 
   return (
@@ -492,9 +497,10 @@ console.log(currency?.symbol);
 
               <div className="mb-8 flex items-center space-x-4 whitespace-nowrap">
                 <div className="flex items-center">
-                  <span className="text-green text-sm font-medium tracking-tight">
+                  <span className="text-green text-sm font-medium tracking-tight mr-2">
                     {(price * protocolFees) / 100 + price} {currency?.symbol ? currency?.symbol : "N/A"}
                   </span>
+                  <ModalHelper {...modalHelper} size="small" />
                 </div>
 
                 <span className="dark:text-jacarta-300 text-jacarta-400 text-sm">

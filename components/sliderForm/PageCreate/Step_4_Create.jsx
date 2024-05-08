@@ -1,7 +1,9 @@
-import {useState} from "react";
+import { useEffect, useState } from "react";
 import DatePicker from "react-datepicker";
-
-import {FileUploader} from "react-drag-drop-files";
+import "react-datepicker/dist/react-datepicker.css";
+import { useAddress, useSwitchChain, useContract, useContractWrite, Web3Button, useContractRead, useStorageUpload, useTokenDecimals, CheckoutWithCard, CheckoutWithEth } from "@thirdweb-dev/react";
+import adminInstance from "../../../utils/sdkProvider";
+import { FileUploader } from "react-drag-drop-files";
 
 const Step_4_Create = ({
   stepsRef,
@@ -13,13 +15,70 @@ const Step_4_Create = ({
   selectedUnitPrice,
   handleUnitPriceChange,
   selectedCurrency,
-  handleCurrencyChange,
+  setSelectedCurrency,
   customContract,
-  handleCustomContractChange,
   selectedRoyalties,
+  setTokenDecimals,
+  tokenDecimals,
   handleRoyaltiesChange,
-  customSymbolContract,
+  setSymbolContract,
+  symbolContract,
+  setCustomContract,
+  setTokenContract,
+  setCustomTokenContract,
 }) => {
+  const USDCCurrency = adminInstance.chain.getCurrencyAddress("USDC");
+  const ETHCurrency = adminInstance.chain.getCurrencyAddress("ETH");
+  const WETHCurrency = adminInstance.chain.getCurrencyAddress("WETH");
+  const USDTCurrency = adminInstance.chain.getCurrencyAddress("USDT");
+  const [selectedCurrencyContract, setSelectedCurrencyContract] = useState(USDCCurrency.contract);
+  const { contract: tokenContractAsync } = useContract(selectedCurrencyContract, "token");
+  const { data: symbolContractAsync } = useContractRead(tokenContractAsync, "symbol");
+  const { data: decimalsContractAsync } = useContractRead(tokenContractAsync, "decimals");
+
+  useEffect(() => {
+    setSymbolContract(symbolContractAsync);
+    setTokenDecimals(decimalsContractAsync);
+    setTokenContract(selectedCurrencyContract);
+    setCustomTokenContract(tokenContractAsync);
+  }, [decimalsContractAsync, symbolContractAsync, setTokenDecimals, setSymbolContract, setTokenContract, selectedCurrencyContract, tokenContractAsync, setCustomTokenContract]);
+
+  const handleCurrencyChange = (event) => {
+    setSelectedCurrency(event.target.value);
+    if (event.target.value === "ETH") {
+      setTokenDecimals(ETHCurrency.decimals);
+      setSymbolContract(ETHCurrency.symbol);
+      setTokenContract(ETHCurrency.contract);
+    } else if (event.target.value === "custom") {
+      setSelectedCurrencyContract("f");
+    } else {
+      console.log("ici");
+      setSelectedCurrencyContract(selectedCurrencyContractObject[event.target.value]);
+      setCustomContract(null);
+    }
+  };
+  const handleCustomContractChange = (event) => {
+    if (event.target.value === ETHCurrency.contract) {
+      setTokenDecimals(ETHCurrency.decimals);
+      setSymbolContract(ETHCurrency.symbol);
+      setTokenContract(ETHCurrency.contract);
+      setCustomTokenContract(ETHCurrency.contract);
+    } else {
+      setCustomContract(event.target.value);
+      setSelectedCurrencyContract(event.target.value);
+      setCustomTokenContract(tokenContractAsync);
+    }
+  };
+ 
+
+  const selectedCurrencyContractObject = {
+    USDC: USDCCurrency.contract,
+    ETH: ETHCurrency.contract,
+    WETH: WETHCurrency.contract,
+    USDT: USDTCurrency.contract,
+    custom: customContract,
+  };
+
   return (
     <div ref={(el) => (stepsRef.current[3] = el)} className={styles.form__step}>
       <div className="pr-6 pl-2">
@@ -65,8 +124,7 @@ const Step_4_Create = ({
               <input
                 id="numberInput"
                 type="number"
-                
-                step="0.01"
+                step="0.1"
                 value={selectedUnitPrice}
                 onChange={handleUnitPriceChange}
                 placeholder="Unit selling price"
@@ -93,15 +151,15 @@ const Step_4_Create = ({
                     onChange={handleCustomContractChange}
                     placeholder="Contract address"
                     className={`dark:bg-jacarta-700  hover:ring-accent/10 ${
-                      customSymbolContract ? "border-green" : "border-red"
+                      tokenContractAsync && customContract ? "border-green" : "border-red"
                     } focus:ring-accent  dark:placeholder:text-jacarta-300 w-full rounded-lg py-3 px-3 hover:ring-2 dark:text-white`}
                   />
                 )}
               </div>
             </div>
             <p className="dark:text-jacarta-300 text-jacarta-400 text-2xs mt-3">
-              You&apos;ll earn up to {selectedUnitPrice} {customSymbolContract ? customSymbolContract : selectedCurrency}. As d&gt;sponsor charges a fee of 4%, sponsors will pay{" "}
-              {parseFloat(selectedUnitPrice) + (parseFloat(selectedUnitPrice) * (4/100)) } {customSymbolContract ? customSymbolContract : selectedCurrency}.
+              You&apos;ll earn up to {selectedUnitPrice} {symbolContractAsync ? symbolContractAsync : selectedCurrency}. As d&gt;sponsor charges a fee of 4%, sponsors will pay{" "}
+              {parseFloat(selectedUnitPrice) + parseFloat(selectedUnitPrice) * (4 / 100)} {symbolContractAsync ? symbolContractAsync : selectedCurrency}.
             </p>
           </div>
 

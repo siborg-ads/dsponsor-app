@@ -154,9 +154,9 @@ setSelectedParameter([]);
   return (
     <div ref={(el) => (stepsRef.current[0] = el)} className={styles.form__step}>
       <div className="pr-6 pl-2">
-        <h3 className="mb-2">Step 1 : Offer Type & Availability</h3>
+        <h3 className="mb-2">Step 1 : OFFER TYPE & AVAILABILITY</h3>
 
-        <p className="text-center pt-2  mb-14 dark:text-white">Choose offer category and number of ads.</p>
+        <p className="text-center pt-2  mb-14 dark:text-white">Choose the type of ad space suitable for your media and the number of spaces available for purchase.</p>
         {/* <!-- Ad Space type --> */}
         <div className="mb-6 flex  flex-col justify-center items-center gap-4">
           <div className="flex flex-col items-center">
@@ -164,9 +164,8 @@ setSelectedParameter([]);
               Type of ad spaces for this offer
               <span className="text-red">*</span>
             </label>
-            <p className="dark:text-jacarta-300 text-jacarta-400 text-2xs mb-3">Select the type of your offer</p>
+            <p className="dark:text-jacarta-300 text-jacarta-400 text-2xs mb-3">Select the appropriate type:</p>
             <div className="flex flex-col gap-4 justify-center items-center w-full text-jacarta-700 dark:text-white">
-             
               <div id="adsType" className="flex flex-wrap justify-center gap-2">
                 {AdIntegrationData.map((integration, index) => (
                   <div key={index} className="relative ">
