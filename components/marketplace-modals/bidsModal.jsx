@@ -6,6 +6,7 @@ import {
   useContract,
   useBalance,
 } from "@thirdweb-dev/react";
+import WalletConnection from "../wallet/walletConnection";
 
 import { contractAddressConfig } from "../../lib/config/listing.config";
 import ChainDetector from "../chain-detector/ChainDetector";
@@ -33,7 +34,7 @@ const BidsModal = ({ showBidsModal, setShowBidsModal, listing }) => {
 
   ///////////////////////////////////////////////////////
   const [approvalStatus, setApprovalStatus] = useState("idle"); // idle, inProgress, approved
-  const [bidAmount, setBidAmount] = useState(listing?.price);
+  const [bidAmount, setBidAmount] = useState(listing?.price * 1.05);
   const [bidAmountValid, setBidAmountValid] = useState(true);
 
   //wallet & address
@@ -167,8 +168,6 @@ const BidsModal = ({ showBidsModal, setShowBidsModal, listing }) => {
                     </div>
                   </div>
 
-                  {/* TODO : update the error price msg  */}
-
                   <div className="text-left">
                     {!bidAmountValid && (
                       <span className="text-red text-sm">
@@ -255,34 +254,7 @@ const BidsModal = ({ showBidsModal, setShowBidsModal, listing }) => {
             </div>
           </>
         ) : (
-          <div className="modal-dialog max-w-2xl">
-            <div className="modal-content bg-sigray-light border-sigray-border">
-              <div className="modal-header">
-                <h5 className="modal-title text-white" id="placeBidLabel">
-                  Connect Wallet First
-                </h5>
-                <button onClick={() => setShowBidsModal(false)}>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    width="24"
-                    height="24"
-                    className="h-6 w-6 fill-jacarta-700 fill-white"
-                  >
-                    <path fill="none" d="M0 0h24v24H0z" />
-                    <path d="M12 10.586l4.95-4.95 1.414 1.414-4.95 4.95 4.95 4.95-1.414 1.414-4.95-4.95-4.95 4.95-1.414-1.414 4.95-4.95-4.95-4.95L7.05 5.636z" />
-                  </svg>
-                </button>
-              </div>
-              <div className="modal-body p-6">
-                <p className="text-white pb-6">
-                  Please connect your wallet first to confirm the bid.
-                </p>
-
-                <ConnectWallet theme={"dark"} modalSize={"wide"} />
-              </div>
-            </div>
-          </div>
+          <WalletConnection setShowModal={setShowBidsModal} />
         )}
       </div>
     </>

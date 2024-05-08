@@ -24,21 +24,13 @@ const fetchAllMpListings = async () => {
             {
               status: CREATED
               quantity_gt: 0
-              # startTime_lte: ${currentTimestamp} 
-              # endTime_gte: ${currentTimestamp} 
+              startTime_lte: ${currentTimestamp} 
+              endTime_gte: ${currentTimestamp} 
             }
           ]
         }
       ) {
         id # listingId
-        # METADATA - if INVALID, ignore this listing
-        # offerMetadata = adOffers[0].metadataURL
-        # if tokenData?.length
-        #    if offerMetadata.offer.token_metadata.name exists => replace all {tokenData} by tokenData value
-        #    (same for offerMetadata.offer.token_metadata.description & offerMetadata.offer.token_metadata.image)
-        # NAME = offerMetadata.offer.token_metadata.name || offerMetadata.offer.name || INVALID
-        # DESCRIPTION = offerMetadata.offer.token_metadata.description || offerMetadata.offer.description || INVALID
-        # IMAGE = offerMetadata.offer.token_metadata.image || offerMetadata.offer.image || INVALID
         token {
           tokenId
           nftContract {
@@ -51,7 +43,6 @@ const fetchAllMpListings = async () => {
             tokenData
           }
         }
-
         # listingType = 0 <-> 'Direct', listingType = 1 <-> 'Auction'
         # 'Direct' or 'Auction'
         listingType
@@ -98,7 +89,8 @@ const fetchAllMpListings = async () => {
 };
 
 // for /marketplace : func to fetch 3 random listings
-async function fetchRandomListingsForMarketplace(allMpListings, chainId) {
+async function fetchRandomListingsForMarketplace(chainId) {
+  const allMpListings = await fetchAllMpListings();
   const listingsForBids = [];
   const listingsForBuyNow = [];
 
@@ -107,18 +99,22 @@ async function fetchRandomListingsForMarketplace(allMpListings, chainId) {
       Number(listing.endTime) > Math.floor(Date.now() / 1000) &&
       (listing.listingType === "Auction" || listing.listingType === "Direct")
   );
-
   shuffleArray(activeListings);
-
   for (const listing of activeListings) {
     if (listingsForBids.length < 3 && listing.listingType === "Auction") {
-      const listingForBidToAdd = await listingWpriceAndSymbol(listing, chainId);
+      const listingForBidToAdd = await fetchListingPriceAndSymbol(
+        listing,
+        chainId
+      );
       listingsForBids.push(listingForBidToAdd);
     } else if (
       listingsForBuyNow.length < 3 &&
       listing.listingType === "Direct"
     ) {
-      const listingForBuyToAdd = await listingWpriceAndSymbol(listing, chainId);
+      const listingForBuyToAdd = await fetchListingPriceAndSymbol(
+        listing,
+        chainId
+      );
       listingsForBuyNow.push(listingForBuyToAdd);
     }
 
@@ -130,7 +126,7 @@ async function fetchRandomListingsForMarketplace(allMpListings, chainId) {
 }
 
 // for /marketplace && /user-view
-const listingWpriceAndSymbol = async (listing, chainId) => {
+const fetchListingPriceAndSymbol = async (listing, chainId) => {
   let decimals;
 
   const erc20ContractAdd = erc20Contract(chainId, listing.currency);
@@ -192,7 +188,7 @@ const getERC20Decimals = async (currencyContractAddress, chainId) => {
 /////////////////////////// for /user-view ////////////////////////////
 //////////////////////////////////////////////////////////////////////////
 
-// for /marketplace/item/user-view
+// for /marketplace/assetContract/tokenId (user-view)
 export const fetchFirstValidListing = async (assetContract, tokenId) => {
   const GET_ALL_LISTINGS_DATA = gql`
     query getMarketplaceListingsForToken ($assetContract: Bytes, $tokenId: BigInt) {
@@ -200,8 +196,6 @@ export const fetchFirstValidListing = async (assetContract, tokenId) => {
       marketplaceListings(    
         orderBy: id, orderDirection: desc
         where: {        
-            # TO REPLACE BY idFilter
-            #idFilter :  "${assetContract}-${tokenId}",
             token_ : { id: "${assetContract}-${tokenId}"}      
         }
       ) {
@@ -284,9 +278,9 @@ export const fetchFirstValidListing = async (assetContract, tokenId) => {
       if (isValidListing(listing)) {
         return listing;
       } else if (
-        !isValidListing(listing) &&
-        listing.status === "CANCELLED" &&
-        listing.status === "UNSET" &&
+        !isValidListing(listing) ||
+        listing.status === "CANCELLED" ||
+        listing.status === "UNSET" ||
         listing.status === "COMPLETED"
       ) {
         return { error: "No valid listing available" };
@@ -300,17 +294,17 @@ export const fetchFirstValidListing = async (assetContract, tokenId) => {
 
 const isValidListing = (listing) => {
   return (
-    listing.token ||
-    listing.token.nftContract ||
-    listing.token.nftContract.adOffers ||
+    listing.token &&
+    listing.token.nftContract &&
+    listing.token.nftContract.adOffers &&
     listing.token.nftContract.adOffers.length > 0
   );
 };
 
 //////////////////////////////////////////////////////////////////////////
-/////////////////////////// for listing OFFER ////////////////////////////
+/////////////////////////// for listing ad OFFER ////////////////////////////
 //////////////////////////////////////////////////////////////////////////
-export const fetchListingOffer = async (listing) => {
+export const fetchListingAdOffer = async (listing) => {
   try {
     const tokenData = listing.token.mint.tokenData;
     const offerMetadata = listing.token.nftContract.adOffers[0].metadataURL;
@@ -369,5 +363,5 @@ export const parseOfferMetadata = async (offerMetadata, tokenData) => {
 export {
   fetchAllMpListings,
   fetchRandomListingsForMarketplace,
-  listingWpriceAndSymbol,
+  fetchListingPriceAndSymbol,
 };

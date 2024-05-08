@@ -21,10 +21,9 @@ export default function Marketplace() {
 
 
   const getMpListings = async () => {
-    try {
-      const allMpListings = await fetchAllMpListings();  
+    try { 
       const { listingsForBids, listingsForBuyNow } =
-        await fetchRandomListingsForMarketplace(allMpListings, chainId);
+        await fetchRandomListingsForMarketplace(chainId);
       
         setListings({
           listingsForBids,

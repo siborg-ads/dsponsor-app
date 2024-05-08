@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { fetchListingOffer } from "../../../app/marketplace/services";
+import { fetchListingAdOffer } from "../../../app/marketplace/services";
 import MarketplaceItemCard from "../marketplace-item-card/marketplace-item-card";
 import Spinner from "../../spinner/Spinner";
 
@@ -11,7 +11,7 @@ const MarketplaceListingSection = ({ listings, title, type }) => {
   const getListingOffer = async () => {
     try {
       const formattedListings = await Promise.all(
-        listings.map((listing, index) => fetchListingOffer(listing))
+        listings.map((listing, index) => fetchListingAdOffer(listing))
       );
       console.log("formattedListings", formattedListings);
       const filteredListings = formattedListings.filter(

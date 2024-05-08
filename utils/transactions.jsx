@@ -4,14 +4,13 @@ import { toWei } from "thirdweb";
 export const useTransaction = () => {
   const address = useAddress();
 
-  const handleApprove = async (
+  const handleERC20approve = async (
     amount,
     tokenContract,
     spender,
     approveERC20
   ) => {
     try {
-      console.log("amount", amount);
       const allowance = await tokenContract.call("allowance", [
         address,
         spender,
@@ -56,25 +55,6 @@ export const useTransaction = () => {
           ],
         ],
       });
-
-      //args
-      // {
-      //   listingId,
-      //   buyFor: user2Addr,
-      //   quantity: 1,
-      //   currency: ERC20MockAddress,
-      //   totalPrice,
-      //   referralAdditionalInformation
-      // }
-
-      // { buyParams: {
-      //   listingId,
-      //   buyFor: user2Addr,
-      //   quantity: 1,
-      //   currency: ERC20MockAddress,
-      //   totalPrice,
-      //   referralAdditionalInformation
-      // }}
       console.log("buy réussie");
     } catch (error) {
       console.error("Erreur de buy:", error);
@@ -113,5 +93,34 @@ export const useTransaction = () => {
     }
   };
 
-  return { handleApprove, handleBid, handleBuy, handleCreateListing };
+  const handleERC721approval = async (
+    nftContract,
+    owner,
+    operator,
+    setApprovalForAll
+  ) => {
+    try {
+      const isApprovedForAll = await nftContract.call("isApprovedForAll", [
+        owner,
+        operator,
+      ]);
+
+      if (isApprovedForAll) return;
+      await setApprovalForAll({
+        args: [operator, true],
+      });
+      console.log("Approval successful");
+    } catch (error) {
+      console.error("Approval error:", error);
+      throw new Error("Approval failed");
+    }
+  };
+
+  return {
+    handleApprove: handleERC20approve,
+    handleBid,
+    handleBuy,
+    handleCreateListing,
+    handleERC721approval,
+  };
 };
