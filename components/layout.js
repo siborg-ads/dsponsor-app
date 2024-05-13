@@ -1,4 +1,4 @@
-import Footer from "./footer";
+import Footer from "./layout/footer/footer";
 import Wallet_modal from "./modal/wallet_modal";
 import BidsModal from "./modal/bidsModal";
 
@@ -14,7 +14,7 @@ export default function Layout({ children }) {
       <Header01 />
       <Wallet_modal />
       <BidsModal />
-      
+
       <main>{children}</main>
       <Footer />
     </>

@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import SDKContext from '../contexts/SDKContext';
 import {DSponsorSDK} from '@dsponsor/sdk';
-import {useChainId} from "@thirdweb-dev/react";
+import {useAddress, useChainId} from "@thirdweb-dev/react";
 
 const SDKProvider = ({ children }) => {
     const [sdk, setSDK] = useState(null);
@@ -12,6 +12,7 @@ const SDKProvider = ({ children }) => {
 
 
     const chainId = useChainId();
+    const connectedAddress = useAddress();
 
     useEffect(() => {
         setSDKChainId(chainId);
@@ -53,7 +54,14 @@ const SDKProvider = ({ children }) => {
         }
     }
 
-    const value = useMemo(() => ({ sdk, admin, SDKChainId, getChainName }), [sdk, admin, SDKChainId]);
+
+    const [address, setAddress] = useState(null);
+
+    useEffect(() => {
+        setAddress(connectedAddress);
+    }, [connectedAddress]);
+
+    const value = useMemo(() => ({ sdk, admin, SDKChainId, getChainName, address }), [sdk, admin, SDKChainId, address]);
 
     return (
         <SDKContext.Provider value={value}>

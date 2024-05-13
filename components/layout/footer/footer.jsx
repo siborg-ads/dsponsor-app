@@ -1,8 +1,32 @@
 import Link from "next/link";
-import { footerMenuList, socialIcons } from "../data/footer_data";
+import { footerMenuList as defaultFooterMenuList, socialIcons } from "../../../data/footer_data";
 import Image from "next/image";
+import {useContext} from "react";
+import SDKContext from "../../../contexts/SDKContext";
 
 const footer = () => {
+
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const state = useContext(SDKContext);
+
+  const footerMenuList = defaultFooterMenuList.concat([{
+        id: 3,
+        title: "My Account",
+        diffClass: "",
+        list: [
+          {
+            id: 1,
+            href: `/manageSpaces/${state.address}`,
+            text: "My Creator Space",
+          },
+          {
+            id: 2,
+            href: `/offer/create`,
+            text: "Create Offer",
+          },
+        ],
+      }]);
+
   return (
     <>
       {/* <!-- Footer --> */}
@@ -62,12 +86,12 @@ const footer = () => {
 
             <ul className="dark:text-jacarta-400 flex flex-wrap space-x-4 text-sm">
               <li>
-                <Link href="/tarms" className="hover:text-accent dark:hover:text-white">
+                <Link href="/terms-and-conditions" className="hover:text-accent dark:hover:text-white">
                   Terms and conditions
                 </Link>
               </li>
               <li>
-                <Link href="/tarms" className="hover:text-accent dark:hover:text-white">
+                <Link href="/privacy-policy" className="hover:text-accent dark:hover:text-white">
                   Privacy policy
                 </Link>
               </li>
