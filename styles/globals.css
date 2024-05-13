@@ -4091,10 +4091,10 @@ html {
     content: var(--tw-content);
   }
 
-  .before\:bg-\[url\(\'\.\.\/img\/heart-fill\.svg\'\)\]:before {
+  /* .before\:bg-\[url\(\'\.\.\/img\/heart-fill\.svg\'\)\]:before {
     background-image: url(../img/a103374135dc865e7608.svg);
     content: var(--tw-content);
-  }
+  } */
 
   .before\:bg-cover:before {
     background-size: cover;

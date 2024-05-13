@@ -1,10 +1,8 @@
-import "swiper/css";
-import "swiper/css/navigation";
 import Image from "next/image";
-import "tippy.js/dist/tippy.css";
 import Link from "next/link";
 import Tippy from "@tippyjs/react";
-import { use, useEffect, useState } from "react";
+import { useState, useEffect } from "react";
+import { DSponsorAdmin } from "@dsponsor/sdk";
 import { useCountdown } from "../../utils/countDown";
 import adminInstance from "../../utils/sdkProvider";
 import {protocolFees} from "../../utils/constUtils";
@@ -143,8 +141,35 @@ const OfferItem = ({ item, url, isToken, isSelectionActive, isOwner }) => {
             <span className="dark:text-jacarta-300 text-jacarta-500">Offer # {item.mint ? item.nftContract?.adOffers[0]?.id : item.id}</span>
           </div>
         </div>
-      </article>
-    </>
+        <div className="mt-2 text-xs">
+          {!isToken ? (
+            <span className="dark:text-jacarta-300 text-jacarta-500">
+              {formatDate(valid_from)} - {formatDate(valid_to)}
+            </span>
+          ) : (
+            <span
+              className={`${
+                adStatus === 0
+                  ? "text-red"
+                  : adStatus === 1
+                  ? "text-green"
+                  : adStatus === 2
+                  ? "text-accent"
+                  : ""
+              } text-sm font-bold`}
+            >
+              {adStatus === 0
+                ? "❌ Rejected"
+                : adStatus === 1
+                ? "✅ Accepted"
+                : adStatus === 2
+                ? "🔍 Pending"
+                : "Ad space available"}
+            </span>
+          )}
+        </div>
+      </div>
+    </article>
   );
 };
 

@@ -7,6 +7,7 @@ import { useRouter } from "next/router";
 import { MetaMaskProvider } from "metamask-react";
 import Meta from "../components/Meta";
 import UserContext from "../components/UserContext";
+import ChainDetector from "../components/chain-detector/ChainDetector";
 import { useRef } from "react";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";

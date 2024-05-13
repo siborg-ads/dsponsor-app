@@ -78,6 +78,7 @@ const Home_1 = () => {
     //    console.log(mappedData);
       setData(mappedData);
     };
+    console.log("data", data);
     fetchAdsOffers();
   }, []);
   return (
