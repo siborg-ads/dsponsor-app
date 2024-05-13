@@ -74,13 +74,13 @@ const BuyModal = ({
                   <div className="overflow-hidden flex flex-col text-ellipsis whitespace-nowrap min-w-[100px]  ">
                     <div className="flex gap-6  items-center justify-between">
                       <h3 className="font-display overflow-hidden text-ellipsis whitespace-nowrap text-jacarta-700 text-base font-semibold dark:text-white">{name}</h3>
-                      <span className="dark:text-jacarta-100 text-sm font-medium tracking-tight overflow-auto ">
+                      <span className="dark:text-jacarta-100 text-sm font-medium tracking-tight overflow-auto min-w-[60px] flex justify-end">
                         {price} {selectedCurrency}
                       </span>
                     </div>
                     <div className="flex gap-6  items-center justify-between">
                       <span className="dark:text-jacarta-300 text-jacarta-500 mr-1 block text-sm">Protocol fees: {protocolFees} %</span>
-                      <span className="dark:text-jacarta-300 text-sm  tracking-tight overflow-auto">
+                      <span className="dark:text-jacarta-300 text-sm  tracking-tight overflow-auto min-w-[60px] flex justify-end">
                         {(price * protocolFees) / 100} {selectedCurrency}
                       </span>
                     </div>

@@ -65,7 +65,7 @@ const Item = () => {
   const { mutateAsync: approve, isLoading: isLoadingApprove } = useContractWrite(tokenContract, "approve");
   const { data: bps } = useContractRead(DsponsorAdminContract, "feeBps");
   const { data: isAllowedToMint, isLoading: isLoadingAllowedToMint } = useContractRead(DsponsorNFTContract, "tokenIdIsAllowedToMint", tokenIdString);
-  const { data: isUserOwner,  } = useContractRead(DsponsorNFTContract, "ownerOf", tokenIdString);
+  const { data: isUserOwner } = useContractRead(DsponsorNFTContract, "ownerOf", tokenIdString);
   const { data: royaltiesInfo } = useContractRead(DsponsorNFTContract, "royaltyInfo", [tokenIdString, 100]);
   const [showPreviewModal, setShowPreviewModal] = useState(false);
   const [validate, setValidate] = useState(false);
@@ -99,12 +99,6 @@ const Item = () => {
 
         console.log(combinedData, "combinedData");
         setOfferData(combinedData);
-
-       
-
-       
-
-       
       };
 
       fetchAdsOffers();
@@ -114,61 +108,58 @@ const Item = () => {
   }, [offerId, address, tokenId, successFullUpload]);
 
   useEffect(() => {
-    if (!offerData && !address && !isUserOwner ) return;
-    
+    if (!offerData || !address || !isUserOwner) return;
+
     console.log(isUserOwner, address, "isUserOwner");
-   if (isUserOwner === address) {
-     setIsOwner(true);
-   }
+    if (isUserOwner === address) {
+      setIsOwner(true);
+    }
   }, [offerData, address, tokenId, isUserOwner]);
 
+  useEffect(() => {
+    if (!tokenId || !offerData) return;
+    if (tokenId.length > 6) {
+      const url = new URL(window.location.href);
+      const tokenData = url.searchParams.get("tokenData");
+      setTokenData(tokenData);
+console.log(offerData, "offerData");
+      let tokenMetaData = {};
+      if (offerData.offer.token_metadata) {
+        tokenMetaData.description = offerData.offer.token_metadata.description.replace(/{tokenData}/g, `${tokenData}`);
+        tokenMetaData.image = offerData.offer.token_metadata.image.replace(/{tokenData}/g, `${tokenData}`);
+        tokenMetaData.name = offerData.offer.token_metadata.name.replace(/{tokenData}/g, `${tokenData}`);
+      }
+      setTokenMetaData(tokenMetaData);
+    }
+  }, [tokenId, offerData]);
 
   useEffect(() => {
-    if (!tokenId) return;
- if (tokenId.length > 6) {
-   const url = new URL(window.location.href);
-   const tokenData = url.searchParams.get("tokenData");
-   setTokenData(tokenData);
-
-   let tokenMetaData = {};
-   if (combinedData.offer.token_metadata) {
-     tokenMetaData.description = combinedData.offer.token_metadata.description.replace(/{tokenData}/g, `${tokenData}`);
-     tokenMetaData.image = combinedData.offer.token_metadata.image.replace(/{tokenData}/g, `${tokenData}`);
-     tokenMetaData.name = combinedData.offer.token_metadata.name.replace(/{tokenData}/g, `${tokenData}`);
-   }
-   setTokenMetaData(tokenMetaData);
- }
-  }, [tokenId]);
-
-  useEffect(() => {
-
     if (!offerData) return;
     setImageURLSteps([]);
-     setNumSteps(2);
- const uniqueIds = new Set();
- for (const param of offerData.adParameters) {
-   if (param.adParameter.id && param.adParameter.id !== "xSpaceId" && param.adParameter.id !== "xCreatorHandle") {
-     uniqueIds.add(param.adParameter.id);
-   }
- }
- const imageURLSteps = [];
- const uniqueIdsArray = Array.from(uniqueIds);
- setAdParameters(uniqueIdsArray);
+    setNumSteps(2);
+    const uniqueIds = new Set();
+    for (const param of offerData.adParameters) {
+      if (param.adParameter.id && param.adParameter.id !== "xSpaceId" && param.adParameter.id !== "xCreatorHandle") {
+        uniqueIds.add(param.adParameter.id);
+      }
+    }
+    const imageURLSteps = [];
+    const uniqueIdsArray = Array.from(uniqueIds);
+    setAdParameters(uniqueIdsArray);
 
- uniqueIdsArray
-   .filter((id) => id.startsWith("imageURL"))
-   .map((id) => {
-     const variant = id.slice("imageURL-".length);
+    uniqueIdsArray
+      .filter((id) => id.startsWith("imageURL"))
+      .map((id) => {
+        const variant = id.slice("imageURL-".length);
 
-     imageURLSteps.push(variant);
-   });
- const totalNumSteps = numSteps + imageURLSteps.length;
- console.log(imageURLSteps, numSteps, totalNumSteps, "imageURLSteps");
+        imageURLSteps.push(variant);
+      });
+    const totalNumSteps = numSteps + imageURLSteps.length;
+    console.log(imageURLSteps, numSteps, totalNumSteps, "imageURLSteps");
 
- setImageURLSteps(imageURLSteps);
- setNumSteps(totalNumSteps);
-
-  }, [ offerData]);
+    setImageURLSteps(imageURLSteps);
+    setNumSteps(totalNumSteps);
+  }, [offerData]);
 
   useEffect(() => {
     if (!offerData) return;
@@ -191,7 +182,7 @@ const Item = () => {
       console.error("Error: Currency not found for address", offerData?.nftContract?.prices[0]);
       setOfferNotFormated(true);
     }
-  }, [symbolContract, decimalsContract, offerData,  address, tokenId]);
+  }, [symbolContract, decimalsContract, offerData, address, tokenId]);
 
   useEffect(() => {
     if (!offerData || !adParameters) return;
@@ -280,7 +271,7 @@ const Item = () => {
       const priceAsNumber = price * bpsValuePercentage + price;
 
       const priceAsNumberString = priceAsNumber.toString();
-      
+
       setFinalPrice(priceAsNumberString);
       const amountToApprove = ethers.utils.parseUnits(priceAsNumberString, currency.decimals);
 
@@ -385,7 +376,7 @@ const Item = () => {
     try {
       const parsedTokenBalance = parseFloat(tokenAddressBalance.displayValue);
       const parsedPriceToken = parseFloat(priceToken);
-console.log(parsedTokenBalance, parsedPriceToken, "parsedTokenBalance, parsedPriceToken");
+      console.log(parsedTokenBalance, parsedPriceToken, "parsedTokenBalance, parsedPriceToken");
       if (parsedTokenBalance >= parsedPriceToken) {
         return true;
       } else {
@@ -517,15 +508,15 @@ console.log(parsedTokenBalance, parsedPriceToken, "parsedTokenBalance, parsedPri
                 <h1 className="font-display text-jacarta-700 mb-4 dark:hover:text-accent text-4xl font-semibold dark:text-white">{name}</h1>
               </Link>
 
-              <div className="mb-8 flex items-center space-x-4 whitespace-nowrap">
-                <div className="flex items-center">
+              <div className="mb-8 flex items-center  whitespace-nowrap flex-wrap">
+                <div className="flex items-center mr-4">
                   <span className="text-green text-sm font-medium tracking-tight mr-2">
                     {(price * protocolFees) / 100 + price} {currency?.symbol ? currency?.symbol : "N/A"}
                   </span>
                   <ModalHelper {...modalHelper} size="small" />
                 </div>
 
-                <span className="dark:text-jacarta-300 text-jacarta-400 text-sm">
+                <span className="dark:text-jacarta-300 text-jacarta-400 text-sm mr-4">
                   Space # <strong className="dark:text-white">{tokenData ? tokenData : formatTokenId(tokenId)}</strong>{" "}
                 </span>
                 <span className="text-jacarta-300 block text-sm ">
