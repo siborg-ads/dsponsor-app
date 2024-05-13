@@ -51,6 +51,12 @@ const Validated_refused_items = ({ statut, proposalData, isToken }) => {
       setStatutItem("refused");
     }
   }, []);
+  function formatTokenId(str) {
+    if (str.length <= 6) {
+      return str;
+    }
+    return str.slice(0, 3) + "..." + str.slice(-3);
+  }
   const getImageUrl = (adParams) => {
     if (!adParams) return "/";
 

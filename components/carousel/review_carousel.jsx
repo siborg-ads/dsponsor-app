@@ -26,7 +26,6 @@ const Review_carousel = ({ handleSubmit, pendingProposalData, successFullRefuseM
 
   useEffect(() => {
     const initialValidateStates = {};
-    console.log("pendingProposalData", pendingProposalData);
     pendingProposalData.forEach((item) => {
       initialValidateStates[item.tokenId] = false;
     });
@@ -127,7 +126,7 @@ const Review_carousel = ({ handleSubmit, pendingProposalData, successFullRefuseM
     const imageKey = Object.keys(adParams).find((key) => key.startsWith("imageURL"));
     return imageKey ? adParams[imageKey] : "/";
   };
-console.log("pendingProposalData", pendingProposalData);
+
   if (pendingProposalData.length === 0) {
     return <div className="flex justify-center">No pendings ads...</div>;
   }

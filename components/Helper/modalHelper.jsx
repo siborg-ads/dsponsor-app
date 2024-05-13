@@ -36,9 +36,7 @@ const ModalHelper = ({title, body, image, dark, size = "default"}) => {
                 )}
               </ModalBody>
               <ModalFooter>
-                <Button color="danger" variant="light" onPress={onClose}>
-                  Close
-                </Button>
+                
                 <Button color="primary" onPress={onClose}>
                   Got it !
                 </Button>

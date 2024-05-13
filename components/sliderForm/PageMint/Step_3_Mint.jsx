@@ -18,7 +18,7 @@ const Step_3_Mint = ({ id, stepsRef, offerIds, styles, file, handleLogoUpload, p
   return (
     <div ref={(el) => (stepsRef.current[currentStep] = el)} className={styles.form__step}>
       <div className="pr-6 pl-2">
-        <h3 className="mb-14">Step 2 : Ad Space Image {id}</h3>
+        <h3 className="mb-14">Step 3 : Ad Space Image {id}</h3>
         {/* <!-- File Upload --> */}
         <div className="mb-6 items-center flex flex-col">
           <div className="flex gap-3 justify-center items-center mb-2">

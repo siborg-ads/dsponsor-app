@@ -12,11 +12,11 @@ const Step_1_Create = ({ stepsRef, styles, setDisplayedParameter, displayedParam
   const [customImageRatio, setCustomImageRatio] = useState({});
   const AdIntegrationData = [
     {
-    integrationName : "ClickableLogosGrid",
+    integrationName : "Clickable Logos Grid",
     imageExemple : "/images/offer_exemple_0.png",
     bodyDescription : "This integration allows you to display a grid of clickable logos. Each logo can redirect to a different URL. You can choose the number of logos to display and the image ratio for each logo."
 }, 
-{integrationName : "DynamicBanner",
+{integrationName : "Dynamic Banner",
 imageExemple : "/images/offer_exemple_1.png",
 bodyDescription : "This integration allows you to display a dynamic banner. You can choose the image ratio of the banner. The banner can redirect to a URL when clicked."
 }
@@ -117,8 +117,9 @@ setSelectedParameter([]);
     setImageRatios((prev) => ({ ...prev, [index]: value }));
   
     if (value === "custom") {
-      
+       setCustomImageRatio((prev) => ({ ...prev, [index]: "" }));
       setCustomRatioInputShown((prev) => ({ ...prev, [index]: true }));
+      setValidRatio((prev) => ({ ...prev, [index]: false }));
     } else {
      
       setCustomRatioInputShown((prev) => ({ ...prev, [index]: false }));
@@ -133,6 +134,7 @@ setSelectedParameter([]);
   };
   const handleCustomRatioInput = (index, e) => {
     const { value } = e.target;
+ 
    setCustomImageRatio((prev) => ({ ...prev, [index]: value }));
     if (isValidRatioFormat(value)) {
       setImageRatios((prev) => ({ ...prev, [index]: value }));
