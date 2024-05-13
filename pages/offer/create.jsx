@@ -103,6 +103,7 @@ const Create = () => {
       newErrors.descriptionError = "Description is missing.";
       isValid = false;
     }
+    console.log(files);
     if (files.length === 0) {
       newErrors.imageError = "Image is missing.";
       isValid = false;
@@ -152,7 +153,7 @@ const Create = () => {
       newErrors.currencyError = "Currency is missing or invalid.";
       isValid = false;
     }
-     console.log(customTokenContract, "setCustomTokenContract");
+
     if (selectedCurrency === "custom" && customTokenContract === undefined) {
       newErrors.currencyError = "Custom contract is missing or invalid.";
       isValid = false;
@@ -162,6 +163,7 @@ const Create = () => {
       newErrors.royaltyError = "Royalties are missing or invalid. They should be between 0.01% and 100%.";
       isValid = false;
     }
+    console.log(previewImages, "previewImages");
     setValidate(isValid);
     setErrors(newErrors);
     return isValid;
@@ -191,15 +193,18 @@ const Create = () => {
         data: [files[0]],
         options: { uploadWithGatewayUrl: true, uploadWithoutDirectory: true },
       });
-      let uploadTerms;
-      console.log(terms, files);
-      if(terms[0].name){
-
-        uploadTerms = await upload({
-          data: [terms[0]],
-          options: { uploadWithGatewayUrl: true, uploadWithoutDirectory: true },
-        });
-      }
+      let uploadTerms = [];
+     
+      
+        if (typeof terms[0] === "string") {
+         uploadTerms.push(terms[0]);
+        
+        } else if (typeof terms[0] === "object" && terms[0] !== null && "name" in terms[0]) {
+          uploadTerms = await upload({
+            data: [terms[0]],
+            options: { uploadWithGatewayUrl: true, uploadWithoutDirectory: true },
+          });
+        }
 
       if (name && link) {
         onUpload(name, link);
@@ -218,7 +223,7 @@ const Create = () => {
           name: name,
           description: description,
           image: uploadUrl[0],
-          terms: terms[0].name ? uploadTerms[0] : terms[0],
+          terms:  uploadTerms[0],
           external_link: link,
           valid_from: startDate || "1970-01-01T00:00:00Z",
           valid_to: endDate || "2100-01-01T00:00:00Z",
@@ -230,7 +235,7 @@ const Create = () => {
       const jsonContractURI = JSON.stringify({
         name: name,
         description: description,
-        image: uploadUrl,
+        image: uploadUrl[0],
         external_link: link,
         collaborators: [address],
       });
@@ -391,6 +396,7 @@ const Create = () => {
             selectedCurrency={selectedCurrency}
             customContract={customContract}
             selectedRoyalties={selectedRoyalties}
+            imageURLSteps={["imageURL"]}
             previewImage={previewImages}
             terms={terms}
             selectedParameter={selectedParameter}

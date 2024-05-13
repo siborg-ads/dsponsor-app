@@ -41,7 +41,7 @@ const Item = () => {
   const [tokenIdString, setTokenIdString] = useState(null);
 
   const [data, setData] = useState([]);
-  const [offerData, setOfferData] = useState([]);
+  const [offerData, setOfferData] = useState(null);
   const address = useAddress();
   const [isOwner, setIsOwner] = useState(false);
   const [files, setFiles] = useState([]);
@@ -65,6 +65,7 @@ const Item = () => {
   const { mutateAsync: approve, isLoading: isLoadingApprove } = useContractWrite(tokenContract, "approve");
   const { data: bps } = useContractRead(DsponsorAdminContract, "feeBps");
   const { data: isAllowedToMint, isLoading: isLoadingAllowedToMint } = useContractRead(DsponsorNFTContract, "tokenIdIsAllowedToMint", tokenIdString);
+  const { data: isUserOwner,  } = useContractRead(DsponsorNFTContract, "ownerOf", tokenIdString);
   const { data: royaltiesInfo } = useContractRead(DsponsorNFTContract, "royaltyInfo", [tokenIdString, 100]);
   const [showPreviewModal, setShowPreviewModal] = useState(false);
   const [validate, setValidate] = useState(false);
@@ -85,7 +86,7 @@ const Item = () => {
   const [numSteps, setNumSteps] = useState(2);
 
   useEffect(() => {
-    if (offerId && tokenId) {
+    if (offerId && tokenId && address) {
       const fetchAdsOffers = async () => {
         const offer = await GetTokenAdOffer(offerId, tokenId);
 
@@ -99,54 +100,75 @@ const Item = () => {
         console.log(combinedData, "combinedData");
         setOfferData(combinedData);
 
-        if (tokenId.length > 6) {
-          const url = new URL(window.location.href);
-          const tokenData = url.searchParams.get("tokenData");
-          setTokenData(tokenData);
+       
 
-          let tokenMetaData = {};
-          if (combinedData.offer.token_metadata) {
-            tokenMetaData.description = combinedData.offer.token_metadata.description.replace(/{tokenData}/g, `${tokenData}`);
-            tokenMetaData.image = combinedData.offer.token_metadata.image.replace(/{tokenData}/g, `${tokenData}`);
-            tokenMetaData.name = combinedData.offer.token_metadata.name.replace(/{tokenData}/g, `${tokenData}`);
-          }
-          setTokenMetaData(tokenMetaData);
-        }
+       
 
-        const uniqueIds = new Set();
-        for (const param of offer.adParameters) {
-          if (param.adParameter.id && param.adParameter.id !== "xSpaceId" && param.adParameter.id !== "xCreatorHandle") {
-            uniqueIds.add(param.adParameter.id);
-          }
-        }
-        const imageURLSteps = [];
-        const uniqueIdsArray = Array.from(uniqueIds);
-        setAdParameters(uniqueIdsArray);
-
-        uniqueIdsArray
-          .filter((id) => id.startsWith("imageURL"))
-          .map((id) => {
-            const variant = id.slice("imageURL-".length);
-
-            imageURLSteps.push(variant);
-          });
-        const totalNumSteps = numSteps + imageURLSteps.length;
-
-        setImageURLSteps(imageURLSteps);
-        setNumSteps(totalNumSteps);
-
-        if (address && offer?.nftContract?.tokens[0]?.mint !== null) {
-          if (offer?.nftContract?.tokens[0]?.mint?.to === address.toLowerCase()) {
-            setIsOwner(true);
-          }
-        }
+       
       };
 
       fetchAdsOffers();
     }
 
     setTokenIdString(tokenId?.toString());
-  }, [offerId, address, tokenId, successFullUpload, isOwner]);
+  }, [offerId, address, tokenId, successFullUpload]);
+
+  useEffect(() => {
+    if (!offerData && !address && !isUserOwner ) return;
+    
+    console.log(isUserOwner, address, "isUserOwner");
+   if (isUserOwner === address) {
+     setIsOwner(true);
+   }
+  }, [offerData, address, tokenId, isUserOwner]);
+
+
+  useEffect(() => {
+    if (!tokenId) return;
+ if (tokenId.length > 6) {
+   const url = new URL(window.location.href);
+   const tokenData = url.searchParams.get("tokenData");
+   setTokenData(tokenData);
+
+   let tokenMetaData = {};
+   if (combinedData.offer.token_metadata) {
+     tokenMetaData.description = combinedData.offer.token_metadata.description.replace(/{tokenData}/g, `${tokenData}`);
+     tokenMetaData.image = combinedData.offer.token_metadata.image.replace(/{tokenData}/g, `${tokenData}`);
+     tokenMetaData.name = combinedData.offer.token_metadata.name.replace(/{tokenData}/g, `${tokenData}`);
+   }
+   setTokenMetaData(tokenMetaData);
+ }
+  }, [tokenId]);
+
+  useEffect(() => {
+
+    if (!offerData) return;
+    setImageURLSteps([]);
+     setNumSteps(2);
+ const uniqueIds = new Set();
+ for (const param of offerData.adParameters) {
+   if (param.adParameter.id && param.adParameter.id !== "xSpaceId" && param.adParameter.id !== "xCreatorHandle") {
+     uniqueIds.add(param.adParameter.id);
+   }
+ }
+ const imageURLSteps = [];
+ const uniqueIdsArray = Array.from(uniqueIds);
+ setAdParameters(uniqueIdsArray);
+
+ uniqueIdsArray
+   .filter((id) => id.startsWith("imageURL"))
+   .map((id) => {
+     const variant = id.slice("imageURL-".length);
+
+     imageURLSteps.push(variant);
+   });
+ const totalNumSteps = numSteps + imageURLSteps.length;
+ console.log(imageURLSteps, numSteps, totalNumSteps, "imageURLSteps");
+
+ setImageURLSteps(imageURLSteps);
+ setNumSteps(totalNumSteps);
+
+  }, [ offerData]);
 
   useEffect(() => {
     if (!offerData) return;
@@ -160,7 +182,7 @@ const Item = () => {
         currencyTokenObject.symbol = symbolContract;
         currencyTokenObject.decimals = decimalsContract;
       }
- console.log(currencyTokenObject);
+
       const formatPrice = offerData.nftContract.prices[0].amount / 10 ** currencyTokenObject.decimals;
       setPrice(formatPrice);
       setCurrency(currencyTokenObject);
@@ -308,7 +330,7 @@ const Item = () => {
     // IPFS upload
 
     let uploadUrl = [];
-    console.log(adStatut, "adStatut");
+
     if (isOwner) {
       try {
         uploadUrl = await uploadToIPFS({
@@ -363,7 +385,7 @@ const Item = () => {
     try {
       const parsedTokenBalance = parseFloat(tokenAddressBalance.displayValue);
       const parsedPriceToken = parseFloat(priceToken);
-
+console.log(parsedTokenBalance, parsedPriceToken, "parsedTokenBalance, parsedPriceToken");
       if (parsedTokenBalance >= parsedPriceToken) {
         return true;
       } else {

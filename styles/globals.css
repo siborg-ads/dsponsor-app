@@ -6051,6 +6051,8 @@ body {
   width: 100%;
   text-align: center;
   font-weight: bold;
+  font-size: 15px;
+  white-space: nowrap;
 }
 
 .select-style {

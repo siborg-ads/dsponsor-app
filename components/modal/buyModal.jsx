@@ -9,6 +9,7 @@ import { useState } from "react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { protocolFees } from "../../utils/constUtils";
+import { Divider } from "@nextui-org/react";
 
 const BuyModal = ({
   formatTokenId,
@@ -62,32 +63,44 @@ const BuyModal = ({
                 <span className="font-display text-jacarta-700 text-sm font-semibold dark:text-white">Subtotal</span>
               </div>
 
-              <div className="dark:border-jacarta-600 border-jacarta-100 relative flex items-center border-t border-b py-4">
+              <div className="dark:border-jacarta-600 border-jacarta-100 relative flex min-h-[100px] border-t border-b py-4">
                 <figure className="mr-5 self-start">
                   <Image width={150} height={150} src={image} alt="logo" className="rounded-2lg" loading="lazy" />
                 </figure>
-
-                <div className="overflow-hidden text-ellipsis whitespace-nowrap max-w-[150px] mr-5">
-                  <a href="collection.html" className="text-accent text-sm">
+                <div className="overflow-hidden  justify-between flex flex-col  text-ellipsis whitespace-nowrap  ">
+                  <a href="collection.html" className="text-accent text-sm text-ellipsis whitespace-nowrap overflow-hidden  ">
                     {initialCreator}
                   </a>
-                  <h3 className="font-display text-jacarta-700 mb-1 text-base font-semibold dark:text-white">{name}</h3>
-                  <div className="flex flex-wrap items-center">
-                    <span className="dark:text-jacarta-300 text-jacarta-500 mr-1 block text-sm">Protocol fees: {protocolFees} %</span>
-                   
+                  <div className="overflow-hidden flex flex-col text-ellipsis whitespace-nowrap min-w-[100px]  ">
+                    <div className="flex gap-6  items-center justify-between">
+                      <h3 className="font-display overflow-hidden text-ellipsis whitespace-nowrap text-jacarta-700 text-base font-semibold dark:text-white">{name}</h3>
+                      <span className="dark:text-jacarta-100 text-sm font-medium tracking-tight overflow-auto ">
+                        {price} {selectedCurrency}
+                      </span>
+                    </div>
+                    <div className="flex gap-6  items-center justify-between">
+                      <span className="dark:text-jacarta-300 text-jacarta-500 mr-1 block text-sm">Protocol fees: {protocolFees} %</span>
+                      <span className="dark:text-jacarta-300 text-sm  tracking-tight overflow-auto">
+                        {(price * protocolFees) / 100} {selectedCurrency}
+                      </span>
+                    </div>
+                    <div className="flex justify-end">
+                      <Divider className="mt-4 w-16 " />
+                    </div>
                   </div>
                 </div>
 
-                <div className="ml-auto">
-                  <span className="mb-1 flex items-center whitespace-nowrap">
-                  
+                {/* <div className="ml-auto h-full">
+                  <span className="mb-1 flex flex-col items-end justify-end whitespace-nowrap">
                     <span className="dark:text-jacarta-100 text-sm font-medium tracking-tight">
-                      {price } {selectedCurrency}
+                      {price} {selectedCurrency}
                     </span>
-                   
+                    <span className="dark:text-jacarta-100 text-sm font-medium tracking-tight">
+                      {(price * protocolFees) / 100} {selectedCurrency}
+                    </span>
                   </span>
-                  {/* <div className="dark:text-jacarta-300 text-right text-sm">$130.82</div> */}
-                </div>
+                  <div className="dark:text-jacarta-300 text-right text-sm">$130.82</div> 
+                </div> */}
               </div>
 
               {/* <!-- Total --> */}
@@ -95,7 +108,6 @@ const BuyModal = ({
                 <span className="font-display text-jacarta-700 hover:text-accent font-semibold dark:text-white">Total</span>
                 <div className="ml-auto">
                   <span className="flex items-center whitespace-nowrap">
-                   
                     <span className="text-green font-medium tracking-tight">
                       {finalPrice} {selectedCurrency}
                     </span>
