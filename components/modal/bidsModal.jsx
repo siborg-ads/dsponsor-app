@@ -1,3 +1,4 @@
+'use client';
 import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { bidsModalHide } from "../../redux/counterSlice";
@@ -48,7 +49,7 @@ const BidsModal = () => {
 
               <div className="dark:border-jacarta-600 border-jacarta-100 relative mb-2 flex items-center overflow-hidden rounded-lg border">
                 <div className="border-jacarta-100 bg-jacarta-50 flex flex-1 items-center self-stretch border-r px-2">
-                  
+
                   <span className="font-display text-jacarta-700 text-sm">
                     ETH
                   </span>

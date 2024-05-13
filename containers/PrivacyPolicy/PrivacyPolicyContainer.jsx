@@ -1,13 +1,9 @@
-// pages/privacy-policy.jsx
-import privacyPolicyData from '../data/privacy-policy';
-import Meta from "../components/Meta";
 import Image from "next/image";
 import React from "react";
+import privacyPolicyData from "../../data/privacy-policy";
 
-export default function PrivacyPolicy() {
+export default function PrivacyPolicyContainer() {
     return (
-        <>
-            <Meta title="Privacy Policy || DSponsor | smarter monetization for your content"/>
             <div className="pt-[5.5rem] lg:pt-24">
                 <section className="dark:bg-jacarta-800 relative py-16 md:py-24">
                     <picture className="pointer-events-none absolute inset-0 -z-10 dark:hidden">
@@ -22,12 +18,20 @@ export default function PrivacyPolicy() {
                     <div className="container">
                         <div className="mx-auto max-w-lg text-center">
                             <div>
-                                <h1>{privacyPolicyData.title}</h1>
-                                <p>{privacyPolicyData.intro}</p>
+                                <h1 className="text-jacarta-700 font-display mb-6 text-2xl dark:text-white md:text-4xl">
+                                    {privacyPolicyData.title}
+                                </h1>
+                                <p className="dark:text-jacarta-300 mb-12 text-lg leading-normal">
+                                    {privacyPolicyData.intro}
+                                </p>
                                 {privacyPolicyData.sections.map((section, index) => (
-                                    <div key={index}>
-                                        <h2>{section.title}</h2>
-                                        <p>{section.content}</p>
+                                    <div key={index} className="mb-8">
+                                        <h2 className="text-jacarta-700 font-bold font-display mb-6 text-2xl dark:text-white md:text-4xl">
+                                            {section.title}
+                                        </h2>
+                                        <p className="dark:text-jacarta-300 mb-12 text-lg leading-normal">
+                                            {section.content}
+                                        </p>
                                     </div>
                                 ))}
                                 <p>Last updated: {privacyPolicyData.lastUpdated}</p>
@@ -36,7 +40,5 @@ export default function PrivacyPolicy() {
                     </div>
                 </section>
             </div>
-        </>
-    )
-        ;
-}
+    );
+};

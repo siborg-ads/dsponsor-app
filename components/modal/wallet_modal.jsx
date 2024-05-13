@@ -1,7 +1,9 @@
+'use client';
 import { display } from "@mui/system";
 import React from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { walletModalhide } from "../../redux/counterSlice";
+
 
 const Wallet_modal = () => {
   const walletModal = useSelector((state) => state.counter.walletModal);
