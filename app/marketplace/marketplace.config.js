@@ -49,15 +49,23 @@ export const getNftContract = (chainId, assetContractAddress) => {
   });
 };
 
-//TODO : add chain id customizations
 export const ERC20SymbolsAndDecimals = {
-  USDC: {
-    symbol: "USDC",
-    decimals: 6,
+  11155111: {
+    USDC: {
+      symbol: "USDC",
+      decimals: 6,
+    },
+    WETH: {
+      symbol: "WETH",
+      decimals: 18,
+    },
   },
-  WETH: {
-    symbol: "WETH",
-    decimals: 18,
+};
+
+export const currencyAdress = {
+  11155111: {
+    USDC: "0xf08A50178dfcDe18524640EA6618a1f965821715",
+    WETH: "0x7b79995e5f793A07Bc00c21412e50Ecae098E7f9",
   },
 };
 export const defaultChainId = 11155111;

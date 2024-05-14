@@ -1,7 +1,6 @@
 import { useAddress } from "@thirdweb-dev/react";
-import { toWei } from "thirdweb";
 
-export const useTransaction = () => {
+export const useTransactionHook = () => {
   const address = useAddress();
 
   const handleERC20approve = async (
@@ -67,25 +66,30 @@ export const useTransaction = () => {
     tokenId,
     startTime,
     secondsUntilEndTime,
+    quantity,
     currencyToAccept,
     reservePricePerToken,
     buyoutPricePerToken,
+    transferType,
+    rentalExpirationTimestamp,
     listingType
   ) => {
     try {
       await createListing({
         args: [
-          assetContract,
-          tokenId,
-          startTime,
-          secondsUntilEndTime,
-          1, //quantity
-          currencyToAccept,
-          reservePricePerToken,
-          buyoutPricePerToken,
-          1, //transferType
-          0, //rentalExpirationTimestamp
-          listingType,
+          {
+            assetContract: assetContract,
+            tokenId: tokenId,
+            startTime: startTime,
+            secondsUntilEndTime: secondsUntilEndTime,
+            quantityToList: quantity, //quantity
+            currencyToAccept: currencyToAccept,
+            reservePricePerToken: reservePricePerToken,
+            buyoutPricePerToken: buyoutPricePerToken,
+            transferType: transferType, //transferType
+            rentalExpirationTimestamp: rentalExpirationTimestamp, //rentalExpirationTimestamp
+            listingType: listingType,
+          },
         ],
       });
     } catch (error) {

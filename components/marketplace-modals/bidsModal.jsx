@@ -7,25 +7,28 @@ import {
   useBalance,
 } from "@thirdweb-dev/react";
 import WalletConnection from "../wallet/walletConnection";
-
-import { contractAddressConfig } from "../../lib/config/listing.config";
+import ThankYouModal from "../marketplace-modals/thankYouModal";
 import ChainDetector from "../chain-detector/ChainDetector";
-import { useTransaction } from "../../utils/transactions";
+import { useTransactionHook } from "../../utils/transactions";
+import {
+  defaultChainId,
+  marketplaceConfig,
+} from "../../app/marketplace/marketplace.config";
 
+const chainId = defaultChainId;
 const BidsModal = ({ showBidsModal, setShowBidsModal, listing }) => {
   ///////////////////////////////////////////////////////
   /////////// contracts ////////////////
   ///////////////////////////////////////////////////////
   const { contract: tokenContract } = useContract(listing?.currency);
   const { contract: dsponsorMpContract } = useContract(
-    contractAddressConfig.dsponsor_marketplace_contract_address
+    marketplaceConfig[chainId].dsponsor_marketplace_contract_address
   );
 
   ///////////////////////////////////////////////////////
   /////////// functions ////////////////
   ///////////////////////////////////////////////////////
 
-  //TODO : define this inside of transactions.jsx handle approve function
   const { mutateAsync: approveERC20 } = useContractWrite(
     tokenContract,
     "approve"
@@ -36,12 +39,11 @@ const BidsModal = ({ showBidsModal, setShowBidsModal, listing }) => {
   const [approvalStatus, setApprovalStatus] = useState("idle"); // idle, inProgress, approved
   const [bidAmount, setBidAmount] = useState(listing?.price * 1.05);
   const [bidAmountValid, setBidAmountValid] = useState(true);
+  const [showThankYouModal, setShowThankYouModal] = useState(false);
+  const [termsChecked, setTermsChecked] = useState(false);
 
-  //wallet & address
   const wallet = useWallet();
-  const balance = useBalance();
-
-  const { handleApprove, handleBid } = useTransaction();
+  const { handleApprove, handleBid } = useTransactionHook();
 
   ///////////////////////////////////////////////////////
   const handleBidAmountInput = (e) => {
@@ -71,7 +73,7 @@ const BidsModal = ({ showBidsModal, setShowBidsModal, listing }) => {
       await handleApprove(
         bidAmount * 10 ** listing.decimals,
         tokenContract,
-        contractAddressConfig.dsponsor_marketplace_contract_address,
+        marketplaceConfig[chainId].dsponsor_marketplace_contract_address,
         approveERC20
       );
       setApprovalStatus("approved");
@@ -90,6 +92,7 @@ const BidsModal = ({ showBidsModal, setShowBidsModal, listing }) => {
       );
       console.log("Bid placed successfully");
       setShowBidsModal(false);
+      setShowThankYouModal(true);
     } catch (error) {
       setShowBidsModal(false);
       console.error("Error:", error);
@@ -98,9 +101,9 @@ const BidsModal = ({ showBidsModal, setShowBidsModal, listing }) => {
   };
 
   const handleTermService = (e) => {
-    console.log(validate);
-    setValidate(e.target.checked);
+    setTermsChecked(e.target.checked);
   };
+
   return (
     <>
       <div
@@ -123,7 +126,7 @@ const BidsModal = ({ showBidsModal, setShowBidsModal, listing }) => {
                     onClick={() => {
                       setShowBidsModal(false);
                       setApprovalStatus("idle");
-                      setBidAmountValid(true);
+                      // setBidAmountValid(true);
                     }}
                   >
                     <svg
@@ -192,6 +195,8 @@ const BidsModal = ({ showBidsModal, setShowBidsModal, listing }) => {
                       type="checkbox"
                       id="terms"
                       className="h-5 w-5 self-start rounded border-jacarta-200 text-accent checked:bg-accent focus:ring-accent/20 focus:ring-offset-0 dark:border-jacarta-500 dark:bg-jacarta-600"
+                      onClick={(e) => handleTermService(e)}
+                      checked={termsChecked}
                     />
                     <label
                       htmlFor="terms"
@@ -215,13 +220,14 @@ const BidsModal = ({ showBidsModal, setShowBidsModal, listing }) => {
                           "" +
                           (approvalStatus === "approved"
                             ? "inline-block w-full rounded-full py-3 px-8 text-center font-semibold text-white bg-green shadow-green-volume"
-                            : approvalStatus === "idle"
+                            : approvalStatus === "idle" && termsChecked
                             ? "inline-block w-full rounded-full py-3 px-8 text-center font-semibold text-white transition-all bg-accent shadow-accent-volume hover:bg-accent-dark"
                             : "inline-block w-full rounded-full py-3 px-8 text-center font-semibold text-white transition-all bg-sibinput")
                         }
                         disabled={
                           approvalStatus === "inProgress" ||
-                          approvalStatus === "approved"
+                          approvalStatus === "approved" ||
+                          !termsChecked
                         }
                         onClick={() => handleApproveButton()}
                       >
@@ -238,11 +244,13 @@ const BidsModal = ({ showBidsModal, setShowBidsModal, listing }) => {
                       <button
                         className={
                           "" +
-                          (approvalStatus === "approved"
+                          (approvalStatus === "approved" && termsChecked
                             ? "inline-block w-full rounded-full  py-3 px-8 text-center font-semibold text-white  transition-all bg-accent shadow-accent-volume hover:bg-accent-dark "
                             : "inline-block w-full rounded-full  py-3 px-8 text-center font-semibold text-white  transition-all bg-sibinput")
                         }
-                        disabled={approvalStatus !== "approved"}
+                        disabled={
+                          approvalStatus !== "approved" || !termsChecked
+                        }
                         onClick={() => confirmBid()}
                       >
                         Confirm Bid
@@ -252,6 +260,9 @@ const BidsModal = ({ showBidsModal, setShowBidsModal, listing }) => {
                 </div>
               </div>
             </div>
+            {showThankYouModal && (
+              <ThankYouModal setShowThankYouModal={setShowThankYouModal} />
+            )}
           </>
         ) : (
           <WalletConnection setShowModal={setShowBidsModal} />

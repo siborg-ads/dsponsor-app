@@ -136,7 +136,7 @@ const fetchListingPriceAndSymbol = async (listing, chainId) => {
   });
 
   if (symbol === "USDC" || symbol === "WETH") {
-    decimals = ERC20SymbolsAndDecimals[symbol].decimals;
+    decimals = ERC20SymbolsAndDecimals[chainId][symbol].decimals;
   } else {
     const { decimals: fetchedDecimals } = await getERC20Decimals(
       erc20ContractAdd,

@@ -29,8 +29,6 @@ export const fetchItemInfo = async (id, assetContract) => {
         assetContract: assetContract,
       },
     });
-
-    console.log("data", data);
   } catch (error) {
     console.error("Error fetching item info:", error);
   }

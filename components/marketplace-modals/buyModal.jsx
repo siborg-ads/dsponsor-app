@@ -1,31 +1,29 @@
 import Link from "next/link";
 import React, { useState } from "react";
-import {
-  useWallet,
-  ConnectWallet,
-  useContractWrite,
-  useContract,
-} from "@thirdweb-dev/react";
+import { useWallet, useContractWrite, useContract } from "@thirdweb-dev/react";
 import Image from "next/image";
-import { contractAddressConfig } from "../../lib/config/listing.config";
 import ChainDetector from "../chain-detector/ChainDetector";
-import { useTransaction } from "../../utils/transactions";
+import { useTransactionHook } from "../../utils/transactions";
 import WalletConnection from "../wallet/walletConnection";
+import {
+  defaultChainId,
+  marketplaceConfig,
+} from "../../app/marketplace/marketplace.config";
+import ThankYouModal from "./thankYouModal";
 
+const chainId = defaultChainId;
 const BuyModal = ({ showBuyModal, setShowBuyModal, listing }) => {
   ///////////////////////////////////////////////////////
   /////////// contracts ////////////////
   ///////////////////////////////////////////////////////
   const { contract: tokenContract } = useContract(listing?.currency);
   const { contract: dsponsorMpContract } = useContract(
-    contractAddressConfig.dsponsor_marketplace_contract_address
+    marketplaceConfig[chainId].dsponsor_marketplace_contract_address
   );
 
   ///////////////////////////////////////////////////////
   /////////// funcs ////////////////
   ///////////////////////////////////////////////////////
-
-  //TODO : define this inside of transactions.jsx handle approve function
   const { mutateAsync: approveERC20 } = useContractWrite(
     tokenContract,
     "approve"
@@ -34,10 +32,11 @@ const BuyModal = ({ showBuyModal, setShowBuyModal, listing }) => {
 
   ///////////////////////////////////////////////////////
   const [approvalStatus, setApprovalStatus] = useState("idle"); // idle, inProgress, approved
+  const [showThankYouModal, setShowThankYouModal] = useState(false);
+  const [termsChecked, setTermsChecked] = useState(false);
 
-  //wallet & address
   const wallet = useWallet();
-  const { handleApprove, handleBuy } = useTransaction();
+  const { handleApprove, handleBuy } = useTransactionHook();
 
   ///////////////////////////////////////////////////////
   const handleApproveButton = async () => {
@@ -46,7 +45,7 @@ const BuyModal = ({ showBuyModal, setShowBuyModal, listing }) => {
       await handleApprove(
         listing?.buyoutPricePerToken,
         tokenContract,
-        contractAddressConfig.dsponsor_marketplace_contract_address,
+        marketplaceConfig[chainId].dsponsor_marketplace_contract_address,
         approveERC20
       );
       setApprovalStatus("approved");
@@ -65,8 +64,9 @@ const BuyModal = ({ showBuyModal, setShowBuyModal, listing }) => {
         listing?.currency,
         listing?.buyoutPricePerToken
       );
-      setShowBuyModal(false);
       console.log("Item bought successfully");
+      setShowBuyModal(false);
+      setShowThankYouModal(true);
     } catch (error) {
       setShowBuyModal(false);
       console.error("Error:", error);
@@ -74,7 +74,7 @@ const BuyModal = ({ showBuyModal, setShowBuyModal, listing }) => {
   };
 
   const handleTermService = (e) => {
-    setValidate(e.target.checked);
+    setTermsChecked(e.target.checked);
   };
   return (
     <>
@@ -163,11 +163,6 @@ const BuyModal = ({ showBuyModal, setShowBuyModal, listing }) => {
 
                     <div className="ml-auto">
                       <span className="mb-1 flex items-center whitespace-nowrap">
-                        {/* <span data-tippy-content="ETH">
-                          <svg className="h-4 w-4">
-                            <use xlinkHref="/icons.svg#icon-ETH"></use>
-                          </svg>
-                        </span> */}
                         <span className="text-jacarta-100 text-sm font-medium tracking-tight">
                           {listing?.price} {listing?.symbol}
                         </span>
@@ -185,11 +180,6 @@ const BuyModal = ({ showBuyModal, setShowBuyModal, listing }) => {
                     </span>
                     <div className="ml-auto">
                       <span className="flex items-center whitespace-nowrap">
-                        {/* <span data-tippy-content="ETH">
-                          <svg className="h-4 w-4">
-                            <use xlinkHref="/icons.svg#icon-ETH"></use>
-                          </svg>
-                        </span> */}
                         <span className="text-green font-medium tracking-tight">
                           {listing?.price} {listing?.symbol}
                         </span>
@@ -204,6 +194,8 @@ const BuyModal = ({ showBuyModal, setShowBuyModal, listing }) => {
                       type="checkbox"
                       id="buyNowTerms"
                       className="checked:bg-accent bg-jacarta-600 text-accent border-jacarta-200 focus:ring-accent/20 border-jacarta-500 h-5 w-5 self-start rounded focus:ring-offset-0"
+                      onClick={(e) => handleTermService(e)}
+                      checked={termsChecked}
                     />
                     <label
                       htmlFor="buyNowTerms"
@@ -227,7 +219,7 @@ const BuyModal = ({ showBuyModal, setShowBuyModal, listing }) => {
                           "" +
                           (approvalStatus === "approved"
                             ? "inline-block w-full rounded-full py-3 px-8 text-center font-semibold text-white bg-green shadow-green-volume"
-                            : approvalStatus === "idle"
+                            : approvalStatus === "idle" && termsChecked
                             ? "inline-block w-full rounded-full py-3 px-8 text-center font-semibold text-white transition-all bg-accent shadow-accent-volume hover:bg-accent-dark"
                             : "inline-block w-full rounded-full py-3 px-8 text-center font-semibold text-white transition-all bg-sibinput")
                         }
@@ -250,7 +242,7 @@ const BuyModal = ({ showBuyModal, setShowBuyModal, listing }) => {
                       <button
                         className={
                           "" +
-                          (approvalStatus === "approved"
+                          (approvalStatus === "approved" && termsChecked
                             ? "inline-block w-full rounded-full  py-3 px-8 text-center font-semibold text-white  transition-all bg-accent shadow-accent-volume hover:bg-accent-dark "
                             : "inline-block w-full rounded-full  py-3 px-8 text-center font-semibold text-white  transition-all bg-sibinput")
                         }
@@ -264,6 +256,9 @@ const BuyModal = ({ showBuyModal, setShowBuyModal, listing }) => {
                 </div>
               </div>
             </div>
+            {showThankYouModal && (
+              <ThankYouModal setShowThankYouModal={setShowThankYouModal} />
+            )}
           </>
         ) : (
           <WalletConnection setShowModal={setShowBuyModal} />

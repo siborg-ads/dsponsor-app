@@ -11,10 +11,10 @@ import {
   getNftContract,
   marketplaceConfig,
 } from "../../app/marketplace/marketplace.config";
-import { contractAddressConfig } from "../../lib/config/listing.config";
 import WalletConnection from "../wallet/walletConnection";
-import { useTransaction } from "../../utils/transactions";
-
+import { useTransactionHook } from "../../utils/transactions";
+import CreateListingModal from "../marketplace-modals/createListingModal";
+import ThankYouModal from "../marketplace-modals/thankYouModal";
 const chainId = defaultChainId;
 
 const OwnerView = ({ listing }) => {
@@ -22,19 +22,19 @@ const OwnerView = ({ listing }) => {
   const [showCancelListingModal, setShowCancelListingModal] = useState(false);
   const [showCreateListingModal, setShowCreateListingModal] = useState(false);
   const [tokenOwner, setTokenOwner] = useState(false);
-  const { handleCreateListing, handleERC721approval } = useTransaction();
+  const [showThankYouModal, setShowThankYouModal] = useState(false);
+  const { handleCreateListing, handleERC721approval } = useTransactionHook();
 
   const address = useAddress();
   const wallet = useWallet();
   const now = new Date().getTime() / 1000;
 
-  const nftContractAdd = getNftContract(chainId, listing.token.nftContract.id);
+  // const nftContractAdd = getNftContract(chainId, listing.token.nftContract.id);
   const { contract: dsponsorMpContract } = useContract(
-    contractAddressConfig.dsponsor_marketplace_contract_address
+    marketplaceConfig[chainId].dsponsor_marketplace_contract_address
   );
 
-  //not so sure about this
-  const { contract: nftContract } = useContract(nftContractAdd);
+  const { contract: nftContract } = useContract(listing.token.nftContract.id);
 
   const { mutateAsync: cancelDirectListing } = useContractWrite(
     dsponsorMpContract,
@@ -55,14 +55,17 @@ const OwnerView = ({ listing }) => {
     "setApprovalForAll"
   );
 
+  const nftContractForOwner = getNftContract(
+    chainId,
+    listing.token.nftContract.id
+  );
   const fetchTokenOwner = async (tokenId) => {
     try {
       const tokenOwner = await readContract({
-        contract: nftContractAdd,
+        contract: nftContractForOwner,
         method: "ownerOf",
         params: [tokenId],
       });
-      console.log("tokenOwner", tokenOwner);
       setTokenOwner(tokenOwner);
     } catch (e) {
       console.log("error fetching token owner", e);
@@ -75,7 +78,11 @@ const OwnerView = ({ listing }) => {
         await closeAuction({
           args: [listing.id],
         });
+        setShowCancelListingModal(false);
+        setShowThankYouModal(true);
       } catch (e) {
+        // TODO : add something for UX to show error
+        setShowCancelListingModal(false);
         console.log("error closing auction", e);
       }
     } else {
@@ -83,48 +90,63 @@ const OwnerView = ({ listing }) => {
         await cancelDirectListing({
           args: [listing.id],
         });
+        setShowCancelListingModal(false);
+        setShowThankYouModal(true);
       } catch (e) {
+        // TODO : add something for UX to show error
+        setShowCancelListingModal(false);
         console.log("error cancelling direct listing", e);
       }
     }
   };
 
-  // TODO : pass the right params, and then call this function for approval
-  const handleERC721approvalButton = async () => {
-    await handleERC721approval(
-      nftContract,
-      address,
-      // contractAddressConfig.dsponsor_marketplace_contract_address,
-      marketplaceConfig[chainId].dsponsor_marketplace_contract_address,
-      setApprovalForAll
-    );
-  };
-
-  //TODO : call approval before creating listing
-  const handleCreateListingModal = async () => {
+  const handleERC721approve = async () => {
     try {
-      await handleCreateListing(
-        createListing,
-        listing.id,
-        listing.listingType,
-        tokenOwner,
-        listing.bids,
-        listing.startTime,
-        listing.endTime
+      await handleERC721approval(
+        nftContract,
+        address,
+        marketplaceConfig[chainId].dsponsor_marketplace_contract_address,
+        setApprovalForAll
       );
     } catch (e) {
+      // TODO : add something for UX to show error
+      console.log("error approving", e);
+    }
+  };
+
+  const createListingFunc = async (newListing) => {
+    try {
+      await handleERC721approve();
+      await handleCreateListing(
+        createListing,
+        listing.token.nftContract.id, //assetContract,
+        listing.token.tokenId, //tokenId
+        newListing.startTime, //startTime
+        newListing.secondsUntilEndTime, //secondsUntilEndTime
+        1, //quantityToList
+        newListing.currency, //currencyToAccept
+        newListing.reservePricePerToken, //reservePricePerToken
+        newListing.buyoutPricePerToken, //buyoutPricePerToken
+        1, //transferType
+        0, //rentalExpirationTimestamp
+
+        newListing.listingType === "Direct" ? 0 : 1 //listingType
+      );
+      setShowCreateListingModal(false);
+      setShowThankYouModal(true);
+    } catch (e) {
+      // TODO : add something for UX to show error
+      setShowCreateListingModal(false);
       console.log("error creating listing", e);
     }
   };
 
   useEffect(() => {
-    console.log("nftContract", nftContract);
     fetchTokenOwner(listing.token.tokenId);
   }, []);
   return (
     <>
-      {/* TODO : listing.status !== "CREATED"  just to test listing creation, the origin is listing.status === "CREATED" */}
-      {listing.status !== "CREATED" ? (
+      {listing.status === "CREATED" ? (
         <>
           {listing.listingType === "Auction" && listing.endTime < now && (
             <a
@@ -173,71 +195,66 @@ const OwnerView = ({ listing }) => {
           aria-hidden="true"
         >
           {wallet ? (
-            <div className="modal-dialog max-w-2xl">
-              <div className="modal-content bg-sigray-light border-sigray-border">
-                <div className="modal-header">
-                  <button
-                    onClick={() => {
-                      setShowModal(false);
-                    }}
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 24 24"
-                      width="24"
-                      height="24"
-                      className="h-6 w-6 fill-jacarta-700 fill-white"
+            <>
+              <div className="modal-dialog max-w-2xl">
+                <div className="modal-content bg-sigray-light border-sigray-border">
+                  <div className="modal-header">
+                    <button
+                      onClick={() => {
+                        setShowModal(false);
+                      }}
                     >
-                      <path fill="none" d="M0 0h24v24H0z" />
-                      <path d="M12 10.586l4.95-4.95 1.414 1.414-4.95 4.95 4.95 4.95-1.414 1.414-4.95-4.95-4.95 4.95-1.414-1.414 4.95-4.95-4.95-4.95L7.05 5.636z" />
-                    </svg>
-                  </button>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        width="24"
+                        height="24"
+                        className="h-6 w-6 fill-jacarta-700 fill-white"
+                      >
+                        <path fill="none" d="M0 0h24v24H0z" />
+                        <path d="M12 10.586l4.95-4.95 1.414 1.414-4.95 4.95 4.95 4.95-1.414 1.414-4.95-4.95-4.95 4.95-1.414-1.414 4.95-4.95-4.95-4.95L7.05 5.636z" />
+                      </svg>
+                    </button>
+                  </div>
+                  <>
+                    {showCancelListingModal && (
+                      <div className="modal-body p-6">
+                        <p className="text-white pb-6">
+                          Are you sure you want to cancel this listing ?
+                        </p>
+
+                        <div className="flex space-x-4">
+                          <a
+                            onClick={() => {
+                              handleCancelModal();
+                            }}
+                            className="inline-block w-full rounded-full bg-accent py-3 px-8 text-center font-semibold text-white shadow-accent-volume transition-all hover:bg-accent-dark"
+                          >
+                            Cancel listing
+                          </a>
+                        </div>
+                      </div>
+                    )}
+                  </>
                 </div>
-                <>
-                  {showCancelListingModal && (
-                    <div className="modal-body p-6">
-                      <p className="text-white pb-6">
-                        Are you sure you want to cancel this listing ?
-                      </p>
-
-                      <div className="flex space-x-4">
-                        <a
-                          onClick={() => {
-                            handleCancelModal();
-                          }}
-                          className="inline-block w-full rounded-full bg-accent py-3 px-8 text-center font-semibold text-white shadow-accent-volume transition-all hover:bg-accent-dark"
-                        >
-                          Cancel listing
-                        </a>
-                      </div>
-                    </div>
-                  )}
-
-                  {showCreateListingModal && (
-                    <div className="modal-body p-6">
-                      <p className="text-white pb-6">Create Listing</p>
-
-                      <div className="flex space-x-4">
-                        <a
-                          onClick={() => {
-                            handleERC721approvalButton();
-                            //normally it should be createListing, but i'm calling approval for the sake of testing
-                            // handleCreateListingModal();
-                          }}
-                          className="inline-block w-full rounded-full bg-accent py-3 px-8 text-center font-semibold text-white shadow-accent-volume transition-all hover:bg-accent-dark"
-                        >
-                          Confirm listing creation
-                        </a>
-                      </div>
-                    </div>
-                  )}
-                </>
               </div>
-            </div>
+              {/* TODO: closing modal bug to fix here */}
+              {showCreateListingModal && (
+                <CreateListingModal
+                  isOpen={showCreateListingModal}
+                  setIsOpen={setShowCreateListingModal}
+                  handleCreateListing={createListingFunc}
+                />
+              )}
+            </>
           ) : (
             <WalletConnection setShowModal={setShowModal} />
           )}
         </div>
+      )}
+
+      {showThankYouModal && (
+        <ThankYouModal setShowThankYouModal={setShowThankYouModal} />
       )}
     </>
   );
