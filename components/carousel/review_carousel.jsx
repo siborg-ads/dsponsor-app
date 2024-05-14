@@ -146,7 +146,7 @@ const Review_carousel = ({ handleSubmit, pendingProposalData, successFullRefuseM
             <div className="dropdown-item mb-4 font-display   block w-full rounded-xl  text-left text-sm transition-colors dark:text-white">
               <span className="flex items-center justify-center gap-6">
                 <span className="mr-4">
-                  I confirm that I have checked all the ads selected <span className="text-accent text-md ml-1">{Object.values(isSelectedItem).filter((value) => value === true).length}</span>{" "}
+                  I confirm that I have checked all the ads selected <span className="text-green text-md ml-1">{Object.values(isSelectedItem).filter((value) => value === true).length}</span>{" "}
                 </span>
                 <input
                   type="checkbox"

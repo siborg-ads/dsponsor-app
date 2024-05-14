@@ -4,6 +4,8 @@ import Link from "next/link";
 import "tippy.js/dist/tippy.css";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import Meta from "../../components/Meta";
+import { ethers } from "ethers";
+
 import Image from "next/image";
 import { useContract, useContractWrite, useContractRead, useAddress } from "@thirdweb-dev/react";
 import Tippy from "@tippyjs/react";
@@ -20,7 +22,7 @@ import { Divider } from "@nextui-org/react";
 import "tippy.js/dist/tippy.css";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import Validation from "../../components/offer-section/validation";
-import { protocolFees } from "../../utils/constUtils";
+import { protocolFees, protocolFeesBigNumber } from "../../utils/constUtils";
 import ModalHelper from "../../components/Helper/modalHelper";
 
 
@@ -45,6 +47,9 @@ const Offer = () => {
   const { contract: tokenContract } = useContract(offerData?.nftContract?.prices[0].currency, "token");
   const { data: symbolContract } = useContractRead(tokenContract, "symbol");
   const { data: decimalsContract } = useContractRead(tokenContract, "decimals");
+ 
+  const { data: bps } = useContractRead(DsponsorAdminContract, "feeBps");
+  const maxBps = 10000;
   
 
   useEffect(() => {
@@ -56,7 +61,7 @@ const Offer = () => {
           ...offer,
           ...destructuredIPFSResult,
         };
-        console.log(combinedData, "ici");
+ 
         setOfferData(combinedData);
         if (userAddress?.toLowerCase() === offer.initialCreator) {
           setIsOwner(true);
@@ -79,16 +84,16 @@ const Offer = () => {
          currencyTokenObject.symbol = symbolContract;
          currencyTokenObject.decimals = decimalsContract;
        }
-       console.log(currencyTokenObject);
-       const formatPrice = offerData.nftContract.prices[0].amount / 10 ** currencyTokenObject.decimals;
-       setPrice(formatPrice);
+
+       const bigIntPrice = (BigInt(offerData?.nftContract?.prices[0]?.amount) * (BigInt(bps) + BigInt(maxBps))) / BigInt(maxBps);
+       const formatPrice = ethers.utils.formatUnits(bigIntPrice, currencyTokenObject.decimals);
+
+       setPrice(Number(Math.ceil(formatPrice * 1000) / 1000));
        setCurrency(currencyTokenObject);
-      
      } catch (e) {
-       console.error("Error: Currency not found for address", offerData?.nftContract?.prices[0]);
-     
+       console.error("Error: Currency not found for address", offerData?.nftContract?.prices[0], e);
      }
-   }, [symbolContract, decimalsContract, offerData]);
+   }, [symbolContract, decimalsContract, offerData, bps]);
 
   useEffect(() => {
     if (offerData?.nftContract?.royaltyBps) setRoyalties(offerData?.nftContract?.royaltyBps / 100);
@@ -192,11 +197,10 @@ const modalHelper = {
 
               <div className="mb-8 flex items-center flex-wrap gap-2 space-x-4 whitespace-nowrap">
                 <div className="flex items-center">
-                  
                   <span className="text-green text-sm font-medium tracking-tight mr-2">
-                    {price * protocolFees/100 + price} {currency?.symbol ? currency?.symbol : "N/A"}
+                    {price} {currency?.symbol ? currency?.symbol : "N/A"}
                   </span>
-                  <ModalHelper  {...modalHelper} size="small" />
+                  <ModalHelper {...modalHelper} size="small" />
                 </div>
 
                 {offerData.nftContract.allowList && (
@@ -248,14 +252,18 @@ const modalHelper = {
                   <figure className="mt-2">
                     <Link href={urlFromChild}>{image && <Image src={image} alt="logo" height={230} width={230} className="rounded-[0.625rem] w-full lg:h-[230px] object-contain" loading="lazy" />}</Link>
                   </figure>
-                  <div className="mt-4 flex items-center justify-between">
-                    <Link href={urlFromChild} className="overflow-hidden text-ellipsis whitespace-nowrap max-w-[120px]">
-                      <span className="font-display max-w-[150px] text-jacarta-700 hover:text-accent text-base dark:text-white ">{name}</span>
-                    </Link>
+                  <div className="mt-4 flex items-center justify-between gap-4">
+                    <Tippy content={<span className="p-2">{name}</span>}>
+                      <Link href={urlFromChild} className="overflow-hidden text-ellipsis whitespace-nowrap min-w-[120px]">
+                        <span className="font-display  text-jacarta-700 hover:text-accent text-base dark:text-white ">{name}</span>
+                      </Link>
+                    </Tippy>
 
-                    <div className="dark:border-jacarta-600 border-jacarta-100 flex items-center whitespace-nowrap rounded-md border py-1 px-2">
-                      <span className="text-green text-sm font-medium tracking-tight"> {tokenData}</span>
-                    </div>
+                    <Tippy content={<span className="p-2">{tokenData}</span>}>
+                      <div className="dark:border-jacarta-600 border-jacarta-100 max-w-[100px] overflow-hidden text-ellipsis flex items-center whitespace-nowrap rounded-md border py-1 px-2">
+                        <span className="text-green text-sm font-medium tracking-tight overflow-hidden text-ellipsis whitespace-nowrap"> {tokenData}</span>
+                      </div>
+                    </Tippy>
                   </div>
                 </div>
               </article>
@@ -289,7 +297,10 @@ const modalHelper = {
               </pre>
               <Tippy hideOnClick={false} content={copied ? <span>copied</span> : <span>copy</span>}>
                 <div className="js-copy-clipboard cursor-pointer">
-                  <CopyToClipboard text={`https://relayer.dsponsor.com/11155111/iframe/${offerId}?bgColor=0d102d`} onCopy={() => setCopied(true)}>
+                  <CopyToClipboard
+                    text={`<iframe src="https://relayer.dsponsor.com/11155111/iframe/${offerId}?bgColor=0d102d" height="315" width="1000px" className={'h-screen w-full'} />`}
+                    onCopy={() => setCopied(true)}
+                  >
                     <Image src="/images/copy.svg" alt="icon" width={20} height={20} className="mt-2 min-w-[20px] " />
                   </CopyToClipboard>
                 </div>

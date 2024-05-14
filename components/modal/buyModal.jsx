@@ -8,8 +8,9 @@ import { Web3Button } from "@thirdweb-dev/react";
 import { useState } from "react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { protocolFees } from "../../utils/constUtils";
+import { protocolFeesBigNumber } from "../../utils/constUtils";
 import { Divider } from "@nextui-org/react";
+import { ethers } from "ethers";
 
 const BuyModal = ({
   formatTokenId,
@@ -18,7 +19,7 @@ const BuyModal = ({
   initialCreator,
   finalPrice,
   successFullUpload,
- 
+ feesAmount,
   successFullBuyModal,
   price,
   tokenId,
@@ -79,9 +80,9 @@ const BuyModal = ({
                       </span>
                     </div>
                     <div className="flex gap-6  items-center justify-between">
-                      <span className="dark:text-jacarta-300 text-jacarta-500 mr-1 block text-sm">Protocol fees: {protocolFees} %</span>
+                      <span className="dark:text-jacarta-300 text-jacarta-500 mr-1 block text-sm">Protocol fees: 4%</span>
                       <span className="dark:text-jacarta-300 text-sm  tracking-tight overflow-auto min-w-[60px] flex justify-end">
-                        {(price * protocolFees) / 100} {selectedCurrency}
+                        {feesAmount} {selectedCurrency}
                       </span>
                     </div>
                     <div className="flex justify-end">

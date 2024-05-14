@@ -25,7 +25,7 @@ import { GetTokenAdOffer } from "../../../data/services/TokenOffersService";
 import { getPossibleAdIntegrations } from "../../../utils/getAdIntegrationsWithParams";
 import { Divider } from "@nextui-org/react";
 import Validation from "../../../components/offer-section/validation.jsx";
-import { protocolFees } from "../../../utils/constUtils";
+import { protocolFees, protocolFeesBigNumber } from "../../../utils/constUtils";
 
 import contractABI from "../../../abi/dsponsorAdmin.json";
 
@@ -39,7 +39,7 @@ const Item = () => {
   const tokenId = router.query?.item;
 
   const [tokenIdString, setTokenIdString] = useState(null);
-
+const maxBps = 10000;
   const [data, setData] = useState([]);
   const [offerData, setOfferData] = useState(null);
   const address = useAddress();
@@ -75,6 +75,8 @@ const Item = () => {
   const [price, setPrice] = useState(null);
   const [buyModal, setBuyModal] = useState(false);
   const [buyMethod, setBuyMethod] = useState(false);
+  const [feesAmount, setFeesAmount] = useState(null);
+
 
   const [submitAdFormated, setSubmitAdFormated] = useState({});
   const [tokenData, setTokenData] = useState(null);
@@ -173,16 +175,24 @@ console.log(offerData, "offerData");
         currencyTokenObject.symbol = symbolContract;
         currencyTokenObject.decimals = decimalsContract;
       }
-
-      const formatPrice = offerData.nftContract.prices[0].amount / 10 ** currencyTokenObject.decimals;
-      setPrice(formatPrice);
+      const bigIntFinalPrice = (BigInt(offerData?.nftContract?.prices[0]?.amount) * (BigInt(bps) + BigInt(maxBps))) / BigInt(maxBps);
+      const formatFinalPrice = ethers.utils.formatUnits(bigIntFinalPrice, currencyTokenObject.decimals);
+      const formatPrice = ethers.utils.formatUnits(BigInt(offerData?.nftContract?.prices[0]?.amount), currencyTokenObject.decimals);
+      const fees = (BigInt(offerData?.nftContract?.prices[0]?.amount) * (BigInt(bps))) / BigInt(maxBps);
+      const formatFees = ethers.utils.formatUnits(fees, currencyTokenObject.decimals);
+     
+      const amountToApprove = ethers.utils.parseUnits(formatFinalPrice.toString(), currencyTokenObject.decimals);
+      setFeesAmount(Number(Math.ceil(formatFees * 1000) / 1000));
+      setPrice(Number(Math.ceil(formatPrice * 1000) / 1000));
       setCurrency(currencyTokenObject);
       setOfferNotFormated(false);
+      setFinalPrice(Number(Math.ceil(formatFinalPrice * 1000) / 1000));
+      setAmountToApprove(amountToApprove);
     } catch (e) {
-      console.error("Error: Currency not found for address", offerData?.nftContract?.prices[0]);
+      console.error("Error: Currency not found for address", offerData?.nftContract?.prices[0], e);
       setOfferNotFormated(true);
     }
-  }, [symbolContract, decimalsContract, offerData, address, tokenId]);
+  }, [symbolContract, decimalsContract, offerData, address, tokenId, bps, maxBps]);
 
   useEffect(() => {
     if (!offerData || !adParameters) return;
@@ -264,18 +274,21 @@ console.log(offerData, "offerData");
 
   useEffect(() => {
     if (price && bps) {
-      const bpsValueHex = bps._hex;
-      const bpsValueDecimal = ethers.BigNumber.from(bpsValueHex).toNumber();
-      const bpsValuePercentage = bpsValueDecimal / 10000;
+      // const bpsValueHex = bps._hex;
+      // const bpsValueDecimal = ethers.BigNumber.from(bpsValueHex).toNumber();
+      // console.log(bpsValueDecimal, "bpsValueDecimal");
+      // const bpsValuePercentage = BigInt(bpsValueDecimal) / BigInt(10000);
+      // console.log(price, bpsValuePercentage, "price, bpsValuePercentage")
+      
+      // const priceAsNumber = BigInt(offerData.nftContract.prices[0].amount) * bpsValuePercentage + BigInt(offerData.nftContract.prices[0].amount);;
 
-      const priceAsNumber = price * bpsValuePercentage + price;
+      // const priceAsNumberString = priceAsNumber.toString();
+  
+      // setFinalPrice(priceAsNumberString);
+      // const amountToApprove = ethers.utils.parseUnits(priceAsNumberString, currency.decimals);
+      
 
-      const priceAsNumberString = priceAsNumber.toString();
-
-      setFinalPrice(priceAsNumberString);
-      const amountToApprove = ethers.utils.parseUnits(priceAsNumberString, currency.decimals);
-
-      setAmountToApprove(amountToApprove);
+      // setAmountToApprove(amountToApprove);
     }
   }, [data, bps, offerData, currency, price]);
 
@@ -511,7 +524,7 @@ console.log(offerData, "offerData");
               <div className="mb-8 flex items-center  whitespace-nowrap flex-wrap">
                 <div className="flex items-center mr-4">
                   <span className="text-green text-sm font-medium tracking-tight mr-2">
-                    {(price * protocolFees) / 100 + price} {currency?.symbol ? currency?.symbol : "N/A"}
+                    {finalPrice} {currency?.symbol ? currency?.symbol : "N/A"}
                   </span>
                   <ModalHelper {...modalHelper} size="small" />
                 </div>
@@ -618,6 +631,7 @@ console.log(offerData, "offerData");
             allowanceTrue={allowanceTrue}
             handleApprove={handleApprove}
             successFullUpload={successFullUpload}
+            feesAmount={feesAmount}
             successFullBuyModal={successFullBuyModal}
             price={price}
             initialCreator={offerData?.initialCreator}

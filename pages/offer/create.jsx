@@ -134,8 +134,9 @@ const Create = () => {
       newErrors.endDateError = "End date cannot be in the past.";
       isValid = false;
     }
-
+    console.log(parseFloat(selectedUnitPrice))
     if (parseFloat(selectedUnitPrice) < 1 * 10 ** -tokenDecimals || isNaN(selectedUnitPrice) || selectedUnitPrice === null) {
+      console.log("là");
       newErrors.unitPriceError = `Unit price must be at least ${1 * 10 ** -tokenDecimals}.`;
       isValid = false;
     }
