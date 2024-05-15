@@ -2,8 +2,7 @@ export default async function fetchOffer(options) {
     const chainId = options?.chainId || '11155111';
     const offerId = options?.offerId;
 
-    // const path = new URL(`https://relayer.dsponsor.com/api/${chainId}/graph/query`);
-    const path = new URL(`http://localhost:3001/api/${chainId}/graph/query`);
+    const path = new URL(`https://relayer.dsponsor.com/api/${chainId}/graph/query`);
     path.searchParams.append('method', 'raw');
     path.searchParams.append('withMetadata', 'true');
     path.searchParams.append('query', `query TokenOfferDetails {

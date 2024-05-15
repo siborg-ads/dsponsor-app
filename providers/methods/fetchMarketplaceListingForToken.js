@@ -3,8 +3,7 @@ export default async function fetchMarketplaceListingForToken(options) {
     const tokenId = options?.tokenId || null;
     const nftContractAddress = options?.offer.nftContract.id || null;
 
-    // const path = new URL(`https://relayer.dsponsor.com/api/${chainId}/graph/query`);
-    const path = new URL(`http://localhost:3001/api/${chainId}/graph/query`);
+    const path = new URL(`https://relayer.dsponsor.com/api/${chainId}/graph/query`);
     path.searchParams.append('method', 'raw');
     path.searchParams.append('withMetadata', 'true');
     path.searchParams.append('query', `query getMarketplaceListingsForToken {
