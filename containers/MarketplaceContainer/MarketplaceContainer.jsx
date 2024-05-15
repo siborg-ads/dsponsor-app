@@ -40,9 +40,6 @@ export default function MarketplaceContainer() {
     return (
         <section >
             <main>
-                <Meta title="Home 1" />
-                <Hero />
-                <HowItWorks />
                 {listings.listingsForBids.length > 0 && (
                     <MarketplaceListingSection
                         listings={listings.listingsForBids}

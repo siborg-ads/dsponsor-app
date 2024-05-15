@@ -18,6 +18,11 @@ const footerMenuList = [
     list: [
       {
         id: 1,
+        href: "/about",
+        text: "About DSponsor",
+      },
+      {
+        id: 2,
         href: "/",
         text: "Explore",
       },

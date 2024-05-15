@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { fetchListingAdOffer } from "../../../app/marketplace/services";
+import { fetchListingAdOffer } from "../../../containers/MarketplaceContainer/services";
 import MarketplaceItemCard from "../marketplace-item-card/marketplace-item-card";
 import Spinner from "../../spinner/Spinner";
 

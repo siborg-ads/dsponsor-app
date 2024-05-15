@@ -16,7 +16,7 @@ const footer = () => {
         list: [
           {
             id: 1,
-            href: `/manageSpaces/${state.address}`,
+            href: `/manage/${state.address}`,
             text: "My Creator Space",
           },
           {

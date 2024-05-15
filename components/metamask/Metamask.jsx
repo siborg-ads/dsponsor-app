@@ -188,10 +188,14 @@ const Confirm_checkout = ({ buyFunc }) => {
       </button>
     );
 };
+import { useContract, useContractWrite, useContractRead, useAddress } from "@thirdweb-dev/react";
 
 const Confirm_bid = ({ bidFunc }) => {
-  const { status, connect, account, chainId, ethereum } = useMetaMask();
+  // const { status, connect, account, chainId, ethereum } = useMetaMask();
 
+
+  const address = useAddress();
+  const status = (address !== null) ? "connected" : "notConnected";
   if (status === "initializing")
     return (
       <button

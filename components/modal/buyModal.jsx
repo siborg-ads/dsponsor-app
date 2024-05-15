@@ -2,7 +2,6 @@ import Link from "next/link";
 import React from "react";
 import { useSelector, useDispatch} from "react-redux";
 import { buyModalHide } from "../../redux/counterSlice";
-import { Confirm_checkout } from "../metamask/Metamask";
 import Image from "next/image";
 import { Web3Button } from "@thirdweb-dev/react";
 import { useState } from "react";

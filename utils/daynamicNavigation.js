@@ -3,13 +3,7 @@
 /* -------------------------------------------------------------------------- */
 
 export function isChildrenPageActive(path, match) {
-    if (path && match) {
-        if (path === match) {
-            return true;
-        }
-        return false;
-    }
-    return false;
+    return path === match;
 }
 
 /* -------------------------------------------------------------------------- */

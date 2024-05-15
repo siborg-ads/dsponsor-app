@@ -1,20 +1,49 @@
 import TokenPageContainer from "../../../../containers/TokenPageContainer/TokenPageContainer";
-import {gql} from "@apollo/client";
-import {GetAdOffer, GetTokenAdOffer} from "../../../../data/services/TokenOffersService";
+import {headers} from "next/headers";
+import fetchLastOffers from "../../../../providers/methods/fetchLastOffers";
+import fetchOfferToken from "../../../../providers/methods/fetchOfferToken";
+import ItemDetails from "../../../../components/item/ItemDetails";
+import React from "react";
+import fetchMarketplaceListingForToken from "../../../../providers/methods/fetchMarketplaceListingForToken";
 
 export async function generateMetadata({
                                            params,
                                        }) {
     const offerId = params.offerId;
     const tokenId = params.tokenId;
-    // const data = await GetTokenAdOffer(offerId,tokenId);
+
+    // We use headers as a way to get the chainID
+    const headersList = headers()
+    const chainID= headersList.get('chainID')
+
+    const lastOffersRequest = await fetchOfferToken({chainID,offerId,tokenId})
+    const offer = lastOffersRequest?.adOffers?.[0] || null
+
     return {
-        title: `Token ${tokenId} || DSponsor | smarter monetization for your content`,
+        title: `${offer?.metadata?.offer?.name} - Token ${tokenId} || DSponsor | smarter monetization for your content`,
+        description: offer?.metadata?.offer?.description,
+        keywords: `DSponsor, offer, ${offer?.metadata?.offer?.name}, ${offer?.metadata?.offer?.description}`,
     }
 }
 export default async function TokenPage({params}) {
     const offerId = params.offerId;
     const tokenId = params.tokenId;
 
-    return <TokenPageContainer offerId={offerId} tokenId={tokenId} />
+    // We use headers as a way to get the chainID
+    const headersList = headers()
+    const chainID= headersList.get('chainID')
+
+    const lastOffersRequest = await fetchOfferToken({chainID,offerId,tokenId})
+    const offer = lastOffersRequest?.adOffers?.[0] || null
+
+    const listingsRequest = await fetchMarketplaceListingForToken({chainID,tokenId, offer})
+    const listings = listingsRequest?.marketplaceListings || []
+
+    return (
+        <div className="pt-[5.5rem] lg:pt-24">
+            <div className="dark:bg-jacarta-800 relative py-16 md:py-24">
+                <TokenPageContainer offerId={offerId} tokenId={tokenId} offer={offer} listings={listings}/>
+            </div>
+        </div>
+    )
 }

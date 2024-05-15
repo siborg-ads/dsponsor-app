@@ -132,7 +132,7 @@ const BidsModal = () => {
                   htmlFor="terms"
                   className="text-sm text-white dark:text-jacarta-200"
                 >
-                  By checking this box, I agree to Xhibiter's{" "}
+                  By checking this box, I agree to DSponsor&apos;s{" "}
                   <a href="#" className="text-accent">
                     Terms of Service
                   </a>

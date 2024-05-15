@@ -25,7 +25,7 @@ import { protocolFees } from "../../utils/constUtils";
 import ModalHelper from "../../components/Helper/modalHelper";
 
 
-const OfferPageContainer = ({offerId}) => {
+const OfferPageContainer = ({offerId, offer}) => {
     const router = useRouter();
 
     const userAddress = useAddress();
@@ -42,7 +42,7 @@ const OfferPageContainer = ({offerId}) => {
     const [successFullRefuseModal, setSuccessFullRefuseModal] = useState(false);
     const [tokenData, setTokenData] = useState("");
     const [isWordAlreadyTaken, setIsWordAlreadyTaken] = useState(false);
-    const { contract: tokenContract } = useContract(offerData?.nftContract?.prices[0].currency, "token");
+    const { contract: tokenContract } = useContract(offer?.nftContract?.prices?.[0]?.currency, "token");
     const { data: symbolContract } = useContractRead(tokenContract, "symbol");
     const { data: decimalsContract } = useContractRead(tokenContract, "decimals");
 
@@ -50,7 +50,7 @@ const OfferPageContainer = ({offerId}) => {
     useEffect(() => {
         if (offerId) {
             const fetchAdsOffers = async () => {
-                const offer = await GetAdOffer(offerId);
+                // const offer = await GetAdOffer(offerId);
                 const destructuredIPFSResult = await fetchDataFromIPFS(offer.metadataURL);
                 const combinedData = {
                     ...offer,
@@ -175,7 +175,7 @@ const OfferPageContainer = ({offerId}) => {
                             <div className="mb-3 flex">
                                 {/* <!-- Collection --> */}
                                 <div className="flex items-center">
-                                    <Link href={`/manageSpaces/${offerData?.initialCreator}`} className="text-accent mr-2 text-sm font-bold">
+                                    <Link href={`/manage/${offerData?.initialCreator}`} className="text-accent mr-2 text-sm font-bold">
                                         {offerData?.initialCreator}
                                     </Link>
                                     <span className="dark:border-jacarta-600 bg-green inline-flex h-6 w-6 items-center justify-center rounded-full border-2 border-white" data-tippy-content="Verified Collection">

@@ -1,26 +1,15 @@
+'use client';
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination, Scrollbar } from "swiper";
 import "swiper/css";
 import "swiper/css/navigation";
 import Image from "next/image";
 import "tippy.js/dist/tippy.css";
-import { bidsData } from "../../data/bids_data";
-import Link from "next/link";
-import Tippy from "@tippyjs/react";
 import { MdKeyboardArrowRight, MdKeyboardArrowLeft } from "react-icons/md";
-import { bidsModalShow } from "../../redux/counterSlice";
-import { useDispatch } from "react-redux";
-import Likes from "../likes";
-import { execute } from "../../.graphclient";
-import { gql } from "@apollo/client";
-
-import { useEffect, useState } from "react";
 import OfferItem from "../cards/offerItem";
 
-
-
 const BidsCarousel = ({data}) => {
- 
+
 //  if (!data || data.length === 0) {
 //    return (
 //      <div className="flex w-full justify-center">
@@ -63,12 +52,12 @@ const BidsCarousel = ({data}) => {
           data.map((item, index) => {
             return (
               <SwiperSlide className="text-white" key={index}>
-                <OfferItem item={item} url={`/offer/${item.id}/${item.tokenIdAllowedToMint ? item.tokenIdAllowedToMint : "" }`} />
+                <OfferItem item={item} url={`/offer/${item.id}/${item.tokenIdAllowedToMint ? item.tokenIdAllowedToMint.tokenId : "" }`} />
               </SwiperSlide>
             );
           })
         )}
-       
+
       </Swiper>
       {/* <!-- Slider Navigation --> */}
       <div className="group bids-swiper-button-prev swiper-button-prev shadow-white-volume absolute !top-1/2 !-left-4 z-10 -mt-6 flex !h-12 !w-12 cursor-pointer items-center justify-center rounded-full bg-white p-3 text-jacarta-700 text-xl sm:!-left-6 after:hidden">

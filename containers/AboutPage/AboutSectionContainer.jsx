@@ -11,7 +11,7 @@ export default function AboutSectionContainer() {
                     <p className="dark:text-jacarta-200 mb-8 text-center text-lg">We are excited to be a part of this new era of the internet and we hope that you will join us on this journey. </p>
                     <p className="dark:text-jacarta-200 mb-8 text-center text-lg">Together, we can create a more equitable internet for everyone. </p>
                     <div className="flex space-x-4 justify-center w-full">
-                        <Link href="/pages/_offer/create"
+                        <Link href="/about"
                               className="bg-accent shadow-accent-volume hover:bg-accent-dark w-36 rounded-full py-3 px-8 text-center font-semibold text-white transition-all">
                             Create
                         </Link>

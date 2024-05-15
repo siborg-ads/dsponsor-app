@@ -30,8 +30,9 @@ import contractABI from "../../abi/dsponsorAdmin.json";
 
 import "react-toastify/dist/ReactToastify.css";
 import ModalHelper from "../../components/Helper/modalHelper.jsx";
+import ItemDetails from "../../components/item/ItemDetails";
 
-const TokenPageContainer = ({offerId, tokenId}) => {
+const TokenPageContainer = ({offerId, tokenId, offer, listings}) => {
     const router = useRouter();
 
     // const offerId = router.query.offer;
@@ -53,18 +54,19 @@ const TokenPageContainer = ({offerId, tokenId}) => {
     const [finalPrice, setFinalPrice] = useState(null);
     const [successFullUpload, setSuccessFullUpload] = useState(false);
     const { contract: DsponsorAdminContract } = useContract("0xE442802706F3603d58F34418Eac50C78C7B4E8b3", contractABI);
-    const { contract: DsponsorNFTContract } = useContract(offerData?.nftContract?.id);
+    const { contract: DsponsorNFTContract } = useContract(offer?.nftContract?.id);
     const { mutateAsync: uploadToIPFS, isLoading: isUploading } = useStorageUpload();
     const { mutateAsync: mintAndSubmit } = useContractWrite(DsponsorAdminContract, "mintAndSubmit");
     const { mutateAsync: submitAd } = useContractWrite(DsponsorAdminContract, "submitAdProposals");
-    const { contract: tokenContract } = useContract(offerData?.nftContract?.prices[0].currency, "token");
+    const { contract: tokenContract } = useContract(offer?.nftContract?.prices?.[0]?.currency, "token");
     const { data: symbolContract } = useContractRead(tokenContract, "symbol");
     const { data: decimalsContract } = useContractRead(tokenContract, "decimals");
-    const { data: tokenBalance, isLoading, error } = useBalance(offerData?.nftContract?.prices[0].currency);
+    const { data: tokenBalance, isLoading, error } = useBalance(offer?.nftContract?.prices?.[0]?.currency);
     const { mutateAsync: approve, isLoading: isLoadingApprove } = useContractWrite(tokenContract, "approve");
-    const { data: bps } = useContractRead(DsponsorAdminContract, "feeBps");
-    const { data: isAllowedToMint, isLoading: isLoadingAllowedToMint } = useContractRead(DsponsorNFTContract, "tokenIdIsAllowedToMint", tokenIdString);
-    const { data: isUserOwner } = useContractRead(DsponsorNFTContract, "ownerOf", tokenIdString);
+    // const { data: bps } = useContractRead(DsponsorAdminContract, "feeBps");
+    const bps = ethers.BigNumber.from(4000);
+    const { data: isAllowedToMint, isLoading: isLoadingAllowedToMint } = useContractRead(DsponsorNFTContract, "tokenIdIsAllowedToMint", [tokenIdString]);
+    const { data: isUserOwner } = useContractRead(DsponsorNFTContract, "ownerOf", [tokenIdString]);
     const { data: royaltiesInfo } = useContractRead(DsponsorNFTContract, "royaltyInfo", [tokenIdString, 100]);
     const [showPreviewModal, setShowPreviewModal] = useState(false);
     const [validate, setValidate] = useState(false);
@@ -87,7 +89,7 @@ const TokenPageContainer = ({offerId, tokenId}) => {
     useEffect(() => {
         if (offerId && tokenId && address) {
             const fetchAdsOffers = async () => {
-                const offer = await GetTokenAdOffer(offerId, tokenId);
+                // const offer = await GetTokenAdOffer(offerId, tokenId);
 
                 const destructuredIPFSResult = await fetchDataFromIPFS(offer.metadataURL);
 
@@ -104,7 +106,7 @@ const TokenPageContainer = ({offerId, tokenId}) => {
         }
 
         setTokenIdString(tokenId?.toString());
-    }, [offerId, address, tokenId, successFullUpload]);
+    }, [offerId, address, tokenId, successFullUpload, offer]);
 
     useEffect(() => {
         if (!offerData || !address || !isUserOwner) return;
@@ -412,14 +414,14 @@ const TokenPageContainer = ({offerId, tokenId}) => {
         body: "Congratulations, you proposed an ad space.",
         subBody: "The media still has the power to validate or reject ad assets.",
         buttonTitle: "Manage Spaces",
-        hrefButton: `/manageSpaces/${address}`,
+        hrefButton: `/manage/${address}`,
     };
     const successFullBuyModal = {
         title: "Checkout",
         body: "Congratulations, you purchase this ad space.",
         subBody: "Check your ad space in your manage section to submit your ad.",
         buttonTitle: "Manage Spaces",
-        hrefButton: `/manageSpaces/${address}`,
+        hrefButton: `/manage/${address}`,
     };
     const statutAds = {
         pending: "🔍 Your ad is pending, wait the validation of the creator",
@@ -490,7 +492,7 @@ const TokenPageContainer = ({offerId, tokenId}) => {
                             <div className="mb-3 flex">
                                 {/* <!-- Collection --> */}
                                 <div className="flex items-center">
-                                    <Link href={`/manageSpaces/${offerData?.initialCreator}`} className="text-accent mr-2 text-sm font-bold">
+                                    <Link href={`/manage/${offerData?.initialCreator}`} className="text-accent mr-2 text-sm font-bold">
                                         {offerData?.initialCreator}
                                     </Link>
                                     <span className="dark:border-jacarta-600 bg-green inline-flex h-6 w-6 items-center justify-center rounded-full border-2 border-white" data-tippy-content="Verified Collection">
@@ -548,7 +550,13 @@ const TokenPageContainer = ({offerId, tokenId}) => {
                 </div>
             </section>
             {/* <!-- end item --> */}
-            <Validation offer={offerData} offerId={offerId} isOwner={isOwner} isToken={true} successFullUploadModal={successFullUploadModal} />
+
+
+            {!listings || listings.length === 0 && (
+                <Validation offer={offerData} offerId={offerId} isOwner={isOwner} isToken={true} successFullUploadModal={successFullUploadModal} />
+            )}
+
+
 
             <div>
                 {isOwner && !offerNotFormated ? (
@@ -576,7 +584,7 @@ const TokenPageContainer = ({offerId, tokenId}) => {
                     <div className="flex justify-center">
                         <p>
                             {offerNotFormated
-                                ? "Offer isn't well formated to buy"
+                                ?  <ItemDetails assetContract={offer.nftContract.id} tokenId={tokenId}/>
                                 : offerData.nftContract?.tokens === 0
                                     ? "Sorry, tokenId unavailable, please provide a tokenId valid "
                                     : offerData.nftContract?.tokens[0]?.mint && !isOwner
@@ -633,6 +641,7 @@ const TokenPageContainer = ({offerId, tokenId}) => {
                 </div>
             )}
         </>
+
     );
 };
 

@@ -1,9 +1,7 @@
+'use client';
 import React, { useEffect, useState } from "react";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
-import Social_dropdown from "../../components/dropdown/Social_dropdown";
-import Auctions_dropdown from "../../components/dropdown/Auctions_dropdown";
-import user_data from "../../data/user_data";
 import User_items from "../../components/user/User_items";
 import Tippy from "@tippyjs/react";
 import "tippy.js/dist/tippy.css"; // optional
@@ -11,15 +9,12 @@ import { CopyToClipboard } from "react-copy-to-clipboard";
 import Meta from "../../components/Meta";
 import { GetAllAdOffersFromUser } from "../../data/services/AdOffersService";
 import { GetAllTokenbyOfferForAUser } from "../../data/services/TokenOffersService";
-import { useAddress, darkTheme, useBalance, Web3Button, useTokenBalance, useContract, useContractRead, useContractWrite, useStorageUpload, useTokenDecimals, CheckoutWithCard, CheckoutWithEth } from "@thirdweb-dev/react";
-
-import adminInstance from "../../utils/sdkProvider";
+import { useAddress } from "@thirdweb-dev/react";
 
 import { fetchDataFromIPFS } from "../../data/services/ipfsService";
 
-const ManageSpaces = () => {
+const ManageSpaceContainer = ({address: userAddress}) => {
   const router = useRouter();
-  const userAddress = router.query.manageSpaces;
   const address = useAddress();
   const [createdData, setCreatedData] = useState(null);
   const [mappedownedAdProposals, setMappedownedAdProposals] = useState(null);
@@ -86,9 +81,6 @@ const ManageSpaces = () => {
 
   return (
     <>
-      <Meta title="User || DSponsor | smarter monetization for your content" />
-      {/* <!-- Profile --> */}
-
       <div className=" " key="5">
         {/* <!-- Banner --> */}
         <div className="relative h-[13rem]">
@@ -101,7 +93,7 @@ const ManageSpaces = () => {
             <div className="container">
               <div className="text-center">
                 <div className="dark:bg-jacarta-700 dark:border-jacarta-600 border-jacarta-100  inline-flex items-center justify-center rounded-full border bg-white py-1.5 px-4">
-                  
+
 
                   <Tippy hideOnClick={false} content={copied ? <span>copied</span> : <span>copy</span>}>
                     <button className="js-copy-clipboard dark:text-jacarta-200 max-w-[10rem] select-none overflow-hidden text-ellipsis whitespace-nowrap">
@@ -122,4 +114,4 @@ const ManageSpaces = () => {
   );
 };
 
-export default ManageSpaces;
+export default ManageSpaceContainer;

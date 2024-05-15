@@ -3,7 +3,7 @@ import {
   erc20Contract,
   ERC20SymbolsAndDecimals,
   queryClient,
-} from "./marketplace.config.js";
+} from "../../containers/MarketplaceContainer/marketplace.config.js";
 import { gql } from "@apollo/client";
 import { fetchDataFromIPFS } from "../../data/services/ipfsService";
 

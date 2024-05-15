@@ -54,6 +54,11 @@ const SDKProvider = ({ children }) => {
         }
     }
 
+    const getLastOffers = async () => {
+        const fetchRequest = await fetch('https://relayer.dsponsor.com/api/11155111/graph/query?where=%7BadOffer_%3A%7Bid%3A6%7D%2C+status%3ACURRENT_PENDING%7D&method=adProposals');
+        const fetchResponse = await fetchRequest.json();
+        return fetchResponse;
+    }
 
     const [address, setAddress] = useState(null);
 
@@ -61,7 +66,7 @@ const SDKProvider = ({ children }) => {
         setAddress(connectedAddress);
     }, [connectedAddress]);
 
-    const value = useMemo(() => ({ sdk, admin, SDKChainId, getChainName, address }), [sdk, admin, SDKChainId, address]);
+    const value = useMemo(() => ({ sdk, admin, SDKChainId, getChainName, address, getLastOffers }), [sdk, admin, SDKChainId, address]);
 
     return (
         <SDKContext.Provider value={value}>

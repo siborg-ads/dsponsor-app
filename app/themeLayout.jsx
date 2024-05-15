@@ -20,11 +20,7 @@ export default function ThemeLayout({children}) {
                     <Header/>
                     <Wallet_modal/>
                     <BidsModal/>
-                    <div className="pt-[5.5rem] lg:pt-24">
-                        <div className="dark:bg-jacarta-800 relative py-16 md:py-24">
-                            {children}
-                        </div>
-                    </div>
+                    {children}
                     <Footer/>
                 </UserContext.Provider>
                 <ToastContainer position="top-right" autoClose={5000}/>

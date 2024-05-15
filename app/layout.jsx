@@ -13,7 +13,7 @@ export default function RootLayout({
                                    }) {
     return (
         <html lang="en">
-            <body>
+            <body className="bg-jacarta-800 h-full relative">
                 <Providers>
                     <ThemeLayout>
                         {children}

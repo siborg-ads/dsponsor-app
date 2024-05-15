@@ -1,12 +1,10 @@
+'use client';
 import Image from "next/image";
 import Link from "next/link";
-import Tippy from "@tippyjs/react";
 import { useState, useEffect } from "react";
-import { DSponsorAdmin } from "@dsponsor/sdk";
-import { useCountdown } from "../../utils/countDown";
 import adminInstance from "../../utils/sdkProvider";
 import {protocolFees} from "../../utils/constUtils";
-import { useAddress, useSwitchChain, useContract, useContractWrite, Web3Button, useContractRead, useStorageUpload, useTokenDecimals, CheckoutWithCard, CheckoutWithEth } from "@thirdweb-dev/react";
+import {  useContract,useContractRead,  } from "@thirdweb-dev/react";
 
 
 
@@ -18,8 +16,8 @@ const OfferItem = ({ item, url, isToken, isSelectionActive, isOwner }) => {
   const { contract: tokenContract } = useContract(!isToken && item?.nftContract?.prices[0]?.currency, "token");
   const { data: symbolContract } = useContractRead(tokenContract, "symbol");
   const { data: decimalsContract } = useContractRead(tokenContract, "decimals");
-  
-  
+
+
 
   function formatDate(dateIsoString) {
     if (!dateIsoString) return "date not found";
@@ -27,11 +25,11 @@ const OfferItem = ({ item, url, isToken, isSelectionActive, isOwner }) => {
     return new Date(dateIsoString).toLocaleDateString("en-EN", options);
   }
   useEffect(() => {
-  
 
-      
 
-   
+
+
+
     try {
        const currencyTokenObject = {};
        if (!decimalsContract && !symbolContract) {
@@ -49,10 +47,10 @@ const OfferItem = ({ item, url, isToken, isSelectionActive, isOwner }) => {
       console.error("Error: Currency not found for address");
     }
     if (isToken) {
-      const data = item.offer ? item.offer : null;
+      const data = item?.metadata?.offer ? item?.metadata?.offer : null;
       setItemData(data);
     } else {
-      const data = item.offer ? item.offer : null;
+      const data = item.metadata?.offer ? item.metadata?.offer : null;
       setItemData(data);
     }
   }, [item, isToken,  symbolContract, decimalsContract]);
@@ -114,7 +112,7 @@ const OfferItem = ({ item, url, isToken, isSelectionActive, isOwner }) => {
             {!isToken ? (
               <div className="dark:border-jacarta-600 border-jacarta-100 flex items-center whitespace-nowrap rounded-md border py-1 px-2">
                 {" "}
-               
+
                 <span className="text-green text-sm font-medium tracking-tight">
                   {price * protocolFees/100 + price} {currencyToken?.symbol ? currencyToken?.symbol : "N/A"}
                 </span>
@@ -168,8 +166,8 @@ const OfferItem = ({ item, url, isToken, isSelectionActive, isOwner }) => {
             </span>
           )}
         </div>
-      </div>
-    </article>
+      </article>
+    </>
   );
 };
 

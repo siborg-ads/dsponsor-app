@@ -1,10 +1,10 @@
 import { sepolia } from "thirdweb/chains";
 import { getContract } from "thirdweb";
-import marketplaceContractAbi from "../marketplace/marketplace-contact-abi.json";
+import marketplaceContractAbi from "./marketplace-contact-abi.json";
 import { client } from "../../data/services/client";
-import erc20ContractAbi from "../marketplace/erc20-contract-abi.json";
+import erc20ContractAbi from "./erc20-contract-abi.json";
 import { ApolloClient, InMemoryCache } from "@apollo/client";
-import dsponsorNftAbi from "../marketplace/dsponsor-nft-abi.json";
+import dsponsorNftAbi from "./dsponsor-nft-abi.json";
 
 export const marketplaceConfig = {
   // Sepolia Testnet

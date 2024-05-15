@@ -10,7 +10,7 @@ import {
   defaultChainId,
   getNftContract,
   marketplaceConfig,
-} from "../../app/marketplace/marketplace.config";
+} from "../../containers/MarketplaceContainer/marketplace.config";
 import { contractAddressConfig } from "../../lib/config/listing.config";
 import WalletConnection from "../wallet/walletConnection";
 import { useTransaction } from "../../utils/transactions";
