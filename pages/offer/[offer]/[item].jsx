@@ -418,8 +418,8 @@ const [imageUrlVariants, setImageUrlVariants] = useState([]);
   };
   const successFullUploadModal = {
     title: "Ad Space",
-    body: "Congratulations, you proposed an ad space.",
-    subBody: "The media still has the power to validate or reject ad assets.",
+    body: "Congratulations, you have proposed an ad.",
+    subBody: 'The media still has the power to validate or reject ad assets. You can follow the ad validation in the "Owned Ad Spaces" section.',
     buttonTitle: "Manage Spaces",
     hrefButton: `/manageSpaces/${address}`,
   };

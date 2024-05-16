@@ -77,14 +77,7 @@ const Create = () => {
     }
   };
 
-  const isValidURL = (url) => {
-    try {
-      new URL(url);
-      return true;
-    } catch (e) {
-      return false;
-    }
-  };
+  
 
   const validateInputs = () => {
     let isValid = true;
@@ -94,7 +87,7 @@ const Create = () => {
       isValid = false;
     }
 
-    if (!link || !isValidURL(link)) {
+    if (!link){
       newErrors.linkError = "The link is missing or invalid.";
       isValid = false;
     }
@@ -301,7 +294,7 @@ const Create = () => {
   const numSteps = 4;
   const successFullUploadModal = {
     body: "Your offer has been created successfully",
-    subBody: "❕On your offer management page, you will find the integration code to copy/paste onto your platform.",
+    subBody: "❕❕ On your offer management page, you will find the integration code to copy/paste onto your platform.",
     buttonTitle: "Manage Spaces",
     hrefButton: `/manageSpaces/${address}`,
   };

@@ -36,7 +36,7 @@ const [selectedItems, setSelectedItems] = useState([]);
                     return (
                       <div key={id}>
                         <ul>
-                          <li>{variant ? `- ${variant}` : "- No variant"}</li>
+                          <li>{variant ? `- Format : ${variant}` : "- Format : No variant"}</li>
                         </ul>
                       </div>
                     );

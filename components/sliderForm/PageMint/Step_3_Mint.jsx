@@ -18,7 +18,7 @@ const Step_3_Mint = ({ id, stepsRef, offerIds, styles, file, handleLogoUpload, p
   return (
     <div ref={(el) => (stepsRef.current[currentStep] = el)} className={styles.form__step}>
       <div className="pr-6 pl-2">
-        <h3 className="mb-14">Step 3 : Ad Space Image {id}</h3>
+        <h3 className="mb-14">Step 3 : Ad Image {id}</h3>
         {/* <!-- File Upload --> */}
         <div className="mb-6 items-center flex flex-col">
           <div className="flex gap-3 justify-center items-center mb-2">
@@ -29,8 +29,8 @@ const Step_3_Mint = ({ id, stepsRef, offerIds, styles, file, handleLogoUpload, p
             <ModalHelper title={modalHelper.title} body={modalHelper.body} dark={false} />
           </div>
           <p className="dark:text-jacarta-300 text-jacarta-400 text-2xs mb-3">
-            Please upload a media format that visually represents the content to be displayed on the site. This element will serve as a visual cue for users to quickly identify the associated content. Make sure the
-            content is clear, relevant, and has a high enough resolution for good quality display. The visual will be approved by the Media before it is displayed on their site.
+            Please upload a media format that visually represents the content to be displayed on the platform. This element will serve as a visual cue for users to quickly identify the associated content. Make sure the
+            content is clear, relevant, and has a high enough resolution for good quality display. The visual will be approved by the Media before it is displayed on their platform.
           </p>
 
           {file ? <p className="text-green text-2xs mb-3">successfully uploaded : {file.file.name}</p> : <p className="dark:text-jacarta-300 text-2xs mb-3">Drag or choose your file to upload</p>}

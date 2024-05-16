@@ -33,18 +33,18 @@ const Step_3_Create = ({ stepsRef, styles, setLink, link, file, handleLogoUpload
     <div ref={(el) => (stepsRef.current[2] = el)} className={styles.form__step}>
       <div className="pr-6 pl-2">
         <h3 className="mb-2">Step 3 : URL & Image</h3>
-        <p className="text-center pt-2  mb-14 dark:text-white"> Add the landing page URL and an offer image.</p>
+        <p className="text-center pt-2  mb-14 dark:text-white"> Provide the landing page URL, an image and the terms that represent the offer.</p>
 
         {/* <!-- External Link --> */}
         <div className="mb-6">
           <label htmlFor="item-external-link" className="font-display text-jacarta-700 mb-2 block dark:text-white">
-            Url where your ads will be displayed<span className="text-red">*</span>
+            Specifiy where advertisements will be exposed (website URL, mobile app, ...)<span className="text-red">*</span>
           </label>
           <input
             type="url"
             id="item-external-link"
             className="dark:bg-jacarta-700 border-jacarta-100 hover:ring-accent/10 focus:ring-accent dark:border-jacarta-600 dark:placeholder:text-jacarta-300 w-full rounded-lg py-3 px-3 hover:ring-2 dark:text-white"
-            placeholder="Provide an url for your offer. Eg.  https://yoursite.com"
+            placeholder="Provide an url, the name of your app, or what characterizes your platform."
             onChange={handleChange}
             value={link}
           />
@@ -55,7 +55,7 @@ const Step_3_Create = ({ stepsRef, styles, setLink, link, file, handleLogoUpload
             Illustration
             <span className="text-red">*</span>
           </label>
-          <p className="dark:text-jacarta-300 text-jacarta-400 text-2xs mb-3">Import an image that will represent your offer</p>
+          <p className="dark:text-jacarta-300 text-jacarta-400 text-2xs mb-3">Submit a square image to illustrate your offer</p>
           {file.length > 0 ? (
             <p className=" text-2xs mb-3 text-green">successfully uploaded : {file[0].name}</p>
           ) : (
@@ -92,7 +92,10 @@ const Step_3_Create = ({ stepsRef, styles, setLink, link, file, handleLogoUpload
           <label className="font-display text-jacarta-700 mb-2 block dark:text-white">
             Legal <span className="text-sm text-jacarta-400">(optionnal)</span>{" "}
           </label>
-          <p className="dark:text-jacarta-300 text-jacarta-400 text-2xs mb-3">Import a pdf or a link of your Term of Use</p>
+          <p className="dark:text-jacarta-300 text-jacarta-400 text-2xs mb-3">
+            Provide the terms of use for the ad spaces you are offering. This helps to clearly define what is expected of the advertisements displayed in the sold spaces and the rules that must be adhered to. <br />{" "}
+            Import a pdf or a link
+          </p>
           <div className="flex">
             <span className="mr-3">Url</span>
             <Switch

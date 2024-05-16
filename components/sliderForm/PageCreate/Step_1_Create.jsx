@@ -231,6 +231,7 @@ setSelectedParameter([]);
                     </div>
                   </div>
                 ))}
+                <p className="dark:text-jacarta-300 text-jacarta-400 text-2xs mb-3">Depending on the selected type, various integration options will be available for your media.</p>
               </div>
             </div>
           </div>
