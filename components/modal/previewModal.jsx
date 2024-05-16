@@ -8,7 +8,7 @@ import "react-toastify/dist/ReactToastify.css";
 const PreviewModal = ({
   handlePreviewModal,
   handleSubmit,
-
+  imageUrlVariants = [],
   name = false,
   link = null,
   description = false,
@@ -161,7 +161,7 @@ const PreviewModal = ({
                   )}
                   {terms.length > 0 ? (
                     <p className="font-display  mb-2 block text-jacarta-400 text-sm">
-                      Terms :  <span className="dark:text-white text-base ml-2"> {terms[0].name ? terms[0].name : terms[0]}  </span>
+                      Terms : <span className="dark:text-white text-base ml-2"> {terms[0].name ? terms[0].name : terms[0]} </span>
                     </p>
                   ) : (
                     ""
@@ -171,7 +171,7 @@ const PreviewModal = ({
                   previewImage.map((image, index) => (
                     <div className="mb-6  flex-col items-center justify-center " key={index}>
                       <label htmlFor="item-description" className="font-display text-jacarta-400 text-sm text-center mb-2 block ">
-                        Image preview :
+                        Image {imageUrlVariants[index] && `( ratio ${imageUrlVariants[index]} )`} preview
                       </label>
                       <div style={{ width: "300px", height: "300px", position: "relative" }}>
                         <Image src={image} width={300} height={200} alt="Preview" className="object-contain h-full" />

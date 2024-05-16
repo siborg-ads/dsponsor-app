@@ -10,8 +10,8 @@ import SDKProvider from "../../providers/SDKProvider";
 import SDKContext from "../../contexts/SDKContext";
 
 
-const ItemsTabs = ({ contractAddress, offerId }) => {
-  const {SDKChainId,getChainName} = useContext(SDKContext);
+const ItemsTabs = ({ contractAddress, offerId, isUserOwner }) => {
+  const { SDKChainId, getChainName } = useContext(SDKContext);
 
   const [tabsActive, setTabsActive] = useState(1);
   const tabsHeadText = [
@@ -88,12 +88,19 @@ const ItemsTabs = ({ contractAddress, offerId }) => {
                 <div className="mb-2 flex items-center">
                   <span className="dark:text-jacarta-300 mr-2 min-w-[9rem]">Offer ID:</span>
                   <Link href={`/offer/${offerId}`} className="flex">
-
-                  <span className="js-copy-clipboard text-jacarta-700 dark:hover:text-accent cursor-pointer select-none dark:text-white" data-tippy-content="Copy">
-                    {offerId}
-                  </span>
+                    <span className="js-copy-clipboard text-jacarta-700 dark:hover:text-accent cursor-pointer select-none dark:text-white" data-tippy-content="Copy">
+                      {offerId}
+                    </span>
                   </Link>
                 </div>
+                {isUserOwner && (
+                  <div className="mb-2 flex items-center">
+                    <span className="dark:text-jacarta-300 mr-2 min-w-[9rem]">Owner:</span>
+                    <Link href={`/manageSpaces/${isUserOwner}`}  rel="noopener noreferrer" className="text-accent">
+                      {isUserOwner}
+                    </Link>
+                  </div>
+                )}
                 <div className="mb-2 flex items-center">
                   <span className="dark:text-jacarta-300 mr-2 min-w-[9rem]">Token Standard:</span>
                   <span className="text-jacarta-700 dark:text-white">ERC-721</span>

@@ -79,7 +79,7 @@ const Validation = ({ offer, offerId, isOwner, handleSubmit, successFullRefuseMo
     setRefusedProposalData(formattedRefusedAds);
 
     setPendingProposalData(formattedPendingAds);
-  }, [offer, offerId, isOwner, successFullUploadModal]);
+  }, [offer, successFullUploadModal]);
 
   return (
     <div className="container">

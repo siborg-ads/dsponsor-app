@@ -130,11 +130,11 @@ const OfferItem = ({ item, url, isToken, isSelectionActive, isOwner }) => {
             )}
 
             {!isToken ? (
-              <div className="dark:border-jacarta-600 border-jacarta-100 flex items-center whitespace-nowrap rounded-md border py-1 px-2">
+              currencyToken?.symbol && <div className="dark:border-jacarta-600 border-jacarta-100 flex items-center whitespace-nowrap rounded-md border py-1 px-2">
                 {" "}
                
                 <span className="text-green text-sm font-medium tracking-tight">
-                  {price} {currencyToken?.symbol ? currencyToken?.symbol : "N/A"}
+                  {price} {currencyToken?.symbol}
                 </span>
               </div>
             ) : (

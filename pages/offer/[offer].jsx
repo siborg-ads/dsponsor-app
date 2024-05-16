@@ -44,7 +44,7 @@ const Offer = () => {
   const [successFullRefuseModal, setSuccessFullRefuseModal] = useState(false);
   const [tokenData, setTokenData] = useState("");
   const [isWordAlreadyTaken, setIsWordAlreadyTaken] = useState(false);
-  const { contract: tokenContract } = useContract(offerData?.nftContract?.prices[0].currency, "token");
+  const { contract: tokenContract } = useContract(offerData?.nftContract?.prices[0]?.currency, "token");
   const { data: symbolContract } = useContractRead(tokenContract, "symbol");
   const { data: decimalsContract } = useContractRead(tokenContract, "decimals");
  
@@ -61,7 +61,7 @@ const Offer = () => {
           ...offer,
           ...destructuredIPFSResult,
         };
- 
+        console.log("combinedData", combinedData);
         setOfferData(combinedData);
         if (userAddress?.toLowerCase() === offer.initialCreator) {
           setIsOwner(true);
@@ -133,7 +133,7 @@ const Offer = () => {
   }
 const modalHelper = {
   title: "Protocol Fees",
-  body: `The protocol fees (${protocolFees}%) are used to maintain the platform and the services provided. The fees are calculated based on the price of the ad space and are automatically deducted from the total amount paid by the buyer.`,
+  body: `The protocol fees (4%) are used to maintain the platform and the services provided. The fees are calculated based on the price of the ad space and are automatically deducted from the total amount paid by the buyer.`,
 };
   const { description = "description not found", id = "1", image = ["/images/gradient_creative.jpg"], name = "DefaultName", nftContract = "N/A" } = offerData.offer ? offerData.offer : {};
 
@@ -196,12 +196,12 @@ const modalHelper = {
               <h1 className="font-display text-jacarta-700 mb-4 text-4xl font-semibold dark:text-white">{name}</h1>
 
               <div className="mb-8 flex items-center flex-wrap gap-2 space-x-4 whitespace-nowrap">
-                <div className="flex items-center">
+                { currency?.symbol && <div className="flex items-center">
                   <span className="text-green text-sm font-medium tracking-tight mr-2">
-                    {price} {currency?.symbol ? currency?.symbol : "N/A"}
+                    {price} {currency?.symbol}
                   </span>
                   <ModalHelper {...modalHelper} size="small" />
-                </div>
+                </div>}
 
                 {offerData.nftContract.allowList && (
                   <span className="dark:text-jacarta-300 text-jacarta-400 text-sm">

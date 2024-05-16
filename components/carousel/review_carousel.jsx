@@ -23,6 +23,7 @@ const Review_carousel = ({ handleSubmit, pendingProposalData, successFullRefuseM
   const [selectedItems, setSelectedItems] = useState([]);
   const [isSelectedItem, setIsSelectedItem] = useState({});
   const [modalStates, setModalStates] = useState({});
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     const initialValidateStates = {};
@@ -32,12 +33,13 @@ const Review_carousel = ({ handleSubmit, pendingProposalData, successFullRefuseM
     setValidate(initialValidateStates);
   }, [pendingProposalData]);
 
-  const [copied, setCopied] = useState(false);
-
   useEffect(() => {
-    setTimeout(() => {
-      setCopied(false);
-    }, 2000);
+    if (copied) {
+      const timer = setTimeout(() => {
+        setCopied(false);
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
   }, [copied]);
 
   const openModal = (tokenId) => {

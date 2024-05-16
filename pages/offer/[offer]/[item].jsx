@@ -39,7 +39,7 @@ const Item = () => {
   const tokenId = router.query?.item;
 
   const [tokenIdString, setTokenIdString] = useState(null);
-const maxBps = 10000;
+  const maxBps = 10000;
   const [data, setData] = useState([]);
   const [offerData, setOfferData] = useState(null);
   const address = useAddress();
@@ -58,14 +58,14 @@ const maxBps = 10000;
   const { mutateAsync: uploadToIPFS, isLoading: isUploading } = useStorageUpload();
   const { mutateAsync: mintAndSubmit } = useContractWrite(DsponsorAdminContract, "mintAndSubmit");
   const { mutateAsync: submitAd } = useContractWrite(DsponsorAdminContract, "submitAdProposals");
-  const { contract: tokenContract } = useContract(offerData?.nftContract?.prices[0].currency, "token");
+  const { contract: tokenContract } = useContract(offerData?.nftContract?.prices[0]?.currency, "token");
   const { data: symbolContract } = useContractRead(tokenContract, "symbol");
   const { data: decimalsContract } = useContractRead(tokenContract, "decimals");
-  const { data: tokenBalance, isLoading, error } = useBalance(offerData?.nftContract?.prices[0].currency);
+  const { data: tokenBalance, isLoading, error } = useBalance(offerData?.nftContract?.prices[0]?.currency);
   const { mutateAsync: approve, isLoading: isLoadingApprove } = useContractWrite(tokenContract, "approve");
   const { data: bps } = useContractRead(DsponsorAdminContract, "feeBps");
   const { data: isAllowedToMint, isLoading: isLoadingAllowedToMint } = useContractRead(DsponsorNFTContract, "tokenIdIsAllowedToMint", tokenIdString);
-  const { data: isUserOwner } = useContractRead(DsponsorNFTContract, "ownerOf", tokenIdString);
+  const { data: isUserOwner } = useContractRead(DsponsorNFTContract, "ownerOf", [tokenIdString]);
   const { data: royaltiesInfo } = useContractRead(DsponsorNFTContract, "royaltyInfo", [tokenIdString, 100]);
   const [showPreviewModal, setShowPreviewModal] = useState(false);
   const [validate, setValidate] = useState(false);
@@ -76,8 +76,7 @@ const maxBps = 10000;
   const [buyModal, setBuyModal] = useState(false);
   const [buyMethod, setBuyMethod] = useState(false);
   const [feesAmount, setFeesAmount] = useState(null);
-
-
+const [imageUrlVariants, setImageUrlVariants] = useState([]);
   const [submitAdFormated, setSubmitAdFormated] = useState({});
   const [tokenData, setTokenData] = useState(null);
   const [tokenMetaData, setTokenMetaData] = useState("");
@@ -88,7 +87,7 @@ const maxBps = 10000;
   const [numSteps, setNumSteps] = useState(2);
 
   useEffect(() => {
-    if (offerId && tokenId && address) {
+    if (offerId && tokenId) {
       const fetchAdsOffers = async () => {
         const offer = await GetTokenAdOffer(offerId, tokenId);
 
@@ -107,9 +106,10 @@ const maxBps = 10000;
     }
 
     setTokenIdString(tokenId?.toString());
-  }, [offerId, address, tokenId, successFullUpload]);
+  }, [offerId, tokenId, successFullUpload]);
 
   useEffect(() => {
+ 
     if (!offerData || !address || !isUserOwner) return;
 
     console.log(isUserOwner, address, "isUserOwner");
@@ -124,7 +124,7 @@ const maxBps = 10000;
       const url = new URL(window.location.href);
       const tokenData = url.searchParams.get("tokenData");
       setTokenData(tokenData);
-console.log(offerData, "offerData");
+      console.log(offerData, "offerData");
       let tokenMetaData = {};
       if (offerData.offer.token_metadata) {
         tokenMetaData.description = offerData.offer.token_metadata.description.replace(/{tokenData}/g, `${tokenData}`);
@@ -157,7 +157,7 @@ console.log(offerData, "offerData");
         imageURLSteps.push(variant);
       });
     const totalNumSteps = numSteps + imageURLSteps.length;
-    console.log(imageURLSteps, numSteps, totalNumSteps, "imageURLSteps");
+    
 
     setImageURLSteps(imageURLSteps);
     setNumSteps(totalNumSteps);
@@ -178,9 +178,9 @@ console.log(offerData, "offerData");
       const bigIntFinalPrice = (BigInt(offerData?.nftContract?.prices[0]?.amount) * (BigInt(bps) + BigInt(maxBps))) / BigInt(maxBps);
       const formatFinalPrice = ethers.utils.formatUnits(bigIntFinalPrice, currencyTokenObject.decimals);
       const formatPrice = ethers.utils.formatUnits(BigInt(offerData?.nftContract?.prices[0]?.amount), currencyTokenObject.decimals);
-      const fees = (BigInt(offerData?.nftContract?.prices[0]?.amount) * (BigInt(bps))) / BigInt(maxBps);
+      const fees = (BigInt(offerData?.nftContract?.prices[0]?.amount) * BigInt(bps)) / BigInt(maxBps);
       const formatFees = ethers.utils.formatUnits(fees, currencyTokenObject.decimals);
-     
+
       const amountToApprove = ethers.utils.parseUnits(formatFinalPrice.toString(), currencyTokenObject.decimals);
       setFeesAmount(Number(Math.ceil(formatFees * 1000) / 1000));
       setPrice(Number(Math.ceil(formatPrice * 1000) / 1000));
@@ -279,15 +279,10 @@ console.log(offerData, "offerData");
       // console.log(bpsValueDecimal, "bpsValueDecimal");
       // const bpsValuePercentage = BigInt(bpsValueDecimal) / BigInt(10000);
       // console.log(price, bpsValuePercentage, "price, bpsValuePercentage")
-      
       // const priceAsNumber = BigInt(offerData.nftContract.prices[0].amount) * bpsValuePercentage + BigInt(offerData.nftContract.prices[0].amount);;
-
       // const priceAsNumberString = priceAsNumber.toString();
-  
       // setFinalPrice(priceAsNumberString);
       // const amountToApprove = ethers.utils.parseUnits(priceAsNumberString, currency.decimals);
-      
-
       // setAmountToApprove(amountToApprove);
     }
   }, [data, bps, offerData, currency, price]);
@@ -522,13 +517,14 @@ console.log(offerData, "offerData");
               </Link>
 
               <div className="mb-8 flex items-center  whitespace-nowrap flex-wrap">
-                <div className="flex items-center mr-4">
-                  <span className="text-green text-sm font-medium tracking-tight mr-2">
-                    {finalPrice} {currency?.symbol ? currency?.symbol : "N/A"}
-                  </span>
-                  <ModalHelper {...modalHelper} size="small" />
-                </div>
-
+                {currency?.symbol && (
+                  <div className="flex items-center mr-4">
+                    <span className="text-green text-sm font-medium tracking-tight mr-2">
+                      {finalPrice} {currency?.symbol}
+                    </span>
+                    <ModalHelper {...modalHelper} size="small" />
+                  </div>
+                )}
                 <span className="dark:text-jacarta-300 text-jacarta-400 text-sm mr-4">
                   Space # <strong className="dark:text-white">{tokenData ? tokenData : formatTokenId(tokenId)}</strong>{" "}
                 </span>
@@ -562,15 +558,15 @@ console.log(offerData, "offerData");
         </div>
       </section>
       {/* <!-- end item --> */}
-      <Validation offer={offerData} offerId={offerId} isOwner={isOwner} isToken={true} successFullUploadModal={successFullUploadModal} />
+      {offerData.nftContract?.tokens[0]?.mint && <Validation offer={offerData} offerId={offerId} isOwner={isOwner} isToken={true} successFullUploadModal={successFullUploadModal} />}
 
       <div>
-        {isOwner && !offerNotFormated ? (
+        {isOwner ? (
           <div className="container">
             <Divider className="my-4" />
             <h2 className="text-jacarta-700 font-bold font-display mb-6 text-center text-3xl dark:text-white ">Submission </h2>
             <SliderForm styles={styles} handlePreviewModal={handlePreviewModal} stepsRef={stepsRef} numSteps={numSteps}>
-              <Step_1_Mint stepsRef={stepsRef} styles={styles} adParameters={adParameters} />
+              <Step_1_Mint stepsRef={stepsRef} styles={styles} adParameters={adParameters} setImageUrlVariants={setImageUrlVariants} />
               <Step_2_Mint stepsRef={stepsRef} styles={styles} setLink={setLink} link={link} />
               {imageURLSteps.map((id, index) => (
                 <Step_3_Mint
@@ -590,7 +586,7 @@ console.log(offerData, "offerData");
           <div className="flex justify-center">
             <p>
               {offerNotFormated
-                ? "Offer isn't well formated to buy"
+                ? ""
                 : offerData.nftContract?.tokens === 0
                 ? "Sorry, tokenId unavailable, please provide a tokenId valid "
                 : offerData.nftContract?.tokens[0]?.mint && !isOwner
@@ -603,13 +599,14 @@ console.log(offerData, "offerData");
 
       {/* <ItemsTabs /> */}
       <div className="container mb-12">
-        <ItemsTabs contractAddress={offerData?.nftContract.id} offerId={offerId} />
+        <ItemsTabs contractAddress={offerData?.nftContract.id} offerId={offerId} isUserOwner={isUserOwner} />
       </div>
       {showPreviewModal && (
         <div className="modal fade show bloc">
           <PreviewModal
             handlePreviewModal={handlePreviewModal}
             handleSubmit={handleSubmit}
+            imageUrlVariants={imageUrlVariants}
             link={link}
             name={true}
             description={true}
@@ -618,7 +615,7 @@ console.log(offerData, "offerData");
             errors={errors}
             successFullUpload={successFullUpload}
             validate={validate}
-            buttonTitle="Submit"
+            buttonTitle="Submit ad"
             modalTitle="Ad Space Preview"
             successFullUploadModal={successFullUploadModal}
           />

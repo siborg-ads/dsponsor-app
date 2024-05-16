@@ -21,6 +21,7 @@ import Step_3_Mint from "../sliderForm/PageMint/Step_3_Mint";
  import contractABI from "../../abi/dsponsorAdmin.json";
 
 import PreviewModal from "../modal/previewModal";
+import { image } from "@nextui-org/react";
 
 const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
   const [itemdata, setItemdata] = useState(trendingCategoryData);
@@ -41,6 +42,7 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
   const [adParameters, setAdParameters] = useState([]);
   const [imageURLSteps, setImageURLSteps] = useState([]);
   const [successFullUploadModal, setSuccessFullUploadModal] = useState(false);
+  const [imageUrlVariants, setImageUrlVariants] = useState([]);
   const stepsRef = useRef([]);
   const [numSteps, setNumSteps] = useState(2);
   const { contract: DsponsorAdminContract } = useContract("0xE442802706F3603d58F34418Eac50C78C7B4E8b3", contractABI);
@@ -223,9 +225,11 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
     setSelectedItems([]);
     setImageURLSteps([]);
     setPreviewImages([]);
+    setImageUrlVariants([]);
     setFiles([]);
     setNumSteps(2);
   };
+  console.log(imageUrlVariants, "imageUrlVariants");
 
   if (!data) {
     return (
@@ -362,7 +366,7 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
       {showSliderForm && (
         <div>
           <SliderForm styles={styles} files={files} handlePreviewModal={handlePreviewModal} stepsRef={stepsRef} numSteps={numSteps}>
-            <Step_1_Mint stepsRef={stepsRef} styles={styles} adParameters={adParameters} />
+            <Step_1_Mint stepsRef={stepsRef} styles={styles} adParameters={adParameters} setImageUrlVariants={setImageUrlVariants} />
             <Step_2_Mint stepsRef={stepsRef} styles={styles} setLink={setLink} link={link} />
             {imageURLSteps.map((step, index) => (
               <Step_3_Mint
@@ -386,6 +390,7 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
             handlePreviewModal={handlePreviewModal}
             handleSubmit={handleSubmit}
             link={link}
+            imageUrlVariants={imageUrlVariants}
             imageURLSteps={imageURLSteps}
             name={true}
             description={true}
@@ -393,7 +398,7 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
             errors={errors}
             successFullUpload={successFullUpload}
             validate={validate}
-            buttonTitle="Ad proposal"
+            buttonTitle="Submit ad"
             modalTitle="Ad Space Preview"
             successFullUploadModal={successFullUploadModal}
           />

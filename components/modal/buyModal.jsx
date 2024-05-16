@@ -64,15 +64,12 @@ const BuyModal = ({
                 <span className="font-display text-jacarta-700 text-sm font-semibold dark:text-white">Subtotal</span>
               </div>
 
-              <div className="dark:border-jacarta-600 border-jacarta-100 relative flex min-h-[100px] border-t border-b py-4">
+              <div className="dark:border-jacarta-600 border-jacarta-100 relative justify-between flex min-h-[75px] border-t border-b py-4">
                 <figure className="mr-5 self-start">
                   <Image width={150} height={150} src={image} alt="logo" className="rounded-2lg" loading="lazy" />
                 </figure>
-                <div className="overflow-hidden  justify-between flex flex-col  text-ellipsis whitespace-nowrap  ">
-                  <a href="collection.html" className="text-accent text-sm text-ellipsis whitespace-nowrap overflow-hidden  ">
-                    {initialCreator}
-                  </a>
-                  <div className="overflow-hidden flex flex-col text-ellipsis whitespace-nowrap min-w-[100px]  ">
+                <div className="overflow-hidden  justify-end flex flex-col  text-ellipsis whitespace-nowrap min-w-[200px]  ">
+                  <div className="overflow-hidden flex flex-col text-ellipsis whitespace-nowrap   ">
                     <div className="flex gap-6  items-center justify-between">
                       <h3 className="font-display overflow-hidden text-ellipsis whitespace-nowrap text-jacarta-700 text-base font-semibold dark:text-white">{name}</h3>
                       <span className="dark:text-jacarta-100 text-sm font-medium tracking-tight overflow-auto min-w-[60px] flex justify-end">
