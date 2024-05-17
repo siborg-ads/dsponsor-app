@@ -5,47 +5,59 @@ import Image from "next/image";
 import { FileUploader } from "react-drag-drop-files";
 import ModalHelper from "../../Helper/modalHelper";
 
-const Step_1_Create = ({ stepsRef, styles, setDisplayedParameter, displayedParameter, selectedNumber, setSelectedNumber, selectedIntegration, imageRatios, setImageRatios, setSelectedIntegration, setSelectedParameter }) => {
-  
+const Step_1_Create = ({
+  stepsRef,
+  styles,
+  setDisplayedParameter,
+  displayedParameter,
+  selectedNumber,
+  setSelectedNumber,
+  selectedIntegration,
+  imageRatios,
+  setImageRatios,
+  setSelectedIntegration,
+  setSelectedParameter,
+}) => {
   const [customRatioInputShown, setCustomRatioInputShown] = useState({});
   const [validRatio, setValidRatio] = useState({});
   const [customImageRatio, setCustomImageRatio] = useState({});
   const AdIntegrationData = [
     {
-    integrationName : "Clickable Logos Grid",
-    imageExemple : "/images/offer_exemple_0.png",
-    bodyDescription : "This integration allows you to display a grid of clickable logos. Each logo can redirect to a different URL. You can choose the number of logos to display and the image ratio for each logo."
-}, 
-{integrationName : "Dynamic Banner",
-imageExemple : "/images/offer_exemple_1.png",
-bodyDescription : "This integration allows you to display a dynamic banner. You can choose the image ratio of the banner. The banner can redirect to a URL when clicked."
-}
-
-];
-const predefinedRatios = ["1:1", "16:9", "4:3"];
+      integrationName: "Clickable Logos Grid",
+      imageExemple: "/images/offer_exemple_0.png",
+      bodyDescription: "This integration allows you to display a grid of clickable logos. Each logo can redirect to a different URL. You can choose the number of logos to display and the image ratio for each logo.",
+    },
+    {
+      integrationName: "Dynamic Banner",
+      imageExemple: "/images/offer_exemple_1.png",
+      bodyDescription:
+        "This integration lets you display a randomly selected ad from those submitted by sponsors (ad space token owners), with a new ad randomly selected at each request. You can choose the banner's image ratio. The banner displays an ad image and redirects to a URL provided by the selected sponsor.",
+    },
+  ];
+  const predefinedRatios = ["1:1", "16:9", "4:3"];
 
   const handleNumberChange = (e) => {
     setSelectedNumber(parseInt(e.target.value, 10));
   };
 
- const handleIntegrationChange = (e) => {
-   const { value, checked } = e.target;
-   const intValue = parseInt(value);
-setSelectedIntegration([]);
-setDisplayedParameter([]);
-setSelectedParameter([]);
-   if (checked) {
-     setSelectedIntegration([intValue]);
-     setImageRatios((prev) => ({
-       ...prev,
-       [intValue]: prev[intValue] || "1:1",
-     }));
-     handleAddParameter(intValue);
-   } else {
-     setSelectedIntegration((prev) => prev.filter((item) => item !== intValue));
-     handleRemoveParameter(intValue);
-   }
- };
+  const handleIntegrationChange = (e) => {
+    const { value, checked } = e.target;
+    const intValue = parseInt(value);
+    setSelectedIntegration([]);
+    setDisplayedParameter([]);
+    setSelectedParameter([]);
+    if (checked) {
+      setSelectedIntegration([intValue]);
+      setImageRatios((prev) => ({
+        ...prev,
+        [intValue]: prev[intValue] || "1:1",
+      }));
+      handleAddParameter(intValue);
+    } else {
+      setSelectedIntegration((prev) => prev.filter((item) => item !== intValue));
+      handleRemoveParameter(intValue);
+    }
+  };
 
   const handleAddParameter = (value) => {
     const initialRatio = imageRatios[value] || "";
@@ -54,7 +66,7 @@ setSelectedParameter([]);
       case 0:
         paramsToAdd = [`imageURL-${value}${initialRatio ? `-${initialRatio}` : ""}`, `linkURL-${value}`];
         setDisplayedParameter((prev) => [...prev, "ClickableLogosGrid"]);
-        
+
         break;
       case 1:
         paramsToAdd = [`imageURL-${value}${initialRatio ? `-${initialRatio}` : ""}`, `linkURL-${value}`];
@@ -71,7 +83,7 @@ setSelectedParameter([]);
     switch (value) {
       case 0:
         paramsToRemove = [`imageURL-${value}`, `linkURL-${value}`];
-        
+
         const filter0 = displayedParameter.filter((item) => item !== "ClickableLogosGrid");
         setDisplayedParameter(filter0);
         break;
@@ -100,7 +112,6 @@ setSelectedParameter([]);
     });
   };
 
-  
   const updateParameterWithRatio = (index, ratio) => {
     setSelectedParameter((prev) => {
       return prev.map((param) => {
@@ -113,17 +124,16 @@ setSelectedParameter([]);
   };
   const handleCustomRatioChange = (index, e) => {
     const { value } = e.target;
-   
+
     setImageRatios((prev) => ({ ...prev, [index]: value }));
-  
+
     if (value === "custom") {
-       setCustomImageRatio((prev) => ({ ...prev, [index]: "" }));
+      setCustomImageRatio((prev) => ({ ...prev, [index]: "" }));
       setCustomRatioInputShown((prev) => ({ ...prev, [index]: true }));
       setValidRatio((prev) => ({ ...prev, [index]: false }));
     } else {
-     
       setCustomRatioInputShown((prev) => ({ ...prev, [index]: false }));
-     
+
       if (isValidRatioFormat(value)) {
         updateParameterWithRatio(index, value);
         setValidRatio((prev) => ({ ...prev, [index]: true }));
@@ -134,8 +144,8 @@ setSelectedParameter([]);
   };
   const handleCustomRatioInput = (index, e) => {
     const { value } = e.target;
- 
-   setCustomImageRatio((prev) => ({ ...prev, [index]: value }));
+
+    setCustomImageRatio((prev) => ({ ...prev, [index]: value }));
     if (isValidRatioFormat(value)) {
       setImageRatios((prev) => ({ ...prev, [index]: value }));
       updateParameterWithRatio(index, value);
@@ -145,12 +155,9 @@ setSelectedParameter([]);
       setValidRatio((prev) => ({ ...prev, [index]: false }));
     }
   };
-  
-
 
   const isValidRatioFormat = (ratio) => {
-
-    return /^\d+:\d+$/.test(ratio); 
+    return /^\d+:\d+$/.test(ratio);
   };
 
   return (

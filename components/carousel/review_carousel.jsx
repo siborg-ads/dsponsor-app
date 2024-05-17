@@ -15,7 +15,7 @@ import { CopyToClipboard } from "react-copy-to-clipboard";
 import { Web3Button } from "@thirdweb-dev/react";
 import AddProposalRefusedModal from "../modal/adProposalRefusedModal";
 
-const Review_carousel = ({ handleSubmit, pendingProposalData, successFullRefuseModal, isToken }) => {
+const Review_carousel = ({ handleSubmit, pendingProposalData, successFullRefuseModal, isToken, isOwner }) => {
   const [validate, setValidate] = useState({});
   const [comments, setComments] = useState({});
   const [refusedAdModalId, setRefusedAdModalId] = useState(null);
@@ -100,6 +100,7 @@ const Review_carousel = ({ handleSubmit, pendingProposalData, successFullRefuseM
   };
 
   const handleSelection = (item) => {
+    if(!isOwner) return;
     setIsSelectedItem((prevState) => ({
       ...prevState,
       [item.tokenId]: !prevState[item.tokenId],

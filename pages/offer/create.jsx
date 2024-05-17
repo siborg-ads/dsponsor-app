@@ -48,6 +48,7 @@ const Create = () => {
   const [customTokenContract, setCustomTokenContract] = useState(null);
   const [terms, setTerms] = useState([]);
   const [previewTerms, setPreviewTerms] = useState([]);
+  const [isLoadingButton, setIsLoadingButton] = useState(false);
 
   const [name, setName] = useState(false);
   const stepsRef = useRef([]);
@@ -172,6 +173,7 @@ const Create = () => {
     if (!validateInputs()) {
       return;
     }
+    setIsLoadingButton(true);
     try {
       let paramsFormated = [];
       selectedParameter.forEach((param) => {
@@ -283,6 +285,8 @@ const Create = () => {
       setSuccessFullUpload(false);
       console.log(error);
       throw error;
+    } finally{
+      setIsLoadingButton(false);
     }
   };
 
@@ -402,6 +406,7 @@ const Create = () => {
             buttonTitle="Create ad space offer"
             modalTitle="Ad Space Offer "
             successFullUploadModal={successFullUploadModal}
+            isLoadingButton={isLoadingButton}
           />
         </div>
       )}

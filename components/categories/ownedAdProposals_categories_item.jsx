@@ -46,6 +46,7 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
   const stepsRef = useRef([]);
   const [numSteps, setNumSteps] = useState(2);
   const { contract: DsponsorAdminContract } = useContract("0xE442802706F3603d58F34418Eac50C78C7B4E8b3", contractABI);
+  const [isLoadingButton, setIsLoadingButton] = useState(false);
  
   const { mutateAsync: uploadToIPFS, isLoading: isUploading } = useStorageUpload();
   const { mutateAsync: submitAd } = useContractWrite(DsponsorAdminContract, "submitAdProposals");
@@ -141,7 +142,6 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
       }
     }
 
-    // Convert Sets back to arrays if necessary for further processing
     for (const id in adDetails) {
       adDetails[id] = Array.from(adDetails[id]);
     }
@@ -163,12 +163,13 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
     const totalNumSteps = numSteps + imageURLStep.length;
     setImageURLSteps(imageURLStep);
     setNumSteps(totalNumSteps);
-    console.log(imageURLStep, "Unique IDs");
+   
   };
   const handleSubmit = async () => {
     if (!validateInputs()) {
       return;
     }
+    setIsLoadingButton(true);
     const selectedOfferIdItems = [];
     const selectedTokenIdItems = [];
     const adParametersItems = [];
@@ -215,6 +216,8 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
     } catch (err) {
       console.log(err);
       throw new Error("Upload to Blockchain failed.");
+    } finally {
+    isLoadingButton(false);
     }
   };
  
@@ -401,6 +404,7 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
             buttonTitle="Submit ad"
             modalTitle="Ad Space Preview"
             successFullUploadModal={successFullUploadModal}
+            isLoadingButton={isLoadingButton}
           />
         </div>
       )}

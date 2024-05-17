@@ -24,6 +24,7 @@ import { CopyToClipboard } from "react-copy-to-clipboard";
 import Validation from "../../components/offer-section/validation";
 import { protocolFees, protocolFeesBigNumber } from "../../utils/constUtils";
 import ModalHelper from "../../components/Helper/modalHelper";
+import { ItemsTabs } from "../../components/component";
 
 
 const Offer = () => {
@@ -183,25 +184,20 @@ const modalHelper = {
                   <Link href={`/manageSpaces/${offerData?.initialCreator}`} className="text-accent mr-2 text-sm font-bold">
                     {offerData?.initialCreator}
                   </Link>
-                  <span className="dark:border-jacarta-600 bg-green inline-flex h-6 w-6 items-center justify-center rounded-full border-2 border-white" data-tippy-content="Verified Collection">
-                    <Tippy content={<span>Verified Collection</span>}>
-                      <svg className="icon h-[.875rem] w-[.875rem] fill-white">
-                        <use xlinkHref="/icons.svg#icon-right-sign"></use>
-                      </svg>
-                    </Tippy>
-                  </span>
                 </div>
               </div>
 
               <h1 className="font-display text-jacarta-700 mb-4 text-4xl font-semibold dark:text-white">{name}</h1>
 
               <div className="mb-8 flex items-center flex-wrap gap-2 space-x-4 whitespace-nowrap">
-                { currency?.symbol && <div className="flex items-center">
-                  <span className="text-green text-sm font-medium tracking-tight mr-2">
-                    {price} {currency?.symbol}
-                  </span>
-                  <ModalHelper {...modalHelper} size="small" />
-                </div>}
+                {currency?.symbol && (
+                  <div className="flex items-center">
+                    <span className="text-green text-sm font-medium tracking-tight mr-2">
+                      {price} {currency?.symbol}
+                    </span>
+                    <ModalHelper {...modalHelper} size="small" />
+                  </div>
+                )}
 
                 {offerData.nftContract.allowList && (
                   <span className="dark:text-jacarta-300 text-jacarta-400 text-sm">
@@ -229,10 +225,15 @@ const modalHelper = {
           </div>
         </div>
       </section>
+      <div className="container mb-12">
+        <Divider className="my-4" />
+        <h2 className="text-jacarta-700 font-bold font-display mb-6 text-center text-3xl dark:text-white ">Details </h2>
+        <ItemsTabs contractAddress={offerData?.nftContract.id} offerId={offerId} initialCreator={offerData?.initialCreator} isToken={false} />
+      </div>
       {!offerData.nftContract.allowList && (
         <div className="container flex flex-col justify-center mb-6">
           <Divider className="my-4" />
-          <h2 className="text-jacarta-700 font-bold font-display mb-6 text-center text-3xl dark:text-white md:text-left">Search </h2>
+          <h2 className="text-jacarta-700 font-bold font-display mb-6 text-center text-3xl dark:text-white md:text-center">Search </h2>
           <div className="dark:bg-jacarta-700 dark:border-jacarta-600 border-jacarta-100 rounded-2lg border bg-white p-8">
             <div className=" sm:flex sm:flex-wrap">
               <span className="dark:text-jacarta-300 text-jacarta-400 text-sm">

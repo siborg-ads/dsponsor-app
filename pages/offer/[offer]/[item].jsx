@@ -26,6 +26,7 @@ import { getPossibleAdIntegrations } from "../../../utils/getAdIntegrationsWithP
 import { Divider } from "@nextui-org/react";
 import Validation from "../../../components/offer-section/validation.jsx";
 import { protocolFees, protocolFeesBigNumber } from "../../../utils/constUtils";
+import stringToUint256 from "../../../utils/stringToUnit256";
 
 import contractABI from "../../../abi/dsponsorAdmin.json";
 
@@ -61,7 +62,7 @@ const Item = () => {
   const { contract: tokenContract } = useContract(offerData?.nftContract?.prices[0]?.currency, "token");
   const { data: symbolContract } = useContractRead(tokenContract, "symbol");
   const { data: decimalsContract } = useContractRead(tokenContract, "decimals");
-  const { data: tokenBalance, isLoading, error } = useBalance(offerData?.nftContract?.prices[0]?.currency);
+  const { data: tokenBalance } = useBalance(offerData?.nftContract?.prices[0]?.currency);
   const { mutateAsync: approve, isLoading: isLoadingApprove } = useContractWrite(tokenContract, "approve");
   const { data: bps } = useContractRead(DsponsorAdminContract, "feeBps");
   const { data: isAllowedToMint, isLoading: isLoadingAllowedToMint } = useContractRead(DsponsorNFTContract, "tokenIdIsAllowedToMint", tokenIdString);
@@ -83,6 +84,8 @@ const [imageUrlVariants, setImageUrlVariants] = useState([]);
   const [allowanceTrue, setAllowanceTrue] = useState(false);
   const [adParameters, setAdParameters] = useState([]);
   const [imageURLSteps, setImageURLSteps] = useState([]);
+  const [isValidId, setIsValidId] = useState(true);
+  const [isLoadingButton, setIsLoadingButton] = useState(false);
   const stepsRef = useRef([]);
   const [numSteps, setNumSteps] = useState(2);
 
@@ -90,7 +93,7 @@ const [imageUrlVariants, setImageUrlVariants] = useState([]);
     if (offerId && tokenId) {
       const fetchAdsOffers = async () => {
         const offer = await GetTokenAdOffer(offerId, tokenId);
-
+        console.log(offer, "offer");
         const destructuredIPFSResult = await fetchDataFromIPFS(offer.metadataURL);
 
         const combinedData = {
@@ -109,31 +112,46 @@ const [imageUrlVariants, setImageUrlVariants] = useState([]);
   }, [offerId, tokenId, successFullUpload]);
 
   useEffect(() => {
- 
-    if (!offerData || !address || !isUserOwner) return;
 
-    console.log(isUserOwner, address, "isUserOwner");
-    if (isUserOwner === address) {
-      setIsOwner(true);
+    if (isUserOwner){
+   if (isUserOwner === address) {
+     setIsOwner(true);
+   }
+
     }
-  }, [offerData, address, tokenId, isUserOwner]);
+    
+  
+  }, [  tokenId, isUserOwner, tokenData, address]);
 
   useEffect(() => {
-    if (!tokenId || !offerData) return;
+    if (!tokenId || !offerData ) return;
     if (tokenId.length > 6) {
       const url = new URL(window.location.href);
       const tokenData = url.searchParams.get("tokenData");
       setTokenData(tokenData);
+      let isValidId = false;
+      if (tokenData) {
+        
+        const stringToUnit = stringToUint256(tokenData);
+        console.log(stringToUnit, tokenId, "stringToUnit");
+        if (BigInt(stringToUnit) === BigInt(tokenId)) {
+          isValidId = true;
+          setIsValidId(true);
+        } else{
+          setIsValidId(false);
+        
+        }
+      }
       console.log(offerData, "offerData");
       let tokenMetaData = {};
-      if (offerData.offer.token_metadata) {
+      if (offerData.offer.token_metadata && isValidId) {
         tokenMetaData.description = offerData.offer.token_metadata.description.replace(/{tokenData}/g, `${tokenData}`);
         tokenMetaData.image = offerData.offer.token_metadata.image.replace(/{tokenData}/g, `${tokenData}`);
         tokenMetaData.name = offerData.offer.token_metadata.name.replace(/{tokenData}/g, `${tokenData}`);
       }
       setTokenMetaData(tokenMetaData);
     }
-  }, [tokenId, offerData]);
+  }, [tokenId, offerData,tokenData]);
 
   useEffect(() => {
     if (!offerData) return;
@@ -156,9 +174,10 @@ const [imageUrlVariants, setImageUrlVariants] = useState([]);
 
         imageURLSteps.push(variant);
       });
+      const numSteps = 2;
     const totalNumSteps = numSteps + imageURLSteps.length;
     
-
+      console.log(totalNumSteps,imageURLSteps, numSteps, "totalNumSteps");
     setImageURLSteps(imageURLSteps);
     setNumSteps(totalNumSteps);
   }, [offerData]);
@@ -301,6 +320,7 @@ const [imageUrlVariants, setImageUrlVariants] = useState([]);
   };
 
   const handleApprove = async () => {
+     setIsLoadingButton(true);
     try {
       const hasEnoughBalance = checkUserBalance(tokenBalance, price);
       if (!hasEnoughBalance) {
@@ -312,10 +332,13 @@ const [imageUrlVariants, setImageUrlVariants] = useState([]);
     } catch (error) {
       console.error("Approval failed:", error.message);
       throw new Error("Approval failed.");
+    } finally {
+      setIsLoadingButton(false);
     }
   };
 
   const handleSubmit = async () => {
+    setIsLoadingButton(true);
     if (!buyMethod) {
       if (!validateInputs()) {
         return;
@@ -377,6 +400,8 @@ const [imageUrlVariants, setImageUrlVariants] = useState([]);
       console.error("Erreur de soumission du token:", error);
       setSuccessFullUpload(false);
       throw error;
+    } finally {
+      setIsLoadingButton(false);
     }
   };
 
@@ -448,7 +473,7 @@ const [imageUrlVariants, setImageUrlVariants] = useState([]);
     body: `The protocol fees (${protocolFees}%) are used to maintain the platform and the services provided. The fees are calculated based on the price of the ad space and are automatically deducted from the total amount paid by the buyer.`,
   };
 
-  const { description = "description not found", id = "1", image = ["/images/gradient_creative.jpg"], name = "DefaultName" } = Object.keys(offerData.offer.token_metadata).length > 0 ? tokenMetaData : offerData.offer;
+  const { description = "description not found", id = "1", image = "/images/gradient_creative.jpg", name = "DefaultName" } = Object.keys(offerData.offer.token_metadata).length > 0 ? tokenMetaData : offerData.offer;
 
   return (
     <>
@@ -457,7 +482,7 @@ const [imageUrlVariants, setImageUrlVariants] = useState([]);
       <section className="relative lg:mt-24 lg:pt-12  mt-24 pt-12 pb-8">
         <div className="mb-8 container flex justify-center flex-col items-center ">
           <div className=" flex justify-center ">
-            <h1 className="text-jacarta-700 font-bold font-display mb-6 text-center text-5xl dark:text-white md:text-left lg:text-6xl xl:text-6xl">{isOwner ? "Your Ad Space" : "Buy Ad Space"} </h1>
+            <h1 className="text-jacarta-700 font-bold font-display mb-6 text-center text-5xl dark:text-white md:text-left lg:text-6xl xl:text-6xl">{isOwner && isValidId ? "Your Ad Space" : "Buy Ad Space"} </h1>
             {/* <span className={`ml-2 text-sm font-bold ${isOwner ? (adStatut === 0 ? "text-red" : adStatut === 1 ? "text-green" : adStatut === 2 ? "text-accent" : "hidden") : "hidden"}`}>
               {adStatut === 0 ? "Rejected" : adStatut === 1 ? "Accepted" : adStatut === 2 ? "Pending" : ""}
             </span> */}
@@ -480,7 +505,7 @@ const [imageUrlVariants, setImageUrlVariants] = useState([]);
               {/* <!-- Modal --> */}
               <div className={imageModal ? "modal fade show block" : "modal fade"}>
                 <div className="modal-dialog !my-0 flex h-full max-w-4xl items-center justify-center">
-                  <Image width={582} height={722} src={image && image} alt="image" className="h-full object-cover w-full rounded-2xl" />
+                  <Image width={582} height={722} src={image ? image : "/images/gradient_creative.jpg"} alt="image" className="h-full object-cover w-full rounded-2xl" />
                 </div>
 
                 <button type="button" className="btn-close absolute top-6 right-6" onClick={() => setImageModal(false)}>
@@ -496,21 +521,6 @@ const [imageUrlVariants, setImageUrlVariants] = useState([]);
             {/* <!-- Details --> */}
             <div className="md:w-3/5 md:basis-auto md:pl-8 lg:w-1/2 lg:pl-[3.75rem]">
               {/* <!-- Collection / Likes / Actions --> */}
-              <div className="mb-3 flex">
-                {/* <!-- Collection --> */}
-                <div className="flex items-center">
-                  <Link href={`/manageSpaces/${offerData?.initialCreator}`} className="text-accent mr-2 text-sm font-bold">
-                    {offerData?.initialCreator}
-                  </Link>
-                  <span className="dark:border-jacarta-600 bg-green inline-flex h-6 w-6 items-center justify-center rounded-full border-2 border-white" data-tippy-content="Verified Collection">
-                    <Tippy content={<span>Verified Collection</span>}>
-                      <svg className="icon h-[.875rem] w-[.875rem] fill-white">
-                        <use xlinkHref="/icons.svg#icon-right-sign"></use>
-                      </svg>
-                    </Tippy>
-                  </span>
-                </div>
-              </div>
 
               <Link href={`/offer/${offerId}`} className="flex">
                 <h1 className="font-display text-jacarta-700 mb-4 dark:hover:text-accent text-4xl font-semibold dark:text-white">{name}</h1>
@@ -558,10 +568,15 @@ const [imageUrlVariants, setImageUrlVariants] = useState([]);
         </div>
       </section>
       {/* <!-- end item --> */}
-      {offerData.nftContract?.tokens[0]?.mint && <Validation offer={offerData} offerId={offerId} isOwner={isOwner} isToken={true} successFullUploadModal={successFullUploadModal} />}
-
+      <div className="container mb-12">
+        <Divider className="my-4" />
+        <h2 className="text-jacarta-700 font-bold font-display mb-6 text-center text-3xl dark:text-white ">Details </h2>
+        <ItemsTabs contractAddress={offerData?.nftContract.id} offerId={offerId} isUserOwner={isUserOwner} initialCreator={offerData?.initialCreator} />
+      </div>
+      {offerData.nftContract?.tokens[0]?.mint && isValidId && <Validation offer={offerData} offerId={offerId} isOwner={isOwner} isToken={true} successFullUploadModal={successFullUploadModal} />}
+      {/* <ItemsTabs /> */}
       <div>
-        {isOwner ? (
+        {isOwner && isValidId ? (
           <div className="container">
             <Divider className="my-4" />
             <h2 className="text-jacarta-700 font-bold font-display mb-6 text-center text-3xl dark:text-white ">Submission </h2>
@@ -585,7 +600,9 @@ const [imageUrlVariants, setImageUrlVariants] = useState([]);
         ) : (
           <div className="flex justify-center">
             <p>
-              {offerNotFormated
+              {!isValidId
+                ? "Sorry, tokenId unavailable, please provide a tokenId valid"
+                : offerNotFormated
                 ? ""
                 : offerData.nftContract?.tokens === 0
                 ? "Sorry, tokenId unavailable, please provide a tokenId valid "
@@ -597,10 +614,6 @@ const [imageUrlVariants, setImageUrlVariants] = useState([]);
         )}
       </div>
 
-      {/* <ItemsTabs /> */}
-      <div className="container mb-12">
-        <ItemsTabs contractAddress={offerData?.nftContract.id} offerId={offerId} isUserOwner={isUserOwner} />
-      </div>
       {showPreviewModal && (
         <div className="modal fade show bloc">
           <PreviewModal
@@ -618,6 +631,7 @@ const [imageUrlVariants, setImageUrlVariants] = useState([]);
             buttonTitle="Submit ad"
             modalTitle="Ad Space Preview"
             successFullUploadModal={successFullUploadModal}
+            isLoadingButton={isLoadingButton}
           />
         </div>
       )}
@@ -641,6 +655,7 @@ const [imageUrlVariants, setImageUrlVariants] = useState([]);
             tokenId={tokenId}
             tokenData={tokenData}
             formatTokenId={formatTokenId}
+            isLoadingButton={isLoadingButton}
           />
         </div>
       )}

@@ -18,7 +18,7 @@ const Validation = ({ offer, offerId, isOwner, handleSubmit, successFullRefuseMo
     },
     {
       id: 2,
-      text: "Validated",
+      text: "Submitted ",
       icon: "owned",
     },
 
@@ -89,7 +89,7 @@ const Validation = ({ offer, offerId, isOwner, handleSubmit, successFullRefuseMo
       <Tabs className="tabs">
         <TabList className="nav nav-tabs scrollbar-custom mb-12 flex items-center justify-start overflow-x-auto overflow-y-hidden border-b border-jacarta-100 pb-px dark:border-jacarta-600 md:justify-center">
           {tabItem.map(({ id, text, icon }) => {
-            if (!isOwner && text === "Pending") return;
+            
             return (
               <Tab className="nav-item" role="presentation" key={id} onClick={() => setItemActive(id)}>
                 <button
@@ -109,16 +109,16 @@ const Validation = ({ offer, offerId, isOwner, handleSubmit, successFullRefuseMo
           })}
         </TabList>
 
-        {isOwner && (
+        
           <div>
             <TabPanel>
               <div className="container mb-12 relative p-0">
                 {/* <!-- Filter --> */}
-                <Review_carousel pendingProposalData={pendingProposalData} handleSubmit={handleSubmit} successFullRefuseModal={successFullRefuseModal} isToken={isToken} />
+                <Review_carousel pendingProposalData={pendingProposalData} handleSubmit={handleSubmit} successFullRefuseModal={successFullRefuseModal} isToken={isToken} isOwner={isOwner} />
               </div>
             </TabPanel>
           </div>
-        )}
+    
         <TabPanel>
           <div className="container mb-12 relative p-0">
             {/* <!-- Filter --> */}

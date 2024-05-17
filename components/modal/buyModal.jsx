@@ -11,25 +11,25 @@ import "react-toastify/dist/ReactToastify.css";
 import { protocolFeesBigNumber } from "../../utils/constUtils";
 import { Divider } from "@nextui-org/react";
 import { ethers } from "ethers";
+import { Spinner } from "@nextui-org/spinner";
 
 const BuyModal = ({
   formatTokenId,
   allowanceTrue,
   handleApprove,
-  initialCreator,
   finalPrice,
   successFullUpload,
- feesAmount,
+  feesAmount,
   successFullBuyModal,
   price,
   tokenId,
   selectedCurrency,
-  selectedRoyalties,
   name,
   image,
   handleSubmit,
   handleBuyModal,
   tokenData,
+  isLoadingButton,
 }) => {
   const { buyModal } = useSelector((state) => state.counter);
   const dispatch = useDispatch();
@@ -162,9 +162,9 @@ const BuyModal = ({
                     });
                   }}
                   className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate ? "btn-disabled" : "!bg-accent !cursor-pointer"} `}
-                  disabled={!validate}
+                  isDisabled={!validate || isLoadingButton}
                 >
-                  Approve
+                  {isLoadingButton ? <Spinner size="sm" color="default" /> : "Approve"}
                 </Web3Button>
               ) : !successFullUpload ? (
                 <Web3Button
@@ -177,9 +177,9 @@ const BuyModal = ({
                     });
                   }}
                   className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate ? "btn-disabled" : "!bg-accent !cursor-pointer"} `}
-                  disabled={!validate}
+                  isDisabled={!validate || isLoadingButton}
                 >
-                  Confirm checkout
+                  {isLoadingButton ? <Spinner size="sm" color="default" /> : "Confirm checkout"}
                 </Web3Button>
               ) : (
                 <Link href={successFullBuyModal.hrefButton}>

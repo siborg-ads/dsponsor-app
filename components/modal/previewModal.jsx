@@ -4,6 +4,7 @@ import Image from "next/image";
 import { Web3Button } from "@thirdweb-dev/react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { Spinner } from "@nextui-org/spinner";
 
 const PreviewModal = ({
   handlePreviewModal,
@@ -18,7 +19,6 @@ const PreviewModal = ({
   selectedUnitPrice = null,
   symbolContract = null,
   selectedParameter = null,
-  customContract = null,
   selectedCurrency = null,
   selectedRoyalties = null,
   previewImage = null,
@@ -28,12 +28,11 @@ const PreviewModal = ({
   validate,
   errors,
   successFullUpload,
-  address,
   buttonTitle,
   modalTitle,
   successFullUploadModal,
-  finalPrice = null,
-  protocolFees = null,
+ 
+  isLoadingButton,
 }) => {
   const formatDate = (date) => {
     if (!date) return "";
@@ -209,9 +208,9 @@ const PreviewModal = ({
                       });
                     }}
                     className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate ? "btn-disabled" : "!bg-accent !cursor-pointer"} `}
-                    disabled={!validate}
+                    isDisabled={!validate || isLoadingButton}
                   >
-                    {buttonTitle}
+                    {isLoadingButton ? <Spinner size="sm" color="default" /> : buttonTitle}
                   </Web3Button>
                 ) : (
                   <Link href={successFullUploadModal.hrefButton}>
