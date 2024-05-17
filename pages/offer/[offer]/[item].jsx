@@ -121,7 +121,7 @@ const [imageUrlVariants, setImageUrlVariants] = useState([]);
     }
     
   
-  }, [  tokenId, isUserOwner, tokenData, address]);
+  }, [ isUserOwner, address]);
 
   useEffect(() => {
     if (!tokenId || !offerData ) return;

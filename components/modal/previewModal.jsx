@@ -34,11 +34,34 @@ const PreviewModal = ({
  
   isLoadingButton,
 }) => {
+
+   console.log(imageUrlVariants);
   const formatDate = (date) => {
     if (!date) return "";
     return date.toLocaleDateString();
   };
-
+  const imageRatioDisplay = (id) => {
+    const ratios = imageUrlVariants[id].split(":");
+    const stepWidth = 250;
+    let width = Number(ratios[0]);
+    let height = Number(ratios[1]);
+    const ratioArray = [];
+    if (ratios.length !== 2) {
+      ratioArray.push(stepWidth);
+      ratioArray.push(stepWidth);
+    }
+    if (width / height > 1) {
+      ratioArray.push(stepWidth);
+      ratioArray.push(stepWidth * (height / width));
+    } else {
+      ratioArray.push(stepWidth * (width / height));
+      ratioArray.push(stepWidth);
+    }
+    
+    return ratioArray;
+  
+  };
+  
   return (
     <div>
       <div className="modal-dialog max-h-[75vh] max-w-2xl">
@@ -172,8 +195,15 @@ const PreviewModal = ({
                       <label htmlFor="item-description" className="font-display text-jacarta-400 text-sm text-center mb-2 block ">
                         Image {imageUrlVariants[index] && `( ratio ${imageUrlVariants[index]} )`} preview
                       </label>
-                      <div style={{ width: "300px", height: "300px", position: "relative" }}>
-                        <Image src={image} width={300} height={200} alt="Preview" className="object-contain h-full" />
+                      <div
+                        className="dark:bg-jacarta-700 dark:border-jacarta-600 border-jacarta-100  group relative flex max-w-md flex-col items-center justify-center rounded-lg border-2 border-dashed"
+                        style={{
+                          width: imageUrlVariants.length > 0 ? `${imageRatioDisplay(index)[0]}px` : "275px",
+                          height: imageUrlVariants.length > 0 ? `${imageRatioDisplay(index)[1]}px` : "275px",
+                          position: "relative",
+                        }}
+                      >
+                        <Image src={image} fill={true} alt="Preview" className="object-contain h-full p-1" />
                       </div>
                     </div>
                   ))}

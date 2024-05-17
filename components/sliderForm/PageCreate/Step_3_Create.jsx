@@ -63,11 +63,12 @@ const Step_3_Create = ({ stepsRef, styles, setLink, link, file, handleLogoUpload
           )}
 
           <div
-            className={`dark:bg-jacarta-700 dark:border-jacarta-600 border-jacarta-100 group relative flex max-w-md flex-col items-center justify-center rounded-lg border-2 border-dashed bg-white  px-5 text-center ${
-              previewImage.length <= 0 ? "py-20" : "py-5"
+            className={`dark:bg-jacarta-700 dark:border-jacarta-600 border-jacarta-100 group relative flex max-w-md flex-col items-center justify-center rounded-lg border-2 border-dashed bg-white  px-1 text-center ${
+              previewImage.length <= 0 ? "py-20" : "p-1"
             }`}
+            style={{ width: `300px`, height: `300px` }}
           >
-            <div className={`relative z-10 cursor-pointer ${previewImage.length <= 0 ? "px-16" : "px-0"}`}>
+            <div className={`relative z-10 cursor-pointer  ${!previewImage ? "p-1" : "px-0 h-full w-full"}`}>
               {previewImage.length <= 0 ? (
                 <div>
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" className="fill-jacarta-500 mb-4 inline-block dark:fill-white">
@@ -77,8 +78,8 @@ const Step_3_Create = ({ stepsRef, styles, setLink, link, file, handleLogoUpload
                   <p className="dark:text-jacarta-300 mx-auto max-w-xs text-xs">JPG, PNG, WEBP Max size: 25 MB</p>
                 </div>
               ) : (
-                <div className="flex justify-center ">
-                  <Image src={previewImage[0] ? previewImage[0] : "/"} width={200} height={200} alt="Preview" className="object-contain h-full" />
+                <div className="flex justify-center  " style={{ width: `300px`, height: `300px` }}>
+                  <Image src={previewImage[0] ? previewImage[0] : "/"} fill={true} alt="Preview" className="object-contain h-full" />
                 </div>
               )}
             </div>
