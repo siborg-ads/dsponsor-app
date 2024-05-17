@@ -1,10 +1,8 @@
-import TokenPageContainer from "../../../../containers/TokenPageContainer/TokenPageContainer";
-import {headers} from "next/headers";
-import fetchLastOffers from "../../../../providers/methods/fetchLastOffers";
-import fetchOfferToken from "../../../../providers/methods/fetchOfferToken";
-import ItemDetails from "../../../../components/item/ItemDetails";
 import React from "react";
-import fetchMarketplaceListingForToken from "../../../../providers/methods/fetchMarketplaceListingForToken";
+import {headers} from "next/headers";
+import TokenPageContainer from "../../../../../containers/TokenPageContainer/TokenPageContainer";
+import fetchOfferToken from "../../../../../providers/methods/fetchOfferToken";
+import fetchMarketplaceListingForToken from "../../../../../providers/methods/fetchMarketplaceListingForToken";
 
 export async function generateMetadata({
                                            params,
@@ -36,8 +34,10 @@ export default async function TokenPage({params}) {
     const lastOffersRequest = await fetchOfferToken({chainID,offerId,tokenId})
     const offer = lastOffersRequest?.adOffers?.[0] || null
 
+    console.dir({offer},{depth:10})
     const listingsRequest = await fetchMarketplaceListingForToken({chainID,tokenId, offer})
     const listings = listingsRequest?.marketplaceListings || []
+    console.dir({listings},{depth:10})
 
     return (
         <div className="pt-[5.5rem] lg:pt-24">

@@ -1,12 +1,12 @@
-import OfferPageContainer from "../../../containers/OfferPageContainer/OfferPageContainer";
+import OfferPageContainer from "../../../../containers/OfferPageContainer/OfferPageContainer";
 import {headers} from "next/headers";
-import fetchOfferToken from "../../../providers/methods/fetchOfferToken";
-import fetchOffer from "../../../providers/methods/fetchOffer";
+import fetchOffer from "../../../../providers/methods/fetchOffer";
 
 export async function generateMetadata({
                                            params,
                                        }) {
     const offerId = params.offerId;
+    const chainName = params.chainName;
 
     // We use headers as a way to get the chainID
     const headersList = headers()
