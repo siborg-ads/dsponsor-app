@@ -88,21 +88,21 @@ const TokenPageContainer = ({offerId, tokenId, offer, listings}) => {
 
     useEffect(() => {
         if (offerId && tokenId && address) {
-            const fetchAdsOffers = async () => {
+            // const fetchAdsOffers = async () => {
                 // const offer = await GetTokenAdOffer(offerId, tokenId);
 
-                const destructuredIPFSResult = await fetchDataFromIPFS(offer.metadataURL);
+                // const destructuredIPFSResult = await fetchDataFromIPFS(offer.metadataURL);
 
-                const combinedData = {
-                    ...offer,
-                    ...destructuredIPFSResult,
-                };
+                // const combinedData = {
+                //     ...offer,
+                //     ...destructuredIPFSResult,
+                // };
 
-                console.log(combinedData, "combinedData");
-                setOfferData(combinedData);
-            };
+                // console.log(combinedData, "combinedData");
+                setOfferData(offer);
+            // };
 
-            fetchAdsOffers();
+            // fetchAdsOffers();
         }
 
         setTokenIdString(tokenId?.toString());

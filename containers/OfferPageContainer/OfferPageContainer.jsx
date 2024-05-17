@@ -48,24 +48,10 @@ const OfferPageContainer = ({offerId, offer}) => {
 
 
     useEffect(() => {
-        if (offerId) {
-            const fetchAdsOffers = async () => {
-                // const offer = await GetAdOffer(offerId);
-                const destructuredIPFSResult = await fetchDataFromIPFS(offer.metadataURL);
-                const combinedData = {
-                    ...offer,
-                    ...destructuredIPFSResult,
-                };
-                console.log(combinedData, "ici");
-                setOfferData(combinedData);
-                if (userAddress?.toLowerCase() === offer.initialCreator) {
-                    setIsOwner(true);
-                }
-            };
-
-            fetchAdsOffers();
+        if (userAddress?.toLowerCase() === offer.initialCreator) {
+            setIsOwner(true);
         }
-    }, [offerId, router, successFullRefuseModal, userAddress]);
+    }, [userAddress]);
 
     useEffect(() => {
         if (!offerData) return;
