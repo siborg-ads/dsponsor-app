@@ -3,9 +3,10 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import adminInstance from "../../utils/sdkProvider";
-import {protocolFees} from "../../utils/constUtils";
-import {  useContract,useContractRead,  } from "@thirdweb-dev/react";
-
+import { protocolFeesBigNumber } from "../../utils/constUtils";
+import { useAddress, useSwitchChain, useContract, useContractWrite, Web3Button, useContractRead, useStorageUpload, useTokenDecimals, CheckoutWithCard, CheckoutWithEth } from "@thirdweb-dev/react";
+import {ethers} from "ethers";
+import { contractABI } from "../../utils/constUtils";
 
 
 const OfferItem = ({ item, url, isToken, isSelectionActive, isOwner }) => {
@@ -16,6 +17,12 @@ const OfferItem = ({ item, url, isToken, isSelectionActive, isOwner }) => {
   const { contract: tokenContract } = useContract(!isToken && item?.nftContract?.prices[0]?.currency, "token");
   const { data: symbolContract } = useContractRead(tokenContract, "symbol");
   const { data: decimalsContract } = useContractRead(tokenContract, "decimals");
+  const { contract: DsponsorAdminContract } = useContract("0xE442802706F3603d58F34418Eac50C78C7B4E8b3", contractABI);
+  const { data: bps } = useContractRead(DsponsorAdminContract, "feeBps");
+  const maxBps = 10000;
+
+  
+  
 
 
 
@@ -40,9 +47,19 @@ const OfferItem = ({ item, url, isToken, isSelectionActive, isOwner }) => {
          currencyTokenObject.symbol = symbolContract;
          currencyTokenObject.decimals = decimalsContract;
        }
-       const formatPrice = item?.nftContract?.prices[0]?.amount / 10 ** currencyTokenObject.decimals;
-      setCurrencyToken(currencyTokenObject);
-      setPrice(formatPrice);
+      
+
+
+  const bigIntPrice = BigInt(item?.nftContract?.prices[0]?.amount) * (BigInt(bps)+ BigInt(maxBps)) / BigInt(maxBps);
+   const formatPrice = ethers.utils.formatUnits(bigIntPrice, currencyTokenObject.decimals);
+
+
+   
+
+   
+      
+       setCurrencyToken(currencyTokenObject);
+      setPrice(Number(Math.ceil(formatPrice * 1000) / 1000));
     } catch (e) {
       console.error("Error: Currency not found for address");
     }
@@ -53,7 +70,7 @@ const OfferItem = ({ item, url, isToken, isSelectionActive, isOwner }) => {
       const data = item.metadata?.offer ? item.metadata?.offer : null;
       setItemData(data);
     }
-  }, [item, isToken,  symbolContract, decimalsContract]);
+  }, [item, isToken,  symbolContract, decimalsContract, bps]);
 
   // useEffect(() => {
   //   const fetchAdsOffers = async () => {
@@ -83,6 +100,7 @@ const OfferItem = ({ item, url, isToken, isSelectionActive, isOwner }) => {
   //   fetchAdsOffers();
   // }, [item]);
 
+
   const { name = "offerName", image = "/images/gradient_creative.jpg", valid_from = null, valid_to = null } = itemData ? itemData : {};
 
   return (
@@ -110,11 +128,11 @@ const OfferItem = ({ item, url, isToken, isSelectionActive, isOwner }) => {
             )}
 
             {!isToken ? (
-              <div className="dark:border-jacarta-600 border-jacarta-100 flex items-center whitespace-nowrap rounded-md border py-1 px-2">
+              currencyToken?.symbol && <div className="dark:border-jacarta-600 border-jacarta-100 flex items-center whitespace-nowrap rounded-md border py-1 px-2">
                 {" "}
 
                 <span className="text-green text-sm font-medium tracking-tight">
-                  {price * protocolFees/100 + price} {currencyToken?.symbol ? currencyToken?.symbol : "N/A"}
+                  {price} {currencyToken?.symbol}
                 </span>
               </div>
             ) : (

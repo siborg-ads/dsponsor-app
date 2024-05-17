@@ -17,7 +17,7 @@ export const GetAllAdOffers = async () => {
           id # DSponsorNFT smart contract address
           allowList # defines if there is a token allowlist
           # default mint price
-          prices {
+          prices(where: { enabled: true }) {
             currency # ERC20 smart contract
             amount # wei, mind decimals() function to transform in human readable value !
             enabled
@@ -30,7 +30,6 @@ export const GetAllAdOffers = async () => {
               transactionHash # if = null => not minted yet, so it's available
             }
             setInAllowList # define if is in allowlist
-            
           }
         }
       }

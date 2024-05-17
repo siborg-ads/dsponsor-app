@@ -29,6 +29,7 @@ const Step_2_Create = ({ stepsRef, styles, setName, setDescription }) => {
           <label htmlFor="item-description" className="font-display text-jacarta-700 mb-2 block dark:text-white">
             Description<span className="text-red">*</span>
           </label>
+          <p className="dark:text-jacarta-300 text-jacarta-400 text-2xs mb-3">The description should briefly introduce your media, specify the location of the ad spaces, and describe the type of content expected.</p>
           <textarea
             id="item-description"
             className="dark:bg-jacarta-700 border-jacarta-100 hover:ring-accent/10 focus:ring-accent dark:border-jacarta-600 dark:placeholder:text-jacarta-300 w-full rounded-lg py-3 px-3 hover:ring-2 dark:text-white"

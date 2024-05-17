@@ -116,12 +116,12 @@ const Validated_refused_items = ({ statut, proposalData, isToken }) => {
 
                     <div>
                       <h3 className="font-display text-jacarta-700 mb-1 text-base font-semibold dark:text-white">
-                        Item : <span className="text-accent"> {tokenData ? tokenData : formatTokenId(tokenId)} </span>{" "}
+                        Item : <span className="text-green"> {tokenData ? tokenData : formatTokenId(tokenId)} </span>{" "}
                       </h3>
 
                       <div className="flex flex-col">
                         <button className="js-copy-clipboard flex min-w-[20px] text-white max-w-[20rem]  select-none overflow-hidden text-ellipsis whitespace-nowrap">
-                          <Link href={adParametersList?.linkURL ? adParametersList.linkURL : "/"}>{adParametersList?.linkURL}</Link>
+                          <Link href={adParametersList?.linkURL ? adParametersList.linkURL : "/"} target="_blank">{adParametersList?.linkURL}</Link>
                         </button>
                       </div>
                       {reason && <span className="text-jacarta-500 dark:text-jacarta-300">Reason : {reason}</span>}

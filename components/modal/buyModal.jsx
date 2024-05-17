@@ -5,9 +5,31 @@ import { buyModalHide } from "../../redux/counterSlice";
 import Image from "next/image";
 import { Web3Button } from "@thirdweb-dev/react";
 import { useState } from "react";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { protocolFeesBigNumber } from "../../utils/constUtils";
+import { Divider } from "@nextui-org/react";
+import { ethers } from "ethers";
+import { Spinner } from "@nextui-org/spinner";
 
-
-const BuyModal = ({ finalPrice, price, selectedCurrency, selectedRoyalties, name, image, handleSubmit, handleBuyModal }) => {
+const BuyModal = ({
+  formatTokenId,
+  allowanceTrue,
+  handleApprove,
+  finalPrice,
+  successFullUpload,
+  feesAmount,
+  successFullBuyModal,
+  price,
+  tokenId,
+  selectedCurrency,
+  name,
+  image,
+  handleSubmit,
+  handleBuyModal,
+  tokenData,
+  isLoadingButton,
+}) => {
   const { buyModal } = useSelector((state) => state.counter);
   const dispatch = useDispatch();
   const [validate, setValidate] = useState(false);
@@ -40,10 +62,29 @@ const BuyModal = ({ finalPrice, price, selectedCurrency, selectedRoyalties, name
               <span className="font-display text-jacarta-700 text-sm font-semibold dark:text-white">Subtotal</span>
             </div>
 
-            <div className="dark:border-jacarta-600 border-jacarta-100 relative flex items-center border-t border-b py-4">
-              <figure className="mr-5 self-start">
-                <Image width={150} height={150} src={image[0]} alt="logo" className="rounded-2lg" loading="lazy" />
-              </figure>
+              <div className="dark:border-jacarta-600 border-jacarta-100 relative justify-between flex min-h-[75px] border-t border-b py-4">
+                <figure className="mr-5 self-start">
+                  <Image width={150} height={150} src={image} alt="logo" className="rounded-2lg" loading="lazy" />
+                </figure>
+                <div className="overflow-hidden  justify-end flex flex-col  text-ellipsis whitespace-nowrap min-w-[200px]  ">
+                  <div className="overflow-hidden flex flex-col text-ellipsis whitespace-nowrap   ">
+                    <div className="flex gap-6  items-center justify-between">
+                      <h3 className="font-display overflow-hidden text-ellipsis whitespace-nowrap text-jacarta-700 text-base font-semibold dark:text-white">{name}</h3>
+                      <span className="dark:text-jacarta-100 text-sm font-medium tracking-tight overflow-auto min-w-[60px] flex justify-end">
+                        {price} {selectedCurrency}
+                      </span>
+                    </div>
+                    <div className="flex gap-6  items-center justify-between">
+                      <span className="dark:text-jacarta-300 text-jacarta-500 mr-1 block text-sm">Protocol fees: 4%</span>
+                      <span className="dark:text-jacarta-300 text-sm  tracking-tight overflow-auto min-w-[60px] flex justify-end">
+                        {feesAmount} {selectedCurrency}
+                      </span>
+                    </div>
+                    <div className="flex justify-end">
+                      <Divider className="mt-4 w-16 " />
+                    </div>
+                  </div>
+                </div>
 
               <div>
                 <a href="collection.html" className="text-accent text-sm">
@@ -114,14 +155,62 @@ const BuyModal = ({ finalPrice, price, selectedCurrency, selectedRoyalties, name
 
           <div className="modal-footer">
             <div className="flex items-center justify-center space-x-4">
-              <Web3Button
-                contractAddress="0xdf42633BD40e8f46942e44a80F3A58d0Ec971f09"
-                action={handleSubmit}
-                className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate ? "btn-disabled" : "!bg-accent !cursor-pointer"} `}
-                disabled={!validate}
-              >
-                Confirm checkout
-              </Web3Button>
+              {allowanceTrue && !successFullUpload ? (
+                <Web3Button
+                  contractAddress="0xE442802706F3603d58F34418Eac50C78C7B4E8b3"
+                  action={() => {
+                    toast.promise(handleApprove, {
+                      pending: "Waiting for approval",
+                      success: "Approval confirmed 👌",
+                      error: "Approval rejected 🤯",
+                    });
+                  }}
+                  className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate ? "btn-disabled" : "!bg-accent !cursor-pointer"} `}
+                  isDisabled={!validate || isLoadingButton}
+                >
+                  {isLoadingButton ? <Spinner size="sm" color="default" /> : "Approve"}
+                </Web3Button>
+              ) : !successFullUpload ? (
+                <Web3Button
+                  contractAddress="0xE442802706F3603d58F34418Eac50C78C7B4E8b3"
+                  action={() => {
+                    toast.promise(handleSubmit, {
+                      pending: "Waiting transaction confirmation",
+                      success: "Transaction confirmed 👌",
+                      error: "Transaction rejected 🤯",
+                    });
+                  }}
+                  className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate ? "btn-disabled" : "!bg-accent !cursor-pointer"} `}
+                  isDisabled={!validate || isLoadingButton}
+                >
+                  {isLoadingButton ? <Spinner size="sm" color="default" /> : "Confirm checkout"}
+                </Web3Button>
+              ) : (
+                <Link href={successFullBuyModal.hrefButton}>
+                  <button className="!rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all !bg-accent !cursor-pointer">{successFullBuyModal.buttonTitle}</button>
+                </Link>
+              )}
+
+              {/* {!successFullUpload ? (
+                <Web3Button
+                  contractAddress="0xE442802706F3603d58F34418Eac50C78C7B4E8b3"
+                  action={() => {
+                    toast.promise(handleSubmit, {
+                      pending: "Waiting transaction confirmation",
+                      success: "Transaction confirmed 👌",
+                      error: "Transaction rejected 🤯",
+                    });
+                  }}
+                  className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate || !userBalance ? "btn-disabled" : "!bg-accent !cursor-pointer"} `}
+                  disabled={!validate}
+                >
+                  Confirm checkout
+                </Web3Button>
+              ) : (
+                <Link href={successFullBuyModal.hrefButton}>
+                  <button className="!rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all !bg-accent !cursor-pointer">{successFullBuyModal.buttonTitle}</button>
+                </Link>
+              )} */}
             </div>
           </div>
         </div>

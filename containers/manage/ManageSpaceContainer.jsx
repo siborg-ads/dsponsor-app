@@ -51,9 +51,10 @@ const ManageSpaceContainer = ({address: userAddress}) => {
         const mappedownedAdProposals = [];
 
         setCreatedData(mappedOffers);
+        
 
         for (const element of ownedAdProposals) {
-          if (!element.nftContract.adOffers[0].metadataURL) {
+          if (!element.nftContract?.adOffers[0]?.metadataURL) {
             continue;
           }
 

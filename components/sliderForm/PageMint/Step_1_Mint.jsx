@@ -1,41 +1,19 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 
-const Step_1_Mint = ({ stepsRef, styles, adParameters}) => {
- 
-  const selectedItems = adParameters.map((param) => param);
-  const  DisplayImageIds =({ ids }) => {
-  return (
-    <div>
-      <p className="font-display">Image :</p>
-      {ids
-        .filter((id) => id.startsWith("imageURL"))
-        .map((id) => {
-          const variant = id.slice("imageURL-".length);
-          return (
-            <div key={id}>
-              <ul>
-                <li>{variant ? `- ${variant}` : "- No variant"}</li>
-              </ul>
-            </div>
-          );
-        })}
-      <p className="font-display">Link :</p>
-      {ids
-        .filter((id) => id.startsWith("linkURL"))
-        .map((id) => {
-          const variant = id.slice("link".length);
-          return (
-            <div key={id}>
-              <ul>
-                <li>{variant ? `- ${variant}` : "-No variant"}</li>
-              </ul>
-            </div>
-          );
-        })}
-    </div>
-  );
-}
+
+
+const Step_1_Mint = ({ stepsRef, styles, adParameters, setImageUrlVariants }) => {
+  
+const [selectedItems, setSelectedItems] = useState([]);
+  useEffect(() => {
+    if (!adParameters) return;
+    setSelectedItems(adParameters);
+    const imageVariants = adParameters.filter((id) => id.startsWith("imageURL")).map((id) => id.slice("imageURL-".length));
+
+    setImageUrlVariants((prev) => [...prev, ...imageVariants]);
+  }, [adParameters, setImageUrlVariants]);
+
 
   return (
     <div ref={(el) => (stepsRef.current[0] = el)} className={styles.form__step}>
@@ -48,7 +26,35 @@ const Step_1_Mint = ({ stepsRef, styles, adParameters}) => {
             </label>
             <div className="flex flex-col gap-4">
               To display your ad you need to provide the following parameters:
-              {DisplayImageIds({ ids: selectedItems })}
+              {/* <DisplayImageIds ids={selectedItems} /> */}
+              <div>
+                <p className="font-display">Image :</p>
+                {selectedItems
+                  .filter((id) => id.startsWith("imageURL"))
+                  .map((id) => {
+                    const variant = id.slice("imageURL-".length);
+                    return (
+                      <div key={id}>
+                        <ul>
+                          <li>{variant ? `- Format : ${variant}` : "- Format : No variant"}</li>
+                        </ul>
+                      </div>
+                    );
+                  })}
+                <p className="font-display">Link :</p>
+                {selectedItems
+                  .filter((id) => id.startsWith("linkURL"))
+                  .map((id) => {
+                    const variant = id.slice("linkURL-".length);
+                    return (
+                      <div key={id}>
+                        <ul>
+                          <li>{variant ? `- ${variant}` : "- No variant"}</li>
+                        </ul>
+                      </div>
+                    );
+                  })}
+              </div>
               {/* <select
                 id="adIntegrationSelect"
                 className="dark:bg-jacarta-700 min-w-[110px] border-jacarta-100 hover:ring-accent/10 focus:ring-accent dark:border-jacarta-600 dark:placeholder:text-jacarta-300 w-full rounded-lg py-3 px-5 hover:ring-2 dark:text-white"
@@ -62,7 +68,6 @@ const Step_1_Mint = ({ stepsRef, styles, adParameters}) => {
                   </option>
                 ))}
               </select> */}
-              
             </div>
           </div>
         </div>

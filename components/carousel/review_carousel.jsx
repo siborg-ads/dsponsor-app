@@ -15,7 +15,7 @@ import { CopyToClipboard } from "react-copy-to-clipboard";
 import { Web3Button } from "@thirdweb-dev/react";
 import AddProposalRefusedModal from "../modal/adProposalRefusedModal";
 
-const Review_carousel = ({ handleSubmit, pendingProposalData, successFullRefuseModal, isToken }) => {
+const Review_carousel = ({ handleSubmit, pendingProposalData, successFullRefuseModal, isToken, isOwner }) => {
   const [validate, setValidate] = useState({});
   const [comments, setComments] = useState({});
   const [refusedAdModalId, setRefusedAdModalId] = useState(null);
@@ -23,6 +23,7 @@ const Review_carousel = ({ handleSubmit, pendingProposalData, successFullRefuseM
   const [selectedItems, setSelectedItems] = useState([]);
   const [isSelectedItem, setIsSelectedItem] = useState({});
   const [modalStates, setModalStates] = useState({});
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     const initialValidateStates = {};
@@ -32,12 +33,13 @@ const Review_carousel = ({ handleSubmit, pendingProposalData, successFullRefuseM
     setValidate(initialValidateStates);
   }, [pendingProposalData]);
 
-  const [copied, setCopied] = useState(false);
-
   useEffect(() => {
-    setTimeout(() => {
-      setCopied(false);
-    }, 2000);
+    if (copied) {
+      const timer = setTimeout(() => {
+        setCopied(false);
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
   }, [copied]);
 
   const openModal = (tokenId) => {
@@ -98,6 +100,7 @@ const Review_carousel = ({ handleSubmit, pendingProposalData, successFullRefuseM
   };
 
   const handleSelection = (item) => {
+    if(!isOwner) return;
     setIsSelectedItem((prevState) => ({
       ...prevState,
       [item.tokenId]: !prevState[item.tokenId],
@@ -146,7 +149,7 @@ const Review_carousel = ({ handleSubmit, pendingProposalData, successFullRefuseM
             <div className="dropdown-item mb-4 font-display   block w-full rounded-xl  text-left text-sm transition-colors dark:text-white">
               <span className="flex items-center justify-center gap-6">
                 <span className="mr-4">
-                  I confirm that I have checked all the ads selected <span className="text-accent text-md ml-1">{Object.values(isSelectedItem).filter((value) => value === true).length}</span>{" "}
+                  I confirm that I have checked all the ads selected <span className="text-green text-md ml-1">{Object.values(isSelectedItem).filter((value) => value === true).length}</span>{" "}
                 </span>
                 <input
                   type="checkbox"
