@@ -4,11 +4,12 @@ import Image from "next/image";
 import { Web3Button } from "@thirdweb-dev/react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { Spinner } from "@nextui-org/spinner";
 
 const PreviewModal = ({
   handlePreviewModal,
   handleSubmit,
-
+  imageUrlVariants = [],
   name = false,
   link = null,
   description = false,
@@ -18,7 +19,6 @@ const PreviewModal = ({
   selectedUnitPrice = null,
   symbolContract = null,
   selectedParameter = null,
-  customContract = null,
   selectedCurrency = null,
   selectedRoyalties = null,
   previewImage = null,
@@ -28,18 +28,40 @@ const PreviewModal = ({
   validate,
   errors,
   successFullUpload,
-  address,
   buttonTitle,
   modalTitle,
   successFullUploadModal,
-  finalPrice = null,
-  protocolFees = null,
+ 
+  isLoadingButton,
 }) => {
+
+   console.log(imageUrlVariants);
   const formatDate = (date) => {
     if (!date) return "";
     return date.toLocaleDateString();
   };
-
+  const imageRatioDisplay = (id) => {
+    const ratios = imageUrlVariants[id].split(":");
+    const stepWidth = 250;
+    let width = Number(ratios[0]);
+    let height = Number(ratios[1]);
+    const ratioArray = [];
+    if (ratios.length !== 2) {
+      ratioArray.push(stepWidth);
+      ratioArray.push(stepWidth);
+    }
+    if (width / height > 1) {
+      ratioArray.push(stepWidth);
+      ratioArray.push(stepWidth * (height / width));
+    } else {
+      ratioArray.push(stepWidth * (width / height));
+      ratioArray.push(stepWidth);
+    }
+    
+    return ratioArray;
+  
+  };
+  
   return (
     <div>
       <div className="modal-dialog max-h-[75vh] max-w-2xl">
@@ -161,7 +183,7 @@ const PreviewModal = ({
                   )}
                   {terms.length > 0 ? (
                     <p className="font-display  mb-2 block text-jacarta-400 text-sm">
-                      Terms :  <span className="dark:text-white text-base ml-2"> {terms[0].name ? terms[0].name : terms[0]}  </span>
+                      Terms : <span className="dark:text-white text-base ml-2"> {terms[0].name ? terms[0].name : terms[0]} </span>
                     </p>
                   ) : (
                     ""
@@ -171,10 +193,17 @@ const PreviewModal = ({
                   previewImage.map((image, index) => (
                     <div className="mb-6  flex-col items-center justify-center " key={index}>
                       <label htmlFor="item-description" className="font-display text-jacarta-400 text-sm text-center mb-2 block ">
-                        Image preview :
+                        Image {imageUrlVariants[index] && `( ratio ${imageUrlVariants[index]} )`} preview
                       </label>
-                      <div style={{ width: "300px", height: "300px", position: "relative" }}>
-                        <Image src={image} width={300} height={200} alt="Preview" className="object-contain h-full" />
+                      <div
+                        className="dark:bg-jacarta-700 dark:border-jacarta-600 border-jacarta-100  group relative flex max-w-md flex-col items-center justify-center rounded-lg border-2 border-dashed"
+                        style={{
+                          width: imageUrlVariants.length > 0 ? `${imageRatioDisplay(index)[0]}px` : "275px",
+                          height: imageUrlVariants.length > 0 ? `${imageRatioDisplay(index)[1]}px` : "275px",
+                          position: "relative",
+                        }}
+                      >
+                        <Image src={image} fill={true} alt="Preview" className="object-contain h-full p-1" />
                       </div>
                     </div>
                   ))}
@@ -209,9 +238,9 @@ const PreviewModal = ({
                       });
                     }}
                     className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate ? "btn-disabled" : "!bg-accent !cursor-pointer"} `}
-                    disabled={!validate}
+                    isDisabled={!validate || isLoadingButton}
                   >
-                    {buttonTitle}
+                    {isLoadingButton ? <Spinner size="sm" color="default" /> : buttonTitle}
                   </Web3Button>
                 ) : (
                   <Link href={successFullUploadModal.hrefButton}>

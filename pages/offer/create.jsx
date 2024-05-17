@@ -48,6 +48,7 @@ const Create = () => {
   const [customTokenContract, setCustomTokenContract] = useState(null);
   const [terms, setTerms] = useState([]);
   const [previewTerms, setPreviewTerms] = useState([]);
+  const [isLoadingButton, setIsLoadingButton] = useState(false);
 
   const [name, setName] = useState(false);
   const stepsRef = useRef([]);
@@ -77,14 +78,7 @@ const Create = () => {
     }
   };
 
-  const isValidURL = (url) => {
-    try {
-      new URL(url);
-      return true;
-    } catch (e) {
-      return false;
-    }
-  };
+  
 
   const validateInputs = () => {
     let isValid = true;
@@ -94,7 +88,7 @@ const Create = () => {
       isValid = false;
     }
 
-    if (!link || !isValidURL(link)) {
+    if (!link){
       newErrors.linkError = "The link is missing or invalid.";
       isValid = false;
     }
@@ -134,8 +128,9 @@ const Create = () => {
       newErrors.endDateError = "End date cannot be in the past.";
       isValid = false;
     }
-
+    console.log(parseFloat(selectedUnitPrice))
     if (parseFloat(selectedUnitPrice) < 1 * 10 ** -tokenDecimals || isNaN(selectedUnitPrice) || selectedUnitPrice === null) {
+      console.log("là");
       newErrors.unitPriceError = `Unit price must be at least ${1 * 10 ** -tokenDecimals}.`;
       isValid = false;
     }
@@ -178,6 +173,7 @@ const Create = () => {
     if (!validateInputs()) {
       return;
     }
+    setIsLoadingButton(true);
     try {
       let paramsFormated = [];
       selectedParameter.forEach((param) => {
@@ -289,6 +285,8 @@ const Create = () => {
       setSuccessFullUpload(false);
       console.log(error);
       throw error;
+    } finally{
+      setIsLoadingButton(false);
     }
   };
 
@@ -300,7 +298,7 @@ const Create = () => {
   const numSteps = 4;
   const successFullUploadModal = {
     body: "Your offer has been created successfully",
-    subBody: "❕On your offer management page, you will find the integration code to copy/paste onto your platform.",
+    subBody: "❕❕ On your offer management page, you will find the integration code to copy/paste onto your platform.",
     buttonTitle: "Manage Spaces",
     hrefButton: `/manageSpaces/${address}`,
   };
@@ -408,6 +406,7 @@ const Create = () => {
             buttonTitle="Create ad space offer"
             modalTitle="Ad Space Offer "
             successFullUploadModal={successFullUploadModal}
+            isLoadingButton={isLoadingButton}
           />
         </div>
       )}
