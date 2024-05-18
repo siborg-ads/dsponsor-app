@@ -31,7 +31,8 @@ const ChainProvider = ({ children }) => {
             case 1:
                 return 'ethereum';
             default:
-                return 'Unknown:'+chainId;
+                console.warn(`Unknown chainId: ${chainId} - Using default chainId: 11155111`);
+                return getChainName(11155111);
         }
     }
 

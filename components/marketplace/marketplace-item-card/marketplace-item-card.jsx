@@ -9,6 +9,9 @@ const MarketplaceItemCard = ({
   symbol,
   image,
   type,
+  offer,
+  chainName,
+  tokenData,
   assetContract,
   tokenId,
 }) => {
@@ -16,7 +19,7 @@ const MarketplaceItemCard = ({
     <div className="">
       <article>
         <div className="shadow-md dark:bg-jacarta-700 dark:border-jacarta-700 border-jacarta-100 rounded-2xl block border bg-white p-[1.1875rem] transition-shadow hover:shadow-lg text-jacarta-500">
-          <Link href={`/offer/${assetContract}/${tokenId}`}>
+          <Link href={`${chainName}/offer/${offer.id}/${tokenId}?tokenData=${tokenData}`}>
             <figure>
               <Image
                 src={image}
