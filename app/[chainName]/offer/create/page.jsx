@@ -1,5 +1,4 @@
-import CreateOfferContainer from "../../../containers/CreateOfferContainer/CreateOfferContainer";
-import PrivacyPolicyContainer from "../../../containers/PrivacyPolicy/PrivacyPolicyContainer";
+import CreateOfferContainer from "../../../../containers/CreateOfferContainer/CreateOfferContainer";
 
 
 const metadata = {

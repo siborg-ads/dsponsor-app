@@ -31,6 +31,7 @@ import contractABI from "../../abi/dsponsorAdmin.json";
 import "react-toastify/dist/ReactToastify.css";
 import ModalHelper from "../../components/Helper/modalHelper.jsx";
 import ItemDetails from "../../components/item/ItemDetails";
+import stringToUint256 from "../../utils/stringToUnit256";
 
 const TokenPageContainer = ({offerId, tokenId, offer, listings}) => {
     const router = useRouter();
@@ -39,7 +40,7 @@ const TokenPageContainer = ({offerId, tokenId, offer, listings}) => {
     // const tokenId = router.query?.item;
 
     const [tokenIdString, setTokenIdString] = useState(null);
-
+    const maxBps = 10000;
     const [data, setData] = useState([]);
     const [offerData, setOfferData] = useState(null);
     const address = useAddress();
@@ -54,18 +55,17 @@ const TokenPageContainer = ({offerId, tokenId, offer, listings}) => {
     const [finalPrice, setFinalPrice] = useState(null);
     const [successFullUpload, setSuccessFullUpload] = useState(false);
     const { contract: DsponsorAdminContract } = useContract("0xE442802706F3603d58F34418Eac50C78C7B4E8b3", contractABI);
-    const { contract: DsponsorNFTContract } = useContract(offer?.nftContract?.id);
+    const { contract: DsponsorNFTContract } = useContract(offerData?.nftContract?.id);
     const { mutateAsync: uploadToIPFS, isLoading: isUploading } = useStorageUpload();
     const { mutateAsync: mintAndSubmit } = useContractWrite(DsponsorAdminContract, "mintAndSubmit");
     const { mutateAsync: submitAd } = useContractWrite(DsponsorAdminContract, "submitAdProposals");
-    const { contract: tokenContract } = useContract(offer?.nftContract?.prices?.[0]?.currency, "token");
+    const { contract: tokenContract } = useContract(offerData?.nftContract?.prices[0]?.currency, "token");
     const { data: symbolContract } = useContractRead(tokenContract, "symbol");
     const { data: decimalsContract } = useContractRead(tokenContract, "decimals");
-    const { data: tokenBalance, isLoading, error } = useBalance(offer?.nftContract?.prices?.[0]?.currency);
+    const { data: tokenBalance } = useBalance(offerData?.nftContract?.prices[0]?.currency);
     const { mutateAsync: approve, isLoading: isLoadingApprove } = useContractWrite(tokenContract, "approve");
-    // const { data: bps } = useContractRead(DsponsorAdminContract, "feeBps");
-    const bps = ethers.BigNumber.from(4000);
-    const { data: isAllowedToMint, isLoading: isLoadingAllowedToMint } = useContractRead(DsponsorNFTContract, "tokenIdIsAllowedToMint", [tokenIdString]);
+    const { data: bps } = useContractRead(DsponsorAdminContract, "feeBps");
+    const { data: isAllowedToMint, isLoading: isLoadingAllowedToMint } = useContractRead(DsponsorNFTContract, "tokenIdIsAllowedToMint", tokenIdString);
     const { data: isUserOwner } = useContractRead(DsponsorNFTContract, "ownerOf", [tokenIdString]);
     const { data: royaltiesInfo } = useContractRead(DsponsorNFTContract, "royaltyInfo", [tokenIdString, 100]);
     const [showPreviewModal, setShowPreviewModal] = useState(false);
@@ -76,63 +76,68 @@ const TokenPageContainer = ({offerId, tokenId, offer, listings}) => {
     const [price, setPrice] = useState(null);
     const [buyModal, setBuyModal] = useState(false);
     const [buyMethod, setBuyMethod] = useState(false);
-
+    const [feesAmount, setFeesAmount] = useState(null);
+    const [imageUrlVariants, setImageUrlVariants] = useState([]);
     const [submitAdFormated, setSubmitAdFormated] = useState({});
     const [tokenData, setTokenData] = useState(null);
     const [tokenMetaData, setTokenMetaData] = useState("");
     const [allowanceTrue, setAllowanceTrue] = useState(false);
     const [adParameters, setAdParameters] = useState([]);
     const [imageURLSteps, setImageURLSteps] = useState([]);
+    const [isValidId, setIsValidId] = useState(true);
+    const [isLoadingButton, setIsLoadingButton] = useState(false);
     const stepsRef = useRef([]);
     const [numSteps, setNumSteps] = useState(2);
 
     useEffect(() => {
-        if (offerId && tokenId && address) {
-            // const fetchAdsOffers = async () => {
-                // const offer = await GetTokenAdOffer(offerId, tokenId);
-
-                // const destructuredIPFSResult = await fetchDataFromIPFS(offer.metadataURL);
-
-                // const combinedData = {
-                //     ...offer,
-                //     ...destructuredIPFSResult,
-                // };
-
-                // console.log(combinedData, "combinedData");
-                setOfferData(offer);
-            // };
-
-            // fetchAdsOffers();
+        if (offerId && tokenId) {
+            setOfferData(offer);
         }
 
         setTokenIdString(tokenId?.toString());
-    }, [offerId, address, tokenId, successFullUpload, offer]);
+    }, [offerId, tokenId, successFullUpload]);
 
     useEffect(() => {
-        if (!offerData || !address || !isUserOwner) return;
 
-        console.log(isUserOwner, address, "isUserOwner");
-        if (isUserOwner === address) {
-            setIsOwner(true);
+        if (isUserOwner){
+            if (isUserOwner === address) {
+                setIsOwner(true);
+            }
+
         }
-    }, [offerData, address, tokenId, isUserOwner]);
+
+
+    }, [ isUserOwner, address]);
 
     useEffect(() => {
-        if (!tokenId || !offerData) return;
+        if (!tokenId || !offerData ) return;
         if (tokenId.length > 6) {
             const url = new URL(window.location.href);
             const tokenData = url.searchParams.get("tokenData");
             setTokenData(tokenData);
+            let isValidId = false;
+            if (tokenData) {
+
+                const stringToUnit = stringToUint256(tokenData);
+                console.log(stringToUnit, tokenId, "stringToUnit");
+                if (BigInt(stringToUnit) === BigInt(tokenId)) {
+                    isValidId = true;
+                    setIsValidId(true);
+                } else{
+                    setIsValidId(false);
+
+                }
+            }
             console.log(offerData, "offerData");
             let tokenMetaData = {};
-            if (offerData.offer.token_metadata) {
+            if (offerData.offer.token_metadata && isValidId) {
                 tokenMetaData.description = offerData.offer.token_metadata.description.replace(/{tokenData}/g, `${tokenData}`);
                 tokenMetaData.image = offerData.offer.token_metadata.image.replace(/{tokenData}/g, `${tokenData}`);
                 tokenMetaData.name = offerData.offer.token_metadata.name.replace(/{tokenData}/g, `${tokenData}`);
             }
             setTokenMetaData(tokenMetaData);
         }
-    }, [tokenId, offerData]);
+    }, [tokenId, offerData,tokenData]);
 
     useEffect(() => {
         if (!offerData) return;
@@ -155,9 +160,10 @@ const TokenPageContainer = ({offerId, tokenId, offer, listings}) => {
 
                 imageURLSteps.push(variant);
             });
+        const numSteps = 2;
         const totalNumSteps = numSteps + imageURLSteps.length;
-        console.log(imageURLSteps, numSteps, totalNumSteps, "imageURLSteps");
 
+        console.log(totalNumSteps,imageURLSteps, numSteps, "totalNumSteps");
         setImageURLSteps(imageURLSteps);
         setNumSteps(totalNumSteps);
     }, [offerData]);
@@ -174,16 +180,24 @@ const TokenPageContainer = ({offerId, tokenId, offer, listings}) => {
                 currencyTokenObject.symbol = symbolContract;
                 currencyTokenObject.decimals = decimalsContract;
             }
+            const bigIntFinalPrice = (BigInt(offerData?.nftContract?.prices[0]?.amount) * (BigInt(bps) + BigInt(maxBps))) / BigInt(maxBps);
+            const formatFinalPrice = ethers.utils.formatUnits(bigIntFinalPrice, currencyTokenObject.decimals);
+            const formatPrice = ethers.utils.formatUnits(BigInt(offerData?.nftContract?.prices[0]?.amount), currencyTokenObject.decimals);
+            const fees = (BigInt(offerData?.nftContract?.prices[0]?.amount) * BigInt(bps)) / BigInt(maxBps);
+            const formatFees = ethers.utils.formatUnits(fees, currencyTokenObject.decimals);
 
-            const formatPrice = offerData.nftContract.prices[0].amount / 10 ** currencyTokenObject.decimals;
-            setPrice(formatPrice);
+            const amountToApprove = ethers.utils.parseUnits(formatFinalPrice.toString(), currencyTokenObject.decimals);
+            setFeesAmount(Number(Math.ceil(formatFees * 1000) / 1000));
+            setPrice(Number(Math.ceil(formatPrice * 1000) / 1000));
             setCurrency(currencyTokenObject);
             setOfferNotFormated(false);
+            setFinalPrice(Number(Math.ceil(formatFinalPrice * 1000) / 1000));
+            setAmountToApprove(amountToApprove);
         } catch (e) {
-            console.error("Error: Currency not found for address", offerData?.nftContract?.prices[0]);
+            console.error("Error: Currency not found for address", offerData?.nftContract?.prices[0], e);
             setOfferNotFormated(true);
         }
-    }, [symbolContract, decimalsContract, offerData, address, tokenId]);
+    }, [symbolContract, decimalsContract, offerData, address, tokenId, bps, maxBps]);
 
     useEffect(() => {
         if (!offerData || !adParameters) return;
@@ -265,18 +279,16 @@ const TokenPageContainer = ({offerId, tokenId, offer, listings}) => {
 
     useEffect(() => {
         if (price && bps) {
-            const bpsValueHex = bps._hex;
-            const bpsValueDecimal = ethers.BigNumber.from(bpsValueHex).toNumber();
-            const bpsValuePercentage = bpsValueDecimal / 10000;
-
-            const priceAsNumber = price * bpsValuePercentage + price;
-
-            const priceAsNumberString = priceAsNumber.toString();
-
-            setFinalPrice(priceAsNumberString);
-            const amountToApprove = ethers.utils.parseUnits(priceAsNumberString, currency.decimals);
-
-            setAmountToApprove(amountToApprove);
+            // const bpsValueHex = bps._hex;
+            // const bpsValueDecimal = ethers.BigNumber.from(bpsValueHex).toNumber();
+            // console.log(bpsValueDecimal, "bpsValueDecimal");
+            // const bpsValuePercentage = BigInt(bpsValueDecimal) / BigInt(10000);
+            // console.log(price, bpsValuePercentage, "price, bpsValuePercentage")
+            // const priceAsNumber = BigInt(offerData.nftContract.prices[0].amount) * bpsValuePercentage + BigInt(offerData.nftContract.prices[0].amount);;
+            // const priceAsNumberString = priceAsNumber.toString();
+            // setFinalPrice(priceAsNumberString);
+            // const amountToApprove = ethers.utils.parseUnits(priceAsNumberString, currency.decimals);
+            // setAmountToApprove(amountToApprove);
         }
     }, [data, bps, offerData, currency, price]);
 
@@ -294,6 +306,7 @@ const TokenPageContainer = ({offerId, tokenId, offer, listings}) => {
     };
 
     const handleApprove = async () => {
+        setIsLoadingButton(true);
         try {
             const hasEnoughBalance = checkUserBalance(tokenBalance, price);
             if (!hasEnoughBalance) {
@@ -305,10 +318,13 @@ const TokenPageContainer = ({offerId, tokenId, offer, listings}) => {
         } catch (error) {
             console.error("Approval failed:", error.message);
             throw new Error("Approval failed.");
+        } finally {
+            setIsLoadingButton(false);
         }
     };
 
     const handleSubmit = async () => {
+        setIsLoadingButton(true);
         if (!buyMethod) {
             if (!validateInputs()) {
                 return;
@@ -370,6 +386,8 @@ const TokenPageContainer = ({offerId, tokenId, offer, listings}) => {
             console.error("Erreur de soumission du token:", error);
             setSuccessFullUpload(false);
             throw error;
+        } finally {
+            setIsLoadingButton(false);
         }
     };
 
@@ -411,17 +429,17 @@ const TokenPageContainer = ({offerId, tokenId, offer, listings}) => {
     };
     const successFullUploadModal = {
         title: "Ad Space",
-        body: "Congratulations, you proposed an ad space.",
-        subBody: "The media still has the power to validate or reject ad assets.",
+        body: "Congratulations, you have proposed an ad.",
+        subBody: 'The media still has the power to validate or reject ad assets. You can follow the ad validation in the "Owned Ad Spaces" section.',
         buttonTitle: "Manage Spaces",
-        hrefButton: `/manage/${address}`,
+        hrefButton: `/manageSpaces/${address}`,
     };
     const successFullBuyModal = {
         title: "Checkout",
         body: "Congratulations, you purchase this ad space.",
         subBody: "Check your ad space in your manage section to submit your ad.",
         buttonTitle: "Manage Spaces",
-        hrefButton: `/manage/${address}`,
+        hrefButton: `/manageSpaces/${address}`,
     };
     const statutAds = {
         pending: "🔍 Your ad is pending, wait the validation of the creator",
@@ -441,7 +459,7 @@ const TokenPageContainer = ({offerId, tokenId, offer, listings}) => {
         body: `The protocol fees (${protocolFees}%) are used to maintain the platform and the services provided. The fees are calculated based on the price of the ad space and are automatically deducted from the total amount paid by the buyer.`,
     };
 
-    const { description = "description not found", id = "1", image = ["/images/gradient_creative.jpg"], name = "DefaultName" } = Object.keys(offerData.offer.token_metadata).length > 0 ? tokenMetaData : offerData.offer;
+    const { description = "description not found", id = "1", image = "/images/gradient_creative.jpg", name = "DefaultName" } = Object.keys(offerData.metadata?.offer?.token_metadata).length > 0 ? tokenMetaData : offerData.metadata?.offer;
 
     return (
         <>
@@ -450,7 +468,7 @@ const TokenPageContainer = ({offerId, tokenId, offer, listings}) => {
             <section className="relative lg:mt-24 lg:pt-12  mt-24 pt-12 pb-8">
                 <div className="mb-8 container flex justify-center flex-col items-center ">
                     <div className=" flex justify-center ">
-                        <h1 className="text-jacarta-700 font-bold font-display mb-6 text-center text-5xl dark:text-white md:text-left lg:text-6xl xl:text-6xl">{isOwner ? "Your Ad Space" : "Buy Ad Space"} </h1>
+                        <h1 className="text-jacarta-700 font-bold font-display mb-6 text-center text-5xl dark:text-white md:text-left lg:text-6xl xl:text-6xl">{isOwner && isValidId ? "Your Ad Space" : "Buy Ad Space"} </h1>
                         {/* <span className={`ml-2 text-sm font-bold ${isOwner ? (adStatut === 0 ? "text-red" : adStatut === 1 ? "text-green" : adStatut === 2 ? "text-accent" : "hidden") : "hidden"}`}>
               {adStatut === 0 ? "Rejected" : adStatut === 1 ? "Accepted" : adStatut === 2 ? "Pending" : ""}
             </span> */}
@@ -473,7 +491,7 @@ const TokenPageContainer = ({offerId, tokenId, offer, listings}) => {
                             {/* <!-- Modal --> */}
                             <div className={imageModal ? "modal fade show block" : "modal fade"}>
                                 <div className="modal-dialog !my-0 flex h-full max-w-4xl items-center justify-center">
-                                    <Image width={582} height={722} src={image && image} alt="image" className="h-full object-cover w-full rounded-2xl" />
+                                    <Image width={582} height={722} src={image ? image : "/images/gradient_creative.jpg"} alt="image" className="h-full object-cover w-full rounded-2xl" />
                                 </div>
 
                                 <button type="button" className="btn-close absolute top-6 right-6" onClick={() => setImageModal(false)}>
@@ -489,34 +507,20 @@ const TokenPageContainer = ({offerId, tokenId, offer, listings}) => {
                         {/* <!-- Details --> */}
                         <div className="md:w-3/5 md:basis-auto md:pl-8 lg:w-1/2 lg:pl-[3.75rem]">
                             {/* <!-- Collection / Likes / Actions --> */}
-                            <div className="mb-3 flex">
-                                {/* <!-- Collection --> */}
-                                <div className="flex items-center">
-                                    <Link href={`/manage/${offerData?.initialCreator}`} className="text-accent mr-2 text-sm font-bold">
-                                        {offerData?.initialCreator}
-                                    </Link>
-                                    <span className="dark:border-jacarta-600 bg-green inline-flex h-6 w-6 items-center justify-center rounded-full border-2 border-white" data-tippy-content="Verified Collection">
-                    <Tippy content={<span>Verified Collection</span>}>
-                      <svg className="icon h-[.875rem] w-[.875rem] fill-white">
-                        <use xlinkHref="/icons.svg#icon-right-sign"></use>
-                      </svg>
-                    </Tippy>
-                  </span>
-                                </div>
-                            </div>
 
                             <Link href={`/offer/${offerId}`} className="flex">
                                 <h1 className="font-display text-jacarta-700 mb-4 dark:hover:text-accent text-4xl font-semibold dark:text-white">{name}</h1>
                             </Link>
 
                             <div className="mb-8 flex items-center  whitespace-nowrap flex-wrap">
-                                <div className="flex items-center mr-4">
-                  <span className="text-green text-sm font-medium tracking-tight mr-2">
-                    {(price * protocolFees) / 100 + price} {currency?.symbol ? currency?.symbol : "N/A"}
-                  </span>
-                                    <ModalHelper {...modalHelper} size="small" />
-                                </div>
-
+                                {currency?.symbol && (
+                                    <div className="flex items-center mr-4">
+                    <span className="text-green text-sm font-medium tracking-tight mr-2">
+                      {finalPrice} {currency?.symbol}
+                    </span>
+                                        <ModalHelper {...modalHelper} size="small" />
+                                    </div>
+                                )}
                                 <span className="dark:text-jacarta-300 text-jacarta-400 text-sm mr-4">
                   Space # <strong className="dark:text-white">{tokenData ? tokenData : formatTokenId(tokenId)}</strong>{" "}
                 </span>
@@ -550,21 +554,20 @@ const TokenPageContainer = ({offerId, tokenId, offer, listings}) => {
                 </div>
             </section>
             {/* <!-- end item --> */}
-
-
-            {!listings || listings.length === 0 && (
-                <Validation offer={offerData} offerId={offerId} isOwner={isOwner} isToken={true} successFullUploadModal={successFullUploadModal} />
-            )}
-
-
-
+            <div className="container mb-12">
+                <Divider className="my-4" />
+                <h2 className="text-jacarta-700 font-bold font-display mb-6 text-center text-3xl dark:text-white ">Details </h2>
+                <ItemsTabs contractAddress={offerData?.nftContract.id} offerId={offerId} isUserOwner={isUserOwner} initialCreator={offerData?.initialCreator} />
+            </div>
+            {offerData.nftContract?.tokens[0]?.mint && isValidId && <Validation offer={offerData} offerId={offerId} isOwner={isOwner} isToken={true} successFullUploadModal={successFullUploadModal} />}
+            {/* <ItemsTabs /> */}
             <div>
-                {isOwner && !offerNotFormated ? (
+                {isOwner && isValidId ? (
                     <div className="container">
                         <Divider className="my-4" />
                         <h2 className="text-jacarta-700 font-bold font-display mb-6 text-center text-3xl dark:text-white ">Submission </h2>
                         <SliderForm styles={styles} handlePreviewModal={handlePreviewModal} stepsRef={stepsRef} numSteps={numSteps}>
-                            <Step_1_Mint stepsRef={stepsRef} styles={styles} adParameters={adParameters} />
+                            <Step_1_Mint stepsRef={stepsRef} styles={styles} adParameters={adParameters} setImageUrlVariants={setImageUrlVariants} />
                             <Step_2_Mint stepsRef={stepsRef} styles={styles} setLink={setLink} link={link} />
                             {imageURLSteps.map((id, index) => (
                                 <Step_3_Mint
@@ -583,27 +586,26 @@ const TokenPageContainer = ({offerId, tokenId, offer, listings}) => {
                 ) : (
                     <div className="flex justify-center">
                         <p>
-                            {offerNotFormated
-                                ?  <ItemDetails assetContract={offer.nftContract.id} tokenId={tokenId}/>
-                                : offerData.nftContract?.tokens === 0
-                                    ? "Sorry, tokenId unavailable, please provide a tokenId valid "
-                                    : offerData.nftContract?.tokens[0]?.mint && !isOwner
-                                        ? "Sorry, someone already own this NFT "
-                                        : ""}
+                            {!isValidId
+                                ? "Sorry, tokenId unavailable, please provide a tokenId valid"
+                                : offerNotFormated
+                                    ? ""
+                                    : offerData.nftContract?.tokens === 0
+                                        ? "Sorry, tokenId unavailable, please provide a tokenId valid "
+                                        : offerData.nftContract?.tokens[0]?.mint && !isOwner
+                                            ? "Sorry, someone already own this NFT "
+                                            : ""}
                         </p>
                     </div>
                 )}
             </div>
 
-            {/* <ItemsTabs /> */}
-            <div className="container mb-12">
-                <ItemsTabs contractAddress={offerData?.nftContract.id} offerId={offerId} />
-            </div>
             {showPreviewModal && (
                 <div className="modal fade show bloc">
                     <PreviewModal
                         handlePreviewModal={handlePreviewModal}
                         handleSubmit={handleSubmit}
+                        imageUrlVariants={imageUrlVariants}
                         link={link}
                         name={true}
                         description={true}
@@ -612,9 +614,10 @@ const TokenPageContainer = ({offerId, tokenId, offer, listings}) => {
                         errors={errors}
                         successFullUpload={successFullUpload}
                         validate={validate}
-                        buttonTitle="Submit"
+                        buttonTitle="Submit ad"
                         modalTitle="Ad Space Preview"
                         successFullUploadModal={successFullUploadModal}
+                        isLoadingButton={isLoadingButton}
                     />
                 </div>
             )}
@@ -625,6 +628,7 @@ const TokenPageContainer = ({offerId, tokenId, offer, listings}) => {
                         allowanceTrue={allowanceTrue}
                         handleApprove={handleApprove}
                         successFullUpload={successFullUpload}
+                        feesAmount={feesAmount}
                         successFullBuyModal={successFullBuyModal}
                         price={price}
                         initialCreator={offerData?.initialCreator}
@@ -637,11 +641,11 @@ const TokenPageContainer = ({offerId, tokenId, offer, listings}) => {
                         tokenId={tokenId}
                         tokenData={tokenData}
                         formatTokenId={formatTokenId}
+                        isLoadingButton={isLoadingButton}
                     />
                 </div>
             )}
         </>
-
     );
 };
 

@@ -1,6 +1,5 @@
 'use client';
 import React, { useState, useRef } from "react";
-import Meta from "../../components/Meta";
 import Image from "next/image";
 import "react-datepicker/dist/react-datepicker.css";
 import { useAddress, useContract, useContractWrite, useStorageUpload } from "@thirdweb-dev/react";
@@ -13,6 +12,7 @@ import Step_3_Create from "../../components/sliderForm/PageCreate/Step_3_Create"
 import Step_4_Create from "../../components/sliderForm/PageCreate/Step_4_Create";
 import contractABI from "../../abi/dsponsorAdmin.json";
 import SliderForm from "../../components/sliderForm/sliderForm";
+import {ethers} from "ethers";
 
 const CreateOfferContainer = () => {
     const [files, setFiles] = useState([]);
@@ -45,6 +45,7 @@ const CreateOfferContainer = () => {
     const [customTokenContract, setCustomTokenContract] = useState(null);
     const [terms, setTerms] = useState([]);
     const [previewTerms, setPreviewTerms] = useState([]);
+    const [isLoadingButton, setIsLoadingButton] = useState(false);
 
     const [name, setName] = useState(false);
     const stepsRef = useRef([]);
@@ -74,14 +75,7 @@ const CreateOfferContainer = () => {
         }
     };
 
-    const isValidURL = (url) => {
-        try {
-            new URL(url);
-            return true;
-        } catch (e) {
-            return false;
-        }
-    };
+
 
     const validateInputs = () => {
         let isValid = true;
@@ -91,7 +85,7 @@ const CreateOfferContainer = () => {
             isValid = false;
         }
 
-        if (!link || !isValidURL(link)) {
+        if (!link){
             newErrors.linkError = "The link is missing or invalid.";
             isValid = false;
         }
@@ -131,8 +125,9 @@ const CreateOfferContainer = () => {
             newErrors.endDateError = "End date cannot be in the past.";
             isValid = false;
         }
-
+        console.log(parseFloat(selectedUnitPrice))
         if (parseFloat(selectedUnitPrice) < 1 * 10 ** -tokenDecimals || isNaN(selectedUnitPrice) || selectedUnitPrice === null) {
+            console.log("là");
             newErrors.unitPriceError = `Unit price must be at least ${1 * 10 ** -tokenDecimals}.`;
             isValid = false;
         }
@@ -175,6 +170,7 @@ const CreateOfferContainer = () => {
         if (!validateInputs()) {
             return;
         }
+        setIsLoadingButton(true);
         try {
             let paramsFormated = [];
             selectedParameter.forEach((param) => {
@@ -286,6 +282,8 @@ const CreateOfferContainer = () => {
             setSuccessFullUpload(false);
             console.log(error);
             throw error;
+        } finally{
+            setIsLoadingButton(false);
         }
     };
 
@@ -297,13 +295,14 @@ const CreateOfferContainer = () => {
     const numSteps = 4;
     const successFullUploadModal = {
         body: "Your offer has been created successfully",
-        subBody: "❕On your offer management page, you will find the integration code to copy/paste onto your platform.",
+        subBody: "❕❕ On your offer management page, you will find the integration code to copy/paste onto your platform.",
         buttonTitle: "Manage Spaces",
-        hrefButton: `/manage/${address}`,
+        hrefButton: `/manageSpaces/${address}`,
     };
 
     return (
         <div>
+            {/* <!-- Create --> */}
             <section className="relative py-24">
                 <picture className="pointer-events-none absolute inset-0 -z-10 dark:hidden">
                     <Image width={1519} height={773} priority src="/images/gradient_light.jpg" alt="gradient" className="h-full w-full object-cover" />
@@ -403,6 +402,7 @@ const CreateOfferContainer = () => {
                         buttonTitle="Create ad space offer"
                         modalTitle="Ad Space Offer "
                         successFullUploadModal={successFullUploadModal}
+                        isLoadingButton={isLoadingButton}
                     />
                 </div>
             )}

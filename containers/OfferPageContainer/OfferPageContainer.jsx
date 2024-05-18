@@ -1,33 +1,24 @@
 'use client';
-import React, { useState, useEffect, useCallback, useRef } from "react";
-import { useRouter } from "next/navigation";
+import {ethers} from "ethers";
 import Link from "next/link";
 import "tippy.js/dist/tippy.css";
-import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
-import Meta from "../../components/Meta";
 import Image from "next/image";
-import { useContract, useContractWrite, useContractRead, useAddress } from "@thirdweb-dev/react";
 import Tippy from "@tippyjs/react";
-import "tippy.js/dist/tippy.css";
-import Review_carousel from "../../components/carousel/review_carousel";
-import Validated_refused_items from "../../components/collections/validated_refused_items";
-import { fetchDataFromIPFS } from "../../data/services/ipfsService";
+import { useRouter } from "next/navigation";
+import { Divider } from "@nextui-org/react";
+import React, { useState, useEffect } from "react";
+import { CopyToClipboard } from "react-copy-to-clipboard";
+import { useContract, useContractWrite, useContractRead, useAddress } from "@thirdweb-dev/react";
 import adminInstance from "../../utils/sdkProvider";
 import OfferSkeleton from "../../components/skeleton/offerSkeleton";
-import { GetAdOffer } from "../../data/services/TokenOffersService";
 import { contractABI } from "../../data/services/contract";
 import Form from "../../components/collections-wide/sidebar/collections/Form";
-import { Divider } from "@nextui-org/react";
-import "tippy.js/dist/tippy.css";
-import { CopyToClipboard } from "react-copy-to-clipboard";
 import Validation from "../../components/offer-section/validation";
-import { protocolFees } from "../../utils/constUtils";
 import ModalHelper from "../../components/Helper/modalHelper";
-
+import {ItemsTabs} from "../../components/component";
 
 const OfferPageContainer = ({offerId, offer}) => {
     const router = useRouter();
-
     const userAddress = useAddress();
     const [copied, setCopied] = useState(false);
     const [offerData, setOfferData] = useState([]);
@@ -42,16 +33,19 @@ const OfferPageContainer = ({offerId, offer}) => {
     const [successFullRefuseModal, setSuccessFullRefuseModal] = useState(false);
     const [tokenData, setTokenData] = useState("");
     const [isWordAlreadyTaken, setIsWordAlreadyTaken] = useState(false);
-    const { contract: tokenContract } = useContract(offer?.nftContract?.prices?.[0]?.currency, "token");
+    const { contract: tokenContract } = useContract(offerData?.nftContract?.prices[0]?.currency, "token");
     const { data: symbolContract } = useContractRead(tokenContract, "symbol");
     const { data: decimalsContract } = useContractRead(tokenContract, "decimals");
 
+    const { data: bps } = useContractRead(DsponsorAdminContract, "feeBps");
+    const maxBps = 10000;
+
 
     useEffect(() => {
-        if (userAddress?.toLowerCase() === offer.initialCreator) {
-            setIsOwner(true);
+        if (offerId) {
+            setOfferData(offer);
         }
-    }, [userAddress]);
+    }, [offerId, successFullRefuseModal, userAddress]);
 
     useEffect(() => {
         if (!offerData) return;
@@ -65,16 +59,16 @@ const OfferPageContainer = ({offerId, offer}) => {
                 currencyTokenObject.symbol = symbolContract;
                 currencyTokenObject.decimals = decimalsContract;
             }
-            console.log(currencyTokenObject);
-            const formatPrice = offerData.nftContract.prices[0].amount / 10 ** currencyTokenObject.decimals;
-            setPrice(formatPrice);
+
+            const bigIntPrice = (BigInt(offerData?.nftContract?.prices[0]?.amount) * (BigInt(bps) + BigInt(maxBps))) / BigInt(maxBps);
+            const formatPrice = ethers.utils.formatUnits(bigIntPrice, currencyTokenObject.decimals);
+
+            setPrice(Number(Math.ceil(formatPrice * 1000) / 1000));
             setCurrency(currencyTokenObject);
-
         } catch (e) {
-            console.error("Error: Currency not found for address", offerData?.nftContract?.prices[0]);
-
+            console.error("Error: Currency not found for address", offerData?.nftContract?.prices[0], e);
         }
-    }, [symbolContract, decimalsContract, offerData]);
+    }, [symbolContract, decimalsContract, offerData, bps]);
 
     useEffect(() => {
         if (offerData?.nftContract?.royaltyBps) setRoyalties(offerData?.nftContract?.royaltyBps / 100);
@@ -114,14 +108,12 @@ const OfferPageContainer = ({offerId, offer}) => {
     }
     const modalHelper = {
         title: "Protocol Fees",
-        body: `The protocol fees (${protocolFees}%) are used to maintain the platform and the services provided. The fees are calculated based on the price of the ad space and are automatically deducted from the total amount paid by the buyer.`,
+        body: `The protocol fees (4%) are used to maintain the platform and the services provided. The fees are calculated based on the price of the ad space and are automatically deducted from the total amount paid by the buyer.`,
     };
-    const { description = "description not found", id = "1", image = ["/images/gradient_creative.jpg"], name = "DefaultName", nftContract = "N/A" } = offerData.offer ? offerData.offer : {};
+    const { description = "description not found", id = "1", image = ["/images/gradient_creative.jpg"], name = "DefaultName", nftContract = "N/A" } = offerData.metadata.offer ? offerData.metadata.offer : {};
 
     return (
         <>
-            <Meta title={` || d>sponsor | Media sponsor Marketplace `} />
-            {/*  <!-- Item --> */}
             <section className="relative lg:mt-24 lg:pt-12  mt-24 pt-12 pb-8">
                 <div className="container flex justify-center mb-6">
                     <h1 className="text-jacarta-700 font-bold font-display mb-6 text-center text-5xl dark:text-white md:text-left lg:text-6xl xl:text-6xl">Offer </h1>
@@ -161,29 +153,23 @@ const OfferPageContainer = ({offerId, offer}) => {
                             <div className="mb-3 flex">
                                 {/* <!-- Collection --> */}
                                 <div className="flex items-center">
-                                    <Link href={`/manage/${offerData?.initialCreator}`} className="text-accent mr-2 text-sm font-bold">
+                                    <Link href={`/manageSpaces/${offerData?.initialCreator}`} className="text-accent mr-2 text-sm font-bold">
                                         {offerData?.initialCreator}
                                     </Link>
-                                    <span className="dark:border-jacarta-600 bg-green inline-flex h-6 w-6 items-center justify-center rounded-full border-2 border-white" data-tippy-content="Verified Collection">
-                    <Tippy content={<span>Verified Collection</span>}>
-                      <svg className="icon h-[.875rem] w-[.875rem] fill-white">
-                        <use xlinkHref="/icons.svg#icon-right-sign"></use>
-                      </svg>
-                    </Tippy>
-                  </span>
                                 </div>
                             </div>
 
                             <h1 className="font-display text-jacarta-700 mb-4 text-4xl font-semibold dark:text-white">{name}</h1>
 
                             <div className="mb-8 flex items-center flex-wrap gap-2 space-x-4 whitespace-nowrap">
-                                <div className="flex items-center">
-
-                  <span className="text-green text-sm font-medium tracking-tight mr-2">
-                    {price * protocolFees/100 + price} {currency?.symbol ? currency?.symbol : "N/A"}
-                  </span>
-                                    <ModalHelper  {...modalHelper} size="small" />
-                                </div>
+                                {currency?.symbol && (
+                                    <div className="flex items-center">
+                    <span className="text-green text-sm font-medium tracking-tight mr-2">
+                      {price} {currency?.symbol}
+                    </span>
+                                        <ModalHelper {...modalHelper} size="small" />
+                                    </div>
+                                )}
 
                                 {offerData.nftContract.allowList && (
                                     <span className="dark:text-jacarta-300 text-jacarta-400 text-sm">
@@ -211,10 +197,15 @@ const OfferPageContainer = ({offerId, offer}) => {
                     </div>
                 </div>
             </section>
+            <div className="container mb-12">
+                <Divider className="my-4" />
+                <h2 className="text-jacarta-700 font-bold font-display mb-6 text-center text-3xl dark:text-white ">Details </h2>
+                <ItemsTabs contractAddress={offerData?.nftContract.id} offerId={offerId} initialCreator={offerData?.initialCreator} isToken={false} />
+            </div>
             {!offerData.nftContract.allowList && (
                 <div className="container flex flex-col justify-center mb-6">
                     <Divider className="my-4" />
-                    <h2 className="text-jacarta-700 font-bold font-display mb-6 text-center text-3xl dark:text-white md:text-left">Search </h2>
+                    <h2 className="text-jacarta-700 font-bold font-display mb-6 text-center text-3xl dark:text-white md:text-center">Search </h2>
                     <div className="dark:bg-jacarta-700 dark:border-jacarta-600 border-jacarta-100 rounded-2lg border bg-white p-8">
                         <div className=" sm:flex sm:flex-wrap">
               <span className="dark:text-jacarta-300 text-jacarta-400 text-sm">
@@ -234,14 +225,18 @@ const OfferPageContainer = ({offerId, offer}) => {
                                     <figure className="mt-2">
                                         <Link href={urlFromChild}>{image && <Image src={image} alt="logo" height={230} width={230} className="rounded-[0.625rem] w-full lg:h-[230px] object-contain" loading="lazy" />}</Link>
                                     </figure>
-                                    <div className="mt-4 flex items-center justify-between">
-                                        <Link href={urlFromChild} className="overflow-hidden text-ellipsis whitespace-nowrap max-w-[120px]">
-                                            <span className="font-display max-w-[150px] text-jacarta-700 hover:text-accent text-base dark:text-white ">{name}</span>
-                                        </Link>
+                                    <div className="mt-4 flex items-center justify-between gap-4">
+                                        <Tippy content={<span className="p-2">{name}</span>}>
+                                            <Link href={urlFromChild} className="overflow-hidden text-ellipsis whitespace-nowrap min-w-[120px]">
+                                                <span className="font-display  text-jacarta-700 hover:text-accent text-base dark:text-white ">{name}</span>
+                                            </Link>
+                                        </Tippy>
 
-                                        <div className="dark:border-jacarta-600 border-jacarta-100 flex items-center whitespace-nowrap rounded-md border py-1 px-2">
-                                            <span className="text-green text-sm font-medium tracking-tight"> {tokenData}</span>
-                                        </div>
+                                        <Tippy content={<span className="p-2">{tokenData}</span>}>
+                                            <div className="dark:border-jacarta-600 border-jacarta-100 max-w-[100px] overflow-hidden text-ellipsis flex items-center whitespace-nowrap rounded-md border py-1 px-2">
+                                                <span className="text-green text-sm font-medium tracking-tight overflow-hidden text-ellipsis whitespace-nowrap"> {tokenData}</span>
+                                            </div>
+                                        </Tippy>
                                     </div>
                                 </div>
                             </article>
@@ -275,7 +270,10 @@ const OfferPageContainer = ({offerId, offer}) => {
               </pre>
                             <Tippy hideOnClick={false} content={copied ? <span>copied</span> : <span>copy</span>}>
                                 <div className="js-copy-clipboard cursor-pointer">
-                                    <CopyToClipboard text={`https://relayer.dsponsor.com/11155111/iframe/${offerId}?bgColor=0d102d`} onCopy={() => setCopied(true)}>
+                                    <CopyToClipboard
+                                        text={`<iframe src="https://relayer.dsponsor.com/11155111/iframe/${offerId}?bgColor=0d102d" height="315" width="1000px" className={'h-screen w-full'} />`}
+                                        onCopy={() => setCopied(true)}
+                                    >
                                         <Image src="/images/copy.svg" alt="icon" width={20} height={20} className="mt-2 min-w-[20px] " />
                                     </CopyToClipboard>
                                 </div>
