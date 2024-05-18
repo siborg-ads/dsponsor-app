@@ -589,7 +589,7 @@ const TokenPageContainer = ({offerId, tokenId, offer, listings}) => {
                             {!isValidId
                                 ? "Sorry, tokenId unavailable, please provide a tokenId valid"
                                 : offerNotFormated
-                                    ? ""
+                                    ?  <ItemDetails assetContract={offer.nftContract.id} tokenId={tokenId}/>
                                     : offerData.nftContract?.tokens === 0
                                         ? "Sorry, tokenId unavailable, please provide a tokenId valid "
                                         : offerData.nftContract?.tokens[0]?.mint && !isOwner
