@@ -43,7 +43,7 @@ const ManageSpaceContainer = ({address: userAddress}) => {
           const combinedData = {
             isPending: isPending,
             ...element,
-            ...destructuredIPFSResult,
+            metadata : destructuredIPFSResult,
           };
           mappedOffers.push(combinedData);
         }
@@ -63,7 +63,7 @@ const ManageSpaceContainer = ({address: userAddress}) => {
           const combinedData = {
             ...element,
             ...(element.mint.tokenData ? { tokenData: element.mint.tokenData } : {}),
-            ...destructuredIPFSResult,
+            metadata: destructuredIPFSResult,
           };
           mappedownedAdProposals.push(combinedData);
         }
@@ -84,8 +84,8 @@ const ManageSpaceContainer = ({address: userAddress}) => {
     <>
       <div className=" " key="5">
         {/* <!-- Banner --> */}
-        <div className="relative h-[13rem]">
-          <Image width={1519} height={150} src="/images/gradient_creative.jpg" alt="banner" className="w-full h-full object-cover" />
+        <div className="relative sm:h-[250px] h-[150px]">
+          <Image fill={true} src="/images/gradient_creative.jpg" alt="banner" className="w-full h-full object-cover" />
         </div>
         {/* <!-- end banner --> */}
         <section className="dark:bg-jacarta-800 bg-light-base relative ">
@@ -94,12 +94,10 @@ const ManageSpaceContainer = ({address: userAddress}) => {
             <div className="container">
               <div className="text-center">
                 <div className="dark:bg-jacarta-700 dark:border-jacarta-600 border-jacarta-100  inline-flex items-center justify-center rounded-full border bg-white py-1.5 px-4">
-
-
                   <Tippy hideOnClick={false} content={copied ? <span>copied</span> : <span>copy</span>}>
-                    <button className="js-copy-clipboard dark:text-jacarta-200 max-w-[10rem] select-none overflow-hidden text-ellipsis whitespace-nowrap">
+                    <button className="js-copy-clipboard dark:text-jacarta-200 max-w-[150px] select-none overflow-hidden text-ellipsis whitespace-nowrap">
                       <CopyToClipboard text="userId" onCopy={() => setCopied(true)}>
-                        <span>{userAddress}</span>
+                        <span className="overflow-hidden text-ellipsis whitespace-nowrap">{userAddress}</span>
                       </CopyToClipboard>
                     </button>
                   </Tippy>

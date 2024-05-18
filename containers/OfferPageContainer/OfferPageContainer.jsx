@@ -42,10 +42,14 @@ const OfferPageContainer = ({offerId, offer}) => {
 
 
     useEffect(() => {
-        if (offerId) {
+        if (offerId && offer) {
             setOfferData(offer);
         }
-    }, [offerId, successFullRefuseModal, userAddress]);
+        console.log(offer);
+         if (userAddress?.toLowerCase() === offer.initialCreator) {
+           setIsOwner(true);
+         }
+    }, [offerId, successFullRefuseModal, userAddress, offer]);
 
     useEffect(() => {
         if (!offerData) return;
