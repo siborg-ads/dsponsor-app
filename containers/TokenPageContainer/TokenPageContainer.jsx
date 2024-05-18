@@ -536,68 +536,68 @@ const TokenPageContainer = ({ offerId, tokenId, offer, listings }) => {
                       Buying the ad space give you the exclusive right to submit an ad. The media still has the power to validate or reject ad assets. You re free to change the ad at anytime. And free to resell on the
                       open market your ad space.{" "}
                     </span>
-                  </div>
-                  <div className="w-full flex justify-center">
-                    {address ? (
-                      <button type="button" className="bg-accent shadow-accent-volume hover:bg-accent-dark w-36 rounded-full py-3 px-8 text-center font-semibold text-white transition-all" onClick={handleBuyModal}>
-                        Buy
-                      </button>
-                    ) : (
-                      <Web3Button className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all  !bg-accent !cursor-pointer `}>Connect wallet</Web3Button>
-                    )}
-                  </div>
+                                    </div>
+                                    <div className="w-full flex justify-center">
+                                        {address ? (
+                                            <button type="button" className="bg-accent shadow-accent-volume hover:bg-accent-dark w-36 rounded-full py-3 px-8 text-center font-semibold text-white transition-all" onClick={handleBuyModal}>
+                                                Buy
+                                            </button>
+                                        ) : (
+                                            <Web3Button className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all  !bg-accent !cursor-pointer `}>Connect wallet</Web3Button>
+                                        )}
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    </div>
                 </div>
-              )}
+            </section>
+            {/* <!-- end item --> */}
+            <div className="container mb-12">
+                <Divider className="my-4" />
+                <h2 className="text-jacarta-700 font-bold font-display mb-6 text-center text-3xl dark:text-white ">Details </h2>
+                <ItemsTabs contractAddress={offerData?.nftContract.id} offerId={offerId} isUserOwner={isUserOwner} initialCreator={offerData?.initialCreator} />
             </div>
-          </div>
-        </div>
-      </section>
-      {/* <!-- end item --> */}
-      <div className="container mb-12">
-        <Divider className="my-4" />
-        <h2 className="text-jacarta-700 font-bold font-display mb-6 text-center text-3xl dark:text-white ">Details </h2>
-        <ItemsTabs contractAddress={offerData?.nftContract.id} offerId={offerId} isUserOwner={isUserOwner} initialCreator={offerData?.initialCreator} />
-      </div>
-      {offerData.nftContract?.tokens[0]?.mint && isValidId && <Validation offer={offerData} offerId={offerId} isOwner={isOwner} isToken={true} successFullUploadModal={successFullUploadModal} />}
-      {/* <ItemsTabs /> */}
-      <div>
-        {isOwner && isValidId ? (
-          <div className="container">
-            <Divider className="my-4" />
-            <h2 className="text-jacarta-700 font-bold font-display mb-6 text-center text-3xl dark:text-white ">Submission </h2>
-            <SliderForm styles={styles} handlePreviewModal={handlePreviewModal} stepsRef={stepsRef} numSteps={numSteps}>
-              <Step_1_Mint stepsRef={stepsRef} styles={styles} adParameters={adParameters} setImageUrlVariants={setImageUrlVariants} />
-              <Step_2_Mint stepsRef={stepsRef} styles={styles} setLink={setLink} link={link} />
-              {imageURLSteps.map((id, index) => (
-                <Step_3_Mint
-                  key={id}
-                  stepsRef={stepsRef}
-                  currentStep={index + 2}
-                  id={id}
-                  styles={styles}
-                  file={files[index]}
-                  previewImage={previewImages[index]}
-                  handleLogoUpload={(file) => handleLogoUpload(file, index)}
-                />
-              ))}
-            </SliderForm>
-          </div>
-        ) : (
-          <div className="flex justify-center">
-            <p>
-              {!isValidId
-                ? "Sorry, tokenId unavailable, please provide a tokenId valid"
-                : offerNotFormated
-                ? ""
-                : offerData.nftContract?.tokens === 0
-                ? "Sorry, tokenId unavailable, please provide a tokenId valid "
-                : offerData.nftContract?.tokens[0]?.mint && !isOwner
-                ? "Sorry, someone already own this NFT "
-                : ""}
-            </p>
-          </div>
-        )}
-      </div>
+            {offerData.nftContract?.tokens[0]?.mint && isValidId && <Validation offer={offerData} offerId={offerId} isOwner={isOwner} isToken={true} successFullUploadModal={successFullUploadModal} />}
+            {/* <ItemsTabs /> */}
+            <div>
+                {isOwner && isValidId ? (
+                    <div className="container">
+                        <Divider className="my-4" />
+                        <h2 className="text-jacarta-700 font-bold font-display mb-6 text-center text-3xl dark:text-white ">Submission </h2>
+                        <SliderForm styles={styles} handlePreviewModal={handlePreviewModal} stepsRef={stepsRef} numSteps={numSteps}>
+                            <Step_1_Mint stepsRef={stepsRef} styles={styles} adParameters={adParameters} setImageUrlVariants={setImageUrlVariants} />
+                            <Step_2_Mint stepsRef={stepsRef} styles={styles} setLink={setLink} link={link} />
+                            {imageURLSteps.map((id, index) => (
+                                <Step_3_Mint
+                                    key={id}
+                                    stepsRef={stepsRef}
+                                    currentStep={index + 2}
+                                    id={id}
+                                    styles={styles}
+                                    file={files[index]}
+                                    previewImage={previewImages[index]}
+                                    handleLogoUpload={(file) => handleLogoUpload(file, index)}
+                                />
+                            ))}
+                        </SliderForm>
+                    </div>
+                ) : (
+                    <div className="flex justify-center">
+                        <p>
+                            {!isValidId
+                                ? "Sorry, tokenId unavailable, please provide a tokenId valid"
+                                : offerNotFormated
+                                    ?  <ItemDetails assetContract={offer.nftContract.id} tokenId={tokenId}/>
+                                    : offerData.nftContract?.tokens === 0
+                                        ? "Sorry, tokenId unavailable, please provide a tokenId valid "
+                                        : offerData.nftContract?.tokens[0]?.mint && !isOwner
+                                            ? "Sorry, someone already own this NFT "
+                                            : ""}
+                        </p>
+                    </div>
+                )}
+            </div>
 
       {showPreviewModal && (
         <div className="modal fade show bloc">
