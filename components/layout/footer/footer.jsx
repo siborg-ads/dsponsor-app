@@ -13,7 +13,7 @@ const footer = () => {
         id: 3,
         title: "My Account",
         diffClass: "",
-        list: [
+        list: (state.address ? [
           {
             id: 1,
             href: `/manage/${state.address}`,
@@ -24,7 +24,7 @@ const footer = () => {
             href: `/offer/create`,
             text: "Create Offer",
           },
-        ],
+        ] : []),
       }]);
 
   return (
