@@ -2,12 +2,14 @@ import React, { useState, useEffect, useMemo } from "react";
 import { fetchListingAdOffer } from "../../../containers/MarketplaceContainer/services";
 import MarketplaceItemCard from "../marketplace-item-card/marketplace-item-card";
 import Spinner from "../../spinner/Spinner";
+import {useChainContext} from "../../../contexts/hooks/useChainContext";
 
 const MarketplaceListingSection = ({ listings, title, type }) => {
   const [loading, setLoading] = useState(true);
   const [listingsWithOfferInfo, setListingsWithOfferInfo] = useState([]);
   const [listingOfferInfoInvalid, setListingOfferInfoInvalid] = useState(false);
 
+  const {chainName } = useChainContext();
   const getListingOffer = async () => {
     try {
       const formattedListings = await Promise.all(
@@ -27,7 +29,8 @@ const MarketplaceListingSection = ({ listings, title, type }) => {
 
   useEffect(() => {
     getListingOffer();
-  }, []);
+  }, [chainName]);
+
 
   // Memoize the rendered items to prevent unnecessary re-renders
   const renderedItems = useMemo(() => {
@@ -37,6 +40,9 @@ const MarketplaceListingSection = ({ listings, title, type }) => {
         title={listing.offer?.name}
         image={listing.offer?.image}
         price={listing.price}
+        chainName={chainName}
+        offer={listing.token.nftContract.adOffers?.[0]}
+        tokenData={listing.token?.mint?.tokenData}
         assetContract={listing.token.nftContract.id}
         tokenId={listing.token.tokenId}
         symbol={listing.symbol}

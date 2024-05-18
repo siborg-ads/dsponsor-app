@@ -130,10 +130,10 @@ const TokenPageContainer = ({offerId, tokenId, offer, listings}) => {
             }
             console.log(offerData, "offerData");
             let tokenMetaData = {};
-            if (offerData.offer.token_metadata && isValidId) {
-                tokenMetaData.description = offerData.offer.token_metadata.description.replace(/{tokenData}/g, `${tokenData}`);
-                tokenMetaData.image = offerData.offer.token_metadata.image.replace(/{tokenData}/g, `${tokenData}`);
-                tokenMetaData.name = offerData.offer.token_metadata.name.replace(/{tokenData}/g, `${tokenData}`);
+            if (offerData.metadata.offer.token_metadata && isValidId) {
+                tokenMetaData.description = offerData.metadata.offer.token_metadata.description.replace(/{tokenData}/g, `${tokenData}`);
+                tokenMetaData.image = offerData.metadata.offer.token_metadata.image.replace(/{tokenData}/g, `${tokenData}`);
+                tokenMetaData.name = offerData.metadata.offer.token_metadata.name.replace(/{tokenData}/g, `${tokenData}`);
             }
             setTokenMetaData(tokenMetaData);
         }

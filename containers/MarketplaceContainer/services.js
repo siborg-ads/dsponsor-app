@@ -36,6 +36,8 @@ const fetchAllMpListings = async () => {
           nftContract {
             id # = assetContract
             adOffers {
+              id
+              name
               metadataURL # offerMetadata
             }
           }
@@ -215,6 +217,8 @@ export const fetchFirstValidListing = async (assetContract, tokenId) => {
           nftContract {
             id # = assetContract
             adOffers {
+              id
+              name
               metadataURL # offerMetadata
             }
             royaltyBps # bps -> 690 == 6.90 %

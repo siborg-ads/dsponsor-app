@@ -7,8 +7,8 @@ const ChainProvider = ({ children }) => {
     const chainId = useChainId();
     const connectedAddress = useAddress();
 
-    const [currentChainId, setCurrentChainId] = useState(null);
-    const [currentChainName, setCurrentChainName] = useState(null);
+    const [currentChainId, setCurrentChainId] = useState(11155111);
+    const [currentChainName, setCurrentChainName] = useState('sepolia');
 
     useEffect(() => {
         setCurrentChainId(chainId);
@@ -19,19 +19,20 @@ const ChainProvider = ({ children }) => {
         const id = parseInt(chainId);
         switch (id) {
             case 11155111:
-                return 'Ethereum Sepolia';
+                return 'sepolia';
             case 42161:
-                return 'Arbitrum One';
+                return 'arbitrum-one';
             case 421614:
-                return 'Arbitrum Sepolia';
+                return 'arbitrum-sepolia';
             case 80001:
-                return 'Polygon Mumbai';
+                return 'polygon-mumbai';
             case 137:
-                return 'Polygon';
+                return 'polygon';
             case 1:
-                return 'Ethereum Mainnet';
+                return 'ethereum';
             default:
-                return 'Unknown:'+chainId;
+                console.warn(`Unknown chainId: ${chainId} - Using default chainId: 11155111`);
+                return getChainName(11155111);
         }
     }
 
