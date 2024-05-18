@@ -42,7 +42,7 @@ const MarketplaceListingSection = ({ listings, title, type }) => {
         price={listing.price}
         chainName={chainName}
         offer={listing.token.nftContract.adOffers?.[0]}
-        tokenData={listings[0].token?.mint?.tokenData}
+        tokenData={listing.token?.mint?.tokenData}
         assetContract={listing.token.nftContract.id}
         tokenId={listing.token.tokenId}
         symbol={listing.symbol}
