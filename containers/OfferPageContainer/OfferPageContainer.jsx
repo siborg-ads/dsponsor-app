@@ -118,7 +118,7 @@ const OfferPageContainer = ({offerId, offer}) => {
 
     return (
         <>
-            <section className="relative lg:mt-24 lg:pt-12  mt-24 pt-12 pb-8">
+            <section className="relative  lg:pt-4  pt-12 pb-8">
                 <div className="container flex justify-center mb-6">
                     <h1 className="text-jacarta-700 font-bold font-display mb-6 text-center text-5xl dark:text-white md:text-left lg:text-6xl xl:text-6xl">Offer </h1>
                 </div>

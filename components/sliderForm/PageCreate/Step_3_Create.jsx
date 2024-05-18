@@ -66,7 +66,7 @@ const Step_3_Create = ({ stepsRef, styles, setLink, link, file, handleLogoUpload
             className={`dark:bg-jacarta-700 dark:border-jacarta-600 border-jacarta-100 group relative flex max-w-md flex-col items-center justify-center rounded-lg border-2 border-dashed bg-white  px-1 text-center ${
               previewImage.length <= 0 ? "py-20" : "p-1"
             }`}
-            style={{ width: `300px`, height: `300px` }}
+            style={{ width: `275px`, height: `275px` }}
           >
             <div className={`relative z-10 cursor-pointer  ${!previewImage ? "p-1" : "px-0 h-full w-full"}`}>
               {previewImage.length <= 0 ? (
