@@ -7,6 +7,7 @@ import Image from "next/image";
 import "tippy.js/dist/tippy.css";
 import { MdKeyboardArrowRight, MdKeyboardArrowLeft } from "react-icons/md";
 import OfferItem from "../cards/offerItem";
+import {useChainContext} from "../../contexts/hooks/useChainContext";
 
 const BidsCarousel = ({data}) => {
 
@@ -17,6 +18,9 @@ const BidsCarousel = ({data}) => {
 //      </div>
 //    );
 //  }
+
+    const {chainName} = useChainContext();
+
   return (
     <>
       <Swiper
@@ -52,7 +56,7 @@ const BidsCarousel = ({data}) => {
           data.map((item, index) => {
             return (
               <SwiperSlide className="text-white" key={index}>
-                <OfferItem item={item} url={`/offer/${item.id}/${item.tokenIdAllowedToMint ? item.tokenIdAllowedToMint.tokenId : "" }`} />
+                <OfferItem item={item} url={`${chainName}/offer/${item.id}/${item.tokenIdAllowedToMint ? item.tokenIdAllowedToMint.tokenId : "" }`} />
               </SwiperSlide>
             );
           })
