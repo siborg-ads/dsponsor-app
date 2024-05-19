@@ -4,7 +4,6 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import "tippy.js/dist/tippy.css";
 import styles from "../../styles/createPage/style.module.scss";
-import Meta from "../../components/Meta";
 import Image from "next/image";
 import { useAddress, useBalance, Web3Button, useContract, useContractRead, useContractWrite, useStorageUpload } from "@thirdweb-dev/react";
 import { ethers } from "ethers";
@@ -13,15 +12,12 @@ import Step_1_Mint from "../../components/sliderForm/PageMint/Step_1_Mint";
 import Step_2_Mint from "../../components/sliderForm/PageMint/Step_2_Mint";
 import Step_3_Mint from "../../components/sliderForm/PageMint/Step_3_Mint";
 import PreviewModal from "../../components/modal/previewModal";
-import Tippy from "@tippyjs/react";
 import "tippy.js/dist/tippy.css";
 import { ItemsTabs } from "../../components/component";
-import { fetchDataFromIPFS } from "../../data/services/ipfsService";
 import BuyModal from "../../components/modal/buyModal";
 import adminInstance from "../../utils/sdkProvider";
 import { toast } from "react-toastify";
 import OfferSkeleton from "../../components/skeleton/offerSkeleton.jsx";
-import { GetTokenAdOffer } from "../../data/services/TokenOffersService";
 import { Divider } from "@nextui-org/react";
 import Validation from "../../components/offer-section/validation.jsx";
 import { protocolFees } from "../../utils/constUtils";
@@ -462,7 +458,6 @@ const TokenPageContainer = ({ offerId, tokenId, offer, listings }) => {
 
   return (
     <>
-      <Meta title={` || d>sponsor | Media sponsor Marketplace `} />
       {/*  <!-- Item --> */}
       <section className="relative lg:mt-24 lg:pt-12  mt-24 pt-12 pb-8">
         <div className="mb-8 container flex justify-center flex-col items-center ">
