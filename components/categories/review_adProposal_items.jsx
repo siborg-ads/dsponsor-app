@@ -6,8 +6,10 @@ import "tippy.js/dist/tippy.css";
 import { useDispatch, useSelector } from "react-redux";
 import { buyModalShow } from "../../redux/counterSlice";
 import Review_carousel from "../carousel/review_carousel";
+import {useChainContext} from "../../contexts/hooks/useChainContext";
 
 const Review_adProposal_items = () => {
+  const {chainName} = useChainContext();
   const { sortedtrendingCategoryItemData } = useSelector((state) => state.counter);
   const dispatch = useDispatch();
   const router = useRouter();
@@ -23,12 +25,12 @@ const Review_adProposal_items = () => {
           <article key={id}>
             <div className={`dark:bg-jacarta-700 ${isAlreadyMinted ? "dark:border-jacarta-700" : "border-green"}  rounded-2.5xl block border-2 bg-white p-[1.1875rem] transition-shadow hover:shadow-lg`}>
               <figure className="relative">
-                <Link href={`/offer/${offerAddress}`}>
+                <Link href={`/${chainName}/offer/${offerAddress}`}>
                   <Image width={230} height={230} src={image} alt="item 5" className="w-full h-[230px] rounded-[0.625rem] object-cover" />
                 </Link>
               </figure>
               <div className="mt-7 flex items-center justify-between">
-                <Link href={`/offer/${offerAddress}`}>
+                <Link href={`/${chainName}/offer/${offerAddress}`}>
                   <span className="font-display text-jacarta-700 hover:text-accent text-base dark:text-white">{title}</span>
                 </Link>
               </div>
@@ -43,12 +45,12 @@ const Review_adProposal_items = () => {
                 {ownerName ? (
                   <p className="dark:text-white font-display text-sm font-semibold">{ownerName}</p>
                 ) : (
-                  <Link href={`/offer/${offerAddress}`} className="text-accent font-display text-sm font-semibold">
+                  <Link href={`/${chainName}/offer/${offerAddress}`} className="text-accent font-display text-sm font-semibold">
                     Buy now
                   </Link>
                 )}
 
-                <Link href={`/offer/${offerAddress}`} className="group flex items-center">
+                <Link href={`/${chainName}/offer/${offerAddress}`} className="group flex items-center">
                   <svg className="icon icon-history group-hover:fill-accent dark:fill-jacarta-200 fill-jacarta-500 mr-1 mb-[3px] h-4 w-4">
                     <use xlinkHref="/icons.svg#icon-history"></use>
                   </svg>
