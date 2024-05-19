@@ -14,8 +14,8 @@ export default function ThemeLayout({children}) {
         scrollPos: 0,
     });
     return (
-        <ThemeProvider enableSystem={true} attribute="class" defaultTheme="dark">
-            <NextUIProvider>
+        <NextUIProvider>
+            <ThemeProvider enableSystem={true} attribute="class" defaultTheme="dark">
                 <UserContext.Provider value={{scrollRef: scrollRef}}>
                     <Header/>
                     <Wallet_modal/>
@@ -24,7 +24,7 @@ export default function ThemeLayout({children}) {
                     <Footer/>
                 </UserContext.Provider>
                 <ToastContainer position="top-right" autoClose={5000}/>
-            </NextUIProvider>
-        </ThemeProvider>
+            </ThemeProvider>
+        </NextUIProvider>
     )
 }
