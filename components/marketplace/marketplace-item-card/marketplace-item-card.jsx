@@ -19,7 +19,7 @@ const MarketplaceItemCard = ({
     <div className="">
       <article>
         <div className="shadow-md dark:bg-jacarta-700 dark:border-jacarta-700 border-jacarta-100 rounded-2xl block border bg-white p-[1.1875rem] transition-shadow hover:shadow-lg text-jacarta-500">
-          <Link href={`${chainName}/offer/${offer.id}/${tokenId}?tokenData=${tokenData}`}>
+          <Link href={`/${chainName}/offer/${offer.id}/${tokenId}?tokenData=${tokenData}`}>
             <figure>
               <Image
                 src={image}

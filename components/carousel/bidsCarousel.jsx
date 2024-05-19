@@ -56,7 +56,7 @@ const BidsCarousel = ({data}) => {
           data.map((item, index) => {
             return (
               <SwiperSlide className="text-white" key={index}>
-                <OfferItem item={item} url={`${chainName}/offer/${item.id}/${item.tokenIdAllowedToMint ? item.tokenIdAllowedToMint.tokenId : "" }`} />
+                <OfferItem item={item} url={`/${chainName}/offer/${item.id}/${item.tokenIdAllowedToMint ? item.tokenIdAllowedToMint.tokenId : "" }`} />
               </SwiperSlide>
             );
           })

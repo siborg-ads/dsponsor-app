@@ -323,7 +323,7 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
                       item={item}
                       isToken={true}
                       isSelectionActive={isSelectionActive}
-                      url={!item.tokenData ? `/${chainName}/offer/${item.nftContract.adOffers[0].id}/${item.tokenId}` : `/offer/${item.nftContract.adOffers[0].id}/${item.tokenId}?tokenData=${item.tokenData}`}
+                      url={!item.tokenData ? `/${chainName}/offer/${item.nftContract.adOffers[0].id}/${item.tokenId}` : `/${chainName}/offer/${item.nftContract.adOffers[0].id}/${item.tokenId}?tokenData=${item.tokenData}`}
                     />
                   </div>
                 ) : (
@@ -332,7 +332,7 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
                     key={index}
                     isToken={true}
                     isSelectionActive={isSelectionActive}
-                    url={!item.tokenData ? `/${chainName}/offer/${item.nftContract.adOffers[0].id}/${item.tokenId}` : `/offer/${item.nftContract.adOffers[0].id}/${item.tokenId}?tokenData=${item.tokenData}`}
+                    url={!item.tokenData ? `/${chainName}/offer/${item.nftContract.adOffers[0].id}/${item.tokenId}` : `/${chainName}/offer/${item.nftContract.adOffers[0].id}/${item.tokenId}?tokenData=${item.tokenData}`}
                   />
                 );
               })}

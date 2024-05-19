@@ -16,7 +16,7 @@ const Form = ({ offerId, onUrlChange }) => {
       .replace(/\p{Diacritic}/gu, "")
       .replace(/[^a-z0-9]/gi, "");
     const bigInt = BigInt(keccak256(toUtf8Bytes(normalized)));
-    const url = `${chainName}/offer/${offerId}/${bigInt}?tokenData=${searchTerm}`;
+    const url = `/${chainName}/offer/${offerId}/${bigInt}?tokenData=${searchTerm}`;
 
     onUrlChange(url, searchTerm);
   };

@@ -28,12 +28,15 @@ import "react-toastify/dist/ReactToastify.css";
 import ModalHelper from "../../components/Helper/modalHelper.jsx";
 import ItemDetails from "../../components/item/ItemDetails";
 import stringToUint256 from "../../utils/stringToUnit256";
+import {useChainContext} from "../../contexts/hooks/useChainContext";
 
 const TokenPageContainer = ({ offerId, tokenId, offer, listings }) => {
   const router = useRouter();
 
   // const offerId = router.query.offer;
   // const tokenId = router.query?.item;
+
+  const { chainName } = useChainContext();
 
   const itemHasListing = listings?.length > 0;
 
@@ -504,7 +507,7 @@ const TokenPageContainer = ({ offerId, tokenId, offer, listings }) => {
             <div className="md:w-3/5 md:basis-auto md:pl-8 lg:w-1/2 lg:pl-[3.75rem]">
               {/* <!-- Collection / Likes / Actions --> */}
 
-              <Link href={`/offer/${offerId}`} className="flex">
+              <Link href={`/${chainName}/offer/${offerId}`} className="flex">
                 <h1 className="font-display text-jacarta-700 mb-4 dark:hover:text-accent text-4xl font-semibold dark:text-white">{name}</h1>
               </Link>
 

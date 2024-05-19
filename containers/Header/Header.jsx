@@ -6,10 +6,12 @@ import SocialsHorizontalContainer from "./SocialsHorizontalContainer";
 import LogoContainer from "./LogoContainer";
 import HeaderNavLink from "./HeaderNavLink";
 import HeaderMobileMenuLink from "./HeaderMobileMenuLink";
+import {useChainContext} from "../../contexts/hooks/useChainContext";
 
 export default function Header() {
     const [toggle, setToggle] = useState(false);
     const address = useAddress();
+    const {chainName} = useChainContext();
 
     useEffect(() => {
         const handleResize = () => {
@@ -38,7 +40,7 @@ export default function Header() {
                     <HeaderNavLink to="/#hot-offers">Buy spaces</HeaderNavLink>
                   </li>
                   <li>
-                    <HeaderNavLink to="/offer/create">Create offer</HeaderNavLink>
+                    <HeaderNavLink to={`/${chainName}/offer/create`}>Create offer</HeaderNavLink>
                   </li>
                   <li>
                     <HeaderNavLink to="/marketplace">Marketplace</HeaderNavLink>
@@ -74,7 +76,7 @@ export default function Header() {
                     <HeaderMobileMenuLink to="#hot-offers" setToggle={setToggle}>Buy spaces</HeaderMobileMenuLink>
                   </li>
                   <li className="group">
-                    <HeaderMobileMenuLink to="/offer/create" setToggle={setToggle}>Create offer</HeaderMobileMenuLink>
+                    <HeaderMobileMenuLink to={`/${chainName}/offer/create`} setToggle={setToggle}>Create offer</HeaderMobileMenuLink>
                   </li>
                   <li className="group">
                     <HeaderMobileMenuLink to="/marketplace" setToggle={setToggle}>Marketplace</HeaderMobileMenuLink>
