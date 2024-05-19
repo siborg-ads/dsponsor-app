@@ -68,18 +68,18 @@ export default function Header() {
               <nav className="navbar w-full">
                 <ul className="flex flex-col lg:flex-row">
                   <li className="group">
-                    <HeaderMobileMenuLink to="/">Home</HeaderMobileMenuLink>
+                    <HeaderMobileMenuLink to="/" setToggle={setToggle}>Home</HeaderMobileMenuLink>
                   </li>
                   <li className="group">
-                    <HeaderMobileMenuLink to="#hot-offers">Buy spaces</HeaderMobileMenuLink>
+                    <HeaderMobileMenuLink to="#hot-offers" setToggle={setToggle}>Buy spaces</HeaderMobileMenuLink>
                   </li>
                   <li className="group">
-                    <HeaderMobileMenuLink to="/offer/create">Create offer</HeaderMobileMenuLink>
+                    <HeaderMobileMenuLink to="/offer/create" setToggle={setToggle}>Create offer</HeaderMobileMenuLink>
                   </li>
                   <li className="group">
-                    <HeaderMobileMenuLink to="/marketplace">Marketplace</HeaderMobileMenuLink>
+                    <HeaderMobileMenuLink to="/marketplace" setToggle={setToggle}>Marketplace</HeaderMobileMenuLink>
                   </li>
-                  <li className="group">{address && <HeaderMobileMenuLink to={`/manage/${address}`}>Manage</HeaderMobileMenuLink>}</li>
+                  <li className="group">{address && <HeaderMobileMenuLink to={`/manage/${address}`} setToggle={setToggle}>Manage</HeaderMobileMenuLink>}</li>
                 </ul>
               </nav>
               <div className="mt-10 w-full lg:hidden">

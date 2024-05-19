@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-export default function HeaderMobileMenuLink({ to, children }) {
+export default function HeaderMobileMenuLink({ to, children, setToggle }) {
     return (
       <Link
         href={to}
