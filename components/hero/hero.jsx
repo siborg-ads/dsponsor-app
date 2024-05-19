@@ -1,7 +1,10 @@
+'use client';
 import Image from "next/image";
 import Link from "next/link";
+import {useChainContext} from "../../contexts/hooks/useChainContext";
 
-const hero = () => {
+const Hero = () => {
+  const {chainName} = useChainContext();
   return (
     <section className="relative  pt-24 md:pt-10 h-1527">
       <picture className="pointer-events-none absolute inset-x-0 top-0 -z-10 block dark:hidden h-full">
@@ -35,7 +38,7 @@ const hero = () => {
             </p>
             <div className="flex space-x-4">
               <Link
-                href="/offer/create"
+                href={`/${chainName}/offer/create`}
                 className="bg-accent shadow-accent-volume hover:bg-accent-dark w-36 rounded-full py-3 px-8 text-center font-semibold text-white transition-all"
               >
                 Create
@@ -54,4 +57,4 @@ const hero = () => {
   );
 };
 
-export default hero;
+export default Hero;

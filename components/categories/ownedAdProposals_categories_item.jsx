@@ -22,9 +22,11 @@ import Step_3_Mint from "../sliderForm/PageMint/Step_3_Mint";
 
 import PreviewModal from "../modal/previewModal";
 import { image } from "@nextui-org/react";
+import {useChainContext} from "../../contexts/hooks/useChainContext";
 
 const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
   const [itemdata, setItemdata] = useState(trendingCategoryData);
+  const {chainName} = useChainContext();
 
   const [filterVal, setFilterVal] = useState(0);
   const [selectedItems, setSelectedItems] = useState([]);
@@ -47,7 +49,7 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
   const [numSteps, setNumSteps] = useState(2);
   const { contract: DsponsorAdminContract } = useContract("0xE442802706F3603d58F34418Eac50C78C7B4E8b3", contractABI);
   const [isLoadingButton, setIsLoadingButton] = useState(false);
- 
+
   const { mutateAsync: uploadToIPFS, isLoading: isUploading } = useStorageUpload();
   const { mutateAsync: submitAd } = useContractWrite(DsponsorAdminContract, "submitAdProposals");
 
@@ -88,7 +90,7 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
       const newPreviewImages = [...previewImages];
       newFiles[index] = { file: file, index: index, offerIds: step.offerIds};
       newPreviewImages[index] = URL.createObjectURL(file);
-     
+
       setFiles(newFiles);
       setPreviewImages(newPreviewImages);
     }
@@ -148,7 +150,7 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
 
     const uniqueIdsArray = Array.from(uniqueIds);
     setAdParameters(uniqueIdsArray);
-    
+
     const imageURLStep = [];
 
     uniqueIdsArray
@@ -157,13 +159,13 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
         const variant = id.slice("imageURL-".length);
         imageURLStep.push({
           uniqueId: variant,
-          offerIds: adDetails[id], 
+          offerIds: adDetails[id],
         });
       });
     const totalNumSteps = numSteps + imageURLStep.length;
     setImageURLSteps(imageURLStep);
     setNumSteps(totalNumSteps);
-   
+
   };
   const handleSubmit = async () => {
     if (!validateInputs()) {
@@ -174,8 +176,8 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
     const selectedTokenIdItems = [];
     const adParametersItems = [];
     const dataItems = [];
-    
-  
+
+
     try {
       for (const item of selectedItems) {
         for (const args of item.nftContract.adOffers[0].adParameters) {
@@ -183,7 +185,7 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
             selectedOfferIdItems.push(item.nftContract.adOffers[0].id);
             selectedTokenIdItems.push(item.tokenId);
             adParametersItems.push(args.adParameter.id);
-             
+
           }
         }
         for (const file of files) {
@@ -203,7 +205,7 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
         }
         dataItems.push(link);
       }
-     
+
 
       const argsAdSubmited = {
         offerId: selectedOfferIdItems,
@@ -220,7 +222,7 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
     isLoadingButton(false);
     }
   };
- 
+
   const handleSelectionTokens = () => {
     setIsSelectionActive(!isSelectionActive);
     setShowSliderForm(false);
@@ -321,7 +323,7 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
                       item={item}
                       isToken={true}
                       isSelectionActive={isSelectionActive}
-                      url={!item.tokenData ? `/offer/${item.nftContract.adOffers[0].id}/${item.tokenId}` : `/offer/${item.nftContract.adOffers[0].id}/${item.tokenId}?tokenData=${item.tokenData}`}
+                      url={!item.tokenData ? `/${chainName}/offer/${item.nftContract.adOffers[0].id}/${item.tokenId}` : `/offer/${item.nftContract.adOffers[0].id}/${item.tokenId}?tokenData=${item.tokenData}`}
                     />
                   </div>
                 ) : (
@@ -330,7 +332,7 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
                     key={index}
                     isToken={true}
                     isSelectionActive={isSelectionActive}
-                    url={!item.tokenData ? `/offer/${item.nftContract.adOffers[0].id}/${item.tokenId}` : `/offer/${item.nftContract.adOffers[0].id}/${item.tokenId}?tokenData=${item.tokenData}`}
+                    url={!item.tokenData ? `/${chainName}/offer/${item.nftContract.adOffers[0].id}/${item.tokenId}` : `/offer/${item.nftContract.adOffers[0].id}/${item.tokenId}?tokenData=${item.tokenData}`}
                   />
                 );
               })}

@@ -3,11 +3,13 @@ import { footerMenuList as defaultFooterMenuList, socialIcons } from "../../../d
 import Image from "next/image";
 import {useContext} from "react";
 import SDKContext from "../../../contexts/SDKContext";
+import {useChainContext} from "../../../contexts/hooks/useChainContext";
 
-const footer = () => {
+const Footer = () => {
 
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const state = useContext(SDKContext);
+  const {chainName} = useChainContext();
 
   const footerMenuList = defaultFooterMenuList.concat([{
         id: 3,
@@ -21,7 +23,7 @@ const footer = () => {
           },
           {
             id: 2,
-            href: `/offer/create`,
+            href: `${chainName}/offer/create`,
             text: "Create Offer",
           },
         ] : []),
@@ -103,4 +105,4 @@ const footer = () => {
   );
 };
 
-export default footer;
+export default Footer;
