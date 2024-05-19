@@ -1,3 +1,4 @@
+'use client';
 import React from "react";
 import HeadLine from "../headLine";
 import Feature_collections_carousel from "../carousel/Feature_collection_carousel";

@@ -1,3 +1,4 @@
+'use client';
 import React, {useContext, useState} from "react";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import OfferTab from "./OfferTab";

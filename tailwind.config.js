@@ -1,7 +1,12 @@
 /** @type {import('tailwindcss').Config} */
 const { nextui } = require("@nextui-org/react");
 module.exports = {
-  content: ["./pages/**/*.{js,ts,jsx,tsx}", "./components/**/*.{js,ts,jsx,tsx}", "./node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}"],
+  content: [
+      "./app/**/*.{js,ts,jsx,tsx}",
+    "./components/**/*.{js,ts,jsx,tsx}",
+    "./containers/**/*.{js,ts,jsx,tsx}",
+    "./node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}"
+  ],
   darkMode: "class",
   theme: {
     screens: {
@@ -24,6 +29,13 @@ module.exports = {
       current: "currentColor",
       white: "#ffffff",
       accent: "#8358FF",
+
+      //siborg colors
+      sigray: "#211F2B",
+      "sigray-light": "#2A2832",
+      "sigray-border": "#35333E",
+      sipurple: "#C084FC",
+      sibinput: "#D9D9D960",
 
       "accent-light": "#9E7CFF",
       "accent-lighter": "#B9A0FF",
@@ -53,9 +65,12 @@ module.exports = {
       md: "0px 2px 4px -2px rgba(13, 16, 45, 0.1), 0px 4px 6px -1px rgba(13, 16, 45, 0.1)",
       lg: "0px 4px 6px -4px rgba(13, 16, 45, 0.1), 0px 10px 15px -3px rgba(13, 16, 45, 0.1)",
       xl: "0px 8px 10px -6px rgba(13, 16, 45, 0.1), 0px 20px 25px -5px rgba(13, 16, 45, 0.1)",
-      "2xl": "0px 25px 50px -12px rgba(13, 16, 45, 0.1), 0px 12px 24px 0px rgba(13, 16, 45, 0.1)",
-      "accent-volume": "5px 5px 10px rgba(108, 106, 213, 0.25), inset 2px 2px 6px #A78DF0, inset -5px -5px 10px #6336E4",
-      "white-volume": "5px 5px 10px rgba(108, 106, 212, 0.25), inset 2px 2px 6px #EEF1F9, inset -5px -5px 10px #DFE3EF",
+      "2xl":
+        "0px 25px 50px -12px rgba(13, 16, 45, 0.1), 0px 12px 24px 0px rgba(13, 16, 45, 0.1)",
+      "accent-volume":
+        "5px 5px 10px rgba(108, 106, 213, 0.25), inset 2px 2px 6px #A78DF0, inset -5px -5px 10px #6336E4",
+      "white-volume":
+        "5px 5px 10px rgba(108, 106, 212, 0.25), inset 2px 2px 6px #EEF1F9, inset -5px -5px 10px #DFE3EF",
     },
     fontSize: {
       xs: ["0.75rem", { lineHeight: "normal" }],
@@ -116,6 +131,6 @@ module.exports = {
     namedGroups: ["dropdown"],
   },
   plugins: [nextui()],
- 
- 
+
+
 };

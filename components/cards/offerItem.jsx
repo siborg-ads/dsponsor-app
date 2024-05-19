@@ -1,11 +1,7 @@
-import "swiper/css";
-import "swiper/css/navigation";
+'use client';
 import Image from "next/image";
-import "tippy.js/dist/tippy.css";
 import Link from "next/link";
-import Tippy from "@tippyjs/react";
-import { use, useEffect, useState } from "react";
-import { useCountdown } from "../../utils/countDown";
+import { useState, useEffect } from "react";
 import adminInstance from "../../utils/sdkProvider";
 import { protocolFeesBigNumber } from "../../utils/constUtils";
 import { useAddress, useSwitchChain, useContract, useContractWrite, Web3Button, useContractRead, useStorageUpload, useTokenDecimals, CheckoutWithCard, CheckoutWithEth } from "@thirdweb-dev/react";
@@ -28,17 +24,19 @@ const OfferItem = ({ item, url, isToken, isSelectionActive, isOwner }) => {
   
   
 
+
+
   function formatDate(dateIsoString) {
     if (!dateIsoString) return "date not found";
     const options = { year: "numeric", month: "long", day: "numeric" };
     return new Date(dateIsoString).toLocaleDateString("en-EN", options);
   }
   useEffect(() => {
-  
 
-      
 
-   
+
+
+
     try {
        const currencyTokenObject = {};
        if (!decimalsContract && !symbolContract) {
@@ -66,10 +64,10 @@ const OfferItem = ({ item, url, isToken, isSelectionActive, isOwner }) => {
       console.error("Error: Currency not found for address");
     }
     if (isToken) {
-      const data = item.offer ? item.offer : null;
+      const data = item?.metadata?.offer ? item?.metadata?.offer : null;
       setItemData(data);
     } else {
-      const data = item.offer ? item.offer : null;
+      const data = item.metadata?.offer ? item.metadata?.offer : null;
       setItemData(data);
     }
   }, [item, isToken,  symbolContract, decimalsContract, bps]);
@@ -132,7 +130,7 @@ const OfferItem = ({ item, url, isToken, isSelectionActive, isOwner }) => {
             {!isToken ? (
               currencyToken?.symbol && <div className="dark:border-jacarta-600 border-jacarta-100 flex items-center whitespace-nowrap rounded-md border py-1 px-2">
                 {" "}
-               
+
                 <span className="text-green text-sm font-medium tracking-tight">
                   {price} {currencyToken?.symbol}
                 </span>
@@ -159,6 +157,7 @@ const OfferItem = ({ item, url, isToken, isSelectionActive, isOwner }) => {
             <span className="dark:text-jacarta-300 text-jacarta-500">Offer # {item.mint ? item.nftContract?.adOffers[0]?.id : item.id}</span>
           </div>
         </div>
+       
       </article>
     </>
   );

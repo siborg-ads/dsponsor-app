@@ -6,33 +6,8 @@ const footerMenuList = [
     list: [
       {
         id: 1,
-        href: "#",
-        text: "All NFTs",
-      },
-      {
-        id: 2,
-        href: "#",
-        text: "art",
-      },
-      {
-        id: 3,
-        href: "#",
-        text: "music",
-      },
-      {
-        id: 4,
-        href: "#",
-        text: "domain names",
-      },
-      {
-        id: 5,
-        href: "#",
-        text: "collections",
-      },
-      {
-        id: 6,
-        href: "#",
-        text: "virtual world",
+        href: "/marketplace",
+        text: "All Offers",
       },
     ],
   },
@@ -43,55 +18,13 @@ const footerMenuList = [
     list: [
       {
         id: 1,
-        href: "#",
+        href: "/about",
+        text: "About DSponsor",
+      },
+      {
+        id: 2,
+        href: "/",
         text: "Explore",
-      },
-      {
-        id: 2,
-        href: "#",
-        text: "About",
-      },
-      {
-        id: 3,
-        href: "#",
-        text: "Contact Us",
-      },
-      {
-        id: 4,
-        href: "#",
-        text: "Our Blog",
-      },
-      {
-        id: 5,
-        href: "#",
-        text: "FAQ",
-      },
-    ],
-  },
-  {
-    id: 3,
-    title: "My Account",
-    diffClass: "",
-    list: [
-      {
-        id: 1,
-        href: "#",
-        text: "Authors",
-      },
-      {
-        id: 2,
-        href: "#",
-        text: "Collection",
-      },
-      {
-        id: 3,
-        href: "#",
-        text: "Author Profile",
-      },
-      {
-        id: 4,
-        href: "#",
-        text: "Create Item",
       },
     ],
   },

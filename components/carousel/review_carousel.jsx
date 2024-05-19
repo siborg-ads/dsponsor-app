@@ -100,6 +100,7 @@ const Review_carousel = ({ handleSubmit, pendingProposalData, successFullRefuseM
   };
 
   const handleSelection = (item) => {
+    console.log(item,isOwner, "item");
     if(!isOwner) return;
     setIsSelectedItem((prevState) => ({
       ...prevState,
