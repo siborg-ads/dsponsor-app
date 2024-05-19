@@ -95,7 +95,7 @@ export default function ItemDetails({ assetContract, tokenId }) {
         )}
         <div className="container flex flex-row">
           {/* Item */}
-          <div className="md:flex md:flex-wrap">
+          <div className="md:flex md:flex-wrap flex-col">
               {listingInformation?.startTime > now ? (
                 <p className="mb-10 text-light-base">
                   This item listing will start soon.

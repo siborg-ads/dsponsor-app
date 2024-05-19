@@ -35,6 +35,8 @@ const TokenPageContainer = ({ offerId, tokenId, offer, listings }) => {
   // const offerId = router.query.offer;
   // const tokenId = router.query?.item;
 
+  const itemHasListing = listings?.length > 0;
+
   const [tokenIdString, setTokenIdString] = useState(null);
   const maxBps = 10000;
   const [data, setData] = useState([]);
@@ -547,6 +549,13 @@ const TokenPageContainer = ({ offerId, tokenId, offer, listings }) => {
                     </div>
                 </div>
             </section>
+
+            <div className="container mb-12">
+              {itemHasListing && (
+                  <ItemDetails assetContract={offer.nftContract.id} tokenId={tokenId}/>
+              )}
+            </div>
+
             {/* <!-- end item --> */}
             <div className="container mb-12">
                 <Divider className="my-4" />
@@ -582,7 +591,7 @@ const TokenPageContainer = ({ offerId, tokenId, offer, listings }) => {
                           {!isValidId
                               ? "Sorry, tokenId unavailable, please provide a tokenId valid"
                               : offerNotFormated
-                                  ?  <ItemDetails assetContract={offer.nftContract.id} tokenId={tokenId}/>
+                                  ?  ""
                                   : offerData.nftContract?.tokens === 0
                                       ? "Sorry, tokenId unavailable, please provide a tokenId valid "
                                       : offerData.nftContract?.tokens[0]?.mint && !isOwner
