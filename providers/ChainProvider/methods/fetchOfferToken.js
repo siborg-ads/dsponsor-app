@@ -1,10 +1,22 @@
-export default async function fetchOfferToken(options) {
-    const chainId = options?.chainId || '11155111';
+// import getChainId from "./getChainId.js";
 
-    const path = new URL(`https://relayer.dsponsor.com/api/${chainId}/graph/query`);
-    path.searchParams.append('method', 'raw');
-    path.searchParams.append('withMetadata', 'true');
-    path.searchParams.append('query', ` query TokenOfferDetails {
+export default async function fetchOfferToken(options) {
+
+    const chainName = options?.chainName || 'sepolia'
+    // const chainId = getChainId(chainName);
+    const chainId = 11155111;
+    const offerId = options?.offerId;
+    const tokenId = options?.tokenId;
+
+    console.log({chainName, chainId, offerId, tokenId})
+    if(!offerId || !tokenId) {
+        console.trace('Missing offerId or tokenId')
+        return null;
+    }
+
+
+    const path = new URL(`https://relayer.dsponsor.com/api/${chainId}/graph`);
+    const query = ` query TokenOfferDetails {
       # replace by the $offerId
       adOffers(where: { id: "${options.offerId.toString()}" }) {
         # METADATA - if INVALID, ignore this listing
@@ -86,10 +98,20 @@ export default async function fetchOfferToken(options) {
           }
         }
       }
-    }`);
+    }`;
 
-    const response = await fetch(path,{
-        cache: 'force-cache'
+    const start = new Date();
+    const response = await fetch(path, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        },
+        body: JSON.stringify({query})
     });
-    return response.json();
+    const json = await response.json();
+    const offer = json?.data?.adOffers?.[0] ?? null;
+    console.info(` ✓ [Relayer] ${new Date().toISOString()} [FETCH][${chainId}]: Token Offer <${offerId}:${tokenId}> in ${new Date() - start}ms - Has offer: ${!!offer}`);
+    return offer;
+
 }

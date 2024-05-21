@@ -1,8 +1,8 @@
 import React from "react";
 import {headers} from "next/headers";
 import TokenPageContainer from "../../../../../containers/TokenPageContainer/TokenPageContainer";
-import fetchOfferToken from "../../../../../providers/methods/fetchOfferToken";
-import fetchMarketplaceListingForToken from "../../../../../providers/methods/fetchMarketplaceListingForToken";
+import fetchOfferToken from "../../../../../providers/ChainProvider/methods/fetchOfferToken";
+import fetchMarketplaceListingForToken from "../../../../../providers/ChainProvider/methods/fetchMarketplaceListingForToken";
 
 export async function generateMetadata({
                                            params,
@@ -14,10 +14,8 @@ export async function generateMetadata({
 
     // We use headers as a way to get the chainID
     const headersList = headers()
-    const chainID= headersList.get('chainID')
 
-    const lastOffersRequest = await fetchOfferToken({chainID,offerId,tokenId})
-    const offer = lastOffersRequest?.adOffers?.[0] || null
+    const offer = await fetchOfferToken({chainName,offerId,tokenId})
 
     return {
         title: `${offer?.metadata?.offer?.name} - Token ${tokenId} || DSponsor | smarter monetization for your content`,
@@ -33,12 +31,8 @@ export default async function TokenPage({params}) {
     const headersList = headers()
     const chainID= headersList.get('chainID')
 
-    const lastOffersRequest = await fetchOfferToken({chainID,offerId,tokenId})
-    const offer = lastOffersRequest?.adOffers?.[0] || null
-
-    console.dir({offer},{depth:10})
-    const listingsRequest = await fetchMarketplaceListingForToken({chainID,tokenId, offer})
-    const listings = listingsRequest?.marketplaceListings || []
+    const offer = await fetchOfferToken({chainID,offerId,tokenId})
+    const listings = await fetchMarketplaceListingForToken({chainID,tokenId, offer})
     console.dir({listings},{depth:10})
 
     return (
