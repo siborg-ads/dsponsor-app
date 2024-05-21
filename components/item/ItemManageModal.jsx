@@ -17,7 +17,7 @@ import PreviewModal from "../modal/previewModal";
 import adminInstance from "../../utils/sdkProvider";
 
 
-const ItemManageModal = ({ handleListingModal, offerData }) => {
+const ItemManageModal = ({ handleListingModal, offerData, marketplaceListings }) => {
   const [selectedListingType, setSelectedListingType] = useState([]);
   const [selectedUnitPrice, setSelectedUnitPrice] = useState(0);
   const [selectedCurrency, setSelectedCurrency] = useState("USDC");

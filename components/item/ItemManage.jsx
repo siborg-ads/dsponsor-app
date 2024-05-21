@@ -1,11 +1,17 @@
 import React, { useState, useEffect, useRef, use } from "react";
 import { useAddress, useBalance, Web3Button, useContract, useContractRead, useContractWrite, useStorageUpload } from "@thirdweb-dev/react";
 import ItemManageModal from "./ItemManageModal";
-const ItemManage = ({ offerData, listings }) => {
+import BuyModal from "../modal/buyModal";
+const ItemManage = ({ offerData, marketplaceListings }) => {
   const [listingModal, setListingModal] = useState(false);
-
+  const [buyModal, setBuyModal] = useState(false);
+  
+  const now = new Date();
   const handleListingModal = () => {
     setListingModal(!listingModal);
+  };
+  const handleBuyModal = () => {
+    setBuyModal(!buyModal);
   };
 
   return (
@@ -18,18 +24,41 @@ const ItemManage = ({ offerData, listings }) => {
           </span>
         </div>
 
-        {/* {listings.length <= 0 && (
-          <div className="w-full flex justify-center">
+        <div className="w-full flex justify-center">
+          {marketplaceListings.length <= 0 && (
             <button type="button" className="bg-accent shadow-accent-volume hover:bg-accent-dark w-36 rounded-full py-3 px-8 text-center font-semibold text-white transition-all" onClick={handleListingModal}>
               Create a listing
             </button>
-          </div>
-        )} */}
+          )}
+        
+        </div>
       </div>
       {listingModal && (
         <div className="modal fade show block">
-          <ItemManageModal handleListingModal={handleListingModal} offerData={offerData} />
+          <ItemManageModal handleListingModal={handleListingModal} offerData={offerData} marketplaceListings={marketplaceListings} />
         </div>
+      )}
+      {buyModal && (
+        <BuyModal
+          finalPrice={finalPrice}
+          allowanceTrue={allowanceTrue}
+          handleApprove={handleApprove}
+          successFullUpload={successFullUpload}
+          feesAmount={feesAmount}
+          successFullBuyModal={successFullBuyModal}
+          price={price}
+          initialCreator={offerData?.initialCreator}
+          handleSubmit={handleSubmit}
+          handleBuyModal={handleBuyModal}
+          name={name}
+          image={image}
+          selectedCurrency={currency.symbol}
+          selectedRoyalties={royalties}
+          tokenId={tokenId}
+          tokenData={tokenData}
+          formatTokenId={formatTokenId}
+          isLoadingButton={isLoadingButton}
+        />
       )}
     </>
   );

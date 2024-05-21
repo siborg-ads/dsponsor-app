@@ -42,8 +42,58 @@ export const GetTokenAdOffer = async (offerId, tokenId) => {
 
           # to replace by $tokenId
           tokens(where: { tokenId: $tokenId }) {
-            
             tokenId
+            marketplaceListings(orderBy: id, orderDirection: desc) {
+              id # listingId
+              # listingType = 0 <-> 'Direct', listingType = 1 <-> 'Auction'
+              # 'Direct' or 'Auction'
+              listingType
+
+              currency # ERC20 smart contract addr
+              # PRICE
+              # if listingType = 'Direct'
+              #    price = buyoutPricePerToken
+              # else if listingType = 'Auction'
+              #    price = bids[0].totalBidAmount || reservePricePerToken
+              reservePricePerToken
+              buyoutPricePerToken
+              bids(orderBy: totalBidAmount, orderDirection: desc, first: 1) {
+                bidder
+                totalBidAmount
+                status
+              }
+
+              lister
+
+              startTime
+              endTime
+
+              # 'UNSET', 'CREATED', 'COMPLETED' or 'CANCELLED'
+              status
+
+              # will be useful later
+              tokenType
+              transferType
+              rentalExpirationTimestamp
+            }
+
+            marketplaceOffers {
+              id # offerId
+              offeror # who submitted the offer
+              expirationTimestamp
+              currency # ERC20 smart contract addr
+              totalPrice
+
+              # 'UNSET', 'CREATED', 'COMPLETED' or 'CANCELLED'
+              status
+
+              creationTimestamp
+
+              # will be useful later
+              tokenType
+              transferType
+              rentalExpirationTimestamp
+            }
             mint {
               transactionHash # if = null => not minted yet, so it's available
               to # address who receives the token

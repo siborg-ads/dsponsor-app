@@ -53,22 +53,9 @@ const Item = () => {
   const [amountToApprove, setAmountToApprove] = useState(null);
   const [royalties, setRoyalties] = useState(null);
   const [errors, setErrors] = useState({});
+  const [marketplaceListings, setMarketplaceListings] = useState([]);
   const [finalPrice, setFinalPrice] = useState(null);
   const [successFullUpload, setSuccessFullUpload] = useState(false);
-  const { contract: DsponsorAdminContract } = useContract("0xE442802706F3603d58F34418Eac50C78C7B4E8b3", contractABI);
-  const { contract: DsponsorNFTContract } = useContract(offerData?.nftContract?.id);
-  const { mutateAsync: uploadToIPFS, isLoading: isUploading } = useStorageUpload();
-  const { mutateAsync: mintAndSubmit } = useContractWrite(DsponsorAdminContract, "mintAndSubmit");
-  const { mutateAsync: submitAd } = useContractWrite(DsponsorAdminContract, "submitAdProposals");
-  const { contract: tokenContract } = useContract(offerData?.nftContract?.prices[0]?.currency, "token");
-  const { data: symbolContract } = useContractRead(tokenContract, "symbol");
-  const { data: decimalsContract } = useContractRead(tokenContract, "decimals");
-  const { data: tokenBalance } = useBalance(offerData?.nftContract?.prices[0]?.currency);
-  const { mutateAsync: approve, isLoading: isLoadingApprove } = useContractWrite(tokenContract, "approve");
-  const { data: bps } = useContractRead(DsponsorAdminContract, "feeBps");
-  const { data: isAllowedToMint, isLoading: isLoadingAllowedToMint } = useContractRead(DsponsorNFTContract, "tokenIdIsAllowedToMint", tokenIdString);
-  const { data: isUserOwner } = useContractRead(DsponsorNFTContract, "ownerOf", [tokenIdString]);
-  const { data: royaltiesInfo } = useContractRead(DsponsorNFTContract, "royaltyInfo", [tokenIdString, 100]);
   const [showPreviewModal, setShowPreviewModal] = useState(false);
   const [validate, setValidate] = useState(false);
   const [currency, setCurrency] = useState(null);
@@ -78,7 +65,7 @@ const Item = () => {
   const [buyModal, setBuyModal] = useState(false);
   const [buyMethod, setBuyMethod] = useState(false);
   const [feesAmount, setFeesAmount] = useState(null);
-const [imageUrlVariants, setImageUrlVariants] = useState([]);
+  const [imageUrlVariants, setImageUrlVariants] = useState([]);
   const [submitAdFormated, setSubmitAdFormated] = useState({});
   const [tokenData, setTokenData] = useState(null);
   const [tokenMetaData, setTokenMetaData] = useState("");
@@ -89,6 +76,25 @@ const [imageUrlVariants, setImageUrlVariants] = useState([]);
   const [isLoadingButton, setIsLoadingButton] = useState(false);
   const stepsRef = useRef([]);
   const [numSteps, setNumSteps] = useState(2);
+
+  const { contract: DsponsorAdminContract } = useContract("0xE442802706F3603d58F34418Eac50C78C7B4E8b3", contractABI);
+  const { contract: DsponsorNFTContract } = useContract(offerData?.nftContract?.id);
+  const { mutateAsync: uploadToIPFS, isLoading: isUploading } = useStorageUpload();
+  const { mutateAsync: mintAndSubmit } = useContractWrite(DsponsorAdminContract, "mintAndSubmit");
+  const { mutateAsync: submitAd } = useContractWrite(DsponsorAdminContract, "submitAdProposals");
+  const { contract: tokenContract } = useContract(marketplaceListings.length > 0 ? marketplaceListings[0].buyoutPricePerToken : offerData?.nftContract?.prices[0]?.currency, "token");
+  const { data: symbolContract } = useContractRead(tokenContract, "symbol");
+  const { data: decimalsContract } = useContractRead(tokenContract, "decimals");
+  const { data: tokenBalance } = useBalance(marketplaceListings.length > 0 ? marketplaceListings[0].currency : offerData?.nftContract?.prices[0]?.currency);
+  const { mutateAsync: approve, isLoading: isLoadingApprove } = useContractWrite(tokenContract, "approve");
+  const { data: bps } = useContractRead(DsponsorAdminContract, "feeBps");
+  const { data: isAllowedToMint, isLoading: isLoadingAllowedToMint } = useContractRead(DsponsorNFTContract, "tokenIdIsAllowedToMint", tokenIdString);
+  const { data: isUserOwner } = useContractRead(DsponsorNFTContract, "ownerOf", [tokenIdString]);
+  const { data: royaltiesInfo } = useContractRead(DsponsorNFTContract, "royaltyInfo", [tokenIdString, 100]);
+  const { contract: dsponsorMpContract } = useContract("0xac03b675fa9644279b92f060bf542eed54f75599");
+  const { mutateAsync: directBuy } = useContractWrite(dsponsorMpContract, "buy");
+
+  const now = new Date();
 
   useEffect(() => {
     if (offerId && tokenId) {
@@ -101,7 +107,7 @@ const [imageUrlVariants, setImageUrlVariants] = useState([]);
           ...offer,
           ...destructuredIPFSResult,
         };
-
+        setMarketplaceListings(offer?.nftContract?.tokens[0]?.marketplaceListings);
         console.log(combinedData, "combinedData");
         setOfferData(combinedData);
       };
@@ -113,34 +119,28 @@ const [imageUrlVariants, setImageUrlVariants] = useState([]);
   }, [offerId, tokenId, successFullUpload]);
 
   useEffect(() => {
-
-    if (isUserOwner){
-   if (isUserOwner === address) {
-     setIsOwner(true);
-   }
-
+    if (isUserOwner) {
+      if (isUserOwner === address) {
+        setIsOwner(true);
+      }
     }
-    
-  
-  }, [ isUserOwner, address]);
+  }, [isUserOwner, address]);
 
   useEffect(() => {
-    if (!tokenId || !offerData ) return;
+    if (!tokenId || !offerData) return;
     if (tokenId.length > 6) {
       const url = new URL(window.location.href);
       const tokenData = url.searchParams.get("tokenData");
       setTokenData(tokenData);
       let isValidId = false;
       if (tokenData) {
-        
         const stringToUnit = stringToUint256(tokenData);
         console.log(stringToUnit, tokenId, "stringToUnit");
         if (BigInt(stringToUnit) === BigInt(tokenId)) {
           isValidId = true;
           setIsValidId(true);
-        } else{
+        } else {
           setIsValidId(false);
-        
         }
       }
       console.log(offerData, "offerData");
@@ -152,7 +152,7 @@ const [imageUrlVariants, setImageUrlVariants] = useState([]);
       }
       setTokenMetaData(tokenMetaData);
     }
-  }, [tokenId, offerData,tokenData]);
+  }, [tokenId, offerData, tokenData]);
 
   useEffect(() => {
     if (!offerData) return;
@@ -175,10 +175,10 @@ const [imageUrlVariants, setImageUrlVariants] = useState([]);
 
         imageURLSteps.push(variant);
       });
-      const numSteps = 2;
+    const numSteps = 2;
     const totalNumSteps = numSteps + imageURLSteps.length;
-    
-      console.log(totalNumSteps,imageURLSteps, numSteps, "totalNumSteps");
+
+    console.log(totalNumSteps, imageURLSteps, numSteps, "totalNumSteps");
     setImageURLSteps(imageURLSteps);
     setNumSteps(totalNumSteps);
   }, [offerData]);
@@ -186,19 +186,28 @@ const [imageUrlVariants, setImageUrlVariants] = useState([]);
   useEffect(() => {
     if (!offerData) return;
     try {
+      let price;
+      let currency;
+      if (marketplaceListings.length > 0) {
+        price = marketplaceListings[0].buyoutPricePerToken;
+        currency = marketplaceListings[0].currency;
+      } else {
+        currency = offerData.nftContract.prices[0].currency;
+        price = offerData?.nftContract?.prices[0]?.amount;
+      }
       const currencyTokenObject = {};
       if (!decimalsContract && !symbolContract) {
-        const currencyToken = adminInstance.chain.getCurrencyByAddress(offerData.nftContract.prices[0].currency);
+        const currencyToken = adminInstance.chain.getCurrencyByAddress(currency);
         currencyTokenObject.symbol = currencyToken.symbol;
         currencyTokenObject.decimals = currencyToken.decimals;
       } else {
         currencyTokenObject.symbol = symbolContract;
         currencyTokenObject.decimals = decimalsContract;
       }
-      const bigIntFinalPrice = (BigInt(offerData?.nftContract?.prices[0]?.amount) * (BigInt(bps) + BigInt(maxBps))) / BigInt(maxBps);
+      const bigIntFinalPrice = (BigInt(price) * (BigInt(bps) + BigInt(maxBps))) / BigInt(maxBps);
       const formatFinalPrice = ethers.utils.formatUnits(bigIntFinalPrice, currencyTokenObject.decimals);
-      const formatPrice = ethers.utils.formatUnits(BigInt(offerData?.nftContract?.prices[0]?.amount), currencyTokenObject.decimals);
-      const fees = (BigInt(offerData?.nftContract?.prices[0]?.amount) * BigInt(bps)) / BigInt(maxBps);
+      const formatPrice = ethers.utils.formatUnits(BigInt(price), currencyTokenObject.decimals);
+      const fees = (BigInt(price) * BigInt(bps)) / BigInt(maxBps);
       const formatFees = ethers.utils.formatUnits(fees, currencyTokenObject.decimals);
 
       const amountToApprove = ethers.utils.parseUnits(formatFinalPrice.toString(), currencyTokenObject.decimals);
@@ -209,7 +218,7 @@ const [imageUrlVariants, setImageUrlVariants] = useState([]);
       setFinalPrice(Number(Math.ceil(formatFinalPrice * 1000) / 1000));
       setAmountToApprove(amountToApprove);
     } catch (e) {
-      console.error("Error: Currency not found for address", offerData?.nftContract?.prices[0], e);
+      console.error("Error: Currency not found for address", price, e);
       setOfferNotFormated(true);
     }
   }, [symbolContract, decimalsContract, offerData, address, tokenId, bps, maxBps]);
@@ -321,7 +330,7 @@ const [imageUrlVariants, setImageUrlVariants] = useState([]);
   };
 
   const handleApprove = async () => {
-     setIsLoadingButton(true);
+    setIsLoadingButton(true);
     try {
       const hasEnoughBalance = checkUserBalance(tokenBalance, price);
       if (!hasEnoughBalance) {
@@ -357,7 +366,7 @@ const [imageUrlVariants, setImageUrlVariants] = useState([]);
     if (isOwner) {
       try {
         uploadUrl = await uploadToIPFS({
-          data: [files[0].file],
+          data: [files[0]?.file],
           options: { uploadWithGatewayUrl: true, uploadWithoutDirectory: true },
         });
       } catch (error) {
@@ -366,6 +375,8 @@ const [imageUrlVariants, setImageUrlVariants] = useState([]);
       }
     }
     try {
+    
+
       const argsMintAndSubmit = {
         tokenId: tokenIdString,
         to: address,
@@ -376,24 +387,45 @@ const [imageUrlVariants, setImageUrlVariants] = useState([]);
         adDatas: [],
         referralAdditionalInformation: "",
       };
-      const argsAdSubmited = {
-        offerId: submitAdFormated.offerId,
-        tokenId: submitAdFormated.tokenId,
-        adParameters: submitAdFormated.params,
-        data: [uploadUrl[0], link],
-      };
+      const isAlreadyBuy = () => {
+        if (marketplaceListings.length > 0) {
+           const argsdirectBuy =  {
+             listingId: Number(marketplaceListings[0].id),
+             buyFor: address,
+             quantity: 1,
+             currency: marketplaceListings[0].currency,
+             totalPrice: marketplaceListings[0].buyoutPricePerToken,
+             referralAdditionalInformation: "",
+           };
+          console.log(argsdirectBuy, "argsdirectBuy");
+           return argsdirectBuy;
+          }else{
 
-      const isEthCurrency = offerData?.nftContract.prices[0].currency === "0x0000000000000000000000000000000000000000";
-      const functionWithPossibleArgs = adStatut !== 0 && !isAllowedToMint ? Object.values(argsAdSubmited) : argsMintAndSubmit;
+            const argsAdSubmited = {
+              offerId: submitAdFormated.offerId,
+              tokenId: submitAdFormated.tokenId,
+              adParameters: submitAdFormated.params,
+              data: [uploadUrl[0], link],
+            };
+            return argsAdSubmited;
+          }
+      }
+      
+
+      const isEthCurrency = offerData?.nftContract.prices[0].currency || marketplaceListings[0].currency === "0x0000000000000000000000000000000000000000";
+      const functionWithPossibleArgs = adStatut !== 0 && !isAllowedToMint ? Object.values(isAlreadyBuy()) : argsMintAndSubmit;
       const argsWithPossibleOverrides = isEthCurrency ? { args: [functionWithPossibleArgs], overrides: { value: amountToApprove } } : { args: [functionWithPossibleArgs] };
 
-      if (adStatut !== 0 && !isAllowedToMint) {
+      if (adStatut !== 0 && !isAllowedToMint && marketplaceListings.length <= 0) {
         console.log("ici", functionWithPossibleArgs);
         await submitAd({ args: functionWithPossibleArgs });
         setSuccessFullUpload(true);
-      } else {
+      } else if (marketplaceListings.length <= 0) {
         console.log("mintAndSubmit", argsWithPossibleOverrides);
         await mintAndSubmit(argsWithPossibleOverrides);
+      } else {
+        console.log("directBuy", functionWithPossibleArgs);
+        await directBuy({ args: [functionWithPossibleArgs] });
       }
 
       setSuccessFullUpload(true);
@@ -545,26 +577,27 @@ const [imageUrlVariants, setImageUrlVariants] = useState([]);
               </div>
 
               <p className="dark:text-jacarta-300 mb-10">{description}</p>
-              {!isOwner && !offerNotFormated && !offerData.nftContract?.tokens[0]?.mint && isAllowedToMint !== null && (
-                <div className="dark:bg-jacarta-700 dark:border-jacarta-600 border-jacarta-100 rounded-2lg border flex flex-col gap-4 bg-white p-8">
-                  <div className=" sm:flex sm:flex-wrap">
-                    <span className="dark:text-jacarta-300 text-jacarta-400 text-sm">
-                      Buying the ad space give you the exclusive right to submit an ad. The media still has the power to validate or reject ad assets. You re free to change the ad at anytime. And free to resell on the
-                      open market your ad space.{" "}
-                    </span>
+              {(!isOwner && !offerNotFormated && !offerData.nftContract?.tokens[0]?.mint && isAllowedToMint !== null) ||
+                (marketplaceListings[0]?.startTime < now && marketplaceListings[0]?.status === "CREATED" && marketplaceListings[0]?.listingType === "Direct" && (
+                  <div className="dark:bg-jacarta-700 dark:border-jacarta-600 border-jacarta-100 rounded-2lg border flex flex-col gap-4 bg-white p-8">
+                    <div className=" sm:flex sm:flex-wrap">
+                      <span className="dark:text-jacarta-300 text-jacarta-400 text-sm">
+                        Buying the ad space give you the exclusive right to submit an ad. The media still has the power to validate or reject ad assets. You re free to change the ad at anytime. And free to resell on the
+                        open market your ad space.{" "}
+                      </span>
+                    </div>
+                    <div className="w-full flex justify-center">
+                      {address ? (
+                        <button type="button" className="bg-accent shadow-accent-volume hover:bg-accent-dark w-36 rounded-full py-3 px-8 text-center font-semibold text-white transition-all" onClick={handleBuyModal}>
+                          Buy
+                        </button>
+                      ) : (
+                        <Web3Button className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all  !bg-accent !cursor-pointer `}>Connect wallet</Web3Button>
+                      )}
+                    </div>
                   </div>
-                  <div className="w-full flex justify-center">
-                    {address ? (
-                      <button type="button" className="bg-accent shadow-accent-volume hover:bg-accent-dark w-36 rounded-full py-3 px-8 text-center font-semibold text-white transition-all" onClick={handleBuyModal}>
-                        Buy
-                      </button>
-                    ) : (
-                      <Web3Button className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all  !bg-accent !cursor-pointer `}>Connect wallet</Web3Button>
-                    )}
-                  </div>
-                </div>
-              )}
-              <ItemManage offerData={offerData}  />
+                ))}
+              <ItemManage offerData={offerData} marketplaceListings={marketplaceListings} />
             </div>
           </div>
         </div>
