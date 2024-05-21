@@ -6,12 +6,11 @@ import User_items from "../../components/user/User_items";
 import Tippy from "@tippyjs/react";
 import "tippy.js/dist/tippy.css"; // optional
 import { CopyToClipboard } from "react-copy-to-clipboard";
-import Meta from "../../components/Meta";
-import { GetAllAdOffersFromUser } from "../../data/services/AdOffersService";
 import { GetAllTokenbyOfferForAUser } from "../../data/services/TokenOffersService";
 import { useAddress } from "@thirdweb-dev/react";
 
 import { fetchDataFromIPFS } from "../../data/services/ipfsService";
+import fetchAdsOffersForUser from "../../providers/ChainProvider/methods/fetchAdsOffersForUser";
 
 const ManageSpaceContainer = ({address: userAddress}) => {
   const router = useRouter();
@@ -25,7 +24,7 @@ const ManageSpaceContainer = ({address: userAddress}) => {
   useEffect(() => {
     if (userAddress) {
       const fetchAdsOffers = async () => {
-        const offers = await GetAllAdOffersFromUser(userAddress);
+        const offers = await fetchAdsOffersForUser(userAddress);
         const ownedAdProposals = await GetAllTokenbyOfferForAUser(userAddress);
         console.log(ownedAdProposals);
         const mappedOffers = [];
@@ -51,7 +50,7 @@ const ManageSpaceContainer = ({address: userAddress}) => {
         const mappedownedAdProposals = [];
 
         setCreatedData(mappedOffers);
-        
+
 
         for (const element of ownedAdProposals) {
           if (!element.nftContract?.adOffers[0]?.metadataURL) {

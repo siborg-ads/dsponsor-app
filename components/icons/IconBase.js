@@ -14,20 +14,24 @@ export function Tree2Element(tree) {
 }
 
 export function GenIcon(data) {
-    return (props) => (
-        <IconBase attr={{ ...data.attr }} {...props}>
-            {Tree2Element(data.child)}
-        </IconBase>
-    );
+    const generatedIcon = function (props) {
+        return (
+            <IconBase attr={{ ...data.attr }} {...props}>
+                {Tree2Element(data.child)}
+            </IconBase>
+        );
+    }
+    return generatedIcon;
 }
 
-export function IconBase(props) {
+const IconBase = function(props = {}) {
     const { attr, size, title, ...svgProps } = props;
     const computedSize = size || '1em';
     let className = props.className || '';
 
     return (
         <svg
+            name={props.name}
             stroke="currentColor"
             fill="currentColor"
             strokeWidth="0"
@@ -43,4 +47,6 @@ export function IconBase(props) {
             {props.children}
         </svg>
     );
-}
+};
+export default IconBase;
+

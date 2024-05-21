@@ -158,7 +158,7 @@ const OfferPageContainer = ({offerId, offer}) => {
                             <div className="mb-3 flex">
                                 {/* <!-- Collection --> */}
                                 <div className="flex items-center">
-                                    <Link href={`/manageSpaces/${offerData?.initialCreator}`} className="text-accent mr-2 text-sm font-bold">
+                                    <Link href={`/manage/${offerData?.initialCreator}`} className="text-accent mr-2 text-sm font-bold">
                                         {offerData?.initialCreator}
                                     </Link>
                                 </div>

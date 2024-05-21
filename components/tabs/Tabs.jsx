@@ -32,7 +32,7 @@ const ItemsTabs = ({ contractAddress,  isUserOwner, initialCreator, isToken = tr
                 </div>
                 <div className="mb-2 flex items-center">
                   <span className="dark:text-jacarta-300 mr-2 min-w-[9rem]">Contract Creator:</span>
-                  <Link href={`/manageSpaces/${initialCreator}`} target="_blank" rel="noopener noreferrer" className="text-accent">
+                  <Link href={`/manage/${initialCreator}`} target="_blank" rel="noopener noreferrer" className="text-accent">
                     {initialCreator}
                   </Link>
                 </div>
@@ -41,7 +41,7 @@ const ItemsTabs = ({ contractAddress,  isUserOwner, initialCreator, isToken = tr
                   <span className="dark:text-jacarta-300 mr-2 min-w-[9rem]">Owner:</span>
                   {isUserOwner ? (
                     <div>
-                      <Link href={`/manageSpaces/${isUserOwner}`} rel="noopener noreferrer" className="text-accent mr-2">
+                      <Link href={`/manage/${isUserOwner}`} rel="noopener noreferrer" className="text-accent mr-2">
                         {isUserOwner}
                       </Link>
                       {whiteListedAddress.includes(isUserOwner) && (

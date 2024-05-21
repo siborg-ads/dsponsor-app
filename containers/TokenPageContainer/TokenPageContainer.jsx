@@ -428,14 +428,14 @@ const TokenPageContainer = ({ offerId, tokenId, offer, listings }) => {
     body: "Congratulations, you have proposed an ad.",
     subBody: 'The media still has the power to validate or reject ad assets. You can follow the ad validation in the "Owned Ad Spaces" section.',
     buttonTitle: "Manage Spaces",
-    hrefButton: `/manageSpaces/${address}`,
+    hrefButton: `/manage/${address}`,
   };
   const successFullBuyModal = {
     title: "Checkout",
     body: "Congratulations, you purchase this ad space.",
     subBody: "Check your ad space in your manage section to submit your ad.",
     buttonTitle: "Manage Spaces",
-    hrefButton: `/manageSpaces/${address}`,
+    hrefButton: `/manage/${address}`,
   };
   const statutAds = {
     pending: "🔍 Your ad is pending, wait the validation of the creator",
