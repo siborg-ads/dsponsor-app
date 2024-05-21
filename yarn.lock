@@ -6538,7 +6538,7 @@ axios@^0.27.2:
     follow-redirects "^1.14.9"
     form-data "^4.0.0"
 
-axios@^1.4.0, axios@^1.6.5:
+axios@^1.6.5:
   version "1.6.8"
   resolved "https://registry.npmjs.org/axios/-/axios-1.6.8.tgz"
   integrity sha512-v/ZHtJDU39mDpyBoFVkETcd/uNdxrWRrg3bKpOKzXFA6Bvqopts6ALSMU3y6ijYxbw2B+wPrIv46egTzJXCLGQ==
@@ -7061,11 +7061,6 @@ chalk@^4.0.0, chalk@^4.1.0, chalk@^4.1.2:
   dependencies:
     ansi-styles "^4.1.0"
     supports-color "^7.1.0"
-
-chart.js@^3.5.0:
-  version "3.9.1"
-  resolved "https://registry.npmjs.org/chart.js/-/chart.js-3.9.1.tgz"
-  integrity sha512-Ro2JbLmvg83gXF5F4sniaQ+lTbSv18E+TIf2cOeiH1Iqd2PGFOtem+DUufMZsCJwFE7ywPOpfXFBwRTGq7dh6w==
 
 check-error@^1.0.3:
   version "1.0.3"
@@ -9008,7 +9003,7 @@ fraction.js@^4.2.0:
   resolved "https://registry.npmjs.org/fraction.js/-/fraction.js-4.2.0.tgz"
   integrity sha512-MhLuK+2gUcnZe8ZHlaaINnQLl0xRIGRfcGk2yl8xoQAfHrSsL3rYu6FCmBdkdbhc9EPlwyGHewaRsvwRMJtAlA==
 
-framer-motion@^11.1.2, framer-motion@>=4.0.0:
+framer-motion@>=4.0.0:
   version "11.1.2"
   resolved "https://registry.npmjs.org/framer-motion/-/framer-motion-11.1.2.tgz"
   integrity sha512-flRo14ImBGRbOFz9KsXQ9ty3wWW2zFk0Gp4VbvZ5bG+1gZg/1CNWj9ZHtsCmZSPkBgZNOVkVf6aEtW5YxOITfw==
@@ -11948,11 +11943,6 @@ react-accessible-accordion@^5.0.0:
   version "5.0.0"
   resolved "https://registry.npmjs.org/react-accessible-accordion/-/react-accessible-accordion-5.0.0.tgz"
   integrity sha512-MT2obYpTgLIIfPr9d7hEyvPB5rg8uJcHpgA83JSRlEUHvzH48+8HJPvzSs+nM+XprTugDgLfhozO5qyJpBvYRQ==
-
-react-chartjs-2@^4.3.1:
-  version "4.3.1"
-  resolved "https://registry.npmjs.org/react-chartjs-2/-/react-chartjs-2-4.3.1.tgz"
-  integrity sha512-5i3mjP6tU7QSn0jvb8I4hudTzHJqS8l00ORJnVwI2sYu0ihpj83Lv2YzfxunfxTZkscKvZu2F2w9LkwNBhj6xA==
 
 react-copy-to-clipboard@^5.1.0:
   version "5.1.0"

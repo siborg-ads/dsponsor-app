@@ -4,7 +4,6 @@ import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import OfferTab from "./OfferTab";
 import Properties from "./Properties";
 import Activity_tab from "./Activity_tab";
-import Price_history from "./Price_history";
 import Link from "next/link";
 import { useChainId } from "@thirdweb-dev/react";
 import SDKProvider from "../../providers/SDKProvider";
@@ -17,12 +16,12 @@ const ItemsTabs = ({ contractAddress,  isUserOwner, initialCreator, isToken = tr
   const { SDKChainId, getChainName } = useContext(SDKContext);
 
 
- 
+
   return (
     <>
       <div className="scrollbar-custom overflow-x-auto rounded-lg">
- 
-       
+
+
             {/* <!-- Details --> */}
             <div className="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
               <div className="dark:bg-jacarta-700 dark:border-jacarta-600 border-jacarta-100 rounded-t-2lg rounded-b-2lg rounded-tl-none border bg-white p-6 md:p-10">
@@ -68,7 +67,7 @@ const ItemsTabs = ({ contractAddress,  isUserOwner, initialCreator, isToken = tr
                 </div>
               </div>
             </div>
-          
+
       </div>
     </>
   );
