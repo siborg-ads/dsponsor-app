@@ -7,6 +7,8 @@ import "react-toastify/dist/ReactToastify.css";
 import { Spinner } from "@nextui-org/spinner";
 
 const PreviewModal = ({
+  approvalForAllToken = true,
+  handleApprove,
   handlePreviewModal,
   handleSubmit,
   imageUrlVariants = [],
@@ -31,11 +33,10 @@ const PreviewModal = ({
   buttonTitle,
   modalTitle,
   successFullUploadModal,
- 
+
   isLoadingButton,
 }) => {
-
-   console.log(imageUrlVariants);
+  console.log(imageUrlVariants);
   const formatDate = (date) => {
     if (!date) return "";
     return date.toLocaleDateString();
@@ -57,11 +58,10 @@ const PreviewModal = ({
       ratioArray.push(stepWidth * (width / height));
       ratioArray.push(stepWidth);
     }
-    
+
     return ratioArray;
-  
   };
-  
+
   return (
     <div>
       <div className="modal-dialog max-h-[75vh] max-w-2xl">
@@ -228,20 +228,38 @@ const PreviewModal = ({
             <div className="flex items-center justify-center space-x-4">
               <div className="flex items-center gap-4">
                 {!successFullUpload ? (
-                  <Web3Button
-                    contractAddress="0xE442802706F3603d58F34418Eac50C78C7B4E8b3"
-                    action={() => {
-                      toast.promise(handleSubmit, {
-                        pending: "Waiting transaction confirmation",
-                        success: "Transaction confirmed 👌",
-                        error: "Transaction rejected 🤯",
-                      });
-                    }}
-                    className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate ? "btn-disabled" : "!bg-accent !cursor-pointer"} `}
-                    isDisabled={!validate || isLoadingButton}
-                  >
-                    {isLoadingButton ? <Spinner size="sm" color="default" /> : buttonTitle}
-                  </Web3Button>
+                  approvalForAllToken ? (
+                    <Web3Button
+                      contractAddress="0xE442802706F3603d58F34418Eac50C78C7B4E8b3"
+                      action={() => {
+                        toast.promise(handleSubmit, {
+                          pending: "Waiting transaction confirmation",
+                          success: "Transaction confirmed 👌",
+                          error: "Transaction rejected 🤯",
+                        });
+                      }}
+                      className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate ? "btn-disabled" : "!bg-accent !cursor-pointer"} `}
+                      isDisabled={!validate || isLoadingButton}
+                    >
+                      {isLoadingButton ? <Spinner size="sm" color="default" /> : buttonTitle}
+                    </Web3Button>
+                  ) : (
+                    // approve for listing
+                    <Web3Button
+                      contractAddress="0xac03b675fa9644279b92f060bf542eed54f75599"
+                      action={() => {
+                        toast.promise(handleApprove, {
+                          pending: "Waiting for approval",
+                          success: "Approval confirmed 👌",
+                          error: "Approval rejected 🤯",
+                        });
+                      }}
+                      className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate ? "btn-disabled" : "!bg-accent !cursor-pointer"} `}
+                      isDisabled={!validate || isLoadingButton}
+                    >
+                      {isLoadingButton ? <Spinner size="sm" color="default" /> : "Approve"}
+                    </Web3Button>
+                  )
                 ) : (
                   <Link href={successFullUploadModal.hrefButton}>
                     <button className="!rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all !bg-accent !cursor-pointer">{successFullUploadModal.buttonTitle}</button>

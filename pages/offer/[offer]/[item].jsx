@@ -27,6 +27,7 @@ import { Divider } from "@nextui-org/react";
 import Validation from "../../../components/offer-section/validation.jsx";
 import { protocolFees, protocolFeesBigNumber } from "../../../utils/constUtils";
 import stringToUint256 from "../../../utils/stringToUnit256";
+import ItemManage from "../../../components/item/ItemManage";
 
 import contractABI from "../../../abi/dsponsorAdmin.json";
 
@@ -563,6 +564,7 @@ const [imageUrlVariants, setImageUrlVariants] = useState([]);
                   </div>
                 </div>
               )}
+              <ItemManage offerData={offerData}  />
             </div>
           </div>
         </div>

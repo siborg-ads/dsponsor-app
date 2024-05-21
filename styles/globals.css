@@ -6040,6 +6040,14 @@ body {
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   transition: box-shadow 0.3s, transform 0.2s;
 }
+.card.closed{
+  width: 50px!important;
+  transition: transform 0.2s;
+}
+.card.open{
+  width: 250px!important;
+  transition: transform 0.2s;
+}
 
 .card:hover {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
