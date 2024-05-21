@@ -15,7 +15,7 @@ import PreviewModal from "../../components/modal/previewModal";
 import "tippy.js/dist/tippy.css";
 import { ItemsTabs } from "../../components/component";
 import BuyModal from "../../components/modal/buyModal";
-import adminInstance from "../../utils/sdkProvider";
+// import adminInstance from "../../utils/sdkProvider";
 import { toast } from "react-toastify";
 import OfferSkeleton from "../../components/skeleton/offerSkeleton.jsx";
 import { Divider } from "@nextui-org/react";
@@ -88,6 +88,8 @@ const TokenPageContainer = ({ offerId, tokenId, offer, listings }) => {
   const [isLoadingButton, setIsLoadingButton] = useState(false);
   const stepsRef = useRef([]);
   const [numSteps, setNumSteps] = useState(2);
+
+  const { getCurrencyByAddress } = useChainContext()
 
   useEffect(() => {
     if (offerId && tokenId) {
@@ -167,7 +169,7 @@ const TokenPageContainer = ({ offerId, tokenId, offer, listings }) => {
     try {
       const currencyTokenObject = {};
       if (!decimalsContract && !symbolContract) {
-        const currencyToken = adminInstance.chain.getCurrencyByAddress(offerData.nftContract.prices[0].currency);
+        const currencyToken = getCurrencyByAddress(offerData.nftContract.prices[0].currency);
         currencyTokenObject.symbol = currencyToken.symbol;
         currencyTokenObject.decimals = currencyToken.decimals;
       } else {

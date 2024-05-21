@@ -2,12 +2,12 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import adminInstance from "../../utils/sdkProvider";
 import { protocolFeesBigNumber } from "../../utils/constUtils";
 import { useAddress, useSwitchChain, useContract, useContractWrite, Web3Button, useContractRead, useStorageUpload, useTokenDecimals, CheckoutWithCard, CheckoutWithEth } from "@thirdweb-dev/react";
 // import { contractABI } from "../../utils/constUtils";
 import contractABI from "../../abi/dsponsorAdmin.json";
 import {formatUnits} from "../../utils/formatUnits";
+import {useChainContext} from "../../contexts/hooks/useChainContext";
 
 
 const OfferItem = ({ item, url, isToken, isSelectionActive, isOwner }) => {
@@ -21,6 +21,8 @@ const OfferItem = ({ item, url, isToken, isSelectionActive, isOwner }) => {
   const { contract: DsponsorAdminContract } = useContract("0xE442802706F3603d58F34418Eac50C78C7B4E8b3", contractABI);
   const { data: bps } = useContractRead(DsponsorAdminContract, "feeBps");
   const maxBps = 10000;
+
+  const { getCurrencyByAddress } = useChainContext()
 
   function formatDate(dateIsoString) {
     if (!dateIsoString) return "date not found";
@@ -36,7 +38,7 @@ const OfferItem = ({ item, url, isToken, isSelectionActive, isOwner }) => {
     try {
        const currencyTokenObject = {};
        if (!decimalsContract && !symbolContract) {
-         const currencyToken = adminInstance.chain.getCurrencyByAddress(item?.nftContract?.prices[0]?.currency);
+         const currencyToken = getCurrencyByAddress(item?.nftContract?.prices[0]?.currency);
          currencyTokenObject.symbol = currencyToken.symbol;
          currencyTokenObject.decimals = currencyToken.decimals;
        } else {

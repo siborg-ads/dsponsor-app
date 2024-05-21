@@ -2,10 +2,17 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import {useAddress, useChainId} from "@thirdweb-dev/react";
 import ChainContext from "../../contexts/ChainContext";
+import ethereumSepolia from "./configs/chains/ethereum-sepolia";
+
+const configs = {
+    sepolia: ethereumSepolia
+};
+
 
 const ChainProvider = ({ children }) => {
     const chainId = useChainId();
     const connectedAddress = useAddress();
+
 
     const [currentChainId, setCurrentChainId] = useState(11155111);
     const [currentChainName, setCurrentChainName] = useState('sepolia');
@@ -41,6 +48,20 @@ const ChainProvider = ({ children }) => {
             chainId: currentChainId,
             connectedAddress: connectedAddress,
             chainName: currentChainName,
+            getCurrencyAddress: (currency) => {
+                const currencyConfig = configs[currentChainName];
+                const assets = currencyConfig?.assets;
+                if(assets){
+                    return assets[currency];
+                }
+            },
+            getCurrencyByAddress: (address) => {
+                const currencyConfig = configs[currentChainName];
+                const assets = currencyConfig?.assets;
+                if(assets){
+                    return Object.entries(assets).find(([key, value]) => value.contract.toLowerCase() === address.toLowerCase())[1];
+                }
+            }
         };
     });
 
