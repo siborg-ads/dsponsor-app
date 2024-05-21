@@ -5,8 +5,9 @@ import { useState, useEffect } from "react";
 import adminInstance from "../../utils/sdkProvider";
 import { protocolFeesBigNumber } from "../../utils/constUtils";
 import { useAddress, useSwitchChain, useContract, useContractWrite, Web3Button, useContractRead, useStorageUpload, useTokenDecimals, CheckoutWithCard, CheckoutWithEth } from "@thirdweb-dev/react";
-import {ethers} from "ethers";
-import { contractABI } from "../../utils/constUtils";
+// import { contractABI } from "../../utils/constUtils";
+import contractABI from "../../abi/dsponsorAdmin.json";
+import {formatUnits} from "../../utils/formatUnits";
 
 
 const OfferItem = ({ item, url, isToken, isSelectionActive, isOwner }) => {
@@ -20,11 +21,6 @@ const OfferItem = ({ item, url, isToken, isSelectionActive, isOwner }) => {
   const { contract: DsponsorAdminContract } = useContract("0xE442802706F3603d58F34418Eac50C78C7B4E8b3", contractABI);
   const { data: bps } = useContractRead(DsponsorAdminContract, "feeBps");
   const maxBps = 10000;
-
-  
-  
-
-
 
   function formatDate(dateIsoString) {
     if (!dateIsoString) return "date not found";
@@ -47,17 +43,12 @@ const OfferItem = ({ item, url, isToken, isSelectionActive, isOwner }) => {
          currencyTokenObject.symbol = symbolContract;
          currencyTokenObject.decimals = decimalsContract;
        }
-      
+
 
 
   const bigIntPrice = BigInt(item?.nftContract?.prices[0]?.amount) * (BigInt(bps)+ BigInt(maxBps)) / BigInt(maxBps);
-   const formatPrice = ethers.utils.formatUnits(bigIntPrice, currencyTokenObject.decimals);
+   const formatPrice = formatUnits(bigIntPrice, currencyTokenObject.decimals);
 
-
-   
-
-   
-      
        setCurrencyToken(currencyTokenObject);
       setPrice(Number(Math.ceil(formatPrice * 1000) / 1000));
     } catch (e) {
@@ -157,7 +148,7 @@ const OfferItem = ({ item, url, isToken, isSelectionActive, isOwner }) => {
             <span className="dark:text-jacarta-300 text-jacarta-500">Offer # {item.mint ? item.nftContract?.adOffers[0]?.id : item.id}</span>
           </div>
         </div>
-       
+
       </article>
     </>
   );
