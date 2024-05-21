@@ -6,7 +6,6 @@ import Properties from "./Properties";
 import Activity_tab from "./Activity_tab";
 import Link from "next/link";
 import { useChainId } from "@thirdweb-dev/react";
-import SDKProvider from "../../providers/SDKProvider";
 import SDKContext from "../../contexts/SDKContext";
 import Tippy from "@tippyjs/react";
 import {whiteListedAddress} from "../../utils/whiteListedAddress";
