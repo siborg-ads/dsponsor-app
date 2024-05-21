@@ -1,8 +1,6 @@
 import { useState } from "react";
-import { toUtf8Bytes, keccak256 } from "ethers/lib/utils";
 import {useChainContext} from "../../../../contexts/hooks/useChainContext";
 import keccak256 from "../../../../utils/keccak256";
-
 
 
 const Form = ({ offerId, onUrlChange }) => {

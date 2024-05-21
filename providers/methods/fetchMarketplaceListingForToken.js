@@ -76,7 +76,7 @@ export default async function fetchMarketplaceListingForToken(options) {
         }`);
 
     const response = await fetch(path, {
-        cache: 'force-cache'
+        cache: 'no-cache'
     });
     return response.json();
 }

@@ -8,7 +8,6 @@ import Link from "next/link";
 import Tippy from "@tippyjs/react";
 import { MdKeyboardArrowRight, MdKeyboardArrowLeft } from "react-icons/md";
 import { toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 
 import { useEffect, useState } from "react";
 import { CopyToClipboard } from "react-copy-to-clipboard";

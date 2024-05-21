@@ -9,6 +9,8 @@ export async function generateMetadata({
                                        }) {
     const offerId = params.offerId;
     const tokenId = params.tokenId;
+    const chainName = params.chainName;
+
 
     // We use headers as a way to get the chainID
     const headersList = headers()

@@ -24,7 +24,6 @@ import { protocolFees } from "../../utils/constUtils";
 
 import contractABI from "../../abi/dsponsorAdmin.json";
 
-import "react-toastify/dist/ReactToastify.css";
 import ModalHelper from "../../components/Helper/modalHelper.jsx";
 import ItemDetails from "../../components/item/ItemDetails";
 import stringToUint256 from "../../utils/stringToUnit256";
