@@ -6,11 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
-    "graphclient": "graphclient build"
+    "lint": "next lint"
   },
   "dependencies": {
-    "@apollo/client": "^3.10.4",
     "@dsponsor/sdk": "^5.0.2",
     "@nextui-org/react": "^2.3.6",
     "@nextui-org/spinner": "^2.0.28",
@@ -19,9 +17,10 @@
     "@thirdweb-dev/react": "^4.6.24",
     "@thirdweb-dev/sdk": "^4.0.85",
     "@tippyjs/react": "^4.2.6",
-    "ethers": "^5.7.2",
+    "js-sha3": "^0.9.3",
     "next": "14.2.3",
     "next-themes": "^0.3.0",
+    "pino-pretty": "^11.0.0",
     "react": "18.3.1",
     "react-accessible-accordion": "^5.0.0",
     "react-copy-to-clipboard": "^5.1.0",
@@ -34,6 +33,7 @@
     "react-tabs": "^6.0.2",
     "react-toastify": "^10.0.5",
     "sass": "^1.77.2",
+    "sharp": "^0.33.4",
     "swiper": "^8.4.7",
     "thirdweb": "^5.22.1"
   },
