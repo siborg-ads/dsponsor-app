@@ -1,12 +1,11 @@
 'use client';
 import React, { useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
 import { useAddress } from "@thirdweb-dev/react";
 import ConfirmBid from "./BidsModal/ConfirmBid";
+import {useAppContext} from "../../contexts/hooks/useAppContext";
 
 const BidsModal = () => {
-  const bidsModal = useSelector((state) => state.bids_modal);
-  const dispatch = useDispatch();
+  const {isBidModalOpen, setIsBidModalOpen} = useAppContext();
   const [ETHAmount, setETHAmount] = useState(0.05);
   const address = useAddress();
 
@@ -52,7 +51,7 @@ const BidsModal = () => {
   return (
     <div>
       <div
-        className={bidsModal ? "modal fade show block" : "modal hide"}
+        className={isBidModalOpen ? "modal fade show block" : "modal hide"}
         id="placeBidModal"
         tabIndex="-1"
         aria-labelledby="placeBidLabel"
@@ -64,13 +63,13 @@ const BidsModal = () => {
               <h5 className="modal-title text-white" id="placeBidLabel">
                 Confirm Bid
               </h5>
-              <button onClick={() => setShowBidsModal(false)}>
+              <button onClick={() => setIsBidModalOpen(false)}>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 24 24"
                   width="24"
                   height="24"
-                  onClick={() => setShowBidsModal(false)}
+                  onClick={() => setIsBidModalOpen(false)}
                   className="h-6 w-6 fill-jacarta-700 fill-white"
                 >
                   <path fill="none" d="M0 0h24v24H0z" />
