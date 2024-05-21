@@ -9,10 +9,8 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@dsponsor/sdk": "^5.0.2",
     "@nextui-org/react": "^2.3.6",
     "@nextui-org/spinner": "^2.0.28",
-    "@reduxjs/toolkit": "^2.2.5",
     "@thirdweb-dev/auth": "^4.1.83",
     "@thirdweb-dev/react": "^4.6.24",
     "@thirdweb-dev/sdk": "^4.0.85",
