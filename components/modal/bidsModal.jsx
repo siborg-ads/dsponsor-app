@@ -1,15 +1,8 @@
 'use client';
 import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { bidsModalHide } from "../../redux/counterSlice";
-import { prepareContractCall, sendTransaction, resolveMethod } from "thirdweb";
-import { client } from "../../data/services/client";
-import { erc20Contract } from "../../lib/config/listing.config";
-import { dSponsorMpContract } from "../../lib/config/listing.config";
-
-import { privateKeyAccount } from "thirdweb/wallets";
 import { useAddress } from "@thirdweb-dev/react";
-import { Confirm_bid } from "../metamask/Metamask";
+import ConfirmBid from "./BidsModal/ConfirmBid";
 
 const BidsModal = () => {
   const bidsModal = useSelector((state) => state.bids_modal);
@@ -143,7 +136,7 @@ const BidsModal = () => {
 
             <div className="modal-footer">
               <div className="flex items-center justify-center space-x-4">
-                <Confirm_bid bidFunc={confirmBid} />
+                <ConfirmBid bidFunc={confirmBid} />
               </div>
             </div>
           </div>
