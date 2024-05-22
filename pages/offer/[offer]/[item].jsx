@@ -76,13 +76,14 @@ const Item = () => {
   const [isLoadingButton, setIsLoadingButton] = useState(false);
   const stepsRef = useRef([]);
   const [numSteps, setNumSteps] = useState(2);
+  const [tokenStatut, setTokenStatut] = useState(null);
 
   const { contract: DsponsorAdminContract } = useContract("0xE442802706F3603d58F34418Eac50C78C7B4E8b3", contractABI);
   const { contract: DsponsorNFTContract } = useContract(offerData?.nftContract?.id);
   const { mutateAsync: uploadToIPFS, isLoading: isUploading } = useStorageUpload();
   const { mutateAsync: mintAndSubmit } = useContractWrite(DsponsorAdminContract, "mintAndSubmit");
   const { mutateAsync: submitAd } = useContractWrite(DsponsorAdminContract, "submitAdProposals");
-  const { contract: tokenContract } = useContract(marketplaceListings.length > 0 ? marketplaceListings[0].buyoutPricePerToken : offerData?.nftContract?.prices[0]?.currency, "token");
+  const { contract: tokenContract } = useContract(marketplaceListings.length > 0 ? marketplaceListings[0].currency : offerData?.nftContract?.prices[0]?.currency, "token");
   const { data: symbolContract } = useContractRead(tokenContract, "symbol");
   const { data: decimalsContract } = useContractRead(tokenContract, "decimals");
   const { data: tokenBalance } = useBalance(marketplaceListings.length > 0 ? marketplaceListings[0].currency : offerData?.nftContract?.prices[0]?.currency);
@@ -110,6 +111,7 @@ const Item = () => {
         setMarketplaceListings(offer?.nftContract?.tokens[0]?.marketplaceListings);
         console.log(combinedData, "combinedData");
         setOfferData(combinedData);
+         setStatusFromOffer(offer);
       };
 
       fetchAdsOffers();
@@ -117,15 +119,25 @@ const Item = () => {
 
     setTokenIdString(tokenId?.toString());
   }, [offerId, tokenId, successFullUpload]);
+   const setStatusFromOffer = (offer) => {
+     if (!isOwner && !offerNotFormated && offerData?.nftContract?.tokens[0]?.mint === null && isAllowedToMint !== null) {
+       setTokenStatut("MINTABLE");
+     }
+     if(offer?.nftContract?.tokens[0]?.marketplaceListings.length > 0) {
+       setTokenStatut("LISTED");
+     }
+
+   }
 
   useEffect(() => {
+    console.log(isUserOwner, address, "isUserOwner");
     if (isUserOwner) {
       if (isUserOwner === address) {
         setIsOwner(true);
       }
     }
   }, [isUserOwner, address]);
-
+  console.log(isOwner, offerNotFormated, offerData?.nftContract?.tokens[0]?.mint, isAllowedToMint, "isOwner");
   useEffect(() => {
     if (!tokenId || !offerData) return;
     if (tokenId.length > 6) {
@@ -178,7 +190,6 @@ const Item = () => {
     const numSteps = 2;
     const totalNumSteps = numSteps + imageURLSteps.length;
 
-    console.log(totalNumSteps, imageURLSteps, numSteps, "totalNumSteps");
     setImageURLSteps(imageURLSteps);
     setNumSteps(totalNumSteps);
   }, [offerData]);
@@ -301,28 +312,20 @@ const Item = () => {
     }
   };
 
-  useEffect(() => {
-    if (price && bps) {
-      // const bpsValueHex = bps._hex;
-      // const bpsValueDecimal = ethers.BigNumber.from(bpsValueHex).toNumber();
-      // console.log(bpsValueDecimal, "bpsValueDecimal");
-      // const bpsValuePercentage = BigInt(bpsValueDecimal) / BigInt(10000);
-      // console.log(price, bpsValuePercentage, "price, bpsValuePercentage")
-      // const priceAsNumber = BigInt(offerData.nftContract.prices[0].amount) * bpsValuePercentage + BigInt(offerData.nftContract.prices[0].amount);;
-      // const priceAsNumberString = priceAsNumber.toString();
-      // setFinalPrice(priceAsNumberString);
-      // const amountToApprove = ethers.utils.parseUnits(priceAsNumberString, currency.decimals);
-      // setAmountToApprove(amountToApprove);
-    }
-  }, [data, bps, offerData, currency, price]);
-
   const checkAllowance = async () => {
-    if (offerData?.nftContract.prices[0].currency !== "0x0000000000000000000000000000000000000000") {
-      const allowance = await tokenContract.call("allowance", [address, "0xE442802706F3603d58F34418Eac50C78C7B4E8b3"]);
+    if (offerData?.nftContract?.prices[0]?.currency || marketplaceListings[0]?.currency !== "0x0000000000000000000000000000000000000000") {
+      let allowance;
+      if (marketplaceListings.length > 0) {
+        allowance = await tokenContract.call("allowance", [address, "0xac03b675fa9644279b92f060bf542eed54f75599"]);
+        console.log("là");
+      } else {
+        console.log("ici");
+        allowance = await tokenContract.call("allowance", [address, "0xE442802706F3603d58F34418Eac50C78C7B4E8b3"]);
+      }
 
       const allowanceBigNumber = ethers.BigNumber.from(allowance._hex);
       const amountToApproveBigNumber = ethers.BigNumber.from(amountToApprove._hex);
-
+      console.log(Number(allowanceBigNumber), Number(amountToApproveBigNumber), "allowanceBigNumber, amountToApproveBigNumber");
       if (allowanceBigNumber.gt(amountToApproveBigNumber)) return;
 
       setAllowanceTrue(true);
@@ -336,8 +339,11 @@ const Item = () => {
       if (!hasEnoughBalance) {
         throw new Error("Not enough balance for approval.");
       }
-
-      await approve({ args: ["0xE442802706F3603d58F34418Eac50C78C7B4E8b3", amountToApprove] });
+      if (marketplaceListings.length > 0) {
+        await approve({ args: ["0xac03b675fa9644279b92f060bf542eed54f75599", amountToApprove] });
+      } else {
+        await approve({ args: ["0xE442802706F3603d58F34418Eac50C78C7B4E8b3", amountToApprove] });
+      }
       setAllowanceTrue(false);
     } catch (error) {
       console.error("Approval failed:", error.message);
@@ -375,8 +381,6 @@ const Item = () => {
       }
     }
     try {
-    
-
       const argsMintAndSubmit = {
         tokenId: tokenIdString,
         to: address,
@@ -389,33 +393,33 @@ const Item = () => {
       };
       const isAlreadyBuy = () => {
         if (marketplaceListings.length > 0) {
-           const argsdirectBuy =  {
-             listingId: Number(marketplaceListings[0].id),
-             buyFor: address,
-             quantity: 1,
-             currency: marketplaceListings[0].currency,
-             totalPrice: marketplaceListings[0].buyoutPricePerToken,
-             referralAdditionalInformation: "",
-           };
+          const argsdirectBuy = [
+            {
+              listingId: Number(marketplaceListings[0].id),
+              buyFor: address,
+              quantity: 1,
+              currency: marketplaceListings[0].currency,
+              totalPrice: marketplaceListings[0].buyoutPricePerToken,
+              referralAdditionalInformation: "",
+            },
+          ];
           console.log(argsdirectBuy, "argsdirectBuy");
-           return argsdirectBuy;
-          }else{
-
-            const argsAdSubmited = {
-              offerId: submitAdFormated.offerId,
-              tokenId: submitAdFormated.tokenId,
-              adParameters: submitAdFormated.params,
-              data: [uploadUrl[0], link],
-            };
-            return argsAdSubmited;
-          }
-      }
-      
+          return argsdirectBuy;
+        } else {
+          const argsAdSubmited = {
+            offerId: submitAdFormated.offerId,
+            tokenId: submitAdFormated.tokenId,
+            adParameters: submitAdFormated.params,
+            data: [uploadUrl[0], link],
+          };
+          return argsAdSubmited;
+        }
+      };
 
       const isEthCurrency = offerData?.nftContract.prices[0].currency || marketplaceListings[0].currency === "0x0000000000000000000000000000000000000000";
       const functionWithPossibleArgs = adStatut !== 0 && !isAllowedToMint ? Object.values(isAlreadyBuy()) : argsMintAndSubmit;
       const argsWithPossibleOverrides = isEthCurrency ? { args: [functionWithPossibleArgs], overrides: { value: amountToApprove } } : { args: [functionWithPossibleArgs] };
-
+      console.log(functionWithPossibleArgs);
       if (adStatut !== 0 && !isAllowedToMint && marketplaceListings.length <= 0) {
         console.log("ici", functionWithPossibleArgs);
         await submitAd({ args: functionWithPossibleArgs });
@@ -425,7 +429,9 @@ const Item = () => {
         await mintAndSubmit(argsWithPossibleOverrides);
       } else {
         console.log("directBuy", functionWithPossibleArgs);
-        await directBuy({ args: [functionWithPossibleArgs] });
+        await directBuy({
+          args: [functionWithPossibleArgs],
+        });
       }
 
       setSuccessFullUpload(true);
@@ -474,6 +480,7 @@ const Item = () => {
     setShowPreviewModal(!showPreviewModal);
     validateInputs();
   };
+
   const successFullUploadModal = {
     title: "Ad Space",
     body: "Congratulations, you have proposed an ad.",
@@ -577,7 +584,7 @@ const Item = () => {
               </div>
 
               <p className="dark:text-jacarta-300 mb-10">{description}</p>
-              {(!isOwner && !offerNotFormated && !offerData.nftContract?.tokens[0]?.mint && isAllowedToMint !== null) ||
+              {(!isOwner && !offerNotFormated && offerData?.nftContract?.tokens[0]?.mint === null && isAllowedToMint !== null) ||
                 (marketplaceListings[0]?.startTime < now && marketplaceListings[0]?.status === "CREATED" && marketplaceListings[0]?.listingType === "Direct" && (
                   <div className="dark:bg-jacarta-700 dark:border-jacarta-600 border-jacarta-100 rounded-2lg border flex flex-col gap-4 bg-white p-8">
                     <div className=" sm:flex sm:flex-wrap">
