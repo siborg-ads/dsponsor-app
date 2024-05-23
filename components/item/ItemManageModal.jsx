@@ -20,6 +20,7 @@ import adminInstance from "../../utils/sdkProvider";
 const ItemManageModal = ({ handleListingModal, offerData, marketplaceListings }) => {
   const [selectedListingType, setSelectedListingType] = useState([]);
   const [selectedUnitPrice, setSelectedUnitPrice] = useState(0);
+  const [selectedStartingPrice, setSelectedStartingPrice] = useState(0);
   const [selectedCurrency, setSelectedCurrency] = useState("USDC");
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date(new Date().setFullYear(new Date().getFullYear() + 1)));
@@ -51,6 +52,7 @@ const ItemManageModal = ({ handleListingModal, offerData, marketplaceListings })
   const { data: symbolContractAsync } = useContractRead(tokenContractAsync, "symbol");
   const { data: decimalsContractAsync } = useContractRead(tokenContractAsync, "decimals");
 
+  
   useEffect(() => {
     setSymbolContract(symbolContractAsync);
     setTokenDecimals(decimalsContractAsync);
@@ -73,6 +75,7 @@ const ItemManageModal = ({ handleListingModal, offerData, marketplaceListings })
         const startDateFormated = Math.floor(startDate.getTime() / 1000);
         const endDateFormated = Math.floor(endDate.getTime() / 1000);
         const secondsUntilEndTime = endDateFormated - startDateFormated;
+        const startingPrice = ethers.utils.parseUnits(selectedStartingPrice.toString(), tokenDecimals).toString();
         const isAuction = selectedListingType[0] === 1;
         const price = ethers.utils.parseUnits(selectedUnitPrice.toString(), tokenDecimals).toString();
         const args = {
@@ -80,10 +83,10 @@ const ItemManageModal = ({ handleListingModal, offerData, marketplaceListings })
           tokenId: offerData?.nftContract?.tokens[0].tokenId,
           startTime: startDateFormated,
           secondsUntilEndTime: secondsUntilEndTime,
-          quantityToList: 1, //quantity
+          quantityToList: 1,
           currencyToAccept: tokenContract,
-          reservePricePerToken: price,
-          buyoutPricePerToken: isAuction ? price * 10000 : price,
+          reservePricePerToken: isAuction ? startingPrice : price,
+          buyoutPricePerToken: price,
           transferType: 1,
           rentalExpirationTimestamp: startDateFormated + secondsUntilEndTime,
           listingType: selectedListingType[0],
@@ -116,9 +119,14 @@ const ItemManageModal = ({ handleListingModal, offerData, marketplaceListings })
 
     const price = value;
 
-    console.log(price);
-
     setSelectedUnitPrice(value === "" ? null : price);
+  };
+  const handleStartingPriceChange = (e) => {
+    const { value } = e.target;
+
+    const price = value;
+
+    setSelectedStartingPrice(value === "" ? null : price);
   };
   const handleCurrencyChange = (event) => {
     setSelectedCurrency(event.target.value);
@@ -203,9 +211,7 @@ const ItemManageModal = ({ handleListingModal, offerData, marketplaceListings })
       name: "Direct Listing",
 
       image: (
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-          <path d="M318.6 9.4c-12.5-12.5-32.8-12.5-45.3 0l-120 120c-12.5 12.5-12.5 32.8 0 45.3l16 16c12.5 12.5 32.8 12.5 45.3 0l4-4L325.4 293.4l-4 4c-12.5 12.5-12.5 32.8 0 45.3l16 16c12.5 12.5 32.8 12.5 45.3 0l120-120c12.5-12.5 12.5-32.8 0-45.3l-16-16c-12.5-12.5-32.8-12.5-45.3 0l-4 4L330.6 74.6l4-4c12.5-12.5 12.5-32.8 0-45.3l-16-16zm-152 288c-12.5-12.5-32.8-12.5-45.3 0l-112 112c-12.5 12.5-12.5 32.8 0 45.3l48 48c12.5 12.5 32.8 12.5 45.3 0l112-112c12.5-12.5 12.5-32.8 0-45.3l-1.4-1.4L272 285.3 226.7 240 168 298.7l-1.4-1.4z" />
-        </svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><path d="M64 64C28.7 64 0 92.7 0 128V384c0 35.3 28.7 64 64 64H512c35.3 0 64-28.7 64-64V128c0-35.3-28.7-64-64-64H64zm64 320H64V320c35.3 0 64 28.7 64 64zM64 192V128h64c0 35.3-28.7 64-64 64zM448 384c0-35.3 28.7-64 64-64v64H448zm64-192c-35.3 0-64-28.7-64-64h64v64zM288 160a96 96 0 1 1 0 192 96 96 0 1 1 0-192z"/></svg>
       ),
       body: "This integration allows you to display a grid of clickable logos. Each logo can redirect to a different URL. You can choose the number of logos to display and the image ratio for each logo.",
     },
@@ -274,8 +280,7 @@ const ItemManageModal = ({ handleListingModal, offerData, marketplaceListings })
                                   document.getElementById(`checkbox-${index}`).click();
                                 }}
                               >
-                                {selectedListingType[0] !== index && selectedListingType.length > 0 && listing.image}
-                                {listing.name}
+                                {selectedListingType[0] !== index && selectedListingType.length > 0 ? listing.image : listing.name}
                               </label>
                               {/* <ModalHelper dark={true} title={integration.integrationName} body={integration.bodyDescription} image={integration.imageExemple} /> */}
                             </div>
@@ -315,11 +320,29 @@ const ItemManageModal = ({ handleListingModal, offerData, marketplaceListings })
                                     </div>
                                   </div>
                                 </div>
+                                {selectedListingType[0] === 1 && (
+                                  <div className="text-center">
+                                    <label htmlFor="item-description" className="font-display text-jacarta-700 mb-2 block dark:text-white">
+                                      Unit starting price <span className="text-red">*</span>
+                                    </label>
+                                    <div className="flex  flex-wrap   gap-4 items-center text-jacarta-700 dark:text-white">
+                                      <input
+                                        id="numberInput"
+                                        type="number"
+                                        step="0.1"
+                                        value={selectedStartingPrice}
+                                        onChange={handleStartingPriceChange}
+                                        placeholder="Unit selling price"
+                                        className="dark:bg-jacarta-700 flex-grow border-jacarta-100 hover:ring-accent/10 focus:ring-accent dark:border-jacarta-600 dark:placeholder:text-jacarta-300  rounded-lg py-3 px-3 hover:ring-2 dark:text-white"
+                                      />
+                                    </div>
+                                  </div>
+                                )}
                                 <label htmlFor="item-description" className="font-display text-jacarta-700 mb-2 block dark:text-white">
-                                  {selectedListingType[0] === 0 ? "Unit selling price" : "Unit starting price"}
+                                  Unit selling price
                                   <span className="text-red">*</span>
                                 </label>
-                                <p className="dark:text-jacarta-300 text-jacarta-400 text-2xs mb-3">USD payment</p>
+
                                 <div className="flex  flex-wrap   gap-4 items-center text-jacarta-700 dark:text-white">
                                   <input
                                     id="numberInput"

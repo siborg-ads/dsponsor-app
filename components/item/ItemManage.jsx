@@ -25,11 +25,11 @@ const ItemManage = ({ offerData, marketplaceListings }) => {
         </div>
 
         <div className="w-full flex justify-center">
-          {marketplaceListings.length <= 0 && (
+          
             <button type="button" className="bg-accent shadow-accent-volume hover:bg-accent-dark w-36 rounded-full py-3 px-8 text-center font-semibold text-white transition-all" onClick={handleListingModal}>
               Create a listing
             </button>
-          )}
+         
         
         </div>
       </div>
