@@ -618,7 +618,7 @@ tokenBalance;
                 </div>
               )}
 
-              {isOwner && <ItemManage offerData={offerData} marketplaceListings={marketplaceListings} />}
+              {isOwner && <ItemManage offerData={offerData} marketplaceListings={marketplaceListings} royalties={royalties} />}
               {tokenStatut === "AUCTION" && (
                 <ItemBids
                   dsponsorMpContract={dsponsorMpContract}

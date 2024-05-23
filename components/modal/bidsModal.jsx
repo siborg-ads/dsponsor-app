@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { ethers } from "ethers";
 import { useAddress, darkTheme, useBalance, Web3Button, useTokenBalance, useContract, useContractRead, useContractWrite, useStorageUpload, useTokenDecimals, CheckoutWithCard, CheckoutWithEth } from "@thirdweb-dev/react";
-
+import { Spinner } from "@nextui-org/spinner";
 import { bidsModalHide } from "../../redux/counterSlice";
+import { toast } from "react-toastify";
+import Link from "next/link";
 
 const BidsModal = ({ dsponsorMpContract, toggleBidsModal, marketplaceListings, currencySymbol, tokenBalance, currencyTokenDecimals }) => {
   const [bidsAmount, setBidsAmount] = useState(null);
@@ -10,6 +12,9 @@ const BidsModal = ({ dsponsorMpContract, toggleBidsModal, marketplaceListings, c
   const [reservePrice, setReservePrice] = useState(0);
   const [isPriceGood, setIsPriceGood] = useState(true);
   const { mutateAsync: auctionBids } = useContractWrite(dsponsorMpContract, "bid");
+  const [isLoadingButton, setIsLoadingButton] = useState(false);
+  const [checkTerms, setCheckTerms] = useState(false);
+  const [successFullBid, setSuccessFullBid] = useState(false);
 
   useEffect(() => {
     let reservePrice;
@@ -23,26 +28,37 @@ const BidsModal = ({ dsponsorMpContract, toggleBidsModal, marketplaceListings, c
     setInitialIntPrice(Number(Math.ceil(reservePriceParsed * 1000) / 1000));
     setBidsAmount(Number(Math.ceil(reservePriceParsed * 1000) / 1000));
   }, [ marketplaceListings[0], currencyTokenDecimals]);
+
   const handleBidsAmount = (e) => {
-    if (e.target.value < ethers.utils.formatUnits(reservePrice, currencyTokenDecimals)) {
-      console.log(e.target.value);
+    
+    console.log(e.target.value, initialIntPrice);
+    if (e.target.value <  initialIntPrice) {
       setIsPriceGood(false);
       setBidsAmount(e.target.value);
     } else {
+      console.log("good");
       setIsPriceGood(true);
       setBidsAmount(e.target.value);
     }
   };
   const handleSubmit = async () => {
     try {
+      setIsLoadingButton(true);
       const bigIntPrice = ethers.utils.parseUnits(bidsAmount.toString(), currencyTokenDecimals);
       await auctionBids({
         args: [marketplaceListings[0].id, bigIntPrice, ""],
       });
+      setSuccessFullBid(true);
     } catch (error) {
       console.log(error);
+    } finally{
+      setIsLoadingButton(false);
+  
     }
   };
+   const handleTermService = (e) => {
+     setCheckTerms(e.target.checked);
+   };
   return (
     <div>
       <div className="modal fade show block">
@@ -61,63 +77,108 @@ const BidsModal = ({ dsponsorMpContract, toggleBidsModal, marketplaceListings, c
             </div>
 
             {/* <!-- Body --> */}
-            <div className="modal-body p-6">
-              <div className="flex justify-between mb-2">
-                <div className="flex items-center justify-between">
-                  <span className="font-display text-jacarta-700 text-sm font-semibold dark:text-white">Price</span>
+            {successFullBid ? (
+              <div className="modal-body p-6">
+                <div className="flex justify-between mb-2">
+                  <div className="flex items-center justify-between">
+                    <span className="font-display text-jacarta-700 text-sm font-semibold dark:text-white">Price</span>
+                  </div>
+                  <div>
+                    <span className="dark:text-jacarta-400 text-sm">
+                      Balance: {tokenBalance} {currencySymbol}
+                    </span>
+                  </div>
                 </div>
-                <div>
-                  <span className="dark:text-jacarta-400 text-sm">
-                    Balance: {tokenBalance} {currencySymbol}
-                  </span>
+                <div className="dark:border-jacarta-600 border-jacarta-100 relative mb-2 flex items-center overflow-hidden rounded-lg border">
+                  <div className="border-jacarta-100 bg-jacarta-50 flex flex-1 items-center self-stretch border-r px-2">
+                    <span className="font-display text-jacarta-700 text-sm">{currencySymbol}</span>
+                  </div>
+
+                  <input
+                    type="number"
+                    className={`${isPriceGood ? "border-green" : "border-red"} focus:ring-accent h-12 w-full flex-[3] border-2 focus:ring-inse dark:text-jacarta-700`}
+                    placeholder="Amount"
+                    value={bidsAmount}
+                    onChange={(e) => handleBidsAmount(e)}
+                  />
+
+                  <div className="bg-jacarta-50 border-jacarta-100 flex flex-1 justify-end self-stretch border-l dark:text-jacarta-700">
+                    <span className="self-center px-2 text-sm">$130.82</span>
+                  </div>
+                </div>
+                {!isPriceGood && (
+                  <div className="text-left">
+                    <span className="dark:text-warning text-sm">
+                      ⚠️ Bid Price must be higher than {initialIntPrice} {currencySymbol}
+                    </span>
+                  </div>
+                )}
+
+                {/* <!-- Terms --> */}
+                <div className="mt-4 flex items-center space-x-2">
+                  <input
+                    type="checkbox"
+                    id="buyNowTerms"
+                    className="checked:bg-accent dark:bg-jacarta-600 text-accent border-jacarta-200 focus:ring-accent/20 dark:border-jacarta-500 h-5 w-5 self-start rounded focus:ring-offset-0"
+                    onClick={handleTermService}
+                  />
+                  <label htmlFor="buyNowTerms" className="dark:text-jacarta-200 text-sm">
+                    By checking this box, I agree to {"DSponsor's"}{" "}
+                    <Link href="#" className="text-accent">
+                      Terms of Service
+                    </Link>
+                  </label>
                 </div>
               </div>
-              <div className="dark:border-jacarta-600 border-jacarta-100 relative mb-2 flex items-center overflow-hidden rounded-lg border">
-                <div className="border-jacarta-100 bg-jacarta-50 flex flex-1 items-center self-stretch border-r px-2">
-                  <span className="font-display text-jacarta-700 text-sm">{currencySymbol}</span>
-                </div>
-
-                <input
-                  type="number"
-                  className={`${isPriceGood ? "border-green" : "border-red"} focus:ring-accent h-12 w-full flex-[3] border-2 focus:ring-inse dark:text-jacarta-700`}
-                  placeholder="Amount"
-                  value={bidsAmount}
-                  onChange={(e) => handleBidsAmount(e)}
-                />
-
-                <div className="bg-jacarta-50 border-jacarta-100 flex flex-1 justify-end self-stretch border-l dark:text-jacarta-700">
-                  <span className="self-center px-2 text-sm">$130.82</span>
+            ) : (
+              <div className="modal-body p-6">
+                <div className="flex flex-col gap-2">
+                  <div className="flex gap-4">
+                    <p>Congratulations your bid has been submit ! 🎉 </p>
+                    <div className="dark:border-jacarta-600 bg-green   flex h-6 w-6 items-center justify-center rounded-full border-2 border-white" data-tippy-content="Verified Collection">
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" className="h-[.875rem] w-[.875rem] fill-white">
+                        <path fill="none" d="M0 0h24v24H0z"></path>
+                        <path d="M10 15.172l9.192-9.193 1.415 1.414L10 18l-6.364-6.364 1.414-1.414z"></path>
+                      </svg>
+                    </div>
+                  </div>
+                  
                 </div>
               </div>
-              {!isPriceGood && <div className="text-left">
-                <span className="dark:text-warning text-sm">
-                  ⚠️ Bid Price must be higher than {initialIntPrice} {currencySymbol}
-                </span>
-              </div>}
-
-              {/* <!-- Terms --> */}
-              <div className="mt-4 flex items-center space-x-2">
-                <input
-                  type="checkbox"
-                  id="terms"
-                  className="checked:bg-accent dark:bg-jacarta-600 text-accent border-jacarta-200 focus:ring-accent/20 dark:border-jacarta-500 h-5 w-5 self-start rounded focus:ring-offset-0"
-                />
-                <label htmlFor="terms" className="dark:text-jacarta-200 text-sm">
-                  By checking this box, I agree to {"DSponsor's"}{" "}
-                  <a href="#" className="text-accent">
-                    Terms of Service
-                  </a>
-                </label>
-              </div>
-            </div>
+            )}
             {/* <!-- end body --> */}
 
             <div className="modal-footer">
-              <div className="flex items-center justify-center space-x-4">
-                <button type="button" className="bg-accent shadow-accent-volume hover:bg-accent-dark rounded-full py-3 px-8 text-center font-semibold text-white transition-all" onClick={handleSubmit}>
+              {successFullBid ? (
+                <div className="flex items-center justify-center space-x-4">
+                  <Web3Button
+                    contractAddress="0xac03b675fa9644279b92f060bf542eed54f75599"
+                    action={() => {
+                      toast.promise(handleSubmit, {
+                        pending: "Waiting for confirmation 🕒",
+                        success: "Bid confirmed 👌",
+                        error: "Bid rejected 🤯",
+                      });
+                    }}
+                    className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!isPriceGood || !checkTerms ? "btn-disabled" : "!bg-accent !cursor-pointer"} `}
+                    isDisabled={!isPriceGood || !checkTerms}
+                  >
+                    {isLoadingButton ? <Spinner size="sm" color="default" /> : "Place Bid"}
+                  </Web3Button>
+                  {/* <button
+                  type="button"
+                  disabled={!isPriceGood}
+                  className={`  ${!isPriceGood ? "btn-disabled" : "bg-accent shadow-accent-volume"} hover:bg-accent-dark rounded-full py-3 px-8 text-center font-semibold text-white transition-all`}
+                  onClick={handleSubmit}
+                >
                   Place Bid
+                </button> */}
+                </div>
+              ) : (
+                <button className="!rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all !bg-accent !cursor-pointer" onClick={toggleBidsModal}>
+                  Close
                 </button>
-              </div>
+              )}
             </div>
           </div>
         </div>

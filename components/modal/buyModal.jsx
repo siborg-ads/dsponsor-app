@@ -161,7 +161,7 @@ const BuyModal = ({
                   contractAddress="0xE442802706F3603d58F34418Eac50C78C7B4E8b3"
                   action={() => {
                     toast.promise(handleApprove, {
-                      pending: "Waiting for approval",
+                      pending: "Waiting for confirmation 🕒",
                       success: "Approval confirmed 👌",
                       error: "Approval rejected 🤯",
                     });
@@ -176,7 +176,7 @@ const BuyModal = ({
                   contractAddress="0xE442802706F3603d58F34418Eac50C78C7B4E8b3"
                   action={() => {
                     toast.promise(handleSubmit, {
-                      pending: "Waiting transaction confirmation",
+                      pending: "Waiting for confirmation 🕒",
                       success: "Transaction confirmed 👌",
                       error: "Transaction rejected 🤯",
                     });
@@ -192,26 +192,7 @@ const BuyModal = ({
                 </Link>
               )}
 
-              {/* {!successFullUpload ? (
-                <Web3Button
-                  contractAddress="0xE442802706F3603d58F34418Eac50C78C7B4E8b3"
-                  action={() => {
-                    toast.promise(handleSubmit, {
-                      pending: "Waiting transaction confirmation",
-                      success: "Transaction confirmed 👌",
-                      error: "Transaction rejected 🤯",
-                    });
-                  }}
-                  className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate || !userBalance ? "btn-disabled" : "!bg-accent !cursor-pointer"} `}
-                  disabled={!validate}
-                >
-                  Confirm checkout
-                </Web3Button>
-              ) : (
-                <Link href={successFullBuyModal.hrefButton}>
-                  <button className="!rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all !bg-accent !cursor-pointer">{successFullBuyModal.buttonTitle}</button>
-                </Link>
-              )} */}
+           
             </div>
           </div>
         </div>

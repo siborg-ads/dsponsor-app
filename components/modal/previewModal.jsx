@@ -13,7 +13,7 @@ const PreviewModal = ({
   handleSubmit,
   imageUrlVariants = [],
   name = false,
-  link = null,
+  link = false,
   description = false,
   startDate = null,
   endDate = null,
@@ -109,9 +109,9 @@ const PreviewModal = ({
                     )}
                   </p>
 
-                  <p className="font-display  mb-2 block text-jacarta-400 text-sm">
+                  {link.length ? (<p className="font-display  mb-2 block text-jacarta-400 text-sm">
                     Link : {!errors.linkError ? <span className="dark:text-white text-base ml-2"> {link} </span> : <span className="text-red text-base ml-2"> {errors.linkError}</span>}
-                  </p>
+                  </p>):("")}
                   {imageURLSteps?.length > 0 && previewImage.filter((item) => item).length < imageURLSteps.length && (
                     <p className="font-display  mb-2 block text-jacarta-400 text-sm">
                       Image preview : <span className="text-red text-base ml-2"> {errors.imageError}</span>
@@ -233,7 +233,7 @@ const PreviewModal = ({
                       contractAddress="0xE442802706F3603d58F34418Eac50C78C7B4E8b3"
                       action={() => {
                         toast.promise(handleSubmit, {
-                          pending: "Waiting transaction confirmation",
+                          pending: "Waiting for confirmation 🕒",
                           success: "Transaction confirmed 👌",
                           error: "Transaction rejected 🤯",
                         });
@@ -249,7 +249,7 @@ const PreviewModal = ({
                       contractAddress="0xac03b675fa9644279b92f060bf542eed54f75599"
                       action={() => {
                         toast.promise(handleApprove, {
-                          pending: "Waiting for approval",
+                          pending: "Waiting for confirmation 🕒",
                           success: "Approval confirmed 👌",
                           error: "Approval rejected 🤯",
                         });

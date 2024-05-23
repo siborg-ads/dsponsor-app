@@ -16,8 +16,7 @@ import ModalHelper from "../Helper/modalHelper";
 import PreviewModal from "../modal/previewModal";
 import adminInstance from "../../utils/sdkProvider";
 
-
-const ItemManageModal = ({ handleListingModal, offerData, marketplaceListings }) => {
+const ItemManageModal = ({ handleListingModal, offerData, marketplaceListings, royalties }) => {
   const [selectedListingType, setSelectedListingType] = useState([]);
   const [selectedUnitPrice, setSelectedUnitPrice] = useState(0);
   const [selectedStartingPrice, setSelectedStartingPrice] = useState(0);
@@ -52,7 +51,6 @@ const ItemManageModal = ({ handleListingModal, offerData, marketplaceListings })
   const { data: symbolContractAsync } = useContractRead(tokenContractAsync, "symbol");
   const { data: decimalsContractAsync } = useContractRead(tokenContractAsync, "decimals");
 
-  
   useEffect(() => {
     setSymbolContract(symbolContractAsync);
     setTokenDecimals(decimalsContractAsync);
@@ -199,6 +197,15 @@ const ItemManageModal = ({ handleListingModal, offerData, marketplaceListings })
     setErrors(newErrors);
     return isValid;
   };
+  const calculatePriceWithTaxes = (price) => {
+    let grossPrice = price;
+    const fees = [0.04, royalties / 100];
+    for (let i = 0; i < fees.length; i++) {
+      grossPrice /= 1 - fees[i];
+    }
+    return grossPrice.toFixed(3);
+  };
+
   const selectedCurrencyContractObject = {
     USDC: USDCCurrency.contract,
     ETH: ETHCurrency.contract,
@@ -208,22 +215,24 @@ const ItemManageModal = ({ handleListingModal, offerData, marketplaceListings })
   };
   const listingType = [
     {
-      name: "Direct Listing",
+      title: "Direct Listing",
 
-      image: (
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><path d="M64 64C28.7 64 0 92.7 0 128V384c0 35.3 28.7 64 64 64H512c35.3 0 64-28.7 64-64V128c0-35.3-28.7-64-64-64H64zm64 320H64V320c35.3 0 64 28.7 64 64zM64 192V128h64c0 35.3-28.7 64-64 64zM448 384c0-35.3 28.7-64 64-64v64H448zm64-192c-35.3 0-64-28.7-64-64h64v64zM288 160a96 96 0 1 1 0 192 96 96 0 1 1 0-192z"/></svg>
+      picture: (
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512">
+          <path d="M64 64C28.7 64 0 92.7 0 128V384c0 35.3 28.7 64 64 64H512c35.3 0 64-28.7 64-64V128c0-35.3-28.7-64-64-64H64zm64 320H64V320c35.3 0 64 28.7 64 64zM64 192V128h64c0 35.3-28.7 64-64 64zM448 384c0-35.3 28.7-64 64-64v64H448zm64-192c-35.3 0-64-28.7-64-64h64v64zM288 160a96 96 0 1 1 0 192 96 96 0 1 1 0-192z" />
+        </svg>
       ),
-      body: "This integration allows you to display a grid of clickable logos. Each logo can redirect to a different URL. You can choose the number of logos to display and the image ratio for each logo.",
+      body: "This listing allows anyone to purchase the ad space at the set price. The ad space is immediately available for the buyer to use.",
     },
     {
-      name: "Auction Listing",
+      title: "Auction Listing",
 
-      image: (
+      picture: (
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
           <path d="M318.6 9.4c-12.5-12.5-32.8-12.5-45.3 0l-120 120c-12.5 12.5-12.5 32.8 0 45.3l16 16c12.5 12.5 32.8 12.5 45.3 0l4-4L325.4 293.4l-4 4c-12.5 12.5-12.5 32.8 0 45.3l16 16c12.5 12.5 32.8 12.5 45.3 0l120-120c12.5-12.5 12.5-32.8 0-45.3l-16-16c-12.5-12.5-32.8-12.5-45.3 0l-4 4L330.6 74.6l4-4c12.5-12.5 12.5-32.8 0-45.3l-16-16zm-152 288c-12.5-12.5-32.8-12.5-45.3 0l-112 112c-12.5 12.5-12.5 32.8 0 45.3l48 48c12.5 12.5 32.8 12.5 45.3 0l112-112c12.5-12.5 12.5-32.8 0-45.3l-1.4-1.4L272 285.3 226.7 240 168 298.7l-1.4-1.4z" />
         </svg>
       ),
-      body: "This integration lets you display a randomly selected ad from those submitted by sponsors (ad space token owners), with a new ad randomly selected at each request. You can choose the banner's image ratio. The banner displays an ad image and redirects to a URL provided by the selected sponsor.",
+      body: "This listing allows anyone to bid on the ad space. The highest bidder at the end of the auction wins the ad space. The ad space is immediately available for the buyer to use.",
     },
   ];
   const successFullUploadModal = {
@@ -232,6 +241,17 @@ const ItemManageModal = ({ handleListingModal, offerData, marketplaceListings })
     buttonTitle: "Manage Spaces",
     hrefButton: `/manage/${address}`,
   };
+  const helperSartingPrice = {
+    title: "Starting price",
+    body: "This is the minimum price that a buyer must pay to purchase the ad space. You can set a starting price for the auction or the fixed price for the direct listing.",
+    size: "small",
+  };
+  const helperBuyoutPrice = {
+    title: "Buyout price",
+    body: "This is the price that a buyer must pay to purchase the ad space immediately.",
+    size: "small",
+  };
+
   return (
     <div>
       {/* <!-- Buy Now Modal --> */}
@@ -275,18 +295,23 @@ const ItemManageModal = ({ handleListingModal, offerData, marketplaceListings })
                             <div className="flex gap-3">
                               <label
                                 htmlFor={`checkbox-${index}`}
-                                className={`card-label ${selectedListingType.includes(index) ? "text-white" : "text-jacarta-700"}`}
+                                className={`card-label  ${selectedListingType.includes(index) ? "text-white" : "text-jacarta-700"}`}
                                 onClick={() => {
                                   document.getElementById(`checkbox-${index}`).click();
                                 }}
                               >
-                                {selectedListingType[0] !== index && selectedListingType.length > 0 ? listing.image : listing.name}
+                                {selectedListingType[0] !== index && selectedListingType.length > 0 ? (
+                                  listing.picture
+                                ) : (
+                                  <div className="flex gap-3 justify-center">
+                                    <span>{listing.title}</span> <ModalHelper dark={true} {...listing} />
+                                  </div>
+                                )}
                               </label>
-                              {/* <ModalHelper dark={true} title={integration.integrationName} body={integration.bodyDescription} image={integration.imageExemple} /> */}
                             </div>
                             {selectedListingType.includes(index) && (
                               <div className="mb-6 flex flex-col items-center">
-                                <label htmlFor="item-description" className="font-display text-jacarta-700 mb-2 block dark:text-white">
+                                <label htmlFor="item-description" className="font-display mt-2 text-jacarta-700 text-sm mb-2 block dark:text-white">
                                   Validity period<span className="text-red">*</span>
                                 </label>
                                 <p className="dark:text-jacarta-300 text-jacarta-400 text-2xs mb-3">Set the validity period for the spaces.</p>
@@ -321,10 +346,13 @@ const ItemManageModal = ({ handleListingModal, offerData, marketplaceListings })
                                   </div>
                                 </div>
                                 {selectedListingType[0] === 1 && (
-                                  <div className="text-center">
-                                    <label htmlFor="item-description" className="font-display text-jacarta-700 mb-2 block dark:text-white">
-                                      Unit starting price <span className="text-red">*</span>
-                                    </label>
+                                  <div className="text-center w-full mb-2">
+                                    <div className="flex gap-2 justify-center items-center">
+                                      <label htmlFor="item-description" className="font-display text-jacarta-700 text-sm mb-2 block dark:text-white">
+                                        Unit starting price <span className="text-red">*</span>
+                                        <ModalHelper {...helperSartingPrice} size="small" />
+                                      </label>
+                                    </div>
                                     <div className="flex  flex-wrap   gap-4 items-center text-jacarta-700 dark:text-white">
                                       <input
                                         id="numberInput"
@@ -336,49 +364,58 @@ const ItemManageModal = ({ handleListingModal, offerData, marketplaceListings })
                                         className="dark:bg-jacarta-700 flex-grow border-jacarta-100 hover:ring-accent/10 focus:ring-accent dark:border-jacarta-600 dark:placeholder:text-jacarta-300  rounded-lg py-3 px-3 hover:ring-2 dark:text-white"
                                       />
                                     </div>
+                                    <p className="dark:text-jacarta-300 text-jacarta-400 text-2xs ">
+                                      Starting price display : {calculatePriceWithTaxes(selectedStartingPrice)} {selectedCurrency}
+                                    </p>
                                   </div>
                                 )}
-                                <label htmlFor="item-description" className="font-display text-jacarta-700 mb-2 block dark:text-white">
-                                  Unit selling price
-                                  <span className="text-red">*</span>
-                                </label>
-
-                                <div className="flex  flex-wrap   gap-4 items-center text-jacarta-700 dark:text-white">
-                                  <input
-                                    id="numberInput"
-                                    type="number"
-                                    step="0.1"
-                                    value={selectedUnitPrice}
-                                    onChange={handleUnitPriceChange}
-                                    placeholder="Unit selling price"
-                                    className="dark:bg-jacarta-700 flex-grow border-jacarta-100 hover:ring-accent/10 focus:ring-accent dark:border-jacarta-600 dark:placeholder:text-jacarta-300  rounded-lg py-3 px-3 hover:ring-2 dark:text-white"
-                                  />
-
-                                  <div className="flex gap-4">
-                                    <select
-                                      id="currency"
-                                      value={selectedCurrency}
-                                      onChange={handleCurrencyChange}
-                                      className="dark:bg-jacarta-700 min-w-[110px] border-jacarta-100 hover:ring-accent/10 focus:ring-accent dark:border-jacarta-600 dark:placeholder:text-jacarta-300 w-full rounded-lg py-3 px-5 hover:ring-2 dark:text-white"
-                                    >
-                                      <option value="USDC">USDC</option>
-                                      <option value="ETH">ETH</option>
-                                      <option value="WETH">WETH</option>
-                                      <option value="USDT">USDT</option>
-                                      <option value="custom">Custom</option>
-                                    </select>
-                                    {selectedCurrency === "custom" && (
-                                      <input
-                                        type="text"
-                                        value={customContract}
-                                        onChange={handleCustomContractChange}
-                                        placeholder="Contract address"
-                                        className={`dark:bg-jacarta-700  hover:ring-accent/10 ${
-                                          tokenContractAsync && customContract ? "border-green" : "border-red"
-                                        } focus:ring-accent  dark:placeholder:text-jacarta-300 w-full rounded-lg py-3 px-3 hover:ring-2 dark:text-white`}
-                                      />
-                                    )}
+                                <div className="text-center w-full mb-2">
+                                  <div className="flex gap-2 justify-center items-center">
+                                    <label htmlFor="item-description" className="font-display text-jacarta-700 mb-2 text-sm block dark:text-white">
+                                      Unit selling price <span className="text-red">*</span>
+                                      <ModalHelper {...helperBuyoutPrice} size="small" />
+                                    </label>
                                   </div>
+
+                                  <div className="flex  flex-col items-center text-jacarta-700 dark:text-white">
+                                    <input
+                                      id="numberInput"
+                                      type="number"
+                                      step="0.1"
+                                      value={selectedUnitPrice}
+                                      onChange={handleUnitPriceChange}
+                                      placeholder="Unit selling price"
+                                      className="dark:bg-jacarta-700 flex-grow border-jacarta-100 hover:ring-accent/10 focus:ring-accent dark:border-jacarta-600 dark:placeholder:text-jacarta-300  rounded-lg py-3 px-3 hover:ring-2 dark:text-white"
+                                    />
+                                    <p className="dark:text-jacarta-300 text-jacarta-400 text-2xs ">
+                                      Selling price display : {calculatePriceWithTaxes(selectedUnitPrice)} {selectedCurrency}
+                                    </p>
+                                  </div>
+                                </div>
+                                <div className="flex flex-start gap-4 mt-2">
+                                  <select
+                                    id="currency"
+                                    value={selectedCurrency}
+                                    onChange={handleCurrencyChange}
+                                    className="dark:bg-jacarta-700 min-w-[110px] border-jacarta-100 hover:ring-accent/10 focus:ring-accent dark:border-jacarta-600 dark:placeholder:text-jacarta-300 w-full rounded-lg py-3 px-5 hover:ring-2 dark:text-white"
+                                  >
+                                    <option value="USDC">USDC</option>
+                                    <option value="ETH">ETH</option>
+                                    <option value="WETH">WETH</option>
+                                    <option value="USDT">USDT</option>
+                                    <option value="custom">Custom</option>
+                                  </select>
+                                  {selectedCurrency === "custom" && (
+                                    <input
+                                      type="text"
+                                      value={customContract}
+                                      onChange={handleCustomContractChange}
+                                      placeholder="Contract address"
+                                      className={`dark:bg-jacarta-700  hover:ring-accent/10 ${
+                                        tokenContractAsync && customContract ? "border-green" : "border-red"
+                                      } focus:ring-accent  dark:placeholder:text-jacarta-300 w-full rounded-lg py-3 px-3 hover:ring-2 dark:text-white`}
+                                    />
+                                  )}
                                 </div>
                               </div>
                             )}
@@ -396,6 +433,9 @@ const ItemManageModal = ({ handleListingModal, offerData, marketplaceListings })
                           handleSubmit={handleSubmit}
                           startDate={startDate}
                           endDate={endDate}
+                          name={true}
+                          description={true}
+                          link={true}
                           selectedUnitPrice={selectedUnitPrice}
                           selectedCurrency={selectedCurrency}
                           validate={validate}

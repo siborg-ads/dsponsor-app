@@ -166,7 +166,7 @@ const Review_carousel = ({ handleSubmit, pendingProposalData, successFullRefuseM
                 contractAddress="0xE442802706F3603d58F34418Eac50C78C7B4E8b3"
                 action={() =>
                   toast.promise(handleItemSubmit(true), {
-                    pending: "Waiting transaction confirmation",
+                    pending: "Waiting for confirmation 🕒",
                     success: "Transaction confirmed 👌",
                     error: "Transaction rejected 🤯",
                   })

@@ -2,10 +2,10 @@ import React, { useState, useEffect, useRef, use } from "react";
 import { useAddress, useBalance, Web3Button, useContract, useContractRead, useContractWrite, useStorageUpload } from "@thirdweb-dev/react";
 import ItemManageModal from "./ItemManageModal";
 import BuyModal from "../modal/buyModal";
-const ItemManage = ({ offerData, marketplaceListings }) => {
+const ItemManage = ({ offerData, marketplaceListings, royalties }) => {
   const [listingModal, setListingModal] = useState(false);
   const [buyModal, setBuyModal] = useState(false);
-  
+
   const now = new Date();
   const handleListingModal = () => {
     setListingModal(!listingModal);
@@ -25,17 +25,14 @@ const ItemManage = ({ offerData, marketplaceListings }) => {
         </div>
 
         <div className="w-full flex justify-center">
-          
-            <button type="button" className="bg-accent shadow-accent-volume hover:bg-accent-dark w-36 rounded-full py-3 px-8 text-center font-semibold text-white transition-all" onClick={handleListingModal}>
-              Create a listing
-            </button>
-         
-        
+          <button type="button" className="bg-accent shadow-accent-volume hover:bg-accent-dark w-36 rounded-full py-3 px-8 text-center font-semibold text-white transition-all" onClick={handleListingModal}>
+            Create a listing
+          </button>
         </div>
       </div>
       {listingModal && (
         <div className="modal fade show block">
-          <ItemManageModal handleListingModal={handleListingModal} offerData={offerData} marketplaceListings={marketplaceListings} />
+          <ItemManageModal royalties={royalties} handleListingModal={handleListingModal} offerData={offerData} marketplaceListings={marketplaceListings} />
         </div>
       )}
       {buyModal && (
