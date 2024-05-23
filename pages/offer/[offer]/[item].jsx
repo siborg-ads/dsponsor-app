@@ -28,11 +28,13 @@ import Validation from "../../../components/offer-section/validation.jsx";
 import { protocolFees, protocolFeesBigNumber } from "../../../utils/constUtils";
 import stringToUint256 from "../../../utils/stringToUnit256";
 import ItemManage from "../../../components/item/ItemManage";
+import ItemBids from "../../../components/item/ItemBids";
 
 import contractABI from "../../../abi/dsponsorAdmin.json";
 
 import "react-toastify/dist/ReactToastify.css";
 import ModalHelper from "../../../components/Helper/modalHelper.jsx";
+
 
 const Item = () => {
   const router = useRouter();
@@ -98,7 +100,7 @@ const Item = () => {
   const { mutateAsync: directBuy } = useContractWrite(dsponsorMpContract, "buy");
 
   const now = new Date();
-
+tokenBalance;
   useEffect(() => {
     if (offerId && tokenId) {
       const fetchAdsOffers = async () => {
@@ -132,7 +134,8 @@ const Item = () => {
       return;
     }
     if(offerData?.nftContract?.tokens[0]?.marketplaceListings[0].status === "CREATED") {
-      setTokenStatut("LISTED");
+      if (offerData?.nftContract?.tokens[0]?.marketplaceListings[0].listingType === "Direct") setTokenStatut("DIRECT");
+      if (offerData?.nftContract?.tokens[0]?.marketplaceListings[0].listingType === "Auction") setTokenStatut("AUCTION");
       setTokenCurrencyAddress(offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.currency);
       setTokenBigIntPrice(offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.buyoutPricePerToken);
       return;
@@ -225,6 +228,7 @@ const Item = () => {
         currencyTokenObject.symbol = symbolContract;
         currencyTokenObject.decimals = decimalsContract;
       }
+      
       const bigIntFinalPrice = (BigInt(tokenBigIntPrice) * (BigInt(bps) + BigInt(maxBps))) / BigInt(maxBps);
       const formatFinalPrice = ethers.utils.formatUnits(bigIntFinalPrice, currencyTokenObject.decimals);
       const formatPrice = ethers.utils.formatUnits(BigInt(tokenBigIntPrice), currencyTokenObject.decimals);
@@ -325,7 +329,7 @@ const Item = () => {
   const checkAllowance = async () => {
     if (tokenCurrencyAddress !== "0x0000000000000000000000000000000000000000") {
       let allowance;
-      if (tokenStatut === "LISTED") {
+      if (tokenStatut === "DIRECT" || tokenStatut === "AUCTION") {
         allowance = await tokenContract.call("allowance", [address, "0xac03b675fa9644279b92f060bf542eed54f75599"]);
         console.log("là");
       } else {
@@ -580,7 +584,7 @@ const Item = () => {
                 {currency?.symbol && (
                   <div className="flex items-center mr-4">
                     <span className="text-green text-sm font-medium tracking-tight mr-2">
-                      {tokenStatut === "LISTED" ? price : finalPrice} {currency?.symbol}
+                      {tokenStatut === "DIRECT" || tokenStatut === "AUCTION" ? price : finalPrice} {currency?.symbol}
                     </span>
                     <ModalHelper {...modalHelper} size="small" />
                   </div>
@@ -594,7 +598,7 @@ const Item = () => {
               </div>
 
               <p className="dark:text-jacarta-300 mb-10">{description}</p>
-              {(tokenStatut === "MINTABLE" || tokenStatut === "LISTED") && (
+              {(tokenStatut === "MINTABLE" || tokenStatut === "DIRECT") && (
                 <div className="dark:bg-jacarta-700 dark:border-jacarta-600 border-jacarta-100 rounded-2lg border flex flex-col gap-4 bg-white p-8">
                   <div className=" sm:flex sm:flex-wrap">
                     <span className="dark:text-jacarta-300 text-jacarta-400 text-sm">
@@ -614,7 +618,16 @@ const Item = () => {
                 </div>
               )}
 
-            {isOwner && <ItemManage offerData={offerData} marketplaceListings={marketplaceListings} />}
+              {isOwner && <ItemManage offerData={offerData} marketplaceListings={marketplaceListings} />}
+              {tokenStatut === "AUCTION" && (
+                <ItemBids
+                  dsponsorMpContract={dsponsorMpContract}
+                  marketplaceListings={marketplaceListings}
+                  currencySymbol={currency?.symbol}
+                  tokenBalance={tokenBalance?.displayValue}
+                  currencyTokenDecimals={currency?.decimals}
+                />
+              )}
             </div>
           </div>
         </div>

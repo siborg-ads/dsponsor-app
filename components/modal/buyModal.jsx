@@ -77,13 +77,16 @@ const BuyModal = ({
                         {price} {selectedCurrency}
                       </span>
                     </div>
-                    
-                    {tokenStatut !== "LISTED" && <div className="flex gap-6  items-center justify-between">
-                      <span className="dark:text-jacarta-300 text-jacarta-500 mr-1 block text-sm">Protocol fees: 4%</span>
-                      <span className="dark:text-jacarta-300 text-sm  tracking-tight overflow-auto min-w-[60px] flex justify-end">
-                        {feesAmount} {selectedCurrency}
-                      </span>
-                    </div>}
+
+                    {tokenStatut !== "DIRECT" ||
+                      (tokenStatut !== "AUCTION" && (
+                        <div className="flex gap-6  items-center justify-between">
+                          <span className="dark:text-jacarta-300 text-jacarta-500 mr-1 block text-sm">Protocol fees: 4%</span>
+                          <span className="dark:text-jacarta-300 text-sm  tracking-tight overflow-auto min-w-[60px] flex justify-end">
+                            {feesAmount} {selectedCurrency}
+                          </span>
+                        </div>
+                      ))}
                     <div className="flex justify-end">
                       <Divider className="mt-4 w-16 " />
                     </div>
@@ -109,7 +112,7 @@ const BuyModal = ({
                 <div className="ml-auto">
                   <span className="flex items-center whitespace-nowrap">
                     <span className="text-green font-medium tracking-tight">
-                      {tokenStatut === "LISTED" ? price : finalPrice} {selectedCurrency}
+                      {tokenStatut === "DIRECT" || tokenStatut === "AUCTION" ? price : finalPrice} {selectedCurrency}
                     </span>
                   </span>
                   {/* <div className="dark:text-jacarta-300 text-right">$130.82</div> */}
