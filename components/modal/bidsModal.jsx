@@ -6,7 +6,7 @@ import { bidsModalHide } from "../../redux/counterSlice";
 import { toast } from "react-toastify";
 import Link from "next/link";
 
-const BidsModal = ({ dsponsorMpContract, toggleBidsModal, marketplaceListings, currencySymbol, tokenBalance, currencyTokenDecimals }) => {
+const BidsModal = ({successFullBid, setSuccessFullBid, dsponsorMpContract, toggleBidsModal, marketplaceListings, currencySymbol, checkUserBalance, tokenBalance,allowanceTrue, currencyTokenDecimals, handleApprove }) => {
   const [bidsAmount, setBidsAmount] = useState(null);
   const [initialIntPrice, setInitialIntPrice] = useState(0);
   const [reservePrice, setReservePrice] = useState(0);
@@ -14,10 +14,11 @@ const BidsModal = ({ dsponsorMpContract, toggleBidsModal, marketplaceListings, c
   const { mutateAsync: auctionBids } = useContractWrite(dsponsorMpContract, "bid");
   const [isLoadingButton, setIsLoadingButton] = useState(false);
   const [checkTerms, setCheckTerms] = useState(false);
-  const [successFullBid, setSuccessFullBid] = useState(false);
+  
 
   useEffect(() => {
     let reservePrice;
+    
     if (marketplaceListings[0]?.bids?.length <= 0) {
       reservePrice = (BigInt(marketplaceListings[0]?.reservePricePerToken) * (BigInt(500) + BigInt(10000))) / BigInt(10000);
     }else {
@@ -31,17 +32,21 @@ const BidsModal = ({ dsponsorMpContract, toggleBidsModal, marketplaceListings, c
 
   const handleBidsAmount = (e) => {
     
-    console.log(e.target.value, initialIntPrice);
     if (e.target.value <  initialIntPrice) {
       setIsPriceGood(false);
       setBidsAmount(e.target.value);
     } else {
-      console.log("good");
+
       setIsPriceGood(true);
       setBidsAmount(e.target.value);
     }
   };
   const handleSubmit = async () => {
+  
+    const hasEnoughBalance = checkUserBalance(tokenBalance, bidsAmount);
+    if (!hasEnoughBalance) {
+      throw new Error("Not enough balance for approval.");
+    }
     try {
       setIsLoadingButton(true);
       const bigIntPrice = ethers.utils.parseUnits(bidsAmount.toString(), currencyTokenDecimals);
@@ -50,7 +55,7 @@ const BidsModal = ({ dsponsorMpContract, toggleBidsModal, marketplaceListings, c
       });
       setSuccessFullBid(true);
     } catch (error) {
-      console.log(error);
+      throw new Error(error);
     } finally{
       setIsLoadingButton(false);
   
@@ -77,7 +82,7 @@ const BidsModal = ({ dsponsorMpContract, toggleBidsModal, marketplaceListings, c
             </div>
 
             {/* <!-- Body --> */}
-            {successFullBid ? (
+            {!successFullBid ? (
               <div className="modal-body p-6">
                 <div className="flex justify-between mb-2">
                   <div className="flex items-center justify-between">
@@ -85,7 +90,7 @@ const BidsModal = ({ dsponsorMpContract, toggleBidsModal, marketplaceListings, c
                   </div>
                   <div>
                     <span className="dark:text-jacarta-400 text-sm">
-                      Balance: {tokenBalance} {currencySymbol}
+                      Balance: {tokenBalance?.displayValue} {currencySymbol}
                     </span>
                   </div>
                 </div>
@@ -142,14 +147,28 @@ const BidsModal = ({ dsponsorMpContract, toggleBidsModal, marketplaceListings, c
                       </svg>
                     </div>
                   </div>
-                  
                 </div>
               </div>
             )}
             {/* <!-- end body --> */}
 
             <div className="modal-footer">
-              {successFullBid ? (
+              {allowanceTrue && !successFullBid ? (
+                <Web3Button
+                  contractAddress="0xac03b675fa9644279b92f060bf542eed54f75599"
+                  action={() => {
+                    toast.promise(handleApprove, {
+                      pending: "Waiting for confirmation 🕒",
+                      success: "Approval confirmed 👌",
+                      error: "Approval rejected 🤯",
+                    });
+                  }}
+                  className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!isPriceGood || !checkTerms ? "btn-disabled" : "!bg-accent !cursor-pointer"} `}
+                  isDisabled={!isPriceGood || !checkTerms}
+                >
+                  {isLoadingButton ? <Spinner size="sm" color="default" /> : "Approve"}
+                </Web3Button>
+              ) : !successFullBid ? (
                 <div className="flex items-center justify-center space-x-4">
                   <Web3Button
                     contractAddress="0xac03b675fa9644279b92f060bf542eed54f75599"

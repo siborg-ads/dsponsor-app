@@ -1,6 +1,6 @@
 import Link from "next/link";
 import React from "react";
-import { useSelector, useDispatch} from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { buyModalHide } from "../../redux/counterSlice";
 import { Confirm_checkout } from "../metamask/Metamask";
 import Image from "next/image";
@@ -32,13 +32,13 @@ const BuyModal = ({
   tokenData,
   isLoadingButton,
 }) => {
-  const { buyModal } = useSelector((state) => state.counter);
-  const dispatch = useDispatch();
+  
   const [validate, setValidate] = useState(false);
 
   const handleTermService = (e) => {
     setValidate(e.target.checked);
   };
+  console.log(tokenStatut, "tokenStatut");
 
   return (
     <div>
@@ -73,20 +73,19 @@ const BuyModal = ({
                   <div className="overflow-hidden flex flex-col text-ellipsis whitespace-nowrap   ">
                     <div className="flex gap-6  items-center justify-between">
                       <h3 className="font-display overflow-hidden text-ellipsis whitespace-nowrap text-jacarta-700 text-base font-semibold dark:text-white">{name}</h3>
-                      <span className="dark:text-jacarta-100 text-sm font-medium tracking-tight overflow-auto min-w-[60px] flex justify-end">
+                      <span className="dark:text-jacarta-100 text-sm font-medium tracking-tight overflow-auto min-w-[70px] flex justify-end">
                         {price} {selectedCurrency}
                       </span>
                     </div>
 
-                    {tokenStatut !== "DIRECT" ||
-                      (tokenStatut !== "AUCTION" && (
-                        <div className="flex gap-6  items-center justify-between">
-                          <span className="dark:text-jacarta-300 text-jacarta-500 mr-1 block text-sm">Protocol fees: 4%</span>
-                          <span className="dark:text-jacarta-300 text-sm  tracking-tight overflow-auto min-w-[60px] flex justify-end">
-                            {feesAmount} {selectedCurrency}
-                          </span>
-                        </div>
-                      ))}
+                    {tokenStatut === "MINTABLE"  && (
+                      <div className="flex gap-6  items-center justify-between">
+                        <span className="dark:text-jacarta-300 text-jacarta-500 mr-1 block text-sm">Protocol fees: 4%</span>
+                        <span className="dark:text-jacarta-300 text-sm  tracking-tight overflow-auto min-w-[60px] flex justify-end">
+                          {feesAmount} {selectedCurrency}
+                        </span>
+                      </div>
+                    )}
                     <div className="flex justify-end">
                       <Divider className="mt-4 w-16 " />
                     </div>
@@ -191,8 +190,6 @@ const BuyModal = ({
                   <button className="!rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all !bg-accent !cursor-pointer">{successFullBuyModal.buttonTitle}</button>
                 </Link>
               )}
-
-           
             </div>
           </div>
         </div>

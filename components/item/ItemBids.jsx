@@ -6,10 +6,14 @@ import Timer from './Timer'
 import BidsModal from '../modal/bidsModal'
 import { ethers } from "ethers";
 
-const ItemBids = ({dsponsorMpContract, marketplaceListings, currencySymbol, tokenBalance, currencyTokenDecimals }) => {
+const ItemBids = ({successFullBid, setSuccessFullBid, dsponsorMpContract, marketplaceListings, currencySymbol, tokenBalance,handleApprove,price, hasEnoughBalance, currencyTokenDecimals, checkUserBalance, allowanceTrue, checkAllowance }) => {
   const [showBidsModal, setShowBidsModal] = useState(false);
-  const toggleBidsModal = () => setShowBidsModal(!showBidsModal);
+  
+  const toggleBidsModal = () =>{ 
+    checkAllowance();
+    setShowBidsModal(!showBidsModal)};
   const bids = marketplaceListings[0].bids;
+  
   return (
     <div className="rounded-2lg border border-jacarta-100 bg-white p-8 dark:border-jacarta-600 dark:bg-jacarta-700">
       <div className="mb-8 sm:flex sm:flex-wrap">
@@ -27,7 +31,7 @@ const ItemBids = ({dsponsorMpContract, marketplaceListings, currencySymbol, toke
             <div>
               <div className="flex items-center whitespace-nowrap">
                 <span className="text-lg font-medium leading-tight tracking-tight text-green">
-                  {bids.length <= 0 ? "no bids" : ethers.utils.formatUnits(marketplaceListings[0].bids[0].totalBidAmount, currencyTokenDecimals)} {currencySymbol}
+                  {bids.length <= 0 ? "no bids" : price} {!bids.length <= 0 && currencySymbol}
                 </span>
               </div>
             </div>
@@ -46,6 +50,13 @@ const ItemBids = ({dsponsorMpContract, marketplaceListings, currencySymbol, toke
       </button>
       {showBidsModal && (
         <BidsModal
+          successFullBid={successFullBid}
+          setSuccessFullBid={setSuccessFullBid}
+          handleApprove={handleApprove}
+          checkAllowance={checkAllowance}
+          allowanceTrue={allowanceTrue}
+          hasEnoughBalance={hasEnoughBalance}
+          checkUserBalance={checkUserBalance}
           dsponsorMpContract={dsponsorMpContract}
           toggleBidsModal={toggleBidsModal}
           currencyTokenDecimals={currencyTokenDecimals}

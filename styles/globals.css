@@ -3778,7 +3778,7 @@ html {
   }
 
   .modal-dialog {
-    margin: 3rem auto;
+    margin-top: 3rem auto;
     pointer-events: none;
     position: relative;
     width: auto;

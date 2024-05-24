@@ -16,7 +16,7 @@ import ModalHelper from "../Helper/modalHelper";
 import PreviewModal from "../modal/previewModal";
 import adminInstance from "../../utils/sdkProvider";
 
-const ItemManageModal = ({ handleListingModal, offerData, marketplaceListings, royalties }) => {
+const ItemManageModal = ({ handleListingModal, offerData, marketplaceListings, royalties, dsponsorNFTContract, dsponsorMpContract }) => {
   const [selectedListingType, setSelectedListingType] = useState([]);
   const [selectedUnitPrice, setSelectedUnitPrice] = useState(0);
   const [selectedStartingPrice, setSelectedStartingPrice] = useState(0);
@@ -38,12 +38,13 @@ const ItemManageModal = ({ handleListingModal, offerData, marketplaceListings, r
   const WETHCurrency = adminInstance.chain.getCurrencyAddress("WETH");
   const USDTCurrency = adminInstance.chain.getCurrencyAddress("USDT");
   const [approvalForAllToken, setApprovalForAllToken] = useState(false);
+  const [unitPriceForSM, setUnitPriceForSM] = useState(0);
+  const [startingPriceForSM, setStartingPriceForSM] = useState(0);
 
   const address = useAddress();
 
-  const { contract: dsponsorMpContract } = useContract("0xac03b675fa9644279b92f060bf542eed54f75599");
-  const { contract: nftContract } = useContract(offerData?.nftContract?.id);
-  const { mutateAsync: setApprovalForAll } = useContractWrite(nftContract, "setApprovalForAll");
+
+  const { mutateAsync: setApprovalForAll } = useContractWrite(dsponsorNFTContract, "setApprovalForAll");
   const { mutateAsync: createListing } = useContractWrite(dsponsorMpContract, "createListing");
 
   const [selectedCurrencyContract, setSelectedCurrencyContract] = useState(USDCCurrency.contract);
@@ -59,7 +60,7 @@ const ItemManageModal = ({ handleListingModal, offerData, marketplaceListings, r
   }, [decimalsContractAsync, symbolContractAsync, setTokenDecimals, setSymbolContract, setTokenContract, selectedCurrencyContract, tokenContractAsync, setCustomTokenContract]);
 
   const handlePreviewModal = async () => {
-    const isApprovedForAll = await nftContract.call("isApprovedForAll", [address, "0xac03b675fa9644279b92f060bf542eed54f75599"]);
+    const isApprovedForAll = await dsponsorNFTContract.call("isApprovedForAll", [address, "0xac03b675fa9644279b92f060bf542eed54f75599"]);
     setApprovalForAllToken(isApprovedForAll);
 
     setShowPreviewModal(!showPreviewModal);
@@ -73,9 +74,11 @@ const ItemManageModal = ({ handleListingModal, offerData, marketplaceListings, r
         const startDateFormated = Math.floor(startDate.getTime() / 1000);
         const endDateFormated = Math.floor(endDate.getTime() / 1000);
         const secondsUntilEndTime = endDateFormated - startDateFormated;
-        const startingPrice = ethers.utils.parseUnits(selectedStartingPrice.toString(), tokenDecimals).toString();
+        const startingPriceWithTaxes = calculatePriceWithTaxes(selectedStartingPrice, true);
+        const startingPrice = ethers.utils.parseUnits(startingPriceWithTaxes.toString(), tokenDecimals).toString();
         const isAuction = selectedListingType[0] === 1;
-        const price = ethers.utils.parseUnits(selectedUnitPrice.toString(), tokenDecimals).toString();
+        const priceWithTaxes = calculatePriceWithTaxes(selectedUnitPrice, true);
+        const price = ethers.utils.parseUnits(priceWithTaxes.toString(), tokenDecimals).toString();
         const args = {
           assetContract: offerData?.nftContract?.id,
           tokenId: offerData?.nftContract?.tokens[0].tokenId,
@@ -178,8 +181,16 @@ const ItemManageModal = ({ handleListingModal, offerData, marketplaceListings, r
       isValid = false;
     }
     if (parseFloat(selectedUnitPrice) < 1 * 10 ** -tokenDecimals || isNaN(selectedUnitPrice) || selectedUnitPrice === null) {
-      console.log("là");
       newErrors.unitPriceError = `Unit price must be at least ${1 * 10 ** -tokenDecimals}.`;
+      isValid = false;
+    }
+
+    if ((selectedListingType[0] === 1 && parseFloat(selectedStartingPrice) < 1 * 10 ** -tokenDecimals) || isNaN(selectedStartingPrice) || selectedStartingPrice === null) {
+      newErrors.startingPriceError = `Unit starting price must be at least ${1 * 10 ** -tokenDecimals}.`;
+      isValid = false;
+    }
+    if (parseFloat(selectedUnitPrice) <= parseFloat(selectedStartingPrice)) {
+      newErrors.unitPriceError = `Unit price must be higher than the unit starting price.`;
       isValid = false;
     }
     if (selectedCurrency === "custom" && customTokenContract === undefined) {
@@ -197,13 +208,18 @@ const ItemManageModal = ({ handleListingModal, offerData, marketplaceListings, r
     setErrors(newErrors);
     return isValid;
   };
-  const calculatePriceWithTaxes = (price) => {
+  const calculatePriceWithTaxes = (price, smartContract = false) => {
     let grossPrice = price;
     const fees = [0.04, royalties / 100];
     for (let i = 0; i < fees.length; i++) {
       grossPrice /= 1 - fees[i];
     }
-    return grossPrice.toFixed(3);
+    if (smartContract) {
+      console.log(grossPrice.toFixed(tokenDecimals));
+      return grossPrice.toFixed(tokenDecimals);
+    } else {
+      return grossPrice.toFixed(3);
+    }
   };
 
   const selectedCurrencyContractObject = {
@@ -236,8 +252,8 @@ const ItemManageModal = ({ handleListingModal, offerData, marketplaceListings, r
     },
   ];
   const successFullUploadModal = {
-    body: "Your offer has been created successfully",
-    subBody: "❕❕ On your offer management page, you will find the integration code to copy/paste onto your platform.",
+    body: "Your listing has been created successfully",
+    subBody: "You can see your lsiting on the martketplace page.",
     buttonTitle: "Manage Spaces",
     hrefButton: `/manage/${address}`,
   };
@@ -249,6 +265,14 @@ const ItemManageModal = ({ handleListingModal, offerData, marketplaceListings, r
   const helperBuyoutPrice = {
     title: "Buyout price",
     body: "This is the price that a buyer must pay to purchase the ad space immediately.",
+    size: "small",
+  };
+
+  const helperFeesListing = {
+    title: "Fees",
+    body: `The fees are calculated on the final price. The fees are 4% for the platform and ${royalties} % royalties for the creator. We have calculated the price for you to get the exact amount you put in the listing. 
+    e.g. If you put 100 USDC, the buyer will pay 100 USDC + 4% fees + ${royalties} % royalties = 114 USDC. You will receive 100 USDC.
+    `,
     size: "small",
   };
 
@@ -346,7 +370,7 @@ const ItemManageModal = ({ handleListingModal, offerData, marketplaceListings, r
                                   </div>
                                 </div>
                                 {selectedListingType[0] === 1 && (
-                                  <div className="text-center w-full mb-2">
+                                  <div className="text-center  mb-2">
                                     <div className="flex gap-2 justify-center items-center">
                                       <label htmlFor="item-description" className="font-display text-jacarta-700 text-sm mb-2 block dark:text-white">
                                         Unit starting price <span className="text-red">*</span>
@@ -369,7 +393,7 @@ const ItemManageModal = ({ handleListingModal, offerData, marketplaceListings, r
                                     </p>
                                   </div>
                                 )}
-                                <div className="text-center w-full mb-2">
+                                <div className="text-center mb-2">
                                   <div className="flex gap-2 justify-center items-center">
                                     <label htmlFor="item-description" className="font-display text-jacarta-700 mb-2 text-sm block dark:text-white">
                                       Unit selling price <span className="text-red">*</span>
@@ -436,14 +460,18 @@ const ItemManageModal = ({ handleListingModal, offerData, marketplaceListings, r
                           name={true}
                           description={true}
                           link={true}
-                          selectedUnitPrice={selectedUnitPrice}
+                          helperFeesListing={helperFeesListing}
+                          protocolFees={4}
+                          selectedUnitPrice={calculatePriceWithTaxes(selectedUnitPrice)}
+                          selectedStartingPrice={selectedListingType[0] === 1 && calculatePriceWithTaxes(selectedStartingPrice)}
+                          selectedRoyalties={royalties}
                           selectedCurrency={selectedCurrency}
                           validate={validate}
                           symbolContract={symbolContract}
                           errors={errors}
                           successFullUpload={successFullUpload}
-                          buttonTitle="Create ad space offer"
-                          modalTitle="Ad Space Offer "
+                          buttonTitle="Create listing"
+                          modalTitle="Listing preview"
                           successFullUploadModal={successFullUploadModal}
                           isLoadingButton={isLoadingButton}
                           approvalForAllToken={approvalForAllToken}

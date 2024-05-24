@@ -81,6 +81,7 @@ const Item = () => {
   const [tokenStatut, setTokenStatut] = useState(null);
   const [tokenCurrencyAddress, setTokenCurrencyAddress] = useState(null);
   const [tokenBigIntPrice, setTokenBigIntPrice] = useState(null);
+  const [successFullBid, setSuccessFullBid] = useState(false);
 
   const { contract: DsponsorAdminContract } = useContract("0xE442802706F3603d58F34418Eac50C78C7B4E8b3", contractABI);
   const { contract: DsponsorNFTContract } = useContract(offerData?.nftContract?.id);
@@ -99,8 +100,7 @@ const Item = () => {
   const { contract: dsponsorMpContract } = useContract("0xac03b675fa9644279b92f060bf542eed54f75599");
   const { mutateAsync: directBuy } = useContractWrite(dsponsorMpContract, "buy");
 
-  const now = new Date();
-tokenBalance;
+ 
   useEffect(() => {
     if (offerId && tokenId) {
       const fetchAdsOffers = async () => {
@@ -115,14 +115,13 @@ tokenBalance;
         setMarketplaceListings(offer?.nftContract?.tokens[0]?.marketplaceListings);
         console.log(combinedData, "combinedData");
         setOfferData(combinedData);
- 
       };
 
       fetchAdsOffers();
     }
 
     setTokenIdString(tokenId?.toString());
-  }, [offerId, tokenId, successFullUpload]);
+  }, [offerId, tokenId, successFullUpload, successFullBid]);
 
   useEffect(() => {
     if(!offerData) return;
@@ -133,11 +132,20 @@ tokenBalance;
       setTokenBigIntPrice(offerData?.nftContract?.prices[0]?.amount);
       return;
     }
-    if(offerData?.nftContract?.tokens[0]?.marketplaceListings[0].status === "CREATED") {
-      if (offerData?.nftContract?.tokens[0]?.marketplaceListings[0].listingType === "Direct") setTokenStatut("DIRECT");
-      if (offerData?.nftContract?.tokens[0]?.marketplaceListings[0].listingType === "Auction") setTokenStatut("AUCTION");
+    if(offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.status === "CREATED") {
+      if (offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.listingType === "Direct"){
+setTokenBigIntPrice(offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.buyoutPricePerToken);
+        setTokenStatut("DIRECT");
+      }
+      if (offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.listingType === "Auction" && offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.bids.length > 0) {
+        setTokenBigIntPrice(offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.bids[0]?.totalBidAmount);
+        setTokenStatut("AUCTION");
+      } else if (offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.listingType === "Auction" && offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.bids.length <= 0) {
+        setTokenBigIntPrice(offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.reservePricePerToken);
+        setTokenStatut("AUCTION");
+      };
       setTokenCurrencyAddress(offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.currency);
-      setTokenBigIntPrice(offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.buyoutPricePerToken);
+      
       return;
     }
     if (offerData?.nftContract?.tokens[0]?.mint !== null ) {
@@ -151,7 +159,7 @@ tokenBalance;
   },[offerData, isAllowedToMint, isOwner, offerNotFormated, tokenId, successFullUpload, marketplaceListings]);
 
   useEffect(() => {
-    console.log(isUserOwner, address, "isUserOwner");
+
     if (isUserOwner) {
       if (isUserOwner === address) {
         setIsOwner(true);
@@ -168,7 +176,7 @@ tokenBalance;
       let isValidId = false;
       if (tokenData) {
         const stringToUnit = stringToUint256(tokenData);
-        console.log(stringToUnit, tokenId, "stringToUnit");
+
         if (BigInt(stringToUnit) === BigInt(tokenId)) {
           isValidId = true;
           setIsValidId(true);
@@ -216,6 +224,7 @@ tokenBalance;
   }, [offerData]);
 
   useEffect(() => {
+    console.log(offerData, tokenBigIntPrice, "oouiii");
     if (!offerData || !tokenBigIntPrice) return;
     try {
       
@@ -234,7 +243,6 @@ tokenBalance;
       const formatPrice = ethers.utils.formatUnits(BigInt(tokenBigIntPrice), currencyTokenObject.decimals);
       const fees = (BigInt(tokenBigIntPrice) * BigInt(bps)) / BigInt(maxBps);
       const formatFees = ethers.utils.formatUnits(fees, currencyTokenObject.decimals);
-
       const amountToApprove = ethers.utils.parseUnits(formatFinalPrice.toString(), currencyTokenObject.decimals);
       setFeesAmount(Number(Math.ceil(formatFees * 1000) / 1000));
       setPrice(Number(Math.ceil(formatPrice * 1000) / 1000));
@@ -331,9 +339,9 @@ tokenBalance;
       let allowance;
       if (tokenStatut === "DIRECT" || tokenStatut === "AUCTION") {
         allowance = await tokenContract.call("allowance", [address, "0xac03b675fa9644279b92f060bf542eed54f75599"]);
-        console.log("là");
+     
       } else {
-        console.log("ici");
+
         allowance = await tokenContract.call("allowance", [address, "0xE442802706F3603d58F34418Eac50C78C7B4E8b3"]);
       }
 
@@ -459,6 +467,7 @@ tokenBalance;
   };
 
   const checkUserBalance = (tokenAddressBalance, priceToken) => {
+    console.log(tokenAddressBalance, priceToken, "maqué");
     try {
       const parsedTokenBalance = parseFloat(tokenAddressBalance.displayValue);
       const parsedPriceToken = parseFloat(priceToken);
@@ -524,7 +533,7 @@ tokenBalance;
 
   const modalHelper = {
     title: "Protocol Fees",
-    body: `The protocol fees (${protocolFees}%) are used to maintain the platform and the services provided. The fees are calculated based on the price of the ad space and are automatically deducted from the total amount paid by the buyer.`,
+    body: `The protocol fees (4%) are used to maintain the platform and the services provided. The fees are calculated based on the price of the ad space and are automatically deducted from the total amount paid by the buyer.`,
   };
 
   const { description = "description not found", id = "1", image = "/images/gradient_creative.jpg", name = "DefaultName" } = Object.keys(offerData.offer.token_metadata).length > 0 ? tokenMetaData : offerData.offer;
@@ -618,14 +627,21 @@ tokenBalance;
                 </div>
               )}
 
-              {isOwner && <ItemManage offerData={offerData} marketplaceListings={marketplaceListings} royalties={royalties} />}
+              {isOwner && <ItemManage dsponsorNFTContract={DsponsorNFTContract} offerData={offerData} marketplaceListings={marketplaceListings} royalties={royalties} dsponsorMpContract={dsponsorMpContract} />}
               {tokenStatut === "AUCTION" && (
                 <ItemBids
+                  checkUserBalance={checkUserBalance}
+                  price={price}
+                  allowanceTrue={allowanceTrue}
+                  checkAllowance={checkAllowance}
+                  handleApprove={handleApprove}
                   dsponsorMpContract={dsponsorMpContract}
                   marketplaceListings={marketplaceListings}
                   currencySymbol={currency?.symbol}
-                  tokenBalance={tokenBalance?.displayValue}
+                  tokenBalance={tokenBalance}
                   currencyTokenDecimals={currency?.decimals}
+                  setSuccessFullBid={setSuccessFullBid}
+                  successFullBid={successFullBid}
                 />
               )}
             </div>
@@ -665,15 +681,7 @@ tokenBalance;
         ) : (
           <div className="flex justify-center">
             <p>
-              {!isValidId
-                ? "Sorry, tokenId unavailable, please provide a tokenId valid"
-                : offerNotFormated
-                ? ""
-                : offerData.nftContract?.tokens === 0
-                ? "Sorry, tokenId unavailable, please provide a tokenId valid "
-                : offerData.nftContract?.tokens[0]?.mint && !isOwner
-                ? "Sorry, someone already own this NFT "
-                : ""}
+              {!isValidId ? "Sorry, tokenId unavailable, please provide a tokenId valid" : offerNotFormated ? "" : offerData.nftContract?.tokens === 0 ? "Sorry, tokenId unavailable, please provide a tokenId valid " : ""}
             </p>
           </div>
         )}

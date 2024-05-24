@@ -5,11 +5,15 @@ import { Web3Button } from "@thirdweb-dev/react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Spinner } from "@nextui-org/spinner";
+import ModalHelper from "../Helper/modalHelper";
 
 const PreviewModal = ({
   approvalForAllToken = true,
   handleApprove,
+  helperFeesListing = null,
+  selectedStartingPrice = null,
   handlePreviewModal,
+  protocolFees = null,
   handleSubmit,
   imageUrlVariants = [],
   name = false,
@@ -36,7 +40,7 @@ const PreviewModal = ({
 
   isLoadingButton,
 }) => {
-  console.log(imageUrlVariants);
+ 
   const formatDate = (date) => {
     if (!date) return "";
     return date.toLocaleDateString();
@@ -67,7 +71,7 @@ const PreviewModal = ({
       <div className="modal-dialog max-h-[75vh] max-w-2xl">
         <div className="modal-content">
           <div className="modal-header">
-            <h5 className="modal-title" id="placeBidLabel">
+            <h5 className="modal-title mr-8" id="placeBidLabel">
               {!successFullUpload ? modalTitle : successFullUploadModal.title}
             </h5>
             <button type="button" className="btn-close" onClick={() => handlePreviewModal()}>
@@ -109,9 +113,13 @@ const PreviewModal = ({
                     )}
                   </p>
 
-                  {link.length ? (<p className="font-display  mb-2 block text-jacarta-400 text-sm">
-                    Link : {!errors.linkError ? <span className="dark:text-white text-base ml-2"> {link} </span> : <span className="text-red text-base ml-2"> {errors.linkError}</span>}
-                  </p>):("")}
+                  {link.length ? (
+                    <p className="font-display  mb-2 block text-jacarta-400 text-sm">
+                      Link : {!errors.linkError ? <span className="dark:text-white text-base ml-2"> {link} </span> : <span className="text-red text-base ml-2"> {errors.linkError}</span>}
+                    </p>
+                  ) : (
+                    ""
+                  )}
                   {imageURLSteps?.length > 0 && previewImage.filter((item) => item).length < imageURLSteps.length && (
                     <p className="font-display  mb-2 block text-jacarta-400 text-sm">
                       Image preview : <span className="text-red text-base ml-2"> {errors.imageError}</span>
@@ -160,9 +168,19 @@ const PreviewModal = ({
                   ) : (
                     ""
                   )}
+                  {selectedStartingPrice || errors.startingPriceError ? (
+                    <p className="font-display  mb-2 block text-jacarta-400 text-sm">
+                      Unit starting Price :{" "}
+                      {!errors.startingPriceError ? <span className="dark:text-white text-base ml-2"> {selectedStartingPrice} </span> : <span className="text-red text-base ml-2">{errors.startingPriceError}</span>}
+                      {helperFeesListing && <ModalHelper {...helperFeesListing} />}
+                    </p>
+                  ) : (
+                    ""
+                  )}
                   {selectedUnitPrice || errors.unitPriceError ? (
                     <p className="font-display  mb-2 block text-jacarta-400 text-sm">
                       Unit Price : {!errors.unitPriceError ? <span className="dark:text-white text-base ml-2"> {selectedUnitPrice} </span> : <span className="text-red text-base ml-2">{errors.unitPriceError}</span>}
+                      {helperFeesListing && <ModalHelper {...helperFeesListing} />}
                     </p>
                   ) : (
                     ""
@@ -177,6 +195,13 @@ const PreviewModal = ({
                   {selectedRoyalties ? (
                     <p className="font-display  mb-2 block text-jacarta-400 text-sm">
                       Royalties : {!errors.royaltyError ? <span className="dark:text-white text-base ml-2"> {selectedRoyalties} % </span> : <span className="text-red text-base ml-2">{errors.royaltyError}</span>}
+                    </p>
+                  ) : (
+                    ""
+                  )}
+                  {protocolFees ? (
+                    <p className="font-display  mb-2 block text-jacarta-400 text-sm">
+                      Protocol fees : <span className="dark:text-white text-base ml-2"> {protocolFees} % </span>
                     </p>
                   ) : (
                     ""
