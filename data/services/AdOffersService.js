@@ -1,6 +1,6 @@
 export const GetAllAdOffers = async () => {
   // Requête pour récupérer tous les NewDSponsorNFTs
-  const GET_DATA = gql`
+  const GET_DATA = `
     query Homepage_LastOffers {
       adOffers(orderBy: creationTimestamp, orderDirection: desc, first: 20, where: { and: [{ disable: false }] }) {
         id # offerId

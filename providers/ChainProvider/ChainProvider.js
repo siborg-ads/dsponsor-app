@@ -38,6 +38,9 @@ const ChainProvider = ({ children }) => {
             },
             getCurrencyByAddress: (address) => {
                return getCurrencyByAddress(currentChainName, address);
+            },
+            getChainExplorerPath: () => {
+                return configs[currentChainName].explorer;
             }
         };
     });

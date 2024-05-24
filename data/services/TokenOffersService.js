@@ -3,7 +3,7 @@
 
 export const GetTokenAdOffer = async (offerId, tokenId) => {
   // Requête pour récupérer tous les NewDSponsorNFTs
-  const GET_DATA = gql`
+  const GET_DATA = `
     query TokenOfferDetails($offerId: ID!, $tokenId: ID!) {
       # replace by the $offerId
       adOffers(where: { id: $offerId }) {
@@ -97,7 +97,7 @@ export const GetTokenAdOffer = async (offerId, tokenId) => {
 };
 export const GetAdOffer = async (offerId) => {
   // Requête pour récupérer tous les NewDSponsorNFTs
-  const GET_DATA = gql`
+  const GET_DATA = `
     query TokenOfferDetails($offerId: ID!) {
       # replace by the $offerId
       adOffers(where: { id: $offerId }) {
@@ -202,7 +202,7 @@ let nftFilterIds;
    console.error(err);
    return;
  }
-  const GET_DATA = gql`
+  const GET_DATA = `
     query AdSpacesOwnedByUser($ids: [ID!]) {
       tokens(where: { id_in: $ids }, first: 1000) {
         id

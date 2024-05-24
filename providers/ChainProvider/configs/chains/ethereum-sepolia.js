@@ -5,6 +5,7 @@ export default {
   "nativeSymbol": "ETH",
   "graphApiUrl": "https://api.studio.thegraph.com/proxy/65744/dsponsor-sepolia/version/latest/",
   "relayerApiUrl":"https://relayer.dsponsor.com/api/11155111",
+  "explorer": "https://sepolia.etherscan.io",
   "contracts": {
     "DSponsorAdmin": "0xdf42633BD40e8f46942e44a80F3A58d0Ec971f09"
   },
