@@ -1,17 +1,42 @@
 import React, { useState, useEffect, useRef, use } from "react";
 import { useAddress, useBalance, Web3Button, useContract, useContractRead, useContractWrite, useStorageUpload } from "@thirdweb-dev/react";
 import ItemManageModal from "./ItemManageModal";
+import { toast } from "react-toastify";
+import { Spinner } from "@nextui-org/spinner";
 
 const ItemManage = ({ offerData, marketplaceListings, royalties, dsponsorNFTContract, dsponsorMpContract }) => {
   const [listingModal, setListingModal] = useState(false);
   const [buyModal, setBuyModal] = useState(false);
+   const { mutateAsync: cancelDirectListing } = useContractWrite(dsponsorMpContract, "cancelDirectListing");
+   const { mutateAsync: closeAuctionListing } = useContractWrite(dsponsorMpContract, "closeAuction");
+   const [successFullListing, setSuccessFullListing] = useState(false);
+   const [isLoadingButton, setIsLoadingButton] = useState(false);
 
-  const now = new Date();
+  const now = Math.floor(new Date().getTime() / 1000);
+
+  useEffect(() => {
+    if (successFullListing) {
+      handleListingModal();
+    }
+  }, [successFullListing]);
   const handleListingModal = () => {
     setListingModal(!listingModal);
   };
-  const handleBuyModal = () => {
-    setBuyModal(!buyModal);
+  const handleSubmitCancel = async () => {
+    setIsLoadingButton(true);
+    try{
+      if(marketplaceListings[0].listingType === "Auction"){
+        await closeAuctionListing({args : [marketplaceListings[0].id]});
+      }else if (marketplaceListings[0].listingType === "Direct") {
+        await cancelDirectListing({ args: [marketplaceListings[0].id] });
+      }
+      
+    }catch(e){
+      throw new Error(e);
+    }finally{
+      setIsLoadingButton(false);
+    }
+  
   };
 
   return (
@@ -24,23 +49,51 @@ const ItemManage = ({ offerData, marketplaceListings, royalties, dsponsorNFTCont
           </span>
         </div>
 
-        {!marketplaceListings[0]?.status === "CREATED" || marketplaceListings.length <= 0 ? (
+        {marketplaceListings[0]?.status !== "CREATED" || marketplaceListings.length <= 0 ? (
           <div className="w-full flex justify-center">
             <button type="button" className="bg-accent shadow-accent-volume hover:bg-accent-dark w-36 rounded-full py-3 px-3 text-center font-semibold text-white transition-all" onClick={handleListingModal}>
               Create a listing
             </button>
           </div>
+        ) : marketplaceListings[0].listingType === "Direct" ? (
+          <Web3Button
+            contractAddress="0xac03b675fa9644279b92f060bf542eed54f75599"
+            action={() => {
+              toast.promise(handleSubmitCancel, {
+                pending: "Waiting for confirmation 🕒",
+                success: "Cancel listing confirmed 👌",
+                error: "Cancel listing rejected 🤯",
+              });
+            }}
+            className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all  !bg-red !cursor-pointer `}
+            isDisabled={isLoadingButton}
+          >
+            {isLoadingButton ? <Spinner size="sm" color="default" /> : "Cancel listing"}
+          </Web3Button>
+        ) : marketplaceListings[0].listingType === "Auction" && (marketplaceListings[0].bids.length <= 0 || marketplaceListings[0].startTime < now || marketplaceListings[0].endTime > now) ? (
+          <Web3Button
+            contractAddress="0xac03b675fa9644279b92f060bf542eed54f75599"
+            action={() => {
+              toast.promise(handleSubmitCancel, {
+                pending: "Waiting for confirmation 🕒",
+                success: "Close auction confirmed 👌",
+                error: "Close auction rejected 🤯",
+              });
+            }}
+            className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all  !bg-green !cursor-pointer `}
+            isDisabled={isLoadingButton}
+          >
+            {isLoadingButton ? <Spinner size="sm" color="default" /> : "Close auction"}
+          </Web3Button>
         ) : (
-          <div className="w-full flex justify-center">
-            <button type="button" className="bg-red shadow-accent-volume hover:bg-accent-dark w-36 rounded-full py-3 px-3 text-center font-semibold text-white transition-all" onClick={handleBuyModal}>
-              Cancel listing
-            </button>
-          </div>
+          ""
         )}
       </div>
       {listingModal && (
         <div className="modal fade show block">
           <ItemManageModal
+            setSuccessFullListing={setSuccessFullListing}
+            successFullListing={successFullListing}
             royalties={royalties}
             dsponsorNFTContract={dsponsorNFTContract}
             dsponsorMpContract={dsponsorMpContract}
@@ -50,7 +103,6 @@ const ItemManage = ({ offerData, marketplaceListings, royalties, dsponsorNFTCont
           />
         </div>
       )}
-      
     </>
   );
 };

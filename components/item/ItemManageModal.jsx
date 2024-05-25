@@ -16,7 +16,7 @@ import ModalHelper from "../Helper/modalHelper";
 import PreviewModal from "../modal/previewModal";
 import adminInstance from "../../utils/sdkProvider";
 
-const ItemManageModal = ({ handleListingModal, offerData, marketplaceListings, royalties, dsponsorNFTContract, dsponsorMpContract }) => {
+const ItemManageModal = ({ handleListingModal, offerData,setSuccessFullListing, successFullListing, marketplaceListings, royalties, dsponsorNFTContract, dsponsorMpContract }) => {
   const [selectedListingType, setSelectedListingType] = useState([]);
   const [selectedUnitPrice, setSelectedUnitPrice] = useState(0);
   const [selectedStartingPrice, setSelectedStartingPrice] = useState(0);
@@ -26,7 +26,7 @@ const ItemManageModal = ({ handleListingModal, offerData, marketplaceListings, r
   const [errors, setErrors] = useState({});
   const [showPreviewModal, setShowPreviewModal] = useState(false);
   const [validate, setValidate] = useState(false);
-  const [successFullUpload, setSuccessFullUpload] = useState(false);
+  
   const [isLoadingButton, setIsLoadingButton] = useState(false);
   const [customContract, setCustomContract] = useState(null);
   const [tokenDecimals, setTokenDecimals] = useState(18);
@@ -38,8 +38,7 @@ const ItemManageModal = ({ handleListingModal, offerData, marketplaceListings, r
   const WETHCurrency = adminInstance.chain.getCurrencyAddress("WETH");
   const USDTCurrency = adminInstance.chain.getCurrencyAddress("USDT");
   const [approvalForAllToken, setApprovalForAllToken] = useState(false);
-  const [unitPriceForSM, setUnitPriceForSM] = useState(0);
-  const [startingPriceForSM, setStartingPriceForSM] = useState(0);
+ 
 
   const address = useAddress();
 
@@ -94,7 +93,7 @@ const ItemManageModal = ({ handleListingModal, offerData, marketplaceListings, r
         };
         console.log(args);
         await createListing({ args: [args] });
-        setSuccessFullUpload(true);
+        setSuccessFullListing(true);
       } catch (error) {
         console.error(error);
         throw error;
@@ -180,6 +179,10 @@ const ItemManageModal = ({ handleListingModal, offerData, marketplaceListings, r
       newErrors.endDateError = "End date cannot be in the past.";
       isValid = false;
     }
+     if (parseFloat(selectedUnitPrice) <= parseFloat(selectedStartingPrice)) {
+       newErrors.unitPriceError = `Unit price must be higher than the unit starting price.`;
+       isValid = false;
+     }
     if (parseFloat(selectedUnitPrice) < 1 * 10 ** -tokenDecimals || isNaN(selectedUnitPrice) || selectedUnitPrice === null) {
       newErrors.unitPriceError = `Unit price must be at least ${1 * 10 ** -tokenDecimals}.`;
       isValid = false;
@@ -189,10 +192,7 @@ const ItemManageModal = ({ handleListingModal, offerData, marketplaceListings, r
       newErrors.startingPriceError = `Unit starting price must be at least ${1 * 10 ** -tokenDecimals}.`;
       isValid = false;
     }
-    if (parseFloat(selectedUnitPrice) <= parseFloat(selectedStartingPrice)) {
-      newErrors.unitPriceError = `Unit price must be higher than the unit starting price.`;
-      isValid = false;
-    }
+   
     if (selectedCurrency === "custom" && customTokenContract === undefined) {
       newErrors.currencyError = "Custom contract is missing or invalid.";
       isValid = false;
@@ -251,9 +251,9 @@ const ItemManageModal = ({ handleListingModal, offerData, marketplaceListings, r
       body: "This listing allows anyone to bid on the ad space. The highest bidder at the end of the auction wins the ad space. The ad space is immediately available for the buyer to use.",
     },
   ];
-  const successFullUploadModal = {
+  const successFullListingModal = {
     body: "Your listing has been created successfully",
-    subBody: "You can see your lsiting on the martketplace page.",
+    subBody: "You can see your listing on the martketplace page.",
     buttonTitle: "Manage Spaces",
     hrefButton: `/manage/${address}`,
   };
@@ -469,10 +469,10 @@ const ItemManageModal = ({ handleListingModal, offerData, marketplaceListings, r
                           validate={validate}
                           symbolContract={symbolContract}
                           errors={errors}
-                          successFullUpload={successFullUpload}
+                          successFullUpload={successFullListing}
                           buttonTitle="Create listing"
                           modalTitle="Listing preview"
-                          successFullUploadModal={successFullUploadModal}
+                          successFullUploadModal={successFullListingModal}
                           isLoadingButton={isLoadingButton}
                           approvalForAllToken={approvalForAllToken}
                           handleApprove={handleApprove}
