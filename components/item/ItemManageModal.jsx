@@ -61,8 +61,11 @@ const ItemManageModal = ({ handleListingModal, offerData,setSuccessFullListing, 
   const handlePreviewModal = async () => {
     const isApprovedForAll = await dsponsorNFTContract.call("isApprovedForAll", [address, "0xac03b675fa9644279b92f060bf542eed54f75599"]);
     setApprovalForAllToken(isApprovedForAll);
-
-    setShowPreviewModal(!showPreviewModal);
+    if (successFullListing) {
+      handleListingModal();
+      setSuccessFullListing(false);
+    }
+      setShowPreviewModal(!showPreviewModal);
     validateInputs();
   };
   const handleSubmit = async () => {
@@ -91,7 +94,6 @@ const ItemManageModal = ({ handleListingModal, offerData,setSuccessFullListing, 
           rentalExpirationTimestamp: startDateFormated + secondsUntilEndTime,
           listingType: selectedListingType[0],
         };
-        console.log(args);
         await createListing({ args: [args] });
         setSuccessFullListing(true);
       } catch (error) {
@@ -106,8 +108,10 @@ const ItemManageModal = ({ handleListingModal, offerData,setSuccessFullListing, 
     setIsLoadingButton(true);
     try {
       await setApprovalForAll({ args: ["0xac03b675fa9644279b92f060bf542eed54f75599", true] });
+       setApprovalForAllToken(true);
     } catch (error) {
       console.error(error);
+      setApprovalForAllToken(false);
       throw error;
     } finally {
       setIsLoadingButton(false);
@@ -463,7 +467,7 @@ const ItemManageModal = ({ handleListingModal, offerData,setSuccessFullListing, 
                     <button type="button" className="bg-accent cursor-pointer rounded-full py-3 px-3 text-end font-semibold text-white transition-all" onClick={handlePreviewModal}>
                       Show preview
                     </button>
-                    {showPreviewModal && (
+                    {!showPreviewModal && (
                       <div className="modal fade show bloc">
                         <PreviewModal
                           handlePreviewModal={handlePreviewModal}

@@ -84,6 +84,7 @@ const Item = () => {
   const [tokenBigIntPrice, setTokenBigIntPrice] = useState(null);
   const [successFullBid, setSuccessFullBid] = useState(false);
   const [isTokenInAuction, setIsTokenInAuction] = useState(false);
+   const [successFullListing, setSuccessFullListing] = useState(false);
 
   const { contract: DsponsorAdminContract } = useContract("0xE442802706F3603d58F34418Eac50C78C7B4E8b3", contractABI);
   const { contract: DsponsorNFTContract } = useContract(offerData?.nftContract?.id);
@@ -108,7 +109,7 @@ const Item = () => {
     if (offerId && tokenId) {
       const fetchAdsOffers = async () => {
         const offer = await GetTokenAdOffer(offerId, tokenId);
-        console.log(offer, "offer");
+
         const destructuredIPFSResult = await fetchDataFromIPFS(offer.metadataURL);
 
         const combinedData = {
@@ -116,7 +117,7 @@ const Item = () => {
           ...destructuredIPFSResult,
         };
         setMarketplaceListings(offer?.nftContract?.tokens[0]?.marketplaceListings);
-        console.log(now, offer?.nftContract?.tokens[0]?.marketplaceListings[0]?.startTime, "now");
+      
         console.log(combinedData, "combinedData");
         setOfferData(combinedData);
       };
@@ -125,7 +126,7 @@ const Item = () => {
     }
 
     setTokenIdString(tokenId?.toString());
-  }, [offerId, tokenId, successFullUpload, successFullBid]);
+  }, [offerId, tokenId, successFullUpload, successFullBid, successFullListing, address]);
 
   useEffect(() => {
     if(!offerData) return;
@@ -165,6 +166,7 @@ setTokenBigIntPrice(offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.b
   useEffect(() => {
 if(!isUserOwner || !marketplaceListings) return;
 if (marketplaceListings[0]?.listingType === "Auction" && marketplaceListings[0]?.status === "CREATED" && address.toLowerCase() === marketplaceListings[0]?.lister) {
+
   setIsOwner(true);
   setIsTokenInAuction(true);
 }   
@@ -172,6 +174,7 @@ if (marketplaceListings[0]?.listingType === "Auction" && marketplaceListings[0]?
 
 if (isUserOwner) {
       if (isUserOwner === address) {
+          console.log("ici");
         setIsOwner(true);
       }
     } 
@@ -638,11 +641,21 @@ if (isUserOwner) {
                   </div>
                 ))}
 
-              {marketplaceListings[0].startTime < now && marketplaceListings[0].endTime > now ? (
-                ""
-              ) : (
-                <ItemManage dsponsorNFTContract={DsponsorNFTContract} offerData={offerData} marketplaceListings={marketplaceListings} royalties={royalties} dsponsorMpContract={dsponsorMpContract} isOwner={isOwner} />
-              )}
+              {marketplaceListings[0]?.startTime < now && marketplaceListings[0]?.endTime > now && marketplaceListings[0]?.listingType === "Auction"
+                ? ""
+                : marketplaceListings[0]?.listingType ===
+                  "Direct" && !isOwner ?("") :(
+                    <ItemManage
+                      successFullListing={successFullListing}
+                      setSuccessFullListing={setSuccessFullListing}
+                      dsponsorNFTContract={DsponsorNFTContract}
+                      offerData={offerData}
+                      marketplaceListings={marketplaceListings}
+                      royalties={royalties}
+                      dsponsorMpContract={dsponsorMpContract}
+                      isOwner={isOwner}
+                    />
+                  )}
               {tokenStatut === "AUCTION" && marketplaceListings[0].startTime < now && marketplaceListings[0].endTime > now && (
                 <ItemBids
                   checkUserBalance={checkUserBalance}
@@ -677,9 +690,9 @@ if (isUserOwner) {
             <Divider className="my-4" />
             <h2 className="text-jacarta-700 font-bold font-display mb-6 text-center text-3xl dark:text-white ">Submission </h2>
             {isTokenInAuction && (
-              <span className="dark:text-warning text-md">
-               ⚠️ You canno't submit an ad while your token is in auction{" "}
-              </span>
+              <div className="text-center w-full">
+                <span className="dark:text-warning text-md ">⚠️ You canno&apos;t submit an ad while your token is in auction</span>
+              </div>
             )}
             {!isTokenInAuction && (
               <SliderForm styles={styles} handlePreviewModal={handlePreviewModal} stepsRef={stepsRef} numSteps={numSteps}>
