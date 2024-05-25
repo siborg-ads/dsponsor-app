@@ -83,6 +83,7 @@ const Item = () => {
   const [tokenCurrencyAddress, setTokenCurrencyAddress] = useState(null);
   const [tokenBigIntPrice, setTokenBigIntPrice] = useState(null);
   const [successFullBid, setSuccessFullBid] = useState(false);
+  const [isTokenInAuction, setIsTokenInAuction] = useState(false);
 
   const { contract: DsponsorAdminContract } = useContract("0xE442802706F3603d58F34418Eac50C78C7B4E8b3", contractABI);
   const { contract: DsponsorNFTContract } = useContract(offerData?.nftContract?.id);
@@ -115,6 +116,7 @@ const Item = () => {
           ...destructuredIPFSResult,
         };
         setMarketplaceListings(offer?.nftContract?.tokens[0]?.marketplaceListings);
+        console.log(now, offer?.nftContract?.tokens[0]?.marketplaceListings[0]?.startTime, "now");
         console.log(combinedData, "combinedData");
         setOfferData(combinedData);
       };
@@ -161,13 +163,19 @@ setTokenBigIntPrice(offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.b
   },[offerData, isAllowedToMint, isOwner, offerNotFormated, tokenId, successFullUpload, marketplaceListings]);
 
   useEffect(() => {
+if(!isUserOwner || !marketplaceListings) return;
+if (marketplaceListings[0]?.listingType === "Auction" && marketplaceListings[0]?.status === "CREATED" && address.toLowerCase() === marketplaceListings[0]?.lister) {
+  setIsOwner(true);
+  setIsTokenInAuction(true);
+}   
 
-    if (isUserOwner) {
+
+if (isUserOwner) {
       if (isUserOwner === address) {
         setIsOwner(true);
       }
-    }
-  }, [isUserOwner, address]);
+    } 
+  }, [isUserOwner, address, marketplaceListings]);
 
   useEffect(() => {
     if (!tokenId || !offerData) return;
@@ -226,7 +234,7 @@ setTokenBigIntPrice(offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.b
   }, [offerData]);
 
   useEffect(() => {
-    console.log(offerData, tokenBigIntPrice, "oouiii");
+
     if (!offerData || !tokenBigIntPrice) return;
     try {
       
@@ -609,28 +617,33 @@ setTokenBigIntPrice(offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.b
               </div>
 
               <p className="dark:text-jacarta-300 mb-10">{description}</p>
-              {tokenStatut === "MINTABLE" || (tokenStatut === "DIRECT" && marketplaceListings[0].startTime < now) && (
-                <div className="dark:bg-jacarta-700 dark:border-jacarta-600 mb-2 border-jacarta-100 rounded-2lg border flex flex-col gap-4 bg-white p-8">
-                  <div className=" sm:flex sm:flex-wrap">
-                    <span className="dark:text-jacarta-300 text-jacarta-400 text-sm">
-                      Buying the ad space give you the exclusive right to submit an ad. The media still has the power to validate or reject ad assets. You re free to change the ad at anytime. And free to resell on the
-                      open market your ad space.{" "}
-                    </span>
+              {tokenStatut === "MINTABLE" ||
+                (tokenStatut === "DIRECT" && marketplaceListings[0].startTime < now && (
+                  <div className="dark:bg-jacarta-700 dark:border-jacarta-600 mb-2 border-jacarta-100 rounded-2lg border flex flex-col gap-4 bg-white p-8">
+                    <div className=" sm:flex sm:flex-wrap">
+                      <span className="dark:text-jacarta-300 text-jacarta-400 text-sm">
+                        Buying the ad space give you the exclusive right to submit an ad. The media still has the power to validate or reject ad assets. You re free to change the ad at anytime. And free to resell on the
+                        open market your ad space.{" "}
+                      </span>
+                    </div>
+                    <div className="w-full flex justify-center">
+                      {address ? (
+                        <button type="button" className="bg-accent shadow-accent-volume hover:bg-accent-dark w-36 rounded-full py-3 px-8 text-center font-semibold text-white transition-all" onClick={handleBuyModal}>
+                          Buy
+                        </button>
+                      ) : (
+                        <Web3Button className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all  !bg-accent !cursor-pointer `}>Connect wallet</Web3Button>
+                      )}
+                    </div>
                   </div>
-                  <div className="w-full flex justify-center">
-                    {address ? (
-                      <button type="button" className="bg-accent shadow-accent-volume hover:bg-accent-dark w-36 rounded-full py-3 px-8 text-center font-semibold text-white transition-all" onClick={handleBuyModal}>
-                        Buy
-                      </button>
-                    ) : (
-                      <Web3Button className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all  !bg-accent !cursor-pointer `}>Connect wallet</Web3Button>
-                    )}
-                  </div>
-                </div>
-              )}
+                ))}
 
-              {isOwner && <ItemManage dsponsorNFTContract={DsponsorNFTContract} offerData={offerData} marketplaceListings={marketplaceListings} royalties={royalties} dsponsorMpContract={dsponsorMpContract} />}
-              {tokenStatut === "AUCTION" && (
+              {marketplaceListings[0].startTime < now && marketplaceListings[0].endTime > now ? (
+                ""
+              ) : (
+                <ItemManage dsponsorNFTContract={DsponsorNFTContract} offerData={offerData} marketplaceListings={marketplaceListings} royalties={royalties} dsponsorMpContract={dsponsorMpContract} isOwner={isOwner} />
+              )}
+              {tokenStatut === "AUCTION" && marketplaceListings[0].startTime < now && marketplaceListings[0].endTime > now && (
                 <ItemBids
                   checkUserBalance={checkUserBalance}
                   price={price}
@@ -663,22 +676,29 @@ setTokenBigIntPrice(offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.b
           <div className="container">
             <Divider className="my-4" />
             <h2 className="text-jacarta-700 font-bold font-display mb-6 text-center text-3xl dark:text-white ">Submission </h2>
-            <SliderForm styles={styles} handlePreviewModal={handlePreviewModal} stepsRef={stepsRef} numSteps={numSteps}>
-              <Step_1_Mint stepsRef={stepsRef} styles={styles} adParameters={adParameters} setImageUrlVariants={setImageUrlVariants} />
-              <Step_2_Mint stepsRef={stepsRef} styles={styles} setLink={setLink} link={link} />
-              {imageURLSteps.map((id, index) => (
-                <Step_3_Mint
-                  key={id}
-                  stepsRef={stepsRef}
-                  currentStep={index + 2}
-                  id={id}
-                  styles={styles}
-                  file={files[index]}
-                  previewImage={previewImages[index]}
-                  handleLogoUpload={(file) => handleLogoUpload(file, index)}
-                />
-              ))}
-            </SliderForm>
+            {isTokenInAuction && (
+              <span className="dark:text-warning text-md">
+               ⚠️ You canno't submit an ad while your token is in auction{" "}
+              </span>
+            )}
+            {!isTokenInAuction && (
+              <SliderForm styles={styles} handlePreviewModal={handlePreviewModal} stepsRef={stepsRef} numSteps={numSteps}>
+                <Step_1_Mint stepsRef={stepsRef} styles={styles} adParameters={adParameters} setImageUrlVariants={setImageUrlVariants} />
+                <Step_2_Mint stepsRef={stepsRef} styles={styles} setLink={setLink} link={link} />
+                {imageURLSteps.map((id, index) => (
+                  <Step_3_Mint
+                    key={id}
+                    stepsRef={stepsRef}
+                    currentStep={index + 2}
+                    id={id}
+                    styles={styles}
+                    file={files[index]}
+                    previewImage={previewImages[index]}
+                    handleLogoUpload={(file) => handleLogoUpload(file, index)}
+                  />
+                ))}
+              </SliderForm>
+            )}
           </div>
         ) : (
           <div className="flex justify-center">

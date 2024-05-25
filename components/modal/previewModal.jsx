@@ -43,7 +43,14 @@ const PreviewModal = ({
  
   const formatDate = (date) => {
     if (!date) return "";
-    return date.toLocaleDateString();
+    return date.toLocaleString("en-EN", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true, 
+    });
   };
   const imageRatioDisplay = (id) => {
     const ratios = imageUrlVariants[id].split(":");

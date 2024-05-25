@@ -162,23 +162,31 @@ const ItemManageModal = ({ handleListingModal, offerData,setSuccessFullListing, 
     let isValid = true;
     let newErrors = {};
     const currentDate = new Date();
-    const yesterday = new Date(currentDate.setDate(currentDate.getDate() - 1));
+   const yesterday = new Date();
+   yesterday.setDate(yesterday.getDate() - 1);
+   yesterday.setHours(23, 59, 59, 999); // Définir à la fin de la journée pour éviter l'erreur de jour.
 
-    if (!startDate) {
-      newErrors.startDateError = "Start date is missing.";
-      isValid = false;
-    } else if (new Date(startDate) < yesterday) {
-      newErrors.startDateError = "Start date cannot be in the past.";
-      isValid = false;
-    }
+   if (!startDate) {
+     newErrors.startDateError = "Start date is missing.";
+     isValid = false;
+   } else if (new Date(startDate) < yesterday) {
+     newErrors.startDateError = "Start date cannot be in the past.";
+     isValid = false;
+   } else if (startDate > endDate) {
+     newErrors.startDateError = "Start date cannot be after the end date.";
+     isValid = false;
+   }
 
-    if (!endDate) {
-      newErrors.endDateError = "End date is missing.";
-      isValid = false;
-    } else if (new Date(endDate) < yesterday) {
-      newErrors.endDateError = "End date cannot be in the past.";
-      isValid = false;
-    }
+   if (!endDate) {
+     newErrors.endDateError = "End date is missing.";
+     isValid = false;
+   } else if (new Date(endDate) < yesterday) {
+     newErrors.endDateError = "End date cannot be in the past.";
+     isValid = false;
+   } else if (endDate < startDate) {
+     newErrors.endDateError = "End date cannot be before the start date.";
+     isValid = false;
+   }
      if (parseFloat(selectedUnitPrice) <= parseFloat(selectedStartingPrice)) {
        newErrors.unitPriceError = `Unit price must be higher than the unit starting price.`;
        isValid = false;
@@ -345,9 +353,12 @@ const ItemManageModal = ({ handleListingModal, offerData,setSuccessFullListing, 
                                       selected={startDate}
                                       onChange={(date) => setStartDate(date)}
                                       showMonthDropdown
-                                      popperPlacement="bottom-end"
+                                      popperPlacement="bottom-start"
                                       showYearDropdown
+                                      showTimeSelect
+                                      dateFormat="MMMM d, yyyy h:mm aa"
                                       className="dark:bg-jacarta-700 border-jacarta-100 hover:ring-accent/10 focus:ring-accent dark:border-jacarta-600 dark:placeholder:text-jacarta-300 w-full rounded-lg py-3 px-3 hover:ring-2 dark:text-white"
+                                      style={{ width: "357px" }}
                                     />
                                     <div className="flex gap-2 justify-center items-center">
                                       <span className="text-jacarta-700 dark:text-white">Start date</span>
@@ -361,6 +372,8 @@ const ItemManageModal = ({ handleListingModal, offerData,setSuccessFullListing, 
                                       showMonthDropdown
                                       popperPlacement="bottom-end"
                                       showYearDropdown
+                                      showTimeSelect
+                                      dateFormat="MMMM d, yyyy h:mm aa"
                                       className="dark:bg-jacarta-700 border-jacarta-100 hover:ring-accent/10 focus:ring-accent dark:border-jacarta-600 dark:placeholder:text-jacarta-300 w-full rounded-lg py-3 px-3 hover:ring-2 dark:text-white"
                                     />
                                     <div className="flex gap-2 justify-center items-center">
