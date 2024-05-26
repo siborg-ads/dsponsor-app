@@ -13,15 +13,20 @@ import { Divider } from "@nextui-org/react";
 import { ethers } from "ethers";
 import { Spinner } from "@nextui-org/spinner";
 
+
 const BuyModal = ({
   formatTokenId,
   tokenStatut,
   allowanceTrue,
   handleApprove,
   finalPrice,
+  royaltiesFeesAmount,
+  buyoutPriceAmount,
   successFullUpload,
   feesAmount,
   successFullBuyModal,
+  royalties,
+  marketplaceListings = null,
   price,
   tokenId,
   selectedCurrency,
@@ -38,7 +43,19 @@ const BuyModal = ({
   const handleTermService = (e) => {
     setValidate(e.target.checked);
   };
-  console.log(tokenStatut, "tokenStatut");
+const calculateOriginalPriceFromTotal = (totalPrice, royalties, tokenDecimals = 2) => {
+  let netPrice = parseFloat(totalPrice); // Convertir en float si la saisie est une chaîne
+  const fees = [0.04, royalties / 100];
+
+  // Inverser le calcul en multipliant par (1 - fee) pour chaque frais
+  for (let i = fees.length - 1; i >= 0; i--) {
+    netPrice *= 1 - fees[i];
+  }
+
+
+    return netPrice.toFixed(tokenDecimals); // Formatage avec le nombre spécifié de décimales pour les smart contracts
+  
+};
 
   return (
     <div>
@@ -69,20 +86,28 @@ const BuyModal = ({
                 <figure className="mr-5 self-start">
                   <Image width={150} height={150} src={image} alt="logo" className="rounded-2lg" loading="lazy" />
                 </figure>
-                <div className="overflow-hidden  justify-end flex flex-col  text-ellipsis whitespace-nowrap min-w-[200px]  ">
+                <div className="overflow-hidden  justify-between flex flex-col  text-ellipsis whitespace-nowrap min-w-[200px]  ">
+                  <h2 className="font-display overflow-hidden text-ellipsis whitespace-nowrap text-jacarta-700 text-base font-semibold dark:text-white">{name}</h2>
                   <div className="overflow-hidden flex flex-col text-ellipsis whitespace-nowrap   ">
                     <div className="flex gap-6  items-center justify-between">
-                      <h3 className="font-display overflow-hidden text-ellipsis whitespace-nowrap text-jacarta-700 text-base font-semibold dark:text-white">{name}</h3>
+                      <h3 className="font-display overflow-hidden text-ellipsis whitespace-nowrap text-jacarta-700 text-sm font-semibold dark:text-white">Price : </h3>
                       <span className="dark:text-jacarta-100 text-sm font-medium tracking-tight overflow-auto min-w-[70px] flex justify-end">
-                        {price} {selectedCurrency}
+                        {tokenStatut === "DIRECT" ? calculateOriginalPriceFromTotal(buyoutPriceAmount, royalties) : price} {selectedCurrency}
                       </span>
                     </div>
 
-                    {tokenStatut === "MINTABLE"  && (
+                    <div className="flex gap-6  items-center justify-between">
+                      <span className="dark:text-jacarta-300 text-jacarta-500 mr-1 block text-sm">Protocol fees: 4%</span>
+                      <span className="dark:text-jacarta-300 text-sm  tracking-tight overflow-auto min-w-[60px] flex justify-end">
+                        {feesAmount} {selectedCurrency}
+                      </span>
+                    </div>
+
+                    {tokenStatut === "DIRECT" && (
                       <div className="flex gap-6  items-center justify-between">
-                        <span className="dark:text-jacarta-300 text-jacarta-500 mr-1 block text-sm">Protocol fees: 4%</span>
+                        <span className="dark:text-jacarta-300 text-jacarta-500 mr-1 block text-sm">Royalties fees: {royalties}%</span>
                         <span className="dark:text-jacarta-300 text-sm  tracking-tight overflow-auto min-w-[60px] flex justify-end">
-                          {feesAmount} {selectedCurrency}
+                          {royaltiesFeesAmount} {selectedCurrency}
                         </span>
                       </div>
                     )}

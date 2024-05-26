@@ -23,8 +23,10 @@ const ItemManage = ({successFullListing, setSuccessFullListing,  offerData, mark
     try {
       if (marketplaceListings[0].listingType === "Auction") {
         await closeAuctionListing({ args: [marketplaceListings[0].id] });
+        setSuccessFullListing(true);
       } else if (marketplaceListings[0].listingType === "Direct") {
         await cancelDirectListing({ args: [marketplaceListings[0].id] });
+        setSuccessFullListing(true);
       }
     } catch (e) {
       throw new Error(e);
@@ -40,15 +42,15 @@ const ItemManage = ({successFullListing, setSuccessFullListing,  offerData, mark
           {marketplaceListings[0]?.endTime < now && marketplaceListings[0]?.listingType === "Auction" && (
             <span className="dark:text-jacarta-300 text-jacarta-400 text-sm">Auction has ended, you can complete the auction by clicking the button bellow. </span>
           )}
-          {marketplaceListings[0]?.startTime > now && marketplaceListings[0]?.listingType === "Auction" && (
+          {marketplaceListings[0]?.startTime > now && marketplaceListings[0]?.listingType === "Auction" && marketplaceListings[0]?.status === "CREATED" && (
             <span className="dark:text-jacarta-300 text-jacarta-400 text-sm">Auction will start soon, wait {new Date(marketplaceListings[0]?.startTime * 1000).toString()}. </span>
           )}
           {(marketplaceListings[0]?.status !== "CREATED" || marketplaceListings?.length <= 0) && isOwner && (
             <span className="dark:text-jacarta-300 text-jacarta-400 text-sm">Click the button below to sell your item in auction or direct listing. </span>
           )}
-          {marketplaceListings[0]?.listingType === "Direct"   && isOwner && (
-            <span className="dark:text-jacarta-300 text-jacarta-400 text-sm">Click the button below to cancel the  listing. </span>
-          )}
+          {marketplaceListings[0]?.listingType === "Direct" &&
+            isOwner &&
+            marketplaceListings[0]?.status === "CREATED" &&(<span className="dark:text-jacarta-300 text-jacarta-400 text-sm">Click the button below to cancel the listing. </span>)}
         </div>
 
         {(marketplaceListings[0]?.status !== "CREATED" || marketplaceListings?.length <= 0) && isOwner ? (

@@ -30,9 +30,18 @@ const ItemBids = ({successFullBid, setSuccessFullBid, dsponsorMpContract, market
           <div className="mt-3 flex">
             <div>
               <div className="flex items-center whitespace-nowrap">
-                <span className="text-lg font-medium leading-tight tracking-tight text-green">
-                  {bids.length <= 0 ? "no bids" : price} {!bids.length <= 0 && currencySymbol}
-                </span>
+                {bids.length <= 0 ? (
+                  <div className='flex flex-col'>
+                    <p className="text-sm text-jacarta-400">starting price : </p>
+                    <span className="text-lg font-medium leading-tight tracking-tight text-green">
+                      {price} {currencySymbol}
+                    </span>
+                  </div>
+                ) : (
+                  <p className="text-lg font-medium leading-tight tracking-tight text-green">
+                    {price} {currencySymbol}
+                  </p>
+                )}
               </div>
             </div>
           </div>

@@ -34,7 +34,6 @@ const ItemManageModal = ({ handleListingModal, offerData,setSuccessFullListing, 
   const [tokenContract, setTokenContract] = useState("");
   const [customTokenContract, setCustomTokenContract] = useState("");
   const USDCCurrency = adminInstance.chain.getCurrencyAddress("USDC");
-  const ETHCurrency = adminInstance.chain.getCurrencyAddress("ETH");
   const WETHCurrency = adminInstance.chain.getCurrencyAddress("WETH");
   const USDTCurrency = adminInstance.chain.getCurrencyAddress("USDT");
   const [approvalForAllToken, setApprovalForAllToken] = useState(false);
@@ -62,6 +61,7 @@ const ItemManageModal = ({ handleListingModal, offerData,setSuccessFullListing, 
     const isApprovedForAll = await dsponsorNFTContract.call("isApprovedForAll", [address, "0xac03b675fa9644279b92f060bf542eed54f75599"]);
     setApprovalForAllToken(isApprovedForAll);
     if (successFullListing) {
+      
       handleListingModal();
       setSuccessFullListing(false);
     }
@@ -134,11 +134,7 @@ const ItemManageModal = ({ handleListingModal, offerData,setSuccessFullListing, 
   };
   const handleCurrencyChange = (event) => {
     setSelectedCurrency(event.target.value);
-    if (event.target.value === "ETH") {
-      setTokenDecimals(ETHCurrency.decimals);
-      setSymbolContract(ETHCurrency.symbol);
-      setTokenContract(ETHCurrency.contract);
-    } else if (event.target.value === "custom") {
+     if (event.target.value === "custom") {
       setSelectedCurrencyContract("f");
     } else {
       console.log("ici");
@@ -147,11 +143,8 @@ const ItemManageModal = ({ handleListingModal, offerData,setSuccessFullListing, 
     }
   };
   const handleCustomContractChange = (event) => {
-    if (event.target.value === ETHCurrency.contract) {
-      setTokenDecimals(ETHCurrency.decimals);
-      setSymbolContract(ETHCurrency.symbol);
-      setTokenContract(ETHCurrency.contract);
-      setCustomTokenContract(ETHCurrency.contract);
+    if (event.target.value === "0x0000000000000000000000000000000000000000") {
+      setCustomContract("0x0000000000000000000000000000000000000000");
     } else {
       setCustomContract(event.target.value);
       setSelectedCurrencyContract(event.target.value);
@@ -236,7 +229,6 @@ const ItemManageModal = ({ handleListingModal, offerData,setSuccessFullListing, 
 
   const selectedCurrencyContractObject = {
     USDC: USDCCurrency.contract,
-    ETH: ETHCurrency.contract,
     WETH: WETHCurrency.contract,
     USDT: USDTCurrency.contract,
     custom: customContract,
@@ -441,7 +433,6 @@ const ItemManageModal = ({ handleListingModal, offerData,setSuccessFullListing, 
                                     className="dark:bg-jacarta-700 min-w-[110px] border-jacarta-100 hover:ring-accent/10 focus:ring-accent dark:border-jacarta-600 dark:placeholder:text-jacarta-300 w-full rounded-lg py-3 px-5 hover:ring-2 dark:text-white"
                                   >
                                     <option value="USDC">USDC</option>
-                                    <option value="ETH">ETH</option>
                                     <option value="WETH">WETH</option>
                                     <option value="USDT">USDT</option>
                                     <option value="custom">Custom</option>
@@ -467,7 +458,7 @@ const ItemManageModal = ({ handleListingModal, offerData,setSuccessFullListing, 
                     <button type="button" className="bg-accent cursor-pointer rounded-full py-3 px-3 text-end font-semibold text-white transition-all" onClick={handlePreviewModal}>
                       Show preview
                     </button>
-                    {!showPreviewModal && (
+                    {showPreviewModal && (
                       <div className="modal fade show bloc">
                         <PreviewModal
                           handlePreviewModal={handlePreviewModal}

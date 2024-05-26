@@ -85,6 +85,8 @@ const Item = () => {
   const [successFullBid, setSuccessFullBid] = useState(false);
   const [isTokenInAuction, setIsTokenInAuction] = useState(false);
    const [successFullListing, setSuccessFullListing] = useState(false);
+   const [buyoutPriceAmount, setBuyoutPriceAmount] = useState(null);
+   const [royaltiesFeesAmount, setRoyaltiesFeesAmount] = useState(null);
 
   const { contract: DsponsorAdminContract } = useContract("0xE442802706F3603d58F34418Eac50C78C7B4E8b3", contractABI);
   const { contract: DsponsorNFTContract } = useContract(offerData?.nftContract?.id);
@@ -174,7 +176,7 @@ if (marketplaceListings[0]?.listingType === "Auction" && marketplaceListings[0]?
 
 if (isUserOwner) {
       if (isUserOwner === address) {
-          console.log("ici");
+     
         setIsOwner(true);
       }
     } 
@@ -197,7 +199,7 @@ if (isUserOwner) {
           setIsValidId(false);
         }
       }
-      console.log(offerData, "offerData");
+
       let tokenMetaData = {};
       if (offerData.offer.token_metadata && isValidId) {
         tokenMetaData.description = offerData.offer.token_metadata.description.replace(/{tokenData}/g, `${tokenData}`);
@@ -250,15 +252,20 @@ if (isUserOwner) {
         currencyTokenObject.symbol = symbolContract;
         currencyTokenObject.decimals = decimalsContract;
       }
-      
+
       const bigIntFinalPrice = (BigInt(tokenBigIntPrice) * (BigInt(bps) + BigInt(maxBps))) / BigInt(maxBps);
       const formatFinalPrice = ethers.utils.formatUnits(bigIntFinalPrice, currencyTokenObject.decimals);
       const formatPrice = ethers.utils.formatUnits(BigInt(tokenBigIntPrice), currencyTokenObject.decimals);
-      const fees = (BigInt(tokenBigIntPrice) * BigInt(bps)) / BigInt(maxBps);
-      const formatFees = ethers.utils.formatUnits(fees, currencyTokenObject.decimals);
+      const protocolFees = (BigInt(tokenBigIntPrice) * BigInt(bps)) / BigInt(maxBps);
+      const royaltiesFees = (BigInt(tokenBigIntPrice) * BigInt(royalties)) / BigInt(100);
+      const formatRoyaltiesFees = ethers.utils.formatUnits(royaltiesFees, currencyTokenObject.decimals);
+      const formatProtocolFees = ethers.utils.formatUnits(protocolFees, currencyTokenObject.decimals);
       const amountToApprove = ethers.utils.parseUnits(formatFinalPrice.toString(), currencyTokenObject.decimals);
-      setFeesAmount(Number(Math.ceil(formatFees * 1000) / 1000));
+      const formatBuyoutPrice = ethers.utils.formatUnits(BigInt(tokenBigIntPrice), currencyTokenObject.decimals);
+      setFeesAmount(Number(Math.ceil(formatProtocolFees * 1000) / 1000));
+      setRoyaltiesFeesAmount(Number(Math.ceil(formatRoyaltiesFees * 1000) / 1000));
       setPrice(Number(Math.ceil(formatPrice * 1000) / 1000));
+      setBuyoutPriceAmount(Number(Math.ceil(formatBuyoutPrice * 1000) / 1000));
       setCurrency(currencyTokenObject);
       setOfferNotFormated(false);
       setFinalPrice(Number(Math.ceil(formatFinalPrice * 1000) / 1000));
@@ -438,7 +445,7 @@ if (isUserOwner) {
               referralAdditionalInformation: "",
             },
           ];
-          console.log(argsdirectBuy, "argsdirectBuy");
+
           return argsdirectBuy;
         } else {
           const argsAdSubmited = {
@@ -454,22 +461,24 @@ if (isUserOwner) {
       const isEthCurrency = tokenCurrencyAddress === "0x0000000000000000000000000000000000000000";
       const functionWithPossibleArgs = adStatut !== 0 && !isAllowedToMint ? Object.values(isAlreadyBuy()) : argsMintAndSubmit;
       const argsWithPossibleOverrides = isEthCurrency ? { args: [functionWithPossibleArgs], overrides: { value: amountToApprove } } : { args: [functionWithPossibleArgs] };
-      console.log(functionWithPossibleArgs);
+
       if (adStatut !== 0 && !isAllowedToMint && marketplaceListings.length <= 0) {
-        console.log("ici", functionWithPossibleArgs);
+
         await submitAd({ args: functionWithPossibleArgs });
         setSuccessFullUpload(true);
       } else if (marketplaceListings.length <= 0) {
-        console.log("mintAndSubmit", argsWithPossibleOverrides);
+
         await mintAndSubmit(argsWithPossibleOverrides);
+        setSuccessFullUpload(true);
       } else {
-        console.log("directBuy", functionWithPossibleArgs);
+
         await directBuy({
           args: [functionWithPossibleArgs],
         });
+        setSuccessFullUpload(true);
       }
 
-      setSuccessFullUpload(true);
+      
     } catch (error) {
       console.error("Erreur de soumission du token:", error);
       setSuccessFullUpload(false);
@@ -480,11 +489,11 @@ if (isUserOwner) {
   };
 
   const checkUserBalance = (tokenAddressBalance, priceToken) => {
-    console.log(tokenAddressBalance, priceToken, "maqué");
+
     try {
       const parsedTokenBalance = parseFloat(tokenAddressBalance.displayValue);
       const parsedPriceToken = parseFloat(priceToken);
-      console.log(parsedTokenBalance, parsedPriceToken, "parsedTokenBalance, parsedPriceToken");
+
       if (parsedTokenBalance >= parsedPriceToken) {
         return true;
       } else {
@@ -603,7 +612,7 @@ if (isUserOwner) {
               </Link>
 
               <div className="mb-8 flex items-center  whitespace-nowrap flex-wrap">
-                {currency?.symbol && (
+                {currency?.symbol && tokenStatut !== "MINTED" && (marketplaceListings[0]?.status === "CREATED" || marketplaceListings?.length <= 0) && (
                   <div className="flex items-center mr-4">
                     <span className="text-green text-sm font-medium tracking-tight mr-2">
                       {tokenStatut === "DIRECT" || tokenStatut === "AUCTION" ? price : finalPrice} {currency?.symbol}
@@ -620,42 +629,44 @@ if (isUserOwner) {
               </div>
 
               <p className="dark:text-jacarta-300 mb-10">{description}</p>
-              {tokenStatut === "MINTABLE" ||
-                (tokenStatut === "DIRECT" && marketplaceListings[0].startTime < now && (
-                  <div className="dark:bg-jacarta-700 dark:border-jacarta-600 mb-2 border-jacarta-100 rounded-2lg border flex flex-col gap-4 bg-white p-8">
-                    <div className=" sm:flex sm:flex-wrap">
-                      <span className="dark:text-jacarta-300 text-jacarta-400 text-sm">
-                        Buying the ad space give you the exclusive right to submit an ad. The media still has the power to validate or reject ad assets. You re free to change the ad at anytime. And free to resell on the
-                        open market your ad space.{" "}
-                      </span>
-                    </div>
-                    <div className="w-full flex justify-center">
-                      {address ? (
-                        <button type="button" className="bg-accent shadow-accent-volume hover:bg-accent-dark w-36 rounded-full py-3 px-8 text-center font-semibold text-white transition-all" onClick={handleBuyModal}>
-                          Buy
-                        </button>
-                      ) : (
-                        <Web3Button className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all  !bg-accent !cursor-pointer `}>Connect wallet</Web3Button>
-                      )}
-                    </div>
+              {(tokenStatut === "MINTABLE" || (tokenStatut === "DIRECT" && marketplaceListings[0].startTime < now)) && (
+                <div className="dark:bg-jacarta-700 dark:border-jacarta-600 mb-2 border-jacarta-100 rounded-2lg border flex flex-col gap-4 bg-white p-8">
+                  <div className=" sm:flex sm:flex-wrap">
+                    <span className="dark:text-jacarta-300 text-jacarta-400 text-sm">
+                      Buying the ad space give you the exclusive right to submit an ad. The media still has the power to validate or reject ad assets. You re free to change the ad at anytime. And free to resell on the
+                      open market your ad space.{" "}
+                    </span>
                   </div>
-                ))}
+                  <div className="w-full flex justify-center">
+                    {address ? (
+                      <button type="button" className="bg-accent shadow-accent-volume hover:bg-accent-dark w-36 rounded-full py-3 px-8 text-center font-semibold text-white transition-all" onClick={handleBuyModal}>
+                        Buy
+                      </button>
+                    ) : (
+                      <Web3Button className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all  !bg-accent !cursor-pointer `}>Connect wallet</Web3Button>
+                    )}
+                  </div>
+                </div>
+              )}
 
-              {marketplaceListings[0]?.startTime < now && marketplaceListings[0]?.endTime > now && marketplaceListings[0]?.listingType === "Auction"
-                ? ""
-                : marketplaceListings[0]?.listingType ===
-                  "Direct" && !isOwner ?("") :(
-                    <ItemManage
-                      successFullListing={successFullListing}
-                      setSuccessFullListing={setSuccessFullListing}
-                      dsponsorNFTContract={DsponsorNFTContract}
-                      offerData={offerData}
-                      marketplaceListings={marketplaceListings}
-                      royalties={royalties}
-                      dsponsorMpContract={dsponsorMpContract}
-                      isOwner={isOwner}
-                    />
-                  )}
+              {marketplaceListings[0]?.startTime < now && marketplaceListings[0]?.endTime > now && marketplaceListings[0]?.listingType === "Auction" ? (
+                ""
+              ) : marketplaceListings[0]?.listingType === "Direct" && !isOwner ? (
+                ""
+              ) : tokenStatut === "MINTABLE" ? (
+                ""
+              ) : (
+                <ItemManage
+                  successFullListing={successFullListing}
+                  setSuccessFullListing={setSuccessFullListing}
+                  dsponsorNFTContract={DsponsorNFTContract}
+                  offerData={offerData}
+                  marketplaceListings={marketplaceListings}
+                  royalties={royalties}
+                  dsponsorMpContract={dsponsorMpContract}
+                  isOwner={isOwner}
+                />
+              )}
               {tokenStatut === "AUCTION" && marketplaceListings[0].startTime < now && marketplaceListings[0].endTime > now && (
                 <ItemBids
                   checkUserBalance={checkUserBalance}
@@ -753,14 +764,17 @@ if (isUserOwner) {
             successFullUpload={successFullUpload}
             feesAmount={feesAmount}
             successFullBuyModal={successFullBuyModal}
+            buyoutPriceAmount={buyoutPriceAmount}
+            royaltiesFeesAmount={royaltiesFeesAmount}
             price={price}
             initialCreator={offerData?.initialCreator}
             handleSubmit={handleSubmit}
             handleBuyModal={handleBuyModal}
             name={name}
+            marketplaceListings={marketplaceListings}
             image={image}
             selectedCurrency={currency.symbol}
-            selectedRoyalties={royalties}
+            royalties={royalties}
             tokenId={tokenId}
             tokenData={tokenData}
             formatTokenId={formatTokenId}
