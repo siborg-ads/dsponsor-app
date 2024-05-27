@@ -51,9 +51,7 @@ const OfferSkeleton = () => {
 
             <div className="mb-8 flex items-center space-x-4 whitespace-nowrap">
               <div className="flex items-center w-[100px]">
-                <svg className="icon mr-1 h-4 w-4">
-                  <use xlinkHref="/icons.svg#icon-ETH"></use>
-                </svg>
+              
                 <Skeleton className="w-2/5 rounded-lg">
                   <div className="h-3 w-2/5 rounded-lg bg-default-200"></div>
                 </Skeleton>

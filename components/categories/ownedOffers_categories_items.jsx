@@ -11,7 +11,7 @@ import OfferItem from "../cards/offerItem";
 import Link from "next/link";
 import Image from "next/image";
 
-const OwnedOffers_categories_items = ({ data, isPendinAdsOnOffer }) => {
+const OwnedOffers_categories_items = ({ data, isPendinAdsOnOffer, isOwner }) => {
   const [itemdata, setItemdata] = useState(trendingCategoryData);
   const dispatch = useDispatch();
   const { trendingCategorySorText } = useSelector((state) => state.counter);
@@ -57,59 +57,7 @@ const OwnedOffers_categories_items = ({ data, isPendinAdsOnOffer }) => {
   }
   return (
     <>
-      {/* <!-- Filter --> */}
-      {/* <div className="mb-8 flex flex-wrap items-center justify-between">
-        <ul className="flex flex-wrap items-center">
-          {tranding_category_filter.map(({ id, svg, text }) => {
-            if (text === "all") {
-              return (
-                <li className="my-1 mr-2.5" key={id}>
-                  <button
-                    className={
-                      filterVal === id
-                        ? "dark:border-jacarta-600 group bg-accent border-jacarta-100 font-display flex h-9 items-center rounded-lg border px-4 text-sm font-semibold transition-colors border-transparent text-white dark:border-transparent capitalize"
-                        : "dark:border-jacarta-600 dark:bg-jacarta-900 dark:hover:bg-accent group hover:bg-accent border-jacarta-100 font-display text-jacarta-500 flex h-9 items-center rounded-lg border bg-white px-4 text-sm font-semibold transition-colors hover:border-transparent hover:text-white dark:text-white dark:hover:border-transparent dark:hover:text-white capitalize"
-                    }
-                    onClick={() => {
-                      handleFilter(text);
-                      setFilterVal(id);
-                    }}
-                  >
-                    {text}
-                  </button>
-                </li>
-              );
-            } else {
-              return (
-                <li className="my-1 mr-2.5" key={id}>
-                  <button
-                    onClick={() => {
-                      handleFilter(text);
-                      setFilterVal(id);
-                    }}
-                  >
-                    <div
-                      className={
-                        filterVal === id
-                          ? "dark:border-jacarta-600 group bg-accent border-jacarta-100 font-display flex h-9 items-center rounded-lg border px-4 text-sm font-semibold transition-colors border-transparent text-white dark:border-transparent capitalize"
-                          : "dark:border-jacarta-600 dark:bg-jacarta-900 dark:hover:bg-accent group hover:bg-accent border-jacarta-100 font-display text-jacarta-500 flex h-9 items-center rounded-lg border bg-white px-4 text-sm font-semibold transition-colors hover:border-transparent hover:text-white dark:text-white dark:hover:border-transparent dark:hover:text-white capitalize"
-                      }
-                    >
-                      <svg className={filterVal === id ? "icon mr-1 h-4 w-4 transition-colors fill-white" : "icon fill-jacarta-700 dark:fill-jacarta-100 mr-1 h-4 w-4 transition-colors group-hover:fill-white"}>
-                        <use xlinkHref={`/icons.svg#icon-${svg}`}></use>
-                      </svg>
-                      <span>{text}</span>
-                    </div>
-                  </button>
-                </li>
-              );
-            }
-          })}
-        </ul> */}
-      {/* dropdown */}
-      {/* <Recently_added_dropdown data={sortText} dropdownFor="recently_added" />
-      </div> */}
-      {isPendinAdsOnOffer && (
+      {isPendinAdsOnOffer && isOwner && (
         <div className="dark:bg-jacarta-700 dark:text-jacarta-300 dark:border-jacarta-600 border-jacarta-100 rounded-2lg border bg-white p-3 flex gap-4 justify-center items-center mb-6">
           <span className="bg-red rounded-2xl dark:text-white  px-2">!</span>
           <span> You have 1 or more ads proposals to check on your offer </span>
@@ -120,7 +68,7 @@ const OwnedOffers_categories_items = ({ data, isPendinAdsOnOffer }) => {
       {data.length > 0 ? (
         <div className="grid grid-cols-1 gap-[1.875rem] md:grid-cols-2 lg:grid-cols-4">
           {data?.map((item, index) => {
-            return <OfferItem item={item} key={index} url={`/offer/${item.id}`} />;
+            return <OfferItem item={item} key={index} url={`/offer/${item.id}`} isOwner={isOwner} />;
           })}
         </div>
       ) : (

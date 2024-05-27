@@ -4,6 +4,8 @@ import Link from "next/link";
 import "tippy.js/dist/tippy.css";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import Meta from "../../components/Meta";
+import { ethers } from "ethers";
+
 import Image from "next/image";
 import { useContract, useContractWrite, useContractRead, useAddress } from "@thirdweb-dev/react";
 import Tippy from "@tippyjs/react";
@@ -11,107 +13,89 @@ import "tippy.js/dist/tippy.css";
 import Review_carousel from "../../components/carousel/review_carousel";
 import Validated_refused_items from "../../components/collections/validated_refused_items";
 import { fetchDataFromIPFS } from "../../data/services/ipfsService";
-import { ethers } from "ethers";
 import adminInstance from "../../utils/sdkProvider";
 import OfferSkeleton from "../../components/skeleton/offerSkeleton";
 import { GetAdOffer } from "../../data/services/TokenOffersService";
 import { contractABI } from "../../data/services/contract";
+import Form from "../../components/collections-wide/sidebar/collections/Form";
+import { Divider } from "@nextui-org/react";
+import "tippy.js/dist/tippy.css";
+import { CopyToClipboard } from "react-copy-to-clipboard";
+import Validation from "../../components/offer-section/validation";
+import { protocolFees, protocolFeesBigNumber } from "../../utils/constUtils";
+import ModalHelper from "../../components/Helper/modalHelper";
+import { ItemsTabs } from "../../components/component";
+
 
 const Offer = () => {
   const router = useRouter();
 
   const offerId = router.query.offer;
   const userAddress = useAddress();
-
+  const [copied, setCopied] = useState(false);
   const [offerData, setOfferData] = useState([]);
-  const [pendingProposalData, setPendingProposalData] = useState([]);
-  const [validatedProposalData, setValidatedProposalData] = useState([]);
-  const [refusedProposalData, setRefusedProposalData] = useState([]);
   const [royalties, setRoyalties] = useState(null);
-  const [successFullUpload, setSuccessFullUpload] = useState(false);
   const [currency, setCurrency] = useState(null);
   const [price, setPrice] = useState(null);
   const [imageModal, setImageModal] = useState(false);
+  const [isOwner, setIsOwner] = useState(false);
   const { contract: DsponsorAdminContract } = useContract("0xE442802706F3603d58F34418Eac50C78C7B4E8b3", contractABI);
   const { mutateAsync, isLoadingreviewAdProposal } = useContractWrite(DsponsorAdminContract, "reviewAdProposals");
-
+  const [urlFromChild, setUrlFromChild] = useState("");
   const [successFullRefuseModal, setSuccessFullRefuseModal] = useState(false);
+  const [tokenData, setTokenData] = useState("");
+  const [isWordAlreadyTaken, setIsWordAlreadyTaken] = useState(false);
+  const { contract: tokenContract } = useContract(offerData?.nftContract?.prices[0]?.currency, "token");
+  const { data: symbolContract } = useContractRead(tokenContract, "symbol");
+  const { data: decimalsContract } = useContractRead(tokenContract, "decimals");
+ 
+  const { data: bps } = useContractRead(DsponsorAdminContract, "feeBps");
+  const maxBps = 10000;
+  
 
   useEffect(() => {
     if (offerId) {
       const fetchAdsOffers = async () => {
         const offer = await GetAdOffer(offerId);
-
-        const groupedPendingAds = {};
-        const groupedValidatedAds = {};
-        const groupedRefusedAds = {};
-
-        function processProposal(token, element, groupedAds, statusKey, statusId) {
-          if (element[statusKey] !== null) {
-            if (!groupedAds[token.tokenId]) {
-              groupedAds[token.tokenId] = {
-                tokenId: token.tokenId,
-                offerId: offerId,
-                proposalIds: [],
-                adParametersList: {},
-                adParametersKeys: [],
-              };
-              if (statusKey === "rejectedProposal") {
-                groupedAds[token.tokenId].reason = element[statusKey].rejectReason;
-              }
-            }
-            const adParamBase = element.adParameter.base;
-
-            groupedAds[token.tokenId].proposalIds.push(element[statusKey].id);
-
-            if (!groupedAds[token.tokenId].adParametersKeys.includes(adParamBase)) {
-              groupedAds[token.tokenId].adParametersKeys.push(adParamBase);
-            }
-
-            groupedAds[token.tokenId].adParametersList[adParamBase] = element[statusKey].data;
-          }
-        }
-
-        for (const token of offer.nftContract.tokens) {
-          if (token.mint !== null) {
-            for (const element of token.currentProposals) {
-              processProposal(token, element, groupedPendingAds, "pendingProposal");
-              processProposal(token, element, groupedValidatedAds, "acceptedProposal");
-              processProposal(token, element, groupedRefusedAds, "rejectedProposal");
-            }
-          }
-        }
-
-        const formattedPendingAds = Object.values(groupedPendingAds);
-        const formattedValidatedAds = Object.values(groupedValidatedAds);
-        const formattedRefusedAds = Object.values(groupedRefusedAds);
-        console.log(formattedRefusedAds, "formattedValidatedAds");
-
         const destructuredIPFSResult = await fetchDataFromIPFS(offer.metadataURL);
         const combinedData = {
           ...offer,
           ...destructuredIPFSResult,
         };
-
-        try {
-          const currencyToken = adminInstance.chain.getCurrencyByAddress(offer?.nftContract.prices[0].currency);
-          const formatPrice = offer.nftContract.prices[0].amount / 10 ** currencyToken.decimals;
-
-          setPrice(formatPrice);
-          setCurrency(currencyToken);
-        } catch (e) {
-          console.error("Error: Currency not found for address");
-        }
+        console.log("combinedData", combinedData);
         setOfferData(combinedData);
-        setValidatedProposalData(formattedValidatedAds);
-        setRefusedProposalData(formattedRefusedAds);
-
-        setPendingProposalData(formattedPendingAds);
+        if (userAddress?.toLowerCase() === offer.initialCreator) {
+          setIsOwner(true);
+        }
       };
 
       fetchAdsOffers();
     }
-  }, [offerId, router, successFullRefuseModal]);
+  }, [offerId, router, successFullRefuseModal, userAddress]);
+
+   useEffect(() => {
+     if (!offerData) return;
+     try {
+       const currencyTokenObject = {};
+       if (!decimalsContract && !symbolContract) {
+         const currencyToken = adminInstance.chain.getCurrencyByAddress(offerData.nftContract.prices[0].currency);
+         currencyTokenObject.symbol = currencyToken.symbol;
+         currencyTokenObject.decimals = currencyToken.decimals;
+       } else {
+         currencyTokenObject.symbol = symbolContract;
+         currencyTokenObject.decimals = decimalsContract;
+       }
+
+       const bigIntPrice = (BigInt(offerData?.nftContract?.prices[0]?.amount) * (BigInt(bps) + BigInt(maxBps))) / BigInt(maxBps);
+       const formatPrice = ethers.utils.formatUnits(bigIntPrice, currencyTokenObject.decimals);
+
+       setPrice(Number(Math.ceil(formatPrice * 1000) / 1000));
+       setCurrency(currencyTokenObject);
+     } catch (e) {
+       console.error("Error: Currency not found for address", offerData?.nftContract?.prices[0], e);
+     }
+   }, [symbolContract, decimalsContract, offerData, bps]);
+
   useEffect(() => {
     if (offerData?.nftContract?.royaltyBps) setRoyalties(offerData?.nftContract?.royaltyBps / 100);
   }, [offerData]);
@@ -128,26 +112,18 @@ const Offer = () => {
       throw error;
     }
   };
+  const handleUrlChange = (newUrl, tokenData) => {
+    setIsWordAlreadyTaken(false);
+    setUrlFromChild(newUrl);
+    setTokenData(tokenData);
+   for(const token of offerData.nftContract.tokens){
+    if(token.mint === null)return;
+      if(tokenData.toLowerCase() === token.mint.tokenData.toLowerCase()){
+        setIsWordAlreadyTaken(true);
+      }
+   }
+  };
 
-  const [itemActive, setItemActive] = useState(1);
-  const tabItem = [
-    {
-      id: 1,
-      text: "Pending",
-      icon: "owned",
-    },
-    {
-      id: 2,
-      text: "Validated",
-      icon: "owned",
-    },
-
-    {
-      id: 3,
-      text: "Refused",
-      icon: "activity",
-    },
-  ];
 
   if (!offerData || offerData.length === 0) {
     return (
@@ -156,7 +132,10 @@ const Offer = () => {
       </div>
     );
   }
-
+const modalHelper = {
+  title: "Protocol Fees",
+  body: `The protocol fees (4%) are used to maintain the platform and the services provided. The fees are calculated based on the price of the ad space and are automatically deducted from the total amount paid by the buyer.`,
+};
   const { description = "description not found", id = "1", image = ["/images/gradient_creative.jpg"], name = "DefaultName", nftContract = "N/A" } = offerData.offer ? offerData.offer : {};
 
   return (
@@ -177,12 +156,12 @@ const Offer = () => {
             {/* <!-- Image --> */}
             <figure className="mb-8 md:w-2/5 md:flex-shrink-0 md:flex-grow-0 md:basis-auto lg:w-1/2 w-full flex justify-center">
               <button className=" w-full" onClick={() => setImageModal(true)} style={{ height: "450px" }}>
-                <Image width={585} height={726} src={image} alt="image" className="rounded-2xl cursor-pointer h-full object-contain w-full" />
+                {image && <Image width={585} height={726} src={image} alt="image" className="rounded-2xl cursor-pointer h-full object-contain w-full" />}
               </button>
 
               {/* <!-- Modal --> */}
               <div className={imageModal ? "modal fade show block" : "modal fade"}>
-                <div className="modal-dialog !my-0 flex h-full max-w-4xl items-center justify-center">
+                <div className="modal-dialog !my-0 flex  items-center justify-center">
                   <Image width={582} height={722} src={image} alt="image" className="h-full object-cover w-full rounded-2xl" />
                 </div>
 
@@ -202,38 +181,29 @@ const Offer = () => {
               <div className="mb-3 flex">
                 {/* <!-- Collection --> */}
                 <div className="flex items-center">
-                  <Link href="#" className="text-accent mr-2 text-sm font-bold">
+                  <Link href={`/manageSpaces/${offerData?.initialCreator}`} className="text-accent mr-2 text-sm font-bold">
                     {offerData?.initialCreator}
                   </Link>
-                  <span className="dark:border-jacarta-600 bg-green inline-flex h-6 w-6 items-center justify-center rounded-full border-2 border-white" data-tippy-content="Verified Collection">
-                    <Tippy content={<span>Verified Collection</span>}>
-                      <svg className="icon h-[.875rem] w-[.875rem] fill-white">
-                        <use xlinkHref="/icons.svg#icon-right-sign"></use>
-                      </svg>
-                    </Tippy>
-                  </span>
                 </div>
               </div>
 
               <h1 className="font-display text-jacarta-700 mb-4 text-4xl font-semibold dark:text-white">{name}</h1>
 
               <div className="mb-8 flex items-center flex-wrap gap-2 space-x-4 whitespace-nowrap">
-                <div className="flex items-center">
-                  <Tippy content={<span>{currency?.symbol ? currency?.symbol : "N/A"}</span>}>
-                    <span className="-ml-1">
-                      <svg className="icon mr-1 h-4 w-4">
-                        <use xlinkHref="/icons.svg#icon-ETH"></use>
-                      </svg>
+                {currency?.symbol && (
+                  <div className="flex items-center">
+                    <span className="text-green text-sm font-medium tracking-tight mr-2">
+                      {price} {currency?.symbol}
                     </span>
-                  </Tippy>
-                  <span className="text-green text-sm font-medium tracking-tight">
-                    {price} {currency?.symbol ? currency?.symbol : "N/A"}
-                  </span>
-                </div>
+                    <ModalHelper {...modalHelper} size="small" />
+                  </div>
+                )}
 
-                <span className="dark:text-jacarta-300 text-jacarta-400 text-sm">
-                  {/* {offerData[0].allowedTokens.length - validatedProposalData.length - refusedProposalData.length - pendingProposalData.length}/{offerData[0].allowedTokens.length} available */}
-                </span>
+                {offerData.nftContract.allowList && (
+                  <span className="dark:text-jacarta-300 text-jacarta-400 text-sm">
+                    {offerData.nftContract.maxSupply - offerData.nftContract.tokens.filter((item) => item.mint != null).length}/{offerData.nftContract.maxSupply} available
+                  </span>
+                )}
                 <span className="text-jacarta-400 block text-sm dark:text-white">
                   Creator <strong>{royalties}% royalties</strong>
                 </span>
@@ -241,66 +211,106 @@ const Offer = () => {
 
               <p className="dark:text-jacarta-300 mb-10">{description}</p>
 
-              <div className="dark:bg-jacarta-700 dark:border-jacarta-600 border-jacarta-100 rounded-2lg border bg-white p-8">
-                <div className=" sm:flex sm:flex-wrap">
-                  <span className="dark:text-jacarta-300 text-jacarta-400 text-sm">
-                    This page allows you to oversee submitted ads, offering tools to either approve or reject them. Approve ads to make them live or reject those that don&apos;t meet your standards, streamlining the
-                    content that reaches your audience while maintaining quality control on your platform.{" "}
-                  </span>
+              {isOwner && (
+                <div className="dark:bg-jacarta-700 dark:border-jacarta-600 border-jacarta-100 rounded-2lg border bg-white p-8">
+                  <div className=" sm:flex sm:flex-wrap">
+                    <span className="dark:text-jacarta-300 text-jacarta-400 text-sm">
+                      This page allows you to oversee submitted ads, offering tools to either approve or reject them. Approve ads to make them live or reject those that don&apos;t meet your standards, streamlining the
+                      content that reaches your audience while maintaining quality control on your platform.{" "}
+                    </span>
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
           </div>
         </div>
       </section>
-      {/* {userAddress === collaborators[0] && ( */}
-      {userAddress && (
-        <div className="container">
-          {/* <!-- Tabs Nav --> */}
-          <Tabs className="tabs">
-            <TabList className="nav nav-tabs scrollbar-custom mb-12 flex items-center justify-start overflow-x-auto overflow-y-hidden border-b border-jacarta-100 pb-px dark:border-jacarta-600 md:justify-center">
-              {tabItem.map(({ id, text, icon }) => {
-                return (
-                  <Tab className="nav-item" role="presentation" key={id} onClick={() => setItemActive(id)}>
-                    <button
-                      className={
-                        itemActive === id
-                          ? "nav-link hover:text-jacarta-700 text-jacarta-400 relative flex items-center whitespace-nowrap py-3 px-6 dark:hover:text-white active"
-                          : "nav-link hover:text-jacarta-700 text-jacarta-400 relative flex items-center whitespace-nowrap py-3 px-6 dark:hover:text-white"
-                      }
-                    >
-                      <svg className="icon mr-1 h-5 w-5 fill-current">
-                        <use xlinkHref={`/icons.svg#icon-${icon}`}></use>
-                      </svg>
-                      <span className="font-display text-base font-medium">{text}</span>
-                    </button>
-                  </Tab>
-                );
-              })}
-            </TabList>
+      <div className="container mb-12">
+        <Divider className="my-4" />
+        <h2 className="text-jacarta-700 font-bold font-display mb-6 text-center text-3xl dark:text-white ">Details </h2>
+        <ItemsTabs contractAddress={offerData?.nftContract.id} offerId={offerId} initialCreator={offerData?.initialCreator} isToken={false} />
+      </div>
+      {!offerData.nftContract.allowList && (
+        <div className="container flex flex-col justify-center mb-6">
+          <Divider className="my-4" />
+          <h2 className="text-jacarta-700 font-bold font-display mb-6 text-center text-3xl dark:text-white md:text-center">Search </h2>
+          <div className="dark:bg-jacarta-700 dark:border-jacarta-600 border-jacarta-100 rounded-2lg border bg-white p-8">
+            <div className=" sm:flex sm:flex-wrap">
+              <span className="dark:text-jacarta-300 text-jacarta-400 text-sm">
+                You can check if a word is available for purchase by using the search bar. Simply type the word into the search bar and press enter to see if it is available. This feature allows you to quickly find out
+                if the word you are interested in is free for acquisition.{" "}
+              </span>
+            </div>
+          </div>
+          <div className="flex justify-center mt-6">
+            <Form offerId={offerId} onUrlChange={handleUrlChange} />
+          </div>
+          {urlFromChild && (
+            <div className="grid grid-cols-1 gap-[1.875rem] md:grid-cols-2 lg:grid-cols-4">
+              <article className="relative">
+                <div className="dark:bg-jacarta-700 dark:border-jacarta-700 border-jacarta-100 rounded-2xl block border bg-white p-[1.1875rem] transition-shadow hover:shadow-lg text-jacarta-500">
+                  {isWordAlreadyTaken ? <span className="text-red  ">This word is already taken ❌</span> : <span className="text-green ">This word is available 🎉</span>}
+                  <figure className="mt-2">
+                    <Link href={urlFromChild}>{image && <Image src={image} alt="logo" height={230} width={230} className="rounded-[0.625rem] w-full lg:h-[230px] object-contain" loading="lazy" />}</Link>
+                  </figure>
+                  <div className="mt-4 flex items-center justify-between gap-4">
+                    <Tippy content={<span className="p-2">{name}</span>}>
+                      <Link href={urlFromChild} className="overflow-hidden text-ellipsis whitespace-nowrap min-w-[120px]">
+                        <span className="font-display  text-jacarta-700 hover:text-accent text-base dark:text-white ">{name}</span>
+                      </Link>
+                    </Tippy>
 
-            <TabPanel>
-              <div className="container mb-12 relative p-0">
-                {/* <!-- Filter --> */}
-                <Review_carousel handleSubmit={handleSubmit} pendingProposalData={pendingProposalData} successFullRefuseModal={successFullRefuseModal} />
-              </div>
-            </TabPanel>
-            <TabPanel>
-              <div className="container mb-12 relative p-0">
-                {/* <!-- Filter --> */}
-                <Validated_refused_items statut={true} proposalData={validatedProposalData} />
-              </div>
-            </TabPanel>
-            <TabPanel>
-              <div className="container mb-12 relative p-0">
-                {/* <!-- Filter --> */}
-                <Validated_refused_items statut={false} proposalData={refusedProposalData} />
-              </div>
-            </TabPanel>
-          </Tabs>
+                    <Tippy content={<span className="p-2">{tokenData}</span>}>
+                      <div className="dark:border-jacarta-600 border-jacarta-100 max-w-[100px] overflow-hidden text-ellipsis flex items-center whitespace-nowrap rounded-md border py-1 px-2">
+                        <span className="text-green text-sm font-medium tracking-tight overflow-hidden text-ellipsis whitespace-nowrap"> {tokenData}</span>
+                      </div>
+                    </Tippy>
+                  </div>
+                </div>
+              </article>
+            </div>
+          )}
         </div>
       )}
 
+      <Validation offer={offerData} offerId={offerId} isOwner={isOwner} handleSubmit={handleSubmit} successFullRefuseModal={successFullRefuseModal} />
+
+      {isOwner && (
+        <div className="container">
+          <Divider className="my-4" />
+          <h2 className="text-jacarta-700 font-bold font-display mb-6 text-center text-3xl dark:text-white ">Display </h2>
+          <div className="dark:bg-jacarta-700 dark:border-jacarta-600 border-jacarta-100 rounded-2lg border bg-white p-8 mb-4">
+            <span className="dark:text-jacarta-300 text-jacarta-400 text-sm ">
+              You can integrate this offer on your website by using the following iframe code. Simply copy and paste the code into your website to display the offer.{" "}
+            </span>
+            <br />
+            <div className="flex gap-4 w-full md:w-auto items-start mt-2 ">
+              <pre
+                style={{
+                  backgroundColor: "#010101",
+                  borderRadius: "5px",
+                  fontFamily: "'Courier New', monospace",
+                  padding: "10px",
+                  overflowX: "auto",
+                }}
+              >
+                <code> {`<iframe src="https://relayer.dsponsor.com/11155111/iframe/${offerId}?bgColor=0d102d" height="315" width="1000px" className={'h-screen w-full'} />`}</code>
+              </pre>
+              <Tippy hideOnClick={false} content={copied ? <span>copied</span> : <span>copy</span>}>
+                <div className="js-copy-clipboard cursor-pointer">
+                  <CopyToClipboard
+                    text={`<iframe src="https://relayer.dsponsor.com/11155111/iframe/${offerId}?bgColor=0d102d" height="315" width="1000px" className={'h-screen w-full'} />`}
+                    onCopy={() => setCopied(true)}
+                  >
+                    <Image src="/images/copy.svg" alt="icon" width={20} height={20} className="mt-2 min-w-[20px] " />
+                  </CopyToClipboard>
+                </div>
+              </Tippy>
+            </div>
+          </div>
+          <iframe src={`https://relayer.dsponsor.com/11155111/iframe/${offerId}?bgColor=0d102d`} height="315" width="1000px" className={"h-screen w-full"} />
+        </div>
+      )}
       {/* <ItemsTabs /> */}
       {/* <div className="container mb-12">
         <ItemsTabs />

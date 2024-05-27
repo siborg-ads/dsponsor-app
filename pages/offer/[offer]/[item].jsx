@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, use } from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import "tippy.js/dist/tippy.css";
@@ -22,10 +22,20 @@ import adminInstance from "../../../utils/sdkProvider";
 import { toast } from "react-toastify";
 import OfferSkeleton from "../../../components/skeleton/offerSkeleton.jsx";
 import { GetTokenAdOffer } from "../../../data/services/TokenOffersService";
+import { getPossibleAdIntegrations } from "../../../utils/getAdIntegrationsWithParams";
+import { Divider } from "@nextui-org/react";
+import Validation from "../../../components/offer-section/validation.jsx";
+import { protocolFees, protocolFeesBigNumber } from "../../../utils/constUtils";
+import stringToUint256 from "../../../utils/stringToUnit256";
+import ItemManage from "../../../components/item/ItemManage";
+import ItemBids from "../../../components/item/ItemBids";
 
 import contractABI from "../../../abi/dsponsorAdmin.json";
 
 import "react-toastify/dist/ReactToastify.css";
+import ModalHelper from "../../../components/Helper/modalHelper.jsx";
+
+
 
 const Item = () => {
   const router = useRouter();
@@ -34,31 +44,21 @@ const Item = () => {
   const tokenId = router.query?.item;
 
   const [tokenIdString, setTokenIdString] = useState(null);
-
+  const maxBps = 10000;
   const [data, setData] = useState([]);
-  const [offerData, setOfferData] = useState([]);
+  const [offerData, setOfferData] = useState(null);
   const address = useAddress();
   const [isOwner, setIsOwner] = useState(false);
-  const [file, setFile] = useState(null);
+  const [files, setFiles] = useState([]);
+  const [previewImages, setPreviewImages] = useState([]);
   const [imageModal, setImageModal] = useState(false);
-  const [previewImage, setPreviewImage] = useState(null);
-  const [link, setLink] = useState("https://");
+  const [link, setLink] = useState("");
   const [amountToApprove, setAmountToApprove] = useState(null);
   const [royalties, setRoyalties] = useState(null);
   const [errors, setErrors] = useState({});
+  const [marketplaceListings, setMarketplaceListings] = useState([]);
   const [finalPrice, setFinalPrice] = useState(null);
   const [successFullUpload, setSuccessFullUpload] = useState(false);
-  const { contract: DsponsorAdminContract } = useContract("0xE442802706F3603d58F34418Eac50C78C7B4E8b3", contractABI);
-  const { contract: DsponsorNFTContract } = useContract(offerData?.nftContract?.id);
-  const { mutateAsync: uploadToIPFS, isLoading: isUploading } = useStorageUpload();
-  const { mutateAsync: mintAndSubmit } = useContractWrite(DsponsorAdminContract, "mintAndSubmit");
-  const { mutateAsync: submitAd } = useContractWrite(DsponsorAdminContract, "submitAdProposals");
-  const { contract: tokenContract } = useContract(offerData?.nftContract?.prices[0].currency, "token");
-  const { data: tokenBalance, isLoading, error } = useBalance(offerData?.nftContract?.prices[0].currency);
-  const { mutateAsync: approve, isLoading: isLoadingApprove } = useContractWrite(tokenContract, "approve");
-  const { data: bps } = useContractRead(DsponsorAdminContract, "feeBps");
-  const { data: isAllowedToMint = true } = useContractRead(DsponsorNFTContract, "tokenIdIsAllowedToMint", tokenIdString);
-  const { data: royaltiesInfo } = useContractRead(DsponsorNFTContract, "royaltyInfo", [tokenIdString, 100]);
   const [showPreviewModal, setShowPreviewModal] = useState(false);
   const [validate, setValidate] = useState(false);
   const [currency, setCurrency] = useState(null);
@@ -67,63 +67,59 @@ const Item = () => {
   const [price, setPrice] = useState(null);
   const [buyModal, setBuyModal] = useState(false);
   const [buyMethod, setBuyMethod] = useState(false);
-  const [userBalance, setUserBalance] = useState(null);
+  const [feesAmount, setFeesAmount] = useState(null);
+  const [imageUrlVariants, setImageUrlVariants] = useState([]);
   const [submitAdFormated, setSubmitAdFormated] = useState({});
+  const [tokenData, setTokenData] = useState(null);
+  const [tokenMetaData, setTokenMetaData] = useState("");
+  const [allowanceTrue, setAllowanceTrue] = useState(false);
+  const [adParameters, setAdParameters] = useState([]);
+  const [imageURLSteps, setImageURLSteps] = useState([]);
+  const [isValidId, setIsValidId] = useState(true);
+  const [isLoadingButton, setIsLoadingButton] = useState(false);
   const stepsRef = useRef([]);
-  const numSteps = 3;
+  const [numSteps, setNumSteps] = useState(2);
+  const [tokenStatut, setTokenStatut] = useState(null);
+  const [tokenCurrencyAddress, setTokenCurrencyAddress] = useState(null);
+  const [tokenBigIntPrice, setTokenBigIntPrice] = useState(null);
+  const [successFullBid, setSuccessFullBid] = useState(false);
+  const [isTokenInAuction, setIsTokenInAuction] = useState(false);
+   const [successFullListing, setSuccessFullListing] = useState(false);
+   const [buyoutPriceAmount, setBuyoutPriceAmount] = useState(null);
+   const [royaltiesFeesAmount, setRoyaltiesFeesAmount] = useState(null);
+
+  const { contract: DsponsorAdminContract } = useContract("0xE442802706F3603d58F34418Eac50C78C7B4E8b3", contractABI);
+  const { contract: DsponsorNFTContract } = useContract(offerData?.nftContract?.id);
+  const { mutateAsync: uploadToIPFS, isLoading: isUploading } = useStorageUpload();
+  const { mutateAsync: mintAndSubmit } = useContractWrite(DsponsorAdminContract, "mintAndSubmit");
+  const { mutateAsync: submitAd } = useContractWrite(DsponsorAdminContract, "submitAdProposals");
+  const { contract: tokenContract } = useContract(tokenCurrencyAddress, "token");
+  const { data: symbolContract } = useContractRead(tokenContract, "symbol");
+  const { data: decimalsContract } = useContractRead(tokenContract, "decimals");
+  const { data: tokenBalance } = useBalance(tokenCurrencyAddress);
+  const { mutateAsync: approve, isLoading: isLoadingApprove } = useContractWrite(tokenContract, "approve");
+  const { data: bps } = useContractRead(DsponsorAdminContract, "feeBps");
+  const { data: isAllowedToMint, isLoading: isLoadingAllowedToMint } = useContractRead(DsponsorNFTContract, "tokenIdIsAllowedToMint", tokenIdString);
+  const { data: isUserOwner } = useContractRead(DsponsorNFTContract, "ownerOf", [tokenIdString]);
+  const { data: royaltiesInfo } = useContractRead(DsponsorNFTContract, "royaltyInfo", [tokenIdString, 100]);
+  const { contract: dsponsorMpContract } = useContract("0xac03b675fa9644279b92f060bf542eed54f75599");
+  const { mutateAsync: directBuy } = useContractWrite(dsponsorMpContract, "buy");
+
+  const now = Math.floor(new Date().getTime() / 1000);
 
   useEffect(() => {
-    if (offerId) {
-      if (tokenId.length > 6) {
-        const url = new URL(window.location.href);
-        const tokenData = url.searchParams.get("tokenData");
-        console.log(tokenData);
-      }
+    if (offerId && tokenId) {
       const fetchAdsOffers = async () => {
         const offer = await GetTokenAdOffer(offerId, tokenId);
 
-        try{
-          const params = [];
-          const tokenIdArray = [];
-          const offerIdArray = [];
-          for(const element of offer.adParameters){
-            params.push(element.base);
-            tokenIdArray.push(tokenId);
-            offerIdArray.push(offerId);
-          }
-          const submitAdFormated = {};
-          submitAdFormated.params = params;
-          submitAdFormated.tokenId = tokenIdArray;
-          submitAdFormated.offerId = offerIdArray;
-
-          setSubmitAdFormated(submitAdFormated);
-        }catch(e){
-          console.error("Error: Ad parameters not found for offer", offer);
-        }
-
-        try {
-          const currencyToken = adminInstance.chain.getCurrencyByAddress(offer.nftContract.prices[0].currency);
-          const formatPrice = offer.nftContract.prices[0].amount / 10 ** currencyToken.decimals;
-          setPrice(formatPrice);
-          setCurrency(currencyToken);
-        } catch (e) {
-          console.error("Error: Currency not found for address", offer?.nftContract?.prices[0]);
-          setOfferNotFormated(true);
-        }
-
-        if (address && offer?.nftContract?.tokens[0]?.mint !== null) {
-          
-            if (offer?.nftContract?.tokens[0]?.mint?.to === address.toLowerCase() ) {
-              setIsOwner(true);
-            }
-        }
         const destructuredIPFSResult = await fetchDataFromIPFS(offer.metadataURL);
 
         const combinedData = {
           ...offer,
           ...destructuredIPFSResult,
         };
-
+        setMarketplaceListings(offer?.nftContract?.tokens[0]?.marketplaceListings);
+      
         console.log(combinedData, "combinedData");
         setOfferData(combinedData);
       };
@@ -132,36 +128,187 @@ const Item = () => {
     }
 
     setTokenIdString(tokenId?.toString());
-  }, [offerId, router, address, tokenId, successFullUpload]);
+  }, [offerId, tokenId, successFullUpload, successFullBid, successFullListing, address]);
 
   useEffect(() => {
-    const fetchAdsOffers = async () => {
-      if (!offerData) return;
-    const tokenData = offerData?.nftContract?.tokens[0];
-       if (tokenData?.mint === null) {
-         setAdStatut(3);
-         return;
-       }
-       if(tokenData?.currentProposals?.length > 0){
+    if(!offerData) return;
 
-         if (tokenData?.currentProposals[0]?.acceptedProposal !== null) {
-           
-           setAdStatut(1);
-           return;
-         }
-   
-         if (tokenData?.currentProposals[0]?.pendingProposal !== null) {
-           setAdStatut(2);
-          }
-            if (tokenData?.currentProposals[0]?.rejectedProposal !== null) {
-              setAdStatut(0);
-            }
-        } else  {
-          setAdStatut(3);
+    if (!isOwner && !offerNotFormated && offerData?.nftContract?.tokens[0]?.mint === null && isAllowedToMint !== null) {
+      setTokenStatut("MINTABLE");
+      setTokenCurrencyAddress(offerData?.nftContract?.prices[0]?.currency);
+      setTokenBigIntPrice(offerData?.nftContract?.prices[0]?.amount);
+      return;
+    }
+    if(offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.status === "CREATED") {
+      if (offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.listingType === "Direct"){
+setTokenBigIntPrice(offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.buyoutPricePerToken);
+        setTokenStatut("DIRECT");
+      }
+      if (offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.listingType === "Auction" && offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.bids.length > 0) {
+        setTokenBigIntPrice(offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.bids[0]?.totalBidAmount);
+        setTokenStatut("AUCTION");
+      } else if (offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.listingType === "Auction" && offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.bids.length <= 0) {
+        setTokenBigIntPrice(offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.reservePricePerToken);
+        setTokenStatut("AUCTION");
+      };
+      setTokenCurrencyAddress(offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.currency);
+      
+      return;
+    }
+    if (offerData?.nftContract?.tokens[0]?.mint !== null ) {
+
+      setTokenStatut("MINTED");
+      setTokenCurrencyAddress(offerData?.nftContract?.prices[0]?.currency);
+      setTokenBigIntPrice(offerData?.nftContract?.prices[0]?.amount);
+      return;
+    }
+    
+  },[offerData, isAllowedToMint, isOwner, offerNotFormated, tokenId, successFullUpload, marketplaceListings]);
+
+  useEffect(() => {
+if(!isUserOwner || !marketplaceListings) return;
+if (marketplaceListings[0]?.listingType === "Auction" && marketplaceListings[0]?.status === "CREATED" && address.toLowerCase() === marketplaceListings[0]?.lister) {
+
+  setIsOwner(true);
+  setIsTokenInAuction(true);
+}   
+
+
+if (isUserOwner) {
+      if (isUserOwner === address) {
+     
+        setIsOwner(true);
+      }
+    } 
+  }, [isUserOwner, address, marketplaceListings]);
+
+  useEffect(() => {
+    if (!tokenId || !offerData) return;
+    if (tokenId.length > 6) {
+      const url = new URL(window.location.href);
+      const tokenData = url.searchParams.get("tokenData");
+      setTokenData(tokenData);
+      let isValidId = false;
+      if (tokenData) {
+        const stringToUnit = stringToUint256(tokenData);
+
+        if (BigInt(stringToUnit) === BigInt(tokenId)) {
+          isValidId = true;
+          setIsValidId(true);
+        } else {
+          setIsValidId(false);
         }
+      }
+
+      let tokenMetaData = {};
+      if (offerData.offer.token_metadata && isValidId) {
+        tokenMetaData.description = offerData.offer.token_metadata.description.replace(/{tokenData}/g, `${tokenData}`);
+        tokenMetaData.image = offerData.offer.token_metadata.image.replace(/{tokenData}/g, `${tokenData}`);
+        tokenMetaData.name = offerData.offer.token_metadata.name.replace(/{tokenData}/g, `${tokenData}`);
+      }
+      setTokenMetaData(tokenMetaData);
+    }
+  }, [tokenId, offerData, tokenData]);
+
+  useEffect(() => {
+    if (!offerData) return;
+    setImageURLSteps([]);
+    setNumSteps(2);
+    const uniqueIds = new Set();
+    for (const param of offerData.adParameters) {
+      if (param.adParameter.id && param.adParameter.id !== "xSpaceId" && param.adParameter.id !== "xCreatorHandle") {
+        uniqueIds.add(param.adParameter.id);
+      }
+    }
+    const imageURLSteps = [];
+    const uniqueIdsArray = Array.from(uniqueIds);
+    setAdParameters(uniqueIdsArray);
+
+    uniqueIdsArray
+      .filter((id) => id.startsWith("imageURL"))
+      .map((id) => {
+        const variant = id.slice("imageURL-".length);
+
+        imageURLSteps.push(variant);
+      });
+    const numSteps = 2;
+    const totalNumSteps = numSteps + imageURLSteps.length;
+
+    setImageURLSteps(imageURLSteps);
+    setNumSteps(totalNumSteps);
+  }, [offerData]);
+
+  useEffect(() => {
+
+    if (!offerData || !tokenBigIntPrice) return;
+    try {
+      
+      const currencyTokenObject = {};
+      if (!decimalsContract && !symbolContract) {
+        const currencyToken = adminInstance.chain.getCurrencyByAddress(tokenCurrencyAddress);
+        currencyTokenObject.symbol = currencyToken.symbol;
+        currencyTokenObject.decimals = currencyToken.decimals;
+      } else {
+        currencyTokenObject.symbol = symbolContract;
+        currencyTokenObject.decimals = decimalsContract;
+      }
+
+      const bigIntFinalPrice = (BigInt(tokenBigIntPrice) * (BigInt(bps) + BigInt(maxBps))) / BigInt(maxBps);
+      const formatFinalPrice = ethers.utils.formatUnits(bigIntFinalPrice, currencyTokenObject.decimals);
+      const formatPrice = ethers.utils.formatUnits(BigInt(tokenBigIntPrice), currencyTokenObject.decimals);
+      const protocolFees = (BigInt(tokenBigIntPrice) * BigInt(bps)) / BigInt(maxBps);
+      const royaltiesFees = (BigInt(tokenBigIntPrice) * BigInt(royalties)) / BigInt(100);
+      const formatRoyaltiesFees = ethers.utils.formatUnits(royaltiesFees, currencyTokenObject.decimals);
+      const formatProtocolFees = ethers.utils.formatUnits(protocolFees, currencyTokenObject.decimals);
+      const amountToApprove = ethers.utils.parseUnits(formatFinalPrice.toString(), currencyTokenObject.decimals);
+      const formatBuyoutPrice = ethers.utils.formatUnits(BigInt(tokenBigIntPrice), currencyTokenObject.decimals);
+      setFeesAmount(Number(Math.ceil(formatProtocolFees * 1000) / 1000));
+      setRoyaltiesFeesAmount(Number(Math.ceil(formatRoyaltiesFees * 1000) / 1000));
+      setPrice(Number(Math.ceil(formatPrice * 1000) / 1000));
+      setBuyoutPriceAmount(Number(Math.ceil(formatBuyoutPrice * 1000) / 1000));
+      setCurrency(currencyTokenObject);
+      setOfferNotFormated(false);
+      setFinalPrice(Number(Math.ceil(formatFinalPrice * 1000) / 1000));
+      setAmountToApprove(amountToApprove);
+    } catch (e) {
+      console.error("Error: Currency not found for address", tokenBigIntPrice, e);
+      setOfferNotFormated(true);
+    }
+  }, [symbolContract, decimalsContract, offerData, address, tokenId, bps, maxBps, tokenBigIntPrice, tokenCurrencyAddress]);
+
+  useEffect(() => {
+    if (!offerData || !adParameters) return;
+    try {
+      const params = [];
+      const tokenIdArray = [];
+      const offerIdArray = [];
+      for (const element of adParameters) {
+        params.push(element);
+        tokenIdArray.push(tokenId);
+        offerIdArray.push(offerId);
+      }
+      const submitAdFormated = {};
+      submitAdFormated.params = params;
+      submitAdFormated.tokenId = tokenIdArray;
+      submitAdFormated.offerId = offerIdArray;
+      setSubmitAdFormated(submitAdFormated);
+    } catch (e) {
+      console.error(e, "Error: Ad parameters not found for offer");
+    }
+  }, [tokenId, offerId, offerData, adParameters]);
+
+  useEffect(() => {
+    const fetchStatusOffers = async () => {
+      if (!offerData) return;
+      const tokenData = offerData?.nftContract?.tokens[0];
+      if (tokenData?.mint === null || offerData.nftContract?.tokens.length === 0) {
+        setAdStatut(0);
+      } else {
+        setAdStatut(1);
+      }
     };
 
-    fetchAdsOffers();
+    fetchStatusOffers();
   }, [offerId, tokenId, successFullUpload, offerData]);
 
   useEffect(() => {
@@ -172,7 +319,7 @@ const Item = () => {
     let isValid = true;
     let newErrors = {};
 
-    if (!file) {
+    if (files.length === 0) {
       newErrors.imageError = "Image is missing.";
       isValid = false;
     }
@@ -195,116 +342,154 @@ const Item = () => {
     }
   };
 
-  const handleLogoUpload = (file) => {
+  const handleLogoUpload = (file, index) => {
     if (file) {
-      setFile(file);
-      setPreviewImage(URL.createObjectURL(file));
+      const newFiles = [...files];
+      const newPreviewImages = [...previewImages];
+      newFiles[index] = { file: file, index: index };
+      newPreviewImages[index] = URL.createObjectURL(file);
+
+      setFiles(newFiles);
+      setPreviewImages(newPreviewImages);
     }
   };
 
-  useEffect(() => {
-    if (price && bps) {
-      const bpsValueHex = bps._hex;
-      const bpsValueDecimal = ethers.BigNumber.from(bpsValueHex).toNumber();
-      const bpsValuePercentage = bpsValueDecimal / 10000;
+  const checkAllowance = async () => {
+    if (tokenCurrencyAddress !== "0x0000000000000000000000000000000000000000") {
+      let allowance;
+      if (tokenStatut === "DIRECT" || tokenStatut === "AUCTION") {
+        allowance = await tokenContract.call("allowance", [address, "0xac03b675fa9644279b92f060bf542eed54f75599"]);
+     
+      } else {
 
-      const priceAsNumber = price * bpsValuePercentage + price;
+        allowance = await tokenContract.call("allowance", [address, "0xE442802706F3603d58F34418Eac50C78C7B4E8b3"]);
+      }
 
-      const priceAsNumberString = priceAsNumber.toString();
+      const allowanceBigNumber = ethers.BigNumber.from(allowance._hex);
+      const amountToApproveBigNumber = ethers.BigNumber.from(amountToApprove._hex);
+     
+      if (allowanceBigNumber.gt(amountToApproveBigNumber)) return;
 
-      setFinalPrice(priceAsNumberString);
-      const amountToApprove = ethers.utils.parseUnits(priceAsNumberString, currency.decimals);
-
-      setAmountToApprove(amountToApprove);
+      setAllowanceTrue(true);
     }
-  }, [data, bps, offerData, currency, price]);
+  };
 
   const handleApprove = async () => {
+    setIsLoadingButton(true);
     try {
-      console.log(tokenContract, address, "tokenContract");
-      const allowance = await tokenContract.call("allowance", [address, "0xE442802706F3603d58F34418Eac50C78C7B4E8b3"]);
-      console.log(allowance);
-
-      if (allowance > amountToApprove) return;
-      await approve({ args: ["0xE442802706F3603d58F34418Eac50C78C7B4E8b3", amountToApprove] });
-      console.log("Approvation réussie");
+      const hasEnoughBalance = checkUserBalance(tokenBalance, price);
+      if (!hasEnoughBalance) {
+        throw new Error("Not enough balance for approval.");
+      }
+      if (marketplaceListings.length > 0) {
+        await approve({ args: ["0xac03b675fa9644279b92f060bf542eed54f75599", amountToApprove] });
+      } else {
+        await approve({ args: ["0xE442802706F3603d58F34418Eac50C78C7B4E8b3", amountToApprove] });
+      }
+      setAllowanceTrue(false);
     } catch (error) {
-      console.error("Erreur d'approbation:", error);
+      console.error("Approval failed:", error.message);
+      throw new Error("Approval failed.");
+    } finally {
+      setIsLoadingButton(false);
     }
   };
 
   const handleSubmit = async () => {
+    setIsLoadingButton(true);
     if (!buyMethod) {
       if (!validateInputs()) {
         return;
       }
     }
+    const hasEnoughBalance = checkUserBalance(tokenBalance, price);
+    if (!hasEnoughBalance) {
+      throw new Error("Not enough balance for approval.");
+    }
+
     // IPFS upload
-    console.log(userBalance, "userBalance");
 
-    if (userBalance || isOwner) {
-      try {
-        if (offerData?.nftContract.prices[0].currency !== "0x0000000000000000000000000000000000000000") {
-          await handleApprove();
-        }
-      } catch (error) {
-        console.error("Erreur d'approbation des tokens:", error);
-        throw error;
-      }
+    let uploadUrl = [];
 
-      let uploadUrl;
+    if (isOwner) {
       try {
         uploadUrl = await uploadToIPFS({
-          data: [file],
+          data: [files[0]?.file],
           options: { uploadWithGatewayUrl: true, uploadWithoutDirectory: true },
         });
       } catch (error) {
         console.error("Erreur lors de l'upload à IPFS:", error);
         throw new Error("Upload to IPFS failed.");
       }
-      try {
-        const argsMintAndSubmit = {
-          tokenId: tokenIdString,
-          to: address,
-          currency: offerData?.nftContract.prices[0].currency,
-          tokenData: "",
-          offerId: offerId,
-          adParameters: [],
-          adDatas: [],
-          referralAdditionalInformation: "",
-        };
-        const argsAdSubmited = {
-          offerId: submitAdFormated.offerId,
-          tokenId: submitAdFormated.tokenId,
-          adParameters: submitAdFormated.params,
-          data: [uploadUrl[0], link],
-        };
+    }
+    try {
+      const argsMintAndSubmit = {
+        tokenId: tokenIdString,
+        to: address,
+        currency: offerData?.nftContract.prices[0].currency,
+        tokenData: tokenData ? tokenData : "",
+        offerId: offerId,
+        adParameters: [],
+        adDatas: [],
+        referralAdditionalInformation: "",
+      };
+      const isAlreadyBuy = () => {
+        if (marketplaceListings.length > 0) {
+          const argsdirectBuy = [
+            {
+              listingId: marketplaceListings[0].id,
+              buyFor: address,
+              quantity: 1,
+              currency: marketplaceListings[0].currency,
+              totalPrice: marketplaceListings[0].buyoutPricePerToken,
+              referralAdditionalInformation: "",
+            },
+          ];
 
-        const isEthCurrency = offerData?.nftContract.prices[0].currency === "0x0000000000000000000000000000000000000000";
-        const functionWithPossibleArgs = (adStatut === 0 || adStatut === 3) && !isAllowedToMint ? Object.values(argsAdSubmited) : argsMintAndSubmit;
-        const argsWithPossibleOverrides = isEthCurrency ? { args: [functionWithPossibleArgs], overrides: { value: amountToApprove } } : { args: [functionWithPossibleArgs] };
-        // console.log(adStatut, "adStatut")
-        // console.log(isAllowedToMint, "isAllowedToMint")
-       
-        if ((adStatut === 0 || adStatut === 3) && !isAllowedToMint) {
-           console.log(argsAdSubmited, 'ici');
-
-           await submitAd({ args: functionWithPossibleArgs });
-          setSuccessFullUpload(true);
+          return argsdirectBuy;
         } else {
-           await mintAndSubmit(argsWithPossibleOverrides);
+          const argsAdSubmited = {
+            offerId: submitAdFormated.offerId,
+            tokenId: submitAdFormated.tokenId,
+            adParameters: submitAdFormated.params,
+            data: [uploadUrl[0], link],
+          };
+          return argsAdSubmited;
         }
+      };
 
+      const isEthCurrency = tokenCurrencyAddress === "0x0000000000000000000000000000000000000000";
+      const functionWithPossibleArgs = adStatut !== 0 && !isAllowedToMint ? Object.values(isAlreadyBuy()) : argsMintAndSubmit;
+      const argsWithPossibleOverrides = isEthCurrency ? { args: [functionWithPossibleArgs], overrides: { value: amountToApprove } } : { args: [functionWithPossibleArgs] };
+
+      if (adStatut !== 0 && !isAllowedToMint && marketplaceListings.length <= 0) {
+
+        await submitAd({ args: functionWithPossibleArgs });
         setSuccessFullUpload(true);
-      } catch (error) {
-        console.error("Erreur de soumission du token:", error);
-        setSuccessFullUpload(false);
-        throw error;
+      } else if (marketplaceListings.length <= 0) {
+
+        await mintAndSubmit(argsWithPossibleOverrides);
+        setSuccessFullUpload(true);
+      } else {
+
+        await directBuy({
+          args: [functionWithPossibleArgs],
+        });
+        setSuccessFullUpload(true);
       }
+
+      
+    } catch (error) {
+      console.error("Erreur de soumission du token:", error);
+      setSuccessFullUpload(false);
+      throw error;
+    } finally {
+      setIsLoadingButton(false);
     }
   };
 
   const checkUserBalance = (tokenAddressBalance, priceToken) => {
+
     try {
       const parsedTokenBalance = parseFloat(tokenAddressBalance.displayValue);
       const parsedPriceToken = parseFloat(priceToken);
@@ -318,7 +503,7 @@ const Item = () => {
     } catch (error) {
       toast.error("Error while checking user balance");
       console.error("Failed to fetch token balance:", error);
-      return null;
+      throw new Error("Failed to fetch token balance");
     }
   };
   function formatTokenId(str) {
@@ -329,8 +514,8 @@ const Item = () => {
   }
 
   const handleBuyModal = () => {
+    checkAllowance();
     setSuccessFullUpload(false);
-    !buyModal && setUserBalance(checkUserBalance(tokenBalance, price));
     setBuyModal(!buyModal);
     setBuyMethod(true);
   };
@@ -339,10 +524,11 @@ const Item = () => {
     setShowPreviewModal(!showPreviewModal);
     validateInputs();
   };
+
   const successFullUploadModal = {
     title: "Ad Space",
-    body: "Congratulations, you proposed an ad space.",
-    subBody: "The media still has the power to validate or reject ad assets.",
+    body: "Congratulations, you have proposed an ad.",
+    subBody: 'The media still has the power to validate or reject ad assets. You can follow the ad validation in the "Owned Ad Spaces" section.',
     buttonTitle: "Manage Spaces",
     hrefButton: `/manageSpaces/${address}`,
   };
@@ -366,8 +552,13 @@ const Item = () => {
       </div>
     );
   }
-console.log(isOwner, "isOwner");
-  const { description = "description not found", id = "1", image = ["/images/gradient_creative.jpg"], name = "DefaultName" } = offerData.offer ? offerData.offer : {};
+
+  const modalHelper = {
+    title: "Protocol Fees",
+    body: `The protocol fees (4%) are used to maintain the platform and the services provided. The fees are calculated based on the price of the ad space and are automatically deducted from the total amount paid by the buyer.`,
+  };
+
+  const { description = "description not found", id = "1", image = "/images/gradient_creative.jpg", name = "DefaultName" } = Object.keys(offerData.offer.token_metadata).length > 0 ? tokenMetaData : offerData.offer;
 
   return (
     <>
@@ -376,14 +567,14 @@ console.log(isOwner, "isOwner");
       <section className="relative lg:mt-24 lg:pt-12  mt-24 pt-12 pb-8">
         <div className="mb-8 container flex justify-center flex-col items-center ">
           <div className=" flex justify-center ">
-            <h1 className="text-jacarta-700 font-bold font-display mb-6 text-center text-5xl dark:text-white md:text-left lg:text-6xl xl:text-6xl">{isOwner ? "Your Ad Space" : "Buy Ad Space"} </h1>
-            <span className={`ml-2 text-sm font-bold ${isOwner ? (adStatut === 0 ? "text-red" : adStatut === 1 ? "text-green" : adStatut === 2 ? "text-accent" : "hidden") : "hidden"}`}>
+            <h1 className="text-jacarta-700 font-bold font-display mb-6 text-center text-5xl dark:text-white md:text-left lg:text-6xl xl:text-6xl">{isOwner && isValidId ? "Your Ad Space" : "Buy Ad Space"} </h1>
+            {/* <span className={`ml-2 text-sm font-bold ${isOwner ? (adStatut === 0 ? "text-red" : adStatut === 1 ? "text-green" : adStatut === 2 ? "text-accent" : "hidden") : "hidden"}`}>
               {adStatut === 0 ? "Rejected" : adStatut === 1 ? "Accepted" : adStatut === 2 ? "Pending" : ""}
-            </span>
+            </span> */}
           </div>
-          <p className={`${isOwner ? (adStatut === 0 ? "text-red" : adStatut === 1 ? "text-green" : adStatut === 2 ? "text-accent" : "hidden") : "hidden"} text-sm font-bold`}>
+          {/* <p className={`${isOwner ? (adStatut === 0 ? "text-red" : adStatut === 1 ? "text-green" : adStatut === 2 ? "text-accent" : "hidden") : "hidden"} text-sm font-bold`}>
             {adStatut === 0 ? statutAds.rejected : adStatut === 1 ? statutAds.accepted : statutAds.pending}
-          </p>
+          </p> */}
         </div>
 
         <div className="container">
@@ -391,15 +582,15 @@ console.log(isOwner, "isOwner");
 
           <div className="md:flex md:flex-wrap" key={id}>
             {/* <!-- Image --> */}
-            <figure className="mb-8 md:mb-0 md:w-2/5 md:flex-shrink-0 md:flex-grow-0 md:basis-auto lg:w-1/2 w-full flex justify-center">
+            <figure className="mb-8 md:mb-0 md:w-2/5 md:flex-shrink-0 md:flex-grow-0 md:basis-auto lg:w-1/2 w-full flex justify-center relative">
               <button className=" w-full" onClick={() => setImageModal(true)} style={{ height: "450px" }}>
-                <Image width={585} height={726} src={image} alt="image" className="rounded-2xl cursor-pointer h-full object-contain w-full" />
+                <Image width={585} height={726} src={image ? image : "/images/gradient_creative.jpg"} alt="image" className="rounded-2xl cursor-pointer h-full object-contain w-full" />
               </button>
 
               {/* <!-- Modal --> */}
               <div className={imageModal ? "modal fade show block" : "modal fade"}>
                 <div className="modal-dialog !my-0 flex h-full max-w-4xl items-center justify-center">
-                  <Image width={582} height={722} src={image} alt="image" className="h-full object-cover w-full rounded-2xl" />
+                  <Image width={582} height={722} src={image ? image : "/images/gradient_creative.jpg"} alt="image" className="h-full object-cover w-full rounded-2xl" />
                 </div>
 
                 <button type="button" className="btn-close absolute top-6 right-6" onClick={() => setImageModal(false)}>
@@ -415,102 +606,151 @@ console.log(isOwner, "isOwner");
             {/* <!-- Details --> */}
             <div className="md:w-3/5 md:basis-auto md:pl-8 lg:w-1/2 lg:pl-[3.75rem]">
               {/* <!-- Collection / Likes / Actions --> */}
-              <div className="mb-3 flex">
-                {/* <!-- Collection --> */}
-                <div className="flex items-center">
-                  <Link href="#" className="text-accent mr-2 text-sm font-bold">
-                    {offerData?.initialCreator}
-                  </Link>
-                  <span className="dark:border-jacarta-600 bg-green inline-flex h-6 w-6 items-center justify-center rounded-full border-2 border-white" data-tippy-content="Verified Collection">
-                    <Tippy content={<span>Verified Collection</span>}>
-                      <svg className="icon h-[.875rem] w-[.875rem] fill-white">
-                        <use xlinkHref="/icons.svg#icon-right-sign"></use>
-                      </svg>
-                    </Tippy>
-                  </span>
-                </div>
-              </div>
 
-              <h1 className="font-display text-jacarta-700 mb-4 text-4xl font-semibold dark:text-white">{name}</h1>
+              <Link href={`/offer/${offerId}`} className="flex">
+                <h1 className="font-display text-jacarta-700 mb-4 dark:hover:text-accent text-4xl font-semibold dark:text-white">{name}</h1>
+              </Link>
 
-              <div className="mb-8 flex items-center space-x-4 whitespace-nowrap">
-                <div className="flex items-center">
-                  <Tippy content={<span>{currency?.symbol ? currency?.symbol : "N/A"}</span>}>
-                    <span className="-ml-1">
-                      <svg className="icon mr-1 h-4 w-4">
-                        <use xlinkHref="/icons.svg#icon-ETH"></use>
-                      </svg>
+              <div className="mb-8 flex items-center  whitespace-nowrap flex-wrap">
+                {currency?.symbol && tokenStatut !== "MINTED" && (marketplaceListings[0]?.status === "CREATED" || marketplaceListings?.length <= 0) && (
+                  <div className="flex items-center mr-4">
+                    <span className="text-green text-sm font-medium tracking-tight mr-2">
+                      {tokenStatut === "DIRECT" || tokenStatut === "AUCTION" ? price : finalPrice} {currency?.symbol}
                     </span>
-                  </Tippy>
-                  <span className="text-green text-sm font-medium tracking-tight">
-                    {price} {currency?.symbol ? currency?.symbol : "N/A"}
-                  </span>
-                </div>
-
-                <span className="dark:text-jacarta-300 text-jacarta-400 text-sm">Space #{formatTokenId(tokenId)}</span>
-                <span className="text-jacarta-400 block text-sm dark:text-white">
-                  Creator <strong>{royalties}% royalties</strong>
+                    <ModalHelper {...modalHelper} size="small" />
+                  </div>
+                )}
+                <span className="dark:text-jacarta-300 text-jacarta-400 text-sm mr-4">
+                  Space # <strong className="dark:text-white">{tokenData ? tokenData : formatTokenId(tokenId)}</strong>{" "}
+                </span>
+                <span className="text-jacarta-300 block text-sm ">
+                  Creator <strong className="dark:text-white">{royalties}% royalties</strong>
                 </span>
               </div>
 
               <p className="dark:text-jacarta-300 mb-10">{description}</p>
+              {(tokenStatut === "MINTABLE" || (tokenStatut === "DIRECT" && marketplaceListings[0].startTime < now)) && (
+                <div className="dark:bg-jacarta-700 dark:border-jacarta-600 mb-2 border-jacarta-100 rounded-2lg border flex flex-col gap-4 bg-white p-8">
+                  <div className=" sm:flex sm:flex-wrap">
+                    <span className="dark:text-jacarta-300 text-jacarta-400 text-sm">
+                      Buying the ad space give you the exclusive right to submit an ad. The media still has the power to validate or reject ad assets. You re free to change the ad at anytime. And free to resell on the
+                      open market your ad space.{" "}
+                    </span>
+                  </div>
+                  <div className="w-full flex justify-center">
+                    {address ? (
+                      <button type="button" className="bg-accent shadow-accent-volume hover:bg-accent-dark w-36 rounded-full py-3 px-8 text-center font-semibold text-white transition-all" onClick={handleBuyModal}>
+                        Buy
+                      </button>
+                    ) : (
+                      <Web3Button className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all  !bg-accent !cursor-pointer `}>Connect wallet</Web3Button>
+                    )}
+                  </div>
+                </div>
+              )}
 
-              <div className="dark:bg-jacarta-700 dark:border-jacarta-600 border-jacarta-100 rounded-2lg border flex flex-col gap-4 bg-white p-8">
-                <div className=" sm:flex sm:flex-wrap">
-                  <span className="dark:text-jacarta-300 text-jacarta-400 text-sm">
-                    Buying the ad space give you the exclusive right to submit an ad. The media still has the power to validate or reject ad assets. You re free to change the ad at anytime. And free to resell on the open
-                    market your ad space.{" "}
-                  </span>
-                </div>
-                <div className="w-full flex justify-center">
-                  {!isOwner && isAllowedToMint && !offerNotFormated && (
-                    <button type="button" className="bg-accent shadow-accent-volume hover:bg-accent-dark w-36 rounded-full py-3 px-8 text-center font-semibold text-white transition-all" onClick={handleBuyModal}>
-                      Buy
-                    </button>
-                  )}
-                </div>
-              </div>
+              {marketplaceListings[0]?.startTime < now && marketplaceListings[0]?.endTime > now && marketplaceListings[0]?.listingType === "Auction" ? (
+                ""
+              ) : marketplaceListings[0]?.listingType === "Direct" && !isOwner ? (
+                ""
+              ) : tokenStatut === "MINTABLE" ? (
+                ""
+              ) : (
+                <ItemManage
+                  successFullListing={successFullListing}
+                  setSuccessFullListing={setSuccessFullListing}
+                  dsponsorNFTContract={DsponsorNFTContract}
+                  offerData={offerData}
+                  marketplaceListings={marketplaceListings}
+                  royalties={royalties}
+                  dsponsorMpContract={dsponsorMpContract}
+                  isOwner={isOwner}
+                />
+              )}
+              {tokenStatut === "AUCTION" && marketplaceListings[0].startTime < now && marketplaceListings[0].endTime > now && (
+                <ItemBids
+                  checkUserBalance={checkUserBalance}
+                  price={price}
+                  allowanceTrue={allowanceTrue}
+                  checkAllowance={checkAllowance}
+                  handleApprove={handleApprove}
+                  dsponsorMpContract={dsponsorMpContract}
+                  marketplaceListings={marketplaceListings}
+                  currencySymbol={currency?.symbol}
+                  tokenBalance={tokenBalance}
+                  currencyTokenDecimals={currency?.decimals}
+                  setSuccessFullBid={setSuccessFullBid}
+                  successFullBid={successFullBid}
+                />
+              )}
             </div>
           </div>
         </div>
       </section>
       {/* <!-- end item --> */}
-
+      <div className="container mb-12">
+        <Divider className="my-4" />
+        <h2 className="text-jacarta-700 font-bold font-display mb-6 text-center text-3xl dark:text-white ">Details </h2>
+        <ItemsTabs contractAddress={offerData?.nftContract.id} offerId={offerId} isUserOwner={isUserOwner} initialCreator={offerData?.initialCreator} />
+      </div>
+      {offerData.nftContract?.tokens[0]?.mint && isValidId && <Validation offer={offerData} offerId={offerId} isOwner={isOwner} isToken={true} successFullUploadModal={successFullUploadModal} />}
+      {/* <ItemsTabs /> */}
       <div>
-        {isOwner && !offerNotFormated ? (
-          <div>
-            <SliderForm styles={styles} handlePreviewModal={handlePreviewModal} stepsRef={stepsRef} numSteps={numSteps}>
-              <Step_1_Mint stepsRef={stepsRef} styles={styles} adParamaters={["Grid Logo & Link"]} />
-              <Step_2_Mint stepsRef={stepsRef} styles={styles} file={file} previewImage={previewImage} handleLogoUpload={handleLogoUpload} />
-              <Step_3_Mint stepsRef={stepsRef} styles={styles} setLink={setLink} link={link} />
-            </SliderForm>
+        {isOwner && isValidId ? (
+          <div className="container">
+            <Divider className="my-4" />
+            <h2 className="text-jacarta-700 font-bold font-display mb-6 text-center text-3xl dark:text-white ">Submission </h2>
+            {isTokenInAuction && (
+              <div className="text-center w-full">
+                <span className="dark:text-warning text-md ">⚠️ You canno&apos;t submit an ad while your token is in auction</span>
+              </div>
+            )}
+            {!isTokenInAuction && (
+              <SliderForm styles={styles} handlePreviewModal={handlePreviewModal} stepsRef={stepsRef} numSteps={numSteps}>
+                <Step_1_Mint stepsRef={stepsRef} styles={styles} adParameters={adParameters} setImageUrlVariants={setImageUrlVariants} />
+                <Step_2_Mint stepsRef={stepsRef} styles={styles} setLink={setLink} link={link} />
+                {imageURLSteps.map((id, index) => (
+                  <Step_3_Mint
+                    key={id}
+                    stepsRef={stepsRef}
+                    currentStep={index + 2}
+                    id={id}
+                    styles={styles}
+                    file={files[index]}
+                    previewImage={previewImages[index]}
+                    handleLogoUpload={(file) => handleLogoUpload(file, index)}
+                  />
+                ))}
+              </SliderForm>
+            )}
           </div>
         ) : (
           <div className="flex justify-center">
-            <p>{offerNotFormated ? "Offer isn't well formated to buy" : !isAllowedToMint && !isOwner ? "Sorry, someone already own this NFT " : ""}</p>
+            <p>
+              {!isValidId ? "Sorry, tokenId unavailable, please provide a tokenId valid" : offerNotFormated ? "" : offerData.nftContract?.tokens === 0 ? "Sorry, tokenId unavailable, please provide a tokenId valid " : ""}
+            </p>
           </div>
         )}
       </div>
 
-      {/* <ItemsTabs /> */}
-      <div className="container mb-12">
-        <ItemsTabs contractAddress={offerData?.nftContract.id} offerId={offerId} />
-      </div>
       {showPreviewModal && (
         <div className="modal fade show bloc">
           <PreviewModal
             handlePreviewModal={handlePreviewModal}
             handleSubmit={handleSubmit}
+            imageUrlVariants={imageUrlVariants}
             link={link}
             name={true}
             description={true}
-            previewImage={previewImage}
+            previewImage={previewImages}
+            imageURLSteps={imageURLSteps}
             errors={errors}
             successFullUpload={successFullUpload}
             validate={validate}
-            buttonTitle="Ad proposal"
+            buttonTitle="Submit ad"
             modalTitle="Ad Space Preview"
             successFullUploadModal={successFullUploadModal}
+            isLoadingButton={isLoadingButton}
           />
         </div>
       )}
@@ -518,19 +758,27 @@ console.log(isOwner, "isOwner");
         <div className="modal fade show block">
           <BuyModal
             finalPrice={finalPrice}
+            tokenStatut={tokenStatut}
+            allowanceTrue={allowanceTrue}
+            handleApprove={handleApprove}
             successFullUpload={successFullUpload}
+            feesAmount={feesAmount}
             successFullBuyModal={successFullBuyModal}
+            buyoutPriceAmount={buyoutPriceAmount}
+            royaltiesFeesAmount={royaltiesFeesAmount}
             price={price}
             initialCreator={offerData?.initialCreator}
             handleSubmit={handleSubmit}
             handleBuyModal={handleBuyModal}
             name={name}
+            marketplaceListings={marketplaceListings}
             image={image}
             selectedCurrency={currency.symbol}
-            selectedRoyalties={royalties}
-            userBalance={userBalance}
+            royalties={royalties}
             tokenId={tokenId}
+            tokenData={tokenData}
             formatTokenId={formatTokenId}
+            isLoadingButton={isLoadingButton}
           />
         </div>
       )}

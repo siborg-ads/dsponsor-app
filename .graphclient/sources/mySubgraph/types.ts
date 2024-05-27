@@ -163,9 +163,9 @@ export type AdOffer = {
   nftContract: NftContract;
   initialCreator: Scalars['Bytes'];
   creationTimestamp: Scalars['BigInt'];
-  adParameters: Array<AdParameter>;
   admins?: Maybe<Array<Scalars['Bytes']>>;
   validators?: Maybe<Array<Scalars['Bytes']>>;
+  adParameters?: Maybe<Array<AdOfferParameterLink>>;
   allProposals?: Maybe<Array<AdProposal>>;
   currentProposals?: Maybe<Array<CurrentProposal>>;
 };
@@ -174,9 +174,9 @@ export type AdOffer = {
 export type AdOfferadParametersArgs = {
   skip?: InputMaybe<Scalars['Int']>;
   first?: InputMaybe<Scalars['Int']>;
-  orderBy?: InputMaybe<AdParameter_orderBy>;
+  orderBy?: InputMaybe<AdOfferParameterLink_orderBy>;
   orderDirection?: InputMaybe<OrderDirection>;
-  where?: InputMaybe<AdParameter_filter>;
+  where?: InputMaybe<AdOfferParameterLink_filter>;
 };
 
 
@@ -196,6 +196,100 @@ export type AdOffercurrentProposalsArgs = {
   orderDirection?: InputMaybe<OrderDirection>;
   where?: InputMaybe<CurrentProposal_filter>;
 };
+
+export type AdOfferParameterLink = {
+  id: Scalars['String'];
+  enable: Scalars['Boolean'];
+  adOffer: AdOffer;
+  adParameter: AdParameter;
+};
+
+export type AdOfferParameterLink_filter = {
+  id?: InputMaybe<Scalars['String']>;
+  id_not?: InputMaybe<Scalars['String']>;
+  id_gt?: InputMaybe<Scalars['String']>;
+  id_lt?: InputMaybe<Scalars['String']>;
+  id_gte?: InputMaybe<Scalars['String']>;
+  id_lte?: InputMaybe<Scalars['String']>;
+  id_in?: InputMaybe<Array<Scalars['String']>>;
+  id_not_in?: InputMaybe<Array<Scalars['String']>>;
+  id_contains?: InputMaybe<Scalars['String']>;
+  id_contains_nocase?: InputMaybe<Scalars['String']>;
+  id_not_contains?: InputMaybe<Scalars['String']>;
+  id_not_contains_nocase?: InputMaybe<Scalars['String']>;
+  id_starts_with?: InputMaybe<Scalars['String']>;
+  id_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  id_not_starts_with?: InputMaybe<Scalars['String']>;
+  id_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  id_ends_with?: InputMaybe<Scalars['String']>;
+  id_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  id_not_ends_with?: InputMaybe<Scalars['String']>;
+  id_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  enable?: InputMaybe<Scalars['Boolean']>;
+  enable_not?: InputMaybe<Scalars['Boolean']>;
+  enable_in?: InputMaybe<Array<Scalars['Boolean']>>;
+  enable_not_in?: InputMaybe<Array<Scalars['Boolean']>>;
+  adOffer?: InputMaybe<Scalars['String']>;
+  adOffer_not?: InputMaybe<Scalars['String']>;
+  adOffer_gt?: InputMaybe<Scalars['String']>;
+  adOffer_lt?: InputMaybe<Scalars['String']>;
+  adOffer_gte?: InputMaybe<Scalars['String']>;
+  adOffer_lte?: InputMaybe<Scalars['String']>;
+  adOffer_in?: InputMaybe<Array<Scalars['String']>>;
+  adOffer_not_in?: InputMaybe<Array<Scalars['String']>>;
+  adOffer_contains?: InputMaybe<Scalars['String']>;
+  adOffer_contains_nocase?: InputMaybe<Scalars['String']>;
+  adOffer_not_contains?: InputMaybe<Scalars['String']>;
+  adOffer_not_contains_nocase?: InputMaybe<Scalars['String']>;
+  adOffer_starts_with?: InputMaybe<Scalars['String']>;
+  adOffer_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  adOffer_not_starts_with?: InputMaybe<Scalars['String']>;
+  adOffer_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  adOffer_ends_with?: InputMaybe<Scalars['String']>;
+  adOffer_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  adOffer_not_ends_with?: InputMaybe<Scalars['String']>;
+  adOffer_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  adOffer_?: InputMaybe<AdOffer_filter>;
+  adParameter?: InputMaybe<Scalars['String']>;
+  adParameter_not?: InputMaybe<Scalars['String']>;
+  adParameter_gt?: InputMaybe<Scalars['String']>;
+  adParameter_lt?: InputMaybe<Scalars['String']>;
+  adParameter_gte?: InputMaybe<Scalars['String']>;
+  adParameter_lte?: InputMaybe<Scalars['String']>;
+  adParameter_in?: InputMaybe<Array<Scalars['String']>>;
+  adParameter_not_in?: InputMaybe<Array<Scalars['String']>>;
+  adParameter_contains?: InputMaybe<Scalars['String']>;
+  adParameter_contains_nocase?: InputMaybe<Scalars['String']>;
+  adParameter_not_contains?: InputMaybe<Scalars['String']>;
+  adParameter_not_contains_nocase?: InputMaybe<Scalars['String']>;
+  adParameter_starts_with?: InputMaybe<Scalars['String']>;
+  adParameter_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  adParameter_not_starts_with?: InputMaybe<Scalars['String']>;
+  adParameter_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  adParameter_ends_with?: InputMaybe<Scalars['String']>;
+  adParameter_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  adParameter_not_ends_with?: InputMaybe<Scalars['String']>;
+  adParameter_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  adParameter_?: InputMaybe<AdParameter_filter>;
+  /** Filter for the block changed event. */
+  _change_block?: InputMaybe<BlockChangedFilter>;
+  and?: InputMaybe<Array<InputMaybe<AdOfferParameterLink_filter>>>;
+  or?: InputMaybe<Array<InputMaybe<AdOfferParameterLink_filter>>>;
+};
+
+export type AdOfferParameterLink_orderBy =
+  | 'id'
+  | 'enable'
+  | 'adOffer'
+  | 'adOffer__id'
+  | 'adOffer__disable'
+  | 'adOffer__name'
+  | 'adOffer__metadataURL'
+  | 'adOffer__initialCreator'
+  | 'adOffer__creationTimestamp'
+  | 'adParameter'
+  | 'adParameter__id'
+  | 'adParameter__base';
 
 export type AdOffer_filter = {
   id?: InputMaybe<Scalars['String']>;
@@ -301,13 +395,6 @@ export type AdOffer_filter = {
   creationTimestamp_lte?: InputMaybe<Scalars['BigInt']>;
   creationTimestamp_in?: InputMaybe<Array<Scalars['BigInt']>>;
   creationTimestamp_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  adParameters?: InputMaybe<Array<Scalars['String']>>;
-  adParameters_not?: InputMaybe<Array<Scalars['String']>>;
-  adParameters_contains?: InputMaybe<Array<Scalars['String']>>;
-  adParameters_contains_nocase?: InputMaybe<Array<Scalars['String']>>;
-  adParameters_not_contains?: InputMaybe<Array<Scalars['String']>>;
-  adParameters_not_contains_nocase?: InputMaybe<Array<Scalars['String']>>;
-  adParameters_?: InputMaybe<AdParameter_filter>;
   admins?: InputMaybe<Array<Scalars['Bytes']>>;
   admins_not?: InputMaybe<Array<Scalars['Bytes']>>;
   admins_contains?: InputMaybe<Array<Scalars['Bytes']>>;
@@ -320,6 +407,7 @@ export type AdOffer_filter = {
   validators_contains_nocase?: InputMaybe<Array<Scalars['Bytes']>>;
   validators_not_contains?: InputMaybe<Array<Scalars['Bytes']>>;
   validators_not_contains_nocase?: InputMaybe<Array<Scalars['Bytes']>>;
+  adParameters_?: InputMaybe<AdOfferParameterLink_filter>;
   allProposals_?: InputMaybe<AdProposal_filter>;
   currentProposals_?: InputMaybe<CurrentProposal_filter>;
   /** Filter for the block changed event. */
@@ -346,9 +434,9 @@ export type AdOffer_orderBy =
   | 'nftContract__allowList'
   | 'initialCreator'
   | 'creationTimestamp'
-  | 'adParameters'
   | 'admins'
   | 'validators'
+  | 'adParameters'
   | 'allProposals'
   | 'currentProposals';
 
@@ -356,7 +444,7 @@ export type AdParameter = {
   id: Scalars['String'];
   base: Scalars['String'];
   variants: Array<Scalars['String']>;
-  adOffers?: Maybe<Array<AdOffer>>;
+  adOffers?: Maybe<Array<AdOfferParameterLink>>;
   proposals?: Maybe<Array<AdProposal>>;
   currentProposals?: Maybe<Array<CurrentProposal>>;
 };
@@ -365,9 +453,9 @@ export type AdParameter = {
 export type AdParameteradOffersArgs = {
   skip?: InputMaybe<Scalars['Int']>;
   first?: InputMaybe<Scalars['Int']>;
-  orderBy?: InputMaybe<AdOffer_orderBy>;
+  orderBy?: InputMaybe<AdOfferParameterLink_orderBy>;
   orderDirection?: InputMaybe<OrderDirection>;
-  where?: InputMaybe<AdOffer_filter>;
+  where?: InputMaybe<AdOfferParameterLink_filter>;
 };
 
 
@@ -435,7 +523,7 @@ export type AdParameter_filter = {
   variants_contains_nocase?: InputMaybe<Array<Scalars['String']>>;
   variants_not_contains?: InputMaybe<Array<Scalars['String']>>;
   variants_not_contains_nocase?: InputMaybe<Array<Scalars['String']>>;
-  adOffers_?: InputMaybe<AdOffer_filter>;
+  adOffers_?: InputMaybe<AdOfferParameterLink_filter>;
   proposals_?: InputMaybe<AdProposal_filter>;
   currentProposals_?: InputMaybe<CurrentProposal_filter>;
   /** Filter for the block changed event. */
@@ -781,6 +869,7 @@ export type CallWithProtocolFee = {
   referralAddresses: Array<Scalars['Bytes']>;
   referralUnitShare?: Maybe<Scalars['Int']>;
   referralNb?: Maybe<Scalars['Int']>;
+  epochCurrencyRevenue: EpochCurrencyRevenue;
 };
 
 export type CallWithProtocolFee_filter = {
@@ -931,6 +1020,27 @@ export type CallWithProtocolFee_filter = {
   referralNb_lte?: InputMaybe<Scalars['Int']>;
   referralNb_in?: InputMaybe<Array<Scalars['Int']>>;
   referralNb_not_in?: InputMaybe<Array<Scalars['Int']>>;
+  epochCurrencyRevenue?: InputMaybe<Scalars['String']>;
+  epochCurrencyRevenue_not?: InputMaybe<Scalars['String']>;
+  epochCurrencyRevenue_gt?: InputMaybe<Scalars['String']>;
+  epochCurrencyRevenue_lt?: InputMaybe<Scalars['String']>;
+  epochCurrencyRevenue_gte?: InputMaybe<Scalars['String']>;
+  epochCurrencyRevenue_lte?: InputMaybe<Scalars['String']>;
+  epochCurrencyRevenue_in?: InputMaybe<Array<Scalars['String']>>;
+  epochCurrencyRevenue_not_in?: InputMaybe<Array<Scalars['String']>>;
+  epochCurrencyRevenue_contains?: InputMaybe<Scalars['String']>;
+  epochCurrencyRevenue_contains_nocase?: InputMaybe<Scalars['String']>;
+  epochCurrencyRevenue_not_contains?: InputMaybe<Scalars['String']>;
+  epochCurrencyRevenue_not_contains_nocase?: InputMaybe<Scalars['String']>;
+  epochCurrencyRevenue_starts_with?: InputMaybe<Scalars['String']>;
+  epochCurrencyRevenue_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  epochCurrencyRevenue_not_starts_with?: InputMaybe<Scalars['String']>;
+  epochCurrencyRevenue_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  epochCurrencyRevenue_ends_with?: InputMaybe<Scalars['String']>;
+  epochCurrencyRevenue_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  epochCurrencyRevenue_not_ends_with?: InputMaybe<Scalars['String']>;
+  epochCurrencyRevenue_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  epochCurrencyRevenue_?: InputMaybe<EpochCurrencyRevenue_filter>;
   /** Filter for the block changed event. */
   _change_block?: InputMaybe<BlockChangedFilter>;
   and?: InputMaybe<Array<InputMaybe<CallWithProtocolFee_filter>>>;
@@ -953,7 +1063,13 @@ export type CallWithProtocolFee_orderBy =
   | 'revenueTransaction__blockTimestamp'
   | 'referralAddresses'
   | 'referralUnitShare'
-  | 'referralNb';
+  | 'referralNb'
+  | 'epochCurrencyRevenue'
+  | 'epochCurrencyRevenue__id'
+  | 'epochCurrencyRevenue__year'
+  | 'epochCurrencyRevenue__month'
+  | 'epochCurrencyRevenue__currency'
+  | 'epochCurrencyRevenue__totalAmount';
 
 export type CancelledOffer = {
   id: Scalars['Bytes'];
@@ -1311,6 +1427,154 @@ export type CurrentProposal_orderBy =
   | 'rejectedProposal__rejectReason'
   | 'rejectedProposal__creationTimestamp'
   | 'rejectedProposal__lastUpdateTimestamp';
+
+export type EpochCurrencyRevenue = {
+  id: Scalars['String'];
+  year: Scalars['Int'];
+  month: Scalars['Int'];
+  currency: Scalars['Bytes'];
+  totalAmount: Scalars['BigInt'];
+  callsWithProtocolFee?: Maybe<Array<CallWithProtocolFee>>;
+};
+
+
+export type EpochCurrencyRevenuecallsWithProtocolFeeArgs = {
+  skip?: InputMaybe<Scalars['Int']>;
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<CallWithProtocolFee_orderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  where?: InputMaybe<CallWithProtocolFee_filter>;
+};
+
+export type EpochCurrencyRevenue_filter = {
+  id?: InputMaybe<Scalars['String']>;
+  id_not?: InputMaybe<Scalars['String']>;
+  id_gt?: InputMaybe<Scalars['String']>;
+  id_lt?: InputMaybe<Scalars['String']>;
+  id_gte?: InputMaybe<Scalars['String']>;
+  id_lte?: InputMaybe<Scalars['String']>;
+  id_in?: InputMaybe<Array<Scalars['String']>>;
+  id_not_in?: InputMaybe<Array<Scalars['String']>>;
+  id_contains?: InputMaybe<Scalars['String']>;
+  id_contains_nocase?: InputMaybe<Scalars['String']>;
+  id_not_contains?: InputMaybe<Scalars['String']>;
+  id_not_contains_nocase?: InputMaybe<Scalars['String']>;
+  id_starts_with?: InputMaybe<Scalars['String']>;
+  id_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  id_not_starts_with?: InputMaybe<Scalars['String']>;
+  id_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  id_ends_with?: InputMaybe<Scalars['String']>;
+  id_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  id_not_ends_with?: InputMaybe<Scalars['String']>;
+  id_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  year?: InputMaybe<Scalars['Int']>;
+  year_not?: InputMaybe<Scalars['Int']>;
+  year_gt?: InputMaybe<Scalars['Int']>;
+  year_lt?: InputMaybe<Scalars['Int']>;
+  year_gte?: InputMaybe<Scalars['Int']>;
+  year_lte?: InputMaybe<Scalars['Int']>;
+  year_in?: InputMaybe<Array<Scalars['Int']>>;
+  year_not_in?: InputMaybe<Array<Scalars['Int']>>;
+  month?: InputMaybe<Scalars['Int']>;
+  month_not?: InputMaybe<Scalars['Int']>;
+  month_gt?: InputMaybe<Scalars['Int']>;
+  month_lt?: InputMaybe<Scalars['Int']>;
+  month_gte?: InputMaybe<Scalars['Int']>;
+  month_lte?: InputMaybe<Scalars['Int']>;
+  month_in?: InputMaybe<Array<Scalars['Int']>>;
+  month_not_in?: InputMaybe<Array<Scalars['Int']>>;
+  currency?: InputMaybe<Scalars['Bytes']>;
+  currency_not?: InputMaybe<Scalars['Bytes']>;
+  currency_gt?: InputMaybe<Scalars['Bytes']>;
+  currency_lt?: InputMaybe<Scalars['Bytes']>;
+  currency_gte?: InputMaybe<Scalars['Bytes']>;
+  currency_lte?: InputMaybe<Scalars['Bytes']>;
+  currency_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  currency_not_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  currency_contains?: InputMaybe<Scalars['Bytes']>;
+  currency_not_contains?: InputMaybe<Scalars['Bytes']>;
+  totalAmount?: InputMaybe<Scalars['BigInt']>;
+  totalAmount_not?: InputMaybe<Scalars['BigInt']>;
+  totalAmount_gt?: InputMaybe<Scalars['BigInt']>;
+  totalAmount_lt?: InputMaybe<Scalars['BigInt']>;
+  totalAmount_gte?: InputMaybe<Scalars['BigInt']>;
+  totalAmount_lte?: InputMaybe<Scalars['BigInt']>;
+  totalAmount_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  totalAmount_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  callsWithProtocolFee_?: InputMaybe<CallWithProtocolFee_filter>;
+  /** Filter for the block changed event. */
+  _change_block?: InputMaybe<BlockChangedFilter>;
+  and?: InputMaybe<Array<InputMaybe<EpochCurrencyRevenue_filter>>>;
+  or?: InputMaybe<Array<InputMaybe<EpochCurrencyRevenue_filter>>>;
+};
+
+export type EpochCurrencyRevenue_orderBy =
+  | 'id'
+  | 'year'
+  | 'month'
+  | 'currency'
+  | 'totalAmount'
+  | 'callsWithProtocolFee';
+
+export type FeeMethodology =
+  | 'ADDED_TO_AMOUNT'
+  | 'CUT_TO_AMOUNT';
+
+export type FeeParamsForContract = {
+  id: Scalars['Bytes'];
+  feeRecipient: Scalars['Bytes'];
+  feeBps: Scalars['BigInt'];
+  lastUpdateTimestamp: Scalars['BigInt'];
+};
+
+export type FeeParamsForContract_filter = {
+  id?: InputMaybe<Scalars['Bytes']>;
+  id_not?: InputMaybe<Scalars['Bytes']>;
+  id_gt?: InputMaybe<Scalars['Bytes']>;
+  id_lt?: InputMaybe<Scalars['Bytes']>;
+  id_gte?: InputMaybe<Scalars['Bytes']>;
+  id_lte?: InputMaybe<Scalars['Bytes']>;
+  id_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  id_not_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  id_contains?: InputMaybe<Scalars['Bytes']>;
+  id_not_contains?: InputMaybe<Scalars['Bytes']>;
+  feeRecipient?: InputMaybe<Scalars['Bytes']>;
+  feeRecipient_not?: InputMaybe<Scalars['Bytes']>;
+  feeRecipient_gt?: InputMaybe<Scalars['Bytes']>;
+  feeRecipient_lt?: InputMaybe<Scalars['Bytes']>;
+  feeRecipient_gte?: InputMaybe<Scalars['Bytes']>;
+  feeRecipient_lte?: InputMaybe<Scalars['Bytes']>;
+  feeRecipient_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  feeRecipient_not_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  feeRecipient_contains?: InputMaybe<Scalars['Bytes']>;
+  feeRecipient_not_contains?: InputMaybe<Scalars['Bytes']>;
+  feeBps?: InputMaybe<Scalars['BigInt']>;
+  feeBps_not?: InputMaybe<Scalars['BigInt']>;
+  feeBps_gt?: InputMaybe<Scalars['BigInt']>;
+  feeBps_lt?: InputMaybe<Scalars['BigInt']>;
+  feeBps_gte?: InputMaybe<Scalars['BigInt']>;
+  feeBps_lte?: InputMaybe<Scalars['BigInt']>;
+  feeBps_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  feeBps_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  lastUpdateTimestamp?: InputMaybe<Scalars['BigInt']>;
+  lastUpdateTimestamp_not?: InputMaybe<Scalars['BigInt']>;
+  lastUpdateTimestamp_gt?: InputMaybe<Scalars['BigInt']>;
+  lastUpdateTimestamp_lt?: InputMaybe<Scalars['BigInt']>;
+  lastUpdateTimestamp_gte?: InputMaybe<Scalars['BigInt']>;
+  lastUpdateTimestamp_lte?: InputMaybe<Scalars['BigInt']>;
+  lastUpdateTimestamp_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  lastUpdateTimestamp_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  /** Filter for the block changed event. */
+  _change_block?: InputMaybe<BlockChangedFilter>;
+  and?: InputMaybe<Array<InputMaybe<FeeParamsForContract_filter>>>;
+  or?: InputMaybe<Array<InputMaybe<FeeParamsForContract_filter>>>;
+};
+
+export type FeeParamsForContract_orderBy =
+  | 'id'
+  | 'feeRecipient'
+  | 'feeBps'
+  | 'lastUpdateTimestamp';
 
 export type FeeUpdate = {
   id: Scalars['Bytes'];
@@ -1798,6 +2062,13 @@ export type MarketplaceBid = {
   revenueTransaction?: Maybe<RevenueTransaction>;
   creationTimestamp: Scalars['BigInt'];
   lastUpdateTimestamp: Scalars['BigInt'];
+  feeMethodology?: Maybe<FeeMethodology>;
+  amountSentToProtocol?: Maybe<Scalars['BigInt']>;
+  protocolRecipient?: Maybe<Scalars['Bytes']>;
+  amountSentToSeller?: Maybe<Scalars['BigInt']>;
+  sellerRecipient?: Maybe<Scalars['Bytes']>;
+  amountSentToCreator?: Maybe<Scalars['BigInt']>;
+  creatorRecipient?: Maybe<Scalars['Bytes']>;
 };
 
 export type MarketplaceBid_filter = {
@@ -1919,6 +2190,64 @@ export type MarketplaceBid_filter = {
   lastUpdateTimestamp_lte?: InputMaybe<Scalars['BigInt']>;
   lastUpdateTimestamp_in?: InputMaybe<Array<Scalars['BigInt']>>;
   lastUpdateTimestamp_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  feeMethodology?: InputMaybe<FeeMethodology>;
+  feeMethodology_not?: InputMaybe<FeeMethodology>;
+  feeMethodology_in?: InputMaybe<Array<FeeMethodology>>;
+  feeMethodology_not_in?: InputMaybe<Array<FeeMethodology>>;
+  amountSentToProtocol?: InputMaybe<Scalars['BigInt']>;
+  amountSentToProtocol_not?: InputMaybe<Scalars['BigInt']>;
+  amountSentToProtocol_gt?: InputMaybe<Scalars['BigInt']>;
+  amountSentToProtocol_lt?: InputMaybe<Scalars['BigInt']>;
+  amountSentToProtocol_gte?: InputMaybe<Scalars['BigInt']>;
+  amountSentToProtocol_lte?: InputMaybe<Scalars['BigInt']>;
+  amountSentToProtocol_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  amountSentToProtocol_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  protocolRecipient?: InputMaybe<Scalars['Bytes']>;
+  protocolRecipient_not?: InputMaybe<Scalars['Bytes']>;
+  protocolRecipient_gt?: InputMaybe<Scalars['Bytes']>;
+  protocolRecipient_lt?: InputMaybe<Scalars['Bytes']>;
+  protocolRecipient_gte?: InputMaybe<Scalars['Bytes']>;
+  protocolRecipient_lte?: InputMaybe<Scalars['Bytes']>;
+  protocolRecipient_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  protocolRecipient_not_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  protocolRecipient_contains?: InputMaybe<Scalars['Bytes']>;
+  protocolRecipient_not_contains?: InputMaybe<Scalars['Bytes']>;
+  amountSentToSeller?: InputMaybe<Scalars['BigInt']>;
+  amountSentToSeller_not?: InputMaybe<Scalars['BigInt']>;
+  amountSentToSeller_gt?: InputMaybe<Scalars['BigInt']>;
+  amountSentToSeller_lt?: InputMaybe<Scalars['BigInt']>;
+  amountSentToSeller_gte?: InputMaybe<Scalars['BigInt']>;
+  amountSentToSeller_lte?: InputMaybe<Scalars['BigInt']>;
+  amountSentToSeller_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  amountSentToSeller_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  sellerRecipient?: InputMaybe<Scalars['Bytes']>;
+  sellerRecipient_not?: InputMaybe<Scalars['Bytes']>;
+  sellerRecipient_gt?: InputMaybe<Scalars['Bytes']>;
+  sellerRecipient_lt?: InputMaybe<Scalars['Bytes']>;
+  sellerRecipient_gte?: InputMaybe<Scalars['Bytes']>;
+  sellerRecipient_lte?: InputMaybe<Scalars['Bytes']>;
+  sellerRecipient_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  sellerRecipient_not_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  sellerRecipient_contains?: InputMaybe<Scalars['Bytes']>;
+  sellerRecipient_not_contains?: InputMaybe<Scalars['Bytes']>;
+  amountSentToCreator?: InputMaybe<Scalars['BigInt']>;
+  amountSentToCreator_not?: InputMaybe<Scalars['BigInt']>;
+  amountSentToCreator_gt?: InputMaybe<Scalars['BigInt']>;
+  amountSentToCreator_lt?: InputMaybe<Scalars['BigInt']>;
+  amountSentToCreator_gte?: InputMaybe<Scalars['BigInt']>;
+  amountSentToCreator_lte?: InputMaybe<Scalars['BigInt']>;
+  amountSentToCreator_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  amountSentToCreator_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  creatorRecipient?: InputMaybe<Scalars['Bytes']>;
+  creatorRecipient_not?: InputMaybe<Scalars['Bytes']>;
+  creatorRecipient_gt?: InputMaybe<Scalars['Bytes']>;
+  creatorRecipient_lt?: InputMaybe<Scalars['Bytes']>;
+  creatorRecipient_gte?: InputMaybe<Scalars['Bytes']>;
+  creatorRecipient_lte?: InputMaybe<Scalars['Bytes']>;
+  creatorRecipient_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  creatorRecipient_not_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  creatorRecipient_contains?: InputMaybe<Scalars['Bytes']>;
+  creatorRecipient_not_contains?: InputMaybe<Scalars['Bytes']>;
   /** Filter for the block changed event. */
   _change_block?: InputMaybe<BlockChangedFilter>;
   and?: InputMaybe<Array<InputMaybe<MarketplaceBid_filter>>>;
@@ -1953,7 +2282,14 @@ export type MarketplaceBid_orderBy =
   | 'revenueTransaction__id'
   | 'revenueTransaction__blockTimestamp'
   | 'creationTimestamp'
-  | 'lastUpdateTimestamp';
+  | 'lastUpdateTimestamp'
+  | 'feeMethodology'
+  | 'amountSentToProtocol'
+  | 'protocolRecipient'
+  | 'amountSentToSeller'
+  | 'sellerRecipient'
+  | 'amountSentToCreator'
+  | 'creatorRecipient';
 
 export type MarketplaceDirectBuy = {
   id: Scalars['Bytes'];
@@ -1962,6 +2298,13 @@ export type MarketplaceDirectBuy = {
   quantityBought: Scalars['BigInt'];
   totalPricePaid: Scalars['BigInt'];
   revenueTransaction: RevenueTransaction;
+  feeMethodology?: Maybe<FeeMethodology>;
+  amountSentToProtocol?: Maybe<Scalars['BigInt']>;
+  protocolRecipient?: Maybe<Scalars['Bytes']>;
+  amountSentToSeller?: Maybe<Scalars['BigInt']>;
+  sellerRecipient?: Maybe<Scalars['Bytes']>;
+  amountSentToCreator?: Maybe<Scalars['BigInt']>;
+  creatorRecipient?: Maybe<Scalars['Bytes']>;
 };
 
 export type MarketplaceDirectBuy_filter = {
@@ -2043,6 +2386,64 @@ export type MarketplaceDirectBuy_filter = {
   revenueTransaction_not_ends_with?: InputMaybe<Scalars['String']>;
   revenueTransaction_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
   revenueTransaction_?: InputMaybe<RevenueTransaction_filter>;
+  feeMethodology?: InputMaybe<FeeMethodology>;
+  feeMethodology_not?: InputMaybe<FeeMethodology>;
+  feeMethodology_in?: InputMaybe<Array<FeeMethodology>>;
+  feeMethodology_not_in?: InputMaybe<Array<FeeMethodology>>;
+  amountSentToProtocol?: InputMaybe<Scalars['BigInt']>;
+  amountSentToProtocol_not?: InputMaybe<Scalars['BigInt']>;
+  amountSentToProtocol_gt?: InputMaybe<Scalars['BigInt']>;
+  amountSentToProtocol_lt?: InputMaybe<Scalars['BigInt']>;
+  amountSentToProtocol_gte?: InputMaybe<Scalars['BigInt']>;
+  amountSentToProtocol_lte?: InputMaybe<Scalars['BigInt']>;
+  amountSentToProtocol_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  amountSentToProtocol_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  protocolRecipient?: InputMaybe<Scalars['Bytes']>;
+  protocolRecipient_not?: InputMaybe<Scalars['Bytes']>;
+  protocolRecipient_gt?: InputMaybe<Scalars['Bytes']>;
+  protocolRecipient_lt?: InputMaybe<Scalars['Bytes']>;
+  protocolRecipient_gte?: InputMaybe<Scalars['Bytes']>;
+  protocolRecipient_lte?: InputMaybe<Scalars['Bytes']>;
+  protocolRecipient_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  protocolRecipient_not_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  protocolRecipient_contains?: InputMaybe<Scalars['Bytes']>;
+  protocolRecipient_not_contains?: InputMaybe<Scalars['Bytes']>;
+  amountSentToSeller?: InputMaybe<Scalars['BigInt']>;
+  amountSentToSeller_not?: InputMaybe<Scalars['BigInt']>;
+  amountSentToSeller_gt?: InputMaybe<Scalars['BigInt']>;
+  amountSentToSeller_lt?: InputMaybe<Scalars['BigInt']>;
+  amountSentToSeller_gte?: InputMaybe<Scalars['BigInt']>;
+  amountSentToSeller_lte?: InputMaybe<Scalars['BigInt']>;
+  amountSentToSeller_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  amountSentToSeller_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  sellerRecipient?: InputMaybe<Scalars['Bytes']>;
+  sellerRecipient_not?: InputMaybe<Scalars['Bytes']>;
+  sellerRecipient_gt?: InputMaybe<Scalars['Bytes']>;
+  sellerRecipient_lt?: InputMaybe<Scalars['Bytes']>;
+  sellerRecipient_gte?: InputMaybe<Scalars['Bytes']>;
+  sellerRecipient_lte?: InputMaybe<Scalars['Bytes']>;
+  sellerRecipient_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  sellerRecipient_not_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  sellerRecipient_contains?: InputMaybe<Scalars['Bytes']>;
+  sellerRecipient_not_contains?: InputMaybe<Scalars['Bytes']>;
+  amountSentToCreator?: InputMaybe<Scalars['BigInt']>;
+  amountSentToCreator_not?: InputMaybe<Scalars['BigInt']>;
+  amountSentToCreator_gt?: InputMaybe<Scalars['BigInt']>;
+  amountSentToCreator_lt?: InputMaybe<Scalars['BigInt']>;
+  amountSentToCreator_gte?: InputMaybe<Scalars['BigInt']>;
+  amountSentToCreator_lte?: InputMaybe<Scalars['BigInt']>;
+  amountSentToCreator_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  amountSentToCreator_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  creatorRecipient?: InputMaybe<Scalars['Bytes']>;
+  creatorRecipient_not?: InputMaybe<Scalars['Bytes']>;
+  creatorRecipient_gt?: InputMaybe<Scalars['Bytes']>;
+  creatorRecipient_lt?: InputMaybe<Scalars['Bytes']>;
+  creatorRecipient_gte?: InputMaybe<Scalars['Bytes']>;
+  creatorRecipient_lte?: InputMaybe<Scalars['Bytes']>;
+  creatorRecipient_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  creatorRecipient_not_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  creatorRecipient_contains?: InputMaybe<Scalars['Bytes']>;
+  creatorRecipient_not_contains?: InputMaybe<Scalars['Bytes']>;
   /** Filter for the block changed event. */
   _change_block?: InputMaybe<BlockChangedFilter>;
   and?: InputMaybe<Array<InputMaybe<MarketplaceDirectBuy_filter>>>;
@@ -2072,7 +2473,14 @@ export type MarketplaceDirectBuy_orderBy =
   | 'totalPricePaid'
   | 'revenueTransaction'
   | 'revenueTransaction__id'
-  | 'revenueTransaction__blockTimestamp';
+  | 'revenueTransaction__blockTimestamp'
+  | 'feeMethodology'
+  | 'amountSentToProtocol'
+  | 'protocolRecipient'
+  | 'amountSentToSeller'
+  | 'sellerRecipient'
+  | 'amountSentToCreator'
+  | 'creatorRecipient';
 
 export type MarketplaceListing = {
   id: Scalars['String'];
@@ -2315,6 +2723,13 @@ export type MarketplaceListing_orderBy =
   | 'completedBid__creationTxHash'
   | 'completedBid__creationTimestamp'
   | 'completedBid__lastUpdateTimestamp'
+  | 'completedBid__feeMethodology'
+  | 'completedBid__amountSentToProtocol'
+  | 'completedBid__protocolRecipient'
+  | 'completedBid__amountSentToSeller'
+  | 'completedBid__sellerRecipient'
+  | 'completedBid__amountSentToCreator'
+  | 'completedBid__creatorRecipient'
   | 'bids'
   | 'directBuys';
 
@@ -2334,6 +2749,13 @@ export type MarketplaceOffer = {
   referralAdditionalInformation?: Maybe<Scalars['String']>;
   creationTimestamp: Scalars['BigInt'];
   lastUpdateTimestamp: Scalars['BigInt'];
+  feeMethodology?: Maybe<FeeMethodology>;
+  amountSentToProtocol?: Maybe<Scalars['BigInt']>;
+  protocolRecipient?: Maybe<Scalars['Bytes']>;
+  amountSentToSeller?: Maybe<Scalars['BigInt']>;
+  sellerRecipient?: Maybe<Scalars['Bytes']>;
+  amountSentToCreator?: Maybe<Scalars['BigInt']>;
+  creatorRecipient?: Maybe<Scalars['Bytes']>;
 };
 
 export type MarketplaceOffer_filter = {
@@ -2499,6 +2921,64 @@ export type MarketplaceOffer_filter = {
   lastUpdateTimestamp_lte?: InputMaybe<Scalars['BigInt']>;
   lastUpdateTimestamp_in?: InputMaybe<Array<Scalars['BigInt']>>;
   lastUpdateTimestamp_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  feeMethodology?: InputMaybe<FeeMethodology>;
+  feeMethodology_not?: InputMaybe<FeeMethodology>;
+  feeMethodology_in?: InputMaybe<Array<FeeMethodology>>;
+  feeMethodology_not_in?: InputMaybe<Array<FeeMethodology>>;
+  amountSentToProtocol?: InputMaybe<Scalars['BigInt']>;
+  amountSentToProtocol_not?: InputMaybe<Scalars['BigInt']>;
+  amountSentToProtocol_gt?: InputMaybe<Scalars['BigInt']>;
+  amountSentToProtocol_lt?: InputMaybe<Scalars['BigInt']>;
+  amountSentToProtocol_gte?: InputMaybe<Scalars['BigInt']>;
+  amountSentToProtocol_lte?: InputMaybe<Scalars['BigInt']>;
+  amountSentToProtocol_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  amountSentToProtocol_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  protocolRecipient?: InputMaybe<Scalars['Bytes']>;
+  protocolRecipient_not?: InputMaybe<Scalars['Bytes']>;
+  protocolRecipient_gt?: InputMaybe<Scalars['Bytes']>;
+  protocolRecipient_lt?: InputMaybe<Scalars['Bytes']>;
+  protocolRecipient_gte?: InputMaybe<Scalars['Bytes']>;
+  protocolRecipient_lte?: InputMaybe<Scalars['Bytes']>;
+  protocolRecipient_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  protocolRecipient_not_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  protocolRecipient_contains?: InputMaybe<Scalars['Bytes']>;
+  protocolRecipient_not_contains?: InputMaybe<Scalars['Bytes']>;
+  amountSentToSeller?: InputMaybe<Scalars['BigInt']>;
+  amountSentToSeller_not?: InputMaybe<Scalars['BigInt']>;
+  amountSentToSeller_gt?: InputMaybe<Scalars['BigInt']>;
+  amountSentToSeller_lt?: InputMaybe<Scalars['BigInt']>;
+  amountSentToSeller_gte?: InputMaybe<Scalars['BigInt']>;
+  amountSentToSeller_lte?: InputMaybe<Scalars['BigInt']>;
+  amountSentToSeller_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  amountSentToSeller_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  sellerRecipient?: InputMaybe<Scalars['Bytes']>;
+  sellerRecipient_not?: InputMaybe<Scalars['Bytes']>;
+  sellerRecipient_gt?: InputMaybe<Scalars['Bytes']>;
+  sellerRecipient_lt?: InputMaybe<Scalars['Bytes']>;
+  sellerRecipient_gte?: InputMaybe<Scalars['Bytes']>;
+  sellerRecipient_lte?: InputMaybe<Scalars['Bytes']>;
+  sellerRecipient_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  sellerRecipient_not_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  sellerRecipient_contains?: InputMaybe<Scalars['Bytes']>;
+  sellerRecipient_not_contains?: InputMaybe<Scalars['Bytes']>;
+  amountSentToCreator?: InputMaybe<Scalars['BigInt']>;
+  amountSentToCreator_not?: InputMaybe<Scalars['BigInt']>;
+  amountSentToCreator_gt?: InputMaybe<Scalars['BigInt']>;
+  amountSentToCreator_lt?: InputMaybe<Scalars['BigInt']>;
+  amountSentToCreator_gte?: InputMaybe<Scalars['BigInt']>;
+  amountSentToCreator_lte?: InputMaybe<Scalars['BigInt']>;
+  amountSentToCreator_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  amountSentToCreator_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  creatorRecipient?: InputMaybe<Scalars['Bytes']>;
+  creatorRecipient_not?: InputMaybe<Scalars['Bytes']>;
+  creatorRecipient_gt?: InputMaybe<Scalars['Bytes']>;
+  creatorRecipient_lt?: InputMaybe<Scalars['Bytes']>;
+  creatorRecipient_gte?: InputMaybe<Scalars['Bytes']>;
+  creatorRecipient_lte?: InputMaybe<Scalars['Bytes']>;
+  creatorRecipient_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  creatorRecipient_not_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  creatorRecipient_contains?: InputMaybe<Scalars['Bytes']>;
+  creatorRecipient_not_contains?: InputMaybe<Scalars['Bytes']>;
   /** Filter for the block changed event. */
   _change_block?: InputMaybe<BlockChangedFilter>;
   and?: InputMaybe<Array<InputMaybe<MarketplaceOffer_filter>>>;
@@ -2525,7 +3005,14 @@ export type MarketplaceOffer_orderBy =
   | 'revenueTransaction__blockTimestamp'
   | 'referralAdditionalInformation'
   | 'creationTimestamp'
-  | 'lastUpdateTimestamp';
+  | 'lastUpdateTimestamp'
+  | 'feeMethodology'
+  | 'amountSentToProtocol'
+  | 'protocolRecipient'
+  | 'amountSentToSeller'
+  | 'sellerRecipient'
+  | 'amountSentToCreator'
+  | 'creatorRecipient';
 
 /**
  * type Initialized @entity(immutable: true) {
@@ -2551,6 +3038,9 @@ export type Mint = {
   transactionHash: Scalars['Bytes'];
   revenueTransaction?: Maybe<RevenueTransaction>;
   token?: Maybe<Token>;
+  feeMethodology?: Maybe<FeeMethodology>;
+  amountSentToProtocol?: Maybe<Scalars['BigInt']>;
+  protocolRecipient?: Maybe<Scalars['Bytes']>;
 };
 
 export type Mint_filter = {
@@ -2708,6 +3198,28 @@ export type Mint_filter = {
   token_not_ends_with?: InputMaybe<Scalars['String']>;
   token_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
   token_?: InputMaybe<Token_filter>;
+  feeMethodology?: InputMaybe<FeeMethodology>;
+  feeMethodology_not?: InputMaybe<FeeMethodology>;
+  feeMethodology_in?: InputMaybe<Array<FeeMethodology>>;
+  feeMethodology_not_in?: InputMaybe<Array<FeeMethodology>>;
+  amountSentToProtocol?: InputMaybe<Scalars['BigInt']>;
+  amountSentToProtocol_not?: InputMaybe<Scalars['BigInt']>;
+  amountSentToProtocol_gt?: InputMaybe<Scalars['BigInt']>;
+  amountSentToProtocol_lt?: InputMaybe<Scalars['BigInt']>;
+  amountSentToProtocol_gte?: InputMaybe<Scalars['BigInt']>;
+  amountSentToProtocol_lte?: InputMaybe<Scalars['BigInt']>;
+  amountSentToProtocol_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  amountSentToProtocol_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  protocolRecipient?: InputMaybe<Scalars['Bytes']>;
+  protocolRecipient_not?: InputMaybe<Scalars['Bytes']>;
+  protocolRecipient_gt?: InputMaybe<Scalars['Bytes']>;
+  protocolRecipient_lt?: InputMaybe<Scalars['Bytes']>;
+  protocolRecipient_gte?: InputMaybe<Scalars['Bytes']>;
+  protocolRecipient_lte?: InputMaybe<Scalars['Bytes']>;
+  protocolRecipient_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  protocolRecipient_not_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  protocolRecipient_contains?: InputMaybe<Scalars['Bytes']>;
+  protocolRecipient_not_contains?: InputMaybe<Scalars['Bytes']>;
   /** Filter for the block changed event. */
   _change_block?: InputMaybe<BlockChangedFilter>;
   and?: InputMaybe<Array<InputMaybe<Mint_filter>>>;
@@ -2732,7 +3244,10 @@ export type Mint_orderBy =
   | 'token'
   | 'token__id'
   | 'token__tokenId'
-  | 'token__setInAllowList';
+  | 'token__setInAllowList'
+  | 'feeMethodology'
+  | 'amountSentToProtocol'
+  | 'protocolRecipient';
 
 export type NewBid = {
   id: Scalars['Bytes'];
@@ -3850,12 +4365,18 @@ export type OwnershipTransferred_orderBy =
 export type Query = {
   adOffer?: Maybe<AdOffer>;
   adOffers: Array<AdOffer>;
+  adOfferParameterLink?: Maybe<AdOfferParameterLink>;
+  adOfferParameterLinks: Array<AdOfferParameterLink>;
   adParameter?: Maybe<AdParameter>;
   adParameters: Array<AdParameter>;
   adProposal?: Maybe<AdProposal>;
   adProposals: Array<AdProposal>;
   currentProposal?: Maybe<CurrentProposal>;
   currentProposals: Array<CurrentProposal>;
+  epochCurrencyRevenue?: Maybe<EpochCurrencyRevenue>;
+  epochCurrencyRevenues: Array<EpochCurrencyRevenue>;
+  feeParamsForContract?: Maybe<FeeParamsForContract>;
+  feeParamsForContracts: Array<FeeParamsForContract>;
   nftContract?: Maybe<NftContract>;
   nftContracts: Array<NftContract>;
   nftPrice?: Maybe<NftPrice>;
@@ -3952,6 +4473,24 @@ export type QueryadOffersArgs = {
 };
 
 
+export type QueryadOfferParameterLinkArgs = {
+  id: Scalars['ID'];
+  block?: InputMaybe<Block_height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type QueryadOfferParameterLinksArgs = {
+  skip?: InputMaybe<Scalars['Int']>;
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<AdOfferParameterLink_orderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  where?: InputMaybe<AdOfferParameterLink_filter>;
+  block?: InputMaybe<Block_height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
 export type QueryadParameterArgs = {
   id: Scalars['ID'];
   block?: InputMaybe<Block_height>;
@@ -4001,6 +4540,42 @@ export type QuerycurrentProposalsArgs = {
   orderBy?: InputMaybe<CurrentProposal_orderBy>;
   orderDirection?: InputMaybe<OrderDirection>;
   where?: InputMaybe<CurrentProposal_filter>;
+  block?: InputMaybe<Block_height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type QueryepochCurrencyRevenueArgs = {
+  id: Scalars['ID'];
+  block?: InputMaybe<Block_height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type QueryepochCurrencyRevenuesArgs = {
+  skip?: InputMaybe<Scalars['Int']>;
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<EpochCurrencyRevenue_orderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  where?: InputMaybe<EpochCurrencyRevenue_filter>;
+  block?: InputMaybe<Block_height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type QueryfeeParamsForContractArgs = {
+  id: Scalars['ID'];
+  block?: InputMaybe<Block_height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type QueryfeeParamsForContractsArgs = {
+  skip?: InputMaybe<Scalars['Int']>;
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<FeeParamsForContract_orderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  where?: InputMaybe<FeeParamsForContract_filter>;
   block?: InputMaybe<Block_height>;
   subgraphError?: _SubgraphErrorPolicy_;
 };
@@ -4773,12 +5348,18 @@ export type Status =
 export type Subscription = {
   adOffer?: Maybe<AdOffer>;
   adOffers: Array<AdOffer>;
+  adOfferParameterLink?: Maybe<AdOfferParameterLink>;
+  adOfferParameterLinks: Array<AdOfferParameterLink>;
   adParameter?: Maybe<AdParameter>;
   adParameters: Array<AdParameter>;
   adProposal?: Maybe<AdProposal>;
   adProposals: Array<AdProposal>;
   currentProposal?: Maybe<CurrentProposal>;
   currentProposals: Array<CurrentProposal>;
+  epochCurrencyRevenue?: Maybe<EpochCurrencyRevenue>;
+  epochCurrencyRevenues: Array<EpochCurrencyRevenue>;
+  feeParamsForContract?: Maybe<FeeParamsForContract>;
+  feeParamsForContracts: Array<FeeParamsForContract>;
   nftContract?: Maybe<NftContract>;
   nftContracts: Array<NftContract>;
   nftPrice?: Maybe<NftPrice>;
@@ -4872,6 +5453,24 @@ export type SubscriptionadOffersArgs = {
 };
 
 
+export type SubscriptionadOfferParameterLinkArgs = {
+  id: Scalars['ID'];
+  block?: InputMaybe<Block_height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type SubscriptionadOfferParameterLinksArgs = {
+  skip?: InputMaybe<Scalars['Int']>;
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<AdOfferParameterLink_orderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  where?: InputMaybe<AdOfferParameterLink_filter>;
+  block?: InputMaybe<Block_height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
 export type SubscriptionadParameterArgs = {
   id: Scalars['ID'];
   block?: InputMaybe<Block_height>;
@@ -4921,6 +5520,42 @@ export type SubscriptioncurrentProposalsArgs = {
   orderBy?: InputMaybe<CurrentProposal_orderBy>;
   orderDirection?: InputMaybe<OrderDirection>;
   where?: InputMaybe<CurrentProposal_filter>;
+  block?: InputMaybe<Block_height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type SubscriptionepochCurrencyRevenueArgs = {
+  id: Scalars['ID'];
+  block?: InputMaybe<Block_height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type SubscriptionepochCurrencyRevenuesArgs = {
+  skip?: InputMaybe<Scalars['Int']>;
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<EpochCurrencyRevenue_orderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  where?: InputMaybe<EpochCurrencyRevenue_filter>;
+  block?: InputMaybe<Block_height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type SubscriptionfeeParamsForContractArgs = {
+  id: Scalars['ID'];
+  block?: InputMaybe<Block_height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type SubscriptionfeeParamsForContractsArgs = {
+  skip?: InputMaybe<Scalars['Int']>;
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<FeeParamsForContract_orderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  where?: InputMaybe<FeeParamsForContract_filter>;
   block?: InputMaybe<Block_height>;
   subgraphError?: _SubgraphErrorPolicy_;
 };
@@ -5846,6 +6481,9 @@ export type Token_orderBy =
   | 'mint__blockNumber'
   | 'mint__blockTimestamp'
   | 'mint__transactionHash'
+  | 'mint__feeMethodology'
+  | 'mint__amountSentToProtocol'
+  | 'mint__protocolRecipient'
   | 'user'
   | 'user__id'
   | 'user__tokenId'
@@ -6971,6 +7609,10 @@ export type _SubgraphErrorPolicy_ =
   /** null **/
   adOffers: InContextSdkMethod<Query['adOffers'], QueryadOffersArgs, MeshContext>,
   /** null **/
+  adOfferParameterLink: InContextSdkMethod<Query['adOfferParameterLink'], QueryadOfferParameterLinkArgs, MeshContext>,
+  /** null **/
+  adOfferParameterLinks: InContextSdkMethod<Query['adOfferParameterLinks'], QueryadOfferParameterLinksArgs, MeshContext>,
+  /** null **/
   adParameter: InContextSdkMethod<Query['adParameter'], QueryadParameterArgs, MeshContext>,
   /** null **/
   adParameters: InContextSdkMethod<Query['adParameters'], QueryadParametersArgs, MeshContext>,
@@ -6982,6 +7624,14 @@ export type _SubgraphErrorPolicy_ =
   currentProposal: InContextSdkMethod<Query['currentProposal'], QuerycurrentProposalArgs, MeshContext>,
   /** null **/
   currentProposals: InContextSdkMethod<Query['currentProposals'], QuerycurrentProposalsArgs, MeshContext>,
+  /** null **/
+  epochCurrencyRevenue: InContextSdkMethod<Query['epochCurrencyRevenue'], QueryepochCurrencyRevenueArgs, MeshContext>,
+  /** null **/
+  epochCurrencyRevenues: InContextSdkMethod<Query['epochCurrencyRevenues'], QueryepochCurrencyRevenuesArgs, MeshContext>,
+  /** null **/
+  feeParamsForContract: InContextSdkMethod<Query['feeParamsForContract'], QueryfeeParamsForContractArgs, MeshContext>,
+  /** null **/
+  feeParamsForContracts: InContextSdkMethod<Query['feeParamsForContracts'], QueryfeeParamsForContractsArgs, MeshContext>,
   /** null **/
   nftContract: InContextSdkMethod<Query['nftContract'], QuerynftContractArgs, MeshContext>,
   /** null **/
@@ -7142,6 +7792,10 @@ export type _SubgraphErrorPolicy_ =
   /** null **/
   adOffers: InContextSdkMethod<Subscription['adOffers'], SubscriptionadOffersArgs, MeshContext>,
   /** null **/
+  adOfferParameterLink: InContextSdkMethod<Subscription['adOfferParameterLink'], SubscriptionadOfferParameterLinkArgs, MeshContext>,
+  /** null **/
+  adOfferParameterLinks: InContextSdkMethod<Subscription['adOfferParameterLinks'], SubscriptionadOfferParameterLinksArgs, MeshContext>,
+  /** null **/
   adParameter: InContextSdkMethod<Subscription['adParameter'], SubscriptionadParameterArgs, MeshContext>,
   /** null **/
   adParameters: InContextSdkMethod<Subscription['adParameters'], SubscriptionadParametersArgs, MeshContext>,
@@ -7153,6 +7807,14 @@ export type _SubgraphErrorPolicy_ =
   currentProposal: InContextSdkMethod<Subscription['currentProposal'], SubscriptioncurrentProposalArgs, MeshContext>,
   /** null **/
   currentProposals: InContextSdkMethod<Subscription['currentProposals'], SubscriptioncurrentProposalsArgs, MeshContext>,
+  /** null **/
+  epochCurrencyRevenue: InContextSdkMethod<Subscription['epochCurrencyRevenue'], SubscriptionepochCurrencyRevenueArgs, MeshContext>,
+  /** null **/
+  epochCurrencyRevenues: InContextSdkMethod<Subscription['epochCurrencyRevenues'], SubscriptionepochCurrencyRevenuesArgs, MeshContext>,
+  /** null **/
+  feeParamsForContract: InContextSdkMethod<Subscription['feeParamsForContract'], SubscriptionfeeParamsForContractArgs, MeshContext>,
+  /** null **/
+  feeParamsForContracts: InContextSdkMethod<Subscription['feeParamsForContracts'], SubscriptionfeeParamsForContractsArgs, MeshContext>,
   /** null **/
   nftContract: InContextSdkMethod<Subscription['nftContract'], SubscriptionnftContractArgs, MeshContext>,
   /** null **/

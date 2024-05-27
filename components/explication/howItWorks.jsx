@@ -4,7 +4,7 @@ import Image from "next/image";
 
 const HowItWorks = ({ bgWhite = true }) => {
   return (
-    <section className="dark:bg-jacarta-800 relative py-24">
+    <section className="dark:bg-jacarta-800 relative py-16">
       {bgWhite && (
         <picture className="pointer-events-none absolute inset-0 -z-10 dark:hidden">
           <Image src="/images/gradient_light.jpg" alt="gradient" className="h-full w-full object-cover" width={1559} height={761} />
@@ -33,9 +33,8 @@ const HowItWorks = ({ bgWhite = true }) => {
               </div>
             );
           })}
+          
         </div>
-
-      
       </div>
     </section>
   );

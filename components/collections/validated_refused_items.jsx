@@ -6,12 +6,18 @@ import Tippy from "@tippyjs/react";
 import "tippy.js/dist/tippy.css";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 
-const Validated_refused_items = ({ statut, proposalData }) => {
-  const [filterVal, setFilterVal] = useState(null);
-  const [copied, setCopied] = useState(false);
+const Validated_refused_items = ({ statut, proposalData, isToken }) => {
+  const [modalStates, setModalStates] = useState({});
   const [data, setData] = useState(collection_activity_item_data);
   const [statutItem, setStatutItem] = useState(null);
 
+  const openModal = (tokenId) => {
+    setModalStates((prev) => ({ ...prev, [tokenId]: true }));
+  };
+
+  const closeModal = (tokenId) => {
+    setModalStates((prev) => ({ ...prev, [tokenId]: false }));
+  };
   function onlyUnique(value, index, self) {
     return self.indexOf(value) === index;
   }
@@ -22,12 +28,6 @@ const Validated_refused_items = ({ statut, proposalData }) => {
       return category;
     })
   );
-
-  useEffect(() => {
-    setTimeout(() => {
-      setCopied(false);
-    }, 2000);
-  }, [copied]);
 
   const [inputText, setInputText] = useState("");
 
@@ -51,7 +51,19 @@ const Validated_refused_items = ({ statut, proposalData }) => {
       setStatutItem("refused");
     }
   }, []);
-  console.log(proposalData);
+  function formatTokenId(str) {
+    if (str.length <= 6) {
+      return str;
+    }
+    return str.slice(0, 3) + "..." + str.slice(-3);
+  }
+  const getImageUrl = (adParams) => {
+    if (!adParams) return "/";
+
+    const imageKey = Object.keys(adParams).find((key) => key.startsWith("imageURL"));
+    return imageKey ? adParams[imageKey] : "/";
+  };
+
   if (proposalData.length === 0) {
     return <div className="flex justify-center">{statut ? "No validated ads..." : "No refused ads..."}</div>;
   }
@@ -61,33 +73,10 @@ const Validated_refused_items = ({ statut, proposalData }) => {
       {/* <!-- Activity Tab --> */}
       <div className="tab-pane fade">
         {/* <!-- Records / Filter --> */}
-        {statut && (
-          <div key="2" className="dropdown-item mb-4 p-6 dark:bg-jacarta-700 dark:border-jacarta-600 border hover:bg-jacarta-50 block w-full rounded-xl  text-left text-sm transition-colors dark:text-white">
-            <div className="flex flex-wrap  gap-5 ">
-              <span className="mb-2 md:w-1/3 flex-grow dark:text-jacarta-300 text-jacarta-400 text-sm">
-                Don&apos;t forget to display the adSpaces on your website ! Copy paste this piece of code to display automatically your sponsor logo.
-              </span>
-              
-              <div className="flex gap-2 w-full md:w-auto items-start ">
-                <pre
-                  style={{
-                    backgroundColor: "#010101",
-                    borderRadius: "5px",
-                    fontFamily: "'Courier New', monospace",
-                    padding: "10px",
-                    overflowX: "auto",
-                  }}
-                >
-                  <code>{`<iframe src="https://integrations.dsponsor.com/squareLogsoV1/...`}</code>
-                </pre>
-                <Tippy hideOnClick={false} content={copied ? <span>copied</span> : <span>copy</span>}>
-                  <div className="js-copy-clipboard cursor-pointer">
-                    <CopyToClipboard text="userId" onCopy={() => setCopied(true)}>
-                      <Image src="/images/copy.svg" alt="icon" width={20} height={20} className="mt-2 " />
-                    </CopyToClipboard>
-                  </div>
-                </Tippy>
-              </div>
+        {isToken && (
+          <div className="dark:bg-jacarta-700 dark:border-jacarta-600 border-jacarta-100 rounded-2lg border bg-white p-6 mb-4">
+            <div className=" sm:flex sm:flex-wrap">
+              <span className="dark:text-jacarta-300 text-jacarta-400 text-sm">🎉 Congratulations ! This the ad currently displayed by the owner of the offer !</span>
             </div>
           </div>
         )}
@@ -96,35 +85,46 @@ const Validated_refused_items = ({ statut, proposalData }) => {
 
           <div className="mb-10 shrink-0 basis-8/12 space-y-5 lg:mb-0 lg:pr-10">
             {proposalData?.map((item) => {
-              const {adParametersList, proposalIds, tokenId, reason, title } = item;
-       
+              const { adParametersList, proposalIds, tokenId, reason, title, tokenData } = item;
+
               return (
                 <div key={tokenId} className="dark:bg-jacarta-700  gap-5 p-8 dark:border-jacarta-700 transition-shadow hover:shadow-lg border-jacarta-100 rounded-2.5xl relative flex">
                   <div className=" relative flex items-center gap-5 flex-col sm:flex-row ">
-                    <figure className=" self-start">
-                      <Image src={adParametersList?.imageURL} alt={title} height={75} width={75} objectFit="contain" className="rounded-2lg min-w-[75px]" loading="lazy" />
+                    <figure className="self-start">
+                      <button className="w-full" onClick={() => openModal(tokenId)}>
+                        {getImageUrl(adParametersList) && <Image src={getImageUrl(adParametersList)} alt={item.title} height={75} width={75} objectFit="contain" className="rounded-2lg min-w-[75px]" loading="lazy" />}
+                      </button>
+
+                      {/* Modal */}
+                      <div className={modalStates[tokenId] ? "modal fade show block" : "modal fade"}>
+                        <div className="modal-dialog !my-0 flex h-full max-w-4xl items-center justify-center relative">
+                          <Image src={getImageUrl(adParametersList)} alt={item.title} height={300} width={300} objectFit="contain" className="rounded-2lg min-w-[75px]" loading="lazy" />
+                        </div>
+
+                        <button type="button" className="btn-close absolute top-6 right-6" onClick={() => closeModal(tokenId)}>
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" className="h-6 w-6 fill-white">
+                            <path fill="none" d="M0 0h24v24H0z" />
+                            <path d="M12 10.586l4.95-4.95 1.414 1.414-4.95 4.95 4.95 4.95-1.414 1.414-4.95-4.95-4.95 4.95-1.414-1.414 4.95-4.95-4.95-4.95L7.05 5.636z" />
+                          </svg>
+                        </button>
+                        <a href={getImageUrl(adParametersList)} download className="absolute bottom-6 right-6 btn btn-primary flex items-center justify-center p-2">
+                          {/* SVG icon for download */}
+                        </a>
+                      </div>
+                      {/* End Modal */}
                     </figure>
+
                     <div>
                       <h3 className="font-display text-jacarta-700 mb-1 text-base font-semibold dark:text-white">
-                        Item n°: <span className="text-accent"> {tokenId} </span>{" "}
+                        Item : <span className="text-green"> {tokenData ? tokenData : formatTokenId(tokenId)} </span>{" "}
                       </h3>
-                      <span>
-                        Proposals n° :{" "}
-                        <span className="text-accent">
-                          [{proposalIds[0]}-{proposalIds[1]}]
-                        </span>{" "}
-                      </span>
+
                       <div className="flex flex-col">
-                        <Tippy hideOnClick={false} content={copied ? <span>copied</span> : <span>copy</span>}>
-                          <button className="js-copy-clipboard flex min-w-[20px] text-white max-w-[20rem]  select-none overflow-hidden text-ellipsis whitespace-nowrap">
-                            <CopyToClipboard text="userId" onCopy={() => setCopied(true)}>
-                              <span>{adParametersList?.linkURL}</span>
-                            </CopyToClipboard>
-                          </button>
-                        </Tippy>
+                        <button className="js-copy-clipboard flex min-w-[20px] text-white max-w-[20rem]  select-none overflow-hidden text-ellipsis whitespace-nowrap">
+                          <Link href={adParametersList?.linkURL ? adParametersList.linkURL : "/"} target="_blank">{adParametersList?.linkURL}</Link>
+                        </button>
                       </div>
                       {reason && <span className="text-jacarta-500 dark:text-jacarta-300">Reason : {reason}</span>}
-                      
                     </div>
                   </div>
                   <div className="dark:border-jacarta-600 border-jacarta-100 ml-auto rounded-full border p-3 self-start">

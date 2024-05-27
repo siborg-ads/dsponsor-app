@@ -1,48 +1,84 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Web3Button } from "@thirdweb-dev/react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { Spinner } from "@nextui-org/spinner";
+import ModalHelper from "../Helper/modalHelper";
 
 const PreviewModal = ({
+  approvalForAllToken = true,
+  handleApprove,
+  helperFeesListing = null,
+  selectedStartingPrice = null,
   handlePreviewModal,
+  protocolFees = null,
   handleSubmit,
-  customSymbolContract,
+  imageUrlVariants = [],
   name = false,
-  link = null,
+  link = false,
   description = false,
   startDate = null,
   endDate = null,
   selectedNumber = null,
   selectedUnitPrice = null,
-  selectedCurrency = null,
+  symbolContract = null,
   selectedParameter = null,
-  customContract = null,
+  selectedCurrency = null,
   selectedRoyalties = null,
   previewImage = null,
   displayedParameter = null,
+  terms = [],
+  imageURLSteps = [],
   validate,
   errors,
   successFullUpload,
-  address,
   buttonTitle,
   modalTitle,
   successFullUploadModal,
-  finalPrice = null,
-  protocolFees = null,
+
+  isLoadingButton,
 }) => {
+ 
   const formatDate = (date) => {
     if (!date) return "";
-    return date.toLocaleDateString();
+    return date.toLocaleString("en-EN", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true, 
+    });
   };
-  
+  const imageRatioDisplay = (id) => {
+    const ratios = imageUrlVariants[id].split(":");
+    const stepWidth = 250;
+    let width = Number(ratios[0]);
+    let height = Number(ratios[1]);
+    const ratioArray = [];
+    if (ratios.length !== 2) {
+      ratioArray.push(stepWidth);
+      ratioArray.push(stepWidth);
+    }
+    if (width / height > 1) {
+      ratioArray.push(stepWidth);
+      ratioArray.push(stepWidth * (height / width));
+    } else {
+      ratioArray.push(stepWidth * (width / height));
+      ratioArray.push(stepWidth);
+    }
+
+    return ratioArray;
+  };
+
   return (
     <div>
       <div className="modal-dialog max-h-[75vh] max-w-2xl">
         <div className="modal-content">
           <div className="modal-header">
-            <h5 className="modal-title" id="placeBidLabel">
+            <h5 className="modal-title mr-8" id="placeBidLabel">
               {!successFullUpload ? modalTitle : successFullUploadModal.title}
             </h5>
             <button type="button" className="btn-close" onClick={() => handlePreviewModal()}>
@@ -55,7 +91,7 @@ const PreviewModal = ({
 
           <div className="modal-body p-6 flex gap-4 items-center justify-center">
             {!successFullUpload ? (
-              <div className="flex gap-8 md:flex-row flex-col">
+              <div className="flex flex-wrap gap-8 md:flex-row flex-col">
                 <div>
                   <p className="font-display mb-2 block dark:text-white">
                     {name.length > 0 ? (
@@ -84,78 +120,125 @@ const PreviewModal = ({
                     )}
                   </p>
 
-                  <p className="font-display  mb-2 block text-jacarta-400 text-sm">
-                    Link : {!errors.linkError ? <span className="dark:text-white text-base ml-2"> {link} </span> : <span className="text-red text-base ml-2"> {errors.linkError}</span>}
-                  </p>
-                  {!previewImage && (
+                  {link.length ? (
+                    <p className="font-display  mb-2 block text-jacarta-400 text-sm">
+                      Link : {!errors.linkError ? <span className="dark:text-white text-base ml-2"> {link} </span> : <span className="text-red text-base ml-2"> {errors.linkError}</span>}
+                    </p>
+                  ) : (
+                    ""
+                  )}
+                  {imageURLSteps?.length > 0 && previewImage.filter((item) => item).length < imageURLSteps.length && (
                     <p className="font-display  mb-2 block text-jacarta-400 text-sm">
                       Image preview : <span className="text-red text-base ml-2"> {errors.imageError}</span>
                     </p>
                   )}
                   <p className="font-display  mb-2 block text-jacarta-400 text-sm">
                     {startDate ? (
-                      <span>Start Date : {!errors.startDateError ? <span className="dark:text-white text-base ml-2"> {formatDate(startDate)} </span> : <span className="text-red">{errors.startDateError}</span>}</span>
+                      <span>
+                        Start Date : {!errors.startDateError ? <span className="dark:text-white text-base ml-2"> {formatDate(startDate)} </span> : <span className="text-red text-base ml-2">{errors.startDateError}</span>}
+                      </span>
                     ) : (
                       ""
                     )}
                   </p>
                   {endDate ? (
                     <p className="font-display  mb-2 block text-jacarta-400 text-sm">
-                      End Date : {!errors.endDateError ? <span className="dark:text-white text-base ml-2"> {formatDate(endDate)} </span> : <span className="text-red">{errors.endDateError}</span>}
+                      End Date : {!errors.endDateError ? <span className="dark:text-white text-base ml-2"> {formatDate(endDate)} </span> : <span className="text-red text-base ml-2">{errors.endDateError}</span>}
                     </p>
                   ) : (
                     ""
                   )}
                   {selectedNumber ? (
                     <p className="font-display  mb-2 block text-jacarta-400 text-sm">
-                      Number of Items : {!errors.numberError ? <span className="dark:text-white text-base ml-2"> {selectedNumber} </span> : <span className="text-red">{errors.numberError}</span>}
+                      Number of Items : {!errors.numberError ? <span className="dark:text-white text-base ml-2"> {selectedNumber} </span> : <span className="text-red text-base ml-2">{errors.numberError}</span>}
                     </p>
                   ) : (
                     ""
                   )}
                   {selectedParameter ? (
                     <p className="font-display  mb-2 block text-jacarta-400 text-sm">
-                      Type of Ad : {!errors.typeAdError ? <span className="dark:text-white text-base ml-2"> {displayedParameter} </span> : <span className="text-red">{errors.typeAdError}</span>}
+                      Type of Ad :{" "}
+                      {!errors.typeAdError && !errors.imageRatioError ? (
+                        displayedParameter.map((item, index) => (
+                          <span key={index} className="dark:text-white text-base ml-2">
+                            {" "}
+                            {item}{" "}
+                          </span>
+                        ))
+                      ) : (
+                        <div>
+                          {errors.typeAdError && <span className="text-red text-base ml-2">{errors.typeAdError}</span>}
+                          {errors.imageRatioError && <span className="text-red text-base ml-2">{errors.imageRatioError}</span>}
+                        </div>
+                      )}
                     </p>
                   ) : (
                     ""
                   )}
-                  {selectedUnitPrice ? (
+                  {selectedStartingPrice || errors.startingPriceError ? (
                     <p className="font-display  mb-2 block text-jacarta-400 text-sm">
-                      Unit Price : {!errors.unitPriceError ? <span className="dark:text-white text-base ml-2"> {selectedUnitPrice} </span> : <span className="text-red">{errors.unitPriceError}</span>}
+                      Unit starting Price :{" "}
+                      {!errors.startingPriceError ? <span className="dark:text-white text-base ml-2"> {selectedStartingPrice} </span> : <span className="text-red text-base ml-2">{errors.startingPriceError}</span>}
+                      {helperFeesListing && <ModalHelper {...helperFeesListing} />}
                     </p>
                   ) : (
                     ""
                   )}
-                  {customContract ? (
+                  {selectedUnitPrice || errors.unitPriceError ? (
                     <p className="font-display  mb-2 block text-jacarta-400 text-sm">
-                      Custom Contract : {!errors.currencyError ? <span className="dark:text-white text-base ml-2"> {customSymbolContract} </span> : <span className="text-red">{errors.currencyError}</span>}
+                      Unit Price : {!errors.unitPriceError ? <span className="dark:text-white text-base ml-2"> {selectedUnitPrice} </span> : <span className="text-red text-base ml-2">{errors.unitPriceError}</span>}
+                      {helperFeesListing && <ModalHelper {...helperFeesListing} />}
                     </p>
-                  ) : selectedCurrency ? (
+                  ) : (
+                    ""
+                  )}
+                  {symbolContract || selectedCurrency ? (
                     <p className="font-display  mb-2 block text-jacarta-400 text-sm">
-                      Currency : {!errors.currencyError ? <span className="dark:text-white text-base ml-2"> {selectedCurrency} </span> : <span className="text-red">{errors.currencyError}</span>}
+                      Currency : {!errors.currencyError ? <span className="dark:text-white text-base ml-2"> {symbolContract} </span> : <span className="text-red text-base ml-2">{errors.currencyError}</span>}
                     </p>
                   ) : (
                     ""
                   )}
                   {selectedRoyalties ? (
                     <p className="font-display  mb-2 block text-jacarta-400 text-sm">
-                      Royalties : {!errors.royaltyError ? <span className="dark:text-white text-base ml-2"> {selectedRoyalties} % </span> : <span className="text-red">{errors.royaltyError}</span>}
+                      Royalties : {!errors.royaltyError ? <span className="dark:text-white text-base ml-2"> {selectedRoyalties} % </span> : <span className="text-red text-base ml-2">{errors.royaltyError}</span>}
+                    </p>
+                  ) : (
+                    ""
+                  )}
+                  {protocolFees ? (
+                    <p className="font-display  mb-2 block text-jacarta-400 text-sm">
+                      Protocol fees : <span className="dark:text-white text-base ml-2"> {protocolFees} % </span>
+                    </p>
+                  ) : (
+                    ""
+                  )}
+                  {terms.length > 0 ? (
+                    <p className="font-display  mb-2 block text-jacarta-400 text-sm">
+                      Terms : <span className="dark:text-white text-base ml-2"> {terms[0].name ? terms[0].name : terms[0]} </span>
                     </p>
                   ) : (
                     ""
                   )}
                 </div>
-                {previewImage && (
-                  <div className="mb-6  flex-col items-center justify-center ">
-                    <label htmlFor="item-description" className="font-display text-jacarta-400 text-sm text-center mb-2 block ">
-                      Image preview :
-                    </label>
-                    <div style={{ width: "300px", height: "300px", position: "relative" }}>
-                      <Image src={previewImage} width={300} height={200} alt="Preview" className="object-contain h-full" />
+                {previewImage &&
+                  previewImage.map((image, index) => (
+                    <div className="mb-6  flex-col items-center justify-center " key={index}>
+                      <label htmlFor="item-description" className="font-display text-jacarta-400 text-sm text-center mb-2 block ">
+                        Image {imageUrlVariants[index] && `( ratio ${imageUrlVariants[index]} )`} preview
+                      </label>
+                      <div
+                        className="dark:bg-jacarta-700 dark:border-jacarta-600 border-jacarta-100  group relative flex max-w-md flex-col items-center justify-center rounded-lg border-2 border-dashed"
+                        style={{
+                          width: imageUrlVariants.length > 0 ? `${imageRatioDisplay(index)[0]}px` : "275px",
+                          height: imageUrlVariants.length > 0 ? `${imageRatioDisplay(index)[1]}px` : "275px",
+                          position: "relative",
+                        }}
+                      >
+                        <Image src={image} fill={true} alt="Preview" className="object-contain h-full p-1" />
+                      </div>
                     </div>
-                  </div>
-                )}
+                  ))}
               </div>
             ) : (
               <div className="flex flex-col gap-2">
@@ -177,20 +260,38 @@ const PreviewModal = ({
             <div className="flex items-center justify-center space-x-4">
               <div className="flex items-center gap-4">
                 {!successFullUpload ? (
-                  <Web3Button
-                    contractAddress="0xE442802706F3603d58F34418Eac50C78C7B4E8b3"
-                    action={() => {
-                      toast.promise(handleSubmit, {
-                        pending: "Waiting transaction confirmation",
-                        success: "Transaction confirmed 👌",
-                        error: "Transaction rejected 🤯",
-                      });
-                    }}
-                    className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate ? "btn-disabled" : "!bg-accent !cursor-pointer"} `}
-                    disabled={!validate}
-                  >
-                    {buttonTitle}
-                  </Web3Button>
+                  approvalForAllToken ? (
+                    <Web3Button
+                      contractAddress="0xE442802706F3603d58F34418Eac50C78C7B4E8b3"
+                      action={() => {
+                        toast.promise(handleSubmit, {
+                          pending: "Waiting for confirmation 🕒",
+                          success: "Transaction confirmed 👌",
+                          error: "Transaction rejected 🤯",
+                        });
+                      }}
+                      className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate ? "btn-disabled" : "!bg-accent !cursor-pointer"} `}
+                      isDisabled={!validate || isLoadingButton}
+                    >
+                      {isLoadingButton ? <Spinner size="sm" color="default" /> : buttonTitle}
+                    </Web3Button>
+                  ) : (
+                    // approve for listing
+                    <Web3Button
+                      contractAddress="0xac03b675fa9644279b92f060bf542eed54f75599"
+                      action={() => {
+                        toast.promise(handleApprove, {
+                          pending: "Waiting for confirmation 🕒",
+                          success: "Approval confirmed 👌",
+                          error: "Approval rejected 🤯",
+                        });
+                      }}
+                      className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate ? "btn-disabled" : "!bg-accent !cursor-pointer"} `}
+                      isDisabled={!validate || isLoadingButton}
+                    >
+                      {isLoadingButton ? <Spinner size="sm" color="default" /> : "Approve"}
+                    </Web3Button>
+                  )
                 ) : (
                   <Link href={successFullUploadModal.hrefButton}>
                     <button className="!rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all !bg-accent !cursor-pointer">{successFullUploadModal.buttonTitle}</button>

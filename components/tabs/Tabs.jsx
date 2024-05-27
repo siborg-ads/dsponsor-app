@@ -1,75 +1,27 @@
-import React, { useState } from "react";
+import React, {useContext, useState} from "react";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import OfferTab from "./OfferTab";
 import Properties from "./Properties";
 import Activity_tab from "./Activity_tab";
 import Price_history from "./Price_history";
 import Link from "next/link";
+import { useChainId } from "@thirdweb-dev/react";
+import SDKProvider from "../../providers/SDKProvider";
+import SDKContext from "../../contexts/SDKContext";
+import Tippy from "@tippyjs/react";
+import {whiteListedAddress} from "../../utils/whiteListedAddress";
 
-const ItemsTabs = ({ contractAddress, offerId }) => {
-  const [tabsActive, setTabsActive] = useState(1);
-  const tabsHeadText = [
-    // {
-    //   id: 1,
-    //   text: "Offers",
-    //   icon: "offers",
-    // },
-    // {
-    //   id: 2,
-    //   text: "properties",
-    //   icon: "properties",
-    // },
-    {
-      id: 3,
-      text: "details",
-      icon: "details",
-    },
-    // {
-    //   id: 4,
-    //   text: "activities",
-    //   icon: "activity",
-    // },
-    // {
-    //   id: 5,
-    //   text: "price history",
-    //   icon: "price",
-    // },
-  ];
+
+const ItemsTabs = ({ contractAddress,  isUserOwner, initialCreator, isToken = true }) => {
+  const { SDKChainId, getChainName } = useContext(SDKContext);
+
+
+ 
   return (
     <>
-      <div className="scrollbar-custom mt-14 overflow-x-auto rounded-lg">
-        {/* <!-- Tabs Nav --> */}
-        <Tabs className="min-w-fit tabs">
-          <TabList className="nav nav-tabs flex items-center">
-            {/* <!-- Offers --> */}
-            {tabsHeadText.map(({ id, text, icon }) => {
-              return (
-                <Tab className="nav-item bg-transparent" key={id}>
-                  <button
-                    className={
-                      tabsActive === id
-                        ? "nav-link hover:text-jacarta-700 text-jacarta-400 relative flex items-center whitespace-nowrap py-3 px-6 dark:hover:text-white active"
-                        : "nav-link hover:text-jacarta-700 text-jacarta-400 relative flex items-center whitespace-nowrap py-3 px-6 dark:hover:text-white"
-                    }
-                    onClick={() => setTabsActive(id)}
-                  >
-                    <svg className="icon mr-1 h-5 w-5 fill-current">
-                      <use xlinkHref={`/icons.svg#icon-${icon}`}></use>
-                    </svg>
-                    <span className="font-display text-base font-medium">{text}</span>
-                  </button>
-                </Tab>
-              );
-            })}
-          </TabList>
-
-          {/* <TabPanel className="tab-content">
-            <OfferTab />
-          </TabPanel> */}
-          {/* <TabPanel>
-            <Properties />
-          </TabPanel> */}
-          <TabPanel>
+      <div className="scrollbar-custom overflow-x-auto rounded-lg">
+ 
+       
             {/* <!-- Details --> */}
             <div className="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
               <div className="dark:bg-jacarta-700 dark:border-jacarta-600 border-jacarta-100 rounded-t-2lg rounded-b-2lg rounded-tl-none border bg-white p-6 md:p-10">
@@ -80,29 +32,42 @@ const ItemsTabs = ({ contractAddress, offerId }) => {
                   </Link>
                 </div>
                 <div className="mb-2 flex items-center">
-                  <span className="dark:text-jacarta-300 mr-2 min-w-[9rem]">Offer ID:</span>
-                  <span className="js-copy-clipboard text-jacarta-700 cursor-pointer select-none dark:text-white" data-tippy-content="Copy">
-                    {offerId}
-                  </span>
+                  <span className="dark:text-jacarta-300 mr-2 min-w-[9rem]">Contract Creator:</span>
+                  <Link href={`/manageSpaces/${initialCreator}`} target="_blank" rel="noopener noreferrer" className="text-accent">
+                    {initialCreator}
+                  </Link>
                 </div>
+
+                { isToken && <div className="mb-2 flex items-center">
+                  <span className="dark:text-jacarta-300 mr-2 min-w-[9rem]">Owner:</span>
+                  {isUserOwner ? (
+                    <div>
+                      <Link href={`/manageSpaces/${isUserOwner}`} rel="noopener noreferrer" className="text-accent mr-2">
+                        {isUserOwner}
+                      </Link>
+                      {whiteListedAddress.includes(isUserOwner) && (
+                        <span className="dark:border-jacarta-600 bg-green inline-flex h-6 w-6 items-center justify-center rounded-full border-2 border-white" data-tippy-content="Verified Collection">
+                          <Tippy content={<span>Verified Collection</span>}>
+                            <svg className="icon h-[.875rem] w-[.875rem] fill-white">
+                              <use xlinkHref="/icons.svg#icon-right-sign"></use>
+                            </svg>
+                          </Tippy>
+                        </span>
+                      )}
+                    </div>
+                  ): "No owner"}
+                </div>}
                 <div className="mb-2 flex items-center">
                   <span className="dark:text-jacarta-300 mr-2 min-w-[9rem]">Token Standard:</span>
                   <span className="text-jacarta-700 dark:text-white">ERC-721</span>
                 </div>
                 <div className="flex items-center">
                   <span className="dark:text-jacarta-300 mr-2 min-w-[9rem]">Blockchain:</span>
-                  <span className="text-jacarta-700 dark:text-white">Polygon</span>
+                  <span className="text-jacarta-700 dark:text-white">{getChainName(SDKChainId)}</span>
                 </div>
               </div>
             </div>
-          </TabPanel>
-          {/* <TabPanel>
-            <Activity_tab />
-          </TabPanel> */}
-          {/* <TabPanel>
-            <Price_history classes="dark:bg-jacarta-700 dark:border-jacarta-600 border-jacarta-100 rounded-t-2lg rounded-b-2lg rounded-tl-none border bg-white p-6" />
-          </TabPanel> */}
-        </Tabs>
+          
       </div>
     </>
   );

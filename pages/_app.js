@@ -10,17 +10,8 @@ import UserContext from "../components/UserContext";
 import { useRef } from "react";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import {
-  ThirdwebProvider,
-  ConnectWallet,
-  metamaskWallet,
-  coinbaseWallet,
-  walletConnect,
-  localWallet,
-  embeddedWallet,
-} from "@thirdweb-dev/react";
-import { Mumbai, Polygon, Sepolia } from "@thirdweb-dev/chains";
 import { NextUIProvider } from "@nextui-org/react";
+import Providers from "../providers/providers";
 
 if (typeof window !== "undefined") {
   require("bootstrap/dist/js/bootstrap");
@@ -39,44 +30,26 @@ function MyApp({ Component, pageProps }) {
   return (
     <>
       <Meta title="Home" />
-      <ThirdwebProvider
-        activeChain={Sepolia}
-        clientId="6f375d41f2a33f1f08f6042a65d49ec9"
-        authConfig={{
-          domain: "dsponsor.com",
-        }}
-        switchToActiveChain={true}
-        supportedWallets={[
-          metamaskWallet(),
-          coinbaseWallet({ recommended: true }),
-          walletConnect(),
-          localWallet(),
-          embeddedWallet({
-            auth: {
-              options: ["email", "google", "apple", "facebook"],
-            },
-          }),
-        ]}
-      >
-        <Provider store={store}>
-          <ThemeProvider enableSystem={true} attribute="class" defaultTheme="dark">
-            <MetaMaskProvider>
-              <NextUIProvider>
-                <UserContext.Provider value={{ scrollRef: scrollRef }}>
-                  {pid === "/login" ? (
-                    <Component {...pageProps} />
-                  ) : (
-                    <Layout>
-                      <Component {...pageProps} />
-                    </Layout>
-                  )}
-                </UserContext.Provider>
-                <ToastContainer position="top-right" autoClose={5000} />
-              </NextUIProvider>
-            </MetaMaskProvider>
-          </ThemeProvider>
-        </Provider>
-      </ThirdwebProvider>
+      <Providers>
+            <Provider store={store}>
+              <ThemeProvider enableSystem={true} attribute="class" defaultTheme="dark">
+                <MetaMaskProvider>
+                  <NextUIProvider>
+                    <UserContext.Provider value={{ scrollRef: scrollRef }}>
+                      {pid === "/login" ? (
+                        <Component {...pageProps} />
+                      ) : (
+                        <Layout>
+                          <Component {...pageProps} />
+                        </Layout>
+                      )}
+                    </UserContext.Provider>
+                    <ToastContainer position="top-right" autoClose={5000} />
+                  </NextUIProvider>
+                </MetaMaskProvider>
+              </ThemeProvider>
+            </Provider>
+          </Providers>
     </>
   );
 }
