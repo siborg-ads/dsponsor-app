@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, use } from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import "tippy.js/dist/tippy.css";
-import styles from "../../../styles/createPage/style.module.scss";
+import styles from "../../styles/createPage/style.module.scss";
 import Meta from "../../components/Meta.jsx";
 import Image from "next/image";
 import { useAddress, darkTheme, useBalance, Web3Button, useTokenBalance, useContract, useContractRead, useContractWrite, useStorageUpload, useTokenDecimals, CheckoutWithCard, CheckoutWithEth } from "@thirdweb-dev/react";
@@ -12,34 +12,35 @@ import Step_1_Mint from "../../components/sliderForm/PageMint/Step_1_Mint.jsx";
 import Step_2_Mint from "../../components/sliderForm/PageMint/Step_2_Mint.jsx";
 import Step_3_Mint from "../../components/sliderForm/PageMint/Step_3_Mint.jsx";
 import PreviewModal from "../../components/modal/previewModal.jsx";
-import Tippy from "@tippyjs/react";
+
 import "tippy.js/dist/tippy.css";
 import { ItemsTabs } from "../../components/component.js";
-import { fetchDataFromIPFS } from "../../data/services/ipfsService.js";
-import { bufferAdParams } from "../../utils/formatedData.js";
+
 import BuyModal from "../../components/modal/buyModal.jsx";
 import adminInstance from "../../utils/sdkProvider.js";
 import { toast } from "react-toastify";
 import OfferSkeleton from "../../components/skeleton/offerSkeleton.jsx";
-import { GetTokenAdOffer } from "../../data/services/TokenOffersService.js";
-import { getPossibleAdIntegrations } from "../../utils/getAdIntegrationsWithParams.js";
+
 import { Divider } from "@nextui-org/react";
 import Validation from "../../components/offer-section/validation.jsx";
-import { protocolFees, protocolFeesBigNumber } from "../../utils/constUtils.js";
+
 import stringToUint256 from "../../utils/stringToUnit256.js";
 import ItemManage from "../../components/item/ItemManage.jsx";
 import ItemBids from "../../components/item/ItemBids.jsx";
+import { useChainContext } from "../../contexts/hooks/useChainContext.js";
+import { fetchOfferToken } from "../../providers/methods/fetchOfferToken.js";
 
 import contractABI from "../../abi/dsponsorAdmin.json";
 
 import "react-toastify/dist/ReactToastify.css";
 import ModalHelper from "../../components/Helper/modalHelper.jsx";
 
-const Item = () => {
+const TokenPageContainer = () => {
   const router = useRouter();
 
-  const offerId = router.query.offer;
-  const tokenId = router.query?.item;
+  const offerId = router.query?.offerId;
+  const tokenId = router.query?.tokenId;
+  const {chainId, chainName} = useChainContext();
 
   const [tokenIdString, setTokenIdString] = useState(null);
   const maxBps = 10000;
@@ -108,13 +109,12 @@ const Item = () => {
   useEffect(() => {
     if (offerId && tokenId) {
       const fetchAdsOffers = async () => {
-        const offer = await GetTokenAdOffer(offerId, tokenId);
+        const offer = await fetchOfferToken(offerId, tokenId, chainId);
 
-        const destructuredIPFSResult = await fetchDataFromIPFS(offer.metadataURL);
+      
 
         const combinedData = {
           ...offer,
-          ...destructuredIPFSResult,
         };
         setMarketplaceListings(offer?.nftContract?.tokens[0]?.marketplaceListings);
 
@@ -126,7 +126,7 @@ const Item = () => {
     }
 
     setTokenIdString(tokenId?.toString());
-  }, [offerId, tokenId, successFullUpload, successFullBid, successFullListing, address]);
+  }, [offerId, tokenId, successFullUpload, successFullBid, successFullListing, address, chainId]);
 
   useEffect(() => {
     if (!offerData) return;
@@ -513,14 +513,14 @@ const Item = () => {
     body: "Congratulations, you have proposed an ad.",
     subBody: 'The media still has the power to validate or reject ad assets. You can follow the ad validation in the "Owned Ad Spaces" section.',
     buttonTitle: "Manage Spaces",
-    hrefButton: `/manageSpaces/${address}`,
+    hrefButton: `/manage/${address}`,
   };
   const successFullBuyModal = {
     title: "Checkout",
     body: "Congratulations, you purchase this ad space.",
     subBody: "Check your ad space in your manage section to submit your ad.",
     buttonTitle: "Manage Spaces",
-    hrefButton: `/manageSpaces/${address}`,
+    hrefButton: `/manage/${address}`,
   };
   const statutAds = {
     pending: "🔍 Your ad is pending, wait the validation of the creator",
@@ -541,7 +541,7 @@ const Item = () => {
     body: `The protocol fees (4%) are used to maintain the platform and the services provided. The fees are calculated based on the price of the ad space and are automatically deducted from the total amount paid by the buyer.`,
   };
 
-  const { description = "description not found", id = "1", image = "/images/gradient_creative.jpg", name = "DefaultName" } = Object.keys(offerData.offer.token_metadata).length > 0 ? tokenMetaData : offerData.offer;
+  const { description = "description not found", id = "1", image = "/images/gradient_creative.jpg", name = "DefaultName" } = Object.keys(offerData?.metadata?.offer?.token_metadata).length > 0 ? tokenMetaData : offerData?.metadata?.offer;
 
   return (
     <>
@@ -590,7 +590,7 @@ const Item = () => {
             <div className="md:w-3/5 md:basis-auto md:pl-8 lg:w-1/2 lg:pl-[3.75rem]">
               {/* <!-- Collection / Likes / Actions --> */}
 
-              <Link href={`/offer/${offerId}`} className="flex">
+              <Link href={`/${chainName}/offer/${offerId}`} className="flex">
                 <h1 className="font-display text-jacarta-700 mb-4 dark:hover:text-accent text-4xl font-semibold dark:text-white">{name}</h1>
               </Link>
 
@@ -769,4 +769,4 @@ const Item = () => {
   );
 };
 
-export default Item;
+export default TokenPageContainer;

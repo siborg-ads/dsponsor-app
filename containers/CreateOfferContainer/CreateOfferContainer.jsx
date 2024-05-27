@@ -17,7 +17,7 @@ import contractABI from "../../abi/dsponsorAdmin.json";
 import SliderForm from "../../components/sliderForm/sliderForm";
 import adminInstance from "../../utils/sdkProvider";
 
-const Create = () => {
+const CreateOfferContainer = () => {
   const [files, setFiles] = useState([]);
   const { mutateAsync: upload, isLoading } = useStorageUpload();
 
@@ -78,8 +78,6 @@ const Create = () => {
     }
   };
 
-  
-
   const validateInputs = () => {
     let isValid = true;
     let newErrors = {};
@@ -88,7 +86,7 @@ const Create = () => {
       isValid = false;
     }
 
-    if (!link){
+    if (!link) {
       newErrors.linkError = "The link is missing or invalid.";
       isValid = false;
     }
@@ -128,7 +126,7 @@ const Create = () => {
       newErrors.endDateError = "End date cannot be in the past.";
       isValid = false;
     }
-    console.log(parseFloat(selectedUnitPrice))
+    console.log(parseFloat(selectedUnitPrice));
     if (parseFloat(selectedUnitPrice) < 1 * 10 ** -tokenDecimals || isNaN(selectedUnitPrice) || selectedUnitPrice === null) {
       console.log("là");
       newErrors.unitPriceError = `Unit price must be at least ${1 * 10 ** -tokenDecimals}.`;
@@ -190,17 +188,15 @@ const Create = () => {
         options: { uploadWithGatewayUrl: true, uploadWithoutDirectory: true },
       });
       let uploadTerms = [];
-     
-      
-        if (typeof terms[0] === "string") {
-         uploadTerms.push(terms[0]);
-        
-        } else if (typeof terms[0] === "object" && terms[0] !== null && "name" in terms[0]) {
-          uploadTerms = await upload({
-            data: [terms[0]],
-            options: { uploadWithGatewayUrl: true, uploadWithoutDirectory: true },
-          });
-        }
+
+      if (typeof terms[0] === "string") {
+        uploadTerms.push(terms[0]);
+      } else if (typeof terms[0] === "object" && terms[0] !== null && "name" in terms[0]) {
+        uploadTerms = await upload({
+          data: [terms[0]],
+          options: { uploadWithGatewayUrl: true, uploadWithoutDirectory: true },
+        });
+      }
 
       if (name && link) {
         onUpload(name, link);
@@ -219,7 +215,7 @@ const Create = () => {
           name: name,
           description: description,
           image: uploadUrl[0],
-          terms:  uploadTerms[0],
+          terms: uploadTerms[0],
           external_link: link,
           valid_from: startDate || "1970-01-01T00:00:00Z",
           valid_to: endDate || "2100-01-01T00:00:00Z",
@@ -285,7 +281,7 @@ const Create = () => {
       setSuccessFullUpload(false);
       console.log(error);
       throw error;
-    } finally{
+    } finally {
       setIsLoadingButton(false);
     }
   };
@@ -300,7 +296,7 @@ const Create = () => {
     body: "Your offer has been created successfully",
     subBody: "❕❕ On your offer management page, you will find the integration code to copy/paste onto your platform.",
     buttonTitle: "Manage Spaces",
-    hrefButton: `/manageSpaces/${address}`,
+    hrefButton: `/manage/${address}`,
   };
 
   return (
@@ -416,4 +412,4 @@ const Create = () => {
   );
 };
 
-export default Create;
+export default CreateOfferContainer;

@@ -2,35 +2,31 @@ import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import "tippy.js/dist/tippy.css";
-import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
+
 import Meta from "../../components/Meta";
 import { ethers } from "ethers";
-
 import Image from "next/image";
 import { useContract, useContractWrite, useContractRead, useAddress } from "@thirdweb-dev/react";
 import Tippy from "@tippyjs/react";
 import "tippy.js/dist/tippy.css";
-import Review_carousel from "../../components/carousel/review_carousel";
-import Validated_refused_items from "../../components/collections/validated_refused_items";
-import { fetchDataFromIPFS } from "../../data/services/ipfsService";
 import adminInstance from "../../utils/sdkProvider";
 import OfferSkeleton from "../../components/skeleton/offerSkeleton";
-import { GetAdOffer } from "../../data/services/TokenOffersService";
 import { contractABI } from "../../data/services/contract";
 import Form from "../../components/collections-wide/sidebar/collections/Form";
 import { Divider } from "@nextui-org/react";
 import "tippy.js/dist/tippy.css";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import Validation from "../../components/offer-section/validation";
-import { protocolFees, protocolFeesBigNumber } from "../../utils/constUtils";
 import ModalHelper from "../../components/Helper/modalHelper";
 import { ItemsTabs } from "../../components/component";
+import { useChainContext } from "../../contexts/hooks/useChainContext";
+import { fetchOffer } from "../../providers/methods/fetchOffer";
 
 
-const Offer = () => {
+const OfferPageContainer = () => {
   const router = useRouter();
-
-  const offerId = router.query.offer;
+  const { chainId } = useChainContext();
+  const offerId = router.query?.offerId;
   const userAddress = useAddress();
   const [copied, setCopied] = useState(false);
   const [offerData, setOfferData] = useState([]);
@@ -48,22 +44,17 @@ const Offer = () => {
   const { contract: tokenContract } = useContract(offerData?.nftContract?.prices[0]?.currency, "token");
   const { data: symbolContract } = useContractRead(tokenContract, "symbol");
   const { data: decimalsContract } = useContractRead(tokenContract, "decimals");
- 
+
   const { data: bps } = useContractRead(DsponsorAdminContract, "feeBps");
   const maxBps = 10000;
-  
 
   useEffect(() => {
-    if (offerId) {
+    if (offerId && userAddress && chainId) {
       const fetchAdsOffers = async () => {
-        const offer = await GetAdOffer(offerId);
-        const destructuredIPFSResult = await fetchDataFromIPFS(offer.metadataURL);
-        const combinedData = {
-          ...offer,
-          ...destructuredIPFSResult,
-        };
-        console.log("combinedData", combinedData);
-        setOfferData(combinedData);
+        const offer = await fetchOffer(offerId, chainId);
+        
+        console.log("combinedData", offer);
+        setOfferData(offer);
         if (userAddress?.toLowerCase() === offer.initialCreator) {
           setIsOwner(true);
         }
@@ -71,30 +62,30 @@ const Offer = () => {
 
       fetchAdsOffers();
     }
-  }, [offerId, router, successFullRefuseModal, userAddress]);
+  }, [offerId, successFullRefuseModal, userAddress, chainId]);
 
-   useEffect(() => {
-     if (!offerData) return;
-     try {
-       const currencyTokenObject = {};
-       if (!decimalsContract && !symbolContract) {
-         const currencyToken = adminInstance.chain.getCurrencyByAddress(offerData.nftContract.prices[0].currency);
-         currencyTokenObject.symbol = currencyToken.symbol;
-         currencyTokenObject.decimals = currencyToken.decimals;
-       } else {
-         currencyTokenObject.symbol = symbolContract;
-         currencyTokenObject.decimals = decimalsContract;
-       }
+  useEffect(() => {
+    if (!offerData) return;
+    try {
+      const currencyTokenObject = {};
+      if (!decimalsContract && !symbolContract) {
+        const currencyToken = adminInstance.chain.getCurrencyByAddress(offerData.nftContract.prices[0].currency);
+        currencyTokenObject.symbol = currencyToken.symbol;
+        currencyTokenObject.decimals = currencyToken.decimals;
+      } else {
+        currencyTokenObject.symbol = symbolContract;
+        currencyTokenObject.decimals = decimalsContract;
+      }
 
-       const bigIntPrice = (BigInt(offerData?.nftContract?.prices[0]?.amount) * (BigInt(bps) + BigInt(maxBps))) / BigInt(maxBps);
-       const formatPrice = ethers.utils.formatUnits(bigIntPrice, currencyTokenObject.decimals);
+      const bigIntPrice = (BigInt(offerData?.nftContract?.prices[0]?.amount) * (BigInt(bps) + BigInt(maxBps))) / BigInt(maxBps);
+      const formatPrice = ethers.utils.formatUnits(bigIntPrice, currencyTokenObject.decimals);
 
-       setPrice(Number(Math.ceil(formatPrice * 1000) / 1000));
-       setCurrency(currencyTokenObject);
-     } catch (e) {
-       console.error("Error: Currency not found for address", offerData?.nftContract?.prices[0], e);
-     }
-   }, [symbolContract, decimalsContract, offerData, bps]);
+      setPrice(Number(Math.ceil(formatPrice * 1000) / 1000));
+      setCurrency(currencyTokenObject);
+    } catch (e) {
+      console.error("Error: Currency not found for address", offerData?.nftContract?.prices[0], e);
+    }
+  }, [symbolContract, decimalsContract, offerData, bps]);
 
   useEffect(() => {
     if (offerData?.nftContract?.royaltyBps) setRoyalties(offerData?.nftContract?.royaltyBps / 100);
@@ -116,14 +107,13 @@ const Offer = () => {
     setIsWordAlreadyTaken(false);
     setUrlFromChild(newUrl);
     setTokenData(tokenData);
-   for(const token of offerData.nftContract.tokens){
-    if(token.mint === null)return;
-      if(tokenData.toLowerCase() === token.mint.tokenData.toLowerCase()){
+    for (const token of offerData.nftContract.tokens) {
+      if (token.mint === null) return;
+      if (tokenData.toLowerCase() === token.mint.tokenData.toLowerCase()) {
         setIsWordAlreadyTaken(true);
       }
-   }
+    }
   };
-
 
   if (!offerData || offerData.length === 0) {
     return (
@@ -132,11 +122,11 @@ const Offer = () => {
       </div>
     );
   }
-const modalHelper = {
-  title: "Protocol Fees",
-  body: `The protocol fees (4%) are used to maintain the platform and the services provided. The fees are calculated based on the price of the ad space and are automatically deducted from the total amount paid by the buyer.`,
-};
-  const { description = "description not found", id = "1", image = ["/images/gradient_creative.jpg"], name = "DefaultName", nftContract = "N/A" } = offerData.offer ? offerData.offer : {};
+  const modalHelper = {
+    title: "Protocol Fees",
+    body: `The protocol fees (4%) are used to maintain the platform and the services provided. The fees are calculated based on the price of the ad space and are automatically deducted from the total amount paid by the buyer.`,
+  };
+  const { description = "description not found", id = "1", image = ["/images/gradient_creative.jpg"], name = "DefaultName", nftContract = "N/A" } = offerData.metadata.offer ? offerData.metadata.offer : {};
 
   return (
     <>
@@ -181,7 +171,7 @@ const modalHelper = {
               <div className="mb-3 flex">
                 {/* <!-- Collection --> */}
                 <div className="flex items-center">
-                  <Link href={`/manageSpaces/${offerData?.initialCreator}`} className="text-accent mr-2 text-sm font-bold">
+                  <Link href={`/manage/${offerData?.initialCreator}`} className="text-accent mr-2 text-sm font-bold">
                     {offerData?.initialCreator}
                   </Link>
                 </div>
@@ -319,4 +309,4 @@ const modalHelper = {
   );
 };
 
-export default Offer;
+export default OfferPageContainer;

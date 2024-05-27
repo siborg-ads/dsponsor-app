@@ -1,44 +1,42 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import Image from "next/image";
-import Social_dropdown from "../../components/dropdown/Social_dropdown";
-import Auctions_dropdown from "../../components/dropdown/Auctions_dropdown";
-import user_data from "../../data/user_data";
+
 import User_items from "../../components/user/User_items";
 import Tippy from "@tippyjs/react";
 import "tippy.js/dist/tippy.css"; // optional
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import Meta from "../../components/Meta";
-import { GetAllAdOffersFromUser } from "../../data/services/AdOffersService";
-import { GetAllTokenbyOfferForAUser } from "../../data/services/TokenOffersService";
+
 import { useAddress, darkTheme, useBalance, Web3Button, useTokenBalance, useContract, useContractRead, useContractWrite, useStorageUpload, useTokenDecimals, CheckoutWithCard, CheckoutWithEth } from "@thirdweb-dev/react";
 
-import adminInstance from "../../utils/sdkProvider";
+import {fetchAllTokenByOfferForAuser} from "../../providers/methods/fetchAllTokenByOfferForAuser";
+import { fetchAllOffersByUserAddress } from "../../providers/methods/fetchAllOffersByUserAddress";
+import { useChainContext } from "../../contexts/hooks/useChainContext";
 
-import { fetchDataFromIPFS } from "../../data/services/ipfsService";
-
-const ManageSpaceContainer = ({userAddress}) => {
+const ManageSpaceContainer = () => {
   const router = useRouter();
-  
+  const userAddress = router.query.manage;
   const address = useAddress();
   const [createdData, setCreatedData] = useState(null);
   const [mappedownedAdProposals, setMappedownedAdProposals] = useState(null);
   const [copied, setCopied] = useState(false);
   const [isPendinAdsOnOffer, setIsPendinAdsOnOffer] = useState(false);
   const [isOwner, setIsOwner] = useState(false);
+  const { chainId } = useChainContext();
 
   useEffect(() => {
-    console.log(userAddress);
-    if (userAddress) {
+
+    if (userAddress && chainId) {
       const fetchAdsOffers = async () => {
-        const offers = await GetAllAdOffersFromUser(userAddress);
+        const offers = await fetchAllOffersByUserAddress(userAddress, chainId);
         
-        const ownedAdProposals = await GetAllTokenbyOfferForAUser(userAddress);
+        const ownedAdProposals = await fetchAllTokenByOfferForAuser(userAddress, chainId);
         console.log(ownedAdProposals);
         const mappedOffers = [];
         for (const element of offers) {
           let isPending = false;
-          const destructuredIPFSResult = await fetchDataFromIPFS(element.metadataURL);
+          
           const pendingProposals = element.nftContract.tokens;
           for (const isPendingAds of pendingProposals) {
             if (isPendingAds.currentProposals.length > 0 && isPendingAds.currentProposals[0].pendingProposal !== null) {
@@ -50,11 +48,10 @@ const ManageSpaceContainer = ({userAddress}) => {
           const combinedData = {
             isPending: isPending,
             ...element,
-            ...destructuredIPFSResult,
           };
           mappedOffers.push(combinedData);
         }
-        console.log(mappedOffers);
+
         const mappedownedAdProposals = [];
 
         setCreatedData(mappedOffers);
@@ -65,11 +62,10 @@ const ManageSpaceContainer = ({userAddress}) => {
           }
 
           const IPFSLink = element.nftContract.adOffers[0].metadataURL;
-          const destructuredIPFSResult = await fetchDataFromIPFS(IPFSLink);
+    
           const combinedData = {
             ...element,
             ...(element.mint.tokenData ? { tokenData: element.mint.tokenData } : {}),
-            ...destructuredIPFSResult,
           };
           mappedownedAdProposals.push(combinedData);
         }
@@ -79,7 +75,7 @@ const ManageSpaceContainer = ({userAddress}) => {
       if (address === userAddress) setIsOwner(true);
       fetchAdsOffers();
     }
-  }, [userAddress, router, address]);
+  }, [userAddress, router, address, chainId]);
   useEffect(() => {
     setTimeout(() => {
       setCopied(false);

@@ -1,7 +1,9 @@
 import Image from "next/image";
 import Link from "next/link";
+import { useChainContext } from "../../contexts/hooks/useChainContext";
 
-const hero = () => {
+const Hero = () => {
+  const { chainName } = useChainContext();
   return (
     <section className="relative  pt-24 md:pt-10 h-1527">
       <picture className="pointer-events-none absolute inset-x-0 top-0 -z-10 block dark:hidden h-full">
@@ -17,7 +19,7 @@ const hero = () => {
             <h1 className="text-jacarta-700 font-bold font-display mb-6 text-center text-5xl dark:text-white  lg:text-6xl xl:text-7xl">Unlock Smarter Monetization with d&gt;sponsor</h1>
             <p className="dark:text-jacarta-200 mb-8 text-center text-lg">Leverage audience engagement into investment opportunities. A new Web3 model for an enhanced media and creator economy.</p>
             <div className="flex space-x-4 justify-center w-full">
-              <Link href="/offer/create" className="bg-accent shadow-accent-volume hover:bg-accent-dark w-36 rounded-full py-3 px-8 text-center font-semibold text-white transition-all">
+              <Link href={`/${chainName}/offer/create`} className="bg-accent shadow-accent-volume hover:bg-accent-dark w-36 rounded-full py-3 px-8 text-center font-semibold text-white transition-all">
                 Create
               </Link>
               <Link
@@ -28,11 +30,10 @@ const hero = () => {
               </Link>
             </div>
           </div>
-
         </div>
       </div>
     </section>
   );
 };
 
-export default hero;
+export default Hero;

@@ -66,10 +66,10 @@ const OfferItem = ({ item, url, isToken, isSelectionActive, isOwner }) => {
       console.error("Error: Currency not found for address");
     }
     if (isToken) {
-      const data = item.offer ? item.offer : null;
+      const data = item.metadata ? item.metadata : null;
       setItemData(data);
     } else {
-      const data = item.offer ? item.offer : null;
+      const data = item.metadata.offer ? item.metadata.offer : null;
       setItemData(data);
     }
   }, [item, isToken,  symbolContract, decimalsContract, bps]);

@@ -9,25 +9,11 @@ export async function generateMetadata({ params }) {
   };
 }
 
-export async function getServerSideProps(context) {
-  const { params } = context;
-
-  if (!params || !params.manage) {
-    return {
-      notFound: true,
-    };
-  }
-
-  return {
-    props: {
-      params,
-    },
-  };
-}
-
-export default function ManagePage({ params }) {
-  const { manage } = params;
 
 
-  return <ManageSpaceContainer userAddress={manage} />;
+export default function ManagePage() {
+
+
+
+  return <ManageSpaceContainer  />;
 }

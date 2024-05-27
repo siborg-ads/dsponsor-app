@@ -1,11 +1,10 @@
 import { executeQuery } from "../utils/executeQuery";
 import { gql } from "@apollo/client";
 
-export default async function fetchLastOffers(options) {
-    console.log(options, "options");
-  const chainId = options?.chainId;
+export default async function fetchLastOffers(chainId) {
 
-  const path = new URL(`https://api.studio.thegraph.com/proxy/65744/dsponsor-sepolia/version/latest`);
+ 
+const path = new URL(`https://relayer.dsponsor.com/api/${chainId}/graph`);
 
   const GET_DATA = gql`
     query Homepage_LastOffers {
@@ -34,5 +33,5 @@ export default async function fetchLastOffers(options) {
 
   const response = await executeQuery(path.href, GET_DATA);
 
-  return response;
+  return response.adOffers;
 }

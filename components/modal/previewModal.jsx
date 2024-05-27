@@ -120,14 +120,14 @@ const PreviewModal = ({
                     )}
                   </p>
 
-                  {link.length ? (
+                  {link?.length ? (
                     <p className="font-display  mb-2 block text-jacarta-400 text-sm">
-                      Link : {!errors.linkError ? <span className="dark:text-white text-base ml-2"> {link} </span> : <span className="text-red text-base ml-2"> {errors.linkError}</span>}
+                      Link : {!errors?.linkError ? <span className="dark:text-white text-base ml-2"> {link} </span> : <span className="text-red text-base ml-2"> {errors.linkError}</span>}
                     </p>
                   ) : (
                     ""
                   )}
-                  {imageURLSteps?.length > 0 && previewImage.filter((item) => item).length < imageURLSteps.length && (
+                  {imageURLSteps?.length > 0 && previewImage.filter((item) => item).length < imageURLSteps?.length && (
                     <p className="font-display  mb-2 block text-jacarta-400 text-sm">
                       Image preview : <span className="text-red text-base ml-2"> {errors.imageError}</span>
                     </p>

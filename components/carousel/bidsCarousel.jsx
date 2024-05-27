@@ -11,7 +11,7 @@ import { MdKeyboardArrowRight, MdKeyboardArrowLeft } from "react-icons/md";
 import { bidsModalShow } from "../../redux/counterSlice";
 import { useDispatch } from "react-redux";
 import Likes from "../likes";
-import { execute } from "../../.graphclient";
+
 import { gql } from "@apollo/client";
 import { useChainContext } from "../../contexts/hooks/useChainContext";
 

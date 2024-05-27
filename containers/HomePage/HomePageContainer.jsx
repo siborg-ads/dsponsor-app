@@ -1,28 +1,30 @@
 import React from "react";
 import { useEffect, useState } from "react";
 import { useAddress, darkTheme, Web3Button, useTokenBalance, useContract, useContractRead, useContractWrite, useStorageUpload, useTokenDecimals, CheckoutWithCard, CheckoutWithEth } from "@thirdweb-dev/react";
-import { fetchDataFromIPFS } from "../../data/services/ipfsService";
+
 import { Hero, Bids, Top_collection } from "../../components/component";
 import Meta from "../../components/Meta";
-import { getContractNFT } from "../../data/services/contract";
-import { readContract } from "thirdweb";
+
 import HowItWorks from "../../components/explication/howItWorks";
-import adminInstance from "../../utils/sdkProvider";
-import {GetAllAdOffers} from "../../data/services/AdOffersService";
+
+import fetchLastOffers from "../../providers/methods/fetchLastOffers";
+import { useChainContext } from "../../contexts/hooks/useChainContext";
 
 
-const HomePageContainer = ({lastOffers}) => {
+const HomePageContainer = () => {
   const [data, setData] = useState([]);
+  const { chainId } = useChainContext();
+
 
   useEffect(() => {
-    if (!lastOffers) return;
+    if (!chainId) return;
     const fetchAdsOffers = async () => {
+      const lastOffers = await fetchLastOffers(chainId);
   
-
       const mappedData = [];
       for (const element of lastOffers) {
         let tokenIdAllowedToMint = false;
-        const destructuredIPFSResult = await fetchDataFromIPFS(element.metadataURL);
+        
         for (const allowtoken of element.nftContract.tokens) {
           if (allowtoken.mint === null) {
             tokenIdAllowedToMint = allowtoken.tokenId;
@@ -33,7 +35,7 @@ const HomePageContainer = ({lastOffers}) => {
         const combinedData = {
           ...element,
           tokenIdAllowedToMint: tokenIdAllowedToMint,
-          ...destructuredIPFSResult,
+   
         };
 
         if (!tokenIdAllowedToMint && element.nftContract.allowList === true) continue;
@@ -41,37 +43,11 @@ const HomePageContainer = ({lastOffers}) => {
         mappedData.push(combinedData);
       }
       console.log(mappedData);
-      //   const ads = await adminInstance.getOffers(
-      //     {limit: 30},
-      //     { includeMetadata: true, includePrices: true, includeAllowedTokens: true }
-      //   );
-
-      //   for (const element of ads) {
-      //     if (!element.nftContract) return;
-      //     const contract = await getContractNFT(element.nftContract);
-
-      //  for (let i = 0; i < element.allowedTokens?.length; i++) {
-      //    const isTokenAllowed = await readContract({
-      //      contract: contract,
-      //      method: "tokenIdIsAllowedToMint",
-      //      params: [i],
-      //    });
-
-      //    if (isTokenAllowed) {
-      //      mappedData.push({
-      //        ...element,
-      //        tokenIdAllowedToMint: i,
-      //      });
-      //      break;
-      //    }
-      //  }
-
-      //   }
-      //    console.log(mappedData);
+      
       setData(mappedData);
     };
     fetchAdsOffers();
-  }, [lastOffers]);
+  }, [chainId]);
   return (
     <main>
       <Meta title="Home 1" />

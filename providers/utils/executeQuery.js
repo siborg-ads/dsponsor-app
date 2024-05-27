@@ -11,7 +11,7 @@ export const executeQuery = async (url, query, variables) => {
       }),
     });
 
-    console.log("Raw response:", response);
+ 
 
     if (!response.ok) {
       console.error("Network response was not ok", response.statusText);
@@ -19,7 +19,7 @@ export const executeQuery = async (url, query, variables) => {
     }
 
     const responseText = await response.text();
-    console.log("Response text:", responseText);
+   
 
 
     const result = JSON.parse(responseText);

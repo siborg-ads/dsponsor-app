@@ -17,8 +17,9 @@ import SliderForm from "../sliderForm/sliderForm";
 import Step_1_Mint from "../sliderForm/PageMint/Step_1_Mint";
 import Step_2_Mint from "../sliderForm/PageMint/Step_2_Mint";
 import Step_3_Mint from "../sliderForm/PageMint/Step_3_Mint";
- import { uploadToIPFS } from "../../data/services/ipfsService";
+
  import contractABI from "../../abi/dsponsorAdmin.json";
+ import { useChainContext } from "../../contexts/hooks/useChainContext";
 
 import PreviewModal from "../modal/previewModal";
 import { image } from "@nextui-org/react";
@@ -50,7 +51,7 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
  
   const { mutateAsync: uploadToIPFS, isLoading: isUploading } = useStorageUpload();
   const { mutateAsync: submitAd } = useContractWrite(DsponsorAdminContract, "submitAdProposals");
-
+const { chainName } = useChainContext();
 
   const handleFilter = (category) => {
     if (category !== "all") {
@@ -321,7 +322,9 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
                       item={item}
                       isToken={true}
                       isSelectionActive={isSelectionActive}
-                      url={!item.tokenData ? `/offer/${item.nftContract.adOffers[0].id}/${item.tokenId}` : `/offer/${item.nftContract.adOffers[0].id}/${item.tokenId}?tokenData=${item.tokenData}`}
+                      url={
+                        !item.tokenData ? `/${chainName}/offer/${item.nftContract.adOffers[0].id}/${item.tokenId}` : `/${chainName}/offer/${item.nftContract.adOffers[0].id}/${item.tokenId}?tokenData=${item.tokenData}`
+                      }
                     />
                   </div>
                 ) : (
@@ -330,7 +333,7 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
                     key={index}
                     isToken={true}
                     isSelectionActive={isSelectionActive}
-                    url={!item.tokenData ? `/offer/${item.nftContract.adOffers[0].id}/${item.tokenId}` : `/offer/${item.nftContract.adOffers[0].id}/${item.tokenId}?tokenData=${item.tokenData}`}
+                    url={!item.tokenData ? `/${chainName}/offer/${item.nftContract.adOffers[0].id}/${item.tokenId}` : `/${chainName}/offer/${item.nftContract.adOffers[0].id}/${item.tokenId}?tokenData=${item.tokenData}`}
                   />
                 );
               })}
