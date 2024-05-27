@@ -166,8 +166,8 @@ setTokenBigIntPrice(offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.b
   },[offerData, isAllowedToMint, isOwner, offerNotFormated, tokenId, successFullUpload, marketplaceListings]);
 
   useEffect(() => {
-if(!isUserOwner || !marketplaceListings) return;
-if (marketplaceListings[0]?.listingType === "Auction" && marketplaceListings[0]?.status === "CREATED" && address.toLowerCase() === marketplaceListings[0]?.lister) {
+if(!isUserOwner || !marketplaceListings || address ) return;
+if (marketplaceListings[0]?.listingType === "Auction" && marketplaceListings[0]?.status === "CREATED" && address?.toLowerCase() === marketplaceListings[0]?.lister) {
 
   setIsOwner(true);
   setIsTokenInAuction(true);
