@@ -13,6 +13,7 @@ const SDKProvider = ({ children }) => {
 
     const chainId = useChainId();
 
+
     useEffect(() => {
         setSDKChainId(chainId);
     }, [chainId]);

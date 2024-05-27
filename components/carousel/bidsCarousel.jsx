@@ -13,6 +13,7 @@ import { useDispatch } from "react-redux";
 import Likes from "../likes";
 import { execute } from "../../.graphclient";
 import { gql } from "@apollo/client";
+import { useChainContext } from "../../contexts/hooks/useChainContext";
 
 import { useEffect, useState } from "react";
 import OfferItem from "../cards/offerItem";
@@ -21,13 +22,8 @@ import OfferItem from "../cards/offerItem";
 
 const BidsCarousel = ({data}) => {
  
-//  if (!data || data.length === 0) {
-//    return (
-//      <div className="flex w-full justify-center">
-//        <Image src="/images/loading-bullet.svg" alt="icon" width={60} height={60} />
-//      </div>
-//    );
-//  }
+  const { chainName } = useChainContext();
+
   return (
     <>
       <Swiper
@@ -63,7 +59,7 @@ const BidsCarousel = ({data}) => {
           data.map((item, index) => {
             return (
               <SwiperSlide className="text-white" key={index}>
-                <OfferItem item={item} url={`/offer/${item.id}/${item.tokenIdAllowedToMint ? item.tokenIdAllowedToMint : "" }`} />
+                <OfferItem item={item} url={`/${chainName}/offer/${item.id}/${item.tokenIdAllowedToMint ? item.tokenIdAllowedToMint : "d"}`} />
               </SwiperSlide>
             );
           })

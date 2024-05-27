@@ -3,39 +3,37 @@ import { useRouter } from "next/router";
 import Link from "next/link";
 import "tippy.js/dist/tippy.css";
 import styles from "../../../styles/createPage/style.module.scss";
-import Meta from "../../../components/Meta";
+import Meta from "../../../components/Meta.jsx";
 import Image from "next/image";
 import { useAddress, darkTheme, useBalance, Web3Button, useTokenBalance, useContract, useContractRead, useContractWrite, useStorageUpload, useTokenDecimals, CheckoutWithCard, CheckoutWithEth } from "@thirdweb-dev/react";
 import { ethers } from "ethers";
 import SliderForm from "../../../components/sliderForm/sliderForm.jsx";
-import Step_1_Mint from "../../../components/sliderForm/PageMint/Step_1_Mint";
-import Step_2_Mint from "../../../components/sliderForm/PageMint/Step_2_Mint";
-import Step_3_Mint from "../../../components/sliderForm/PageMint/Step_3_Mint";
-import PreviewModal from "../../../components/modal/previewModal";
+import Step_1_Mint from "../../../components/sliderForm/PageMint/Step_1_Mint.jsx";
+import Step_2_Mint from "../../../components/sliderForm/PageMint/Step_2_Mint.jsx";
+import Step_3_Mint from "../../../components/sliderForm/PageMint/Step_3_Mint.jsx";
+import PreviewModal from "../../../components/modal/previewModal.jsx";
 import Tippy from "@tippyjs/react";
 import "tippy.js/dist/tippy.css";
-import { ItemsTabs } from "../../../components/component";
-import { fetchDataFromIPFS } from "../../../data/services/ipfsService";
-import { bufferAdParams } from "../../../utils/formatedData";
-import BuyModal from "../../../components/modal/buyModal";
-import adminInstance from "../../../utils/sdkProvider";
+import { ItemsTabs } from "../../../components/component.js";
+import { fetchDataFromIPFS } from "../../../data/services/ipfsService.js";
+import { bufferAdParams } from "../../../utils/formatedData.js";
+import BuyModal from "../../../components/modal/buyModal.jsx";
+import adminInstance from "../../../utils/sdkProvider.js";
 import { toast } from "react-toastify";
 import OfferSkeleton from "../../../components/skeleton/offerSkeleton.jsx";
-import { GetTokenAdOffer } from "../../../data/services/TokenOffersService";
-import { getPossibleAdIntegrations } from "../../../utils/getAdIntegrationsWithParams";
+import { GetTokenAdOffer } from "../../../data/services/TokenOffersService.js";
+import { getPossibleAdIntegrations } from "../../../utils/getAdIntegrationsWithParams.js";
 import { Divider } from "@nextui-org/react";
 import Validation from "../../../components/offer-section/validation.jsx";
-import { protocolFees, protocolFeesBigNumber } from "../../../utils/constUtils";
-import stringToUint256 from "../../../utils/stringToUnit256";
-import ItemManage from "../../../components/item/ItemManage";
-import ItemBids from "../../../components/item/ItemBids";
+import { protocolFees, protocolFeesBigNumber } from "../../../utils/constUtils.js";
+import stringToUint256 from "../../../utils/stringToUnit256.js";
+import ItemManage from "../../../components/item/ItemManage.jsx";
+import ItemBids from "../../../components/item/ItemBids.jsx";
 
 import contractABI from "../../../abi/dsponsorAdmin.json";
 
 import "react-toastify/dist/ReactToastify.css";
 import ModalHelper from "../../../components/Helper/modalHelper.jsx";
-
-
 
 const Item = () => {
   const router = useRouter();
@@ -84,9 +82,9 @@ const Item = () => {
   const [tokenBigIntPrice, setTokenBigIntPrice] = useState(null);
   const [successFullBid, setSuccessFullBid] = useState(false);
   const [isTokenInAuction, setIsTokenInAuction] = useState(false);
-   const [successFullListing, setSuccessFullListing] = useState(false);
-   const [buyoutPriceAmount, setBuyoutPriceAmount] = useState(null);
-   const [royaltiesFeesAmount, setRoyaltiesFeesAmount] = useState(null);
+  const [successFullListing, setSuccessFullListing] = useState(false);
+  const [buyoutPriceAmount, setBuyoutPriceAmount] = useState(null);
+  const [royaltiesFeesAmount, setRoyaltiesFeesAmount] = useState(null);
 
   const { contract: DsponsorAdminContract } = useContract("0xE442802706F3603d58F34418Eac50C78C7B4E8b3", contractABI);
   const { contract: DsponsorNFTContract } = useContract(offerData?.nftContract?.id);
@@ -119,7 +117,7 @@ const Item = () => {
           ...destructuredIPFSResult,
         };
         setMarketplaceListings(offer?.nftContract?.tokens[0]?.marketplaceListings);
-      
+
         console.log(combinedData, "combinedData");
         setOfferData(combinedData);
       };
@@ -131,7 +129,7 @@ const Item = () => {
   }, [offerId, tokenId, successFullUpload, successFullBid, successFullListing, address]);
 
   useEffect(() => {
-    if(!offerData) return;
+    if (!offerData) return;
 
     if (!isOwner && !offerNotFormated && offerData?.nftContract?.tokens[0]?.mint === null && isAllowedToMint !== null) {
       setTokenStatut("MINTABLE");
@@ -139,9 +137,9 @@ const Item = () => {
       setTokenBigIntPrice(offerData?.nftContract?.prices[0]?.amount);
       return;
     }
-    if(offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.status === "CREATED") {
-      if (offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.listingType === "Direct"){
-setTokenBigIntPrice(offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.buyoutPricePerToken);
+    if (offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.status === "CREATED") {
+      if (offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.listingType === "Direct") {
+        setTokenBigIntPrice(offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.buyoutPricePerToken);
         setTokenStatut("DIRECT");
       }
       if (offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.listingType === "Auction" && offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.bids.length > 0) {
@@ -150,36 +148,31 @@ setTokenBigIntPrice(offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.b
       } else if (offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.listingType === "Auction" && offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.bids.length <= 0) {
         setTokenBigIntPrice(offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.reservePricePerToken);
         setTokenStatut("AUCTION");
-      };
+      }
       setTokenCurrencyAddress(offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.currency);
-      
+
       return;
     }
-    if (offerData?.nftContract?.tokens[0]?.mint !== null ) {
-
+    if (offerData?.nftContract?.tokens[0]?.mint !== null) {
       setTokenStatut("MINTED");
       setTokenCurrencyAddress(offerData?.nftContract?.prices[0]?.currency);
       setTokenBigIntPrice(offerData?.nftContract?.prices[0]?.amount);
       return;
     }
-    
-  },[offerData, isAllowedToMint, isOwner, offerNotFormated, tokenId, successFullUpload, marketplaceListings]);
+  }, [offerData, isAllowedToMint, isOwner, offerNotFormated, tokenId, successFullUpload, marketplaceListings]);
 
   useEffect(() => {
-if(!isUserOwner || !marketplaceListings || address ) return;
-if (marketplaceListings[0]?.listingType === "Auction" && marketplaceListings[0]?.status === "CREATED" && address?.toLowerCase() === marketplaceListings[0]?.lister) {
+    if (!isUserOwner || !marketplaceListings || address) return;
+    if (marketplaceListings[0]?.listingType === "Auction" && marketplaceListings[0]?.status === "CREATED" && address?.toLowerCase() === marketplaceListings[0]?.lister) {
+      setIsOwner(true);
+      setIsTokenInAuction(true);
+    }
 
-  setIsOwner(true);
-  setIsTokenInAuction(true);
-}   
-
-
-if (isUserOwner) {
+    if (isUserOwner) {
       if (isUserOwner === address) {
-     
         setIsOwner(true);
       }
-    } 
+    }
   }, [isUserOwner, address, marketplaceListings]);
 
   useEffect(() => {
@@ -239,10 +232,8 @@ if (isUserOwner) {
   }, [offerData]);
 
   useEffect(() => {
-
     if (!offerData || !tokenBigIntPrice) return;
     try {
-      
       const currencyTokenObject = {};
       if (!decimalsContract && !symbolContract) {
         const currencyToken = adminInstance.chain.getCurrencyByAddress(tokenCurrencyAddress);
@@ -359,15 +350,13 @@ if (isUserOwner) {
       let allowance;
       if (tokenStatut === "DIRECT" || tokenStatut === "AUCTION") {
         allowance = await tokenContract.call("allowance", [address, "0xac03b675fa9644279b92f060bf542eed54f75599"]);
-     
       } else {
-
         allowance = await tokenContract.call("allowance", [address, "0xE442802706F3603d58F34418Eac50C78C7B4E8b3"]);
       }
 
       const allowanceBigNumber = ethers.BigNumber.from(allowance._hex);
       const amountToApproveBigNumber = ethers.BigNumber.from(amountToApprove._hex);
-     
+
       if (allowanceBigNumber.gt(amountToApproveBigNumber)) return;
 
       setAllowanceTrue(true);
@@ -463,22 +452,17 @@ if (isUserOwner) {
       const argsWithPossibleOverrides = isEthCurrency ? { args: [functionWithPossibleArgs], overrides: { value: amountToApprove } } : { args: [functionWithPossibleArgs] };
 
       if (adStatut !== 0 && !isAllowedToMint && marketplaceListings.length <= 0) {
-
         await submitAd({ args: functionWithPossibleArgs });
         setSuccessFullUpload(true);
       } else if (marketplaceListings.length <= 0) {
-
         await mintAndSubmit(argsWithPossibleOverrides);
         setSuccessFullUpload(true);
       } else {
-
         await directBuy({
           args: [functionWithPossibleArgs],
         });
         setSuccessFullUpload(true);
       }
-
-      
     } catch (error) {
       console.error("Erreur de soumission du token:", error);
       setSuccessFullUpload(false);
@@ -489,7 +473,6 @@ if (isUserOwner) {
   };
 
   const checkUserBalance = (tokenAddressBalance, priceToken) => {
-
     try {
       const parsedTokenBalance = parseFloat(tokenAddressBalance.displayValue);
       const parsedPriceToken = parseFloat(priceToken);

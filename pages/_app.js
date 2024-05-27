@@ -26,7 +26,6 @@ function MyApp({ Component, pageProps }) {
   const scrollRef = useRef({
     scrollPos: 0,
   });
-
   return (
     <>
       <Meta title="Home" />

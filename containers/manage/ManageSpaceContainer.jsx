@@ -17,9 +17,9 @@ import adminInstance from "../../utils/sdkProvider";
 
 import { fetchDataFromIPFS } from "../../data/services/ipfsService";
 
-const ManageSpaces = () => {
+const ManageSpaceContainer = ({userAddress}) => {
   const router = useRouter();
-  const userAddress = router.query.manageSpaces;
+  
   const address = useAddress();
   const [createdData, setCreatedData] = useState(null);
   const [mappedownedAdProposals, setMappedownedAdProposals] = useState(null);
@@ -28,9 +28,11 @@ const ManageSpaces = () => {
   const [isOwner, setIsOwner] = useState(false);
 
   useEffect(() => {
+    console.log(userAddress);
     if (userAddress) {
       const fetchAdsOffers = async () => {
         const offers = await GetAllAdOffersFromUser(userAddress);
+        
         const ownedAdProposals = await GetAllTokenbyOfferForAUser(userAddress);
         console.log(ownedAdProposals);
         const mappedOffers = [];
@@ -56,7 +58,6 @@ const ManageSpaces = () => {
         const mappedownedAdProposals = [];
 
         setCreatedData(mappedOffers);
-        
 
         for (const element of ownedAdProposals) {
           if (!element.nftContract?.adOffers[0]?.metadataURL) {
@@ -75,7 +76,7 @@ const ManageSpaces = () => {
         console.log(mappedownedAdProposals);
         setMappedownedAdProposals(mappedownedAdProposals);
       };
-      if(address === userAddress) setIsOwner(true);
+      if (address === userAddress) setIsOwner(true);
       fetchAdsOffers();
     }
   }, [userAddress, router, address]);
@@ -102,8 +103,6 @@ const ManageSpaces = () => {
             <div className="container">
               <div className="text-center">
                 <div className="dark:bg-jacarta-700 dark:border-jacarta-600 border-jacarta-100  inline-flex items-center justify-center rounded-full border bg-white py-1.5 px-4">
-                  
-
                   <Tippy hideOnClick={false} content={copied ? <span>copied</span> : <span>copy</span>}>
                     <button className="js-copy-clipboard dark:text-jacarta-200 max-w-[10rem] select-none overflow-hidden text-ellipsis whitespace-nowrap">
                       <CopyToClipboard text="userId" onCopy={() => setCopied(true)}>
@@ -123,4 +122,4 @@ const ManageSpaces = () => {
   );
 };
 
-export default ManageSpaces;
+export default ManageSpaceContainer;
