@@ -16,11 +16,12 @@ import contractABI from "../../abi/dsponsorAdmin.json";
 
 import SliderForm from "../../components/sliderForm/sliderForm";
 import adminInstance from "../../utils/sdkProvider";
+import { useChainContext } from "../../contexts/hooks/useChainContext";
 
 const CreateOfferContainer = () => {
   const [files, setFiles] = useState([]);
   const { mutateAsync: upload, isLoading } = useStorageUpload();
-
+  const { currentChainObject } = useChainContext();
   const [link, setLink] = useState(null);
   const [errors, setErrors] = useState({});
   const [description, setDescription] = useState(false);
@@ -39,7 +40,7 @@ const CreateOfferContainer = () => {
   const [selectedParameter, setSelectedParameter] = useState([]);
   const [displayedParameter, setDisplayedParameter] = useState([]);
   const [selectedTypeParameter, setSelectedTypeParameter] = useState(0);
-  const { contract: DsponsorAdminContract } = useContract("0xE442802706F3603d58F34418Eac50C78C7B4E8b3", contractABI);
+  const { contract: DsponsorAdminContract } = useContract(currentChainObject?.smartContracts?.DSPONSORADMIN?.address, currentChainObject?.smartContracts?.DSPONSORADMIN?.abi);
   const { mutateAsync: createDSponsorNFTAndOffer } = useContractWrite(DsponsorAdminContract, "createDSponsorNFTAndOffer");
   const [imageRatios, setImageRatios] = useState([]);
   const [tokenDecimals, setTokenDecimals] = useState(0);
@@ -308,10 +309,10 @@ const CreateOfferContainer = () => {
           <Image width={1519} height={773} priority src="/images/gradient_light.jpg" alt="gradient" className="h-full w-full object-cover" />
         </picture>
         <div className="container">
-          <h1 className="font-display text-jacarta-700 pt-16 pb-8 text-center text-4xl font-medium dark:text-white">Create ad space offer</h1>
+          <h1 className="font-display text-jacarta-700 pt-16 pb-8 text-center text-3xl font-medium dark:text-white">Create ad space offer</h1>
 
-          <div className="mx-auto max-w-[48.125rem]">
-            <p className="text-center pt-8 pb-16 dark:text-white">
+          <div className="mx-auto max-w-[48.125rem]" style={{ maxWidth: "48.125rem" }}>
+            <p className="text-center pt- pb-12 dark:text-white">
               Finance your activity by selling ad space ownerships. The sponsors, the buyers of ad spaces, will have the exclusive right to propose an ad on your media platform, such as your website. You retain full
               control to accept or reject any ads submitted.{" "}
             </p>

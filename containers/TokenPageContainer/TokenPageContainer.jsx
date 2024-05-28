@@ -40,7 +40,9 @@ const TokenPageContainer = () => {
 
   const offerId = router.query?.offerId;
   const tokenId = router.query?.tokenId;
-  const {chainId, chainName} = useChainContext();
+   const { currentChainObject } = useChainContext();
+   const chainId = currentChainObject?.chainId;
+   const chainName = currentChainObject?.chainName;
 
   const [tokenIdString, setTokenIdString] = useState(null);
   const maxBps = 10000;
@@ -87,7 +89,7 @@ const TokenPageContainer = () => {
   const [buyoutPriceAmount, setBuyoutPriceAmount] = useState(null);
   const [royaltiesFeesAmount, setRoyaltiesFeesAmount] = useState(null);
 
-  const { contract: DsponsorAdminContract } = useContract("0xE442802706F3603d58F34418Eac50C78C7B4E8b3", contractABI);
+const { contract: DsponsorAdminContract } = useContract(currentChainObject?.smartContracts?.DSPONSORADMIN?.address, currentChainObject?.smartContracts?.DSPONSORADMIN?.abi);
   const { contract: DsponsorNFTContract } = useContract(offerData?.nftContract?.id);
   const { mutateAsync: uploadToIPFS, isLoading: isUploading } = useStorageUpload();
   const { mutateAsync: mintAndSubmit } = useContractWrite(DsponsorAdminContract, "mintAndSubmit");
@@ -101,13 +103,13 @@ const TokenPageContainer = () => {
   const { data: isAllowedToMint, isLoading: isLoadingAllowedToMint } = useContractRead(DsponsorNFTContract, "tokenIdIsAllowedToMint", tokenIdString);
   const { data: isUserOwner } = useContractRead(DsponsorNFTContract, "ownerOf", [tokenIdString]);
   const { data: royaltiesInfo } = useContractRead(DsponsorNFTContract, "royaltyInfo", [tokenIdString, 100]);
-  const { contract: dsponsorMpContract } = useContract("0xac03b675fa9644279b92f060bf542eed54f75599");
+  const { contract: dsponsorMpContract } = useContract(currentChainObject?.smartContracts?.DSPONSORMP?.address);
   const { mutateAsync: directBuy } = useContractWrite(dsponsorMpContract, "buy");
 
   const now = Math.floor(new Date().getTime() / 1000);
 
   useEffect(() => {
-    if (offerId && tokenId) {
+    if (offerId && tokenId && address && chainId) {
       const fetchAdsOffers = async () => {
         const offer = await fetchOfferToken(offerId, tokenId, chainId);
 
@@ -116,7 +118,9 @@ const TokenPageContainer = () => {
         const combinedData = {
           ...offer,
         };
+        if(offer?.nftContract?.tokens.length > 0){
         setMarketplaceListings(offer?.nftContract?.tokens[0]?.marketplaceListings);
+        }
 
         console.log(combinedData, "combinedData");
         setOfferData(combinedData);
@@ -130,7 +134,10 @@ const TokenPageContainer = () => {
 
   useEffect(() => {
     if (!offerData) return;
-
+    if (!offerNotFormated && offerData?.metadata?.offer?.token_metadata && offerData?.nftContract?.tokens.length <= 0) {
+      setTokenStatut("SIBORG");
+    return;
+    }
     if (!isOwner && !offerNotFormated && offerData?.nftContract?.tokens[0]?.mint === null && isAllowedToMint !== null) {
       setTokenStatut("MINTABLE");
       setTokenCurrencyAddress(offerData?.nftContract?.prices[0]?.currency);
@@ -162,7 +169,7 @@ const TokenPageContainer = () => {
   }, [offerData, isAllowedToMint, isOwner, offerNotFormated, tokenId, successFullUpload, marketplaceListings]);
 
   useEffect(() => {
-    if (!isUserOwner || !marketplaceListings || address) return;
+    if (!isUserOwner || !marketplaceListings || !address) return;
     if (marketplaceListings[0]?.listingType === "Auction" && marketplaceListings[0]?.status === "CREATED" && address?.toLowerCase() === marketplaceListings[0]?.lister) {
       setIsOwner(true);
       setIsTokenInAuction(true);
@@ -194,10 +201,10 @@ const TokenPageContainer = () => {
       }
 
       let tokenMetaData = {};
-      if (offerData.offer.token_metadata && isValidId) {
-        tokenMetaData.description = offerData.offer.token_metadata.description.replace(/{tokenData}/g, `${tokenData}`);
-        tokenMetaData.image = offerData.offer.token_metadata.image.replace(/{tokenData}/g, `${tokenData}`);
-        tokenMetaData.name = offerData.offer.token_metadata.name.replace(/{tokenData}/g, `${tokenData}`);
+      if (offerData?.metadata.offer?.token_metadata && isValidId) {
+        tokenMetaData.description = offerData.metadata.offer.token_metadata.description.replace(/{tokenData}/g, `${tokenData}`);
+        tokenMetaData.image = offerData.metadata.offer.token_metadata.image.replace(/{tokenData}/g, `${tokenData}`);
+        tokenMetaData.name = offerData.metadata.offer.token_metadata.name.replace(/{tokenData}/g, `${tokenData}`);
       }
       setTokenMetaData(tokenMetaData);
     }
@@ -349,9 +356,9 @@ const TokenPageContainer = () => {
     if (tokenCurrencyAddress !== "0x0000000000000000000000000000000000000000") {
       let allowance;
       if (tokenStatut === "DIRECT" || tokenStatut === "AUCTION") {
-        allowance = await tokenContract.call("allowance", [address, "0xac03b675fa9644279b92f060bf542eed54f75599"]);
+        allowance = await tokenContract.call("allowance", [address, currentChainObject?.smartContracts?.DSPONSORMP?.address]);
       } else {
-        allowance = await tokenContract.call("allowance", [address, "0xE442802706F3603d58F34418Eac50C78C7B4E8b3"]);
+        allowance = await tokenContract.call("allowance", [address, currentChainObject?.smartContracts?.DSPONSORADMIN?.address]);
       }
 
       const allowanceBigNumber = ethers.BigNumber.from(allowance._hex);
@@ -371,9 +378,9 @@ const TokenPageContainer = () => {
         throw new Error("Not enough balance for approval.");
       }
       if (marketplaceListings.length > 0) {
-        await approve({ args: ["0xac03b675fa9644279b92f060bf542eed54f75599", amountToApprove] });
+        await approve({ args: [currentChainObject?.smartContracts?.DSPONSORMP?.address, amountToApprove] });
       } else {
-        await approve({ args: ["0xE442802706F3603d58F34418Eac50C78C7B4E8b3", amountToApprove] });
+        await approve({ args: [currentChainObject?.smartContracts?.DSPONSORADMIN?.address, amountToApprove] });
       }
       setAllowanceTrue(false);
     } catch (error) {
@@ -384,16 +391,19 @@ const TokenPageContainer = () => {
     }
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (preview = false) => {
     setIsLoadingButton(true);
     if (!buyMethod) {
       if (!validateInputs()) {
         return;
       }
     }
-    const hasEnoughBalance = checkUserBalance(tokenBalance, price);
-    if (!hasEnoughBalance) {
-      throw new Error("Not enough balance for approval.");
+    if(!preview){
+
+      const hasEnoughBalance = checkUserBalance(tokenBalance, price);
+      if (!hasEnoughBalance) {
+        throw new Error("Not enough balance for approval.");
+      }
     }
 
     // IPFS upload
@@ -407,6 +417,7 @@ const TokenPageContainer = () => {
           options: { uploadWithGatewayUrl: true, uploadWithoutDirectory: true },
         });
       } catch (error) {
+        setIsLoadingButton(false);
         console.error("Erreur lors de l'upload à IPFS:", error);
         throw new Error("Upload to IPFS failed.");
       }
@@ -415,7 +426,7 @@ const TokenPageContainer = () => {
       const argsMintAndSubmit = {
         tokenId: tokenIdString,
         to: address,
-        currency: offerData?.nftContract.prices[0].currency,
+        currency: offerData?.nftContract?.prices[0]?.currency,
         tokenData: tokenData ? tokenData : "",
         offerId: offerId,
         adParameters: [],
@@ -426,11 +437,11 @@ const TokenPageContainer = () => {
         if (marketplaceListings.length > 0) {
           const argsdirectBuy = [
             {
-              listingId: marketplaceListings[0].id,
+              listingId: marketplaceListings[0]?.id,
               buyFor: address,
               quantity: 1,
-              currency: marketplaceListings[0].currency,
-              totalPrice: marketplaceListings[0].buyoutPricePerToken,
+              currency: marketplaceListings[0]?.currency,
+              totalPrice: marketplaceListings[0]?.buyoutPricePerToken,
               referralAdditionalInformation: "",
             },
           ];
@@ -438,14 +449,15 @@ const TokenPageContainer = () => {
           return argsdirectBuy;
         } else {
           const argsAdSubmited = {
-            offerId: submitAdFormated.offerId,
-            tokenId: submitAdFormated.tokenId,
-            adParameters: submitAdFormated.params,
+            offerId: submitAdFormated?.offerId,
+            tokenId: submitAdFormated?.tokenId,
+            adParameters: submitAdFormated?.params,
             data: [uploadUrl[0], link],
           };
           return argsAdSubmited;
         }
       };
+   
 
       const isEthCurrency = tokenCurrencyAddress === "0x0000000000000000000000000000000000000000";
       const functionWithPossibleArgs = adStatut !== 0 && !isAllowedToMint ? Object.values(isAlreadyBuy()) : argsMintAndSubmit;
@@ -466,6 +478,7 @@ const TokenPageContainer = () => {
     } catch (error) {
       console.error("Erreur de soumission du token:", error);
       setSuccessFullUpload(false);
+      setIsLoadingButton(false);
       throw error;
     } finally {
       setIsLoadingButton(false);
@@ -591,7 +604,7 @@ const TokenPageContainer = () => {
               {/* <!-- Collection / Likes / Actions --> */}
 
               <Link href={`/${chainName}/offer/${offerId}`} className="flex">
-                <h1 className="font-display text-jacarta-700 mb-4 dark:hover:text-accent text-4xl font-semibold dark:text-white">{name}</h1>
+                <h2 className="font-display text-jacarta-700 mb-4 dark:hover:text-accent text-3xl font-semibold dark:text-white">{name}</h2>
               </Link>
 
               <div className="mb-8 flex items-center  whitespace-nowrap flex-wrap">
@@ -636,7 +649,7 @@ const TokenPageContainer = () => {
                 ""
               ) : marketplaceListings[0]?.listingType === "Direct" && !isOwner ? (
                 ""
-              ) : tokenStatut === "MINTABLE" ? (
+              ) : tokenStatut === "MINTABLE" || tokenStatut  === "SIBORG" || (!isOwner && !isAllowedToMint) ? (
                 ""
               ) : (
                 <ItemManage

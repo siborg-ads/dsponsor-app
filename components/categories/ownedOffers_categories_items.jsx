@@ -15,7 +15,8 @@ import { useChainContext } from "../../contexts/hooks/useChainContext";
 const OwnedOffers_categories_items = ({ data, isPendinAdsOnOffer, isOwner }) => {
   const [itemdata, setItemdata] = useState(trendingCategoryData);
   const dispatch = useDispatch();
-  const { chainName } = useChainContext();
+const { currentChainObject } = useChainContext();
+const chainName = currentChainObject?.chainName;
   const { trendingCategorySorText } = useSelector((state) => state.counter);
   const [filterVal, setFilterVal] = useState(0);
 

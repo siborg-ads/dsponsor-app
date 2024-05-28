@@ -6,6 +6,7 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Spinner } from "@nextui-org/spinner";
 import ModalHelper from "../Helper/modalHelper";
+import { useChainContext } from "../../contexts/hooks/useChainContext";
 
 const PreviewModal = ({
   approvalForAllToken = true,
@@ -40,7 +41,7 @@ const PreviewModal = ({
 
   isLoadingButton,
 }) => {
- 
+ const { currentChainObject } = useChainContext();
   const formatDate = (date) => {
     if (!date) return "";
     return date.toLocaleString("en-EN", {
@@ -262,9 +263,9 @@ const PreviewModal = ({
                 {!successFullUpload ? (
                   approvalForAllToken ? (
                     <Web3Button
-                      contractAddress="0xE442802706F3603d58F34418Eac50C78C7B4E8b3"
+                      contractAddress={currentChainObject?.smartContracts?.DSPONSORADMIN?.address}
                       action={() => {
-                        toast.promise(handleSubmit, {
+                        toast.promise(handleSubmit(true), {
                           pending: "Waiting for confirmation 🕒",
                           success: "Transaction confirmed 👌",
                           error: "Transaction rejected 🤯",
@@ -278,7 +279,7 @@ const PreviewModal = ({
                   ) : (
                     // approve for listing
                     <Web3Button
-                      contractAddress="0xac03b675fa9644279b92f060bf542eed54f75599"
+                      contractAddress={currentChainObject?.smartContracts?.DSPONSORMP?.address}
                       action={() => {
                         toast.promise(handleApprove, {
                           pending: "Waiting for confirmation 🕒",

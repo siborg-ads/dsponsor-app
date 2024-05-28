@@ -3,7 +3,9 @@ import Link from "next/link";
 import { useChainContext } from "../../contexts/hooks/useChainContext";
 
 const Hero = () => {
-  const { chainName } = useChainContext();
+    const { currentChainObject } = useChainContext();
+
+    const chainName = currentChainObject?.chainName;
   return (
     <section className="relative  pt-24 md:pt-10 h-1527">
       <picture className="pointer-events-none absolute inset-x-0 top-0 -z-10 block dark:hidden h-full">

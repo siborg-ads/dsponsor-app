@@ -2,8 +2,8 @@
 import { createContext } from 'react';
 
 const ChainContext = createContext({
-    chainId: null,
+    currentChainObject: null,
     connectedAddress: null,
-    chainName: null,
+    
 });
 export default ChainContext;

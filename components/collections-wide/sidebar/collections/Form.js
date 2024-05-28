@@ -6,7 +6,9 @@ import { useChainContext } from "../../../../contexts/hooks/useChainContext";
 
 const Form = ({ offerId, onUrlChange }) => {
   const [searchTerm, setSearchTerm] = useState("");
-  const { chainName } = useChainContext();
+    const { currentChainObject } = useChainContext();
+
+    const chainName = currentChainObject?.chainName;
 
   const handleSubmit = (event) => {
     event.preventDefault(); // Prevent default form submission

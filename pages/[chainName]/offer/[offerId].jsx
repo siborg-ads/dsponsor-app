@@ -33,8 +33,8 @@ export default  function OfferPage() {
     // const offer = offerRequest?.adOffers?.[0] || null
 
     return (
-        <div className="pt-[5.5rem] lg:pt-24">
-            <div className="dark:bg-jacarta-800 relative py-16 md:py-24">
+        <div className="">
+            <div className="dark:bg-jacarta-800 relative pb-16">
                 <OfferPageContainer  />
             </div>
         </div>

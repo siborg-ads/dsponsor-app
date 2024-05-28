@@ -31,7 +31,9 @@ export default function Header01() {
       }
     });
   });
-const { chainName } = useChainContext();
+  const { currentChainObject } = useChainContext();
+
+  const chainName = currentChainObject?.chainName;
   const route = useRouter();
   /* -------------------------------------------------------------------------- */
   /*                            daynamic navigations                            */

@@ -22,7 +22,9 @@ import OfferItem from "../cards/offerItem";
 
 const BidsCarousel = ({data}) => {
  
-  const { chainName } = useChainContext();
+  const { currentChainObject } = useChainContext();
+  
+  const chainName = currentChainObject?.chainName;
 
   return (
     <>

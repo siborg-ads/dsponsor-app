@@ -12,6 +12,7 @@ import { protocolFeesBigNumber } from "../../utils/constUtils";
 import { Divider } from "@nextui-org/react";
 import { ethers } from "ethers";
 import { Spinner } from "@nextui-org/spinner";
+import { useChainContext } from "../../contexts/hooks/useChainContext";
 
 
 const BuyModal = ({
@@ -39,6 +40,7 @@ const BuyModal = ({
 }) => {
   
   const [validate, setValidate] = useState(false);
+  const { currentChainObject } = useChainContext();
 
   const handleTermService = (e) => {
     setValidate(e.target.checked);
@@ -182,7 +184,7 @@ const calculateOriginalPriceFromTotal = (totalPrice, royalties, tokenDecimals = 
             <div className="flex items-center justify-center space-x-4">
               {allowanceTrue && !successFullUpload ? (
                 <Web3Button
-                  contractAddress="0xE442802706F3603d58F34418Eac50C78C7B4E8b3"
+                  contractAddress={currentChainObject?.smartContracts?.DSPONSORADMIN?.address}
                   action={() => {
                     toast.promise(handleApprove, {
                       pending: "Waiting for confirmation 🕒",
@@ -197,7 +199,7 @@ const calculateOriginalPriceFromTotal = (totalPrice, royalties, tokenDecimals = 
                 </Web3Button>
               ) : !successFullUpload ? (
                 <Web3Button
-                  contractAddress="0xE442802706F3603d58F34418Eac50C78C7B4E8b3"
+                  contractAddress={currentChainObject?.smartContracts?.DSPONSORADMIN?.address}
                   action={() => {
                     toast.promise(handleSubmit, {
                       pending: "Waiting for confirmation 🕒",

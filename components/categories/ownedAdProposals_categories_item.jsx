@@ -26,7 +26,7 @@ import { image } from "@nextui-org/react";
 
 const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
   const [itemdata, setItemdata] = useState(trendingCategoryData);
-
+const { currentChainObject } = useChainContext();
   const [filterVal, setFilterVal] = useState(0);
   const [selectedItems, setSelectedItems] = useState([]);
   const [isSelectedItem, setIsSelectedItem] = useState({});
@@ -46,12 +46,13 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
   const [imageUrlVariants, setImageUrlVariants] = useState([]);
   const stepsRef = useRef([]);
   const [numSteps, setNumSteps] = useState(2);
-  const { contract: DsponsorAdminContract } = useContract("0xE442802706F3603d58F34418Eac50C78C7B4E8b3", contractABI);
+  const { contract: DsponsorAdminContract } = useContract(currentChainObject?.smartContracts?.DSPONSORADMIN?.address, currentChainObject?.smartContracts?.DSPONSORADMIN?.abi);
   const [isLoadingButton, setIsLoadingButton] = useState(false);
  
   const { mutateAsync: uploadToIPFS, isLoading: isUploading } = useStorageUpload();
   const { mutateAsync: submitAd } = useContractWrite(DsponsorAdminContract, "submitAdProposals");
-const { chainName } = useChainContext();
+
+const chainName = currentChainObject?.chainName;
 
   const handleFilter = (category) => {
     if (category !== "all") {
@@ -66,6 +67,7 @@ const { chainName } = useChainContext();
     setShowPreviewModal(!showPreviewModal);
   };
   const handleSelection = (item) => {
+
     setIsSelectedItem((prevState) => ({
       ...prevState,
       [item.id]: !prevState[item.id],
@@ -127,7 +129,7 @@ const { chainName } = useChainContext();
     let adParams = [];
     const uniqueIds = new Set();
     const adDetails = {};
-
+console.log(selectedItems, "selectedItems");
     for (const token of selectedItems) {
       const offers = token.nftContract.adOffers;
       if (offers.length > 0) {
@@ -233,7 +235,7 @@ const { chainName } = useChainContext();
     setFiles([]);
     setNumSteps(2);
   };
-  console.log(imageUrlVariants, "imageUrlVariants");
+
 
   if (!data) {
     return (
@@ -322,9 +324,7 @@ const { chainName } = useChainContext();
                       item={item}
                       isToken={true}
                       isSelectionActive={isSelectionActive}
-                      url={
-                        !item.tokenData ? `/${chainName}/offer/${item.nftContract.adOffers[0].id}/${item.tokenId}` : `/${chainName}/offer/${item.nftContract.adOffers[0].id}/${item.tokenId}?tokenData=${item.tokenData}`
-                      }
+                      url={!item.tokenData ? `/${chainName}/offer/${item.offerId}/${item.tokenId}` : `/${chainName}/offer/${item.offerId}/${item.tokenId}?tokenData=${item.tokenData}`}
                     />
                   </div>
                 ) : (
@@ -333,7 +333,7 @@ const { chainName } = useChainContext();
                     key={index}
                     isToken={true}
                     isSelectionActive={isSelectionActive}
-                    url={!item.tokenData ? `/${chainName}/offer/${item.nftContract.adOffers[0].id}/${item.tokenId}` : `/${chainName}/offer/${item.nftContract.adOffers[0].id}/${item.tokenId}?tokenData=${item.tokenData}`}
+                    url={!item.tokenData ? `/${chainName}/offer/${item.offerId}/${item.tokenId}` : `/${chainName}/offer/${item.offerId}/${item.tokenId}?tokenData=${item.tokenData}`}
                   />
                 );
               })}

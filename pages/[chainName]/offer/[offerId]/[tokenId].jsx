@@ -40,10 +40,10 @@ export default  function TokenPage() {
     // console.dir({listings},{depth:10})
 
     return (
-        <div className="pt-[5.5rem] lg:pt-24">
-            <div className="dark:bg-jacarta-800 relative py-16 md:py-24">
-                <TokenPageContainer />
-            </div>
+      <div className="">
+        <div className="dark:bg-jacarta-800 relative pb-16 ">
+          <TokenPageContainer />
         </div>
-    )
+      </div>
+    );
 }

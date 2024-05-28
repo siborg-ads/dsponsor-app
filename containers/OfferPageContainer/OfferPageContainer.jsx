@@ -22,10 +22,10 @@ import { ItemsTabs } from "../../components/component";
 import { useChainContext } from "../../contexts/hooks/useChainContext";
 import { fetchOffer } from "../../providers/methods/fetchOffer";
 
-
 const OfferPageContainer = () => {
   const router = useRouter();
-  const { chainId } = useChainContext();
+  const { currentChainObject } = useChainContext();
+  const chainId = currentChainObject?.chainId;
   const offerId = router.query?.offerId;
   const userAddress = useAddress();
   const [copied, setCopied] = useState(false);
@@ -35,7 +35,7 @@ const OfferPageContainer = () => {
   const [price, setPrice] = useState(null);
   const [imageModal, setImageModal] = useState(false);
   const [isOwner, setIsOwner] = useState(false);
-  const { contract: DsponsorAdminContract } = useContract("0xE442802706F3603d58F34418Eac50C78C7B4E8b3", contractABI);
+  const { contract: DsponsorAdminContract } = useContract(currentChainObject?.smartContracts?.DSPONSORADMIN?.address, currentChainObject?.smartContracts?.DSPONSORADMIN?.abi);
   const { mutateAsync, isLoadingreviewAdProposal } = useContractWrite(DsponsorAdminContract, "reviewAdProposals");
   const [urlFromChild, setUrlFromChild] = useState("");
   const [successFullRefuseModal, setSuccessFullRefuseModal] = useState(false);
@@ -52,7 +52,7 @@ const OfferPageContainer = () => {
     if (offerId && userAddress && chainId) {
       const fetchAdsOffers = async () => {
         const offer = await fetchOffer(offerId, chainId);
-        
+
         console.log("combinedData", offer);
         setOfferData(offer);
         if (userAddress?.toLowerCase() === offer.initialCreator) {
@@ -177,7 +177,7 @@ const OfferPageContainer = () => {
                 </div>
               </div>
 
-              <h1 className="font-display text-jacarta-700 mb-4 text-4xl font-semibold dark:text-white">{name}</h1>
+              <h2 className="font-display text-jacarta-700 mb-4 text-3xl font-semibold dark:text-white">{name}</h2>
 
               <div className="mb-8 flex items-center flex-wrap gap-2 space-x-4 whitespace-nowrap">
                 {currency?.symbol && (
@@ -274,6 +274,7 @@ const OfferPageContainer = () => {
               You can integrate this offer on your website by using the following iframe code. Simply copy and paste the code into your website to display the offer.{" "}
             </span>
             <br />
+            
             <div className="flex gap-4 w-full md:w-auto items-start mt-2 ">
               <pre
                 style={{
@@ -298,7 +299,7 @@ const OfferPageContainer = () => {
               </Tippy>
             </div>
           </div>
-          <iframe src={`https://relayer.dsponsor.com/11155111/iframe/${offerId}?bgColor=0d102d`} height="315" width="1000px" className={"h-screen w-full"} />
+          <iframe src={`https://relayer.dsponsor.com/${chainId}/ads/${offerId}`} height="315" width="1000px" className={"h-screen w-full"} />
         </div>
       )}
       {/* <ItemsTabs /> */}

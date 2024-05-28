@@ -41,7 +41,8 @@ const ownedAdProposals_categories_filter = [
     id: 0,
     svg: "collection",
     text: "All",
-  }
+  },
+  
   // {
   //   id: 1,
   //   svg: "art",

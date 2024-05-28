@@ -15,9 +15,11 @@ import DatePicker from "react-datepicker";
 import ModalHelper from "../Helper/modalHelper";
 import PreviewModal from "../modal/previewModal";
 import adminInstance from "../../utils/sdkProvider";
+import { useChainContext } from "../../contexts/hooks/useChainContext";
 
-const ItemManageModal = ({ handleListingModal, offerData,setSuccessFullListing, successFullListing, marketplaceListings, royalties, dsponsorNFTContract, dsponsorMpContract }) => {
+const ItemManageModal = ({ handleListingModal, offerData, setSuccessFullListing, successFullListing, marketplaceListings, royalties, dsponsorNFTContract, dsponsorMpContract }) => {
   const [selectedListingType, setSelectedListingType] = useState([]);
+  const { currentChainObject } = useChainContext();
   const [selectedUnitPrice, setSelectedUnitPrice] = useState(0);
   const [selectedStartingPrice, setSelectedStartingPrice] = useState(0);
   const [selectedCurrency, setSelectedCurrency] = useState("USDC");
@@ -26,46 +28,46 @@ const ItemManageModal = ({ handleListingModal, offerData,setSuccessFullListing, 
   const [errors, setErrors] = useState({});
   const [showPreviewModal, setShowPreviewModal] = useState(false);
   const [validate, setValidate] = useState(false);
-  
+  const address = useAddress();
+
+
   const [isLoadingButton, setIsLoadingButton] = useState(false);
   const [customContract, setCustomContract] = useState(null);
   const [tokenDecimals, setTokenDecimals] = useState(18);
   const [symbolContract, setSymbolContract] = useState("USDC");
   const [tokenContract, setTokenContract] = useState("");
   const [customTokenContract, setCustomTokenContract] = useState("");
-  const USDCCurrency = adminInstance.chain.getCurrencyAddress("USDC");
-  const WETHCurrency = adminInstance.chain.getCurrencyAddress("WETH");
-  const USDTCurrency = adminInstance.chain.getCurrencyAddress("USDT");
+  const USDCCurrency = currentChainObject?.smartContracts?.USDC;
+  const WETHCurrency = currentChainObject?.smartContracts?.WETH;
+  const USDTCurrency = currentChainObject?.smartContracts?.USDT;
+  const NATIVECurrency = currentChainObject?.smartContracts?.NATIVE;
+  const [selectedCurrencyContract, setSelectedCurrencyContract] = useState(USDCCurrency?.address);
+  const { contract: tokenContractAsync } = useContract(selectedCurrencyContract, "token");
+  const { data: symbolContractAsync } = useContractRead(tokenContractAsync, "symbol");
+  const { data: decimalsContractAsync } = useContractRead(tokenContractAsync, "decimals");
   const [approvalForAllToken, setApprovalForAllToken] = useState(false);
- 
 
-  const address = useAddress();
 
 
   const { mutateAsync: setApprovalForAll } = useContractWrite(dsponsorNFTContract, "setApprovalForAll");
   const { mutateAsync: createListing } = useContractWrite(dsponsorMpContract, "createListing");
+  
 
-  const [selectedCurrencyContract, setSelectedCurrencyContract] = useState(USDCCurrency.contract);
-  const { contract: tokenContractAsync } = useContract(selectedCurrencyContract, "token");
-  const { data: symbolContractAsync } = useContractRead(tokenContractAsync, "symbol");
-  const { data: decimalsContractAsync } = useContractRead(tokenContractAsync, "decimals");
-
-  useEffect(() => {
-    setSymbolContract(symbolContractAsync);
-    setTokenDecimals(decimalsContractAsync);
-    setTokenContract(selectedCurrencyContract);
-    setCustomTokenContract(tokenContractAsync);
-  }, [decimalsContractAsync, symbolContractAsync, setTokenDecimals, setSymbolContract, setTokenContract, selectedCurrencyContract, tokenContractAsync, setCustomTokenContract]);
+   useEffect(() => {
+     setSymbolContract(symbolContractAsync);
+     setTokenDecimals(decimalsContractAsync);
+     setTokenContract(selectedCurrencyContract);
+     setCustomTokenContract(tokenContractAsync);
+   }, [decimalsContractAsync, symbolContractAsync, selectedCurrencyContract, tokenContractAsync, currentChainObject, setSymbolContract, setTokenDecimals, setTokenContract, setCustomTokenContract]);
 
   const handlePreviewModal = async () => {
-    const isApprovedForAll = await dsponsorNFTContract.call("isApprovedForAll", [address, "0xac03b675fa9644279b92f060bf542eed54f75599"]);
+    const isApprovedForAll = await dsponsorNFTContract.call("isApprovedForAll", [address, currentChainObject?.smartContracts?.DSPONSORMP?.address]);
     setApprovalForAllToken(isApprovedForAll);
     if (successFullListing) {
-      
       handleListingModal();
       setSuccessFullListing(false);
     }
-      setShowPreviewModal(!showPreviewModal);
+    setShowPreviewModal(!showPreviewModal);
     validateInputs();
   };
   const handleSubmit = async () => {
@@ -107,8 +109,8 @@ const ItemManageModal = ({ handleListingModal, offerData,setSuccessFullListing, 
   const handleApprove = async () => {
     setIsLoadingButton(true);
     try {
-      await setApprovalForAll({ args: ["0xac03b675fa9644279b92f060bf542eed54f75599", true] });
-       setApprovalForAllToken(true);
+      await setApprovalForAll({ args: [currentChainObject?.smartContracts?.DSPONSORMP?.address, true] });
+      setApprovalForAllToken(true);
     } catch (error) {
       console.error(error);
       setApprovalForAllToken(false);
@@ -134,17 +136,16 @@ const ItemManageModal = ({ handleListingModal, offerData,setSuccessFullListing, 
   };
   const handleCurrencyChange = (event) => {
     setSelectedCurrency(event.target.value);
-     if (event.target.value === "custom") {
+   if (event.target.value === "custom") {
       setSelectedCurrencyContract("f");
     } else {
-      console.log("ici");
       setSelectedCurrencyContract(selectedCurrencyContractObject[event.target.value]);
       setCustomContract(null);
     }
   };
   const handleCustomContractChange = (event) => {
-    if (event.target.value === "0x0000000000000000000000000000000000000000") {
-      setCustomContract("0x0000000000000000000000000000000000000000");
+    if (event.target.value === NATIVECurrency.address) {
+      setCustomContract(NATIVECurrency.address);
     } else {
       setCustomContract(event.target.value);
       setSelectedCurrencyContract(event.target.value);
@@ -159,35 +160,35 @@ const ItemManageModal = ({ handleListingModal, offerData,setSuccessFullListing, 
     let isValid = true;
     let newErrors = {};
     const currentDate = new Date();
-   const yesterday = new Date();
-   yesterday.setDate(yesterday.getDate() - 1);
-   yesterday.setHours(23, 59, 59, 999); // Définir à la fin de la journée pour éviter l'erreur de jour.
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    yesterday.setHours(23, 59, 59, 999); // Définir à la fin de la journée pour éviter l'erreur de jour.
 
-   if (!startDate) {
-     newErrors.startDateError = "Start date is missing.";
-     isValid = false;
-   } else if (new Date(startDate) < yesterday) {
-     newErrors.startDateError = "Start date cannot be in the past.";
-     isValid = false;
-   } else if (startDate > endDate) {
-     newErrors.startDateError = "Start date cannot be after the end date.";
-     isValid = false;
-   }
+    if (!startDate) {
+      newErrors.startDateError = "Start date is missing.";
+      isValid = false;
+    } else if (new Date(startDate) < yesterday) {
+      newErrors.startDateError = "Start date cannot be in the past.";
+      isValid = false;
+    } else if (startDate > endDate) {
+      newErrors.startDateError = "Start date cannot be after the end date.";
+      isValid = false;
+    }
 
-   if (!endDate) {
-     newErrors.endDateError = "End date is missing.";
-     isValid = false;
-   } else if (new Date(endDate) < yesterday) {
-     newErrors.endDateError = "End date cannot be in the past.";
-     isValid = false;
-   } else if (endDate < startDate) {
-     newErrors.endDateError = "End date cannot be before the start date.";
-     isValid = false;
-   }
-     if (parseFloat(selectedUnitPrice) <= parseFloat(selectedStartingPrice)) {
-       newErrors.unitPriceError = `Unit price must be higher than the unit starting price.`;
-       isValid = false;
-     }
+    if (!endDate) {
+      newErrors.endDateError = "End date is missing.";
+      isValid = false;
+    } else if (new Date(endDate) < yesterday) {
+      newErrors.endDateError = "End date cannot be in the past.";
+      isValid = false;
+    } else if (endDate < startDate) {
+      newErrors.endDateError = "End date cannot be before the start date.";
+      isValid = false;
+    }
+    if (parseFloat(selectedUnitPrice) <= parseFloat(selectedStartingPrice)) {
+      newErrors.unitPriceError = `Unit price must be higher than the unit starting price.`;
+      isValid = false;
+    }
     if (parseFloat(selectedUnitPrice) < 1 * 10 ** -tokenDecimals || isNaN(selectedUnitPrice) || selectedUnitPrice === null) {
       newErrors.unitPriceError = `Unit price must be at least ${1 * 10 ** -tokenDecimals}.`;
       isValid = false;
@@ -197,7 +198,7 @@ const ItemManageModal = ({ handleListingModal, offerData,setSuccessFullListing, 
       newErrors.startingPriceError = `Unit starting price must be at least ${1 * 10 ** -tokenDecimals}.`;
       isValid = false;
     }
-   
+
     if (selectedCurrency === "custom" && customTokenContract === undefined) {
       newErrors.currencyError = "Custom contract is missing or invalid.";
       isValid = false;
@@ -228,9 +229,9 @@ const ItemManageModal = ({ handleListingModal, offerData,setSuccessFullListing, 
   };
 
   const selectedCurrencyContractObject = {
-    USDC: USDCCurrency.contract,
-    WETH: WETHCurrency.contract,
-    USDT: USDTCurrency.contract,
+    USDC: USDCCurrency?.address,
+    WETH: WETHCurrency?.address,
+    USDT: USDTCurrency?.address,
     custom: customContract,
   };
   const listingType = [

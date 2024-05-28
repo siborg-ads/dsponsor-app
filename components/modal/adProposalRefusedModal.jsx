@@ -4,9 +4,11 @@ import Image from "next/image";
 import { Web3Button } from "@thirdweb-dev/react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { currentChainObject } from "../../utils/constUtils";
 const AddProposalRefusedModal = ({ id, selectedItems, closeRefuseModal, handleCommentChange, handleItemSubmit, setRefusedAdModal, successFullRefuseModal }) => {
   const [filteredItems, setFilteredItems] = useState([]);
   const [allCommentsOk, setAllCommentsOk] = useState(false);
+  const { currentChainObject } = useChainContext();
 
   useEffect(() => {
      for (const item of selectedItems) {
@@ -91,7 +93,7 @@ const AddProposalRefusedModal = ({ id, selectedItems, closeRefuseModal, handleCo
               <div className="flex items-center gap-4">
                 {!successFullRefuseModal ? (
                   <Web3Button
-                    contractAddress="0xE442802706F3603d58F34418Eac50C78C7B4E8b3"
+                    contractAddress={currentChainObject?.smartContracts?.DSPONSORADMIN?.address}
                     action={() =>
                       toast.promise(handleItemSubmit(false), {
                         pending: "Waiting for confirmation 🕒",

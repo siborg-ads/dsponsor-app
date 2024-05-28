@@ -10,7 +10,8 @@ import { useChainContext } from "../../contexts/hooks/useChainContext";
 
 const Review_adProposal_items = () => {
   const { sortedtrendingCategoryItemData } = useSelector((state) => state.counter);
-  const { chainName } = useChainContext();
+  const { currentChainObject } = useChainContext();
+  const chainName = currentChainObject?.chainName;
   const dispatch = useDispatch();
   const router = useRouter();
   const offerAddress = "0x17c923c242c3217bd27e8f402a3608c2c8689618c12723d585fa19d7657ff06a0c000000";

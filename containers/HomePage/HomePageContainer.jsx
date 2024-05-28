@@ -13,7 +13,10 @@ import { useChainContext } from "../../contexts/hooks/useChainContext";
 
 const HomePageContainer = () => {
   const [data, setData] = useState([]);
-  const { chainId } = useChainContext();
+
+  const { currentChainObject } = useChainContext();
+
+  const chainId = currentChainObject?.chainId;
 
 
   useEffect(() => {

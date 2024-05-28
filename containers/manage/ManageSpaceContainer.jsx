@@ -12,7 +12,9 @@ import { useAddress, darkTheme, useBalance, Web3Button, useTokenBalance, useCont
 
 import {fetchAllTokenByOfferForAuser} from "../../providers/methods/fetchAllTokenByOfferForAuser";
 import { fetchAllOffersByUserAddress } from "../../providers/methods/fetchAllOffersByUserAddress";
+import { fetchAllTokenListedByUserAddress } from "../../providers/methods/fetchAllTokenListedByUserAddress";
 import { useChainContext } from "../../contexts/hooks/useChainContext";
+import { id } from "ethers/lib/utils";
 
 const ManageSpaceContainer = () => {
   const router = useRouter();
@@ -20,19 +22,40 @@ const ManageSpaceContainer = () => {
   const address = useAddress();
   const [createdData, setCreatedData] = useState(null);
   const [mappedownedAdProposals, setMappedownedAdProposals] = useState(null);
+  const [listedAuctionToken, setListedAuctionToken] = useState(null);
   const [copied, setCopied] = useState(false);
   const [isPendinAdsOnOffer, setIsPendinAdsOnOffer] = useState(false);
   const [isOwner, setIsOwner] = useState(false);
-  const { chainId } = useChainContext();
+  const { currentChainObject } = useChainContext();
+
+  const chainId = currentChainObject?.chainId;
 
   useEffect(() => {
 
     if (userAddress && chainId) {
       const fetchAdsOffers = async () => {
+     
+   
         const offers = await fetchAllOffersByUserAddress(userAddress, chainId);
         
         const ownedAdProposals = await fetchAllTokenByOfferForAuser(userAddress, chainId);
-        console.log(ownedAdProposals);
+        const listedToken = await fetchAllTokenListedByUserAddress(userAddress, chainId);
+        const mappedListedToken = [];
+        for (const element of listedToken) {
+          if(element?.listingType === "Auction"){
+            const combinedData = {
+              
+              tokenData: element?.token.mint.tokenData,
+              startTime: element?.startTime,
+              endTime: element?.endTime,
+              ...element?.token,
+            };
+            mappedListedToken.push(combinedData);  
+          }
+          
+        }
+        
+        
         const mappedOffers = [];
         for (const element of offers) {
           let isPending = false;
@@ -57,20 +80,22 @@ const ManageSpaceContainer = () => {
         setCreatedData(mappedOffers);
 
         for (const element of ownedAdProposals) {
-          if (!element.nftContract?.adOffers[0]?.metadataURL) {
-            continue;
-          }
+          
+          for(const token of element.nftContract.tokens){
 
-          const IPFSLink = element.nftContract.adOffers[0].metadataURL;
-    
-          const combinedData = {
-            ...element,
-            ...(element.mint.tokenData ? { tokenData: element.mint.tokenData } : {}),
-          };
-          mappedownedAdProposals.push(combinedData);
+            const combinedData = {
+              id: `${element.id}-${token.tokenId}`,
+              offerId: element.id,
+              ...token,
+              ...(token.mint.tokenData ? { tokenData: token.mint.tokenData } : {}),
+            };
+            mappedownedAdProposals.push(combinedData);
+          }
         }
         console.log(mappedownedAdProposals);
+        console.log(mappedOffers);
         setMappedownedAdProposals(mappedownedAdProposals);
+        setListedAuctionToken(mappedListedToken);
       };
       if (address === userAddress) setIsOwner(true);
       fetchAdsOffers();
@@ -89,7 +114,7 @@ const ManageSpaceContainer = () => {
 
       <div className=" " key="5">
         {/* <!-- Banner --> */}
-        <div className="relative h-[13rem]">
+        <div className="relative " style={{ height: "13rem" }}>
           <Image width={1519} height={150} src="/images/gradient_creative.jpg" alt="banner" className="w-full h-full object-cover" />
         </div>
         {/* <!-- end banner --> */}
@@ -100,7 +125,7 @@ const ManageSpaceContainer = () => {
               <div className="text-center">
                 <div className="dark:bg-jacarta-700 dark:border-jacarta-600 border-jacarta-100  inline-flex items-center justify-center rounded-full border bg-white py-1.5 px-4">
                   <Tippy hideOnClick={false} content={copied ? <span>copied</span> : <span>copy</span>}>
-                    <button className="js-copy-clipboard dark:text-jacarta-200 max-w-[10rem] select-none overflow-hidden text-ellipsis whitespace-nowrap">
+                    <button style={{ maxWidth: "10rem" }} className="js-copy-clipboard dark:text-jacarta-200  select-none overflow-hidden text-ellipsis whitespace-nowrap">
                       <CopyToClipboard text="userId" onCopy={() => setCopied(true)}>
                         <span>{userAddress}</span>
                       </CopyToClipboard>
@@ -112,7 +137,7 @@ const ManageSpaceContainer = () => {
           </div>
         </section>
         {/* <!-- end profile --> */}
-        <User_items createdData={createdData} mappedownedAdProposals={mappedownedAdProposals} isPendinAdsOnOffer={isPendinAdsOnOffer} isOwner={isOwner} />
+        <User_items createdData={createdData} listedAuctionToken={listedAuctionToken} mappedownedAdProposals={mappedownedAdProposals} isPendinAdsOnOffer={isPendinAdsOnOffer} isOwner={isOwner} />
       </div>
     </>
   );
