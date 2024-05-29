@@ -52,7 +52,7 @@ const OfferPageContainer = () => {
   const maxBps = 10000;
 
   useEffect(() => {
-    if (offerId && userAddress && chainId) {
+    if (offerId && chainId) {
       const fetchAdsOffers = async () => {
         const offer = await fetchOffer(offerId, chainId);
 
