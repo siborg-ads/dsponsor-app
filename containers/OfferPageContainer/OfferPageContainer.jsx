@@ -101,7 +101,7 @@ const OfferPageContainer = () => {
       });
       setRefusedValidatedAdModal(true);
       setSuccessFullRefuseModal(true);
-      setSelectedItems([]);
+      
     } catch (error) {
       console.error("Erreur de validation du token:", error);
       setSuccessFullRefuseModal(false);
@@ -269,6 +269,7 @@ const OfferPageContainer = () => {
       )}
 
       <Validation
+        setSuccessFullRefuseModal={setSuccessFullRefuseModal}
         setSelectedItems={setSelectedItems}
         selectedItems={selectedItems}
         offer={offerData}

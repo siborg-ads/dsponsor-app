@@ -33,6 +33,7 @@ const { currentChainObject } = useChainContext();
   const [validate, setValidate] = useState({});
   const [isSelectionActive, setIsSelectionActive] = useState(false);
   const [showPreviewModal, setShowPreviewModal] = useState(false);
+  const [isFirstSelection, setIsFirstSelection] = useState(true);
  
   const [successFullUpload, setSuccessFullUpload] = useState(false);
   const [files, setFiles] = useState([]);
@@ -72,7 +73,7 @@ const chainName = currentChainObject?.chainName;
     setShowPreviewModal(!showPreviewModal);
   };
   const handleSelection = (item) => {
-
+setIsFirstSelection(false);
     setIsSelectedItem((prevState) => ({
       ...prevState,
       [item.id]: !prevState[item.id],
@@ -364,7 +365,11 @@ const successFullUploadModal = {
         </div>
       )}
       {!showSliderForm && (
-        <div className={`fixed dark:border-jacarta-500 border  bottom-0 blury-background left-0 right-0 px-4 py-3 animated-modalSelectedItemUp ${!isSelectionActive && "animated-modalSelectedItemDown"}`}>
+        <div
+          className={`fixed dark:border-jacarta-500 border  bottom-0 blury-background left-0 right-0 px-4 py-3   ${
+            isFirstSelection ? "hidden" : selectedItems?.length === 0 ? "animated-modalSelectedItemDown" : "animated-modalSelectedItemUp"
+          }`}
+        >
           <div className="dropdown-item mb-4 font-display   block w-full rounded-xl  text-left text-sm transition-colors dark:text-white">
             <span className="flex items-center justify-center gap-6">
               <span className="mr-4">
