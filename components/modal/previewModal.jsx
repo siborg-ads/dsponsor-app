@@ -294,9 +294,15 @@ const PreviewModal = ({
                     </Web3Button>
                   )
                 ) : (
-                  <Link href={successFullUploadModal.hrefButton}>
-                    <button className="!rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all !bg-accent !cursor-pointer">{successFullUploadModal.buttonTitle}</button>
-                  </Link>
+                  successFullUploadModal.hrefButton !== null ? (
+                    <Link href={successFullUploadModal.hrefButton}>
+                      <button className="!rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all !bg-accent !cursor-pointer">{successFullUploadModal.buttonTitle}</button>
+                    </Link>
+                  ) : (
+                    <button className="!rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all !bg-accent !cursor-pointer" onClick={() => handlePreviewModal()}>
+                      Close
+                    </button>
+                  )
                 )}
               </div>
             </div>

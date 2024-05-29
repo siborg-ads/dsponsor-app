@@ -21,8 +21,8 @@ const ItemManage = ({successFullListing, setSuccessFullListing,  offerData, mark
     setListingModal(!listingModal);
   };
   const handleSubmitCancel = async () => {
-    setIsLoadingButton(true);
     try {
+      setIsLoadingButton(true);
       if (marketplaceListings[0].listingType === "Auction") {
         await closeAuctionListing({ args: [marketplaceListings[0].id] });
         setSuccessFullListing(true);
@@ -31,6 +31,7 @@ const ItemManage = ({successFullListing, setSuccessFullListing,  offerData, mark
         setSuccessFullListing(true);
       }
     } catch (e) {
+      setIsLoadingButton(false);
       throw new Error(e);
     } finally {
       setIsLoadingButton(false);

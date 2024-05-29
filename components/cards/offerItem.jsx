@@ -41,8 +41,7 @@ const OfferItem = ({ item, url, isToken, isSelectionActive, isOwner, isAuction =
      year: "numeric",
      month: "long",
      day: "numeric",
-     hour: "2-digit",
-     minute: "2-digit",
+     
      hour12: true,
    });
 
@@ -160,10 +159,10 @@ const OfferItem = ({ item, url, isToken, isSelectionActive, isOwner, isAuction =
                 <div className="flex flex-col">
 
                 <span className="dark:text-jacarta-300 text-jacarta-500">
-                  Auction Start : <span className="text-green text-sm font-medium">{formatAuctionDate(item.startTime)} </span>
+                Auction  Start : <span className="text-green text-xs font-medium">{formatAuctionDate(item.startTime)} </span>
                 </span>
                 <span className="dark:text-jacarta-300 text-jacarta-500">
-                  Auction End : <span className="text-green text-sm font-medium">{formatAuctionDate(item.endTime)}</span>{" "}
+                Auction  End : <span className="text-green text-xs font-medium">{formatAuctionDate(item.endTime)}</span>{" "}
                 </span>
                 </div>
                 <span className="dark:text-jacarta-300 text-jacarta-500">Offer # {item?.nftContract?.adOffers[0]?.id}</span>

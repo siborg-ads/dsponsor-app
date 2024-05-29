@@ -12,6 +12,7 @@ import Step_1_Mint from "../../components/sliderForm/PageMint/Step_1_Mint.jsx";
 import Step_2_Mint from "../../components/sliderForm/PageMint/Step_2_Mint.jsx";
 import Step_3_Mint from "../../components/sliderForm/PageMint/Step_3_Mint.jsx";
 import PreviewModal from "../../components/modal/previewModal.jsx";
+import { Skeleton } from "@nextui-org/react";
 
 import "tippy.js/dist/tippy.css";
 import { ItemsTabs } from "../../components/component.js";
@@ -30,8 +31,6 @@ import ItemBids from "../../components/item/ItemBids.jsx";
 import { useChainContext } from "../../contexts/hooks/useChainContext.js";
 import { fetchOfferToken } from "../../providers/methods/fetchOfferToken.js";
 
-import contractABI from "../../abi/dsponsorAdmin.json";
-
 import "react-toastify/dist/ReactToastify.css";
 import ModalHelper from "../../components/Helper/modalHelper.jsx";
 
@@ -40,9 +39,9 @@ const TokenPageContainer = () => {
 
   const offerId = router.query?.offerId;
   const tokenId = router.query?.tokenId;
-   const { currentChainObject } = useChainContext();
-   const chainId = currentChainObject?.chainId;
-   const chainName = currentChainObject?.chainName;
+  const { currentChainObject } = useChainContext();
+  const chainId = currentChainObject?.chainId;
+  const chainName = currentChainObject?.chainName;
 
   const [tokenIdString, setTokenIdString] = useState(null);
   const maxBps = 10000;
@@ -89,7 +88,7 @@ const TokenPageContainer = () => {
   const [buyoutPriceAmount, setBuyoutPriceAmount] = useState(null);
   const [royaltiesFeesAmount, setRoyaltiesFeesAmount] = useState(null);
 
-const { contract: DsponsorAdminContract } = useContract(currentChainObject?.smartContracts?.DSPONSORADMIN?.address, currentChainObject?.smartContracts?.DSPONSORADMIN?.abi);
+  const { contract: DsponsorAdminContract } = useContract(currentChainObject?.smartContracts?.DSPONSORADMIN?.address, currentChainObject?.smartContracts?.DSPONSORADMIN?.abi);
   const { contract: DsponsorNFTContract } = useContract(offerData?.nftContract?.id);
   const { mutateAsync: uploadToIPFS, isLoading: isUploading } = useStorageUpload();
   const { mutateAsync: mintAndSubmit } = useContractWrite(DsponsorAdminContract, "mintAndSubmit");
@@ -109,17 +108,16 @@ const { contract: DsponsorAdminContract } = useContract(currentChainObject?.smar
   const now = Math.floor(new Date().getTime() / 1000);
 
   useEffect(() => {
-    if (offerId && tokenId && address && chainId) {
+    console.log(offerId, tokenId, address, chainId, "offerId, tokenId, address, chainId");
+    if (offerId && tokenId && chainId) {
       const fetchAdsOffers = async () => {
         const offer = await fetchOfferToken(offerId, tokenId, chainId);
-
-      
 
         const combinedData = {
           ...offer,
         };
-        if(offer?.nftContract?.tokens.length > 0){
-        setMarketplaceListings(offer?.nftContract?.tokens[0]?.marketplaceListings);
+        if (offer?.nftContract?.tokens.length > 0) {
+          setMarketplaceListings(offer?.nftContract?.tokens[0]?.marketplaceListings);
         }
 
         console.log(combinedData, "combinedData");
@@ -136,7 +134,7 @@ const { contract: DsponsorAdminContract } = useContract(currentChainObject?.smar
     if (!offerData) return;
     if (!offerNotFormated && offerData?.metadata?.offer?.token_metadata && offerData?.nftContract?.tokens.length <= 0) {
       setTokenStatut("SIBORG");
-    return;
+      return;
     }
     if (!isOwner && !offerNotFormated && offerData?.nftContract?.tokens[0]?.mint === null && isAllowedToMint !== null) {
       setTokenStatut("MINTABLE");
@@ -255,11 +253,12 @@ const { contract: DsponsorAdminContract } = useContract(currentChainObject?.smar
       const formatFinalPrice = ethers.utils.formatUnits(bigIntFinalPrice, currencyTokenObject.decimals);
       const formatPrice = ethers.utils.formatUnits(BigInt(tokenBigIntPrice), currencyTokenObject.decimals);
       const protocolFees = (BigInt(tokenBigIntPrice) * BigInt(bps)) / BigInt(maxBps);
-      const royaltiesFees = (BigInt(tokenBigIntPrice) * BigInt(royalties)) / BigInt(100);
+      const royaltiesFees = (BigInt(tokenBigIntPrice) * BigInt(royalties * 100)) / BigInt(10000);
       const formatRoyaltiesFees = ethers.utils.formatUnits(royaltiesFees, currencyTokenObject.decimals);
       const formatProtocolFees = ethers.utils.formatUnits(protocolFees, currencyTokenObject.decimals);
       const amountToApprove = ethers.utils.parseUnits(formatFinalPrice.toString(), currencyTokenObject.decimals);
       const formatBuyoutPrice = ethers.utils.formatUnits(BigInt(tokenBigIntPrice), currencyTokenObject.decimals);
+
       setFeesAmount(Number(Math.ceil(formatProtocolFees * 1000) / 1000));
       setRoyaltiesFeesAmount(Number(Math.ceil(formatRoyaltiesFees * 1000) / 1000));
       setPrice(Number(Math.ceil(formatPrice * 1000) / 1000));
@@ -272,7 +271,7 @@ const { contract: DsponsorAdminContract } = useContract(currentChainObject?.smar
       console.error("Error: Currency not found for address", tokenBigIntPrice, e);
       setOfferNotFormated(true);
     }
-  }, [symbolContract, decimalsContract, offerData, address, tokenId, bps, maxBps, tokenBigIntPrice, tokenCurrencyAddress]);
+  }, [symbolContract, decimalsContract, offerData, address, tokenId, bps, maxBps, tokenBigIntPrice, tokenCurrencyAddress, royalties]);
 
   useEffect(() => {
     if (!offerData || !adParameters) return;
@@ -353,8 +352,9 @@ const { contract: DsponsorAdminContract } = useContract(currentChainObject?.smar
   };
 
   const checkAllowance = async () => {
-    if (tokenCurrencyAddress !== "0x0000000000000000000000000000000000000000") {
+    if (tokenCurrencyAddress !== "0x0000000000000000000000000000000000000000" && address) {
       let allowance;
+
       if (tokenStatut === "DIRECT" || tokenStatut === "AUCTION") {
         allowance = await tokenContract.call("allowance", [address, currentChainObject?.smartContracts?.DSPONSORMP?.address]);
       } else {
@@ -371,8 +371,8 @@ const { contract: DsponsorAdminContract } = useContract(currentChainObject?.smar
   };
 
   const handleApprove = async () => {
-    setIsLoadingButton(true);
     try {
+      setIsLoadingButton(true);
       const hasEnoughBalance = checkUserBalance(tokenBalance, price);
       if (!hasEnoughBalance) {
         throw new Error("Not enough balance for approval.");
@@ -384,28 +384,68 @@ const { contract: DsponsorAdminContract } = useContract(currentChainObject?.smar
       }
       setAllowanceTrue(false);
     } catch (error) {
+      setIsLoadingButton(false);
       console.error("Approval failed:", error.message);
       throw new Error("Approval failed.");
     } finally {
       setIsLoadingButton(false);
     }
   };
+  const handleBuySubmit = async () => {
+    const hasEnoughBalance = checkUserBalance(tokenBalance, price);
+    if (!hasEnoughBalance) {
+      throw new Error("Not enough balance for approval.");
+    }
+    const argsMintAndSubmit = {
+      tokenId: tokenIdString,
+      to: address,
+      currency: offerData?.nftContract?.prices[0]?.currency,
+      tokenData: tokenData ? tokenData : "",
+      offerId: offerId,
+      adParameters: [],
+      adDatas: [],
+      referralAdditionalInformation: "",
+    };
 
+    const argsdirectBuy = [
+      {
+        listingId: marketplaceListings[0]?.id,
+        buyFor: address,
+        quantity: 1,
+        currency: marketplaceListings[0]?.currency,
+        totalPrice: marketplaceListings[0]?.buyoutPricePerToken,
+        referralAdditionalInformation: "",
+      },
+    ];
+    try {
+      const isEthCurrency = tokenCurrencyAddress === "0x0000000000000000000000000000000000000000";
+      const functionWithPossibleArgs = marketplaceListings.length <= 0 ? argsMintAndSubmit : argsdirectBuy;
+      const argsWithPossibleOverrides = isEthCurrency ? { args: [functionWithPossibleArgs], overrides: { value: amountToApprove } } : { args: [functionWithPossibleArgs] };
+
+      if (marketplaceListings.length <= 0) {
+        console.log("mintAndSubmit", argsWithPossibleOverrides, "mintAndSubmit");
+        await mintAndSubmit(argsWithPossibleOverrides);
+        setSuccessFullUpload(true);
+      } else {
+        console.log("directBuy", argsWithPossibleOverrides, "directBuy");
+        await directBuy(argsWithPossibleOverrides);
+        setSuccessFullUpload(true);
+      }
+    } catch (error) {
+      console.error("Erreur de soumission du token:", error);
+      setSuccessFullUpload(false);
+      setIsLoadingButton(false);
+      throw error;
+    } finally {
+      setIsLoadingButton(false);
+    }
+  };
   const handleSubmit = async (preview = false) => {
-    setIsLoadingButton(true);
     if (!buyMethod) {
       if (!validateInputs()) {
         return;
       }
     }
-    if(!preview){
-
-      const hasEnoughBalance = checkUserBalance(tokenBalance, price);
-      if (!hasEnoughBalance) {
-        throw new Error("Not enough balance for approval.");
-      }
-    }
-
     // IPFS upload
 
     let uploadUrl = [];
@@ -423,58 +463,25 @@ const { contract: DsponsorAdminContract } = useContract(currentChainObject?.smar
       }
     }
     try {
-      const argsMintAndSubmit = {
-        tokenId: tokenIdString,
-        to: address,
-        currency: offerData?.nftContract?.prices[0]?.currency,
-        tokenData: tokenData ? tokenData : "",
-        offerId: offerId,
-        adParameters: [],
-        adDatas: [],
-        referralAdditionalInformation: "",
-      };
-      const isAlreadyBuy = () => {
-        if (marketplaceListings.length > 0) {
-          const argsdirectBuy = [
-            {
-              listingId: marketplaceListings[0]?.id,
-              buyFor: address,
-              quantity: 1,
-              currency: marketplaceListings[0]?.currency,
-              totalPrice: marketplaceListings[0]?.buyoutPricePerToken,
-              referralAdditionalInformation: "",
-            },
-          ];
-
-          return argsdirectBuy;
-        } else {
+      setIsLoadingButton(true);
+     
+      
           const argsAdSubmited = {
             offerId: submitAdFormated?.offerId,
             tokenId: submitAdFormated?.tokenId,
             adParameters: submitAdFormated?.params,
             data: [uploadUrl[0], link],
           };
-          return argsAdSubmited;
-        }
-      };
-   
+    
+      
+      const functionWithPossibleArgs =  Object.values(argsAdSubmited)
+      
 
-      const isEthCurrency = tokenCurrencyAddress === "0x0000000000000000000000000000000000000000";
-      const functionWithPossibleArgs = adStatut !== 0 && !isAllowedToMint ? Object.values(isAlreadyBuy()) : argsMintAndSubmit;
-      const argsWithPossibleOverrides = isEthCurrency ? { args: [functionWithPossibleArgs], overrides: { value: amountToApprove } } : { args: [functionWithPossibleArgs] };
-
-      if (adStatut !== 0 && !isAllowedToMint && marketplaceListings.length <= 0) {
+      
+        console.log("submitAd", functionWithPossibleArgs, "submitAd");
         await submitAd({ args: functionWithPossibleArgs });
         setSuccessFullUpload(true);
-      } else if (marketplaceListings.length <= 0) {
-        await mintAndSubmit(argsWithPossibleOverrides);
-        setSuccessFullUpload(true);
-      } else {
-        await directBuy({
-          args: [functionWithPossibleArgs],
-        });
-        setSuccessFullUpload(true);
-      }
+      
     } catch (error) {
       console.error("Erreur de soumission du token:", error);
       setSuccessFullUpload(false);
@@ -522,11 +529,11 @@ const { contract: DsponsorAdminContract } = useContract(currentChainObject?.smar
   };
 
   const successFullUploadModal = {
-    title: "Ad Space",
-    body: "Congratulations, you have proposed an ad.",
-    subBody: 'The media still has the power to validate or reject ad assets. You can follow the ad validation in the "Owned Ad Spaces" section.',
-    buttonTitle: "Manage Spaces",
-    hrefButton: `/manage/${address}`,
+    title: "Submit ad",
+    body: "Congratulations, you have proposed an ad. 🎉",
+    subBody: "The media still has the power to validate or reject ad assets. You can follow the ad validation in your token view.",
+    buttonTitle: "Close",
+    hrefButton: null,
   };
   const successFullBuyModal = {
     title: "Checkout",
@@ -554,7 +561,12 @@ const { contract: DsponsorAdminContract } = useContract(currentChainObject?.smar
     body: `The protocol fees (4%) are used to maintain the platform and the services provided. The fees are calculated based on the price of the ad space and are automatically deducted from the total amount paid by the buyer.`,
   };
 
-  const { description = "description not found", id = "1", image = "/images/gradient_creative.jpg", name = "DefaultName" } = Object.keys(offerData?.metadata?.offer?.token_metadata).length > 0 ? tokenMetaData : offerData?.metadata?.offer;
+  const {
+    description = "description not found",
+    id = "1",
+    image = "/images/gradient_creative.jpg",
+    name = "DefaultName",
+  } = Object.keys(offerData?.metadata?.offer?.token_metadata).length > 0 ? tokenMetaData : offerData?.metadata?.offer;
 
   return (
     <>
@@ -649,7 +661,7 @@ const { contract: DsponsorAdminContract } = useContract(currentChainObject?.smar
                 ""
               ) : marketplaceListings[0]?.listingType === "Direct" && !isOwner ? (
                 ""
-              ) : tokenStatut === "MINTABLE" || tokenStatut  === "SIBORG" || (!isOwner && !isAllowedToMint) ? (
+              ) : tokenStatut === "MINTABLE" || tokenStatut === "SIBORG" || (!isOwner && !isAllowedToMint) ? (
                 ""
               ) : (
                 <ItemManage
@@ -677,6 +689,7 @@ const { contract: DsponsorAdminContract } = useContract(currentChainObject?.smar
                   currencyTokenDecimals={currency?.decimals}
                   setSuccessFullBid={setSuccessFullBid}
                   successFullBid={successFullBid}
+                  address={address}
                 />
               )}
             </div>
@@ -764,7 +777,7 @@ const { contract: DsponsorAdminContract } = useContract(currentChainObject?.smar
             royaltiesFeesAmount={royaltiesFeesAmount}
             price={price}
             initialCreator={offerData?.initialCreator}
-            handleSubmit={handleSubmit}
+            handleSubmit={handleBuySubmit}
             handleBuyModal={handleBuyModal}
             name={name}
             marketplaceListings={marketplaceListings}

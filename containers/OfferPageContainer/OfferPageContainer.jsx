@@ -22,16 +22,19 @@ import { ItemsTabs } from "../../components/component";
 import { useChainContext } from "../../contexts/hooks/useChainContext";
 import { fetchOffer } from "../../providers/methods/fetchOffer";
 
+
 const OfferPageContainer = () => {
   const router = useRouter();
   const { currentChainObject } = useChainContext();
   const chainId = currentChainObject?.chainId;
   const offerId = router.query?.offerId;
   const userAddress = useAddress();
+  const [refusedValidatedAdModal, setRefusedValidatedAdModal] = useState(null);
   const [copied, setCopied] = useState(false);
   const [offerData, setOfferData] = useState([]);
   const [royalties, setRoyalties] = useState(null);
   const [currency, setCurrency] = useState(null);
+  const [selectedItems, setSelectedItems] = useState([]);
   const [price, setPrice] = useState(null);
   const [imageModal, setImageModal] = useState(false);
   const [isOwner, setIsOwner] = useState(false);
@@ -96,7 +99,9 @@ const OfferPageContainer = () => {
       await mutateAsync({
         args: [submissionArgs],
       });
+      setRefusedValidatedAdModal(true);
       setSuccessFullRefuseModal(true);
+      setSelectedItems([]);
     } catch (error) {
       console.error("Erreur de validation du token:", error);
       setSuccessFullRefuseModal(false);
@@ -263,7 +268,17 @@ const OfferPageContainer = () => {
         </div>
       )}
 
-      <Validation offer={offerData} offerId={offerId} isOwner={isOwner} handleSubmit={handleSubmit} successFullRefuseModal={successFullRefuseModal} />
+      <Validation
+        setSelectedItems={setSelectedItems}
+        selectedItems={selectedItems}
+        offer={offerData}
+        offerId={offerId}
+        isOwner={isOwner}
+        handleSubmit={handleSubmit}
+        successFullRefuseModal={successFullRefuseModal}
+        setRefusedValidatedAdModal={setRefusedValidatedAdModal}
+        refusedValidatedAdModal={refusedValidatedAdModal}
+      />
 
       {isOwner && (
         <div className="container">
@@ -274,7 +289,7 @@ const OfferPageContainer = () => {
               You can integrate this offer on your website by using the following iframe code. Simply copy and paste the code into your website to display the offer.{" "}
             </span>
             <br />
-            
+
             <div className="flex gap-4 w-full md:w-auto items-start mt-2 ">
               <pre
                 style={{
@@ -285,12 +300,12 @@ const OfferPageContainer = () => {
                   overflowX: "auto",
                 }}
               >
-                <code> {`<iframe src="https://relayer.dsponsor.com/11155111/iframe/${offerId}?bgColor=0d102d" height="315" width="1000px" className={'h-screen w-full'} />`}</code>
+                <code> {`<iframe src="https://relayer.dsponsor.com/${chainId}/ads/${offerId}/ClickableLogosGrid/iFrame" height="315" width="1000px" className={'h-screen w-full'} />`}</code>
               </pre>
               <Tippy hideOnClick={false} content={copied ? <span>copied</span> : <span>copy</span>}>
                 <div className="js-copy-clipboard cursor-pointer">
                   <CopyToClipboard
-                    text={`<iframe src="https://relayer.dsponsor.com/11155111/iframe/${offerId}?bgColor=0d102d" height="315" width="1000px" className={'h-screen w-full'} />`}
+                    text={`<iframe src="https://relayer.dsponsor.com/${chainId}/ads/${offerId}/ClickableLogosGrid/iFrame" height="315" width="1000px" className={'h-screen w-full'} />`}
                     onCopy={() => setCopied(true)}
                   >
                     <Image src="/images/copy.svg" alt="icon" width={20} height={20} className="mt-2 min-w-[20px] " />
@@ -299,7 +314,7 @@ const OfferPageContainer = () => {
               </Tippy>
             </div>
           </div>
-          <iframe src={`https://relayer.dsponsor.com/${chainId}/ads/${offerId}`} height="315" width="1000px" className={"h-screen w-full"} />
+          <iframe loading="lazy" src={`https://relayer.dsponsor.com/${chainId}/ads/${offerId}/ClickableLogosGrid/iFrame`} height="315" width="1000px" className={"h-screen w-full"} />
         </div>
       )}
       {/* <ItemsTabs /> */}

@@ -4,8 +4,8 @@ import Image from "next/image";
 import { Web3Button } from "@thirdweb-dev/react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { currentChainObject } from "../../utils/constUtils";
-const AddProposalRefusedModal = ({ id, selectedItems, closeRefuseModal, handleCommentChange, handleItemSubmit, setRefusedAdModal, successFullRefuseModal }) => {
+import{ useChainContext } from "../../contexts/hooks/useChainContext";
+const AddProposalRefusedModal = ({ id, selectedItems,successFullModalObject, closeRefuseModal, handleCommentChange, handleItemSubmit, setRefusedAdModal, successFullRefuseModal }) => {
   const [filteredItems, setFilteredItems] = useState([]);
   const [allCommentsOk, setAllCommentsOk] = useState(false);
   const { currentChainObject } = useChainContext();
@@ -41,7 +41,7 @@ const AddProposalRefusedModal = ({ id, selectedItems, closeRefuseModal, handleCo
         <div className="modal-content">
           <div className="modal-header">
             <h5 className="modal-title" id="placeBidLabel">
-              Comments
+              {successFullRefuseModal ? successFullModalObject.title : "Comments"}
             </h5>
             <button type="button" className="btn-close" onClick={() => closeRefuseModal()}>
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" className="fill-jacarta-700 h-6 w-6 dark:fill-white">
@@ -77,13 +77,8 @@ const AddProposalRefusedModal = ({ id, selectedItems, closeRefuseModal, handleCo
                 </div>
               ) : (
                 <div className="flex gap-2">
-                  <p>Proposal ad successfully refused </p>
-                  <div className="dark:border-jacarta-600 bg-green   flex h-6 w-6 items-center justify-center rounded-full border-2 border-white" data-tippy-content="Verified Collection">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" className="h-[.875rem] w-[.875rem] fill-white">
-                      <path fill="none" d="M0 0h24v24H0z"></path>
-                      <path d="M10 15.172l9.192-9.193 1.415 1.414L10 18l-6.364-6.364 1.414-1.414z"></path>
-                    </svg>
-                  </div>
+                  <p>{successFullModalObject.body} </p>
+                  
                 </div>
               );
             })}

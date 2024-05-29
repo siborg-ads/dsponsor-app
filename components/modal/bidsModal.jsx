@@ -56,6 +56,7 @@ const BidsModal = ({successFullBid, setSuccessFullBid, dsponsorMpContract, toggl
       });
       setSuccessFullBid(true);
     } catch (error) {
+      setIsLoadingButton(false);
       throw new Error(error);
     } finally{
       setIsLoadingButton(false);

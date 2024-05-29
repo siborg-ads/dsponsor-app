@@ -172,8 +172,8 @@ const CreateOfferContainer = () => {
     if (!validateInputs()) {
       return;
     }
-    setIsLoadingButton(true);
     try {
+      setIsLoadingButton(true);
       let paramsFormated = [];
       selectedParameter.forEach((param) => {
         const a = param.split("-");
@@ -279,6 +279,7 @@ const CreateOfferContainer = () => {
 
       setSuccessFullUpload(true);
     } catch (error) {
+      setIsLoadingButton(false);
       setSuccessFullUpload(false);
       console.log(error);
       throw error;

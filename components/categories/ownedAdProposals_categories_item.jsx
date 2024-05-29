@@ -33,6 +33,7 @@ const { currentChainObject } = useChainContext();
   const [validate, setValidate] = useState({});
   const [isSelectionActive, setIsSelectionActive] = useState(false);
   const [showPreviewModal, setShowPreviewModal] = useState(false);
+ 
   const [successFullUpload, setSuccessFullUpload] = useState(false);
   const [files, setFiles] = useState([]);
   const [previewImages, setPreviewImages] = useState([]);
@@ -42,7 +43,7 @@ const { currentChainObject } = useChainContext();
   const [showSliderForm, setShowSliderForm] = useState(false);
   const [adParameters, setAdParameters] = useState([]);
   const [imageURLSteps, setImageURLSteps] = useState([]);
-  const [successFullUploadModal, setSuccessFullUploadModal] = useState(false);
+
   const [imageUrlVariants, setImageUrlVariants] = useState([]);
   const stepsRef = useRef([]);
   const [numSteps, setNumSteps] = useState(2);
@@ -62,7 +63,11 @@ const chainName = currentChainObject?.chainName;
     }
   };
   const handlePreviewModal = () => {
-    setSuccessFullUpload(false);
+    if(successFullUpload){
+      setSuccessFullUpload(false);
+      handleSelectionTokens();
+
+    }
     validateInputs();
     setShowPreviewModal(!showPreviewModal);
   };
@@ -131,18 +136,17 @@ const chainName = currentChainObject?.chainName;
     const adDetails = {};
 console.log(selectedItems, "selectedItems");
     for (const token of selectedItems) {
-      const offers = token.nftContract.adOffers;
-      if (offers.length > 0) {
-        const offer = offers[0];
-        for (const param of offer.adParameters) {
+    
+      
+        for (const param of token.adParameters) {
           const paramId = param.adParameter.id;
           if (paramId && paramId !== "xSpaceId" && paramId !== "xCreatorHandle") {
             uniqueIds.add(paramId);
             adDetails[paramId] = adDetails[paramId] || new Set();
-            adDetails[paramId].add(offer.id);
+            adDetails[paramId].add(token.id);
           }
         }
-      }
+      
     }
 
     for (const id in adDetails) {
@@ -172,7 +176,7 @@ console.log(selectedItems, "selectedItems");
     if (!validateInputs()) {
       return;
     }
-    setIsLoadingButton(true);
+    
     const selectedOfferIdItems = [];
     const selectedTokenIdItems = [];
     const adParametersItems = [];
@@ -180,18 +184,20 @@ console.log(selectedItems, "selectedItems");
     
   
     try {
+      setIsLoadingButton(true);
       for (const item of selectedItems) {
-        for (const args of item.nftContract.adOffers[0].adParameters) {
+        for (const args of item.adParameters) {
           if (args.adParameter.id !== "xSpaceId" && args.adParameter.id !== "xCreatorHandle") {
-            selectedOfferIdItems.push(item.nftContract.adOffers[0].id);
+            selectedOfferIdItems.push(item.offerId);
             selectedTokenIdItems.push(item.tokenId);
             adParametersItems.push(args.adParameter.id);
              
           }
         }
+ 
         for (const file of files) {
           let uploadUrl;
-          if (file.offerIds.includes(item.nftContract.adOffers[0].id)) {
+          if (file.offerIds.includes(item.id)) {
             try {
               uploadUrl = await uploadToIPFS({
                 data: [file.file],
@@ -216,11 +222,13 @@ console.log(selectedItems, "selectedItems");
       };
       console.log(argsAdSubmited, "argsAdSubmited");
       await submitAd({ args: Object.values(argsAdSubmited) });
+      setSuccessFullUpload(true);
     } catch (err) {
-      console.log(err);
+      console.log("ici");
+      setIsLoadingButton(false);
       throw new Error("Upload to Blockchain failed.");
     } finally {
-    isLoadingButton(false);
+    setIsLoadingButton(false);
     }
   };
  
@@ -235,7 +243,14 @@ console.log(selectedItems, "selectedItems");
     setFiles([]);
     setNumSteps(2);
   };
-
+const successFullUploadModal = {
+  title: "Submit ad",
+  body: "Congratulations, you have proposed an ad. 🎉",
+  subBody: 'The media still has the power to validate or reject ad assets. You can follow the ad validation in your token view.',
+  buttonTitle: "Close",
+  hrefButton: null,
+  
+};
 
   if (!data) {
     return (

@@ -99,6 +99,7 @@ const ItemManageModal = ({ handleListingModal, offerData, setSuccessFullListing,
         await createListing({ args: [args] });
         setSuccessFullListing(true);
       } catch (error) {
+        setIsLoadingButton(false);
         console.error(error);
         throw error;
       } finally {
@@ -107,11 +108,12 @@ const ItemManageModal = ({ handleListingModal, offerData, setSuccessFullListing,
     }
   };
   const handleApprove = async () => {
-    setIsLoadingButton(true);
     try {
+      setIsLoadingButton(true);
       await setApprovalForAll({ args: [currentChainObject?.smartContracts?.DSPONSORMP?.address, true] });
       setApprovalForAllToken(true);
     } catch (error) {
+      setIsLoadingButton(false);
       console.error(error);
       setApprovalForAllToken(false);
       throw error;
@@ -260,7 +262,7 @@ const ItemManageModal = ({ handleListingModal, offerData, setSuccessFullListing,
     body: "Your listing has been created successfully",
     subBody: "You can see your listing on the martketplace page.",
     buttonTitle: "Manage Spaces",
-    hrefButton: `/manage/${address}`,
+    hrefButton: null,
   };
   const helperSartingPrice = {
     title: "Starting price",

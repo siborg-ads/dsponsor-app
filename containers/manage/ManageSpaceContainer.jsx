@@ -39,6 +39,7 @@ const ManageSpaceContainer = () => {
         const offers = await fetchAllOffersByUserAddress(userAddress, chainId);
         
         const ownedAdProposals = await fetchAllTokenByOfferForAuser(userAddress, chainId);
+        console.log(ownedAdProposals);
         const listedToken = await fetchAllTokenListedByUserAddress(userAddress, chainId);
         const mappedListedToken = [];
         for (const element of listedToken) {
@@ -84,6 +85,8 @@ const ManageSpaceContainer = () => {
           for(const token of element.nftContract.tokens){
 
             const combinedData = {
+            
+              adParameters: element.adParameters,
               id: `${element.id}-${token.tokenId}`,
               offerId: element.id,
               ...token,
