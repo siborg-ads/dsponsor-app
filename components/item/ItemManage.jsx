@@ -3,9 +3,11 @@ import { useAddress, useBalance, Web3Button, useContract, useContractRead, useCo
 import ItemManageModal from "./ItemManageModal";
 import { toast } from "react-toastify";
 import { Spinner } from "@nextui-org/spinner";
+import { useChainContext } from "../../contexts/hooks/useChainContext";
 
 const ItemManage = ({successFullListing, setSuccessFullListing,  offerData, marketplaceListings, royalties, dsponsorNFTContract, dsponsorMpContract, isOwner }) => {
   const [listingModal, setListingModal] = useState(false);
+  const { currentChainObject } = useChainContext();
   const [buyModal, setBuyModal] = useState(false);
   const { mutateAsync: cancelDirectListing } = useContractWrite(dsponsorMpContract, "cancelDirectListing");
   const { mutateAsync: closeAuctionListing } = useContractWrite(dsponsorMpContract, "closeAuction");
@@ -19,8 +21,8 @@ const ItemManage = ({successFullListing, setSuccessFullListing,  offerData, mark
     setListingModal(!listingModal);
   };
   const handleSubmitCancel = async () => {
-    setIsLoadingButton(true);
     try {
+      setIsLoadingButton(true);
       if (marketplaceListings[0].listingType === "Auction") {
         await closeAuctionListing({ args: [marketplaceListings[0].id] });
         setSuccessFullListing(true);
@@ -29,6 +31,7 @@ const ItemManage = ({successFullListing, setSuccessFullListing,  offerData, mark
         setSuccessFullListing(true);
       }
     } catch (e) {
+      setIsLoadingButton(false);
       throw new Error(e);
     } finally {
       setIsLoadingButton(false);
@@ -48,9 +51,9 @@ const ItemManage = ({successFullListing, setSuccessFullListing,  offerData, mark
           {(marketplaceListings[0]?.status !== "CREATED" || marketplaceListings?.length <= 0) && isOwner && (
             <span className="dark:text-jacarta-300 text-jacarta-400 text-sm">Click the button below to sell your item in auction or direct listing. </span>
           )}
-          {marketplaceListings[0]?.listingType === "Direct" &&
-            isOwner &&
-            marketplaceListings[0]?.status === "CREATED" &&(<span className="dark:text-jacarta-300 text-jacarta-400 text-sm">Click the button below to cancel the listing. </span>)}
+          {marketplaceListings[0]?.listingType === "Direct" && isOwner && marketplaceListings[0]?.status === "CREATED" && (
+            <span className="dark:text-jacarta-300 text-jacarta-400 text-sm">Click the button below to cancel the listing. </span>
+          )}
         </div>
 
         {(marketplaceListings[0]?.status !== "CREATED" || marketplaceListings?.length <= 0) && isOwner ? (
@@ -61,7 +64,7 @@ const ItemManage = ({successFullListing, setSuccessFullListing,  offerData, mark
           </div>
         ) : marketplaceListings[0]?.listingType === "Direct" && isOwner ? (
           <Web3Button
-            contractAddress="0xac03b675fa9644279b92f060bf542eed54f75599"
+            contractAddress={currentChainObject?.smartContracts?.DSPONSORMP?.address}
             action={() => {
               toast.promise(handleSubmitCancel, {
                 pending: "Waiting for confirmation 🕒",
@@ -76,7 +79,7 @@ const ItemManage = ({successFullListing, setSuccessFullListing,  offerData, mark
           </Web3Button>
         ) : marketplaceListings[0]?.listingType === "Auction" && marketplaceListings[0]?.endTime < now ? (
           <Web3Button
-            contractAddress="0xac03b675fa9644279b92f060bf542eed54f75599"
+            contractAddress={currentChainObject?.smartContracts?.DSPONSORMP?.address}
             action={() => {
               toast.promise(handleSubmitCancel, {
                 pending: "Waiting for confirmation 🕒",
@@ -96,7 +99,7 @@ const ItemManage = ({successFullListing, setSuccessFullListing,  offerData, mark
           isOwner &&
           (marketplaceListings[0]?.bids?.length <= 0 || marketplaceListings[0]?.startTime > now) && (
             <Web3Button
-              contractAddress="0xac03b675fa9644279b92f060bf542eed54f75599"
+              contractAddress={currentChainObject?.smartContracts?.DSPONSORMP?.address}
               action={() => {
                 toast.promise(handleSubmitCancel, {
                   pending: "Waiting for confirmation 🕒",

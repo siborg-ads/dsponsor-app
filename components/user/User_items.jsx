@@ -4,8 +4,9 @@ import Image from "next/image";
 import OwnedOffers_categories_items from "../categories/ownedOffers_categories_items";
 
 import OwnedAdProposals_categories_items from "../categories/ownedAdProposals_categories_item";
+import Auctions_categories from "../categories/Auctions_categories";
 
-const User_items = ({ createdData, mappedownedAdProposals, isPendinAdsOnOffer, isOwner }) => {
+const User_items = ({ createdData, mappedownedAdProposals, isPendinAdsOnOffer, isOwner, listedAuctionToken }) => {
   const [itemActive, setItemActive] = useState(1);
 
   const tabItem = [
@@ -16,15 +17,15 @@ const User_items = ({ createdData, mappedownedAdProposals, isPendinAdsOnOffer, i
     },
     {
       id: 2,
-      text: "Owned Ad Spaces",
+      text: "Owned tokens",
       icon: "owned",
     },
 
-    // {
-    //   id: 3,
-    //   text: "Favorite",
-    //   icon: "activity",
-    // },
+    {
+      id: 3,
+      text: "Auction listed tokens",
+      icon: "activity",
+    },
   ];
   return (
     <>
@@ -66,9 +67,9 @@ const User_items = ({ createdData, mappedownedAdProposals, isPendinAdsOnOffer, i
                 <OwnedAdProposals_categories_items data={mappedownedAdProposals} isOwner={isOwner} />
               </div>
             </TabPanel>
-            {/* <TabPanel>
-              <Trending_categories_items data={data} />
-            </TabPanel> */}
+            <TabPanel>
+              <Auctions_categories data={listedAuctionToken} isOwner={isOwner} />
+            </TabPanel>
           </Tabs>
         </div>
       </section>

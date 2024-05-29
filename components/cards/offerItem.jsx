@@ -9,11 +9,12 @@ import { useCountdown } from "../../utils/countDown";
 import adminInstance from "../../utils/sdkProvider";
 import { protocolFeesBigNumber } from "../../utils/constUtils";
 import { useAddress, useSwitchChain, useContract, useContractWrite, Web3Button, useContractRead, useStorageUpload, useTokenDecimals, CheckoutWithCard, CheckoutWithEth } from "@thirdweb-dev/react";
-import {ethers} from "ethers";
+import { ethers } from "ethers";
 import { contractABI } from "../../utils/constUtils";
+import { useChainContext } from "../../contexts/hooks/useChainContext";
 
-
-const OfferItem = ({ item, url, isToken, isSelectionActive, isOwner }) => {
+const OfferItem = ({ item, url, isToken, isSelectionActive, isOwner, isAuction = false }) => {
+  const { currentChainObject } = useChainContext();
   const [price, setPrice] = useState(null);
   const [currencyToken, setCurrencyToken] = useState(null);
   const [itemData, setItemData] = useState({});
@@ -21,58 +22,60 @@ const OfferItem = ({ item, url, isToken, isSelectionActive, isOwner }) => {
   const { contract: tokenContract } = useContract(!isToken && item?.nftContract?.prices[0]?.currency, "token");
   const { data: symbolContract } = useContractRead(tokenContract, "symbol");
   const { data: decimalsContract } = useContractRead(tokenContract, "decimals");
-  const { contract: DsponsorAdminContract } = useContract("0xE442802706F3603d58F34418Eac50C78C7B4E8b3", contractABI);
+  const { contract: DsponsorAdminContract } = useContract(currentChainObject?.smartContracts?.DSPONSORADMIN?.address, currentChainObject?.smartContracts?.DSPONSORADMIN?.abi);
   const { data: bps } = useContractRead(DsponsorAdminContract, "feeBps");
   const maxBps = 10000;
-
-  
-  
 
   function formatDate(dateIsoString) {
     if (!dateIsoString) return "date not found";
     const options = { year: "numeric", month: "long", day: "numeric" };
     return new Date(dateIsoString).toLocaleDateString("en-EN", options);
   }
+ const formatAuctionDate = (timestamp) => {
+   if (!timestamp) return "";
+
+   // Convertir le timestamp en objet Date
+   const date = new Date(timestamp*1000);
+
+   const dates = date.toLocaleString("en-EN", {
+     year: "numeric",
+     month: "long",
+     day: "numeric",
+     
+     hour12: true,
+   });
+
+
+   return dates;
+ };
   useEffect(() => {
-  
-
-      
-
-   
     try {
-       const currencyTokenObject = {};
-       if (!decimalsContract && !symbolContract) {
-         const currencyToken = adminInstance.chain.getCurrencyByAddress(item?.nftContract?.prices[0]?.currency);
-         currencyTokenObject.symbol = currencyToken.symbol;
-         currencyTokenObject.decimals = currencyToken.decimals;
-       } else {
-         currencyTokenObject.symbol = symbolContract;
-         currencyTokenObject.decimals = decimalsContract;
-       }
-      
+      const currencyTokenObject = {};
+      if (!decimalsContract && !symbolContract) {
+        const currencyToken = adminInstance.chain.getCurrencyByAddress(item?.nftContract?.prices[0]?.currency);
+        currencyTokenObject.symbol = currencyToken.symbol;
+        currencyTokenObject.decimals = currencyToken.decimals;
+      } else {
+        currencyTokenObject.symbol = symbolContract;
+        currencyTokenObject.decimals = decimalsContract;
+      }
 
+      const bigIntPrice = (BigInt(item?.nftContract?.prices[0]?.amount) * (BigInt(bps) + BigInt(maxBps))) / BigInt(maxBps);
+      const formatPrice = ethers.utils.formatUnits(bigIntPrice, currencyTokenObject.decimals);
 
-  const bigIntPrice = BigInt(item?.nftContract?.prices[0]?.amount) * (BigInt(bps)+ BigInt(maxBps)) / BigInt(maxBps);
-   const formatPrice = ethers.utils.formatUnits(bigIntPrice, currencyTokenObject.decimals);
-
-
-   
-
-   
-      
-       setCurrencyToken(currencyTokenObject);
+      setCurrencyToken(currencyTokenObject);
       setPrice(Number(Math.ceil(formatPrice * 1000) / 1000));
     } catch (e) {
       console.error("Error: Currency not found for address");
     }
     if (isToken) {
-      const data = item.offer ? item.offer : null;
+      const data = item.metadata ? item.metadata : null;
       setItemData(data);
     } else {
-      const data = item.offer ? item.offer : null;
+      const data = item.metadata.offer ? item.metadata.offer : null;
       setItemData(data);
     }
-  }, [item, isToken,  symbolContract, decimalsContract, bps]);
+  }, [item, isToken, symbolContract, decimalsContract, bps]);
 
   // useEffect(() => {
   //   const fetchAdsOffers = async () => {
@@ -102,8 +105,7 @@ const OfferItem = ({ item, url, isToken, isSelectionActive, isOwner }) => {
   //   fetchAdsOffers();
   // }, [item]);
 
-
-  const { name = "offerName", image = "/images/gradient_creative.jpg", valid_from = null, valid_to = null } = itemData ? itemData : {};
+  const { name = "offerName", image = "/images/gradient_creative.jpg", valid_from = null, valid_to = null, startTime = null, endTime = null } = itemData ? itemData : {};
 
   return (
     <>
@@ -130,13 +132,14 @@ const OfferItem = ({ item, url, isToken, isSelectionActive, isOwner }) => {
             )}
 
             {!isToken ? (
-              currencyToken?.symbol && <div className="dark:border-jacarta-600 border-jacarta-100 flex items-center whitespace-nowrap rounded-md border py-1 px-2">
-                {" "}
-               
-                <span className="text-green text-sm font-medium tracking-tight">
-                  {price} {currencyToken?.symbol}
-                </span>
-              </div>
+              currencyToken?.symbol && (
+                <div className="dark:border-jacarta-600 border-jacarta-100 flex items-center whitespace-nowrap rounded-md border py-1 px-2">
+                  {" "}
+                  <span className="text-green text-sm font-medium tracking-tight">
+                    {price} {currencyToken?.symbol}
+                  </span>
+                </div>
+              )
             ) : (
               <div className="dark:border-jacarta-600 border-jacarta-100 flex items-center whitespace-nowrap rounded-md border py-1 px-2">
                 <span className="text-green text-sm font-medium tracking-tight"># {item.tokenData ? item.tokenData : item.tokenId}</span>
@@ -144,9 +147,27 @@ const OfferItem = ({ item, url, isToken, isSelectionActive, isOwner }) => {
             )}
           </div>
           <div className="mt-2 text-xs flex items-center justify-between">
-            <span className="dark:text-jacarta-300 text-jacarta-500">
-              {formatDate(valid_from)} - {formatDate(valid_to)}
-            </span>
+            {!isAuction ? (
+              <div className="flex justify-between w-full">
+                <span className="dark:text-jacarta-300 text-jacarta-500">
+                  {formatDate(valid_from)} - {formatDate(valid_to)}
+                </span>
+                <span className="dark:text-jacarta-300 text-jacarta-500">Offer # {isToken ? item?.offerId : item?.id }</span>
+              </div>
+            ) : (
+              <div className="flex justify-between w-full items-center">
+                <div className="flex flex-col">
+
+                <span className="dark:text-jacarta-300 text-jacarta-500">
+                Auction  Start : <span className="text-green text-xs font-medium">{formatAuctionDate(item.startTime)} </span>
+                </span>
+                <span className="dark:text-jacarta-300 text-jacarta-500">
+                Auction  End : <span className="text-green text-xs font-medium">{formatAuctionDate(item.endTime)}</span>{" "}
+                </span>
+                </div>
+                <span className="dark:text-jacarta-300 text-jacarta-500">Offer # {item?.nftContract?.adOffers[0]?.id}</span>
+              </div>
+            )}
             {/* {!isToken ? (
               <span className="dark:text-jacarta-300 text-jacarta-500">
                 {formatDate(valid_from)} - {formatDate(valid_to)}
@@ -156,7 +177,6 @@ const OfferItem = ({ item, url, isToken, isSelectionActive, isOwner }) => {
                 {adStatut === 0 ? "❌ Rejected" : adStatut === 1 ? "✅ Accepted" : adStatut === 2 ? "🔍 Pending" : "Ad space available"}
               </span>
             )} */}
-            <span className="dark:text-jacarta-300 text-jacarta-500">Offer # {item.mint ? item.nftContract?.adOffers[0]?.id : item.id}</span>
           </div>
         </div>
       </article>

@@ -1,10 +1,14 @@
 import { useState } from "react";
 import { toUtf8Bytes, keccak256 } from "ethers/lib/utils";
+import { useChainContext } from "../../../../contexts/hooks/useChainContext";
 
 
 
 const Form = ({ offerId, onUrlChange }) => {
   const [searchTerm, setSearchTerm] = useState("");
+    const { currentChainObject } = useChainContext();
+
+    const chainName = currentChainObject?.chainName;
 
   const handleSubmit = (event) => {
     event.preventDefault(); // Prevent default form submission
@@ -14,7 +18,7 @@ const Form = ({ offerId, onUrlChange }) => {
       .replace(/\p{Diacritic}/gu, "")
       .replace(/[^a-z0-9]/gi, "");
     const bigInt = BigInt(keccak256(toUtf8Bytes(normalized)));
-    const url = `/offer/${offerId}/${bigInt}?tokenData=${searchTerm}`;
+    const url = `/${chainName}/offer/${offerId}/${bigInt}?tokenData=${searchTerm}`;
     
     onUrlChange(url, searchTerm);
   };

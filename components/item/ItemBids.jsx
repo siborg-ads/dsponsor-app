@@ -5,10 +5,11 @@ import Link from 'next/link'
 import Timer from './Timer'
 import BidsModal from '../modal/bidsModal'
 import { ethers } from "ethers";
-
-const ItemBids = ({successFullBid, setSuccessFullBid, dsponsorMpContract, marketplaceListings, currencySymbol, tokenBalance,handleApprove,price, hasEnoughBalance, currencyTokenDecimals, checkUserBalance, allowanceTrue, checkAllowance }) => {
+import { useAddress, darkTheme, useBalance, Web3Button, useTokenBalance, useContract, useContractRead, useContractWrite, useStorageUpload, useTokenDecimals, CheckoutWithCard, CheckoutWithEth } from "@thirdweb-dev/react";
+import { useChainContext } from "../../contexts/hooks/useChainContext";
+const ItemBids = ({successFullBid, address, setSuccessFullBid, dsponsorMpContract, marketplaceListings, currencySymbol, tokenBalance,handleApprove,price, hasEnoughBalance, currencyTokenDecimals, checkUserBalance, allowanceTrue, checkAllowance }) => {
   const [showBidsModal, setShowBidsModal] = useState(false);
-  
+  const { currentChainObject } = useChainContext();
   const toggleBidsModal = () =>{ 
     checkAllowance();
     setShowBidsModal(!showBidsModal)};
@@ -31,7 +32,7 @@ const ItemBids = ({successFullBid, setSuccessFullBid, dsponsorMpContract, market
             <div>
               <div className="flex items-center whitespace-nowrap">
                 {bids.length <= 0 ? (
-                  <div className='flex flex-col'>
+                  <div className="flex flex-col">
                     <p className="text-sm text-jacarta-400">starting price : </p>
                     <span className="text-lg font-medium leading-tight tracking-tight text-green">
                       {price} {currencySymbol}
@@ -53,10 +54,24 @@ const ItemBids = ({successFullBid, setSuccessFullBid, dsponsorMpContract, market
           <Timer endTime={marketplaceListings[0].endTime} />
         </div>
       </div>
+      {!address ? (
+        <div className='flex justify-center'>
 
-      <button className="inline-block w-full rounded-full bg-accent py-3 px-8 text-center font-semibold text-white shadow-accent-volume transition-all hover:bg-accent-dark" onClick={toggleBidsModal}>
-        Place Bid
-      </button>
+        <Web3Button
+          contractAddress={currentChainObject?.smartContracts?.DSPONSORMP?.address}
+          action={() => {
+            toggleBidsModal;
+          }}
+          className={` !rounded-full !py-3 w-full !px-8 !text-center !font-semibold !text-white !transition-all !bg-accent !cursor-pointer `}
+        >
+          Connect wallet
+        </Web3Button>
+        </div>
+      ) : (
+        <button className="inline-block w-full rounded-full bg-accent py-3 px-8 text-center font-semibold text-white shadow-accent-volume transition-all hover:bg-accent-dark" onClick={toggleBidsModal}>
+          Place Bid
+        </button>
+      )}
       {showBidsModal && (
         <BidsModal
           successFullBid={successFullBid}

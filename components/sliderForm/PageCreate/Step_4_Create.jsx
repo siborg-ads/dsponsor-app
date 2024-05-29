@@ -5,6 +5,7 @@ import { useAddress, useSwitchChain, useContract, useContractWrite, Web3Button, 
 import adminInstance from "../../../utils/sdkProvider";
 import { FileUploader } from "react-drag-drop-files";
 import  ModalHelper  from "../../Helper/modalHelper";
+import { useChainContext } from "../../../contexts/hooks/useChainContext";
 
 const Step_4_Create = ({
   stepsRef,
@@ -28,11 +29,12 @@ const Step_4_Create = ({
   setTokenContract,
   setCustomTokenContract,
 }) => {
-  const USDCCurrency = adminInstance.chain.getCurrencyAddress("USDC");
-  const ETHCurrency = adminInstance.chain.getCurrencyAddress("ETH");
-  const WETHCurrency = adminInstance.chain.getCurrencyAddress("WETH");
-  const USDTCurrency = adminInstance.chain.getCurrencyAddress("USDT");
-  const [selectedCurrencyContract, setSelectedCurrencyContract] = useState(USDCCurrency.contract);
+  const { currentChainObject } = useChainContext();
+  const USDCCurrency = currentChainObject?.smartContracts?.USDC;
+  const NATIVECurrency = currentChainObject?.smartContracts?.NATIVE;
+  const WETHCurrency = currentChainObject?.smartContracts?.WETH;
+  const USDTCurrency = currentChainObject?.smartContracts?.USDT;
+  const [selectedCurrencyContract, setSelectedCurrencyContract] = useState(USDCCurrency?.address);
   const { contract: tokenContractAsync } = useContract(selectedCurrencyContract, "token");
   const { data: symbolContractAsync } = useContractRead(tokenContractAsync, "symbol");
   const { data: decimalsContractAsync } = useContractRead(tokenContractAsync, "decimals");
@@ -42,28 +44,28 @@ const Step_4_Create = ({
     setTokenDecimals(decimalsContractAsync);
     setTokenContract(selectedCurrencyContract);
     setCustomTokenContract(tokenContractAsync);
-  }, [decimalsContractAsync, symbolContractAsync, setTokenDecimals, setSymbolContract, setTokenContract, selectedCurrencyContract, tokenContractAsync, setCustomTokenContract]);
+  }, [decimalsContractAsync, symbolContractAsync, selectedCurrencyContract, tokenContractAsync, currentChainObject, setSymbolContract, setTokenDecimals, setTokenContract, setCustomTokenContract]);
 
   const handleCurrencyChange = (event) => {
     setSelectedCurrency(event.target.value);
-    if (event.target.value === "ETH") {
-      setTokenDecimals(ETHCurrency.decimals);
-      setSymbolContract(ETHCurrency.symbol);
-      setTokenContract(ETHCurrency.contract);
+    if (event.target.value === "NATIVE") {
+      setTokenDecimals(NATIVECurrency.decimals);
+      setSymbolContract(NATIVECurrency.symbol);
+      setTokenContract(NATIVECurrency.address);
     } else if (event.target.value === "custom") {
       setSelectedCurrencyContract("f");
     } else {
-      console.log("ici");
+ 
       setSelectedCurrencyContract(selectedCurrencyContractObject[event.target.value]);
       setCustomContract(null);
     }
   };
   const handleCustomContractChange = (event) => {
-    if (event.target.value === ETHCurrency.contract) {
-      setTokenDecimals(ETHCurrency.decimals);
-      setSymbolContract(ETHCurrency.symbol);
-      setTokenContract(ETHCurrency.contract);
-      setCustomTokenContract(ETHCurrency.contract);
+    if (event.target.value === NATIVECurrency.address) {
+      setTokenDecimals(NATIVECurrency.decimals);
+      setSymbolContract(NATIVECurrency.symbol);
+      setTokenContract(NATIVECurrency.address);
+      setCustomTokenContract(NATIVECurrency.address);
     } else {
       setCustomContract(event.target.value);
       setSelectedCurrencyContract(event.target.value);
@@ -82,10 +84,9 @@ const Step_4_Create = ({
 
 
   const selectedCurrencyContractObject = {
-    USDC: USDCCurrency.contract,
-    ETH: ETHCurrency.contract,
-    WETH: WETHCurrency.contract,
-    USDT: USDTCurrency.contract,
+    USDC: USDCCurrency?.address,
+    WETH: WETHCurrency?.address,
+    USDT: USDTCurrency?.address,
     custom: customContract,
   };
 
@@ -159,7 +160,7 @@ const Step_4_Create = ({
                   className="dark:bg-jacarta-700 min-w-[110px] border-jacarta-100 hover:ring-accent/10 focus:ring-accent dark:border-jacarta-600 dark:placeholder:text-jacarta-300 w-full rounded-lg py-3 px-5 hover:ring-2 dark:text-white"
                 >
                   <option value="USDC">USDC</option>
-                  <option value="ETH">ETH</option>
+                  <option value="NATIVE">{currentChainObject?.smartContracts?.NATIVE.symbol}</option>
                   <option value="WETH">WETH</option>
                   <option value="USDT">USDT</option>
                   <option value="custom">Custom</option>
@@ -178,8 +179,8 @@ const Step_4_Create = ({
               </div>
             </div>
             <p className="dark:text-jacarta-300 text-jacarta-400 text-2xs mt-3">
-              You&apos;ll earn up to {selectedUnitPrice} {symbolContractAsync ? symbolContractAsync : selectedCurrency}. As d&gt;sponsor charges a fee of 4%, sponsors will pay{" "}
-              {parseFloat(selectedUnitPrice) + parseFloat(selectedUnitPrice) * (4 / 100)} {symbolContractAsync ? symbolContractAsync : selectedCurrency}.
+              You&apos;ll earn up to {selectedUnitPrice} {symbolContract ? symbolContract : selectedCurrency}. As d&gt;sponsor charges a fee of 4%, sponsors will pay{" "}
+              {parseFloat(selectedUnitPrice) + parseFloat(selectedUnitPrice) * (4 / 100)} {symbolContract ? symbolContract : selectedCurrency}.
             </p>
           </div>
 

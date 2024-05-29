@@ -17,21 +17,23 @@ import SliderForm from "../sliderForm/sliderForm";
 import Step_1_Mint from "../sliderForm/PageMint/Step_1_Mint";
 import Step_2_Mint from "../sliderForm/PageMint/Step_2_Mint";
 import Step_3_Mint from "../sliderForm/PageMint/Step_3_Mint";
- import { uploadToIPFS } from "../../data/services/ipfsService";
+
  import contractABI from "../../abi/dsponsorAdmin.json";
+ import { useChainContext } from "../../contexts/hooks/useChainContext";
 
 import PreviewModal from "../modal/previewModal";
 import { image } from "@nextui-org/react";
 
 const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
   const [itemdata, setItemdata] = useState(trendingCategoryData);
-
+const { currentChainObject } = useChainContext();
   const [filterVal, setFilterVal] = useState(0);
   const [selectedItems, setSelectedItems] = useState([]);
   const [isSelectedItem, setIsSelectedItem] = useState({});
   const [validate, setValidate] = useState({});
   const [isSelectionActive, setIsSelectionActive] = useState(false);
   const [showPreviewModal, setShowPreviewModal] = useState(false);
+ 
   const [successFullUpload, setSuccessFullUpload] = useState(false);
   const [files, setFiles] = useState([]);
   const [previewImages, setPreviewImages] = useState([]);
@@ -41,16 +43,17 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
   const [showSliderForm, setShowSliderForm] = useState(false);
   const [adParameters, setAdParameters] = useState([]);
   const [imageURLSteps, setImageURLSteps] = useState([]);
-  const [successFullUploadModal, setSuccessFullUploadModal] = useState(false);
+
   const [imageUrlVariants, setImageUrlVariants] = useState([]);
   const stepsRef = useRef([]);
   const [numSteps, setNumSteps] = useState(2);
-  const { contract: DsponsorAdminContract } = useContract("0xE442802706F3603d58F34418Eac50C78C7B4E8b3", contractABI);
+  const { contract: DsponsorAdminContract } = useContract(currentChainObject?.smartContracts?.DSPONSORADMIN?.address, currentChainObject?.smartContracts?.DSPONSORADMIN?.abi);
   const [isLoadingButton, setIsLoadingButton] = useState(false);
  
   const { mutateAsync: uploadToIPFS, isLoading: isUploading } = useStorageUpload();
   const { mutateAsync: submitAd } = useContractWrite(DsponsorAdminContract, "submitAdProposals");
 
+const chainName = currentChainObject?.chainName;
 
   const handleFilter = (category) => {
     if (category !== "all") {
@@ -60,11 +63,16 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
     }
   };
   const handlePreviewModal = () => {
-    setSuccessFullUpload(false);
+    if(successFullUpload){
+      setSuccessFullUpload(false);
+      handleSelectionTokens();
+
+    }
     validateInputs();
     setShowPreviewModal(!showPreviewModal);
   };
   const handleSelection = (item) => {
+
     setIsSelectedItem((prevState) => ({
       ...prevState,
       [item.id]: !prevState[item.id],
@@ -126,20 +134,19 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
     let adParams = [];
     const uniqueIds = new Set();
     const adDetails = {};
-
+console.log(selectedItems, "selectedItems");
     for (const token of selectedItems) {
-      const offers = token.nftContract.adOffers;
-      if (offers.length > 0) {
-        const offer = offers[0];
-        for (const param of offer.adParameters) {
+    
+      
+        for (const param of token.adParameters) {
           const paramId = param.adParameter.id;
           if (paramId && paramId !== "xSpaceId" && paramId !== "xCreatorHandle") {
             uniqueIds.add(paramId);
             adDetails[paramId] = adDetails[paramId] || new Set();
-            adDetails[paramId].add(offer.id);
+            adDetails[paramId].add(token.id);
           }
         }
-      }
+      
     }
 
     for (const id in adDetails) {
@@ -169,7 +176,7 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
     if (!validateInputs()) {
       return;
     }
-    setIsLoadingButton(true);
+    
     const selectedOfferIdItems = [];
     const selectedTokenIdItems = [];
     const adParametersItems = [];
@@ -177,18 +184,20 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
     
   
     try {
+      setIsLoadingButton(true);
       for (const item of selectedItems) {
-        for (const args of item.nftContract.adOffers[0].adParameters) {
+        for (const args of item.adParameters) {
           if (args.adParameter.id !== "xSpaceId" && args.adParameter.id !== "xCreatorHandle") {
-            selectedOfferIdItems.push(item.nftContract.adOffers[0].id);
+            selectedOfferIdItems.push(item.offerId);
             selectedTokenIdItems.push(item.tokenId);
             adParametersItems.push(args.adParameter.id);
              
           }
         }
+ 
         for (const file of files) {
           let uploadUrl;
-          if (file.offerIds.includes(item.nftContract.adOffers[0].id)) {
+          if (file.offerIds.includes(item.id)) {
             try {
               uploadUrl = await uploadToIPFS({
                 data: [file.file],
@@ -213,11 +222,13 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
       };
       console.log(argsAdSubmited, "argsAdSubmited");
       await submitAd({ args: Object.values(argsAdSubmited) });
+      setSuccessFullUpload(true);
     } catch (err) {
-      console.log(err);
+      console.log("ici");
+      setIsLoadingButton(false);
       throw new Error("Upload to Blockchain failed.");
     } finally {
-    isLoadingButton(false);
+    setIsLoadingButton(false);
     }
   };
  
@@ -232,7 +243,14 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
     setFiles([]);
     setNumSteps(2);
   };
-  console.log(imageUrlVariants, "imageUrlVariants");
+const successFullUploadModal = {
+  title: "Submit ad",
+  body: "Congratulations, you have proposed an ad. 🎉",
+  subBody: 'The media still has the power to validate or reject ad assets. You can follow the ad validation in your token view.',
+  buttonTitle: "Close",
+  hrefButton: null,
+  
+};
 
   if (!data) {
     return (
@@ -321,7 +339,7 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
                       item={item}
                       isToken={true}
                       isSelectionActive={isSelectionActive}
-                      url={!item.tokenData ? `/offer/${item.nftContract.adOffers[0].id}/${item.tokenId}` : `/offer/${item.nftContract.adOffers[0].id}/${item.tokenId}?tokenData=${item.tokenData}`}
+                      url={!item.tokenData ? `/${chainName}/offer/${item.offerId}/${item.tokenId}` : `/${chainName}/offer/${item.offerId}/${item.tokenId}?tokenData=${item.tokenData}`}
                     />
                   </div>
                 ) : (
@@ -330,7 +348,7 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
                     key={index}
                     isToken={true}
                     isSelectionActive={isSelectionActive}
-                    url={!item.tokenData ? `/offer/${item.nftContract.adOffers[0].id}/${item.tokenId}` : `/offer/${item.nftContract.adOffers[0].id}/${item.tokenId}?tokenData=${item.tokenData}`}
+                    url={!item.tokenData ? `/${chainName}/offer/${item.offerId}/${item.tokenId}` : `/${chainName}/offer/${item.offerId}/${item.tokenId}?tokenData=${item.tokenData}`}
                   />
                 );
               })}

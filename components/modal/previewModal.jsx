@@ -6,6 +6,7 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Spinner } from "@nextui-org/spinner";
 import ModalHelper from "../Helper/modalHelper";
+import { useChainContext } from "../../contexts/hooks/useChainContext";
 
 const PreviewModal = ({
   approvalForAllToken = true,
@@ -40,7 +41,7 @@ const PreviewModal = ({
 
   isLoadingButton,
 }) => {
- 
+ const { currentChainObject } = useChainContext();
   const formatDate = (date) => {
     if (!date) return "";
     return date.toLocaleString("en-EN", {
@@ -120,14 +121,14 @@ const PreviewModal = ({
                     )}
                   </p>
 
-                  {link.length ? (
+                  {link?.length ? (
                     <p className="font-display  mb-2 block text-jacarta-400 text-sm">
-                      Link : {!errors.linkError ? <span className="dark:text-white text-base ml-2"> {link} </span> : <span className="text-red text-base ml-2"> {errors.linkError}</span>}
+                      Link : {!errors?.linkError ? <span className="dark:text-white text-base ml-2"> {link} </span> : <span className="text-red text-base ml-2"> {errors.linkError}</span>}
                     </p>
                   ) : (
                     ""
                   )}
-                  {imageURLSteps?.length > 0 && previewImage.filter((item) => item).length < imageURLSteps.length && (
+                  {imageURLSteps?.length > 0 && previewImage.filter((item) => item).length < imageURLSteps?.length && (
                     <p className="font-display  mb-2 block text-jacarta-400 text-sm">
                       Image preview : <span className="text-red text-base ml-2"> {errors.imageError}</span>
                     </p>
@@ -262,9 +263,9 @@ const PreviewModal = ({
                 {!successFullUpload ? (
                   approvalForAllToken ? (
                     <Web3Button
-                      contractAddress="0xE442802706F3603d58F34418Eac50C78C7B4E8b3"
+                      contractAddress={currentChainObject?.smartContracts?.DSPONSORADMIN?.address}
                       action={() => {
-                        toast.promise(handleSubmit, {
+                        toast.promise(handleSubmit(true), {
                           pending: "Waiting for confirmation 🕒",
                           success: "Transaction confirmed 👌",
                           error: "Transaction rejected 🤯",
@@ -278,7 +279,7 @@ const PreviewModal = ({
                   ) : (
                     // approve for listing
                     <Web3Button
-                      contractAddress="0xac03b675fa9644279b92f060bf542eed54f75599"
+                      contractAddress={currentChainObject?.smartContracts?.DSPONSORMP?.address}
                       action={() => {
                         toast.promise(handleApprove, {
                           pending: "Waiting for confirmation 🕒",
@@ -293,9 +294,15 @@ const PreviewModal = ({
                     </Web3Button>
                   )
                 ) : (
-                  <Link href={successFullUploadModal.hrefButton}>
-                    <button className="!rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all !bg-accent !cursor-pointer">{successFullUploadModal.buttonTitle}</button>
-                  </Link>
+                  successFullUploadModal.hrefButton !== null ? (
+                    <Link href={successFullUploadModal.hrefButton}>
+                      <button className="!rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all !bg-accent !cursor-pointer">{successFullUploadModal.buttonTitle}</button>
+                    </Link>
+                  ) : (
+                    <button className="!rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all !bg-accent !cursor-pointer" onClick={() => handlePreviewModal()}>
+                      Close
+                    </button>
+                  )
                 )}
               </div>
             </div>

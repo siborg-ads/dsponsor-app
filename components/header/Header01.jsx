@@ -8,6 +8,7 @@ import { isChildrenPageActive, isParentPageActive } from "../../utils/daynamicNa
 import { useEffect, useState } from "react";
 import { ConnectWallet, useAddress } from "@thirdweb-dev/react";
 import { useTheme } from "next-themes";
+import { useChainContext } from "../../contexts/hooks/useChainContext";
 
 function randomUUID() {
   return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) {
@@ -30,7 +31,9 @@ export default function Header01() {
       }
     });
   });
+  const { currentChainObject } = useChainContext();
 
+  const chainName = currentChainObject?.chainName;
   const route = useRouter();
   /* -------------------------------------------------------------------------- */
   /*                            daynamic navigations                            */
@@ -66,17 +69,17 @@ export default function Header01() {
                 </li>
                 {/* create */}
                 <li className="group">
-                  <Link href="/offer/create">
+                  <Link href={`/${chainName}/offer/create`}>
                     <button className="text-jacarta-700 font-display hover:text-accent focus:text-accent dark:hover:text-accent dark:focus:text-accent flex items-center justify-between py-3.5 text-base dark:text-white lg:px-5">
-                      <span className={isChildrenPageActive(route.asPath, "/offer/create") ? "text-accent dark:text-accent" : ""}>Create offer</span>
+                      <span className={isChildrenPageActive(route.asPath, `/${chainName}/offer/create`) ? "text-accent dark:text-accent" : ""}>Create offer</span>
                     </button>
                   </Link>
                 </li>
                 {address && (
                   <li className="group">
-                    <Link href={`/manageSpaces/${address}`}>
+                    <Link href={`/manage/${address}`}>
                       <button className="text-jacarta-700 font-display hover:text-accent focus:text-accent dark:hover:text-accent dark:focus:text-accent flex items-center justify-between py-3.5 text-base dark:text-white lg:px-5">
-                        <span className={isChildrenPageActive(route.asPath, `/user/${address}`) ? "text-accent dark:text-accent" : ""}>Manage</span>
+                        <span className={isChildrenPageActive(route.asPath, `/manage/${address}`) ? "text-accent dark:text-accent" : ""}>Manage</span>
                       </button>
                     </Link>
                   </li>
@@ -155,17 +158,17 @@ export default function Header01() {
             </li>
             {/* create */}
             <li className="group">
-              <Link href="/offer/create" onClick={() => setToggle(false)}>
+              <Link href={`/${chainName}/offer/create`} onClick={() => setToggle(false)}>
                 <button className="text-jacarta-700 font-display hover:text-accent focus:text-accent dark:hover:text-accent dark:focus:text-accent flex items-center justify-between py-3.5 text-base dark:text-white lg:px-5">
-                  <span className={isChildrenPageActive(route.asPath, "/offer/create") ? "text-accent dark:text-accent" : ""}>Create offer</span>
+                  <span className={isChildrenPageActive(route.asPath, `/${chainName}/offer/create`) ? "text-accent dark:text-accent" : ""}>Create offer</span>
                 </button>
               </Link>
             </li>
             {address && (
               <li className="group" onClick={() => setToggle(false)}>
-                <Link href={`/manageSpaces/${address}`}>
+                <Link href={`/manage/${address}`}>
                   <button className="text-jacarta-700 font-display hover:text-accent focus:text-accent dark:hover:text-accent dark:focus:text-accent flex items-center justify-between py-3.5 text-base dark:text-white lg:px-5">
-                    <span className={isChildrenPageActive(route.asPath, `/user/${address}`) ? "text-accent dark:text-accent" : ""}>Manage</span>
+                    <span className={isChildrenPageActive(route.asPath, `/manage/${address}`) ? "text-accent dark:text-accent" : ""}>Manage</span>
                   </button>
                 </Link>
               </li>

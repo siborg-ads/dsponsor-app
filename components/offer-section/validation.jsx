@@ -5,7 +5,7 @@ import { Divider } from "@nextui-org/react";
 import Validated_refused_items from "../collections/validated_refused_items";
 import Review_carousel from "../carousel/review_carousel";
 
-const Validation = ({ offer, offerId, isOwner, handleSubmit, successFullRefuseModal, isToken = false, successFullUploadModal }) => {
+const Validation = ({ offer, offerId, isOwner, handleSubmit, successFullRefuseModal, isToken = false, successFullUploadModal, setRefusedValidatedAdModal, refusedValidatedAdModal, setSelectedItems, selectedItems }) => {
   const [pendingProposalData, setPendingProposalData] = useState([]);
   const [validatedProposalData, setValidatedProposalData] = useState([]);
   const [refusedProposalData, setRefusedProposalData] = useState([]);
@@ -18,7 +18,7 @@ const Validation = ({ offer, offerId, isOwner, handleSubmit, successFullRefuseMo
     },
     {
       id: 2,
-      text: "Submitted ",
+      text: "Validated",
       icon: "owned",
     },
 
@@ -84,12 +84,11 @@ const Validation = ({ offer, offerId, isOwner, handleSubmit, successFullRefuseMo
   return (
     <div className="container">
       <Divider className="my-4" />
-      <h2 className="text-jacarta-700 font-bold font-display mb-6 text-center text-3xl dark:text-white ">Validation </h2>
+      <h2 className="text-jacarta-700 font-bold font-display mb-6 text-center text-3xl dark:text-white ">Submitted Ads </h2>
       {/* <!-- Tabs Nav --> */}
       <Tabs className="tabs">
         <TabList className="nav nav-tabs scrollbar-custom mb-12 flex items-center justify-start overflow-x-auto overflow-y-hidden border-b border-jacarta-100 pb-px dark:border-jacarta-600 md:justify-center">
           {tabItem.map(({ id, text, icon }) => {
-            
             return (
               <Tab className="nav-item" role="presentation" key={id} onClick={() => setItemActive(id)}>
                 <button
@@ -109,16 +108,25 @@ const Validation = ({ offer, offerId, isOwner, handleSubmit, successFullRefuseMo
           })}
         </TabList>
 
-        
-          <div>
-            <TabPanel>
-              <div className="container mb-12 relative p-0">
-                {/* <!-- Filter --> */}
-                <Review_carousel pendingProposalData={pendingProposalData} handleSubmit={handleSubmit} successFullRefuseModal={successFullRefuseModal} isToken={isToken} isOwner={isOwner} />
-              </div>
-            </TabPanel>
-          </div>
-    
+        <div>
+          <TabPanel>
+            <div className="container mb-12 relative p-0">
+              {/* <!-- Filter --> */}
+              <Review_carousel
+              setSelectedItems={setSelectedItems}
+                selectedItems={selectedItems}
+                setRefusedValidatedAdModal={setRefusedValidatedAdModal}
+                refusedValidatedAdModal={refusedValidatedAdModal}
+                pendingProposalData={pendingProposalData}
+                handleSubmit={handleSubmit}
+                successFullRefuseModal={successFullRefuseModal}
+                isToken={isToken}
+                isOwner={isOwner}
+              />
+            </div>
+          </TabPanel>
+        </div>
+
         <TabPanel>
           <div className="container mb-12 relative p-0">
             {/* <!-- Filter --> */}

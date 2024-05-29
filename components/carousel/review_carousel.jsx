@@ -14,13 +14,15 @@ import { useEffect, useState } from "react";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import { Web3Button } from "@thirdweb-dev/react";
 import AddProposalRefusedModal from "../modal/adProposalRefusedModal";
+import { useChainContext } from "../../contexts/hooks/useChainContext";
 
-const Review_carousel = ({ handleSubmit, pendingProposalData, successFullRefuseModal, isToken, isOwner }) => {
+const Review_carousel = ({ setSelectedItems, selectedItems, handleSubmit, pendingProposalData, successFullRefuseModal, isToken, isOwner, setRefusedValidatedAdModal, refusedValidatedAdModal }) => {
+  const { currentChainObject } = useChainContext();
   const [validate, setValidate] = useState({});
   const [comments, setComments] = useState({});
-  const [refusedAdModalId, setRefusedAdModalId] = useState(null);
+  const [isApprouvedAd, setIsApprouvedAd] = useState(false);
   const [tokenId, setTokenId] = useState(null);
-  const [selectedItems, setSelectedItems] = useState([]);
+
   const [isSelectedItem, setIsSelectedItem] = useState({});
   const [modalStates, setModalStates] = useState({});
   const [copied, setCopied] = useState(false);
@@ -71,9 +73,9 @@ const Review_carousel = ({ handleSubmit, pendingProposalData, successFullRefuseM
     });
   };
 
-  const handleItemSubmit = async (approuved) => {
+  const handleItemSubmit = async (approuved = false) => {
     let submissionArgs = [];
-
+    setIsApprouvedAd(approuved);
     for (const item of selectedItems) {
       console.log(item, "item");
       let argObject = {
@@ -87,7 +89,7 @@ const Review_carousel = ({ handleSubmit, pendingProposalData, successFullRefuseM
     await handleSubmit(submissionArgs);
   };
   const openRefuseModal = () => {
-    setRefusedAdModalId(true);
+    setRefusedValidatedAdModal(true);
   };
   function formatTokenId(str) {
     if (str.length <= 6) {
@@ -96,11 +98,11 @@ const Review_carousel = ({ handleSubmit, pendingProposalData, successFullRefuseM
     return str.slice(0, 3) + "..." + str.slice(-3);
   }
   const closeRefuseModal = () => {
-    setRefusedAdModalId(null);
+    setRefusedValidatedAdModal(null);
   };
 
   const handleSelection = (item) => {
-    if(!isOwner) return;
+    if (!isOwner) return;
     setIsSelectedItem((prevState) => ({
       ...prevState,
       [item.tokenId]: !prevState[item.tokenId],
@@ -128,6 +130,16 @@ const Review_carousel = ({ handleSubmit, pendingProposalData, successFullRefuseM
 
     const imageKey = Object.keys(adParams).find((key) => key.startsWith("imageURL"));
     return imageKey ? adParams[imageKey] : "/";
+  };
+  const successFullRefusedAdModalObject = {
+    title: "Refused",
+    body: "The ad has been refused successfully ✅",
+    button: "Close",
+  };
+  const successFullValidatedAdModalObject = {
+    title: "Validated",
+    body: "The ad has been validated successfully 🎉",
+    button: "Close",
   };
 
   if (pendingProposalData.length === 0) {
@@ -163,7 +175,7 @@ const Review_carousel = ({ handleSubmit, pendingProposalData, successFullRefuseM
 
             <div className="flex justify-center  gap-4 flex-wrap">
               <Web3Button
-                contractAddress="0xE442802706F3603d58F34418Eac50C78C7B4E8b3"
+                contractAddress={currentChainObject?.smartContracts?.DSPONSORADMIN?.address}
                 action={() =>
                   toast.promise(handleItemSubmit(true), {
                     pending: "Waiting for confirmation 🕒",
@@ -177,7 +189,7 @@ const Review_carousel = ({ handleSubmit, pendingProposalData, successFullRefuseM
               </Web3Button>
 
               <Web3Button
-                contractAddress="0xE442802706F3603d58F34418Eac50C78C7B4E8b3"
+                contractAddress={currentChainObject?.smartContracts?.DSPONSORADMIN?.address}
                 action={() => openRefuseModal()}
                 className={` !rounded-full !min-w-[100px] !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate[tokenId] ? "btn-disabled" : "!bg-red !cursor-pointer"} `}
               >
@@ -241,15 +253,16 @@ const Review_carousel = ({ handleSubmit, pendingProposalData, successFullRefuseM
           );
         })}
       </div>
-      {refusedAdModalId && (
+      {refusedValidatedAdModal && (
         <div className="modal fade show bloc">
           <AddProposalRefusedModal
-            id={refusedAdModalId}
+            refusedValidatedAdModal={refusedValidatedAdModal}
             selectedItems={selectedItems}
             handleCommentChange={handleCommentChange}
             handleItemSubmit={handleItemSubmit}
             closeRefuseModal={closeRefuseModal}
             successFullRefuseModal={successFullRefuseModal}
+            successFullModalObject={isApprouvedAd ? successFullValidatedAdModalObject : successFullRefusedAdModalObject}
           />
         </div>
       )}
