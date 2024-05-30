@@ -12,10 +12,10 @@ import Step_1_Create from "../../components/sliderForm/PageCreate/Step_1_Create"
 import Step_2_Create from "../../components/sliderForm/PageCreate/Step_2_Create";
 import Step_3_Create from "../../components/sliderForm/PageCreate/Step_3_Create";
 import Step_4_Create from "../../components/sliderForm/PageCreate/Step_4_Create";
-import contractABI from "../../abi/dsponsorAdmin.json";
+
 
 import SliderForm from "../../components/sliderForm/sliderForm";
-import adminInstance from "../../utils/sdkProvider";
+
 import { useChainContext } from "../../contexts/hooks/useChainContext";
 
 const CreateOfferContainer = () => {
@@ -300,10 +300,14 @@ const CreateOfferContainer = () => {
     buttonTitle: "Manage Spaces",
     hrefButton: `/manage/${address}`,
   };
+  const metadata = {
+    title: "Create Offer || DSponsor | smarter monetization for your content",
+    description: "DSponsor is a platform that connects content creators with sponsors. Our platform helps creators monetize their content and helps sponsors find creators to promote their products.",
+  };
 
   return (
     <div>
-      <Meta title="Create || DSponsor - Unlock smarter monetization for your content." />
+      <Meta {...metadata} />
       {/* <!-- Create --> */}
       <section className="relative py-24">
         <picture className="pointer-events-none absolute inset-0 -z-10 dark:hidden">

@@ -247,10 +247,9 @@ console.log(selectedItems, "selectedItems");
 const successFullUploadModal = {
   title: "Submit ad",
   body: "Congratulations, you have proposed an ad. 🎉",
-  subBody: 'The media still has the power to validate or reject ad assets. You can follow the ad validation in your token view.',
+  subBody: "Ad assets submitted! They are now under review and awaiting validation by the offer creator.",
   buttonTitle: "Close",
   hrefButton: null,
-  
 };
 
   if (!data) {

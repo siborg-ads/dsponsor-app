@@ -20,7 +20,7 @@ import OfferItem from "../cards/offerItem";
 
 
 
-const BidsCarousel = ({data}) => {
+const HomeCarousel = ({data, isToken = false , arrowName}) => {
  
   const { currentChainObject } = useChainContext();
   
@@ -48,8 +48,8 @@ const BidsCarousel = ({data}) => {
           },
         }}
         navigation={{
-          nextEl: ".bids-swiper-button-next",
-          prevEl: ".bids-swiper-button-prev",
+          nextEl: `.bids-swiper-button-next-${arrowName}`,
+          prevEl: `.bids-swiper-button-prev-${arrowName}`,
         }}
         className=" card-slider-4-columns !py-5"
       >
@@ -61,22 +61,34 @@ const BidsCarousel = ({data}) => {
           data.map((item, index) => {
             return (
               <SwiperSlide className="text-white" key={index}>
-                <OfferItem item={item} url={`/${chainName}/offer/${item.id}/${item.tokenIdAllowedToMint ? item.tokenIdAllowedToMint : "d"}`} />
+                {isToken ? (
+                  <OfferItem
+                    item={item}
+                    url={!item.mint?.tokenData ? `/${chainName}/offer/${item?.offerId}/${item?.tokenId}` : `/${chainName}/offer/${item?.nftContract?.adOffers[0]?.id}/${item?.tokenId}?tokenData=${item?.mint?.tokenData}`}
+                    isToken={isToken}
+                    isListing={item?.marketplaceListings[0]?.listingType}
+                  />
+                ) : (
+                  <OfferItem item={item} url={`/${chainName}/offer/${item.id}/${item.tokenIdAllowedToMint ? item.tokenIdAllowedToMint : "d"}`} />
+                )}
               </SwiperSlide>
             );
           })
         )}
-       
       </Swiper>
       {/* <!-- Slider Navigation --> */}
-      <div className="group bids-swiper-button-prev swiper-button-prev shadow-white-volume absolute !top-1/2 !-left-4 z-10 -mt-6 flex !h-12 !w-12 cursor-pointer items-center justify-center rounded-full bg-white p-3 text-jacarta-700 text-xl sm:!-left-6 after:hidden">
+      <div
+        className={`group bids-swiper-button-prev-${arrowName} swiper-button-prev shadow-white-volume absolute !top-1/2 !-left-4 z-10 -mt-6 flex !h-12 !w-12 cursor-pointer items-center justify-center rounded-full bg-white p-3 text-jacarta-700 text-xl sm:!-left-6 after:hidden`}
+      >
         <MdKeyboardArrowLeft />
       </div>
-      <div className="group bids-swiper-button-next swiper-button-next shadow-white-volume absolute !top-1/2 !-right-4 z-10 -mt-6 flex !h-12 !w-12 cursor-pointer items-center justify-center rounded-full bg-white p-3 text-jacarta-700 text-xl sm:!-right-6 after:hidden">
+      <div
+        className={`group bids-swiper-button-next-${arrowName} swiper-button-next shadow-white-volume absolute !top-1/2 !-right-4 z-10 -mt-6 flex !h-12 !w-12 cursor-pointer items-center justify-center rounded-full bg-white p-3 text-jacarta-700 text-xl sm:!-right-6 after:hidden`}
+      >
         <MdKeyboardArrowRight />
       </div>
     </>
   );
 };
 
-export default BidsCarousel;
+export default HomeCarousel;

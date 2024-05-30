@@ -76,7 +76,7 @@ const Validated_refused_items = ({ statut, proposalData, isToken }) => {
         {isToken && (
           <div className="dark:bg-jacarta-700 dark:border-jacarta-600 border-jacarta-100 rounded-2lg border bg-white p-6 mb-4">
             <div className=" sm:flex sm:flex-wrap">
-              <span className="dark:text-jacarta-300 text-jacarta-400 text-sm">🎉 Congratulations ! This the ad currently displayed by the owner of the offer !</span>
+              <span className="dark:text-jacarta-300 text-jacarta-400 text-sm">🎉 Congratulations ! This ad is displayed on the offer creator’s interfaces!</span>
             </div>
           </div>
         )}
@@ -121,7 +121,9 @@ const Validated_refused_items = ({ statut, proposalData, isToken }) => {
 
                       <div className="flex flex-col">
                         <button className="js-copy-clipboard flex min-w-[20px] text-white max-w-[20rem]  select-none overflow-hidden text-ellipsis whitespace-nowrap">
-                          <Link href={adParametersList?.linkURL ? adParametersList.linkURL : "/"} target="_blank">{adParametersList?.linkURL}</Link>
+                          <Link href={adParametersList?.linkURL ? adParametersList.linkURL : "/"} target="_blank">
+                            {adParametersList?.linkURL}
+                          </Link>
                         </button>
                       </div>
                       {reason && <span className="text-jacarta-500 dark:text-jacarta-300">Reason : {reason}</span>}

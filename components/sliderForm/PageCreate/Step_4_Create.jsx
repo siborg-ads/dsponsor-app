@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { useAddress, useSwitchChain, useContract, useContractWrite, Web3Button, useContractRead, useStorageUpload, useTokenDecimals, CheckoutWithCard, CheckoutWithEth } from "@thirdweb-dev/react";
-import adminInstance from "../../../utils/sdkProvider";
+
 import { FileUploader } from "react-drag-drop-files";
 import  ModalHelper  from "../../Helper/modalHelper";
 import { useChainContext } from "../../../contexts/hooks/useChainContext";

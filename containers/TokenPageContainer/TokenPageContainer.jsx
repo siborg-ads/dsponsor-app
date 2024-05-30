@@ -18,7 +18,7 @@ import "tippy.js/dist/tippy.css";
 import { ItemsTabs } from "../../components/component.js";
 
 import BuyModal from "../../components/modal/buyModal.jsx";
-import adminInstance from "../../utils/sdkProvider.js";
+
 import { toast } from "react-toastify";
 import OfferSkeleton from "../../components/skeleton/offerSkeleton.jsx";
 
@@ -87,6 +87,7 @@ const TokenPageContainer = () => {
   const [successFullListing, setSuccessFullListing] = useState(false);
   const [buyoutPriceAmount, setBuyoutPriceAmount] = useState(null);
   const [royaltiesFeesAmount, setRoyaltiesFeesAmount] = useState(null);
+  const NATIVECurrency = currentChainObject?.smartContracts?.NATIVE;
 
   const { contract: DsponsorAdminContract } = useContract(currentChainObject?.smartContracts?.DSPONSORADMIN?.address, currentChainObject?.smartContracts?.DSPONSORADMIN?.abi);
   const { contract: DsponsorNFTContract } = useContract(offerData?.nftContract?.id);
@@ -108,7 +109,6 @@ const TokenPageContainer = () => {
   const now = Math.floor(new Date().getTime() / 1000);
 
   useEffect(() => {
-    console.log(offerId, tokenId, address, chainId, "offerId, tokenId, address, chainId");
     if (offerId && tokenId && chainId) {
       const fetchAdsOffers = async () => {
         const offer = await fetchOfferToken(offerId, tokenId, chainId);
@@ -240,10 +240,9 @@ const TokenPageContainer = () => {
     if (!offerData || !tokenBigIntPrice) return;
     try {
       const currencyTokenObject = {};
-      if (!decimalsContract && !symbolContract) {
-        const currencyToken = adminInstance.chain.getCurrencyByAddress(tokenCurrencyAddress);
-        currencyTokenObject.symbol = currencyToken.symbol;
-        currencyTokenObject.decimals = currencyToken.decimals;
+      if (!decimalsContract && !symbolContract && tokenCurrencyAddress === "0x0000000000000000000000000000000000000000") {
+        currencyTokenObject.symbol = NATIVECurrency.symbol;
+        currencyTokenObject.decimals = NATIVECurrency.decimals;
       } else {
         currencyTokenObject.symbol = symbolContract;
         currencyTokenObject.decimals = decimalsContract;
@@ -464,24 +463,19 @@ const TokenPageContainer = () => {
     }
     try {
       setIsLoadingButton(true);
-     
-      
-          const argsAdSubmited = {
-            offerId: submitAdFormated?.offerId,
-            tokenId: submitAdFormated?.tokenId,
-            adParameters: submitAdFormated?.params,
-            data: [uploadUrl[0], link],
-          };
-    
-      
-      const functionWithPossibleArgs =  Object.values(argsAdSubmited)
-      
 
-      
-        console.log("submitAd", functionWithPossibleArgs, "submitAd");
-        await submitAd({ args: functionWithPossibleArgs });
-        setSuccessFullUpload(true);
-      
+      const argsAdSubmited = {
+        offerId: submitAdFormated?.offerId,
+        tokenId: submitAdFormated?.tokenId,
+        adParameters: submitAdFormated?.params,
+        data: [uploadUrl[0], link],
+      };
+
+      const functionWithPossibleArgs = Object.values(argsAdSubmited);
+
+      console.log("submitAd", functionWithPossibleArgs, "submitAd");
+      await submitAd({ args: functionWithPossibleArgs });
+      setSuccessFullUpload(true);
     } catch (error) {
       console.error("Erreur de soumission du token:", error);
       setSuccessFullUpload(false);
@@ -531,7 +525,7 @@ const TokenPageContainer = () => {
   const successFullUploadModal = {
     title: "Submit ad",
     body: "Congratulations, you have proposed an ad. 🎉",
-    subBody: "The media still has the power to validate or reject ad assets. You can follow the ad validation in your token view.",
+    subBody: "Ad assets submitted! They are now under review and awaiting validation by the offer creator.",
     buttonTitle: "Close",
     hrefButton: null,
   };
@@ -547,6 +541,11 @@ const TokenPageContainer = () => {
     rejected: "❌ Your ad has been rejected, you can submit an other ads below",
     accepted: "🎉 Congratulations ! Your ad has been accepted by the creator ! ",
   };
+   const metadata = {
+     title: `${offerData?.metadata?.offer?.name} - Token ${tokenId} || DSponsor | smarter monetization for your content`,
+     keyword: `DSponsor, offer, ${offerData?.metadata?.offer?.name}, ${offerData?.metadata?.offer?.description}`,
+     desc: offerData?.metadata?.offer?.description,
+   };
 
   if (!offerData || offerData.length === 0) {
     return (
@@ -570,7 +569,7 @@ const TokenPageContainer = () => {
 
   return (
     <>
-      <Meta title={` || d>sponsor | Media sponsor Marketplace `} />
+      <Meta {...metadata} />
       {/*  <!-- Item --> */}
       <section className="relative lg:mt-24 lg:pt-12  mt-24 pt-12 pb-8">
         <div className="mb-8 container flex justify-center flex-col items-center ">

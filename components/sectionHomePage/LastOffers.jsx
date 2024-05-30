@@ -2,10 +2,10 @@ import "swiper/css";
 import "swiper/css/navigation";
 import { HeadLine } from "../component";
 import "tippy.js/dist/tippy.css";
-import BidsCarousel from "../carousel/bidsCarousel";
+import HomeCarousel from "../carousel/HomeCarousel";
 import Image from "next/image";
 
-const Bids = ({ data, classes = "pt-10 pb-24", bgWhite }) => {
+const LastOffers = ({ data, classes = "pt-10 pb-24", bgWhite }) => {
   return (
     <section className={classes} id="hot-offers">
       {/* <!-- Hot Offers --> */}
@@ -19,7 +19,7 @@ const Bids = ({ data, classes = "pt-10 pb-24", bgWhite }) => {
 
         <div className="relative">
           {/* <!-- Slider --> */}
-          <BidsCarousel data={data} />
+          <HomeCarousel data={data} arrowName="lastOffersArrow" />
         </div>
       </div>
       {/* <!-- end hot Offers --> */}
@@ -27,4 +27,4 @@ const Bids = ({ data, classes = "pt-10 pb-24", bgWhite }) => {
   );
 };
 
-export default Bids;
+export default LastOffers;

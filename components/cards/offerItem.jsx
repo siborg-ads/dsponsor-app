@@ -6,25 +6,26 @@ import Link from "next/link";
 import Tippy from "@tippyjs/react";
 import { use, useEffect, useState } from "react";
 import { useCountdown } from "../../utils/countDown";
-import adminInstance from "../../utils/sdkProvider";
+
 import { protocolFeesBigNumber } from "../../utils/constUtils";
 import { useAddress, useSwitchChain, useContract, useContractWrite, Web3Button, useContractRead, useStorageUpload, useTokenDecimals, CheckoutWithCard, CheckoutWithEth } from "@thirdweb-dev/react";
 import { ethers } from "ethers";
 import { contractABI } from "../../utils/constUtils";
 import { useChainContext } from "../../contexts/hooks/useChainContext";
 
-const OfferItem = ({ item, url, isToken, isSelectionActive, isOwner, isAuction = false }) => {
+const OfferItem = ({ item, url, isToken, isSelectionActive, isOwner, isAuction = false, isListing = false }) => {
   const { currentChainObject } = useChainContext();
   const [price, setPrice] = useState(null);
   const [currencyToken, setCurrencyToken] = useState(null);
   const [itemData, setItemData] = useState({});
   const [adStatut, setAdStatut] = useState(null);
-  const { contract: tokenContract } = useContract(!isToken && item?.nftContract?.prices[0]?.currency, "token");
+  const { contract: tokenContract } = useContract((!isToken || (isToken && isListing)) && item?.nftContract?.prices[0]?.currency, "token");
   const { data: symbolContract } = useContractRead(tokenContract, "symbol");
   const { data: decimalsContract } = useContractRead(tokenContract, "decimals");
   const { contract: DsponsorAdminContract } = useContract(currentChainObject?.smartContracts?.DSPONSORADMIN?.address, currentChainObject?.smartContracts?.DSPONSORADMIN?.abi);
   const { data: bps } = useContractRead(DsponsorAdminContract, "feeBps");
   const maxBps = 10000;
+  const NATIVECurrency = currentChainObject?.smartContracts?.NATIVE;
 
   function formatDate(dateIsoString) {
     if (!dateIsoString) return "date not found";
@@ -49,24 +50,26 @@ const OfferItem = ({ item, url, isToken, isSelectionActive, isOwner, isAuction =
    return dates;
  };
   useEffect(() => {
+    if (!item) return;
     try {
       const currencyTokenObject = {};
-      if (!decimalsContract && !symbolContract) {
-        const currencyToken = adminInstance.chain.getCurrencyByAddress(item?.nftContract?.prices[0]?.currency);
-        currencyTokenObject.symbol = currencyToken.symbol;
-        currencyTokenObject.decimals = currencyToken.decimals;
-      } else {
-        currencyTokenObject.symbol = symbolContract;
-        currencyTokenObject.decimals = decimalsContract;
-      }
-
+     if ( item?.nftContract?.prices[0]?.currency === "0x0000000000000000000000000000000000000000") {
+     
+       currencyTokenObject.symbol = NATIVECurrency.symbol;
+       currencyTokenObject.decimals = NATIVECurrency.decimals;
+     } else {
+       currencyTokenObject.symbol = symbolContract;
+       currencyTokenObject.decimals = decimalsContract;
+  
+     }
+     
       const bigIntPrice = (BigInt(item?.nftContract?.prices[0]?.amount) * (BigInt(bps) + BigInt(maxBps))) / BigInt(maxBps);
       const formatPrice = ethers.utils.formatUnits(bigIntPrice, currencyTokenObject.decimals);
 
       setCurrencyToken(currencyTokenObject);
       setPrice(Number(Math.ceil(formatPrice * 1000) / 1000));
     } catch (e) {
-      console.error("Error: Currency not found for address");
+      console.error("Error: Currency not found for address",   item.metadata.name);
     }
     if (isToken) {
       const data = item.metadata ? item.metadata : null;
@@ -75,35 +78,9 @@ const OfferItem = ({ item, url, isToken, isSelectionActive, isOwner, isAuction =
       const data = item.metadata.offer ? item.metadata.offer : null;
       setItemData(data);
     }
-  }, [item, isToken, symbolContract, decimalsContract, bps]);
+  }, [item, isToken, symbolContract, decimalsContract, bps, NATIVECurrency]);
 
-  // useEffect(() => {
-  //   const fetchAdsOffers = async () => {
-  //     if (!item) return;
-
-  //     if (item?.mint === null) {
-  //       setAdStatut(3);
-  //       return;
-  //     }
-  //     if (item?.currentProposals?.length > 0) {
-  //       if (item?.currentProposals[0]?.acceptedProposal !== null) {
-  //         setAdStatut(1);
-  //         return;
-  //       }
-
-  //       if (item?.currentProposals[0]?.pendingProposal !== null) {
-  //         setAdStatut(2);
-  //       }
-  //       if (item?.currentProposals[0]?.rejectedProposal !== null) {
-  //         setAdStatut(0);
-  //       }
-  //     } else {
-  //       setAdStatut(3);
-  //     }
-  //   };
-
-  //   fetchAdsOffers();
-  // }, [item]);
+ 
 
   const { name = "offerName", image = "/images/gradient_creative.jpg", valid_from = null, valid_to = null, startTime = null, endTime = null } = itemData ? itemData : {};
 
@@ -131,7 +108,7 @@ const OfferItem = ({ item, url, isToken, isSelectionActive, isOwner, isAuction =
               </Link>
             )}
 
-            {!isToken ? (
+            {(!isToken && !isListing) || (isToken && isListing) ? (
               currencyToken?.symbol && (
                 <div className="dark:border-jacarta-600 border-jacarta-100 flex items-center whitespace-nowrap rounded-md border py-1 px-2">
                   {" "}
@@ -147,26 +124,45 @@ const OfferItem = ({ item, url, isToken, isSelectionActive, isOwner, isAuction =
             )}
           </div>
           <div className="mt-2 text-xs flex items-center justify-between">
-            {!isAuction ? (
+            {!isAuction  && !isListing ? (
               <div className="flex justify-between w-full">
                 <span className="dark:text-jacarta-300 text-jacarta-500">
                   {formatDate(valid_from)} - {formatDate(valid_to)}
                 </span>
-                <span className="dark:text-jacarta-300 text-jacarta-500">Offer # {isToken ? item?.offerId : item?.id }</span>
+                <span className="dark:text-jacarta-300 text-jacarta-500">Offer # {isToken ? item?.offerId : item?.id}</span>
               </div>
-            ) : (
+            ) : isAuction && isToken && !isListing ? (
               <div className="flex justify-between w-full items-center">
                 <div className="flex flex-col">
-
-                <span className="dark:text-jacarta-300 text-jacarta-500">
-                Auction  Start : <span className="text-green text-xs font-medium">{formatAuctionDate(item.startTime)} </span>
-                </span>
-                <span className="dark:text-jacarta-300 text-jacarta-500">
-                Auction  End : <span className="text-green text-xs font-medium">{formatAuctionDate(item.endTime)}</span>{" "}
-                </span>
+                  <span className="dark:text-jacarta-300 text-jacarta-500">
+                    Auction Start : <span className="text-green text-xs font-medium">{formatAuctionDate(item.startTime)} </span>
+                  </span>
+                  <span className="dark:text-jacarta-300 text-jacarta-500">
+                    Auction End : <span className="text-green text-xs font-medium">{formatAuctionDate(item.endTime)}</span>{" "}
+                  </span>
                 </div>
                 <span className="dark:text-jacarta-300 text-jacarta-500">Offer # {item?.nftContract?.adOffers[0]?.id}</span>
               </div>
+            ) : (
+              isToken &&
+              isListing && (
+                <div className="flex justify-between w-full items-center">
+                  <div className="flex gap-2 items-center justify-center">
+                    <span className="dark:text-jacarta-300 text-jacarta-500">{isListing === "Auction" ? "Auction listing" : "Direct listing"} </span>
+
+                    {isListing === "Auction" ? (
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" className="h-6 w-6 fill-[#ce44ea]">
+                        <path d="M318.6 9.4c-12.5-12.5-32.8-12.5-45.3 0l-120 120c-12.5 12.5-12.5 32.8 0 45.3l16 16c12.5 12.5 32.8 12.5 45.3 0l4-4L325.4 293.4l-4 4c-12.5 12.5-12.5 32.8 0 45.3l16 16c12.5 12.5 32.8 12.5 45.3 0l120-120c12.5-12.5 12.5-32.8 0-45.3l-16-16c-12.5-12.5-32.8-12.5-45.3 0l-4 4L330.6 74.6l4-4c12.5-12.5 12.5-32.8 0-45.3l-16-16zm-152 288c-12.5-12.5-32.8-12.5-45.3 0l-112 112c-12.5 12.5-12.5 32.8 0 45.3l48 48c12.5 12.5 32.8 12.5 45.3 0l112-112c12.5-12.5 12.5-32.8 0-45.3l-1.4-1.4L272 285.3 226.7 240 168 298.7l-1.4-1.4z" />
+                      </svg>
+                    ) : (
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512" className="h-6 w-6 fill-orange">
+                        <path d="M64 64C28.7 64 0 92.7 0 128V384c0 35.3 28.7 64 64 64H512c35.3 0 64-28.7 64-64V128c0-35.3-28.7-64-64-64H64zm64 320H64V320c35.3 0 64 28.7 64 64zM64 192V128h64c0 35.3-28.7 64-64 64zM448 384c0-35.3 28.7-64 64-64v64H448zm64-192c-35.3 0-64-28.7-64-64h64v64zM288 160a96 96 0 1 1 0 192 96 96 0 1 1 0-192z" />
+                      </svg>
+                    )}
+                  </div>
+                  <span className="dark:text-jacarta-300 text-jacarta-500">Offer # {item?.nftContract?.adOffers[0]?.id}</span>
+                </div>
+              )
             )}
             {/* {!isToken ? (
               <span className="dark:text-jacarta-300 text-jacarta-500">

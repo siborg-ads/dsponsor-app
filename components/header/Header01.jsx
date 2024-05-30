@@ -60,13 +60,7 @@ export default function Header01() {
             <nav className="navbar w-full">
               <ul className="flex flex-col lg:flex-row">
                 {/* buy */}
-                <li className="group">
-                  <Link href="/#hot-offers">
-                    <button className="text-jacarta-700 font-display hover:text-accent focus:text-accent dark:hover:text-accent dark:focus:text-accent flex items-center justify-between py-3.5 text-base dark:text-white lg:px-5">
-                      <span className={isChildrenPageActive(route.asPath, "#hot-offers") ? "text-accent dark:text-accent" : ""}>Buy spaces</span>
-                    </button>
-                  </Link>
-                </li>
+                
                 {/* create */}
                 <li className="group">
                   <Link href={`/${chainName}/offer/create`}>
@@ -156,18 +150,19 @@ export default function Header01() {
                 </button>
               </Link>
             </li>
-            <li className="group">
-              <Link href="/#hot-offers" onClick={() => setToggle(false)}>
-                <button className="text-jacarta-700 font-display hover:text-accent focus:text-accent dark:hover:text-accent dark:focus:text-accent flex items-center justify-between py-3.5 text-base dark:text-white lg:px-5">
-                  <span className={isChildrenPageActive(route.asPath, "#hot-offers") ? "text-accent dark:text-accent" : ""}>Buy spaces</span>
-                </button>
-              </Link>
-            </li>
+            
             {/* create */}
             <li className="group">
               <Link href={`/${chainName}/offer/create`} onClick={() => setToggle(false)}>
                 <button className="text-jacarta-700 font-display hover:text-accent focus:text-accent dark:hover:text-accent dark:focus:text-accent flex items-center justify-between py-3.5 text-base dark:text-white lg:px-5">
                   <span className={isChildrenPageActive(route.asPath, `/${chainName}/offer/create`) ? "text-accent dark:text-accent" : ""}>Create offer</span>
+                </button>
+              </Link>
+            </li>
+            <li className="group">
+              <Link href={`/marketplace`} onClick={() => setToggle(false)}>
+                <button className="text-jacarta-700 font-display hover:text-accent focus:text-accent dark:hover:text-accent dark:focus:text-accent flex items-center justify-between py-3.5 text-base dark:text-white lg:px-5">
+                  <span className={isChildrenPageActive(route.asPath, `/marketplace`) ? "text-accent dark:text-accent" : ""}>Marketplace</span>
                 </button>
               </Link>
             </li>

@@ -17,6 +17,7 @@ const ItemsTabs = ({ contractAddress,  isUserOwner, initialCreator, isToken = tr
     const { currentChainObject } = useChainContext();
 
     const chainName = currentChainObject?.chainName;
+    const chainExplorer = currentChainObject?.explorerBaseUrl;
 
 
  
@@ -28,7 +29,7 @@ const ItemsTabs = ({ contractAddress,  isUserOwner, initialCreator, isToken = tr
           <div className="dark:bg-jacarta-700 dark:border-jacarta-600 border-jacarta-100 rounded-t-2lg rounded-b-2lg rounded-tl-none border bg-white p-6 md:p-10">
             <div className="mb-2 flex items-center">
               <span className="dark:text-jacarta-300 mr-2 min-w-[9rem]">Contract Address:</span>
-              <Link href={`https://polygonscan.com/address/${contractAddress}`} target="_blank" rel="noopener noreferrer" className="text-accent">
+              <Link href={`${chainExplorer}${contractAddress}`} target="_blank" rel="noopener noreferrer" className="text-accent">
                 {contractAddress}
               </Link>
             </div>

@@ -8,6 +8,7 @@ const config = {
     chainId: 11155111,
     chainName: "sepolia",
     network: Network.ETH_SEPOLIA,
+    explorerBaseUrl: "https://sepolia.etherscan.io/address/",
     appURL: "https://app.staging.dsponsor.com",
     assetsURL: "https://relayer.dsponsor.com",
     creditsURL: "https://dsponsor.com",
