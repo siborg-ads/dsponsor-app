@@ -14,7 +14,7 @@ import { Spinner } from "@nextui-org/spinner";
 import DatePicker from "react-datepicker";
 import ModalHelper from "../Helper/modalHelper";
 import PreviewModal from "../modal/previewModal";
-import adminInstance from "../../utils/sdkProvider";
+
 import { useChainContext } from "../../contexts/hooks/useChainContext";
 
 const ItemManageModal = ({ handleListingModal, offerData, setSuccessFullListing, successFullListing, marketplaceListings, royalties, dsponsorNFTContract, dsponsorMpContract }) => {

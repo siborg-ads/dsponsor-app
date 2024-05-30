@@ -23,7 +23,7 @@ const ItemBids = ({successFullBid, address, setSuccessFullBid, dsponsorMpContrac
           {bids.length > 0 && (
             <div className="block overflow-hidden text-ellipsis whitespace-nowrap">
               <span className="text-sm text-jacarta-400 dark:text-jacarta-300">Highest bid by </span>
-              <Link href={`/user/9`} className="text-sm font-bold text-accent">
+              <Link href={`/manage/${marketplaceListings[0].bids[0].bidder}`} className="text-sm font-bold text-accent">
                 {marketplaceListings[0].bids[0].bidder}
               </Link>
             </div>
@@ -55,17 +55,16 @@ const ItemBids = ({successFullBid, address, setSuccessFullBid, dsponsorMpContrac
         </div>
       </div>
       {!address ? (
-        <div className='flex justify-center'>
-
-        <Web3Button
-          contractAddress={currentChainObject?.smartContracts?.DSPONSORMP?.address}
-          action={() => {
-            toggleBidsModal;
-          }}
-          className={` !rounded-full !py-3 w-full !px-8 !text-center !font-semibold !text-white !transition-all !bg-accent !cursor-pointer `}
-        >
-          Connect wallet
-        </Web3Button>
+        <div className="flex justify-center">
+          <Web3Button
+            contractAddress={currentChainObject?.smartContracts?.DSPONSORMP?.address}
+            action={() => {
+              toggleBidsModal;
+            }}
+            className={` !rounded-full !py-3 w-full !px-8 !text-center !font-semibold !text-white !transition-all !bg-accent !cursor-pointer `}
+          >
+            Connect wallet
+          </Web3Button>
         </div>
       ) : (
         <button className="inline-block w-full rounded-full bg-accent py-3 px-8 text-center font-semibold text-white shadow-accent-volume transition-all hover:bg-accent-dark" onClick={toggleBidsModal}>

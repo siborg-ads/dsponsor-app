@@ -9,9 +9,9 @@ import Image from "next/image";
 import { useContract, useContractWrite, useContractRead, useAddress } from "@thirdweb-dev/react";
 import Tippy from "@tippyjs/react";
 import "tippy.js/dist/tippy.css";
-import adminInstance from "../../utils/sdkProvider";
+
 import OfferSkeleton from "../../components/skeleton/offerSkeleton";
-import { contractABI } from "../../data/services/contract";
+
 import Form from "../../components/collections-wide/sidebar/collections/Form";
 import { Divider } from "@nextui-org/react";
 import "tippy.js/dist/tippy.css";
@@ -47,6 +47,7 @@ const OfferPageContainer = () => {
   const { contract: tokenContract } = useContract(offerData?.nftContract?.prices[0]?.currency, "token");
   const { data: symbolContract } = useContractRead(tokenContract, "symbol");
   const { data: decimalsContract } = useContractRead(tokenContract, "decimals");
+   const NATIVECurrency = currentChainObject?.smartContracts?.NATIVE;
 
   const { data: bps } = useContractRead(DsponsorAdminContract, "feeBps");
   const maxBps = 10000;
@@ -71,14 +72,13 @@ const OfferPageContainer = () => {
     if (!offerData) return;
     try {
       const currencyTokenObject = {};
-      if (!decimalsContract && !symbolContract) {
-        const currencyToken = adminInstance.chain.getCurrencyByAddress(offerData.nftContract.prices[0].currency);
-        currencyTokenObject.symbol = currencyToken.symbol;
-        currencyTokenObject.decimals = currencyToken.decimals;
-      } else {
-        currencyTokenObject.symbol = symbolContract;
-        currencyTokenObject.decimals = decimalsContract;
-      }
+       if (!decimalsContract && !symbolContract && tokenCurrencyAddress === "0x0000000000000000000000000000000000000000") {
+         currencyTokenObject.symbol = NATIVECurrency.symbol;
+         currencyTokenObject.decimals = NATIVECurrency.decimals;
+       } else {
+         currencyTokenObject.symbol = symbolContract;
+         currencyTokenObject.decimals = decimalsContract;
+       }
 
       const bigIntPrice = (BigInt(offerData?.nftContract?.prices[0]?.amount) * (BigInt(bps) + BigInt(maxBps))) / BigInt(maxBps);
       const formatPrice = ethers.utils.formatUnits(bigIntPrice, currencyTokenObject.decimals);
@@ -101,7 +101,7 @@ const OfferPageContainer = () => {
       });
       setRefusedValidatedAdModal(true);
       setSuccessFullRefuseModal(true);
-      setSelectedItems([]);
+      
     } catch (error) {
       console.error("Erreur de validation du token:", error);
       setSuccessFullRefuseModal(false);
@@ -119,7 +119,11 @@ const OfferPageContainer = () => {
       }
     }
   };
-
+const metadata = {
+  title: `${offerData?.metadata?.offer?.name} || DSponsor | smarter monetization for your content`,
+  keyword: `DSponsor, offer, ${offerData?.metadata?.offer?.name}, ${offerData?.metadata?.offer?.description}`,
+  desc: offerData?.metadata?.offer?.description,
+};
   if (!offerData || offerData.length === 0) {
     return (
       <div>
@@ -135,7 +139,7 @@ const OfferPageContainer = () => {
 
   return (
     <>
-      <Meta title={` || d>sponsor | Media sponsor Marketplace `} />
+      <Meta {...metadata} />
       {/*  <!-- Item --> */}
       <section className="relative lg:mt-24 lg:pt-12  mt-24 pt-12 pb-8">
         <div className="container flex justify-center mb-6">
@@ -269,6 +273,7 @@ const OfferPageContainer = () => {
       )}
 
       <Validation
+        setSuccessFullRefuseModal={setSuccessFullRefuseModal}
         setSelectedItems={setSelectedItems}
         selectedItems={selectedItems}
         offer={offerData}

@@ -16,13 +16,13 @@ import { Web3Button } from "@thirdweb-dev/react";
 import AddProposalRefusedModal from "../modal/adProposalRefusedModal";
 import { useChainContext } from "../../contexts/hooks/useChainContext";
 
-const Review_carousel = ({ setSelectedItems, selectedItems, handleSubmit, pendingProposalData, successFullRefuseModal, isToken, isOwner, setRefusedValidatedAdModal, refusedValidatedAdModal }) => {
+const Review_carousel = ({ setSelectedItems, selectedItems, handleSubmit, pendingProposalData, successFullRefuseModal, setSuccessFullRefuseModal, isToken, isOwner, setRefusedValidatedAdModal, refusedValidatedAdModal }) => {
   const { currentChainObject } = useChainContext();
   const [validate, setValidate] = useState({});
   const [comments, setComments] = useState({});
   const [isApprouvedAd, setIsApprouvedAd] = useState(false);
   const [tokenId, setTokenId] = useState(null);
-
+  const [isFirstSelection, setIsFirstSelection] = useState(true);
   const [isSelectedItem, setIsSelectedItem] = useState({});
   const [modalStates, setModalStates] = useState({});
   const [copied, setCopied] = useState(false);
@@ -99,10 +99,15 @@ const Review_carousel = ({ setSelectedItems, selectedItems, handleSubmit, pendin
   }
   const closeRefuseModal = () => {
     setRefusedValidatedAdModal(null);
+    if(successFullRefuseModal){
+       setSelectedItems([]);
+       setSuccessFullRefuseModal(false);
+    }
   };
 
   const handleSelection = (item) => {
     if (!isOwner) return;
+    setIsFirstSelection(false);
     setIsSelectedItem((prevState) => ({
       ...prevState,
       [item.tokenId]: !prevState[item.tokenId],
@@ -157,7 +162,7 @@ const Review_carousel = ({ setSelectedItems, selectedItems, handleSubmit, pendin
               </span>
             </div>
           </div>
-          <div className={`fixed dark:border-jacarta-500 border  bottom-0 blury-background left-0 right-0 px-4 py-3 animated-modalSelectedItemUp ${selectedItems.length === 0 && "animated-modalSelectedItemDown"}`}>
+          <div className={`fixed dark:border-jacarta-500 border  bottom-0 blury-background left-0 right-0 px-4 py-3  ${isFirstSelection  ? "hidden" : selectedItems?.length === 0 ? "animated-modalSelectedItemDown" : "animated-modalSelectedItemUp"}`}>
             <div className="dropdown-item mb-4 font-display   block w-full rounded-xl  text-left text-sm transition-colors dark:text-white">
               <span className="flex items-center justify-center gap-6">
                 <span className="mr-4">

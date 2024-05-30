@@ -109,10 +109,14 @@ const ManageSpaceContainer = () => {
       setCopied(false);
     }, 2000);
   }, [copied]);
-
+const metadata = {
+  title: "DSponsor | Manage your ad spaces - " + address,
+  keyword: "audience engagement, web3, creator economic, NFT, creator monetization, creator economy, creator token, creator coin, creator tokenization, creator economy",
+  desc: "Manage your ad spaces on DSponsor.",
+};
   return (
     <>
-      <Meta title="User || DSponsor | smarter monetization for your content" />
+      <Meta {...metadata} />
       {/* <!-- Profile --> */}
 
       <div className=" " key="5">
