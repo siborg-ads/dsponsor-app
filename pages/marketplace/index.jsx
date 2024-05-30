@@ -1,4 +1,4 @@
-import MarketplaceContainer from "../../containers/MarketPlaceContainer/MarketplaceContainer";
+import MarketplaceContainer from "../../containers/MarketplaceContainer/MarketplaceContainer";
 
 // export async function generateMetadata({ params }) {
 //   const { manage } = params;
