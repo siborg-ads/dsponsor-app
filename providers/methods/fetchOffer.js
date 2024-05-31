@@ -88,7 +88,7 @@ const path = new URL(`https://relayer.dsponsor.com/api/${chainId}/graph`);
   `;
 
 const response = await executeQuery(path.href, GET_DATA, { offerId: offerId });
- 
+
 
   return response?.adOffers[0];
 };

@@ -2,13 +2,16 @@ import Image from "next/image";
 import Link from "next/link";
 import DarkMode from "../mode/DarkMode";
 import Logo from "./../../public/images/logo.png";
+import { Select, SelectItem, Avatar } from "@nextui-org/react";
+
 import WhiteLogo from "./../../public/images/logo_white.png";
 import { useRouter } from "next/router";
 import { isChildrenPageActive, isParentPageActive } from "../../utils/daynamicNavigation";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { ConnectWallet, useAddress } from "@thirdweb-dev/react";
 import { useTheme } from "next-themes";
 import { useChainContext } from "../../contexts/hooks/useChainContext";
+import SwitchChainProvider from "../../providers/ChainProvider/SwitchChainProvider";
 
 function randomUUID() {
   return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) {
@@ -22,6 +25,7 @@ export default function Header01() {
   const [isCollapse, setCollapse] = useState(null);
   const address = useAddress();
   const { theme, setTheme } = useTheme();
+  const { selectedChain, setSelectedChain } = useContext(SwitchChainProvider);
 
   // window resize
   useEffect(() => {
@@ -33,7 +37,7 @@ export default function Header01() {
   });
   const { currentChainObject } = useChainContext();
 
-  const chainName = currentChainObject?.chainName;
+  const chainId = currentChainObject?.chainId;
   const route = useRouter();
   /* -------------------------------------------------------------------------- */
   /*                            daynamic navigations                            */
@@ -60,12 +64,12 @@ export default function Header01() {
             <nav className="navbar w-full">
               <ul className="flex flex-col lg:flex-row">
                 {/* buy */}
-                
+
                 {/* create */}
                 <li className="group">
-                  <Link href={`/${chainName}/offer/create`}>
+                  <Link href={`/${chainId}/offer/create`}>
                     <button className="text-jacarta-700 font-display hover:text-accent focus:text-accent dark:hover:text-accent dark:focus:text-accent flex items-center justify-between py-3.5 text-base dark:text-white lg:px-5">
-                      <span className={isChildrenPageActive(route.asPath, `/${chainName}/offer/create`) ? "text-accent dark:text-accent" : ""}>Create offer</span>
+                      <span className={isChildrenPageActive(route.asPath, `/${chainId}/offer/create`) ? "text-accent dark:text-accent" : ""}>Create offer</span>
                     </button>
                   </Link>
                 </li>
@@ -76,6 +80,7 @@ export default function Header01() {
                     </button>
                   </Link>
                 </li>
+
                 {address && (
                   <li className="group">
                     <Link href={`/manage/${address}`}>
@@ -85,6 +90,16 @@ export default function Header01() {
                     </Link>
                   </li>
                 )}
+                {/* <li className="group">
+                  <Select className="w-[175px]" label="Chain" defaultSelectedKeys={[selectedChain]} key={selectedChain} onChange={(e) => setSelectedChain(e.target.value)}>
+                    <SelectItem className="font-display" key="sepolia" startContent={<Image width={15} height={15} src="/images/ethereum-logo.png" alt="logo"></Image>}>
+                      Sepolia
+                    </SelectItem>
+                    <SelectItem className="font-display" key="base-sepolia-testnet" startContent={<Image width={15} height={15} src="/images/base-logo.png" alt="logo"></Image>}>
+                      Base Sepolia
+                    </SelectItem>
+                  </Select>
+                </li> */}
                 <li className="group">
                   <ConnectWallet theme={"dark"} modalSize={"wide"} />
                 </li>
@@ -150,12 +165,12 @@ export default function Header01() {
                 </button>
               </Link>
             </li>
-            
+
             {/* create */}
             <li className="group">
-              <Link href={`/${chainName}/offer/create`} onClick={() => setToggle(false)}>
+              <Link href={`/${chainId}/offer/create`} onClick={() => setToggle(false)}>
                 <button className="text-jacarta-700 font-display hover:text-accent focus:text-accent dark:hover:text-accent dark:focus:text-accent flex items-center justify-between py-3.5 text-base dark:text-white lg:px-5">
-                  <span className={isChildrenPageActive(route.asPath, `/${chainName}/offer/create`) ? "text-accent dark:text-accent" : ""}>Create offer</span>
+                  <span className={isChildrenPageActive(route.asPath, `/${chainId}/offer/create`) ? "text-accent dark:text-accent" : ""}>Create offer</span>
                 </button>
               </Link>
             </li>
@@ -166,6 +181,12 @@ export default function Header01() {
                 </button>
               </Link>
             </li>
+            {/* <li className="group">
+              <select value={String(selectedChain)} onChange={(e) => setSelectedChain(e.target.value)}>
+                <option value="sepolia">Sepolia</option>
+                <option value="BaseSepoliaTestnet">Base Sepolia Testnet</option>
+              </select>
+            </li> */}
             {address && (
               <li className="group" onClick={() => setToggle(false)}>
                 <Link href={`/manage/${address}`}>

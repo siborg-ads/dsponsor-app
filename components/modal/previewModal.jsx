@@ -73,7 +73,7 @@ const PreviewModal = ({
 
     return ratioArray;
   };
-
+console.log(currentChainObject?.smartContracts?.DSPONSORADMIN?.address, "currentChainObject");
   return (
     <div>
       <div className="modal-dialog max-h-[75vh] max-w-2xl">

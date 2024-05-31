@@ -11,12 +11,13 @@ import SDKContext from "../../contexts/SDKContext";
 import Tippy from "@tippyjs/react";
 import {whiteListedAddress} from "../../utils/whiteListedAddress";
 import { useChainContext } from "../../contexts/hooks/useChainContext";
+import config from "../../providers/utils/config";
 
 
-const ItemsTabs = ({ contractAddress,  isUserOwner, initialCreator, isToken = true }) => {
+const ItemsTabs = ({chainId, contractAddress,  isUserOwner, initialCreator, isToken = true }) => {
     const { currentChainObject } = useChainContext();
 
-    const chainName = currentChainObject?.chainName;
+    const chainName = config[chainId]?.chainName;
     const chainExplorer = currentChainObject?.explorerBaseUrl;
 
 

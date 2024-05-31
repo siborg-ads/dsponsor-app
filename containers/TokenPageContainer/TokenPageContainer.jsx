@@ -30,6 +30,7 @@ import ItemManage from "../../components/item/ItemManage.jsx";
 import ItemBids from "../../components/item/ItemBids.jsx";
 import { useChainContext } from "../../contexts/hooks/useChainContext.js";
 import { fetchOfferToken } from "../../providers/methods/fetchOfferToken.js";
+import config from "../../providers/utils/config.js";
 
 import "react-toastify/dist/ReactToastify.css";
 import ModalHelper from "../../components/Helper/modalHelper.jsx";
@@ -39,9 +40,9 @@ const TokenPageContainer = () => {
 
   const offerId = router.query?.offerId;
   const tokenId = router.query?.tokenId;
-  const { currentChainObject } = useChainContext();
-  const chainId = currentChainObject?.chainId;
-  const chainName = currentChainObject?.chainName;
+  const chainId = router.query?.chainName;
+  
+  
 
   const [tokenIdString, setTokenIdString] = useState(null);
   const maxBps = 10000;
@@ -87,30 +88,33 @@ const TokenPageContainer = () => {
   const [successFullListing, setSuccessFullListing] = useState(false);
   const [buyoutPriceAmount, setBuyoutPriceAmount] = useState(null);
   const [royaltiesFeesAmount, setRoyaltiesFeesAmount] = useState(null);
-  const NATIVECurrency = currentChainObject?.smartContracts?.NATIVE;
+  const NATIVECurrency = config[chainId]?.smartContracts?.NATIVE;
 
-  const { contract: DsponsorAdminContract } = useContract(currentChainObject?.smartContracts?.DSPONSORADMIN?.address, currentChainObject?.smartContracts?.DSPONSORADMIN?.abi);
+  const { contract: DsponsorAdminContract } = useContract(config[chainId]?.smartContracts?.DSPONSORADMIN?.address, config[chainId]?.smartContracts?.DSPONSORADMIN?.abi);
   const { contract: DsponsorNFTContract } = useContract(offerData?.nftContract?.id);
   const { mutateAsync: uploadToIPFS, isLoading: isUploading } = useStorageUpload();
   const { mutateAsync: mintAndSubmit } = useContractWrite(DsponsorAdminContract, "mintAndSubmit");
   const { mutateAsync: submitAd } = useContractWrite(DsponsorAdminContract, "submitAdProposals");
   const { contract: tokenContract } = useContract(tokenCurrencyAddress, "token");
-  const { data: symbolContract } = useContractRead(tokenContract, "symbol");
-  const { data: decimalsContract } = useContractRead(tokenContract, "decimals");
+  const { data: symbolContract } = useContractRead(tokenContract && tokenContract, "symbol");
+  const { data: decimalsContract } = useContractRead(tokenContract && tokenContract, "decimals");
   const { data: tokenBalance } = useBalance(tokenCurrencyAddress);
   const { mutateAsync: approve, isLoading: isLoadingApprove } = useContractWrite(tokenContract, "approve");
   const { data: bps } = useContractRead(DsponsorAdminContract, "feeBps");
   const { data: isAllowedToMint, isLoading: isLoadingAllowedToMint } = useContractRead(DsponsorNFTContract, "tokenIdIsAllowedToMint", tokenIdString);
   const { data: isUserOwner } = useContractRead(DsponsorNFTContract, "ownerOf", [tokenIdString]);
   const { data: royaltiesInfo } = useContractRead(DsponsorNFTContract, "royaltyInfo", [tokenIdString, 100]);
-  const { contract: dsponsorMpContract } = useContract(currentChainObject?.smartContracts?.DSPONSORMP?.address);
+  const { contract: dsponsorMpContract } = useContract(config[chainId]?.smartContracts?.DSPONSORMP?.address);
   const { mutateAsync: directBuy } = useContractWrite(dsponsorMpContract, "buy");
 
   const now = Math.floor(new Date().getTime() / 1000);
 
   useEffect(() => {
+   
     if (offerId && tokenId && chainId) {
       const fetchAdsOffers = async () => {
+       
+
         const offer = await fetchOfferToken(offerId, tokenId, chainId);
 
         const combinedData = {
@@ -247,6 +251,7 @@ const TokenPageContainer = () => {
         currencyTokenObject.symbol = symbolContract;
         currencyTokenObject.decimals = decimalsContract;
       }
+      console.log(tokenBigIntPrice, bps, maxBps, config[chainId]?.smartContracts?.DSPONSORADMIN?.address, "currencyTokenObject");
 
       const bigIntFinalPrice = (BigInt(tokenBigIntPrice) * (BigInt(bps) + BigInt(maxBps))) / BigInt(maxBps);
       const formatFinalPrice = ethers.utils.formatUnits(bigIntFinalPrice, currencyTokenObject.decimals);
@@ -355,13 +360,14 @@ const TokenPageContainer = () => {
       let allowance;
 
       if (tokenStatut === "DIRECT" || tokenStatut === "AUCTION") {
-        allowance = await tokenContract.call("allowance", [address, currentChainObject?.smartContracts?.DSPONSORMP?.address]);
+        allowance = await tokenContract.call("allowance", [address, config[chainId]?.smartContracts?.DSPONSORMP?.address]);
       } else {
-        allowance = await tokenContract.call("allowance", [address, currentChainObject?.smartContracts?.DSPONSORADMIN?.address]);
+        allowance = await tokenContract.call("allowance", [address, config[chainId]?.smartContracts?.DSPONSORADMIN?.address]);
       }
 
       const allowanceBigNumber = ethers.BigNumber.from(allowance._hex);
       const amountToApproveBigNumber = ethers.BigNumber.from(amountToApprove._hex);
+      console.log(amountToApprove, "allowanceBigNumber");
 
       if (allowanceBigNumber.gt(amountToApproveBigNumber)) return;
 
@@ -377,9 +383,9 @@ const TokenPageContainer = () => {
         throw new Error("Not enough balance for approval.");
       }
       if (marketplaceListings.length > 0) {
-        await approve({ args: [currentChainObject?.smartContracts?.DSPONSORMP?.address, amountToApprove] });
+        await approve({ args: [config[chainId]?.smartContracts?.DSPONSORMP?.address, amountToApprove] });
       } else {
-        await approve({ args: [currentChainObject?.smartContracts?.DSPONSORADMIN?.address, amountToApprove] });
+        await approve({ args: [config[chainId]?.smartContracts?.DSPONSORADMIN?.address, amountToApprove] });
       }
       setAllowanceTrue(false);
     } catch (error) {
@@ -614,7 +620,7 @@ const TokenPageContainer = () => {
             <div className="md:w-3/5 md:basis-auto md:pl-8 lg:w-1/2 lg:pl-[3.75rem]">
               {/* <!-- Collection / Likes / Actions --> */}
 
-              <Link href={`/${chainName}/offer/${offerId}`} className="flex">
+              <Link href={`/${chainId}/offer/${offerId}`} className="flex">
                 <h2 className="font-display text-jacarta-700 mb-4 dark:hover:text-accent text-3xl font-semibold dark:text-white">{name}</h2>
               </Link>
 
@@ -676,6 +682,7 @@ const TokenPageContainer = () => {
               )}
               {tokenStatut === "AUCTION" && marketplaceListings[0].startTime < now && marketplaceListings[0].endTime > now && (
                 <ItemBids
+                chainId={chainId}
                   checkUserBalance={checkUserBalance}
                   price={price}
                   allowanceTrue={allowanceTrue}
@@ -699,7 +706,7 @@ const TokenPageContainer = () => {
       <div className="container mb-12">
         <Divider className="my-4" />
         <h2 className="text-jacarta-700 font-bold font-display mb-6 text-center text-3xl dark:text-white ">Details </h2>
-        <ItemsTabs contractAddress={offerData?.nftContract.id} offerId={offerId} isUserOwner={isUserOwner} initialCreator={offerData?.initialCreator} />
+        <ItemsTabs chainId={chainId} contractAddress={offerData?.nftContract.id} offerId={offerId} isUserOwner={isUserOwner} initialCreator={offerData?.initialCreator} />
       </div>
       {offerData.nftContract?.tokens[0]?.mint && isValidId && <Validation offer={offerData} offerId={offerId} isOwner={isOwner} isToken={true} successFullUploadModal={successFullUploadModal} />}
       {/* <ItemsTabs /> */}
@@ -781,7 +788,7 @@ const TokenPageContainer = () => {
             name={name}
             marketplaceListings={marketplaceListings}
             image={image}
-            selectedCurrency={currency.symbol}
+            selectedCurrency={currency?.symbol}
             royalties={royalties}
             tokenId={tokenId}
             tokenData={tokenData}

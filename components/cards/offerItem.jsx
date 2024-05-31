@@ -13,7 +13,7 @@ import { ethers } from "ethers";
 import { contractABI } from "../../utils/constUtils";
 import { useChainContext } from "../../contexts/hooks/useChainContext";
 
-const OfferItem = ({ item, url, isToken, isSelectionActive, isOwner, isAuction = false, isListing = false }) => {
+const OfferItem = ({ item, url, isToken = false, isSelectionActive, isOwner, isAuction = false, isListing = false }) => {
   const { currentChainObject } = useChainContext();
   const [price, setPrice] = useState(null);
   const [currencyToken, setCurrencyToken] = useState(null);
@@ -51,6 +51,7 @@ const OfferItem = ({ item, url, isToken, isSelectionActive, isOwner, isAuction =
  };
   useEffect(() => {
     if (!item) return;
+    
     try {
       const currencyTokenObject = {};
      if ( item?.nftContract?.prices[0]?.currency === "0x0000000000000000000000000000000000000000") {
@@ -69,16 +70,22 @@ const OfferItem = ({ item, url, isToken, isSelectionActive, isOwner, isAuction =
       setCurrencyToken(currencyTokenObject);
       setPrice(Number(Math.ceil(formatPrice * 1000) / 1000));
     } catch (e) {
-      console.error("Error: Currency not found for address",   item.metadata.name);
+      return;
+      // console.error("Error: Currency not found for address");
     }
+   
+  }, [item, symbolContract, decimalsContract, bps, NATIVECurrency]);
+  useEffect(() => {
+    if (!item) return;
+
+    let data = null;
     if (isToken) {
-      const data = item.metadata ? item.metadata : null;
-      setItemData(data);
+      data = item.metadata ? item.metadata : null;
     } else {
-      const data = item.metadata.offer ? item.metadata.offer : null;
-      setItemData(data);
+      data = item.metadata.offer ? item.metadata.offer : null;
     }
-  }, [item, isToken, symbolContract, decimalsContract, bps, NATIVECurrency]);
+    setItemData(data);
+  }, [item, isToken]);
 
  
 
@@ -89,16 +96,21 @@ const OfferItem = ({ item, url, isToken, isSelectionActive, isOwner, isAuction =
       <article className="relative">
         {item.isPending && isOwner && <div className="absolute -top-2 -right-2 rounded-2xl bg-red rounded-2xl dark:text-white  px-2">!</div>}
 
-        <div className="dark:bg-jacarta-700 dark:border-jacarta-700 border-jacarta-100 rounded-2xl block border bg-white p-[1.1875rem] transition-shadow hover:shadow-lg text-jacarta-500">
-          <figure>
-            {isSelectionActive ? (
-              image && <Image src={image ? image : "/images/gradient_creative.jpg"} alt="logo" height={230} width={230} className="rounded-[0.625rem] w-full lg:h-[230px] object-contain" loading="lazy" />
-            ) : (
-              <Link href={url}>
-                {image && <Image src={image ? image : "/images/gradient_creative.jpg"} alt="logo" height={230} width={230} className="rounded-[0.625rem] w-full lg:h-[230px] object-contain" loading="lazy" />}
-              </Link>
-            )}
-          </figure>
+        <div className="dark:bg-jacarta-700 dark:border-jacarta-700 border-jacarta-100 relative rounded-2xl block border bg-white p-[1.1875rem] transition-shadow hover:shadow-lg text-jacarta-500">
+          <div className="relative">
+            <figure>
+              {isSelectionActive ? (
+                image && <Image src={image ? image : "/images/gradient_creative.jpg"} alt="logo" height={230} width={230} className="rounded-[0.625rem] w-full lg:h-[230px] object-contain" loading="lazy" />
+              ) : (
+                <Link href={url}>
+                  {image && <Image src={image ? image : "/images/gradient_creative.jpg"} alt="logo" height={230} width={230} className="rounded-[0.625rem] w-full lg:h-[230px] object-contain" loading="lazy" />}
+                </Link>
+              )}
+            </figure>
+            <div className="absolute bottom-3 -right-2 backdrop-blur-sm bg-jacarta-400 border   w-7 h-7 rounded-[0.625rem] flex justify-center items-center">
+              <Image src={item?.chainConfig?.logoURL} width={20} height={20} alt="logo" loading="lazy" />
+            </div>
+          </div>
           <div className="mt-4 flex items-center justify-between">
             {isSelectionActive ? (
               <span className="font-display max-w-[150px] text-jacarta-700 hover:text-accent text-base dark:text-white ">{name}</span>
@@ -124,7 +136,7 @@ const OfferItem = ({ item, url, isToken, isSelectionActive, isOwner, isAuction =
             )}
           </div>
           <div className="mt-2 text-xs flex items-center justify-between">
-            {!isAuction  && !isListing ? (
+            {!isAuction && !isListing ? (
               <div className="flex justify-between w-full">
                 <span className="dark:text-jacarta-300 text-jacarta-500">
                   {formatDate(valid_from)} - {formatDate(valid_to)}

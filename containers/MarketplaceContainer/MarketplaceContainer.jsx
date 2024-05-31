@@ -30,7 +30,7 @@ const MarketplaceContainer = () => {
 
   const { currentChainObject } = useChainContext();
   const chainId = currentChainObject?.chainId;
-  const chainName = currentChainObject?.chainName;
+
 
   useEffect(() => {
     if (chainId) {
@@ -117,7 +117,7 @@ const MarketplaceContainer = () => {
                         item={item}
                         key={index}
                         url={
-                          !item.mint?.tokenData ? `/${chainName}/offer/${item?.offerId}/${item?.tokenId}` : `/${chainName}/offer/${item?.nftContract?.adOffers[0]?.id}/${item?.tokenId}?tokenData=${item?.mint?.tokenData}`
+                          !item.mint?.tokenData ? `/${chainId}/offer/${item?.offerId}/${item?.tokenId}` : `/${chainId}/offer/${item?.nftContract?.adOffers[0]?.id}/${item?.tokenId}?tokenData=${item?.mint?.tokenData}`
                         }
                         isOwner={isOwner}
                         isToken={true}

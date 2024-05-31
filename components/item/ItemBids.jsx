@@ -7,12 +7,15 @@ import BidsModal from '../modal/bidsModal'
 import { ethers } from "ethers";
 import { useAddress, darkTheme, useBalance, Web3Button, useTokenBalance, useContract, useContractRead, useContractWrite, useStorageUpload, useTokenDecimals, CheckoutWithCard, CheckoutWithEth } from "@thirdweb-dev/react";
 import { useChainContext } from "../../contexts/hooks/useChainContext";
-const ItemBids = ({successFullBid, address, setSuccessFullBid, dsponsorMpContract, marketplaceListings, currencySymbol, tokenBalance,handleApprove,price, hasEnoughBalance, currencyTokenDecimals, checkUserBalance, allowanceTrue, checkAllowance }) => {
+import config from '../../providers/utils/config'
+const ItemBids = ({successFullBid, address, setSuccessFullBid, dsponsorMpContract, marketplaceListings, currencySymbol, tokenBalance,handleApprove,price, hasEnoughBalance, currencyTokenDecimals, checkUserBalance, allowanceTrue, checkAllowance, chainId }) => {
   const [showBidsModal, setShowBidsModal] = useState(false);
-  const { currentChainObject } = useChainContext();
+ 
   const toggleBidsModal = () =>{ 
     checkAllowance();
-    setShowBidsModal(!showBidsModal)};
+    setShowBidsModal(!showBidsModal)
+    setSuccessFullBid(false);
+  };
   const bids = marketplaceListings[0].bids;
   
   return (
@@ -54,25 +57,22 @@ const ItemBids = ({successFullBid, address, setSuccessFullBid, dsponsorMpContrac
           <Timer endTime={marketplaceListings[0].endTime} />
         </div>
       </div>
-      {!address ? (
+       
         <div className="flex justify-center">
           <Web3Button
-            contractAddress={currentChainObject?.smartContracts?.DSPONSORMP?.address}
+            contractAddress={config[chainId]?.smartContracts?.DSPONSORMP?.address}
             action={() => {
-              toggleBidsModal;
+              toggleBidsModal();
             }}
             className={` !rounded-full !py-3 w-full !px-8 !text-center !font-semibold !text-white !transition-all !bg-accent !cursor-pointer `}
           >
-            Connect wallet
+            Place Bid
           </Web3Button>
         </div>
-      ) : (
-        <button className="inline-block w-full rounded-full bg-accent py-3 px-8 text-center font-semibold text-white shadow-accent-volume transition-all hover:bg-accent-dark" onClick={toggleBidsModal}>
-          Place Bid
-        </button>
-      )}
+     
       {showBidsModal && (
         <BidsModal
+          chainId={chainId}
           successFullBid={successFullBid}
           setSuccessFullBid={setSuccessFullBid}
           handleApprove={handleApprove}

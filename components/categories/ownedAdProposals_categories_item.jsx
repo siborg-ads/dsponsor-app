@@ -54,7 +54,7 @@ const { currentChainObject } = useChainContext();
   const { mutateAsync: uploadToIPFS, isLoading: isUploading } = useStorageUpload();
   const { mutateAsync: submitAd } = useContractWrite(DsponsorAdminContract, "submitAdProposals");
 
-const chainName = currentChainObject?.chainName;
+const chainId = currentChainObject?.chainId;
 
   const handleFilter = (category) => {
     if (category !== "all") {
@@ -339,7 +339,7 @@ const successFullUploadModal = {
                       item={item}
                       isToken={true}
                       isSelectionActive={isSelectionActive}
-                      url={!item.tokenData ? `/${chainName}/offer/${item.offerId}/${item.tokenId}` : `/${chainName}/offer/${item.offerId}/${item.tokenId}?tokenData=${item.tokenData}`}
+                      url={!item.tokenData ? `/${chainId}/offer/${item.offerId}/${item.tokenId}` : `/${chainId}/offer/${item.offerId}/${item.tokenId}?tokenData=${item.tokenData}`}
                     />
                   </div>
                 ) : (
@@ -348,7 +348,7 @@ const successFullUploadModal = {
                     key={index}
                     isToken={true}
                     isSelectionActive={isSelectionActive}
-                    url={!item.tokenData ? `/${chainName}/offer/${item.offerId}/${item.tokenId}` : `/${chainName}/offer/${item.offerId}/${item.tokenId}?tokenData=${item.tokenData}`}
+                    url={!item.tokenData ? `/${chainId}/offer/${item.offerId}/${item.tokenId}` : `/${chainId}/offer/${item.offerId}/${item.tokenId}?tokenData=${item.tokenData}`}
                   />
                 );
               })}

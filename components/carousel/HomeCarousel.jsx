@@ -24,8 +24,8 @@ const HomeCarousel = ({data, isToken = false , arrowName}) => {
  
   const { currentChainObject } = useChainContext();
   
-  const chainName = currentChainObject?.chainName;
-
+  const chainId = currentChainObject?.chainId;
+console.log(data[0], "data");
   return (
     <>
       <Swiper
@@ -64,12 +64,12 @@ const HomeCarousel = ({data, isToken = false , arrowName}) => {
                 {isToken ? (
                   <OfferItem
                     item={item}
-                    url={!item.mint?.tokenData ? `/${chainName}/offer/${item?.offerId}/${item?.tokenId}` : `/${chainName}/offer/${item?.nftContract?.adOffers[0]?.id}/${item?.tokenId}?tokenData=${item?.mint?.tokenData}`}
+                    url={!item.mint?.tokenData ? `/${chainId}/offer/${item?.offerId}/${item?.tokenId}` : `/${chainId}/offer/${item?.nftContract?.adOffers[0]?.id}/${item?.tokenId}?tokenData=${item?.mint?.tokenData}`}
                     isToken={isToken}
                     isListing={item?.marketplaceListings[0]?.listingType}
                   />
                 ) : (
-                  <OfferItem item={item} url={`/${chainName}/offer/${item.id}/${item.tokenIdAllowedToMint ? item.tokenIdAllowedToMint : "d"}`} />
+                  <OfferItem item={item} url={`/${chainId}/offer/${item.id}/${item.tokenIdAllowedToMint ? item.tokenIdAllowedToMint : ""}`} />
                 )}
               </SwiperSlide>
             );

@@ -47,7 +47,7 @@ export default function Timer({ endTime }) {
     const endDate = new Date(parseInt(endTime) * 1000); // Convert UNIX timestamp to JavaScript Date object
     setRemainingTime(endDate);
     setShowTimer(true);
-    console.log(endTime);
+
   }, [endTime]);
 
   return <>{showTimer && <Countdown date={remainingTime} renderer={renderer} />}</>;

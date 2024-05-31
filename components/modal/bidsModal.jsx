@@ -6,7 +6,8 @@ import { bidsModalHide } from "../../redux/counterSlice";
 import { toast } from "react-toastify";
 import Link from "next/link";
 import { useChainContext } from "../../contexts/hooks/useChainContext";
-const BidsModal = ({successFullBid, setSuccessFullBid, dsponsorMpContract, toggleBidsModal, marketplaceListings, currencySymbol, checkUserBalance, tokenBalance,allowanceTrue, currencyTokenDecimals, handleApprove }) => {
+import config from "../../providers/utils/config";
+const BidsModal = ({chainId, successFullBid, setSuccessFullBid, dsponsorMpContract, toggleBidsModal, marketplaceListings, currencySymbol, checkUserBalance, tokenBalance,allowanceTrue, currencyTokenDecimals, handleApprove }) => {
   const [bidsAmount, setBidsAmount] = useState(null);
   const [initialIntPrice, setInitialIntPrice] = useState(0);
   const [reservePrice, setReservePrice] = useState(0);
@@ -14,7 +15,7 @@ const BidsModal = ({successFullBid, setSuccessFullBid, dsponsorMpContract, toggl
   const { mutateAsync: auctionBids } = useContractWrite(dsponsorMpContract, "bid");
   const [isLoadingButton, setIsLoadingButton] = useState(false);
   const [checkTerms, setCheckTerms] = useState(false);
-  const { currentChainObject } = useChainContext();
+ 
   
 
   useEffect(() => {
@@ -157,7 +158,7 @@ const BidsModal = ({successFullBid, setSuccessFullBid, dsponsorMpContract, toggl
             <div className="modal-footer">
               {allowanceTrue && !successFullBid ? (
                 <Web3Button
-                  contractAddress={currentChainObject?.smartContracts?.DSPONSORMP?.address}
+                  contractAddress={config[chainId]?.smartContracts?.DSPONSORMP?.address}
                   action={() => {
                     toast.promise(handleApprove, {
                       pending: "Waiting for confirmation 🕒",
@@ -173,7 +174,7 @@ const BidsModal = ({successFullBid, setSuccessFullBid, dsponsorMpContract, toggl
               ) : !successFullBid ? (
                 <div className="flex items-center justify-center space-x-4">
                   <Web3Button
-                    contractAddress={currentChainObject?.smartContracts?.DSPONSORMP?.address}
+                    contractAddress={config[chainId]?.smartContracts?.DSPONSORMP?.address}
                     action={() => {
                       toast.promise(handleSubmit, {
                         pending: "Waiting for confirmation 🕒",

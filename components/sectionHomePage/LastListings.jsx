@@ -19,7 +19,7 @@ const LastListings = ({ data, classes = "pt-10 pb-24", bgWhite }) => {
 
         <div className="relative">
           {/* <!-- Slider --> */}
-          <HomeCarousel data={data} isToken={true} arrowName="latListingsArrow" />
+          <HomeCarousel data={data} isToken={true} arrowName="lastListingsArrow" />
         </div>
       </div>
       {/* <!-- end hot Offers --> */}

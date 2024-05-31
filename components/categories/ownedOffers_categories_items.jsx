@@ -16,7 +16,7 @@ const OwnedOffers_categories_items = ({ data, isPendinAdsOnOffer, isOwner }) => 
   const [itemdata, setItemdata] = useState(trendingCategoryData);
   const dispatch = useDispatch();
 const { currentChainObject } = useChainContext();
-const chainName = currentChainObject?.chainName;
+const chainId = currentChainObject?.chainId;
   const { trendingCategorySorText } = useSelector((state) => state.counter);
   const [filterVal, setFilterVal] = useState(0);
 
@@ -71,13 +71,13 @@ const chainName = currentChainObject?.chainName;
       {data.length > 0 ? (
         <div className="grid grid-cols-1 gap-[1.875rem] md:grid-cols-2 lg:grid-cols-4">
           {data?.map((item, index) => {
-            return <OfferItem item={item} key={index} url={`/${chainName}/offer/${item.id}`} isOwner={isOwner} />;
+            return <OfferItem item={item} key={index} url={`/${chainId}/offer/${item.id}`} isOwner={isOwner} />;
           })}
         </div>
       ) : (
         <div className="w-full flex flex-col gap-4 justify-center items-center">
           <span>You have no offers yet...</span>
-          <Link href={`/${chainName}/offer/create`} className="bg-accent shadow-accent-volume hover:bg-accent-dark w-36 rounded-full py-3 px-8 text-center font-semibold text-white transition-all">
+          <Link href={`/${chainId}/offer/create`} className="bg-accent shadow-accent-volume hover:bg-accent-dark w-36 rounded-full py-3 px-8 text-center font-semibold text-white transition-all">
             Create
           </Link>
         </div>
