@@ -55,13 +55,14 @@ const OfferPageContainer = () => {
   const maxBps = 10000;
 
   useEffect(() => {
+    console.log(offerId, chainId);
     if (offerId && chainId) {
       const fetchAdsOffers = async () => {
         const offer = await fetchOffer(offerId, chainId);
 
         console.log("combinedData", offer);
         setOfferData(offer);
-        if (userAddress?.toLowerCase() === offer.initialCreator) {
+        if (userAddress?.toLowerCase() === offer?.initialCreator) {
           setIsOwner(true);
         }
       };

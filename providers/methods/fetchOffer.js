@@ -33,7 +33,9 @@ const path = new URL(`https://relayer.dsponsor.com/api/${chainId}/graph`);
           id # DSponsorNFT smart contract address
           maxSupply
           allowList # defines if there is a token allowlist
-          royaltyBps # creator royalties (690 = 6.90%)
+          royalty {
+            bps
+          } # creator royalties (690 = 6.90%)
           # default mint price
           prices(where: { enabled: true }) {
             currency # ERC20 smart contract

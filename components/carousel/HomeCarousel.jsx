@@ -13,7 +13,6 @@ import { useDispatch } from "react-redux";
 import Likes from "../likes";
 
 import { gql } from "@apollo/client";
-import { useChainContext } from "../../contexts/hooks/useChainContext";
 
 import { useEffect, useState } from "react";
 import OfferItem from "../cards/offerItem";
@@ -22,10 +21,8 @@ import OfferItem from "../cards/offerItem";
 
 const HomeCarousel = ({data, isToken = false , arrowName}) => {
  
-  const { currentChainObject } = useChainContext();
-  
-  const chainId = currentChainObject?.chainId;
-console.log(data[0], "data");
+ 
+
   return (
     <>
       <Swiper
@@ -64,12 +61,16 @@ console.log(data[0], "data");
                 {isToken ? (
                   <OfferItem
                     item={item}
-                    url={!item.mint?.tokenData ? `/${chainId}/offer/${item?.offerId}/${item?.tokenId}` : `/${chainId}/offer/${item?.nftContract?.adOffers[0]?.id}/${item?.tokenId}?tokenData=${item?.mint?.tokenData}`}
+                    url={
+                      !item.mint?.tokenData
+                        ? `/${item?.chainConfig?.chainId}/offer/${item?.offerId}/${item?.tokenId}`
+                        : `/${item?.chainConfig?.chainId}/offer/${item?.nftContract?.adOffers[0]?.id}/${item?.tokenId}?tokenData=${item?.mint?.tokenData}`
+                    }
                     isToken={isToken}
                     isListing={item?.marketplaceListings[0]?.listingType}
                   />
                 ) : (
-                  <OfferItem item={item} url={`/${chainId}/offer/${item.id}/${item.tokenIdAllowedToMint ? item.tokenIdAllowedToMint : ""}`} />
+                  <OfferItem item={item} url={`/${item?.chainConfig?.chainId}/offer/${item.id}/${item.tokenIdAllowedToMint ? item.tokenIdAllowedToMint : ""}`} />
                 )}
               </SwiperSlide>
             );

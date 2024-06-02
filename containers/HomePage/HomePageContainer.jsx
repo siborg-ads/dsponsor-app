@@ -44,7 +44,7 @@ const HomePageContainer = () => {
         lastListingsArray.push(...lastListings);
       }
   
-        console.log(lastListingsArray, "listedToken");
+      
        setLastListings(lastListingsArray);
       
       setLastOffers(lastOffersArray);

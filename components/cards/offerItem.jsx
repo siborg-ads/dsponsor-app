@@ -107,9 +107,11 @@ const OfferItem = ({ item, url, isToken = false, isSelectionActive, isOwner, isA
                 </Link>
               )}
             </figure>
-            <div className="absolute bottom-3 -right-2 backdrop-blur-sm bg-jacarta-400 border   w-7 h-7 rounded-[0.625rem] flex justify-center items-center">
-              <Image src={item?.chainConfig?.logoURL} width={20} height={20} alt="logo" loading="lazy" />
-            </div>
+            <Tippy content={item?.chainConfig?.chainName} placement="top" className="bg-jacarta-300 text-jacarta-700 dark:bg-jacarta-700 dark:text-jacarta-300 rounded-md p-2">
+              <div className="absolute -bottom-1 -right-2 backdrop-blur-sm bg-jacarta-300 border   w-7 h-7 rounded-[0.625rem] flex justify-center items-center">
+                <Image src={item?.chainConfig?.logoURL} width={20} height={20} alt="logo" loading="lazy" />
+              </div>
+            </Tippy>
           </div>
           <div className="mt-4 flex items-center justify-between">
             {isSelectionActive ? (
