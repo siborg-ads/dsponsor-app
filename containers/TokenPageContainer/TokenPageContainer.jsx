@@ -108,6 +108,7 @@ const TokenPageContainer = () => {
   const { mutateAsync: directBuy } = useContractWrite(dsponsorMpContract, "buy");
 
   const now = Math.floor(new Date().getTime() / 1000);
+  
 
   useEffect(() => {
    
@@ -142,24 +143,40 @@ const TokenPageContainer = () => {
     }
     if (!isOwner && !offerNotFormated && offerData?.nftContract?.tokens[0]?.mint === null && isAllowedToMint !== null) {
       setTokenStatut("MINTABLE");
-      setTokenCurrencyAddress(offerData?.nftContract?.prices[0]?.currency);
-      setTokenBigIntPrice(offerData?.nftContract?.prices[0]?.amount);
+       setTokenCurrencyAddress(offerData?.nftContract?.prices[0]?.currency);
+      // setTokenBigIntPrice(offerData?.nftContract?.prices[0]?.amount);
+      setPrice(offerData?.nftContract?.prices[0]?.mintPriceStructureFormatted.creatorAmount);
+      setFeesAmount(offerData?.nftContract?.prices[0]?.mintPriceStructureFormatted.protocolFeeAmount);
+      setFinalPrice(offerData?.nftContract?.prices[0]?.mintPriceStructureFormatted.totalAmount);
+      setAmountToApprove(BigInt(offerData?.nftContract?.prices[0]?.mintPriceStructure.totalAmount));
+      setCurrency(offerData?.nftContract?.prices[0]?.currencySymbol);
       return;
     }
     if (offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.status === "CREATED") {
       if (offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.listingType === "Direct") {
         setTokenBigIntPrice(offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.buyoutPricePerToken);
         setTokenStatut("DIRECT");
+        setPrice(offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.buyPriceStructureFormatted.listerBuyAmount);
+        setFeesAmount(offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.buyPriceStructureFormatted.protocolFeeBuyAmount);
+        setRoyaltiesFeesAmount(offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.buyPriceStructureFormatted.royaltiesBuyAmount);
+        setFinalPrice(offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.buyPriceStructureFormatted.buyoutPricePerToken);
+        setAmountToApprove(BigInt(offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.buyPriceStructure.buyoutPricePerToken));
+        
       }
-      if (offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.listingType === "Auction" && offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.bids.length > 0) {
+      if (offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.listingType === "Auction" ) {
         setTokenBigIntPrice(offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.bids[0]?.totalBidAmount);
         setTokenStatut("AUCTION");
+        setPrice(offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.bidPriceStructureFormatted.newPricePerToken);
+        setFeesAmount(offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.bidPriceStructureFormatted.protocolFeeAmount);
+        setRoyaltiesFeesAmount(offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.bidPriceStructureFormatted.royaltyAmount);
+        setFinalPrice(offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.bidPriceStructureFormatted.newPricePerToken);
+        setAmountToApprove(BigInt(offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.bidPriceStructure.newPricePerToken));
       } else if (offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.listingType === "Auction" && offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.bids.length <= 0) {
         setTokenBigIntPrice(offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.reservePricePerToken);
         setTokenStatut("AUCTION");
       }
       setTokenCurrencyAddress(offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.currency);
-
+      setCurrency(offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.currencySymbol);
       return;
     }
     if (offerData?.nftContract?.tokens[0]?.mint !== null) {
@@ -240,42 +257,42 @@ const TokenPageContainer = () => {
     setNumSteps(totalNumSteps);
   }, [offerData]);
 
-  useEffect(() => {
-    if (!offerData || !tokenBigIntPrice) return;
-    try {
-      const currencyTokenObject = {};
-      if (!decimalsContract && !symbolContract && tokenCurrencyAddress === "0x0000000000000000000000000000000000000000") {
-        currencyTokenObject.symbol = NATIVECurrency.symbol;
-        currencyTokenObject.decimals = NATIVECurrency.decimals;
-      } else {
-        currencyTokenObject.symbol = symbolContract;
-        currencyTokenObject.decimals = decimalsContract;
-      }
-      console.log(tokenBigIntPrice, bps, maxBps, config[chainId]?.smartContracts?.DSPONSORADMIN?.address, "currencyTokenObject");
+  // useEffect(() => {
+  //   if (!offerData || !tokenBigIntPrice) return;
+  //   try {
+  //     const currencyTokenObject = {};
+  //     if (!decimalsContract && !symbolContract && tokenCurrencyAddress === "0x0000000000000000000000000000000000000000") {
+  //       currencyTokenObject.symbol = NATIVECurrency.symbol;
+  //       currencyTokenObject.decimals = NATIVECurrency.decimals;
+  //     } else {
+  //       currencyTokenObject.symbol = symbolContract;
+  //       currencyTokenObject.decimals = decimalsContract;
+  //     }
 
-      const bigIntFinalPrice = (BigInt(tokenBigIntPrice) * (BigInt(bps) + BigInt(maxBps))) / BigInt(maxBps);
-      const formatFinalPrice = ethers.utils.formatUnits(bigIntFinalPrice, currencyTokenObject.decimals);
-      const formatPrice = ethers.utils.formatUnits(BigInt(tokenBigIntPrice), currencyTokenObject.decimals);
-      const protocolFees = (BigInt(tokenBigIntPrice) * BigInt(bps)) / BigInt(maxBps);
-      const royaltiesFees = (BigInt(tokenBigIntPrice) * BigInt(royalties * 100)) / BigInt(10000);
-      const formatRoyaltiesFees = ethers.utils.formatUnits(royaltiesFees, currencyTokenObject.decimals);
-      const formatProtocolFees = ethers.utils.formatUnits(protocolFees, currencyTokenObject.decimals);
-      const amountToApprove = ethers.utils.parseUnits(formatFinalPrice.toString(), currencyTokenObject.decimals);
-      const formatBuyoutPrice = ethers.utils.formatUnits(BigInt(tokenBigIntPrice), currencyTokenObject.decimals);
 
-      setFeesAmount(Number(Math.ceil(formatProtocolFees * 1000) / 1000));
-      setRoyaltiesFeesAmount(Number(Math.ceil(formatRoyaltiesFees * 1000) / 1000));
-      setPrice(Number(Math.ceil(formatPrice * 1000) / 1000));
-      setBuyoutPriceAmount(Number(Math.ceil(formatBuyoutPrice * 1000) / 1000));
-      setCurrency(currencyTokenObject);
-      setOfferNotFormated(false);
-      setFinalPrice(Number(Math.ceil(formatFinalPrice * 1000) / 1000));
-      setAmountToApprove(amountToApprove);
-    } catch (e) {
-      console.error("Error: Currency not found for address", tokenBigIntPrice, e);
-      setOfferNotFormated(true);
-    }
-  }, [symbolContract, decimalsContract, offerData, address, tokenId, bps, maxBps, tokenBigIntPrice, tokenCurrencyAddress, royalties]);
+  //     const bigIntFinalPrice = (BigInt(tokenBigIntPrice) * (BigInt(bps) + BigInt(maxBps))) / BigInt(maxBps);
+  //     const formatFinalPrice = ethers.utils.formatUnits(bigIntFinalPrice, currencyTokenObject.decimals);
+  //     const formatPrice = ethers.utils.formatUnits(BigInt(tokenBigIntPrice), currencyTokenObject.decimals);
+  //     const protocolFees = (BigInt(tokenBigIntPrice) * BigInt(bps)) / BigInt(maxBps);
+  //     const royaltiesFees = (BigInt(tokenBigIntPrice) * BigInt(royalties * 100)) / BigInt(10000);
+  //     const formatRoyaltiesFees = ethers.utils.formatUnits(royaltiesFees, currencyTokenObject.decimals);
+  //     const formatProtocolFees = ethers.utils.formatUnits(protocolFees, currencyTokenObject.decimals);
+  //     const amountToApprove = ethers.utils.parseUnits(formatFinalPrice.toString(), currencyTokenObject.decimals);
+  //     const formatBuyoutPrice = ethers.utils.formatUnits(BigInt(tokenBigIntPrice), currencyTokenObject.decimals);
+
+  //     setFeesAmount(Number(Math.ceil(formatProtocolFees * 1000) / 1000));
+  //     setRoyaltiesFeesAmount(Number(Math.ceil(formatRoyaltiesFees * 1000) / 1000));
+  //     setPrice(Number(Math.ceil(formatPrice * 1000) / 1000));
+  //     setBuyoutPriceAmount(Number(Math.ceil(formatBuyoutPrice * 1000) / 1000));
+  //     setCurrency(currencyTokenObject);
+  //     setOfferNotFormated(false);
+  //     setFinalPrice(Number(Math.ceil(formatFinalPrice * 1000) / 1000));
+  //     setAmountToApprove(amountToApprove);
+  //   } catch (e) {
+  //     console.error("Error: Currency not found for address", tokenBigIntPrice, e);
+  //     setOfferNotFormated(true);
+  //   }
+  // }, [symbolContract, decimalsContract, offerData, address, tokenId, bps, maxBps, tokenBigIntPrice, tokenCurrencyAddress, royalties]);
 
   useEffect(() => {
     if (!offerData || !adParameters) return;
@@ -313,7 +330,7 @@ const TokenPageContainer = () => {
   }, [offerId, tokenId, successFullUpload, offerData]);
 
   useEffect(() => {
-    if (offerData?.nftContract?.royaltyBps) setRoyalties(offerData?.nftContract?.royaltyBps / 100);
+    if (offerData?.nftContract?.royalty.bps) setRoyalties(offerData?.nftContract?.royalty.bps / 100);
   }, [offerData]);
 
   const validateInputs = () => {
@@ -366,10 +383,10 @@ const TokenPageContainer = () => {
       }
 
       const allowanceBigNumber = ethers.BigNumber.from(allowance._hex);
-      const amountToApproveBigNumber = ethers.BigNumber.from(amountToApprove._hex);
-      console.log(amountToApprove, "allowanceBigNumber");
+      
+    
 
-      if (allowanceBigNumber.gt(amountToApproveBigNumber)) return;
+      if (allowanceBigNumber.gt(amountToApprove)) return;
 
       setAllowanceTrue(true);
     }
@@ -412,16 +429,16 @@ const TokenPageContainer = () => {
       referralAdditionalInformation: "",
     };
 
-    const argsdirectBuy = [
+    const argsdirectBuy = 
       {
         listingId: marketplaceListings[0]?.id,
         buyFor: address,
         quantity: 1,
         currency: marketplaceListings[0]?.currency,
-        totalPrice: marketplaceListings[0]?.buyoutPricePerToken,
+        totalPrice: marketplaceListings[0]?.buyPriceStructure.buyoutPricePerToken,
         referralAdditionalInformation: "",
-      },
-    ];
+      }
+    ;
     try {
       const isEthCurrency = tokenCurrencyAddress === "0x0000000000000000000000000000000000000000";
       const functionWithPossibleArgs = marketplaceListings.length <= 0 ? argsMintAndSubmit : argsdirectBuy;
@@ -625,10 +642,10 @@ const TokenPageContainer = () => {
               </Link>
 
               <div className="mb-8 flex items-center  whitespace-nowrap flex-wrap">
-                {currency?.symbol && tokenStatut !== "MINTED" && (marketplaceListings[0]?.status === "CREATED" || marketplaceListings?.length <= 0) && (
+                {currency && tokenStatut !== "MINTED" && (marketplaceListings[0]?.status === "CREATED" || marketplaceListings?.length <= 0) && (
                   <div className="flex items-center mr-4">
                     <span className="text-green text-sm font-medium tracking-tight mr-2">
-                      {tokenStatut === "DIRECT" || tokenStatut === "AUCTION" ? price : finalPrice} {currency?.symbol}
+                      {finalPrice} {currency}
                     </span>
                     <ModalHelper {...modalHelper} size="small" />
                   </div>
@@ -690,7 +707,7 @@ const TokenPageContainer = () => {
                   handleApprove={handleApprove}
                   dsponsorMpContract={dsponsorMpContract}
                   marketplaceListings={marketplaceListings}
-                  currencySymbol={currency?.symbol}
+                  currencySymbol={currency}
                   tokenBalance={tokenBalance}
                   currencyTokenDecimals={currency?.decimals}
                   setSuccessFullBid={setSuccessFullBid}
@@ -788,7 +805,7 @@ const TokenPageContainer = () => {
             name={name}
             marketplaceListings={marketplaceListings}
             image={image}
-            selectedCurrency={currency?.symbol}
+            selectedCurrency={currency}
             royalties={royalties}
             tokenId={tokenId}
             tokenData={tokenData}

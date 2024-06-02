@@ -47,6 +47,32 @@ export const fetchOfferToken = async (offerId, tokenId, chainId) => {
             tokenId
             marketplaceListings(orderBy: id, orderDirection: desc) {
               id # listingId
+              quantity
+              # METADATA - if INVALID, ignore this listing
+              # offerMetadata = adOffers[0].metadataURL
+              # if tokenData?.length
+              #    if offerMetadata.offer.token_metadata.name exists => replace all {tokenData} by tokenData value
+              #    (same for offerMetadata.offer.token_metadata.description & offerMetadata.offer.token_metadata.image)
+              # NAME = offerMetadata.offer.token_metadata.name || offerMetadata.offer.name || INVALID
+              # DESCRIPTION = offerMetadata.offer.token_metadata.description || offerMetadata.offer.description || INVALID
+              # IMAGE = offerMetadata.offer.token_metadata.image || offerMetadata.offer.image || INVALID
+              token {
+                tokenId
+                nftContract {
+                  id # = assetContract
+                  royalty {
+                    bps
+                  }
+                  adOffers {
+                    id
+                    metadataURL # offerMetadata
+                  }
+                }
+                mint {
+                  tokenData
+                }
+              }
+
               # listingType = 0 <-> 'Direct', listingType = 1 <-> 'Auction'
               # 'Direct' or 'Auction'
               listingType

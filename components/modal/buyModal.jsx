@@ -94,7 +94,7 @@ const calculateOriginalPriceFromTotal = (totalPrice, royalties, tokenDecimals = 
                     <div className="flex gap-6  items-center justify-between">
                       <h3 className="font-display overflow-hidden text-ellipsis whitespace-nowrap text-jacarta-700 text-sm font-semibold dark:text-white">Price : </h3>
                       <span className="dark:text-jacarta-100 text-sm font-medium tracking-tight overflow-auto min-w-[70px] flex justify-end">
-                        {tokenStatut === "DIRECT" ? calculateOriginalPriceFromTotal(buyoutPriceAmount, royalties) : price} {selectedCurrency}
+                        {price} {selectedCurrency}
                       </span>
                     </div>
 
@@ -138,7 +138,7 @@ const calculateOriginalPriceFromTotal = (totalPrice, royalties, tokenDecimals = 
                 <div className="ml-auto">
                   <span className="flex items-center whitespace-nowrap">
                     <span className="text-green font-medium tracking-tight">
-                      {tokenStatut === "DIRECT" || tokenStatut === "AUCTION" ? price : finalPrice} {selectedCurrency}
+                      {finalPrice} {selectedCurrency}
                     </span>
                   </span>
                   {/* <div className="dark:text-jacarta-300 text-right">$130.82</div> */}

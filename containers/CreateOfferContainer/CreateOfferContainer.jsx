@@ -24,7 +24,7 @@ const CreateOfferContainer = () => {
   const { mutateAsync: upload, isLoading } = useStorageUpload();
 
   const router = useRouter();
-  const chainId = router.query?.chainId;
+  const chainId = router.query?.chainName;
   const [link, setLink] = useState(null);
   const [errors, setErrors] = useState({});
   const [description, setDescription] = useState(false);
@@ -277,7 +277,7 @@ const CreateOfferContainer = () => {
         }),
       ];
       const preparedArgs = [Object.values(JSON.parse(args[0])), Object.values(JSON.parse(args[1]))];
-      console.log(preparedArgs, "preparedArgs");
+      console.log(preparedArgs,DsponsorAdminContract, "preparedArgs");
       await createDSponsorNFTAndOffer({ args: preparedArgs });
 
       setSuccessFullUpload(true);

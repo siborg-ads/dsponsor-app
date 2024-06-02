@@ -1,4 +1,5 @@
 export const executeQuery = async (url, query, variables) => {
+  console.log("response", url, query, variables);
   try {
     const response = await fetch(url, {
       method: "POST",
@@ -11,7 +12,7 @@ export const executeQuery = async (url, query, variables) => {
       }),
     });
 
- 
+ console.log("response", response);
 
     if (!response.ok) {
       console.error("Network response was not ok", response.statusText);

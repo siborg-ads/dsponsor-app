@@ -7,10 +7,9 @@ import { toast } from "react-toastify";
 import Link from "next/link";
 import { useChainContext } from "../../contexts/hooks/useChainContext";
 import config from "../../providers/utils/config";
-const BidsModal = ({chainId, successFullBid, setSuccessFullBid, dsponsorMpContract, toggleBidsModal, marketplaceListings, currencySymbol, checkUserBalance, tokenBalance,allowanceTrue, currencyTokenDecimals, handleApprove }) => {
+const BidsModal = ({address,chainId, successFullBid, setSuccessFullBid, dsponsorMpContract, toggleBidsModal, marketplaceListings, currencySymbol, checkUserBalance, tokenBalance,allowanceTrue, currencyTokenDecimals, handleApprove }) => {
   const [bidsAmount, setBidsAmount] = useState(null);
   const [initialIntPrice, setInitialIntPrice] = useState(0);
-  const [reservePrice, setReservePrice] = useState(0);
   const [isPriceGood, setIsPriceGood] = useState(true);
   const { mutateAsync: auctionBids } = useContractWrite(dsponsorMpContract, "bid");
   const [isLoadingButton, setIsLoadingButton] = useState(false);
@@ -19,17 +18,9 @@ const BidsModal = ({chainId, successFullBid, setSuccessFullBid, dsponsorMpContra
   
 
   useEffect(() => {
-    let reservePrice;
-    
-    if (marketplaceListings[0]?.bids?.length <= 0) {
-      reservePrice = (BigInt(marketplaceListings[0]?.reservePricePerToken) * (BigInt(500) + BigInt(10000))) / BigInt(10000);
-    }else {
-      reservePrice = (BigInt(marketplaceListings[0]?.bids[0]?.totalBidAmount) * (BigInt(500) + BigInt(10000)) / BigInt(10000));
-    }
-    const reservePriceParsed = ethers.utils.formatUnits(reservePrice, currencyTokenDecimals);
-    setReservePrice(reservePrice);
-    setInitialIntPrice(Number(Math.ceil(reservePriceParsed * 1000) / 1000));
-    setBidsAmount(Number(Math.ceil(reservePriceParsed * 1000) / 1000));
+
+    setInitialIntPrice(marketplaceListings[0]?.bidPriceStructureFormatted?.newBidPerToken);
+    setBidsAmount(marketplaceListings[0]?.bidPriceStructureFormatted?.newBidPerToken);
   }, [ marketplaceListings[0], currencyTokenDecimals]);
 
   const handleBidsAmount = (e) => {
@@ -44,16 +35,15 @@ const BidsModal = ({chainId, successFullBid, setSuccessFullBid, dsponsorMpContra
     }
   };
   const handleSubmit = async () => {
-  
+    console.log("bidsAmount", bidsAmount, tokenBalance);
     const hasEnoughBalance = checkUserBalance(tokenBalance, bidsAmount);
     if (!hasEnoughBalance) {
       throw new Error("Not enough balance for approval.");
     }
     try {
       setIsLoadingButton(true);
-      const bigIntPrice = ethers.utils.parseUnits(bidsAmount.toString(), currencyTokenDecimals);
       await auctionBids({
-        args: [marketplaceListings[0].id, bigIntPrice, ""],
+        args: [marketplaceListings[0].id, marketplaceListings[0]?.bidPriceStructure?.newBidPerToken, address, ""],
       });
       setSuccessFullBid(true);
     } catch (error) {

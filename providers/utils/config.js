@@ -32,11 +32,11 @@ const config = {
         address: "0xEd1f6473345F45b75F8179591dd5bA1888cf2FB3",
       },
       DSPONSORADMIN: {
-        address: "0xE442802706F3603d58F34418Eac50C78C7B4E8b3",
+        address: "0x22554D70702C60A5fa30297908005B6cE19eEf51",
         abi: contractABI,
       },
       DSPONSORMP: {
-        address: "0xac03b675fa9644279b92f060bf542eed54f75599",
+        address: "0xd36097D256F31F1BF5aa597dA7C3E098d466aD13",
       },
     },
   },

@@ -309,12 +309,12 @@ const metadata = {
                   overflowX: "auto",
                 }}
               >
-                <code> {`<iframe src="https://relayer.dsponsor.com/${chainId}/ads/${offerId}/ClickableLogosGrid/iFrame" height="315" width="1000px" className={'h-screen w-full'} />`}</code>
+                <code> {`<iframe src="https://relayer.dsponsor.com/${chainId}/integrations/${offerId}/ClickableLogosGrid/iFrame" height="315" width="1000px" className={'h-screen w-full'} />`}</code>
               </pre>
               <Tippy hideOnClick={false} content={copied ? <span>copied</span> : <span>copy</span>}>
                 <div className="js-copy-clipboard cursor-pointer">
                   <CopyToClipboard
-                    text={`<iframe src="https://relayer.dsponsor.com/${chainId}/ads/${offerId}/ClickableLogosGrid/iFrame" height="315" width="1000px" className={'h-screen w-full'} />`}
+                    text={`<iframe src="https://relayer.dsponsor.com/${chainId}/integrations/${offerId}/ClickableLogosGrid/iFrame" height="315" width="1000px" className={'h-screen w-full'} />`}
                     onCopy={() => setCopied(true)}
                   >
                     <Image src="/images/copy.svg" alt="icon" width={20} height={20} className="mt-2 min-w-[20px] " />
@@ -323,7 +323,7 @@ const metadata = {
               </Tippy>
             </div>
           </div>
-          <iframe loading="lazy" src={`https://relayer.dsponsor.com/${chainId}/ads/${offerId}/ClickableLogosGrid/iFrame`} height="315" width="1000px" className={"h-screen w-full"} />
+          <iframe loading="lazy" src={`https://relayer.dsponsor.com/${chainId}/integrations/${offerId}/ClickableLogosGrid/iFrame`} height="315" width="1000px" className={"h-screen w-full"} />
         </div>
       )}
       {/* <ItemsTabs /> */}

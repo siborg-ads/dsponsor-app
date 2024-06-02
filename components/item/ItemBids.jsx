@@ -86,6 +86,7 @@ const ItemBids = ({successFullBid, address, setSuccessFullBid, dsponsorMpContrac
           tokenBalance={tokenBalance}
           marketplaceListings={marketplaceListings}
           currencySymbol={currencySymbol}
+          address={address}
         />
       )}
     </div>

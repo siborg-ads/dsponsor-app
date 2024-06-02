@@ -15,8 +15,9 @@ import { CopyToClipboard } from "react-copy-to-clipboard";
 import { Web3Button } from "@thirdweb-dev/react";
 import AddProposalRefusedModal from "../modal/adProposalRefusedModal";
 import { useChainContext } from "../../contexts/hooks/useChainContext";
+import config from "../../providers/utils/config";
 
-const Review_carousel = ({ setSelectedItems, selectedItems, handleSubmit, pendingProposalData, successFullRefuseModal, setSuccessFullRefuseModal, isToken, isOwner, setRefusedValidatedAdModal, refusedValidatedAdModal }) => {
+const Review_carousel = ({chainId, setSelectedItems, selectedItems, handleSubmit, pendingProposalData, successFullRefuseModal, setSuccessFullRefuseModal, isToken, isOwner, setRefusedValidatedAdModal, refusedValidatedAdModal }) => {
   
   const [validate, setValidate] = useState({});
   const [comments, setComments] = useState({});

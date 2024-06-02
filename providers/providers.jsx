@@ -1,5 +1,5 @@
 
-import { useEffect, useState, createContext, useContext, useChain } from "react";
+import { useEffect, useState, createContext, useContext, useChain, use } from "react";
 import { useNetwork } from "@thirdweb-dev/react";
 import { Ethereum, Polygon, BaseSepoliaTestnet, Sepolia } from "@thirdweb-dev/chains";
 
@@ -16,13 +16,20 @@ import SwitchChainProvider from "./ChainProvider/SwitchChainProvider";
 import { useChainContext } from "../contexts/hooks/useChainContext";
 
 
+
 function Providers({children}) {
  const [selectedChain, setSelectedChain] = useState("sepolia");
- 
-  console.log("selectedChain", selectedChain);
+const { currentChainObject } = useChainContext();
+
+  useEffect(() => {
+    if (currentChainObject) {
+      setSelectedChain(currentChainObject.chainId);
+    }
+  }
+  , [currentChainObject]);
   
     return (
-      <SwitchChainProvider.Provider value={{ selectedChain, setSelectedChain }}>
+     
         <ThirdwebProvider
           activeChain={selectedChain}
           clientId="6f375d41f2a33f1f08f6042a65d49ec9"
@@ -44,7 +51,7 @@ function Providers({children}) {
         >
           <ChainProvider>{children}</ChainProvider>
         </ThirdwebProvider>
-      </SwitchChainProvider.Provider>
+
     );
 }
 

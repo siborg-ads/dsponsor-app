@@ -37,7 +37,8 @@ const ManageSpaceContainer = () => {
      
    
         const offers = await fetchAllOffersByUserAddress(userAddress, chainId);
-        
+        setCreatedData(offers);
+        console.log(offers);
         const ownedAdProposals = await fetchAllTokenByOfferForAuser(userAddress, chainId);
         console.log(ownedAdProposals);
         const listedToken = await fetchAllTokenListedByUserAddress(userAddress, chainId);
@@ -57,28 +58,11 @@ const ManageSpaceContainer = () => {
         }
         
         
-        const mappedOffers = [];
-        for (const element of offers) {
-          let isPending = false;
-          
-          const pendingProposals = element.nftContract.tokens;
-          for (const isPendingAds of pendingProposals) {
-            if (isPendingAds.currentProposals.length > 0 && isPendingAds.currentProposals[0].pendingProposal !== null) {
-              isPending = true;
-              setIsPendinAdsOnOffer(true);
-              break;
-            }
-          }
-          const combinedData = {
-            isPending: isPending,
-            ...element,
-          };
-          mappedOffers.push(combinedData);
-        }
+       
 
         const mappedownedAdProposals = [];
 
-        setCreatedData(mappedOffers);
+        
 
         for (const element of ownedAdProposals) {
           
@@ -96,7 +80,7 @@ const ManageSpaceContainer = () => {
           }
         }
         console.log(mappedownedAdProposals);
-        console.log(mappedOffers);
+    
         setMappedownedAdProposals(mappedownedAdProposals);
         setListedAuctionToken(mappedListedToken);
       };
