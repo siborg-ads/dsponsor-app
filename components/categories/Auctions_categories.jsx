@@ -65,9 +65,10 @@ const Auctions_categories = ({ data, isOwner }) => {
                 item={item}
                 key={index}
                 url={
-                  !item.tokenData ? `/${chainId}/offer/${item?.nftContract?.adOffers[0]?.id}/${item.tokenId}` : `/${chainId}/offer/${item?.nftContract?.adOffers[0]?.id}/${item.tokenId}?tokenData=${item.tokenData}`
+                  !item.tokenData
+                    ? `/${item?.chainConfig?.chainId}/offer/${item?.nftContract?.adOffers[0]?.id}/${item.tokenId}`
+                    : `/${item?.chainConfig?.chainId}/offer/${item?.nftContract?.adOffers[0]?.id}/${item.tokenId}?tokenData=${item.tokenData}`
                 }
-            
                 isOwner={isOwner}
                 isToken={true}
                 isAuction={true}

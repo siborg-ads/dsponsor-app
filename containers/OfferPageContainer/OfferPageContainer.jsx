@@ -22,6 +22,7 @@ import { ItemsTabs } from "../../components/component";
 import { useChainContext } from "../../contexts/hooks/useChainContext";
 import { fetchOffer } from "../../providers/methods/fetchOffer";
 import config from "../../providers/utils/config";
+import { useSwitchChainContext } from "../../contexts/hooks/useSwitchChainContext";
 
 
 const OfferPageContainer = () => {
@@ -50,12 +51,13 @@ const OfferPageContainer = () => {
   const { data: symbolContract } = useContractRead(tokenContract, "symbol");
   const { data: decimalsContract } = useContractRead(tokenContract, "decimals");
    const NATIVECurrency = config[chainId]?.smartContracts?.NATIVE;
+   const { setSelectedChain } = useSwitchChainContext();
 
   const { data: bps } = useContractRead(DsponsorAdminContract, "feeBps");
   const maxBps = 10000;
 
   useEffect(() => {
-    console.log(offerId, chainId);
+    
     if (offerId && chainId) {
       const fetchAdsOffers = async () => {
         const offer = await fetchOffer(offerId, chainId);
@@ -66,10 +68,10 @@ const OfferPageContainer = () => {
           setIsOwner(true);
         }
       };
-
+    setSelectedChain(config[chainId]?.chainNameProvider);
       fetchAdsOffers();
     }
-  }, [offerId, successFullRefuseModal, userAddress, chainId]);
+  }, [offerId, successFullRefuseModal, userAddress, chainId, setSelectedChain]);
 
   useEffect(() => {
     if (!offerData) return;

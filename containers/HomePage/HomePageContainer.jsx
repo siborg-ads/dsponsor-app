@@ -13,6 +13,7 @@ import { useChainContext } from "../../contexts/hooks/useChainContext";
 import config from "../../providers/utils/config";
 
 
+
 const HomePageContainer = () => {
   const [lastOffers, setLastOffers] = useState([]);
    const [lastListings, setLastListings] = useState([]);
@@ -23,7 +24,7 @@ const HomePageContainer = () => {
 
 
   useEffect(() => {
-    console.log(config);
+
     if (!chainId) return;
     const fetchAdsOffers = async () => {
       const lastOffersArray =  []
@@ -37,7 +38,17 @@ const HomePageContainer = () => {
       
       console.log(lastOffersArray, "lastOffers");
 
-      const lastListingsArray = [];
+     
+      
+      setLastOffers(lastOffersArray);
+    };
+    fetchAdsOffers();
+  }, [chainId]);
+  
+  useEffect(() =>{
+     if (!chainId) return;
+      const fetchAdsListings = async () => {
+ const lastListingsArray = [];
 
       for (const [chainId] of Object.entries(config)) {
         const lastListings = await fetchAllListedToken(chainId);
@@ -46,11 +57,10 @@ const HomePageContainer = () => {
   
       
        setLastListings(lastListingsArray);
-      
-      setLastOffers(lastOffersArray);
-    };
-    fetchAdsOffers();
-  }, [chainId]);
+    }
+    fetchAdsListings();
+
+  },[chainId]);
   const metadata = {
     title: `Home || DSponsor | smarter monetization for your content`,
     keyword: "Home",

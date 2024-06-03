@@ -29,6 +29,7 @@ import stringToUint256 from "../../utils/stringToUnit256.js";
 import ItemManage from "../../components/item/ItemManage.jsx";
 import ItemBids from "../../components/item/ItemBids.jsx";
 import { useChainContext } from "../../contexts/hooks/useChainContext.js";
+import { useSwitchChainContext } from "../../contexts/hooks/useSwitchChainContext.js";
 import { fetchOfferToken } from "../../providers/methods/fetchOfferToken.js";
 import config from "../../providers/utils/config.js";
 
@@ -106,7 +107,7 @@ const TokenPageContainer = () => {
   const { data: royaltiesInfo } = useContractRead(DsponsorNFTContract, "royaltyInfo", [tokenIdString, 100]);
   const { contract: dsponsorMpContract } = useContract(config[chainId]?.smartContracts?.DSPONSORMP?.address);
   const { mutateAsync: directBuy } = useContractWrite(dsponsorMpContract, "buy");
-
+const { setSelectedChain } = useSwitchChainContext();
   const now = Math.floor(new Date().getTime() / 1000);
 
   useEffect(() => {
@@ -124,7 +125,7 @@ const TokenPageContainer = () => {
         console.log(combinedData, "combinedData");
         setOfferData(combinedData);
       };
-
+        setSelectedChain(config[chainId]?.chainNameProvider);
       fetchAdsOffers();
     }
 
@@ -256,41 +257,7 @@ const TokenPageContainer = () => {
     setNumSteps(totalNumSteps);
   }, [offerData]);
 
-  // useEffect(() => {
-  //   if (!offerData || !tokenBigIntPrice) return;
-  //   try {
-  //     const currencyTokenObject = {};
-  //     if (!decimalsContract && !symbolContract && tokenCurrencyAddress === "0x0000000000000000000000000000000000000000") {
-  //       currencyTokenObject.symbol = NATIVECurrency.symbol;
-  //       currencyTokenObject.decimals = NATIVECurrency.decimals;
-  //     } else {
-  //       currencyTokenObject.symbol = symbolContract;
-  //       currencyTokenObject.decimals = decimalsContract;
-  //     }
-
-  //     const bigIntFinalPrice = (BigInt(tokenBigIntPrice) * (BigInt(bps) + BigInt(maxBps))) / BigInt(maxBps);
-  //     const formatFinalPrice = ethers.utils.formatUnits(bigIntFinalPrice, currencyTokenObject.decimals);
-  //     const formatPrice = ethers.utils.formatUnits(BigInt(tokenBigIntPrice), currencyTokenObject.decimals);
-  //     const protocolFees = (BigInt(tokenBigIntPrice) * BigInt(bps)) / BigInt(maxBps);
-  //     const royaltiesFees = (BigInt(tokenBigIntPrice) * BigInt(royalties * 100)) / BigInt(10000);
-  //     const formatRoyaltiesFees = ethers.utils.formatUnits(royaltiesFees, currencyTokenObject.decimals);
-  //     const formatProtocolFees = ethers.utils.formatUnits(protocolFees, currencyTokenObject.decimals);
-  //     const amountToApprove = ethers.utils.parseUnits(formatFinalPrice.toString(), currencyTokenObject.decimals);
-  //     const formatBuyoutPrice = ethers.utils.formatUnits(BigInt(tokenBigIntPrice), currencyTokenObject.decimals);
-
-  //     setFeesAmount(Number(Math.ceil(formatProtocolFees * 1000) / 1000));
-  //     setRoyaltiesFeesAmount(Number(Math.ceil(formatRoyaltiesFees * 1000) / 1000));
-  //     setPrice(Number(Math.ceil(formatPrice * 1000) / 1000));
-  //     setBuyoutPriceAmount(Number(Math.ceil(formatBuyoutPrice * 1000) / 1000));
-  //     setCurrency(currencyTokenObject);
-  //     setOfferNotFormated(false);
-  //     setFinalPrice(Number(Math.ceil(formatFinalPrice * 1000) / 1000));
-  //     setAmountToApprove(amountToApprove);
-  //   } catch (e) {
-  //     console.error("Error: Currency not found for address", tokenBigIntPrice, e);
-  //     setOfferNotFormated(true);
-  //   }
-  // }, [symbolContract, decimalsContract, offerData, address, tokenId, bps, maxBps, tokenBigIntPrice, tokenCurrencyAddress, royalties]);
+ 
 
   useEffect(() => {
     if (!offerData || !adParameters) return;

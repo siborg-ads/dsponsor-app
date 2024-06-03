@@ -11,7 +11,7 @@ import { useContext, useEffect, useState } from "react";
 import { ConnectWallet, useAddress } from "@thirdweb-dev/react";
 import { useTheme } from "next-themes";
 import { useChainContext } from "../../contexts/hooks/useChainContext";
-import SwitchChainProvider from "../../providers/ChainProvider/SwitchChainProvider";
+
 
 function randomUUID() {
   return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) {
@@ -25,7 +25,7 @@ export default function Header01() {
   const [isCollapse, setCollapse] = useState(null);
   const address = useAddress();
   const { theme, setTheme } = useTheme();
-  const { selectedChain, setSelectedChain } = useContext(SwitchChainProvider);
+  // const { selectedChain, setSelectedChain } = useContext(SwitchChainProvider);
 
   // window resize
   useEffect(() => {

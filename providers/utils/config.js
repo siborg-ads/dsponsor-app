@@ -7,7 +7,7 @@ const config = {
   11155111: {
     chainId: 11155111,
     chainName: "sepolia",
-    chainNameProvider: "Sepolia",
+    chainNameProvider: "sepolia",
     network: Network.ETH_SEPOLIA,
     logoURL: "/images/ethereum-logo.png",
     explorerBaseUrl: "https://sepolia.etherscan.io/address/",
@@ -43,7 +43,7 @@ const config = {
   84532: {
     chainId: 84532,
     chainName: "base-sepolia",
-    chainNameProvider: "BaseSepoliaTestnet",
+    chainNameProvider: "base-sepolia-testnet",
     network: Network.BASE_SEPOLIA,
     logoURL: "/images/base-logo.png",
     explorerBaseURL: "https://sepolia.basescan.org/",

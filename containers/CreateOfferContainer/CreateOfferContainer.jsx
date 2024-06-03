@@ -16,6 +16,7 @@ import Step_4_Create from "../../components/sliderForm/PageCreate/Step_4_Create"
 import config from "../../providers/utils/config";
 
 import SliderForm from "../../components/sliderForm/sliderForm";
+import { useSwitchChainContext } from "../../contexts/hooks/useSwitchChainContext";
 
 
 
@@ -53,10 +54,18 @@ const CreateOfferContainer = () => {
   const [terms, setTerms] = useState([]);
   const [previewTerms, setPreviewTerms] = useState([]);
   const [isLoadingButton, setIsLoadingButton] = useState(false);
+  const { setSelectedChain } = useSwitchChainContext();
 
   const [name, setName] = useState(false);
   const stepsRef = useRef([]);
   const { ethers } = require("ethers");
+
+useEffect(() => {
+  if (!chainId) return;
+  setSelectedChain(config[chainId]?.chainNameProvider);
+
+}, [chainId, setSelectedChain]);
+
 
   const handleUnitPriceChange = (e) => {
     const { value } = e.target;

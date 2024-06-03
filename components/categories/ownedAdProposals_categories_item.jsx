@@ -339,7 +339,7 @@ const successFullUploadModal = {
                       item={item}
                       isToken={true}
                       isSelectionActive={isSelectionActive}
-                      url={!item.tokenData ? `/${chainId}/offer/${item.offerId}/${item.tokenId}` : `/${chainId}/offer/${item.offerId}/${item.tokenId}?tokenData=${item.tokenData}`}
+                      url={!item.tokenData ? `/${item?.chainConfig?.chainId}/offer/${item.offerId}/${item.tokenId}` : `/${item?.chainConfig?.chainId}/offer/${item.offerId}/${item.tokenId}?tokenData=${item.tokenData}`}
                     />
                   </div>
                 ) : (
@@ -348,7 +348,7 @@ const successFullUploadModal = {
                     key={index}
                     isToken={true}
                     isSelectionActive={isSelectionActive}
-                    url={!item.tokenData ? `/${chainId}/offer/${item.offerId}/${item.tokenId}` : `/${chainId}/offer/${item.offerId}/${item.tokenId}?tokenData=${item.tokenData}`}
+                    url={!item.tokenData ? `/${item?.chainConfig?.chainId}/offer/${item.offerId}/${item.tokenId}` : `/${item?.chainConfig?.chainId}/offer/${item.offerId}/${item.tokenId}?tokenData=${item.tokenData}`}
                   />
                 );
               })}

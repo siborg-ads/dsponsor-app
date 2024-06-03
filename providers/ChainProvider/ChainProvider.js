@@ -9,6 +9,7 @@ const ChainProvider = ({ children }) => {
   const connectedAddress = useAddress();
   const [currentChainObject, setCurrentChainObject] = useState({});
 
+
   
   useEffect(() => {
     
@@ -19,9 +20,10 @@ const ChainProvider = ({ children }) => {
       setCurrentChainObject(config[11155111]);
     }
   }, [chainId]);
-const value= {
+const value = {
   currentChainObject,
   connectedAddress,
+
 };
 
 

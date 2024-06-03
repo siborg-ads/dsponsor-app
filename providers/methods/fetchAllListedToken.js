@@ -121,12 +121,13 @@ export const fetchAllListedToken = async (chainId) => {
       offer.nftContract.tokens.map((token) => ({
         ...token,
         offerId: offer.id,
+        tokenData: token.mint.tokenData ? token.mint.tokenData : null,
         chainConfig: chainConfig,
       }))
     )
     .sort((a, b) => b.marketplaceListings[0]?.startTime - a.marketplaceListings[0]?.startTime);
 
-  console.log(mappedListedToken);
+  
 
   return mappedListedToken;
 };
