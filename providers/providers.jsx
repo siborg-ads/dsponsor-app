@@ -27,7 +27,7 @@ const { currentChainObject } = useChainContext();
     }
   }
   , [currentChainObject]);
-  
+  console.log(selectedChain);
     return (
      
         <ThirdwebProvider

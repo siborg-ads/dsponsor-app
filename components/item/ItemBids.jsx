@@ -8,16 +8,34 @@ import { ethers } from "ethers";
 import { useAddress, darkTheme, useBalance, Web3Button, useTokenBalance, useContract, useContractRead, useContractWrite, useStorageUpload, useTokenDecimals, CheckoutWithCard, CheckoutWithEth } from "@thirdweb-dev/react";
 import { useChainContext } from "../../contexts/hooks/useChainContext";
 import config from '../../providers/utils/config'
-const ItemBids = ({successFullBid, address, setSuccessFullBid, dsponsorMpContract, marketplaceListings, currencySymbol, tokenBalance,handleApprove,price, hasEnoughBalance, currencyTokenDecimals, checkUserBalance, allowanceTrue, checkAllowance, chainId }) => {
+const ItemBids = ({
+  bidsAmount,
+  setBidsAmount,
+  successFullBid,
+  address,
+  setSuccessFullBid,
+  dsponsorMpContract,
+  marketplaceListings,
+  currencySymbol,
+  tokenBalance,
+  handleApprove,
+  price,
+  hasEnoughBalance,
+  currencyTokenDecimals,
+  checkUserBalance,
+  allowanceTrue,
+  checkAllowance,
+  chainId,
+}) => {
   const [showBidsModal, setShowBidsModal] = useState(false);
- 
-  const toggleBidsModal = () =>{ 
+
+  const toggleBidsModal = () => {
     checkAllowance();
-    setShowBidsModal(!showBidsModal)
+    setShowBidsModal(!showBidsModal);
     setSuccessFullBid(false);
   };
   const bids = marketplaceListings[0].bids;
-  
+
   return (
     <div className="rounded-2lg border border-jacarta-100 bg-white p-8 dark:border-jacarta-600 dark:bg-jacarta-700">
       <div className="mb-8 sm:flex sm:flex-wrap">
@@ -57,21 +75,23 @@ const ItemBids = ({successFullBid, address, setSuccessFullBid, dsponsorMpContrac
           <Timer endTime={marketplaceListings[0].endTime} />
         </div>
       </div>
-       
-        <div className="flex justify-center">
-          <Web3Button
-            contractAddress={config[chainId]?.smartContracts?.DSPONSORMP?.address}
-            action={() => {
-              toggleBidsModal();
-            }}
-            className={` !rounded-full !py-3 w-full !px-8 !text-center !font-semibold !text-white !transition-all !bg-accent !cursor-pointer `}
-          >
-            Place Bid
-          </Web3Button>
-        </div>
-     
+
+      <div className="flex justify-center">
+        <Web3Button
+          contractAddress={config[chainId]?.smartContracts?.DSPONSORMP?.address}
+          action={() => {
+            toggleBidsModal();
+          }}
+          className={` !rounded-full !py-3 w-full !px-8 !text-center !font-semibold !text-white !transition-all !bg-accent !cursor-pointer `}
+        >
+          Place Bid
+        </Web3Button>
+      </div>
+
       {showBidsModal && (
         <BidsModal
+        bidsAmount={bidsAmount} 
+        setBidsAmount={setBidsAmount}
           chainId={chainId}
           successFullBid={successFullBid}
           setSuccessFullBid={setSuccessFullBid}

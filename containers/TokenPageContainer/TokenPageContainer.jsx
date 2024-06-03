@@ -41,8 +41,6 @@ const TokenPageContainer = () => {
   const offerId = router.query?.offerId;
   const tokenId = router.query?.tokenId;
   const chainId = router.query?.chainName;
-  
-  
 
   const [tokenIdString, setTokenIdString] = useState(null);
   const maxBps = 10000;
@@ -88,6 +86,8 @@ const TokenPageContainer = () => {
   const [successFullListing, setSuccessFullListing] = useState(false);
   const [buyoutPriceAmount, setBuyoutPriceAmount] = useState(null);
   const [royaltiesFeesAmount, setRoyaltiesFeesAmount] = useState(null);
+  const [bidsAmount, setBidsAmount] = useState(null);
+  const [currencyDecimals, setCurrencyDecimals] = useState(null)
   const NATIVECurrency = config[chainId]?.smartContracts?.NATIVE;
 
   const { contract: DsponsorAdminContract } = useContract(config[chainId]?.smartContracts?.DSPONSORADMIN?.address, config[chainId]?.smartContracts?.DSPONSORADMIN?.abi);
@@ -108,14 +108,10 @@ const TokenPageContainer = () => {
   const { mutateAsync: directBuy } = useContractWrite(dsponsorMpContract, "buy");
 
   const now = Math.floor(new Date().getTime() / 1000);
-  
 
   useEffect(() => {
-   
     if (offerId && tokenId && chainId) {
       const fetchAdsOffers = async () => {
-       
-
         const offer = await fetchOfferToken(offerId, tokenId, chainId);
 
         const combinedData = {
@@ -143,7 +139,7 @@ const TokenPageContainer = () => {
     }
     if (!isOwner && !offerNotFormated && offerData?.nftContract?.tokens[0]?.mint === null && isAllowedToMint !== null) {
       setTokenStatut("MINTABLE");
-       setTokenCurrencyAddress(offerData?.nftContract?.prices[0]?.currency);
+      setTokenCurrencyAddress(offerData?.nftContract?.prices[0]?.currency);
       // setTokenBigIntPrice(offerData?.nftContract?.prices[0]?.amount);
       setPrice(offerData?.nftContract?.prices[0]?.mintPriceStructureFormatted.creatorAmount);
       setFeesAmount(offerData?.nftContract?.prices[0]?.mintPriceStructureFormatted.protocolFeeAmount);
@@ -161,20 +157,23 @@ const TokenPageContainer = () => {
         setRoyaltiesFeesAmount(offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.buyPriceStructureFormatted.royaltiesBuyAmount);
         setFinalPrice(offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.buyPriceStructureFormatted.buyoutPricePerToken);
         setAmountToApprove(BigInt(offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.buyPriceStructure.buyoutPricePerToken));
+       
         
       }
-      if (offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.listingType === "Auction" ) {
+      if (offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.listingType === "Auction") {
         setTokenBigIntPrice(offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.bids[0]?.totalBidAmount);
         setTokenStatut("AUCTION");
         setPrice(offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.bidPriceStructureFormatted.newPricePerToken);
         setFeesAmount(offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.bidPriceStructureFormatted.protocolFeeAmount);
         setRoyaltiesFeesAmount(offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.bidPriceStructureFormatted.royaltyAmount);
         setFinalPrice(offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.bidPriceStructureFormatted.newPricePerToken);
+
         setAmountToApprove(BigInt(offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.bidPriceStructure.newPricePerToken));
       } else if (offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.listingType === "Auction" && offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.bids.length <= 0) {
         setTokenBigIntPrice(offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.reservePricePerToken);
         setTokenStatut("AUCTION");
       }
+      setCurrencyDecimals(offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.currencyDecimals);
       setTokenCurrencyAddress(offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.currency);
       setCurrency(offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.currencySymbol);
       return;
@@ -268,7 +267,6 @@ const TokenPageContainer = () => {
   //       currencyTokenObject.symbol = symbolContract;
   //       currencyTokenObject.decimals = decimalsContract;
   //     }
-
 
   //     const bigIntFinalPrice = (BigInt(tokenBigIntPrice) * (BigInt(bps) + BigInt(maxBps))) / BigInt(maxBps);
   //     const formatFinalPrice = ethers.utils.formatUnits(bigIntFinalPrice, currencyTokenObject.decimals);
@@ -383,8 +381,6 @@ const TokenPageContainer = () => {
       }
 
       const allowanceBigNumber = ethers.BigNumber.from(allowance._hex);
-      
-    
 
       if (allowanceBigNumber.gt(amountToApprove)) return;
 
@@ -399,8 +395,12 @@ const TokenPageContainer = () => {
       if (!hasEnoughBalance) {
         throw new Error("Not enough balance for approval.");
       }
-      if (marketplaceListings.length > 0) {
+      if (marketplaceListings.length > 0 && tokenStatut === "DIRECT") {
         await approve({ args: [config[chainId]?.smartContracts?.DSPONSORMP?.address, amountToApprove] });
+      } else if(tokenStatut === "AUCTION" && marketplaceListings.length > 0) {
+        const bidsBigInt = ethers.utils.parseUnits(bidsAmount.toString(), currencyDecimals);
+        console.log(bidsAmount, currencyDecimals);
+        await approve({ args: [config[chainId]?.smartContracts?.DSPONSORMP?.address, bidsBigInt] });
       } else {
         await approve({ args: [config[chainId]?.smartContracts?.DSPONSORADMIN?.address, amountToApprove] });
       }
@@ -429,16 +429,14 @@ const TokenPageContainer = () => {
       referralAdditionalInformation: "",
     };
 
-    const argsdirectBuy = 
-      {
-        listingId: marketplaceListings[0]?.id,
-        buyFor: address,
-        quantity: 1,
-        currency: marketplaceListings[0]?.currency,
-        totalPrice: marketplaceListings[0]?.buyPriceStructure.buyoutPricePerToken,
-        referralAdditionalInformation: "",
-      }
-    ;
+    const argsdirectBuy = {
+      listingId: marketplaceListings[0]?.id,
+      buyFor: address,
+      quantity: 1,
+      currency: marketplaceListings[0]?.currency,
+      totalPrice: marketplaceListings[0]?.buyPriceStructure.buyoutPricePerToken,
+      referralAdditionalInformation: "",
+    };
     try {
       const isEthCurrency = tokenCurrencyAddress === "0x0000000000000000000000000000000000000000";
       const functionWithPossibleArgs = marketplaceListings.length <= 0 ? argsMintAndSubmit : argsdirectBuy;
@@ -564,11 +562,11 @@ const TokenPageContainer = () => {
     rejected: "❌ Your ad has been rejected, you can submit an other ads below",
     accepted: "🎉 Congratulations ! Your ad has been accepted by the creator ! ",
   };
-   const metadata = {
-     title: `${offerData?.metadata?.offer?.name} - Token ${tokenId} || DSponsor | smarter monetization for your content`,
-     keyword: `DSponsor, offer, ${offerData?.metadata?.offer?.name}, ${offerData?.metadata?.offer?.description}`,
-     desc: offerData?.metadata?.offer?.description,
-   };
+  const metadata = {
+    title: `${offerData?.metadata?.offer?.name} - Token ${tokenId} || DSponsor | smarter monetization for your content`,
+    keyword: `DSponsor, offer, ${offerData?.metadata?.offer?.name}, ${offerData?.metadata?.offer?.description}`,
+    desc: offerData?.metadata?.offer?.description,
+  };
 
   if (!offerData || offerData.length === 0) {
     return (
@@ -668,13 +666,15 @@ const TokenPageContainer = () => {
                     </span>
                   </div>
                   <div className="w-full flex justify-center">
-                    {address ? (
-                      <button type="button" className="bg-accent shadow-accent-volume hover:bg-accent-dark w-36 rounded-full py-3 px-8 text-center font-semibold text-white transition-all" onClick={handleBuyModal}>
-                        Buy
-                      </button>
-                    ) : (
-                      <Web3Button className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all  !bg-accent !cursor-pointer `}>Connect wallet</Web3Button>
-                    )}
+                    <Web3Button
+                      contractAddress={marketplaceListings.length > 0 ? config[chainId]?.smartContracts?.DSPONSORMP?.address : config[chainId]?.smartContracts?.DSPONSORADMIN?.address}
+                      action={() => {
+                        handleBuyModal();
+                      }}
+                      className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all  !bg-accent !cursor-pointer `}
+                    >
+                      Buy
+                    </Web3Button>
                   </div>
                 </div>
               )}
@@ -699,7 +699,9 @@ const TokenPageContainer = () => {
               )}
               {tokenStatut === "AUCTION" && marketplaceListings[0].startTime < now && marketplaceListings[0].endTime > now && (
                 <ItemBids
-                chainId={chainId}
+                  bidsAmount={bidsAmount}
+                  setBidsAmount={setBidsAmount}
+                  chainId={chainId}
                   checkUserBalance={checkUserBalance}
                   price={price}
                   allowanceTrue={allowanceTrue}
@@ -709,7 +711,7 @@ const TokenPageContainer = () => {
                   marketplaceListings={marketplaceListings}
                   currencySymbol={currency}
                   tokenBalance={tokenBalance}
-                  currencyTokenDecimals={currency?.decimals}
+                  currencyTokenDecimals={currencyDecimals}
                   setSuccessFullBid={setSuccessFullBid}
                   successFullBid={successFullBid}
                   address={address}

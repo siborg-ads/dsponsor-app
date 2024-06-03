@@ -7,29 +7,40 @@ import { toast } from "react-toastify";
 import Link from "next/link";
 import { useChainContext } from "../../contexts/hooks/useChainContext";
 import config from "../../providers/utils/config";
-const BidsModal = ({address,chainId, successFullBid, setSuccessFullBid, dsponsorMpContract, toggleBidsModal, marketplaceListings, currencySymbol, checkUserBalance, tokenBalance,allowanceTrue, currencyTokenDecimals, handleApprove }) => {
-  const [bidsAmount, setBidsAmount] = useState(null);
+const BidsModal = ({
+  bidsAmount,
+  setBidsAmount,
+  address,
+  chainId,
+  successFullBid,
+  setSuccessFullBid,
+  dsponsorMpContract,
+  toggleBidsModal,
+  marketplaceListings,
+  currencySymbol,
+  checkUserBalance,
+  tokenBalance,
+  allowanceTrue,
+  currencyTokenDecimals,
+  handleApprove,
+}) => {
+  
   const [initialIntPrice, setInitialIntPrice] = useState(0);
   const [isPriceGood, setIsPriceGood] = useState(true);
   const { mutateAsync: auctionBids } = useContractWrite(dsponsorMpContract, "bid");
   const [isLoadingButton, setIsLoadingButton] = useState(false);
   const [checkTerms, setCheckTerms] = useState(false);
- 
-  
 
   useEffect(() => {
-
-    setInitialIntPrice(marketplaceListings[0]?.bidPriceStructureFormatted?.newBidPerToken);
+    setInitialIntPrice(marketplaceListings[0]?.bidPriceStructureFormatted?.minimalBidPerToken);
     setBidsAmount(marketplaceListings[0]?.bidPriceStructureFormatted?.newBidPerToken);
-  }, [ marketplaceListings[0], currencyTokenDecimals]);
+  }, [marketplaceListings]);
 
   const handleBidsAmount = (e) => {
-    
-    if (e.target.value <  initialIntPrice) {
+    if (e.target.value < initialIntPrice) {
       setIsPriceGood(false);
       setBidsAmount(e.target.value);
     } else {
-
       setIsPriceGood(true);
       setBidsAmount(e.target.value);
     }
@@ -42,21 +53,21 @@ const BidsModal = ({address,chainId, successFullBid, setSuccessFullBid, dsponsor
     }
     try {
       setIsLoadingButton(true);
+      const bidsBigInt = ethers.utils.parseUnits(bidsAmount.toString(),currencyTokenDecimals )
       await auctionBids({
-        args: [marketplaceListings[0].id, marketplaceListings[0]?.bidPriceStructure?.newBidPerToken, address, ""],
+        args: [marketplaceListings[0].id, bidsBigInt, address, ""],
       });
       setSuccessFullBid(true);
     } catch (error) {
       setIsLoadingButton(false);
       throw new Error(error);
-    } finally{
+    } finally {
       setIsLoadingButton(false);
-  
     }
   };
-   const handleTermService = (e) => {
-     setCheckTerms(e.target.checked);
-   };
+  const handleTermService = (e) => {
+    setCheckTerms(e.target.checked);
+  };
   return (
     <div>
       <div className="modal fade show block">
