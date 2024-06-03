@@ -9,8 +9,10 @@ const ChainProvider = ({ children }) => {
   const connectedAddress = useAddress();
   const [currentChainObject, setCurrentChainObject] = useState({});
 
+
   
   useEffect(() => {
+    
     if (config[chainId]) {
       setCurrentChainObject(config[chainId]);
     } else {
@@ -18,14 +20,12 @@ const ChainProvider = ({ children }) => {
       setCurrentChainObject(config[11155111]);
     }
   }, [chainId]);
+const value = {
+  currentChainObject,
+  connectedAddress,
 
-  const value = useMemo(
-    () => ({
-      currentChainObject,
-      connectedAddress,
-    }),
-    [currentChainObject, connectedAddress]
-  );
+};
+
 
   return <ChainContext.Provider value={value}>{children}</ChainContext.Provider>;
 };

@@ -29,7 +29,9 @@ import stringToUint256 from "../../utils/stringToUnit256.js";
 import ItemManage from "../../components/item/ItemManage.jsx";
 import ItemBids from "../../components/item/ItemBids.jsx";
 import { useChainContext } from "../../contexts/hooks/useChainContext.js";
+import { useSwitchChainContext } from "../../contexts/hooks/useSwitchChainContext.js";
 import { fetchOfferToken } from "../../providers/methods/fetchOfferToken.js";
+import config from "../../providers/utils/config.js";
 
 import "react-toastify/dist/ReactToastify.css";
 import ModalHelper from "../../components/Helper/modalHelper.jsx";
@@ -39,9 +41,7 @@ const TokenPageContainer = () => {
 
   const offerId = router.query?.offerId;
   const tokenId = router.query?.tokenId;
-  const { currentChainObject } = useChainContext();
-  const chainId = currentChainObject?.chainId;
-  const chainName = currentChainObject?.chainName;
+  const chainId = router.query?.chainName;
 
   const [tokenIdString, setTokenIdString] = useState(null);
   const maxBps = 10000;
@@ -87,25 +87,27 @@ const TokenPageContainer = () => {
   const [successFullListing, setSuccessFullListing] = useState(false);
   const [buyoutPriceAmount, setBuyoutPriceAmount] = useState(null);
   const [royaltiesFeesAmount, setRoyaltiesFeesAmount] = useState(null);
-  const NATIVECurrency = currentChainObject?.smartContracts?.NATIVE;
+  const [bidsAmount, setBidsAmount] = useState(null);
+  const [currencyDecimals, setCurrencyDecimals] = useState(null)
+  const NATIVECurrency = config[chainId]?.smartContracts?.NATIVE;
 
-  const { contract: DsponsorAdminContract } = useContract(currentChainObject?.smartContracts?.DSPONSORADMIN?.address, currentChainObject?.smartContracts?.DSPONSORADMIN?.abi);
+  const { contract: DsponsorAdminContract } = useContract(config[chainId]?.smartContracts?.DSPONSORADMIN?.address, config[chainId]?.smartContracts?.DSPONSORADMIN?.abi);
   const { contract: DsponsorNFTContract } = useContract(offerData?.nftContract?.id);
   const { mutateAsync: uploadToIPFS, isLoading: isUploading } = useStorageUpload();
   const { mutateAsync: mintAndSubmit } = useContractWrite(DsponsorAdminContract, "mintAndSubmit");
   const { mutateAsync: submitAd } = useContractWrite(DsponsorAdminContract, "submitAdProposals");
   const { contract: tokenContract } = useContract(tokenCurrencyAddress, "token");
-  const { data: symbolContract } = useContractRead(tokenContract, "symbol");
-  const { data: decimalsContract } = useContractRead(tokenContract, "decimals");
+  const { data: symbolContract } = useContractRead(tokenContract && tokenContract, "symbol");
+  const { data: decimalsContract } = useContractRead(tokenContract && tokenContract, "decimals");
   const { data: tokenBalance } = useBalance(tokenCurrencyAddress);
   const { mutateAsync: approve, isLoading: isLoadingApprove } = useContractWrite(tokenContract, "approve");
   const { data: bps } = useContractRead(DsponsorAdminContract, "feeBps");
   const { data: isAllowedToMint, isLoading: isLoadingAllowedToMint } = useContractRead(DsponsorNFTContract, "tokenIdIsAllowedToMint", tokenIdString);
   const { data: isUserOwner } = useContractRead(DsponsorNFTContract, "ownerOf", [tokenIdString]);
   const { data: royaltiesInfo } = useContractRead(DsponsorNFTContract, "royaltyInfo", [tokenIdString, 100]);
-  const { contract: dsponsorMpContract } = useContract(currentChainObject?.smartContracts?.DSPONSORMP?.address);
+  const { contract: dsponsorMpContract } = useContract(config[chainId]?.smartContracts?.DSPONSORMP?.address);
   const { mutateAsync: directBuy } = useContractWrite(dsponsorMpContract, "buy");
-
+const { setSelectedChain } = useSwitchChainContext();
   const now = Math.floor(new Date().getTime() / 1000);
 
   useEffect(() => {
@@ -123,7 +125,7 @@ const TokenPageContainer = () => {
         console.log(combinedData, "combinedData");
         setOfferData(combinedData);
       };
-
+        setSelectedChain(config[chainId]?.chainNameProvider);
       fetchAdsOffers();
     }
 
@@ -139,23 +141,42 @@ const TokenPageContainer = () => {
     if (!isOwner && !offerNotFormated && offerData?.nftContract?.tokens[0]?.mint === null && isAllowedToMint !== null) {
       setTokenStatut("MINTABLE");
       setTokenCurrencyAddress(offerData?.nftContract?.prices[0]?.currency);
-      setTokenBigIntPrice(offerData?.nftContract?.prices[0]?.amount);
+      // setTokenBigIntPrice(offerData?.nftContract?.prices[0]?.amount);
+      setPrice(offerData?.nftContract?.prices[0]?.mintPriceStructureFormatted.creatorAmount);
+      setFeesAmount(offerData?.nftContract?.prices[0]?.mintPriceStructureFormatted.protocolFeeAmount);
+      setFinalPrice(offerData?.nftContract?.prices[0]?.mintPriceStructureFormatted.totalAmount);
+      setAmountToApprove(BigInt(offerData?.nftContract?.prices[0]?.mintPriceStructure.totalAmount));
+      setCurrency(offerData?.nftContract?.prices[0]?.currencySymbol);
       return;
     }
     if (offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.status === "CREATED") {
       if (offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.listingType === "Direct") {
         setTokenBigIntPrice(offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.buyoutPricePerToken);
         setTokenStatut("DIRECT");
+        setPrice(offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.buyPriceStructureFormatted.listerBuyAmount);
+        setFeesAmount(offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.buyPriceStructureFormatted.protocolFeeBuyAmount);
+        setRoyaltiesFeesAmount(offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.buyPriceStructureFormatted.royaltiesBuyAmount);
+        setFinalPrice(offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.buyPriceStructureFormatted.buyoutPricePerToken);
+        setAmountToApprove(BigInt(offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.buyPriceStructure.buyoutPricePerToken));
+       
+        
       }
-      if (offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.listingType === "Auction" && offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.bids.length > 0) {
+      if (offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.listingType === "Auction") {
         setTokenBigIntPrice(offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.bids[0]?.totalBidAmount);
         setTokenStatut("AUCTION");
+        setPrice(offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.bidPriceStructureFormatted.newPricePerToken);
+        setFeesAmount(offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.bidPriceStructureFormatted.protocolFeeAmount);
+        setRoyaltiesFeesAmount(offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.bidPriceStructureFormatted.royaltyAmount);
+        setFinalPrice(offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.bidPriceStructureFormatted.newPricePerToken);
+
+        setAmountToApprove(BigInt(offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.bidPriceStructure.newPricePerToken));
       } else if (offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.listingType === "Auction" && offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.bids.length <= 0) {
         setTokenBigIntPrice(offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.reservePricePerToken);
         setTokenStatut("AUCTION");
       }
+      setCurrencyDecimals(offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.currencyDecimals);
       setTokenCurrencyAddress(offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.currency);
-
+      setCurrency(offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.currencySymbol);
       return;
     }
     if (offerData?.nftContract?.tokens[0]?.mint !== null) {
@@ -236,41 +257,7 @@ const TokenPageContainer = () => {
     setNumSteps(totalNumSteps);
   }, [offerData]);
 
-  useEffect(() => {
-    if (!offerData || !tokenBigIntPrice) return;
-    try {
-      const currencyTokenObject = {};
-      if (!decimalsContract && !symbolContract && tokenCurrencyAddress === "0x0000000000000000000000000000000000000000") {
-        currencyTokenObject.symbol = NATIVECurrency.symbol;
-        currencyTokenObject.decimals = NATIVECurrency.decimals;
-      } else {
-        currencyTokenObject.symbol = symbolContract;
-        currencyTokenObject.decimals = decimalsContract;
-      }
-
-      const bigIntFinalPrice = (BigInt(tokenBigIntPrice) * (BigInt(bps) + BigInt(maxBps))) / BigInt(maxBps);
-      const formatFinalPrice = ethers.utils.formatUnits(bigIntFinalPrice, currencyTokenObject.decimals);
-      const formatPrice = ethers.utils.formatUnits(BigInt(tokenBigIntPrice), currencyTokenObject.decimals);
-      const protocolFees = (BigInt(tokenBigIntPrice) * BigInt(bps)) / BigInt(maxBps);
-      const royaltiesFees = (BigInt(tokenBigIntPrice) * BigInt(royalties * 100)) / BigInt(10000);
-      const formatRoyaltiesFees = ethers.utils.formatUnits(royaltiesFees, currencyTokenObject.decimals);
-      const formatProtocolFees = ethers.utils.formatUnits(protocolFees, currencyTokenObject.decimals);
-      const amountToApprove = ethers.utils.parseUnits(formatFinalPrice.toString(), currencyTokenObject.decimals);
-      const formatBuyoutPrice = ethers.utils.formatUnits(BigInt(tokenBigIntPrice), currencyTokenObject.decimals);
-
-      setFeesAmount(Number(Math.ceil(formatProtocolFees * 1000) / 1000));
-      setRoyaltiesFeesAmount(Number(Math.ceil(formatRoyaltiesFees * 1000) / 1000));
-      setPrice(Number(Math.ceil(formatPrice * 1000) / 1000));
-      setBuyoutPriceAmount(Number(Math.ceil(formatBuyoutPrice * 1000) / 1000));
-      setCurrency(currencyTokenObject);
-      setOfferNotFormated(false);
-      setFinalPrice(Number(Math.ceil(formatFinalPrice * 1000) / 1000));
-      setAmountToApprove(amountToApprove);
-    } catch (e) {
-      console.error("Error: Currency not found for address", tokenBigIntPrice, e);
-      setOfferNotFormated(true);
-    }
-  }, [symbolContract, decimalsContract, offerData, address, tokenId, bps, maxBps, tokenBigIntPrice, tokenCurrencyAddress, royalties]);
+ 
 
   useEffect(() => {
     if (!offerData || !adParameters) return;
@@ -308,7 +295,7 @@ const TokenPageContainer = () => {
   }, [offerId, tokenId, successFullUpload, offerData]);
 
   useEffect(() => {
-    if (offerData?.nftContract?.royaltyBps) setRoyalties(offerData?.nftContract?.royaltyBps / 100);
+    if (offerData?.nftContract?.royalty.bps) setRoyalties(offerData?.nftContract?.royalty.bps / 100);
   }, [offerData]);
 
   const validateInputs = () => {
@@ -355,15 +342,14 @@ const TokenPageContainer = () => {
       let allowance;
 
       if (tokenStatut === "DIRECT" || tokenStatut === "AUCTION") {
-        allowance = await tokenContract.call("allowance", [address, currentChainObject?.smartContracts?.DSPONSORMP?.address]);
+        allowance = await tokenContract.call("allowance", [address, config[chainId]?.smartContracts?.DSPONSORMP?.address]);
       } else {
-        allowance = await tokenContract.call("allowance", [address, currentChainObject?.smartContracts?.DSPONSORADMIN?.address]);
+        allowance = await tokenContract.call("allowance", [address, config[chainId]?.smartContracts?.DSPONSORADMIN?.address]);
       }
 
       const allowanceBigNumber = ethers.BigNumber.from(allowance._hex);
-      const amountToApproveBigNumber = ethers.BigNumber.from(amountToApprove._hex);
 
-      if (allowanceBigNumber.gt(amountToApproveBigNumber)) return;
+      if (allowanceBigNumber.gt(amountToApprove)) return;
 
       setAllowanceTrue(true);
     }
@@ -376,10 +362,14 @@ const TokenPageContainer = () => {
       if (!hasEnoughBalance) {
         throw new Error("Not enough balance for approval.");
       }
-      if (marketplaceListings.length > 0) {
-        await approve({ args: [currentChainObject?.smartContracts?.DSPONSORMP?.address, amountToApprove] });
+      if (marketplaceListings.length > 0 && tokenStatut === "DIRECT") {
+        await approve({ args: [config[chainId]?.smartContracts?.DSPONSORMP?.address, amountToApprove] });
+      } else if(tokenStatut === "AUCTION" && marketplaceListings.length > 0) {
+        const bidsBigInt = ethers.utils.parseUnits(bidsAmount.toString(), currencyDecimals);
+        console.log(bidsAmount, currencyDecimals);
+        await approve({ args: [config[chainId]?.smartContracts?.DSPONSORMP?.address, bidsBigInt] });
       } else {
-        await approve({ args: [currentChainObject?.smartContracts?.DSPONSORADMIN?.address, amountToApprove] });
+        await approve({ args: [config[chainId]?.smartContracts?.DSPONSORADMIN?.address, amountToApprove] });
       }
       setAllowanceTrue(false);
     } catch (error) {
@@ -406,16 +396,14 @@ const TokenPageContainer = () => {
       referralAdditionalInformation: "",
     };
 
-    const argsdirectBuy = [
-      {
-        listingId: marketplaceListings[0]?.id,
-        buyFor: address,
-        quantity: 1,
-        currency: marketplaceListings[0]?.currency,
-        totalPrice: marketplaceListings[0]?.buyoutPricePerToken,
-        referralAdditionalInformation: "",
-      },
-    ];
+    const argsdirectBuy = {
+      listingId: marketplaceListings[0]?.id,
+      buyFor: address,
+      quantity: 1,
+      currency: marketplaceListings[0]?.currency,
+      totalPrice: marketplaceListings[0]?.buyPriceStructure.buyoutPricePerToken,
+      referralAdditionalInformation: "",
+    };
     try {
       const isEthCurrency = tokenCurrencyAddress === "0x0000000000000000000000000000000000000000";
       const functionWithPossibleArgs = marketplaceListings.length <= 0 ? argsMintAndSubmit : argsdirectBuy;
@@ -541,11 +529,11 @@ const TokenPageContainer = () => {
     rejected: "❌ Your ad has been rejected, you can submit an other ads below",
     accepted: "🎉 Congratulations ! Your ad has been accepted by the creator ! ",
   };
-   const metadata = {
-     title: `${offerData?.metadata?.offer?.name} - Token ${tokenId} || DSponsor | smarter monetization for your content`,
-     keyword: `DSponsor, offer, ${offerData?.metadata?.offer?.name}, ${offerData?.metadata?.offer?.description}`,
-     desc: offerData?.metadata?.offer?.description,
-   };
+  const metadata = {
+    title: `${offerData?.metadata?.offer?.name} - Token ${tokenId} || DSponsor | smarter monetization for your content`,
+    keyword: `DSponsor, offer, ${offerData?.metadata?.offer?.name}, ${offerData?.metadata?.offer?.description}`,
+    desc: offerData?.metadata?.offer?.description,
+  };
 
   if (!offerData || offerData.length === 0) {
     return (
@@ -614,15 +602,15 @@ const TokenPageContainer = () => {
             <div className="md:w-3/5 md:basis-auto md:pl-8 lg:w-1/2 lg:pl-[3.75rem]">
               {/* <!-- Collection / Likes / Actions --> */}
 
-              <Link href={`/${chainName}/offer/${offerId}`} className="flex">
+              <Link href={`/${chainId}/offer/${offerId}`} className="flex">
                 <h2 className="font-display text-jacarta-700 mb-4 dark:hover:text-accent text-3xl font-semibold dark:text-white">{name}</h2>
               </Link>
 
               <div className="mb-8 flex items-center  whitespace-nowrap flex-wrap">
-                {currency?.symbol && tokenStatut !== "MINTED" && (marketplaceListings[0]?.status === "CREATED" || marketplaceListings?.length <= 0) && (
+                {currency && tokenStatut !== "MINTED" && (marketplaceListings[0]?.status === "CREATED" || marketplaceListings?.length <= 0) && (
                   <div className="flex items-center mr-4">
                     <span className="text-green text-sm font-medium tracking-tight mr-2">
-                      {tokenStatut === "DIRECT" || tokenStatut === "AUCTION" ? price : finalPrice} {currency?.symbol}
+                      {finalPrice} {currency}
                     </span>
                     <ModalHelper {...modalHelper} size="small" />
                   </div>
@@ -645,13 +633,15 @@ const TokenPageContainer = () => {
                     </span>
                   </div>
                   <div className="w-full flex justify-center">
-                    {address ? (
-                      <button type="button" className="bg-accent shadow-accent-volume hover:bg-accent-dark w-36 rounded-full py-3 px-8 text-center font-semibold text-white transition-all" onClick={handleBuyModal}>
-                        Buy
-                      </button>
-                    ) : (
-                      <Web3Button className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all  !bg-accent !cursor-pointer `}>Connect wallet</Web3Button>
-                    )}
+                    <Web3Button
+                      contractAddress={marketplaceListings.length > 0 ? config[chainId]?.smartContracts?.DSPONSORMP?.address : config[chainId]?.smartContracts?.DSPONSORADMIN?.address}
+                      action={() => {
+                        handleBuyModal();
+                      }}
+                      className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all  !bg-accent !cursor-pointer `}
+                    >
+                      Buy
+                    </Web3Button>
                   </div>
                 </div>
               )}
@@ -676,6 +666,9 @@ const TokenPageContainer = () => {
               )}
               {tokenStatut === "AUCTION" && marketplaceListings[0].startTime < now && marketplaceListings[0].endTime > now && (
                 <ItemBids
+                  bidsAmount={bidsAmount}
+                  setBidsAmount={setBidsAmount}
+                  chainId={chainId}
                   checkUserBalance={checkUserBalance}
                   price={price}
                   allowanceTrue={allowanceTrue}
@@ -683,9 +676,9 @@ const TokenPageContainer = () => {
                   handleApprove={handleApprove}
                   dsponsorMpContract={dsponsorMpContract}
                   marketplaceListings={marketplaceListings}
-                  currencySymbol={currency?.symbol}
+                  currencySymbol={currency}
                   tokenBalance={tokenBalance}
-                  currencyTokenDecimals={currency?.decimals}
+                  currencyTokenDecimals={currencyDecimals}
                   setSuccessFullBid={setSuccessFullBid}
                   successFullBid={successFullBid}
                   address={address}
@@ -699,7 +692,7 @@ const TokenPageContainer = () => {
       <div className="container mb-12">
         <Divider className="my-4" />
         <h2 className="text-jacarta-700 font-bold font-display mb-6 text-center text-3xl dark:text-white ">Details </h2>
-        <ItemsTabs contractAddress={offerData?.nftContract.id} offerId={offerId} isUserOwner={isUserOwner} initialCreator={offerData?.initialCreator} />
+        <ItemsTabs chainId={chainId} contractAddress={offerData?.nftContract.id} offerId={offerId} isUserOwner={isUserOwner} initialCreator={offerData?.initialCreator} />
       </div>
       {offerData.nftContract?.tokens[0]?.mint && isValidId && <Validation offer={offerData} offerId={offerId} isOwner={isOwner} isToken={true} successFullUploadModal={successFullUploadModal} />}
       {/* <ItemsTabs /> */}
@@ -781,7 +774,7 @@ const TokenPageContainer = () => {
             name={name}
             marketplaceListings={marketplaceListings}
             image={image}
-            selectedCurrency={currency.symbol}
+            selectedCurrency={currency}
             royalties={royalties}
             tokenId={tokenId}
             tokenData={tokenData}

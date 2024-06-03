@@ -15,9 +15,10 @@ import { CopyToClipboard } from "react-copy-to-clipboard";
 import { Web3Button } from "@thirdweb-dev/react";
 import AddProposalRefusedModal from "../modal/adProposalRefusedModal";
 import { useChainContext } from "../../contexts/hooks/useChainContext";
+import config from "../../providers/utils/config";
 
-const Review_carousel = ({ setSelectedItems, selectedItems, handleSubmit, pendingProposalData, successFullRefuseModal, setSuccessFullRefuseModal, isToken, isOwner, setRefusedValidatedAdModal, refusedValidatedAdModal }) => {
-  const { currentChainObject } = useChainContext();
+const Review_carousel = ({chainId, setSelectedItems, selectedItems, handleSubmit, pendingProposalData, successFullRefuseModal, setSuccessFullRefuseModal, isToken, isOwner, setRefusedValidatedAdModal, refusedValidatedAdModal }) => {
+  
   const [validate, setValidate] = useState({});
   const [comments, setComments] = useState({});
   const [isApprouvedAd, setIsApprouvedAd] = useState(false);
@@ -180,7 +181,7 @@ const Review_carousel = ({ setSelectedItems, selectedItems, handleSubmit, pendin
 
             <div className="flex justify-center  gap-4 flex-wrap">
               <Web3Button
-                contractAddress={currentChainObject?.smartContracts?.DSPONSORADMIN?.address}
+                contractAddress={config[chainId]?.smartContracts?.DSPONSORADMIN?.address}
                 action={() =>
                   toast.promise(handleItemSubmit(true), {
                     pending: "Waiting for confirmation 🕒",
@@ -194,7 +195,7 @@ const Review_carousel = ({ setSelectedItems, selectedItems, handleSubmit, pendin
               </Web3Button>
 
               <Web3Button
-                contractAddress={currentChainObject?.smartContracts?.DSPONSORADMIN?.address}
+                contractAddress={config[chainId]?.smartContracts?.DSPONSORADMIN?.address}
                 action={() => openRefuseModal()}
                 className={` !rounded-full !min-w-[100px] !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate[tokenId] ? "btn-disabled" : "!bg-red !cursor-pointer"} `}
               >

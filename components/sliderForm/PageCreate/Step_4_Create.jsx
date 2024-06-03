@@ -6,8 +6,10 @@ import { useAddress, useSwitchChain, useContract, useContractWrite, Web3Button, 
 import { FileUploader } from "react-drag-drop-files";
 import  ModalHelper  from "../../Helper/modalHelper";
 import { useChainContext } from "../../../contexts/hooks/useChainContext";
+import config from "../../../providers/utils/config";
 
 const Step_4_Create = ({
+  chainId,
   stepsRef,
   styles,
   startDate,
@@ -29,11 +31,11 @@ const Step_4_Create = ({
   setTokenContract,
   setCustomTokenContract,
 }) => {
-  const { currentChainObject } = useChainContext();
-  const USDCCurrency = currentChainObject?.smartContracts?.USDC;
-  const NATIVECurrency = currentChainObject?.smartContracts?.NATIVE;
-  const WETHCurrency = currentChainObject?.smartContracts?.WETH;
-  const USDTCurrency = currentChainObject?.smartContracts?.USDT;
+  
+  const USDCCurrency = config[chainId]?.smartContracts?.USDC;
+  const NATIVECurrency = config[chainId]?.smartContracts?.NATIVE;
+  const WETHCurrency = config[chainId]?.smartContracts?.WETH;
+  const USDTCurrency = config[chainId]?.smartContracts?.USDT;
   const [selectedCurrencyContract, setSelectedCurrencyContract] = useState(USDCCurrency?.address);
   const { contract: tokenContractAsync } = useContract(selectedCurrencyContract, "token");
   const { data: symbolContractAsync } = useContractRead(tokenContractAsync, "symbol");
@@ -44,7 +46,7 @@ const Step_4_Create = ({
     setTokenDecimals(decimalsContractAsync);
     setTokenContract(selectedCurrencyContract);
     setCustomTokenContract(tokenContractAsync);
-  }, [decimalsContractAsync, symbolContractAsync, selectedCurrencyContract, tokenContractAsync, currentChainObject, setSymbolContract, setTokenDecimals, setTokenContract, setCustomTokenContract]);
+  }, [decimalsContractAsync, symbolContractAsync, selectedCurrencyContract, tokenContractAsync, chainId, setSymbolContract, setTokenDecimals, setTokenContract, setCustomTokenContract]);
 
   const handleCurrencyChange = (event) => {
     setSelectedCurrency(event.target.value);
@@ -160,7 +162,7 @@ const Step_4_Create = ({
                   className="dark:bg-jacarta-700 min-w-[110px] border-jacarta-100 hover:ring-accent/10 focus:ring-accent dark:border-jacarta-600 dark:placeholder:text-jacarta-300 w-full rounded-lg py-3 px-5 hover:ring-2 dark:text-white"
                 >
                   <option value="USDC">USDC</option>
-                  <option value="NATIVE">{currentChainObject?.smartContracts?.NATIVE.symbol}</option>
+                  <option value="NATIVE">{config[chainId]?.smartContracts?.NATIVE.symbol}</option>
                   <option value="WETH">WETH</option>
                   <option value="USDT">USDT</option>
                   <option value="custom">Custom</option>

@@ -5,7 +5,7 @@ import { Divider } from "@nextui-org/react";
 import Validated_refused_items from "../collections/validated_refused_items";
 import Review_carousel from "../carousel/review_carousel";
 
-const Validation = ({ offer, offerId, isOwner, handleSubmit, successFullRefuseModal,setSuccessFullRefuseModal, isToken = false, successFullUploadModal, setRefusedValidatedAdModal, refusedValidatedAdModal, setSelectedItems, selectedItems }) => {
+const Validation = ({chainId, offer, offerId, isOwner, handleSubmit, successFullRefuseModal,setSuccessFullRefuseModal, isToken = false, successFullUploadModal, setRefusedValidatedAdModal, refusedValidatedAdModal, setSelectedItems, selectedItems }) => {
   const [pendingProposalData, setPendingProposalData] = useState([]);
   const [validatedProposalData, setValidatedProposalData] = useState([]);
   const [refusedProposalData, setRefusedProposalData] = useState([]);
@@ -113,6 +113,7 @@ const Validation = ({ offer, offerId, isOwner, handleSubmit, successFullRefuseMo
             <div className="container mb-12 relative p-0">
               {/* <!-- Filter --> */}
               <Review_carousel
+                chainId={chainId}
                 setSelectedItems={setSelectedItems}
                 selectedItems={selectedItems}
                 setRefusedValidatedAdModal={setRefusedValidatedAdModal}

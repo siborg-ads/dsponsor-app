@@ -21,13 +21,16 @@ import ModalHelper from "../../components/Helper/modalHelper";
 import { ItemsTabs } from "../../components/component";
 import { useChainContext } from "../../contexts/hooks/useChainContext";
 import { fetchOffer } from "../../providers/methods/fetchOffer";
+import config from "../../providers/utils/config";
+import { useSwitchChainContext } from "../../contexts/hooks/useSwitchChainContext";
 
 
 const OfferPageContainer = () => {
   const router = useRouter();
-  const { currentChainObject } = useChainContext();
-  const chainId = currentChainObject?.chainId;
+ 
+
   const offerId = router.query?.offerId;
+  const chainId = router.query?.chainName;
   const userAddress = useAddress();
   const [refusedValidatedAdModal, setRefusedValidatedAdModal] = useState(null);
   const [copied, setCopied] = useState(false);
@@ -38,7 +41,7 @@ const OfferPageContainer = () => {
   const [price, setPrice] = useState(null);
   const [imageModal, setImageModal] = useState(false);
   const [isOwner, setIsOwner] = useState(false);
-  const { contract: DsponsorAdminContract } = useContract(currentChainObject?.smartContracts?.DSPONSORADMIN?.address, currentChainObject?.smartContracts?.DSPONSORADMIN?.abi);
+  const { contract: DsponsorAdminContract } = useContract(config[chainId]?.smartContracts?.DSPONSORADMIN?.address, config[chainId]?.smartContracts?.DSPONSORADMIN?.abi);
   const { mutateAsync, isLoadingreviewAdProposal } = useContractWrite(DsponsorAdminContract, "reviewAdProposals");
   const [urlFromChild, setUrlFromChild] = useState("");
   const [successFullRefuseModal, setSuccessFullRefuseModal] = useState(false);
@@ -47,26 +50,28 @@ const OfferPageContainer = () => {
   const { contract: tokenContract } = useContract(offerData?.nftContract?.prices[0]?.currency, "token");
   const { data: symbolContract } = useContractRead(tokenContract, "symbol");
   const { data: decimalsContract } = useContractRead(tokenContract, "decimals");
-   const NATIVECurrency = currentChainObject?.smartContracts?.NATIVE;
+   const NATIVECurrency = config[chainId]?.smartContracts?.NATIVE;
+   const { setSelectedChain } = useSwitchChainContext();
 
   const { data: bps } = useContractRead(DsponsorAdminContract, "feeBps");
   const maxBps = 10000;
 
   useEffect(() => {
+    
     if (offerId && chainId) {
       const fetchAdsOffers = async () => {
         const offer = await fetchOffer(offerId, chainId);
 
         console.log("combinedData", offer);
         setOfferData(offer);
-        if (userAddress?.toLowerCase() === offer.initialCreator) {
+        if (userAddress?.toLowerCase() === offer?.initialCreator) {
           setIsOwner(true);
         }
       };
-
+    setSelectedChain(config[chainId]?.chainNameProvider);
       fetchAdsOffers();
     }
-  }, [offerId, successFullRefuseModal, userAddress, chainId]);
+  }, [offerId, successFullRefuseModal, userAddress, chainId, setSelectedChain]);
 
   useEffect(() => {
     if (!offerData) return;
@@ -273,6 +278,7 @@ const metadata = {
       )}
 
       <Validation
+        chainId={chainId}
         setSuccessFullRefuseModal={setSuccessFullRefuseModal}
         setSelectedItems={setSelectedItems}
         selectedItems={selectedItems}
@@ -305,12 +311,12 @@ const metadata = {
                   overflowX: "auto",
                 }}
               >
-                <code> {`<iframe src="https://relayer.dsponsor.com/${chainId}/ads/${offerId}/ClickableLogosGrid/iFrame" height="315" width="1000px" className={'h-screen w-full'} />`}</code>
+                <code> {`<iframe src="https://relayer.dsponsor.com/${chainId}/integrations/${offerId}/ClickableLogosGrid/iFrame" height="315" width="1000px" className={'h-screen w-full'} />`}</code>
               </pre>
               <Tippy hideOnClick={false} content={copied ? <span>copied</span> : <span>copy</span>}>
                 <div className="js-copy-clipboard cursor-pointer">
                   <CopyToClipboard
-                    text={`<iframe src="https://relayer.dsponsor.com/${chainId}/ads/${offerId}/ClickableLogosGrid/iFrame" height="315" width="1000px" className={'h-screen w-full'} />`}
+                    text={`<iframe src="https://relayer.dsponsor.com/${chainId}/integrations/${offerId}/ClickableLogosGrid/iFrame" height="315" width="1000px" className={'h-screen w-full'} />`}
                     onCopy={() => setCopied(true)}
                   >
                     <Image src="/images/copy.svg" alt="icon" width={20} height={20} className="mt-2 min-w-[20px] " />
@@ -319,7 +325,7 @@ const metadata = {
               </Tippy>
             </div>
           </div>
-          <iframe loading="lazy" src={`https://relayer.dsponsor.com/${chainId}/ads/${offerId}/ClickableLogosGrid/iFrame`} height="315" width="1000px" className={"h-screen w-full"} />
+          <iframe loading="lazy" src={`https://relayer.dsponsor.com/${chainId}/integrations/${offerId}/ClickableLogosGrid/iFrame`} height="315" width="1000px" className={"h-screen w-full"} />
         </div>
       )}
       {/* <ItemsTabs /> */}

@@ -1,4 +1,5 @@
-import React, { useEffect, useState, useRef, useCallback, use } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
+import { useRouter } from "next/router";
 import { FileUploader } from "react-drag-drop-files";
 import Meta from "../../components/Meta";
 import Image from "next/image";
@@ -12,16 +13,19 @@ import Step_1_Create from "../../components/sliderForm/PageCreate/Step_1_Create"
 import Step_2_Create from "../../components/sliderForm/PageCreate/Step_2_Create";
 import Step_3_Create from "../../components/sliderForm/PageCreate/Step_3_Create";
 import Step_4_Create from "../../components/sliderForm/PageCreate/Step_4_Create";
-
+import config from "../../providers/utils/config";
 
 import SliderForm from "../../components/sliderForm/sliderForm";
+import { useSwitchChainContext } from "../../contexts/hooks/useSwitchChainContext";
 
-import { useChainContext } from "../../contexts/hooks/useChainContext";
+
 
 const CreateOfferContainer = () => {
   const [files, setFiles] = useState([]);
   const { mutateAsync: upload, isLoading } = useStorageUpload();
-  const { currentChainObject } = useChainContext();
+
+  const router = useRouter();
+  const chainId = router.query?.chainName;
   const [link, setLink] = useState(null);
   const [errors, setErrors] = useState({});
   const [description, setDescription] = useState(false);
@@ -40,7 +44,7 @@ const CreateOfferContainer = () => {
   const [selectedParameter, setSelectedParameter] = useState([]);
   const [displayedParameter, setDisplayedParameter] = useState([]);
   const [selectedTypeParameter, setSelectedTypeParameter] = useState(0);
-  const { contract: DsponsorAdminContract } = useContract(currentChainObject?.smartContracts?.DSPONSORADMIN?.address, currentChainObject?.smartContracts?.DSPONSORADMIN?.abi);
+  const { contract: DsponsorAdminContract } = useContract(config[chainId]?.smartContracts?.DSPONSORADMIN?.address, config[chainId]?.smartContracts?.DSPONSORADMIN?.abi);
   const { mutateAsync: createDSponsorNFTAndOffer } = useContractWrite(DsponsorAdminContract, "createDSponsorNFTAndOffer");
   const [imageRatios, setImageRatios] = useState([]);
   const [tokenDecimals, setTokenDecimals] = useState(0);
@@ -50,10 +54,18 @@ const CreateOfferContainer = () => {
   const [terms, setTerms] = useState([]);
   const [previewTerms, setPreviewTerms] = useState([]);
   const [isLoadingButton, setIsLoadingButton] = useState(false);
+  const { setSelectedChain } = useSwitchChainContext();
 
   const [name, setName] = useState(false);
   const stepsRef = useRef([]);
   const { ethers } = require("ethers");
+
+useEffect(() => {
+  if (!chainId) return;
+  setSelectedChain(config[chainId]?.chainNameProvider);
+
+}, [chainId, setSelectedChain]);
+
 
   const handleUnitPriceChange = (e) => {
     const { value } = e.target;
@@ -274,7 +286,7 @@ const CreateOfferContainer = () => {
         }),
       ];
       const preparedArgs = [Object.values(JSON.parse(args[0])), Object.values(JSON.parse(args[1]))];
-      console.log(preparedArgs, "preparedArgs");
+      console.log(preparedArgs,DsponsorAdminContract, "preparedArgs");
       await createDSponsorNFTAndOffer({ args: preparedArgs });
 
       setSuccessFullUpload(true);
@@ -355,6 +367,7 @@ const CreateOfferContainer = () => {
           />
 
           <Step_4_Create
+          chainId={chainId}
             stepsRef={stepsRef}
             styles={styles}
             startDate={startDate}

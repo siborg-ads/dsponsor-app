@@ -13,11 +13,12 @@ import { ethers } from "ethers";
 import { contractABI } from "../../utils/constUtils";
 import { useChainContext } from "../../contexts/hooks/useChainContext";
 
-const OfferItem = ({ item, url, isToken, isSelectionActive, isOwner, isAuction = false, isListing = false }) => {
+const OfferItem = ({ item, url, isToken = false, isSelectionActive, isOwner, isAuction = false, isListing = false }) => {
   const { currentChainObject } = useChainContext();
   const [price, setPrice] = useState(null);
   const [currencyToken, setCurrencyToken] = useState(null);
   const [itemData, setItemData] = useState({});
+  const [itemStatut, setItemStatut] = useState(null);
   const [adStatut, setAdStatut] = useState(null);
   const { contract: tokenContract } = useContract((!isToken || (isToken && isListing)) && item?.nftContract?.prices[0]?.currency, "token");
   const { data: symbolContract } = useContractRead(tokenContract, "symbol");
@@ -49,38 +50,55 @@ const OfferItem = ({ item, url, isToken, isSelectionActive, isOwner, isAuction =
 
    return dates;
  };
+ useEffect(() => {
+   if (!item) return;
+console.log(item, "item");
+   if (!isToken && !isListing && !isAuction) {
+    setItemStatut("OFFER")
+     setPrice(item.nftContract.prices[0].mintPriceStructureFormatted.totalAmount);
+     setCurrencyToken(item.nftContract.prices[0].currencySymbol);
+     return;
+   }
+   if (isToken && item?.marketplaceListings?.length <= 0 && item.mint === null) {
+    setItemStatut("TOKENMINTABLE")
+    setPrice(item?.nftContract?.prices[0]?.mintPriceStructureFormatted.totalAmount);
+    setCurrencyToken(item.nftContract.prices[0].currencySymbol);
+    return;
+   }
+   if(isToken && item?.marketplaceListings?.length <= 0 && item.mint !== null) {
+    setPrice(item?.nftContract?.prices[0]?.mintPriceStructureFormatted.totalAmount);
+    setCurrencyToken(item.nftContract.prices[0].currencySymbol);
+    setItemStatut("TOKENMINTED")
+    return;
+   }
+   if(isToken && item?.marketplaceListings?.length > 0 && isListing === "Auction") {
+    setPrice(item?.marketplaceListings[0]?.bidPriceStructureFormatted.newPricePerToken);
+    setCurrencyToken(item?.marketplaceListings[0]?.currencySymbol);
+    setItemStatut("AUCTION")
+    return;
+   }
+    if(isToken && item?.marketplaceListings?.length > 0 && isListing === "Direct") {
+      setPrice(item?.marketplaceListings[0]?.buyPriceStructureFormatted?.buyoutPricePerToken);
+      setCurrencyToken(item?.marketplaceListings[0]?.currencySymbol);
+    setItemStatut("DIRECT")
+    return;
+    }
+  
+ }, [ item, isToken, isListing, isAuction]);
+ 
   useEffect(() => {
     if (!item) return;
-    try {
-      const currencyTokenObject = {};
-     if ( item?.nftContract?.prices[0]?.currency === "0x0000000000000000000000000000000000000000") {
-     
-       currencyTokenObject.symbol = NATIVECurrency.symbol;
-       currencyTokenObject.decimals = NATIVECurrency.decimals;
-     } else {
-       currencyTokenObject.symbol = symbolContract;
-       currencyTokenObject.decimals = decimalsContract;
-  
-     }
-     
-      const bigIntPrice = (BigInt(item?.nftContract?.prices[0]?.amount) * (BigInt(bps) + BigInt(maxBps))) / BigInt(maxBps);
-      const formatPrice = ethers.utils.formatUnits(bigIntPrice, currencyTokenObject.decimals);
 
-      setCurrencyToken(currencyTokenObject);
-      setPrice(Number(Math.ceil(formatPrice * 1000) / 1000));
-    } catch (e) {
-      console.error("Error: Currency not found for address",   item.metadata.name);
-    }
+    let data = null;
     if (isToken) {
-      const data = item.metadata ? item.metadata : null;
-      setItemData(data);
+      data = item.metadata ? item.metadata : null;
     } else {
-      const data = item.metadata.offer ? item.metadata.offer : null;
-      setItemData(data);
+      data = item.metadata.offer ? item.metadata.offer : null;
     }
-  }, [item, isToken, symbolContract, decimalsContract, bps, NATIVECurrency]);
+    setItemData(data);
+  }, [item, isToken]);
 
- 
+
 
   const { name = "offerName", image = "/images/gradient_creative.jpg", valid_from = null, valid_to = null, startTime = null, endTime = null } = itemData ? itemData : {};
 
@@ -89,16 +107,37 @@ const OfferItem = ({ item, url, isToken, isSelectionActive, isOwner, isAuction =
       <article className="relative">
         {item.isPending && isOwner && <div className="absolute -top-2 -right-2 rounded-2xl bg-red rounded-2xl dark:text-white  px-2">!</div>}
 
-        <div className="dark:bg-jacarta-700 dark:border-jacarta-700 border-jacarta-100 rounded-2xl block border bg-white p-[1.1875rem] transition-shadow hover:shadow-lg text-jacarta-500">
-          <figure>
-            {isSelectionActive ? (
-              image && <Image src={image ? image : "/images/gradient_creative.jpg"} alt="logo" height={230} width={230} className="rounded-[0.625rem] w-full lg:h-[230px] object-contain" loading="lazy" />
-            ) : (
-              <Link href={url}>
-                {image && <Image src={image ? image : "/images/gradient_creative.jpg"} alt="logo" height={230} width={230} className="rounded-[0.625rem] w-full lg:h-[230px] object-contain" loading="lazy" />}
-              </Link>
+        <div className="dark:bg-jacarta-700 dark:border-jacarta-700 border-jacarta-100 relative rounded-2xl block border bg-white p-[1.1875rem] transition-shadow hover:shadow-lg text-jacarta-500">
+          <div className="relative">
+            <figure>
+              {isSelectionActive ? (
+                image && <Image src={image ? image : "/images/gradient_creative.jpg"} alt="logo" height={230} width={230} className="rounded-[0.625rem] w-full lg:h-[230px] object-contain" loading="lazy" />
+              ) : (
+                <Link href={url}>
+                  {image && <Image src={image ? image : "/images/gradient_creative.jpg"} alt="logo" height={230} width={230} className="rounded-[0.625rem] w-full lg:h-[230px] object-contain" loading="lazy" />}
+                </Link>
+              )}
+            </figure>
+
+            <Tippy content={item?.chainConfig?.chainName} placement="top" className="bg-jacarta-300 text-jacarta-700 dark:bg-jacarta-700 dark:text-jacarta-300 rounded-md p-2">
+              <div
+                style={{ background: "rgba(54, 58, 93, 0.7)", backdropFilter: "blur(20px)" }}
+                className={`absolute ${!isToken? "-bottom-1":"bottom-8"} -right-2  dark:border-jacarta-600 border-jacarta-100 flex items-center whitespace-nowrap rounded-md border py-1 px-2`}
+              >
+                <Image src={item?.chainConfig?.logoURL} width={20} height={20} alt="logo" loading="lazy" />
+              </div>
+            </Tippy>
+            {isToken && (
+              <Tippy content={`token  # ${item.tokenData ? item.tokenData : item.tokenId}`} placement="top" className="bg-jacarta-300 text-jacarta-700 dark:bg-jacarta-700 dark:text-jacarta-300 rounded-md p-2">
+                <div
+                  style={{ background: "rgba(54, 58, 93, 0.7)", backdropFilter: "blur(20px)" }}
+                  className="absolute backdrop-blur-1 -bottom-1 -right-2 dark:border-jacarta-600 border-jacarta-100 flex items-center whitespace-nowrap rounded-md border py-1 px-2"
+                >
+                  <span className="text-green text-sm font-medium tracking-tight"># {item.tokenData ? item.tokenData : item.tokenId}</span>
+                </div>
+              </Tippy>
             )}
-          </figure>
+          </div>
           <div className="mt-4 flex items-center justify-between">
             {isSelectionActive ? (
               <span className="font-display max-w-[150px] text-jacarta-700 hover:text-accent text-base dark:text-white ">{name}</span>
@@ -108,23 +147,17 @@ const OfferItem = ({ item, url, isToken, isSelectionActive, isOwner, isAuction =
               </Link>
             )}
 
-            {(!isToken && !isListing) || (isToken && isListing) ? (
-              currencyToken?.symbol && (
-                <div className="dark:border-jacarta-600 border-jacarta-100 flex items-center whitespace-nowrap rounded-md border py-1 px-2">
-                  {" "}
-                  <span className="text-green text-sm font-medium tracking-tight">
-                    {price} {currencyToken?.symbol}
-                  </span>
-                </div>
-              )
-            ) : (
+            {currencyToken && (
               <div className="dark:border-jacarta-600 border-jacarta-100 flex items-center whitespace-nowrap rounded-md border py-1 px-2">
-                <span className="text-green text-sm font-medium tracking-tight"># {item.tokenData ? item.tokenData : item.tokenId}</span>
+                {" "}
+                <span className="text-green text-sm font-medium tracking-tight">
+                  {price} {currencyToken}
+                </span>
               </div>
             )}
           </div>
           <div className="mt-2 text-xs flex items-center justify-between">
-            {!isAuction  && !isListing ? (
+            {!isAuction && !isListing ? (
               <div className="flex justify-between w-full">
                 <span className="dark:text-jacarta-300 text-jacarta-500">
                   {formatDate(valid_from)} - {formatDate(valid_to)}

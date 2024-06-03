@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import tippy from "tippy.js";
 import { useChainContext } from "../../contexts/hooks/useChainContext";
+import config from "../../providers/utils/config";
 
 const collectionFilteringOptions = [
   {
@@ -52,6 +53,7 @@ const categories = [
   "Virtual World",
 ];
 
+
 export default function Sidebar({setFilterTypes}) {
   const [currency, setCurrency] = useState(currencies[0]);
   const [category, setCategory] = useState(categories[0]);
@@ -61,14 +63,14 @@ export default function Sidebar({setFilterTypes}) {
   }, []);
 
 
-const handleFilterChange = (type, checked) => {
-  if (checked) {
-    // Ajoute 'type' au tableau s'il n'est pas déjà inclus
-    setFilterTypes((prev) => [...new Set([...prev, type])]);
-  } else {
-    // Retire 'type' du tableau
-    setFilterTypes((prev) => prev.filter((t) => t !== type));
-  }
+const handleFilterChange = (type, checked, category) => {
+  setFilterTypes((prev) => {
+    if (checked) {
+      return [...new Set([...prev, { type, category }])];
+    } else {
+      return prev.filter((t) => t.type !== type || t.category !== category);
+    }
+  });
 };
 
   return (
@@ -93,16 +95,18 @@ const handleFilterChange = (type, checked) => {
         </h2>
         <div id="filters-chains" className="mt-3 collapse visible" aria-labelledby="filters-chains-heading">
           <ul className="space-y-6 mb-8">
-            {chains.map((elm, i) => (
+            {Object.entries(config).map((elm, i) => (
               <li key={i}>
                 <label className="flex items-center cursor-pointer w-full">
                   <input
                     type="checkbox"
-                    id="terms"
-                    className="h-5 w-5 mr-3 rounded border-jacarta-200 text-accent checked:bg-accent focus:ring-accent/20 focus:ring-offset-0 dark:border-jacarta-500 dark:bg-jacarta-600"
+                    className="h-5 w-5 mr-2 rounded border-jacarta-200 text-accent checked:bg-accent focus:ring-accent/20 focus:ring-offset-0 dark:border-jacarta-500 dark:bg-jacarta-600"
+                    onChange={(e) => handleFilterChange(elm[1].chainName, e.target.checked, "chain")}
                   />
-
-                  <span className="font-display text-sm font-semibold text-jacarta-700 dark:text-white">{elm.name}</span>
+                  <div className="backdrop-blur-sm mr-1 w-7 h-7 rounded-[0.625rem] flex justify-center items-center">
+                    <Image src={elm[1].logoURL} width={15} height={15} alt="logo" loading="lazy" />
+                  </div>
+                  <span className="font-display text-sm font-semibold text-jacarta-700 dark:text-white">{elm[1].chainName}</span>
                 </label>
               </li>
             ))}
@@ -137,8 +141,7 @@ const handleFilterChange = (type, checked) => {
                     type="checkbox"
                     id="terms"
                     className="h-5 w-5 mr-2 rounded border-jacarta-200 text-accent checked:bg-accent focus:ring-accent/20 focus:ring-offset-0 dark:border-jacarta-500 dark:bg-jacarta-600"
-                    
-                    onChange={(e) => handleFilterChange(elm.listingType, e.target.checked)}
+                    onChange={(e) => handleFilterChange(elm.listingType, e.target.checked, "status")}
                   />
                   <span className="dark:text-white">{elm.label}</span>
                 </label>

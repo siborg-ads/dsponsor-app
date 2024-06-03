@@ -16,6 +16,7 @@ import { useAddress, darkTheme, useBalance, Web3Button, useTokenBalance, useCont
 import { fetchAllListedToken } from "../../providers/methods/fetchAllListedToken";
 import { useChainContext } from "../../contexts/hooks/useChainContext";
 import { id } from "ethers/lib/utils";
+import config from "../../providers/utils/config";
 
 const MarketplaceContainer = () => {
   const router = useRouter();
@@ -30,37 +31,39 @@ const MarketplaceContainer = () => {
 
   const { currentChainObject } = useChainContext();
   const chainId = currentChainObject?.chainId;
-  const chainName = currentChainObject?.chainName;
+
 
   useEffect(() => {
     if (chainId) {
       const fetchAdsOffers = async () => {
-        const listedToken = await fetchAllListedToken(chainId);
+        const listingArray = [];
 
-        const mappedListedToken = [];
-        for (const element of listedToken) {
-          for (const token of element?.nftContract?.tokens) {
-            const combinedData = {
-              ...token,
-              offerId: element?.id,
-            };
-            mappedListedToken.push(combinedData);
-          }
+        for (const [chainId] of Object.entries(config)) {
+          const listings = await fetchAllListedToken(chainId);
+          listingArray.push(...listings);
         }
-        const sortByDate = mappedListedToken.sort((a, b) => b.marketplaceListings[0]?.startTime - a.marketplaceListings[0]?.startTime);
-        console.log(mappedListedToken, "listedToken");
-        setListedAuctionToken(sortByDate);
+
+        setListedAuctionToken(listingArray);
       };
 
       fetchAdsOffers();
     }
   }, [router, address, chainId]);
 
-  const filteredTokens = useMemo(() => {
-    if (filterTypes.length === 0) return listedAuctionToken; 
+const filteredTokens = useMemo(() => {
+  if (filterTypes.length === 0) return listedAuctionToken;
 
-    return listedAuctionToken.filter((item) => filterTypes.includes(item.marketplaceListings[0]?.listingType));
-  }, [listedAuctionToken, filterTypes]);
+  const filterCategories = {
+    status: filterTypes.filter((f) => f.category === "status").map((f) => f.type),
+    chain: filterTypes.filter((f) => f.category === "chain").map((f) => f.type),
+  };
+
+  return listedAuctionToken.filter((item) => {
+    const statusMatch = filterCategories.status.length === 0 || filterCategories.status.includes(item.marketplaceListings[0]?.listingType);
+    const chainMatch = filterCategories.chain.length === 0 || filterCategories.chain.includes(item.chainConfig.chainName);
+    return statusMatch && chainMatch;
+  });
+}, [listedAuctionToken, filterTypes]);
 
    const metadata = {
      title: "Marketplace || DSponsor | smarter monetization for your content",
@@ -117,7 +120,9 @@ const MarketplaceContainer = () => {
                         item={item}
                         key={index}
                         url={
-                          !item.mint?.tokenData ? `/${chainName}/offer/${item?.offerId}/${item?.tokenId}` : `/${chainName}/offer/${item?.nftContract?.adOffers[0]?.id}/${item?.tokenId}?tokenData=${item?.mint?.tokenData}`
+                          !item.mint?.tokenData
+                            ? `/${item?.chainConfig?.chainId}/offer/${item?.offerId}/${item?.tokenId}`
+                            : `/${item?.chainConfig?.chainId}/offer/${item?.nftContract?.adOffers[0]?.id}/${item?.tokenId}?tokenData=${item?.mint?.tokenData}`
                         }
                         isOwner={isOwner}
                         isToken={true}

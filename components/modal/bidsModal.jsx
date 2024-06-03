@@ -6,66 +6,68 @@ import { bidsModalHide } from "../../redux/counterSlice";
 import { toast } from "react-toastify";
 import Link from "next/link";
 import { useChainContext } from "../../contexts/hooks/useChainContext";
-const BidsModal = ({successFullBid, setSuccessFullBid, dsponsorMpContract, toggleBidsModal, marketplaceListings, currencySymbol, checkUserBalance, tokenBalance,allowanceTrue, currencyTokenDecimals, handleApprove }) => {
-  const [bidsAmount, setBidsAmount] = useState(null);
+import config from "../../providers/utils/config";
+const BidsModal = ({
+  bidsAmount,
+  setBidsAmount,
+  address,
+  chainId,
+  successFullBid,
+  setSuccessFullBid,
+  dsponsorMpContract,
+  toggleBidsModal,
+  marketplaceListings,
+  currencySymbol,
+  checkUserBalance,
+  tokenBalance,
+  allowanceTrue,
+  currencyTokenDecimals,
+  handleApprove,
+}) => {
+  
   const [initialIntPrice, setInitialIntPrice] = useState(0);
-  const [reservePrice, setReservePrice] = useState(0);
   const [isPriceGood, setIsPriceGood] = useState(true);
   const { mutateAsync: auctionBids } = useContractWrite(dsponsorMpContract, "bid");
   const [isLoadingButton, setIsLoadingButton] = useState(false);
   const [checkTerms, setCheckTerms] = useState(false);
-  const { currentChainObject } = useChainContext();
-  
 
   useEffect(() => {
-    let reservePrice;
-    
-    if (marketplaceListings[0]?.bids?.length <= 0) {
-      reservePrice = (BigInt(marketplaceListings[0]?.reservePricePerToken) * (BigInt(500) + BigInt(10000))) / BigInt(10000);
-    }else {
-      reservePrice = (BigInt(marketplaceListings[0]?.bids[0]?.totalBidAmount) * (BigInt(500) + BigInt(10000)) / BigInt(10000));
-    }
-    const reservePriceParsed = ethers.utils.formatUnits(reservePrice, currencyTokenDecimals);
-    setReservePrice(reservePrice);
-    setInitialIntPrice(Number(Math.ceil(reservePriceParsed * 1000) / 1000));
-    setBidsAmount(Number(Math.ceil(reservePriceParsed * 1000) / 1000));
-  }, [ marketplaceListings[0], currencyTokenDecimals]);
+    setInitialIntPrice(marketplaceListings[0]?.bidPriceStructureFormatted?.minimalBidPerToken);
+    setBidsAmount(marketplaceListings[0]?.bidPriceStructureFormatted?.newBidPerToken);
+  }, [marketplaceListings]);
 
   const handleBidsAmount = (e) => {
-    
-    if (e.target.value <  initialIntPrice) {
+    if (e.target.value < initialIntPrice) {
       setIsPriceGood(false);
       setBidsAmount(e.target.value);
     } else {
-
       setIsPriceGood(true);
       setBidsAmount(e.target.value);
     }
   };
   const handleSubmit = async () => {
-  
+    console.log("bidsAmount", bidsAmount, tokenBalance);
     const hasEnoughBalance = checkUserBalance(tokenBalance, bidsAmount);
     if (!hasEnoughBalance) {
       throw new Error("Not enough balance for approval.");
     }
     try {
       setIsLoadingButton(true);
-      const bigIntPrice = ethers.utils.parseUnits(bidsAmount.toString(), currencyTokenDecimals);
+      const bidsBigInt = ethers.utils.parseUnits(bidsAmount.toString(),currencyTokenDecimals )
       await auctionBids({
-        args: [marketplaceListings[0].id, bigIntPrice, ""],
+        args: [marketplaceListings[0].id, bidsBigInt, address, ""],
       });
       setSuccessFullBid(true);
     } catch (error) {
       setIsLoadingButton(false);
       throw new Error(error);
-    } finally{
+    } finally {
       setIsLoadingButton(false);
-  
     }
   };
-   const handleTermService = (e) => {
-     setCheckTerms(e.target.checked);
-   };
+  const handleTermService = (e) => {
+    setCheckTerms(e.target.checked);
+  };
   return (
     <div>
       <div className="modal fade show block">
@@ -157,7 +159,7 @@ const BidsModal = ({successFullBid, setSuccessFullBid, dsponsorMpContract, toggl
             <div className="modal-footer">
               {allowanceTrue && !successFullBid ? (
                 <Web3Button
-                  contractAddress={currentChainObject?.smartContracts?.DSPONSORMP?.address}
+                  contractAddress={config[chainId]?.smartContracts?.DSPONSORMP?.address}
                   action={() => {
                     toast.promise(handleApprove, {
                       pending: "Waiting for confirmation 🕒",
@@ -173,7 +175,7 @@ const BidsModal = ({successFullBid, setSuccessFullBid, dsponsorMpContract, toggl
               ) : !successFullBid ? (
                 <div className="flex items-center justify-center space-x-4">
                   <Web3Button
-                    contractAddress={currentChainObject?.smartContracts?.DSPONSORMP?.address}
+                    contractAddress={config[chainId]?.smartContracts?.DSPONSORMP?.address}
                     action={() => {
                       toast.promise(handleSubmit, {
                         pending: "Waiting for confirmation 🕒",

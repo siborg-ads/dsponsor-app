@@ -1,5 +1,6 @@
 import { executeQuery } from "../utils/executeQuery";
 import { gql } from "@apollo/client";
+import config from "../utils/config";
 
 export const fetchAllListedToken = async (chainId) => {
   const path = new URL(`https://relayer.dsponsor.com/api/${chainId}/graph`);
@@ -11,6 +12,9 @@ export const fetchAllListedToken = async (chainId) => {
         id
         metadataURL
         nftContract {
+          royalty {
+            bps
+          }
           tokens {
             tokenId
             mint {
@@ -19,6 +23,7 @@ export const fetchAllListedToken = async (chainId) => {
             }
             nftContract {
               id # = assetContract
+             
               adOffers {
                 id
                 metadataURL # offerMetadata
@@ -30,22 +35,43 @@ export const fetchAllListedToken = async (chainId) => {
               }
             }
             marketplaceListings(orderBy: endTime, orderDirection: asc, where: { status: CREATED, quantity_gt: 0, startTime_lte: $currentTimestamp, endTime_gte: $currentTimestamp }) {
-              id
+              id # listingId
+              quantity
+              # METADATA - if INVALID, ignore this listing
+              # offerMetadata = adOffers[0].metadataURL
+              # if tokenData?.length
+              #    if offerMetadata.offer.token_metadata.name exists => replace all {tokenData} by tokenData value
+              #    (same for offerMetadata.offer.token_metadata.description & offerMetadata.offer.token_metadata.image)
+              # NAME = offerMetadata.offer.token_metadata.name || offerMetadata.offer.name || INVALID
+              # DESCRIPTION = offerMetadata.offer.token_metadata.description || offerMetadata.offer.description || INVALID
+              # IMAGE = offerMetadata.offer.token_metadata.image || offerMetadata.offer.image || INVALID
               token {
                 tokenId
                 nftContract {
-                  id
+                  id # = assetContract
+                  royalty {
+                    bps
+                  }
                   adOffers {
                     id
-                    metadataURL
+                    metadataURL # offerMetadata
                   }
                 }
                 mint {
                   tokenData
                 }
               }
+
+              # listingType = 0 <-> 'Direct', listingType = 1 <-> 'Auction'
+              # 'Direct' or 'Auction'
               listingType
-              currency
+
+              currency # ERC20 smart contract addr
+              # PRICE
+              # if listingType = 'Direct'
+              #    price = buyoutPricePerToken
+              # else if listingType = 'Auction'
+              #    price = bids[0].totalBidAmount || reservePricePerToken
               reservePricePerToken
               buyoutPricePerToken
               bids(orderBy: totalBidAmount, orderDirection: desc, first: 1) {
@@ -53,10 +79,16 @@ export const fetchAllListedToken = async (chainId) => {
                 totalBidAmount
                 status
               }
+
               lister
+
               startTime
               endTime
+
+              # 'UNSET', 'CREATED', 'COMPLETED' or 'CANCELLED'
               status
+
+              # will be useful later
               tokenType
               transferType
               rentalExpirationTimestamp
@@ -66,23 +98,36 @@ export const fetchAllListedToken = async (chainId) => {
       }
     }
   `;
- const variables = {
-   currentTimestamp,
- };
- const response = await executeQuery(path.href, GET_DATA, variables);
-//  const filteredAdOffers = response.adOffers.flatMap((offer) => offer.nftContract.tokens.filter((token) => token.mint === null || (token.mint && token.marketplaceListings.length > 0)));
-const filteredAdOffers = response.adOffers
-  .map((offer) => ({
-    ...offer,
-    nftContract: {
-      ...offer.nftContract,
-      tokens: offer.nftContract.tokens.filter((token) => token.mint && token.marketplaceListings.length > 0),
-      // tokens: offer.nftContract.tokens.filter((token) => (token.mint === null || (token.mint && token.marketplaceListings.length > 0))),
-    },
-  }))
-  .filter((offer) => offer.nftContract.tokens.length > 0);
+  const variables = {
+    currentTimestamp,
+  };
+  const response = await executeQuery(path.href, GET_DATA, variables);
+  const chainConfig = config[chainId];
+  const mappedListedToken = response.adOffers
+    .map((offer) => {
+      const newOffer = {
+        ...offer,
 
+        nftContract: {
+          ...offer.nftContract,
+          tokens: offer.nftContract.tokens.filter((token) => token.mint && token.marketplaceListings.length > 0),
+        },
+      };
 
+      return newOffer;
+    })
+    .filter((offer) => offer.nftContract.tokens.length > 0)
+    .flatMap((offer) =>
+      offer.nftContract.tokens.map((token) => ({
+        ...token,
+        offerId: offer.id,
+        tokenData: token.mint.tokenData ? token.mint.tokenData : null,
+        chainConfig: chainConfig,
+      }))
+    )
+    .sort((a, b) => b.marketplaceListings[0]?.startTime - a.marketplaceListings[0]?.startTime);
 
-  return filteredAdOffers;
+  
+
+  return mappedListedToken;
 };
