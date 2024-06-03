@@ -77,7 +77,7 @@ const chainId = currentChainObject?.chainId;
       ) : (
         <div className="w-full flex flex-col gap-4 justify-center items-center">
           <span>You have no offers yet...</span>
-          <Link href={`/${item?.chainConfig?.chainId}/offer/create`} className="bg-accent shadow-accent-volume hover:bg-accent-dark w-36 rounded-full py-3 px-8 text-center font-semibold text-white transition-all">
+          <Link href={`/${chainId}/offer/create`} className="bg-accent shadow-accent-volume hover:bg-accent-dark w-36 rounded-full py-3 px-8 text-center font-semibold text-white transition-all">
             Create
           </Link>
         </div>
