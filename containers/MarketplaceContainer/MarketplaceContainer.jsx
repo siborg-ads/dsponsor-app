@@ -11,7 +11,20 @@ import "tippy.js/dist/tippy.css"; // optional
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import Meta from "../../components/Meta";
 import OfferItem from "../../components/cards/offerItem";
-import { useAddress, darkTheme, useBalance, Web3Button, useTokenBalance, useContract, useContractRead, useContractWrite, useStorageUpload, useTokenDecimals, CheckoutWithCard, CheckoutWithEth } from "@thirdweb-dev/react";
+import {
+  useAddress,
+  darkTheme,
+  useBalance,
+  Web3Button,
+  useTokenBalance,
+  useContract,
+  useContractRead,
+  useContractWrite,
+  useStorageUpload,
+  useTokenDecimals,
+  CheckoutWithCard,
+  CheckoutWithEth,
+} from "@thirdweb-dev/react";
 
 import { fetchAllListedToken } from "../../providers/methods/fetchAllListedToken";
 import { useChainContext } from "../../contexts/hooks/useChainContext";
@@ -33,7 +46,6 @@ const MarketplaceContainer = () => {
   const { currentChainObject } = useChainContext();
   const chainId = currentChainObject?.chainId;
 
-
   useEffect(() => {
     if (chainId) {
       const fetchAdsOffers = async () => {
@@ -51,33 +63,50 @@ const MarketplaceContainer = () => {
     }
   }, [router, address, chainId]);
 
-const filteredTokens = useMemo(() => {
-  if (filterTypes.length === 0) return listedAuctionToken;
+  const filteredTokens = useMemo(() => {
+    if (filterTypes.length === 0) return listedAuctionToken;
 
-  const filterCategories = {
-    status: filterTypes.filter((f) => f.category === "status").map((f) => f.type),
-    chain: filterTypes.filter((f) => f.category === "chain").map((f) => f.type),
+    const filterCategories = {
+      status: filterTypes
+        .filter((f) => f.category === "status")
+        .map((f) => f.type),
+      chain: filterTypes
+        .filter((f) => f.category === "chain")
+        .map((f) => f.type),
+    };
+
+    return listedAuctionToken.filter((item) => {
+      const statusMatch =
+        filterCategories.status.length === 0 ||
+        filterCategories.status.includes(
+          item.marketplaceListings[0]?.listingType
+        );
+      const chainMatch =
+        filterCategories.chain.length === 0 ||
+        filterCategories.chain.includes(item.chainConfig.chainName);
+      return statusMatch && chainMatch;
+    });
+  }, [listedAuctionToken, filterTypes]);
+
+  const metadata = {
+    title: "Marketplace || DSponsor | smarter monetization for your content",
+    keyword:
+      "DSponsor, marketplace, token, creator, sponsor, monetize, content, creator, sponsor, monetize, content",
+    desc: "DSponsor is a platform that connects content creators with sponsors. Our platform helps creators monetize their content and helps sponsors find creators to promote their products.",
   };
-
-  return listedAuctionToken.filter((item) => {
-    const statusMatch = filterCategories.status.length === 0 || filterCategories.status.includes(item.marketplaceListings[0]?.listingType);
-    const chainMatch = filterCategories.chain.length === 0 || filterCategories.chain.includes(item.chainConfig.chainName);
-    return statusMatch && chainMatch;
-  });
-}, [listedAuctionToken, filterTypes]);
-
-   const metadata = {
-     title: "Marketplace || DSponsor | smarter monetization for your content",
-     keyword: "DSponsor, marketplace, token, creator, sponsor, monetize, content, creator, sponsor, monetize, content",
-     desc: "DSponsor is a platform that connects content creators with sponsors. Our platform helps creators monetize their content and helps sponsors find creators to promote their products.",
-   };
 
   return (
     <>
       <Meta {...metadata} />
       <section className="relative pt-16 pb-24">
         <picture className="pointer-events-none absolute inset-0 -z-10 dark:hidden">
-          <Image width={1920} height={789} src="/img/gradient_light.jpg" alt="gradient" className="h-full w-full" />
+          <Image
+            width={1920}
+            height={789}
+            src="/img/gradient_light.jpg"
+            alt="gradient"
+            className="h-full w-full"
+          />
         </picture>
         <div className="px-6 py-16 xl:px-24">
           {/* Filters / Sorting */}
@@ -101,15 +130,19 @@ const filteredTokens = useMemo(() => {
           {/*</div> */}
           {/* end filters / sorting */}
 
-          <div className="lg:flex mt-6 ">
+          <div className="lg:flex w-full mt-6">
             {/* Sidebar */}
             <Sidebar setFilterTypes={setFilterTypes} />
             {/* end sidebar */}
             {/* Content */}
-            <div className="lg:w-4/5 js-collections-content">
+            <div className="js-collections-content w-full">
               <div className="mb-8 pb-px">
-                <h1 className="pt-3 mb-2 font-display text-2xl font-medium text-jacarta-700 dark:text-white">Explore Marketplace</h1>
-                <p className="dark:text-jacarta-400 font-medium text-2xs">{listedAuctionToken?.length} items</p>
+                <h1 className="pt-3 mb-2 font-display text-2xl font-medium text-jacarta-700 dark:text-white">
+                  Explore Marketplace
+                </h1>
+                <p className="dark:text-jacarta-400 font-medium text-2xs">
+                  {filteredTokens?.length ?? 0} items
+                </p>
               </div>
               <>
                 {/* <!-- Grid --> */}
@@ -128,7 +161,10 @@ const filteredTokens = useMemo(() => {
                           isOwner={isOwner}
                           isToken={true}
                           isListing={item?.marketplaceListings[0]?.listingType}
-                          isAuction={item?.marketplaceListings[0]?.listingType === "Auction" ? true : false}
+                          isAuction={
+                            item?.marketplaceListings[0]?.listingType ===
+                            "Auction"
+                          }
                         />
                       );
                     })}
@@ -136,7 +172,7 @@ const filteredTokens = useMemo(() => {
                 ) : (
                   <div className="grid grid-cols-1 gap-[1.875rem] md:grid-cols-2 lg:grid-cols-4">
                     {[...Array(15)].map((_, index) => (
-                      <ItemCardSkeleton key={index} widthSize={225}  />
+                      <ItemCardSkeleton key={index} widthSize={230} />
                     ))}
                   </div>
                 )}
