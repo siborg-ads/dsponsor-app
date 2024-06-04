@@ -19,7 +19,7 @@ const ConditionalUSDPaymentText = ({children, condition}) => {
 const ConditionalCurrencySelector = ({children, condition}) => {
   return condition ? (
     <div>{children}</div>
-) : ("ETH")
+) : ("WETH")
 }
 
 const Step_4_Create = ({
