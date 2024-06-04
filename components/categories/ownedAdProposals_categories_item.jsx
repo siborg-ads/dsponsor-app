@@ -1,7 +1,20 @@
 import React, { useEffect, useState, useRef } from "react";
 import { ownedAdProposals_categories_filter } from "../../data/categories_data";
 import CategoryItem from "./categoryItem";
-import { useAddress, darkTheme, useBalance, Web3Button, useTokenBalance, useContract, useContractRead, useContractWrite, useStorageUpload, useTokenDecimals, CheckoutWithCard, CheckoutWithEth } from "@thirdweb-dev/react";
+import {
+  useAddress,
+  darkTheme,
+  useBalance,
+  Web3Button,
+  useTokenBalance,
+  useContract,
+  useContractRead,
+  useContractWrite,
+  useStorageUpload,
+  useTokenDecimals,
+  CheckoutWithCard,
+  CheckoutWithEth,
+} from "@thirdweb-dev/react";
 import { trendingCategoryData } from "../../data/categories_data";
 import Tippy from "@tippyjs/react";
 import Recently_added_dropdown from "../dropdown/recently_added_dropdown";
@@ -18,15 +31,16 @@ import Step_1_Mint from "../sliderForm/PageMint/Step_1_Mint";
 import Step_2_Mint from "../sliderForm/PageMint/Step_2_Mint";
 import Step_3_Mint from "../sliderForm/PageMint/Step_3_Mint";
 
- import contractABI from "../../abi/dsponsorAdmin.json";
- import { useChainContext } from "../../contexts/hooks/useChainContext";
+import contractABI from "../../abi/dsponsorAdmin.json";
+import { useChainContext } from "../../contexts/hooks/useChainContext";
 
 import PreviewModal from "../modal/previewModal";
 import { image } from "@nextui-org/react";
+import MainButton from "../buttons/mainButton";
 
 const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
   const [itemdata, setItemdata] = useState(trendingCategoryData);
-const { currentChainObject } = useChainContext();
+  const { currentChainObject } = useChainContext();
   const [filterVal, setFilterVal] = useState(0);
   const [selectedItems, setSelectedItems] = useState([]);
   const [isSelectedItem, setIsSelectedItem] = useState({});
@@ -34,13 +48,15 @@ const { currentChainObject } = useChainContext();
   const [isSelectionActive, setIsSelectionActive] = useState(false);
   const [showPreviewModal, setShowPreviewModal] = useState(false);
   const [isFirstSelection, setIsFirstSelection] = useState(true);
- 
+
   const [successFullUpload, setSuccessFullUpload] = useState(false);
   const [files, setFiles] = useState([]);
   const [previewImages, setPreviewImages] = useState([]);
   const [link, setLink] = useState("");
   const [errors, setErrors] = useState({});
-  const [selectedParamsIntegration, setSelectedParamsIntegration] = useState([]);
+  const [selectedParamsIntegration, setSelectedParamsIntegration] = useState(
+    []
+  );
   const [showSliderForm, setShowSliderForm] = useState(false);
   const [adParameters, setAdParameters] = useState([]);
   const [imageURLSteps, setImageURLSteps] = useState([]);
@@ -48,32 +64,40 @@ const { currentChainObject } = useChainContext();
   const [imageUrlVariants, setImageUrlVariants] = useState([]);
   const stepsRef = useRef([]);
   const [numSteps, setNumSteps] = useState(2);
-  const { contract: DsponsorAdminContract } = useContract(currentChainObject?.smartContracts?.DSPONSORADMIN?.address, currentChainObject?.smartContracts?.DSPONSORADMIN?.abi);
+  const { contract: DsponsorAdminContract } = useContract(
+    currentChainObject?.smartContracts?.DSPONSORADMIN?.address,
+    currentChainObject?.smartContracts?.DSPONSORADMIN?.abi
+  );
   const [isLoadingButton, setIsLoadingButton] = useState(false);
- 
-  const { mutateAsync: uploadToIPFS, isLoading: isUploading } = useStorageUpload();
-  const { mutateAsync: submitAd } = useContractWrite(DsponsorAdminContract, "submitAdProposals");
 
-const chainId = currentChainObject?.chainId;
+  const { mutateAsync: uploadToIPFS, isLoading: isUploading } =
+    useStorageUpload();
+  const { mutateAsync: submitAd } = useContractWrite(
+    DsponsorAdminContract,
+    "submitAdProposals"
+  );
+
+  const chainId = currentChainObject?.chainId;
 
   const handleFilter = (category) => {
     if (category !== "all") {
-      setItemdata(trendingCategoryData.filter((item) => item.category === category));
+      setItemdata(
+        trendingCategoryData.filter((item) => item.category === category)
+      );
     } else {
       setItemdata(trendingCategoryData);
     }
   };
   const handlePreviewModal = () => {
-    if(successFullUpload){
+    if (successFullUpload) {
       setSuccessFullUpload(false);
       handleSelectionTokens();
-
     }
     validateInputs();
     setShowPreviewModal(!showPreviewModal);
   };
   const handleSelection = (item) => {
-setIsFirstSelection(false);
+    setIsFirstSelection(false);
     setIsSelectedItem((prevState) => ({
       ...prevState,
       [item.id]: !prevState[item.id],
@@ -91,13 +115,12 @@ setIsFirstSelection(false);
     });
   };
   const handleLogoUpload = (file, index, step) => {
-
     if (file) {
       const newFiles = [...files];
       const newPreviewImages = [...previewImages];
-      newFiles[index] = { file: file, index: index, offerIds: step.offerIds};
+      newFiles[index] = { file: file, index: index, offerIds: step.offerIds };
       newPreviewImages[index] = URL.createObjectURL(file);
-     
+
       setFiles(newFiles);
       setPreviewImages(newPreviewImages);
     }
@@ -135,19 +158,16 @@ setIsFirstSelection(false);
     let adParams = [];
     const uniqueIds = new Set();
     const adDetails = {};
-console.log(selectedItems, "selectedItems");
+    console.log(selectedItems, "selectedItems");
     for (const token of selectedItems) {
-    
-      
-        for (const param of token.adParameters) {
-          const paramId = param.adParameter.id;
-          if (paramId && paramId !== "xSpaceId" && paramId !== "xCreatorHandle") {
-            uniqueIds.add(paramId);
-            adDetails[paramId] = adDetails[paramId] || new Set();
-            adDetails[paramId].add(token.id);
-          }
+      for (const param of token.adParameters) {
+        const paramId = param.adParameter.id;
+        if (paramId && paramId !== "xSpaceId" && paramId !== "xCreatorHandle") {
+          uniqueIds.add(paramId);
+          adDetails[paramId] = adDetails[paramId] || new Set();
+          adDetails[paramId].add(token.id);
         }
-      
+      }
     }
 
     for (const id in adDetails) {
@@ -156,7 +176,7 @@ console.log(selectedItems, "selectedItems");
 
     const uniqueIdsArray = Array.from(uniqueIds);
     setAdParameters(uniqueIdsArray);
-    
+
     const imageURLStep = [];
 
     uniqueIdsArray
@@ -165,44 +185,47 @@ console.log(selectedItems, "selectedItems");
         const variant = id.slice("imageURL-".length);
         imageURLStep.push({
           uniqueId: variant,
-          offerIds: adDetails[id], 
+          offerIds: adDetails[id],
         });
       });
     const totalNumSteps = numSteps + imageURLStep.length;
     setImageURLSteps(imageURLStep);
     setNumSteps(totalNumSteps);
-   
   };
   const handleSubmit = async () => {
     if (!validateInputs()) {
       return;
     }
-    
+
     const selectedOfferIdItems = [];
     const selectedTokenIdItems = [];
     const adParametersItems = [];
     const dataItems = [];
-    
-  
+
     try {
       setIsLoadingButton(true);
       for (const item of selectedItems) {
         for (const args of item.adParameters) {
-          if (args.adParameter.id !== "xSpaceId" && args.adParameter.id !== "xCreatorHandle") {
+          if (
+            args.adParameter.id !== "xSpaceId" &&
+            args.adParameter.id !== "xCreatorHandle"
+          ) {
             selectedOfferIdItems.push(item.offerId);
             selectedTokenIdItems.push(item.tokenId);
             adParametersItems.push(args.adParameter.id);
-             
           }
         }
- 
+
         for (const file of files) {
           let uploadUrl;
           if (file.offerIds.includes(item.id)) {
             try {
               uploadUrl = await uploadToIPFS({
                 data: [file.file],
-                options: { uploadWithGatewayUrl: true, uploadWithoutDirectory: true },
+                options: {
+                  uploadWithGatewayUrl: true,
+                  uploadWithoutDirectory: true,
+                },
               });
             } catch (error) {
               console.error("Erreur lors de l'upload à IPFS:", error);
@@ -213,7 +236,6 @@ console.log(selectedItems, "selectedItems");
         }
         dataItems.push(link);
       }
-     
 
       const argsAdSubmited = {
         offerId: selectedOfferIdItems,
@@ -229,10 +251,10 @@ console.log(selectedItems, "selectedItems");
       setIsLoadingButton(false);
       throw new Error("Upload to Blockchain failed.");
     } finally {
-    setIsLoadingButton(false);
+      setIsLoadingButton(false);
     }
   };
- 
+
   const handleSelectionTokens = () => {
     setIsSelectionActive(!isSelectionActive);
     setShowSliderForm(false);
@@ -244,25 +266,30 @@ console.log(selectedItems, "selectedItems");
     setFiles([]);
     setNumSteps(2);
   };
-const successFullUploadModal = {
-  title: "Submit ad",
-  body: "Congratulations, you have proposed an ad. 🎉",
-  subBody: "Ad assets submitted! They are now under review and awaiting validation by the offer creator.",
-  buttonTitle: "Close",
-  hrefButton: null,
-};
+  const successFullUploadModal = {
+    title: "Submit ad",
+    body: "Congratulations, you have proposed an ad. 🎉",
+    subBody:
+      "Ad assets submitted! They are now under review and awaiting validation by the offer creator.",
+    buttonTitle: "Close",
+    hrefButton: null,
+  };
 
   if (!data) {
     return (
       <div className="flex w-full justify-center">
-        <Image src="/images/loading-bullet.svg" alt="icon" width={60} height={60} />
+        <Image
+          src="/images/loading-bullet.svg"
+          alt="icon"
+          width={60}
+          height={60}
+        />
       </div>
     );
   }
   return (
     <>
       {/* <!-- Filter --> */}
-      
 
       {/* <!-- Grid --> */}
       {data.length > 0 ? (
@@ -277,19 +304,35 @@ const successFullUploadModal = {
               }`}
               onClick={handleSelectionTokens}
             >
-              {showSliderForm || isSelectionActive ? "Close selection" : "Submit ad for multiple tokens"}
+              {showSliderForm || isSelectionActive
+                ? "Close selection"
+                : "Submit ad for multiple tokens"}
             </button>
           )}
           {!showSliderForm && (
-            <div className={` grid grid-cols-1 gap-[1.875rem] md:grid-cols-2 lg:grid-cols-4`}>
+            <div
+              className={` grid grid-cols-1 gap-[1.875rem] md:grid-cols-2 lg:grid-cols-4`}
+            >
               {data?.map((item, index) => {
                 return isSelectionActive ? (
-                  <div onClick={() => handleSelection(item)} key={index} className={`  ${isSelectedItem[item.id] ? "border-4 border-jacarta-100 rounded-2xl" : ""}`}>
+                  <div
+                    onClick={() => handleSelection(item)}
+                    key={index}
+                    className={`  ${
+                      isSelectedItem[item.id]
+                        ? "border-4 border-jacarta-100 rounded-2xl"
+                        : ""
+                    }`}
+                  >
                     <OfferItem
                       item={item}
                       isToken={true}
                       isSelectionActive={isSelectionActive}
-                      url={!item.tokenData ? `/${item?.chainConfig?.chainId}/offer/${item.offerId}/${item.tokenId}` : `/${item?.chainConfig?.chainId}/offer/${item.offerId}/${item.tokenId}?tokenData=${item.tokenData}`}
+                      url={
+                        !item.tokenData
+                          ? `/${item?.chainConfig?.chainId}/offer/${item.offerId}/${item.tokenId}`
+                          : `/${item?.chainConfig?.chainId}/offer/${item.offerId}/${item.tokenId}?tokenData=${item.tokenData}`
+                      }
                     />
                   </div>
                 ) : (
@@ -298,7 +341,11 @@ const successFullUploadModal = {
                     key={index}
                     isToken={true}
                     isSelectionActive={isSelectionActive}
-                    url={!item.tokenData ? `/${item?.chainConfig?.chainId}/offer/${item.offerId}/${item.tokenId}` : `/${item?.chainConfig?.chainId}/offer/${item.offerId}/${item.tokenId}?tokenData=${item.tokenData}`}
+                    url={
+                      !item.tokenData
+                        ? `/${item?.chainConfig?.chainId}/offer/${item.offerId}/${item.tokenId}`
+                        : `/${item?.chainConfig?.chainId}/offer/${item.offerId}/${item.tokenId}?tokenData=${item.tokenData}`
+                    }
                   />
                 );
               })}
@@ -308,31 +355,46 @@ const successFullUploadModal = {
       ) : (
         <div className="w-full flex flex-col gap-4 justify-center items-center">
           <span>You have no ad space yet...</span>
-          <Link href="/#hot-offers" className="bg-accent shadow-accent-volume hover:bg-accent-dark w-36 rounded-full py-3 px-8 text-center font-semibold text-white transition-all">
-            Buy
-          </Link>
+          <MainButton link={"/#hot-offers"} isPurple={true} text="Buy" />
         </div>
       )}
       {!showSliderForm && (
         <div
           className={`fixed dark:border-jacarta-500 border  bottom-0 blury-background left-0 right-0 px-4 py-3   ${
-            isFirstSelection ? "hidden" : selectedItems?.length === 0 ? "animated-modalSelectedItemDown" : "animated-modalSelectedItemUp"
+            isFirstSelection
+              ? "hidden"
+              : selectedItems?.length === 0
+              ? "animated-modalSelectedItemDown"
+              : "animated-modalSelectedItemUp"
           }`}
         >
           <div className="dropdown-item mb-4 font-display   block w-full rounded-xl  text-left text-sm transition-colors dark:text-white">
             <span className="flex items-center justify-center gap-6">
               <span className="mr-4">
-                Ad Spaces selected : <span className="text-accent text-md ml-1">{Object.values(isSelectedItem).filter((value) => value === true).length}</span>{" "}
+                Ad Spaces selected :{" "}
+                <span className="text-accent text-md ml-1">
+                  {
+                    Object.values(isSelectedItem).filter(
+                      (value) => value === true
+                    ).length
+                  }
+                </span>{" "}
               </span>
             </span>
           </div>
 
           <div className="flex justify-center  gap-4 flex-wrap">
-            <button className={` !rounded-full !min-w-[100px] !py-3 !px-8 !text-center !font-semibold !text-white !transition-all !bg-green !cursor-pointer `} onClick={handleSliderForm}>
+            <button
+              className={` !rounded-full !min-w-[100px] !py-3 !px-8 !text-center !font-semibold !text-white !transition-all !bg-green !cursor-pointer `}
+              onClick={handleSliderForm}
+            >
               Continue
             </button>
 
-            <button className={` !rounded-full !min-w-[100px] !py-3 !px-8 !text-center !font-semibold !text-white !transition-all !bg-red !cursor-pointer `} onClick={handleSelectionTokens}>
+            <button
+              className={` !rounded-full !min-w-[100px] !py-3 !px-8 !text-center !font-semibold !text-white !transition-all !bg-red !cursor-pointer `}
+              onClick={handleSelectionTokens}
+            >
               Close
             </button>
           </div>
@@ -340,9 +402,25 @@ const successFullUploadModal = {
       )}
       {showSliderForm && (
         <div>
-          <SliderForm styles={styles} files={files} handlePreviewModal={handlePreviewModal} stepsRef={stepsRef} numSteps={numSteps}>
-            <Step_1_Mint stepsRef={stepsRef} styles={styles} adParameters={adParameters} setImageUrlVariants={setImageUrlVariants} />
-            <Step_2_Mint stepsRef={stepsRef} styles={styles} setLink={setLink} link={link} />
+          <SliderForm
+            styles={styles}
+            files={files}
+            handlePreviewModal={handlePreviewModal}
+            stepsRef={stepsRef}
+            numSteps={numSteps}
+          >
+            <Step_1_Mint
+              stepsRef={stepsRef}
+              styles={styles}
+              adParameters={adParameters}
+              setImageUrlVariants={setImageUrlVariants}
+            />
+            <Step_2_Mint
+              stepsRef={stepsRef}
+              styles={styles}
+              setLink={setLink}
+              link={link}
+            />
             {imageURLSteps.map((step, index) => (
               <Step_3_Mint
                 key={step.uniqueId}

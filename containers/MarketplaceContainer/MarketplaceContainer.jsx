@@ -1,4 +1,3 @@
-import { collections6, collections7 } from "../../data/collections";
 import React, { useEffect, useState, useMemo } from "react";
 import { useRouter } from "next/router";
 import Image from "next/image";
@@ -8,7 +7,6 @@ import Sidebar from "../../components/marketplace/Sidebar";
 import User_items from "../../components/user/User_items";
 import Tippy from "@tippyjs/react";
 import "tippy.js/dist/tippy.css"; // optional
-import { CopyToClipboard } from "react-copy-to-clipboard";
 import Meta from "../../components/Meta";
 import OfferItem from "../../components/cards/offerItem";
 import {

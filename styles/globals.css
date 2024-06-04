@@ -3384,6 +3384,11 @@ html {
     --tw-shadow-colored: 5px 5px 10px var(--tw-shadow-color), inset 2px 2px 6px var(--tw-shadow-color), inset -5px -5px 10px var(--tw-shadow-color);
   }
 
+  .shadow-accent-volume-dark {
+    --tw-shadow: 5px 5px 10px rgb(16 16 16 / 25%), inset 2px 2px 6px #544873, inset -5px -5px 10px #21134a !important;
+    --tw-shadow-colored: 5px 5px 10px var(--tw-shadow-color), inset 2px 2px 6px var(--tw-shadow-color), inset -5px -5px 10px var(--tw-shadow-color);
+  }
+
   .shadow-accent-volume,
   .shadow-xl {
     box-shadow: 0 0 transparent, 0 0 transparent, var(--tw-shadow);

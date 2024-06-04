@@ -11,7 +11,6 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 import { useEffect, useState } from "react";
-import { CopyToClipboard } from "react-copy-to-clipboard";
 import { Web3Button } from "@thirdweb-dev/react";
 import AddProposalRefusedModal from "../modal/adProposalRefusedModal";
 import { useChainContext } from "../../contexts/hooks/useChainContext";
