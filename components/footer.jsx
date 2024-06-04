@@ -3,6 +3,7 @@ import { footerMenuList as defaultFooterMenuList, socialIcons } from "../data/fo
 import Image from "next/image";
 import {useChainContext} from "../contexts/hooks/useChainContext";
 import {useAddress} from "@thirdweb-dev/react";
+import { activated_features } from '../data/activated_features';
 
 const Footer = () => {
   const { currentChainObject } = useChainContext();
@@ -14,20 +15,20 @@ const Footer = () => {
     id: 3,
     title: "My Account",
     diffClass: "",
-    list: (address ? [
+    list: address ? [
       {
         id: 1,
         href: `/manage/${address}`,
         text: "My Creator Space",
       },
-      {
+      ...(activated_features.canCreateOffer ? [{
         id: 2,
         href: `${chainId}/offer/create`,
         text: "Create Offer",
-      },
-    ] : []),
+      }] : []),
+    ] : [],
   }]);
-
+  
   return (
     <>
       {/* <!-- Footer --> */}
