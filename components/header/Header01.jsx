@@ -11,6 +11,7 @@ import { useContext, useEffect, useState } from "react";
 import { ConnectWallet, useAddress } from "@thirdweb-dev/react";
 import { useTheme } from "next-themes";
 import { useChainContext } from "../../contexts/hooks/useChainContext";
+import {activated_features} from "../../data/activated_features";
 
 
 function randomUUID() {
@@ -20,6 +21,12 @@ function randomUUID() {
     return v.toString(16);
   });
 }
+
+
+const ConditionalCreateLi = ({ children, condition }) => {
+    return condition ? children : null;
+}
+
 export default function Header01() {
   const [toggle, setToggle] = useState(false);
   const [isCollapse, setCollapse] = useState(null);
@@ -66,13 +73,15 @@ export default function Header01() {
                 {/* buy */}
 
                 {/* create */}
-                <li className="group">
-                  <Link href={`/${chainId}/offer/create`}>
-                    <button className="text-jacarta-700 font-display hover:text-accent focus:text-accent dark:hover:text-accent dark:focus:text-accent flex items-center justify-between py-3.5 text-base dark:text-white lg:px-5">
-                      <span className={isChildrenPageActive(route.asPath, `/${chainId}/offer/create`) ? "text-accent dark:text-accent" : ""}>Create offer</span>
-                    </button>
-                  </Link>
-                </li>
+                <ConditionalCreateLi condition={activated_features.canCreateOffer}>
+                  <li className="group">
+                    <Link href={`/${chainId}/offer/create`}>
+                      <button className="text-jacarta-700 font-display hover:text-accent focus:text-accent dark:hover:text-accent dark:focus:text-accent flex items-center justify-between py-3.5 text-base dark:text-white lg:px-5">
+                        <span className={isChildrenPageActive(route.asPath, `/${chainId}/offer/create`) ? "text-accent dark:text-accent" : ""}>Create offer</span>
+                      </button>
+                    </Link>
+                  </li>
+                </ConditionalCreateLi>
                 <li className="group">
                   <Link href={`/marketplace`}>
                     <button className="text-jacarta-700 font-display hover:text-accent focus:text-accent dark:hover:text-accent dark:focus:text-accent flex items-center justify-between py-3.5 text-base dark:text-white lg:px-5">
