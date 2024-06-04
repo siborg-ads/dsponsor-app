@@ -43,29 +43,29 @@ const SliderForm = ({ styles, handlePreviewModal, stepsRef, numSteps, children, 
     stepContainerRef.current.style.transition = "transform 0.3s ease";
     stepContainerRef.current.style.transform = `translateX(${-stepFormContainerRef.current.offsetWidth * currentSlide}px)`;
   };
+ const adjustHeight = useCallback(() => {
+   const stepHeight = stepsRef.current[currentSlide].offsetHeight;
+   stepFormContainerRef.current.style.height = `${stepHeight}px `;
+   stepContainerRef.current.style.height = `${stepHeight}px `;
+ }, [currentSlide, stepsRef, stepFormContainerRef, stepContainerRef]);
 
-  const animateSlider = () => {
-    if (stepContainerRef.current && stepFormContainerRef) {
-      const stepWidth = stepFormContainerRef.current.offsetWidth;
-      stepContainerRef.current.style.transform = `translateX(${-stepWidth * currentSlide}px)`;
-      adjustHeight();
-      //      const topPosition = stepFormContainerRef.current.getBoundingClientRect().top + window.pageYOffset - 150;
-      //      window.scrollTo({ top: topPosition, behavior: "smooth" });
-    }
-
-    bulletsRef.current.forEach((bullet, index) => {
-      if (bullet) {
-        bullet.classList.toggle(styles["form__bullet--active"], index === currentSlide);
-      }
-    });
-  };
-
-  const adjustHeight = () => {
-    const stepHeight = stepsRef.current[currentSlide].offsetHeight;
-    stepFormContainerRef.current.style.height = `${stepHeight}px `;
-    stepContainerRef.current.style.height = `${stepHeight}px `;
-  };
   useEffect(() => {
+    const animateSlider = () => {
+      if (stepContainerRef.current && stepFormContainerRef) {
+        const stepWidth = stepFormContainerRef.current.offsetWidth;
+        stepContainerRef.current.style.transform = `translateX(${-stepWidth * currentSlide}px)`;
+        adjustHeight();
+        //      const topPosition = stepFormContainerRef.current.getBoundingClientRect().top + window.pageYOffset - 150;
+        //      window.scrollTo({ top: topPosition, behavior: "smooth" });
+      }
+
+      bulletsRef.current.forEach((bullet, index) => {
+        if (bullet) {
+          bullet.classList.toggle(styles["form__bullet--active"], index === currentSlide);
+        }
+      });
+    };
+
     stepFormContainerRef.current.style.height = `auto `;
     stepContainerRef.current.style.height = `auto `;
     const updateDimensions = () => {
@@ -91,7 +91,37 @@ const SliderForm = ({ styles, handlePreviewModal, stepsRef, numSteps, children, 
     return () => {
       window.removeEventListener("resize", updateDimensions);
     };
-  }, [currentSlide, numSteps, stepsRef, styles, files, selectedIntegration, handlePreviewModal, children, stepContainerRef, stepFormContainerRef, bulletsRef, adjustHeight, animateSlider]);
+  }, [currentSlide, numSteps, stepsRef, styles, files, selectedIntegration, handlePreviewModal, children, stepContainerRef, stepFormContainerRef, bulletsRef, adjustHeight]);
+
+ 
+
+  useEffect(() => {
+    stepFormContainerRef.current.style.height = `auto `;
+    stepContainerRef.current.style.height = `auto `;
+    const updateDimensions = () => {
+      if (stepContainerRef.current && stepFormContainerRef) {
+        const stepWidth = stepFormContainerRef.current.offsetWidth;
+
+        stepsRef.current.forEach((step) => {
+          if (step) {
+            step.style.width = `${stepWidth}px`;
+            step.style.height = "100%";
+          }
+        });
+
+        stepContainerRef.current.style.width = `${stepWidth * numSteps}px`;
+        adjustHeight();
+        
+      }
+    };
+
+    updateDimensions();
+    window.addEventListener("resize", updateDimensions);
+
+    return () => {
+      window.removeEventListener("resize", updateDimensions);
+    };
+  }, [currentSlide, numSteps, stepsRef, styles, files, selectedIntegration, handlePreviewModal, children, stepContainerRef, stepFormContainerRef, bulletsRef, adjustHeight]);
 
   const handleNextClick = () => {
     if (currentSlide < numSteps - 1) {

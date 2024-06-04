@@ -17,6 +17,7 @@ import { fetchAllListedToken } from "../../providers/methods/fetchAllListedToken
 import { useChainContext } from "../../contexts/hooks/useChainContext";
 import { id } from "ethers/lib/utils";
 import config from "../../providers/utils/config";
+import ItemCardSkeleton from "../../components/skeleton/ItemCardSkeleton";
 
 const MarketplaceContainer = () => {
   const router = useRouter();
@@ -73,14 +74,14 @@ const filteredTokens = useMemo(() => {
 
   return (
     <>
-    <Meta {...metadata} />
-    <section className="relative pt-16 pb-24">
-      <picture className="pointer-events-none absolute inset-0 -z-10 dark:hidden">
-        <Image width={1920} height={789} src="/img/gradient_light.jpg" alt="gradient" className="h-full w-full" />
-      </picture>
-      <div className="px-6 py-16 xl:px-24">
-        {/* Filters / Sorting */}
-        {/* <div className="flex flex-wrap justify-between">
+      <Meta {...metadata} />
+      <section className="relative pt-16 pb-24">
+        <picture className="pointer-events-none absolute inset-0 -z-10 dark:hidden">
+          <Image width={1920} height={789} src="/img/gradient_light.jpg" alt="gradient" className="h-full w-full" />
+        </picture>
+        <div className="px-6 py-16 xl:px-24">
+          {/* Filters / Sorting */}
+          {/* <div className="flex flex-wrap justify-between">
           <div className="flex space-x-2 mb-2">
             <button className="js-collections-toggle-filters flex h-10 group flex-shrink-0 items-center justify-center space-x-1 rounded-lg border border-jacarta-100 bg-white py-1.5 px-4 font-display text-sm font-semibold text-jacarta-500 hover:bg-accent hover:border-accent dark:hover:bg-accent dark:border-jacarta-600 dark:bg-jacarta-700">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" className="h-4 w-4 fill-jacarta-700 dark:fill-white group-hover:fill-white">
@@ -96,54 +97,56 @@ const filteredTokens = useMemo(() => {
           </div>
 
           {/* View / Sorting */}
-        {/* <Sorting /> */}
-        {/*</div> */}
-        {/* end filters / sorting */}
+          {/* <Sorting /> */}
+          {/*</div> */}
+          {/* end filters / sorting */}
 
-        <div className="lg:flex mt-6">
-          {/* Sidebar */}
-          <Sidebar setFilterTypes={setFilterTypes} />
-          {/* end sidebar */}
-          {/* Content */}
-          <div className="lg:w-4/5 js-collections-content">
-            <div className="mb-8 pb-px">
-              <h1 className="pt-3 mb-2 font-display text-2xl font-medium text-jacarta-700 dark:text-white">Explore Marketplace</h1>
-              <p className="dark:text-jacarta-400 font-medium text-2xs">{listedAuctionToken?.length} items</p>
-            </div>
-            <>
-              {/* <!-- Grid --> */}
-              {listedAuctionToken?.length > 0 ? (
-                <div className="grid grid-cols-1 gap-[1.875rem] md:grid-cols-2 lg:grid-cols-4">
-                  {filteredTokens?.map((item, index) => {
-                    return (
-                      <OfferItem
-                        item={item}
-                        key={index}
-                        url={
-                          !item.mint?.tokenData
-                            ? `/${item?.chainConfig?.chainId}/offer/${item?.offerId}/${item?.tokenId}`
-                            : `/${item?.chainConfig?.chainId}/offer/${item?.nftContract?.adOffers[0]?.id}/${item?.tokenId}?tokenData=${item?.mint?.tokenData}`
-                        }
-                        isOwner={isOwner}
-                        isToken={true}
-                        isListing={item?.marketplaceListings[0]?.listingType}
-                        isAuction={item?.marketplaceListings[0]?.listingType === "Auction" ? true : false}
-                      />
-                    );
-                  })}
-                </div>
-              ) : (
-                <div className="flex w-full justify-center">
-                  <Image src="/images/loading-bullet.svg" alt="icon" width={60} height={60} />
-                </div>
-              )}
-            </>
-          </div>{" "}
-          {/* end content */}
+          <div className="lg:flex mt-6 ">
+            {/* Sidebar */}
+            <Sidebar setFilterTypes={setFilterTypes} />
+            {/* end sidebar */}
+            {/* Content */}
+            <div className="lg:w-4/5 js-collections-content">
+              <div className="mb-8 pb-px">
+                <h1 className="pt-3 mb-2 font-display text-2xl font-medium text-jacarta-700 dark:text-white">Explore Marketplace</h1>
+                <p className="dark:text-jacarta-400 font-medium text-2xs">{listedAuctionToken?.length} items</p>
+              </div>
+              <>
+                {/* <!-- Grid --> */}
+                {listedAuctionToken?.length > 0 ? (
+                  <div className="grid grid-cols-1 gap-[1.875rem] md:grid-cols-2 lg:grid-cols-4">
+                    {filteredTokens?.map((item, index) => {
+                      return (
+                        <OfferItem
+                          item={item}
+                          key={index}
+                          url={
+                            !item.mint?.tokenData
+                              ? `/${item?.chainConfig?.chainId}/offer/${item?.offerId}/${item?.tokenId}`
+                              : `/${item?.chainConfig?.chainId}/offer/${item?.nftContract?.adOffers[0]?.id}/${item?.tokenId}?tokenData=${item?.mint?.tokenData}`
+                          }
+                          isOwner={isOwner}
+                          isToken={true}
+                          isListing={item?.marketplaceListings[0]?.listingType}
+                          isAuction={item?.marketplaceListings[0]?.listingType === "Auction" ? true : false}
+                        />
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 gap-[1.875rem] md:grid-cols-2 lg:grid-cols-4">
+                    {[...Array(15)].map((_, index) => (
+                      <ItemCardSkeleton key={index} widthSize={225}  />
+                    ))}
+                  </div>
+                )}
+              </>
+            </div>{" "}
+            {/* end content */}
+          </div>
         </div>
-      </div>
-    </section>
-  </>
+      </section>
+    </>
   );
 };
 export default MarketplaceContainer;

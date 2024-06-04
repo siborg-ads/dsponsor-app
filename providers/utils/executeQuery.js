@@ -11,7 +11,7 @@ export const executeQuery = async (url, query, variables) => {
         variables,
       }),
     });
-
+console.log(response, "response");
 
 
     if (!response.ok) {

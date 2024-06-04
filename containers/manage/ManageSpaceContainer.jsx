@@ -65,7 +65,7 @@ const ManageSpaceContainer = () => {
         for (const element of listedTokenArray) {
           if (element?.listingType === "Auction") {
             const combinedData = {
-              chainConfig: chainConfig,
+              chainConfig: element.chainConfig,
               tokenData: element?.token.mint.tokenData,
               startTime: element?.startTime,
               endTime: element?.endTime,
@@ -85,7 +85,7 @@ const ManageSpaceContainer = () => {
         for (const element of ownedAdProposalsArray) {
           for (const token of element.nftContract.tokens) {
             const combinedData = {
-              chainConfig: chainConfig,
+              chainConfig: element.chainConfig,
               adParameters: element.adParameters,
               id: `${element.id}-${token.tokenId}`,
               offerId: element.id,
@@ -95,7 +95,7 @@ const ManageSpaceContainer = () => {
             mappedownedAdProposals.push(combinedData);
           }
         }
-        console.log(mappedownedAdProposals);
+        console.log(mappedownedAdProposals, "mappedownedAdProposals");
     
         setMappedownedAdProposals(mappedownedAdProposals);
         setListedAuctionToken(mappedListedToken);

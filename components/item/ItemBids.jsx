@@ -9,6 +9,7 @@ import { useAddress, darkTheme, useBalance, Web3Button, useTokenBalance, useCont
 import { useChainContext } from "../../contexts/hooks/useChainContext";
 import config from '../../providers/utils/config'
 const ItemBids = ({
+  setAmountToApprove,
   bidsAmount,
   setBidsAmount,
   successFullBid,
@@ -26,11 +27,13 @@ const ItemBids = ({
   allowanceTrue,
   checkAllowance,
   chainId,
+  isLoadingButton,
+  setIsLoadingButton,
 }) => {
   const [showBidsModal, setShowBidsModal] = useState(false);
 
-  const toggleBidsModal = () => {
-    checkAllowance();
+  const toggleBidsModal = async () => {
+   await checkAllowance(marketplaceListings[0]?.bidPriceStructureFormatted?.minimalBidPerToken);
     setShowBidsModal(!showBidsModal);
     setSuccessFullBid(false);
   };
@@ -90,8 +93,11 @@ const ItemBids = ({
 
       {showBidsModal && (
         <BidsModal
-        bidsAmount={bidsAmount} 
-        setBidsAmount={setBidsAmount}
+          isLoadingButton={isLoadingButton}
+          setIsLoadingButton={setIsLoadingButton}
+          setAmountToApprove={setAmountToApprove}
+          bidsAmount={bidsAmount}
+          setBidsAmount={setBidsAmount}
           chainId={chainId}
           successFullBid={successFullBid}
           setSuccessFullBid={setSuccessFullBid}

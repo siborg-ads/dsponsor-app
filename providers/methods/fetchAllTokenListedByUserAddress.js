@@ -1,5 +1,6 @@
 import { executeQuery } from "../utils/executeQuery";
 import { gql } from "@apollo/client";
+import config from "../utils/config";
 
 export const fetchAllTokenListedByUserAddress = async (lister, chainId) => {
   const path = new URL(`https://relayer.dsponsor.com/api/${chainId}/graph`);
@@ -64,6 +65,13 @@ export const fetchAllTokenListedByUserAddress = async (lister, chainId) => {
 
   // Exécutez la requête pour obtenir tous les NFTs
   const response = await executeQuery(path.href, GET_DATA, {  lister: lister });
+  const resultMappedData = response?.marketplaceListings.map((item) => {
+    const combinedData = {
+      ...item,
+      chainConfig: config[chainId],
+    };
+    return combinedData;
+  });
 
-  return response?.marketplaceListings;
+  return resultMappedData;
 };
