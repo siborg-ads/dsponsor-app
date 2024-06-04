@@ -74,7 +74,7 @@ const handleFilterChange = (type, checked, category) => {
 };
 
   return (
-    <div className="lg:w-1/5 mb-10 js-collections-sidebar lg:h-[calc(100vh_-_232px)] lg:overflow-auto lg:sticky lg:top-32 lg:mr-12 pr-4 scrollbar-custom divide-y divide-jacarta-100 dark:divide-jacarta-600">
+    <div className="lg:w-1/5 min-w-[150px] mb-10 js-collections-sidebar lg:h-[calc(100vh_-_232px)] lg:overflow-auto lg:sticky lg:top-32 lg:mr-10 pr-4 scrollbar-custom divide-y divide-jacarta-100 dark:divide-jacarta-600">
       {/* Chains filter */}
       <div className="mt-4 pt-4">
         <h2 id="filters-chains-heading">

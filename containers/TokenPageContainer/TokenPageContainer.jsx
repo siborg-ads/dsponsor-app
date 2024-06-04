@@ -88,7 +88,7 @@ const TokenPageContainer = () => {
   const [buyoutPriceAmount, setBuyoutPriceAmount] = useState(null);
   const [royaltiesFeesAmount, setRoyaltiesFeesAmount] = useState(null);
   const [bidsAmount, setBidsAmount] = useState(null);
-  const [currencyDecimals, setCurrencyDecimals] = useState(null)
+  const [currencyDecimals, setCurrencyDecimals] = useState(null);
   const NATIVECurrency = config[chainId]?.smartContracts?.NATIVE;
 
   const { contract: DsponsorAdminContract } = useContract(config[chainId]?.smartContracts?.DSPONSORADMIN?.address, config[chainId]?.smartContracts?.DSPONSORADMIN?.abi);
@@ -107,7 +107,7 @@ const TokenPageContainer = () => {
   const { data: royaltiesInfo } = useContractRead(DsponsorNFTContract, "royaltyInfo", [tokenIdString, 100]);
   const { contract: dsponsorMpContract } = useContract(config[chainId]?.smartContracts?.DSPONSORMP?.address);
   const { mutateAsync: directBuy } = useContractWrite(dsponsorMpContract, "buy");
-const { setSelectedChain } = useSwitchChainContext();
+  const { setSelectedChain } = useSwitchChainContext();
   const now = Math.floor(new Date().getTime() / 1000);
 
   useEffect(() => {
@@ -118,19 +118,23 @@ const { setSelectedChain } = useSwitchChainContext();
         const combinedData = {
           ...offer,
         };
-        if (offer?.nftContract?.tokens.length > 0) {
-          setMarketplaceListings(offer?.nftContract?.tokens[0]?.marketplaceListings);
-        }
+        
 
         console.log(combinedData, "combinedData");
         setOfferData(combinedData);
       };
-        setSelectedChain(config[chainId]?.chainNameProvider);
+      setSelectedChain(config[chainId]?.chainNameProvider);
       fetchAdsOffers();
     }
 
     setTokenIdString(tokenId?.toString());
   }, [offerId, tokenId, successFullUpload, successFullBid, successFullListing, address, chainId]);
+
+  useEffect(() => {
+if (offerData?.nftContract?.tokens.length > 0) {
+  setMarketplaceListings(offerData?.nftContract?.tokens[0]?.marketplaceListings);
+}
+  }, [offerData]);
 
   useEffect(() => {
     if (!offerData) return;
@@ -158,8 +162,6 @@ const { setSelectedChain } = useSwitchChainContext();
         setRoyaltiesFeesAmount(offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.buyPriceStructureFormatted.royaltiesBuyAmount);
         setFinalPrice(offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.buyPriceStructureFormatted.buyoutPricePerToken);
         setAmountToApprove(BigInt(offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.buyPriceStructure.buyoutPricePerToken));
-       
-        
       }
       if (offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.listingType === "Auction") {
         setTokenBigIntPrice(offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.bids[0]?.totalBidAmount);
@@ -179,7 +181,7 @@ const { setSelectedChain } = useSwitchChainContext();
       setCurrency(offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.currencySymbol);
       return;
     }
-    if (offerData?.nftContract?.tokens[0]?.mint !== null) {
+    if (offerData?.nftContract?.tokens[0]?.mint !== null && offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.length === 0) { 
       setTokenStatut("MINTED");
       setTokenCurrencyAddress(offerData?.nftContract?.prices[0]?.currency);
       setTokenBigIntPrice(offerData?.nftContract?.prices[0]?.amount);
@@ -256,8 +258,6 @@ const { setSelectedChain } = useSwitchChainContext();
     setImageURLSteps(imageURLSteps);
     setNumSteps(totalNumSteps);
   }, [offerData]);
-
- 
 
   useEffect(() => {
     if (!offerData || !adParameters) return;
@@ -337,7 +337,7 @@ const { setSelectedChain } = useSwitchChainContext();
     }
   };
 
-  const checkAllowance = async () => {
+  const checkAllowance = async (amountToApprove) => {
     if (tokenCurrencyAddress !== "0x0000000000000000000000000000000000000000" && address) {
       let allowance;
 
@@ -347,11 +347,13 @@ const { setSelectedChain } = useSwitchChainContext();
         allowance = await tokenContract.call("allowance", [address, config[chainId]?.smartContracts?.DSPONSORADMIN?.address]);
       }
 
-      const allowanceBigNumber = ethers.BigNumber.from(allowance._hex);
-
-      if (allowanceBigNumber.gt(amountToApprove)) return;
+      if (allowance.toNumber() > amountToApprove) {
+        setAllowanceTrue(false);
+        return false;
+      }
 
       setAllowanceTrue(true);
+      return true;
     }
   };
 
@@ -364,9 +366,9 @@ const { setSelectedChain } = useSwitchChainContext();
       }
       if (marketplaceListings.length > 0 && tokenStatut === "DIRECT") {
         await approve({ args: [config[chainId]?.smartContracts?.DSPONSORMP?.address, amountToApprove] });
-      } else if(tokenStatut === "AUCTION" && marketplaceListings.length > 0) {
+      } else if (tokenStatut === "AUCTION" && marketplaceListings.length > 0) {
         const bidsBigInt = ethers.utils.parseUnits(bidsAmount.toString(), currencyDecimals);
-        console.log(bidsAmount, currencyDecimals);
+ 
         await approve({ args: [config[chainId]?.smartContracts?.DSPONSORMP?.address, bidsBigInt] });
       } else {
         await approve({ args: [config[chainId]?.smartContracts?.DSPONSORADMIN?.address, amountToApprove] });
@@ -405,6 +407,7 @@ const { setSelectedChain } = useSwitchChainContext();
       referralAdditionalInformation: "",
     };
     try {
+      setIsLoadingButton(true);
       const isEthCurrency = tokenCurrencyAddress === "0x0000000000000000000000000000000000000000";
       const functionWithPossibleArgs = marketplaceListings.length <= 0 ? argsMintAndSubmit : argsdirectBuy;
       const argsWithPossibleOverrides = isEthCurrency ? { args: [functionWithPossibleArgs], overrides: { value: amountToApprove } } : { args: [functionWithPossibleArgs] };
@@ -498,8 +501,8 @@ const { setSelectedChain } = useSwitchChainContext();
     return str?.slice(0, 3) + "..." + str?.slice(-3);
   }
 
-  const handleBuyModal = () => {
-    checkAllowance();
+  const handleBuyModal = async () => {
+   await checkAllowance(amountToApprove);
     setSuccessFullUpload(false);
     setBuyModal(!buyModal);
     setBuyMethod(true);
@@ -509,6 +512,14 @@ const { setSelectedChain } = useSwitchChainContext();
     setShowPreviewModal(!showPreviewModal);
     validateInputs();
   };
+  function shouldRenderManageTokenComponent() {
+    const isFirstListingAuctionActive = marketplaceListings[0]?.startTime < now && marketplaceListings[0]?.endTime > now && marketplaceListings[0]?.listingType === "Auction";
+    const isFirstListingDirect = marketplaceListings[0]?.listingType === "Direct";
+    const isTokenStatusSpecial = tokenStatut === "MINTABLE" || tokenStatut === "SIBORG";
+    const isAuctionWithBids = marketplaceListings[0]?.listingType === "Auction" && marketplaceListings[0]?.bids?.length > 0;
+
+    return (isFirstListingAuctionActive && !isOwner) || (isFirstListingDirect && !isOwner) || isTokenStatusSpecial || (!isOwner && !isAllowedToMint) || isAuctionWithBids;
+  }
 
   const successFullUploadModal = {
     title: "Submit ad",
@@ -646,11 +657,7 @@ const { setSelectedChain } = useSwitchChainContext();
                 </div>
               )}
 
-              {marketplaceListings[0]?.startTime < now && marketplaceListings[0]?.endTime > now && marketplaceListings[0]?.listingType === "Auction" ? (
-                ""
-              ) : marketplaceListings[0]?.listingType === "Direct" && !isOwner ? (
-                ""
-              ) : tokenStatut === "MINTABLE" || tokenStatut === "SIBORG" || (!isOwner && !isAllowedToMint) ? (
+              {shouldRenderManageTokenComponent() ? (
                 ""
               ) : (
                 <ItemManage
@@ -666,6 +673,7 @@ const { setSelectedChain } = useSwitchChainContext();
               )}
               {tokenStatut === "AUCTION" && marketplaceListings[0].startTime < now && marketplaceListings[0].endTime > now && (
                 <ItemBids
+                  setAmountToApprove={setAmountToApprove}
                   bidsAmount={bidsAmount}
                   setBidsAmount={setBidsAmount}
                   chainId={chainId}
@@ -682,6 +690,8 @@ const { setSelectedChain } = useSwitchChainContext();
                   setSuccessFullBid={setSuccessFullBid}
                   successFullBid={successFullBid}
                   address={address}
+                  isLoadingButton={isLoadingButton}
+                  setIsLoadingButton={setIsLoadingButton}
                 />
               )}
             </div>

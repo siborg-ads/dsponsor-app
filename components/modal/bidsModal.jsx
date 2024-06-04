@@ -8,6 +8,7 @@ import Link from "next/link";
 import { useChainContext } from "../../contexts/hooks/useChainContext";
 import config from "../../providers/utils/config";
 const BidsModal = ({
+  setAmountToApprove,
   bidsAmount,
   setBidsAmount,
   address,
@@ -23,37 +24,43 @@ const BidsModal = ({
   allowanceTrue,
   currencyTokenDecimals,
   handleApprove,
+  checkAllowance,
+  isLoadingButton,
+  setIsLoadingButton,
 }) => {
-  
   const [initialIntPrice, setInitialIntPrice] = useState(0);
-  const [isPriceGood, setIsPriceGood] = useState(true);
+  const [isPriceGood, setIsPriceGood] = useState(false);
   const { mutateAsync: auctionBids } = useContractWrite(dsponsorMpContract, "bid");
-  const [isLoadingButton, setIsLoadingButton] = useState(false);
   const [checkTerms, setCheckTerms] = useState(false);
 
   useEffect(() => {
     setInitialIntPrice(marketplaceListings[0]?.bidPriceStructureFormatted?.minimalBidPerToken);
     setBidsAmount(marketplaceListings[0]?.bidPriceStructureFormatted?.newBidPerToken);
+   
+
   }, [marketplaceListings]);
 
-  const handleBidsAmount = (e) => {
-    if (e.target.value < initialIntPrice) {
+  const handleBidsAmount = async (e) => {
+    if (Number(e.target.value) <= initialIntPrice) {
       setIsPriceGood(false);
       setBidsAmount(e.target.value);
     } else {
       setIsPriceGood(true);
       setBidsAmount(e.target.value);
+      setAmountToApprove(ethers.utils.parseUnits(e.target.value.toString(), currencyTokenDecimals));
+      await checkAllowance(ethers.utils.parseUnits(e.target.value.toString(), currencyTokenDecimals));
     }
   };
   const handleSubmit = async () => {
-    console.log("bidsAmount", bidsAmount, tokenBalance);
+
     const hasEnoughBalance = checkUserBalance(tokenBalance, bidsAmount);
     if (!hasEnoughBalance) {
       throw new Error("Not enough balance for approval.");
     }
     try {
       setIsLoadingButton(true);
-      const bidsBigInt = ethers.utils.parseUnits(bidsAmount.toString(),currencyTokenDecimals )
+      const bidsBigInt = ethers.utils.parseUnits(bidsAmount.toString(), currencyTokenDecimals);
+ 
       await auctionBids({
         args: [marketplaceListings[0].id, bidsBigInt, address, ""],
       });
@@ -68,6 +75,7 @@ const BidsModal = ({
   const handleTermService = (e) => {
     setCheckTerms(e.target.checked);
   };
+
   return (
     <div>
       <div className="modal fade show block">

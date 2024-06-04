@@ -124,7 +124,7 @@ console.log(item, "item");
                 style={{ background: "rgba(54, 58, 93, 0.7)", backdropFilter: "blur(20px)" }}
                 className={`absolute ${!isToken? "-bottom-1":"bottom-8"} -right-2  dark:border-jacarta-600 border-jacarta-100 flex items-center whitespace-nowrap rounded-md border py-1 px-2`}
               >
-                <Image src={item?.chainConfig?.logoURL} width={20} height={20} alt="logo" loading="lazy" />
+                <Image src={item?.chainConfig?.logoURL} width={17} height={17} alt="logo" loading="lazy" />
               </div>
             </Tippy>
             {isToken && (

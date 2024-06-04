@@ -11,6 +11,7 @@ import { MdKeyboardArrowRight, MdKeyboardArrowLeft } from "react-icons/md";
 import { bidsModalShow } from "../../redux/counterSlice";
 import { useDispatch } from "react-redux";
 import Likes from "../likes";
+import ItemCardSkeleton from "../skeleton/ItemCardSkeleton";
 
 import { gql } from "@apollo/client";
 
@@ -51,9 +52,12 @@ const HomeCarousel = ({data, isToken = false , arrowName}) => {
         className=" card-slider-4-columns !py-5"
       >
         {data.length === 0 || !data ? (
-          <div className="flex w-full justify-center">
-            <Image src="/images/loading-bullet.svg" alt="icon" width={60} height={60} />
-          </div>
+          [...Array(25)].map((_, index) => (
+             <SwiperSlide className="text-white" key={index}>
+
+               <ItemCardSkeleton widthSize={275}  />
+             </SwiperSlide>
+                    ))
         ) : (
           data.map((item, index) => {
             return (
