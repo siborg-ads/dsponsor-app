@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { useAddress, useSwitchChain, useContract, useContractWrite, Web3Button, useContractRead, useStorageUpload, useTokenDecimals, CheckoutWithCard, CheckoutWithEth } from "@thirdweb-dev/react";
+import { activated_features } from '../../../data/activated_features';
 
 import { FileUploader } from "react-drag-drop-files";
 import  ModalHelper  from "../../Helper/modalHelper";
@@ -169,7 +170,7 @@ const Step_4_Create = ({
                 className="dark:bg-jacarta-700 flex-grow border-jacarta-100 hover:ring-accent/10 focus:ring-accent dark:border-jacarta-600 dark:placeholder:text-jacarta-300  rounded-lg py-3 px-3 hover:ring-2 dark:text-white"
               />
 
-              <ConditionalCurrencySelector condition={false}>
+              <ConditionalCurrencySelector condition={activated_features.canHaveMultipleCurrencies}>
                 <div className="flex gap-4">
                 <select
                     id="currency"
