@@ -8,6 +8,19 @@ import  ModalHelper  from "../../Helper/modalHelper";
 import { useChainContext } from "../../../contexts/hooks/useChainContext";
 import config from "../../../providers/utils/config";
 
+
+const ConditionalUSDPaymentText = ({children, condition}) => {
+  return condition ? (
+    <div>{children}</div>
+) : ("")
+}
+
+const ConditionalCurrencySelector = ({children, condition}) => {
+  return condition ? (
+    <div>{children}</div>
+) : ("ETH")
+}
+
 const Step_4_Create = ({
   chainId,
   stepsRef,
@@ -36,7 +49,7 @@ const Step_4_Create = ({
   const NATIVECurrency = config[chainId]?.smartContracts?.NATIVE;
   const WETHCurrency = config[chainId]?.smartContracts?.WETH;
   const USDTCurrency = config[chainId]?.smartContracts?.USDT;
-  const [selectedCurrencyContract, setSelectedCurrencyContract] = useState(USDCCurrency?.address);
+  const [selectedCurrencyContract, setSelectedCurrencyContract] = useState(WETHCurrency?.address);
   const { contract: tokenContractAsync } = useContract(selectedCurrencyContract, "token");
   const { data: symbolContractAsync } = useContractRead(tokenContractAsync, "symbol");
   const { data: decimalsContractAsync } = useContractRead(tokenContractAsync, "decimals");
@@ -86,8 +99,8 @@ const Step_4_Create = ({
 
 
   const selectedCurrencyContractObject = {
-    USDC: USDCCurrency?.address,
     WETH: WETHCurrency?.address,
+    USDC: USDCCurrency?.address,
     USDT: USDTCurrency?.address,
     custom: customContract,
   };
@@ -140,9 +153,11 @@ const Step_4_Create = ({
               Unit selling price
               <span className="text-red">*</span>
             </label>
-            <p className="dark:text-jacarta-300 text-jacarta-400 text-2xs mb-3">
-              USD payment means you&apos;ll receive USD tokens (1 USDC = 1$). You&apos;ll be able to cash out via wire transfer with a service like MtPelerin. You can change the pricing later.
-            </p>
+             <ConditionalUSDPaymentText condition={selectedCurrency.includes(['USDT', 'USDC'])}> 
+                <p className="dark:text-jacarta-300 text-jacarta-400 text-2xs mb-3">
+                  USD payment means you&apos;ll receive USD tokens (1 USDC = 1$). You&apos;ll be able to cash out via wire transfer with a service like MtPelerin. You can change the pricing later.
+                </p>
+              </ConditionalUSDPaymentText>
             <div className="flex  flex-wrap   gap-4 items-center text-jacarta-700 dark:text-white">
               <input
                 id="numberInput"
@@ -154,31 +169,33 @@ const Step_4_Create = ({
                 className="dark:bg-jacarta-700 flex-grow border-jacarta-100 hover:ring-accent/10 focus:ring-accent dark:border-jacarta-600 dark:placeholder:text-jacarta-300  rounded-lg py-3 px-3 hover:ring-2 dark:text-white"
               />
 
-              <div className="flex gap-4">
+              <ConditionalCurrencySelector condition={false}>
+                <div className="flex gap-4">
                 <select
-                  id="currency"
-                  value={selectedCurrency}
-                  onChange={handleCurrencyChange}
-                  className="dark:bg-jacarta-700 min-w-[110px] border-jacarta-100 hover:ring-accent/10 focus:ring-accent dark:border-jacarta-600 dark:placeholder:text-jacarta-300 w-full rounded-lg py-3 px-5 hover:ring-2 dark:text-white"
-                >
-                  <option value="USDC">USDC</option>
-                  <option value="NATIVE">{config[chainId]?.smartContracts?.NATIVE.symbol}</option>
-                  <option value="WETH">WETH</option>
-                  <option value="USDT">USDT</option>
-                  <option value="custom">Custom</option>
-                </select>
-                {selectedCurrency === "custom" && (
-                  <input
-                    type="text"
-                    value={customContract}
-                    onChange={handleCustomContractChange}
-                    placeholder="Contract address"
-                    className={`dark:bg-jacarta-700  hover:ring-accent/10 ${
-                      tokenContractAsync && customContract ? "border-green" : "border-red"
-                    } focus:ring-accent  dark:placeholder:text-jacarta-300 w-full rounded-lg py-3 px-3 hover:ring-2 dark:text-white`}
-                  />
-                )}
-              </div>
+                    id="currency"
+                    value={selectedCurrency}
+                    onChange={handleCurrencyChange}
+                    className="dark:bg-jacarta-700 min-w-[110px] border-jacarta-100 hover:ring-accent/10 focus:ring-accent dark:border-jacarta-600 dark:placeholder:text-jacarta-300 w-full rounded-lg py-3 px-5 hover:ring-2 dark:text-white"
+                  >
+                    <option value="WETH">WETH</option>
+                    <option value="USDC">USDC</option>
+                    <option value="NATIVE">{config[chainId]?.smartContracts?.NATIVE.symbol}</option>
+                    <option value="USDT">USDT</option>
+                    <option value="custom">Custom</option>
+                  </select>
+                  {selectedCurrency === "custom" && (
+                    <input
+                      type="text"
+                      value={customContract}
+                      onChange={handleCustomContractChange}
+                      placeholder="Contract address"
+                      className={`dark:bg-jacarta-700  hover:ring-accent/10 ${
+                        tokenContractAsync && customContract ? "border-green" : "border-red"
+                      } focus:ring-accent  dark:placeholder:text-jacarta-300 w-full rounded-lg py-3 px-3 hover:ring-2 dark:text-white`}
+                    />
+                  )}
+                </div>
+              </ConditionalCurrencySelector>
             </div>
             <p className="dark:text-jacarta-300 text-jacarta-400 text-2xs mt-3">
               You&apos;ll earn up to {selectedUnitPrice} {symbolContract ? symbolContract : selectedCurrency}. As d&gt;sponsor charges a fee of 4%, sponsors will pay{" "}
