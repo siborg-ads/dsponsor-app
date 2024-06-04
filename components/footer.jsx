@@ -1,8 +1,33 @@
 import Link from "next/link";
-import { footerMenuList, socialIcons } from "../data/footer_data";
+import { footerMenuList as defaultFooterMenuList, socialIcons } from "../data/footer_data";
 import Image from "next/image";
+import {useChainContext} from "../contexts/hooks/useChainContext";
+import {useAddress} from "@thirdweb-dev/react";
 
-const footer = () => {
+const Footer = () => {
+  const { currentChainObject } = useChainContext();
+  const chainId = currentChainObject?.chainId;
+
+  const address = useAddress();
+
+  const footerMenuList = defaultFooterMenuList.concat([{
+    id: 3,
+    title: "My Account",
+    diffClass: "",
+    list: (address ? [
+      {
+        id: 1,
+        href: `/manage/${address}`,
+        text: "My Creator Space",
+      },
+      {
+        id: 2,
+        href: `${chainId}/offer/create`,
+        text: "Create Offer",
+      },
+    ] : []),
+  }]);
+
   return (
     <>
       {/* <!-- Footer --> */}
@@ -62,12 +87,12 @@ const footer = () => {
 
             <ul className="dark:text-jacarta-400 flex flex-wrap space-x-4 text-sm">
               <li>
-                <Link href="/tarms" className="hover:text-accent dark:hover:text-white">
+                <Link href="/terms-and-conditions" className="hover:text-accent dark:hover:text-white">
                   Terms and conditions
                 </Link>
               </li>
               <li>
-                <Link href="/tarms" className="hover:text-accent dark:hover:text-white">
+                <Link href="/privacy-policy" className="hover:text-accent dark:hover:text-white">
                   Privacy policy
                 </Link>
               </li>
@@ -79,4 +104,4 @@ const footer = () => {
   );
 };
 
-export default footer;
+export default Footer;
