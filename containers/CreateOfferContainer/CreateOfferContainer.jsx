@@ -34,7 +34,7 @@ const CreateOfferContainer = () => {
   const [previewImages, setPreviewImages] = useState([]);
   const [selectedNumber, setSelectedNumber] = useState(1);
   const [selectedUnitPrice, setSelectedUnitPrice] = useState(1);
-  const [selectedCurrency, setSelectedCurrency] = useState("USDC");
+  const [selectedCurrency, setSelectedCurrency] = useState("WETH");
   const [customContract, setCustomContract] = useState(null);
   const [selectedRoyalties, setSelectedRoyalties] = useState(10);
   const [validate, setValidate] = useState(false);
