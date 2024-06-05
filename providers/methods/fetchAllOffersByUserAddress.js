@@ -1,11 +1,12 @@
 import { executeQuery } from "../utils/executeQuery";
-import { gql } from "@apollo/client";
 import config from "../utils/config";
 
 export const fetchAllOffersByUserAddress = async (userAddress, chainId) => {
   const path = new URL(`https://relayer.dsponsor.com/api/${chainId}/graph`);
 
-  const GET_DATA = gql`
+const path = new URL(`https://relayer.dsponsor.com/api/${chainId}/graph`);
+
+  const GET_DATA = `
     query OffersManagedByUser($userAddress: ID!) {
       adOffers(
         where: {
@@ -89,8 +90,9 @@ export const fetchAllOffersByUserAddress = async (userAddress, chainId) => {
     }
   `;
 
-  const response = await executeQuery(path.href, GET_DATA, { userAddress: userAddress });
-  const chainConfig = config[chainId];
+
+  const response = await executeQuery(path.href, GET_DATA,  { userAddress: userAddress });
+   const chainConfig = config[chainId];
 
   const resultMappedData = response.adOffers
     .map((element) => {

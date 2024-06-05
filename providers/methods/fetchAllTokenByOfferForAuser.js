@@ -1,5 +1,3 @@
-import { executeQuery } from "../utils/executeQuery";
-import { gql } from "@apollo/client";
 import config from "../utils/config";
 
 export const fetchAllTokenByOfferForAuser = async (ownerAddress, chainId) => {
