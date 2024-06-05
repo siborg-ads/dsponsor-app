@@ -1,6 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useChainContext } from "../../contexts/hooks/useChainContext";
+import {activated_features} from "../../data/activated_features";
+import ConditionalDisplayedComponent from "../../utils/ConditionalDisplayedComponent";
 
 const Hero = () => {
     const { currentChainObject } = useChainContext();
@@ -21,9 +23,11 @@ const Hero = () => {
             <h1 className="text-jacarta-700 font-bold font-display mb-6 text-center text-5xl dark:text-white  lg:text-6xl xl:text-7xl">Unlock Smarter Monetization with d&gt;sponsor</h1>
             <p className="dark:text-jacarta-200 mb-8 text-center text-lg">Leverage audience engagement into investment opportunities. A new Web3 model for an enhanced media and creator economy.</p>
             <div className="flex space-x-4 justify-center w-full">
-              <Link href={`/${chainId}/offer/create`} className="bg-accent shadow-accent-volume hover:bg-accent-dark w-36 rounded-full py-3 px-8 text-center font-semibold text-white transition-all">
-                Create
-              </Link>
+                <ConditionalDisplayedComponent condition={activated_features.canCreateOffer}>
+                    <Link href={`/${chainId}/offer/create`} className="bg-accent shadow-accent-volume hover:bg-accent-dark w-36 rounded-full py-3 px-8 text-center font-semibold text-white transition-all">
+                        Create
+                    </Link>
+                </ConditionalDisplayedComponent>
               <Link
                 href="#hot-offers"
                 className="text-accent shadow-white-volume ici hover:bg-accent-dark hover:shadow-accent-volume w-36 rounded-full bg-white py-3 px-8 text-center font-semibold transition-all hover:text-white"

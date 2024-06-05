@@ -5,28 +5,22 @@ import OwnedOffers_categories_items from "../categories/ownedOffers_categories_i
 
 import OwnedAdProposals_categories_items from "../categories/ownedAdProposals_categories_item";
 import Auctions_categories from "../categories/Auctions_categories";
+import { activated_features } from '../../data/activated_features';
 
 const User_items = ({ createdData, mappedownedAdProposals, isPendinAdsOnOffer, isOwner, listedAuctionToken }) => {
   const [itemActive, setItemActive] = useState(1);
 
+
   const tabItem = [
-    {
+    ...(activated_features.canCreateOffer ? [{
       id: 1,
       text: "Created Offers",
       icon: "owned",
-    },
-    {
-      id: 2,
-      text: "Owned tokens",
-      icon: "owned",
-    },
-
-    {
-      id: 3,
-      text: "Auction listed tokens",
-      icon: "activity",
-    },
+    }] : []),
+    { id: 2, text: "Owned tokens", icon: "owned" },
+    { id: 3, text: "Auction listed tokens", icon: "activity" },
   ];
+
   return (
     <>
       <section className="relative py-24">
