@@ -72,7 +72,7 @@ useEffect(() => {
 
     const price = value;
 
-    console.log(price);
+    //console.log(price);
 
     setSelectedUnitPrice(value === "" ? null : price);
   };
@@ -108,7 +108,7 @@ useEffect(() => {
       newErrors.descriptionError = "Description is missing.";
       isValid = false;
     }
-    console.log(files);
+    //console.log(files);
     if (files.length === 0) {
       newErrors.imageError = "Image is missing.";
       isValid = false;
@@ -127,7 +127,7 @@ useEffect(() => {
 
     for (let i = 0; i < selectedIntegration.length; i++) {
       if (imageRatios[i] === "custom") {
-        console.log("ici");
+        //console.log("ici");
         newErrors.imageRatioError = "Image ratio is missing.";
         isValid = false;
       }
@@ -139,9 +139,9 @@ useEffect(() => {
       newErrors.endDateError = "End date cannot be in the past.";
       isValid = false;
     }
-    console.log(parseFloat(selectedUnitPrice));
+    //console.log(parseFloat(selectedUnitPrice));
     if (parseFloat(selectedUnitPrice) < 1 * 10 ** -tokenDecimals || isNaN(selectedUnitPrice) || selectedUnitPrice === null) {
-      console.log("là");
+      //console.log("là");
       newErrors.unitPriceError = `Unit price must be at least ${1 * 10 ** -tokenDecimals}.`;
       isValid = false;
     }
@@ -169,7 +169,7 @@ useEffect(() => {
       newErrors.royaltyError = "Royalties are missing or invalid. They should be between 0.01% and 100%.";
       isValid = false;
     }
-    console.log(previewImages, "previewImages");
+    //console.log(previewImages, "previewImages");
     setValidate(isValid);
     setErrors(newErrors);
     return isValid;
@@ -194,7 +194,7 @@ useEffect(() => {
         paramsFormated.push(c);
       });
       let uniqueParams = [...new Set(paramsFormated)];
-      console.log(uniqueParams);
+      //console.log(uniqueParams);
 
       const uploadUrl = await upload({
         data: [files[0]],
@@ -236,7 +236,7 @@ useEffect(() => {
           token_metadata: {},
         },
       });
-      console.log(jsonMetadata, "jsonMetadata");
+      //console.log(jsonMetadata, "jsonMetadata");
       const jsonContractURI = JSON.stringify({
         name: name,
         description: description,
@@ -286,14 +286,14 @@ useEffect(() => {
         }),
       ];
       const preparedArgs = [Object.values(JSON.parse(args[0])), Object.values(JSON.parse(args[1]))];
-      console.log(preparedArgs,DsponsorAdminContract, "preparedArgs");
+      //console.log(preparedArgs,DsponsorAdminContract, "preparedArgs");
       await createDSponsorNFTAndOffer({ args: preparedArgs });
 
       setSuccessFullUpload(true);
     } catch (error) {
       setIsLoadingButton(false);
       setSuccessFullUpload(false);
-      console.log(error);
+      //console.log(error);
       throw error;
     } finally {
       setIsLoadingButton(false);

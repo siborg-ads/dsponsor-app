@@ -36,7 +36,7 @@ const HomePageContainer = () => {
       
    
       
-      console.log(lastOffersArray, "lastOffers");
+      //console.log(lastOffersArray, "lastOffers");
 
      
       

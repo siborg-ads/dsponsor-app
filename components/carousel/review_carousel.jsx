@@ -78,7 +78,7 @@ const Review_carousel = ({chainId, setSelectedItems, selectedItems, handleSubmit
     let submissionArgs = [];
     setIsApprouvedAd(approuved);
     for (const item of selectedItems) {
-      console.log(item, "item");
+      //console.log(item, "item");
       let argObject = {
         ...item,
         ...(approuved && { reason: "" }),

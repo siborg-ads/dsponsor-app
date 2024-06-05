@@ -205,7 +205,7 @@ const ItemManageModal = ({ handleListingModal, offerData, setSuccessFullListing,
       newErrors.currencyError = "Custom contract is missing or invalid.";
       isValid = false;
     }
-    console.log(selectedCurrency);
+    //console.log(selectedCurrency);
 
     if (!selectedCurrency) {
       newErrors.currencyError = "Currency is missing or invalid.";
@@ -223,7 +223,7 @@ const ItemManageModal = ({ handleListingModal, offerData, setSuccessFullListing,
       grossPrice /= 1 - fees[i];
     }
     if (smartContract) {
-      console.log(grossPrice.toFixed(tokenDecimals));
+      //console.log(grossPrice.toFixed(tokenDecimals));
       return grossPrice.toFixed(tokenDecimals);
     } else {
       return grossPrice.toFixed(3);

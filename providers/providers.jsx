@@ -24,7 +24,7 @@ function InnerProviders({ children }) {
 
   useEffect(() => {
     if (selectedChain) {
-      console.log(selectedChain, "selectedChain");
+      //console.log(selectedChain, "selectedChain");
       setChain(selectedChain.toString());
     }
   }, [selectedChain]);

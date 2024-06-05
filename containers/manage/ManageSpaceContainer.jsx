@@ -47,20 +47,20 @@ const ManageSpaceContainer = () => {
         }
 
         setCreatedData(offersByUserAddressArray);
-        console.log(offersByUserAddressArray);
+        //console.log(offersByUserAddressArray);
         const ownedAdProposalsArray = [];
         for (const [chainId] of Object.entries(config)) {
 
         const ownedAdProposals = await fetchAllTokenByOfferForAuser(userAddress, chainId);
         ownedAdProposalsArray.push(...ownedAdProposals);
         }
-        console.log(ownedAdProposalsArray);
+        //console.log(ownedAdProposalsArray);
         const listedTokenArray = [];
         for (const [chainId] of Object.entries(config)) {
         const listedToken = await fetchAllTokenListedByUserAddress(userAddress, chainId);
         listedTokenArray.push(...listedToken);
         }
-        console.log(listedTokenArray, "listedTokenArray");
+        //console.log(listedTokenArray, "listedTokenArray");
         const mappedListedToken = [];
         for (const element of listedTokenArray) {
           if (element?.listingType === "Auction") {
@@ -95,7 +95,7 @@ const ManageSpaceContainer = () => {
             mappedownedAdProposals.push(combinedData);
           }
         }
-        console.log(mappedownedAdProposals, "mappedownedAdProposals");
+        //console.log(mappedownedAdProposals, "mappedownedAdProposals");
     
         setMappedownedAdProposals(mappedownedAdProposals);
         setListedAuctionToken(mappedListedToken);

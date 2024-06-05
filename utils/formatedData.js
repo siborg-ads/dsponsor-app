@@ -8,7 +8,7 @@ export const bufferAdParams = (data) => {
     console.error("Invalid input data");
     return;
   }
-  console.log("ici");
+  //console.log("ici");
   const adParamsData = [];
   for (let i = 0; i < data.length; i++) {
     const validParam = data[i].adParameter;
@@ -21,7 +21,7 @@ export const bufferAdParams = (data) => {
   if (adParamsData.length > 1) {
     return adParamsData;
   } else {
-    console.log("No matching key found");
+    //console.log("No matching key found");
     return undefined;
   }
 };

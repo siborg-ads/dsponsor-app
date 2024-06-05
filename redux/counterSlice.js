@@ -115,7 +115,7 @@ export const counterSlice = createSlice({
     },
     updateCollectionData: (state, action) => {
       const text = action.payload;
-      console.log(text);
+      //console.log(text);
       if (text === "trending") {
         const tampItem = state.collectiondata.filter((item) => item.trending);
         state.sortedCollectionData = tampItem;

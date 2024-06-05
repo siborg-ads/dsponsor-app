@@ -15,6 +15,6 @@ const resultMappedData = data.map((item) => {
   };
   return combinedData;
 });
-console.log(resultMappedData, "resultMappedData");
+//console.log(resultMappedData, "resultMappedData");
   return resultMappedData;
 };

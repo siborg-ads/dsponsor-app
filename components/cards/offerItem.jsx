@@ -52,7 +52,7 @@ const OfferItem = ({ item, url, isToken = false, isSelectionActive, isOwner, isA
  };
  useEffect(() => {
    if (!item) return;
-console.log(item, "item");
+  ////console.log(item, "item");
    if (!isToken && !isListing && !isAuction) {
     setItemStatut("OFFER")
      setPrice(item.nftContract.prices[0].mintPriceStructureFormatted.totalAmount);

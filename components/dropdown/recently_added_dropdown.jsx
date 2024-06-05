@@ -96,7 +96,7 @@ const Recently_added_dropdown = ({ data, dropdownFor }) => {
   };
 
   const handleCurrencyDropdown = () => {
-    console.log("first");
+    //console.log("first");
     if (currencyDropdown) {
       setCurrencyDropdown(false);
     } else {
@@ -104,7 +104,7 @@ const Recently_added_dropdown = ({ data, dropdownFor }) => {
     }
   };
 
-  // console.log(blockChaindropdownShow);
+  // //console.log(blockChaindropdownShow);
 
   useEffect(() => {
     dispatch(updatetrendingCategorySorText(sortFilterText));
@@ -127,7 +127,7 @@ const Recently_added_dropdown = ({ data, dropdownFor }) => {
 
   const handleInput = (e, text) => {
     if (e.target.checked) {
-      // console.log(text);
+      // //console.log(text);
       dispatch(updateTrendingCategoryItemByInput(text));
     } else {
       dispatch(updateTrendingCategoryItemByInput(""));

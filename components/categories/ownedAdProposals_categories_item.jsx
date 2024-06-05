@@ -131,11 +131,11 @@ setIsFirstSelection(false);
 
   const handleSliderForm = () => {
     setShowSliderForm(!showSliderForm);
-    console.log(selectedItems, "selectedItems");
+    //console.log(selectedItems, "selectedItems");
     let adParams = [];
     const uniqueIds = new Set();
     const adDetails = {};
-console.log(selectedItems, "selectedItems");
+//console.log(selectedItems, "selectedItems");
     for (const token of selectedItems) {
     
       
@@ -221,11 +221,11 @@ console.log(selectedItems, "selectedItems");
         adParameters: adParametersItems,
         data: dataItems,
       };
-      console.log(argsAdSubmited, "argsAdSubmited");
+      //console.log(argsAdSubmited, "argsAdSubmited");
       await submitAd({ args: Object.values(argsAdSubmited) });
       setSuccessFullUpload(true);
     } catch (err) {
-      console.log("ici");
+      //console.log("ici");
       setIsLoadingButton(false);
       throw new Error("Upload to Blockchain failed.");
     } finally {
