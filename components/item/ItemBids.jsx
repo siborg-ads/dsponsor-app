@@ -21,6 +21,7 @@ import {
 } from "@thirdweb-dev/react";
 import { useChainContext } from "../../contexts/hooks/useChainContext";
 import config from "../../providers/utils/config";
+
 const ItemBids = ({
   setAmountToApprove,
   bidsAmount,
@@ -118,30 +119,32 @@ const ItemBids = ({
         </Web3Button>
       </div>
 
-      {showBidsModal && (
-        <BidsModal
-          isLoadingButton={isLoadingButton}
-          setIsLoadingButton={setIsLoadingButton}
-          setAmountToApprove={setAmountToApprove}
-          bidsAmount={bidsAmount}
-          setBidsAmount={setBidsAmount}
-          chainId={chainId}
-          successFullBid={successFullBid}
-          setSuccessFullBid={setSuccessFullBid}
-          handleApprove={handleApprove}
-          checkAllowance={checkAllowance}
-          allowanceTrue={allowanceTrue}
-          hasEnoughBalance={hasEnoughBalance}
-          checkUserBalance={checkUserBalance}
-          dsponsorMpContract={dsponsorMpContract}
-          toggleBidsModal={toggleBidsModal}
-          currencyTokenDecimals={currencyTokenDecimals}
-          tokenBalance={tokenBalance}
-          marketplaceListings={marketplaceListings}
-          currencySymbol={currencySymbol}
-          address={address}
-        />
-      )}
+      <div className="mt-8">
+        {showBidsModal && (
+          <BidsModal
+            isLoadingButton={isLoadingButton}
+            setIsLoadingButton={setIsLoadingButton}
+            setAmountToApprove={setAmountToApprove}
+            bidsAmount={bidsAmount}
+            setBidsAmount={setBidsAmount}
+            chainId={chainId}
+            successFullBid={successFullBid}
+            setSuccessFullBid={setSuccessFullBid}
+            handleApprove={handleApprove}
+            checkAllowance={checkAllowance}
+            allowanceTrue={allowanceTrue}
+            hasEnoughBalance={hasEnoughBalance}
+            checkUserBalance={checkUserBalance}
+            dsponsorMpContract={dsponsorMpContract}
+            toggleBidsModal={toggleBidsModal}
+            currencyTokenDecimals={currencyTokenDecimals}
+            tokenBalance={tokenBalance}
+            marketplaceListings={marketplaceListings}
+            currencySymbol={currencySymbol}
+            address={address}
+          />
+        )}
+      </div>
     </div>
   );
 };

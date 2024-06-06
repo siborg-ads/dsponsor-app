@@ -36,11 +36,14 @@ import ItemBids from "../../components/item/ItemBids.jsx";
 import ItemManage from "../../components/item/ItemManage.jsx";
 import { useSwitchChainContext } from "../../contexts/hooks/useSwitchChainContext.js";
 import { fetchOfferToken } from "../../providers/methods/fetchOfferToken.js";
+// import { fetchAllTokenListedByListingId } from "../../providers/methods/fetchAllTokenListedByListingId.js";
 import config from "../../providers/utils/config.js";
 import stringToUint256 from "../../utils/stringToUnit256.js";
 
 import "react-toastify/dist/ReactToastify.css";
 import ModalHelper from "../../components/Helper/modalHelper.jsx";
+import ItemLastBids from "../../components/item/ItemLastBids";
+import itemLastBids from "../../components/item/ItemLastBids";
 
 const TokenPageContainer = () => {
   const router = useRouter();
@@ -133,6 +136,29 @@ const TokenPageContainer = () => {
 
   useEffect(() => {
     if (offerId && tokenId && chainId) {
+
+      // const fetchOfferTokenBids = async () => {
+      //   // const offer = await fetchOfferToken(offerId, tokenId, chainId);
+      //   //
+      //   // const combinedData = {
+      //   //   ...offer
+      //   // };
+      //   //
+      //   // console.log(combinedData, "combinedData");
+      //   // setOfferData(combinedData);
+      //   console.log({marketplaceListings})
+      //   console.log({marketplaceListings})
+      //   console.log({marketplaceListings})
+      //   console.log({marketplaceListings})
+      //   console.log({marketplaceListings})
+      //   console.log({marketplaceListings})
+      //   console.log({marketplaceListings})
+      //   console.log({marketplaceListings})
+      //   console.log({marketplaceListings})
+      //   console.log({marketplaceListings})
+      // };
+
+
       const fetchAdsOffers = async () => {
         const offer = await fetchOfferToken(offerId, tokenId, chainId);
 
@@ -142,6 +168,7 @@ const TokenPageContainer = () => {
 
         console.log(combinedData, "combinedData");
         setOfferData(combinedData);
+        // await fetchOfferTokenBids();
       };
       setSelectedChain(config[chainId]?.chainNameProvider);
       fetchAdsOffers();
@@ -620,6 +647,7 @@ const TokenPageContainer = () => {
       throw new Error("Failed to fetch token balance");
     }
   };
+
   function formatTokenId(str) {
     if (str?.length <= 6) {
       return str;
@@ -638,6 +666,7 @@ const TokenPageContainer = () => {
     setShowPreviewModal(!showPreviewModal);
     validateInputs();
   };
+
   function shouldRenderManageTokenComponent() {
     const isFirstListingAuctionActive =
       marketplaceListings[0]?.startTime < now &&
@@ -779,7 +808,6 @@ const TokenPageContainer = () => {
             {/* <!-- Details --> */}
             <div className="md:w-3/5 md:basis-auto md:pl-8 lg:w-1/2 lg:pl-[3.75rem]">
               {/* <!-- Collection / Likes / Actions --> */}
-
               <Link href={`/${chainId}/offer/${offerId}`} className="flex">
                 <h2 className="font-display text-jacarta-700 mb-4 dark:hover:text-accent text-3xl font-semibold dark:text-white">
                   {name}
@@ -881,6 +909,20 @@ const TokenPageContainer = () => {
           </div>
         </div>
       </section>
+
+      {tokenStatut === "AUCTION" &&
+        marketplaceListings[0].startTime < now &&
+        marketplaceListings[0].endTime > now && (
+          <div className="container mb-12">
+            <Divider className="my-4" />
+            <ItemLastBids
+              currencySymbol={currency}
+              currencyDecimals={currencyDecimals}
+              lastBids={marketplaceListings[0].bids}
+            />
+          </div>
+        )}
+
       {/* <!-- end item --> */}
       <div className="container mb-12">
         <Divider className="my-4" />

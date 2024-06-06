@@ -1,17 +1,11 @@
 import { executeQuery } from "../utils/executeQuery";
-import { gql } from "@apollo/client";
-import config from "../utils/config";
 
-export const fetchAllTokenListedByUserAddress = async (lister, chainId) => {
-  const path = new URL(`https://relayer.dsponsor.com/api/${chainId}/graph`);
+export const fetchAllTokenListedByListingId = async (chainId) => {
+    const path = new URL(`https://relayer.dsponsor.com/api/${chainId}/graph`);
 
-  const GET_DATA = gql`
-    query getMarketplaceListingsForUser($lister: Bytes) {
-      marketplaceListings(
-        orderBy: endTime
-        orderDirection: asc
-        where: { and: [{ status: CREATED, quantity_gt: 0, lister: $lister }] }
-      ) {
+    const GET_DATA = `
+    query getMarketplaceListingsForUser {
+      marketplaceListings {
         id # listingId
         token {
           tokenId
@@ -45,7 +39,7 @@ export const fetchAllTokenListedByUserAddress = async (lister, chainId) => {
         #    price = bids[0].totalBidAmount || reservePricePerToken
         reservePricePerToken
         buyoutPricePerToken
-        bids(orderBy: totalBidAmount, orderDirection: desc, first: 1) {
+        bids {
           creationTimestamp
           bidder
           totalBidAmount
@@ -68,15 +62,7 @@ export const fetchAllTokenListedByUserAddress = async (lister, chainId) => {
     }
   `;
 
-  // Exécutez la requête pour obtenir tous les NFTs
-  const response = await executeQuery(path.href, GET_DATA, { lister: lister });
-  const resultMappedData = response?.marketplaceListings.map((item) => {
-    const combinedData = {
-      ...item,
-      chainConfig: config[chainId]
-    };
-    return combinedData;
-  });
+    const response = await executeQuery(path.href, GET_DATA);
 
-  return resultMappedData;
+    return response;
 };
