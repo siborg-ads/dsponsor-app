@@ -40,6 +40,7 @@ const OfferItem = ({
     const options = { year: "numeric", month: "long", day: "numeric" };
     return new Date(dateIsoString).toLocaleDateString("en-EN", options);
   }
+
   const formatAuctionDate = (timestamp) => {
     if (!timestamp) return "";
 
