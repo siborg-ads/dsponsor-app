@@ -8,11 +8,7 @@ const Proparties_modal = () => {
 
   return (
     <div>
-      <div
-        className={
-          propartiesModalValue ? "modal fade show block" : "modal fade"
-        }
-      >
+      <div className={propartiesModalValue ? "modal fade show block" : "modal fade"}>
         <div className="modal-dialog max-w-2xl">
           <div className="modal-content">
             <div className="modal-header">
@@ -40,8 +36,8 @@ const Proparties_modal = () => {
             {/* <!-- Body --> */}
             <div className="modal-body p-6">
               <p className="dark:text-jacarta-300 mb-8">
-                Item Properties show up underneath your item, are clickable, and
-                can be filtered in your {"collection's"}
+                Item Properties show up underneath your item, are clickable, and can be filtered in
+                your {"collection's"}
                 sidebar.
               </p>
 

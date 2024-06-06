@@ -17,21 +17,33 @@ const renderer = ({ days, hours, minutes, seconds, completed }) => {
   } else {
     // Render a countdown
     return (
-      <div className="js-countdown-single-timer mt-3 flex space-x-4" data-countdown="2023-09-07T19:40:30" data-expired="This auction has ended">
+      <div
+        className="js-countdown-single-timer mt-3 flex space-x-4"
+        data-countdown="2023-09-07T19:40:30"
+        data-expired="This auction has ended"
+      >
         <span className="countdown-days text-jacarta-700 dark:text-white">
-          <span className="js-countdown-days-number text-lg font-medium lg:text-[1.5rem]">{days}</span>
+          <span className="js-countdown-days-number text-lg font-medium lg:text-[1.5rem]">
+            {days}
+          </span>
           <span className="block text-xs font-medium tracking-tight">Days</span>
         </span>
         <span className="countdown-hours text-jacarta-700 dark:text-white">
-          <span className="js-countdown-hours-number text-lg font-medium lg:text-[1.5rem]">{hours}</span>
+          <span className="js-countdown-hours-number text-lg font-medium lg:text-[1.5rem]">
+            {hours}
+          </span>
           <span className="block text-xs font-medium tracking-tight">Hrs</span>
         </span>
         <span className="countdown-minutes text-jacarta-700 dark:text-white">
-          <span className="js-countdown-minutes-number text-lg font-medium lg:text-[1.5rem]">{minutes}</span>
+          <span className="js-countdown-minutes-number text-lg font-medium lg:text-[1.5rem]">
+            {minutes}
+          </span>
           <span className="block text-xs font-medium tracking-tight">Min</span>
         </span>
         <span className="countdown-seconds text-jacarta-700 dark:text-white">
-          <span className="js-countdown-seconds-number text-lg font-medium lg:text-[1.5rem]">{seconds}</span>
+          <span className="js-countdown-seconds-number text-lg font-medium lg:text-[1.5rem]">
+            {seconds}
+          </span>
           <span className="block text-xs font-medium tracking-tight">Sec</span>
         </span>
       </div>
@@ -47,7 +59,6 @@ export default function Timer({ endTime }) {
     const endDate = new Date(parseInt(endTime) * 1000); // Convert UNIX timestamp to JavaScript Date object
     setRemainingTime(endDate);
     setShowTimer(true);
-
   }, [endTime]);
 
   return <>{showTimer && <Countdown date={remainingTime} renderer={renderer} />}</>;

@@ -7,7 +7,7 @@ const auctions_category_data = [
     price: "1.3 ETH",
     title: "Monkeyme#155",
     likes: "25",
-    auction_timer: "000",
+    auction_timer: "000"
   },
   {
     id: "1Splendid Girl",
@@ -17,7 +17,7 @@ const auctions_category_data = [
     price: "10 ETH",
     title: "Splendid Girl",
     likes: "60",
-    auction_timer: "000",
+    auction_timer: "000"
   },
   {
     id: "2Asuna #1649",
@@ -27,7 +27,7 @@ const auctions_category_data = [
     price: "0.8 ETH",
     title: "Asuna #1649",
     likes: "34",
-    auction_timer: "000",
+    auction_timer: "000"
   },
   {
     id: "3Artof Eve",
@@ -37,7 +37,7 @@ const auctions_category_data = [
     price: "1.75 ETH",
     title: "Artof Eve",
     likes: "15",
-    auction_timer: "550000000",
+    auction_timer: "550000000"
   },
   {
     id: "4Azuki #4017",
@@ -47,7 +47,7 @@ const auctions_category_data = [
     price: "9.3712 ETH",
     title: "Azuki #4017",
     likes: "334",
-    auction_timer: "000",
+    auction_timer: "000"
   },
   {
     id: "5Block #2788",
@@ -57,7 +57,7 @@ const auctions_category_data = [
     price: "7.3 ETH",
     title: "Block #2788",
     likes: "52",
-    auction_timer: "560000000",
+    auction_timer: "560000000"
   },
   {
     id: "6Crypto bull #6195",
@@ -67,7 +67,7 @@ const auctions_category_data = [
     price: "0.32 ETH",
     title: "Crypto bull #6195",
     likes: "90",
-    auction_timer: "500000000",
+    auction_timer: "500000000"
   },
   {
     id: "7TSARÉVNA",
@@ -77,7 +77,7 @@ const auctions_category_data = [
     price: "4.7 ETH",
     title: "TSARÉVNA",
     likes: "260",
-    auction_timer: "000",
+    auction_timer: "000"
   },
   {
     id: "8Monkeyme#155",
@@ -87,7 +87,7 @@ const auctions_category_data = [
     price: "1.3 ETH",
     title: "Monkeyme#155",
     likes: "25",
-    auction_timer: "000",
+    auction_timer: "000"
   },
   {
     id: "9Splendid Girl",
@@ -97,7 +97,7 @@ const auctions_category_data = [
     price: "10 ETH",
     title: "Splendid Girl",
     likes: "60",
-    auction_timer: "000",
+    auction_timer: "000"
   },
   {
     id: "10Asuna #1649",
@@ -107,7 +107,7 @@ const auctions_category_data = [
     price: "0.8 ETH",
     title: "Asuna #1649",
     likes: "34",
-    auction_timer: "000",
+    auction_timer: "000"
   },
   {
     id: "11Artof Eve",
@@ -117,7 +117,7 @@ const auctions_category_data = [
     price: "1.75 ETH",
     title: "Artof Eve",
     likes: "15",
-    auction_timer: "550000000",
+    auction_timer: "550000000"
   },
   {
     id: "12Azuki #4017",
@@ -127,7 +127,7 @@ const auctions_category_data = [
     price: "9.3712 ETH",
     title: "Azuki #4017",
     likes: "334",
-    auction_timer: "000",
+    auction_timer: "000"
   },
   {
     id: "13Block #2788",
@@ -137,7 +137,7 @@ const auctions_category_data = [
     price: "7.3 ETH",
     title: "Block #2788",
     likes: "52",
-    auction_timer: "560000000",
+    auction_timer: "560000000"
   },
   {
     id: "14Crypto bull #6195",
@@ -147,7 +147,7 @@ const auctions_category_data = [
     price: "0.32 ETH",
     title: "Crypto bull #6195",
     likes: "90",
-    auction_timer: "500000000",
+    auction_timer: "500000000"
   },
   {
     id: "15TSARÉVNA",
@@ -157,8 +157,8 @@ const auctions_category_data = [
     price: "4.7 ETH",
     title: "TSARÉVNA",
     likes: "260",
-    auction_timer: "000",
-  },
+    auction_timer: "000"
+  }
 ];
 
 export default auctions_category_data;

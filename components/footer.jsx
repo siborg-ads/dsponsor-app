@@ -1,9 +1,9 @@
 import Link from "next/link";
 import { footerMenuList as defaultFooterMenuList, socialIcons } from "../data/footer_data";
 import Image from "next/image";
-import {useChainContext} from "../contexts/hooks/useChainContext";
-import {useAddress} from "@thirdweb-dev/react";
-import { activated_features } from '../data/activated_features';
+import { useChainContext } from "../contexts/hooks/useChainContext";
+import { useAddress } from "@thirdweb-dev/react";
+import { activated_features } from "../data/activated_features";
 
 const Footer = () => {
   const { currentChainObject } = useChainContext();
@@ -11,24 +11,32 @@ const Footer = () => {
 
   const address = useAddress();
 
-  const footerMenuList = defaultFooterMenuList.concat([{
-    id: 3,
-    title: "My Account",
-    diffClass: "",
-    list: address ? [
-      {
-        id: 1,
-        href: `/manage/${address}`,
-        text: "My Creator Space",
-      },
-      ...(activated_features.canCreateOffer ? [{
-        id: 2,
-        href: `${chainId}/offer/create`,
-        text: "Create Offer",
-      }] : []),
-    ] : [],
-  }]);
-  
+  const footerMenuList = defaultFooterMenuList.concat([
+    {
+      id: 3,
+      title: "My Account",
+      diffClass: "",
+      list: address
+        ? [
+            {
+              id: 1,
+              href: `/manage/${address}`,
+              text: "My Creator Space"
+            },
+            ...(activated_features.canCreateOffer
+              ? [
+                  {
+                    id: 2,
+                    href: `${chainId}/offer/create`,
+                    text: "Create Offer"
+                  }
+                ]
+              : [])
+          ]
+        : []
+    }
+  ]);
+
   return (
     <>
       {/* <!-- Footer --> */}
@@ -39,13 +47,27 @@ const Footer = () => {
             <div className="col-span-3 md:col-span-4">
               {/* <!-- Logo --> */}
               <Link href="#" className="mb-6 inline-block">
-                <Image width={80} height={80} src="/images/logo.png" className=" dark:hidden" alt="d>sponsor | Media sponsoring Marketplace" />
+                <Image
+                  width={80}
+                  height={80}
+                  src="/images/logo.png"
+                  className=" dark:hidden"
+                  alt="d>sponsor | Media sponsoring Marketplace"
+                />
               </Link>
 
               <Link href="#" className=" mb-6 inline-block">
-                <Image width={80} height={80} src="/images/logo_white.png" className="hidden  dark:block mb-6" alt="d>sponsor | Media sponsoring Marketplace" />
+                <Image
+                  width={80}
+                  height={80}
+                  src="/images/logo_white.png"
+                  className="hidden  dark:block mb-6"
+                  alt="d>sponsor | Media sponsoring Marketplace"
+                />
               </Link>
-              <p className="dark:text-jacarta-300 mb-12">Investing in the Potential of independent media</p>
+              <p className="dark:text-jacarta-300 mb-12">
+                Investing in the Potential of independent media
+              </p>
 
               {/* <!-- Socials --> */}
               {/* <div className="flex space-x-5">
@@ -63,8 +85,13 @@ const Footer = () => {
             </div>
 
             {footerMenuList.map((single) => (
-              <div className={`col-span-full sm:col-span-3 md:col-span-2 ${single.diffClass}`} key={single.id}>
-                <h3 className="font-display text-jacarta-700 mb-6 text-sm dark:text-white">{single.title}</h3>
+              <div
+                className={`col-span-full sm:col-span-3 md:col-span-2 ${single.diffClass}`}
+                key={single.id}
+              >
+                <h3 className="font-display text-jacarta-700 mb-6 text-sm dark:text-white">
+                  {single.title}
+                </h3>
                 <ul className="dark:text-jacarta-300 flex flex-col space-y-1">
                   {single.list.map((item) => {
                     const { id, href, text } = item;
@@ -88,7 +115,10 @@ const Footer = () => {
 
             <ul className="dark:text-jacarta-400 flex flex-wrap space-x-4 text-sm">
               <li>
-                <Link href="/terms-and-conditions" className="hover:text-accent dark:hover:text-white">
+                <Link
+                  href="/terms-and-conditions"
+                  className="hover:text-accent dark:hover:text-white"
+                >
                   Terms and conditions
                 </Link>
               </li>

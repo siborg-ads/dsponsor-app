@@ -8,7 +8,7 @@ const SingleFeatuer = () => {
       bgFill: "bg-accent",
       icon: "1",
       meta: "$76 billion",
-      textInfo: "24h trading volume on our app exchange",
+      textInfo: "24h trading volume on our app exchange"
     },
     {
       id: 2,
@@ -16,7 +16,7 @@ const SingleFeatuer = () => {
       bgFill: "bg-green",
       icon: "2",
       meta: "310+",
-      textInfo: "Cryptocurrencies listed",
+      textInfo: "Cryptocurrencies listed"
     },
     {
       id: 3,
@@ -24,7 +24,7 @@ const SingleFeatuer = () => {
       bgFill: "bg-blue",
       icon: "3",
       meta: "100+ million",
-      textInfo: "Download our app and register users in 3 minutes",
+      textInfo: "Download our app and register users in 3 minutes"
     },
     {
       id: 4,
@@ -32,8 +32,8 @@ const SingleFeatuer = () => {
       bgFill: "bg-red",
       icon: "4",
       meta: "$0.00023",
-      textInfo: "Lowest transaction fees",
-    },
+      textInfo: "Lowest transaction fees"
+    }
   ];
   return (
     <>

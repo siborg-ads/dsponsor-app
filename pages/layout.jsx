@@ -1,6 +1,4 @@
-
 import Providers from "../providers/providers";
-
 
 // export const metadata = {
 //     title: "DSponsor | Unlock smarter monetization for your content.",
@@ -8,18 +6,12 @@ import Providers from "../providers/providers";
 //     description: "DSponsor is a platform that enables creators to monetize their content and engage with their audience in a smarter way."
 // }
 
-export default function RootLayout({
-                                       children,
-                                   }) {
-    return (
-        <html lang="en">
-            <body className="bg-jacarta-800 h-full relative">
-                <Providers>
-             
-                        {children}
-                   
-                </Providers>
-            </body>
-        </html>
-    )
+export default function RootLayout({ children }) {
+  return (
+    <html lang="en">
+      <body className="bg-jacarta-800 h-full relative">
+        <Providers>{children}</Providers>
+      </body>
+    </html>
+  );
 }

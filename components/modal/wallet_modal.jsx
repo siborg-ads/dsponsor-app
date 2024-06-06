@@ -9,9 +9,7 @@ const Wallet_modal = () => {
   return (
     <div>
       {/* <!-- Wallet Modal --> */}
-      <div
-        className={walletModal ? "block modal fade show " : "modal fade hidden"}
-      >
+      <div className={walletModal ? "block modal fade show " : "modal fade hidden"}>
         <div className="modal-dialog max-w-lg">
           <div className="modal-content">
             <div className="modal-header">
@@ -42,8 +40,7 @@ const Wallet_modal = () => {
                 <use xlinkHref="/icons.svg#icon-metamask"></use>
               </svg>
               <p className="text-center dark:text-white">
-                You {"don't"} have MetaMask in your browser, please download it
-                from
+                You {"don't"} have MetaMask in your browser, please download it from
                 <a
                   href="https://metamask.io/"
                   className="text-accent"

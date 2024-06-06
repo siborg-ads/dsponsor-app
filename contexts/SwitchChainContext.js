@@ -2,7 +2,7 @@ import { createContext } from "react";
 
 const SwitchChainContext = createContext({
   selectedChain: "sepolia",
-  setSelectedChain: () => {},
+  setSelectedChain: () => {}
 });
 
 export default SwitchChainContext;

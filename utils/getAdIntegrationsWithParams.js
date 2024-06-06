@@ -1,53 +1,50 @@
-
 const adParameters = {
   imageURL: {
     required: true,
     validation: /^\w+:\/\/[\s()<>]+(?:\([\w\d]+\)|([^[:punct:]\s]|\/))$/,
-    variants: ["320x50", "1:1", "ipfs", "jpg"],
+    variants: ["320x50", "1:1", "ipfs", "jpg"]
   },
   linkURL: {
     required: true,
-    validation: /^https:\/\/[^\[\s()<>]+(?:\([\w\d]+\)|([^[:punct:]\s]|\/))$/,
+    validation: /^https:\/\/[^\[\s()<>]+(?:\([\w\d]+\)|([^[:punct:]\s]|\/))$/
   },
   xCreatorHandle: {
     required: false,
-    validation: /^@[A-Za-z0-9_]{1,15}$/,
+    validation: /^@[A-Za-z0-9_]{1,15}$/
   },
   xSpaceId: {
     required: false,
-    validation: /^\d[A-Za-z\d]{12}$/,
-  },
+    validation: /^\d[A-Za-z\d]{12}$/
+  }
 };
-
 
 const adIntegrations = {
   DynamicBanner: {
     requiredParams: ["imageURL", "linkURL"],
-    platforms: ["Newsletter", "React Native", "Web"],
+    platforms: ["Newsletter", "React Native", "Web"]
   },
   ClickableLogosGrid: {
     requiredParams: ["imageURL", "linkURL"],
-    platforms: ["Newsletter", "React Native", "Web"],
+    platforms: ["Newsletter", "React Native", "Web"]
   },
   LogosGrid: {
     requiredParams: ["imageURL"],
-    platforms: ["Newsletter", "Print", "React Native", "Web"],
+    platforms: ["Newsletter", "Print", "React Native", "Web"]
   },
   xCreatorHighlight: {
     requiredParams: ["xCreatorHandle"],
-    platforms: ["Newsletter", "React Native", "Web"],
+    platforms: ["Newsletter", "React Native", "Web"]
   },
   xSpaceHighlight: {
     requiredParams: ["xSpaceId"],
-    platforms: ["React Native", "Web"],
-  },
+    platforms: ["React Native", "Web"]
+  }
 };
-
 
 function extractValidParams(adParams) {
   const params = {};
   adParams.forEach((param) => {
-    params[param.base] = param.id; 
+    params[param.base] = param.id;
   });
   return params;
 }
@@ -71,7 +68,7 @@ export function getPossibleAdIntegrations(adParams) {
         id: params[baseParam],
         base: baseParam,
         variants: adParameters[baseParam]?.variants || [],
-        description: adParameters[baseParam]?.description || "No description available",
+        description: adParameters[baseParam]?.description || "No description available"
       });
     }
 
@@ -79,7 +76,7 @@ export function getPossibleAdIntegrations(adParams) {
       possibleIntegrations.push({
         name: key,
         requiredParams: detailedParams,
-        platforms: integration.platforms,
+        platforms: integration.platforms
       });
     }
   }

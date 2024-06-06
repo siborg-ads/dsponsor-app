@@ -14,7 +14,6 @@ import { ethers } from "ethers";
 import { Spinner } from "@nextui-org/spinner";
 import { useChainContext } from "../../contexts/hooks/useChainContext";
 
-
 const BuyModal = ({
   formatTokenId,
   tokenStatut,
@@ -36,28 +35,25 @@ const BuyModal = ({
   handleSubmit,
   handleBuyModal,
   tokenData,
-  isLoadingButton,
+  isLoadingButton
 }) => {
-  
   const [validate, setValidate] = useState(false);
   const { currentChainObject } = useChainContext();
 
   const handleTermService = (e) => {
     setValidate(e.target.checked);
   };
-const calculateOriginalPriceFromTotal = (totalPrice, royalties, tokenDecimals = 2) => {
-  let netPrice = parseFloat(totalPrice); // Convertir en float si la saisie est une chaîne
-  const fees = [0.04, royalties / 100];
+  const calculateOriginalPriceFromTotal = (totalPrice, royalties, tokenDecimals = 2) => {
+    let netPrice = parseFloat(totalPrice); // Convertir en float si la saisie est une chaîne
+    const fees = [0.04, royalties / 100];
 
-  // Inverser le calcul en multipliant par (1 - fee) pour chaque frais
-  for (let i = fees.length - 1; i >= 0; i--) {
-    netPrice *= 1 - fees[i];
-  }
-
+    // Inverser le calcul en multipliant par (1 - fee) pour chaque frais
+    for (let i = fees.length - 1; i >= 0; i--) {
+      netPrice *= 1 - fees[i];
+    }
 
     return netPrice.toFixed(tokenDecimals); // Formatage avec le nombre spécifié de décimales pour les smart contracts
-  
-};
+  };
 
   return (
     <div>
@@ -69,7 +65,13 @@ const calculateOriginalPriceFromTotal = (totalPrice, royalties, tokenDecimals = 
               {!successFullUpload ? "Complete checkout" : successFullBuyModal.title}
             </h5>
             <button type="button" className="btn-close" onClick={handleBuyModal}>
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" className="fill-jacarta-700 h-6 w-6 dark:fill-white">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                width="24"
+                height="24"
+                className="fill-jacarta-700 h-6 w-6 dark:fill-white"
+              >
                 <path fill="none" d="M0 0h24v24H0z" />
                 <path d="M12 10.586l4.95-4.95 1.414 1.414-4.95 4.95 4.95 4.95-1.414 1.414-4.95-4.95-4.95 4.95-1.414-1.414 4.95-4.95-4.95-4.95L7.05 5.636z" />
               </svg>
@@ -80,26 +82,43 @@ const calculateOriginalPriceFromTotal = (totalPrice, royalties, tokenDecimals = 
           {!successFullUpload ? (
             <div className="modal-body p-6">
               <div className="mb-2 flex items-center justify-between">
-                <span className="font-display text-jacarta-700 text-sm font-semibold dark:text-white">Space # {tokenData ? tokenData : formatTokenId(tokenId)}</span>
-                <span className="font-display text-jacarta-700 text-sm font-semibold dark:text-white">Subtotal</span>
+                <span className="font-display text-jacarta-700 text-sm font-semibold dark:text-white">
+                  Space # {tokenData ? tokenData : formatTokenId(tokenId)}
+                </span>
+                <span className="font-display text-jacarta-700 text-sm font-semibold dark:text-white">
+                  Subtotal
+                </span>
               </div>
 
               <div className="dark:border-jacarta-600 border-jacarta-100 relative justify-between flex min-h-[75px] border-t border-b py-4">
                 <figure className="mr-5 self-start">
-                  <Image width={150} height={150} src={image} alt="logo" className="rounded-2lg" loading="lazy" />
+                  <Image
+                    width={150}
+                    height={150}
+                    src={image}
+                    alt="logo"
+                    className="rounded-2lg"
+                    loading="lazy"
+                  />
                 </figure>
                 <div className="overflow-hidden  justify-between flex flex-col  text-ellipsis whitespace-nowrap min-w-[200px]  ">
-                  <h2 className="font-display overflow-hidden text-ellipsis whitespace-nowrap text-jacarta-700 text-base font-semibold dark:text-white">{name}</h2>
+                  <h2 className="font-display overflow-hidden text-ellipsis whitespace-nowrap text-jacarta-700 text-base font-semibold dark:text-white">
+                    {name}
+                  </h2>
                   <div className="overflow-hidden flex flex-col text-ellipsis whitespace-nowrap   ">
                     <div className="flex gap-6  items-center justify-between">
-                      <h3 className="font-display overflow-hidden text-ellipsis whitespace-nowrap text-jacarta-700 text-sm font-semibold dark:text-white">Price : </h3>
+                      <h3 className="font-display overflow-hidden text-ellipsis whitespace-nowrap text-jacarta-700 text-sm font-semibold dark:text-white">
+                        Price :{" "}
+                      </h3>
                       <span className="dark:text-jacarta-100 text-sm font-medium tracking-tight overflow-auto min-w-[70px] flex justify-end">
                         {price} {selectedCurrency}
                       </span>
                     </div>
 
                     <div className="flex gap-6  items-center justify-between">
-                      <span className="dark:text-jacarta-300 text-jacarta-500 mr-1 block text-sm">Protocol fees: 4%</span>
+                      <span className="dark:text-jacarta-300 text-jacarta-500 mr-1 block text-sm">
+                        Protocol fees: 4%
+                      </span>
                       <span className="dark:text-jacarta-300 text-sm  tracking-tight overflow-auto min-w-[60px] flex justify-end">
                         {feesAmount} {selectedCurrency}
                       </span>
@@ -107,7 +126,9 @@ const calculateOriginalPriceFromTotal = (totalPrice, royalties, tokenDecimals = 
 
                     {tokenStatut === "DIRECT" && (
                       <div className="flex gap-6  items-center justify-between">
-                        <span className="dark:text-jacarta-300 text-jacarta-500 mr-1 block text-sm">Royalties fees: {royalties}%</span>
+                        <span className="dark:text-jacarta-300 text-jacarta-500 mr-1 block text-sm">
+                          Royalties fees: {royalties}%
+                        </span>
                         <span className="dark:text-jacarta-300 text-sm  tracking-tight overflow-auto min-w-[60px] flex justify-end">
                           {royaltiesFeesAmount} {selectedCurrency}
                         </span>
@@ -134,7 +155,9 @@ const calculateOriginalPriceFromTotal = (totalPrice, royalties, tokenDecimals = 
 
               {/* <!-- Total --> */}
               <div className="dark:border-jacarta-600 border-jacarta-100 mb-2 flex items-center justify-between border-b py-2.5">
-                <span className="font-display text-jacarta-700 hover:text-accent font-semibold dark:text-white">Total</span>
+                <span className="font-display text-jacarta-700 hover:text-accent font-semibold dark:text-white">
+                  Total
+                </span>
                 <div className="ml-auto">
                   <span className="flex items-center whitespace-nowrap">
                     <span className="text-green font-medium tracking-tight">
@@ -166,8 +189,17 @@ const calculateOriginalPriceFromTotal = (totalPrice, royalties, tokenDecimals = 
               <div className="flex flex-col gap-2">
                 <div className="flex gap-4">
                   <p>{successFullBuyModal.body} </p>
-                  <div className="dark:border-jacarta-600 bg-green   flex h-6 w-6 items-center justify-center rounded-full border-2 border-white" data-tippy-content="Verified Collection">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" className="h-[.875rem] w-[.875rem] fill-white">
+                  <div
+                    className="dark:border-jacarta-600 bg-green   flex h-6 w-6 items-center justify-center rounded-full border-2 border-white"
+                    data-tippy-content="Verified Collection"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      width="24"
+                      height="24"
+                      className="h-[.875rem] w-[.875rem] fill-white"
+                    >
                       <path fill="none" d="M0 0h24v24H0z"></path>
                       <path d="M10 15.172l9.192-9.193 1.415 1.414L10 18l-6.364-6.364 1.414-1.414z"></path>
                     </svg>
@@ -189,7 +221,7 @@ const calculateOriginalPriceFromTotal = (totalPrice, royalties, tokenDecimals = 
                     toast.promise(handleApprove, {
                       pending: "Waiting for confirmation 🕒",
                       success: "Approval confirmed 👌",
-                      error: "Approval rejected 🤯",
+                      error: "Approval rejected 🤯"
                     });
                   }}
                   className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate ? "btn-disabled" : "!bg-accent !cursor-pointer"} `}
@@ -204,7 +236,7 @@ const calculateOriginalPriceFromTotal = (totalPrice, royalties, tokenDecimals = 
                     toast.promise(handleSubmit, {
                       pending: "Waiting for confirmation 🕒",
                       success: "Transaction confirmed 👌",
-                      error: "Transaction rejected 🤯",
+                      error: "Transaction rejected 🤯"
                     });
                   }}
                   className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate ? "btn-disabled" : "!bg-accent !cursor-pointer"} `}
@@ -214,7 +246,9 @@ const calculateOriginalPriceFromTotal = (totalPrice, royalties, tokenDecimals = 
                 </Web3Button>
               ) : (
                 <Link href={successFullBuyModal.hrefButton}>
-                  <button className="!rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all !bg-accent !cursor-pointer">{successFullBuyModal.buttonTitle}</button>
+                  <button className="!rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all !bg-accent !cursor-pointer">
+                    {successFullBuyModal.buttonTitle}
+                  </button>
                 </Link>
               )}
             </div>

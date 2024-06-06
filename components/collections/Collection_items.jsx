@@ -13,14 +13,21 @@ const Collection_items = () => {
     {
       id: 1,
       text: "Items",
-      icon: "items",
-    },
+      icon: "items"
+    }
   ];
   return (
     <>
       <section className="relative py-8">
         <picture className="pointer-events-none absolute inset-0 -z-10 dark:hidden">
-          <Image width={1519} height={773} priority src="/images/gradient_light.jpg" alt="gradient" className="h-full w-full object-cover" />
+          <Image
+            width={1519}
+            height={773}
+            priority
+            src="/images/gradient_light.jpg"
+            alt="gradient"
+            className="h-full w-full object-cover"
+          />
         </picture>
         <div className="container">
           {/* <!-- Tabs Nav --> */}
@@ -51,7 +58,6 @@ const Collection_items = () => {
                 <FilterCategoryItem />
               </div>
             </TabPanel>
-            
           </Tabs>
         </div>
       </section>

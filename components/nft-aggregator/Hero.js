@@ -25,9 +25,7 @@ const Hero = () => {
         <div className="mx-auto max-w-4xl pt-24 text-center">
           <h1 className="font-display text-5xl text-jacarta-700 dark:text-white lg:text-6xl xl:text-7xl">
             The Best NFT Aggregator{" "}
-            <span className="animate-gradient">
-              More Listings. Better Prices.
-            </span>
+            <span className="animate-gradient">More Listings. Better Prices.</span>
           </h1>
         </div>
       </div>

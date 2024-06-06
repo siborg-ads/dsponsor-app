@@ -7,9 +7,9 @@ const footerMenuList = [
       {
         id: 1,
         href: "/marketplace",
-        text: "All Offers",
-      },
-    ],
+        text: "All Offers"
+      }
+    ]
   },
   {
     id: 2,
@@ -19,43 +19,43 @@ const footerMenuList = [
       {
         id: 1,
         href: "/about",
-        text: "About DSponsor",
+        text: "About DSponsor"
       },
       {
         id: 2,
         href: "/",
-        text: "Explore",
-      },
-    ],
-  },
+        text: "Explore"
+      }
+    ]
+  }
 ];
 
 const socialIcons = [
   {
     id: 1,
     href: "https://www.facebook.com",
-    text: "facebook",
+    text: "facebook"
   },
   {
     id: 2,
     href: "https://www.twitter.com",
-    text: "twitter",
+    text: "twitter"
   },
   {
     id: 3,
     href: "https://www.discord.com",
-    text: "discord",
+    text: "discord"
   },
   {
     id: 4,
     href: "https://www.instagram.com",
-    text: "instagram",
+    text: "instagram"
   },
   {
     id: 5,
     href: "https://www.tiktok.com",
-    text: "tiktok",
-  },
+    text: "tiktok"
+  }
 ];
 
 export { footerMenuList, socialIcons };

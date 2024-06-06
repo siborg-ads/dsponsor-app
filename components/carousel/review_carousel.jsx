@@ -17,8 +17,19 @@ import AddProposalRefusedModal from "../modal/adProposalRefusedModal";
 import { useChainContext } from "../../contexts/hooks/useChainContext";
 import config from "../../providers/utils/config";
 
-const Review_carousel = ({chainId, setSelectedItems, selectedItems, handleSubmit, pendingProposalData, successFullRefuseModal, setSuccessFullRefuseModal, isToken, isOwner, setRefusedValidatedAdModal, refusedValidatedAdModal }) => {
-  
+const Review_carousel = ({
+  chainId,
+  setSelectedItems,
+  selectedItems,
+  handleSubmit,
+  pendingProposalData,
+  successFullRefuseModal,
+  setSuccessFullRefuseModal,
+  isToken,
+  isOwner,
+  setRefusedValidatedAdModal,
+  refusedValidatedAdModal
+}) => {
   const [validate, setValidate] = useState({});
   const [comments, setComments] = useState({});
   const [isApprouvedAd, setIsApprouvedAd] = useState(false);
@@ -56,13 +67,13 @@ const Review_carousel = ({chainId, setSelectedItems, selectedItems, handleSubmit
   const handleInput = (id) => {
     setValidate((currentState) => ({
       ...currentState,
-      [id]: !currentState[id],
+      [id]: !currentState[id]
     }));
   };
   const handleCommentChange = (tokenId, value) => {
     setComments((currentComments) => ({
       ...currentComments,
-      [tokenId]: value,
+      [tokenId]: value
     }));
     setSelectedItems((currentItems) => {
       return currentItems.map((item) => {
@@ -82,7 +93,7 @@ const Review_carousel = ({chainId, setSelectedItems, selectedItems, handleSubmit
       let argObject = {
         ...item,
         ...(approuved && { reason: "" }),
-        validated: approuved,
+        validated: approuved
       };
       submissionArgs.push(argObject);
     }
@@ -100,9 +111,9 @@ const Review_carousel = ({chainId, setSelectedItems, selectedItems, handleSubmit
   }
   const closeRefuseModal = () => {
     setRefusedValidatedAdModal(null);
-    if(successFullRefuseModal){
-       setSelectedItems([]);
-       setSuccessFullRefuseModal(false);
+    if (successFullRefuseModal) {
+      setSelectedItems([]);
+      setSuccessFullRefuseModal(false);
     }
   };
 
@@ -111,7 +122,7 @@ const Review_carousel = ({chainId, setSelectedItems, selectedItems, handleSubmit
     setIsFirstSelection(false);
     setIsSelectedItem((prevState) => ({
       ...prevState,
-      [item.tokenId]: !prevState[item.tokenId],
+      [item.tokenId]: !prevState[item.tokenId]
     }));
 
     setSelectedItems((previousItems) => {
@@ -125,7 +136,7 @@ const Review_carousel = ({chainId, setSelectedItems, selectedItems, handleSubmit
           tokenId: item.tokenId,
           proposalId: item.proposalIds[idx],
           adParameter: key,
-          reason: comments[item.tokenId] || "",
+          reason: comments[item.tokenId] || ""
         }));
         return [...previousItems, ...newItems];
       }
@@ -140,12 +151,12 @@ const Review_carousel = ({chainId, setSelectedItems, selectedItems, handleSubmit
   const successFullRefusedAdModalObject = {
     title: "Refused",
     body: "The ad has been refused successfully ✅",
-    button: "Close",
+    button: "Close"
   };
   const successFullValidatedAdModalObject = {
     title: "Validated",
     body: "The ad has been validated successfully 🎉",
-    button: "Close",
+    button: "Close"
   };
 
   if (pendingProposalData.length === 0) {
@@ -158,16 +169,22 @@ const Review_carousel = ({chainId, setSelectedItems, selectedItems, handleSubmit
           <div className="dark:bg-jacarta-700 dark:border-jacarta-600 border-jacarta-100 rounded-2lg border bg-white p-6 mb-4">
             <div className=" sm:flex sm:flex-wrap">
               <span className="dark:text-jacarta-300 text-jacarta-400 text-sm">
-                Select an advertisement below to manage its status. If you approve an ad, it will be displayed on your media platform. The owner of your ad space retains the ability to submit an advertisement even if its
-                status is Pending, Approved, or Denied.{" "}
+                Select an advertisement below to manage its status. If you approve an ad, it will be
+                displayed on your media platform. The owner of your ad space retains the ability to
+                submit an advertisement even if its status is Pending, Approved, or Denied.{" "}
               </span>
             </div>
           </div>
-          <div className={`fixed dark:border-jacarta-500 border  bottom-0 blury-background left-0 right-0 px-4 py-3  ${isFirstSelection  ? "hidden" : selectedItems?.length === 0 ? "animated-modalSelectedItemDown" : "animated-modalSelectedItemUp"}`}>
+          <div
+            className={`fixed dark:border-jacarta-500 border  bottom-0 blury-background left-0 right-0 px-4 py-3  ${isFirstSelection ? "hidden" : selectedItems?.length === 0 ? "animated-modalSelectedItemDown" : "animated-modalSelectedItemUp"}`}
+          >
             <div className="dropdown-item mb-4 font-display   block w-full rounded-xl  text-left text-sm transition-colors dark:text-white">
               <span className="flex items-center justify-center gap-6">
                 <span className="mr-4">
-                  I confirm that I have checked all the ads selected <span className="text-green text-md ml-1">{Object.values(isSelectedItem).filter((value) => value === true).length}</span>{" "}
+                  I confirm that I have checked all the ads selected{" "}
+                  <span className="text-green text-md ml-1">
+                    {Object.values(isSelectedItem).filter((value) => value === true).length}
+                  </span>{" "}
                 </span>
                 <input
                   type="checkbox"
@@ -186,7 +203,7 @@ const Review_carousel = ({chainId, setSelectedItems, selectedItems, handleSubmit
                   toast.promise(handleItemSubmit(true), {
                     pending: "Waiting for confirmation 🕒",
                     success: "Transaction confirmed 👌",
-                    error: "Transaction rejected 🤯",
+                    error: "Transaction rejected 🤯"
                   })
                 }
                 className={` !rounded-full !min-w-[100px] !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate[tokenId] ? "btn-disabled" : "!bg-green !cursor-pointer"} `}
@@ -211,23 +228,56 @@ const Review_carousel = ({chainId, setSelectedItems, selectedItems, handleSubmit
           const { adParametersList, tokenId, proposalIds, tokenData } = item;
 
           return (
-            <article key={tokenId} className={`  ${isSelectedItem[tokenId] && !isToken ? "border-4 border-jacarta-100 rounded-2xl" : ""}`} onClick={() => handleSelection(item)}>
+            <article
+              key={tokenId}
+              className={`  ${isSelectedItem[tokenId] && !isToken ? "border-4 border-jacarta-100 rounded-2xl" : ""}`}
+              onClick={() => handleSelection(item)}
+            >
               <div className="dark:bg-jacarta-700 dark:border-jacarta-700 border-jacarta-100 rounded-2xl block border bg-white p-[1.1875rem] transition-shadow hover:shadow-lg text-jacarta-500">
                 <figure className="flex justify-center">
                   <button onClick={() => openModal(tokenId)}>
                     {getImageUrl(adParametersList) && (
-                      <Image src={getImageUrl(adParametersList)} alt="logo" height={75} width={75} objectFit="contain" className="rounded-[0.625rem] w-auto h-[150px] object-contain" loading="lazy" />
+                      <Image
+                        src={getImageUrl(adParametersList)}
+                        alt="logo"
+                        height={75}
+                        width={75}
+                        objectFit="contain"
+                        className="rounded-[0.625rem] w-auto h-[150px] object-contain"
+                        loading="lazy"
+                      />
                     )}
                   </button>
 
                   {/* <!-- Modal --> */}
-                  <div className={modalStates[tokenId] ? "modal fade show block" : "modal fade"} onClick={(e) => e.stopPropagation()}>
+                  <div
+                    className={modalStates[tokenId] ? "modal fade show block" : "modal fade"}
+                    onClick={(e) => e.stopPropagation()}
+                  >
                     <div className="modal-dialog !my-0 flex h-full max-w-4xl items-center justify-center">
-                      <Image src={getImageUrl(adParametersList)} alt="logo" height={250} width={250} objectFit="contain" className="rounded-2lg min-w-[75px]" loading="lazy" />
+                      <Image
+                        src={getImageUrl(adParametersList)}
+                        alt="logo"
+                        height={250}
+                        width={250}
+                        objectFit="contain"
+                        className="rounded-2lg min-w-[75px]"
+                        loading="lazy"
+                      />
                     </div>
 
-                    <button type="button" className="btn-close absolute top-6 right-6" onClick={() => closeModal(tokenId)}>
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" className="h-6 w-6 fill-white">
+                    <button
+                      type="button"
+                      className="btn-close absolute top-6 right-6"
+                      onClick={() => closeModal(tokenId)}
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        width="24"
+                        height="24"
+                        className="h-6 w-6 fill-white"
+                      >
                         <path fill="none" d="M0 0h24v24H0z" />
                         <path d="M12 10.586l4.95-4.95 1.414 1.414-4.95 4.95 4.95 4.95-1.414 1.414-4.95-4.95-4.95 4.95-1.414-1.414 4.95-4.95-4.95-4.95L7.05 5.636z" />
                       </svg>
@@ -248,7 +298,9 @@ const Review_carousel = ({chainId, setSelectedItems, selectedItems, handleSubmit
                   </Link>
 
                   <div className="dark:border-jacarta-600 ms-14 border-jacarta-100 flex items-center whitespace-nowrap rounded-md border py-1 px-2">
-                    <span className="text-green text-sm font-medium tracking-tight"># {tokenData ? tokenData : formatTokenId(tokenId)}</span>
+                    <span className="text-green text-sm font-medium tracking-tight">
+                      # {tokenData ? tokenData : formatTokenId(tokenId)}
+                    </span>
                   </div>
                 </div>
                 <div className="mt-2 text-xs flex justify-between">
@@ -268,7 +320,9 @@ const Review_carousel = ({chainId, setSelectedItems, selectedItems, handleSubmit
             handleItemSubmit={handleItemSubmit}
             closeRefuseModal={closeRefuseModal}
             successFullRefuseModal={successFullRefuseModal}
-            successFullModalObject={isApprouvedAd ? successFullValidatedAdModalObject : successFullRefusedAdModalObject}
+            successFullModalObject={
+              isApprouvedAd ? successFullValidatedAdModalObject : successFullRefusedAdModalObject
+            }
           />
         </div>
       )}

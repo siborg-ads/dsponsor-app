@@ -2,13 +2,13 @@ import React, { useEffect, useState } from "react";
 import Tippy from "@tippyjs/react";
 import {
   updatetrendingCategorySorText,
-  updateTrendingCategoryItemByInput,
+  updateTrendingCategoryItemByInput
 } from "../../redux/counterSlice";
 import { useDispatch } from "react-redux";
 import {
   updateRenkingData,
   updateRenkingDataByBlockchain,
-  updateRenkingDataByPostdate,
+  updateRenkingDataByPostdate
 } from "../../redux/counterSlice";
 import Image from "next/image";
 
@@ -18,8 +18,7 @@ const Recently_added_dropdown = ({ data, dropdownFor }) => {
   const [currencyValTo, setCurrencyValTo] = useState("");
   const [sortActive, setsortActive] = useState(1);
   const [sortFilterText, setSortFilterText] = useState("");
-  const [renkingCategoriesdropdownShow, setRenkingCategoriesDropdownShow] =
-    useState(false);
+  const [renkingCategoriesdropdownShow, setRenkingCategoriesDropdownShow] = useState(false);
   const [blockChaindropdownShow, setBlockChainDropdownShow] = useState(false);
   const [itemDateDropdown, setItemDateDropdown] = useState(false);
   const [categoryDropdown, setCategoryDropdown] = useState(false);
@@ -113,16 +112,16 @@ const Recently_added_dropdown = ({ data, dropdownFor }) => {
   const inputData = [
     {
       id: 1,
-      text: "Verified Only",
+      text: "Verified Only"
     },
     {
       id: 2,
-      text: "NFSW Only",
+      text: "NFSW Only"
     },
     {
       id: 3,
-      text: "Show Lazy Minted",
-    },
+      text: "Show Lazy Minted"
+    }
   ];
 
   const handleInput = (e, text) => {
@@ -274,13 +273,9 @@ const Recently_added_dropdown = ({ data, dropdownFor }) => {
                 <li key={id} onClick={() => setsortActive(id)}>
                   <button
                     className="dropdown-item font-display dark:hover:bg-jacarta-600 hover:bg-jacarta-50 flex w-full items-center justify-between rounded-xl px-5 py-2 text-left text-sm transition-colors dark:text-white"
-                    onClick={() =>
-                      dispatch(updateRenkingDataByBlockchain(text))
-                    }
+                    onClick={() => dispatch(updateRenkingDataByBlockchain(text))}
                   >
-                    <span className="text-jacarta-700 dark:text-white">
-                      {text}
-                    </span>
+                    <span className="text-jacarta-700 dark:text-white">{text}</span>
                     {sortActive === id && (
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -333,9 +328,7 @@ const Recently_added_dropdown = ({ data, dropdownFor }) => {
               return (
                 <li key={id} onClick={() => setsortActive(id)}>
                   <button className="dropdown-item font-display dark:hover:bg-jacarta-600 hover:bg-jacarta-50 flex w-full items-center justify-between rounded-xl px-5 py-2 text-left text-sm transition-colors dark:text-white">
-                    <span className="text-jacarta-700 dark:text-white">
-                      {text}
-                    </span>
+                    <span className="text-jacarta-700 dark:text-white">{text}</span>
                     {sortActive === id && (
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -391,9 +384,7 @@ const Recently_added_dropdown = ({ data, dropdownFor }) => {
                     className="dropdown-item font-display dark:hover:bg-jacarta-600 hover:bg-jacarta-50 flex w-full items-center justify-between rounded-xl px-5 py-2 text-left text-sm transition-colors dark:text-white"
                     onClick={() => dispatch(updateRenkingData(text))}
                   >
-                    <span className="text-jacarta-700 dark:text-white">
-                      {text}
-                    </span>
+                    <span className="text-jacarta-700 dark:text-white">{text}</span>
                     {sortActive === id && (
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -449,9 +440,7 @@ const Recently_added_dropdown = ({ data, dropdownFor }) => {
                     className="dropdown-item font-display dark:hover:bg-jacarta-600 hover:bg-jacarta-50 flex w-full items-center justify-between rounded-xl px-5 py-2 text-left text-sm transition-colors dark:text-white"
                     onClick={() => setsortActive(id)}
                   >
-                    <span className="text-jacarta-700 dark:text-white">
-                      {text}
-                    </span>
+                    <span className="text-jacarta-700 dark:text-white">{text}</span>
                     {sortActive === id && (
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -492,33 +481,33 @@ const Recently_added_dropdown = ({ data, dropdownFor }) => {
       {
         id: 1,
         image: "/images/chains/ETH.png",
-        text: "ETH",
+        text: "ETH"
       },
       {
         id: 2,
         image: "/images/chains/FLOW.png",
-        text: "FLOW",
+        text: "FLOW"
       },
       {
         id: 3,
         image: "/images/chains/FUSD.png",
-        text: "FUSD",
+        text: "FUSD"
       },
       {
         id: 4,
         image: "/images/chains/XTZ.png",
-        text: "XTZ",
+        text: "XTZ"
       },
       {
         id: 5,
         image: "/images/chains/DAI.png",
-        text: "DAI",
+        text: "DAI"
       },
       {
         id: 6,
         image: "/images/chains/RARI.png",
-        text: "RARI",
-      },
+        text: "RARI"
+      }
     ];
     return (
       <div className="my-1 mr-2.5">

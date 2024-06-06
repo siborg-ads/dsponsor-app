@@ -3,7 +3,15 @@ import DatePicker from "react-datepicker";
 
 import { FileUploader } from "react-drag-drop-files";
 
-const SliderForm = ({ styles, handlePreviewModal, stepsRef, numSteps, children, files, selectedIntegration }) => {
+const SliderForm = ({
+  styles,
+  handlePreviewModal,
+  stepsRef,
+  numSteps,
+  children,
+  files,
+  selectedIntegration
+}) => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const stepContainerRef = useRef(null);
   const stepFormContainerRef = useRef(null);
@@ -43,11 +51,11 @@ const SliderForm = ({ styles, handlePreviewModal, stepsRef, numSteps, children, 
     stepContainerRef.current.style.transition = "transform 0.3s ease";
     stepContainerRef.current.style.transform = `translateX(${-stepFormContainerRef.current.offsetWidth * currentSlide}px)`;
   };
- const adjustHeight = useCallback(() => {
-   const stepHeight = stepsRef.current[currentSlide].offsetHeight;
-   stepFormContainerRef.current.style.height = `${stepHeight}px `;
-   stepContainerRef.current.style.height = `${stepHeight}px `;
- }, [currentSlide, stepsRef, stepFormContainerRef, stepContainerRef]);
+  const adjustHeight = useCallback(() => {
+    const stepHeight = stepsRef.current[currentSlide].offsetHeight;
+    stepFormContainerRef.current.style.height = `${stepHeight}px `;
+    stepContainerRef.current.style.height = `${stepHeight}px `;
+  }, [currentSlide, stepsRef, stepFormContainerRef, stepContainerRef]);
 
   useEffect(() => {
     const animateSlider = () => {
@@ -91,9 +99,20 @@ const SliderForm = ({ styles, handlePreviewModal, stepsRef, numSteps, children, 
     return () => {
       window.removeEventListener("resize", updateDimensions);
     };
-  }, [currentSlide, numSteps, stepsRef, styles, files, selectedIntegration, handlePreviewModal, children, stepContainerRef, stepFormContainerRef, bulletsRef, adjustHeight]);
-
- 
+  }, [
+    currentSlide,
+    numSteps,
+    stepsRef,
+    styles,
+    files,
+    selectedIntegration,
+    handlePreviewModal,
+    children,
+    stepContainerRef,
+    stepFormContainerRef,
+    bulletsRef,
+    adjustHeight
+  ]);
 
   useEffect(() => {
     stepFormContainerRef.current.style.height = `auto `;
@@ -111,7 +130,6 @@ const SliderForm = ({ styles, handlePreviewModal, stepsRef, numSteps, children, 
 
         stepContainerRef.current.style.width = `${stepWidth * numSteps}px`;
         adjustHeight();
-        
       }
     };
 
@@ -121,7 +139,20 @@ const SliderForm = ({ styles, handlePreviewModal, stepsRef, numSteps, children, 
     return () => {
       window.removeEventListener("resize", updateDimensions);
     };
-  }, [currentSlide, numSteps, stepsRef, styles, files, selectedIntegration, handlePreviewModal, children, stepContainerRef, stepFormContainerRef, bulletsRef, adjustHeight]);
+  }, [
+    currentSlide,
+    numSteps,
+    stepsRef,
+    styles,
+    files,
+    selectedIntegration,
+    handlePreviewModal,
+    children,
+    stepContainerRef,
+    stepFormContainerRef,
+    bulletsRef,
+    adjustHeight
+  ]);
 
   const handleNextClick = () => {
     if (currentSlide < numSteps - 1) {
@@ -141,8 +172,16 @@ const SliderForm = ({ styles, handlePreviewModal, stepsRef, numSteps, children, 
 
   return (
     <div className={styles.modal__container}>
-      <div className={`${styles.modal} dark:bg-jacarta-700 dark:border-jacarta-700 rounded-lg ring-accent/10 ring-2`}>
-        <div className={styles.modal__form__container} ref={stepFormContainerRef} onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={handleTouchEnd}>
+      <div
+        className={`${styles.modal} dark:bg-jacarta-700 dark:border-jacarta-700 rounded-lg ring-accent/10 ring-2`}
+      >
+        <div
+          className={styles.modal__form__container}
+          ref={stepFormContainerRef}
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+        >
           <form className={styles.form}>
             <div className={styles.form__step__container} ref={stepContainerRef}>
               {/* Steps */}
@@ -160,15 +199,27 @@ const SliderForm = ({ styles, handlePreviewModal, stepsRef, numSteps, children, 
               ))}
             </div>
             <div className={`${styles.form__nav} bg-accent rounded-lg`}>
-              <button type="button" onClick={handlePrevClick} className={`${styles.form__nav__prev} ${currentSlide === 0 ? "disabled opacity-25" : ""}`}>
+              <button
+                type="button"
+                onClick={handlePrevClick}
+                className={`${styles.form__nav__prev} ${currentSlide === 0 ? "disabled opacity-25" : ""}`}
+              >
                 Back
               </button>
               {currentSlide === numSteps - 1 ? (
-                <button type="button" className="bg-accent cursor-pointer rounded-full py-3 px-3 text-end font-semibold text-white transition-all" onClick={handlePreviewModal}>
+                <button
+                  type="button"
+                  className="bg-accent cursor-pointer rounded-full py-3 px-3 text-end font-semibold text-white transition-all"
+                  onClick={handlePreviewModal}
+                >
                   Show preview
                 </button>
               ) : (
-                <button type="button" onClick={handleNextClick} className={`${styles.form__nav__next} ${currentSlide === numSteps - 1 ? "disabled" : ""}`}>
+                <button
+                  type="button"
+                  onClick={handleNextClick}
+                  className={`${styles.form__nav__next} ${currentSlide === numSteps - 1 ? "disabled" : ""}`}
+                >
                   Next
                 </button>
               )}

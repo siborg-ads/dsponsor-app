@@ -1,4 +1,4 @@
-import React from 'react'
+import React from "react";
 import { Skeleton } from "@nextui-org/react";
 import Tippy from "@tippyjs/react";
 const OfferSkeleton = () => {
@@ -35,7 +35,10 @@ const OfferSkeleton = () => {
                 <Skeleton className="w-2/5 rounded-lg mr-2 ">
                   <div className="h-3 w-3/5 rounded-lg bg-default-200"></div>
                 </Skeleton>
-                <span className="dark:border-jacarta-600 bg-green inline-flex h-6 w-6 items-center justify-center rounded-full border-2 border-white" data-tippy-content="Verified Collection">
+                <span
+                  className="dark:border-jacarta-600 bg-green inline-flex h-6 w-6 items-center justify-center rounded-full border-2 border-white"
+                  data-tippy-content="Verified Collection"
+                >
                   <Tippy content={<span>Verified Collection</span>}>
                     <svg className="icon h-[.875rem] w-[.875rem] fill-white">
                       <use xlinkHref="/icons.svg#icon-right-sign"></use>
@@ -51,7 +54,6 @@ const OfferSkeleton = () => {
 
             <div className="mb-8 flex items-center space-x-4 whitespace-nowrap">
               <div className="flex items-center w-[100px]">
-              
                 <Skeleton className="w-2/5 rounded-lg">
                   <div className="h-3 w-2/5 rounded-lg bg-default-200"></div>
                 </Skeleton>
@@ -84,7 +86,6 @@ const OfferSkeleton = () => {
       </div>
     </section>
   );
-  
-}
+};
 
-export default OfferSkeleton
+export default OfferSkeleton;

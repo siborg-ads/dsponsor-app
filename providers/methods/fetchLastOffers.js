@@ -7,7 +7,12 @@ export default async function fetchLastOffers(chainId) {
 
   const GET_DATA = gql`
     query Homepage_LastOffers {
-      adOffers(orderBy: creationTimestamp, orderDirection: desc, first: 50, where: { and: [{ disable: false }] }) {
+      adOffers(
+        orderBy: creationTimestamp
+        orderDirection: desc
+        first: 50
+        where: { and: [{ disable: false }] }
+      ) {
         id # offerId
         metadataURL
         nftContract {
@@ -36,12 +41,13 @@ export default async function fetchLastOffers(chainId) {
   const resultMappedData = response.adOffers
     .map((element) => {
       const sortByTokenId = element.nftContract.tokens.sort((a, b) => a.tokenId - b.tokenId);
-      const tokenIdAllowedToMint = sortByTokenId.find((token) => token.mint === null)?.tokenId || false;
+      const tokenIdAllowedToMint =
+        sortByTokenId.find((token) => token.mint === null)?.tokenId || false;
 
       const combinedData = {
         ...element,
         chainConfig: chainConfig,
-        tokenIdAllowedToMint: tokenIdAllowedToMint,
+        tokenIdAllowedToMint: tokenIdAllowedToMint
       };
 
       if (!tokenIdAllowedToMint && element.nftContract.allowList === true) {

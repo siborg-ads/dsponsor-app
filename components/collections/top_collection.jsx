@@ -12,16 +12,16 @@ const Top_collection = () => {
   const timeText = [
     {
       id: 1,
-      text: "Last 24 Hours",
+      text: "Last 24 Hours"
     },
     {
       id: 2,
-      text: "Last 7 days",
+      text: "Last 7 days"
     },
     {
       id: 3,
-      text: "Last 30 days",
-    },
+      text: "Last 30 days"
+    }
   ];
 
   const handleFilter = (text) => {
@@ -114,11 +114,7 @@ const Top_collection = () => {
           <div className="grid grid-cols-1 gap-3 md:grid-cols-2 md:gap-[1.875rem] lg:grid-cols-4">
             {data.map((item) => {
               const { id, image, title, icon, amount, postTime } = item;
-              const itemLink = image
-                .split("/")
-                .slice(-1)
-                .toString()
-                .replace(".jpg", "");
+              const itemLink = image.split("/").slice(-1).toString().replace(".jpg", "");
 
               return (
                 <div
@@ -126,10 +122,7 @@ const Top_collection = () => {
                   key={id}
                 >
                   <figure className="mr-4 shrink-0">
-                    <Link
-                      href={"/collection/" + itemLink}
-                      className="relative block"
-                    >
+                    <Link href={"/collection/" + itemLink} className="relative block">
                       <Image
                         src={image}
                         alt={title}
@@ -165,9 +158,7 @@ const Top_collection = () => {
                         {title}
                       </span>
                     </Link>
-                    <span className="dark:text-jacarta-300 text-sm">
-                      {amount} ETH
-                    </span>
+                    <span className="dark:text-jacarta-300 text-sm">{amount} ETH</span>
                   </div>
                 </div>
               );
