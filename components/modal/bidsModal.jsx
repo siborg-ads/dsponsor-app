@@ -8,6 +8,7 @@ import config from "../../providers/utils/config";
 import { computeBidAmounts } from "../../utils/computeBidAmounts";
 import { formatUnits, parseUnits } from "ethers/lib/utils";
 import formatAndRound from "../../utils/formatAndRound";
+import { fetchTokenPrice } from "../../utils/fetchTokenPrice";
 
 const BidsModal = ({
   setAmountToApprove,
@@ -42,6 +43,21 @@ const BidsModal = ({
   const [endDate, setEndDate] = useState(null);
   const [minBid, setMinBid] = useState(null);
   const [endDateHour, setEndDateHour] = useState(null);
+  const [tokenPrice, setTokenPrice] = useState(null);
+
+  useEffect(() => {
+    if (marketplaceListings[0] && bidsAmount && bidsAmount > 0 && chainId) {
+      fetchTokenPrice(
+        marketplaceListings[0]?.currency,
+        chainId,
+        bidsAmount
+      ).then((price) => {
+        setTokenPrice(price);
+      });
+    } else {
+      setTokenPrice(0);
+    }
+  }, [bidsAmount, chainId, marketplaceListings]);
 
   useEffect(() => {
     if (
@@ -63,50 +79,33 @@ const BidsModal = ({
       const royaltyBps = 0;
       const protocolFeeBps = marketplaceListings[0]?.protocolFeeBps;
 
-      const { newAmount, newPricePerToken } = computeBidAmounts(
-        newBidPerToken,
-        1,
-        reservePricePerToken,
-        buyoutPricePerToken,
-        previousPricePerToken,
-        minimalAuctionBps,
-        bonusRefundBps,
-        royaltyBps,
-        protocolFeeBps
-      );
-
-      const {
-        newAmount: newAmountFinal,
-        refundAmountToPreviousBidder: refundAmountToPreviousBidderFinal,
-      } = computeBidAmounts(
-        newAmount * 1.1,
-        1,
-        reservePricePerToken,
-        buyoutPricePerToken,
-        newPricePerToken,
-        minimalAuctionBps,
-        bonusRefundBps,
-        royaltyBps,
-        protocolFeeBps
-      );
-
-      if (newAmountFinal && newAmountFinal > 0) {
-        const nextMinBid =
-          (BigInt(newAmountFinal) * BigInt(1000)) / BigInt(10000) +
-          BigInt(newAmountFinal);
-        const nextMinBidFormatted = formatAndRound(
-          formatUnits(nextMinBid.toString(), currencyTokenDecimals)
-        );
-        const refundedPrice = formatAndRound(
-          formatUnits(refundAmountToPreviousBidderFinal, currencyTokenDecimals)
+      const { newRefundBonusAmount, nextReservePricePerToken } =
+        computeBidAmounts(
+          newBidPerToken,
+          1,
+          reservePricePerToken,
+          buyoutPricePerToken,
+          previousPricePerToken,
+          minimalAuctionBps,
+          bonusRefundBps,
+          royaltyBps,
+          protocolFeeBps
         );
 
-        setMinBid(nextMinBidFormatted);
-        setRefundedPrice(refundedPrice);
-      } else {
-        setMinBid(0);
-        setRefundedPrice(0);
-      }
+      const newRefundBonusAmountFormatted = formatAndRound(
+        formatUnits(newRefundBonusAmount, currencyTokenDecimals)
+      );
+      const newRefundBonusAmountAdded =
+        Number(newRefundBonusAmountFormatted) + Number(bidsAmount);
+      const newRefundBonusFormatted = formatAndRound(
+        newRefundBonusAmountAdded.toString()
+      );
+      const nextReservePricePerTokenFormatted = formatAndRound(
+        formatUnits(nextReservePricePerToken, currencyTokenDecimals)
+      );
+
+      setRefundedPrice(newRefundBonusFormatted);
+      setMinBid(nextReservePricePerTokenFormatted);
     } else {
       setMinBid(0);
       setRefundedPrice(0);
@@ -214,29 +213,29 @@ const BidsModal = ({
                   </div>
                   <div>
                     <span className="dark:text-jacarta-400 text-sm">
-                      Balance: {tokenBalance?.displayValue} {currencySymbol}
+                      Balance: {tokenBalance?.displayValue ?? 0}{" "}
+                      {currencySymbol}
                     </span>
                   </div>
                 </div>
-                <div className="dark:border-jacarta-600 border-jacarta-100 relative mb-2 flex items-center overflow-hidden rounded-lg border">
-                  <div className="border-jacarta-100 bg-jacarta-50 flex flex-1 items-center self-stretch border-r px-2">
-                    <span className="font-display text-jacarta-700 text-sm">
+                <div className="flex items-center gap-4">
+                  <div className="flex items-center relative w-full">
+                    <input
+                      type="number"
+                      className={`focus:ring-accent relative w-full flex-[3] border-transparent bg-jacarta-600 rounded-xl text-2xl py-2 font-semibold text-white focus:ring-inse`}
+                      placeholder="Amount"
+                      value={bidsAmount}
+                      onChange={(e) => handleBidsAmount(e)}
+                    />
+                    <span className="text-white font-semibold absolute right-0 px-4">
                       {currencySymbol}
                     </span>
                   </div>
 
-                  <input
-                    type="number"
-                    className={`${
-                      isPriceGood ? "border-green" : "border-red"
-                    } focus:ring-accent h-12 w-full flex-[3] border-2 focus:ring-inse dark:text-jacarta-700`}
-                    placeholder="Amount"
-                    value={bidsAmount}
-                    onChange={(e) => handleBidsAmount(e)}
-                  />
-
-                  <div className="bg-jacarta-50 border-jacarta-100 flex flex-1 justify-end self-stretch border-l dark:text-jacarta-700">
-                    <span className="self-center px-2 text-sm">$130.82</span>
+                  <div className="bg-jacarta-600 w-1/4 border border-jacarta-900 border-opacity-10 rounded-xl flex flex-1 justify-center self-stretch border-l">
+                    <span className="self-center px-4 text-xl text-center text-white font-semibold">
+                      ${tokenPrice ?? 0}
+                    </span>
                   </div>
                 </div>
                 {!isPriceGood && (

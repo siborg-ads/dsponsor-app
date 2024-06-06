@@ -71,6 +71,9 @@ export function computeBidAmounts(
     (BigInt(newAmount) * BigInt(royaltyBps)) / BigInt("10000");
   const listerAmount = BigInt(newAmount) - protocolFeeAmount - royaltyAmount;
 
+  const nextReservePricePerToken =
+    (newAmount * BigInt(110)) / BigInt(100);
+
   // note: if quantity = 1 :
   // - newBidPerToken = totalBidAmount
   // - refundBonusPerToken = refundBonusAmount
@@ -84,6 +87,7 @@ export function computeBidAmounts(
   return {
     minimalBidPerToken: minimalBidPerToken.toString(),
     minimalBuyoutPerToken,
+    nextReservePricePerToken: nextReservePricePerToken.toString(),
 
     newBidPerToken: newBidPerToken.toString(),
     totalBidAmount: totalBidAmount.toString(), // how much the bidder will pay => refundBonusAmount + newAmount

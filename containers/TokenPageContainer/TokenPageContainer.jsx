@@ -26,6 +26,7 @@ import Step_2_Mint from "../../components/sliderForm/PageMint/Step_2_Mint.jsx";
 import Step_3_Mint from "../../components/sliderForm/PageMint/Step_3_Mint.jsx";
 import PreviewModal from "../../components/modal/previewModal.jsx";
 import { Skeleton } from "@nextui-org/react";
+import { parseUnits } from "ethers/lib/utils";
 
 import "tippy.js/dist/tippy.css";
 import { ItemsTabs } from "../../components/component.js";
@@ -188,6 +189,7 @@ const TokenPageContainer = () => {
     successFullListing,
     address,
     chainId,
+    setSelectedChain,
   ]);
 
   useEffect(() => {
@@ -540,7 +542,9 @@ const TokenPageContainer = () => {
         ]);
       }
 
-      if (allowance.toNumber() > amountToApprove) {
+      if (
+        allowance.gt(parseUnits(amountToApprove.toString(), currencyDecimals))
+      ) {
         setAllowanceTrue(false);
         return false;
       }
