@@ -1,24 +1,13 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 
-import Link from "next/link";
-
-import { useDispatch } from "react-redux";
-import "tippy.js/themes/light.css";
 import Image from "next/image";
-import OfferItem from "../cards/offerItem";
+import "tippy.js/themes/light.css";
 import { useChainContext } from "../../contexts/hooks/useChainContext";
+import OfferItem from "../cards/offerItem";
 
 const Auctions_categories = ({ data, isOwner }) => {
   const { currentChainObject } = useChainContext();
   const chainId = currentChainObject?.chainId;
-
-  const handleFilter = (category) => {
-    if (category !== "all") {
-      setItemdata(trendingCategoryData.filter((item) => item.category === category));
-    } else {
-      setItemdata(trendingCategoryData);
-    }
-  };
 
   const sortText = [
     {

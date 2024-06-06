@@ -1,8 +1,5 @@
 import { useState } from "react";
-import DatePicker from "react-datepicker";
-import Image from "next/image";
 
-import { FileUploader } from "react-drag-drop-files";
 import ModalHelper from "../../Helper/modalHelper";
 
 const Step_1_Create = ({
@@ -87,16 +84,17 @@ const Step_1_Create = ({
 
   const handleRemoveParameter = (value) => {
     let paramsToRemove = [];
+    let filter0, filter1;
     switch (value) {
       case 0:
         paramsToRemove = [`imageURL-${value}`, `linkURL-${value}`];
 
-        const filter0 = displayedParameter.filter((item) => item !== "ClickableLogosGrid");
+        filter0 = displayedParameter.filter((item) => item !== "ClickableLogosGrid");
         setDisplayedParameter(filter0);
         break;
       case 1:
         paramsToRemove = [`imageURL-${value}`, `linkURL-${value}`];
-        const filter1 = displayedParameter.filter((item) => item !== "DynamicBanner");
+        filter1 = displayedParameter.filter((item) => item !== "DynamicBanner");
         setDisplayedParameter(filter1);
         break;
       default:
