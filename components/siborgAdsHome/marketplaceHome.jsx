@@ -1,14 +1,44 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
 import Link from "next/link";
 import Auction from "./auction";
 
-const MarketplaceHome = ({ chainIdFilter, filter, auctions }) => {
+const MarketplaceHome = ({
+  chainIdFilter,
+  filter,
+  auctions,
+  setFilter,
+  setChainIdFilter,
+}) => {
   const [chainIdFilterText, setChainIdFilterText] = useState("All chains");
   const [isHoveringCard, setIsHoveringCard] = useState(
     Array(auctions.length).fill(false)
   );
+  const [filterName, setFilterName] = useState(null);
+  const [filteredAuctions, setFilteredAuctions] = useState(auctions);
+
+  useEffect(() => {
+    let tempFilteredAuctions = auctions;
+
+    if (filterName) {
+      tempFilteredAuctions = tempFilteredAuctions.filter((auction) =>
+        auction.name.toLowerCase().includes(filterName.toLowerCase())
+      );
+    } else {
+      tempFilteredAuctions = auctions;
+    }
+
+    if (chainIdFilter) {
+      tempFilteredAuctions = tempFilteredAuctions.filter(
+        (auction) => auction.chainId === chainIdFilter
+      );
+    } else {
+      tempFilteredAuctions = auctions;
+    }
+
+    setFilteredAuctions(tempFilteredAuctions);
+  }, [filterName, chainIdFilter, auctions]);
 
   return (
     <>
@@ -19,6 +49,8 @@ const MarketplaceHome = ({ chainIdFilter, filter, auctions }) => {
             <input
               type="text"
               placeholder="Search for ad spaces"
+              value={filterName}
+              onChange={(e) => setFilterName(e.target.value)}
               className="w-full h-full rounded-xl bg-jacarta-600 focus:border-jacarta-100 focus:border-opacity-10 focus:ring-0 border border-jacarta-100 border-opacity-10 text-placeholder-jacarta-200 text-white py-2 px-4"
             />
             <Menu as="div" className="w-4/12 h-full">
@@ -33,7 +65,7 @@ const MarketplaceHome = ({ chainIdFilter, filter, auctions }) => {
               >
                 <MenuItem
                   onClick={() => {
-                    setChainIdFilter(0);
+                    setChainIdFilter(null);
                     setChainIdFilterText("All chains");
                   }}
                   className="hover:bg-jacarta-500 p-2 rounded-lg w-full pr-12 md:pr-24"
@@ -111,7 +143,7 @@ const MarketplaceHome = ({ chainIdFilter, filter, auctions }) => {
           </div>
 
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-            {auctions.map((auction, index) => (
+            {filteredAuctions.map((auction, index) => (
               <>
                 <Link
                   key={index}

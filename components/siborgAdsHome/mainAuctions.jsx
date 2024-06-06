@@ -15,10 +15,15 @@ const MainAuctions = ({ auctions }) => {
   }, [auctions]);
 
   useEffect(() => {
+    if (liveAuctions.length === 0) return;
+
     let tempRandomAuctions = [];
     let seenIndexes = new Set();
 
-    while (tempRandomAuctions.length < 4) {
+    while (
+      tempRandomAuctions.length < 4 &&
+      seenIndexes.size < liveAuctions.length
+    ) {
       let randomIndex = Math.floor(Math.random() * liveAuctions.length);
 
       if (!seenIndexes.has(randomIndex)) {

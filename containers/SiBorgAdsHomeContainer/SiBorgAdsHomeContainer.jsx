@@ -5,7 +5,7 @@ import Description from "../../components/siborgAdsHome/description";
 import { useState } from "react";
 
 const SiBorgAdsHomeContainer = () => {
-  const [chainIdFilter, setChainIdFilter] = useState(1);
+  const [chainIdFilter, setChainIdFilter] = useState(null);
   const [filter, setFilter] = useState("All the ad spaces");
 
   const auctions = [
@@ -73,6 +73,8 @@ const SiBorgAdsHomeContainer = () => {
           auctions={auctions}
           filter={filter}
           chainIdFilter={chainIdFilter}
+          setFilter={setFilter}
+          setChainIdFilter={setChainIdFilter}
         />
       </div>
     </>
