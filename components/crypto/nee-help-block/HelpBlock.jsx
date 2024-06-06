@@ -16,9 +16,7 @@ const HelpBlock = () => {
             </svg>
           </div>
           <div>
-            <span className="mb-2 block font-display text-lg text-white">
-              Blog
-            </span>
+            <span className="mb-2 block font-display text-lg text-white">Blog</span>
             <p className="mb-4 text-white">
               Stay up to date with the latest stories and commentary.
             </p>
@@ -41,9 +39,7 @@ const HelpBlock = () => {
             </svg>
           </div>
           <div>
-            <span className="mb-2 block font-display text-lg text-white">
-              24/7 Chat Support
-            </span>
+            <span className="mb-2 block font-display text-lg text-white">24/7 Chat Support</span>
             <p className="mb-4 text-white">
               Get our friendly customer service agents at your service.
             </p>
@@ -71,9 +67,7 @@ const HelpBlock = () => {
           </div>
 
           <div>
-            <span className="mb-2 block font-display text-lg text-white">
-              FAQs
-            </span>
+            <span className="mb-2 block font-display text-lg text-white">FAQs</span>
             <p className="mb-4 text-white">
               View FAQs for detailed instructions on specific features.
             </p>

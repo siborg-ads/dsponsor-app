@@ -5,27 +5,43 @@ import OwnedOffers_categories_items from "../categories/ownedOffers_categories_i
 
 import OwnedAdProposals_categories_items from "../categories/ownedAdProposals_categories_item";
 import Auctions_categories from "../categories/Auctions_categories";
-import { activated_features } from '../../data/activated_features';
+import { activated_features } from "../../data/activated_features";
 
-const User_items = ({ createdData, mappedownedAdProposals, isPendinAdsOnOffer, isOwner, listedAuctionToken }) => {
+const User_items = ({
+  createdData,
+  mappedownedAdProposals,
+  isPendinAdsOnOffer,
+  isOwner,
+  listedAuctionToken
+}) => {
   const [itemActive, setItemActive] = useState(1);
 
-
   const tabItem = [
-    ...(activated_features.canCreateOffer ? [{
-      id: 1,
-      text: "Created Offers",
-      icon: "owned",
-    }] : []),
+    ...(activated_features.canCreateOffer
+      ? [
+          {
+            id: 1,
+            text: "Created Offers",
+            icon: "owned"
+          }
+        ]
+      : []),
     { id: 2, text: "Owned tokens", icon: "owned" },
-    { id: 3, text: "Auction listed tokens", icon: "activity" },
+    { id: 3, text: "Auction listed tokens", icon: "activity" }
   ];
 
   return (
     <>
       <section className="relative py-24">
         <picture className="pointer-events-none absolute inset-0 -z-10 dark:hidden">
-          <Image width={1519} height={773} priority src="/images/gradient_light.jpg" alt="gradient" className="h-full w-full object-cover" />
+          <Image
+            width={1519}
+            height={773}
+            priority
+            src="/images/gradient_light.jpg"
+            alt="gradient"
+            className="h-full w-full object-cover"
+          />
         </picture>
         <div className="container">
           {/* <!-- Tabs Nav --> */}
@@ -33,7 +49,12 @@ const User_items = ({ createdData, mappedownedAdProposals, isPendinAdsOnOffer, i
             <TabList className="nav nav-tabs scrollbar-custom mb-12 flex items-center justify-start overflow-x-auto overflow-y-hidden border-b border-jacarta-100 pb-px dark:border-jacarta-600 md:justify-center">
               {tabItem.map(({ id, text, icon }) => {
                 return (
-                  <Tab className="nav-item" role="presentation" key={id} onClick={() => setItemActive(id)}>
+                  <Tab
+                    className="nav-item"
+                    role="presentation"
+                    key={id}
+                    onClick={() => setItemActive(id)}
+                  >
                     <button
                       className={
                         itemActive === id
@@ -53,12 +74,19 @@ const User_items = ({ createdData, mappedownedAdProposals, isPendinAdsOnOffer, i
 
             <TabPanel>
               <div>
-                <OwnedOffers_categories_items data={createdData} isPendinAdsOnOffer={isPendinAdsOnOffer} isOwner={isOwner} />
+                <OwnedOffers_categories_items
+                  data={createdData}
+                  isPendinAdsOnOffer={isPendinAdsOnOffer}
+                  isOwner={isOwner}
+                />
               </div>
             </TabPanel>
             <TabPanel>
               <div>
-                <OwnedAdProposals_categories_items data={mappedownedAdProposals} isOwner={isOwner} />
+                <OwnedAdProposals_categories_items
+                  data={mappedownedAdProposals}
+                  isOwner={isOwner}
+                />
               </div>
             </TabPanel>
             <TabPanel>

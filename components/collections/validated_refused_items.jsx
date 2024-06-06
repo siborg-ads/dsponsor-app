@@ -65,7 +65,11 @@ const Validated_refused_items = ({ statut, proposalData, isToken }) => {
   };
 
   if (proposalData.length === 0) {
-    return <div className="flex justify-center">{statut ? "No validated ads..." : "No refused ads..."}</div>;
+    return (
+      <div className="flex justify-center">
+        {statut ? "No validated ads..." : "No refused ads..."}
+      </div>
+    );
   }
 
   return (
@@ -76,7 +80,9 @@ const Validated_refused_items = ({ statut, proposalData, isToken }) => {
         {isToken && (
           <div className="dark:bg-jacarta-700 dark:border-jacarta-600 border-jacarta-100 rounded-2lg border bg-white p-6 mb-4">
             <div className=" sm:flex sm:flex-wrap">
-              <span className="dark:text-jacarta-300 text-jacarta-400 text-sm">🎉 Congratulations ! This ad is displayed on the offer creator’s interfaces!</span>
+              <span className="dark:text-jacarta-300 text-jacarta-400 text-sm">
+                🎉 Congratulations ! This ad is displayed on the offer creator’s interfaces!
+              </span>
             </div>
           </div>
         )}
@@ -88,26 +94,63 @@ const Validated_refused_items = ({ statut, proposalData, isToken }) => {
               const { adParametersList, proposalIds, tokenId, reason, title, tokenData } = item;
 
               return (
-                <div key={tokenId} className="dark:bg-jacarta-700  gap-5 p-8 dark:border-jacarta-700 transition-shadow hover:shadow-lg border-jacarta-100 rounded-2.5xl relative flex">
+                <div
+                  key={tokenId}
+                  className="dark:bg-jacarta-700  gap-5 p-8 dark:border-jacarta-700 transition-shadow hover:shadow-lg border-jacarta-100 rounded-2.5xl relative flex"
+                >
                   <div className=" relative flex items-center gap-5 flex-col sm:flex-row ">
                     <figure className="self-start">
                       <button className="w-full" onClick={() => openModal(tokenId)}>
-                        {getImageUrl(adParametersList) && <Image src={getImageUrl(adParametersList)} alt={item.title} height={75} width={75} objectFit="contain" className="rounded-2lg min-w-[75px]" loading="lazy" />}
+                        {getImageUrl(adParametersList) && (
+                          <Image
+                            src={getImageUrl(adParametersList)}
+                            alt={item.title}
+                            height={75}
+                            width={75}
+                            objectFit="contain"
+                            className="rounded-2lg min-w-[75px]"
+                            loading="lazy"
+                          />
+                        )}
                       </button>
 
                       {/* Modal */}
-                      <div className={modalStates[tokenId] ? "modal fade show block" : "modal fade"}>
+                      <div
+                        className={modalStates[tokenId] ? "modal fade show block" : "modal fade"}
+                      >
                         <div className="modal-dialog !my-0 flex h-full max-w-4xl items-center justify-center relative">
-                          <Image src={getImageUrl(adParametersList)} alt={item.title} height={300} width={300} objectFit="contain" className="rounded-2lg min-w-[75px]" loading="lazy" />
+                          <Image
+                            src={getImageUrl(adParametersList)}
+                            alt={item.title}
+                            height={300}
+                            width={300}
+                            objectFit="contain"
+                            className="rounded-2lg min-w-[75px]"
+                            loading="lazy"
+                          />
                         </div>
 
-                        <button type="button" className="btn-close absolute top-6 right-6" onClick={() => closeModal(tokenId)}>
-                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" className="h-6 w-6 fill-white">
+                        <button
+                          type="button"
+                          className="btn-close absolute top-6 right-6"
+                          onClick={() => closeModal(tokenId)}
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 24 24"
+                            width="24"
+                            height="24"
+                            className="h-6 w-6 fill-white"
+                          >
                             <path fill="none" d="M0 0h24v24H0z" />
                             <path d="M12 10.586l4.95-4.95 1.414 1.414-4.95 4.95 4.95 4.95-1.414 1.414-4.95-4.95-4.95 4.95-1.414-1.414 4.95-4.95-4.95-4.95L7.05 5.636z" />
                           </svg>
                         </button>
-                        <a href={getImageUrl(adParametersList)} download className="absolute bottom-6 right-6 btn btn-primary flex items-center justify-center p-2">
+                        <a
+                          href={getImageUrl(adParametersList)}
+                          download
+                          className="absolute bottom-6 right-6 btn btn-primary flex items-center justify-center p-2"
+                        >
                           {/* SVG icon for download */}
                         </a>
                       </div>
@@ -116,21 +159,38 @@ const Validated_refused_items = ({ statut, proposalData, isToken }) => {
 
                     <div>
                       <h3 className="font-display text-jacarta-700 mb-1 text-base font-semibold dark:text-white">
-                        Item : <span className="text-green"> {tokenData ? tokenData : formatTokenId(tokenId)} </span>{" "}
+                        Item :{" "}
+                        <span className="text-green">
+                          {" "}
+                          {tokenData ? tokenData : formatTokenId(tokenId)}{" "}
+                        </span>{" "}
                       </h3>
 
                       <div className="flex flex-col">
                         <button className="js-copy-clipboard flex min-w-[20px] text-white max-w-[20rem]  select-none overflow-hidden text-ellipsis whitespace-nowrap">
-                          <Link href={adParametersList?.linkURL ? adParametersList.linkURL : "/"} target="_blank">
+                          <Link
+                            href={adParametersList?.linkURL ? adParametersList.linkURL : "/"}
+                            target="_blank"
+                          >
                             {adParametersList?.linkURL}
                           </Link>
                         </button>
                       </div>
-                      {reason && <span className="text-jacarta-500 dark:text-jacarta-300">Reason : {reason}</span>}
+                      {reason && (
+                        <span className="text-jacarta-500 dark:text-jacarta-300">
+                          Reason : {reason}
+                        </span>
+                      )}
                     </div>
                   </div>
                   <div className="dark:border-jacarta-600 border-jacarta-100 ml-auto rounded-full border p-3 self-start">
-                    <Image width={24} height={24} src={`/images/${statutItem}.svg`} alt="icon" className="min-w-[25px]" />
+                    <Image
+                      width={24}
+                      height={24}
+                      src={`/images/${statutItem}.svg`}
+                      alt="icon"
+                      className="min-w-[25px]"
+                    />
                   </div>
                 </div>
               );

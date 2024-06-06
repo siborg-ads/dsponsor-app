@@ -6,12 +6,7 @@ const Activity_tab = () => {
   return (
     <>
       {/* <!-- Activity --> */}
-      <div
-        className="tab-pane fade"
-        id="activity"
-        role="tabpanel"
-        aria-labelledby="activity-tab"
-      >
+      <div className="tab-pane fade" id="activity" role="tabpanel" aria-labelledby="activity-tab">
         {/* <!-- Filter --> */}
         <div className="dark:bg-jacarta-700 dark:border-jacarta-600 border-jacarta-100 bg-light-base border border-b-0 px-4 pt-5 pb-2.5">
           <div className="flex flex-wrap">
@@ -74,10 +69,7 @@ const Activity_tab = () => {
           role="table"
           className="scrollbar-custom dark:bg-jacarta-700 dark:border-jacarta-600 border-jacarta-100 max-h-72 w-full overflow-y-auto rounded-lg rounded-tl-none border bg-white text-sm dark:text-white"
         >
-          <div
-            className="dark:bg-jacarta-600 bg-light-base sticky top-0 flex"
-            role="row"
-          >
+          <div className="dark:bg-jacarta-600 bg-light-base sticky top-0 flex" role="row">
             <div className="w-[17%] py-2 px-4" role="columnheader">
               <span className="text-jacarta-700 dark:text-jacarta-100 w-full overflow-hidden text-ellipsis">
                 Event
@@ -133,9 +125,7 @@ const Activity_tab = () => {
                       <use xlinkHref="icons.svg#icon-ETH"></use>
                     </svg>
                   </span>
-                  <span className="text-green text-sm font-medium tracking-tight">
-                    {price} ETH
-                  </span>
+                  <span className="text-green text-sm font-medium tracking-tight">{price} ETH</span>
                 </div>
                 <div
                   className="dark:border-jacarta-600 border-jacarta-100 flex w-[22%] items-center border-t py-4 px-4"

@@ -5,7 +5,7 @@ const FilterWise = () => {
     { id: "buyNow", label: "Buy Now" },
     { id: "onAuction", label: "On Auction" },
     { id: "new", label: "New" },
-    { id: "hasOffers", label: "Has Offers" },
+    { id: "hasOffers", label: "Has Offers" }
   ];
 
   const [selectedFilters, setSelectedFilters] = useState([]);

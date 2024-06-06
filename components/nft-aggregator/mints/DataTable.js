@@ -13,7 +13,7 @@ const DataTable = () => {
       initialValue: "98",
       percentage: "-58.74%",
       mint: "Mint 0",
-      floor: "Floor 0.003",
+      floor: "Floor 0.003"
     },
     {
       id: 2,
@@ -25,7 +25,7 @@ const DataTable = () => {
       initialValue: "58",
       percentage: "9700.00%",
       mint: "Mint 0",
-      floor: "Floor 0.038",
+      floor: "Floor 0.038"
     },
     {
       id: 3,
@@ -37,7 +37,7 @@ const DataTable = () => {
       initialValue: "98",
       percentage: "-58.74%",
       mint: "Mint 0",
-      floor: "Floor 0.003",
+      floor: "Floor 0.003"
     },
     {
       id: 4,
@@ -49,7 +49,7 @@ const DataTable = () => {
       initialValue: "58",
       percentage: "9700.00%",
       mint: "Mint 0",
-      floor: "Floor 0.038",
+      floor: "Floor 0.038"
     },
     {
       id: 5,
@@ -61,7 +61,7 @@ const DataTable = () => {
       initialValue: "98",
       percentage: "-58.74%",
       mint: "Mint 0",
-      floor: "Floor 0.003",
+      floor: "Floor 0.003"
     },
     {
       id: 6,
@@ -73,7 +73,7 @@ const DataTable = () => {
       initialValue: "58",
       percentage: "9700.00%",
       mint: "Mint 0",
-      floor: "Floor 0.038",
+      floor: "Floor 0.038"
     },
     {
       id: 7,
@@ -85,7 +85,7 @@ const DataTable = () => {
       initialValue: "98",
       percentage: "-58.74%",
       mint: "Mint 0",
-      floor: "Floor 0.003",
+      floor: "Floor 0.003"
     },
     {
       id: 8,
@@ -97,7 +97,7 @@ const DataTable = () => {
       initialValue: "58",
       percentage: "9700.00%",
       mint: "Mint 0",
-      floor: "Floor 0.038",
+      floor: "Floor 0.038"
     },
     {
       id: 9,
@@ -109,7 +109,7 @@ const DataTable = () => {
       initialValue: "58",
       percentage: "9700.00%",
       mint: "Mint 0",
-      floor: "Floor 0.038",
+      floor: "Floor 0.038"
     },
     {
       id: 10,
@@ -121,7 +121,7 @@ const DataTable = () => {
       initialValue: "98",
       percentage: "-58.74%",
       mint: "Mint 0",
-      floor: "Floor 0.003",
+      floor: "Floor 0.003"
     },
     {
       id: 11,
@@ -133,8 +133,8 @@ const DataTable = () => {
       initialValue: "98",
       percentage: "-58.74%",
       mint: "Mint 0",
-      floor: "Floor 0.003",
-    },
+      floor: "Floor 0.003"
+    }
   ];
 
   return (
@@ -157,12 +157,8 @@ const DataTable = () => {
               />
             </figure>
             <div>
-              <span className="block text-sm text-jacarta-700 dark:text-white">
-                {item.title}
-              </span>
-              <span className="text-xs text-jacarta-500 dark:text-jacarta-400">
-                {item.time}
-              </span>
+              <span className="block text-sm text-jacarta-700 dark:text-white">{item.title}</span>
+              <span className="text-xs text-jacarta-500 dark:text-jacarta-400">{item.time}</span>
             </div>
           </div>
           <div
@@ -188,15 +184,10 @@ const DataTable = () => {
               />
             </div>
           </div>
-          <div
-            className="hidden w-[18%] text-right sm:block md:w-[14%] lg:w-[10%]"
-            role="cell"
-          >
+          <div className="hidden w-[18%] text-right sm:block md:w-[14%] lg:w-[10%]" role="cell">
             <span className="block">{item.initialValue}</span>
             <span
-              className={`text-xs ${
-                item.percentage.includes("-") ? "text-red" : "text-green"
-              }`}
+              className={`text-xs ${item.percentage.includes("-") ? "text-red" : "text-green"}`}
             >
               {item.percentage}
             </span>
@@ -235,16 +226,11 @@ const DataTable = () => {
             role="cell"
           >
             <div className="mb-1.5">
-              <span className="text-sm text-jacarta-700 dark:text-white">
-                {item.percentage}
-              </span>
+              <span className="text-sm text-jacarta-700 dark:text-white">{item.percentage}</span>
               <span>&nbsp;(614)</span>
             </div>
             <div className="w-24 overflow-hidden rounded-lg bg-jacarta-100 dark:bg-jacarta-600">
-              <div
-                className="h-1.5 rounded-lg bg-accent"
-                style={{ width: item.percentage }}
-              />
+              <div className="h-1.5 rounded-lg bg-accent" style={{ width: item.percentage }} />
             </div>
           </div>
           <div
@@ -258,10 +244,7 @@ const DataTable = () => {
             <span>of 3,995</span>
           </div>
 
-          <div
-            className="mt-1 w-[9%] items-center justify-end sm:mt-0 sm:flex"
-            role="columnheader"
-          >
+          <div className="mt-1 w-[9%] items-center justify-end sm:mt-0 sm:flex" role="columnheader">
             <a
               href="#"
               className="inline-block rounded-full bg-accent py-1 px-4 text-center text-xs font-semibold text-white shadow-accent-volume transition-all hover:bg-accent-dark"

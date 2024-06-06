@@ -7,10 +7,7 @@ const TableHeader = () => {
       <div className="hidden w-[14%] lg:block" role="columnheader">
         Market
       </div>
-      <div
-        className="w-6/12 truncate text-left md:w-6/12 lg:w-4/12"
-        role="columnheader"
-      >
+      <div className="w-6/12 truncate text-left md:w-6/12 lg:w-4/12" role="columnheader">
         Collection
       </div>
       <div
@@ -18,13 +15,7 @@ const TableHeader = () => {
         role="columnheader"
       >
         Items
-        <svg
-          width={16}
-          height={25}
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          className="ml-1"
-        >
+        <svg width={16} height={25} fill="none" xmlns="http://www.w3.org/2000/svg" className="ml-1">
           <g clipPath="url(#clip0_2135_22855)">
             <path
               d="M8 7.219l-3.3 3.3-.942-.943L8 5.333l4.243 4.243-.943.943-3.3-3.3z"
@@ -52,13 +43,7 @@ const TableHeader = () => {
         role="columnheader"
       >
         Value
-        <svg
-          width={16}
-          height={25}
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          className="ml-1"
-        >
+        <svg width={16} height={25} fill="none" xmlns="http://www.w3.org/2000/svg" className="ml-1">
           <g clipPath="url(#clip0_2135_22855)">
             <path
               d="M8 7.219l-3.3 3.3-.942-.943L8 5.333l4.243 4.243-.943.943-3.3-3.3z"
@@ -81,10 +66,7 @@ const TableHeader = () => {
           </defs>
         </svg>
       </div>
-      <div
-        className="hidden w-2/12 items-center justify-end lg:flex"
-        role="columnheader"
-      >
+      <div className="hidden w-2/12 items-center justify-end lg:flex" role="columnheader">
         Refund
       </div>
       <div

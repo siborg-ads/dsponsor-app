@@ -48,10 +48,7 @@ const Collection_category = ({ bgWhite = false }) => {
                           className="border-jacarta-100 dark:bg-jacarta-700 rounded-2xl flex border bg-white py-4 px-7 transition-shadow hover:shadow-lg dark:border-transparent"
                         >
                           <figure className="mr-4 shrink-0">
-                            <Link
-                              href={"/collection/" + itemLink}
-                              className="relative block"
-                            >
+                            <Link href={"/collection/" + itemLink} className="relative block">
                               <Image
                                 width={48}
                                 height={48}
@@ -82,17 +79,12 @@ const Collection_category = ({ bgWhite = false }) => {
                             </Link>
                           </figure>
                           <div>
-                            <Link
-                              href={"/collection/" + itemLink}
-                              className="block"
-                            >
+                            <Link href={"/collection/" + itemLink} className="block">
                               <span className="font-display text-jacarta-700 hover:text-accent font-semibold dark:text-white">
                                 {title}
                               </span>
                             </Link>
-                            <span className="dark:text-jacarta-300 text-sm">
-                              {amount} ETH
-                            </span>
+                            <span className="dark:text-jacarta-300 text-sm">{amount} ETH</span>
                           </div>
                         </div>
                       );

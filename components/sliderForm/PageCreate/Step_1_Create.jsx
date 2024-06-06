@@ -16,7 +16,7 @@ const Step_1_Create = ({
   imageRatios,
   setImageRatios,
   setSelectedIntegration,
-  setSelectedParameter,
+  setSelectedParameter
 }) => {
   const [customRatioInputShown, setCustomRatioInputShown] = useState({});
   const [validRatio, setValidRatio] = useState({});
@@ -25,14 +25,15 @@ const Step_1_Create = ({
     {
       integrationName: "Clickable Logos Grid",
       imageExemple: "/images/offer_exemple_0.png",
-      bodyDescription: "This integration allows you to display a grid of clickable logos. Each logo can redirect to a different URL. You can choose the number of logos to display and the image ratio for each logo.",
+      bodyDescription:
+        "This integration allows you to display a grid of clickable logos. Each logo can redirect to a different URL. You can choose the number of logos to display and the image ratio for each logo."
     },
     {
       integrationName: "Dynamic Banner",
       imageExemple: "/images/offer_exemple_1.png",
       bodyDescription:
-        "This integration lets you display a randomly selected ad from those submitted by sponsors (ad space token owners), with a new ad randomly selected at each request. You can choose the banner's image ratio. The banner displays an ad image and redirects to a URL provided by the selected sponsor.",
-    },
+        "This integration lets you display a randomly selected ad from those submitted by sponsors (ad space token owners), with a new ad randomly selected at each request. You can choose the banner's image ratio. The banner displays an ad image and redirects to a URL provided by the selected sponsor."
+    }
   ];
   const predefinedRatios = ["1:1", "16:9", "4:3"];
 
@@ -50,7 +51,7 @@ const Step_1_Create = ({
       setSelectedIntegration([intValue]);
       setImageRatios((prev) => ({
         ...prev,
-        [intValue]: prev[intValue] || "1:1",
+        [intValue]: prev[intValue] || "1:1"
       }));
       handleAddParameter(intValue);
     } else {
@@ -64,12 +65,18 @@ const Step_1_Create = ({
     let paramsToAdd = [];
     switch (value) {
       case 0:
-        paramsToAdd = [`imageURL-${value}${initialRatio ? `-${initialRatio}` : ""}`, `linkURL-${value}`];
+        paramsToAdd = [
+          `imageURL-${value}${initialRatio ? `-${initialRatio}` : ""}`,
+          `linkURL-${value}`
+        ];
         setDisplayedParameter((prev) => [...prev, "ClickableLogosGrid"]);
 
         break;
       case 1:
-        paramsToAdd = [`imageURL-${value}${initialRatio ? `-${initialRatio}` : ""}`, `linkURL-${value}`];
+        paramsToAdd = [
+          `imageURL-${value}${initialRatio ? `-${initialRatio}` : ""}`,
+          `linkURL-${value}`
+        ];
         setDisplayedParameter((prev) => [...prev, "DynamicBanner"]);
         break;
       default:
@@ -165,15 +172,23 @@ const Step_1_Create = ({
       <div className="pr-6 pl-2">
         <h3 className="mb-2">Step 1 : OFFER TYPE & AVAILABILITY</h3>
 
-        <p className="text-center pt-2  mb-14 dark:text-white">Choose the type of ad space suitable for your media and the number of spaces available for purchase.</p>
+        <p className="text-center pt-2  mb-14 dark:text-white">
+          Choose the type of ad space suitable for your media and the number of spaces available for
+          purchase.
+        </p>
         {/* <!-- Ad Space type --> */}
         <div className="mb-6 flex  flex-col justify-center items-center gap-4">
           <div className="flex flex-col items-center">
-            <label htmlFor="item-description" className="font-display text-jacarta-700 mb-2 block dark:text-white ">
+            <label
+              htmlFor="item-description"
+              className="font-display text-jacarta-700 mb-2 block dark:text-white "
+            >
               Type of ad spaces for this offer
               <span className="text-red">*</span>
             </label>
-            <p className="dark:text-jacarta-300 text-jacarta-400 text-2xs mb-3">Select the appropriate type:</p>
+            <p className="dark:text-jacarta-300 text-jacarta-400 text-2xs mb-3">
+              Select the appropriate type:
+            </p>
             <div className="flex flex-col gap-4 justify-center items-center w-full text-jacarta-700 dark:text-white">
               <div id="adsType" className="flex flex-wrap justify-center gap-2">
                 {AdIntegrationData.map((integration, index) => (
@@ -184,8 +199,19 @@ const Step_1_Create = ({
                         document.getElementById(`checkbox-${index}`).click();
                       }}
                     >
-                      {selectedIntegration.includes(index) && <span className="absolute border-2 border-green rounded-2xl -right-3 text-green font-bold -bottom-2 z-30 w-6 h-6 flex justify-center items-center">✓</span>}
-                      <input id={`checkbox-${index}`} type="checkbox" value={index} checked={selectedIntegration.includes(index)} onChange={handleIntegrationChange} className="hidden" />
+                      {selectedIntegration.includes(index) && (
+                        <span className="absolute border-2 border-green rounded-2xl -right-3 text-green font-bold -bottom-2 z-30 w-6 h-6 flex justify-center items-center">
+                          ✓
+                        </span>
+                      )}
+                      <input
+                        id={`checkbox-${index}`}
+                        type="checkbox"
+                        value={index}
+                        checked={selectedIntegration.includes(index)}
+                        onChange={handleIntegrationChange}
+                        className="hidden"
+                      />
                       <div className="flex gap-3">
                         <label
                           htmlFor={`checkbox-${index}`}
@@ -196,18 +222,30 @@ const Step_1_Create = ({
                         >
                           {integration.integrationName}
                         </label>
-                        <ModalHelper dark={true} title={integration.integrationName} body={integration.bodyDescription} image={integration.imageExemple} />
+                        <ModalHelper
+                          dark={true}
+                          title={integration.integrationName}
+                          body={integration.bodyDescription}
+                          image={integration.imageExemple}
+                        />
                       </div>
                       {selectedIntegration.includes(index) && (
                         <div className="flex flex-col items-center mt-4">
-                          <label htmlFor={`imageRatioSelect-${index}`} className="font-display text-sm mb-2 block text-white">
+                          <label
+                            htmlFor={`imageRatioSelect-${index}`}
+                            className="font-display text-sm mb-2 block text-white"
+                          >
                             Select Image Ratio
                             <span className="text-red">*</span>
                           </label>
                           <select
                             id={`imageRatioSelect-${index}`}
                             onClick={(e) => e.stopPropagation()}
-                            value={predefinedRatios.includes(imageRatios[index]) ? imageRatios[index] : "custom"}
+                            value={
+                              predefinedRatios.includes(imageRatios[index])
+                                ? imageRatios[index]
+                                : "custom"
+                            }
                             onChange={(e) => handleCustomRatioChange(index, e)}
                             className="select-style text-jacarta-700"
                           >
@@ -222,7 +260,11 @@ const Step_1_Create = ({
                             <div className="relative">
                               <input
                                 type="text"
-                                value={customImageRatio[index] === "custom" ? "" : customImageRatio[index]}
+                                value={
+                                  customImageRatio[index] === "custom"
+                                    ? ""
+                                    : customImageRatio[index]
+                                }
                                 onClick={(e) => e.stopPropagation()}
                                 onChange={(e) => handleCustomRatioInput(index, e)}
                                 placeholder="e.g., 16:10"
@@ -230,7 +272,11 @@ const Step_1_Create = ({
                                   validRatio[index] ? "border-green border-2" : "border-red"
                                 }`}
                               />
-                              {validRatio[index] && <span className="absolute right-3 text-green font-bold top-5">✓</span>}
+                              {validRatio[index] && (
+                                <span className="absolute right-3 text-green font-bold top-5">
+                                  ✓
+                                </span>
+                              )}
                             </div>
                           )}
                         </div>
@@ -238,18 +284,27 @@ const Step_1_Create = ({
                     </div>
                   </div>
                 ))}
-                <p className="dark:text-jacarta-300 text-jacarta-400 text-2xs mb-3">Depending on the selected type, various integration options will be available for your media.</p>
+                <p className="dark:text-jacarta-300 text-jacarta-400 text-2xs mb-3">
+                  Depending on the selected type, various integration options will be available for
+                  your media.
+                </p>
               </div>
             </div>
           </div>
         </div>
         {/* <!-- Number of ad spaces --> */}
         <div className="mb-6 flex flex-col items-center">
-          <label htmlFor="item-description" className="font-display text-jacarta-700 mb-2 block dark:text-white">
+          <label
+            htmlFor="item-description"
+            className="font-display text-jacarta-700 mb-2 block dark:text-white"
+          >
             Number of ad spaces for this offer
             <span className="text-red">*</span>
           </label>
-          <p className="dark:text-jacarta-300 text-jacarta-400 text-2xs mb-3">Warning: d&gt;sponsor works with a fixed supply of ad spaces. You won&apos;t be able to modify this value. Max : 25</p>
+          <p className="dark:text-jacarta-300 text-jacarta-400 text-2xs mb-3">
+            Warning: d&gt;sponsor works with a fixed supply of ad spaces. You won&apos;t be able to
+            modify this value. Max : 25
+          </p>
           <div className="flex gap-4 justify-center items-center w-full text-jacarta-700 dark:text-white">
             <label htmlFor="numberSelect">Select a number:</label>
             <select

@@ -21,22 +21,21 @@ import fetchOffer from "../../../providers/methods/fetchOffer";
 //         keywords: `DSponsor, offer, ${offer?.metadata?.offer?.name}, ${offer?.metadata?.offer?.description}`,
 //     }
 // }
-export default  function OfferPage() {
-    // const offerId = params.offerId;
+export default function OfferPage() {
+  // const offerId = params.offerId;
 
+  // // We use headers as a way to get the chainID
+  // const headersList = headers()
+  // const chainID= headersList.get('chainID')
 
-    // // We use headers as a way to get the chainID
-    // const headersList = headers()
-    // const chainID= headersList.get('chainID')
+  // const offerRequest = await fetchOffer({chainID,offerId})
+  // const offer = offerRequest?.adOffers?.[0] || null
 
-    // const offerRequest = await fetchOffer({chainID,offerId})
-    // const offer = offerRequest?.adOffers?.[0] || null
-
-    return (
-        <div className="">
-            <div className="dark:bg-jacarta-800 relative pb-16">
-                <OfferPageContainer  />
-            </div>
-        </div>
-    )
+  return (
+    <div className="">
+      <div className="dark:bg-jacarta-800 relative pb-16">
+        <OfferPageContainer />
+      </div>
+    </div>
+  );
 }

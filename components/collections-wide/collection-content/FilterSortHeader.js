@@ -15,14 +15,10 @@ const FilterSortHeader = () => {
             <path fill="none" d="M0 0H24V24H0z" />
             <path d="M21 4v2h-1l-5 7.5V22H9v-8.5L4 6H3V4h18zM6.404 6L11 12.894V20h2v-7.106L17.596 6H6.404z" />
           </svg>
-          <span className="mt-0.5 dark:text-white group-hover:text-white">
-            Filters
-          </span>
+          <span className="mt-0.5 dark:text-white group-hover:text-white">Filters</span>
         </button>
         <button className="lex h-10 group flex-shrink-0 items-center justify-center space-x-1 rounded-lg border border-jacarta-100 bg-white py-1.5 px-4 font-medium text-2xs hover:bg-accent hover:border-accent dark:hover:bg-accent dark:border-jacarta-600 dark:bg-jacarta-700">
-          <span className="mt-0.5 dark:text-white group-hover:text-white">
-            Clear All
-          </span>
+          <span className="mt-0.5 dark:text-white group-hover:text-white">Clear All</span>
         </button>
       </div>
       {/* View / Sorting */}

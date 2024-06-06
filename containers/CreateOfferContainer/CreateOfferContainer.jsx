@@ -5,7 +5,18 @@ import Meta from "../../components/Meta";
 import Image from "next/image";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { useAddress, useSwitchChain, useContract, useContractWrite, Web3Button, useContractRead, useStorageUpload, useTokenDecimals, CheckoutWithCard, CheckoutWithEth } from "@thirdweb-dev/react";
+import {
+  useAddress,
+  useSwitchChain,
+  useContract,
+  useContractWrite,
+  Web3Button,
+  useContractRead,
+  useStorageUpload,
+  useTokenDecimals,
+  CheckoutWithCard,
+  CheckoutWithEth
+} from "@thirdweb-dev/react";
 
 import styles from "../../styles/createPage/style.module.scss";
 import PreviewModal from "../../components/modal/previewModal";
@@ -18,8 +29,6 @@ import config from "../../providers/utils/config";
 import SliderForm from "../../components/sliderForm/sliderForm";
 import { useSwitchChainContext } from "../../contexts/hooks/useSwitchChainContext";
 
-
-
 const CreateOfferContainer = () => {
   const [files, setFiles] = useState([]);
   const { mutateAsync: upload, isLoading } = useStorageUpload();
@@ -30,7 +39,9 @@ const CreateOfferContainer = () => {
   const [errors, setErrors] = useState({});
   const [description, setDescription] = useState(false);
   const [startDate, setStartDate] = useState(new Date());
-  const [endDate, setEndDate] = useState(new Date(new Date().setFullYear(new Date().getFullYear() + 1)));
+  const [endDate, setEndDate] = useState(
+    new Date(new Date().setFullYear(new Date().getFullYear() + 1))
+  );
   const [previewImages, setPreviewImages] = useState([]);
   const [selectedNumber, setSelectedNumber] = useState(1);
   const [selectedUnitPrice, setSelectedUnitPrice] = useState(1);
@@ -44,8 +55,14 @@ const CreateOfferContainer = () => {
   const [selectedParameter, setSelectedParameter] = useState([]);
   const [displayedParameter, setDisplayedParameter] = useState([]);
   const [selectedTypeParameter, setSelectedTypeParameter] = useState(0);
-  const { contract: DsponsorAdminContract } = useContract(config[chainId]?.smartContracts?.DSPONSORADMIN?.address, config[chainId]?.smartContracts?.DSPONSORADMIN?.abi);
-  const { mutateAsync: createDSponsorNFTAndOffer } = useContractWrite(DsponsorAdminContract, "createDSponsorNFTAndOffer");
+  const { contract: DsponsorAdminContract } = useContract(
+    config[chainId]?.smartContracts?.DSPONSORADMIN?.address,
+    config[chainId]?.smartContracts?.DSPONSORADMIN?.abi
+  );
+  const { mutateAsync: createDSponsorNFTAndOffer } = useContractWrite(
+    DsponsorAdminContract,
+    "createDSponsorNFTAndOffer"
+  );
   const [imageRatios, setImageRatios] = useState([]);
   const [tokenDecimals, setTokenDecimals] = useState(0);
   const [symbolContract, setSymbolContract] = useState(null);
@@ -60,12 +77,10 @@ const CreateOfferContainer = () => {
   const stepsRef = useRef([]);
   const { ethers } = require("ethers");
 
-useEffect(() => {
-  if (!chainId) return;
-  setSelectedChain(config[chainId]?.chainNameProvider);
-
-}, [chainId, setSelectedChain]);
-
+  useEffect(() => {
+    if (!chainId) return;
+    setSelectedChain(config[chainId]?.chainNameProvider);
+  }, [chainId, setSelectedChain]);
 
   const handleUnitPriceChange = (e) => {
     const { value } = e.target;
@@ -140,7 +155,11 @@ useEffect(() => {
       isValid = false;
     }
     console.log(parseFloat(selectedUnitPrice));
-    if (parseFloat(selectedUnitPrice) < 1 * 10 ** -tokenDecimals || isNaN(selectedUnitPrice) || selectedUnitPrice === null) {
+    if (
+      parseFloat(selectedUnitPrice) < 1 * 10 ** -tokenDecimals ||
+      isNaN(selectedUnitPrice) ||
+      selectedUnitPrice === null
+    ) {
       console.log("là");
       newErrors.unitPriceError = `Unit price must be at least ${1 * 10 ** -tokenDecimals}.`;
       isValid = false;
@@ -166,7 +185,8 @@ useEffect(() => {
     }
 
     if (parseFloat(selectedRoyalties) < 0.01 || parseFloat(selectedRoyalties) > 100) {
-      newErrors.royaltyError = "Royalties are missing or invalid. They should be between 0.01% and 100%.";
+      newErrors.royaltyError =
+        "Royalties are missing or invalid. They should be between 0.01% and 100%.";
       isValid = false;
     }
     console.log(previewImages, "previewImages");
@@ -198,7 +218,7 @@ useEffect(() => {
 
       const uploadUrl = await upload({
         data: [files[0]],
-        options: { uploadWithGatewayUrl: true, uploadWithoutDirectory: true },
+        options: { uploadWithGatewayUrl: true, uploadWithoutDirectory: true }
       });
       let uploadTerms = [];
 
@@ -207,7 +227,7 @@ useEffect(() => {
       } else if (typeof terms[0] === "object" && terms[0] !== null && "name" in terms[0]) {
         uploadTerms = await upload({
           data: [terms[0]],
-          options: { uploadWithGatewayUrl: true, uploadWithoutDirectory: true },
+          options: { uploadWithGatewayUrl: true, uploadWithoutDirectory: true }
         });
       }
 
@@ -222,7 +242,7 @@ useEffect(() => {
           description: "",
           image: "",
           external_link: "",
-          categories: ["dApp", "social", "media", "education"],
+          categories: ["dApp", "social", "media", "education"]
         },
         offer: {
           name: name,
@@ -233,8 +253,8 @@ useEffect(() => {
           valid_from: startDate || "1970-01-01T00:00:00Z",
           valid_to: endDate || "2100-01-01T00:00:00Z",
           categories: ["Community", "NFT", "Crypto"],
-          token_metadata: {},
-        },
+          token_metadata: {}
+        }
       });
       console.log(jsonMetadata, "jsonMetadata");
       const jsonContractURI = JSON.stringify({
@@ -242,18 +262,18 @@ useEffect(() => {
         description: description,
         image: uploadUrl[0],
         external_link: link,
-        collaborators: [address],
+        collaborators: [address]
       });
       // upload json to IPFS
       const jsonMetadataURL = await upload({
         data: [jsonMetadata],
-        options: { uploadWithGatewayUrl: true, uploadWithoutDirectory: true },
+        options: { uploadWithGatewayUrl: true, uploadWithoutDirectory: true }
       });
 
       // upload json to IPFS
       const jsonContractURIURL = await upload({
         data: [jsonContractURI],
-        options: { uploadWithGatewayUrl: true, uploadWithoutDirectory: true },
+        options: { uploadWithGatewayUrl: true, uploadWithoutDirectory: true }
       });
 
       const jsonIpfsLinkContractURI = jsonContractURIURL[0];
@@ -272,7 +292,7 @@ useEffect(() => {
           royaltyBps: selectedRoyalties * 100, // royalties
           currencies: [tokenContract], // accepted token
           prices: [ethers.utils.parseUnits(selectedUnitPrice.toString(), tokenDecimals)], // prices with decimals
-          allowedTokenIds: Array.from({ length: selectedNumber }, (_, i) => i), // allowed token ids
+          allowedTokenIds: Array.from({ length: selectedNumber }, (_, i) => i) // allowed token ids
         }),
         JSON.stringify({
           name: name, // name
@@ -281,12 +301,12 @@ useEffect(() => {
           options: {
             admins: [address], // admin
             validators: [], // validator
-            adParameters: uniqueParams, // ad parameters
-          },
-        }),
+            adParameters: uniqueParams // ad parameters
+          }
+        })
       ];
       const preparedArgs = [Object.values(JSON.parse(args[0])), Object.values(JSON.parse(args[1]))];
-      console.log(preparedArgs,DsponsorAdminContract, "preparedArgs");
+      console.log(preparedArgs, DsponsorAdminContract, "preparedArgs");
       await createDSponsorNFTAndOffer({ args: preparedArgs });
 
       setSuccessFullUpload(true);
@@ -308,13 +328,15 @@ useEffect(() => {
   const numSteps = 4;
   const successFullUploadModal = {
     body: "Your offer has been created successfully",
-    subBody: "❕❕ On your offer management page, you will find the integration code to copy/paste onto your platform.",
+    subBody:
+      "❕❕ On your offer management page, you will find the integration code to copy/paste onto your platform.",
     buttonTitle: "Manage Spaces",
-    hrefButton: `/manage/${address}`,
+    hrefButton: `/manage/${address}`
   };
   const metadata = {
     title: "Create Offer || DSponsor | smarter monetization for your content",
-    description: "DSponsor is a platform that connects content creators with sponsors. Our platform helps creators monetize their content and helps sponsors find creators to promote their products.",
+    description:
+      "DSponsor is a platform that connects content creators with sponsors. Our platform helps creators monetize their content and helps sponsors find creators to promote their products."
   };
 
   return (
@@ -323,19 +345,35 @@ useEffect(() => {
       {/* <!-- Create --> */}
       <section className="relative py-24">
         <picture className="pointer-events-none absolute inset-0 -z-10 dark:hidden">
-          <Image width={1519} height={773} priority src="/images/gradient_light.jpg" alt="gradient" className="h-full w-full object-cover" />
+          <Image
+            width={1519}
+            height={773}
+            priority
+            src="/images/gradient_light.jpg"
+            alt="gradient"
+            className="h-full w-full object-cover"
+          />
         </picture>
         <div className="container">
-          <h1 className="font-display text-jacarta-700 pt-16 pb-8 text-center text-3xl font-medium dark:text-white">Create ad space offer</h1>
+          <h1 className="font-display text-jacarta-700 pt-16 pb-8 text-center text-3xl font-medium dark:text-white">
+            Create ad space offer
+          </h1>
 
           <div className="mx-auto max-w-[48.125rem]" style={{ maxWidth: "48.125rem" }}>
             <p className="text-center pt- pb-12 dark:text-white">
-              Finance your activity by selling ad space ownerships. The sponsors, the buyers of ad spaces, will have the exclusive right to propose an ad on your media platform, such as your website. You retain full
-              control to accept or reject any ads submitted.{" "}
+              Finance your activity by selling ad space ownerships. The sponsors, the buyers of ad
+              spaces, will have the exclusive right to propose an ad on your media platform, such as
+              your website. You retain full control to accept or reject any ads submitted.{" "}
             </p>
           </div>
         </div>
-        <SliderForm styles={styles} handlePreviewModal={handlePreviewModal} stepsRef={stepsRef} numSteps={numSteps} selectedIntegration={selectedIntegration}>
+        <SliderForm
+          styles={styles}
+          handlePreviewModal={handlePreviewModal}
+          stepsRef={stepsRef}
+          numSteps={numSteps}
+          selectedIntegration={selectedIntegration}
+        >
           <Step_1_Create
             stepsRef={stepsRef}
             styles={styles}
@@ -350,7 +388,12 @@ useEffect(() => {
             imageRatios={imageRatios}
             setImageRatios={setImageRatios}
           />
-          <Step_2_Create stepsRef={stepsRef} styles={styles} setName={setName} setDescription={setDescription} />
+          <Step_2_Create
+            stepsRef={stepsRef}
+            styles={styles}
+            setName={setName}
+            setDescription={setDescription}
+          />
 
           <Step_3_Create
             stepsRef={stepsRef}
@@ -367,7 +410,7 @@ useEffect(() => {
           />
 
           <Step_4_Create
-          chainId={chainId}
+            chainId={chainId}
             stepsRef={stepsRef}
             styles={styles}
             startDate={startDate}

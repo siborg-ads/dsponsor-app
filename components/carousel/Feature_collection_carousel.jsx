@@ -17,25 +17,25 @@ const Feature_collections_carousel = () => {
           // when window width is >= 640px
           640: {
             slidesPerView: 1,
-            spaceBetween: 20,
+            spaceBetween: 20
           },
           // when window width is >= 768px
           768: {
             slidesPerView: 2,
-            spaceBetween: 20,
+            spaceBetween: 20
           },
           900: {
             slidesPerView: 3,
-            spaceBetween: 20,
+            spaceBetween: 20
           },
           1100: {
             slidesPerView: 4,
-            spaceBetween: 30,
-          },
+            spaceBetween: 30
+          }
         }}
         navigation={{
           nextEl: ".swiper-button-next",
-          prevEl: ".swiper-button-prev",
+          prevEl: ".swiper-button-prev"
         }}
         className=" card-slider-4-columns !py-5"
       >
@@ -49,7 +49,7 @@ const Feature_collections_carousel = () => {
             userImage,
             title,
             itemsCount,
-            userName,
+            userName
           } = item;
 
           const itemLink = bigImage
@@ -64,10 +64,7 @@ const Feature_collections_carousel = () => {
             <SwiperSlide key={id}>
               <article>
                 <div className="dark:bg-jacarta-700 dark:border-jacarta-700 border-jacarta-100 rounded-2xl border bg-white p-[1.1875rem] transition-shadow hover:shadow-lg">
-                  <Link
-                    href={`/item/item_${itemLink}`}
-                    className="flex space-x-[0.625rem]"
-                  >
+                  <Link href={`/item/item_${itemLink}`} className="flex space-x-[0.625rem]">
                     <figure className="w-[74.5%] h-full">
                       <Image
                         src={bigImage}
@@ -115,10 +112,7 @@ const Feature_collections_carousel = () => {
 
                   <div className="mt-2 flex items-center justify-between text-sm font-medium tracking-tight">
                     <div className="flex flex-wrap items-center">
-                      <Link
-                        href={`/item/item_${itemLink}`}
-                        className="mr-2 shrink-0"
-                      >
+                      <Link href={`/item/item_${itemLink}`} className="mr-2 shrink-0">
                         <Image
                           width={20}
                           height={20}
@@ -128,16 +122,11 @@ const Feature_collections_carousel = () => {
                         />
                       </Link>
                       <span className="dark:text-jacarta-400 mr-1">by</span>
-                      <Link
-                        href={`/item/item_${itemLink}`}
-                        className="text-accent"
-                      >
+                      <Link href={`/item/item_${itemLink}`} className="text-accent">
                         <span>{userName}</span>
                       </Link>
                     </div>
-                    <span className="dark:text-jacarta-300 text-sm">
-                      {itemsCount} Items
-                    </span>
+                    <span className="dark:text-jacarta-300 text-sm">{itemsCount} Items</span>
                   </div>
                 </div>
               </article>

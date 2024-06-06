@@ -38,9 +38,7 @@ const AggregratorMain = () => {
                   <path fill="none" d="M0 0h24v24H0z" />
                   <path d="M13 10h7l-9 13v-9H4l9-13z" />
                 </svg>
-                <span className="font-display text-base font-medium">
-                  Trending
-                </span>
+                <span className="font-display text-base font-medium">Trending</span>
               </button>
             </Tab>
             {/* End tab */}
@@ -62,9 +60,7 @@ const AggregratorMain = () => {
                   <path fill="none" d="M0 0h24v24H0z" />
                   <path d="M17 15.245v6.872a.5.5 0 0 1-.757.429L12 20l-4.243 2.546a.5.5 0 0 1-.757-.43v-6.87a8 8 0 1 1 10 0zM12 15a6 6 0 1 0 0-12 6 6 0 0 0 0 12zm0-2a4 4 0 1 1 0-8 4 4 0 0 1 0 8z" />
                 </svg>
-                <span className="font-display text-base font-medium">
-                  Sweeps
-                </span>
+                <span className="font-display text-base font-medium">Sweeps</span>
               </button>
             </Tab>
             {/* End tab */}
@@ -87,9 +83,7 @@ const AggregratorMain = () => {
                   <path fill="none" d="M0 0H24V24H0z" />
                   <path d="M21 3v2c0 9.627-5.373 14-12 14H7.098c.212-3.012 1.15-4.835 3.598-7.001 1.204-1.065 1.102-1.68.509-1.327-4.084 2.43-6.112 5.714-6.202 10.958L5 22H3c0-1.363.116-2.6.346-3.732C3.116 16.974 3 15.218 3 13 3 7.477 7.477 3 13 3c2 0 4 1 8 0z" />
                 </svg>
-                <span className="font-display text-base font-medium">
-                  Mints
-                </span>
+                <span className="font-display text-base font-medium">Mints</span>
               </button>
             </Tab>
             {/* End tab */}

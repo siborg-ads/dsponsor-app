@@ -10,9 +10,9 @@ const items_data = [
     ExternalLink: "https://www.journaldudiamant.com/",
     Description: "This is the main page Ads of Journal du Coin",
     Currency: "WETH",
-    Royalties: 0.2,
+    Royalties: 0.2
   },
-  {},
+  {}
 ];
 
 export { items_data };

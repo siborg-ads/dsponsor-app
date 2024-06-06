@@ -18,7 +18,7 @@ const MintsContent = () => {
                 className="mr-1 inline-block h-4 w-4 animate-heartBeat bg-contain bg-center text-xl"
                 style={{
                   backgroundImage:
-                    "url(https://cdn.jsdelivr.net/npm/emoji-datasource-apple@7.0.2/img/apple/64/2764-fe0f.png)",
+                    "url(https://cdn.jsdelivr.net/npm/emoji-datasource-apple@7.0.2/img/apple/64/2764-fe0f.png)"
                 }}
               />
               <div className="hidden flex-shrink-0 flex-col sm:flex">
@@ -28,9 +28,7 @@ const MintsContent = () => {
               </div>
             </div>
             <div className="flex items-center space-x-1 text-jacarta-300 dark:text-jacarta-400">
-              <div className="text-2xs text-jacarta-500 dark:text-jacarta-300">
-                196 results
-              </div>
+              <div className="text-2xs text-jacarta-500 dark:text-jacarta-300">196 results</div>
               <span>|</span>
               <div className="text-2xs">10 min ago</div>
             </div>
@@ -54,7 +52,7 @@ const MintsContent = () => {
                 className="mr-1 inline-block h-4 w-4 animate-heartBeat bg-contain bg-center text-xl"
                 style={{
                   backgroundImage:
-                    "url(https://cdn.jsdelivr.net/npm/emoji-datasource-apple@7.0.2/images/apple/64/2764-fe0f.png)",
+                    "url(https://cdn.jsdelivr.net/npm/emoji-datasource-apple@7.0.2/images/apple/64/2764-fe0f.png)"
                 }}
               />
               <div className="flex flex-shrink-0 flex-col">
@@ -64,9 +62,7 @@ const MintsContent = () => {
               </div>
             </div>
             <div className="flex items-center space-x-1 text-jacarta-300 dark:text-jacarta-400">
-              <div className="text-2xs text-jacarta-500 dark:text-jacarta-200">
-                196 results
-              </div>
+              <div className="text-2xs text-jacarta-500 dark:text-jacarta-200">196 results</div>
               <span>|</span>
               <div className="text-2xs">10 min ago</div>
             </div>

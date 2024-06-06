@@ -8,13 +8,9 @@ import Image from "next/image";
 import OfferItem from "../cards/offerItem";
 import { useChainContext } from "../../contexts/hooks/useChainContext";
 
-
 const Auctions_categories = ({ data, isOwner }) => {
-  
-
   const { currentChainObject } = useChainContext();
   const chainId = currentChainObject?.chainId;
-
 
   const handleFilter = (category) => {
     if (category !== "all") {
@@ -27,23 +23,21 @@ const Auctions_categories = ({ data, isOwner }) => {
   const sortText = [
     {
       id: 1,
-      text: "Recently Added",
+      text: "Recently Added"
     },
     {
       id: 2,
-      text: "Price: Low to High",
+      text: "Price: Low to High"
     },
     {
       id: 3,
-      text: "Price: high to low",
+      text: "Price: high to low"
     },
     {
       id: 4,
-      text: "Auction Ending Soon",
-    },
+      text: "Auction Ending Soon"
+    }
   ];
-
-
 
   if (!data) {
     return (
@@ -54,8 +48,6 @@ const Auctions_categories = ({ data, isOwner }) => {
   }
   return (
     <>
-     
-
       {/* <!-- Grid --> */}
       {data.length > 0 ? (
         <div className="grid grid-cols-1 gap-[1.875rem] md:grid-cols-2 lg:grid-cols-4">
@@ -78,8 +70,7 @@ const Auctions_categories = ({ data, isOwner }) => {
         </div>
       ) : (
         <div className="w-full flex flex-col gap-4 justify-center items-center">
-          <span>{isOwner ? "You have no auctions yet...": "No auctions..."}</span>
-          
+          <span>{isOwner ? "You have no auctions yet..." : "No auctions..."}</span>
         </div>
       )}
     </>

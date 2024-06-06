@@ -1,10 +1,10 @@
-import React from 'react'
-import { useState } from 'react'
-import Image from 'next/image'
-import Link from 'next/link'
-import Timer from './Timer'
-import BidsModal from '../modal/bidsModal'
-import { ethers } from 'ethers'
+import React from "react";
+import { useState } from "react";
+import Image from "next/image";
+import Link from "next/link";
+import Timer from "./Timer";
+import BidsModal from "../modal/bidsModal";
+import { ethers } from "ethers";
 import {
   useAddress,
   darkTheme,
@@ -18,9 +18,9 @@ import {
   useTokenDecimals,
   CheckoutWithCard,
   CheckoutWithEth
-} from '@thirdweb-dev/react'
-import { useChainContext } from '../../contexts/hooks/useChainContext'
-import config from '../../providers/utils/config'
+} from "@thirdweb-dev/react";
+import { useChainContext } from "../../contexts/hooks/useChainContext";
+import config from "../../providers/utils/config";
 const ItemBids = ({
   setAmountToApprove,
   bidsAmount,
@@ -43,19 +43,18 @@ const ItemBids = ({
   isLoadingButton,
   setIsLoadingButton
 }) => {
-  const [showBidsModal, setShowBidsModal] = useState(false)
+  const [showBidsModal, setShowBidsModal] = useState(false);
 
   const toggleBidsModal = async () => {
-    const minimalBidPerToken =
-      marketplaceListings[0]?.bidPriceStructure?.minimalBidPerToken
+    const minimalBidPerToken = marketplaceListings[0]?.bidPriceStructure?.minimalBidPerToken;
 
     if (minimalBidPerToken) {
-      await checkAllowance(ethers.BigNumber.from(minimalBidPerToken))
+      await checkAllowance(ethers.BigNumber.from(minimalBidPerToken));
     }
-    setShowBidsModal(!showBidsModal)
-    setSuccessFullBid(false)
-  }
-  const bids = marketplaceListings[0].bids
+    setShowBidsModal(!showBidsModal);
+    setSuccessFullBid(false);
+  };
+  const bids = marketplaceListings[0].bids;
 
   return (
     <div className="rounded-2lg border border-jacarta-100 bg-white p-8 dark:border-jacarta-600 dark:bg-jacarta-700">
@@ -65,7 +64,7 @@ const ItemBids = ({
           {bids.length > 0 && (
             <div className="block overflow-hidden text-ellipsis whitespace-nowrap">
               <span className="text-sm text-jacarta-400 dark:text-jacarta-300">
-                Highest bid by{' '}
+                Highest bid by{" "}
               </span>
               <Link
                 href={`/manage/${marketplaceListings[0].bids[0].bidder}`}
@@ -87,9 +86,7 @@ const ItemBids = ({
                   </div>
                 ) : (
                   <div className="flex flex-col">
-                    <p className="text-sm text-jacarta-400">
-                      Minimum bid amount:{' '}
-                    </p>
+                    <p className="text-sm text-jacarta-400">Minimum bid amount: </p>
                     <span className="text-lg font-medium leading-tight tracking-tight text-green">
                       {price} {currencySymbol}
                     </span>
@@ -113,7 +110,7 @@ const ItemBids = ({
         <Web3Button
           contractAddress={config[chainId]?.smartContracts?.DSPONSORMP?.address}
           action={() => {
-            toggleBidsModal()
+            toggleBidsModal();
           }}
           className={` !rounded-full !py-3 w-full !px-8 !text-center !font-semibold !text-white !transition-all !bg-accent !cursor-pointer `}
         >
@@ -146,7 +143,7 @@ const ItemBids = ({
         />
       )}
     </div>
-  )
-}
+  );
+};
 
-export default ItemBids
+export default ItemBids;

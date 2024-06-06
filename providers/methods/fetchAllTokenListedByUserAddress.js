@@ -7,11 +7,15 @@ export const fetchAllTokenListedByUserAddress = async (lister, chainId) => {
 
   const GET_DATA = gql`
     query getMarketplaceListingsForUser($lister: Bytes) {
-      marketplaceListings(orderBy: endTime, orderDirection: asc, where: { and: [{ status: CREATED, quantity_gt: 0, lister: $lister }] }) {
+      marketplaceListings(
+        orderBy: endTime
+        orderDirection: asc
+        where: { and: [{ status: CREATED, quantity_gt: 0, lister: $lister }] }
+      ) {
         id # listingId
         token {
           tokenId
-          
+
           nftContract {
             id # = assetContract
             adOffers {
@@ -64,11 +68,11 @@ export const fetchAllTokenListedByUserAddress = async (lister, chainId) => {
   `;
 
   // Exécutez la requête pour obtenir tous les NFTs
-  const response = await executeQuery(path.href, GET_DATA, {  lister: lister });
+  const response = await executeQuery(path.href, GET_DATA, { lister: lister });
   const resultMappedData = response?.marketplaceListings.map((item) => {
     const combinedData = {
       ...item,
-      chainConfig: config[chainId],
+      chainConfig: config[chainId]
     };
     return combinedData;
   });
