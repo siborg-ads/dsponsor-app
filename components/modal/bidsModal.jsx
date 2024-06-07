@@ -1,25 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { ethers } from "ethers";
-import {
-  useAddress,
-  darkTheme,
-  useBalance,
-  Web3Button,
-  useTokenBalance,
-  useContract,
-  useContractRead,
-  useContractWrite,
-  useStorageUpload,
-  useTokenDecimals,
-  CheckoutWithCard,
-  CheckoutWithEth
-} from "@thirdweb-dev/react";
+import { Web3Button, useContractWrite } from "@thirdweb-dev/react";
 import { Spinner } from "@nextui-org/spinner";
-import { bidsModalHide } from "../../redux/counterSlice";
 import { toast } from "react-toastify";
 import Link from "next/link";
-import { useChainContext } from "../../contexts/hooks/useChainContext";
 import config from "../../providers/utils/config";
+import { computeBidAmounts } from "../../utils/computeBidAmounts";
+import { formatUnits, parseUnits } from "ethers/lib/utils";
+import formatAndRound from "../../utils/formatAndRound";
+import { fetchTokenPrice } from "../../utils/fetchTokenPrice";
+
 const BidsModal = ({
   setAmountToApprove,
   bidsAmount,
@@ -39,35 +29,83 @@ const BidsModal = ({
   handleApprove,
   checkAllowance,
   isLoadingButton,
-  setIsLoadingButton
+  setIsLoadingButton,
+  endTime
 }) => {
   const [initialIntPrice, setInitialIntPrice] = useState(0);
-  const [isPriceGood, setIsPriceGood] = useState(true);
+  const [isPriceGood, setIsPriceGood] = useState(false);
   const { mutateAsync: auctionBids } = useContractWrite(dsponsorMpContract, "bid");
   const [checkTerms, setCheckTerms] = useState(false);
+  const [refundedPrice, setRefundedPrice] = useState(null);
+  const [endDate, setEndDate] = useState(null);
+  const [minBid, setMinBid] = useState(null);
+  const [endDateHour, setEndDateHour] = useState(null);
+  const [tokenPrice, setTokenPrice] = useState(null);
 
   useEffect(() => {
-    const minimalBidPerToken = marketplaceListings[0]?.bidPriceStructure?.minimalBidPerToken;
-    if (minimalBidPerToken) {
-      const minimalBid = ethers.utils.formatUnits(minimalBidPerToken, currencyTokenDecimals);
-
-      /*
-      const precision = Math.max(Math.ceil(currencyTokenDecimals / 6), 2)
-        const extra = Math.pow(10, -precision)
-      let round =
-        Math.ceil(minimalBid * Math.pow(10, precision)) /
-        Math.pow(10, precision)
-      round = Number(round.toFixed(precision))
-      const initialPrice = round > minimalBid ? round : round + extra
-       */
-
-      setInitialIntPrice(minimalBid);
-      setBidsAmount(minimalBid);
+    if (marketplaceListings[0] && bidsAmount && bidsAmount > 0 && chainId) {
+      fetchTokenPrice(marketplaceListings[0]?.currency, chainId, bidsAmount).then((price) => {
+        setTokenPrice(price);
+      });
+    } else {
+      setTokenPrice(0);
     }
-  }, [marketplaceListings]);
+  }, [bidsAmount, chainId, marketplaceListings]);
+
+  useEffect(() => {
+    if (marketplaceListings[0] && bidsAmount && bidsAmount > 0 && currencyTokenDecimals) {
+      const newBidPerToken = parseUnits(bidsAmount.toString(), currencyTokenDecimals);
+      const reservePricePerToken = marketplaceListings[0]?.reservePricePerToken;
+      const buyoutPricePerToken = marketplaceListings[0]?.buyoutPricePerToken;
+      const previousPricePerToken =
+        marketplaceListings[0]?.bidPriceStructure?.previousPricePerToken;
+      const minimalAuctionBps = marketplaceListings[0]?.minimalBidBps;
+      const bonusRefundBps = marketplaceListings[0]?.previousBidAmountBps;
+      const royaltyBps = 0;
+      const protocolFeeBps = marketplaceListings[0]?.protocolFeeBps;
+
+      const { newRefundBonusAmount, nextReservePricePerToken } = computeBidAmounts(
+        newBidPerToken,
+        1,
+        reservePricePerToken,
+        buyoutPricePerToken,
+        previousPricePerToken,
+        minimalAuctionBps,
+        bonusRefundBps,
+        royaltyBps,
+        protocolFeeBps
+      );
+
+      const newRefundBonusAmountFormatted = formatAndRound(
+        formatUnits(newRefundBonusAmount, currencyTokenDecimals)
+      );
+      const newRefundBonusAmountAdded = Number(newRefundBonusAmountFormatted) + Number(bidsAmount);
+      const newRefundBonusFormatted = formatAndRound(newRefundBonusAmountAdded.toString());
+      const nextReservePricePerTokenFormatted = formatAndRound(
+        formatUnits(nextReservePricePerToken, currencyTokenDecimals)
+      );
+
+      setRefundedPrice(newRefundBonusFormatted);
+      setMinBid(nextReservePricePerTokenFormatted);
+    } else {
+      setMinBid(0);
+      setRefundedPrice(0);
+    }
+  }, [bidsAmount, marketplaceListings, currencyTokenDecimals]);
+
+  useEffect(() => {
+    const endTimeLocal = new Date(endTime * 1000); // we convert the timestamp to milliseconds
+    setEndDate(endTimeLocal.toLocaleDateString());
+    setEndDateHour(endTimeLocal.toLocaleTimeString());
+  }, [endTime]);
+
+  useEffect(() => {
+    setInitialIntPrice(marketplaceListings[0]?.bidPriceStructureFormatted?.minimalBidPerToken);
+    setBidsAmount(marketplaceListings[0]?.bidPriceStructureFormatted?.newBidPerToken);
+  }, [marketplaceListings, setBidsAmount]);
 
   const handleBidsAmount = async (e) => {
-    if (Number(e.target.value) < initialIntPrice) {
+    if (Number(e.target.value) <= initialIntPrice) {
       setIsPriceGood(false);
       setBidsAmount(e.target.value);
     } else {
@@ -137,27 +175,28 @@ const BidsModal = ({
                   </div>
                   <div>
                     <span className="dark:text-jacarta-400 text-sm">
-                      Balance: {tokenBalance?.displayValue} {currencySymbol}
+                      Balance: {tokenBalance?.displayValue ?? 0} {currencySymbol}
                     </span>
                   </div>
                 </div>
-                <div className="dark:border-jacarta-600 border-jacarta-100 relative mb-2 flex items-center overflow-hidden rounded-lg border">
-                  <div className="border-jacarta-100 bg-jacarta-50 flex flex-1 items-center self-stretch border-r px-2">
-                    <span className="font-display text-jacarta-700 text-sm">{currencySymbol}</span>
+                <div className="flex items-center gap-4">
+                  <div className="flex items-center relative w-full">
+                    <input
+                      type="number"
+                      className={`focus:ring-accent relative w-full flex-[3] border-transparent bg-jacarta-600 rounded-xl text-2xl py-2 font-semibold text-white focus:ring-inse`}
+                      placeholder="Amount"
+                      value={bidsAmount}
+                      onChange={(e) => handleBidsAmount(e)}
+                    />
+                    <span className="text-white font-semibold absolute right-0 px-4">
+                      {currencySymbol}
+                    </span>
                   </div>
 
-                  <input
-                    type="number"
-                    className={`${
-                      isPriceGood ? "border-green" : "border-red"
-                    } focus:ring-accent h-12 w-full flex-[3] border-2 focus:ring-inse dark:text-jacarta-700`}
-                    placeholder="Amount"
-                    value={bidsAmount}
-                    onChange={(e) => handleBidsAmount(e)}
-                  />
-
-                  <div className="bg-jacarta-50 border-jacarta-100 flex flex-1 justify-end self-stretch border-l dark:text-jacarta-700">
-                    <span className="self-center px-2 text-sm">$130.82</span>
+                  <div className="bg-jacarta-600 w-1/4 border border-jacarta-900 border-opacity-10 rounded-xl flex flex-1 justify-center self-stretch border-l">
+                    <span className="self-center px-4 text-xl text-center text-white font-semibold">
+                      ${tokenPrice ?? 0}
+                    </span>
                   </div>
                 </div>
                 {!isPriceGood && (
@@ -167,6 +206,30 @@ const BidsModal = ({
                     </span>
                   </div>
                 )}
+
+                <div className="flex flex-col gap-8 py-4 items-center justify-center">
+                  <div className="flex flex-col gap-2 items-center text-center">
+                    <span className="font-semibold text-white">What&apos;s next?</span>
+                    <span className="text-white text-sm">
+                      If someone outbids you by at least {minBid} {currencySymbol}, you will receive
+                      your bid amount back plus an additional reward. However, if no one outbids you
+                      by the {endDate} at {endDateHour}, you will get the ad space.
+                    </span>
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <div className="flex items-center gap-4 mx-auto justify-between w-full">
+                      <div className="bg-jacarta-600 duration-400 shadow p-4 rounded-xl font-semibold text-base text-white flex justify-center items-center text-center">
+                        Ad Space transferred
+                      </div>
+
+                      <span className="text-white font-semibold text-sm">OR</span>
+
+                      <div className="bg-jacarta-600 duration-400 shadow p-4 rounded-xl font-semibold text-base text-white flex justify-center items-center text-center">
+                        {refundedPrice} {currencySymbol} refunded
+                      </div>
+                    </div>
+                  </div>
+                </div>
 
                 {/* <!-- Terms --> */}
                 <div className="mt-4 flex items-center space-x-2">
