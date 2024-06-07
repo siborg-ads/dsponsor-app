@@ -1,9 +1,8 @@
-
 import { executeQuery } from "../utils/executeQuery";
 import { gql } from "@apollo/client";
 
 export const fetchOffer = async (offerId, chainId) => {
-const path = new URL(`https://relayer.dsponsor.com/api/${chainId}/graph`);
+  const path = new URL(`https://relayer.dsponsor.com/api/${chainId}/graph`);
   const GET_DATA = gql`
     query TokenOfferDetails($offerId: ID!) {
       # replace by the $offerId
@@ -89,8 +88,8 @@ const path = new URL(`https://relayer.dsponsor.com/api/${chainId}/graph`);
     }
   `;
 
-const response = await executeQuery(path.href, GET_DATA, { offerId: offerId });
+  const response = await executeQuery(path.href, GET_DATA, { offerId: offerId });
 
-console.log(response);
+  console.log(response);
   return response?.adOffers[0];
 };

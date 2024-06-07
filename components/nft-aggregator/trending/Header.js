@@ -21,9 +21,7 @@ const Header = () => {
           <div className="text-base font-medium text-jacarta-500 dark:text-jacarta-300 md:whitespace-nowrap">
             196 results
           </div>
-          <div className="text-2xs text-jacarta-300 dark:text-jacarta-400">
-            10 min ago
-          </div>
+          <div className="text-2xs text-jacarta-300 dark:text-jacarta-400">10 min ago</div>
         </div>
       </div>
       <Form />

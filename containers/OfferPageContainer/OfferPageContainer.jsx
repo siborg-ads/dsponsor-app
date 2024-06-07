@@ -128,7 +128,7 @@ const OfferPageContainer = () => {
   const handleSubmit = async (submissionArgs) => {
     try {
       await mutateAsync({
-        args: [submissionArgs],
+        args: [submissionArgs]
       });
       setRefusedValidatedAdModal(true);
       setSuccessFullRefuseModal(true);
@@ -163,7 +163,7 @@ const OfferPageContainer = () => {
   }
   const modalHelper = {
     title: "Protocol Fees",
-    body: `The protocol fees (4%) are used to maintain the platform and the services provided. The fees are calculated based on the price of the ad space and are automatically deducted from the total amount paid by the buyer.`,
+    body: `The protocol fees (4%) are used to maintain the platform and the services provided. The fees are calculated based on the price of the ad space and are automatically deducted from the total amount paid by the buyer.`
   };
   const {
     description = "description not found",
@@ -434,7 +434,7 @@ const OfferPageContainer = () => {
                   borderRadius: "5px",
                   fontFamily: "'Courier New', monospace",
                   padding: "10px",
-                  overflowX: "auto",
+                  overflowX: "auto"
                 }}
               >
                 <code>

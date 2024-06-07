@@ -1,12 +1,12 @@
+import Image from "next/image";
+import Link from "next/link";
 import React, { useEffect, useState } from "react";
-import { tranding_category_filter } from "../../data/categories_data";
-import CategoryItem from "./categoryItem";
+import { useDispatch, useSelector } from "react-redux";
+import { useChainContext } from "../../contexts/hooks/useChainContext";
+import { activated_features } from "../../data/activated_features";
 import { trendingCategoryData } from "../../data/categories_data";
-import Tippy from "@tippyjs/react";
-import Recently_added_dropdown from "../dropdown/recently_added_dropdown";
-import { useSelector, useDispatch } from "react-redux";
 import { updateTrendingCategoryItemData } from "../../redux/counterSlice";
-import Review_adProposal_data from "./review_adProposal_items";
+import ConditionalDisplayedComponent from "../../utils/ConditionalDisplayedComponent";
 import OfferItem from "../cards/offerItem";
 import Link from "next/link";
 import Image from "next/image";
@@ -38,20 +38,20 @@ const OwnedOffers_categories_items = ({
   const sortText = [
     {
       id: 1,
-      text: "Recently Added",
+      text: "Recently Added"
     },
     {
       id: 2,
-      text: "Price: Low to High",
+      text: "Price: Low to High"
     },
     {
       id: 3,
-      text: "Price: high to low",
+      text: "Price: high to low"
     },
     {
       id: 4,
-      text: "Auction Ending Soon",
-    },
+      text: "Auction Ending Soon"
+    }
   ];
 
   useEffect(() => {

@@ -6,7 +6,7 @@ const DropdownFilter = () => {
   const currencies = [
     { id: 1, label: "USD", icon: "usd" },
     { id: 2, label: "ETH", icon: "eth" },
-    { id: 3, label: "SOL", icon: "sol" },
+    { id: 3, label: "SOL", icon: "sol" }
   ];
 
   const handleCurrencySelect = (currency) => {

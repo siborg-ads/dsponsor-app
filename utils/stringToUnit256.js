@@ -1,7 +1,4 @@
-
 import { toUtf8Bytes, keccak256 } from "ethers/lib/utils";
-
-
 
 export default function stringToUint256(s) {
   const normalized = s

@@ -9,7 +9,7 @@ const sortOptions = [
   { label: "Price Low to High", value: "price_low_high" },
   { label: "Price High to Low", value: "price_high_low" },
   { label: "Highest Last Sale", value: "highest_last_sale" },
-  { label: "Oldest", value: "oldest" },
+  { label: "Oldest", value: "oldest" }
 ];
 
 const SortFilter = () => {

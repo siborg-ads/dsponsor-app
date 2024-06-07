@@ -10,14 +10,13 @@ const index = () => {
               Need help?
             </h2>
             <p className="mb-6 text-lg dark:text-jacarta-300">
-              Discover NFTs, decentralized finance, crypto gaming, and thousands
-              of Dapps! We’ve integrated with the WalletConnect protocol to
-              facilitate your simple and secure connection.
+              Discover NFTs, decentralized finance, crypto gaming, and thousands of Dapps! We’ve
+              integrated with the WalletConnect protocol to facilitate your simple and secure
+              connection.
             </p>
             <p className="dark:text-jacarta-300">
-              We’ve integrated with the WalletConnect protocol to facilitate
-              your simple and secure connection to the world of Web3 quickly and
-              instantaneously.
+              We’ve integrated with the WalletConnect protocol to facilitate your simple and secure
+              connection to the world of Web3 quickly and instantaneously.
             </p>
           </div>
           <div className="lg:w-[55%]">

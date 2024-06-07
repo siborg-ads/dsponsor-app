@@ -40,7 +40,7 @@ const BidsModal = ({
   handleApprove,
   checkAllowance,
   isLoadingButton,
-  setIsLoadingButton,
+  setIsLoadingButton
 }) => {
   const [initialIntPrice, setInitialIntPrice] = useState(0);
   const [isPriceGood, setIsPriceGood] = useState(false);
@@ -61,12 +61,13 @@ const BidsModal = ({
   }, [marketplaceListings]);
 
   const handleBidsAmount = async (e) => {
-    if (Number(e.target.value) <= initialIntPrice) {
+    if (Number(e.target.value) < initialIntPrice) {
       setIsPriceGood(false);
       setBidsAmount(e.target.value);
     } else {
       setIsPriceGood(true);
       setBidsAmount(e.target.value);
+
       setAmountToApprove(
         ethers.utils.parseUnits(
           e.target.value.toString(),
@@ -111,7 +112,7 @@ const BidsModal = ({
       );
 
       await auctionBids({
-        args: [marketplaceListings[0].id, bidsBigInt, address, ""],
+        args: [marketplaceListings[0].id, bidsBigInt, address, ""]
       });
       setSuccessFullBid(true);
     } catch (error) {
@@ -252,7 +253,7 @@ const BidsModal = ({
                     toast.promise(handleApprove, {
                       pending: "Waiting for confirmation 🕒",
                       success: "Approval confirmed 👌",
-                      error: "Approval rejected 🤯",
+                      error: "Approval rejected 🤯"
                     });
                   }}
                   className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${
@@ -278,7 +279,7 @@ const BidsModal = ({
                       toast.promise(handleSubmit, {
                         pending: "Waiting for confirmation 🕒",
                         success: "Bid confirmed 👌",
-                        error: "Bid rejected 🤯",
+                        error: "Bid rejected 🤯"
                       });
                     }}
                     className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${

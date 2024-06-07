@@ -1,18 +1,16 @@
 export const executeQuery = async (url, query, variables) => {
-
   try {
     const response = await fetch(url, {
       method: "POST",
       headers: {
-        "Content-Type": "application/json",
+        "Content-Type": "application/json"
       },
       body: JSON.stringify({
         query: query.loc.source.body,
-        variables,
-      }),
+        variables
+      })
     });
-console.log(response, "response");
-
+    console.log(response, "response");
 
     if (!response.ok) {
       console.error("Network response was not ok", response.statusText);
@@ -20,11 +18,8 @@ console.log(response, "response");
     }
 
     const responseText = await response.text();
-   
-
 
     const result = JSON.parse(responseText);
-
 
     if (result.errors) {
       console.error("GraphQL errors:", result.errors);

@@ -8,7 +8,7 @@ const FilterRightMenu = () => {
     { id: "6h", label: "6h" },
     { id: "1h", label: "1h" },
     { id: "30m", label: "30m" },
-    { id: "15m", label: "15m" },
+    { id: "15m", label: "15m" }
   ];
 
   const handleMenuClick = (menuId) => {

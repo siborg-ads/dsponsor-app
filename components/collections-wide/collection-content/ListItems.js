@@ -13,7 +13,7 @@ const ListItems = () => {
       views: "10.0K",
       likes: "3.5K",
       isVerified: true,
-      isIncrease: true,
+      isIncrease: true
     },
     {
       id: 2,
@@ -25,7 +25,7 @@ const ListItems = () => {
       views: "9.8K",
       likes: "868",
       isVerified: false,
-      isIncrease: true,
+      isIncrease: true
     },
     {
       id: 3,
@@ -37,7 +37,7 @@ const ListItems = () => {
       views: "10.0K",
       likes: "3.5K",
       isVerified: false,
-      isIncrease: true,
+      isIncrease: true
     },
     {
       id: 4,
@@ -49,7 +49,7 @@ const ListItems = () => {
       views: "9.8K",
       likes: "868",
       isVerified: false,
-      isIncrease: true,
+      isIncrease: true
     },
     {
       id: 5,
@@ -61,7 +61,7 @@ const ListItems = () => {
       views: "10.0K",
       likes: "3.5K",
       isVerified: false,
-      isIncrease: true,
+      isIncrease: true
     },
     {
       id: 6,
@@ -73,7 +73,7 @@ const ListItems = () => {
       views: "9.8K",
       likes: "868",
       isVerified: true,
-      isIncrease: false,
+      isIncrease: false
     },
     {
       id: 7,
@@ -85,8 +85,8 @@ const ListItems = () => {
       views: "9.8K",
       likes: "868",
       isVerified: true,
-      isIncrease: false,
-    },
+      isIncrease: false
+    }
   ];
 
   return (
@@ -147,9 +147,7 @@ const ListItems = () => {
                 alt="etherium icon"
               />
             </span>
-            <span className="text-sm font-medium tracking-tight">
-              {row.ethValue}
-            </span>
+            <span className="text-sm font-medium tracking-tight">{row.ethValue}</span>
           </div>
           <div
             className="flex justify-end md:w-[12%] w-[15%] items-center border-t border-jacarta-100 py-4 px-4 dark:border-jacarta-600"
@@ -164,17 +162,13 @@ const ListItems = () => {
                 alt="etherium icon"
               />
             </span>
-            <span className="text-sm font-medium tracking-tight">
-              {row.ethVolume}
-            </span>
+            <span className="text-sm font-medium tracking-tight">{row.ethVolume}</span>
           </div>
           <div
             className="flex justify-end md:w-[12%] w-[15%] items-center border-t border-jacarta-100 py-4 px-4 dark:border-jacarta-600"
             role="cell"
           >
-            <span className={row.isIncrease ? "text-green" : "text-red"}>
-              {row.ethChange}
-            </span>
+            <span className={row.isIncrease ? "text-green" : "text-red"}>{row.ethChange}</span>
           </div>
           <div
             className="flex justify-end md:w-[12%] w-[15%] items-center border-t border-jacarta-100 py-4 px-4 dark:border-jacarta-600"

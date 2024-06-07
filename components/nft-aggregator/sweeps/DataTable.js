@@ -11,7 +11,7 @@ const data = [
     price: 0.3,
     chainIcon: "/images/chains/eth-icon.svg",
     transactionHash: "0x6ee5...ea21",
-    timestamp: "just now",
+    timestamp: "just now"
   },
   {
     id: 2,
@@ -23,7 +23,7 @@ const data = [
     price: 9.3712,
     chainIcon: "/images/chains/eth-icon.svg",
     transactionHash: "0x9120...edcc",
-    timestamp: "1 hour ago",
+    timestamp: "1 hour ago"
   },
   {
     id: 3,
@@ -35,7 +35,7 @@ const data = [
     price: 0.3,
     chainIcon: "/images/chains/eth-icon.svg",
     transactionHash: "0x6ee5...ea21",
-    timestamp: "just now",
+    timestamp: "just now"
   },
   {
     id: 4,
@@ -47,7 +47,7 @@ const data = [
     price: 9.3712,
     chainIcon: "/images/chains/eth-icon.svg",
     transactionHash: "0x9120...edcc",
-    timestamp: "1 hour ago",
+    timestamp: "1 hour ago"
   },
   {
     id: 5,
@@ -59,7 +59,7 @@ const data = [
     price: 0.3,
     chainIcon: "/images/chains/eth-icon.svg",
     transactionHash: "0x6ee5...ea21",
-    timestamp: "just now",
+    timestamp: "just now"
   },
   {
     id: 6,
@@ -71,7 +71,7 @@ const data = [
     price: 9.3712,
     chainIcon: "/images/chains/eth-icon.svg",
     transactionHash: "0x9120...edcc",
-    timestamp: "1 hour ago",
+    timestamp: "1 hour ago"
   },
   {
     id: 7,
@@ -83,7 +83,7 @@ const data = [
     price: 0.3,
     chainIcon: "/images/chains/eth-icon.svg",
     transactionHash: "0x6ee5...ea21",
-    timestamp: "just now",
+    timestamp: "just now"
   },
   {
     id: 8,
@@ -95,7 +95,7 @@ const data = [
     price: 9.3712,
     chainIcon: "/images/chains/eth-icon.svg",
     transactionHash: "0x9120...edcc",
-    timestamp: "1 hour ago",
+    timestamp: "1 hour ago"
   },
   {
     id: 9,
@@ -107,7 +107,7 @@ const data = [
     price: 0.3,
     chainIcon: "/images/chains/eth-icon.svg",
     transactionHash: "0x6ee5...ea21",
-    timestamp: "just now",
+    timestamp: "just now"
   },
   {
     id: 10,
@@ -119,7 +119,7 @@ const data = [
     price: 9.3712,
     chainIcon: "/images/chains/eth-icon.svg",
     transactionHash: "0x9120...edcc",
-    timestamp: "1 hour ago",
+    timestamp: "1 hour ago"
   },
   {
     id: 11,
@@ -131,7 +131,7 @@ const data = [
     price: 9.3712,
     chainIcon: "/images/chains/eth-icon.svg",
     transactionHash: "0x9120...edcc",
-    timestamp: "1 hour ago",
+    timestamp: "1 hour ago"
   },
   {
     id: 12,
@@ -143,8 +143,8 @@ const data = [
     price: 9.3712,
     chainIcon: "/images/chains/eth-icon.svg",
     transactionHash: "0x9120...edcc",
-    timestamp: "1 hour ago",
-  },
+    timestamp: "1 hour ago"
+  }
 ];
 
 const DataTable = () => {
@@ -174,10 +174,7 @@ const DataTable = () => {
               title="Owner: Sussygirl"
             />
           </div>
-          <div
-            className="flex w-6/12 items-center md:w-6/12 lg:w-4/12"
-            role="cell"
-          >
+          <div className="flex w-6/12 items-center md:w-6/12 lg:w-4/12" role="cell">
             <figure className="relative mr-4 w-8 shrink-0 self-start lg:w-10">
               <Image
                 width={40}
@@ -188,9 +185,7 @@ const DataTable = () => {
                 loading="lazy"
               />
             </figure>
-            <span className="text-sm text-jacarta-700 dark:text-white">
-              {item.itemName}
-            </span>
+            <span className="text-sm text-jacarta-700 dark:text-white">{item.itemName}</span>
           </div>
           <div
             className="hidden w-3/12 items-center justify-end whitespace-nowrap md:flex md:w-2/12"
@@ -210,22 +205,13 @@ const DataTable = () => {
               />
             </span>
           </div>
-          <div
-            className="hidden w-3/12 items-center justify-end md:w-2/12 lg:flex"
-            role="cell"
-          >
+          <div className="hidden w-3/12 items-center justify-end md:w-2/12 lg:flex" role="cell">
             -
           </div>
-          <div
-            className="hidden w-2/12 items-center justify-end text-accent md:flex"
-            role="cell"
-          >
+          <div className="hidden w-2/12 items-center justify-end text-accent md:flex" role="cell">
             <a href="#">{item.transactionHash}</a>
           </div>
-          <div
-            className="hidden w-2/12 items-center justify-end md:flex"
-            role="cell"
-          >
+          <div className="hidden w-2/12 items-center justify-end md:flex" role="cell">
             {item.timestamp}
           </div>
         </div>

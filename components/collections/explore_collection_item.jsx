@@ -12,7 +12,6 @@ const Explore_collection_item = ({ itemFor }) => {
   useEffect(() => {
     if (itemFor === "userPage") {
       setItemData(Feature_collections_data.slice(0, 4));
-  
     } else {
       setItemData(sortedCollectionData);
     }
@@ -30,15 +29,12 @@ const Explore_collection_item = ({ itemFor }) => {
           userImage,
           title,
           itemsCount,
-          userName,
+          userName
         } = item;
         return (
           <article key={id}>
             <div className="dark:bg-jacarta-700 dark:border-jacarta-700 border-jacarta-100 rounded-2xl border bg-white p-[1.1875rem] transition-shadow hover:shadow-lg">
-              <Link
-                href="/collection/avatar_1"
-                className="flex space-x-[0.625rem]"
-              >
+              <Link href="/collection/avatar_1" className="flex space-x-[0.625rem]">
                 <span className="w-[74.5%]">
                   <Image
                     width={152}
@@ -100,9 +96,7 @@ const Explore_collection_item = ({ itemFor }) => {
                     <span>{userName}</span>
                   </Link>
                 </div>
-                <span className="dark:text-jacarta-300 text-sm">
-                  {itemsCount} Items
-                </span>
+                <span className="dark:text-jacarta-300 text-sm">{itemsCount} Items</span>
               </div>
             </div>
           </article>

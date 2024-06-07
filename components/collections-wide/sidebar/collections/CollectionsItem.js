@@ -7,29 +7,29 @@ const CollectionsItem = () => {
       imageSrc: "/images/nft-aggregator/item-14.jpg",
       alt: "avatar 1",
       name: "NFT Funny Cat",
-      count: "30,643",
+      count: "30,643"
     },
     {
       id: 2,
       imageSrc: "/images/nft-aggregator/item-2.jpg",
       alt: "avatar 1",
       name: "Azuki #4017",
-      count: "10,000",
+      count: "10,000"
     },
     {
       id: 3,
       imageSrc: "/images/nft-aggregator/item-7.jpg",
       alt: "avatar 1",
       name: "Crypto bull #6195",
-      count: "8,899",
+      count: "8,899"
     },
     {
       id: 4,
       imageSrc: "/images/nft-aggregator/item-1.jpg",
       alt: "avatar 1",
       name: "Monkeyme#155",
-      count: "25,671",
-    },
+      count: "25,671"
+    }
   ];
 
   return (
@@ -72,9 +72,7 @@ const CollectionsItem = () => {
             <span className="font-display text-sm font-semibold text-jacarta-700 dark:text-white">
               {item.name}
             </span>
-            <span className="ml-auto text-sm dark:text-jacarta-300">
-              {item.count}
-            </span>
+            <span className="ml-auto text-sm dark:text-jacarta-300">{item.count}</span>
           </label>
         </li>
       ))}

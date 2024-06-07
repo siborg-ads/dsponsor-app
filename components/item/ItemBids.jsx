@@ -1,13 +1,26 @@
-import React from 'react'
-import { useState } from 'react'
-import Image from 'next/image'
-import Link from 'next/link'
-import Timer from './Timer'
-import BidsModal from '../modal/bidsModal'
+import React from "react";
+import { useState } from "react";
+import Image from "next/image";
+import Link from "next/link";
+import Timer from "./Timer";
+import BidsModal from "../modal/bidsModal";
 import { ethers } from "ethers";
-import { useAddress, darkTheme, useBalance, Web3Button, useTokenBalance, useContract, useContractRead, useContractWrite, useStorageUpload, useTokenDecimals, CheckoutWithCard, CheckoutWithEth } from "@thirdweb-dev/react";
+import {
+  useAddress,
+  darkTheme,
+  useBalance,
+  Web3Button,
+  useTokenBalance,
+  useContract,
+  useContractRead,
+  useContractWrite,
+  useStorageUpload,
+  useTokenDecimals,
+  CheckoutWithCard,
+  CheckoutWithEth
+} from "@thirdweb-dev/react";
 import { useChainContext } from "../../contexts/hooks/useChainContext";
-import config from '../../providers/utils/config'
+import config from "../../providers/utils/config";
 const ItemBids = ({
   setAmountToApprove,
   bidsAmount,
@@ -28,12 +41,16 @@ const ItemBids = ({
   checkAllowance,
   chainId,
   isLoadingButton,
-  setIsLoadingButton,
+  setIsLoadingButton
 }) => {
   const [showBidsModal, setShowBidsModal] = useState(false);
 
   const toggleBidsModal = async () => {
-   await checkAllowance(marketplaceListings[0]?.bidPriceStructureFormatted?.minimalBidPerToken);
+    const minimalBidPerToken = marketplaceListings[0]?.bidPriceStructure?.minimalBidPerToken;
+
+    if (minimalBidPerToken) {
+      await checkAllowance(ethers.BigNumber.from(minimalBidPerToken));
+    }
     setShowBidsModal(!showBidsModal);
     setSuccessFullBid(false);
   };
@@ -46,8 +63,13 @@ const ItemBids = ({
         <div className="sm:w-1/2 sm:pr-4 lg:pr-8">
           {bids.length > 0 && (
             <div className="block overflow-hidden text-ellipsis whitespace-nowrap">
-              <span className="text-sm text-jacarta-400 dark:text-jacarta-300">Highest bid by </span>
-              <Link href={`/manage/${marketplaceListings[0].bids[0].bidder}`} className="text-sm font-bold text-accent">
+              <span className="text-sm text-jacarta-400 dark:text-jacarta-300">
+                Highest bid by{" "}
+              </span>
+              <Link
+                href={`/manage/${marketplaceListings[0].bids[0].bidder}`}
+                className="text-sm font-bold text-accent"
+              >
                 {marketplaceListings[0].bids[0].bidder}
               </Link>
             </div>
@@ -57,15 +79,18 @@ const ItemBids = ({
               <div className="flex items-center whitespace-nowrap">
                 {bids.length <= 0 ? (
                   <div className="flex flex-col">
-                    <p className="text-sm text-jacarta-400">starting price : </p>
+                    <p className="text-sm text-jacarta-400">Starting price: </p>
                     <span className="text-lg font-medium leading-tight tracking-tight text-green">
                       {price} {currencySymbol}
                     </span>
                   </div>
                 ) : (
-                  <p className="text-lg font-medium leading-tight tracking-tight text-green">
-                    {price} {currencySymbol}
-                  </p>
+                  <div className="flex flex-col">
+                    <p className="text-sm text-jacarta-400">Minimum bid amount: </p>
+                    <span className="text-lg font-medium leading-tight tracking-tight text-green">
+                      {price} {currencySymbol}
+                    </span>
+                  </div>
                 )}
               </div>
             </div>
@@ -74,7 +99,9 @@ const ItemBids = ({
 
         {/* Countdown */}
         <div className="mt-4 dark:border-jacarta-600 sm:mt-0 sm:w-1/2 sm:border-l sm:border-jacarta-100 sm:pl-4 lg:pl-8">
-          <span className="js-countdown-ends-label text-sm text-jacarta-400 dark:text-jacarta-300">Auction ends in</span>
+          <span className="js-countdown-ends-label text-sm text-jacarta-400 dark:text-jacarta-300">
+            Auction ends in
+          </span>
           <Timer endTime={marketplaceListings[0].endTime} />
         </div>
       </div>
@@ -119,4 +146,4 @@ const ItemBids = ({
   );
 };
 
-export default ItemBids
+export default ItemBids;

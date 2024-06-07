@@ -7,7 +7,7 @@ const user_data = [
     userId: "0x7a86c0b064171007716bbd6af96676935799a63e",
     joinYear: "2019",
     text: "Unique, fully 3D and built to unite the design multiverse. Designed and styled by Digimental.",
-    coverPhoto: "/images/user/banner.jpg",
+    coverPhoto: "/images/user/banner.jpg"
   },
   {
     id: "avatar_2",
@@ -17,7 +17,7 @@ const user_data = [
     userId: "0x7a86c0b064171007716bbd6af96676935799a63e",
     joinYear: "2019",
     text: "Unique, fully 3D and built to unite the design multiverse. Designed and styled by Digimental.",
-    coverPhoto: "/images/user/banner.jpg",
+    coverPhoto: "/images/user/banner.jpg"
   },
   {
     id: "avatar_3",
@@ -27,7 +27,7 @@ const user_data = [
     userId: "0x7a86c0b064171007716bbd6af96676935799a63e",
     joinYear: "2019",
     text: "Unique, fully 3D and built to unite the design multiverse. Designed and styled by Digimental.",
-    coverPhoto: "/images/user/banner.jpg",
+    coverPhoto: "/images/user/banner.jpg"
   },
   {
     id: "avatar_4",
@@ -37,7 +37,7 @@ const user_data = [
     userId: "0x7a86c0b064171007716bbd6af96676935799a63e",
     joinYear: "2019",
     text: "Unique, fully 3D and built to unite the design multiverse. Designed and styled by Digimental.",
-    coverPhoto: "/images/user/banner.jpg",
+    coverPhoto: "/images/user/banner.jpg"
   },
   {
     id: "avatar_5",
@@ -47,7 +47,7 @@ const user_data = [
     userId: "0x7a86c0b064171007716bbd6af96676935799a63e",
     joinYear: "2019",
     text: "Unique, fully 3D and built to unite the design multiverse. Designed and styled by Digimental.",
-    coverPhoto: "/images/user/banner.jpg",
+    coverPhoto: "/images/user/banner.jpg"
   },
   {
     id: "0xC4753FdeD1998bE4dE94F141767D2c77A268a881",
@@ -57,7 +57,7 @@ const user_data = [
     userId: "0xC4753FdeD1998bE4dE94F141767D2c77A268a881",
     joinYear: "2019",
     text: "Unique, fully 3D and built to unite the design multiverse. Designed and styled by Digimental.",
-    coverPhoto: "/images/user/banner.jpg",
+    coverPhoto: "/images/user/banner.jpg"
   },
   {
     id: "avatar_7",
@@ -67,7 +67,7 @@ const user_data = [
     userId: "0x7a86c0b064171007716bbd6af96676935799a63e",
     joinYear: "2019",
     text: "Unique, fully 3D and built to unite the design multiverse. Designed and styled by Digimental.",
-    coverPhoto: "/images/user/banner.jpg",
+    coverPhoto: "/images/user/banner.jpg"
   },
   {
     id: " avatar_8",
@@ -77,7 +77,7 @@ const user_data = [
     userId: "0x7a86c0b064171007716bbd6af96676935799a63e",
     joinYear: "2019",
     text: "Unique, fully 3D and built to unite the design multiverse. Designed and styled by Digimental.",
-    coverPhoto: "/images/user/banner.jpg",
+    coverPhoto: "/images/user/banner.jpg"
   },
   {
     id: "avatar_9",
@@ -87,7 +87,7 @@ const user_data = [
     userId: "0x7a86c0b064171007716bbd6af96676935799a63e",
     joinYear: "2019",
     text: "Unique, fully 3D and built to unite the design multiverse. Designed and styled by Digimental.",
-    coverPhoto: "/images/user/banner.jpg",
+    coverPhoto: "/images/user/banner.jpg"
   },
   {
     id: "avatar_10",
@@ -96,7 +96,7 @@ const user_data = [
     icon: true,
     userId: "Origin Morish",
     text: "Unique, fully 3D and built to unite the design multiverse. Designed and styled by Digimental.",
-    coverPhoto: "/images/user/banner.jpg",
+    coverPhoto: "/images/user/banner.jpg"
   },
   {
     id: "avatar_11",
@@ -106,7 +106,7 @@ const user_data = [
     userId: "0x7a86c0b064171007716bbd6af96676935799a63e",
     joinYear: "2019",
     text: "Unique, fully 3D and built to unite the design multiverse. Designed and styled by Digimental.",
-    coverPhoto: "/images/user/banner.jpg",
+    coverPhoto: "/images/user/banner.jpg"
   },
   {
     id: "avatar_12",
@@ -116,7 +116,7 @@ const user_data = [
     userId: "0x7a86c0b064171007716bbd6af96676935799a63e",
     joinYear: "2019",
     text: "Unique, fully 3D and built to unite the design multiverse. Designed and styled by Digimental.",
-    coverPhoto: "/images/user/banner.jpg",
+    coverPhoto: "/images/user/banner.jpg"
   },
   {
     id: "avatar_13",
@@ -126,7 +126,7 @@ const user_data = [
     userId: "0x7a86c0b064171007716bbd6af96676935799a63e",
     joinYear: "2019",
     text: "Unique, fully 3D and built to unite the design multiverse. Designed and styled by Digimental.",
-    coverPhoto: "/images/user/banner.jpg",
+    coverPhoto: "/images/user/banner.jpg"
   },
   {
     id: "avatar_14",
@@ -136,7 +136,7 @@ const user_data = [
     userId: "0x7a86c0b064171007716bbd6af96676935799a63e",
     joinYear: "2019",
     text: "Unique, fully 3D and built to unite the design multiverse. Designed and styled by Digimental.",
-    coverPhoto: "/images/user/banner.jpg",
+    coverPhoto: "/images/user/banner.jpg"
   },
   {
     id: "avatar_15",
@@ -146,7 +146,7 @@ const user_data = [
     userId: "0x7a86c0b064171007716bbd6af96676935799a63e",
     joinYear: "2019",
     text: "Unique, fully 3D and built to unite the design multiverse. Designed and styled by Digimental.",
-    coverPhoto: "/images/user/banner.jpg",
+    coverPhoto: "/images/user/banner.jpg"
   },
   {
     id: "avatar_16",
@@ -156,8 +156,8 @@ const user_data = [
     userId: "0x7a86c0b064171007716bbd6af96676935799a63e",
     joinYear: "2019",
     text: "Unique, fully 3D and built to unite the design multiverse. Designed and styled by Digimental.",
-    coverPhoto: "/images/user/banner.jpg",
-  },
+    coverPhoto: "/images/user/banner.jpg"
+  }
 ];
 
 export default user_data;

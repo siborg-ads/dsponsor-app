@@ -9,4 +9,4 @@ import Feature_collections from "./collections/Feature_collections.jsx";
 
 import ItemsTabs from "./tabs/Tabs.jsx";
 
-export { Hero, LastOffers,LastListings, Top_collection, HeadLine, Feature_collections, ItemsTabs };
+export { Hero, LastOffers, LastListings, Top_collection, HeadLine, Feature_collections, ItemsTabs };

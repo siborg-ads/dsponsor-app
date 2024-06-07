@@ -4,21 +4,29 @@ import Image from "next/image";
 import { Web3Button } from "@thirdweb-dev/react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import{ useChainContext } from "../../contexts/hooks/useChainContext";
-const AddProposalRefusedModal = ({ id, selectedItems,successFullModalObject, closeRefuseModal, handleCommentChange, handleItemSubmit, setRefusedAdModal, successFullRefuseModal }) => {
+import { useChainContext } from "../../contexts/hooks/useChainContext";
+const AddProposalRefusedModal = ({
+  id,
+  selectedItems,
+  successFullModalObject,
+  closeRefuseModal,
+  handleCommentChange,
+  handleItemSubmit,
+  setRefusedAdModal,
+  successFullRefuseModal
+}) => {
   const [filteredItems, setFilteredItems] = useState([]);
   const [allCommentsOk, setAllCommentsOk] = useState(false);
   const { currentChainObject } = useChainContext();
 
   useEffect(() => {
-     for (const item of selectedItems) {
-   
-       if (item.reason.length < 3) {
-         setAllCommentsOk(false);
-       } else {
-         setAllCommentsOk(true);
-       }
-     }
+    for (const item of selectedItems) {
+      if (item.reason.length < 3) {
+        setAllCommentsOk(false);
+      } else {
+        setAllCommentsOk(true);
+      }
+    }
   }, [selectedItems]);
   useEffect(() => {
     const itemsMap = new Map();
@@ -26,10 +34,10 @@ const AddProposalRefusedModal = ({ id, selectedItems,successFullModalObject, clo
     const uniqueItems = selectedItems.filter((item) => {
       const alreadyExists = itemsMap.has(item.tokenId);
       if (!alreadyExists) {
-        itemsMap.set(item.tokenId, true); 
-        return true; 
+        itemsMap.set(item.tokenId, true);
+        return true;
       }
-      return false; 
+      return false;
     });
 
     setFilteredItems(uniqueItems);
@@ -44,7 +52,13 @@ const AddProposalRefusedModal = ({ id, selectedItems,successFullModalObject, clo
               {successFullRefuseModal ? successFullModalObject.title : "Comments"}
             </h5>
             <button type="button" className="btn-close" onClick={() => closeRefuseModal()}>
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" className="fill-jacarta-700 h-6 w-6 dark:fill-white">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                width="24"
+                height="24"
+                className="fill-jacarta-700 h-6 w-6 dark:fill-white"
+              >
                 <path fill="none" d="M0 0h24v24H0z"></path>
                 <path d="M12 10.586l4.95-4.95 1.414 1.414-4.95 4.95 4.95 4.95-1.414 1.414-4.95-4.95-4.95 4.95-1.414-1.414 4.95-4.95-4.95-4.95L7.05 5.636z"></path>
               </svg>
@@ -57,7 +71,10 @@ const AddProposalRefusedModal = ({ id, selectedItems,successFullModalObject, clo
                 <div className="mb-6 w-full ">
                   <div className="flex justify-between">
                     <div>
-                      <label htmlFor="item-description" className="font-display text-jacarta-700 mb-2 block dark:text-white">
+                      <label
+                        htmlFor="item-description"
+                        className="font-display text-jacarta-700 mb-2 block dark:text-white"
+                      >
                         Comments
                         <span className="text-red">*</span>
                       </label>
@@ -78,7 +95,6 @@ const AddProposalRefusedModal = ({ id, selectedItems,successFullModalObject, clo
               ) : (
                 <div className="flex gap-2">
                   <p>{successFullModalObject.body} </p>
-                  
                 </div>
               );
             })}
@@ -93,7 +109,7 @@ const AddProposalRefusedModal = ({ id, selectedItems,successFullModalObject, clo
                       toast.promise(handleItemSubmit(false), {
                         pending: "Waiting for confirmation 🕒",
                         success: "Transaction confirmed 👌",
-                        error: "Transaction rejected 🤯",
+                        error: "Transaction rejected 🤯"
                       })
                     }
                     className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!allCommentsOk ? "btn-disabled" : "!bg-red !cursor-pointer"} `}
@@ -102,7 +118,10 @@ const AddProposalRefusedModal = ({ id, selectedItems,successFullModalObject, clo
                     Refuse Ad Proposal
                   </Web3Button>
                 ) : (
-                  <button onClick={() => closeRefuseModal()} className="!rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all !bg-accent !cursor-pointer">
+                  <button
+                    onClick={() => closeRefuseModal()}
+                    className="!rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all !bg-accent !cursor-pointer"
+                  >
                     Close
                   </button>
                 )}

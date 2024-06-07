@@ -86,7 +86,7 @@ const ManageSpaceContainer = () => {
               tokenData: element?.token.mint.tokenData,
               startTime: element?.startTime,
               endTime: element?.endTime,
-              ...element?.token,
+              ...element?.token
             };
             mappedListedToken.push(combinedData);
           }

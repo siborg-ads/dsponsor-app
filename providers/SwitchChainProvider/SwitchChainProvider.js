@@ -6,7 +6,7 @@ const SwitchChainProvider = ({ children }) => {
 
   const value = {
     selectedChain,
-    setSelectedChain,
+    setSelectedChain
   };
 
   return <SwitchChainContext.Provider value={value}>{children}</SwitchChainContext.Provider>;

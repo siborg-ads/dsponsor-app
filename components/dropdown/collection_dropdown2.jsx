@@ -97,9 +97,7 @@ const Collection_dropdown2 = ({ data, collection }) => {
                       className="h-8 w-8 rounded-full"
                       alt="avatar"
                     />
-                    <span className="text-jacarta-700 dark:text-white">
-                      {text}
-                    </span>
+                    <span className="text-jacarta-700 dark:text-white">{text}</span>
                   </span>
                   {activeItem === id && (
                     <svg

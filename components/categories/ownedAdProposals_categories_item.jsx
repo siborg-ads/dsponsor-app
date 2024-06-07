@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import { ownedAdProposals_categories_filter } from "../../data/categories_data";
+import { ownedAdProposals_categories_filter, trendingCategoryData } from "../../data/categories_data";
 import CategoryItem from "./categoryItem";
 import {
   useAddress,
@@ -15,21 +15,14 @@ import {
   CheckoutWithCard,
   CheckoutWithEth,
 } from "@thirdweb-dev/react";
-import { trendingCategoryData } from "../../data/categories_data";
-import Tippy from "@tippyjs/react";
-import Recently_added_dropdown from "../dropdown/recently_added_dropdown";
-import styles from "../../styles/createPage/style.module.scss";
-import { useSelector, useDispatch } from "react-redux";
-import { updateTrendingCategoryItemData } from "../../redux/counterSlice";
-import Review_adProposal_data from "./review_adProposal_items";
-import OfferItem from "../cards/offerItem";
-import Link from "next/link";
 import Image from "next/image";
-import { toast } from "react-toastify";
-import SliderForm from "../sliderForm/sliderForm";
+import Link from "next/link";
+import styles from "../../styles/createPage/style.module.scss";
+import OfferItem from "../cards/offerItem";
 import Step_1_Mint from "../sliderForm/PageMint/Step_1_Mint";
 import Step_2_Mint from "../sliderForm/PageMint/Step_2_Mint";
 import Step_3_Mint from "../sliderForm/PageMint/Step_3_Mint";
+import SliderForm from "../sliderForm/sliderForm";
 
 import contractABI from "../../abi/dsponsorAdmin.json";
 import { useChainContext } from "../../contexts/hooks/useChainContext";
@@ -37,6 +30,11 @@ import { useChainContext } from "../../contexts/hooks/useChainContext";
 import PreviewModal from "../modal/previewModal";
 import { image } from "@nextui-org/react";
 import MainButton from "../buttons/mainButton";
+
+import { useChainContext } from "../../contexts/hooks/useChainContext";
+
+import PreviewModal from "../modal/previewModal";
+
 
 const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
   const [itemdata, setItemdata] = useState(trendingCategoryData);
@@ -70,12 +68,19 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
   );
   const [isLoadingButton, setIsLoadingButton] = useState(false);
 
+
   const { mutateAsync: uploadToIPFS, isLoading: isUploading } =
     useStorageUpload();
   const { mutateAsync: submitAd } = useContractWrite(
     DsponsorAdminContract,
     "submitAdProposals"
   );
+
+
+
+  const { mutateAsync: uploadToIPFS, isLoading: isUploading } = useStorageUpload();
+  const { mutateAsync: submitAd } = useContractWrite(DsponsorAdminContract, "submitAdProposals");
+
 
   const chainId = currentChainObject?.chainId;
 
@@ -100,7 +105,7 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
     setIsFirstSelection(false);
     setIsSelectedItem((prevState) => ({
       ...prevState,
-      [item.id]: !prevState[item.id],
+      [item.id]: !prevState[item.id]
     }));
 
     setSelectedItems((previousItems) => {
@@ -241,7 +246,7 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
         offerId: selectedOfferIdItems,
         tokenId: selectedTokenIdItems,
         adParameters: adParametersItems,
-        data: dataItems,
+        data: dataItems
       };
       console.log(argsAdSubmited, "argsAdSubmited");
       await submitAd({ args: Object.values(argsAdSubmited) });

@@ -18,37 +18,37 @@ if (typeof window !== "undefined") {
 }
 const smartWalletOptions = {
   factoryAddress: "0xfed99008e81d806d7964168b7bfb5ea868a622d3",
-  gasless: true,
+  gasless: true
 };
 function MyApp({ Component, pageProps }) {
   const router = useRouter();
   const pid = router.asPath;
   const scrollRef = useRef({
-    scrollPos: 0,
+    scrollPos: 0
   });
   return (
     <>
       <Meta title="Home" />
       <Providers>
-            <Provider store={store}>
-              <ThemeProvider enableSystem={true} attribute="class" defaultTheme="dark">
-                <MetaMaskProvider>
-                  <NextUIProvider>
-                    <UserContext.Provider value={{ scrollRef: scrollRef }}>
-                      {pid === "/login" ? (
-                        <Component {...pageProps} />
-                      ) : (
-                        <Layout>
-                          <Component {...pageProps} />
-                        </Layout>
-                      )}
-                    </UserContext.Provider>
-                    <ToastContainer position="top-right" autoClose={5000} />
-                  </NextUIProvider>
-                </MetaMaskProvider>
-              </ThemeProvider>
-            </Provider>
-          </Providers>
+        <Provider store={store}>
+          <ThemeProvider enableSystem={true} attribute="class" defaultTheme="dark">
+            <MetaMaskProvider>
+              <NextUIProvider>
+                <UserContext.Provider value={{ scrollRef: scrollRef }}>
+                  {pid === "/login" ? (
+                    <Component {...pageProps} />
+                  ) : (
+                    <Layout>
+                      <Component {...pageProps} />
+                    </Layout>
+                  )}
+                </UserContext.Provider>
+                <ToastContainer position="top-right" autoClose={5000} />
+              </NextUIProvider>
+            </MetaMaskProvider>
+          </ThemeProvider>
+        </Provider>
+      </Providers>
     </>
   );
 }

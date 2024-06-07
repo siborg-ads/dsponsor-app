@@ -7,7 +7,7 @@ const Categories = () => {
     { name: "Domain", color: "jacarta" },
     { name: "Music", color: "jacarta" },
     { name: "Photography", color: "jacarta" },
-    { name: "Virtual World", color: "jacarta" },
+    { name: "Virtual World", color: "jacarta" }
   ];
 
   const [activeCategory, setActiveCategory] = useState(0);

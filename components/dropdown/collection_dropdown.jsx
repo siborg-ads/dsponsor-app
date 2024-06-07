@@ -24,16 +24,16 @@ const Collection_dropdown = () => {
   const dropdownItemText = [
     {
       id: 1,
-      text: "trending",
+      text: "trending"
     },
     {
       id: 2,
-      text: "top",
+      text: "top"
     },
     {
       id: 3,
-      text: "recent",
-    },
+      text: "recent"
+    }
   ];
   return (
     <>

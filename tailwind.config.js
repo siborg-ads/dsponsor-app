@@ -12,16 +12,16 @@ module.exports = {
       sm: "575px",
       md: "768px",
       lg: "1025px",
-      xl: "1202px",
+      xl: "1202px"
     },
 
     fontFamily: {
       display: ['"CalSans-SemiBold"', "sans-serif"],
-      body: ['"DM Sans"', "sans-serif"],
+      body: ['"DM Sans"', "sans-serif"]
     },
     container: {
       center: true,
-      padding: "1rem",
+      padding: "1rem"
     },
     colors: {
       transparent: "transparent",
@@ -47,8 +47,8 @@ module.exports = {
         600: "#363A5D",
         700: "#131740",
         800: "#101436",
-        900: "#0D102D",
-      },
+        900: "#0D102D"
+      }
     },
     boxShadow: {
       none: "none",
@@ -76,7 +76,7 @@ module.exports = {
       "4xl": ["2.25rem", { lineHeight: "normal" }],
       "5xl": ["2.5rem", { lineHeight: "normal" }],
       "6xl": ["3.5rem", { lineHeight: "normal" }],
-      "7xl": ["4.25rem", { lineHeight: "normal" }],
+      "7xl": ["4.25rem", { lineHeight: "normal" }]
     },
     borderRadius: {
       none: "0",
@@ -86,41 +86,41 @@ module.exports = {
       md: "0.375rem",
       lg: "0.5rem",
       full: "9999px",
-      large: "12px",
+      large: "12px"
     },
 
     extend: {
       backgroundImage: {
-        "accent-dark": "linear-gradient(to right, #673297, #40529e)",
+        "accent-dark": "linear-gradient(to right, #673297, #40529e)"
       },
       borderRadius: {
-        "2lg": "0.625rem",
+        "2lg": "0.625rem"
       },
       transitionProperty: {
         height: "height",
-        width: "width",
+        width: "width"
       },
       animation: {
         fly: "fly 6s cubic-bezier(0.75, 0.02, 0.31, 0.87) infinite",
         heartBeat: "heartBeat 1s cubic-bezier(0.75, 0.02, 0.31, 0.87) infinite",
-        progress: "progress 5s linear",
+        progress: "progress 5s linear"
       },
       keyframes: {
         fly: {
           "0%, 100%": { transform: "translateY(5%)" },
-          "50%": { transform: "translateY(0)" },
+          "50%": { transform: "translateY(0)" }
         },
         heartBeat: {
           "0%, 40%, 80%, 100%": { transform: "scale(1.1)" },
-          "20%, 60%": { transform: "scale(.8)" },
+          "20%, 60%": { transform: "scale(.8)" }
         },
         progress: {
           "0%": { width: "0%" },
-          "100%": { width: "100%" },
-        },
-      },
+          "100%": { width: "100%" }
+        }
+      }
     },
-    namedGroups: ["dropdown"],
+    namedGroups: ["dropdown"]
   },
   plugins: [nextui()],
 };

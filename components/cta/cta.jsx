@@ -35,8 +35,7 @@ const Cta = () => {
                   Would you like some help getting started?
                 </h2>
                 <p className="mb-8 text-lg dark:text-jacarta-300">
-                  Our support heroes will have you up and running in less than
-                  10mins.
+                  Our support heroes will have you up and running in less than 10mins.
                 </p>
                 <Link
                   href="/contact"
