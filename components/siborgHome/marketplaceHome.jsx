@@ -11,6 +11,7 @@ const MarketplaceHome = ({ chainIdFilter, auctions }) => {
   const [priceSorting, setPriceSorting] = useState(null);
   const [sort, setSort] = useState("Sort by");
   const [filter, setFilter] = useState("Filter by");
+  const [dateSorting, setDateSorting] = useState(null);
 
   useEffect(() => {
     console.log("filterName", filterName);
@@ -49,6 +50,18 @@ const MarketplaceHome = ({ chainIdFilter, auctions }) => {
       }
     });
   }, [priceSorting]);
+
+  useEffect(() => {
+    setFilteredAuctions((prev) => {
+      if (dateSorting === 1) {
+        return prev.sort((a, b) => a.endTime - b.endTime);
+      } else if (dateSorting === -1) {
+        return prev.sort((a, b) => a.startTime - b.startTime);
+      } else {
+        return prev;
+      }
+    });
+  }, [dateSorting]);
 
   return (
     <>
@@ -172,6 +185,24 @@ const MarketplaceHome = ({ chainIdFilter, auctions }) => {
                     className="hover:bg-jacarta-500 p-2 rounded-lg w-full pr-12 md:pr-24"
                   >
                     <span>Price: high to low</span>
+                  </MenuItem>
+                  <MenuItem
+                    onClick={() => {
+                      setSort("Ending soon");
+                      setDateSorting(1);
+                    }}
+                    className="hover:bg-jacarta-500 p-2 rounded-lg w-full pr-12 md:pr-24"
+                  >
+                    <span>Ending soon</span>
+                  </MenuItem>
+                  <MenuItem
+                    onClick={() => {
+                      setSort("Newest");
+                      setDateSorting(-1);
+                    }}
+                    className="hover:bg-jacarta-500 p-2 rounded-lg w-full pr-12 md:pr-24"
+                  >
+                    <span>Newest</span>
                   </MenuItem>
                 </MenuItems>
               </Menu>

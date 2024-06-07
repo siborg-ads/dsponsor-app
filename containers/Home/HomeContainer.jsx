@@ -1,12 +1,14 @@
+"use client";
+
 import React, { useEffect, useState } from "react";
-import MainAuctions from "../../components/siborgAdsHome/mainAuctions";
-import MarketplaceHome from "../../components/siborgAdsHome/marketplaceHome";
-import Description from "../../components/siborgAdsHome/description";
+import MainAuctions from "../../components/siborgHome/mainAuctions";
+import MarketplaceHome from "../../components/siborgHome/marketplaceHome";
+import Description from "../../components/siborgHome/description";
 import { fetchAllListedToken } from "../../providers/methods/fetchAllListedToken";
 import { useChainContext } from "../../contexts/hooks/useChainContext";
 import { formatUnits } from "ethers/lib/utils";
 
-const SiBorgAdsHomeContainer = () => {
+const HomeContainer = () => {
   const [chainIdFilter, setChainIdFilter] = useState(null);
   const [filter, setFilter] = useState("All the ad spaces");
   const [auctionsTemp, setAuctionsTemp] = useState([]);
@@ -47,13 +49,12 @@ const SiBorgAdsHomeContainer = () => {
         token.marketplaceListings[0].quantity > 0;
       const image = token.metadata.image;
       const currencyDecimals = Number(token.marketplaceListings[0].currencyDecimals);
-      const latestBid =
-        Number(
-          formatUnits(
-            token.marketplaceListings[0].bidPriceStructure.previousBidAmount ?? 0,
-            currencyDecimals
-          )
-        );
+      const latestBid = Number(
+        formatUnits(
+          token.marketplaceListings[0].bidPriceStructure.previousBidAmount ?? 0,
+          currencyDecimals
+        )
+      );
 
       return {
         name: name,
@@ -66,7 +67,9 @@ const SiBorgAdsHomeContainer = () => {
         live: live,
         image: image,
         latestBid: latestBid,
-        currencyDecimals: currencyDecimals
+        currencyDecimals: currencyDecimals,
+        startTime: token.marketplaceListings[0].startTime,
+        endTime: token.marketplaceListings[0].endTime
       };
     });
 
@@ -85,16 +88,10 @@ const SiBorgAdsHomeContainer = () => {
       >
         <Description description={true} />
         <MainAuctions auctions={auctions} />
-        <MarketplaceHome
-          auctions={auctions}
-          filter={filter}
-          chainIdFilter={chainIdFilter}
-          setFilter={setFilter}
-          setChainIdFilter={setChainIdFilter}
-        />
+        <MarketplaceHome auctions={auctions} chainIdFilter={chainIdFilter} />
       </div>
     </>
   );
 };
 
-export default SiBorgAdsHomeContainer;
+export default HomeContainer;

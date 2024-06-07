@@ -149,7 +149,16 @@ const TokenPageContainer = () => {
     }
 
     setTokenIdString(tokenId?.toString());
-  }, [offerId, tokenId, successFullUpload, successFullBid, successFullListing, address, chainId, setSelectedChain]);
+  }, [
+    offerId,
+    tokenId,
+    successFullUpload,
+    successFullBid,
+    successFullListing,
+    address,
+    chainId,
+    setSelectedChain
+  ]);
 
   useEffect(() => {
     if (offerData?.nftContract?.tokens.length > 0) {
@@ -703,7 +712,9 @@ const TokenPageContainer = () => {
     name = "DefaultName"
   } = Object.keys(offerData?.metadata?.offer?.token_metadata).length > 0
     ? tokenMetaData
-    : (offerData && offerData.metadata) ? offerData.metadata.offer : undefined;
+    : offerData && offerData.metadata
+      ? offerData.metadata.offer
+      : undefined;
 
   return (
     <>

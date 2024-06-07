@@ -27,11 +27,7 @@ export function computeBidAmounts(
   }
 
   const minimalBidPerToken = BigInt(
-    getMinimalBidPerToken(
-      previousPricePerToken,
-      reservePricePerToken,
-      minimalAuctionBps
-    )
+    getMinimalBidPerToken(previousPricePerToken, reservePricePerToken, minimalAuctionBps)
   );
   const minimalBuyoutPerToken = getMinimalBuyoutPricePerToken(
     previousPricePerToken,
@@ -41,9 +37,7 @@ export function computeBidAmounts(
   );
 
   if (minimalBidPerToken > BigInt(newBidPerToken)) {
-    errors.push(
-      "New bid price must be greater than or equal to the minimal price"
-    );
+    errors.push("New bid price must be greater than or equal to the minimal price");
   }
 
   const refundBonusPerToken =
@@ -61,18 +55,14 @@ export function computeBidAmounts(
   const newPricePerToken = BigInt(newBidPerToken) - BigInt(refundBonusPerToken);
   const newAmount = newPricePerToken * BigInt(quantity);
 
-  const newRefundBonusPerToken =
-    (BigInt(bonusRefundBps) * newPricePerToken) / BigInt("10000");
+  const newRefundBonusPerToken = (BigInt(bonusRefundBps) * newPricePerToken) / BigInt("10000");
   const newRefundBonusAmount = BigInt(quantity) * newRefundBonusPerToken;
 
-  const protocolFeeAmount =
-    (BigInt(newAmount) * BigInt(protocolFeeBps)) / BigInt("10000");
-  const royaltyAmount =
-    (BigInt(newAmount) * BigInt(royaltyBps)) / BigInt("10000");
+  const protocolFeeAmount = (BigInt(newAmount) * BigInt(protocolFeeBps)) / BigInt("10000");
+  const royaltyAmount = (BigInt(newAmount) * BigInt(royaltyBps)) / BigInt("10000");
   const listerAmount = BigInt(newAmount) - protocolFeeAmount - royaltyAmount;
 
-  const nextReservePricePerToken =
-    (newAmount * BigInt(110)) / BigInt(100);
+  const nextReservePricePerToken = (newAmount * BigInt(110)) / BigInt(100);
 
   // note: if quantity = 1 :
   // - newBidPerToken = totalBidAmount
@@ -113,6 +103,6 @@ export function computeBidAmounts(
      */
     protocolFeeAmount: protocolFeeAmount.toString(), // how much the protocol will receive
     royaltyAmount: royaltyAmount.toString(), // how much the creator will receive
-    listerAmount: listerAmount.toString(), // how much the lister will receive
+    listerAmount: listerAmount.toString() // how much the lister will receive
   };
 }
