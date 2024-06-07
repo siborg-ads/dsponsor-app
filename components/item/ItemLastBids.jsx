@@ -7,6 +7,17 @@ const ItemLastBids = ({ lastBids, currencySymbol,currencyDecimals }) => {
 
   console.log("ItemLastBids.js lastBids: ", lastBids);
   console.dir(lastBids, { depth: null });
+
+    const transformStatus = (status) => {
+      switch (status) {
+        case "CREATED":
+          return "Best Bid";
+        case "CANCELLED":
+          return "Outbid";
+        default:
+          return status;
+      }
+    }
   return (
     <div className="overflow-x-auto mt-4">
       <h2 className="text-jacarta-700 font-bold font-display mb-6 text-center text-3xl dark:text-white ">
@@ -51,7 +62,7 @@ const ItemLastBids = ({ lastBids, currencySymbol,currencyDecimals }) => {
                 <td className="text-sm text-jacarta-400 dark:text-jacarta-300">
                   {bid.reward ? `${bid.reward} ${currencySymbol}` : "-"}
                 </td>
-                <td className="text-sm text-jacarta-400 dark:text-jacarta-300">{bid.status}</td>
+                <td className="text-sm text-jacarta-400 dark:text-jacarta-300">{transformStatus(bid.status)}</td>
               </tr>
             ))}
           </tbody>
