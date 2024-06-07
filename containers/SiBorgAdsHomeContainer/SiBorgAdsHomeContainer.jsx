@@ -37,9 +37,7 @@ const SiBorgAdsHomeContainer = () => {
       const name = token.metadata.name;
       const category = token.metadata.categories[0];
       const chain = token.chainConfig.chainName;
-      const price =
-        token.marketplaceListings[0].buyPriceStructureFormatted
-          .buyoutPricePerToken;
+      const price = token.marketplaceListings[0].buyPriceStructureFormatted.buyoutPricePerToken;
       const chainId = token.chainConfig.chainId;
       const offerId = Number(token.nftContract.offerId);
       const tokenId = Number(token.nftContract.tokenId);
@@ -48,9 +46,7 @@ const SiBorgAdsHomeContainer = () => {
         token.marketplaceListings[0].status === "CREATED" &&
         token.marketplaceListings[0].quantity > 0;
       const image = token.metadata.image;
-      const currencyDecimals = Number(
-        token.marketplaceListings[0].currencyDecimals
-      );
+      const currencyDecimals = Number(token.marketplaceListings[0].currencyDecimals);
       const latestBid =
         Number(
           formatUnits(
@@ -70,7 +66,7 @@ const SiBorgAdsHomeContainer = () => {
         live: live,
         image: image,
         latestBid: latestBid,
-        currencyDecimals: currencyDecimals,
+        currencyDecimals: currencyDecimals
       };
     });
 
@@ -84,7 +80,7 @@ const SiBorgAdsHomeContainer = () => {
       <div
         className="mt-48 px-4 max-w-5xl mx-auto flex flex-col gap-12"
         style={{
-          marginTop: "12rem",
+          marginTop: "12rem"
         }}
       >
         <Description description={true} />

@@ -8,7 +8,7 @@ const DropdownMenu = () => {
     { label: "All", icon: "mb-[3px] h-4 w-4 fill-accent" },
     { label: "Mintable", icon: "" },
     { label: "Free Mints", icon: "" },
-    { label: "Paid Mints", icon: "" },
+    { label: "Paid Mints", icon: "" }
   ];
 
   const handleFilterClick = (filter) => {
@@ -49,9 +49,7 @@ const DropdownMenu = () => {
           <button
             key={index}
             className={`dropdown-item flex w-full items-center justify-between rounded-xl px-5 py-2 text-left font-display text-sm transition-colors hover:bg-jacarta-50 dark:text-white dark:hover:bg-jacarta-600 ${
-              selectedFilter === option.label
-                ? "bg-jacarta-50 dark:bg-jacarta-600"
-                : ""
+              selectedFilter === option.label ? "bg-jacarta-50 dark:bg-jacarta-600" : ""
             }`}
             onClick={() => handleFilterClick(option.label)}
           >

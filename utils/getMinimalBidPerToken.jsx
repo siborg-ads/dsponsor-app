@@ -8,8 +8,7 @@ export function getMinimalBidPerToken(
   const requiredMinimalPricePerToken =
     BigInt(previousPricePerToken) > BigInt("0")
       ? BigInt(previousPricePerToken) +
-        (BigInt(previousPricePerToken) * BigInt(minimalAuctionBps)) /
-          BigInt("10000")
+        (BigInt(previousPricePerToken) * BigInt(minimalAuctionBps)) / BigInt("10000")
       : BigInt(reservePricePerToken);
   return requiredMinimalPricePerToken.toString();
 }

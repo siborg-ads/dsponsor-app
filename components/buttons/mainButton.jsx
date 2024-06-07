@@ -15,9 +15,7 @@ const MainButton = ({ link, isPurple, text }) => {
           {text}
         </Link>
       ) : (
-        <button className={`${isPurple ? purpleClass : whiteClass}`}>
-          {text}
-        </button>
+        <button className={`${isPurple ? purpleClass : whiteClass}`}>{text}</button>
       )}
     </>
   );

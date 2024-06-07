@@ -1,7 +1,3 @@
-
-
-
-
 .modal {
   background: white;
   padding: 20px;
@@ -11,11 +7,13 @@
   text-align: center;
   position: relative;
   padding-bottom: 100px;
-  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2), 0 30px 20px -20px rgba(0, 0, 0, 0.4);
-&__form__container{
-transition: height 0.3s ease-in-out;
-height: auto;
-}
+  box-shadow:
+    0 5px 20px rgba(0, 0, 0, 0.2),
+    0 30px 20px -20px rgba(0, 0, 0, 0.4);
+  &__form__container {
+    transition: height 0.3s ease-in-out;
+    height: auto;
+  }
   &__container {
     height: 100%;
     transition: height 0.3s ease-in-out;
@@ -23,16 +21,14 @@ height: auto;
 }
 
 .form {
- 
-overflow: hidden;
+  overflow: hidden;
   &__step__container {
     display: flex;
-height: 100%;
+    height: 100%;
     transition: 0.5s ease-in-out;
   }
 
   &__step {
-    
     h3 {
       opacity: 0.3;
       text-transform: uppercase;
@@ -145,7 +141,7 @@ button.btn {
     }
   }
 }
-.img-preview{
+.img-preview {
   height: 200px;
 }
 .form__bullet {
@@ -160,12 +156,11 @@ button.btn {
   &__container {
     display: flex;
     justify-content: center;
-    
   }
 
   &--active {
-    background: rgb(131 88 255 );
-    box-shadow: 0 0 4px rgb(131 88 255 );
+    background: rgb(131 88 255);
+    box-shadow: 0 0 4px rgb(131 88 255);
     pointer-events: none;
   }
 }

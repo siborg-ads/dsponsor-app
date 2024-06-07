@@ -2,47 +2,47 @@ const tranding_category_filter = [
   {
     id: 0,
 
-    text: "all",
+    text: "all"
   },
   {
     id: 1,
     svg: "art",
-    text: "art",
+    text: "art"
   },
 
   {
     id: 2,
     svg: "collection",
-    text: "Collectibles",
+    text: "Collectibles"
   },
   {
     id: 3,
     svg: "domain",
-    text: "domain",
+    text: "domain"
   },
   {
     id: 4,
     svg: "music",
-    text: "music",
+    text: "music"
   },
   {
     id: 5,
     svg: "photography",
-    text: "photography",
+    text: "photography"
   },
   {
     id: 6,
     svg: "world",
-    text: "virtual world",
-  },
+    text: "virtual world"
+  }
 ];
 const ownedAdProposals_categories_filter = [
   {
     id: 0,
     svg: "collection",
-    text: "All",
-  },
-  
+    text: "All"
+  }
+
   // {
   //   id: 1,
   //   svg: "art",
@@ -80,9 +80,9 @@ const trendingCategoryData = [
     likes: 15,
     creator: {
       name: "Sussygirl",
-      image: "/images/avatars/creator_1.png",
+      image: "/images/avatars/creator_1.png"
     },
-    ownerName: "Sussygirl",
+    ownerName: "Sussygirl"
   },
   {
     image: "/images/products/item_4.jpg",
@@ -102,9 +102,9 @@ const trendingCategoryData = [
     likes: 188,
     creator: {
       name: "Sussygirl",
-      image: "/images/avatars/creator_2.png",
+      image: "/images/avatars/creator_2.png"
     },
-    ownerName: null,
+    ownerName: null
   },
   {
     image: "/images/products/item_7.jpg",
@@ -124,9 +124,9 @@ const trendingCategoryData = [
     likes: 160,
     creator: {
       name: "Sussygirl",
-      image: "/images/avatars/creator_3.png",
+      image: "/images/avatars/creator_3.png"
     },
-    ownerName: null,
+    ownerName: null
   },
   {
     image: "/images/products/item_6.jpg",
@@ -146,10 +146,10 @@ const trendingCategoryData = [
     likes: 159,
     creator: {
       name: "Sussygirl",
-      image: "/images/avatars/creator_4.png",
+      image: "/images/avatars/creator_4.png"
     },
-    ownerName: null,
-  },
+    ownerName: null
+  }
 ];
 
 export { tranding_category_filter, trendingCategoryData, ownedAdProposals_categories_filter };

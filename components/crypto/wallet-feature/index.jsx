@@ -9,9 +9,9 @@ const index = () => {
             Wallet security is unlike every other wallet: It’s better.
           </h2>
           <p className="text-lg dark:text-jacarta-300">
-            Your account is secured by private facial biometrics and
-            industry-leading encryption to keep you safe from account takeover
-            attacks and phishing. Discover total control and true peace of mind.
+            Your account is secured by private facial biometrics and industry-leading encryption to
+            keep you safe from account takeover attacks and phishing. Discover total control and
+            true peace of mind.
           </p>
         </div>
 

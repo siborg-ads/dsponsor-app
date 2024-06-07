@@ -67,11 +67,7 @@ const Sidebar = () => {
             </svg>
           </button>
         </h2>
-        <div
-          id="filters-chains"
-          className="mt-3 collapse"
-          aria-labelledby="filters-chains-heading"
-        >
+        <div id="filters-chains" className="mt-3 collapse" aria-labelledby="filters-chains-heading">
           <ul className="space-y-6 mb-8">
             <ChainCurrency />
           </ul>
@@ -102,11 +98,7 @@ const Sidebar = () => {
             </svg>
           </button>
         </h2>
-        <div
-          id="filters-status"
-          className="mt-3 collapse"
-          aria-labelledby="filters-status-heading"
-        >
+        <div id="filters-status" className="mt-3 collapse" aria-labelledby="filters-status-heading">
           <ul className="space-y-6 mb-8">
             <FilterWise />
           </ul>

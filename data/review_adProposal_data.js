@@ -14,7 +14,7 @@ const Review_adProposal_data = [
     category: "photography",
     top: true,
     trending: true,
-    recent: true,
+    recent: true
   },
   {
     id: "1PankySkal",
@@ -31,7 +31,7 @@ const Review_adProposal_data = [
     category: "music",
     top: false,
     trending: false,
-    recent: false,
+    recent: false
   },
   {
     id: "2VR Space_287",
@@ -47,7 +47,7 @@ const Review_adProposal_data = [
     category: "photography",
     top: true,
     trending: false,
-    recent: true,
+    recent: true
   },
   {
     id: "3Metasmorf",
@@ -64,8 +64,8 @@ const Review_adProposal_data = [
     category: "art",
     top: false,
     trending: true,
-    recent: false,
-  },
+    recent: false
+  }
 ];
 
 export default Review_adProposal_data;

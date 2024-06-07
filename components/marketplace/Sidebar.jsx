@@ -12,49 +12,38 @@ const collectionFilteringOptions = [
     imgSrc: "/img/nft-aggregator/item-14.jpg",
     name: "NFT Funny Cat",
     count: 30643,
-    varified: true,
+    varified: true
   },
   {
     id: 2,
     imgSrc: "/img/nft-aggregator/item-2.jpg",
     name: "Azuki #4017",
-    count: 10000,
+    count: 10000
   },
   {
     id: 3,
     imgSrc: "/img/nft-aggregator/item-7.jpg",
     name: "Crypto bull #6195",
-    count: 8899,
+    count: 8899
   },
   {
     id: 4,
     imgSrc: "/img/nft-aggregator/item-1.jpg",
     name: "Monkeyme#155",
-    count: 25671,
-  },
+    count: 25671
+  }
 ];
 
-const chains = [
-  { id: 1, imgSrc: "/img/chains/eth-chain.png", name: "Ethereum" },
-  
-];
+const chains = [{ id: 1, imgSrc: "/img/chains/eth-chain.png", name: "Ethereum" }];
 
 const status = [
-  { id: 1, label: "Buy Now", listingType:"Direct" },
-  { id: 2, label: "On Auction", listingType:"Auction" },
+  { id: 1, label: "Buy Now", listingType: "Direct" },
+  { id: 2, label: "On Auction", listingType: "Auction" }
 ];
 const currencies = ["USD", "ETH", "SOL"];
-const categories = [
-  "Art",
-  "Collectibles",
-  "Domain",
-  "Music",
-  "Photography",
-  "Virtual World",
-];
+const categories = ["Art", "Collectibles", "Domain", "Music", "Photography", "Virtual World"];
 
-
-export default function Sidebar({setFilterTypes}) {
+export default function Sidebar({ setFilterTypes }) {
   const [currency, setCurrency] = useState(currencies[0]);
   const [category, setCategory] = useState(categories[0]);
   const { currentChainObject } = useChainContext();
@@ -62,16 +51,15 @@ export default function Sidebar({setFilterTypes}) {
     tippy("[data-tippy-content]");
   }, []);
 
-
-const handleFilterChange = (type, checked, category) => {
-  setFilterTypes((prev) => {
-    if (checked) {
-      return [...new Set([...prev, { type, category }])];
-    } else {
-      return prev.filter((t) => t.type !== type || t.category !== category);
-    }
-  });
-};
+  const handleFilterChange = (type, checked, category) => {
+    setFilterTypes((prev) => {
+      if (checked) {
+        return [...new Set([...prev, { type, category }])];
+      } else {
+        return prev.filter((t) => t.type !== type || t.category !== category);
+      }
+    });
+  };
 
   return (
     <div className="lg:w-1/5 min-w-[150px] mb-10 js-collections-sidebar lg:h-[calc(100vh_-_232px)] lg:overflow-auto lg:sticky lg:top-32 lg:mr-10 pr-4 scrollbar-custom divide-y divide-jacarta-100 dark:divide-jacarta-600">
@@ -87,13 +75,19 @@ const handleFilterChange = (type, checked, category) => {
             aria-controls="filters-chains"
           >
             <span>Chains</span>
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" className="accordion-arrow h-5 w-5 shrink-0 fill-jacarta-700 transition-transform dark:fill-white">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              width="24"
+              height="24"
+              className="accordion-arrow h-5 w-5 shrink-0 fill-jacarta-700 transition-transform dark:fill-white"
+            >
               <path fill="none" d="M0 0h24v24H0z"></path>
               <path d="M12 13.172l4.95-4.95 1.414 1.414L12 16 5.636 9.636 7.05 8.222z"></path>
             </svg>
           </button>
         </h2>
-        <div id="filters-chains" className="mt-3 collapse visible" aria-labelledby="filters-chains-heading">
+        <div id="filters-chains" className="mt-3 visible" aria-labelledby="filters-chains-heading">
           <ul className="space-y-6 mb-8">
             {Object.entries(config).map((elm, i) => (
               <li key={i}>
@@ -101,12 +95,16 @@ const handleFilterChange = (type, checked, category) => {
                   <input
                     type="checkbox"
                     className="h-5 w-5 mr-2 rounded border-jacarta-200 text-accent checked:bg-accent focus:ring-accent/20 focus:ring-offset-0 dark:border-jacarta-500 dark:bg-jacarta-600"
-                    onChange={(e) => handleFilterChange(elm[1].chainName, e.target.checked, "chain")}
+                    onChange={(e) =>
+                      handleFilterChange(elm[1].chainName, e.target.checked, "chain")
+                    }
                   />
                   <div className="backdrop-blur-sm mr-1 w-7 h-7 rounded-[0.625rem] flex justify-center items-center">
                     <Image src={elm[1].logoURL} width={15} height={15} alt="logo" loading="lazy" />
                   </div>
-                  <span className="font-display text-sm font-semibold text-jacarta-700 dark:text-white">{elm[1].chainName}</span>
+                  <span className="font-display text-sm font-semibold text-jacarta-700 dark:text-white">
+                    {elm[1].chainName}
+                  </span>
                 </label>
               </li>
             ))}
@@ -126,13 +124,19 @@ const handleFilterChange = (type, checked, category) => {
             aria-controls="filters-status"
           >
             <span>Status</span>
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" className="accordion-arrow h-5 w-5 shrink-0 fill-jacarta-700 transition-transform dark:fill-white">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              width="24"
+              height="24"
+              className="accordion-arrow h-5 w-5 shrink-0 fill-jacarta-700 transition-transform dark:fill-white"
+            >
               <path fill="none" d="M0 0h24v24H0z"></path>
               <path d="M12 13.172l4.95-4.95 1.414 1.414L12 16 5.636 9.636 7.05 8.222z"></path>
             </svg>
           </button>
         </h2>
-        <div id="filters-status" className="mt-3 collapse visible" aria-labelledby="filters-status-heading">
+        <div id="filters-status" className="mt-3 visible" aria-labelledby="filters-status-heading">
           <ul className="space-y-6 mb-8">
             {status.map((elm, i) => (
               <li key={i}>
@@ -141,7 +145,9 @@ const handleFilterChange = (type, checked, category) => {
                     type="checkbox"
                     id="terms"
                     className="h-5 w-5 mr-2 rounded border-jacarta-200 text-accent checked:bg-accent focus:ring-accent/20 focus:ring-offset-0 dark:border-jacarta-500 dark:bg-jacarta-600"
-                    onChange={(e) => handleFilterChange(elm.listingType, e.target.checked, "status")}
+                    onChange={(e) =>
+                      handleFilterChange(elm.listingType, e.target.checked, "status")
+                    }
                   />
                   <span className="dark:text-white">{elm.label}</span>
                 </label>

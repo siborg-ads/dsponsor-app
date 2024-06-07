@@ -3,12 +3,12 @@ export const executeQuery = async (url, query, variables) => {
     const response = await fetch(url, {
       method: "POST",
       headers: {
-        "Content-Type": "application/json",
+        "Content-Type": "application/json"
       },
       body: JSON.stringify({
         query: query.loc.source.body,
-        variables,
-      }),
+        variables
+      })
     });
 
     if (!response.ok) {

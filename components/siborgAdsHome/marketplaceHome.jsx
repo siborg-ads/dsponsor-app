@@ -5,9 +5,7 @@ import Link from "next/link";
 import Auction from "./auction";
 
 const MarketplaceHome = ({ chainIdFilter, auctions }) => {
-  const [isHoveringCard, setIsHoveringCard] = useState(
-    Array(auctions?.length).fill(false)
-  );
+  const [isHoveringCard, setIsHoveringCard] = useState(Array(auctions?.length).fill(false));
   const [filterName, setFilterName] = useState(null);
   const [filteredAuctions, setFilteredAuctions] = useState(auctions);
   const [priceSorting, setPriceSorting] = useState(null);
@@ -195,16 +193,10 @@ const MarketplaceHome = ({ chainIdFilter, auctions }) => {
                     )
                   }
                   onMouseLeave={() =>
-                    setIsHoveringCard(
-                      Array(filteredAuctions?.length).fill(false)
-                    )
+                    setIsHoveringCard(Array(filteredAuctions?.length).fill(false))
                   }
                 >
-                  <Auction
-                    auction={auction}
-                    isHoveringCard={isHoveringCard}
-                    index={index}
-                  />
+                  <Auction auction={auction} isHoveringCard={isHoveringCard} index={index} />
                 </Link>
               </>
             ))}

@@ -14,7 +14,7 @@ const initialState = {
   bidsModal: false,
   buyModal: false,
   propartiesModalValue: false,
-  trendingCategorySorText: "",
+  trendingCategorySorText: ""
 };
 
 export const counterSlice = createSlice({
@@ -68,21 +68,21 @@ export const counterSlice = createSlice({
     updatetrendingCategorySorText: (state, action) => {
       const sortText = action.payload;
       if (sortText === "Price: Low to High") {
-        state.sortedtrendingCategoryItemData =
-          state.trendingCategoryItemData.sort(
-            (a, b) => a.sortPrice - b.sortPrice
-          );
+        state.sortedtrendingCategoryItemData = state.trendingCategoryItemData.sort(
+          (a, b) => a.sortPrice - b.sortPrice
+        );
       } else if (sortText === "Price: high to low") {
-        state.sortedtrendingCategoryItemData =
-          state.trendingCategoryItemData.sort(
-            (a, b) => b.sortPrice - a.sortPrice
-          );
+        state.sortedtrendingCategoryItemData = state.trendingCategoryItemData.sort(
+          (a, b) => b.sortPrice - a.sortPrice
+        );
       } else if (sortText === "Recently Added") {
-        state.sortedtrendingCategoryItemData =
-          state.trendingCategoryItemData.sort((a, b) => a.addDate - b.addDate);
+        state.sortedtrendingCategoryItemData = state.trendingCategoryItemData.sort(
+          (a, b) => a.addDate - b.addDate
+        );
       } else if (sortText === "Auction Ending Soon") {
-        state.sortedtrendingCategoryItemData =
-          state.trendingCategoryItemData.sort((a, b) => b.addDate - a.addDate);
+        state.sortedtrendingCategoryItemData = state.trendingCategoryItemData.sort(
+          (a, b) => b.addDate - a.addDate
+        );
       } else {
         state.sortedtrendingCategoryItemData = state.trendingCategoryItemData;
       }
@@ -90,20 +90,17 @@ export const counterSlice = createSlice({
     updateTrendingCategoryItemByInput: (state, action) => {
       const text = action.payload;
       if (text === "Verified Only") {
-        state.sortedtrendingCategoryItemData =
-          state.trendingCategoryItemData.filter((item) => {
-            return item.verified;
-          });
+        state.sortedtrendingCategoryItemData = state.trendingCategoryItemData.filter((item) => {
+          return item.verified;
+        });
       } else if (text === "NFSW Only") {
-        state.sortedtrendingCategoryItemData =
-          state.trendingCategoryItemData.filter((item) => {
-            return item.nfsw;
-          });
+        state.sortedtrendingCategoryItemData = state.trendingCategoryItemData.filter((item) => {
+          return item.nfsw;
+        });
       } else if (text === "Show Lazy Minted") {
-        state.sortedtrendingCategoryItemData =
-          state.trendingCategoryItemData.filter((item) => {
-            return item.lazyMinted;
-          });
+        state.sortedtrendingCategoryItemData = state.trendingCategoryItemData.filter((item) => {
+          return item.lazyMinted;
+        });
       } else {
         state.sortedtrendingCategoryItemData = state.trendingCategoryItemData;
       }
@@ -144,9 +141,7 @@ export const counterSlice = createSlice({
     },
     updateRenkingDataByBlockchain: (state, action) => {
       const text = action.payload;
-      let tempItem = state.renkingData.filter(
-        (item) => item.blockchain === text
-      );
+      let tempItem = state.renkingData.filter((item) => item.blockchain === text);
       if (text === "All") {
         tempItem = state.renkingData;
       }
@@ -159,8 +154,8 @@ export const counterSlice = createSlice({
         tempItem = state.renkingData;
       }
       state.filteredRenkingData = tempItem;
-    },
-  },
+    }
+  }
 });
 
 // Action creators are generated for each case reducer function
@@ -185,7 +180,7 @@ export const {
   collectRenkingData,
   updateRenkingData,
   updateRenkingDataByBlockchain,
-  updateRenkingDataByPostdate,
+  updateRenkingDataByPostdate
 } = counterSlice.actions;
 
 export default counterSlice.reducer;

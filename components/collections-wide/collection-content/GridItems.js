@@ -10,7 +10,7 @@ const GridItems = () => {
       title: "Art Me Outside",
       price: "1.55 ETH",
       lastSale: "1.3 ETH",
-      verified: true,
+      verified: true
     },
     {
       id: 2,
@@ -19,7 +19,7 @@ const GridItems = () => {
       title: "PankySkal",
       price: "2.3 ETH",
       lastSale: "0.5 ETH",
-      verified: true,
+      verified: true
     },
     {
       id: 3,
@@ -28,7 +28,7 @@ const GridItems = () => {
       title: "VR Space_287",
       price: "5.6 ETH",
       lastSale: "3.4 ETH",
-      verified: false,
+      verified: false
     },
     {
       id: 4,
@@ -37,7 +37,7 @@ const GridItems = () => {
       title: "Metasmorf",
       price: "1.4 ETH",
       lastSale: "0.7 ETH",
-      verified: false,
+      verified: false
     },
     {
       id: 5,
@@ -46,7 +46,7 @@ const GridItems = () => {
       title: "Art Me Outside",
       price: "1.55 ETH",
       lastSale: "1.3 ETH",
-      verified: false,
+      verified: false
     },
     {
       id: 6,
@@ -55,7 +55,7 @@ const GridItems = () => {
       title: "PankySkal",
       price: "2.3 ETH",
       lastSale: "0.5 ETH",
-      verified: true,
+      verified: true
     },
     {
       id: 7,
@@ -64,7 +64,7 @@ const GridItems = () => {
       title: "VR Space_287",
       price: "5.6 ETH",
       lastSale: "3.4 ETH",
-      verified: true,
+      verified: true
     },
     {
       id: 8,
@@ -73,7 +73,7 @@ const GridItems = () => {
       title: "Metasmorf",
       price: "1.4 ETH",
       lastSale: "0.7 ETH",
-      verified: true,
+      verified: true
     },
     {
       id: 9,
@@ -82,7 +82,7 @@ const GridItems = () => {
       title: "Art Me Outside",
       price: "1.55 ETH",
       lastSale: "1.3 ETH",
-      verified: false,
+      verified: false
     },
     {
       id: 10,
@@ -91,7 +91,7 @@ const GridItems = () => {
       title: "PankySkal",
       price: "2.3 ETH",
       lastSale: "0.5 ETH",
-      verified: false,
+      verified: false
     },
     {
       id: 11,
@@ -100,7 +100,7 @@ const GridItems = () => {
       title: "VR Space_287",
       price: "5.6 ETH",
       lastSale: "3.4 ETH",
-      verified: true,
+      verified: true
     },
     {
       id: 12,
@@ -109,8 +109,8 @@ const GridItems = () => {
       title: "Metasmorf",
       price: "1.4 ETH",
       lastSale: "0.7 ETH",
-      verified: false,
-    },
+      verified: false
+    }
   ];
 
   return (
@@ -157,10 +157,7 @@ const GridItems = () => {
               {item.price}
             </div>
             <div className="font-medium text-2xs text-jacarta-500 dark:text-jacarta-300">
-              Last Sale:{" "}
-              <span className="text-jacarta-700 dark:text-white">
-                {item.lastSale}
-              </span>
+              Last Sale: <span className="text-jacarta-700 dark:text-white">{item.lastSale}</span>
             </div>
           </div>
         </article>

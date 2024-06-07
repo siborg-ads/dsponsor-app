@@ -30,14 +30,11 @@ const BidsModal = ({
   checkAllowance,
   isLoadingButton,
   setIsLoadingButton,
-  endTime,
+  endTime
 }) => {
   const [initialIntPrice, setInitialIntPrice] = useState(0);
   const [isPriceGood, setIsPriceGood] = useState(false);
-  const { mutateAsync: auctionBids } = useContractWrite(
-    dsponsorMpContract,
-    "bid"
-  );
+  const { mutateAsync: auctionBids } = useContractWrite(dsponsorMpContract, "bid");
   const [checkTerms, setCheckTerms] = useState(false);
   const [refundedPrice, setRefundedPrice] = useState(null);
   const [endDate, setEndDate] = useState(null);
@@ -47,11 +44,7 @@ const BidsModal = ({
 
   useEffect(() => {
     if (marketplaceListings[0] && bidsAmount && bidsAmount > 0 && chainId) {
-      fetchTokenPrice(
-        marketplaceListings[0]?.currency,
-        chainId,
-        bidsAmount
-      ).then((price) => {
+      fetchTokenPrice(marketplaceListings[0]?.currency, chainId, bidsAmount).then((price) => {
         setTokenPrice(price);
       });
     } else {
@@ -60,16 +53,8 @@ const BidsModal = ({
   }, [bidsAmount, chainId, marketplaceListings]);
 
   useEffect(() => {
-    if (
-      marketplaceListings[0] &&
-      bidsAmount &&
-      bidsAmount > 0 &&
-      currencyTokenDecimals
-    ) {
-      const newBidPerToken = parseUnits(
-        bidsAmount.toString(),
-        currencyTokenDecimals
-      );
+    if (marketplaceListings[0] && bidsAmount && bidsAmount > 0 && currencyTokenDecimals) {
+      const newBidPerToken = parseUnits(bidsAmount.toString(), currencyTokenDecimals);
       const reservePricePerToken = marketplaceListings[0]?.reservePricePerToken;
       const buyoutPricePerToken = marketplaceListings[0]?.buyoutPricePerToken;
       const previousPricePerToken =
@@ -79,27 +64,23 @@ const BidsModal = ({
       const royaltyBps = 0;
       const protocolFeeBps = marketplaceListings[0]?.protocolFeeBps;
 
-      const { newRefundBonusAmount, nextReservePricePerToken } =
-        computeBidAmounts(
-          newBidPerToken,
-          1,
-          reservePricePerToken,
-          buyoutPricePerToken,
-          previousPricePerToken,
-          minimalAuctionBps,
-          bonusRefundBps,
-          royaltyBps,
-          protocolFeeBps
-        );
+      const { newRefundBonusAmount, nextReservePricePerToken } = computeBidAmounts(
+        newBidPerToken,
+        1,
+        reservePricePerToken,
+        buyoutPricePerToken,
+        previousPricePerToken,
+        minimalAuctionBps,
+        bonusRefundBps,
+        royaltyBps,
+        protocolFeeBps
+      );
 
       const newRefundBonusAmountFormatted = formatAndRound(
         formatUnits(newRefundBonusAmount, currencyTokenDecimals)
       );
-      const newRefundBonusAmountAdded =
-        Number(newRefundBonusAmountFormatted) + Number(bidsAmount);
-      const newRefundBonusFormatted = formatAndRound(
-        newRefundBonusAmountAdded.toString()
-      );
+      const newRefundBonusAmountAdded = Number(newRefundBonusAmountFormatted) + Number(bidsAmount);
+      const newRefundBonusFormatted = formatAndRound(newRefundBonusAmountAdded.toString());
       const nextReservePricePerTokenFormatted = formatAndRound(
         formatUnits(nextReservePricePerToken, currencyTokenDecimals)
       );
@@ -119,12 +100,8 @@ const BidsModal = ({
   }, [endTime]);
 
   useEffect(() => {
-    setInitialIntPrice(
-      marketplaceListings[0]?.bidPriceStructureFormatted?.minimalBidPerToken
-    );
-    setBidsAmount(
-      marketplaceListings[0]?.bidPriceStructureFormatted?.newBidPerToken
-    );
+    setInitialIntPrice(marketplaceListings[0]?.bidPriceStructureFormatted?.minimalBidPerToken);
+    setBidsAmount(marketplaceListings[0]?.bidPriceStructureFormatted?.newBidPerToken);
   }, [marketplaceListings, setBidsAmount]);
 
   const handleBidsAmount = async (e) => {
@@ -134,17 +111,9 @@ const BidsModal = ({
     } else {
       setIsPriceGood(true);
       setBidsAmount(e.target.value);
-      setAmountToApprove(
-        ethers.utils.parseUnits(
-          e.target.value.toString(),
-          currencyTokenDecimals
-        )
-      );
+      setAmountToApprove(ethers.utils.parseUnits(e.target.value.toString(), currencyTokenDecimals));
       await checkAllowance(
-        ethers.utils.parseUnits(
-          e.target.value.toString(),
-          currencyTokenDecimals
-        )
+        ethers.utils.parseUnits(e.target.value.toString(), currencyTokenDecimals)
       );
     }
   };
@@ -155,13 +124,10 @@ const BidsModal = ({
     }
     try {
       setIsLoadingButton(true);
-      const bidsBigInt = ethers.utils.parseUnits(
-        bidsAmount.toString(),
-        currencyTokenDecimals
-      );
+      const bidsBigInt = ethers.utils.parseUnits(bidsAmount.toString(), currencyTokenDecimals);
 
       await auctionBids({
-        args: [marketplaceListings[0].id, bidsBigInt, address, ""],
+        args: [marketplaceListings[0].id, bidsBigInt, address, ""]
       });
       setSuccessFullBid(true);
     } catch (error) {
@@ -184,11 +150,7 @@ const BidsModal = ({
               <h5 className="modal-title" id="placeBidLabel">
                 Place a bid
               </h5>
-              <button
-                type="button"
-                className="btn-close"
-                onClick={toggleBidsModal}
-              >
+              <button type="button" className="btn-close" onClick={toggleBidsModal}>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 24 24"
@@ -213,8 +175,7 @@ const BidsModal = ({
                   </div>
                   <div>
                     <span className="dark:text-jacarta-400 text-sm">
-                      Balance: {tokenBalance?.displayValue ?? 0}{" "}
-                      {currencySymbol}
+                      Balance: {tokenBalance?.displayValue ?? 0} {currencySymbol}
                     </span>
                   </div>
                 </div>
@@ -241,23 +202,18 @@ const BidsModal = ({
                 {!isPriceGood && (
                   <div className="text-left">
                     <span className="dark:text-warning text-sm">
-                      ⚠️ Bid Price must be higher than {initialIntPrice}{" "}
-                      {currencySymbol}
+                      ⚠️ Bid Price must be higher than {initialIntPrice} {currencySymbol}
                     </span>
                   </div>
                 )}
 
                 <div className="flex flex-col gap-8 py-4 items-center justify-center">
                   <div className="flex flex-col gap-2 items-center text-center">
-                    <span className="font-semibold text-white">
-                      What&apos;s next?
-                    </span>
+                    <span className="font-semibold text-white">What&apos;s next?</span>
                     <span className="text-white text-sm">
-                      If someone outbids you by at least {minBid}{" "}
-                      {currencySymbol}, you will receive your bid amount back
-                      plus an additional reward. However, if no one outbids you
-                      by the {endDate} at {endDateHour}, you will get the ad
-                      space.
+                      If someone outbids you by at least {minBid} {currencySymbol}, you will receive
+                      your bid amount back plus an additional reward. However, if no one outbids you
+                      by the {endDate} at {endDateHour}, you will get the ad space.
                     </span>
                   </div>
                   <div className="flex flex-col gap-2">
@@ -266,9 +222,7 @@ const BidsModal = ({
                         Ad Space transferred
                       </div>
 
-                      <span className="text-white font-semibold text-sm">
-                        OR
-                      </span>
+                      <span className="text-white font-semibold text-sm">OR</span>
 
                       <div className="bg-jacarta-600 duration-400 shadow p-4 rounded-xl font-semibold text-base text-white flex justify-center items-center text-center">
                         {refundedPrice} {currencySymbol} refunded
@@ -285,10 +239,7 @@ const BidsModal = ({
                     className="checked:bg-accent dark:bg-jacarta-600 text-accent border-jacarta-200 focus:ring-accent/20 dark:border-jacarta-500 h-5 w-5 self-start rounded focus:ring-offset-0"
                     onClick={handleTermService}
                   />
-                  <label
-                    htmlFor="buyNowTerms"
-                    className="dark:text-jacarta-200 text-sm"
-                  >
+                  <label htmlFor="buyNowTerms" className="dark:text-jacarta-200 text-sm">
                     By checking this box, I agree to {"DSponsor's"}{" "}
                     <Link href="#" className="text-accent">
                       Terms of Service
@@ -325,54 +276,38 @@ const BidsModal = ({
             <div className="modal-footer">
               {allowanceTrue && !successFullBid ? (
                 <Web3Button
-                  contractAddress={
-                    config[chainId]?.smartContracts?.DSPONSORMP?.address
-                  }
+                  contractAddress={config[chainId]?.smartContracts?.DSPONSORMP?.address}
                   action={() => {
                     toast.promise(handleApprove, {
                       pending: "Waiting for confirmation 🕒",
                       success: "Approval confirmed 👌",
-                      error: "Approval rejected 🤯",
+                      error: "Approval rejected 🤯"
                     });
                   }}
                   className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${
-                    !isPriceGood || !checkTerms
-                      ? "btn-disabled"
-                      : "!bg-accent !cursor-pointer"
+                    !isPriceGood || !checkTerms ? "btn-disabled" : "!bg-accent !cursor-pointer"
                   } `}
                   isDisabled={!isPriceGood || !checkTerms}
                 >
-                  {isLoadingButton ? (
-                    <Spinner size="sm" color="default" />
-                  ) : (
-                    "Approve"
-                  )}
+                  {isLoadingButton ? <Spinner size="sm" color="default" /> : "Approve"}
                 </Web3Button>
               ) : !successFullBid ? (
                 <div className="flex items-center justify-center space-x-4">
                   <Web3Button
-                    contractAddress={
-                      config[chainId]?.smartContracts?.DSPONSORMP?.address
-                    }
+                    contractAddress={config[chainId]?.smartContracts?.DSPONSORMP?.address}
                     action={() => {
                       toast.promise(handleSubmit, {
                         pending: "Waiting for confirmation 🕒",
                         success: "Bid confirmed 👌",
-                        error: "Bid rejected 🤯",
+                        error: "Bid rejected 🤯"
                       });
                     }}
                     className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${
-                      !isPriceGood || !checkTerms
-                        ? "btn-disabled"
-                        : "!bg-accent !cursor-pointer"
+                      !isPriceGood || !checkTerms ? "btn-disabled" : "!bg-accent !cursor-pointer"
                     } `}
                     isDisabled={!isPriceGood || !checkTerms}
                   >
-                    {isLoadingButton ? (
-                      <Spinner size="sm" color="default" />
-                    ) : (
-                      "Place Bid"
-                    )}
+                    {isLoadingButton ? <Spinner size="sm" color="default" /> : "Place Bid"}
                   </Web3Button>
                   {/* <button
                   type="button"

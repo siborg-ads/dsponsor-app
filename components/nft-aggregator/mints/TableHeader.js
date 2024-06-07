@@ -4,10 +4,7 @@ const TableHeader = () => {
       className="flex items-center justify-between bg-jacarta-50 py-5 px-4 text-jacarta-700 dark:bg-jacarta-800 dark:text-jacarta-100"
       role="row"
     >
-      <div
-        className="w-1/2 truncate text-left sm:w-[30%] lg:w-[24%]"
-        role="columnheader"
-      >
+      <div className="w-1/2 truncate text-left sm:w-[30%] lg:w-[24%]" role="columnheader">
         Collection Mint Date
       </div>
       <div

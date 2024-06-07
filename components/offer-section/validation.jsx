@@ -5,7 +5,21 @@ import { Divider } from "@nextui-org/react";
 import Validated_refused_items from "../collections/validated_refused_items";
 import Review_carousel from "../carousel/review_carousel";
 
-const Validation = ({chainId, offer, offerId, isOwner, handleSubmit, successFullRefuseModal,setSuccessFullRefuseModal, isToken = false, successFullUploadModal, setRefusedValidatedAdModal, refusedValidatedAdModal, setSelectedItems, selectedItems }) => {
+const Validation = ({
+  chainId,
+  offer,
+  offerId,
+  isOwner,
+  handleSubmit,
+  successFullRefuseModal,
+  setSuccessFullRefuseModal,
+  isToken = false,
+  successFullUploadModal,
+  setRefusedValidatedAdModal,
+  refusedValidatedAdModal,
+  setSelectedItems,
+  selectedItems
+}) => {
   const [pendingProposalData, setPendingProposalData] = useState([]);
   const [validatedProposalData, setValidatedProposalData] = useState([]);
   const [refusedProposalData, setRefusedProposalData] = useState([]);
@@ -14,19 +28,19 @@ const Validation = ({chainId, offer, offerId, isOwner, handleSubmit, successFull
     {
       id: 1,
       text: "Pending",
-      icon: "owned",
+      icon: "owned"
     },
     {
       id: 2,
       text: "Validated",
-      icon: "owned",
+      icon: "owned"
     },
 
     {
       id: 3,
       text: "Refused",
-      icon: "activity",
-    },
+      icon: "activity"
+    }
   ];
   useEffect(() => {
     if (!offer) return;
@@ -43,7 +57,7 @@ const Validation = ({chainId, offer, offerId, isOwner, handleSubmit, successFull
             tokenData: token.mint.tokenData || null,
             proposalIds: [],
             adParametersList: {},
-            adParametersKeys: [],
+            adParametersKeys: []
           };
           if (statusKey === "rejectedProposal") {
             groupedAds[token.tokenId].reason = element[statusKey].rejectReason;
@@ -79,18 +93,25 @@ const Validation = ({chainId, offer, offerId, isOwner, handleSubmit, successFull
     setRefusedProposalData(formattedRefusedAds);
 
     setPendingProposalData(formattedPendingAds);
-  }, [offer, successFullUploadModal]);
+  }, [offer, successFullUploadModal, offerId]);
 
   return (
     <div className="container">
       <Divider className="my-4" />
-      <h2 className="text-jacarta-700 font-bold font-display mb-6 text-center text-3xl dark:text-white ">Submitted Ads </h2>
+      <h2 className="text-jacarta-700 font-bold font-display mb-6 text-center text-3xl dark:text-white ">
+        Submitted Ads{" "}
+      </h2>
       {/* <!-- Tabs Nav --> */}
       <Tabs className="tabs">
         <TabList className="nav nav-tabs scrollbar-custom mb-12 flex items-center justify-start overflow-x-auto overflow-y-hidden border-b border-jacarta-100 pb-px dark:border-jacarta-600 md:justify-center">
           {tabItem.map(({ id, text, icon }) => {
             return (
-              <Tab className="nav-item" role="presentation" key={id} onClick={() => setItemActive(id)}>
+              <Tab
+                className="nav-item"
+                role="presentation"
+                key={id}
+                onClick={() => setItemActive(id)}
+              >
                 <button
                   className={
                     itemActive === id
@@ -132,7 +153,11 @@ const Validation = ({chainId, offer, offerId, isOwner, handleSubmit, successFull
         <TabPanel>
           <div className="container mb-12 relative p-0">
             {/* <!-- Filter --> */}
-            <Validated_refused_items statut={true} proposalData={validatedProposalData} isToken={isToken} />
+            <Validated_refused_items
+              statut={true}
+              proposalData={validatedProposalData}
+              isToken={isToken}
+            />
           </div>
         </TabPanel>
         <TabPanel>

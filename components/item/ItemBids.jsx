@@ -26,14 +26,12 @@ const ItemBids = ({
   checkAllowance,
   chainId,
   isLoadingButton,
-  setIsLoadingButton,
+  setIsLoadingButton
 }) => {
   const [showBidsModal, setShowBidsModal] = useState(false);
 
   const toggleBidsModal = async () => {
-    await checkAllowance(
-      marketplaceListings[0]?.bidPriceStructureFormatted?.minimalBidPerToken
-    );
+    await checkAllowance(marketplaceListings[0]?.bidPriceStructureFormatted?.minimalBidPerToken);
     setShowBidsModal(!showBidsModal);
     console.log("showBidsModal", showBidsModal);
     setSuccessFullBid(false);
@@ -63,9 +61,7 @@ const ItemBids = ({
               <div className="flex items-center whitespace-nowrap">
                 {bids.length <= 0 ? (
                   <div className="flex flex-col">
-                    <p className="text-sm text-jacarta-400">
-                      starting price :{" "}
-                    </p>
+                    <p className="text-sm text-jacarta-400">starting price : </p>
                     <span className="text-lg font-medium leading-tight tracking-tight text-green">
                       {price} {currencySymbol}
                     </span>

@@ -1,11 +1,9 @@
 import { useEffect, useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { useAddress, useSwitchChain, useContract, useContractWrite, Web3Button, useContractRead, useStorageUpload, useTokenDecimals, CheckoutWithCard, CheckoutWithEth } from "@thirdweb-dev/react";
+import { useContract, useContractRead } from "@thirdweb-dev/react";
 
-import { FileUploader } from "react-drag-drop-files";
-import  ModalHelper  from "../../Helper/modalHelper";
-import { useChainContext } from "../../../contexts/hooks/useChainContext";
+import ModalHelper from "../../Helper/modalHelper";
 import config from "../../../providers/utils/config";
 
 const Step_4_Create = ({
@@ -29,9 +27,8 @@ const Step_4_Create = ({
   symbolContract,
   setCustomContract,
   setTokenContract,
-  setCustomTokenContract,
+  setCustomTokenContract
 }) => {
-  
   const USDCCurrency = config[chainId]?.smartContracts?.USDC;
   const NATIVECurrency = config[chainId]?.smartContracts?.NATIVE;
   const WETHCurrency = config[chainId]?.smartContracts?.WETH;
@@ -46,7 +43,17 @@ const Step_4_Create = ({
     setTokenDecimals(decimalsContractAsync);
     setTokenContract(selectedCurrencyContract);
     setCustomTokenContract(tokenContractAsync);
-  }, [decimalsContractAsync, symbolContractAsync, selectedCurrencyContract, tokenContractAsync, chainId, setSymbolContract, setTokenDecimals, setTokenContract, setCustomTokenContract]);
+  }, [
+    decimalsContractAsync,
+    symbolContractAsync,
+    selectedCurrencyContract,
+    tokenContractAsync,
+    chainId,
+    setSymbolContract,
+    setTokenDecimals,
+    setTokenContract,
+    setCustomTokenContract
+  ]);
 
   const handleCurrencyChange = (event) => {
     setSelectedCurrency(event.target.value);
@@ -57,7 +64,6 @@ const Step_4_Create = ({
     } else if (event.target.value === "custom") {
       setSelectedCurrencyContract("f");
     } else {
- 
       setSelectedCurrencyContract(selectedCurrencyContractObject[event.target.value]);
       setCustomContract(null);
     }
@@ -74,36 +80,42 @@ const Step_4_Create = ({
       setCustomTokenContract(tokenContractAsync);
     }
   };
- 
+
   const helperStartDate = {
     title: "Start date",
-    body: "You are free to choose the start date for the offer's validity. By default, it will be today's date.",
+    body: "You are free to choose the start date for the offer's validity. By default, it will be today's date."
   };
   const helperEndDate = {
     title: "End date",
-    body: "If you do not wish to set a time limit, choose a distant end date.",
+    body: "If you do not wish to set a time limit, choose a distant end date."
   };
-
 
   const selectedCurrencyContractObject = {
     USDC: USDCCurrency?.address,
     WETH: WETHCurrency?.address,
     USDT: USDTCurrency?.address,
-    custom: customContract,
+    custom: customContract
   };
 
   return (
     <div ref={(el) => (stepsRef.current[3] = el)} className={styles.form__step}>
       <div className="pr-6 pl-2">
         <h3 className="mb-2">Step 4 : Validity & Financials</h3>
-        <p className="text-center pt-2  mb-14 dark:text-white">Set offer&apos;s validity period, currency, and royalties.</p>
+        <p className="text-center pt-2  mb-14 dark:text-white">
+          Set offer&apos;s validity period, currency, and royalties.
+        </p>
         <div className="mb-6 flex flex-col items-center">
-          <label htmlFor="item-description" className="font-display text-jacarta-700 mb-2 block dark:text-white">
+          <label
+            htmlFor="item-description"
+            className="font-display text-jacarta-700 mb-2 block dark:text-white"
+          >
             Validity period<span className="text-red">*</span>
           </label>
           <p className="dark:text-jacarta-300 text-jacarta-400 text-2xs mb-3">
-            Set the validity period for the spaces associated with your offer. During this period, the acquired NFT grants the right to display an advertisement in the reserved space on your platform. The length of this
-            validity period may influence the resale value of these NFTs on the secondary market.
+            Set the validity period for the spaces associated with your offer. During this period,
+            the acquired NFT grants the right to display an advertisement in the reserved space on
+            your platform. The length of this validity period may influence the resale value of
+            these NFTs on the secondary market.
           </p>
           <div className="flex gap-4 items-center text-jacarta-700 dark:text-white mb-3">
             <div className="flex flex-col justify-center items-center gap-1">
@@ -117,7 +129,11 @@ const Step_4_Create = ({
               />
               <div className="flex gap-2 justify-center items-center">
                 <span className="text-jacarta-700 dark:text-white">Start date</span>
-                <ModalHelper title={helperStartDate.title} body={helperStartDate.body} size="small" />
+                <ModalHelper
+                  title={helperStartDate.title}
+                  body={helperStartDate.body}
+                  size="small"
+                />
               </div>
             </div>
             <div className="flex flex-col justify-center items-center gap-1">
@@ -136,12 +152,17 @@ const Step_4_Create = ({
             </div>
           </div>
           <div className="mb-6 flex flex-col items-center">
-            <label htmlFor="item-description" className="font-display text-jacarta-700 mb-2 block dark:text-white">
+            <label
+              htmlFor="item-description"
+              className="font-display text-jacarta-700 mb-2 block dark:text-white"
+            >
               Unit selling price
               <span className="text-red">*</span>
             </label>
             <p className="dark:text-jacarta-300 text-jacarta-400 text-2xs mb-3">
-              USD payment means you&apos;ll receive USD tokens (1 USDC = 1$). You&apos;ll be able to cash out via wire transfer with a service like MtPelerin. You can change the pricing later.
+              USD payment means you&apos;ll receive USD tokens (1 USDC = 1$). You&apos;ll be able to
+              cash out via wire transfer with a service like MtPelerin. You can change the pricing
+              later.
             </p>
             <div className="flex  flex-wrap   gap-4 items-center text-jacarta-700 dark:text-white">
               <input
@@ -181,20 +202,27 @@ const Step_4_Create = ({
               </div>
             </div>
             <p className="dark:text-jacarta-300 text-jacarta-400 text-2xs mt-3">
-              You&apos;ll earn up to {selectedUnitPrice} {symbolContract ? symbolContract : selectedCurrency}. As d&gt;sponsor charges a fee of 4%, sponsors will pay{" "}
-              {parseFloat(selectedUnitPrice) + parseFloat(selectedUnitPrice) * (4 / 100)} {symbolContract ? symbolContract : selectedCurrency}.
+              You&apos;ll earn up to {selectedUnitPrice}{" "}
+              {symbolContract ? symbolContract : selectedCurrency}. As d&gt;sponsor charges a fee of
+              4%, sponsors will pay{" "}
+              {parseFloat(selectedUnitPrice) + parseFloat(selectedUnitPrice) * (4 / 100)}{" "}
+              {symbolContract ? symbolContract : selectedCurrency}.
             </p>
           </div>
 
           {/* <!-- Royalties --> */}
           <div className="mb-6 flex flex-col items-center">
-            <label htmlFor="item-description" className="font-display text-jacarta-700 mb-2 block dark:text-white">
+            <label
+              htmlFor="item-description"
+              className="font-display text-jacarta-700 mb-2 block dark:text-white"
+            >
               Royalties
               <span className="text-red">*</span>
             </label>
             <p className="dark:text-jacarta-300 text-jacarta-400  text-2xs mb-3">
-              Sponsors can sell an ad space ownership on the marketplace. Define the fee you want to get from secondary sales. Sponsors might refuse to buy an ad space if your royalty fee is too high. You can change this
-              value pricing later.
+              Sponsors can sell an ad space ownership on the marketplace. Define the fee you want to
+              get from secondary sales. Sponsors might refuse to buy an ad space if your royalty fee
+              is too high. You can change this value pricing later.
             </p>
             <div className="flex  gap-4 items-center text-jacarta-700 dark:text-white">
               <input

@@ -3,9 +3,7 @@ import Link from "next/link";
 import Auction from "./auction";
 
 const MainAuctions = ({ auctions }) => {
-  const [isHoveringCard, setIsHoveringCard] = useState(
-    Array(auctions?.length).fill(false)
-  );
+  const [isHoveringCard, setIsHoveringCard] = useState(Array(auctions?.length).fill(false));
   const [randomAuctions, setRandomAuctions] = useState([]);
   const [liveAuctions, setLiveAuctions] = useState([]);
 
@@ -20,10 +18,7 @@ const MainAuctions = ({ auctions }) => {
     let tempRandomAuctions = [];
     let seenIndexes = new Set();
 
-    while (
-      tempRandomAuctions.length < 4 &&
-      seenIndexes.size < liveAuctions?.length
-    ) {
+    while (tempRandomAuctions.length < 4 && seenIndexes.size < liveAuctions?.length) {
       let randomIndex = Math.floor(Math.random() * liveAuctions?.length);
 
       if (!seenIndexes.has(randomIndex)) {
@@ -53,15 +48,9 @@ const MainAuctions = ({ auctions }) => {
                     .fill(true, index, index + 1)
                 )
               }
-              onMouseLeave={() =>
-                setIsHoveringCard(Array(randomAuctions?.length).fill(false))
-              }
+              onMouseLeave={() => setIsHoveringCard(Array(randomAuctions?.length).fill(false))}
             >
-              <Auction
-                auction={auction}
-                isHoveringCard={isHoveringCard}
-                index={index}
-              />
+              <Auction auction={auction} isHoveringCard={isHoveringCard} index={index} />
             </Link>
           ))}
         </div>

@@ -23,7 +23,6 @@ export const fetchAllListedToken = async (chainId) => {
             }
             nftContract {
               id # = assetContract
-             
               adOffers {
                 id
                 metadataURL # offerMetadata
@@ -34,7 +33,16 @@ export const fetchAllListedToken = async (chainId) => {
                 enabled
               }
             }
-            marketplaceListings(orderBy: endTime, orderDirection: asc, where: { status: CREATED, quantity_gt: 0, startTime_lte: $currentTimestamp, endTime_gte: $currentTimestamp }) {
+            marketplaceListings(
+              orderBy: endTime
+              orderDirection: asc
+              where: {
+                status: CREATED
+                quantity_gt: 0
+                startTime_lte: $currentTimestamp
+                endTime_gte: $currentTimestamp
+              }
+            ) {
               id # listingId
               quantity
               # METADATA - if INVALID, ignore this listing
@@ -99,7 +107,7 @@ export const fetchAllListedToken = async (chainId) => {
     }
   `;
   const variables = {
-    currentTimestamp,
+    currentTimestamp
   };
   const response = await executeQuery(path.href, GET_DATA, variables);
   const chainConfig = config[chainId];
@@ -110,8 +118,10 @@ export const fetchAllListedToken = async (chainId) => {
 
         nftContract: {
           ...offer.nftContract,
-          tokens: offer.nftContract.tokens.filter((token) => token.mint && token.marketplaceListings.length > 0),
-        },
+          tokens: offer.nftContract.tokens.filter(
+            (token) => token.mint && token.marketplaceListings.length > 0
+          )
+        }
       };
 
       return newOffer;
@@ -122,12 +132,10 @@ export const fetchAllListedToken = async (chainId) => {
         ...token,
         offerId: offer.id,
         tokenData: token.mint.tokenData ? token.mint.tokenData : null,
-        chainConfig: chainConfig,
+        chainConfig: chainConfig
       }))
     )
     .sort((a, b) => b.marketplaceListings[0]?.startTime - a.marketplaceListings[0]?.startTime);
-
-  
 
   return mappedListedToken;
 };

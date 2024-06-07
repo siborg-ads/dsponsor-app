@@ -6,26 +6,26 @@ const ChainCurrency = () => {
       id: 1,
       imageSrc: "/images/chains/eth-chain.png",
       alt: "Ethereum",
-      name: "Ethereum",
+      name: "Ethereum"
     },
     {
       id: 2,
       imageSrc: "/images/chains/polygon-chain.png",
       alt: "Polygon",
-      name: "Polygon",
+      name: "Polygon"
     },
     {
       id: 3,
       imageSrc: "/images/chains/tezos-chain.png",
       alt: "Tezos",
-      name: "Tezos",
+      name: "Tezos"
     },
     {
       id: 4,
       imageSrc: "/images/chains/solana-chain.png",
       alt: "Solana",
-      name: "Solana",
-    },
+      name: "Solana"
+    }
   ];
 
   return (

@@ -17,7 +17,7 @@ import {
   useStorageUpload,
   useTokenDecimals,
   CheckoutWithCard,
-  CheckoutWithEth,
+  CheckoutWithEth
 } from "@thirdweb-dev/react";
 import { ethers } from "ethers";
 import SliderForm from "../../components/sliderForm/sliderForm.jsx";
@@ -109,58 +109,33 @@ const TokenPageContainer = () => {
     config[chainId]?.smartContracts?.DSPONSORADMIN?.address,
     config[chainId]?.smartContracts?.DSPONSORADMIN?.abi
   );
-  const { contract: DsponsorNFTContract } = useContract(
-    offerData?.nftContract?.id
-  );
-  const { mutateAsync: uploadToIPFS, isLoading: isUploading } =
-    useStorageUpload();
-  const { mutateAsync: mintAndSubmit } = useContractWrite(
-    DsponsorAdminContract,
-    "mintAndSubmit"
-  );
-  const { mutateAsync: submitAd } = useContractWrite(
-    DsponsorAdminContract,
-    "submitAdProposals"
-  );
-  const { contract: tokenContract } = useContract(
-    tokenCurrencyAddress,
-    "token"
-  );
-  const { data: symbolContract } = useContractRead(
-    tokenContract && tokenContract,
-    "symbol"
-  );
-  const { data: decimalsContract } = useContractRead(
-    tokenContract && tokenContract,
-    "decimals"
-  );
+  const { contract: DsponsorNFTContract } = useContract(offerData?.nftContract?.id);
+  const { mutateAsync: uploadToIPFS, isLoading: isUploading } = useStorageUpload();
+  const { mutateAsync: mintAndSubmit } = useContractWrite(DsponsorAdminContract, "mintAndSubmit");
+  const { mutateAsync: submitAd } = useContractWrite(DsponsorAdminContract, "submitAdProposals");
+  const { contract: tokenContract } = useContract(tokenCurrencyAddress, "token");
+  const { data: symbolContract } = useContractRead(tokenContract && tokenContract, "symbol");
+  const { data: decimalsContract } = useContractRead(tokenContract && tokenContract, "decimals");
   const { data: tokenBalance } = useBalance(tokenCurrencyAddress);
-  const { mutateAsync: approve, isLoading: isLoadingApprove } =
-    useContractWrite(tokenContract, "approve");
+  const { mutateAsync: approve, isLoading: isLoadingApprove } = useContractWrite(
+    tokenContract,
+    "approve"
+  );
   const { data: bps } = useContractRead(DsponsorAdminContract, "feeBps");
-  const { data: isAllowedToMint, isLoading: isLoadingAllowedToMint } =
-    useContractRead(
-      DsponsorNFTContract,
-      "tokenIdIsAllowedToMint",
-      tokenIdString
-    );
-  const { data: isUserOwner } = useContractRead(
+  const { data: isAllowedToMint, isLoading: isLoadingAllowedToMint } = useContractRead(
     DsponsorNFTContract,
-    "ownerOf",
-    [tokenIdString]
+    "tokenIdIsAllowedToMint",
+    tokenIdString
   );
-  const { data: royaltiesInfo } = useContractRead(
-    DsponsorNFTContract,
-    "royaltyInfo",
-    [tokenIdString, 100]
-  );
+  const { data: isUserOwner } = useContractRead(DsponsorNFTContract, "ownerOf", [tokenIdString]);
+  const { data: royaltiesInfo } = useContractRead(DsponsorNFTContract, "royaltyInfo", [
+    tokenIdString,
+    100
+  ]);
   const { contract: dsponsorMpContract } = useContract(
     config[chainId]?.smartContracts?.DSPONSORMP?.address
   );
-  const { mutateAsync: directBuy } = useContractWrite(
-    dsponsorMpContract,
-    "buy"
-  );
+  const { mutateAsync: directBuy } = useContractWrite(dsponsorMpContract, "buy");
   const { setSelectedChain } = useSwitchChainContext();
   const now = Math.floor(new Date().getTime() / 1000);
 
@@ -170,7 +145,7 @@ const TokenPageContainer = () => {
         const offer = await fetchOfferToken(offerId, tokenId, chainId);
 
         const combinedData = {
-          ...offer,
+          ...offer
         };
 
         //console.log(combinedData, "combinedData");
@@ -189,14 +164,12 @@ const TokenPageContainer = () => {
     successFullListing,
     address,
     chainId,
-    setSelectedChain,
+    setSelectedChain
   ]);
 
   useEffect(() => {
     if (offerData?.nftContract?.tokens.length > 0) {
-      setMarketplaceListings(
-        offerData?.nftContract?.tokens[0]?.marketplaceListings
-      );
+      setMarketplaceListings(offerData?.nftContract?.tokens[0]?.marketplaceListings);
     }
   }, [offerData]);
 
@@ -219,117 +192,86 @@ const TokenPageContainer = () => {
       setTokenStatut("MINTABLE");
       setTokenCurrencyAddress(offerData?.nftContract?.prices[0]?.currency);
       // setTokenBigIntPrice(offerData?.nftContract?.prices[0]?.amount);
-      setPrice(
-        offerData?.nftContract?.prices[0]?.mintPriceStructureFormatted
-          .creatorAmount
-      );
+      setPrice(offerData?.nftContract?.prices[0]?.mintPriceStructureFormatted.creatorAmount);
       setFeesAmount(
-        offerData?.nftContract?.prices[0]?.mintPriceStructureFormatted
-          .protocolFeeAmount
+        offerData?.nftContract?.prices[0]?.mintPriceStructureFormatted.protocolFeeAmount
       );
-      setFinalPrice(
-        offerData?.nftContract?.prices[0]?.mintPriceStructureFormatted
-          .totalAmount
-      );
-      setAmountToApprove(
-        BigInt(
-          offerData?.nftContract?.prices[0]?.mintPriceStructure.totalAmount
-        )
-      );
+      setFinalPrice(offerData?.nftContract?.prices[0]?.mintPriceStructureFormatted.totalAmount);
+      setAmountToApprove(BigInt(offerData?.nftContract?.prices[0]?.mintPriceStructure.totalAmount));
       setCurrency(offerData?.nftContract?.prices[0]?.currencySymbol);
       return;
     }
-    if (
-      offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.status ===
-      "CREATED"
-    ) {
-      if (
-        offerData?.nftContract?.tokens[0]?.marketplaceListings[0]
-          ?.listingType === "Direct"
-      ) {
+    if (offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.status === "CREATED") {
+      if (offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.listingType === "Direct") {
         setTokenBigIntPrice(
-          offerData?.nftContract?.tokens[0]?.marketplaceListings[0]
-            ?.buyoutPricePerToken
+          offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.buyoutPricePerToken
         );
         setTokenStatut("DIRECT");
         setPrice(
-          offerData?.nftContract?.tokens[0]?.marketplaceListings[0]
-            ?.buyPriceStructureFormatted.listerBuyAmount
+          offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.buyPriceStructureFormatted
+            .listerBuyAmount
         );
         setFeesAmount(
-          offerData?.nftContract?.tokens[0]?.marketplaceListings[0]
-            ?.buyPriceStructureFormatted.protocolFeeBuyAmount
+          offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.buyPriceStructureFormatted
+            .protocolFeeBuyAmount
         );
         setRoyaltiesFeesAmount(
-          offerData?.nftContract?.tokens[0]?.marketplaceListings[0]
-            ?.buyPriceStructureFormatted.royaltiesBuyAmount
+          offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.buyPriceStructureFormatted
+            .royaltiesBuyAmount
         );
         setFinalPrice(
-          offerData?.nftContract?.tokens[0]?.marketplaceListings[0]
-            ?.buyPriceStructureFormatted.buyoutPricePerToken
+          offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.buyPriceStructureFormatted
+            .buyoutPricePerToken
         );
         setAmountToApprove(
           BigInt(
-            offerData?.nftContract?.tokens[0]?.marketplaceListings[0]
-              ?.buyPriceStructure.buyoutPricePerToken
+            offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.buyPriceStructure
+              .buyoutPricePerToken
           )
         );
       }
-      if (
-        offerData?.nftContract?.tokens[0]?.marketplaceListings[0]
-          ?.listingType === "Auction"
-      ) {
+      if (offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.listingType === "Auction") {
         setTokenBigIntPrice(
-          offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.bids[0]
-            ?.totalBidAmount
+          offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.bids[0]?.totalBidAmount
         );
         setTokenStatut("AUCTION");
         setPrice(
-          offerData?.nftContract?.tokens[0]?.marketplaceListings[0]
-            ?.bidPriceStructureFormatted.newPricePerToken
+          offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.bidPriceStructureFormatted
+            .newPricePerToken
         );
         setFeesAmount(
-          offerData?.nftContract?.tokens[0]?.marketplaceListings[0]
-            ?.bidPriceStructureFormatted.protocolFeeAmount
+          offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.bidPriceStructureFormatted
+            .protocolFeeAmount
         );
         setRoyaltiesFeesAmount(
-          offerData?.nftContract?.tokens[0]?.marketplaceListings[0]
-            ?.bidPriceStructureFormatted.royaltyAmount
+          offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.bidPriceStructureFormatted
+            .royaltyAmount
         );
         setFinalPrice(
-          offerData?.nftContract?.tokens[0]?.marketplaceListings[0]
-            ?.bidPriceStructureFormatted.newPricePerToken
+          offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.bidPriceStructureFormatted
+            .newPricePerToken
         );
 
         setAmountToApprove(
           BigInt(
-            offerData?.nftContract?.tokens[0]?.marketplaceListings[0]
-              ?.bidPriceStructure.newPricePerToken
+            offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.bidPriceStructure
+              .newPricePerToken
           )
         );
       } else if (
-        offerData?.nftContract?.tokens[0]?.marketplaceListings[0]
-          ?.listingType === "Auction" &&
-        offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.bids
-          .length <= 0
+        offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.listingType === "Auction" &&
+        offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.bids.length <= 0
       ) {
         setTokenBigIntPrice(
-          offerData?.nftContract?.tokens[0]?.marketplaceListings[0]
-            ?.reservePricePerToken
+          offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.reservePricePerToken
         );
         setTokenStatut("AUCTION");
       }
       setCurrencyDecimals(
-        offerData?.nftContract?.tokens[0]?.marketplaceListings[0]
-          ?.currencyDecimals
+        offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.currencyDecimals
       );
-      setTokenCurrencyAddress(
-        offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.currency
-      );
-      setCurrency(
-        offerData?.nftContract?.tokens[0]?.marketplaceListings[0]
-          ?.currencySymbol
-      );
+      setTokenCurrencyAddress(offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.currency);
+      setCurrency(offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.currencySymbol);
       return;
     }
     if (
@@ -348,7 +290,7 @@ const TokenPageContainer = () => {
     offerNotFormated,
     tokenId,
     successFullUpload,
-    marketplaceListings,
+    marketplaceListings
   ]);
 
   useEffect(() => {
@@ -389,21 +331,18 @@ const TokenPageContainer = () => {
 
       let tokenMetaData = {};
       if (offerData?.metadata.offer?.token_metadata && isValidId) {
-        tokenMetaData.description =
-          offerData.metadata.offer.token_metadata.description.replace(
-            /{tokenData}/g,
-            `${tokenData}`
-          );
-        tokenMetaData.image =
-          offerData.metadata.offer.token_metadata.image.replace(
-            /{tokenData}/g,
-            `${tokenData}`
-          );
-        tokenMetaData.name =
-          offerData.metadata.offer.token_metadata.name.replace(
-            /{tokenData}/g,
-            `${tokenData}`
-          );
+        tokenMetaData.description = offerData.metadata.offer.token_metadata.description.replace(
+          /{tokenData}/g,
+          `${tokenData}`
+        );
+        tokenMetaData.image = offerData.metadata.offer.token_metadata.image.replace(
+          /{tokenData}/g,
+          `${tokenData}`
+        );
+        tokenMetaData.name = offerData.metadata.offer.token_metadata.name.replace(
+          /{tokenData}/g,
+          `${tokenData}`
+        );
       }
       setTokenMetaData(tokenMetaData);
     }
@@ -466,10 +405,7 @@ const TokenPageContainer = () => {
     const fetchStatusOffers = async () => {
       if (!offerData) return;
       const tokenData = offerData?.nftContract?.tokens[0];
-      if (
-        tokenData?.mint === null ||
-        offerData.nftContract?.tokens.length === 0
-      ) {
+      if (tokenData?.mint === null || offerData.nftContract?.tokens.length === 0) {
         setAdStatut(0);
       } else {
         setAdStatut(1);
@@ -524,27 +460,22 @@ const TokenPageContainer = () => {
   };
 
   const checkAllowance = async (amountToApprove) => {
-    if (
-      tokenCurrencyAddress !== "0x0000000000000000000000000000000000000000" &&
-      address
-    ) {
+    if (tokenCurrencyAddress !== "0x0000000000000000000000000000000000000000" && address) {
       let allowance;
 
       if (tokenStatut === "DIRECT" || tokenStatut === "AUCTION") {
         allowance = await tokenContract.call("allowance", [
           address,
-          config[chainId]?.smartContracts?.DSPONSORMP?.address,
+          config[chainId]?.smartContracts?.DSPONSORMP?.address
         ]);
       } else {
         allowance = await tokenContract.call("allowance", [
           address,
-          config[chainId]?.smartContracts?.DSPONSORADMIN?.address,
+          config[chainId]?.smartContracts?.DSPONSORADMIN?.address
         ]);
       }
 
-      if (
-        allowance.gt(parseUnits(amountToApprove.toString(), currencyDecimals))
-      ) {
+      if (allowance.gt(parseUnits(amountToApprove.toString(), currencyDecimals))) {
         setAllowanceTrue(false);
         return false;
       }
@@ -563,29 +494,17 @@ const TokenPageContainer = () => {
       }
       if (marketplaceListings.length > 0 && tokenStatut === "DIRECT") {
         await approve({
-          args: [
-            config[chainId]?.smartContracts?.DSPONSORMP?.address,
-            amountToApprove,
-          ],
+          args: [config[chainId]?.smartContracts?.DSPONSORMP?.address, amountToApprove]
         });
       } else if (tokenStatut === "AUCTION" && marketplaceListings.length > 0) {
-        const bidsBigInt = ethers.utils.parseUnits(
-          bidsAmount.toString(),
-          currencyDecimals
-        );
+        const bidsBigInt = ethers.utils.parseUnits(bidsAmount.toString(), currencyDecimals);
 
         await approve({
-          args: [
-            config[chainId]?.smartContracts?.DSPONSORMP?.address,
-            bidsBigInt,
-          ],
+          args: [config[chainId]?.smartContracts?.DSPONSORMP?.address, bidsBigInt]
         });
       } else {
         await approve({
-          args: [
-            config[chainId]?.smartContracts?.DSPONSORADMIN?.address,
-            amountToApprove,
-          ],
+          args: [config[chainId]?.smartContracts?.DSPONSORADMIN?.address, amountToApprove]
         });
       }
       setAllowanceTrue(false);
@@ -610,7 +529,7 @@ const TokenPageContainer = () => {
       offerId: offerId,
       adParameters: [],
       adDatas: [],
-      referralAdditionalInformation: "",
+      referralAdditionalInformation: ""
     };
 
     const argsdirectBuy = {
@@ -619,18 +538,17 @@ const TokenPageContainer = () => {
       quantity: 1,
       currency: marketplaceListings[0]?.currency,
       totalPrice: marketplaceListings[0]?.buyPriceStructure.buyoutPricePerToken,
-      referralAdditionalInformation: "",
+      referralAdditionalInformation: ""
     };
     try {
       setIsLoadingButton(true);
-      const isEthCurrency =
-        tokenCurrencyAddress === "0x0000000000000000000000000000000000000000";
+      const isEthCurrency = tokenCurrencyAddress === "0x0000000000000000000000000000000000000000";
       const functionWithPossibleArgs =
         marketplaceListings.length <= 0 ? argsMintAndSubmit : argsdirectBuy;
       const argsWithPossibleOverrides = isEthCurrency
         ? {
             args: [functionWithPossibleArgs],
-            overrides: { value: amountToApprove },
+            overrides: { value: amountToApprove }
           }
         : { args: [functionWithPossibleArgs] };
 
@@ -666,7 +584,7 @@ const TokenPageContainer = () => {
       try {
         uploadUrl = await uploadToIPFS({
           data: [files[0]?.file],
-          options: { uploadWithGatewayUrl: true, uploadWithoutDirectory: true },
+          options: { uploadWithGatewayUrl: true, uploadWithoutDirectory: true }
         });
       } catch (error) {
         setIsLoadingButton(false);
@@ -681,7 +599,7 @@ const TokenPageContainer = () => {
         offerId: submitAdFormated?.offerId,
         tokenId: submitAdFormated?.tokenId,
         adParameters: submitAdFormated?.params,
-        data: [uploadUrl[0], link],
+        data: [uploadUrl[0], link]
       };
 
       const functionWithPossibleArgs = Object.values(argsAdSubmited);
@@ -708,7 +626,7 @@ const TokenPageContainer = () => {
         return true;
       } else {
         toast.error("You have not enough balance to confirm checkout", {
-          autoClose: false,
+          autoClose: false
         });
         return false;
       }
@@ -741,13 +659,10 @@ const TokenPageContainer = () => {
       marketplaceListings[0]?.startTime < now &&
       marketplaceListings[0]?.endTime > now &&
       marketplaceListings[0]?.listingType === "Auction";
-    const isFirstListingDirect =
-      marketplaceListings[0]?.listingType === "Direct";
-    const isTokenStatusSpecial =
-      tokenStatut === "MINTABLE" || tokenStatut === "SIBORG";
+    const isFirstListingDirect = marketplaceListings[0]?.listingType === "Direct";
+    const isTokenStatusSpecial = tokenStatut === "MINTABLE" || tokenStatut === "SIBORG";
     const isAuctionWithBids =
-      marketplaceListings[0]?.listingType === "Auction" &&
-      marketplaceListings[0]?.bids?.length > 0;
+      marketplaceListings[0]?.listingType === "Auction" && marketplaceListings[0]?.bids?.length > 0;
 
     return (
       (isFirstListingAuctionActive && !isOwner) ||
@@ -764,25 +679,24 @@ const TokenPageContainer = () => {
     subBody:
       "Ad assets submitted! They are now under review and awaiting validation by the offer creator.",
     buttonTitle: "Close",
-    hrefButton: null,
+    hrefButton: null
   };
   const successFullBuyModal = {
     title: "Checkout",
     body: "Congratulations, you purchase this ad space.",
     subBody: "Check your ad space in your manage section to submit your ad.",
     buttonTitle: "Manage Spaces",
-    hrefButton: `/manage/${address}`,
+    hrefButton: `/manage/${address}`
   };
   const statutAds = {
     pending: "🔍 Your ad is pending, wait the validation of the creator",
     rejected: "❌ Your ad has been rejected, you can submit an other ads below",
-    accepted:
-      "🎉 Congratulations ! Your ad has been accepted by the creator ! ",
+    accepted: "🎉 Congratulations ! Your ad has been accepted by the creator ! "
   };
   const metadata = {
     title: `${offerData?.metadata?.offer?.name} - Token ${tokenId} || DSponsor | smarter monetization for your content`,
     keyword: `DSponsor, offer, ${offerData?.metadata?.offer?.name}, ${offerData?.metadata?.offer?.description}`,
-    desc: offerData?.metadata?.offer?.description,
+    desc: offerData?.metadata?.offer?.description
   };
 
   if (!offerData || offerData.length === 0) {
@@ -795,14 +709,14 @@ const TokenPageContainer = () => {
 
   const modalHelper = {
     title: "Protocol Fees",
-    body: `The protocol fees (4%) are used to maintain the platform and the services provided. The fees are calculated based on the price of the ad space and are automatically deducted from the total amount paid by the buyer.`,
+    body: `The protocol fees (4%) are used to maintain the platform and the services provided. The fees are calculated based on the price of the ad space and are automatically deducted from the total amount paid by the buyer.`
   };
 
   const {
     description = "description not found",
     id = "1",
     image = "/images/gradient_creative.jpg",
-    name = "DefaultName",
+    name = "DefaultName"
   } = Object.keys(offerData?.metadata?.offer?.token_metadata).length > 0
     ? tokenMetaData
     : offerData?.metadata?.offer;
@@ -847,9 +761,7 @@ const TokenPageContainer = () => {
               </button>
 
               {/* <!-- Modal --> */}
-              <div
-                className={imageModal ? "modal fade show block" : "modal fade"}
-              >
+              <div className={imageModal ? "modal fade show block" : "modal fade"}>
                 <div className="modal-dialog !my-0 flex h-full max-w-4xl items-center justify-center">
                   <Image
                     width={582}
@@ -909,24 +821,19 @@ const TokenPageContainer = () => {
                   </strong>{" "}
                 </span>
                 <span className="text-jacarta-300 block text-sm ">
-                  Creator{" "}
-                  <strong className="dark:text-white">
-                    {royalties}% royalties
-                  </strong>
+                  Creator <strong className="dark:text-white">{royalties}% royalties</strong>
                 </span>
               </div>
 
               <p className="dark:text-jacarta-300 mb-10">{description}</p>
               {(tokenStatut === "MINTABLE" ||
-                (tokenStatut === "DIRECT" &&
-                  marketplaceListings[0].startTime < now)) && (
+                (tokenStatut === "DIRECT" && marketplaceListings[0].startTime < now)) && (
                 <div className="dark:bg-jacarta-700 dark:border-jacarta-600 mb-2 border-jacarta-100 rounded-2lg border flex flex-col gap-4 bg-white p-8">
                   <div className=" sm:flex sm:flex-wrap">
                     <span className="dark:text-jacarta-300 text-jacarta-400 text-sm">
-                      Buying the ad space give you the exclusive right to submit
-                      an ad. The media still has the power to validate or reject
-                      ad assets. You re free to change the ad at anytime. And
-                      free to resell on the open market your ad space.{" "}
+                      Buying the ad space give you the exclusive right to submit an ad. The media
+                      still has the power to validate or reject ad assets. You re free to change the
+                      ad at anytime. And free to resell on the open market your ad space.{" "}
                     </span>
                   </div>
                   <div className="w-full flex justify-center">
@@ -934,8 +841,7 @@ const TokenPageContainer = () => {
                       contractAddress={
                         marketplaceListings.length > 0
                           ? config[chainId]?.smartContracts?.DSPONSORMP?.address
-                          : config[chainId]?.smartContracts?.DSPONSORADMIN
-                              ?.address
+                          : config[chainId]?.smartContracts?.DSPONSORADMIN?.address
                       }
                       action={() => {
                         handleBuyModal();
@@ -1025,8 +931,7 @@ const TokenPageContainer = () => {
             {isTokenInAuction && (
               <div className="text-center w-full">
                 <span className="dark:text-warning text-md ">
-                  ⚠️ You canno&apos;t submit an ad while your token is in
-                  auction
+                  ⚠️ You canno&apos;t submit an ad while your token is in auction
                 </span>
               </div>
             )}
@@ -1043,12 +948,7 @@ const TokenPageContainer = () => {
                   adParameters={adParameters}
                   setImageUrlVariants={setImageUrlVariants}
                 />
-                <Step_2_Mint
-                  stepsRef={stepsRef}
-                  styles={styles}
-                  setLink={setLink}
-                  link={link}
-                />
+                <Step_2_Mint stepsRef={stepsRef} styles={styles} setLink={setLink} link={link} />
                 {imageURLSteps.map((id, index) => (
                   <Step_3_Mint
                     key={id}
@@ -1070,10 +970,10 @@ const TokenPageContainer = () => {
               {!isValidId
                 ? "Sorry, tokenId unavailable, please provide a tokenId valid"
                 : offerNotFormated
-                ? ""
-                : offerData.nftContract?.tokens === 0
-                ? "Sorry, tokenId unavailable, please provide a tokenId valid "
-                : ""}
+                  ? ""
+                  : offerData.nftContract?.tokens === 0
+                    ? "Sorry, tokenId unavailable, please provide a tokenId valid "
+                    : ""}
             </p>
           </div>
         )}

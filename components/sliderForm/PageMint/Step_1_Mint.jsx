@@ -1,19 +1,16 @@
 import React, { useState, useEffect } from "react";
-import Image from "next/image";
-
-
 
 const Step_1_Mint = ({ stepsRef, styles, adParameters, setImageUrlVariants }) => {
-  
-const [selectedItems, setSelectedItems] = useState([]);
+  const [selectedItems, setSelectedItems] = useState([]);
   useEffect(() => {
     if (!adParameters) return;
     setSelectedItems(adParameters);
-    const imageVariants = adParameters.filter((id) => id.startsWith("imageURL")).map((id) => id.slice("imageURL-".length));
+    const imageVariants = adParameters
+      .filter((id) => id.startsWith("imageURL"))
+      .map((id) => id.slice("imageURL-".length));
 
     setImageUrlVariants((prev) => [...prev, ...imageVariants]);
   }, [adParameters, setImageUrlVariants]);
-
 
   return (
     <div ref={(el) => (stepsRef.current[0] = el)} className={styles.form__step}>
@@ -21,7 +18,10 @@ const [selectedItems, setSelectedItems] = useState([]);
         <h3 className="mb-14">Step 1 : Offer Type</h3>
         <div className="mb-6 flex flex-col justify-center items-center gap-4">
           <div className="flex flex-col items-center">
-            <label htmlFor="adIntegrationSelect" className="font-display text-jacarta-700 mb-2 block dark:text-white">
+            <label
+              htmlFor="adIntegrationSelect"
+              className="font-display text-jacarta-700 mb-2 block dark:text-white"
+            >
               Type of ad spaces for this offer:
             </label>
             <div className="flex flex-col gap-4">

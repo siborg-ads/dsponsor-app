@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Web3Button } from "@thirdweb-dev/react";
@@ -39,9 +39,9 @@ const PreviewModal = ({
   modalTitle,
   successFullUploadModal,
 
-  isLoadingButton,
+  isLoadingButton
 }) => {
- const { currentChainObject } = useChainContext();
+  const { currentChainObject } = useChainContext();
   const formatDate = (date) => {
     if (!date) return "";
     return date.toLocaleString("en-EN", {
@@ -50,7 +50,7 @@ const PreviewModal = ({
       day: "numeric",
       hour: "2-digit",
       minute: "2-digit",
-      hour12: true, 
+      hour12: true
     });
   };
   const imageRatioDisplay = (id) => {
@@ -83,7 +83,13 @@ const PreviewModal = ({
               {!successFullUpload ? modalTitle : successFullUploadModal.title}
             </h5>
             <button type="button" className="btn-close" onClick={() => handlePreviewModal()}>
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" className="fill-jacarta-700 h-6 w-6 dark:fill-white">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                width="24"
+                height="24"
+                className="fill-jacarta-700 h-6 w-6 dark:fill-white"
+              >
                 <path fill="none" d="M0 0h24v24H0z"></path>
                 <path d="M12 10.586l4.95-4.95 1.414 1.414-4.95 4.95 4.95 4.95-1.414 1.414-4.95-4.95-4.95 4.95-1.414-1.414 4.95-4.95-4.95-4.95L7.05 5.636z"></path>
               </svg>
@@ -110,11 +116,13 @@ const PreviewModal = ({
                   <p className="font-display mb-2 block dark:text-white">
                     {description.length > 0 ? (
                       <span className="dark:text-jacarta-300 text-jacarta-400 text-sm">
-                        Description : <span className="dark:text-white text-base ml-2"> {description} </span>
+                        Description :{" "}
+                        <span className="dark:text-white text-base ml-2"> {description} </span>
                       </span>
                     ) : !description ? (
                       <span className="dark:text-jacarta-300 text-jacarta-400 text-sm">
-                        Description : <span className="text-red text-base ml-2">{errors.descriptionError}</span>
+                        Description :{" "}
+                        <span className="text-red text-base ml-2">{errors.descriptionError}</span>
                       </span>
                     ) : (
                       ""
@@ -123,20 +131,35 @@ const PreviewModal = ({
 
                   {link?.length ? (
                     <p className="font-display  mb-2 block text-jacarta-400 text-sm">
-                      Link : {!errors?.linkError ? <span className="dark:text-white text-base ml-2"> {link} </span> : <span className="text-red text-base ml-2"> {errors.linkError}</span>}
+                      Link :{" "}
+                      {!errors?.linkError ? (
+                        <span className="dark:text-white text-base ml-2"> {link} </span>
+                      ) : (
+                        <span className="text-red text-base ml-2"> {errors.linkError}</span>
+                      )}
                     </p>
                   ) : (
                     ""
                   )}
-                  {imageURLSteps?.length > 0 && previewImage.filter((item) => item).length < imageURLSteps?.length && (
-                    <p className="font-display  mb-2 block text-jacarta-400 text-sm">
-                      Image preview : <span className="text-red text-base ml-2"> {errors.imageError}</span>
-                    </p>
-                  )}
+                  {imageURLSteps?.length > 0 &&
+                    previewImage.filter((item) => item).length < imageURLSteps?.length && (
+                      <p className="font-display  mb-2 block text-jacarta-400 text-sm">
+                        Image preview :{" "}
+                        <span className="text-red text-base ml-2"> {errors.imageError}</span>
+                      </p>
+                    )}
                   <p className="font-display  mb-2 block text-jacarta-400 text-sm">
                     {startDate ? (
                       <span>
-                        Start Date : {!errors.startDateError ? <span className="dark:text-white text-base ml-2"> {formatDate(startDate)} </span> : <span className="text-red text-base ml-2">{errors.startDateError}</span>}
+                        Start Date :{" "}
+                        {!errors.startDateError ? (
+                          <span className="dark:text-white text-base ml-2">
+                            {" "}
+                            {formatDate(startDate)}{" "}
+                          </span>
+                        ) : (
+                          <span className="text-red text-base ml-2">{errors.startDateError}</span>
+                        )}
                       </span>
                     ) : (
                       ""
@@ -144,14 +167,27 @@ const PreviewModal = ({
                   </p>
                   {endDate ? (
                     <p className="font-display  mb-2 block text-jacarta-400 text-sm">
-                      End Date : {!errors.endDateError ? <span className="dark:text-white text-base ml-2"> {formatDate(endDate)} </span> : <span className="text-red text-base ml-2">{errors.endDateError}</span>}
+                      End Date :{" "}
+                      {!errors.endDateError ? (
+                        <span className="dark:text-white text-base ml-2">
+                          {" "}
+                          {formatDate(endDate)}{" "}
+                        </span>
+                      ) : (
+                        <span className="text-red text-base ml-2">{errors.endDateError}</span>
+                      )}
                     </p>
                   ) : (
                     ""
                   )}
                   {selectedNumber ? (
                     <p className="font-display  mb-2 block text-jacarta-400 text-sm">
-                      Number of Items : {!errors.numberError ? <span className="dark:text-white text-base ml-2"> {selectedNumber} </span> : <span className="text-red text-base ml-2">{errors.numberError}</span>}
+                      Number of Items :{" "}
+                      {!errors.numberError ? (
+                        <span className="dark:text-white text-base ml-2"> {selectedNumber} </span>
+                      ) : (
+                        <span className="text-red text-base ml-2">{errors.numberError}</span>
+                      )}
                     </p>
                   ) : (
                     ""
@@ -168,8 +204,14 @@ const PreviewModal = ({
                         ))
                       ) : (
                         <div>
-                          {errors.typeAdError && <span className="text-red text-base ml-2">{errors.typeAdError}</span>}
-                          {errors.imageRatioError && <span className="text-red text-base ml-2">{errors.imageRatioError}</span>}
+                          {errors.typeAdError && (
+                            <span className="text-red text-base ml-2">{errors.typeAdError}</span>
+                          )}
+                          {errors.imageRatioError && (
+                            <span className="text-red text-base ml-2">
+                              {errors.imageRatioError}
+                            </span>
+                          )}
                         </div>
                       )}
                     </p>
@@ -179,7 +221,14 @@ const PreviewModal = ({
                   {selectedStartingPrice || errors.startingPriceError ? (
                     <p className="font-display  mb-2 block text-jacarta-400 text-sm">
                       Unit starting Price :{" "}
-                      {!errors.startingPriceError ? <span className="dark:text-white text-base ml-2"> {selectedStartingPrice} </span> : <span className="text-red text-base ml-2">{errors.startingPriceError}</span>}
+                      {!errors.startingPriceError ? (
+                        <span className="dark:text-white text-base ml-2">
+                          {" "}
+                          {selectedStartingPrice}{" "}
+                        </span>
+                      ) : (
+                        <span className="text-red text-base ml-2">{errors.startingPriceError}</span>
+                      )}
                       {helperFeesListing && <ModalHelper {...helperFeesListing} />}
                     </p>
                   ) : (
@@ -187,7 +236,15 @@ const PreviewModal = ({
                   )}
                   {selectedUnitPrice || errors.unitPriceError ? (
                     <p className="font-display  mb-2 block text-jacarta-400 text-sm">
-                      Unit Price : {!errors.unitPriceError ? <span className="dark:text-white text-base ml-2"> {selectedUnitPrice} </span> : <span className="text-red text-base ml-2">{errors.unitPriceError}</span>}
+                      Unit Price :{" "}
+                      {!errors.unitPriceError ? (
+                        <span className="dark:text-white text-base ml-2">
+                          {" "}
+                          {selectedUnitPrice}{" "}
+                        </span>
+                      ) : (
+                        <span className="text-red text-base ml-2">{errors.unitPriceError}</span>
+                      )}
                       {helperFeesListing && <ModalHelper {...helperFeesListing} />}
                     </p>
                   ) : (
@@ -195,28 +252,46 @@ const PreviewModal = ({
                   )}
                   {symbolContract || selectedCurrency ? (
                     <p className="font-display  mb-2 block text-jacarta-400 text-sm">
-                      Currency : {!errors.currencyError ? <span className="dark:text-white text-base ml-2"> {symbolContract} </span> : <span className="text-red text-base ml-2">{errors.currencyError}</span>}
+                      Currency :{" "}
+                      {!errors.currencyError ? (
+                        <span className="dark:text-white text-base ml-2"> {symbolContract} </span>
+                      ) : (
+                        <span className="text-red text-base ml-2">{errors.currencyError}</span>
+                      )}
                     </p>
                   ) : (
                     ""
                   )}
                   {selectedRoyalties ? (
                     <p className="font-display  mb-2 block text-jacarta-400 text-sm">
-                      Royalties : {!errors.royaltyError ? <span className="dark:text-white text-base ml-2"> {selectedRoyalties} % </span> : <span className="text-red text-base ml-2">{errors.royaltyError}</span>}
+                      Royalties :{" "}
+                      {!errors.royaltyError ? (
+                        <span className="dark:text-white text-base ml-2">
+                          {" "}
+                          {selectedRoyalties} %{" "}
+                        </span>
+                      ) : (
+                        <span className="text-red text-base ml-2">{errors.royaltyError}</span>
+                      )}
                     </p>
                   ) : (
                     ""
                   )}
                   {protocolFees ? (
                     <p className="font-display  mb-2 block text-jacarta-400 text-sm">
-                      Protocol fees : <span className="dark:text-white text-base ml-2"> {protocolFees} % </span>
+                      Protocol fees :{" "}
+                      <span className="dark:text-white text-base ml-2"> {protocolFees} % </span>
                     </p>
                   ) : (
                     ""
                   )}
                   {terms.length > 0 ? (
                     <p className="font-display  mb-2 block text-jacarta-400 text-sm">
-                      Terms : <span className="dark:text-white text-base ml-2"> {terms[0].name ? terms[0].name : terms[0]} </span>
+                      Terms :{" "}
+                      <span className="dark:text-white text-base ml-2">
+                        {" "}
+                        {terms[0].name ? terms[0].name : terms[0]}{" "}
+                      </span>
                     </p>
                   ) : (
                     ""
@@ -225,18 +300,33 @@ const PreviewModal = ({
                 {previewImage &&
                   previewImage.map((image, index) => (
                     <div className="mb-6  flex-col items-center justify-center " key={index}>
-                      <label htmlFor="item-description" className="font-display text-jacarta-400 text-sm text-center mb-2 block ">
-                        Image {imageUrlVariants[index] && `( ratio ${imageUrlVariants[index]} )`} preview
+                      <label
+                        htmlFor="item-description"
+                        className="font-display text-jacarta-400 text-sm text-center mb-2 block "
+                      >
+                        Image {imageUrlVariants[index] && `( ratio ${imageUrlVariants[index]} )`}{" "}
+                        preview
                       </label>
                       <div
                         className="dark:bg-jacarta-700 dark:border-jacarta-600 border-jacarta-100  group relative flex max-w-md flex-col items-center justify-center rounded-lg border-2 border-dashed"
                         style={{
-                          width: imageUrlVariants.length > 0 ? `${imageRatioDisplay(index)[0]}px` : "275px",
-                          height: imageUrlVariants.length > 0 ? `${imageRatioDisplay(index)[1]}px` : "275px",
-                          position: "relative",
+                          width:
+                            imageUrlVariants.length > 0
+                              ? `${imageRatioDisplay(index)[0]}px`
+                              : "275px",
+                          height:
+                            imageUrlVariants.length > 0
+                              ? `${imageRatioDisplay(index)[1]}px`
+                              : "275px",
+                          position: "relative"
                         }}
                       >
-                        <Image src={image} fill={true} alt="Preview" className="object-contain h-full p-1" />
+                        <Image
+                          src={image}
+                          fill={true}
+                          alt="Preview"
+                          className="object-contain h-full p-1"
+                        />
                       </div>
                     </div>
                   ))}
@@ -245,8 +335,17 @@ const PreviewModal = ({
               <div className="flex flex-col gap-2">
                 <div className="flex gap-4">
                   <p>{successFullUploadModal.body} </p>
-                  <div className="dark:border-jacarta-600 bg-green   flex h-6 w-6 items-center justify-center rounded-full border-2 border-white" data-tippy-content="Verified Collection">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" className="h-[.875rem] w-[.875rem] fill-white">
+                  <div
+                    className="dark:border-jacarta-600 bg-green   flex h-6 w-6 items-center justify-center rounded-full border-2 border-white"
+                    data-tippy-content="Verified Collection"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      width="24"
+                      height="24"
+                      className="h-[.875rem] w-[.875rem] fill-white"
+                    >
                       <path fill="none" d="M0 0h24v24H0z"></path>
                       <path d="M10 15.172l9.192-9.193 1.415 1.414L10 18l-6.364-6.364 1.414-1.414z"></path>
                     </svg>
@@ -268,7 +367,7 @@ const PreviewModal = ({
                         toast.promise(handleSubmit(true), {
                           pending: "Waiting for confirmation 🕒",
                           success: "Transaction confirmed 👌",
-                          error: "Transaction rejected 🤯",
+                          error: "Transaction rejected 🤯"
                         });
                       }}
                       className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate ? "btn-disabled" : "!bg-accent !cursor-pointer"} `}
@@ -284,7 +383,7 @@ const PreviewModal = ({
                         toast.promise(handleApprove, {
                           pending: "Waiting for confirmation 🕒",
                           success: "Approval confirmed 👌",
-                          error: "Approval rejected 🤯",
+                          error: "Approval rejected 🤯"
                         });
                       }}
                       className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate ? "btn-disabled" : "!bg-accent !cursor-pointer"} `}
@@ -293,16 +392,19 @@ const PreviewModal = ({
                       {isLoadingButton ? <Spinner size="sm" color="default" /> : "Approve"}
                     </Web3Button>
                   )
-                ) : (
-                  successFullUploadModal.hrefButton !== null ? (
-                    <Link href={successFullUploadModal.hrefButton}>
-                      <button className="!rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all !bg-accent !cursor-pointer">{successFullUploadModal.buttonTitle}</button>
-                    </Link>
-                  ) : (
-                    <button className="!rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all !bg-accent !cursor-pointer" onClick={() => handlePreviewModal()}>
-                      Close
+                ) : successFullUploadModal.hrefButton !== null ? (
+                  <Link href={successFullUploadModal.hrefButton}>
+                    <button className="!rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all !bg-accent !cursor-pointer">
+                      {successFullUploadModal.buttonTitle}
                     </button>
-                  )
+                  </Link>
+                ) : (
+                  <button
+                    className="!rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all !bg-accent !cursor-pointer"
+                    onClick={() => handlePreviewModal()}
+                  >
+                    Close
+                  </button>
                 )}
               </div>
             </div>

@@ -6,7 +6,7 @@ const FancyBlock = () => {
 assets`,
     `  Safe storage of cryptocurrencies – take control of your own
 assets`,
-    ` 10,000+ DApps - enjoy DeFi`,
+    ` 10,000+ DApps - enjoy DeFi`
   ];
 
   return (
@@ -44,11 +44,10 @@ assets`,
                 The safest most secure crypto app like never before
               </h2>
               <p className="mb-12 text-lg leading-normal dark:text-jacarta-300">
-                DSponsor security is unlike every other. It’s better. No more
-                complex passwords or long phrases to store, browser extensions,
-                or special hardware required. Your account is secured by private
-                facial biometrics and industry-leading encryption to keep you
-                safe from account
+                DSponsor security is unlike every other. It’s better. No more complex passwords or
+                long phrases to store, browser extensions, or special hardware required. Your
+                account is secured by private facial biometrics and industry-leading encryption to
+                keep you safe from account
               </p>
 
               {fancyList.map((val, i) => (

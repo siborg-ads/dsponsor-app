@@ -28,9 +28,7 @@ const Auction = ({ auction, isHoveringCard, index }) => {
         </div>
         <div className="flex flex-col gap-3">
           <div className="flex flex-col">
-            <div className="text-jacarta-200 text-xs">
-              #{auction.category ?? "category"}
-            </div>
+            <div className="text-jacarta-200 text-xs">#{auction.category ?? "category"}</div>
             <div className="text-white font-semibold text-base md:text-lg">
               {auction.name ?? "name"}
             </div>

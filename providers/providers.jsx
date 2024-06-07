@@ -2,12 +2,17 @@ import { useEffect, useState, createContext, useContext, useChain, use } from "r
 import { useNetwork } from "@thirdweb-dev/react";
 import { Ethereum, Polygon, BaseSepoliaTestnet, Sepolia } from "@thirdweb-dev/chains";
 
-import { coinbaseWallet, embeddedWallet, localWallet, metamaskWallet, ThirdwebProvider, walletConnect } from "@thirdweb-dev/react";
+import {
+  coinbaseWallet,
+  embeddedWallet,
+  localWallet,
+  metamaskWallet,
+  ThirdwebProvider,
+  walletConnect
+} from "@thirdweb-dev/react";
 import ChainProvider from "./ChainProvider/ChainProvider";
 import SwitchChainProvider from "./SwitchChainProvider/SwitchChainProvider";
 import { useSwitchChainContext } from "../contexts/hooks/useSwitchChainContext";
-
-
 
 function Providers({ children }) {
   return (
@@ -16,7 +21,6 @@ function Providers({ children }) {
     </SwitchChainProvider>
   );
 }
-
 
 function InnerProviders({ children }) {
   const [chain, setChain] = useState("sepolia");
@@ -42,7 +46,7 @@ function InnerProviders({ children }) {
         localWallet(),
         embeddedWallet({
           auth: { options: ["email", "google", "apple", "facebook"] }
-        }),
+        })
       ]}
     >
       <ChainProvider>{children}</ChainProvider>
@@ -51,5 +55,3 @@ function InnerProviders({ children }) {
 }
 
 export default Providers;
-
-

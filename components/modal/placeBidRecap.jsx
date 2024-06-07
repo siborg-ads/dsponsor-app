@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Dialog, DialogPanel } from "@headlessui/react";
 import { fetchAllTokenListedByListingId } from "../../providers/methods/fetchAllTokenListedByListingId";
 import { useChainContext } from "../../contexts/hooks/useChainContext";
@@ -34,17 +34,10 @@ const PlaceBidRecap = ({ isOpen, setIsOpen, listingId, offerId, tokenId }) => {
 
   return (
     <>
-      <Dialog
-        open={isOpen}
-        onClose={() => setIsOpen(false)}
-        className="relative z-50"
-      >
+      <Dialog open={isOpen} onClose={() => setIsOpen(false)} className="relative z-50">
         <div className="fixed inset-0 flex w-screen items-center justify-center p-4 backdrop-blur">
           <DialogPanel className="max-w-lg relative space-y-4 border bg-jacarta-900 border-jacarta-100 border-opacity-10 rounded-xl p-8 flex flex-col gap-8">
-            <button
-              className="absolute p-2 top-0 right-0"
-              onClick={() => setIsOpen(false)}
-            >
+            <button className="absolute p-2 top-0 right-0" onClick={() => setIsOpen(false)}>
               <XMarkIcon className="w-8 h-8 text-white hover:bg-jacarta-700 rounded-full p-1" />
             </button>
             <div className="text-xl text-white font-semibold flex flex-col text-center py-8 px-12 shadow bg-gray-contrast rounded-xl">
@@ -54,14 +47,11 @@ const PlaceBidRecap = ({ isOpen, setIsOpen, listingId, offerId, tokenId }) => {
               </span>
             </div>
             <div className="flex flex-col gap-2 items-center text-center">
-              <span className="text-xl font-semibold text-white">
-                What&apos;s next?
-              </span>
+              <span className="text-xl font-semibold text-white">What&apos;s next?</span>
               <span className="text-white">
-                If someone outbids you by at least {minBid ?? 115.5}{" "}
-                {currencyTicker ?? "USDC"} before the {endDate ?? "01/01/2024"},
-                you will receive your bid amount back plus an additional reward.
-                However, if no one outbids you by the {endDate ?? "01/01/2024"},
+                If someone outbids you by at least {minBid ?? 115.5} {currencyTicker ?? "USDC"}{" "}
+                before the {endDate ?? "01/01/2024"}, you will receive your bid amount back plus an
+                additional reward. However, if no one outbids you by the {endDate ?? "01/01/2024"},
                 you will get the ad space.
               </span>
             </div>
@@ -71,9 +61,7 @@ const PlaceBidRecap = ({ isOpen, setIsOpen, listingId, offerId, tokenId }) => {
                   Ad Space transferred
                 </div>
 
-                <span className="text-white font-semibold text-base md:text-lg">
-                  OR
-                </span>
+                <span className="text-white font-semibold text-base md:text-lg">OR</span>
 
                 <div className="bg-accent-light hover:-translate-y-2 duration-400 shadow p-4 w-32 h-32 md:w-48 md:h-48 rounded-xl font-semibold text-base md:text-xl text-white flex justify-center items-center text-center">
                   {refundedPrice ?? 115.7} {currencyTicker ?? "USDC"} refunded

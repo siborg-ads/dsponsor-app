@@ -1,11 +1,9 @@
-
 import { executeQuery } from "../utils/executeQuery";
 import { gql } from "@apollo/client";
 import config from "../utils/config";
 
 export const fetchAllOffersByUserAddress = async (userAddress, chainId) => {
-
-const path = new URL(`https://relayer.dsponsor.com/api/${chainId}/graph`);
+  const path = new URL(`https://relayer.dsponsor.com/api/${chainId}/graph`);
 
   const GET_DATA = gql`
     query OffersManagedByUser($userAddress: ID!) {
@@ -91,28 +89,28 @@ const path = new URL(`https://relayer.dsponsor.com/api/${chainId}/graph`);
     }
   `;
 
- 
-  const response = await executeQuery(path.href, GET_DATA,  { userAddress: userAddress });
-   const chainConfig = config[chainId];
+  const response = await executeQuery(path.href, GET_DATA, { userAddress: userAddress });
+  const chainConfig = config[chainId];
 
-   const resultMappedData = response.adOffers
-     .map((element) => {
-       const sortByTokenId = element.nftContract.tokens.sort((a, b) => a.tokenId - b.tokenId);
-       const tokenIdAllowedToMint = sortByTokenId.find((token) => token.mint === null)?.tokenId || false;
+  const resultMappedData = response.adOffers
+    .map((element) => {
+      const sortByTokenId = element.nftContract.tokens.sort((a, b) => a.tokenId - b.tokenId);
+      const tokenIdAllowedToMint =
+        sortByTokenId.find((token) => token.mint === null)?.tokenId || false;
 
-       const combinedData = {
-         ...element,
-         chainConfig: chainConfig,
-         tokenIdAllowedToMint: tokenIdAllowedToMint,
-       };
+      const combinedData = {
+        ...element,
+        chainConfig: chainConfig,
+        tokenIdAllowedToMint: tokenIdAllowedToMint
+      };
 
-       if (!tokenIdAllowedToMint && element.nftContract.allowList === true) {
-         return null;
-       }
+      if (!tokenIdAllowedToMint && element.nftContract.allowList === true) {
+        return null;
+      }
 
-       return combinedData;
-     })
-     .filter((item) => item !== null);
+      return combinedData;
+    })
+    .filter((item) => item !== null);
 
   return resultMappedData;
 };
