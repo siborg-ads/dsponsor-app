@@ -31,11 +31,6 @@ import PreviewModal from "../modal/previewModal";
 import { image } from "@nextui-org/react";
 import MainButton from "../buttons/mainButton";
 
-import { useChainContext } from "../../contexts/hooks/useChainContext";
-
-import PreviewModal from "../modal/previewModal";
-
-
 const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
   const [itemdata, setItemdata] = useState(trendingCategoryData);
   const { currentChainObject } = useChainContext();
@@ -75,11 +70,6 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
     DsponsorAdminContract,
     "submitAdProposals"
   );
-
-
-
-  const { mutateAsync: uploadToIPFS, isLoading: isUploading } = useStorageUpload();
-  const { mutateAsync: submitAd } = useContractWrite(DsponsorAdminContract, "submitAdProposals");
 
 
   const chainId = currentChainObject?.chainId;

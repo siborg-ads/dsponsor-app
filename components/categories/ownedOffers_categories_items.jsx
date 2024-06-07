@@ -1,5 +1,4 @@
 import Image from "next/image";
-import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useChainContext } from "../../contexts/hooks/useChainContext";
@@ -9,8 +8,6 @@ import { updateTrendingCategoryItemData } from "../../redux/counterSlice";
 import ConditionalDisplayedComponent from "../../utils/ConditionalDisplayedComponent";
 import OfferItem from "../cards/offerItem";
 import Link from "next/link";
-import Image from "next/image";
-import { useChainContext } from "../../contexts/hooks/useChainContext";
 import MainButton from "../buttons/mainButton";
 
 const OwnedOffers_categories_items = ({
