@@ -4,13 +4,12 @@ import React, { useEffect, useState } from "react";
 import MainAuctions from "../../components/siborgHome/mainAuctions";
 import MarketplaceHome from "../../components/siborgHome/marketplaceHome";
 import Description from "../../components/siborgHome/description";
-import { fetchAllListedToken } from "../../providers/methods/fetchAllListedToken";
+import { fetchAllListedToken } from "../../providers/methods/fetchAllListedTokenWithoutFilter";
 import { useChainContext } from "../../contexts/hooks/useChainContext";
 import { formatUnits } from "ethers/lib/utils";
 
 const HomeContainer = () => {
   const [chainIdFilter, setChainIdFilter] = useState(null);
-  const [filter, setFilter] = useState("All the ad spaces");
   const [auctionsTemp, setAuctionsTemp] = useState([]);
   const [auctions, setAuctions] = useState([]);
 
@@ -41,9 +40,9 @@ const HomeContainer = () => {
       const chain = token.chainConfig.chainName;
       const price = token.marketplaceListings[0].buyPriceStructureFormatted.buyoutPricePerToken;
       const chainId = token.chainConfig.chainId;
-      const offerId = Number(token.nftContract.offerId);
-      const tokenId = Number(token.nftContract.tokenId);
-      const tokenData = token.nftContract.tokenData;
+      const offerId = token.offerId;
+      const tokenId = token.tokenId;
+      const tokenData = token.tokenData;
       const live =
         token.marketplaceListings[0].status === "CREATED" &&
         token.marketplaceListings[0].quantity > 0;
@@ -56,7 +55,7 @@ const HomeContainer = () => {
         )
       );
 
-      return {
+      const object = {
         name: name,
         category: category,
         chain: chain,
@@ -69,8 +68,15 @@ const HomeContainer = () => {
         latestBid: latestBid,
         currencyDecimals: currencyDecimals,
         startTime: token.marketplaceListings[0].startTime,
-        endTime: token.marketplaceListings[0].endTime
+        endTime: token.marketplaceListings[0].endTime,
+        offerId: offerId,
+        tokenId: tokenId,
+        tokenData: tokenData
       };
+
+      console.log("object", object);
+
+      return object;
     });
 
     console.log("auctions", auctions);
