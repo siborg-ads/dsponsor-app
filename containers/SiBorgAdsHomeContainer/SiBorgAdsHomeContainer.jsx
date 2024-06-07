@@ -4,7 +4,7 @@ import MarketplaceHome from "../../components/siborgAdsHome/marketplaceHome";
 import Description from "../../components/siborgAdsHome/description";
 import { fetchAllListedToken } from "../../providers/methods/fetchAllListedToken";
 import { useChainContext } from "../../contexts/hooks/useChainContext";
-import { formatUnits, parseUnits } from "ethers/lib/utils";
+import { formatUnits } from "ethers/lib/utils";
 
 const SiBorgAdsHomeContainer = () => {
   const [chainIdFilter, setChainIdFilter] = useState(null);
@@ -50,10 +50,10 @@ const SiBorgAdsHomeContainer = () => {
       const latestBid =
         Number(
           formatUnits(
-            token.marketplaceListings[0].bidPriceStructure.previousBidAmount,
+            token.marketplaceListings[0].bidPriceStructure.previousBidAmount ?? 0,
             currencyDecimals
           )
-        ) ?? 0;
+        );
 
       return {
         name: name,
