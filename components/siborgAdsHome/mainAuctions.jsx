@@ -4,27 +4,27 @@ import Auction from "./auction";
 
 const MainAuctions = ({ auctions }) => {
   const [isHoveringCard, setIsHoveringCard] = useState(
-    Array(auctions.length).fill(false)
+    Array(auctions?.length).fill(false)
   );
   const [randomAuctions, setRandomAuctions] = useState([]);
   const [liveAuctions, setLiveAuctions] = useState([]);
 
   useEffect(() => {
-    const liveAuctions = auctions.filter((auction) => auction.live);
+    const liveAuctions = auctions?.filter((auction) => auction.live);
     setLiveAuctions(liveAuctions);
   }, [auctions]);
 
   useEffect(() => {
-    if (liveAuctions.length === 0) return;
+    if (liveAuctions?.length === 0) return;
 
     let tempRandomAuctions = [];
     let seenIndexes = new Set();
 
     while (
       tempRandomAuctions.length < 4 &&
-      seenIndexes.size < liveAuctions.length
+      seenIndexes.size < liveAuctions?.length
     ) {
-      let randomIndex = Math.floor(Math.random() * liveAuctions.length);
+      let randomIndex = Math.floor(Math.random() * liveAuctions?.length);
 
       if (!seenIndexes.has(randomIndex)) {
         tempRandomAuctions.push(liveAuctions[randomIndex]);
@@ -40,7 +40,7 @@ const MainAuctions = ({ auctions }) => {
     <>
       <div className="flex flex-col gap-4">
         <div className="text-xl font-semibold text-white">Live Auctions 🔥</div>
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {randomAuctions.map((auction, index) => (
             <Link
               key={index}
@@ -48,13 +48,13 @@ const MainAuctions = ({ auctions }) => {
               className="cursor-pointer md:cursor-default"
               onMouseEnter={() =>
                 setIsHoveringCard(
-                  Array(auctions.length)
+                  Array(randomAuctions?.length)
                     .fill(false, index, index + 1)
                     .fill(true, index, index + 1)
                 )
               }
               onMouseLeave={() =>
-                setIsHoveringCard(Array(auctions.length).fill(false))
+                setIsHoveringCard(Array(randomAuctions?.length).fill(false))
               }
             >
               <Auction
