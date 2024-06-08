@@ -39,6 +39,7 @@ import { useSwitchChainContext } from "../../contexts/hooks/useSwitchChainContex
 import { fetchOfferToken } from "../../providers/methods/fetchOfferToken.js";
 import config from "../../providers/utils/config.js";
 import stringToUint256 from "../../utils/stringToUnit256.js";
+import { parseUnits } from "ethers/lib/utils";
 
 import "react-toastify/dist/ReactToastify.css";
 import ModalHelper from "../../components/Helper/modalHelper.jsx";
@@ -152,7 +153,16 @@ const TokenPageContainer = () => {
     }
 
     setTokenIdString(tokenId?.toString());
-  }, [offerId, tokenId, successFullUpload, successFullBid, successFullListing, address, chainId]);
+  }, [
+    offerId,
+    tokenId,
+    successFullUpload,
+    successFullBid,
+    successFullListing,
+    address,
+    chainId,
+    setSelectedChain
+  ]);
 
   useEffect(() => {
     if (offerData?.nftContract?.tokens.length > 0) {
@@ -268,7 +278,6 @@ const TokenPageContainer = () => {
       setTokenStatut("MINTED");
       setTokenCurrencyAddress(offerData?.nftContract?.prices[0]?.currency);
       setTokenBigIntPrice(offerData?.nftContract?.prices[0]?.amount);
-      return;
     }
   }, [
     offerData,
@@ -513,7 +522,7 @@ const TokenPageContainer = () => {
       tokenId: tokenIdString,
       to: address,
       currency: offerData?.nftContract?.prices[0]?.currency,
-      tokenData: tokenData ? tokenData : "",
+      tokenData: tokenData ?? "",
       offerId: offerId,
       adParameters: [],
       adDatas: [],
@@ -709,7 +718,9 @@ const TokenPageContainer = () => {
     name = "DefaultName"
   } = Object.keys(offerData?.metadata?.offer?.token_metadata).length > 0
     ? tokenMetaData
-    : offerData?.metadata?.offer;
+    : offerData && offerData.metadata
+      ? offerData.metadata.offer
+      : undefined;
 
   return (
     <>
