@@ -132,7 +132,7 @@ const TokenPageContainer = () => {
   const { setSelectedChain } = useSwitchChainContext();
   const now = Math.floor(new Date().getTime() / 1000);
 
-  // referralAddress is the address of the ?ref= parameter in the URL
+  // referralAddress is the address of the ?_rid= parameter in the URL
   const referralAddress = getCookie('_rid') || '';
 
   useEffect(() => {
