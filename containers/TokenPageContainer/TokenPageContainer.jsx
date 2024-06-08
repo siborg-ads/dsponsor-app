@@ -21,6 +21,7 @@ import Step_3_Mint from "../../components/sliderForm/PageMint/Step_3_Mint.jsx";
 import SliderForm from "../../components/sliderForm/sliderForm.jsx";
 import styles from "../../styles/createPage/style.module.scss";
 
+import { getCookie } from 'cookies-next';
 import "tippy.js/dist/tippy.css";
 import { ItemsTabs } from "../../components/component.js";
 
@@ -131,6 +132,9 @@ const TokenPageContainer = () => {
   const { mutateAsync: directBuy } = useContractWrite(dsponsorMpContract, "buy");
   const { setSelectedChain } = useSwitchChainContext();
   const now = Math.floor(new Date().getTime() / 1000);
+
+  // referralAddress is the address of the ?_rid= parameter in the URL
+  const referralAddress = getCookie('_rid') || '';
 
   useEffect(() => {
     if (offerId && tokenId && chainId) {
@@ -522,7 +526,7 @@ const TokenPageContainer = () => {
       offerId: offerId,
       adParameters: [],
       adDatas: [],
-      referralAdditionalInformation: ""
+      referralAdditionalInformation: referralAddress
     };
 
     const argsdirectBuy = {
@@ -531,7 +535,7 @@ const TokenPageContainer = () => {
       quantity: 1,
       currency: marketplaceListings[0]?.currency,
       totalPrice: marketplaceListings[0]?.buyPriceStructure.buyoutPricePerToken,
-      referralAdditionalInformation: ""
+      referralAdditionalInformation: referralAddress
     };
     try {
       setIsLoadingButton(true);
@@ -547,6 +551,8 @@ const TokenPageContainer = () => {
 
       if (marketplaceListings.length <= 0) {
         console.log("mintAndSubmit", argsWithPossibleOverrides, "mintAndSubmit");
+        // address of the minter as referral
+        argsWithPossibleOverrides.referralAdditionalInformation = referralAddress;
         await mintAndSubmit(argsWithPossibleOverrides);
         setSuccessFullUpload(true);
       } else {
