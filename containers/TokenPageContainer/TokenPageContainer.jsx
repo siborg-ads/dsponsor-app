@@ -136,29 +136,6 @@ const TokenPageContainer = () => {
 
   useEffect(() => {
     if (offerId && tokenId && chainId) {
-
-      // const fetchOfferTokenBids = async () => {
-      //   // const offer = await fetchOfferToken(offerId, tokenId, chainId);
-      //   //
-      //   // const combinedData = {
-      //   //   ...offer
-      //   // };
-      //   //
-      //   // console.log(combinedData, "combinedData");
-      //   // setOfferData(combinedData);
-      //   console.log({marketplaceListings})
-      //   console.log({marketplaceListings})
-      //   console.log({marketplaceListings})
-      //   console.log({marketplaceListings})
-      //   console.log({marketplaceListings})
-      //   console.log({marketplaceListings})
-      //   console.log({marketplaceListings})
-      //   console.log({marketplaceListings})
-      //   console.log({marketplaceListings})
-      //   console.log({marketplaceListings})
-      // };
-
-
       const fetchAdsOffers = async () => {
         const offer = await fetchOfferToken(offerId, tokenId, chainId);
 
@@ -168,7 +145,6 @@ const TokenPageContainer = () => {
 
         console.log(combinedData, "combinedData");
         setOfferData(combinedData);
-        // await fetchOfferTokenBids();
       };
       setSelectedChain(config[chainId]?.chainNameProvider);
       fetchAdsOffers();
