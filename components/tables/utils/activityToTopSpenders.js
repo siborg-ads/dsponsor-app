@@ -11,6 +11,7 @@ const activityToTopSpenders = (activity) => {
             totalSpent: ranking.usdcAmounts.totalSpent,
             address: ranking.displayAddr,
             balance: ranking.balance,
+            dPoints: ranking.dPoints,
             chainId: ranking.chainId,
             details: Object.entries(ranking.currenciesAmounts || {}).map(([currency, amounts]) => ({
                 currency,

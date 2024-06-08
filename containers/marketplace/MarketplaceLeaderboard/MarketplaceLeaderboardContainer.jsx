@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
 import LeaderboardTable from "../../../components/tables/LeaderboardTable";
 import { fetchMarketplaceActivity } from "../../../providers/methods/fetchMarketplaceActivity";
+import processBidsAndCalculateRewards from "./processBidsAndCalculateRewards";
+
+
 
 const MarketplaceLeaderboardContainer = () => {
     const [activity, setActivity] = useState([]);
@@ -18,9 +21,11 @@ const MarketplaceLeaderboardContainer = () => {
                 ...ranking,
                 chainId: activity.chainId
             })));
-            setActivity(mergedActivities);
+            const processedActivity = processBidsAndCalculateRewards(mergedActivities);
+            setActivity(processedActivity);
             setLoading(false);
-        }).catch(() => {
+        }).catch((error) => {
+            console.error('Error fetching activities:', error);
             setLoading(false);
         });
     }, []);
@@ -32,7 +37,7 @@ const MarketplaceLeaderboardContainer = () => {
     return (
         <>
             <section className="relative lg:mt-24 lg:pt-12 mt-24 pt-12 pb-8">
-                <div className="mb-8 container flex justify-center flex-col items-center ">
+                <div className="mb-8 container flex justify-center flex-col items-center">
                     <div className="flex justify-center">
                         <LeaderboardTable activity={activity} />
                     </div>
@@ -41,5 +46,6 @@ const MarketplaceLeaderboardContainer = () => {
         </>
     );
 };
+
 
 export default MarketplaceLeaderboardContainer;

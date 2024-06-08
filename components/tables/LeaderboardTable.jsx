@@ -74,6 +74,8 @@ const LeaderboardTable = ({ activity }) => {
             ) },
         { header: "Held", render: (item) => item.balance },
         { header: "Chain ID", render: (item) => item.chainId },
+        { header: "DPoints", render: (item) => item.dPoints }
+
     ];
 
     const spenderColumns = [
@@ -95,6 +97,8 @@ const LeaderboardTable = ({ activity }) => {
             ) },
         { header: "Held", render: (item) => item.balance },
         { header: "Chain ID", render: (item) => item.chainId },
+        { header: "DPoints", render: (item) => item.dPoints }
+
     ];
 
     const rewardedColumns = [
@@ -116,6 +120,8 @@ const LeaderboardTable = ({ activity }) => {
             ) },
         { header: "Number of Refunds", render: (item) => item.refunds },
         { header: "Chain ID", render: (item) => item.chainId },
+        { header: "DPoints", render: (item) => item.dPoints }
+
     ];
 
     return (
