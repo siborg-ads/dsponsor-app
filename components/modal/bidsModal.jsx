@@ -100,12 +100,16 @@ const BidsModal = ({
   }, [endTime]);
 
   useEffect(() => {
-    setInitialIntPrice(marketplaceListings[0]?.bidPriceStructureFormatted?.minimalBidPerToken);
-    setBidsAmount(marketplaceListings[0]?.bidPriceStructureFormatted?.newBidPerToken);
+    const minimalBidPerToken = marketplaceListings[0]?.bidPriceStructure?.minimalBidPerToken;
+    if (minimalBidPerToken) {
+      const minimalBid = ethers.utils.formatUnits(minimalBidPerToken, currencyTokenDecimals);
+      setInitialIntPrice(minimalBid);
+      setBidsAmount(minimalBid);
+    }
   }, [marketplaceListings, setBidsAmount]);
 
   const handleBidsAmount = async (e) => {
-    if (Number(e.target.value) <= initialIntPrice) {
+    if (Number(e.target.value) < initialIntPrice) {
       setIsPriceGood(false);
       setBidsAmount(e.target.value);
     } else {
