@@ -12,6 +12,7 @@ const HomeContainer = () => {
   const [chainIdFilter, setChainIdFilter] = useState(null);
   const [auctionsTemp, setAuctionsTemp] = useState([]);
   const [auctions, setAuctions] = useState([]);
+  const [allTokens, setAllTokens] = useState(true);
 
   const { currentChainObject } = useChainContext();
   const chainId = currentChainObject?.chainId;
@@ -19,7 +20,7 @@ const HomeContainer = () => {
   useEffect(() => {
     const fetchData = async () => {
       if (chainId !== null && chainId !== undefined) {
-        const data = await fetchAllListedToken(chainId);
+        const data = await fetchAllListedToken(chainId, allTokens);
         setAuctionsTemp(data);
       } else {
         setAuctionsTemp([]);
@@ -27,7 +28,7 @@ const HomeContainer = () => {
     };
 
     fetchData();
-  }, [chainId]);
+  }, [chainId, allTokens]);
 
   useEffect(() => {
     console.log("auctionsTemp", auctionsTemp);
@@ -71,7 +72,10 @@ const HomeContainer = () => {
         endTime: token.marketplaceListings[0].endTime,
         offerId: offerId,
         tokenId: tokenId,
-        tokenData: tokenData
+        tokenData: tokenData,
+        priceUSD:
+          Number(token.marketplaceListings[0].bidPriceStructureUsdcFormatted) /
+          Number(token.marketplaceListings[0].currencyPriceUSDCFormatted)
       };
 
       console.log("object", object);
@@ -94,7 +98,12 @@ const HomeContainer = () => {
       >
         <Description description={true} />
         <MainAuctions auctions={auctions} />
-        <MarketplaceHome auctions={auctions} chainIdFilter={chainIdFilter} />
+        <MarketplaceHome
+          auctions={auctions}
+          chainIdFilter={chainIdFilter}
+          setChainIdFilter={setChainIdFilter}
+          setAllTokens={setAllTokens}
+        />
       </div>
     </>
   );
