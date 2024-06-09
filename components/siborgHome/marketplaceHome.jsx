@@ -3,7 +3,7 @@ import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
 import Link from "next/link";
 import Auction from "./auction";
-import ItemCardSkeleton from "../skeleton/itemCardSkeleton";
+import ItemCardSkeleton from "../skeleton/ItemCardSkeleton";
 
 const MarketplaceHome = ({ chainIdFilter, auctions, setChainIdFilter, setAllTokens }) => {
   const [isHoveringCard, setIsHoveringCard] = useState(Array(auctions?.length).fill(false));

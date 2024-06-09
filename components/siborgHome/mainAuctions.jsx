@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Auction from "./auction";
-import ItemCardSkeleton from "../skeleton/itemCardSkeleton";
+import ItemCardSkeleton from "../skeleton/ItemCardSkeleton";
 
 const MainAuctions = ({ auctions }) => {
   const [isHoveringCard, setIsHoveringCard] = useState(Array(auctions?.length).fill(false));
