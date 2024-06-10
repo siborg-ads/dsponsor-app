@@ -80,10 +80,12 @@ const OwnedOffers_categories_items = ({ data, isPendinAdsOnOffer, isOwner }) => 
           })}
         </div>
       ) : (
-        <div className="w-full flex flex-col gap-4 justify-center items-center">
-          <span>You have no offers yet...</span>
-          <MainButton link={`/${chainId}/offer/create`} isPurple={true} text="Create" />
-        </div>
+        <ConditionalDisplayedComponent condition={activated_features.canCreateOffer}>
+          <div className="w-full flex flex-col gap-4 justify-center items-center">
+            <span>You have no offers yet...</span>
+            <MainButton link={`/${chainId}/offer/create`} isPurple={true} text="Create" />
+          </div>
+        </ConditionalDisplayedComponent>
       )}
     </>
   );
