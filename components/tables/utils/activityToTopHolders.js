@@ -4,12 +4,14 @@
  * @returns {Array} Formatted top holders data.
  */
 const activityToTopHolders = (activity) => {
+
     return activity
         .sort((a, b) => a.holdersRank - b.holdersRank)
         .map((ranking) => ({
             rank: ranking.holdersRank,
             totalSpent: ranking.usdcAmounts.totalSpent,
-            address: ranking.displayAddr,
+            addressDisplay: ranking.displayAddr,
+            address: ranking.addr,
             balance: ranking.balance,
             chainId: ranking.chainId,
             dPoints: ranking.dPoints,

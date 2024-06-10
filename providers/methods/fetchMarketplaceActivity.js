@@ -4,5 +4,6 @@ export const fetchMarketplaceActivity = async (chainId) => {
 
   const response = await fetch(path.href);
   const data = await response.json();
+  console.log("Data:", data);
   return data;
 };
