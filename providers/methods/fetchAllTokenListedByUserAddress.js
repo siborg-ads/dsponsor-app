@@ -1,11 +1,10 @@
 import { executeQuery } from "../utils/executeQuery";
-import { gql } from "@apollo/client";
 import config from "../utils/config";
 
 export const fetchAllTokenListedByUserAddress = async (lister, chainId) => {
   const path = new URL(`https://relayer.dsponsor.com/api/${chainId}/graph`);
 
-  const GET_DATA = gql`
+  const GET_DATA = `
     query getMarketplaceListingsForUser($lister: Bytes) {
       marketplaceListings(
         orderBy: endTime

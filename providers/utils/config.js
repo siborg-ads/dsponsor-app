@@ -1,5 +1,6 @@
-import { Network } from "alchemy-sdk";
+
 import contractABI from "../../abi/dsponsorAdmin.json";
+import Network from "./networks";
 
 const config = {
   // sepolia

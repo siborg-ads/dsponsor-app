@@ -1,25 +1,12 @@
 import React, { useEffect } from "react";
 import { useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import Timer from "./Timer";
 import BidsModal from "../modal/bidsModal";
 import { ethers } from "ethers";
 import {
-  useAddress,
-  darkTheme,
-  useBalance,
   Web3Button,
-  useTokenBalance,
-  useContract,
-  useContractRead,
-  useContractWrite,
-  useStorageUpload,
-  useTokenDecimals,
-  CheckoutWithCard,
-  CheckoutWithEth
 } from "@thirdweb-dev/react";
-import { useChainContext } from "../../contexts/hooks/useChainContext";
 import config from "../../providers/utils/config";
 
 const ItemBids = ({

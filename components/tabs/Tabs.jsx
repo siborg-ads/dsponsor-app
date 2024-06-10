@@ -1,13 +1,5 @@
-import React, { useContext, useState } from "react";
-import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
-import OfferTab from "./OfferTab";
-import Properties from "./Properties";
-import Activity_tab from "./Activity_tab";
-import Price_history from "./Price_history";
+import React from "react";
 import Link from "next/link";
-import { useChainId } from "@thirdweb-dev/react";
-import SDKProvider from "../../providers/SDKProvider";
-import SDKContext from "../../contexts/SDKContext";
 import Tippy from "@tippyjs/react";
 import { whiteListedAddress } from "../../utils/whiteListedAddress";
 import { useChainContext } from "../../contexts/hooks/useChainContext";

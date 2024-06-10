@@ -1,9 +1,3 @@
-import { useState } from "react";
-import DatePicker from "react-datepicker";
-// import styles from "../../../styles/createPage/style.module.scss";
-
-import { FileUploader } from "react-drag-drop-files";
-
 const Step_2_Create = ({ stepsRef, styles, setName, setDescription }) => {
   return (
     <div ref={(el) => (stepsRef.current[1] = el)} className={styles.form__step}>

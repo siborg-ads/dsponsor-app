@@ -1,9 +1,8 @@
 import { executeQuery } from "../utils/executeQuery";
-import { gql } from "@apollo/client";
 
 export const fetchOffer = async (offerId, chainId) => {
-  const path = new URL(`https://relayer.dsponsor.com/api/${chainId}/graph`);
-  const GET_DATA = gql`
+const path = new URL(`https://relayer.dsponsor.com/api/${chainId}/graph`);
+  const GET_DATA = `
     query TokenOfferDetails($offerId: ID!) {
       # replace by the $offerId
       adOffers(where: { id: $offerId }) {

@@ -1,7 +1,5 @@
 import React from "react";
 import { Bar } from "react-chartjs-2";
-import Chart from "chart.js/auto";
-
 const Price_history = ({ classes }) => {
   return (
     <div className="relative mb-24 w-full">

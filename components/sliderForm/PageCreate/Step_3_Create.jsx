@@ -1,5 +1,4 @@
 import { useState } from "react";
-import DatePicker from "react-datepicker";
 import Image from "next/image";
 import { Switch, cn } from "@nextui-org/react";
 
