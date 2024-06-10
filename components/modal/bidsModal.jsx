@@ -245,13 +245,13 @@ const BidsModal = ({
                   <div className="flex flex-col gap-2">
                     <div className="flex items-center gap-4 mx-auto justify-between w-full">
                       <div className="bg-jacarta-600 duration-400 shadow p-4 rounded-xl font-semibold text-base text-white flex justify-center items-center text-center">
-                        Ad Space transferred
+                        Ad Space bought
                       </div>
 
                       <span className="text-white font-semibold text-sm">OR</span>
 
                       <div className="bg-jacarta-600 duration-400 shadow p-4 rounded-xl font-semibold text-base text-white flex justify-center items-center text-center">
-                        {refundedPrice} {currencySymbol} refunded
+                        {refundedPrice} {currencySymbol} Outbid reward
                       </div>
                     </div>
                   </div>
