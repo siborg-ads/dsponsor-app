@@ -258,10 +258,7 @@ const TokenPageContainer = () => {
               .minimalBidPerToken
           )
         );
-      } else if (
-        
-        offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.bids.length <= 0
-      ) {
+      } else if (offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.bids.length <= 0) {
         setTokenBigIntPrice(
           offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.reservePricePerToken
         );

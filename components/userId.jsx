@@ -13,10 +13,7 @@ const UserId = ({ classes, userId, shortId }) => {
 
   return (
     <div>
-      <Tippy
-        hideOnClick={false}
-        content={copied ? <span>copied</span> : <span>copy</span>}
-      >
+      <Tippy hideOnClick={false} content={copied ? <span>copied</span> : <span>copy</span>}>
         <button className={classes} onClick={handleCopy(userId, setCopied)}>
           <span>{!shortId ? userId : `${userId.substring(0, 17)}...`}</span>
 

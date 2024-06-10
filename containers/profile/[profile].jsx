@@ -256,8 +256,7 @@ const Edit_user = () => {
                     Profile Image
                   </span>
                   <p className="dark:text-jacarta-300 text-sm leading-normal">
-                    We recommend an image of at least 300x300. Gifs work too.
-                    Max 5mb.
+                    We recommend an image of at least 300x300. Gifs work too. Max 5mb.
                   </p>
                 </div>
               </div>

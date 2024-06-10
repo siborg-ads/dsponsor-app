@@ -6,12 +6,7 @@ import "tippy.js/dist/tippy.css";
 import Meta from "../../components/Meta";
 import { ethers } from "ethers";
 import Image from "next/image";
-import {
-  useContract,
-  useContractWrite,
-  useContractRead,
-  useAddress,
-} from "@thirdweb-dev/react";
+import { useContract, useContractWrite, useContractRead, useAddress } from "@thirdweb-dev/react";
 import Tippy from "@tippyjs/react";
 import handleCopy from "../../utils/handleCopy";
 import "tippy.js/dist/tippy.css";
@@ -101,28 +96,19 @@ const OfferPageContainer = () => {
       }
 
       const bigIntPrice =
-        (BigInt(offerData?.nftContract?.prices[0]?.amount) *
-          (BigInt(bps) + BigInt(maxBps))) /
+        (BigInt(offerData?.nftContract?.prices[0]?.amount) * (BigInt(bps) + BigInt(maxBps))) /
         BigInt(maxBps);
-      const formatPrice = ethers.utils.formatUnits(
-        bigIntPrice,
-        currencyTokenObject.decimals
-      );
+      const formatPrice = ethers.utils.formatUnits(bigIntPrice, currencyTokenObject.decimals);
 
       setPrice(Number(Math.ceil(formatPrice * 1000) / 1000));
       setCurrency(currencyTokenObject);
     } catch (e) {
-      console.error(
-        "Error: Currency not found for address",
-        offerData?.nftContract?.prices[0],
-        e
-      );
+      console.error("Error: Currency not found for address", offerData?.nftContract?.prices[0], e);
     }
   }, [symbolContract, decimalsContract, offerData, bps]);
 
   useEffect(() => {
-    if (offerData?.nftContract?.royaltyBps)
-      setRoyalties(offerData?.nftContract?.royaltyBps / 100);
+    if (offerData?.nftContract?.royaltyBps) setRoyalties(offerData?.nftContract?.royaltyBps / 100);
   }, [offerData]);
 
   const handleSubmit = async (submissionArgs) => {
@@ -152,7 +138,7 @@ const OfferPageContainer = () => {
   const metadata = {
     title: `${offerData?.metadata?.offer?.name} || DSponsor | smarter monetization for your content`,
     keyword: `DSponsor, offer, ${offerData?.metadata?.offer?.name}, ${offerData?.metadata?.offer?.description}`,
-    desc: offerData?.metadata?.offer?.description,
+    desc: offerData?.metadata?.offer?.description
   };
   if (!offerData || offerData.length === 0) {
     return (
@@ -170,7 +156,7 @@ const OfferPageContainer = () => {
     id = "1",
     image = ["/images/gradient_creative.jpg"],
     name = "DefaultName",
-    nftContract = "N/A",
+    nftContract = "N/A"
   } = offerData.metadata.offer ? offerData.metadata.offer : {};
 
   return (
@@ -216,9 +202,7 @@ const OfferPageContainer = () => {
               </button>
 
               {/* <!-- Modal --> */}
-              <div
-                className={imageModal ? "modal fade show block" : "modal fade"}
-              >
+              <div className={imageModal ? "modal fade show block" : "modal fade"}>
                 <div className="modal-dialog !my-0 flex  items-center justify-center">
                   <Image
                     width={582}
@@ -281,9 +265,7 @@ const OfferPageContainer = () => {
                 {offerData.nftContract.allowList && (
                   <span className="dark:text-jacarta-300 text-jacarta-400 text-sm">
                     {offerData.nftContract.maxSupply -
-                      offerData.nftContract.tokens.filter(
-                        (item) => item.mint != null
-                      ).length}
+                      offerData.nftContract.tokens.filter((item) => item.mint != null).length}
                     /{offerData.nftContract.maxSupply} available
                   </span>
                 )}
@@ -298,12 +280,10 @@ const OfferPageContainer = () => {
                 <div className="dark:bg-jacarta-700 dark:border-jacarta-600 border-jacarta-100 rounded-2lg border bg-white p-8">
                   <div className=" sm:flex sm:flex-wrap">
                     <span className="dark:text-jacarta-300 text-jacarta-400 text-sm">
-                      This page allows you to oversee submitted ads, offering
-                      tools to either approve or reject them. Approve ads to
-                      make them live or reject those that don&apos;t meet your
-                      standards, streamlining the content that reaches your
-                      audience while maintaining quality control on your
-                      platform.{" "}
+                      This page allows you to oversee submitted ads, offering tools to either
+                      approve or reject them. Approve ads to make them live or reject those that
+                      don&apos;t meet your standards, streamlining the content that reaches your
+                      audience while maintaining quality control on your platform.{" "}
                     </span>
                   </div>
                 </div>
@@ -333,10 +313,9 @@ const OfferPageContainer = () => {
           <div className="dark:bg-jacarta-700 dark:border-jacarta-600 border-jacarta-100 rounded-2lg border bg-white p-8">
             <div className=" sm:flex sm:flex-wrap">
               <span className="dark:text-jacarta-300 text-jacarta-400 text-sm">
-                You can check if a word is available for purchase by using the
-                search bar. Simply type the word into the search bar and press
-                enter to see if it is available. This feature allows you to
-                quickly find out if the word you are interested in is free for
+                You can check if a word is available for purchase by using the search bar. Simply
+                type the word into the search bar and press enter to see if it is available. This
+                feature allows you to quickly find out if the word you are interested in is free for
                 acquisition.{" "}
               </span>
             </div>
@@ -349,13 +328,9 @@ const OfferPageContainer = () => {
               <article className="relative">
                 <div className="dark:bg-jacarta-700 dark:border-jacarta-700 border-jacarta-100 rounded-2xl block border bg-white p-[1.1875rem] transition-shadow hover:shadow-lg text-jacarta-500">
                   {isWordAlreadyTaken ? (
-                    <span className="text-red  ">
-                      This word is already taken ❌
-                    </span>
+                    <span className="text-red  ">This word is already taken ❌</span>
                   ) : (
-                    <span className="text-green ">
-                      This word is available 🎉
-                    </span>
+                    <span className="text-green ">This word is available 🎉</span>
                   )}
                   <figure className="mt-2">
                     <Link href={urlFromChild}>
@@ -421,9 +396,8 @@ const OfferPageContainer = () => {
           </h2>
           <div className="dark:bg-jacarta-700 dark:border-jacarta-600 border-jacarta-100 rounded-2lg border bg-white p-8 mb-4">
             <span className="dark:text-jacarta-300 text-jacarta-400 text-sm ">
-              You can integrate this offer on your website by using the
-              following iframe code. Simply copy and paste the code into your
-              website to display the offer.{" "}
+              You can integrate this offer on your website by using the following iframe code.
+              Simply copy and paste the code into your website to display the offer.{" "}
             </span>
             <br />
 
@@ -442,10 +416,7 @@ const OfferPageContainer = () => {
                   {`<iframe src="https://relayer.dsponsor.com/${chainId}/integrations/${offerId}/ClickableLogosGrid/iFrame" height="315" width="1000px" className={'h-screen w-full'} />`}
                 </code>
               </pre>
-              <Tippy
-                hideOnClick={false}
-                content={copied ? <span>copied</span> : <span>copy</span>}
-              >
+              <Tippy hideOnClick={false} content={copied ? <span>copied</span> : <span>copy</span>}>
                 <div className=" cursor-pointer">
                   <button
                     text={`<iframe src="https://relayer.dsponsor.com/${chainId}/integrations/${offerId}/ClickableLogosGrid/iFrame" height="315" width="1000px" className={'h-screen w-full'} />`}

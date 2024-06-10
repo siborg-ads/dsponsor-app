@@ -21,7 +21,7 @@ import {
   useStorageUpload,
   useTokenDecimals,
   CheckoutWithCard,
-  CheckoutWithEth,
+  CheckoutWithEth
 } from "@thirdweb-dev/react";
 
 import { fetchAllListedToken } from "../../providers/methods/fetchAllListedToken";
@@ -65,20 +65,14 @@ const MarketplaceContainer = () => {
     if (filterTypes.length === 0) return listedAuctionToken;
 
     const filterCategories = {
-      status: filterTypes
-        .filter((f) => f.category === "status")
-        .map((f) => f.type),
-      chain: filterTypes
-        .filter((f) => f.category === "chain")
-        .map((f) => f.type),
+      status: filterTypes.filter((f) => f.category === "status").map((f) => f.type),
+      chain: filterTypes.filter((f) => f.category === "chain").map((f) => f.type)
     };
 
     return listedAuctionToken?.filter((item) => {
       const statusMatch =
         filterCategories.status.length === 0 ||
-        filterCategories.status.includes(
-          item.marketplaceListings[0]?.listingType
-        );
+        filterCategories.status.includes(item.marketplaceListings[0]?.listingType);
       const chainMatch =
         filterCategories.chain.length === 0 ||
         filterCategories.chain.includes(item.chainConfig.chainName);
@@ -90,7 +84,7 @@ const MarketplaceContainer = () => {
     title: "Marketplace || DSponsor | smarter monetization for your content",
     keyword:
       "DSponsor, marketplace, token, creator, sponsor, monetize, content, creator, sponsor, monetize, content",
-    desc: "DSponsor is a platform that connects content creators with sponsors. Our platform helps creators monetize their content and helps sponsors find creators to promote their products.",
+    desc: "DSponsor is a platform that connects content creators with sponsors. Our platform helps creators monetize their content and helps sponsors find creators to promote their products."
   };
 
   return (
@@ -159,10 +153,7 @@ const MarketplaceContainer = () => {
                           isOwner={isOwner}
                           isToken={true}
                           isListing={item?.marketplaceListings[0]?.listingType}
-                          isAuction={
-                            item?.marketplaceListings[0]?.listingType ===
-                            "Auction"
-                          }
+                          isAuction={item?.marketplaceListings[0]?.listingType === "Auction"}
                         />
                       );
                     })}

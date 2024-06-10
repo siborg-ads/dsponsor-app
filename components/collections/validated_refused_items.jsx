@@ -31,9 +31,7 @@ const Validated_refused_items = ({ statut, proposalData, isToken }) => {
   const [inputText, setInputText] = useState("");
 
   const handleFilter = (category) => {
-    setData(
-      collection_activity_item_data.filter((item) => item.category === category)
-    );
+    setData(collection_activity_item_data.filter((item) => item.category === category));
   };
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -61,9 +59,7 @@ const Validated_refused_items = ({ statut, proposalData, isToken }) => {
   const getImageUrl = (adParams) => {
     if (!adParams) return "/";
 
-    const imageKey = Object.keys(adParams).find((key) =>
-      key.startsWith("imageURL")
-    );
+    const imageKey = Object.keys(adParams).find((key) => key.startsWith("imageURL"));
     return imageKey ? adParams[imageKey] : "/";
   };
 
@@ -84,8 +80,7 @@ const Validated_refused_items = ({ statut, proposalData, isToken }) => {
           <div className="dark:bg-jacarta-700 dark:border-jacarta-600 border-jacarta-100 rounded-2lg border bg-white p-6 mb-4">
             <div className=" sm:flex sm:flex-wrap">
               <span className="dark:text-jacarta-300 text-jacarta-400 text-sm">
-                🎉 Congratulations ! This ad is displayed on the offer creator’s
-                interfaces!
+                🎉 Congratulations ! This ad is displayed on the offer creator’s interfaces!
               </span>
             </div>
           </div>
@@ -95,14 +90,7 @@ const Validated_refused_items = ({ statut, proposalData, isToken }) => {
 
           <div className="mb-10 shrink-0 basis-8/12 space-y-5 lg:mb-0 lg:pr-10">
             {proposalData?.map((item) => {
-              const {
-                adParametersList,
-                proposalIds,
-                tokenId,
-                reason,
-                title,
-                tokenData,
-              } = item;
+              const { adParametersList, proposalIds, tokenId, reason, title, tokenData } = item;
 
               return (
                 <div
@@ -111,10 +99,7 @@ const Validated_refused_items = ({ statut, proposalData, isToken }) => {
                 >
                   <div className=" relative flex items-center gap-5 flex-col sm:flex-row ">
                     <figure className="self-start">
-                      <button
-                        className="w-full"
-                        onClick={() => openModal(tokenId)}
-                      >
+                      <button className="w-full" onClick={() => openModal(tokenId)}>
                         {getImageUrl(adParametersList) && (
                           <Image
                             src={getImageUrl(adParametersList)}
@@ -130,11 +115,7 @@ const Validated_refused_items = ({ statut, proposalData, isToken }) => {
 
                       {/* Modal */}
                       <div
-                        className={
-                          modalStates[tokenId]
-                            ? "modal fade show block"
-                            : "modal fade"
-                        }
+                        className={modalStates[tokenId] ? "modal fade show block" : "modal fade"}
                       >
                         <div className="modal-dialog !my-0 flex h-full max-w-4xl items-center justify-center relative">
                           <Image
@@ -187,11 +168,7 @@ const Validated_refused_items = ({ statut, proposalData, isToken }) => {
                       <div className="flex flex-col">
                         <button className="flex min-w-[20px] text-white max-w-[20rem]  select-none overflow-hidden text-ellipsis whitespace-nowrap">
                           <Link
-                            href={
-                              adParametersList?.linkURL
-                                ? adParametersList.linkURL
-                                : "/"
-                            }
+                            href={adParametersList?.linkURL ? adParametersList.linkURL : "/"}
                             target="_blank"
                           >
                             {adParametersList?.linkURL}

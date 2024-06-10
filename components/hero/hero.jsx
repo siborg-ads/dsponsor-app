@@ -37,15 +37,13 @@ const Hero = () => {
               Unlock Smarter Monetization with d&gt;sponsor
             </h1>
             <p className="dark:text-jacarta-200 mb-8 text-center text-lg">
-              Leverage audience engagement into investment opportunities. A new
-              Web3 model for an enhanced media and creator economy.
+              Leverage audience engagement into investment opportunities. A new Web3 model for an
+              enhanced media and creator economy.
             </p>
             <div className="flex items-center space-x-4 justify-center w-full">
-              <MainButton
-                link={`/${chainId}/offer/create`}
-                isPurple={true}
-                text="Create"
-              />
+              <ConditionalDisplayedComponent condition={activated_features.canCreateOffer}>
+                <MainButton link={`/${chainId}/offer/create`} isPurple={true} text="Create" />
+              </ConditionalDisplayedComponent>
 
               <MainButton link="#hot-offers" isPurple={false} text="Buy" />
             </div>

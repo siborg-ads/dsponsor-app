@@ -1,5 +1,8 @@
 import React, { useEffect, useState, useRef } from "react";
-import { ownedAdProposals_categories_filter, trendingCategoryData } from "../../data/categories_data";
+import {
+  ownedAdProposals_categories_filter,
+  trendingCategoryData
+} from "../../data/categories_data";
 import CategoryItem from "./categoryItem";
 import {
   useAddress,
@@ -13,7 +16,7 @@ import {
   useStorageUpload,
   useTokenDecimals,
   CheckoutWithCard,
-  CheckoutWithEth,
+  CheckoutWithEth
 } from "@thirdweb-dev/react";
 import Image from "next/image";
 import Link from "next/link";
@@ -47,9 +50,7 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
   const [previewImages, setPreviewImages] = useState([]);
   const [link, setLink] = useState("");
   const [errors, setErrors] = useState({});
-  const [selectedParamsIntegration, setSelectedParamsIntegration] = useState(
-    []
-  );
+  const [selectedParamsIntegration, setSelectedParamsIntegration] = useState([]);
   const [showSliderForm, setShowSliderForm] = useState(false);
   const [adParameters, setAdParameters] = useState([]);
   const [imageURLSteps, setImageURLSteps] = useState([]);
@@ -63,22 +64,14 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
   );
   const [isLoadingButton, setIsLoadingButton] = useState(false);
 
-
-  const { mutateAsync: uploadToIPFS, isLoading: isUploading } =
-    useStorageUpload();
-  const { mutateAsync: submitAd } = useContractWrite(
-    DsponsorAdminContract,
-    "submitAdProposals"
-  );
-
+  const { mutateAsync: uploadToIPFS, isLoading: isUploading } = useStorageUpload();
+  const { mutateAsync: submitAd } = useContractWrite(DsponsorAdminContract, "submitAdProposals");
 
   const chainId = currentChainObject?.chainId;
 
   const handleFilter = (category) => {
     if (category !== "all") {
-      setItemdata(
-        trendingCategoryData.filter((item) => item.category === category)
-      );
+      setItemdata(trendingCategoryData.filter((item) => item.category === category));
     } else {
       setItemdata(trendingCategoryData);
     }
@@ -180,7 +173,7 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
         const variant = id.slice("imageURL-".length);
         imageURLStep.push({
           uniqueId: variant,
-          offerIds: adDetails[id],
+          offerIds: adDetails[id]
         });
       });
     const totalNumSteps = numSteps + imageURLStep.length;
@@ -201,10 +194,7 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
       setIsLoadingButton(true);
       for (const item of selectedItems) {
         for (const args of item.adParameters) {
-          if (
-            args.adParameter.id !== "xSpaceId" &&
-            args.adParameter.id !== "xCreatorHandle"
-          ) {
+          if (args.adParameter.id !== "xSpaceId" && args.adParameter.id !== "xCreatorHandle") {
             selectedOfferIdItems.push(item.offerId);
             selectedTokenIdItems.push(item.tokenId);
             adParametersItems.push(args.adParameter.id);
@@ -219,8 +209,8 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
                 data: [file.file],
                 options: {
                   uploadWithGatewayUrl: true,
-                  uploadWithoutDirectory: true,
-                },
+                  uploadWithoutDirectory: true
+                }
               });
             } catch (error) {
               console.error("Erreur lors de l'upload à IPFS:", error);
@@ -267,18 +257,13 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
     subBody:
       "Ad assets submitted! They are now under review and awaiting validation by the offer creator.",
     buttonTitle: "Close",
-    hrefButton: null,
+    hrefButton: null
   };
 
   if (!data) {
     return (
       <div className="flex w-full justify-center">
-        <Image
-          src="/images/loading-bullet.svg"
-          alt="icon"
-          width={60}
-          height={60}
-        />
+        <Image src="/images/loading-bullet.svg" alt="icon" width={60} height={60} />
       </div>
     );
   }
@@ -305,18 +290,14 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
             </button>
           )}
           {!showSliderForm && (
-            <div
-              className={` grid grid-cols-1 gap-[1.875rem] md:grid-cols-2 lg:grid-cols-4`}
-            >
+            <div className={` grid grid-cols-1 gap-[1.875rem] md:grid-cols-2 lg:grid-cols-4`}>
               {data?.map((item, index) => {
                 return isSelectionActive ? (
                   <div
                     onClick={() => handleSelection(item)}
                     key={index}
                     className={`  ${
-                      isSelectedItem[item.id]
-                        ? "border-4 border-jacarta-100 rounded-2xl"
-                        : ""
+                      isSelectedItem[item.id] ? "border-4 border-jacarta-100 rounded-2xl" : ""
                     }`}
                   >
                     <OfferItem
@@ -359,8 +340,8 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
             isFirstSelection
               ? "hidden"
               : selectedItems?.length === 0
-              ? "animated-modalSelectedItemDown"
-              : "animated-modalSelectedItemUp"
+                ? "animated-modalSelectedItemDown"
+                : "animated-modalSelectedItemUp"
           }`}
         >
           <div className="dropdown-item mb-4 font-display   block w-full rounded-xl  text-left text-sm transition-colors dark:text-white">
@@ -368,11 +349,7 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
               <span className="mr-4">
                 Ad Spaces selected :{" "}
                 <span className="text-accent text-md ml-1">
-                  {
-                    Object.values(isSelectedItem).filter(
-                      (value) => value === true
-                    ).length
-                  }
+                  {Object.values(isSelectedItem).filter((value) => value === true).length}
                 </span>{" "}
               </span>
             </span>
@@ -410,12 +387,7 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
               adParameters={adParameters}
               setImageUrlVariants={setImageUrlVariants}
             />
-            <Step_2_Mint
-              stepsRef={stepsRef}
-              styles={styles}
-              setLink={setLink}
-              link={link}
-            />
+            <Step_2_Mint stepsRef={stepsRef} styles={styles} setLink={setLink} link={link} />
             {imageURLSteps.map((step, index) => (
               <Step_3_Mint
                 key={step.uniqueId}

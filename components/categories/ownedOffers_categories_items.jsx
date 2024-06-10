@@ -10,11 +10,7 @@ import OfferItem from "../cards/offerItem";
 import Link from "next/link";
 import MainButton from "../buttons/mainButton";
 
-const OwnedOffers_categories_items = ({
-  data,
-  isPendinAdsOnOffer,
-  isOwner,
-}) => {
+const OwnedOffers_categories_items = ({ data, isPendinAdsOnOffer, isOwner }) => {
   const [itemdata, setItemdata] = useState(trendingCategoryData);
   const dispatch = useDispatch();
   const { currentChainObject } = useChainContext();
@@ -24,9 +20,7 @@ const OwnedOffers_categories_items = ({
 
   const handleFilter = (category) => {
     if (category !== "all") {
-      setItemdata(
-        trendingCategoryData.filter((item) => item.category === category)
-      );
+      setItemdata(trendingCategoryData.filter((item) => item.category === category));
     } else {
       setItemdata(trendingCategoryData);
     }
@@ -58,12 +52,7 @@ const OwnedOffers_categories_items = ({
   if (!data) {
     return (
       <div className="flex w-full justify-center">
-        <Image
-          src="/images/loading-bullet.svg"
-          alt="icon"
-          width={60}
-          height={60}
-        />
+        <Image src="/images/loading-bullet.svg" alt="icon" width={60} height={60} />
       </div>
     );
   }
@@ -93,11 +82,7 @@ const OwnedOffers_categories_items = ({
       ) : (
         <div className="w-full flex flex-col gap-4 justify-center items-center">
           <span>You have no offers yet...</span>
-          <MainButton
-            link={`/${chainId}/offer/create`}
-            isPurple={true}
-            text="Create"
-          />
+          <MainButton link={`/${chainId}/offer/create`} isPurple={true} text="Create" />
         </div>
       )}
     </>

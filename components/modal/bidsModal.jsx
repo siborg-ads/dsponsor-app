@@ -33,10 +33,7 @@ const BidsModal = ({
 }) => {
   const [initialIntPrice, setInitialIntPrice] = useState(0);
   const [isPriceGood, setIsPriceGood] = useState(false);
-  const { mutateAsync: auctionBids } = useContractWrite(
-    dsponsorMpContract,
-    "bid"
-  );
+  const { mutateAsync: auctionBids } = useContractWrite(dsponsorMpContract, "bid");
   const [checkTerms, setCheckTerms] = useState(false);
   const [refundedPrice, setRefundedPrice] = useState(null);
   const [endDate, setEndDate] = useState(null);
@@ -153,10 +150,7 @@ const BidsModal = ({
     }
     try {
       setIsLoadingButton(true);
-      const bidsBigInt = ethers.utils.parseUnits(
-        bidsAmount.toString(),
-        currencyTokenDecimals
-      );
+      const bidsBigInt = ethers.utils.parseUnits(bidsAmount.toString(), currencyTokenDecimals);
 
       await auctionBids({
         args: [marketplaceListings[0].id, bidsBigInt, address, ""]
@@ -182,11 +176,7 @@ const BidsModal = ({
               <h5 className="modal-title" id="placeBidLabel">
                 Place a bid
               </h5>
-              <button
-                type="button"
-                className="btn-close"
-                onClick={toggleBidsModal}
-              >
+              <button type="button" className="btn-close" onClick={toggleBidsModal}>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 24 24"
@@ -238,8 +228,7 @@ const BidsModal = ({
                 {!isPriceGood && (
                   <div className="text-left">
                     <span className="dark:text-warning text-sm">
-                      ⚠️ Bid Price must be higher than {initialIntPrice}{" "}
-                      {currencySymbol}
+                      ⚠️ Bid Price must be higher than {initialIntPrice} {currencySymbol}
                     </span>
                   </div>
                 )}
@@ -276,10 +265,7 @@ const BidsModal = ({
                     className="checked:bg-accent dark:bg-jacarta-600 text-accent border-jacarta-200 focus:ring-accent/20 dark:border-jacarta-500 h-5 w-5 self-start rounded focus:ring-offset-0"
                     onClick={handleTermService}
                   />
-                  <label
-                    htmlFor="buyNowTerms"
-                    className="dark:text-jacarta-200 text-sm"
-                  >
+                  <label htmlFor="buyNowTerms" className="dark:text-jacarta-200 text-sm">
                     By checking this box, I agree to {"DSponsor's"}{" "}
                     <Link href="#" className="text-accent">
                       Terms of Service
@@ -316,9 +302,7 @@ const BidsModal = ({
             <div className="modal-footer">
               {allowanceTrue && !successFullBid ? (
                 <Web3Button
-                  contractAddress={
-                    config[chainId]?.smartContracts?.DSPONSORMP?.address
-                  }
+                  contractAddress={config[chainId]?.smartContracts?.DSPONSORMP?.address}
                   action={() => {
                     toast.promise(handleApprove, {
                       pending: "Waiting for confirmation 🕒",
@@ -327,24 +311,16 @@ const BidsModal = ({
                     });
                   }}
                   className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${
-                    !isPriceGood || !checkTerms
-                      ? "btn-disabled"
-                      : "!bg-accent !cursor-pointer"
+                    !isPriceGood || !checkTerms ? "btn-disabled" : "!bg-accent !cursor-pointer"
                   } `}
                   isDisabled={!isPriceGood || !checkTerms}
                 >
-                  {isLoadingButton ? (
-                    <Spinner size="sm" color="default" />
-                  ) : (
-                    "Approve"
-                  )}
+                  {isLoadingButton ? <Spinner size="sm" color="default" /> : "Approve"}
                 </Web3Button>
               ) : !successFullBid ? (
                 <div className="flex items-center justify-center space-x-4">
                   <Web3Button
-                    contractAddress={
-                      config[chainId]?.smartContracts?.DSPONSORMP?.address
-                    }
+                    contractAddress={config[chainId]?.smartContracts?.DSPONSORMP?.address}
                     action={() => {
                       toast.promise(handleSubmit, {
                         pending: "Waiting for confirmation 🕒",
@@ -353,17 +329,11 @@ const BidsModal = ({
                       });
                     }}
                     className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${
-                      !isPriceGood || !checkTerms
-                        ? "btn-disabled"
-                        : "!bg-accent !cursor-pointer"
+                      !isPriceGood || !checkTerms ? "btn-disabled" : "!bg-accent !cursor-pointer"
                     } `}
                     isDisabled={!isPriceGood || !checkTerms}
                   >
-                    {isLoadingButton ? (
-                      <Spinner size="sm" color="default" />
-                    ) : (
-                      "Place Bid"
-                    )}
+                    {isLoadingButton ? <Spinner size="sm" color="default" /> : "Place Bid"}
                   </Web3Button>
                   {/* <button
                   type="button"
