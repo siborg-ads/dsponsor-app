@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Auction from "./auction";
+import ItemCardSkeleton from "../skeleton/ItemCardSkeleton";
 
 const MainAuctions = ({ auctions }) => {
   const [isHoveringCard, setIsHoveringCard] = useState(Array(auctions?.length).fill(false));
@@ -36,23 +37,34 @@ const MainAuctions = ({ auctions }) => {
       <div className="flex flex-col gap-4">
         <div className="text-xl font-semibold text-white">Live Auctions 🔥</div>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {randomAuctions.map((auction, index) => (
-            <Link
-              key={index}
-              href={auction.link ?? ""}
-              className="cursor-pointer md:cursor-default"
-              onMouseEnter={() =>
-                setIsHoveringCard(
-                  Array(randomAuctions?.length)
-                    .fill(false, index, index + 1)
-                    .fill(true, index, index + 1)
-                )
-              }
-              onMouseLeave={() => setIsHoveringCard(Array(randomAuctions?.length).fill(false))}
-            >
-              <Auction auction={auction} isHoveringCard={isHoveringCard} index={index} />
-            </Link>
-          ))}
+          {randomAuctions.length !== 0 ? (
+            <>
+              {randomAuctions.map((auction, index) => (
+                <Link
+                  key={index}
+                  href={auction.link ?? ""}
+                  className="cursor-pointer md:cursor-default"
+                  onMouseEnter={() =>
+                    setIsHoveringCard(
+                      Array(randomAuctions?.length)
+                        .fill(false, index, index + 1)
+                        .fill(true, index, index + 1)
+                    )
+                  }
+                  onMouseLeave={() => setIsHoveringCard(Array(randomAuctions?.length).fill(false))}
+                >
+                  <Auction auction={auction} isHoveringCard={isHoveringCard} index={index} />
+                </Link>
+              ))}
+            </>
+          ) : (
+            <>
+              <ItemCardSkeleton />
+              <ItemCardSkeleton />
+              <ItemCardSkeleton />
+              <ItemCardSkeleton />
+            </>
+          )}
         </div>
       </div>
     </>

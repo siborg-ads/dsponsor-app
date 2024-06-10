@@ -7,7 +7,7 @@ import Link from "next/link";
 import config from "../../providers/utils/config";
 import { computeBidAmounts } from "../../utils/computeBidAmounts";
 import { formatUnits, parseUnits } from "ethers/lib/utils";
-import formatAndRound from "../../utils/formatAndRound";
+import { formatAndRoundPrice } from "../../utils/formatAndRound";
 import { fetchTokenPrice } from "../../utils/fetchTokenPrice";
 
 const BidsModal = ({
@@ -29,11 +29,10 @@ const BidsModal = ({
   handleApprove,
   checkAllowance,
   isLoadingButton,
-  setIsLoadingButton,
-  endTime
+  setIsLoadingButton
 }) => {
   const [initialIntPrice, setInitialIntPrice] = useState(0);
-  const [isPriceGood, setIsPriceGood] = useState(false);
+  const [isPriceGood, setIsPriceGood] = useState(true);
   const { mutateAsync: auctionBids } = useContractWrite(dsponsorMpContract, "bid");
   const [checkTerms, setCheckTerms] = useState(false);
   const [refundedPrice, setRefundedPrice] = useState(null);
@@ -43,18 +42,32 @@ const BidsModal = ({
   const [tokenPrice, setTokenPrice] = useState(null);
 
   useEffect(() => {
-    if (marketplaceListings[0] && bidsAmount && bidsAmount > 0 && chainId) {
-      fetchTokenPrice(marketplaceListings[0]?.currency, chainId, bidsAmount).then((price) => {
+    const fetchData = async () => {
+      await fetchTokenPrice(
+        marketplaceListings[0]?.currency,
+        Number(chainId),
+        parseUnits(
+          Number(bidsAmount).toFixed(currencyTokenDecimals).toString(),
+          currencyTokenDecimals
+        )
+      ).then((price) => {
         setTokenPrice(price);
       });
+    };
+
+    if (marketplaceListings && marketplaceListings[0] && bidsAmount && bidsAmount > 0 && chainId) {
+      fetchData();
     } else {
       setTokenPrice(0);
     }
-  }, [bidsAmount, chainId, marketplaceListings]);
+  }, [bidsAmount, chainId, marketplaceListings, currencyTokenDecimals]);
 
   useEffect(() => {
     if (marketplaceListings[0] && bidsAmount && bidsAmount > 0 && currencyTokenDecimals) {
-      const newBidPerToken = parseUnits(bidsAmount.toString(), currencyTokenDecimals);
+      const newBidPerToken = parseUnits(
+        Number(bidsAmount).toFixed(6).toString(),
+        currencyTokenDecimals
+      );
       const reservePricePerToken = marketplaceListings[0]?.reservePricePerToken;
       const buyoutPricePerToken = marketplaceListings[0]?.buyoutPricePerToken;
       const previousPricePerToken =
@@ -64,7 +77,7 @@ const BidsModal = ({
       const royaltyBps = 0;
       const protocolFeeBps = marketplaceListings[0]?.protocolFeeBps;
 
-      const { newRefundBonusAmount, nextReservePricePerToken } = computeBidAmounts(
+      const { newAmount, newRefundBonusAmount, nextReservePricePerToken } = computeBidAmounts(
         newBidPerToken,
         1,
         reservePricePerToken,
@@ -76,13 +89,12 @@ const BidsModal = ({
         protocolFeeBps
       );
 
-      const newRefundBonusAmountFormatted = formatAndRound(
-        formatUnits(newRefundBonusAmount, currencyTokenDecimals)
-      );
-      const newRefundBonusAmountAdded = Number(newRefundBonusAmountFormatted) + Number(bidsAmount);
-      const newRefundBonusFormatted = formatAndRound(newRefundBonusAmountAdded.toString());
-      const nextReservePricePerTokenFormatted = formatAndRound(
-        formatUnits(nextReservePricePerToken, currencyTokenDecimals)
+      const newRefundBonusAmountAdded = BigInt(newRefundBonusAmount) + BigInt(newAmount);
+      const newRefundBonusFormatted = formatUnits(newRefundBonusAmountAdded, currencyTokenDecimals);
+
+      const nextReservePricePerTokenFormatted = formatUnits(
+        nextReservePricePerToken,
+        currencyTokenDecimals
       );
 
       setRefundedPrice(newRefundBonusFormatted);
@@ -94,10 +106,11 @@ const BidsModal = ({
   }, [bidsAmount, marketplaceListings, currencyTokenDecimals]);
 
   useEffect(() => {
-    const endTimeLocal = new Date(endTime * 1000); // we convert the timestamp to milliseconds
-    setEndDate(endTimeLocal.toLocaleDateString());
-    setEndDateHour(endTimeLocal.toLocaleTimeString());
-  }, [endTime]);
+    const endTime = marketplaceListings[0]?.endTime;
+    const endTimeDate = new Date(endTime * 1000); // we convert the timestamp to milliseconds
+    setEndDate(endTimeDate.toLocaleDateString());
+    setEndDateHour(endTimeDate.toLocaleTimeString());
+  }, [marketplaceListings]);
 
   useEffect(() => {
     const minimalBidPerToken = marketplaceListings[0]?.bidPriceStructure?.minimalBidPerToken;
@@ -106,7 +119,7 @@ const BidsModal = ({
       setInitialIntPrice(minimalBid);
       setBidsAmount(minimalBid);
     }
-  }, [marketplaceListings, setBidsAmount]);
+  }, [marketplaceListings, setBidsAmount, currencyTokenDecimals]);
 
   const handleBidsAmount = async (e) => {
     if (Number(e.target.value) < initialIntPrice) {
@@ -115,12 +128,21 @@ const BidsModal = ({
     } else {
       setIsPriceGood(true);
       setBidsAmount(e.target.value);
-      setAmountToApprove(ethers.utils.parseUnits(e.target.value.toString(), currencyTokenDecimals));
+      setAmountToApprove(
+        ethers.utils.parseUnits(
+          Number(e.target.value).toFixed(currencyTokenDecimals).toString(),
+          currencyTokenDecimals
+        )
+      );
       await checkAllowance(
-        ethers.utils.parseUnits(e.target.value.toString(), currencyTokenDecimals)
+        ethers.utils.parseUnits(
+          Number(e.target.value).toFixed(currencyTokenDecimals).toString(),
+          currencyTokenDecimals
+        )
       );
     }
   };
+
   const handleSubmit = async () => {
     const hasEnoughBalance = checkUserBalance(tokenBalance, bidsAmount);
     if (!hasEnoughBalance) {
@@ -199,7 +221,7 @@ const BidsModal = ({
 
                   <div className="bg-jacarta-600 w-1/4 border border-jacarta-900 border-opacity-10 rounded-xl flex flex-1 justify-center self-stretch border-l">
                     <span className="self-center px-4 text-xl text-center text-white font-semibold">
-                      ${tokenPrice ?? 0}
+                      ${formatAndRoundPrice(tokenPrice) ?? 0}
                     </span>
                   </div>
                 </div>

@@ -2,7 +2,7 @@ import { executeQuery } from "../utils/executeQuery";
 import { gql } from "@apollo/client";
 import config from "../utils/config";
 
-export const fetchAllListedToken = async (chainId) => {
+export const fetchAllListedToken = async (chainId, allTokens) => {
   const path = new URL(`https://relayer.dsponsor.com/api/${chainId}/graph`);
   const currentTimestamp = Math.floor(Date.now() / 1000);
 
@@ -118,9 +118,11 @@ export const fetchAllListedToken = async (chainId) => {
 
         nftContract: {
           ...offer.nftContract,
-          tokens: offer.nftContract.tokens.filter(
-            (token) => token.mint && token.marketplaceListings.length > 0
-          )
+          tokens: allTokens
+            ? offer.nftContract.tokens
+            : offer.nftContract.tokens.filter(
+                (token) => token.mint && token.marketplaceListings.length > 0
+              )
         }
       };
 
@@ -131,7 +133,7 @@ export const fetchAllListedToken = async (chainId) => {
       offer.nftContract.tokens.map((token) => ({
         ...token,
         offerId: offer.id,
-        tokenData: token.mint.tokenData ? token.mint.tokenData : null,
+        tokenData: token.mint?.tokenData ? token.mint.tokenData : null,
         chainConfig: chainConfig
       }))
     )

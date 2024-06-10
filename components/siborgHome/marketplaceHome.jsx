@@ -3,8 +3,9 @@ import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
 import Link from "next/link";
 import Auction from "./auction";
+import ItemCardSkeleton from "../skeleton/ItemCardSkeleton";
 
-const MarketplaceHome = ({ chainIdFilter, auctions }) => {
+const MarketplaceHome = ({ chainIdFilter, auctions, setChainIdFilter, setAllTokens }) => {
   const [isHoveringCard, setIsHoveringCard] = useState(Array(auctions?.length).fill(false));
   const [filterName, setFilterName] = useState(null);
   const [filteredAuctions, setFilteredAuctions] = useState(auctions);
@@ -42,9 +43,9 @@ const MarketplaceHome = ({ chainIdFilter, auctions }) => {
   useEffect(() => {
     setFilteredAuctions((prev) => {
       if (priceSorting === 1) {
-        return prev.sort((a, b) => a.price - b.price);
+        return prev.sort((a, b) => a.priceUSD - b.priceUSD);
       } else if (priceSorting === -1) {
-        return prev.sort((a, b) => b.price - a.price);
+        return prev.sort((a, b) => b.priceUSD - a.priceUSD);
       } else {
         return prev;
       }
@@ -150,6 +151,7 @@ const MarketplaceHome = ({ chainIdFilter, auctions }) => {
                   <MenuItem
                     onClick={() => {
                       setFilter("All the spaces");
+                      setAllTokens(true);
                     }}
                     className="hover:bg-jacarta-500 p-2 rounded-lg w-full pr-12 md:pr-24"
                   >
@@ -210,27 +212,37 @@ const MarketplaceHome = ({ chainIdFilter, auctions }) => {
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {filteredAuctions?.map((auction, index) => (
+            {filteredAuctions?.length !== 0 ? (
               <>
-                <Link
-                  key={index}
-                  href={auction.link ?? ""}
-                  className="cursor-pointer md:cursor-default"
-                  onMouseEnter={() =>
-                    setIsHoveringCard(
-                      Array(filteredAuctions?.length)
-                        .fill(false, index, index + 1)
-                        .fill(true, index, index + 1)
-                    )
-                  }
-                  onMouseLeave={() =>
-                    setIsHoveringCard(Array(filteredAuctions?.length).fill(false))
-                  }
-                >
-                  <Auction auction={auction} isHoveringCard={isHoveringCard} index={index} />
-                </Link>
+                {filteredAuctions?.map((auction, index) => (
+                  <>
+                    <Link
+                      key={index}
+                      href={auction.link ?? ""}
+                      className="cursor-pointer md:cursor-default"
+                      onMouseEnter={() =>
+                        setIsHoveringCard(
+                          Array(filteredAuctions?.length)
+                            .fill(false, index, index + 1)
+                            .fill(true, index, index + 1)
+                        )
+                      }
+                      onMouseLeave={() =>
+                        setIsHoveringCard(Array(filteredAuctions?.length).fill(false))
+                      }
+                    >
+                      <Auction auction={auction} isHoveringCard={isHoveringCard} index={index} />
+                    </Link>
+                  </>
+                ))}
               </>
-            ))}
+            ) : (
+              <>
+                {Array.from({ length: 12 }).map((_, index) => (
+                  <ItemCardSkeleton key={index} />
+                ))}
+              </>
+            )}
           </div>
         </div>
       </div>
