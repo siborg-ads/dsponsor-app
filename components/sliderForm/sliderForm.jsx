@@ -1,7 +1,4 @@
 import React, { useEffect, useState, useRef, useCallback } from "react";
-import DatePicker from "react-datepicker";
-
-import { FileUploader } from "react-drag-drop-files";
 
 const SliderForm = ({
   styles,

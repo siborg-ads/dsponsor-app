@@ -9,17 +9,5 @@
   "rules": {
     "no-html-link-for-pages": "off",
     "no-unused-vars": "warn"
-  },
-
-  "overrides": [
-    {
-      "files": ["*.js"],
-      "processor": "@graphql-eslint/graphql"
-    },
-    {
-      "files": ["*.graphql"],
-      "parser": "@graphql-eslint/eslint-plugin",
-      "plugins": ["@graphql-eslint"]
-    }
-  ]
+  }
 }

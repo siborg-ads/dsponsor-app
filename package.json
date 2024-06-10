@@ -25,6 +25,7 @@
     "@thirdweb-dev/react": "^4.4.31",
     "@thirdweb-dev/sdk": "^4.0.57",
     "@tippyjs/react": "^4.2.6",
+    "cookies-next": "^4.2.1",
     "ethers": "^5.7.2",
     "next": "14.2.3",
     "next-themes": "^0.2.0",

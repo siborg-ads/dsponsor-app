@@ -1,4 +1,4 @@
-import React, {useContext, useState} from "react";
+import React from "react";
 import Link from "next/link";
 import Tippy from "@tippyjs/react";
 import { whiteListedAddress } from "../../utils/whiteListedAddress";
@@ -10,11 +10,6 @@ const ItemsTabs = ({ chainId, contractAddress, isUserOwner, initialCreator, isTo
 
   const chainName = config[chainId]?.chainName;
   const chainExplorer = currentChainObject?.explorerBaseUrl;
-
-    const chainName = config[chainId]?.chainName;
-    const chainExplorer = currentChainObject?.explorerBaseUrl;
-
-
 
   return (
     <>

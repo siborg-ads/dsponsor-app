@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from "react";
-import DatePicker from "react-datepicker";
 import Image from "next/image";
 import "react-datepicker/dist/react-datepicker.css";
 import ModalHelper from "../../Helper/modalHelper";

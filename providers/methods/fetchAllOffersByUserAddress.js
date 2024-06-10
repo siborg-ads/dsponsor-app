@@ -4,8 +4,6 @@ import config from "../utils/config";
 export const fetchAllOffersByUserAddress = async (userAddress, chainId) => {
   const path = new URL(`https://relayer.dsponsor.com/api/${chainId}/graph`);
 
-const path = new URL(`https://relayer.dsponsor.com/api/${chainId}/graph`);
-
   const GET_DATA = `
     query OffersManagedByUser($userAddress: ID!) {
       adOffers(

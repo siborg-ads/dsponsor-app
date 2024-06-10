@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { footerMenuList as defaultFooterMenuList, socialIcons } from "../data/footer_data";
+import { footerMenuList as defaultFooterMenuList } from "../data/footer_data";
 import Image from "next/image";
 import { useChainContext } from "../contexts/hooks/useChainContext";
 import { useAddress } from "@thirdweb-dev/react";

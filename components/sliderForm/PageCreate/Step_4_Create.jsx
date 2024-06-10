@@ -2,22 +2,12 @@ import { useEffect, useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import {
-  useAddress,
-  useSwitchChain,
   useContract,
-  useContractWrite,
-  Web3Button,
   useContractRead,
-  useStorageUpload,
-  useTokenDecimals,
-  CheckoutWithCard,
-  CheckoutWithEth
 } from "@thirdweb-dev/react";
 import { activated_features } from "../../../data/activated_features";
 
-import { FileUploader } from "react-drag-drop-files";
 import ModalHelper from "../../Helper/modalHelper";
-import { useChainContext } from "../../../contexts/hooks/useChainContext";
 import config from "../../../providers/utils/config";
 
 const ConditionalUSDPaymentText = ({ children, condition }) => {

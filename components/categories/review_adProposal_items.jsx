@@ -1,11 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { useRouter } from "next/router";
 import Image from "next/image";
 import Link from "next/link";
 import "tippy.js/dist/tippy.css";
 import { useDispatch, useSelector } from "react-redux";
-import { buyModalShow } from "../../redux/counterSlice";
-import Review_carousel from "../carousel/review_carousel";
 import { useChainContext } from "../../contexts/hooks/useChainContext";
 
 const Review_adProposal_items = () => {
