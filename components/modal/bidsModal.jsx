@@ -32,7 +32,7 @@ const BidsModal = ({
   setIsLoadingButton
 }) => {
   const [initialIntPrice, setInitialIntPrice] = useState(0);
-  const [isPriceGood, setIsPriceGood] = useState(false);
+  const [isPriceGood, setIsPriceGood] = useState(true);
   const { mutateAsync: auctionBids } = useContractWrite(dsponsorMpContract, "bid");
   const [checkTerms, setCheckTerms] = useState(false);
   const [refundedPrice, setRefundedPrice] = useState(null);
