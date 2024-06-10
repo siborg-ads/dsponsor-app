@@ -4,10 +4,11 @@ import React, { useEffect, useState } from "react";
 import MainAuctions from "../../components/siborgHome/mainAuctions";
 import MarketplaceHome from "../../components/siborgHome/marketplaceHome";
 import Description from "../../components/siborgHome/description";
-import { fetchAllListedTokensForMultipleChains } from "../../providers/methods/fetchAllListedTokenWithoutFilter";
+import { fetchAllListedTokenWithoutFilter } from "../../providers/methods/fetchAllListedTokenWithoutFilter";
 import { formatUnits } from "ethers/lib/utils";
 import formatAndRound from "../../utils/formatAndRound";
 import { chainIds } from "../../data/chainIds";
+import { useChainContext } from "../../contexts/hooks/useChainContext";
 
 const HomeContainer = () => {
   const [chainIdFilter, setChainIdFilter] = useState(null);
@@ -15,10 +16,14 @@ const HomeContainer = () => {
   const [auctions, setAuctions] = useState([]);
   const [allTokens, setAllTokens] = useState(true);
 
+  const { currentChainObject } = useChainContext();
+
+  const chainId = currentChainObject?.chainId;
+
   useEffect(() => {
     const fetchData = async () => {
-      if (chainIds !== null && chainIds !== undefined) {
-        const data = await fetchAllListedTokensForMultipleChains(chainIds, allTokens);
+      if (chainId !== null && chainId !== undefined) {
+        const data = await fetchAllListedTokenWithoutFilter(chainId, allTokens);
         setAuctionsTemp(data);
       } else {
         setAuctionsTemp([]);
@@ -26,7 +31,7 @@ const HomeContainer = () => {
     };
 
     fetchData();
-  }, [allTokens]);
+  }, [allTokens, chainId]);
 
   useEffect(() => {
     console.log("auctionsTemp", auctionsTemp);
@@ -71,8 +76,8 @@ const HomeContainer = () => {
         image: image,
         latestBid: latestBid,
         currencyDecimals: currencyDecimals,
-        startTime: token?.marketplaceListings[0]?.valid_from,
-        endTime: token?.marketplaceListings[0]?.valid_to,
+        startTime: token?.marketplaceListings[0]?.startTime,
+        endTime: token?.marketplaceListings[0]?.endTime,
         offerId: offerId,
         tokenId: tokenId,
         tokenData: tokenData,
