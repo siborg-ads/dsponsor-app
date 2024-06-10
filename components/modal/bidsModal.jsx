@@ -33,7 +33,7 @@ const BidsModal = ({
   endTime
 }) => {
   const [initialIntPrice, setInitialIntPrice] = useState(0);
-  const [isPriceGood, setIsPriceGood] = useState(false);
+  const [isPriceGood, setIsPriceGood] = useState(true);
   const { mutateAsync: auctionBids } = useContractWrite(dsponsorMpContract, "bid");
   const [checkTerms, setCheckTerms] = useState(false);
   const [refundedPrice, setRefundedPrice] = useState(null);
@@ -47,10 +47,12 @@ const BidsModal = ({
       await fetchTokenPrice(
         marketplaceListings[0]?.currency,
         Number(chainId),
-        Number(bidsAmount)
+        parseUnits(
+          Number(bidsAmount).toFixed(currencyTokenDecimals).toString(),
+          currencyTokenDecimals
+        )
       ).then((price) => {
-        const priceLocal = Number(parseUnits(price, 6));
-        setTokenPrice(priceLocal);
+        setTokenPrice(price);
       });
     };
 
@@ -59,11 +61,14 @@ const BidsModal = ({
     } else {
       setTokenPrice(0);
     }
-  }, [bidsAmount, chainId, marketplaceListings]);
+  }, [bidsAmount, chainId, marketplaceListings, currencyTokenDecimals]);
 
   useEffect(() => {
     if (marketplaceListings[0] && bidsAmount && bidsAmount > 0 && currencyTokenDecimals) {
-      const newBidPerToken = parseUnits(bidsAmount.toString(), currencyTokenDecimals);
+      const newBidPerToken = parseUnits(
+        Number(bidsAmount).toFixed(6).toString(),
+        currencyTokenDecimals
+      );
       const reservePricePerToken = marketplaceListings[0]?.reservePricePerToken;
       const buyoutPricePerToken = marketplaceListings[0]?.buyoutPricePerToken;
       const previousPricePerToken =
@@ -73,7 +78,7 @@ const BidsModal = ({
       const royaltyBps = 0;
       const protocolFeeBps = marketplaceListings[0]?.protocolFeeBps;
 
-      const { newRefundBonusAmount, nextReservePricePerToken } = computeBidAmounts(
+      const { newAmount, newRefundBonusAmount, nextReservePricePerToken } = computeBidAmounts(
         newBidPerToken,
         1,
         reservePricePerToken,
@@ -85,13 +90,15 @@ const BidsModal = ({
         protocolFeeBps
       );
 
-      const newRefundBonusAmountFormatted = formatAndRound(
-        formatUnits(newRefundBonusAmount, currencyTokenDecimals)
+      const newRefundBonusAmountAdded = BigInt(newRefundBonusAmount) + BigInt(newAmount);
+      const newRefundBonusFormatted = formatUnits(
+        newRefundBonusAmountAdded,
+        currencyTokenDecimals
       );
-      const newRefundBonusAmountAdded = Number(newRefundBonusAmountFormatted) + Number(bidsAmount);
-      const newRefundBonusFormatted = formatAndRound(newRefundBonusAmountAdded.toString());
-      const nextReservePricePerTokenFormatted = formatAndRound(
-        formatUnits(nextReservePricePerToken, currencyTokenDecimals)
+
+      const nextReservePricePerTokenFormatted = formatUnits(
+        nextReservePricePerToken,
+        currencyTokenDecimals
       );
 
       setRefundedPrice(newRefundBonusFormatted);
@@ -115,7 +122,7 @@ const BidsModal = ({
       setInitialIntPrice(minimalBid);
       setBidsAmount(minimalBid);
     }
-  }, [marketplaceListings, setBidsAmount]);
+  }, [marketplaceListings, setBidsAmount, currencyTokenDecimals]);
 
   const handleBidsAmount = async (e) => {
     if (Number(e.target.value) < initialIntPrice) {
@@ -124,12 +131,21 @@ const BidsModal = ({
     } else {
       setIsPriceGood(true);
       setBidsAmount(e.target.value);
-      setAmountToApprove(ethers.utils.parseUnits(e.target.value.toString(), currencyTokenDecimals));
+      setAmountToApprove(
+        ethers.utils.parseUnits(
+          Number(e.target.value).toFixed(currencyTokenDecimals).toString(),
+          currencyTokenDecimals
+        )
+      );
       await checkAllowance(
-        ethers.utils.parseUnits(e.target.value.toString(), currencyTokenDecimals)
+        ethers.utils.parseUnits(
+          Number(e.target.value).toFixed(currencyTokenDecimals).toString(),
+          currencyTokenDecimals
+        )
       );
     }
   };
+
   const handleSubmit = async () => {
     const hasEnoughBalance = checkUserBalance(tokenBalance, bidsAmount);
     if (!hasEnoughBalance) {
