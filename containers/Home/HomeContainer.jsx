@@ -4,10 +4,10 @@ import React, { useEffect, useState } from "react";
 import MainAuctions from "../../components/siborgHome/mainAuctions";
 import MarketplaceHome from "../../components/siborgHome/marketplaceHome";
 import Description from "../../components/siborgHome/description";
-import { fetchAllListedToken } from "../../providers/methods/fetchAllListedTokenWithoutFilter";
-import { useChainContext } from "../../contexts/hooks/useChainContext";
+import { fetchAllListedTokensForMultipleChains } from "../../providers/methods/fetchAllListedTokenWithoutFilter";
 import { formatUnits } from "ethers/lib/utils";
 import formatAndRound from "../../utils/formatAndRound";
+import { chainIds } from "../../data/chainIds";
 
 const HomeContainer = () => {
   const [chainIdFilter, setChainIdFilter] = useState(null);
@@ -15,13 +15,10 @@ const HomeContainer = () => {
   const [auctions, setAuctions] = useState([]);
   const [allTokens, setAllTokens] = useState(true);
 
-  const { currentChainObject } = useChainContext();
-  const chainId = currentChainObject?.chainId;
-
   useEffect(() => {
     const fetchData = async () => {
-      if (chainId !== null && chainId !== undefined) {
-        const data = await fetchAllListedToken(chainId, allTokens);
+      if (chainIds !== null && chainIds !== undefined) {
+        const data = await fetchAllListedTokensForMultipleChains(chainIds, allTokens);
         setAuctionsTemp(data);
       } else {
         setAuctionsTemp([]);
@@ -29,7 +26,7 @@ const HomeContainer = () => {
     };
 
     fetchData();
-  }, [chainId, allTokens]);
+  }, [allTokens]);
 
   useEffect(() => {
     console.log("auctionsTemp", auctionsTemp);
@@ -79,7 +76,14 @@ const HomeContainer = () => {
         offerId: offerId,
         tokenId: tokenId,
         tokenData: tokenData,
-        priceUSD: priceUSD
+        priceUSD: priceUSD,
+        item: {
+          metadata: token.metadata,
+          mint: token.mint,
+          nftContract: token.nftContract,
+          marketplaceListings: token.marketplaceListings,
+          chainConfig: token.chainConfig
+        }
       };
 
       console.log("object", object);

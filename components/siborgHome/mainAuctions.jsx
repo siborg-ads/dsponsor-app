@@ -2,11 +2,13 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Auction from "./auction";
 import ItemCardSkeleton from "../skeleton/ItemCardSkeleton";
+import OfferItem from "../cards/offerItem";
 
 const MainAuctions = ({ auctions }) => {
   const [isHoveringCard, setIsHoveringCard] = useState(Array(auctions?.length).fill(false));
   const [randomAuctions, setRandomAuctions] = useState([]);
   const [liveAuctions, setLiveAuctions] = useState([]);
+  const [isOwner, setIsOwner] = useState(false);
 
   useEffect(() => {
     const liveAuctions = auctions?.filter((auction) => auction.live);
@@ -40,21 +42,19 @@ const MainAuctions = ({ auctions }) => {
           {randomAuctions.length !== 0 ? (
             <>
               {randomAuctions.map((auction, index) => (
-                <Link
+                <OfferItem
                   key={index}
-                  href={auction.link ?? ""}
-                  className="cursor-pointer md:cursor-default"
-                  onMouseEnter={() =>
-                    setIsHoveringCard(
-                      Array(randomAuctions?.length)
-                        .fill(false, index, index + 1)
-                        .fill(true, index, index + 1)
-                    )
+                  item={auction.item}
+                  isToken={true}
+                  isListing={auction.item?.marketplaceListings[0]?.listingType}
+                  isOwner={isOwner}
+                  isAuction={auction.item?.marketplaceListings[0]?.listingType === "Auction"}
+                  url={
+                    !auction.item?.mint?.tokenData
+                      ? `/${auction?.chainId}/offer/${auction?.offerId}/${auction?.tokenId}`
+                      : `/${auction?.chainId}/offer/${auction.item.nftContract?.adOffers[0]?.id}/${auction.tokenId}?tokenData=${auction.item.mint?.tokenData}`
                   }
-                  onMouseLeave={() => setIsHoveringCard(Array(randomAuctions?.length).fill(false))}
-                >
-                  <Auction auction={auction} isHoveringCard={isHoveringCard} index={index} />
-                </Link>
+                />
               ))}
             </>
           ) : (

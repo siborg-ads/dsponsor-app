@@ -59,6 +59,8 @@ const HomePageContainer = () => {
         lastListingsArray.push(...lastListings);
       }
 
+      console.log("lastListingsArray", lastListingsArray);
+
       setLastListings(lastListingsArray);
     };
     fetchAdsListings();

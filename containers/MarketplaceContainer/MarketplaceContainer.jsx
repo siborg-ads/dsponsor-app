@@ -80,6 +80,10 @@ const MarketplaceContainer = () => {
     });
   }, [listedAuctionToken, filterTypes]);
 
+  useEffect(() => {
+    console.log("filteredTokens", filteredTokens);
+  }, [filteredTokens]);
+
   const metadata = {
     title: "Marketplace || DSponsor | smarter monetization for your content",
     keyword:
