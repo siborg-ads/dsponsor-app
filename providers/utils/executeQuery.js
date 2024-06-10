@@ -7,10 +7,9 @@ export const executeQuery = async (url, query, variables) => {
       },
       body: JSON.stringify({
         query: query,
-        variables,
-      }),
+        variables
+      })
     });
-    console.log(response, "response");
 
     if (!response.ok) {
       console.error("Network response was not ok", response.statusText);

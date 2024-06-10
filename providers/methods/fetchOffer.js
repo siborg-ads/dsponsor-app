@@ -1,7 +1,7 @@
 import { executeQuery } from "../utils/executeQuery";
 
 export const fetchOffer = async (offerId, chainId) => {
-const path = new URL(`https://relayer.dsponsor.com/api/${chainId}/graph`);
+  const path = new URL(`https://relayer.dsponsor.com/api/${chainId}/graph`);
   const GET_DATA = `
     query TokenOfferDetails($offerId: ID!) {
       # replace by the $offerId
@@ -89,6 +89,5 @@ const path = new URL(`https://relayer.dsponsor.com/api/${chainId}/graph`);
 
   const response = await executeQuery(path.href, GET_DATA, { offerId: offerId });
 
-  console.log(response);
   return response?.adOffers[0];
 };

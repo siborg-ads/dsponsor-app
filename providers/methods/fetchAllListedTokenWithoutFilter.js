@@ -144,5 +144,6 @@ export const fetchAllListedToken = async (chainId, allTokens) => {
 export const fetchAllListedTokensForMultipleChains = async (chainIds, allTokens) => {
   const requests = chainIds.map((chainId) => fetchAllListedToken(chainId, allTokens));
   const responses = await Promise.all(requests);
+
   return responses.flat();
 };

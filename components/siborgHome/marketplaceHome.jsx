@@ -15,13 +15,11 @@ const MarketplaceHome = ({ chainIdFilter, auctions, setChainIdFilter, setAllToke
   const [isOwner, setIsOwner] = useState(false);
 
   useEffect(() => {
-    console.log("filterName", filterName);
-
     let tempFilteredAuctions = auctions;
 
     if (filterName !== null || filterName !== "" || filterName !== undefined) {
-      tempFilteredAuctions = auctions.sort((auction) =>
-        auction.name.toLowerCase().includes(filterName?.toLowerCase())
+      tempFilteredAuctions = tempFilteredAuctions.filter((auction) =>
+        auction.name.toLowerCase().includes(filterName.toLowerCase())
       );
     }
 
@@ -55,9 +53,9 @@ const MarketplaceHome = ({ chainIdFilter, auctions, setChainIdFilter, setAllToke
   useEffect(() => {
     setFilteredAuctions((prev) => {
       if (dateSorting === 1) {
-        return prev.sort((a, b) => a.endTime - b.endTime);
+        return prev.sort((a, b) => b.endTime - a.endTime);
       } else if (dateSorting === -1) {
-        return prev.sort((a, b) => a.startTime - b.startTime);
+        return prev.sort((a, b) => b.startTime - a.startTime);
       } else {
         return prev;
       }
@@ -72,9 +70,12 @@ const MarketplaceHome = ({ chainIdFilter, auctions, setChainIdFilter, setAllToke
           <div className="flex flex-col md:flex-row items-center gap-2 h-10">
             <input
               type="text"
+              name="search"
               placeholder="Search for ad spaces"
               value={filterName}
-              onChange={(e) => setFilterName(e.target.value)}
+              onChange={(e) => {
+                setFilterName(e.target.value);
+              }}
               className="w-full h-full rounded-xl bg-jacarta-600 focus:border-jacarta-100 focus:border-opacity-10 focus:ring-0 border border-jacarta-100 border-opacity-10 text-placeholder-jacarta-200 text-white py-2 px-4"
             />
             <div className="grid grid-cols-2 md:flex h-full gap-2 w-full md:w-8/12">
