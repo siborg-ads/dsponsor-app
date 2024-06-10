@@ -4,22 +4,21 @@ import React, { useEffect, useState } from "react";
 import MainAuctions from "../../components/siborgHome/mainAuctions";
 import MarketplaceHome from "../../components/siborgHome/marketplaceHome";
 import Description from "../../components/siborgHome/description";
-import { fetchAllListedToken } from "../../providers/methods/fetchAllListedTokenWithoutFilter";
-import { useChainContext } from "../../contexts/hooks/useChainContext";
+import { fetchAllListedTokensForMultipleChains } from "../../providers/methods/fetchAllListedTokenWithoutFilter";
 import { formatUnits } from "ethers/lib/utils";
+import formatAndRound from "../../utils/formatAndRound";
+import { chainIds } from "../../data/chainIds";
 
 const HomeContainer = () => {
   const [chainIdFilter, setChainIdFilter] = useState(null);
   const [auctionsTemp, setAuctionsTemp] = useState([]);
   const [auctions, setAuctions] = useState([]);
-
-  const { currentChainObject } = useChainContext();
-  const chainId = currentChainObject?.chainId;
+  const [allTokens, setAllTokens] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
-      if (chainId !== null && chainId !== undefined) {
-        const data = await fetchAllListedToken(chainId);
+      if (chainIds !== null && chainIds !== undefined) {
+        const data = await fetchAllListedTokensForMultipleChains(chainIds, allTokens);
         setAuctionsTemp(data);
       } else {
         setAuctionsTemp([]);
@@ -27,7 +26,7 @@ const HomeContainer = () => {
     };
 
     fetchData();
-  }, [chainId]);
+  }, [allTokens]);
 
   useEffect(() => {
     console.log("auctionsTemp", auctionsTemp);
@@ -38,21 +37,26 @@ const HomeContainer = () => {
       const name = token.metadata.name;
       const category = token.metadata.categories[0];
       const chain = token.chainConfig.chainName;
-      const price = token.marketplaceListings[0].buyPriceStructureFormatted.buyoutPricePerToken;
+      const price = token.marketplaceListings[0]?.buyPriceStructureFormatted.buyoutPricePerToken;
       const chainId = token.chainConfig.chainId;
       const offerId = token.offerId;
       const tokenId = token.tokenId;
       const tokenData = token.tokenData;
       const live =
-        token.marketplaceListings[0].status === "CREATED" &&
+        token.marketplaceListings[0]?.status === "CREATED" &&
         token.marketplaceListings[0].quantity > 0;
       const image = token.metadata.image;
-      const currencyDecimals = Number(token.marketplaceListings[0].currencyDecimals);
+      const currencyDecimals = Number(token.marketplaceListings[0]?.currencyDecimals ?? 0);
       const latestBid = Number(
         formatUnits(
-          token.marketplaceListings[0].bidPriceStructure.previousBidAmount ?? 0,
+          token?.marketplaceListings[0]?.bidPriceStructure.previousBidAmount ?? 0,
           currencyDecimals
         )
+      );
+      const priceUSD = Number(
+        formatAndRound(
+          Number(formatUnits(token.marketplaceListings[0]?.currencyPriceUSDC ?? 0, 6))
+        ) ?? 0
       );
 
       const object = {
@@ -61,17 +65,25 @@ const HomeContainer = () => {
         chain: chain,
         chainId: chainId,
         price: price,
-        currencySymbol: token.marketplaceListings[0].currencySymbol,
+        currencySymbol: token?.marketplaceListings[0]?.currencySymbol,
         link: `/${chainId}/offer/${offerId}/${tokenId}?tokenData=${tokenData}`,
         live: live,
         image: image,
         latestBid: latestBid,
         currencyDecimals: currencyDecimals,
-        startTime: token.marketplaceListings[0].startTime,
-        endTime: token.marketplaceListings[0].endTime,
+        startTime: token?.marketplaceListings[0]?.startTime,
+        endTime: token?.marketplaceListings[0]?.endTime,
         offerId: offerId,
         tokenId: tokenId,
-        tokenData: tokenData
+        tokenData: tokenData,
+        priceUSD: priceUSD,
+        item: {
+          metadata: token.metadata,
+          mint: token.mint,
+          nftContract: token.nftContract,
+          marketplaceListings: token.marketplaceListings,
+          chainConfig: token.chainConfig
+        }
       };
 
       console.log("object", object);
@@ -94,7 +106,12 @@ const HomeContainer = () => {
       >
         <Description description={true} />
         <MainAuctions auctions={auctions} />
-        <MarketplaceHome auctions={auctions} chainIdFilter={chainIdFilter} />
+        <MarketplaceHome
+          auctions={auctions}
+          chainIdFilter={chainIdFilter}
+          setChainIdFilter={setChainIdFilter}
+          setAllTokens={setAllTokens}
+        />
       </div>
     </>
   );

@@ -33,8 +33,8 @@ const Auction = ({ auction, isHoveringCard, index }) => {
               {auction.name ?? "name"}
             </div>
           </div>
-          <div className="bg-jacarta-600 py-2 px-4 md:grid grid-cols-2 gap-2 rounded-lg hidden">
-            <div className="flex flex-col gap-1">
+          <div className="bg-jacarta-600 py-2 px-4 grid grid-cols-2 gap-2 rounded-lg">
+            <div className="hidden md:flex flex-col gap-1">
               <span className="text-jacarta-200 text-xs">Latest Bid</span>
               <span className="text-white font-semibold text-xs md:text-sm">
                 {auction.latestBid ?? 0} {auction.currencySymbol ?? "USDC"}

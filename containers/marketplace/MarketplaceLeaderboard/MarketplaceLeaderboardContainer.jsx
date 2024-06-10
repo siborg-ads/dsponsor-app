@@ -3,11 +3,9 @@ import LeaderboardTable from "../../../components/tables/LeaderboardTable";
 import { fetchMarketplaceActivity } from "../../../providers/methods/fetchMarketplaceActivity";
 import processBidsAndCalculateRewards from "./processBidsAndCalculateRewards";
 
-
-
 const MarketplaceLeaderboardContainer = () => {
-    const [activity, setActivity] = useState([]);
-    const [loading, setLoading] = useState(true);
+  const [activity, setActivity] = useState([]);
+  const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const chainIds = [11155111, 84532];
@@ -58,6 +56,5 @@ const MarketplaceLeaderboardContainer = () => {
       </>
     );
 };
-
 
 export default MarketplaceLeaderboardContainer;

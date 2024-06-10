@@ -84,7 +84,6 @@ html {
     background: linear-gradient(rgb(19 23 64 / 69%), rgb(19 23 64 / 70%));
     display: flex;
     justify-content: center;
-  
   }
 
   .react-tabs__tab--selected {
@@ -3427,6 +3426,13 @@ html {
   .shadow-accent-volume {
     --tw-shadow: 5px 5px 10px rgb(16 16 16 / 25%), inset 2px 2px 6px #8f86a6,
       inset -5px -5px 10px #524184 !important;
+    --tw-shadow-colored: 5px 5px 10px var(--tw-shadow-color),
+      inset 2px 2px 6px var(--tw-shadow-color), inset -5px -5px 10px var(--tw-shadow-color);
+  }
+
+  .shadow-accent-volume-dark {
+    --tw-shadow: 5px 5px 10px rgb(16 16 16 / 25%), inset 2px 2px 6px #544873,
+      inset -5px -5px 10px #21134a !important;
     --tw-shadow-colored: 5px 5px 10px var(--tw-shadow-color),
       inset 2px 2px 6px var(--tw-shadow-color), inset -5px -5px 10px var(--tw-shadow-color);
   }

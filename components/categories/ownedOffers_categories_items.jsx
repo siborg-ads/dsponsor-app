@@ -1,5 +1,4 @@
 import Image from "next/image";
-import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useChainContext } from "../../contexts/hooks/useChainContext";
@@ -8,6 +7,8 @@ import { trendingCategoryData } from "../../data/categories_data";
 import { updateTrendingCategoryItemData } from "../../redux/counterSlice";
 import ConditionalDisplayedComponent from "../../utils/ConditionalDisplayedComponent";
 import OfferItem from "../cards/offerItem";
+import Link from "next/link";
+import MainButton from "../buttons/mainButton";
 
 const OwnedOffers_categories_items = ({ data, isPendinAdsOnOffer, isOwner }) => {
   const [itemdata, setItemdata] = useState(trendingCategoryData);
@@ -79,17 +80,12 @@ const OwnedOffers_categories_items = ({ data, isPendinAdsOnOffer, isOwner }) => 
           })}
         </div>
       ) : (
-        <div className="w-full flex flex-col gap-4 justify-center items-center">
-          <span>You have no offers yet...</span>
-          <ConditionalDisplayedComponent condition={activated_features.canCreateOffer}>
-            <Link
-              href={`/${chainId}/offer/create`}
-              className="bg-accent shadow-accent-volume hover:bg-accent-dark w-36 rounded-full py-3 px-8 text-center font-semibold text-white transition-all"
-            >
-              Create
-            </Link>
-          </ConditionalDisplayedComponent>
-        </div>
+        <ConditionalDisplayedComponent condition={activated_features.canCreateOffer}>
+          <div className="w-full flex flex-col gap-4 justify-center items-center">
+            <span>You have no offers yet...</span>
+            <MainButton link={`/${chainId}/offer/create`} isPurple={true} text="Create" />
+          </div>
+        </ConditionalDisplayedComponent>
       )}
     </>
   );

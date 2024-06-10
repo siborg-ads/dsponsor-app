@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Tippy from "@tippyjs/react";
-import CopyToClipboard from "react-copy-to-clipboard";
+import handleCopy from "../utils/handleCopy";
 
 const UserId = ({ classes, userId, shortId }) => {
   const [copied, setCopied] = useState(false);
@@ -14,10 +14,8 @@ const UserId = ({ classes, userId, shortId }) => {
   return (
     <div>
       <Tippy hideOnClick={false} content={copied ? <span>copied</span> : <span>copy</span>}>
-        <button className={classes}>
-          <CopyToClipboard text={userId} onCopy={() => setCopied(true)}>
-            <span>{!shortId ? userId : `${userId.substring(0, 17)}...`}</span>
-          </CopyToClipboard>
+        <button className={classes} onClick={handleCopy(userId, setCopied)}>
+          <span>{!shortId ? userId : `${userId.substring(0, 17)}...`}</span>
 
           <svg
             xmlns="http://www.w3.org/2000/svg"

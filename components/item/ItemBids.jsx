@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
@@ -45,10 +45,14 @@ const ItemBids = ({
   setIsLoadingButton
 }) => {
   const [showBidsModal, setShowBidsModal] = useState(false);
+  const [minimalBidPerToken, setMinimalBidPerToken] = useState(null);
+
+  useEffect(() => {
+    const minimalBidPerToken = marketplaceListings[0]?.bidPriceStructure?.minimalBidPerToken;
+    setMinimalBidPerToken(minimalBidPerToken);
+  }, [marketplaceListings]);
 
   const toggleBidsModal = async () => {
-    const minimalBidPerToken = marketplaceListings[0]?.bidPriceStructure?.minimalBidPerToken;
-
     if (minimalBidPerToken) {
       await checkAllowance(ethers.BigNumber.from(minimalBidPerToken));
     }
@@ -71,7 +75,9 @@ const ItemBids = ({
                 href={`/manage/${marketplaceListings[0].bids[0].bidder}`}
                 className="text-sm font-bold text-accent"
               >
-                {marketplaceListings[0].bids[0].bidder === address.toLowerCase() ? "You" : marketplaceListings[0].bids[0].bidder}
+                {marketplaceListings[0].bids[0].bidder === address.toLowerCase()
+                  ? "You"
+                  : marketplaceListings[0].bids[0].bidder}
               </Link>
             </div>
           )}

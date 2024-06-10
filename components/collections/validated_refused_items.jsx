@@ -4,7 +4,6 @@ import Link from "next/link";
 import Image from "next/image";
 import Tippy from "@tippyjs/react";
 import "tippy.js/dist/tippy.css";
-import { CopyToClipboard } from "react-copy-to-clipboard";
 
 const Validated_refused_items = ({ statut, proposalData, isToken }) => {
   const [modalStates, setModalStates] = useState({});
@@ -167,7 +166,7 @@ const Validated_refused_items = ({ statut, proposalData, isToken }) => {
                       </h3>
 
                       <div className="flex flex-col">
-                        <button className="js-copy-clipboard flex min-w-[20px] text-white max-w-[20rem]  select-none overflow-hidden text-ellipsis whitespace-nowrap">
+                        <button className="flex min-w-[20px] text-white max-w-[20rem]  select-none overflow-hidden text-ellipsis whitespace-nowrap">
                           <Link
                             href={adParametersList?.linkURL ? adParametersList.linkURL : "/"}
                             target="_blank"

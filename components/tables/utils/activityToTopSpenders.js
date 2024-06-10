@@ -4,21 +4,21 @@
  * @returns {Array} Formatted top spenders data.
  */
 const activityToTopSpenders = (activity) => {
-    return activity
-      .sort((a, b) => a.spendersRank - b.spendersRank)
-      .map((ranking) => ({
-        rank: ranking.spendersRank,
-        totalSpent: ranking.usdcAmounts.totalSpent,
-        addressDisplay: ranking.displayAddr,
-        address: ranking.addr,
-        balance: ranking.balance,
-        dPoints: ranking.dPoints,
-        chainId: ranking.chainId,
-        details: Object.entries(ranking.currenciesAmounts || {}).map(([currency, amounts]) => ({
-          currency,
-          totalSpent: amounts.totalSpent
-        }))
-      }));
+  return activity
+    .sort((a, b) => a.spendersRank - b.spendersRank)
+    .map((ranking) => ({
+      rank: ranking.spendersRank,
+      totalSpent: ranking.usdcAmounts.totalSpent,
+      addressDisplay: ranking.displayAddr,
+      address: ranking.addr,
+      balance: ranking.balance,
+      dPoints: ranking.dPoints,
+      chainId: ranking.chainId,
+      details: Object.entries(ranking.currenciesAmounts || {}).map(([currency, amounts]) => ({
+        currency,
+        totalSpent: amounts.totalSpent
+      }))
+    }));
 };
 
 export default activityToTopSpenders;

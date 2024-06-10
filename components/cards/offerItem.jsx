@@ -114,7 +114,7 @@ const OfferItem = ({
   return (
     <>
       <article className="relative">
-        {item.isPending && isOwner && (
+        {item?.isPending && isOwner && (
           <div className="absolute -top-2 -right-2 rounded-2xl bg-red rounded-2xl dark:text-white  px-2">
             !
           </div>

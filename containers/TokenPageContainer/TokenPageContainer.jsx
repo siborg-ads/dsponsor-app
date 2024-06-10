@@ -21,7 +21,7 @@ import Step_3_Mint from "../../components/sliderForm/PageMint/Step_3_Mint.jsx";
 import SliderForm from "../../components/sliderForm/sliderForm.jsx";
 import styles from "../../styles/createPage/style.module.scss";
 
-import { getCookie } from 'cookies-next';
+import { getCookie } from "cookies-next";
 import "tippy.js/dist/tippy.css";
 import { ItemsTabs } from "../../components/component.js";
 
@@ -137,7 +137,7 @@ const TokenPageContainer = () => {
   const now = Math.floor(new Date().getTime() / 1000);
 
   // referralAddress is the address of the ?_rid= parameter in the URL
-  const referralAddress = getCookie('_rid') || '';
+  const referralAddress = getCookie("_rid") || "";
 
   useEffect(() => {
     if (offerId && tokenId && chainId) {
@@ -258,10 +258,7 @@ const TokenPageContainer = () => {
               .minimalBidPerToken
           )
         );
-      } else if (
-        
-        offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.bids.length <= 0
-      ) {
+      } else if (offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.bids.length <= 0) {
         setTokenBigIntPrice(
           offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.reservePricePerToken
         );
