@@ -149,8 +149,8 @@ const ManageSpaceContainer = () => {
                       style={{ maxWidth: "10rem" }}
                       className="js-copy-clipboard dark:text-jacarta-200  select-none overflow-hidden text-ellipsis whitespace-nowrap"
                     >
-                      <CopyToClipboard text="userId" onCopy={() => setCopied(true)}>
-                        <span>{userAddress}</span>
+                      <CopyToClipboard text={userAddress} onCopy={() => setCopied(true)}>
+                        <span>{address === userAddress ? "You" : userAddress}</span>
                       </CopyToClipboard>
                     </button>
                   </Tippy>
