@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { ethers } from "ethers";
-import { Web3Button, useContractWrite } from "@thirdweb-dev/react";
+import { Web3Button, useContractWrite, useBalance } from "@thirdweb-dev/react";
 import { Spinner } from "@nextui-org/spinner";
 import { toast } from "react-toastify";
 import Link from "next/link";
@@ -9,6 +9,7 @@ import { computeBidAmounts } from "../../utils/computeBidAmounts";
 import { formatUnits, parseUnits } from "ethers/lib/utils";
 import { formatAndRoundPrice } from "../../utils/formatAndRound";
 import { fetchTokenPrice } from "../../utils/fetchTokenPrice";
+import UseWrapEth from "../../providers/hooks/UseWrapEth";
 
 const BidsModal = ({
   setAmountToApprove,
@@ -26,7 +27,7 @@ const BidsModal = ({
   tokenBalance,
   allowanceTrue,
   currencyTokenDecimals,
-  handleApprove,
+  handleApprove: handleParentApprove,
   checkAllowance,
   isLoadingButton,
   setIsLoadingButton
@@ -40,6 +41,40 @@ const BidsModal = ({
   const [minBid, setMinBid] = useState(null);
   const [endDateHour, setEndDateHour] = useState(null);
   const [tokenPrice, setTokenPrice] = useState(null);
+
+  const { data: nativeTokenBalance } = useBalance();
+
+  const [bidCurrency, setBidCurrency] = useState(currencySymbol);
+  const [bidBalance, setBidBalance] = useState(tokenBalance);
+  const [bidCurrencyDecimals, setBidCurrencyDecimals] = useState(currencyTokenDecimals);
+
+  useEffect(() => {
+    // if the currency is "WETH" and If we have a currency balance lower than required for minimal bid, we should look for the ETH balance
+    // As we might not have enough WETH but we might have enough ETH
+    const parsedDecimalBalance = parseFloat(bidBalance.displayValue);
+    const parsedNativeTokenBalance = parseFloat(nativeTokenBalance.displayValue);
+    if (
+      currencySymbol === "WETH" &&
+      parsedDecimalBalance < initialIntPrice &&
+      parsedNativeTokenBalance > initialIntPrice
+    ) {
+      // get the ETH balance
+      setBidBalance(nativeTokenBalance);
+      setBidCurrency("ETH");
+      setBidCurrencyDecimals(18);
+    }
+  }, [nativeTokenBalance]);
+
+  const handleApprove = async () => {
+    const isNativeToken = bidCurrency === "ETH";
+    if (isNativeToken) {
+      // We first wrap the needed amount of ETH to WETH
+      const neededAmount = ethers.utils.parseUnits(bidsAmount.toString(), bidCurrencyDecimals);
+      await UseWrapEth(neededAmount);
+      // Reset
+    }
+    await handleParentApprove();
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -267,7 +302,7 @@ const BidsModal = ({
                   />
                   <label htmlFor="buyNowTerms" className="dark:text-jacarta-200 text-sm">
                     By checking this box, I agree to {"DSponsor's"}{" "}
-                    <Link href="#" className="text-accent">
+                    <Link href="/terms-and-conditions" className="text-accent">
                       Terms of Service
                     </Link>
                   </label>
