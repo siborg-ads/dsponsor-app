@@ -17,17 +17,18 @@ const User_items = ({
   const [itemActive, setItemActive] = useState(1);
 
   const tabItem = [
+    { id: 1, text: "Owned tokens", icon: "owned" },
+    { id: 2, text: "Auction listed tokens", icon: "activity" },
     ...(activated_features.canCreateOffer
       ? [
           {
-            id: 1,
+            id: 3,
             text: "Created Offers",
             icon: "owned"
           }
         ]
-      : []),
-    { id: 2, text: "Owned tokens", icon: "owned" },
-    { id: 3, text: "Auction listed tokens", icon: "activity" }
+      : [])
+    
   ];
 
   return (
@@ -71,16 +72,6 @@ const User_items = ({
                 );
               })}
             </TabList>
-
-            <TabPanel>
-              <div>
-                <OwnedOffers_categories_items
-                  data={createdData}
-                  isPendinAdsOnOffer={isPendinAdsOnOffer}
-                  isOwner={isOwner}
-                />
-              </div>
-            </TabPanel>
             <TabPanel>
               <div>
                 <OwnedAdProposals_categories_items
@@ -91,6 +82,15 @@ const User_items = ({
             </TabPanel>
             <TabPanel>
               <Auctions_categories data={listedAuctionToken} isOwner={isOwner} />
+            </TabPanel>
+            <TabPanel>
+              <div>
+                <OwnedOffers_categories_items
+                  data={createdData}
+                  isPendinAdsOnOffer={isPendinAdsOnOffer}
+                  isOwner={isOwner}
+                />
+              </div>
             </TabPanel>
           </Tabs>
         </div>

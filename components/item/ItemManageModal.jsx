@@ -45,9 +45,7 @@ const ItemManageModal = ({
   const [selectedStartingPrice, setSelectedStartingPrice] = useState(0);
   const [selectedCurrency, setSelectedCurrency] = useState("USDC");
   const [startDate, setStartDate] = useState(new Date());
-  const [endDate, setEndDate] = useState(
-    new Date(new Date().setFullYear(new Date().getFullYear() + 1))
-  );
+  const [endDate, setEndDate] = useState(new Date(new Date().setDate(new Date().getDate() + 7)));
   const [errors, setErrors] = useState({});
   const [showPreviewModal, setShowPreviewModal] = useState(false);
   const [validate, setValidate] = useState(false);
@@ -353,8 +351,7 @@ const ItemManageModal = ({
               </svg>
             </button>
           </div>
-
-          <div className="modal-footer">
+          <div className="modal-body p-6 flex gap-4 items-center justify-center">
             <div className="flex items-center justify-center space-x-4">
               <div className="mb-6 flex  flex-col justify-center items-center gap-4">
                 <div className="flex flex-col items-center">
@@ -421,7 +418,7 @@ const ItemManageModal = ({
                                 <p className="dark:text-jacarta-300 text-jacarta-400 text-2xs mb-3">
                                   Set the validity period for the spaces.
                                 </p>
-                                <div className="flex gap-4 items-center text-jacarta-700 dark:text-white mb-3">
+                                <div className="flex flex-col gap-4 items-center text-jacarta-700 dark:text-white mb-3">
                                   <div className="flex flex-col justify-center items-center gap-1">
                                     <DatePicker
                                       selected={startDate}
@@ -549,49 +546,50 @@ const ItemManageModal = ({
                         </div>
                       ))}
                     </div>
-                    <button
-                      type="button"
-                      className="bg-accent cursor-pointer rounded-full py-3 px-3 text-end font-semibold text-white transition-all"
-                      onClick={handlePreviewModal}
-                    >
-                      Show preview
-                    </button>
-                    {showPreviewModal && (
-                      <div className="modal fade show bloc">
-                        <PreviewModal
-                          handlePreviewModal={handlePreviewModal}
-                          handleSubmit={handleSubmit}
-                          startDate={startDate}
-                          endDate={endDate}
-                          name={true}
-                          description={true}
-                          link={true}
-                          helperFeesListing={helperFeesListing}
-                          protocolFees={4}
-                          selectedUnitPrice={calculatePriceWithTaxes(selectedUnitPrice)}
-                          selectedStartingPrice={
-                            selectedListingType[0] === 1 &&
-                            calculatePriceWithTaxes(selectedStartingPrice)
-                          }
-                          selectedRoyalties={royalties}
-                          selectedCurrency={selectedCurrency}
-                          validate={validate}
-                          symbolContract={symbolContract}
-                          errors={errors}
-                          successFullUpload={successFullListing}
-                          buttonTitle="Create listing"
-                          modalTitle="Listing preview"
-                          successFullUploadModal={successFullListingModal}
-                          isLoadingButton={isLoadingButton}
-                          approvalForAllToken={approvalForAllToken}
-                          handleApprove={handleApprove}
-                        />
-                      </div>
-                    )}
                   </div>
                 </div>
               </div>
             </div>
+          </div>
+          <div className="modal-footer">
+            <button
+              type="button"
+              className="bg-accent cursor-pointer rounded-full py-3 px-3 text-end font-semibold text-white transition-all"
+              onClick={handlePreviewModal}
+            >
+              Show preview
+            </button>
+            {showPreviewModal && (
+              <div className="modal fade show bloc">
+                <PreviewModal
+                  handlePreviewModal={handlePreviewModal}
+                  handleSubmit={handleSubmit}
+                  startDate={startDate}
+                  endDate={endDate}
+                  name={true}
+                  description={true}
+                  link={true}
+                  helperFeesListing={helperFeesListing}
+                  protocolFees={4}
+                  selectedUnitPrice={calculatePriceWithTaxes(selectedUnitPrice)}
+                  selectedStartingPrice={
+                    selectedListingType[0] === 1 && calculatePriceWithTaxes(selectedStartingPrice)
+                  }
+                  selectedRoyalties={royalties}
+                  selectedCurrency={selectedCurrency}
+                  validate={validate}
+                  symbolContract={symbolContract}
+                  errors={errors}
+                  successFullUpload={successFullListing}
+                  buttonTitle="Create listing"
+                  modalTitle="Listing preview"
+                  successFullUploadModal={successFullListingModal}
+                  isLoadingButton={isLoadingButton}
+                  approvalForAllToken={approvalForAllToken}
+                  handleApprove={handleApprove}
+                />
+              </div>
+            )}
           </div>
         </div>
       </div>
