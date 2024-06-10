@@ -7,7 +7,7 @@ import Link from "next/link";
 import config from "../../providers/utils/config";
 import { computeBidAmounts } from "../../utils/computeBidAmounts";
 import { formatUnits, parseUnits } from "ethers/lib/utils";
-import formatAndRound from "../../utils/formatAndRound";
+import { formatAndRoundPrice } from "../../utils/formatAndRound";
 import { fetchTokenPrice } from "../../utils/fetchTokenPrice";
 
 const BidsModal = ({
@@ -29,8 +29,7 @@ const BidsModal = ({
   handleApprove,
   checkAllowance,
   isLoadingButton,
-  setIsLoadingButton,
-  endTime
+  setIsLoadingButton
 }) => {
   const [initialIntPrice, setInitialIntPrice] = useState(0);
   const [isPriceGood, setIsPriceGood] = useState(true);
@@ -91,10 +90,7 @@ const BidsModal = ({
       );
 
       const newRefundBonusAmountAdded = BigInt(newRefundBonusAmount) + BigInt(newAmount);
-      const newRefundBonusFormatted = formatUnits(
-        newRefundBonusAmountAdded,
-        currencyTokenDecimals
-      );
+      const newRefundBonusFormatted = formatUnits(newRefundBonusAmountAdded, currencyTokenDecimals);
 
       const nextReservePricePerTokenFormatted = formatUnits(
         nextReservePricePerToken,
@@ -110,10 +106,11 @@ const BidsModal = ({
   }, [bidsAmount, marketplaceListings, currencyTokenDecimals]);
 
   useEffect(() => {
-    const endTimeLocal = new Date(endTime * 1000); // we convert the timestamp to milliseconds
-    setEndDate(endTimeLocal.toLocaleDateString());
-    setEndDateHour(endTimeLocal.toLocaleTimeString());
-  }, [endTime]);
+    const endTime = marketplaceListings[0]?.endTime;
+    const endTimeDate = new Date(endTime * 1000); // we convert the timestamp to milliseconds
+    setEndDate(endTimeDate.toLocaleDateString());
+    setEndDateHour(endTimeDate.toLocaleTimeString());
+  }, [marketplaceListings]);
 
   useEffect(() => {
     const minimalBidPerToken = marketplaceListings[0]?.bidPriceStructure?.minimalBidPerToken;
@@ -224,7 +221,7 @@ const BidsModal = ({
 
                   <div className="bg-jacarta-600 w-1/4 border border-jacarta-900 border-opacity-10 rounded-xl flex flex-1 justify-center self-stretch border-l">
                     <span className="self-center px-4 text-xl text-center text-white font-semibold">
-                      ${tokenPrice ?? 0}
+                      ${formatAndRoundPrice(tokenPrice) ?? 0}
                     </span>
                   </div>
                 </div>
