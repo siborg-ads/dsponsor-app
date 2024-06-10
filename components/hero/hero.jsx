@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useChainContext } from "../../contexts/hooks/useChainContext";
+import MainButton from "../buttons/mainButton";
 import { activated_features } from "../../data/activated_features";
 import ConditionalDisplayedComponent from "../../utils/ConditionalDisplayedComponent";
 
@@ -39,21 +40,12 @@ const Hero = () => {
               Leverage audience engagement into investment opportunities. A new Web3 model for an
               enhanced media and creator economy.
             </p>
-            <div className="flex space-x-4 justify-center w-full">
+            <div className="flex items-center space-x-4 justify-center w-full">
               <ConditionalDisplayedComponent condition={activated_features.canCreateOffer}>
-                <Link
-                  href={`/${chainId}/offer/create`}
-                  className="bg-accent shadow-accent-volume hover:bg-accent-dark w-36 rounded-full py-3 px-8 text-center font-semibold text-white transition-all"
-                >
-                  Create
-                </Link>
+                <MainButton link={`/${chainId}/offer/create`} isPurple={true} text="Create" />
               </ConditionalDisplayedComponent>
-              <Link
-                href="#hot-offers"
-                className="text-accent shadow-white-volume ici hover:bg-accent-dark hover:shadow-accent-volume w-36 rounded-full bg-white py-3 px-8 text-center font-semibold transition-all hover:text-white"
-              >
-                Buy
-              </Link>
+
+              <MainButton link="#hot-offers" isPurple={false} text="Buy" />
             </div>
           </div>
         </div>

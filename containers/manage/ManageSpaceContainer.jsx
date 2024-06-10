@@ -5,7 +5,6 @@ import Image from "next/image";
 import User_items from "../../components/user/User_items";
 import Tippy from "@tippyjs/react";
 import "tippy.js/dist/tippy.css"; // optional
-import { CopyToClipboard } from "react-copy-to-clipboard";
 import Meta from "../../components/Meta";
 
 import {
@@ -29,6 +28,7 @@ import { fetchAllTokenListedByUserAddress } from "../../providers/methods/fetchA
 import { useChainContext } from "../../contexts/hooks/useChainContext";
 import { id } from "ethers/lib/utils";
 import config from "../../providers/utils/config";
+import handleCopy from "../../utils/handleCopy";
 
 const ManageSpaceContainer = () => {
   const router = useRouter();
@@ -147,11 +147,10 @@ const ManageSpaceContainer = () => {
                   >
                     <button
                       style={{ maxWidth: "10rem" }}
-                      className="js-copy-clipboard dark:text-jacarta-200  select-none overflow-hidden text-ellipsis whitespace-nowrap"
+                      onClick={() => handleCopy(userAddress, setCopied)}
+                      className="dark:text-jacarta-200  select-none overflow-hidden text-ellipsis whitespace-nowrap"
                     >
-                      <CopyToClipboard text={userAddress} onCopy={() => setCopied(true)}>
-                        <span>{address === userAddress ? "You" : userAddress}</span>
-                      </CopyToClipboard>
+                      <span>{address === userAddress ? "You" : userAddress}</span>
                     </button>
                   </Tippy>
                 </div>

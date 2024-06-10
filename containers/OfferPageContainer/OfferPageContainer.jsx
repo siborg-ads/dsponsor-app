@@ -8,6 +8,7 @@ import { ethers } from "ethers";
 import Image from "next/image";
 import { useContract, useContractWrite, useContractRead, useAddress } from "@thirdweb-dev/react";
 import Tippy from "@tippyjs/react";
+import handleCopy from "../../utils/handleCopy";
 import "tippy.js/dist/tippy.css";
 
 import OfferSkeleton from "../../components/skeleton/offerSkeleton";
@@ -15,7 +16,6 @@ import OfferSkeleton from "../../components/skeleton/offerSkeleton";
 import Form from "../../components/collections-wide/sidebar/collections/Form";
 import { Divider } from "@nextui-org/react";
 import "tippy.js/dist/tippy.css";
-import { CopyToClipboard } from "react-copy-to-clipboard";
 import Validation from "../../components/offer-section/validation";
 import ModalHelper from "../../components/Helper/modalHelper";
 import { ItemsTabs } from "../../components/component";
@@ -417,10 +417,20 @@ const OfferPageContainer = () => {
                 </code>
               </pre>
               <Tippy hideOnClick={false} content={copied ? <span>copied</span> : <span>copy</span>}>
-                <div className="js-copy-clipboard cursor-pointer">
-                  <CopyToClipboard
+                <div className=" cursor-pointer">
+                  <button
                     text={`<iframe src="https://relayer.dsponsor.com/${chainId}/integrations/${offerId}/ClickableLogosGrid/iFrame" height="315" width="1000px" className={'h-screen w-full'} />`}
-                    onCopy={() => setCopied(true)}
+                    onClick={() =>
+                      handleCopy(
+                        `<iframe
+                      src="https://relayer.dsponsor.com/${chainId}/integrations/${offerId}/ClickableLogosGrid/iFrame"
+                      height="315"
+                      width="1000px"
+                      className={"h-screen w-full"}
+                    />`,
+                        setCopied
+                      )
+                    }
                   >
                     <Image
                       src="/images/copy.svg"
@@ -429,7 +439,7 @@ const OfferPageContainer = () => {
                       height={20}
                       className="mt-2 min-w-[20px] "
                     />
-                  </CopyToClipboard>
+                  </button>
                 </div>
               </Tippy>
             </div>

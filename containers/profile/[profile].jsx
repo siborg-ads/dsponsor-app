@@ -210,7 +210,7 @@ const Edit_user = () => {
                   </label>
 
                   <UserId
-                    classes="js-copy-clipboard dark:bg-jacarta-700 border-jacarta-100 hover:bg-jacarta-50 dark:border-jacarta-600 dark:text-jacarta-300 flex w-full select-none items-center rounded-lg border bg-white py-3 px-4"
+                    classes="dark:bg-jacarta-700 border-jacarta-100 hover:bg-jacarta-50 dark:border-jacarta-600 dark:text-jacarta-300 flex w-full select-none items-center rounded-lg border bg-white py-3 px-4"
                     userId="0x7a9fe22691c811ea339401bbb2leb"
                   />
                 </div>
