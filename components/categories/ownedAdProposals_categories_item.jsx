@@ -1,25 +1,8 @@
-import React, { useEffect, useState, useRef } from "react";
-import {
-  ownedAdProposals_categories_filter,
-  trendingCategoryData
-} from "../../data/categories_data";
-import CategoryItem from "./categoryItem";
-import {
-  useAddress,
-  darkTheme,
-  useBalance,
-  Web3Button,
-  useTokenBalance,
-  useContract,
-  useContractRead,
-  useContractWrite,
-  useStorageUpload,
-  useTokenDecimals,
-  CheckoutWithCard,
-  CheckoutWithEth
-} from "@thirdweb-dev/react";
+import { useContract, useContractWrite, useStorageUpload } from "@thirdweb-dev/react";
 import Image from "next/image";
 import Link from "next/link";
+import React, { useRef, useState } from "react";
+import { trendingCategoryData } from "../../data/categories_data";
 import styles from "../../styles/createPage/style.module.scss";
 import OfferItem from "../cards/offerItem";
 import Step_1_Mint from "../sliderForm/PageMint/Step_1_Mint";
@@ -27,11 +10,9 @@ import Step_2_Mint from "../sliderForm/PageMint/Step_2_Mint";
 import Step_3_Mint from "../sliderForm/PageMint/Step_3_Mint";
 import SliderForm from "../sliderForm/sliderForm";
 
-import contractABI from "../../abi/dsponsorAdmin.json";
 import { useChainContext } from "../../contexts/hooks/useChainContext";
 
 import PreviewModal from "../modal/previewModal";
-import { image } from "@nextui-org/react";
 import MainButton from "../buttons/mainButton";
 
 const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
@@ -207,10 +188,7 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
             try {
               uploadUrl = await uploadToIPFS({
                 data: [file.file],
-                options: {
-                  uploadWithGatewayUrl: true,
-                  uploadWithoutDirectory: true
-                }
+                options: { uploadWithGatewayUrl: true, uploadWithoutDirectory: true }
               });
             } catch (error) {
               console.error("Erreur lors de l'upload à IPFS:", error);
@@ -296,9 +274,7 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
                   <div
                     onClick={() => handleSelection(item)}
                     key={index}
-                    className={`  ${
-                      isSelectedItem[item.id] ? "border-4 border-jacarta-100 rounded-2xl" : ""
-                    }`}
+                    className={`  ${isSelectedItem[item.id] ? "border-4 border-jacarta-100 rounded-2xl" : ""}`}
                   >
                     <OfferItem
                       item={item}
@@ -331,7 +307,7 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
       ) : (
         <div className="w-full flex flex-col gap-4 justify-center items-center">
           <span>You have no ad space yet...</span>
-          <MainButton link={"/#hot-offers"} isPurple={true} text="Buy" />
+          <MainButton link={`/#hot-offers`} isPurple={true} text="Buy" />
         </div>
       )}
       {!showSliderForm && (
