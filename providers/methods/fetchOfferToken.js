@@ -85,7 +85,8 @@ export const fetchOfferToken = async (offerId, tokenId, chainId) => {
               #    price = bids[0].totalBidAmount || reservePricePerToken
               reservePricePerToken
               buyoutPricePerToken
-              bids(orderBy: totalBidAmount, orderDirection: desc, first: 1) {
+              bids(orderBy: totalBidAmount, orderDirection: desc, first: 5) {
+                creationTimestamp
                 bidder
                 totalBidAmount
                 status

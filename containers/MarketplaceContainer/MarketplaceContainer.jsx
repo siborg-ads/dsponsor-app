@@ -73,7 +73,7 @@ const MarketplaceContainer = () => {
         .map((f) => f.type),
     };
 
-    return listedAuctionToken.filter((item) => {
+    return listedAuctionToken?.filter((item) => {
       const statusMatch =
         filterCategories.status.length === 0 ||
         filterCategories.status.includes(

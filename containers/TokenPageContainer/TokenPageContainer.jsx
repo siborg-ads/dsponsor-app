@@ -21,6 +21,7 @@ import Step_3_Mint from "../../components/sliderForm/PageMint/Step_3_Mint.jsx";
 import SliderForm from "../../components/sliderForm/sliderForm.jsx";
 import styles from "../../styles/createPage/style.module.scss";
 
+import { getCookie } from "cookies-next";
 import "tippy.js/dist/tippy.css";
 import { ItemsTabs } from "../../components/component.js";
 
@@ -36,11 +37,15 @@ import ItemBids from "../../components/item/ItemBids.jsx";
 import ItemManage from "../../components/item/ItemManage.jsx";
 import { useSwitchChainContext } from "../../contexts/hooks/useSwitchChainContext.js";
 import { fetchOfferToken } from "../../providers/methods/fetchOfferToken.js";
+// import { fetchAllTokenListedByListingId } from "../../providers/methods/fetchAllTokenListedByListingId.js";
 import config from "../../providers/utils/config.js";
 import stringToUint256 from "../../utils/stringToUnit256.js";
+import { parseUnits } from "ethers/lib/utils";
 
 import "react-toastify/dist/ReactToastify.css";
 import ModalHelper from "../../components/Helper/modalHelper.jsx";
+import ItemLastBids from "../../components/item/ItemLastBids";
+import itemLastBids from "../../components/item/ItemLastBids";
 
 const TokenPageContainer = () => {
   const router = useRouter();
@@ -131,6 +136,9 @@ const TokenPageContainer = () => {
   const { setSelectedChain } = useSwitchChainContext();
   const now = Math.floor(new Date().getTime() / 1000);
 
+  // referralAddress is the address of the ?_rid= parameter in the URL
+  const referralAddress = getCookie("_rid") || "";
+
   useEffect(() => {
     if (offerId && tokenId && chainId) {
       const fetchAdsOffers = async () => {
@@ -148,7 +156,16 @@ const TokenPageContainer = () => {
     }
 
     setTokenIdString(tokenId?.toString());
-  }, [offerId, tokenId, successFullUpload, successFullBid, successFullListing, address, chainId]);
+  }, [
+    offerId,
+    tokenId,
+    successFullUpload,
+    successFullBid,
+    successFullListing,
+    address,
+    chainId,
+    setSelectedChain
+  ]);
 
   useEffect(() => {
     if (offerData?.nftContract?.tokens.length > 0) {
@@ -242,7 +259,7 @@ const TokenPageContainer = () => {
           )
         );
       } else if (
-        offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.listingType === "Auction" &&
+        
         offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.bids.length <= 0
       ) {
         setTokenBigIntPrice(
@@ -264,7 +281,6 @@ const TokenPageContainer = () => {
       setTokenStatut("MINTED");
       setTokenCurrencyAddress(offerData?.nftContract?.prices[0]?.currency);
       setTokenBigIntPrice(offerData?.nftContract?.prices[0]?.amount);
-      return;
     }
   }, [
     offerData,
@@ -509,11 +525,11 @@ const TokenPageContainer = () => {
       tokenId: tokenIdString,
       to: address,
       currency: offerData?.nftContract?.prices[0]?.currency,
-      tokenData: tokenData ? tokenData : "",
+      tokenData: tokenData ?? "",
       offerId: offerId,
       adParameters: [],
       adDatas: [],
-      referralAdditionalInformation: ""
+      referralAdditionalInformation: referralAddress
     };
 
     const argsdirectBuy = {
@@ -522,7 +538,7 @@ const TokenPageContainer = () => {
       quantity: 1,
       currency: marketplaceListings[0]?.currency,
       totalPrice: marketplaceListings[0]?.buyPriceStructure.buyoutPricePerToken,
-      referralAdditionalInformation: ""
+      referralAdditionalInformation: referralAddress
     };
     try {
       setIsLoadingButton(true);
@@ -538,6 +554,8 @@ const TokenPageContainer = () => {
 
       if (marketplaceListings.length <= 0) {
         console.log("mintAndSubmit", argsWithPossibleOverrides, "mintAndSubmit");
+        // address of the minter as referral
+        argsWithPossibleOverrides.referralAdditionalInformation = referralAddress;
         await mintAndSubmit(argsWithPossibleOverrides);
         setSuccessFullUpload(true);
       } else {
@@ -620,6 +638,7 @@ const TokenPageContainer = () => {
       throw new Error("Failed to fetch token balance");
     }
   };
+
   function formatTokenId(str) {
     if (str?.length <= 6) {
       return str;
@@ -638,6 +657,7 @@ const TokenPageContainer = () => {
     setShowPreviewModal(!showPreviewModal);
     validateInputs();
   };
+
   function shouldRenderManageTokenComponent() {
     const isFirstListingAuctionActive =
       marketplaceListings[0]?.startTime < now &&
@@ -703,7 +723,9 @@ const TokenPageContainer = () => {
     name = "DefaultName"
   } = Object.keys(offerData?.metadata?.offer?.token_metadata).length > 0
     ? tokenMetaData
-    : offerData?.metadata?.offer;
+    : offerData && offerData.metadata
+      ? offerData.metadata.offer
+      : undefined;
 
   return (
     <>
@@ -779,7 +801,6 @@ const TokenPageContainer = () => {
             {/* <!-- Details --> */}
             <div className="md:w-3/5 md:basis-auto md:pl-8 lg:w-1/2 lg:pl-[3.75rem]">
               {/* <!-- Collection / Likes / Actions --> */}
-
               <Link href={`/${chainId}/offer/${offerId}`} className="flex">
                 <h2 className="font-display text-jacarta-700 mb-4 dark:hover:text-accent text-3xl font-semibold dark:text-white">
                   {name}
@@ -881,6 +902,20 @@ const TokenPageContainer = () => {
           </div>
         </div>
       </section>
+
+      {tokenStatut === "AUCTION" &&
+        marketplaceListings[0].startTime < now &&
+        marketplaceListings[0].endTime > now && (
+          <div className="container mb-12">
+            <Divider className="my-4" />
+            <ItemLastBids
+              currencySymbol={currency}
+              currencyDecimals={currencyDecimals}
+              lastBids={marketplaceListings[0].bids}
+            />
+          </div>
+        )}
+
       {/* <!-- end item --> */}
       <div className="container mb-12">
         <Divider className="my-4" />

@@ -10,7 +10,7 @@ export default function Layout({ children }) {
       <Header01 />
       <Wallet_modal />
 
-      <main>{children}</main>
+      <>{children}</>
       <Footer />
     </>
   );
