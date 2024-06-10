@@ -84,7 +84,6 @@ html {
     background: linear-gradient(rgb(19 23 64 / 69%), rgb(19 23 64 / 70%));
     display: flex;
     justify-content: center;
-  
   }
 
   .react-tabs__tab--selected {

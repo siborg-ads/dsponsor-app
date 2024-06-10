@@ -75,7 +75,9 @@ const ItemBids = ({
                 href={`/manage/${marketplaceListings[0].bids[0].bidder}`}
                 className="text-sm font-bold text-accent"
               >
-                {marketplaceListings[0].bids[0].bidder === address.toLowerCase() ? "You" : marketplaceListings[0].bids[0].bidder}
+                {marketplaceListings[0].bids[0].bidder === address.toLowerCase()
+                  ? "You"
+                  : marketplaceListings[0].bids[0].bidder}
               </Link>
             </div>
           )}

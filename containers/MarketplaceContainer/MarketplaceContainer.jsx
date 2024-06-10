@@ -1,5 +1,5 @@
 import { collections6, collections7 } from "../../data/collections";
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo, use } from "react";
 import { useRouter } from "next/router";
 import Image from "next/image";
 import Link from "next/link";
@@ -81,6 +81,10 @@ const MarketplaceContainer = () => {
       return statusMatch && chainMatch;
     });
   }, [listedAuctionToken, filterTypes]);
+
+  useEffect(() => {
+    console.log("filteredTokens", filteredTokens);
+  }, [filteredTokens]);
 
   const metadata = {
     title: "Marketplace || DSponsor | smarter monetization for your content",
