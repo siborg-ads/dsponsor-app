@@ -1,13 +1,11 @@
 import Image from "next/image";
 import Link from "next/link";
-import DarkMode from "../mode/DarkMode";
 import Logo from "./../../public/images/logo.png";
-import { Select, SelectItem, Avatar } from "@nextui-org/react";
 
 import WhiteLogo from "./../../public/images/logo_white.png";
 import { useRouter } from "next/router";
-import { isChildrenPageActive, isParentPageActive } from "../../utils/daynamicNavigation";
-import { useContext, useEffect, useState } from "react";
+import { isChildrenPageActive } from "../../utils/daynamicNavigation";
+import { useEffect, useState } from "react";
 import { ConnectWallet, useAddress } from "@thirdweb-dev/react";
 import { useTheme } from "next-themes";
 import { useChainContext } from "../../contexts/hooks/useChainContext";

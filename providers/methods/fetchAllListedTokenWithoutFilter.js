@@ -1,12 +1,11 @@
 import { executeQuery } from "../utils/executeQuery";
-import { gql } from "@apollo/client";
 import config from "../utils/config";
 
 export const fetchAllListedToken = async (chainId, allTokens) => {
   const path = new URL(`https://relayer.dsponsor.com/api/${chainId}/graph`);
   const currentTimestamp = Math.floor(Date.now() / 1000);
 
-  const GET_DATA = gql`
+  const GET_DATA = `
     query getAllMarketplaceListings($currentTimestamp: Int!) {
       adOffers {
         id

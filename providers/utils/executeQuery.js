@@ -6,9 +6,9 @@ export const executeQuery = async (url, query, variables) => {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        query: query.loc.source.body,
-        variables
-      })
+        query: query,
+        variables,
+      }),
     });
     console.log(response, "response");
 

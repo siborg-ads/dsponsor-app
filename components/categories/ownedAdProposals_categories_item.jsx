@@ -1,6 +1,5 @@
 import { useContract, useContractWrite, useStorageUpload } from "@thirdweb-dev/react";
 import Image from "next/image";
-import Link from "next/link";
 import React, { useRef, useState } from "react";
 import { trendingCategoryData } from "../../data/categories_data";
 import styles from "../../styles/createPage/style.module.scss";

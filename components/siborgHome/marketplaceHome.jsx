@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
-import Link from "next/link";
-import Auction from "./auction";
 import ItemCardSkeleton from "../skeleton/ItemCardSkeleton";
 import OfferItem from "../cards/offerItem";
 
@@ -80,7 +78,7 @@ const MarketplaceHome = ({ chainIdFilter, auctions, setChainIdFilter, setAllToke
               className="w-full h-full rounded-xl bg-jacarta-600 focus:border-jacarta-100 focus:border-opacity-10 focus:ring-0 border border-jacarta-100 border-opacity-10 text-placeholder-jacarta-200 text-white py-2 px-4"
             />
             <div className="grid grid-cols-2 md:flex h-full gap-2 w-full md:w-8/12">
-              {/* 
+              {/*
               <Menu as="div" className="py-4 md:py-0 h-full w-full">
                 <MenuButton className="bg-jacarta-600 rounded-xl w-full h-full flex items-center justify-center hover:bg-jacarta-500 border border-jacarta-100 border-opacity-10">
                   <div className="flex items-center gap-1">

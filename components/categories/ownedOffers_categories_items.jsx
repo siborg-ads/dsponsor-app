@@ -7,7 +7,6 @@ import { trendingCategoryData } from "../../data/categories_data";
 import { updateTrendingCategoryItemData } from "../../redux/counterSlice";
 import ConditionalDisplayedComponent from "../../utils/ConditionalDisplayedComponent";
 import OfferItem from "../cards/offerItem";
-import Link from "next/link";
 import MainButton from "../buttons/mainButton";
 
 const OwnedOffers_categories_items = ({ data, isPendinAdsOnOffer, isOwner }) => {

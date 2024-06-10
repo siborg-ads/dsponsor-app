@@ -2,7 +2,6 @@ import Link from "next/link";
 import React from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { buyModalHide } from "../../redux/counterSlice";
-import { Confirm_checkout } from "../metamask/Metamask";
 import Image from "next/image";
 import { Web3Button } from "@thirdweb-dev/react";
 import { useState } from "react";
@@ -149,7 +148,7 @@ const BuyModal = ({
                       {(price * protocolFees) / 100} {selectedCurrency}
                     </span>
                   </span>
-                  <div className="dark:text-jacarta-300 text-right text-sm">$130.82</div> 
+                  <div className="dark:text-jacarta-300 text-right text-sm">$130.82</div>
                 </div> */}
               </div>
 

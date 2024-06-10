@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import Image from "next/image";
 import OwnedOffers_categories_items from "../categories/ownedOffers_categories_items";
