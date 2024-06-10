@@ -259,7 +259,7 @@ const TokenPageContainer = () => {
           )
         );
       } else if (
-        offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.listingType === "Auction" &&
+        
         offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.bids.length <= 0
       ) {
         setTokenBigIntPrice(
