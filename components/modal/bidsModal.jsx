@@ -43,10 +43,19 @@ const BidsModal = ({
   const [tokenPrice, setTokenPrice] = useState(null);
 
   useEffect(() => {
-    if (marketplaceListings[0] && bidsAmount && bidsAmount > 0 && chainId) {
-      fetchTokenPrice(marketplaceListings[0]?.currency, chainId, bidsAmount).then((price) => {
-        setTokenPrice(price);
+    const fetchData = async () => {
+      await fetchTokenPrice(
+        marketplaceListings[0]?.currency,
+        Number(chainId),
+        Number(bidsAmount)
+      ).then((price) => {
+        const priceLocal = Number(parseUnits(price, 6));
+        setTokenPrice(priceLocal);
       });
+    };
+
+    if (marketplaceListings && marketplaceListings[0] && bidsAmount && bidsAmount > 0 && chainId) {
+      fetchData();
     } else {
       setTokenPrice(0);
     }

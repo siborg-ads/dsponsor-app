@@ -133,7 +133,7 @@ export const fetchAllListedToken = async (chainId, allTokens) => {
       offer.nftContract.tokens.map((token) => ({
         ...token,
         offerId: offer.id,
-        tokenData: token.mint.tokenData ? token.mint.tokenData : null,
+        tokenData: token.mint?.tokenData ? token.mint.tokenData : null,
         chainConfig: chainConfig
       }))
     )
