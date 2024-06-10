@@ -19,7 +19,7 @@ import {
   useStorageUpload,
   useTokenDecimals,
   CheckoutWithCard,
-  CheckoutWithEth,
+  CheckoutWithEth
 } from "@thirdweb-dev/react";
 
 import { fetchAllTokenByOfferForAuser } from "../../providers/methods/fetchAllTokenByOfferForAuser";
@@ -51,10 +51,7 @@ const ManageSpaceContainer = () => {
         const offersByUserAddressArray = [];
 
         for (const [chainId] of Object.entries(config)) {
-          const offersByUserAddress = await fetchAllOffersByUserAddress(
-            userAddress,
-            chainId
-          );
+          const offersByUserAddress = await fetchAllOffersByUserAddress(userAddress, chainId);
           offersByUserAddressArray.push(...offersByUserAddress);
         }
 
@@ -62,19 +59,13 @@ const ManageSpaceContainer = () => {
         console.log(offersByUserAddressArray);
         const ownedAdProposalsArray = [];
         for (const [chainId] of Object.entries(config)) {
-          const ownedAdProposals = await fetchAllTokenByOfferForAuser(
-            userAddress,
-            chainId
-          );
+          const ownedAdProposals = await fetchAllTokenByOfferForAuser(userAddress, chainId);
           ownedAdProposalsArray.push(...ownedAdProposals);
         }
         console.log(ownedAdProposalsArray);
         const listedTokenArray = [];
         for (const [chainId] of Object.entries(config)) {
-          const listedToken = await fetchAllTokenListedByUserAddress(
-            userAddress,
-            chainId
-          );
+          const listedToken = await fetchAllTokenListedByUserAddress(userAddress, chainId);
           listedTokenArray.push(...listedToken);
         }
         console.log(listedTokenArray, "listedTokenArray");
@@ -102,9 +93,7 @@ const ManageSpaceContainer = () => {
               id: `${element.id}-${token.tokenId}`,
               offerId: element.id,
               ...token,
-              ...(token.mint.tokenData
-                ? { tokenData: token.mint.tokenData }
-                : {}),
+              ...(token.mint.tokenData ? { tokenData: token.mint.tokenData } : {})
             };
             mappedownedAdProposals.push(combinedData);
           }
@@ -127,7 +116,7 @@ const ManageSpaceContainer = () => {
     title: "DSponsor | Manage your ad spaces - " + address,
     keyword:
       "audience engagement, web3, creator economic, NFT, creator monetization, creator economy, creator token, creator coin, creator tokenization, creator economy",
-    desc: "Manage your ad spaces on DSponsor.",
+    desc: "Manage your ad spaces on DSponsor."
   };
   return (
     <>
@@ -161,9 +150,7 @@ const ManageSpaceContainer = () => {
                       onClick={() => handleCopy(userAddress, setCopied)}
                       className="dark:text-jacarta-200  select-none overflow-hidden text-ellipsis whitespace-nowrap"
                     >
-                      <CopyToClipboard text={userAddress} onCopy={() => setCopied(true)}>
-                        <span>{address === userAddress ? "You" : userAddress}</span>
-                      </CopyToClipboard>
+                      <span>{address === userAddress ? "You" : userAddress}</span>
                     </button>
                   </Tippy>
                 </div>
