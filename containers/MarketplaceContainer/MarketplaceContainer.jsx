@@ -1,4 +1,3 @@
-import { collections6, collections7 } from "../../data/collections";
 import React, { useEffect, useState, useMemo } from "react";
 import { useRouter } from "next/router";
 import Image from "next/image";
@@ -8,7 +7,6 @@ import Sidebar from "../../components/marketplace/Sidebar";
 import User_items from "../../components/user/User_items";
 import Tippy from "@tippyjs/react";
 import "tippy.js/dist/tippy.css"; // optional
-import { CopyToClipboard } from "react-copy-to-clipboard";
 import Meta from "../../components/Meta";
 import OfferItem from "../../components/cards/offerItem";
 import {
@@ -124,18 +122,18 @@ const MarketplaceContainer = () => {
           {/*</div> */}
           {/* end filters / sorting */}
 
-          <div className="lg:flex mt-6 ">
+          <div className="lg:flex w-full mt-6">
             {/* Sidebar */}
             <Sidebar setFilterTypes={setFilterTypes} />
             {/* end sidebar */}
             {/* Content */}
-            <div className="lg:w-4/5 js-collections-content">
+            <div className="js-collections-content w-full">
               <div className="mb-8 pb-px">
                 <h1 className="pt-3 mb-2 font-display text-2xl font-medium text-jacarta-700 dark:text-white">
                   Explore Marketplace
                 </h1>
                 <p className="dark:text-jacarta-400 font-medium text-2xs">
-                  {listedAuctionToken?.length} items
+                  {filteredTokens?.length ?? 0} items
                 </p>
               </div>
               <>
@@ -155,9 +153,7 @@ const MarketplaceContainer = () => {
                           isOwner={isOwner}
                           isToken={true}
                           isListing={item?.marketplaceListings[0]?.listingType}
-                          isAuction={
-                            item?.marketplaceListings[0]?.listingType === "Auction" ? true : false
-                          }
+                          isAuction={item?.marketplaceListings[0]?.listingType === "Auction"}
                         />
                       );
                     })}
@@ -165,7 +161,7 @@ const MarketplaceContainer = () => {
                 ) : (
                   <div className="grid grid-cols-1 gap-[1.875rem] md:grid-cols-2 lg:grid-cols-4">
                     {[...Array(15)].map((_, index) => (
-                      <ItemCardSkeleton key={index} widthSize={225} />
+                      <ItemCardSkeleton key={index} widthSize={230} />
                     ))}
                   </div>
                 )}

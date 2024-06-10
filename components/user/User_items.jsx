@@ -28,7 +28,6 @@ const User_items = ({
           }
         ]
       : [])
-    
   ];
 
   return (

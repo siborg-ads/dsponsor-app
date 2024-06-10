@@ -13,6 +13,7 @@ import SliderForm from "../sliderForm/sliderForm";
 import { useChainContext } from "../../contexts/hooks/useChainContext";
 
 import PreviewModal from "../modal/previewModal";
+import MainButton from "../buttons/mainButton";
 
 const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
   const [itemdata, setItemdata] = useState(trendingCategoryData);
@@ -306,12 +307,7 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
       ) : (
         <div className="w-full flex flex-col gap-4 justify-center items-center">
           <span>You have no ad space yet...</span>
-          <Link
-            href="/#hot-offers"
-            className="bg-accent shadow-accent-volume hover:bg-accent-dark w-36 rounded-full py-3 px-8 text-center font-semibold text-white transition-all"
-          >
-            Buy
-          </Link>
+          <MainButton link={`/#hot-offers`} isPurple={true} text="Buy" />
         </div>
       )}
       {!showSliderForm && (

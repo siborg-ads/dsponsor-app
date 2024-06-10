@@ -28,8 +28,8 @@ module.exports = {
       current: "currentColor",
       white: "#ffffff",
       accent: "#8358FF",
-
       "accent-light": "#9E7CFF",
+      "accent-dark": "#6336E4",
       "accent-lighter": "#B9A0FF",
       "light-base": "#F5F8FA",
       green: "#10b981",
