@@ -73,7 +73,7 @@ const BidsModal = ({
       const isMinimalBuyout = bidsAmountLocal.gte(minimalBuyoutPerToken);
       const isBuyout = bidsAmountLocal.gte(buyoutPrice);
 
-      if (isBuyout || isMinimalBuyout) {
+      if (isBuyout && isMinimalBuyout) {
         setBuyoutPriceReached(true);
       } else {
         setBuyoutPriceReached(false);

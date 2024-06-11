@@ -1,9 +1,8 @@
-import React, { useEffect } from "react";
-import { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import Timer from "./Timer";
 import BidsModal from "../modal/bidsModal";
-import { ethers } from "ethers";
+import { ethers, getAddress } from "ethers";
 import { Web3Button } from "@thirdweb-dev/react";
 import config from "../../providers/utils/config";
 
@@ -62,7 +61,8 @@ const ItemBids = ({
                     href={`/manage/${marketplaceListings[0].bids[0].bidder}`}
                     className="text-sm font-bold text-accent"
                   >
-                    {marketplaceListings[0].bids[0].bidder === address.toLowerCase()
+                    {address &&
+                    getAddress(marketplaceListings[0]?.bids[0]?.bidder) === getAddress(address)
                       ? "You"
                       : marketplaceListings[0].bids[0].bidder}
                   </Link>
