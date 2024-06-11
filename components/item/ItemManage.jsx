@@ -1,8 +1,5 @@
-import React, { useState } from "react";
-import {
-  Web3Button,
-  useContractWrite,
-} from "@thirdweb-dev/react";
+import React, { useEffect, useState } from "react";
+import { Web3Button, useContractWrite } from "@thirdweb-dev/react";
 import ItemManageModal from "./ItemManageModal";
 import { toast } from "react-toastify";
 import { Spinner } from "@nextui-org/spinner";
@@ -51,6 +48,19 @@ const ItemManage = ({
       setIsLoadingButton(false);
     }
   };
+
+  useEffect(() => {
+    console.log(
+      "condition",
+      (marketplaceListings[0]?.status !== "CREATED" || marketplaceListings?.length <= 0) && isOwner,
+      "status",
+      marketplaceListings[0]?.status,
+      "length",
+      marketplaceListings?.length,
+      "isOwner",
+      "isOwner"
+    );
+  }, [marketplaceListings, isOwner]);
 
   return (
     <>
