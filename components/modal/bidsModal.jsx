@@ -32,7 +32,7 @@ const BidsModal = ({
   setIsLoadingButton
 }) => {
   const [initialIntPrice, setInitialIntPrice] = useState(0);
-  const [isPriceGood, setIsPriceGood] = useState(false);
+  const [isPriceGood, setIsPriceGood] = useState(true);
   const { mutateAsync: auctionBids } = useContractWrite(dsponsorMpContract, "bid");
   const [checkTerms, setCheckTerms] = useState(false);
   const [refundedPrice, setRefundedPrice] = useState(null);
@@ -243,15 +243,30 @@ const BidsModal = ({
                     </span>
                   </div>
                   <div className="flex flex-col gap-2">
-                    <div className="flex items-center gap-4 mx-auto justify-between w-full">
-                      <div className="bg-jacarta-600 duration-400 shadow p-4 rounded-xl font-semibold text-base text-white flex justify-center items-center text-center">
+                    <div className="grid grid-cols-7 items-center gap-4 mx-auto w-full">
+                      <div className="bg-jacarta-600 col-span-3 duration-400 shadow p-4 rounded-xl font-semibold text-base text-white flex justify-center items-center text-center">
                         Ad Space bought
                       </div>
 
-                      <span className="text-white font-semibold text-sm">OR</span>
+                      <div className="flex justify-center">
+                        <span className="text-white text-center items-center font-semibold text-sm">
+                          OR
+                        </span>
+                      </div>
 
-                      <div className="bg-jacarta-600 duration-400 shadow p-4 rounded-xl font-semibold text-base text-white flex justify-center items-center text-center">
+                      <div className="bg-jacarta-600 col-span-3 duration-400 shadow p-4 rounded-xl font-semibold text-base text-white flex justify-center items-center text-center">
                         {refundedPrice} {currencySymbol} Outbid reward
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-7 items-center gap-4 mx-auto w-full">
+                      <div className="w-full col-span-3 text-base text-white flex justify-center items-center text-center">
+                        Case 1
+                      </div>
+
+                      <div />
+
+                      <div className="w-full col-span-3 text-base text-white flex justify-center items-center text-center">
+                        Case 2
                       </div>
                     </div>
                   </div>

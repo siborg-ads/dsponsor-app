@@ -1,7 +1,7 @@
 import { executeQuery } from "../utils/executeQuery";
 import config from "../utils/config";
 
-export const fetchAllListedToken = async (chainId, allTokens) => {
+export const fetchAllListedTokenWithoutFilter = async (chainId, allTokens) => {
   const path = new URL(`https://relayer.dsponsor.com/api/${chainId}/graph`);
   const currentTimestamp = Math.floor(Date.now() / 1000);
 
@@ -142,7 +142,8 @@ export const fetchAllListedToken = async (chainId, allTokens) => {
 };
 
 export const fetchAllListedTokensForMultipleChains = async (chainIds, allTokens) => {
-  const requests = chainIds.map((chainId) => fetchAllListedToken(chainId, allTokens));
+  const requests = chainIds.map((chainId) => fetchAllListedTokenWithoutFilter(chainId, allTokens));
   const responses = await Promise.all(requests);
+
   return responses.flat();
 };
