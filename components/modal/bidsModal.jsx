@@ -40,6 +40,7 @@ const BidsModal = ({
   const [minBid, setMinBid] = useState(null);
   const [endDateHour, setEndDateHour] = useState(null);
   const [tokenPrice, setTokenPrice] = useState(null);
+  const [buyoutPriceReached, setBuyoutPriceReached] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -61,6 +62,26 @@ const BidsModal = ({
       setTokenPrice(0);
     }
   }, [bidsAmount, chainId, marketplaceListings, currencyTokenDecimals]);
+
+  useEffect(() => {
+    if (marketplaceListings && marketplaceListings[0] && bidsAmount && bidsAmount > 0) {
+      const bidsAmountLocal = parseUnits(bidsAmount, currencyTokenDecimals);
+      const minimalBuyoutPerToken =
+        marketplaceListings[0]?.bidPriceStructure?.minimalBuyoutPerToken;
+      const buyoutPrice = marketplaceListings[0]?.buyoutPricePerToken;
+
+      const isMinimalBuyout = bidsAmountLocal.gte(minimalBuyoutPerToken);
+      const isBuyout = bidsAmountLocal.gte(buyoutPrice);
+
+      if (isBuyout || isMinimalBuyout) {
+        setBuyoutPriceReached(true);
+      } else {
+        setBuyoutPriceReached(false);
+      }
+    } else {
+      setBuyoutPriceReached(false);
+    }
+  }, [marketplaceListings, bidsAmount, currencyTokenDecimals]);
 
   useEffect(() => {
     if (marketplaceListings[0] && bidsAmount && bidsAmount > 0 && currencyTokenDecimals) {
@@ -234,42 +255,48 @@ const BidsModal = ({
                 )}
 
                 <div className="flex flex-col gap-8 py-4 items-center justify-center">
-                  <div className="flex flex-col gap-2 items-center text-center">
-                    <span className="font-semibold text-white">What&apos;s next?</span>
-                    <span className="text-white text-sm">
-                      If someone outbids you by at least {minBid} {currencySymbol}, you will receive
-                      your bid amount back plus an additional reward. However, if no one outbids you
-                      by the {endDate} at {endDateHour}, you will get the ad space.
-                    </span>
-                  </div>
-                  <div className="flex flex-col gap-2">
-                    <div className="grid grid-cols-7 items-center gap-4 mx-auto w-full">
-                      <div className="bg-jacarta-600 col-span-3 duration-400 shadow p-4 rounded-xl font-semibold text-base text-white flex justify-center items-center text-center">
-                        Ad Space bought
-                      </div>
-
-                      <div className="flex justify-center">
-                        <span className="text-white text-center items-center font-semibold text-sm">
-                          OR
+                  {buyoutPriceReached ? (
+                    <></>
+                  ) : (
+                    <>
+                      <div className="flex flex-col gap-2 items-center text-center">
+                        <span className="font-semibold text-white">What&apos;s next?</span>
+                        <span className="text-white text-sm">
+                          If someone outbids you by at least {minBid} {currencySymbol}, you will
+                          receive your bid amount back plus an additional reward. However, if no one
+                          outbids you by the {endDate} at {endDateHour}, you will get the ad space.
                         </span>
                       </div>
+                      <div className="flex flex-col gap-2">
+                        <div className="grid grid-cols-7 items-center gap-4 mx-auto w-full">
+                          <div className="bg-jacarta-600 col-span-3 duration-400 shadow p-4 rounded-xl font-semibold text-base text-white flex justify-center items-center text-center">
+                            Ad Space bought
+                          </div>
 
-                      <div className="bg-jacarta-600 col-span-3 duration-400 shadow p-4 rounded-xl font-semibold text-base text-white flex justify-center items-center text-center">
-                        {refundedPrice} {currencySymbol} Outbid reward
-                      </div>
-                    </div>
-                    <div className="grid grid-cols-7 items-center gap-4 mx-auto w-full">
-                      <div className="w-full col-span-3 text-base text-white flex justify-center items-center text-center">
-                        Case 1
-                      </div>
+                          <div className="flex justify-center">
+                            <span className="text-white text-center items-center font-semibold text-sm">
+                              OR
+                            </span>
+                          </div>
 
-                      <div />
+                          <div className="bg-jacarta-600 col-span-3 duration-400 shadow p-4 rounded-xl font-semibold text-base text-white flex justify-center items-center text-center">
+                            {refundedPrice} {currencySymbol} Outbid reward
+                          </div>
+                        </div>
+                        <div className="grid grid-cols-7 items-center gap-4 mx-auto w-full">
+                          <div className="w-full col-span-3 text-base text-white flex justify-center items-center text-center">
+                            Case 1
+                          </div>
 
-                      <div className="w-full col-span-3 text-base text-white flex justify-center items-center text-center">
-                        Case 2
+                          <div />
+
+                          <div className="w-full col-span-3 text-base text-white flex justify-center items-center text-center">
+                            Case 2
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                  </div>
+                    </>
+                  )}
                 </div>
 
                 {/* <!-- Terms --> */}
@@ -348,7 +375,13 @@ const BidsModal = ({
                     } `}
                     isDisabled={!isPriceGood || !checkTerms}
                   >
-                    {isLoadingButton ? <Spinner size="sm" color="default" /> : "Place Bid"}
+                    {isLoadingButton ? (
+                      <Spinner size="sm" color="default" />
+                    ) : buyoutPriceReached ? (
+                      "Buy Now"
+                    ) : (
+                      "Place Bid"
+                    )}
                   </Web3Button>
                   {/* <button
                   type="button"
