@@ -9,10 +9,11 @@ const MarketplaceHome = ({ chainIdFilter, auctions, setChainIdFilter, setAllToke
   const [filterName, setFilterName] = useState(null);
   const [filteredAuctions, setFilteredAuctions] = useState(auctions);
   const [priceSorting, setPriceSorting] = useState(null);
-  const [sort, setSort] = useState("Sort by");
+  const [sort, setSort] = useState("Sort by name");
   const [filter, setFilter] = useState("Filter by");
   const [dateSorting, setDateSorting] = useState(null);
   const [isOwner, setIsOwner] = useState(false);
+  const [nameSorting, setNameSorting] = useState(null);
 
   useEffect(() => {
     let tempFilteredAuctions = auctions;
@@ -42,17 +43,37 @@ const MarketplaceHome = ({ chainIdFilter, auctions, setChainIdFilter, setAllToke
     setFilteredAuctions(() => {
       let tempAuctions = auctions;
 
+      // create two arrays for auctions and direct listing with the type of listing
+      let auctionsArray = [];
+      let directListingArray = [];
+
+      tempAuctions.forEach((auction) => {
+        if (auction?.type === "Auction") {
+          auctionsArray.push(auction);
+        } else if (auction?.type === "Direct") {
+          directListingArray.push(auction);
+        }
+      });
+
       if (priceSorting === 1) {
-        tempAuctions = auctions
-          .filter((auction) => auction.priceUSD)
-          .sort((a, b) => a.priceUSD - b.priceUSD);
+        // sort by price low to high
+        auctionsArray = auctionsArray.sort((a, b) => a.auctionPrice - b.auctionPrice);
+        directListingArray = directListingArray.sort((a, b) => a.directPrice - b.directPrice);
       } else if (priceSorting === -1) {
-        tempAuctions = auctions
-          .filter((auction) => auction.priceUSD)
-          .sort((a, b) => b.priceUSD - a.priceUSD);
+        // sort by price high to low
+        auctionsArray = auctionsArray.sort((a, b) => b.auctionPrice - a.auctionPrice);
+        directListingArray = directListingArray.sort((a, b) => b.directPrice - a.directPrice);
       } else {
         tempAuctions = auctions;
       }
+
+      // merge the two arrays with auctions first and direct listing second
+      tempAuctions = auctionsArray.concat(directListingArray);
+
+      // remove listing not live
+      tempAuctions = tempAuctions.filter(
+        (auction) => auction?.type === "Auction" && auction?.type === "Direct"
+      );
 
       return tempAuctions;
     });
@@ -76,9 +97,29 @@ const MarketplaceHome = ({ chainIdFilter, auctions, setChainIdFilter, setAllToke
         tempAuctions = auctions;
       }
 
+      // remove listing not live
+      tempAuctions = tempAuctions.filter(
+        (auction) => auction?.type === "Auction" && auction?.type === "Direct"
+      );
+
       return tempAuctions;
     });
   }, [dateSorting, auctions]);
+
+  useEffect(() => {
+    setFilteredAuctions(() => {
+      let tempAuctions = auctions;
+
+      if (nameSorting === 1) {
+        // sort by name
+        tempAuctions = auctions.sort((a, b) => a.name.localeCompare(b.name));
+      } else {
+        tempAuctions = auctions;
+      }
+
+      return tempAuctions;
+    });
+  }, [nameSorting, auctions]);
 
   return (
     <>
@@ -171,8 +212,6 @@ const MarketplaceHome = ({ chainIdFilter, auctions, setChainIdFilter, setAllToke
                     onClick={() => {
                       setFilter("All the spaces");
                       setAllTokens(true);
-                      setDateSorting(null);
-                      setPriceSorting(null);
                     }}
                     className="hover:bg-jacarta-500 p-2 rounded-lg w-full pr-12 md:pr-24"
                   >
@@ -182,8 +221,6 @@ const MarketplaceHome = ({ chainIdFilter, auctions, setChainIdFilter, setAllToke
                     onClick={() => {
                       setFilter("Listed tokens");
                       setAllTokens(false);
-                      setDateSorting(null);
-                      setPriceSorting(null);
                     }}
                     className="hover:bg-jacarta-500 p-2 rounded-lg w-full pr-12 md:pr-24"
                   >
@@ -204,19 +241,21 @@ const MarketplaceHome = ({ chainIdFilter, auctions, setChainIdFilter, setAllToke
                 >
                   <MenuItem
                     onClick={() => {
-                      setSort("Sort by");
+                      setSort("Sort by name");
                       setPriceSorting(null);
                       setDateSorting(null);
+                      setNameSorting(1);
                     }}
                     className="hover:bg-jacarta-500 p-2 rounded-lg w-full pr-12 md:pr-24"
                   >
-                    <span>Sort by</span>
+                    <span>Sort by name</span>
                   </MenuItem>
                   <MenuItem
                     onClick={() => {
                       setSort("Price: low to high");
                       setPriceSorting(1);
                       setDateSorting(null);
+                      setNameSorting(null);
                     }}
                     className="hover:bg-jacarta-500 p-2 rounded-lg w-full pr-12 md:pr-24"
                   >
@@ -227,6 +266,7 @@ const MarketplaceHome = ({ chainIdFilter, auctions, setChainIdFilter, setAllToke
                       setSort("Price: high to low");
                       setPriceSorting(-1);
                       setDateSorting(null);
+                      setNameSorting(null);
                     }}
                     className="hover:bg-jacarta-500 p-2 rounded-lg w-full pr-12 md:pr-24"
                   >
@@ -237,6 +277,7 @@ const MarketplaceHome = ({ chainIdFilter, auctions, setChainIdFilter, setAllToke
                       setSort("Ending soon");
                       setDateSorting(1);
                       setPriceSorting(null);
+                      setNameSorting(null);
                     }}
                     className="hover:bg-jacarta-500 p-2 rounded-lg w-full pr-12 md:pr-24"
                   >
@@ -247,6 +288,7 @@ const MarketplaceHome = ({ chainIdFilter, auctions, setChainIdFilter, setAllToke
                       setSort("Newest");
                       setDateSorting(-1);
                       setPriceSorting(null);
+                      setNameSorting(null);
                     }}
                     className="hover:bg-jacarta-500 p-2 rounded-lg w-full pr-12 md:pr-24"
                   >

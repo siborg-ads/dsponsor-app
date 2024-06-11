@@ -63,6 +63,9 @@ const HomeContainer = () => {
           Number(formatUnits(token.marketplaceListings[0]?.currencyPriceUSDC ?? 0, 6))
         ) ?? 0
       );
+      const directPrice = token.marketplaceListings[0]?.buyPriceStructure.buyoutPricePerToken;
+      const auctionPrice = token.marketplaceListings[0]?.bidPriceStructure.minimalBidPerToken;
+      const type = token.marketplaceListings[0]?.listingType;
 
       const object = {
         name: name,
@@ -82,6 +85,9 @@ const HomeContainer = () => {
         tokenId: tokenId,
         tokenData: tokenData,
         priceUSD: priceUSD,
+        directPrice: directPrice,
+        auctionPrice: auctionPrice,
+        type: type,
         item: {
           metadata: token.metadata,
           mint: token.mint,
