@@ -199,14 +199,12 @@ const ItemManageModal = ({
     let isValid = true;
     let newErrors = {};
     const currentDate = new Date();
-    const yesterday = new Date();
-    yesterday.setDate(yesterday.getDate() - 1);
-    yesterday.setHours(23, 59, 59, 999); // Définir à la fin de la journée pour éviter l'erreur de jour.
+    currentDate.setMinutes(currentDate.getMinutes() - 1);
 
     if (!startDate) {
       newErrors.startDateError = "Start date is missing.";
       isValid = false;
-    } else if (new Date(startDate) < yesterday) {
+    } else if (new Date(startDate) < currentDate) {
       newErrors.startDateError = "Start date cannot be in the past.";
       isValid = false;
     } else if (startDate > endDate) {
@@ -217,7 +215,7 @@ const ItemManageModal = ({
     if (!endDate) {
       newErrors.endDateError = "End date is missing.";
       isValid = false;
-    } else if (new Date(endDate) < yesterday) {
+    } else if (new Date(endDate) < currentDate) {
       newErrors.endDateError = "End date cannot be in the past.";
       isValid = false;
     } else if (endDate < startDate) {
