@@ -178,6 +178,17 @@ const MarketplaceHome = ({ chainIdFilter, auctions, setChainIdFilter, setAllToke
                   >
                     <span>All the spaces</span>
                   </MenuItem>
+                  <MenuItem
+                    onClick={() => {
+                      setFilter("Listed tokens");
+                      setAllTokens(false);
+                      setDateSorting(null);
+                      setPriceSorting(null);
+                    }}
+                    className="hover:bg-jacarta-500 p-2 rounded-lg w-full pr-12 md:pr-24"
+                  >
+                    <span>Listed tokens</span>
+                  </MenuItem>
                 </MenuItems>
               </Menu>
 
