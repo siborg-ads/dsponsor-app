@@ -12,6 +12,7 @@ const User_items = ({
   mappedownedAdProposals,
   isPendinAdsOnOffer,
   isOwner,
+  isLister,
   listedAuctionToken
 }) => {
   const [itemActive, setItemActive] = useState(1);

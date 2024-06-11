@@ -21,6 +21,7 @@ const Review_carousel = ({
   setSuccessFullRefuseModal,
   isToken,
   isOwner,
+  isLister,
   setRefusedValidatedAdModal,
   refusedValidatedAdModal
 }) => {

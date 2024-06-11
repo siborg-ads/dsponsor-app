@@ -10,6 +10,7 @@ const Validation = ({
   offer,
   offerId,
   isOwner,
+  isLister,
   handleSubmit,
   successFullRefuseModal,
   setSuccessFullRefuseModal,
