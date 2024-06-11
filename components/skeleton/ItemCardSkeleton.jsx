@@ -1,6 +1,6 @@
 import React from "react";
 import { Card, Skeleton } from "@nextui-org/react";
-import Tippy from "@tippyjs/react";
+
 const ItemCardSkeleton = ({ widthSize }) => {
   return (
     <Card

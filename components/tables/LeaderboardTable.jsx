@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
+import Image from "next/image";
 import Link from "next/link";
 import activityToTopHolders from "./utils/activityToTopHolders";
 import activityToTopSpenders from "./utils/activityToTopSpenders";
@@ -15,29 +16,28 @@ const renderTable = (title, data, columns) => {
 
   return (
     <div className="w-full text-left min-w-[736px] border dark:border-jacarta-600 dark:bg-jacarta-700 dark:text-white lg:rounded-2lg">
-        <table className="w-full">
-          <thead>
-            <tr className="bg-jacarta-50 dark:bg-jacarta-600">
-              {columns.map((col, index) => (
-                <th key={index} className="py-3 px-4 font-medium">
-                  {col.header}
-                </th>
+      <table className="w-full">
+        <thead>
+          <tr className="bg-jacarta-50 dark:bg-jacarta-600">
+            {columns.map((col, index) => (
+              <th key={index} className="py-3 px-4 font-medium">
+                {col.header}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {data.map((item, index) => (
+            <tr key={index} className="border-t border-jacarta-100 dark:border-jacarta-600">
+              {columns.map((col, colIndex) => (
+                <td key={colIndex} className="py-4 px-4">
+                  {col.render(item)}
+                </td>
               ))}
             </tr>
-          </thead>
-          <tbody>
-            {data.map((item, index) => (
-              <tr key={index} className="border-t border-jacarta-100 dark:border-jacarta-600">
-                {columns.map((col, colIndex) => (
-                  <td key={colIndex} className="py-4 px-4">
-                    {col.render(item)}
-                  </td>
-                ))}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 };
@@ -46,7 +46,7 @@ const LeaderboardTable = ({ activity }) => {
   const { currentChainObject } = useChainContext();
   const [activeBlockchain, setActiveBlockchain] = useState(currentChainObject?.chainId);
   const [itemActive, setItemActive] = useState(1);
-  const [chainId, setChainId] = useState(); 
+  const [chainId, setChainId] = useState();
   const [filteredActivity, setFilteredActivity] = useState([]);
 
   const [blockChainOptions, setBlockChainOptions] = useState([]);
@@ -56,7 +56,7 @@ const LeaderboardTable = ({ activity }) => {
     const filteredActivity = activity?.filter((item) => item.chainId === Number(activeBlockchain));
     setChainId(filteredActivity[0].chainId);
     setFilteredActivity(filteredActivity[0]);
- 
+
     setLeaderboards({
       topHolders: activityToTopHolders(filteredActivity[0]?.rankings),
       topSpenders: activityToTopSpenders(filteredActivity[0]?.rankings),
@@ -65,7 +65,6 @@ const LeaderboardTable = ({ activity }) => {
   }, [activeBlockchain, activity]);
 
   useEffect(() => {
-
     const chains = Object.entries(config).map((value) => {
       return value[1].chainId;
     });
@@ -85,8 +84,8 @@ const LeaderboardTable = ({ activity }) => {
       )
     },
     { header: "Balance", render: (item) => item.balance },
-    { header: "Chain", render: () => config[chainId].chainName },
-    { header: "DPoints", render: (item) => item.dPoints }
+    { header: "Chain", render: () => config[chainId].chainName }
+    // { header: "DPoints", render: (item) => item.dPoints }
   ];
 
   const spenderColumns = [
@@ -101,8 +100,8 @@ const LeaderboardTable = ({ activity }) => {
       )
     },
     { header: "Balance", render: (item) => item.balance },
-    { header: "Chain", render: () => config[chainId].chainName },
-    { header: "DPoints", render: (item) => item.dPoints }
+    { header: "Chain", render: () => config[chainId].chainName }
+    // { header: "DPoints", render: (item) => item.dPoints }
   ];
 
   const rewardedColumns = [
@@ -117,8 +116,8 @@ const LeaderboardTable = ({ activity }) => {
       )
     },
     { header: "Number of Refunds", render: (item) => item.refunds },
-    { header: "Chain ", render: () => config[chainId].chainName },
-    { header: "DPoints", render: (item) => item.dPoints }
+    { header: "Chain ", render: () => config[chainId].chainName }
+    // { header: "DPoints", render: (item) => item.dPoints }
   ];
   const columns = {
     topHolders: holderColumns,
@@ -136,7 +135,7 @@ const LeaderboardTable = ({ activity }) => {
       <h1 className="text-4xl font-medium text-center py-16 dark:text-white">
         Leaderboard Rankings
       </h1>
-      <div className="mb-8 flex flex-wrap items-center justify-between">
+      <div className="mb-8 flex flex-col gap-6 flex-wrap items-center justify-between">
         <div className="flex flex-wrap items-center">
           {/* Blockchain Filter */}
           <div className="my-1 mr-2.5">
@@ -156,7 +155,15 @@ const LeaderboardTable = ({ activity }) => {
                 <path fill="none" d="M0 0h24v24H0z" />
                 <path d="M14 10v4h-4v-4h4zm2 0h5v4h-5v-4zm-2 11h-4v-5h4v5zm2 0v-5h5v4a1 1 0 0 1-1 1h-4zM14 3v5h-4V3h4zm2 0h4a1 1 0 0 1 1 1v4h-5V3zm-8 7v4H3v-4h5zm0 11H4a1 1 0 0 1-1-1v-4h5v5zM8 3v5H3V4a1 1 0 0 1 1-1h4z" />
               </svg>
-              <span>{config[activeBlockchain]?.chainName}</span>
+              <div className="flex gap-2">
+                <span>{config[activeBlockchain]?.chainName}</span>
+                <Image
+                  src={config[activeBlockchain]?.logoURL}
+                  width={17}
+                  height={17}
+                  alt="blockchain logo"
+                />
+              </div>
             </button>
             <div className="dropdown-menu z-10 hidden min-w-[220px] whitespace-nowrap rounded-xl bg-white py-4 px-2 text-left shadow-xl dark:bg-jacarta-800">
               <ul className="flex flex-col flex-wrap">
@@ -168,9 +175,17 @@ const LeaderboardTable = ({ activity }) => {
                   >
                     {activeBlockchain == option ? (
                       <div className="dropdown-item flex w-full items-center justify-between rounded-xl px-5 py-2 text-left font-display text-sm transition-colors hover:bg-jacarta-50 dark:text-white dark:hover:bg-jacarta-600">
-                        <span className="text-jacarta-700 dark:text-white">
-                          {config[option]?.chainName}
-                        </span>
+                        <div className="flex gap-2">
+                          <span className="text-jacarta-700 dark:text-white">
+                            {config[option]?.chainName}
+                          </span>
+                          <Image
+                            src={config[option]?.logoURL}
+                            width={17}
+                            height={17}
+                            alt="blockchain logo"
+                          />
+                        </div>
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
                           viewBox="0 0 24 24"
@@ -183,8 +198,14 @@ const LeaderboardTable = ({ activity }) => {
                         </svg>
                       </div>
                     ) : (
-                      <div className="dropdown-item flex w-full items-center rounded-xl px-5 py-2 text-left font-display text-sm transition-colors hover:bg-jacarta-50 dark:text-white dark:hover:bg-jacarta-600">
+                      <div className="dropdown-item flex gap-2 w-full items-center rounded-xl px-5 py-2 text-left font-display text-sm transition-colors hover:bg-jacarta-50 dark:text-white dark:hover:bg-jacarta-600">
                         {config[option]?.chainName}
+                        <Image
+                          src={config[option]?.logoURL}
+                          width={17}
+                          height={17}
+                          alt="blockchain logo"
+                        />
                       </div>
                     )}
                   </li>

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import LeaderboardTable from "../../../components/tables/LeaderboardTable";
 import { fetchMarketplaceActivity } from "../../../providers/methods/fetchMarketplaceActivity";
 import processBidsAndCalculateRewards from "./processBidsAndCalculateRewards";
+import LeaderBoardSkeleton from "../../../components/skeleton/leaderBoardSkeleton";
 
 const MarketplaceLeaderboardContainer = () => {
   const [activity, setActivity] = useState([]);
@@ -41,7 +42,11 @@ const MarketplaceLeaderboardContainer = () => {
     }, []);
 
     if (loading) {
-        return <div>Loading...</div>; 
+        return (
+          <>
+            <LeaderBoardSkeleton />
+          </>
+        ); 
     }
 
     return (
