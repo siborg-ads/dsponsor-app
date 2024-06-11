@@ -130,7 +130,7 @@ const OfferPageContainer = () => {
     setTokenData(tokenData);
     for (const token of offerData.nftContract.tokens) {
       if (token.mint === null) return;
-      if (tokenData.toLowerCase() === token.mint.tokenData.toLowerCase()) {
+      if (tokenData?.toLowerCase() === token.mint.tokenData?.toLowerCase()) {
         setIsWordAlreadyTaken(true);
       }
     }

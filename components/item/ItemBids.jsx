@@ -4,9 +4,7 @@ import Link from "next/link";
 import Timer from "./Timer";
 import BidsModal from "../modal/bidsModal";
 import { ethers } from "ethers";
-import {
-  Web3Button,
-} from "@thirdweb-dev/react";
+import { Web3Button } from "@thirdweb-dev/react";
 import config from "../../providers/utils/config";
 
 const ItemBids = ({
@@ -62,7 +60,7 @@ const ItemBids = ({
                 href={`/manage/${marketplaceListings[0].bids[0].bidder}`}
                 className="text-sm font-bold text-accent"
               >
-                {marketplaceListings[0].bids[0].bidder === address.toLowerCase()
+                {address?.toLowerCase() === marketplaceListings[0]?.bids[0]?.bidder?.toLowerCase()
                   ? "You"
                   : marketplaceListings[0].bids[0].bidder}
               </Link>

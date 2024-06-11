@@ -36,7 +36,7 @@ const Validated_refused_items = ({ statut, proposalData, isToken }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     const newArray = collection_activity_item_data.filter((item) => {
-      return item.title.toLowerCase().includes(inputText);
+      return item.title?.toLowerCase().includes(inputText);
     });
     setData(newArray);
     setInputText("");

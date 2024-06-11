@@ -19,7 +19,7 @@ const MarketplaceHome = ({ chainIdFilter, auctions, setChainIdFilter, setAllToke
 
     if (filterName !== null && filterName !== "" && filterName !== undefined) {
       tempFilteredAuctions = tempFilteredAuctions.filter((auction) =>
-        auction.name.toLowerCase().includes(filterName.toLowerCase())
+        auction.name?.toLowerCase().includes(filterName?.toLowerCase())
       );
     }
 

@@ -3,50 +3,21 @@
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import tippy from "tippy.js";
-import { useChainContext } from "../../contexts/hooks/useChainContext";
+
 import config from "../../providers/utils/config";
 
-const collectionFilteringOptions = [
-  {
-    id: 1,
-    imgSrc: "/img/nft-aggregator/item-14.jpg",
-    name: "NFT Funny Cat",
-    count: 30643,
-    varified: true
-  },
-  {
-    id: 2,
-    imgSrc: "/img/nft-aggregator/item-2.jpg",
-    name: "Azuki #4017",
-    count: 10000
-  },
-  {
-    id: 3,
-    imgSrc: "/img/nft-aggregator/item-7.jpg",
-    name: "Crypto bull #6195",
-    count: 8899
-  },
-  {
-    id: 4,
-    imgSrc: "/img/nft-aggregator/item-1.jpg",
-    name: "Monkeyme#155",
-    count: 25671
-  }
-];
 
-const chains = [{ id: 1, imgSrc: "/img/chains/eth-chain.png", name: "Ethereum" }];
+
+
 
 const status = [
   { id: 1, label: "Buy Now", listingType: "Direct" },
   { id: 2, label: "On Auction", listingType: "Auction" }
 ];
-const currencies = ["USD", "ETH", "SOL"];
-const categories = ["Art", "Collectibles", "Domain", "Music", "Photography", "Virtual World"];
+
 
 export default function Sidebar({ setFilterTypes }) {
-  const [currency, setCurrency] = useState(currencies[0]);
-  const [category, setCategory] = useState(categories[0]);
-  const { currentChainObject } = useChainContext();
+
   useEffect(() => {
     tippy("[data-tippy-content]");
   }, []);
