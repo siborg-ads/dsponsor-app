@@ -40,7 +40,7 @@ import { fetchOfferToken } from "../../providers/methods/fetchOfferToken.js";
 // import { fetchAllTokenListedByListingId } from "../../providers/methods/fetchAllTokenListedByListingId.js";
 import config from "../../providers/utils/config.js";
 import stringToUint256 from "../../utils/stringToUnit256.js";
-import { parseUnits } from "ethers/lib/utils";
+import { getAddress, parseUnits } from "ethers/lib/utils";
 
 import "react-toastify/dist/ReactToastify.css";
 import ModalHelper from "../../components/Helper/modalHelper.jsx";
@@ -662,6 +662,15 @@ const TokenPageContainer = () => {
   };
 
   function shouldRenderManageTokenComponent() {
+    let isLister;
+    if (
+      marketplaceListings[0]?.lister !== null &&
+      marketplaceListings[0]?.lister !== undefined &&
+      address !== null &&
+      address !== undefined
+    ) {
+      isLister = getAddress(marketplaceListings[0]?.lister) === getAddress(address);
+    }
     const isFirstListingAuctionActive =
       marketplaceListings[0]?.startTime < now &&
       marketplaceListings[0]?.endTime > now &&
@@ -671,6 +680,9 @@ const TokenPageContainer = () => {
     const isAuctionWithBids =
       marketplaceListings[0]?.listingType === "Auction" && marketplaceListings[0]?.bids?.length > 0;
     const isOwnerAndFinished = isOwner && marketplaceListings[0]?.status === "COMPLETED";
+    const isListerAndEndDateFinishedOrNoBids =
+      isLister &&
+      (marketplaceListings[0]?.endTime < now || marketplaceListings[0]?.bids?.length === 0);
 
     return (
       ((isFirstListingAuctionActive && !isOwner) ||
@@ -678,7 +690,8 @@ const TokenPageContainer = () => {
         isTokenStatusSpecial ||
         (!isOwner && !isAllowedToMint) ||
         isAuctionWithBids) &&
-      !isOwnerAndFinished
+      !isOwnerAndFinished &&
+      !isListerAndEndDateFinishedOrNoBids
     );
   }
 

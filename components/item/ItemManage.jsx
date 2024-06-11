@@ -49,19 +49,6 @@ const ItemManage = ({
     }
   };
 
-  useEffect(() => {
-    console.log(
-      "condition",
-      (marketplaceListings[0]?.status !== "CREATED" || marketplaceListings?.length <= 0) && isOwner,
-      "status",
-      marketplaceListings[0]?.status,
-      "length",
-      marketplaceListings?.length,
-      "isOwner",
-      "isOwner"
-    );
-  }, [marketplaceListings, isOwner]);
-
   return (
     <>
       <div className="dark:bg-jacarta-700 dark:border-jacarta-600 mb-2 border-jacarta-100 rounded-2lg border flex flex-col gap-4 bg-white p-8">
