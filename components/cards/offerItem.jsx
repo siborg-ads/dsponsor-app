@@ -15,6 +15,7 @@ const OfferItem = ({
   isToken = false,
   isSelectionActive,
   isOwner,
+  isLister,
   isAuction = false,
   isListing = false
 }) => {

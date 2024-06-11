@@ -100,6 +100,7 @@ const TokenPageContainer = () => {
   const [royaltiesFeesAmount, setRoyaltiesFeesAmount] = useState(null);
   const [bidsAmount, setBidsAmount] = useState(null);
   const [currencyDecimals, setCurrencyDecimals] = useState(null);
+  const [isLister, setIsLister] = useState(false);
   const NATIVECurrency = config[chainId]?.smartContracts?.NATIVE;
 
   const { contract: DsponsorAdminContract } = useContract(
@@ -665,16 +666,22 @@ const TokenPageContainer = () => {
     validateInputs();
   };
 
-  function shouldRenderManageTokenComponent() {
-    let isLister;
+  useEffect(() => {
     if (
-      marketplaceListings[0]?.lister !== null &&
-      marketplaceListings[0]?.lister !== undefined &&
+      marketplaceListings[0]?.lister &&
+      address &&
+      marketplaceListings?.lister !== null &&
+      marketplaceListings?.lister !== undefined &&
       address !== null &&
       address !== undefined
     ) {
-      isLister = getAddress(marketplaceListings[0]?.lister) === getAddress(address);
+      setIsLister(getAddress(marketplaceListings[0]?.lister) === getAddress(address));
+    } else {
+      setIsLister(false);
     }
+  }, [marketplaceListings, address]);
+
+  function shouldRenderManageTokenComponent() {
     const isFirstListingAuctionActive =
       marketplaceListings[0]?.startTime < now &&
       marketplaceListings[0]?.endTime > now &&
@@ -911,6 +918,7 @@ const TokenPageContainer = () => {
                     royalties={royalties}
                     dsponsorMpContract={dsponsorMpContract}
                     isOwner={isOwner}
+                    isLister={isLister}
                   />
                 </>
               )}
@@ -978,6 +986,7 @@ const TokenPageContainer = () => {
           isOwner={isOwner}
           isToken={true}
           successFullUploadModal={successFullUploadModal}
+          isLister={isLister}
         />
       )}
       {/* <ItemsTabs /> */}

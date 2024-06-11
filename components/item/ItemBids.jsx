@@ -62,6 +62,7 @@ const ItemBids = ({
                     className="text-sm font-bold text-accent"
                   >
                     {address &&
+                    marketplaceListings[0]?.bids[0]?.bidder &&
                     getAddress(marketplaceListings[0]?.bids[0]?.bidder) === getAddress(address)
                       ? "You"
                       : marketplaceListings[0].bids[0].bidder}
