@@ -33,8 +33,10 @@ const MarketplaceHome = ({ chainIdFilter, auctions, setChainIdFilter, setAllToke
 
     if (filterListedTokens) {
       tempFilteredAuctions = tempFilteredAuctions.filter(
-        (auction) => auction?.type === "Auction" && auction?.type === "Direct"
+        (auction) => auction?.type === "Auction" || auction?.type === "Direct"
       );
+    } else {
+      tempFilteredAuctions = auctions;
     }
 
     setFilteredAuctions(tempFilteredAuctions);
@@ -73,7 +75,7 @@ const MarketplaceHome = ({ chainIdFilter, auctions, setChainIdFilter, setAllToke
 
       // remove listing not live
       tempAuctions = tempAuctions.filter(
-        (auction) => auction?.type === "Auction" && auction?.type === "Direct"
+        (auction) => auction?.type === "Auction" || auction?.type === "Direct"
       );
 
       return tempAuctions;
@@ -100,7 +102,7 @@ const MarketplaceHome = ({ chainIdFilter, auctions, setChainIdFilter, setAllToke
 
       // remove listing not live
       tempAuctions = tempAuctions.filter(
-        (auction) => auction?.type === "Auction" && auction?.type === "Direct"
+        (auction) => auction?.type === "Auction" || auction?.type === "Direct"
       );
 
       return tempAuctions;
