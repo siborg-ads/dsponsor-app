@@ -9,7 +9,8 @@ const activityToTopRewarded = (activity) => {
     .map((ranking) => ({
       rank: ranking.bidRefundsRank,
       totalReceived: ranking.usdcAmounts.bidRefundReceived,
-      address: ranking.displayAddr,
+      addressDisplay: ranking.displayAddr,
+      address: ranking.addr,
       refunds: ranking.nbRefunds,
       chainId: ranking.chainId,
       dPoints: ranking.dPoints,

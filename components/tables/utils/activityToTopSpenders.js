@@ -9,7 +9,8 @@ const activityToTopSpenders = (activity) => {
     .map((ranking) => ({
       rank: ranking.spendersRank,
       totalSpent: ranking.usdcAmounts.totalSpent,
-      address: ranking.displayAddr,
+      addressDisplay: ranking.displayAddr,
+      address: ranking.addr,
       balance: ranking.balance,
       dPoints: ranking.dPoints,
       chainId: ranking.chainId,
