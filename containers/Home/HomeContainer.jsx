@@ -7,7 +7,7 @@ import Description from "../../components/siborgHome/description";
 import { fetchAllListedTokenWithoutFilter } from "../../providers/methods/fetchAllListedTokenWithoutFilter";
 import { formatUnits } from "ethers/lib/utils";
 import formatAndRound from "../../utils/formatAndRound";
-import { chainIds } from "../../data/chainIds";
+import { chainIds, mainChainId } from "../../data/chainIds";
 import { useChainContext } from "../../contexts/hooks/useChainContext";
 
 const HomeContainer = () => {
@@ -16,14 +16,10 @@ const HomeContainer = () => {
   const [auctions, setAuctions] = useState([]);
   const [allTokens, setAllTokens] = useState(true);
 
-  const { currentChainObject } = useChainContext();
-
-  const chainId = currentChainObject?.chainId;
-
   useEffect(() => {
     const fetchData = async () => {
-      if (chainId !== null && chainId !== undefined) {
-        const data = await fetchAllListedTokenWithoutFilter(chainId, allTokens);
+      if (mainChainId !== null && mainChainId !== undefined) {
+        const data = await fetchAllListedTokenWithoutFilter(mainChainId, allTokens);
         setAuctionsTemp(data);
       } else {
         setAuctionsTemp([]);
@@ -31,11 +27,9 @@ const HomeContainer = () => {
     };
 
     fetchData();
-  }, [allTokens, chainId]);
+  }, [allTokens]);
 
   useEffect(() => {
-    console.log("auctionsTemp", auctionsTemp);
-
     if (auctionsTemp.length === 0) return;
 
     const auctions = auctionsTemp.map((token) => {
@@ -52,6 +46,7 @@ const HomeContainer = () => {
         token.marketplaceListings[0].quantity > 0;
       const image = token.metadata.image;
       const currencyDecimals = Number(token.marketplaceListings[0]?.currencyDecimals ?? 0);
+      const currencySymbol = token?.marketplaceListings[0]?.currencySymbol;
       const latestBid = Number(
         formatUnits(
           token?.marketplaceListings[0]?.bidPriceStructure.previousBidAmount ?? 0,
@@ -66,6 +61,8 @@ const HomeContainer = () => {
       const directPrice = token.marketplaceListings[0]?.buyPriceStructure.buyoutPricePerToken;
       const auctionPrice = token.marketplaceListings[0]?.bidPriceStructure.minimalBidPerToken;
       const type = token.marketplaceListings[0]?.listingType;
+      const startTime = token?.marketplaceListings[0]?.startTime;
+      const endTime = token?.marketplaceListings[0]?.endTime;
 
       const object = {
         name: name,
@@ -73,14 +70,14 @@ const HomeContainer = () => {
         chain: chain,
         chainId: chainId,
         price: price,
-        currencySymbol: token?.marketplaceListings[0]?.currencySymbol,
+        currencySymbol: currencySymbol,
         link: `/${chainId}/offer/${offerId}/${tokenId}?tokenData=${tokenData}`,
         live: live,
         image: image,
         latestBid: latestBid,
         currencyDecimals: currencyDecimals,
-        startTime: token?.marketplaceListings[0]?.startTime,
-        endTime: token?.marketplaceListings[0]?.endTime,
+        startTime: startTime,
+        endTime: endTime,
         offerId: offerId,
         tokenId: tokenId,
         tokenData: tokenData,
@@ -93,7 +90,12 @@ const HomeContainer = () => {
           mint: token.mint,
           nftContract: token.nftContract,
           marketplaceListings: token.marketplaceListings,
-          chainConfig: token.chainConfig
+          chainConfig: token.chainConfig,
+          offerId: offerId,
+          tokenId: tokenId,
+          tokenData: tokenData,
+          startTime: startTime,
+          endTime: endTime
         }
       };
 

@@ -109,7 +109,7 @@ const OfferItem = ({
     image = "/images/gradient_creative.jpg",
     valid_from = null,
     valid_to = null
-  } = itemData ? itemData : {};
+  } = itemData ?? {};
 
   return (
     <>
