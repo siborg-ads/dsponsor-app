@@ -174,6 +174,8 @@ const TokenPageContainer = () => {
   }, [offerData]);
 
   useEffect(() => {
+    console.log("offerData", offerData);
+
     if (!offerData) return;
     if (
       !offerNotFormated &&
@@ -278,6 +280,10 @@ const TokenPageContainer = () => {
       setTokenStatut("MINTED");
       setTokenCurrencyAddress(offerData?.nftContract?.prices[0]?.currency);
       setTokenBigIntPrice(offerData?.nftContract?.prices[0]?.amount);
+    }
+
+    if (offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.status === "COMPLETED") {
+      setTokenStatut("COMPLETED");
     }
   }, [
     offerData,
@@ -664,13 +670,15 @@ const TokenPageContainer = () => {
     const isTokenStatusSpecial = tokenStatut === "MINTABLE" || tokenStatut === "SIBORG";
     const isAuctionWithBids =
       marketplaceListings[0]?.listingType === "Auction" && marketplaceListings[0]?.bids?.length > 0;
+    const isOwnerAndFinished = isOwner && marketplaceListings[0]?.status === "COMPLETED";
 
     return (
-      (isFirstListingAuctionActive && !isOwner) ||
-      (isFirstListingDirect && !isOwner) ||
-      isTokenStatusSpecial ||
-      (!isOwner && !isAllowedToMint) ||
-      isAuctionWithBids
+      ((isFirstListingAuctionActive && !isOwner) ||
+        (isFirstListingDirect && !isOwner) ||
+        isTokenStatusSpecial ||
+        (!isOwner && !isAllowedToMint) ||
+        isAuctionWithBids) &&
+      !isOwnerAndFinished
     );
   }
 
@@ -818,9 +826,7 @@ const TokenPageContainer = () => {
                   )}
                 <span className="dark:text-jacarta-300 text-jacarta-400 text-sm mr-4">
                   Space #{" "}
-                  <strong className="dark:text-white">
-                    {tokenData ? tokenData : formatTokenId(tokenId)}
-                  </strong>{" "}
+                  <strong className="dark:text-white">{tokenData ?? formatTokenId(tokenId)}</strong>{" "}
                 </span>
                 <span className="text-jacarta-300 block text-sm ">
                   Creator <strong className="dark:text-white">{royalties}% royalties</strong>
@@ -859,16 +865,18 @@ const TokenPageContainer = () => {
               {shouldRenderManageTokenComponent() ? (
                 ""
               ) : (
-                <ItemManage
-                  successFullListing={successFullListing}
-                  setSuccessFullListing={setSuccessFullListing}
-                  dsponsorNFTContract={DsponsorNFTContract}
-                  offerData={offerData}
-                  marketplaceListings={marketplaceListings}
-                  royalties={royalties}
-                  dsponsorMpContract={dsponsorMpContract}
-                  isOwner={isOwner}
-                />
+                <>
+                  <ItemManage
+                    successFullListing={successFullListing}
+                    setSuccessFullListing={setSuccessFullListing}
+                    dsponsorNFTContract={DsponsorNFTContract}
+                    offerData={offerData}
+                    marketplaceListings={marketplaceListings}
+                    royalties={royalties}
+                    dsponsorMpContract={dsponsorMpContract}
+                    isOwner={isOwner}
+                  />
+                </>
               )}
               {tokenStatut === "AUCTION" &&
                 marketplaceListings[0].startTime < now &&
