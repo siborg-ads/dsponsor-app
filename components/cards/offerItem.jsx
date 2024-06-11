@@ -120,17 +120,22 @@ const OfferItem = ({
           </div>
         )}
 
-        <div className="dark:bg-jacarta-700 dark:hover:bg-jacarta-600 dark:border-jacarta-700 border-jacarta-100 relative rounded-2xl block border bg-white p-[1.1875rem] transition-shadow hover:shadow-lg text-jacarta-500">
+        <div
+          style={{
+            transitionDuration: "500ms"
+          }}
+          className="dark:bg-jacarta-700 cursor-pointer dark:hover:bg-jacarta-800 box-border hover:border-2 hover:-m-1 duration-500 hover:-translate-y-1 dark:hover:border-2 dark:border-jacarta-100 dark:border-opacity-10 border-opacity-10 border-jacarta-900 relative rounded-2xl block border bg-white p-[1.1875rem] transition-shadow hover:shadow-lg text-jacarta-500"
+        >
           <div className="relative">
             <figure>
               {isSelectionActive ? (
                 image && (
                   <Image
-                    src={image ? image : "/images/gradient_creative.jpg"}
+                    src={image ?? "/images/gradient_creative.jpg"}
                     alt="logo"
                     height={230}
                     width={230}
-                    className="rounded-[0.625rem] w-full lg:h-[230px] object-contain"
+                    className="w-full lg:h-full object-cover rounded-lg"
                     loading="lazy"
                   />
                 )
@@ -138,11 +143,11 @@ const OfferItem = ({
                 <Link href={url}>
                   {image && (
                     <Image
-                      src={image ? image : "/images/gradient_creative.jpg"}
+                      src={image ?? "/images/gradient_creative.jpg"}
                       alt="logo"
                       height={230}
                       width={230}
-                      className="rounded-[0.625rem] w-full lg:h-[230px] object-contain"
+                      className="w-full lg:h-full object-cover rounded-lg"
                       loading="lazy"
                     />
                   )}
@@ -153,11 +158,14 @@ const OfferItem = ({
             <Tippy
               content={item?.chainConfig?.chainName}
               placement="top"
-              className="bg-jacarta-300 text-jacarta-700 dark:hover:bg-jacarta-600 hover:bg-jacarta-600 dark:text-jacarta-300 rounded-md p-2"
+              style={{
+                transitionDuration: "500ms"
+              }}
+              className="bg-jacarta-300 text-jacarta-700 box-border hover:border-2 duration-500 hover:-m-1 dark:hover:border-2 hover:-translate-y-1 dark:border-jacarta-100 border-opacity-10 border dark:border-opacity-10 border-jacarta-900 dark:hover:bg-jacarta-800 hover:bg-jacarta-600 dark:text-jacarta-300 rounded-md p-2"
             >
               <div
                 style={{ background: "rgba(54, 58, 93, 0.7)", backdropFilter: "blur(20px)" }}
-                className={`absolute ${!isToken ? "-bottom-1" : "bottom-8"} -right-2  dark:border-jacarta-600 border-jacarta-100 flex items-center whitespace-nowrap rounded-md border py-1 px-2`}
+                className={`absolute ${!isToken ? "-bottom-1" : "bottom-8"} -right-2 flex items-center whitespace-nowrap rounded-md border py-1 px-2`}
               >
                 <Image
                   src={item?.chainConfig?.logoURL}
@@ -172,7 +180,7 @@ const OfferItem = ({
               <Tippy
                 content={`token  # ${item.tokenData ? item.tokenData : item.tokenId}`}
                 placement="top"
-                className="bg-jacarta-300 text-jacarta-700 dark:hover:bg-jacarta-600 hover:bg-jacarta-600 dark:text-jacarta-300 rounded-md p-2"
+                className="bg-jacarta-300 text-jacarta-700 box-border hover:border-2 dark:hover:border-2 hover:-m-1 duration-400 dark:hover:bg-jacarta-800 dark:border-jacarta-100 dark:border-opacity-10 border-opacity-10 border border-jacarta-900 hover:bg-jacarta-600 dark:text-jacarta-300 rounded-md p-2"
               >
                 <div
                   style={{ background: "rgba(54, 58, 93, 0.7)", backdropFilter: "blur(20px)" }}
