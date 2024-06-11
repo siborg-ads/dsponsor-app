@@ -14,6 +14,7 @@ const MarketplaceHome = ({ chainIdFilter, auctions, setChainIdFilter, setAllToke
   const [dateSorting, setDateSorting] = useState(null);
   const [isOwner, setIsOwner] = useState(false);
   const [nameSorting, setNameSorting] = useState(null);
+  const [filterListedTokens, setFilterListedTokens] = useState(false);
 
   useEffect(() => {
     let tempFilteredAuctions = auctions;
@@ -24,20 +25,20 @@ const MarketplaceHome = ({ chainIdFilter, auctions, setChainIdFilter, setAllToke
       );
     }
 
-    /*
-    if (
-      chainIdFilter !== null ||
-      chainIdFilter !== undefined ||
-      chainIdFilter !== ""
-    ) {
-      tempFilteredAuctions = tempFilteredAuctions.sort(
-        (auction) => auction.chainId === chainIdFilter
+    setFilteredAuctions(tempFilteredAuctions);
+  }, [filterName, auctions]);
+
+  useEffect(() => {
+    let tempFilteredAuctions = auctions;
+
+    if (filterListedTokens) {
+      tempFilteredAuctions = tempFilteredAuctions.filter(
+        (auction) => auction?.type === "Auction" && auction?.type === "Direct"
       );
     }
-    */
 
     setFilteredAuctions(tempFilteredAuctions);
-  }, [filterName, chainIdFilter, auctions]);
+  }, [filterListedTokens, auctions]);
 
   useEffect(() => {
     setFilteredAuctions(() => {
@@ -212,6 +213,7 @@ const MarketplaceHome = ({ chainIdFilter, auctions, setChainIdFilter, setAllToke
                     onClick={() => {
                       setFilter("All the spaces");
                       setAllTokens(true);
+                      setFilterListedTokens(false);
                     }}
                     className="hover:bg-jacarta-500 p-2 rounded-lg w-full pr-12 md:pr-24"
                   >
@@ -221,6 +223,7 @@ const MarketplaceHome = ({ chainIdFilter, auctions, setChainIdFilter, setAllToke
                     onClick={() => {
                       setFilter("Listed tokens");
                       setAllTokens(false);
+                      setFilterListedTokens(true);
                     }}
                     className="hover:bg-jacarta-500 p-2 rounded-lg w-full pr-12 md:pr-24"
                   >
