@@ -46,11 +46,11 @@ const MainAuctions = ({ auctions }) => {
                   key={index}
                   item={auction.item}
                   isToken={true}
-                  isListing={auction.item?.marketplaceListings[0]?.listingType}
+                  isListing={auction?.type}
                   isOwner={isOwner}
-                  isAuction={auction.item?.marketplaceListings[0]?.listingType === "Auction"}
+                  isAuction={auction?.type === "Auction"}
                   url={
-                    !auction.item?.mint?.tokenData
+                    !auction?.tokenData
                       ? `/${auction?.chainId}/offer/${auction?.offerId}/${auction?.tokenId}`
                       : `/${auction?.chainId}/offer/${auction.item.nftContract?.adOffers[0]?.id}/${auction.tokenId}?tokenData=${auction.item.mint?.tokenData}`
                   }
