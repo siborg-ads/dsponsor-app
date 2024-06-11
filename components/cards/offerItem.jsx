@@ -120,7 +120,7 @@ const OfferItem = ({
           </div>
         )}
 
-        <div className="dark:bg-jacarta-700 dark:border-jacarta-700 border-jacarta-100 relative rounded-2xl block border bg-white p-[1.1875rem] transition-shadow hover:shadow-lg text-jacarta-500">
+        <div className="dark:bg-jacarta-700 dark:hover:bg-jacarta-600 dark:border-jacarta-700 border-jacarta-100 relative rounded-2xl block border bg-white p-[1.1875rem] transition-shadow hover:shadow-lg text-jacarta-500">
           <div className="relative">
             <figure>
               {isSelectionActive ? (
@@ -153,7 +153,7 @@ const OfferItem = ({
             <Tippy
               content={item?.chainConfig?.chainName}
               placement="top"
-              className="bg-jacarta-300 text-jacarta-700 dark:bg-jacarta-700 dark:text-jacarta-300 rounded-md p-2"
+              className="bg-jacarta-300 text-jacarta-700 dark:hover:bg-jacarta-600 hover:bg-jacarta-600 dark:text-jacarta-300 rounded-md p-2"
             >
               <div
                 style={{ background: "rgba(54, 58, 93, 0.7)", backdropFilter: "blur(20px)" }}
@@ -172,7 +172,7 @@ const OfferItem = ({
               <Tippy
                 content={`token  # ${item.tokenData ? item.tokenData : item.tokenId}`}
                 placement="top"
-                className="bg-jacarta-300 text-jacarta-700 dark:bg-jacarta-700 dark:text-jacarta-300 rounded-md p-2"
+                className="bg-jacarta-300 text-jacarta-700 dark:hover:bg-jacarta-600 hover:bg-jacarta-600 dark:text-jacarta-300 rounded-md p-2"
               >
                 <div
                   style={{ background: "rgba(54, 58, 93, 0.7)", backdropFilter: "blur(20px)" }}
