@@ -36,7 +36,7 @@ const ChainCurrency = () => {
             <input
               type="checkbox"
               id="terms"
-              className="h-5 w-5 mr-3 rounded border-jacarta-200 text-accent checked:bg-accent focus:ring-accent/20 focus:ring-offset-0 dark:border-jacarta-500 dark:bg-jacarta-600"
+              className="h-5 w-5 mr-3 rounded border-jacarta-200 text-primaryPurple checked:bg-primaryPurple focus:ring-primaryPurple/20 focus:ring-offset-0 dark:border-jacarta-500 dark:bg-jacarta-600"
             />
             <figure className="relative mr-2 w-8 shrink-0 flex">
               <Image
@@ -48,7 +48,7 @@ const ChainCurrency = () => {
                 loading="lazy"
               />
             </figure>
-            <span className="font-display text-sm font-semibold text-jacarta-700 dark:text-white">
+            <span className="font-display text-sm font-semibold text-jacarta-900 dark:text-white">
               {currency.name}
             </span>
           </label>

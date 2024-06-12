@@ -74,7 +74,7 @@ const OfferSkeleton = () => {
               <div className="h-12 w-5/5 rounded-lg bg-default-200"></div>
             </Skeleton>
 
-            <div className="dark:bg-jacarta-700 dark:border-jacarta-600 border-jacarta-100 rounded-2lg border flex flex-col gap-4 bg-white p-8">
+            <div className="dark:bg-secondaryBlack dark:border-jacarta-600 border-jacarta-100 rounded-2lg border flex flex-col gap-4 bg-white p-8">
               <div className=" sm:flex sm:flex-wrap">
                 <Skeleton className="rounded-lg w-full">
                   <div className="h-24 rounded-lg bg-default-300"></div>

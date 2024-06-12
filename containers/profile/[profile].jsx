@@ -66,7 +66,7 @@ const Edit_user = () => {
             className="h-[18.75rem] w-full object-cover"
           />
           <div className="container relative -translate-y-4">
-            <div className="font-display group hover:bg-accent absolute right-0 bottom-4 flex items-center rounded-lg bg-white py-2 px-4 text-sm">
+            <div className="font-display group hover:bg-primaryPurple absolute right-0 bottom-4 flex items-center rounded-lg bg-white py-2 px-4 text-sm">
               <input
                 type="file"
                 accept="image/*"
@@ -107,42 +107,42 @@ const Edit_user = () => {
               {/* <!-- Form --> */}
               <div className="mb-12 md:w-1/2 md:pr-8">
                 <div className="mb-6">
-                  <label className="font-display text-jacarta-700 mb-1 block text-sm dark:text-white">
+                  <label className="font-display text-jacarta-900 mb-1 block text-sm dark:text-white">
                     Username<span className="text-red">*</span>
                   </label>
                   <input
                     type="text"
                     id="profile-username"
-                    className="dark:bg-jacarta-700 border-jacarta-100 hover:ring-accent/10 focus:ring-accent dark:border-jacarta-600 dark:placeholder:text-jacarta-300 w-full rounded-lg py-3 hover:ring-2 dark:text-white px-3"
+                    className="dark:bg-secondaryBlack border-jacarta-100 hover:ring-primaryPurple/10 focus:ring-primaryPurple dark:border-jacarta-600 dark:placeholder:text-jacarta-100 w-full rounded-lg py-3 hover:ring-2 dark:text-white px-3"
                     placeholder="Enter username"
                     required
                   />
                 </div>
                 <div className="mb-6">
-                  <label className="font-display text-jacarta-700 mb-1 block text-sm dark:text-white">
+                  <label className="font-display text-jacarta-900 mb-1 block text-sm dark:text-white">
                     Bio<span className="text-red">*</span>
                   </label>
                   <textarea
                     id="profile-bio"
-                    className="dark:bg-jacarta-700 border-jacarta-100 hover:ring-accent/10 focus:ring-accent dark:border-jacarta-600 dark:placeholder:text-jacarta-300 w-full rounded-lg py-3 hover:ring-2 dark:text-white px-3"
+                    className="dark:bg-secondaryBlack border-jacarta-100 hover:ring-primaryPurple/10 focus:ring-primaryPurple dark:border-jacarta-600 dark:placeholder:text-jacarta-100 w-full rounded-lg py-3 hover:ring-2 dark:text-white px-3"
                     required
                     placeholder="Tell the world your story!"
                   ></textarea>
                 </div>
                 <div className="mb-6">
-                  <label className="font-display text-jacarta-700 mb-1 block text-sm dark:text-white">
+                  <label className="font-display text-jacarta-900 mb-1 block text-sm dark:text-white">
                     Email address<span className="text-red">*</span>
                   </label>
                   <input
                     type="text"
                     id="profile-email"
-                    className="dark:bg-jacarta-700 border-jacarta-100 hover:ring-accent/10 focus:ring-accent dark:border-jacarta-600 dark:placeholder:text-jacarta-300 w-full rounded-lg py-3 hover:ring-2 dark:text-white px-3"
+                    className="dark:bg-secondaryBlack border-jacarta-100 hover:ring-primaryPurple/10 focus:ring-primaryPurple dark:border-jacarta-600 dark:placeholder:text-jacarta-100 w-full rounded-lg py-3 hover:ring-2 dark:text-white px-3"
                     placeholder="Enter email"
                     required
                   />
                 </div>
                 <div className="mb-6">
-                  <label className="font-display text-jacarta-700 mb-1 block text-sm dark:text-white">
+                  <label className="font-display text-jacarta-900 mb-1 block text-sm dark:text-white">
                     Links<span className="text-red">*</span>
                   </label>
                   <div className="relative">
@@ -161,7 +161,7 @@ const Edit_user = () => {
                     <input
                       type="text"
                       id="profile-twitter"
-                      className="dark:bg-jacarta-700 border-jacarta-100 hover:ring-accent/10 focus:ring-accent dark:border-jacarta-600 dark:placeholder:text-jacarta-300 w-full rounded-t-lg py-3 pl-10 hover:ring-2 focus:ring-inset dark:text-white"
+                      className="dark:bg-secondaryBlack border-jacarta-100 hover:ring-primaryPurple/10 focus:ring-primaryPurple dark:border-jacarta-600 dark:placeholder:text-jacarta-100 w-full rounded-t-lg py-3 pl-10 hover:ring-2 focus:ring-inset dark:text-white"
                       placeholder="@twittername"
                     />
                   </div>
@@ -181,7 +181,7 @@ const Edit_user = () => {
                     <input
                       type="text"
                       id="profile-instagram"
-                      className="dark:bg-jacarta-700 border-jacarta-100 hover:ring-accent/10 focus:ring-accent dark:border-jacarta-600 dark:placeholder:text-jacarta-300 -mt-px w-full py-3 pl-10 hover:ring-2 focus:ring-inset dark:text-white"
+                      className="dark:bg-secondaryBlack border-jacarta-100 hover:ring-primaryPurple/10 focus:ring-primaryPurple dark:border-jacarta-600 dark:placeholder:text-jacarta-100 -mt-px w-full py-3 pl-10 hover:ring-2 focus:ring-inset dark:text-white"
                       placeholder="instagramname"
                     />
                   </div>
@@ -199,22 +199,22 @@ const Edit_user = () => {
                     <input
                       type="url"
                       id="profile-website"
-                      className="dark:bg-jacarta-700 border-jacarta-100 hover:ring-accent/10 focus:ring-accent dark:border-jacarta-600 dark:placeholder:text-jacarta-300 -mt-px w-full rounded-b-lg py-3 pl-10 hover:ring-2 focus:ring-inset dark:text-white"
+                      className="dark:bg-secondaryBlack border-jacarta-100 hover:ring-primaryPurple/10 focus:ring-primaryPurple dark:border-jacarta-600 dark:placeholder:text-jacarta-100 -mt-px w-full rounded-b-lg py-3 pl-10 hover:ring-2 focus:ring-inset dark:text-white"
                       placeholder="yoursitename.com"
                     />
                   </div>
                 </div>
                 <div className="mb-6">
-                  <label className="font-display text-jacarta-700 mb-1 block text-sm dark:text-white">
+                  <label className="font-display text-jacarta-900 mb-1 block text-sm dark:text-white">
                     Wallet Address
                   </label>
 
                   <UserId
-                    classes="dark:bg-jacarta-700 border-jacarta-100 hover:bg-jacarta-50 dark:border-jacarta-600 dark:text-jacarta-300 flex w-full select-none items-center rounded-lg border bg-white py-3 px-4"
+                    classes="dark:bg-secondaryBlack border-jacarta-100 hover:bg-jacarta-50 dark:border-jacarta-600 dark:text-jacarta-100 flex w-full select-none items-center rounded-lg border bg-white py-3 px-4"
                     userId="0x7a9fe22691c811ea339401bbb2leb"
                   />
                 </div>
-                <button className="bg-accent shadow-accent-volume hover:bg-accent-dark rounded-full py-3 px-8 text-center font-semibold text-white transition-all">
+                <button className="bg-primaryPurple shadow-primaryPurple-volume hover:bg-primaryPurple-dark rounded-full py-3 px-8 text-center font-semibold text-white transition-all">
                   Update Profile
                 </button>
               </div>
@@ -229,7 +229,7 @@ const Edit_user = () => {
                       height={140}
                       width={140}
                     />
-                    <div className="group hover:bg-accent border-jacarta-100 absolute -right-3 -bottom-2 h-8 w-8 overflow-hidden rounded-full border bg-white text-center hover:border-transparent">
+                    <div className="group hover:bg-primaryPurple border-jacarta-100 absolute -right-3 -bottom-2 h-8 w-8 overflow-hidden rounded-full border bg-white text-center hover:border-transparent">
                       <input
                         type="file"
                         accept="image/*"
@@ -252,10 +252,10 @@ const Edit_user = () => {
                   </figure>
                 </form>
                 <div className="mt-4">
-                  <span className="font-display text-jacarta-700 mb-3 block text-sm dark:text-white">
+                  <span className="font-display text-jacarta-900 mb-3 block text-sm dark:text-white">
                     Profile Image
                   </span>
-                  <p className="dark:text-jacarta-300 text-sm leading-normal">
+                  <p className="dark:text-jacarta-100 text-sm leading-normal">
                     We recommend an image of at least 300x300. Gifs work too. Max 5mb.
                   </p>
                 </div>

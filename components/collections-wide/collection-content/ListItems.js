@@ -130,7 +130,7 @@ const ListItems = () => {
                 </div>
               )}
             </figure>
-            <span className="font-display text-sm font-semibold text-jacarta-700 dark:text-white">
+            <span className="font-display text-sm font-semibold text-jacarta-900 dark:text-white">
               {row.name}
             </span>
           </div>

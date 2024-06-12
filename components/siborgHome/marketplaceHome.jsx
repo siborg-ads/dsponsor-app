@@ -151,20 +151,20 @@ const MarketplaceHome = ({ auctions, setAllTokens }) => {
               onChange={(e) => {
                 setFilterName(e.target.value);
               }}
-              className="w-full h-full rounded-xl bg-jacarta-600 focus:border-jacarta-100 focus:border-opacity-10 focus:ring-0 border border-jacarta-100 border-opacity-10 text-placeholder-jacarta-200 text-white py-2 px-4"
+              className="w-full h-full rounded-xl bg-secondaryBlack focus:border-jacarta-100 focus:border-opacity-10 focus:ring-0 border border-jacarta-100 border-opacity-10 placeholder:text-jacarta-100 text-white py-2 px-4"
             />
             <div className="grid grid-cols-2 md:flex h-full gap-2 w-full md:w-8/12">
               {}
 
               <Menu as="div" className="py-4 md:py-0 h-full w-full">
-                <MenuButton className="bg-jacarta-600 rounded-xl w-full h-full flex items-center justify-center hover:bg-jacarta-500 border border-jacarta-100 border-opacity-10">
+                <MenuButton className="bg-secondaryBlack rounded-xl w-full h-full flex items-center justify-center hover:bg-opacity-80 border border-jacarta-100 border-opacity-10">
                   <div className="flex items-center gap-1">
                     {filter} <ChevronDownIcon className="w-5 h-5" />
                   </div>
                 </MenuButton>
                 <MenuItems
                   anchor="bottom start"
-                  className={`rounded-xl flex flex-col gap-2 [--anchor-gap:1rem] bg-jacarta-600 p-2 border border-jacarta-100 border-opacity-10`}
+                  className={`rounded-xl flex flex-col gap-2 [--anchor-gap:1rem] bg-secondaryBlack p-2 border border-jacarta-100 border-opacity-10`}
                 >
                   <MenuItem
                     onClick={() => {
@@ -173,7 +173,7 @@ const MarketplaceHome = ({ auctions, setAllTokens }) => {
                       setFilterListedTokens(false);
                       setAuctionsFilter(false);
                     }}
-                    className="hover:bg-jacarta-500 p-2 rounded-lg w-full pr-12 md:pr-24"
+                    className="hover:bg-primaryBlack p-2 rounded-lg w-full pr-12 md:pr-24"
                   >
                     <span>All the spaces</span>
                   </MenuItem>
@@ -184,7 +184,7 @@ const MarketplaceHome = ({ auctions, setAllTokens }) => {
                       setFilterListedTokens(true);
                       setAuctionsFilter(false);
                     }}
-                    className="hover:bg-jacarta-500 p-2 rounded-lg w-full pr-12 md:pr-24"
+                    className="hover:bg-primaryBlack p-2 rounded-lg w-full pr-12 md:pr-24"
                   >
                     <span>Listed tokens</span>
                   </MenuItem>
@@ -195,7 +195,7 @@ const MarketplaceHome = ({ auctions, setAllTokens }) => {
                       setFilterListedTokens(false);
                       setAuctionsFilter(true);
                     }}
-                    className="hover:bg-jacarta-500 p-2 rounded-lg w-full pr-12 md:pr-24"
+                    className="hover:bg-primaryBlack p-2 rounded-lg w-full pr-12 md:pr-24"
                   >
                     <span>On auction</span>
                   </MenuItem>
@@ -203,14 +203,14 @@ const MarketplaceHome = ({ auctions, setAllTokens }) => {
               </Menu>
 
               <Menu as="div" className="py-4 md:py-0 h-full w-full">
-                <MenuButton className="bg-jacarta-600 rounded-xl w-full h-full flex items-center justify-center hover:bg-jacarta-500 border border-jacarta-100 border-opacity-10">
+                <MenuButton className="bg-secondaryBlack rounded-xl w-full h-full flex items-center justify-center hover:bg-opacity-80 border border-jacarta-100 border-opacity-10">
                   <div className="flex items-center gap-1">
                     {sort} <ChevronDownIcon className="w-5 h-5" />
                   </div>
                 </MenuButton>
                 <MenuItems
                   anchor="bottom start"
-                  className={`rounded-xl flex flex-col gap-2 [--anchor-gap:1rem] bg-jacarta-600 p-2 border border-jacarta-100 border-opacity-10`}
+                  className={`rounded-xl flex flex-col gap-2 [--anchor-gap:1rem] bg-secondaryBlack p-2 border border-jacarta-100 border-opacity-10`}
                 >
                   <MenuItem
                     onClick={() => {
@@ -219,7 +219,7 @@ const MarketplaceHome = ({ auctions, setAllTokens }) => {
                       setDateSorting(null);
                       setNameSorting(1);
                     }}
-                    className="hover:bg-jacarta-500 p-2 rounded-lg w-full pr-12 md:pr-24"
+                    className="hover:bg-primaryBlack p-2 rounded-lg w-full pr-12 md:pr-24"
                   >
                     <span>Sort by name</span>
                   </MenuItem>
@@ -230,7 +230,7 @@ const MarketplaceHome = ({ auctions, setAllTokens }) => {
                       setDateSorting(null);
                       setNameSorting(null);
                     }}
-                    className="hover:bg-jacarta-500 p-2 rounded-lg w-full pr-12 md:pr-24"
+                    className="hover:bg-primaryBlack p-2 rounded-lg w-full pr-12 md:pr-24"
                   >
                     <span>Price: low to high</span>
                   </MenuItem>
@@ -241,7 +241,7 @@ const MarketplaceHome = ({ auctions, setAllTokens }) => {
                       setDateSorting(null);
                       setNameSorting(null);
                     }}
-                    className="hover:bg-jacarta-500 p-2 rounded-lg w-full pr-12 md:pr-24"
+                    className="hover:bg-primaryBlack p-2 rounded-lg w-full pr-12 md:pr-24"
                   >
                     <span>Price: high to low</span>
                   </MenuItem>
@@ -252,7 +252,7 @@ const MarketplaceHome = ({ auctions, setAllTokens }) => {
                       setPriceSorting(null);
                       setNameSorting(null);
                     }}
-                    className="hover:bg-jacarta-500 p-2 rounded-lg w-full pr-12 md:pr-24"
+                    className="hover:bg-primaryBlack p-2 rounded-lg w-full pr-12 md:pr-24"
                   >
                     <span>Ending soon</span>
                   </MenuItem>
@@ -263,7 +263,7 @@ const MarketplaceHome = ({ auctions, setAllTokens }) => {
                       setPriceSorting(null);
                       setNameSorting(null);
                     }}
-                    className="hover:bg-jacarta-500 p-2 rounded-lg w-full pr-12 md:pr-24"
+                    className="hover:bg-primaryBlack p-2 rounded-lg w-full pr-12 md:pr-24"
                   >
                     <span>Newest</span>
                   </MenuItem>

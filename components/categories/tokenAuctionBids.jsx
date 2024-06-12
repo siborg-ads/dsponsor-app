@@ -15,13 +15,13 @@ const TokenAuctionBids = ({ data, isOwner }) => {
   return (
     <>
       {/* <!-- Grid --> */}
-      <div className="dark:bg-jacarta-700 dark:text-jacarta-300 dark:border-jacarta-600 border-jacarta-100 rounded-2lg border bg-white p-3 flex gap-4 justify-center items-center mb-6">
+      <div className="dark:bg-secondaryBlack dark:text-jacarta-100 rounded-2lg bg-white p-3 flex gap-4 justify-center items-center mb-6">
         <span>
           {" "}
-          This section is listing all the tokens where you have placed a bid : <br />
+          This section is listing all the tokens where you have placed a bid. <br />
           <span className="text-red font-medium">CANCELLED</span> : You have been out bid by another
           user. <br />
-          <span className="text-accent font-medium">CREATED</span> : You are the highest bidder.{" "}
+          <span className="text-primaryPurple font-medium">CREATED</span> : You are the highest bidder.{" "}
           <br />
           <span className="text-green font-medium">COMPLETED</span> : You have been out bid by
           another user.

@@ -216,12 +216,12 @@ const BidsModal = ({
               <div className="modal-body p-6">
                 <div className="flex justify-between mb-2">
                   <div className="flex items-center justify-between">
-                    <span className="font-display text-jacarta-700 text-sm font-semibold dark:text-white">
+                    <span className="font-display text-jacarta-900 text-sm font-semibold dark:text-white">
                       Price
                     </span>
                   </div>
                   <div>
-                    <span className="dark:text-jacarta-400 text-sm">
+                    <span className="dark:text-jacarta-100 text-sm">
                       Balance: {tokenBalance?.displayValue ?? 0} {currencySymbol}
                     </span>
                   </div>
@@ -230,7 +230,7 @@ const BidsModal = ({
                   <div className="flex items-center relative w-full">
                     <input
                       type="number"
-                      className={`focus:ring-accent relative w-full flex-[3] border-transparent bg-jacarta-600 rounded-xl text-2xl py-2 font-semibold text-white focus:ring-inse`}
+                      className={`focus:ring-primaryPurple relative w-full flex-[3] border-transparent bg-jacarta-600 rounded-xl text-2xl py-2 font-semibold text-white focus:ring-inse`}
                       placeholder={`${initialIntPrice} or higher`}
                       value={bidsAmount}
                       onChange={(e) => handleBidsAmount(e)}
@@ -304,12 +304,12 @@ const BidsModal = ({
                   <input
                     type="checkbox"
                     id="buyNowTerms"
-                    className="checked:bg-accent dark:bg-jacarta-600 text-accent border-jacarta-200 focus:ring-accent/20 dark:border-jacarta-500 h-5 w-5 self-start rounded focus:ring-offset-0"
+                    className="checked:bg-primaryPurple dark:bg-jacarta-600 text-primaryPurple border-jacarta-200 focus:ring-primaryPurple/20 dark:border-jacarta-500 h-5 w-5 self-start rounded focus:ring-offset-0"
                     onClick={handleTermService}
                   />
                   <label htmlFor="buyNowTerms" className="dark:text-jacarta-200 text-sm">
                     By checking this box, I agree to {"SiBorg Ads's"}{" "}
-                    <Link href="#" className="text-accent">
+                    <Link href="#" className="text-primaryPurple">
                       Terms of Service
                     </Link>
                   </label>
@@ -353,7 +353,7 @@ const BidsModal = ({
                     });
                   }}
                   className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${
-                    !isPriceGood || !checkTerms ? "btn-disabled" : "!bg-accent !cursor-pointer"
+                    !isPriceGood || !checkTerms ? "btn-disabled" : "!bg-primaryPurple !cursor-pointer"
                   } `}
                   isDisabled={!isPriceGood || !checkTerms}
                 >
@@ -371,7 +371,7 @@ const BidsModal = ({
                       });
                     }}
                     className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${
-                      !isPriceGood || !checkTerms ? "btn-disabled" : "!bg-accent !cursor-pointer"
+                      !isPriceGood || !checkTerms ? "btn-disabled" : "!bg-primaryPurple !cursor-pointer"
                     } `}
                     isDisabled={!isPriceGood || !checkTerms}
                   >
@@ -386,7 +386,7 @@ const BidsModal = ({
                   {/* <button
                   type="button"
                   disabled={!isPriceGood}
-                  className={`  ${!isPriceGood ? "btn-disabled" : "bg-accent shadow-accent-volume"} hover:bg-accent-dark rounded-full py-3 px-8 text-center font-semibold text-white transition-all`}
+                  className={`  ${!isPriceGood ? "btn-disabled" : "bg-primaryPurple shadow-primaryPurple-volume"} hover:bg-primaryPurple-dark rounded-full py-3 px-8 text-center font-semibold text-white transition-all`}
                   onClick={handleSubmit}
                 >
                   Place Bid
@@ -394,7 +394,7 @@ const BidsModal = ({
                 </div>
               ) : (
                 <button
-                  className="!rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all !bg-accent !cursor-pointer"
+                  className="!rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all !bg-primaryPurple !cursor-pointer"
                   onClick={toggleBidsModal}
                 >
                   Close

@@ -22,7 +22,7 @@ const SortFilter = () => {
   return (
     <div className="dropdown relative cursor-pointer">
       <div
-        className="dropdown-toggle inline-flex w-48 items-center justify-between rounded-lg border border-jacarta-100 bg-white h-12 py-3 px-4 dark:border-jacarta-600 dark:bg-jacarta-700 dark:text-white"
+        className="dropdown-toggle inline-flex w-48 items-center justify-between rounded-lg border border-jacarta-100 bg-white h-12 py-3 px-4 dark:border-jacarta-600 dark:bg-secondaryBlack dark:text-white"
         role="button"
         id="categoriesSort"
         data-bs-toggle="dropdown"
@@ -63,7 +63,7 @@ const SortFilter = () => {
                 viewBox="0 0 24 24"
                 width={24}
                 height={24}
-                className="h-4 w-4 fill-accent"
+                className="h-4 w-4 fill-primaryPurple"
               >
                 <path fill="none" d="M0 0h24v24H0z" />
                 <path d="M10 15.172l9.192-9.193 1.415 1.414L10 18l-6.364-6.364 1.414-1.414z" />

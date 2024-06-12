@@ -161,9 +161,9 @@ const Review_carousel = ({
     <div>
       {!isToken && (
         <div>
-          <div className="dark:bg-jacarta-700 dark:border-jacarta-600 border-jacarta-100 rounded-2lg border bg-white p-6 mb-4">
+          <div className="dark:bg-secondaryBlack dark:border-jacarta-600 border-jacarta-100 rounded-2lg border bg-white p-6 mb-4">
             <div className=" sm:flex sm:flex-wrap">
-              <span className="dark:text-jacarta-300 text-jacarta-400 text-sm">
+              <span className="dark:text-jacarta-100 text-jacarta-100 text-sm">
                 Select an advertisement below to manage its status. If you approve an ad, it will be
                 displayed on your media platform. The owner of your ad space retains the ability to
                 submit an advertisement even if its status is Pending, Approved, or Denied.{" "}
@@ -184,7 +184,7 @@ const Review_carousel = ({
                 <input
                   type="checkbox"
                   name="check"
-                  className="checked:bg-accent checked:focus:bg-accent checked:hover:bg-accent after:bg-jacarta-400 bg-jacarta-100 relative h-4 w-7 cursor-pointer appearance-none rounded-lg border-none shadow-none after:absolute after:top-0.5 after:left-0.5 after:h-3 after:w-3 after:rounded-full after:transition-all checked:bg-none checked:after:left-3.5 checked:after:bg-white focus:ring-transparent focus:ring-offset-0"
+                  className="checked:bg-primaryPurple checked:focus:bg-primaryPurple checked:hover:bg-primaryPurple after:bg-jacarta-400 bg-jacarta-100 relative h-4 w-7 cursor-pointer appearance-none rounded-lg border-none shadow-none after:absolute after:top-0.5 after:left-0.5 after:h-3 after:w-3 after:rounded-full after:transition-all checked:bg-none checked:after:left-3.5 checked:after:bg-white focus:ring-transparent focus:ring-offset-0"
                   onChange={() => handleInput(tokenId)}
                   checked={validate[tokenId] || false}
                 />
@@ -228,7 +228,7 @@ const Review_carousel = ({
               className={`  ${isSelectedItem[tokenId] && !isToken ? "border-4 border-jacarta-100 rounded-2xl" : ""}`}
               onClick={() => handleSelection(item)}
             >
-              <div className="dark:bg-jacarta-700 dark:border-jacarta-700 border-jacarta-100 rounded-2xl block border bg-white p-[1.1875rem] transition-shadow hover:shadow-lg text-jacarta-500">
+              <div className="dark:bg-secondaryBlack hover:-translate-y-1 duration-500 cursor-pointer dark:border-jacarta-700 border-jacarta-100 rounded-2xl block border bg-white p-[1.1875rem] transition-shadow hover:shadow-lg text-jacarta-100">
                 <figure className="flex justify-center">
                   <button onClick={() => openModal(tokenId)}>
                     {getImageUrl(adParametersList) && (
@@ -287,19 +287,21 @@ const Review_carousel = ({
                   <Link
                     href={adParametersList?.linkURL ? adParametersList.linkURL : "/"}
                     target="_blank"
-                    className="font-display  text-jacarta-700 hover:text-accent text-base dark:text-white  overflow-hidden text-ellipsis whitespace-nowrap "
+                    className="font-display  text-jacarta-900 hover:text-primaryPurple text-base dark:text-white  overflow-hidden text-ellipsis whitespace-nowrap "
                   >
                     <span>{adParametersList?.linkURL}</span>
                   </Link>
 
-                  <div className="dark:border-jacarta-600 ms-14 border-jacarta-100 flex items-center whitespace-nowrap rounded-md border py-1 px-2">
+                  <div className="dark:border-primaryPink dark:border-opacity-10 ms-14 border-jacarta-100 flex items-center whitespace-nowrap rounded-md border py-1 px-2">
                     <span className="text-green text-sm font-medium tracking-tight">
-                      # {tokenData ? tokenData : formatTokenId(tokenId)}
+                      # {tokenData ?? formatTokenId(tokenId)}
                     </span>
                   </div>
                 </div>
                 <div className="mt-2 text-xs flex justify-between">
-                  <span className="text-accent text-sm font-bold">🔍 Pending</span>
+                  <span className="text-primaryPurple text-sm font-bold">
+                    <span className="mr-1">🔍</span> Pending
+                  </span>
                 </div>
               </div>
             </article>

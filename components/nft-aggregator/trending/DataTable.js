@@ -156,7 +156,7 @@ const DataTable = () => {
         <Link
           href="/collection/explore_collection"
           key={item.id}
-          className="flex border-t border-jacarta-100 py-2 px-4 transition-shadow hover:shadow-lg dark:border-jacarta-600 dark:bg-jacarta-900"
+          className="flex border-t border-jacarta-100 py-2 px-4 transition-shadow hover:shadow-lg dark:border-jacarta-600 dark:bg-primaryBlack"
           role="row"
         >
           <div className="flex w-6/12 items-center md:w-6/12 lg:w-4/12" role="cell">
@@ -187,7 +187,7 @@ const DataTable = () => {
                 </div>
               )}
             </figure>
-            <span className="text-sm text-jacarta-700 dark:text-white">{item.name}</span>
+            <span className="text-sm text-jacarta-900 dark:text-white">{item.name}</span>
           </div>
           <div
             className="flex w-3/12 items-center justify-end whitespace-nowrap md:w-2/12"

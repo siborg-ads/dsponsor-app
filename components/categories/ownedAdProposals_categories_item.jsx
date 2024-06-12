@@ -247,7 +247,7 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
   return (
     <>
       {/* <!-- Filter --> */}
-      <div className="dark:bg-jacarta-700 dark:text-jacarta-300 dark:border-jacarta-600 border-jacarta-100 rounded-2lg border bg-white p-3 flex gap-4 justify-center items-center mb-6">
+      <div className="dark:bg-secondaryBlack dark:text-jacarta-100 rounded-2lg bg-white p-3 flex gap-4 justify-center items-center mb-6">
         <span>
           {" "}
           This section lists all your tokens that are either currently in a direct listing or not
@@ -260,18 +260,16 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
         <div className="flex flex-col justify-center items-center">
           {" "}
           {isOwner && (
-            <button
-              className={`${
-                isSelectionActive
-                  ? "text-accent shadow-white-volume ici hover:bg-accent-dark mb-4 hover:shadow-accent-volume  rounded-full bg-white py-3 px-8 text-center font-semibold transition-all hover:text-white"
-                  : "bg-accent shadow-accent-volume hover:bg-accent-dark mb-4 rounded-full py-3 px-8 text-center font-semibold text-white transition-all"
-              }`}
+            <MainButton
               onClick={handleSelectionTokens}
-            >
-              {showSliderForm || isSelectionActive
-                ? "Close selection"
-                : "Submit ad for multiple tokens"}
-            </button>
+              isPurple={true}
+              isFullWidth={false}
+              text={
+                showSliderForm || isSelectionActive
+                  ? "Close selection"
+                  : "Submit ad for multiple tokens"
+              }
+            />
           )}
           {!showSliderForm && (
             <div className={` grid grid-cols-1 gap-[1.875rem] md:grid-cols-2 lg:grid-cols-4`}>
@@ -334,7 +332,7 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
             <span className="flex items-center justify-center gap-6">
               <span className="mr-4">
                 Ad Spaces selected :{" "}
-                <span className="text-accent text-md ml-1">
+                <span className="text-primaryPurple text-md ml-1">
                   {Object.values(isSelectedItem).filter((value) => value === true).length}
                 </span>{" "}
               </span>

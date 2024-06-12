@@ -29,7 +29,7 @@ const Collection_dropdown2 = ({ data, collection }) => {
       ></div>
       {collection ? (
         <div
-          className="dark:bg-jacarta-700 dropdown-toggle border-jacarta-100 dark:border-jacarta-600 dark:text-jacarta-300 flex items-center justify-between rounded-lg border bg-white py-3 px-3 show z-50 relative"
+          className="dark:bg-secondaryBlack dropdown-toggle border-jacarta-100 dark:border-jacarta-600 dark:text-jacarta-100 flex items-center justify-between rounded-lg border bg-white py-3 px-3 show z-50 relative"
           onClick={() => handleDropdown()}
         >
           <span className="">Select collection</span>
@@ -46,7 +46,7 @@ const Collection_dropdown2 = ({ data, collection }) => {
         </div>
       ) : (
         <div
-          className="dark:bg-jacarta-700 dropdown-toggle border-jacarta-100 dark:border-jacarta-600 flex items-center justify-between rounded-lg border bg-white py-3.5 px-3 text-base dark:text-white"
+          className="dark:bg-secondaryBlack dropdown-toggle border-jacarta-100 dark:border-jacarta-600 flex items-center justify-between rounded-lg border bg-white py-3.5 px-3 text-base dark:text-white"
           onClick={() => handleDropdown()}
         >
           <span className="flex items-center">
@@ -97,7 +97,7 @@ const Collection_dropdown2 = ({ data, collection }) => {
                       className="h-8 w-8 rounded-full"
                       alt="avatar"
                     />
-                    <span className="text-jacarta-700 dark:text-white">{text}</span>
+                    <span className="text-jacarta-900 dark:text-white">{text}</span>
                   </span>
                   {activeItem === id && (
                     <svg
@@ -105,7 +105,7 @@ const Collection_dropdown2 = ({ data, collection }) => {
                       viewBox="0 0 24 24"
                       width="24"
                       height="24"
-                      className="fill-accent mb-[3px] h-4 w-4"
+                      className="fill-primaryPurple mb-[3px] h-4 w-4"
                     >
                       <path fill="none" d="M0 0h24v24H0z"></path>
                       <path d="M10 15.172l9.192-9.193 1.415 1.414L10 18l-6.364-6.364 1.414-1.414z"></path>

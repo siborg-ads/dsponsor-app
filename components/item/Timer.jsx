@@ -22,25 +22,25 @@ const renderer = ({ days, hours, minutes, seconds, completed }) => {
         data-countdown="2023-09-07T19:40:30"
         data-expired="This auction has ended"
       >
-        <span className="countdown-days text-jacarta-700 dark:text-white">
+        <span className="countdown-days text-jacarta-900 dark:text-white">
           <span className="js-countdown-days-number text-lg font-medium lg:text-[1.5rem]">
             {days}
           </span>
           <span className="block text-xs font-medium tracking-tight">Days</span>
         </span>
-        <span className="countdown-hours text-jacarta-700 dark:text-white">
+        <span className="countdown-hours text-jacarta-900 dark:text-white">
           <span className="js-countdown-hours-number text-lg font-medium lg:text-[1.5rem]">
             {hours}
           </span>
           <span className="block text-xs font-medium tracking-tight">Hrs</span>
         </span>
-        <span className="countdown-minutes text-jacarta-700 dark:text-white">
+        <span className="countdown-minutes text-jacarta-900 dark:text-white">
           <span className="js-countdown-minutes-number text-lg font-medium lg:text-[1.5rem]">
             {minutes}
           </span>
           <span className="block text-xs font-medium tracking-tight">Min</span>
         </span>
-        <span className="countdown-seconds text-jacarta-700 dark:text-white">
+        <span className="countdown-seconds text-jacarta-900 dark:text-white">
           <span className="js-countdown-seconds-number text-lg font-medium lg:text-[1.5rem]">
             {seconds}
           </span>

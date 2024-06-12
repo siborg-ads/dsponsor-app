@@ -355,7 +355,7 @@ const CreateOfferContainer = () => {
           />
         </picture>
         <div className="container">
-          <h1 className="font-display text-jacarta-700 pt-16 pb-8 text-center text-3xl font-medium dark:text-white">
+          <h1 className="font-display text-jacarta-900 pt-16 pb-8 text-center text-3xl font-medium dark:text-white">
             Create ad space offer
           </h1>
 

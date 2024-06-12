@@ -25,7 +25,7 @@ const HelpBlock = () => {
             </a>
           </div>
         </div>
-        <div className="relative mb-8 flex-1 self-end rounded-2.5xl bg-accent p-8 py-16 shadow-2xl">
+        <div className="relative mb-8 flex-1 self-end rounded-2.5xl bg-primaryPurple p-8 py-16 shadow-2xl">
           <div className="absolute right-4 top-4">
             <svg
               xmlns="http://www.w3.org/2000/svg"

@@ -167,7 +167,7 @@ const OfferPageContainer = () => {
       {/*  <!-- Item --> */}
       <section className="relative lg:mt-24 lg:pt-12  mt-24 pt-12 pb-8">
         <div className="container flex justify-center mb-6">
-          <h1 className="text-jacarta-700 font-bold font-display mb-6 text-center text-5xl dark:text-white md:text-left lg:text-6xl xl:text-6xl">
+          <h1 className="text-jacarta-900 font-bold font-display mb-6 text-center text-5xl dark:text-white md:text-left lg:text-6xl xl:text-6xl">
             Offer{" "}
           </h1>
         </div>
@@ -243,14 +243,14 @@ const OfferPageContainer = () => {
                 <div className="flex items-center">
                   <Link
                     href={`/manage/${offerData?.initialCreator}`}
-                    className="text-accent mr-2 text-sm font-bold"
+                    className="text-primaryPurple mr-2 text-sm font-bold"
                   >
                     {offerData?.initialCreator}
                   </Link>
                 </div>
               </div>
 
-              <h2 className="font-display text-jacarta-700 mb-4 text-3xl font-semibold dark:text-white">
+              <h2 className="font-display text-jacarta-900 mb-4 text-3xl font-semibold dark:text-white">
                 {name}
               </h2>
 
@@ -265,23 +265,23 @@ const OfferPageContainer = () => {
                 )}
 
                 {offerData.nftContract.allowList && (
-                  <span className="dark:text-jacarta-300 text-jacarta-400 text-sm">
+                  <span className="dark:text-jacarta-100 text-jacarta-100 text-sm">
                     {offerData.nftContract.maxSupply -
                       offerData.nftContract.tokens.filter((item) => item.mint != null).length}
                     /{offerData.nftContract.maxSupply} available
                   </span>
                 )}
-                <span className="text-jacarta-400 block text-sm dark:text-white">
+                <span className="text-jacarta-100 block text-sm dark:text-white">
                   Creator <strong>{royalties}% royalties</strong>
                 </span>
               </div>
 
-              <p className="dark:text-jacarta-300 mb-10">{description}</p>
+              <p className="dark:text-jacarta-100 mb-10">{description}</p>
 
               {isOwner && (
-                <div className="dark:bg-jacarta-700 dark:border-jacarta-600 border-jacarta-100 rounded-2lg border bg-white p-8">
+                <div className="dark:bg-secondaryBlack dark:border-jacarta-600 border-jacarta-100 rounded-2lg border bg-white p-8">
                   <div className=" sm:flex sm:flex-wrap">
-                    <span className="dark:text-jacarta-300 text-jacarta-400 text-sm">
+                    <span className="dark:text-jacarta-100 text-jacarta-100 text-sm">
                       This page allows you to oversee submitted ads, offering tools to either
                       approve or reject them. Approve ads to make them live or reject those that
                       don&apos;t meet your standards, streamlining the content that reaches your
@@ -296,7 +296,7 @@ const OfferPageContainer = () => {
       </section>
       <div className="container mb-12">
         <Divider className="my-4" />
-        <h2 className="text-jacarta-700 font-bold font-display mb-6 text-center text-3xl dark:text-white ">
+        <h2 className="text-jacarta-900 font-bold font-display mb-6 text-center text-3xl dark:text-white ">
           Details{" "}
         </h2>
         <ItemsTabs
@@ -309,12 +309,12 @@ const OfferPageContainer = () => {
       {!offerData.nftContract.allowList && (
         <div className="container flex flex-col justify-center mb-6">
           <Divider className="my-4" />
-          <h2 className="text-jacarta-700 font-bold font-display mb-6 text-center text-3xl dark:text-white md:text-center">
+          <h2 className="text-jacarta-900 font-bold font-display mb-6 text-center text-3xl dark:text-white md:text-center">
             Search{" "}
           </h2>
-          <div className="dark:bg-jacarta-700 dark:border-jacarta-600 border-jacarta-100 rounded-2lg border bg-white p-8">
+          <div className="dark:bg-secondaryBlack dark:border-jacarta-600 border-jacarta-100 rounded-2lg border bg-white p-8">
             <div className=" sm:flex sm:flex-wrap">
-              <span className="dark:text-jacarta-300 text-jacarta-400 text-sm">
+              <span className="dark:text-jacarta-100 text-jacarta-100 text-sm">
                 You can check if a word is available for purchase by using the search bar. Simply
                 type the word into the search bar and press enter to see if it is available. This
                 feature allows you to quickly find out if the word you are interested in is free for
@@ -328,7 +328,7 @@ const OfferPageContainer = () => {
           {urlFromChild && (
             <div className="grid grid-cols-1 gap-[1.875rem] md:grid-cols-2 lg:grid-cols-4">
               <article className="relative">
-                <div className="dark:bg-jacarta-700 dark:border-jacarta-700 border-jacarta-100 rounded-2xl block border bg-white p-[1.1875rem] transition-shadow hover:shadow-lg text-jacarta-500">
+                <div className="dark:bg-secondaryBlack dark:border-jacarta-700 border-jacarta-100 rounded-2xl block border bg-white p-[1.1875rem] transition-shadow hover:shadow-lg text-jacarta-100">
                   {isWordAlreadyTaken ? (
                     <span className="text-red  ">This word is already taken ❌</span>
                   ) : (
@@ -354,7 +354,7 @@ const OfferPageContainer = () => {
                         href={urlFromChild}
                         className="overflow-hidden text-ellipsis whitespace-nowrap min-w-[120px]"
                       >
-                        <span className="font-display  text-jacarta-700 hover:text-accent text-base dark:text-white ">
+                        <span className="font-display  text-jacarta-900 hover:text-primaryPurple text-base dark:text-white ">
                           {name}
                         </span>
                       </Link>
@@ -393,11 +393,11 @@ const OfferPageContainer = () => {
       {isOwner && (
         <div className="container">
           <Divider className="my-4" />
-          <h2 className="text-jacarta-700 font-bold font-display mb-6 text-center text-3xl dark:text-white ">
+          <h2 className="text-jacarta-900 font-bold font-display mb-6 text-center text-3xl dark:text-white ">
             Display{" "}
           </h2>
-          <div className="dark:bg-jacarta-700 dark:border-jacarta-600 border-jacarta-100 rounded-2lg border bg-white p-8 mb-4">
-            <span className="dark:text-jacarta-300 text-jacarta-400 text-sm ">
+          <div className="dark:bg-secondaryBlack dark:border-jacarta-600 border-jacarta-100 rounded-2lg border bg-white p-8 mb-4">
+            <span className="dark:text-jacarta-100 text-jacarta-100 text-sm ">
               You can integrate this offer on your website by using the following iframe code.
               Simply copy and paste the code into your website to display the offer.{" "}
             </span>

@@ -5,7 +5,7 @@ const SingleFeatuer = () => {
     {
       id: 1,
       bgLight: "bg-[#CDBCFF]",
-      bgFill: "bg-accent",
+      bgFill: "bg-primaryPurple",
       icon: "1",
       meta: "$76 billion",
       textInfo: "24h trading volume on our app exchange"
@@ -55,10 +55,10 @@ const SingleFeatuer = () => {
               />
             </div>
           </div>
-          <h3 className="mb-4 font-display text-lg text-jacarta-700 dark:text-white">
+          <h3 className="mb-4 font-display text-lg text-jacarta-900 dark:text-white">
             {item.meta}
           </h3>
-          <p className="dark:text-jacarta-300">{item.textInfo}</p>
+          <p className="dark:text-jacarta-100">{item.textInfo}</p>
         </div>
       ))}
     </>

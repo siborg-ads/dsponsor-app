@@ -47,7 +47,7 @@ const ItemBids = ({
   const bids = marketplaceListings[0].bids;
 
   return (
-    <div className="rounded-2lg border border-jacarta-100 bg-white p-8 dark:border-jacarta-600 dark:bg-jacarta-700">
+    <div className="rounded-2lg bg-white p-8 dark:bg-secondaryBlack">
       <div className="flex flex-col items-center justify-between gap-8">
         <div className="flex flex-col items-center justify-center w-full">
           <div className="mb-8 grid grid-cols-9">
@@ -55,12 +55,12 @@ const ItemBids = ({
             <div className="col-span-4">
               {bids.length > 0 && (
                 <div className="block overflow-hidden text-ellipsis whitespace-nowrap">
-                  <span className="text-sm text-jacarta-400 dark:text-jacarta-300">
+                  <span className="text-sm text-jacarta-100 dark:text-jacarta-100">
                     Highest bid by{" "}
                   </span>
                   <Link
                     href={`/manage/${marketplaceListings[0].bids[0].bidder}`}
-                    className="text-sm font-bold text-accent"
+                    className="text-sm font-bold text-primaryPurple"
                   >
                     {address &&
                     marketplaceListings[0]?.bids[0]?.bidder &&
@@ -75,14 +75,14 @@ const ItemBids = ({
                   <div className="flex items-center">
                     {bids.length <= 0 ? (
                       <div className="flex flex-col">
-                        <p className="text-sm text-jacarta-400">Starting price: </p>
+                        <p className="text-sm text-jacarta-100">Starting price: </p>
                         <span className="text-lg font-medium leading-tight tracking-tight text-green">
                           {price} {currencySymbol}
                         </span>
                       </div>
                     ) : (
                       <div className="flex flex-col">
-                        <p className="text-sm text-jacarta-400">Minimum bid amount: </p>
+                        <p className="text-sm text-jacarta-100">Minimum bid amount: </p>
                         <span className="text-lg font-medium leading-tight tracking-tight text-green">
                           {price} {currencySymbol}
                         </span>
@@ -99,7 +99,7 @@ const ItemBids = ({
 
             {/* Countdown */}
             <div className="col-span-4">
-              <span className="js-countdown-ends-label text-sm text-jacarta-400 dark:text-jacarta-300">
+              <span className="js-countdown-ends-label text-sm text-jacarta-100 dark:text-jacarta-100">
                 Auction ends in
               </span>
               <Timer endTime={marketplaceListings[0].endTime} />
@@ -112,7 +112,7 @@ const ItemBids = ({
               action={() => {
                 toggleBidsModal();
               }}
-              className={` !rounded-full !py-3 w-full !px-8 !text-center !font-semibold !text-white !transition-all !bg-accent !cursor-pointer `}
+              className={` !rounded-full !py-3 w-full !px-8 !text-center !font-semibold !text-white !transition-all !bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer `}
             >
               Place Bid
             </Web3Button>
@@ -120,7 +120,7 @@ const ItemBids = ({
         </div>
 
         <div>
-          <span className="text-jacarta-300 block text-xs text-center">
+          <span className="text-jacarta-100 block text-xs text-center">
             Listing live from{" "}
             {marketplaceListings[0]?.startTime &&
               new Date(marketplaceListings[0]?.startTime * 1000).toLocaleString()}{" "}

@@ -25,7 +25,7 @@ const CategoryItem = () => {
         return (
           <article key={id}>
             <div
-              className={`dark:bg-jacarta-700 ${isAlreadyMinted ? "dark:border-jacarta-700" : "border-green"}  rounded-2.5xl block border-2 bg-white p-[1.1875rem] transition-shadow hover:shadow-lg`}
+              className={`dark:bg-secondaryBlack ${isAlreadyMinted ? "dark:border-transparent" : "border-green"} rounded-2.5xl block border-2 bg-white p-[1.1875rem] transition-shadow hover:shadow-lg`}
             >
               <figure className="relative">
                 <Link href={`/item/${offerAddress}/${tokenId}`}>
@@ -40,15 +40,15 @@ const CategoryItem = () => {
               </figure>
               <div className="mt-7 flex items-center justify-between">
                 <Link href={`/item/${offerAddress}/${tokenId}`}>
-                  <span className="font-display text-jacarta-700 hover:text-accent text-base dark:text-white">
+                  <span className="font-display text-jacarta-900 hover:text-primaryPurple text-base dark:text-white">
                     {title}
                   </span>
                 </Link>
               </div>
               <div className="mt-2 text-sm flex justify-between">
-                <span className="dark:text-jacarta-200 text-jacarta-700 mr-1">{price}</span>
+                <span className="dark:text-jacarta-200 text-jacarta-900 mr-1">{price}</span>
                 <span
-                  className={`${isAlreadyMinted ? "dark:text-jacarta-300" : "dark:text-green"}`}
+                  className={`${isAlreadyMinted ? "dark:text-jacarta-100" : "dark:text-green"}`}
                 >
                   {tokenId}/{maxToken}
                 </span>
@@ -60,17 +60,17 @@ const CategoryItem = () => {
                 ) : (
                   <Link
                     href={`/item/${offerAddress}/${tokenId}`}
-                    className="text-accent font-display text-sm font-semibold"
+                    className="text-primaryPurple font-display text-sm font-semibold"
                   >
                     Buy now
                   </Link>
                 )}
 
                 <Link href={`/item/${offerAddress}/${tokenId}`} className="group flex items-center">
-                  <svg className="icon icon-history group-hover:fill-accent dark:fill-jacarta-200 fill-jacarta-500 mr-1 mb-[3px] h-4 w-4">
+                  <svg className="icon icon-history group-hover:fill-primaryPurple dark:fill-jacarta-200 fill-jacarta-500 mr-1 mb-[3px] h-4 w-4">
                     <use xlinkHref="/icons.svg#icon-history"></use>
                   </svg>
-                  <span className="group-hover:text-accent font-display dark:text-jacarta-200 text-sm font-semibold">
+                  <span className="group-hover:text-primaryPurple font-display dark:text-jacarta-200 text-sm font-semibold">
                     View History
                   </span>
                 </Link>

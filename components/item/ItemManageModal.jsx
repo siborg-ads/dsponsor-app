@@ -331,7 +331,7 @@ const ItemManageModal = ({
     <div>
       {/* <!-- Buy Now Modal --> */}
       <div className="modal-dialog max-w-2xl">
-        <div className="modal-content">
+        <div className="modal-content !bg-secondaryBlack">
           <div className="modal-header">
             <h5 className="modal-title mr-8" id="buyNowModalLabel">
               Create a listing
@@ -351,24 +351,24 @@ const ItemManageModal = ({
           </div>
           <div className="modal-body p-6 flex gap-4 items-center justify-center">
             <div className="flex items-center justify-center space-x-4">
-              <div className="mb-6 flex  flex-col justify-center items-center gap-4">
+              <div className="mb-6 flex flex-col justify-center items-center gap-4">
                 <div className="flex flex-col items-center">
                   <label
                     htmlFor="item-description"
-                    className="font-display text-jacarta-700 mb-2 block dark:text-white "
+                    className="font-display text-jacarta-900 mb-2 block dark:text-white "
                   >
                     Type of ad spaces for this offer
                     <span className="text-red">*</span>
                   </label>
-                  <p className="dark:text-jacarta-300 text-jacarta-400 text-2xs mb-3">
+                  <p className="dark:text-jacarta-100 text-jacarta-100 text-2xs mb-3">
                     Select the appropriate type:
                   </p>
-                  <div className="flex flex-col gap-4 justify-center items-center w-full text-jacarta-700 dark:text-white">
+                  <div className="flex flex-col gap-4 justify-center items-center w-full text-jacarta-900 dark:text-white">
                     <div id="adsType" className="flex flex-wrap justify-center gap-2">
                       {listingType.map((listing, index) => (
                         <div key={index} className="relative ">
                           <div
-                            className={`card relative ${selectedListingType.includes(index) ? "bg-accent-dark" : ""} ${selectedListingType[0] !== index && selectedListingType.length > 0 ? "closed" : "open"}`}
+                            className={`card relative ${selectedListingType.includes(index) ? "bg-primaryPurple" : "bg-white"} ${selectedListingType[0] !== index && selectedListingType.length > 0 ? "closed" : "open"}`}
                             onClick={() => {
                               document.getElementById(`checkbox-${index}`).click();
                             }}
@@ -389,7 +389,7 @@ const ItemManageModal = ({
                             <div className="flex gap-3">
                               <label
                                 htmlFor={`checkbox-${index}`}
-                                className={`card-label  ${selectedListingType.includes(index) ? "text-white" : "text-jacarta-700"}`}
+                                className={`card-label  ${selectedListingType.includes(index) ? "text-white" : "text-jacarta-900"}`}
                                 onClick={() => {
                                   document.getElementById(`checkbox-${index}`).click();
                                 }}
@@ -398,9 +398,9 @@ const ItemManageModal = ({
                                 selectedListingType.length > 0 ? (
                                   listing.picture
                                 ) : (
-                                  <div className="flex gap-3 justify-center">
+                                  <div className="flex gap-2 justify-center">
                                     <span>{listing.title}</span>{" "}
-                                    <ModalHelper dark={true} {...listing} />
+                                    <ModalHelper dark={false} {...listing} />
                                   </div>
                                 )}
                               </label>
@@ -409,14 +409,14 @@ const ItemManageModal = ({
                               <div className="mb-6 flex flex-col items-center">
                                 <label
                                   htmlFor="item-description"
-                                  className="font-display mt-2 text-jacarta-700 text-sm mb-2 block dark:text-white"
+                                  className="font-display mt-2 text-jacarta-900 text-sm mb-2 block dark:text-white"
                                 >
                                   Validity period<span className="text-red">*</span>
                                 </label>
-                                <p className="dark:text-jacarta-300 text-jacarta-400 text-2xs mb-3">
+                                <p className="dark:text-jacarta-100 text-jacarta-100 text-2xs mb-3">
                                   Set the validity period for the spaces.
                                 </p>
-                                <div className="flex flex-col gap-4 items-center text-jacarta-700 dark:text-white mb-3">
+                                <div className="flex flex-col gap-4 items-center text-jacarta-900 dark:text-white mb-3">
                                   <div className="flex flex-col justify-center items-center gap-1">
                                     <DatePicker
                                       selected={startDate}
@@ -426,11 +426,11 @@ const ItemManageModal = ({
                                       showYearDropdown
                                       showTimeSelect
                                       dateFormat="MMMM d, yyyy h:mm aa"
-                                      className="dark:bg-jacarta-700 border-jacarta-100 hover:ring-accent/10 focus:ring-accent dark:border-jacarta-600 dark:placeholder:text-jacarta-300 w-full rounded-lg py-3 px-3 hover:ring-2 dark:text-white"
+                                      className="dark:bg-secondaryBlack border-jacarta-100 hover:ring-primaryPurple/10 focus:ring-primaryPurple dark:border-jacarta-600 dark:placeholder:text-jacarta-100 w-full rounded-lg py-3 px-3 hover:ring-2 dark:text-white"
                                       style={{ width: "357px" }}
                                     />
                                     <div className="flex gap-2 justify-center items-center">
-                                      <span className="text-jacarta-700 dark:text-white">
+                                      <span className="text-jacarta-900 dark:text-white">
                                         Start date
                                       </span>
                                       {/* <ModalHelper title={helperStartDate.title} body={helperStartDate.body} size="small" /> */}
@@ -445,10 +445,10 @@ const ItemManageModal = ({
                                       showYearDropdown
                                       showTimeSelect
                                       dateFormat="MMMM d, yyyy h:mm aa"
-                                      className="dark:bg-jacarta-700 border-jacarta-100 hover:ring-accent/10 focus:ring-accent dark:border-jacarta-600 dark:placeholder:text-jacarta-300 w-full rounded-lg py-3 px-3 hover:ring-2 dark:text-white"
+                                      className="dark:bg-secondaryBlack border-jacarta-100 hover:ring-primaryPurple/10 focus:ring-primaryPurple dark:border-jacarta-600 dark:placeholder:text-jacarta-100 w-full rounded-lg py-3 px-3 hover:ring-2 dark:text-white"
                                     />
                                     <div className="flex gap-2 justify-center items-center">
-                                      <span className="text-jacarta-700 dark:text-white">
+                                      <span className="text-jacarta-900 dark:text-white">
                                         End date
                                       </span>
                                       {/* <ModalHelper title={helperEndDate.title} body={helperEndDate.body} size="small" /> */}
@@ -460,13 +460,13 @@ const ItemManageModal = ({
                                     <div className="flex gap-2 justify-center items-center">
                                       <label
                                         htmlFor="item-description"
-                                        className="font-display text-jacarta-700 text-sm mb-2 block dark:text-white"
+                                        className="font-display text-jacarta-900 text-sm mb-2 block dark:text-white"
                                       >
                                         Unit starting price <span className="text-red">*</span>
                                         <ModalHelper {...helperSartingPrice} size="small" />
                                       </label>
                                     </div>
-                                    <div className="flex  flex-wrap   gap-4 items-center text-jacarta-700 dark:text-white">
+                                    <div className="flex  flex-wrap   gap-4 items-center text-jacarta-900 dark:text-white">
                                       <input
                                         id="numberInput"
                                         type="number"
@@ -474,10 +474,10 @@ const ItemManageModal = ({
                                         value={selectedStartingPrice}
                                         onChange={handleStartingPriceChange}
                                         placeholder="Unit selling price"
-                                        className="dark:bg-jacarta-700 flex-grow border-jacarta-100 hover:ring-accent/10 focus:ring-accent dark:border-jacarta-600 dark:placeholder:text-jacarta-300  rounded-lg py-3 px-3 hover:ring-2 dark:text-white"
+                                        className="dark:bg-secondaryBlack flex-grow border-jacarta-100 hover:ring-primaryPurple/10 focus:ring-primaryPurple dark:border-jacarta-600 dark:placeholder:text-jacarta-100  rounded-lg py-3 px-3 hover:ring-2 dark:text-white"
                                       />
                                     </div>
-                                    <p className="dark:text-jacarta-300 text-jacarta-400 text-2xs ">
+                                    <p className="dark:text-jacarta-100 text-jacarta-100 text-2xs ">
                                       Starting price display :{" "}
                                       {calculatePriceWithTaxes(selectedStartingPrice)}{" "}
                                       {selectedCurrency}
@@ -488,14 +488,14 @@ const ItemManageModal = ({
                                   <div className="flex gap-2 justify-center items-center">
                                     <label
                                       htmlFor="item-description"
-                                      className="font-display text-jacarta-700 mb-2 text-sm block dark:text-white"
+                                      className="font-display text-jacarta-900 mb-2 text-sm block dark:text-white"
                                     >
                                       Unit selling price <span className="text-red">*</span>
                                       <ModalHelper {...helperBuyoutPrice} size="small" />
                                     </label>
                                   </div>
 
-                                  <div className="flex  flex-col items-center text-jacarta-700 dark:text-white">
+                                  <div className="flex  flex-col items-center text-jacarta-900 dark:text-white">
                                     <input
                                       id="numberInput"
                                       type="number"
@@ -503,9 +503,9 @@ const ItemManageModal = ({
                                       value={selectedUnitPrice}
                                       onChange={handleUnitPriceChange}
                                       placeholder="Unit selling price"
-                                      className="dark:bg-jacarta-700 flex-grow border-jacarta-100 hover:ring-accent/10 focus:ring-accent dark:border-jacarta-600 dark:placeholder:text-jacarta-300  rounded-lg py-3 px-3 hover:ring-2 dark:text-white"
+                                      className="dark:bg-secondaryBlack flex-grow border-jacarta-100 hover:ring-primaryPurple/10 focus:ring-primaryPurple dark:border-jacarta-600 dark:placeholder:text-jacarta-100  rounded-lg py-3 px-3 hover:ring-2 dark:text-white"
                                     />
-                                    <p className="dark:text-jacarta-300 text-jacarta-400 text-2xs ">
+                                    <p className="dark:text-jacarta-100 text-jacarta-100 text-2xs ">
                                       Selling price display :{" "}
                                       {calculatePriceWithTaxes(selectedUnitPrice)}{" "}
                                       {selectedCurrency}
@@ -517,7 +517,7 @@ const ItemManageModal = ({
                                     id="currency"
                                     value={selectedCurrency}
                                     onChange={handleCurrencyChange}
-                                    className="dark:bg-jacarta-700 min-w-[110px] border-jacarta-100 hover:ring-accent/10 focus:ring-accent dark:border-jacarta-600 dark:placeholder:text-jacarta-300 w-full rounded-lg py-3 px-5 hover:ring-2 dark:text-white"
+                                    className="dark:bg-secondaryBlack min-w-[110px] border-jacarta-100 hover:ring-primaryPurple/10 focus:ring-primaryPurple dark:border-jacarta-600 dark:placeholder:text-jacarta-100 w-full rounded-lg py-3 px-5 hover:ring-2 dark:text-white"
                                   >
                                     <option value="USDC">USDC</option>
                                     <option value="WETH">WETH</option>
@@ -530,11 +530,11 @@ const ItemManageModal = ({
                                       value={customContract}
                                       onChange={handleCustomContractChange}
                                       placeholder="Contract address"
-                                      className={`dark:bg-jacarta-700  hover:ring-accent/10 ${
+                                      className={`dark:bg-secondaryBlack  hover:ring-primaryPurple/10 ${
                                         tokenContractAsync && customContract
                                           ? "border-green"
                                           : "border-red"
-                                      } focus:ring-accent  dark:placeholder:text-jacarta-300 w-full rounded-lg py-3 px-3 hover:ring-2 dark:text-white`}
+                                      } focus:ring-primaryPurple  dark:placeholder:text-jacarta-100 w-full rounded-lg py-3 px-3 hover:ring-2 dark:text-white`}
                                     />
                                   )}
                                 </div>
@@ -552,7 +552,7 @@ const ItemManageModal = ({
           <div className="modal-footer">
             <button
               type="button"
-              className="bg-accent cursor-pointer rounded-full py-3 px-3 text-end font-semibold text-white transition-all"
+              className="bg-primaryPurple hover:bg-opacity-80 cursor-pointer rounded-full py-3 px-3 text-end font-semibold text-white transition-all"
               onClick={handlePreviewModal}
             >
               Show preview

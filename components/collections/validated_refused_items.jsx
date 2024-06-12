@@ -77,10 +77,10 @@ const Validated_refused_items = ({ statut, proposalData, isToken }) => {
       <div className="tab-pane fade">
         {/* <!-- Records / Filter --> */}
         {isToken && (
-          <div className="dark:bg-jacarta-700 dark:border-jacarta-600 border-jacarta-100 rounded-2lg border bg-white p-6 mb-4">
+          <div className="dark:bg-secondaryBlack rounded-2lg bg-white p-6 mb-4">
             <div className=" sm:flex sm:flex-wrap">
-              <span className="dark:text-jacarta-300 text-jacarta-400 text-sm">
-                🎉 Congratulations ! This ad is displayed on the offer creator’s interfaces!
+              <span className="dark:text-jacarta-100 text-jacarta-100 text-sm">
+                🎉 Congratulations ! This ad is displayed on the offer creator&apos;s interfaces!
               </span>
             </div>
           </div>
@@ -95,7 +95,7 @@ const Validated_refused_items = ({ statut, proposalData, isToken }) => {
               return (
                 <div
                   key={tokenId}
-                  className="dark:bg-jacarta-700  gap-5 p-8 dark:border-jacarta-700 transition-shadow hover:shadow-lg border-jacarta-100 rounded-2.5xl relative flex"
+                  className="dark:bg-secondaryBlack  gap-5 p-8 dark:border-jacarta-700 transition-shadow hover:shadow-lg border-jacarta-100 rounded-2.5xl relative flex"
                 >
                   <div className=" relative flex items-center gap-5 flex-col sm:flex-row ">
                     <figure className="self-start">
@@ -157,12 +157,9 @@ const Validated_refused_items = ({ statut, proposalData, isToken }) => {
                     </figure>
 
                     <div>
-                      <h3 className="font-display text-jacarta-700 mb-1 text-base font-semibold dark:text-white">
+                      <h3 className="font-display text-jacarta-900 mb-1 text-base font-semibold dark:text-white">
                         Item :{" "}
-                        <span className="text-green">
-                          {" "}
-                          {tokenData ? tokenData : formatTokenId(tokenId)}{" "}
-                        </span>{" "}
+                        <span className="text-green"> {tokenData ?? formatTokenId(tokenId)} </span>{" "}
                       </h3>
 
                       <div className="flex flex-col">
@@ -176,7 +173,7 @@ const Validated_refused_items = ({ statut, proposalData, isToken }) => {
                         </button>
                       </div>
                       {reason && (
-                        <span className="text-jacarta-500 dark:text-jacarta-300">
+                        <span className="text-jacarta-100 dark:text-jacarta-100">
                           Reason : {reason}
                         </span>
                       )}
@@ -203,7 +200,7 @@ const Validated_refused_items = ({ statut, proposalData, isToken }) => {
              <form action="search" className="relative mb-12 block" onSubmit={handleSubmit}>
               <input
                 type="search"
-                className="text-jacarta-700 placeholder-jacarta-500 focus:ring-accent border-jacarta-100 w-full rounded-2xl border py-[0.6875rem] px-4 pl-10 dark:border-transparent dark:bg-white/[.15] dark:text-white dark:placeholder-white"
+                className="text-jacarta-900 placeholder-jacarta-500 focus:ring-primaryPurple border-jacarta-100 w-full rounded-2xl border py-[0.6875rem] px-4 pl-10 dark:border-transparent dark:bg-white/[.15] dark:text-white dark:placeholder-white"
                 placeholder="Search"
                 value={inputText}
                 onChange={(e) => setInputText(e.target.value)}
@@ -216,15 +213,15 @@ const Validated_refused_items = ({ statut, proposalData, isToken }) => {
               </button>
             </form>
 
-            <h3 className="font-display text-jacarta-500 mb-4 font-semibold dark:text-white">Filters</h3>
+            <h3 className="font-display text-jacarta-100 mb-4 font-semibold dark:text-white">Filters</h3>
             <div className="flex flex-wrap">
               {filterData.map((category, i) => {
                 return (
                   <button
                     className={
                       filterVal === i
-                        ? "dark:border-jacarta-600 group bg-accent border-jacarta-100 mr-2.5 mb-2.5 inline-flex items-center rounded-xl border px-4 py-3 border-transparent text-white dark:border-transparent"
-                        : "dark:border-jacarta-600 dark:bg-jacarta-700 group dark:hover:bg-accent hover:bg-accent border-jacarta-100 mr-2.5 mb-2.5 inline-flex items-center rounded-xl border bg-white px-4 py-3 hover:border-transparent hover:text-white dark:text-white dark:hover:border-transparent"
+                        ? "dark:border-jacarta-600 group bg-primaryPurple border-jacarta-100 mr-2.5 mb-2.5 inline-flex items-center rounded-xl border px-4 py-3 border-transparent text-white dark:border-transparent"
+                        : "dark:border-jacarta-600 dark:bg-secondaryBlack group dark:hover:bg-primaryPurple hover:bg-primaryPurple border-jacarta-100 mr-2.5 mb-2.5 inline-flex items-center rounded-xl border bg-white px-4 py-3 hover:border-transparent hover:text-white dark:text-white dark:hover:border-transparent"
                     }
                     key={i}
                     onClick={() => {

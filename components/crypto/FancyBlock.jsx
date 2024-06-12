@@ -40,10 +40,10 @@ assets`,
 
             {/* <!-- Info --> */}
             <div className="py-10 px-6 lg:w-[37%] lg:pl-28">
-              <h2 className="mb-6 font-display text-3xl text-jacarta-700 dark:text-white">
+              <h2 className="mb-6 font-display text-3xl text-jacarta-900 dark:text-white">
                 The safest most secure crypto app like never before
               </h2>
-              <p className="mb-12 text-lg leading-normal dark:text-jacarta-300">
+              <p className="mb-12 text-lg leading-normal dark:text-jacarta-100">
                 DSponsor security is unlike every other. It’s better. No more complex passwords or
                 long phrases to store, browser extensions, or special hardware required. Your
                 account is secured by private facial biometrics and industry-leading encryption to
@@ -57,13 +57,13 @@ assets`,
                     viewBox="0 0 24 24"
                     width="24"
                     height="24"
-                    className="h-8 w-8 shrink-0 fill-accent"
+                    className="h-8 w-8 shrink-0 fill-primaryPurple"
                   >
                     <path fill="none" d="M0 0h24v24H0z" />
                     <path d="M12 22C6.477 22 2 17.523 2 12S6.477 2 12 2s10 4.477 10 10-4.477 10-10 10zm0-2a8 8 0 1 0 0-16 8 8 0 0 0 0 16zm-.997-4L6.76 11.757l1.414-1.414 2.829 2.829 5.656-5.657 1.415 1.414L11.003 16z" />
                   </svg>
                   <div>
-                    <span className="mb-3 mt-2 block font-display text-base font-semibold text-jacarta-700 dark:text-white">
+                    <span className="mb-3 mt-2 block font-display text-base font-semibold text-jacarta-900 dark:text-white">
                       {val}
                     </span>
                   </div>

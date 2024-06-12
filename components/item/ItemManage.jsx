@@ -53,32 +53,32 @@ const ItemManage = ({
 
   return (
     <>
-      <div className="dark:bg-jacarta-700 dark:border-jacarta-600 mb-2 border-jacarta-100 rounded-2lg border flex flex-col gap-4 bg-white p-8">
+      <div className="dark:bg-secondaryBlack mb-2 rounded-2lg flex flex-col gap-4 bg-white p-8">
         <div className=" sm:flex sm:flex-wrap">
           {marketplaceListings[0]?.endTime < now &&
             marketplaceListings[0]?.listingType === "Auction" && (
-              <span className="dark:text-jacarta-300 text-jacarta-400 text-sm">
+              <span className="dark:text-jacarta-100 text-jacarta-100 text-sm">
                 Auction has ended, you can complete the auction by clicking the button bellow.{" "}
               </span>
             )}
           {marketplaceListings[0]?.startTime > now &&
             marketplaceListings[0]?.listingType === "Auction" &&
             marketplaceListings[0]?.status === "CREATED" && (
-              <span className="dark:text-jacarta-300 text-jacarta-400 text-sm">
+              <span className="dark:text-jacarta-100 text-jacarta-100 text-sm">
                 Auction will start soon, wait{" "}
                 {new Date(marketplaceListings[0]?.startTime * 1000).toString()}.{" "}
               </span>
             )}
           {(marketplaceListings[0]?.status !== "CREATED" || marketplaceListings?.length <= 0) &&
             isOwner && (
-              <span className="dark:text-jacarta-300 text-jacarta-400 text-sm">
+              <span className="dark:text-jacarta-100 text-jacarta-100 text-sm">
                 Click the button below to sell your item in auction or direct listing.{" "}
               </span>
             )}
           {marketplaceListings[0]?.listingType === "Direct" &&
             isOwner &&
             marketplaceListings[0]?.status === "CREATED" && (
-              <span className="dark:text-jacarta-300 text-jacarta-400 text-sm">
+              <span className="dark:text-jacarta-100 text-jacarta-100 text-sm">
                 Click the button below to cancel the listing.{" "}
               </span>
             )}
@@ -89,7 +89,7 @@ const ItemManage = ({
           <div className="w-full flex justify-center">
             <button
               type="button"
-              className="bg-accent shadow-accent-volume hover:bg-accent-dark w-36 rounded-full py-3 px-3 text-center font-semibold text-white transition-all"
+              className="bg-primaryPurple hover:bg-opacity-80 w-36 rounded-full py-3 px-3 text-center font-semibold text-white transition-all"
               onClick={handleListingModal}
             >
               Create a listing

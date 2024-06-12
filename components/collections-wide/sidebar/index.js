@@ -11,7 +11,7 @@ const Sidebar = () => {
       <div>
         <h2 id="filters-collections-heading">
           <button
-            className="accordion-button relative flex w-full items-center justify-between py-3 text-left font-display text-xl text-jacarta-700 dark:text-white"
+            className="accordion-button relative flex w-full items-center justify-between py-3 text-left font-display text-xl text-jacarta-900 dark:text-white"
             type="button"
             data-bs-toggle="collapse"
             data-bs-target="#filters-collections"
@@ -47,7 +47,7 @@ const Sidebar = () => {
       <div className="mt-4 pt-4">
         <h2 id="filters-chains-heading">
           <button
-            className="accordion-button collapsed relative flex w-full items-center justify-between py-3 text-left font-display text-xl text-jacarta-700 dark:text-white"
+            className="accordion-button collapsed relative flex w-full items-center justify-between py-3 text-left font-display text-xl text-jacarta-900 dark:text-white"
             type="button"
             data-bs-toggle="collapse"
             data-bs-target="#filters-chains"
@@ -78,7 +78,7 @@ const Sidebar = () => {
       <div className="mt-4 pt-4">
         <h2 id="filters-status-heading">
           <button
-            className="accordion-button collapsed relative flex w-full items-center justify-between py-3 text-left font-display text-xl text-jacarta-700 dark:text-white"
+            className="accordion-button collapsed relative flex w-full items-center justify-between py-3 text-left font-display text-xl text-jacarta-900 dark:text-white"
             type="button"
             data-bs-toggle="collapse"
             data-bs-target="#filters-status"
@@ -109,7 +109,7 @@ const Sidebar = () => {
       <div className="mt-4 pt-4">
         <h2 id="filters-price-heading">
           <button
-            className="accordion-button relative flex w-full items-center justify-between py-3 text-left font-display text-xl text-jacarta-700 dark:text-white"
+            className="accordion-button relative flex w-full items-center justify-between py-3 text-left font-display text-xl text-jacarta-900 dark:text-white"
             type="button"
             data-bs-toggle="collapse"
             data-bs-target="#filters-price"
@@ -142,7 +142,7 @@ const Sidebar = () => {
       <div className="mt-4 pt-4">
         <h2 id="filters-categories-heading">
           <button
-            className="accordion-button relative flex w-full items-center justify-between py-3 text-left font-display text-xl text-jacarta-700 dark:text-white"
+            className="accordion-button relative flex w-full items-center justify-between py-3 text-left font-display text-xl text-jacarta-900 dark:text-white"
             type="button"
             data-bs-toggle="collapse"
             data-bs-target="#filters-categories"

@@ -8,7 +8,7 @@ const MintsContent = () => {
   return (
     <div
       role="table"
-      className="rounded-2lg border border-jacarta-100 bg-white text-sm dark:border-jacarta-600 dark:bg-jacarta-700 dark:text-white"
+      className="rounded-2lg border border-jacarta-100 bg-white text-sm dark:border-jacarta-600 dark:bg-secondaryBlack dark:text-white"
     >
       <div className="flex flex-col gap-4 rounded-t-2lg border-b border-jacarta-100 bg-jacarta-50 p-4 dark:border-jacarta-600 dark:bg-jacarta-800 sm:gap-6 lg:flex-row lg:items-center">
         <div className="flex flex-1 flex-col justify-between gap-4 md:flex-row md:items-center md:gap-10">
@@ -22,13 +22,13 @@ const MintsContent = () => {
                 }}
               />
               <div className="hidden flex-shrink-0 flex-col sm:flex">
-                <div className="text-base font-medium uppercase text-jacarta-500 dark:text-jacarta-300 md:whitespace-nowrap">
+                <div className="text-base font-medium uppercase text-jacarta-100 dark:text-jacarta-100 md:whitespace-nowrap">
                   Live View
                 </div>
               </div>
             </div>
-            <div className="flex items-center space-x-1 text-jacarta-300 dark:text-jacarta-400">
-              <div className="text-2xs text-jacarta-500 dark:text-jacarta-300">196 results</div>
+            <div className="flex items-center space-x-1 text-jacarta-100 dark:text-jacarta-100">
+              <div className="text-2xs text-jacarta-100 dark:text-jacarta-100">196 results</div>
               <span>|</span>
               <div className="text-2xs">10 min ago</div>
             </div>
@@ -56,13 +56,13 @@ const MintsContent = () => {
                 }}
               />
               <div className="flex flex-shrink-0 flex-col">
-                <div className="text-base font-medium uppercase text-jacarta-500 dark:text-jacarta-300 md:whitespace-nowrap">
+                <div className="text-base font-medium uppercase text-jacarta-100 dark:text-jacarta-100 md:whitespace-nowrap">
                   Live View
                 </div>
               </div>
             </div>
-            <div className="flex items-center space-x-1 text-jacarta-300 dark:text-jacarta-400">
-              <div className="text-2xs text-jacarta-500 dark:text-jacarta-200">196 results</div>
+            <div className="flex items-center space-x-1 text-jacarta-100 dark:text-jacarta-100">
+              <div className="text-2xs text-jacarta-100 dark:text-jacarta-200">196 results</div>
               <span>|</span>
               <div className="text-2xs">10 min ago</div>
             </div>

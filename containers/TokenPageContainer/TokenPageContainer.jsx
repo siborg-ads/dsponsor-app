@@ -101,6 +101,7 @@ const TokenPageContainer = () => {
   const [bidsAmount, setBidsAmount] = useState(null);
   const [currencyDecimals, setCurrencyDecimals] = useState(null);
   const [isLister, setIsLister] = useState(false);
+  const [selectedItems, setSelectedItems] = useState([]);
   const NATIVECurrency = config[chainId]?.smartContracts?.NATIVE;
 
   const { contract: DsponsorAdminContract } = useContract(
@@ -765,14 +766,14 @@ const TokenPageContainer = () => {
       <section className="relative lg:mt-24 lg:pt-12  mt-24 pt-12 pb-8">
         <div className="mb-8 container flex justify-center flex-col items-center ">
           <div className=" flex justify-center ">
-            <h1 className="text-jacarta-700 font-bold font-display mb-6 text-center text-5xl dark:text-white md:text-left lg:text-6xl xl:text-6xl">
+            <h1 className="text-jacarta-900 font-bold font-display mb-6 text-center text-5xl dark:text-white md:text-left lg:text-6xl xl:text-6xl">
               {isOwner && isValidId ? "Your Ad Space" : "Buy Ad Space"}{" "}
             </h1>
-            {/* <span className={`ml-2 text-sm font-bold ${isOwner ? (adStatut === 0 ? "text-red" : adStatut === 1 ? "text-green" : adStatut === 2 ? "text-accent" : "hidden") : "hidden"}`}>
+            {/* <span className={`ml-2 text-sm font-bold ${isOwner ? (adStatut === 0 ? "text-red" : adStatut === 1 ? "text-green" : adStatut === 2 ? "text-primaryPurple" : "hidden") : "hidden"}`}>
               {adStatut === 0 ? "Rejected" : adStatut === 1 ? "Accepted" : adStatut === 2 ? "Pending" : ""}
             </span> */}
           </div>
-          {/* <p className={`${isOwner ? (adStatut === 0 ? "text-red" : adStatut === 1 ? "text-green" : adStatut === 2 ? "text-accent" : "hidden") : "hidden"} text-sm font-bold`}>
+          {/* <p className={`${isOwner ? (adStatut === 0 ? "text-red" : adStatut === 1 ? "text-green" : adStatut === 2 ? "text-primaryPurple" : "hidden") : "hidden"} text-sm font-bold`}>
             {adStatut === 0 ? statutAds.rejected : adStatut === 1 ? statutAds.accepted : statutAds.pending}
           </p> */}
         </div>
@@ -833,7 +834,7 @@ const TokenPageContainer = () => {
             <div className="md:w-3/5 md:basis-auto md:pl-8 lg:w-1/2 lg:pl-[3.75rem]">
               {/* <!-- Collection / Likes / Actions --> */}
               <Link href={`/${chainId}/offer/${offerId}`} className="flex">
-                <h2 className="font-display text-jacarta-700 mb-4 dark:hover:text-accent text-3xl font-semibold dark:text-white">
+                <h2 className="font-display text-jacarta-900 mb-4 dark:hover:text-primaryPurple text-3xl font-semibold dark:text-white">
                   {name}
                 </h2>
               </Link>
@@ -850,14 +851,14 @@ const TokenPageContainer = () => {
                       <ModalHelper {...modalHelper} size="small" />
                     </div>
                   )}
-                <span className="dark:text-jacarta-300 text-jacarta-400 text-sm">
+                <span className="dark:text-jacarta-100 text-jacarta-100 text-sm">
                   Space #{" "}
                   <strong className="dark:text-white">{tokenData ?? formatTokenId(tokenId)}</strong>{" "}
                 </span>
-                <span className="text-jacarta-300 block text-sm ">
+                <span className="text-jacarta-100 block text-sm ">
                   Creator <strong className="dark:text-white">{royalties}% royalties</strong>
                 </span>
-                <span className="text-jacarta-300 block text-sm">
+                <span className="text-jacarta-100 block text-sm">
                   Token valid from{" "}
                   <strong className="dark:text-white">
                     {offerData?.nftContract?.tokens[0]?.metadata?.valid_from &&
@@ -878,12 +879,12 @@ const TokenPageContainer = () => {
                 </span>
               </div>
 
-              <p className="dark:text-jacarta-300 mb-10">{description}</p>
+              <p className="dark:text-jacarta-100 mb-10">{description}</p>
               {(tokenStatut === "MINTABLE" ||
                 (tokenStatut === "DIRECT" && marketplaceListings[0].startTime < now)) && (
-                <div className="dark:bg-jacarta-700 dark:border-jacarta-600 mb-2 border-jacarta-100 rounded-2lg border flex flex-col gap-4 bg-white p-8">
+                <div className="dark:bg-secondaryBlack dark:border-jacarta-600 mb-2 border-jacarta-100 rounded-2lg border flex flex-col gap-4 bg-white p-8">
                   <div className=" sm:flex sm:flex-wrap">
-                    <span className="dark:text-jacarta-300 text-jacarta-400 text-sm">
+                    <span className="dark:text-jacarta-100 text-jacarta-100 text-sm">
                       Buying the ad space give you the exclusive right to submit an ad. The media
                       still has the power to validate or reject ad assets. You re free to change the
                       ad at anytime. And free to resell on the open market your ad space.{" "}
@@ -899,7 +900,7 @@ const TokenPageContainer = () => {
                       action={() => {
                         handleBuyModal();
                       }}
-                      className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all  !bg-accent !cursor-pointer `}
+                      className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all  !bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer `}
                     >
                       Buy
                     </Web3Button>
@@ -970,7 +971,7 @@ const TokenPageContainer = () => {
       {/* <!-- end item --> */}
       <div className="container mb-12">
         <Divider className="my-4" />
-        <h2 className="text-jacarta-700 font-bold font-display mb-6 text-center text-3xl dark:text-white ">
+        <h2 className="text-jacarta-900 font-bold font-display mb-6 text-center text-3xl dark:text-white ">
           Details{" "}
         </h2>
         <ItemsTabs
@@ -989,6 +990,7 @@ const TokenPageContainer = () => {
           isToken={true}
           successFullUploadModal={successFullUploadModal}
           isLister={isLister}
+          setSelectedItems={setSelectedItems}
         />
       )}
       {/* <ItemsTabs /> */}
@@ -996,7 +998,7 @@ const TokenPageContainer = () => {
         {isOwner && isValidId ? (
           <div className="container">
             <Divider className="my-4" />
-            <h2 className="text-jacarta-700 font-bold font-display mb-6 text-center text-3xl dark:text-white ">
+            <h2 className="text-jacarta-900 font-bold font-display mb-6 text-center text-3xl dark:text-white ">
               Submission{" "}
             </h2>
             {isTokenInAuction && (

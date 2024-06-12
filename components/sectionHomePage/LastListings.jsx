@@ -25,7 +25,7 @@ const LastListings = ({ data, classes = "pt-10 pb-24", bgWhite }) => {
         <HeadLine
           text="Last Listings"
           image="https://cdn.jsdelivr.net/npm/emoji-datasource-apple@7.0.2/img/apple/64/1f525.png"
-          classes="font-display text-jacarta-700 mb-8 text-center text-3xl dark:text-white"
+          classes="font-display text-jacarta-900 mb-8 text-center text-3xl dark:text-white"
         />
 
         <div className="relative">

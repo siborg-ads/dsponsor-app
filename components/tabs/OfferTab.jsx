@@ -14,14 +14,14 @@ const OfferTab = () => {
       >
         <div
           role="table"
-          className="scrollbar-custom dark:bg-jacarta-700 dark:border-jacarta-600 border-jacarta-100 grid max-h-72 w-full grid-cols-5 overflow-y-auto rounded-lg rounded-tl-none border bg-white text-sm dark:text-white"
+          className="scrollbar-custom dark:bg-secondaryBlack dark:border-jacarta-600 border-jacarta-100 grid max-h-72 w-full grid-cols-5 overflow-y-auto rounded-lg rounded-tl-none border bg-white text-sm dark:text-white"
         >
           <div className="contents" role="row">
             <div
               className="dark:bg-jacarta-600 bg-light-base sticky top-0 py-2 px-4"
               role="columnheader"
             >
-              <span className="text-jacarta-700 dark:text-jacarta-100 w-full overflow-hidden text-ellipsis">
+              <span className="text-jacarta-900 dark:text-jacarta-100 w-full overflow-hidden text-ellipsis">
                 Price
               </span>
             </div>
@@ -29,7 +29,7 @@ const OfferTab = () => {
               className="dark:bg-jacarta-600 bg-light-base sticky top-0 py-2 px-4"
               role="columnheader"
             >
-              <span className="text-jacarta-700 dark:text-jacarta-100 w-full overflow-hidden text-ellipsis">
+              <span className="text-jacarta-900 dark:text-jacarta-100 w-full overflow-hidden text-ellipsis">
                 USD Price
               </span>
             </div>
@@ -37,7 +37,7 @@ const OfferTab = () => {
               className="dark:bg-jacarta-600 bg-light-base sticky top-0 py-2 px-4"
               role="columnheader"
             >
-              <span className="text-jacarta-700 dark:text-jacarta-100 w-full overflow-hidden text-ellipsis">
+              <span className="text-jacarta-900 dark:text-jacarta-100 w-full overflow-hidden text-ellipsis">
                 Floor Difference
               </span>
             </div>
@@ -45,7 +45,7 @@ const OfferTab = () => {
               className="dark:bg-jacarta-600 bg-light-base sticky top-0 py-2 px-4"
               role="columnheader"
             >
-              <span className="text-jacarta-700 dark:text-jacarta-100 w-full overflow-hidden text-ellipsis">
+              <span className="text-jacarta-900 dark:text-jacarta-100 w-full overflow-hidden text-ellipsis">
                 Expiration
               </span>
             </div>
@@ -53,7 +53,7 @@ const OfferTab = () => {
               className="dark:bg-jacarta-600 bg-light-base sticky top-0 py-2 px-4"
               role="columnheader"
             >
-              <span className="text-jacarta-700 dark:text-jacarta-100 w-full overflow-hidden text-ellipsis">
+              <span className="text-jacarta-900 dark:text-jacarta-100 w-full overflow-hidden text-ellipsis">
                 From
               </span>
             </div>
@@ -92,7 +92,7 @@ const OfferTab = () => {
                   className="dark:border-jacarta-600 border-jacarta-100 flex items-center border-t py-4 px-4"
                   role="cell"
                 >
-                  <Link href="#" className="text-accent">
+                  <Link href="#" className="text-primaryPurple">
                     {user}
                   </Link>
                 </div>

@@ -1,14 +1,14 @@
 const TableHeader = () => {
   return (
     <div
-      className="flex items-center bg-jacarta-50 py-5 px-4 text-jacarta-700 dark:bg-jacarta-800 dark:text-jacarta-100"
+      className="flex items-center bg-jacarta-50 py-5 px-4 text-jacarta-900 dark:bg-jacarta-800 dark:text-jacarta-100"
       role="row"
     >
       <div className="w-6/12 truncate text-left md:w-6/12 lg:w-4/12" role="columnheader">
         Collection
       </div>
       <div
-        className="flex w-3/12 cursor-pointer items-center justify-end text-accent md:w-2/12"
+        className="flex w-3/12 cursor-pointer items-center justify-end text-primaryPurple md:w-2/12"
         role="columnheader"
       >
         24h Volume
@@ -17,7 +17,7 @@ const TableHeader = () => {
           viewBox="0 0 24 24"
           width={16}
           height={16}
-          className="ml-1 flex-shrink-0 fill-accent"
+          className="ml-1 flex-shrink-0 fill-primaryPurple"
         >
           <path fill="none" d="M0 0h24v24H0z" />
           <path d="M12 13.172l4.95-4.95 1.414 1.414L12 16 5.636 9.636 7.05 8.222z" />

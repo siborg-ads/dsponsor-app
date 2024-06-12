@@ -29,16 +29,16 @@ const DownloadAppBanner = () => {
         <div className="flex flex-col items-center space-y-10 lg:flex-row lg:space-y-0 lg:space-x-4">
           <div className="mb-10 lg:order-1 lg:w-2/4 xl:w-[30%]">
             <div className="text-center lg:text-left">
-              <h2 className="mb-6 font-display text-xl text-jacarta-700 dark:text-white lg:pr-4">
+              <h2 className="mb-6 font-display text-xl text-jacarta-900 dark:text-white lg:pr-4">
                 Download DSponsor app
-                <span className="text-jacarta-300">
+                <span className="text-jacarta-100">
                   to track your NFT portfolio and discover drops
                 </span>
               </h2>
               <div className="inline-flex space-x-4">
                 <a
                   href="#"
-                  className="group flex items-center rounded-full bg-white py-3 px-6 text-center font-semibold text-jacarta-500 shadow-white-volume transition-all hover:bg-accent-dark hover:text-white hover:shadow-accent-volume"
+                  className="group flex items-center rounded-full bg-white py-3 px-6 text-center font-semibold text-jacarta-100 shadow-white-volume transition-all hover:bg-primaryPurple-dark hover:text-white hover:shadow-primaryPurple-volume"
                 >
                   <Image
                     width={20}
@@ -51,7 +51,7 @@ const DownloadAppBanner = () => {
                 </a>
                 <a
                   href="#"
-                  className="flex items-center rounded-full bg-white py-3 px-6 text-center font-semibold text-jacarta-500 shadow-white-volume transition-all hover:bg-accent-dark hover:text-white hover:shadow-accent-volume"
+                  className="flex items-center rounded-full bg-white py-3 px-6 text-center font-semibold text-jacarta-100 shadow-white-volume transition-all hover:bg-primaryPurple-dark hover:text-white hover:shadow-primaryPurple-volume"
                 >
                   <Image
                     width={20}
@@ -100,7 +100,7 @@ const DownloadAppBanner = () => {
                     <path d="M7.828 11H20v2H7.828l5.364 5.364-1.414 1.414L4 12l7.778-7.778 1.414 1.414z" />
                   </g>
                 </svg>
-                <span className="text-lg text-jacarta-700 dark:text-white">
+                <span className="text-lg text-jacarta-900 dark:text-white">
                   Scan to download DSponsor app
                 </span>
               </div>

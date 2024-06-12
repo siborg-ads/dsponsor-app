@@ -29,10 +29,10 @@ module.exports = {
       current: "currentColor",
       white: "#ffffff",
       black: "#000000",
-      accent: "#8358FF",
-      "accent-light": "#9E7CFF",
-      "accent-dark": "#6336E4",
-      "accent-lighter": "#B9A0FF",
+      primaryPurple: "#8358FF",
+      "primaryPurple-light": "#9E7CFF",
+      "primaryPurple-dark": "#6336E4",
+      "primaryPurple-lighter": "#B9A0FF",
       "light-base": "#F5F8FA",
       green: "#10b981",
       orange: "#FEB240",
@@ -67,7 +67,7 @@ module.exports = {
       lg: "0px 4px 6px -4px rgba(13, 16, 45, 0.1), 0px 10px 15px -3px rgba(13, 16, 45, 0.1)",
       xl: "0px 8px 10px -6px rgba(13, 16, 45, 0.1), 0px 20px 25px -5px rgba(13, 16, 45, 0.1)",
       "2xl": "0px 25px 50px -12px rgba(13, 16, 45, 0.1), 0px 12px 24px 0px rgba(13, 16, 45, 0.1)",
-      "accent-volume":
+      "primaryPurple-volume":
         "5px 5px 10px rgba(108, 106, 213, 0.25), inset 2px 2px 6px #A78DF0, inset -5px -5px 10px #6336E4",
       "white-volume":
         "5px 5px 10px rgba(108, 106, 212, 0.25), inset 2px 2px 6px #EEF1F9, inset -5px -5px 10px #DFE3EF"
@@ -99,7 +99,7 @@ module.exports = {
 
     extend: {
       backgroundImage: {
-        "accent-dark": "linear-gradient(to right, #673297, #40529e)"
+        "primaryPurple-dark": "linear-gradient(to right, #673297, #40529e)"
       },
       borderRadius: {
         "2lg": "0.625rem"

@@ -63,12 +63,12 @@ const Top_collection = () => {
           />
         </picture>
         <div className="container">
-          <div className="font-display text-jacarta-700 mb-12 text-center text-lg sm:text-3xl dark:text-white flex justify-center items-center gap-x-3">
+          <div className="font-display text-jacarta-900 mb-12 text-center text-lg sm:text-3xl dark:text-white flex justify-center items-center gap-x-3">
             <HeadLine text="Top creators over" classes="inline" />
 
             <div className="dropdown cursor-pointer relative">
               <button
-                className="dropdown-toggle text-accent inline-flex items-center"
+                className="dropdown-toggle text-primaryPurple inline-flex items-center"
                 type="button"
                 onClick={(e) => handleDropdown(e)}
               >
@@ -78,7 +78,7 @@ const Top_collection = () => {
                   viewBox="0 0 24 24"
                   width="24"
                   height="24"
-                  className="fill-accent h-8 w-8"
+                  className="fill-primaryPurple h-8 w-8"
                 >
                   <path fill="none" d="M0 0h24v24H0z"></path>
                   <path d="M12 13.172l4.95-4.95 1.414 1.414L12 16 5.636 9.636 7.05 8.222z"></path>
@@ -88,8 +88,8 @@ const Top_collection = () => {
               <div
                 className={
                   dropdownShow
-                    ? "dropdown-menu dark:bg-jacarta-800 z-10  min-w-[200px] whitespace-nowrap rounded-xl bg-white py-4 px-2 text-left shadow-xl show text-jacarta-700 dark:text-white absolute m-0 top-full"
-                    : "dropdown-menu dark:bg-jacarta-800 z-10  min-w-[200px] whitespace-nowrap rounded-xl bg-white py-4 px-2 text-left shadow-xl hidden text-jacarta-700 dark:text-white absolute m-0 top-full"
+                    ? "dropdown-menu dark:bg-jacarta-800 z-10  min-w-[200px] whitespace-nowrap rounded-xl bg-white py-4 px-2 text-left shadow-xl show text-jacarta-900 dark:text-white absolute m-0 top-full"
+                    : "dropdown-menu dark:bg-jacarta-800 z-10  min-w-[200px] whitespace-nowrap rounded-xl bg-white py-4 px-2 text-left shadow-xl hidden text-jacarta-900 dark:text-white absolute m-0 top-full"
                 }
               >
                 {timeText.map(({ id, text }) => {
@@ -118,7 +118,7 @@ const Top_collection = () => {
 
               return (
                 <div
-                  className="border-jacarta-100 dark:bg-jacarta-700 rounded-2xl flex border bg-white py-4 px-7 transition-shadow hover:shadow-lg dark:border-transparent"
+                  className="border-jacarta-100 dark:bg-secondaryBlack rounded-2xl flex border bg-white py-4 px-7 transition-shadow hover:shadow-lg dark:border-transparent"
                   key={id}
                 >
                   <figure className="mr-4 shrink-0">
@@ -130,7 +130,7 @@ const Top_collection = () => {
                         height={48}
                         width={48}
                       />
-                      <div className="dark:border-jacarta-600 bg-jacarta-700 absolute -left-3 top-1/2 flex h-6 w-6 -translate-y-2/4 items-center justify-center rounded-full border-2 border-white text-xs text-white">
+                      <div className="dark:border-jacarta-600 bg-secondaryBlack absolute -left-3 top-1/2 flex h-6 w-6 -translate-y-2/4 items-center justify-center rounded-full border-2 border-white text-xs text-white">
                         {id}
                       </div>
                       {icon && (
@@ -154,11 +154,11 @@ const Top_collection = () => {
                   </figure>
                   <div>
                     <Link href={"/collection/" + itemLink} className="block">
-                      <span className="font-display text-jacarta-700 hover:text-accent font-semibold dark:text-white">
+                      <span className="font-display text-jacarta-900 hover:text-primaryPurple font-semibold dark:text-white">
                         {title}
                       </span>
                     </Link>
-                    <span className="dark:text-jacarta-300 text-sm">{amount} ETH</span>
+                    <span className="dark:text-jacarta-100 text-sm">{amount} ETH</span>
                   </div>
                 </div>
               );
@@ -167,7 +167,7 @@ const Top_collection = () => {
           <div className="mt-10 text-center">
             <Link
               href="/rankings"
-              className="bg-accent shadow-accent-volume hover:bg-accent-dark inline-block rounded-full py-3 px-8 text-center font-semibold text-white transition-all"
+              className="bg-primaryPurple shadow-primaryPurple-volume hover:bg-primaryPurple-dark inline-block rounded-full py-3 px-8 text-center font-semibold text-white transition-all"
             >
               Go to Rankings
             </Link>

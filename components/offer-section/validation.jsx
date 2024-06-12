@@ -94,12 +94,12 @@ const Validation = ({
     setRefusedProposalData(formattedRefusedAds);
 
     setPendingProposalData(formattedPendingAds);
-  }, [offer, successFullUploadModal]);
+  }, [offer, offerId, successFullUploadModal]);
 
   return (
     <div className="container">
       <Divider className="my-4" />
-      <h2 className="text-jacarta-700 font-bold font-display mb-6 text-center text-3xl dark:text-white ">
+      <h2 className="text-jacarta-900 font-bold font-display mb-6 text-center text-3xl dark:text-white ">
         Submitted Ads{" "}
       </h2>
       {/* <!-- Tabs Nav --> */}
@@ -116,8 +116,8 @@ const Validation = ({
                 <button
                   className={
                     itemActive === id
-                      ? "nav-link hover:text-jacarta-700 text-jacarta-400 relative flex items-center whitespace-nowrap py-3 px-6 dark:hover:text-white active"
-                      : "nav-link hover:text-jacarta-700 text-jacarta-400 relative flex items-center whitespace-nowrap py-3 px-6 dark:hover:text-white"
+                      ? "nav-link hover:text-jacarta-900 text-jacarta-100 relative flex items-center whitespace-nowrap py-3 px-6 dark:hover:text-white active"
+                      : "nav-link hover:text-jacarta-900 text-jacarta-100 relative flex items-center whitespace-nowrap py-3 px-6 dark:hover:text-white"
                   }
                 >
                   <svg className="icon mr-1 h-5 w-5 fill-current">

@@ -117,7 +117,7 @@ const GridItems = () => {
     <>
       {items.map((item) => (
         <article key={item.id}>
-          <div className="rounded-2.5xl border border-jacarta-100 bg-white p-[1.1875rem] transition-shadow hover:shadow-lg dark:border-jacarta-700 dark:bg-jacarta-700">
+          <div className="rounded-2.5xl border border-jacarta-100 bg-white p-[1.1875rem] transition-shadow hover:shadow-lg dark:border-jacarta-700 dark:bg-secondaryBlack">
             <Link href="/collection/avatar_1">
               <Image
                 width={270}
@@ -131,7 +131,7 @@ const GridItems = () => {
 
             <Link
               href="/collection/avatar_1"
-              className="mt-5 mb-2 flex items-center font-display text-base text-jacarta-700 hover:text-accent dark:text-white dark:hover:text-accent"
+              className="mt-5 mb-2 flex items-center font-display text-base text-jacarta-900 hover:text-primaryPurple dark:text-white dark:hover:text-primaryPurple"
             >
               {item.title}
               {item.verified && (
@@ -153,11 +153,11 @@ const GridItems = () => {
               )}
             </Link>
 
-            <div className="font-medium text-2xs text-jacarta-700 dark:text-white mb-2">
+            <div className="font-medium text-2xs text-jacarta-900 dark:text-white mb-2">
               {item.price}
             </div>
-            <div className="font-medium text-2xs text-jacarta-500 dark:text-jacarta-300">
-              Last Sale: <span className="text-jacarta-700 dark:text-white">{item.lastSale}</span>
+            <div className="font-medium text-2xs text-jacarta-100 dark:text-jacarta-100">
+              Last Sale: <span className="text-jacarta-900 dark:text-white">{item.lastSale}</span>
             </div>
           </div>
         </article>

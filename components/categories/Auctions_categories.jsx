@@ -38,7 +38,7 @@ const Auctions_categories = ({ data, isOwner }) => {
   return (
     <>
       {/* <!-- Grid --> */}
-      <div className="dark:bg-jacarta-700 dark:text-jacarta-300 dark:border-jacarta-600 border-jacarta-100 rounded-2lg border bg-white p-3 flex gap-4 justify-center items-center mb-6">
+      <div className="dark:bg-secondaryBlack dark:text-jacarta-100 rounded-2lg bg-white p-3 flex gap-4 justify-center items-center mb-6">
         <span>
           {" "}
           This section lists all the tokens you have placed in auction.

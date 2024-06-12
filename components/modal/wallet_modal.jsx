@@ -43,7 +43,7 @@ const Wallet_modal = () => {
                 You {"don't"} have MetaMask in your browser, please download it from
                 <a
                   href="https://metamask.io/"
-                  className="text-accent"
+                  className="text-primaryPurple"
                   target="_blank"
                   rel="noreferrer noopener"
                 >
@@ -59,7 +59,7 @@ const Wallet_modal = () => {
                   href="https://metamask.io/"
                   target="_blank"
                   rel="noreferrer noopener"
-                  className="bg-accent shadow-accent-volume hover:bg-accent-dark rounded-full py-3 px-8 text-center font-semibold text-white transition-all"
+                  className="bg-primaryPurple shadow-primaryPurple-volume hover:bg-primaryPurple-dark rounded-full py-3 px-8 text-center font-semibold text-white transition-all"
                 >
                   Get Metamask
                 </a>

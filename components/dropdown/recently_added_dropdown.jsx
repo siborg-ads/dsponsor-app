@@ -164,10 +164,10 @@ const Recently_added_dropdown = ({ data, dropdownFor }) => {
             className="tooltip-container"
             content={
               <div
-                className="dropdown-menu dark:bg-jacarta-800 z-10 hidden min-w-[220px] whitespace-nowrap rounded-xl bg-white py-4 px-2 text-left shadow-xl show text-jacarta-500"
+                className="dropdown-menu dark:bg-jacarta-800 z-10 hidden min-w-[220px] whitespace-nowrap rounded-xl bg-white py-4 px-2 text-left shadow-xl show text-jacarta-100"
                 aria-labelledby="categoriesSort"
               >
-                <span className="font-display text-jacarta-300 block px-5 py-2 text-sm font-semibold">
+                <span className="font-display text-jacarta-100 block px-5 py-2 text-sm font-semibold">
                   Sort By
                 </span>
                 {data.map((item) => {
@@ -175,7 +175,7 @@ const Recently_added_dropdown = ({ data, dropdownFor }) => {
                   return (
                     <button
                       key={id}
-                      className="dropdown-item font-display text-jacarta-700 dark:hover:bg-jacarta-600 hover:bg-jacarta-50 flex w-full items-center justify-between rounded-xl px-5 py-2 text-left text-sm transition-colors dark:text-white"
+                      className="dropdown-item font-display text-jacarta-900 dark:hover:bg-jacarta-600 hover:bg-jacarta-50 flex w-full items-center justify-between rounded-xl px-5 py-2 text-left text-sm transition-colors dark:text-white"
                       onClick={() => {
                         setsortActive(id);
 
@@ -189,7 +189,7 @@ const Recently_added_dropdown = ({ data, dropdownFor }) => {
                           viewBox="0 0 24 24"
                           width="24"
                           height="24"
-                          className="fill-accent mb-[3px] h-4 w-4"
+                          className="fill-primaryPurple mb-[3px] h-4 w-4"
                         >
                           <path fill="none" d="M0 0h24v24H0z" />
                           <path d="M10 15.172l9.192-9.193 1.415 1.414L10 18l-6.364-6.364 1.414-1.414z" />
@@ -199,7 +199,7 @@ const Recently_added_dropdown = ({ data, dropdownFor }) => {
                   );
                 })}
 
-                <span className="font-display text-jacarta-300 block px-5 py-2 text-sm font-semibold">
+                <span className="font-display text-jacarta-100 block px-5 py-2 text-sm font-semibold">
                   Options
                 </span>
                 {inputData.map(({ id, text }) => {
@@ -213,7 +213,7 @@ const Recently_added_dropdown = ({ data, dropdownFor }) => {
                         <input
                           type="checkbox"
                           name="check"
-                          className="checked:bg-accent checked:focus:bg-accent checked:hover:bg-accent after:bg-jacarta-400 bg-jacarta-100 relative h-4 w-7 cursor-pointer appearance-none rounded-lg border-none shadow-none after:absolute after:top-0.5 after:left-0.5 after:h-3 after:w-3 after:rounded-full after:transition-all checked:bg-none checked:after:left-3.5 checked:after:bg-white focus:ring-transparent focus:ring-offset-0"
+                          className="checked:bg-primaryPurple checked:focus:bg-primaryPurple checked:hover:bg-primaryPurple after:bg-jacarta-400 bg-jacarta-100 relative h-4 w-7 cursor-pointer appearance-none rounded-lg border-none shadow-none after:absolute after:top-0.5 after:left-0.5 after:h-3 after:w-3 after:rounded-full after:transition-all checked:bg-none checked:after:left-3.5 checked:after:bg-white focus:ring-transparent focus:ring-offset-0"
                           onChange={(e) => handleInput(e, text)}
                         />
                       </span>
@@ -223,7 +223,7 @@ const Recently_added_dropdown = ({ data, dropdownFor }) => {
               </div>
             }
           >
-            <div className="dark:bg-jacarta-700 dropdown-toggle border-jacarta-100 dark:border-jacarta-600 inline-flex w-48 items-center justify-between rounded-lg border bg-white py-2 px-3 text-sm dark:text-white">
+            <div className="dark:bg-secondaryBlack dropdown-toggle border-jacarta-100 dark:border-jacarta-600 inline-flex w-48 items-center justify-between rounded-lg border bg-white py-2 px-3 text-sm dark:text-white">
               <span className="font-display">Trending</span>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -244,7 +244,7 @@ const Recently_added_dropdown = ({ data, dropdownFor }) => {
     return (
       <div className="my-1 mr-2.5 relative">
         <button
-          className="group dropdown-toggle blockchainDropdown dark:border-jacarta-600 dark:bg-jacarta-700 group dark:hover:bg-accent hover:bg-accent border-jacarta-100 font-display text-jacarta-700 flex h-9 items-center rounded-lg border bg-white px-4 text-sm font-semibold transition-colors hover:border-transparent hover:text-white dark:text-white"
+          className="group dropdown-toggle blockchainDropdown dark:border-jacarta-600 dark:bg-secondaryBlack group dark:hover:bg-primaryPurple hover:bg-primaryPurple border-jacarta-100 font-display text-jacarta-900 flex h-9 items-center rounded-lg border bg-white px-4 text-sm font-semibold transition-colors hover:border-transparent hover:text-white dark:text-white"
           onClick={handleBlockChainDropdown}
         >
           <svg
@@ -275,14 +275,14 @@ const Recently_added_dropdown = ({ data, dropdownFor }) => {
                     className="dropdown-item font-display dark:hover:bg-jacarta-600 hover:bg-jacarta-50 flex w-full items-center justify-between rounded-xl px-5 py-2 text-left text-sm transition-colors dark:text-white"
                     onClick={() => dispatch(updateRenkingDataByBlockchain(text))}
                   >
-                    <span className="text-jacarta-700 dark:text-white">{text}</span>
+                    <span className="text-jacarta-900 dark:text-white">{text}</span>
                     {sortActive === id && (
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 24 24"
                         width="24"
                         height="24"
-                        className="fill-accent mb-[3px] h-4 w-4"
+                        className="fill-primaryPurple mb-[3px] h-4 w-4"
                       >
                         <path fill="none" d="M0 0h24v24H0z"></path>
                         <path d="M10 15.172l9.192-9.193 1.415 1.414L10 18l-6.364-6.364 1.414-1.414z"></path>
@@ -300,7 +300,7 @@ const Recently_added_dropdown = ({ data, dropdownFor }) => {
     return (
       <div className="my-1 mr-2.5 relative">
         <button
-          className="group dropdown-toggle category-dropdown dark:border-jacarta-600 dark:bg-jacarta-700 dark:hover:bg-accent hover:bg-accent border-jacarta-100 font-display text-jacarta-700 flex h-9 items-center rounded-lg border bg-white px-4 text-sm font-semibold transition-colors hover:border-transparent hover:text-white dark:text-white"
+          className="group dropdown-toggle category-dropdown dark:border-jacarta-600 dark:bg-secondaryBlack dark:hover:bg-primaryPurple hover:bg-primaryPurple border-jacarta-100 font-display text-jacarta-900 flex h-9 items-center rounded-lg border bg-white px-4 text-sm font-semibold transition-colors hover:border-transparent hover:text-white dark:text-white"
           onClick={handleCategoryDropdown}
         >
           <svg
@@ -328,14 +328,14 @@ const Recently_added_dropdown = ({ data, dropdownFor }) => {
               return (
                 <li key={id} onClick={() => setsortActive(id)}>
                   <button className="dropdown-item font-display dark:hover:bg-jacarta-600 hover:bg-jacarta-50 flex w-full items-center justify-between rounded-xl px-5 py-2 text-left text-sm transition-colors dark:text-white">
-                    <span className="text-jacarta-700 dark:text-white">{text}</span>
+                    <span className="text-jacarta-900 dark:text-white">{text}</span>
                     {sortActive === id && (
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 24 24"
                         width="24"
                         height="24"
-                        className="fill-accent mb-[3px] h-4 w-4"
+                        className="fill-primaryPurple mb-[3px] h-4 w-4"
                       >
                         <path fill="none" d="M0 0h24v24H0z"></path>
                         <path d="M10 15.172l9.192-9.193 1.415 1.414L10 18l-6.364-6.364 1.414-1.414z"></path>
@@ -353,7 +353,7 @@ const Recently_added_dropdown = ({ data, dropdownFor }) => {
     return (
       <div className="my-1 mr-2.5 relative">
         <button
-          className="group dropdown-toggle rankingCategoriesDropdown dark:border-jacarta-600 dark:bg-jacarta-700 dark:hover:bg-accent hover:bg-accent border-jacarta-100 font-display text-jacarta-700 flex h-9 items-center rounded-lg border bg-white px-4 text-sm font-semibold transition-colors hover:border-transparent hover:text-white dark:text-white"
+          className="group dropdown-toggle rankingCategoriesDropdown dark:border-jacarta-600 dark:bg-secondaryBlack dark:hover:bg-primaryPurple hover:bg-primaryPurple border-jacarta-100 font-display text-jacarta-900 flex h-9 items-center rounded-lg border bg-white px-4 text-sm font-semibold transition-colors hover:border-transparent hover:text-white dark:text-white"
           onClick={handleRenkingCategoriesDropdown}
         >
           <svg
@@ -384,14 +384,14 @@ const Recently_added_dropdown = ({ data, dropdownFor }) => {
                     className="dropdown-item font-display dark:hover:bg-jacarta-600 hover:bg-jacarta-50 flex w-full items-center justify-between rounded-xl px-5 py-2 text-left text-sm transition-colors dark:text-white"
                     onClick={() => dispatch(updateRenkingData(text))}
                   >
-                    <span className="text-jacarta-700 dark:text-white">{text}</span>
+                    <span className="text-jacarta-900 dark:text-white">{text}</span>
                     {sortActive === id && (
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 24 24"
                         width="24"
                         height="24"
-                        className="fill-accent mb-[3px] h-4 w-4"
+                        className="fill-primaryPurple mb-[3px] h-4 w-4"
                       >
                         <path fill="none" d="M0 0h24v24H0z"></path>
                         <path d="M10 15.172l9.192-9.193 1.415 1.414L10 18l-6.364-6.364 1.414-1.414z"></path>
@@ -409,7 +409,7 @@ const Recently_added_dropdown = ({ data, dropdownFor }) => {
     return (
       <div className="my-1 mr-2.5 relative">
         <button
-          className="group dropdown-toggle dropdown-sale dark:border-jacarta-600 dark:bg-jacarta-700 group dark:hover:bg-accent hover:bg-accent border-jacarta-100 font-display text-jacarta-700 flex h-9 items-center rounded-lg border bg-white px-4 text-sm font-semibold transition-colors hover:border-transparent hover:text-white dark:text-white"
+          className="group dropdown-toggle dropdown-sale dark:border-jacarta-600 dark:bg-secondaryBlack group dark:hover:bg-primaryPurple hover:bg-primaryPurple border-jacarta-100 font-display text-jacarta-900 flex h-9 items-center rounded-lg border bg-white px-4 text-sm font-semibold transition-colors hover:border-transparent hover:text-white dark:text-white"
           onClick={handleSaleDropdown}
         >
           <svg
@@ -440,14 +440,14 @@ const Recently_added_dropdown = ({ data, dropdownFor }) => {
                     className="dropdown-item font-display dark:hover:bg-jacarta-600 hover:bg-jacarta-50 flex w-full items-center justify-between rounded-xl px-5 py-2 text-left text-sm transition-colors dark:text-white"
                     onClick={() => setsortActive(id)}
                   >
-                    <span className="text-jacarta-700 dark:text-white">{text}</span>
+                    <span className="text-jacarta-900 dark:text-white">{text}</span>
                     {sortActive === id && (
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 24 24"
                         width="24"
                         height="24"
-                        className="fill-accent mb-[3px] h-4 w-4"
+                        className="fill-primaryPurple mb-[3px] h-4 w-4"
                       >
                         <path fill="none" d="M0 0h24v24H0z"></path>
                         <path d="M10 15.172l9.192-9.193 1.415 1.414L10 18l-6.364-6.364 1.414-1.414z"></path>
@@ -462,13 +462,13 @@ const Recently_added_dropdown = ({ data, dropdownFor }) => {
           <div className="dark:border-jacarta-600 border-jacarta-100 -ml-2 -mr-2 mt-4 flex items-center justify-center space-x-3 border-t px-7 pt-4">
             <button
               type="button"
-              className="text-accent shadow-white-volume hover:bg-accent-dark hover:shadow-accent-volume flex-1 rounded-full bg-white py-2 px-6 text-center text-sm font-semibold transition-all hover:text-white"
+              className="text-primaryPurple shadow-white-volume hover:bg-primaryPurple-dark hover:shadow-primaryPurple-volume flex-1 rounded-full bg-white py-2 px-6 text-center text-sm font-semibold transition-all hover:text-white"
             >
               Clear
             </button>
             <button
               type="button"
-              className="bg-accent shadow-accent-volume hover:bg-accent-dark flex-1 rounded-full py-2 px-6 text-center text-sm font-semibold text-white transition-all"
+              className="bg-primaryPurple shadow-primaryPurple-volume hover:bg-primaryPurple-dark flex-1 rounded-full py-2 px-6 text-center text-sm font-semibold text-white transition-all"
             >
               Apply
             </button>
@@ -526,7 +526,7 @@ const Recently_added_dropdown = ({ data, dropdownFor }) => {
               {/* <!-- Blockchain --> */}
               <div className="dropdown mb-4 cursor-pointer px-5 pt-2 relative">
                 <button
-                  className="currency-dropdown dark:bg-jacarta-700 dropdown-toggle border-jacarta-100 dark:border-jacarta-600 flex items-center justify-between rounded-lg border py-3.5 px-3 text-sm dark:text-white w-full"
+                  className="currency-dropdown dark:bg-secondaryBlack dropdown-toggle border-jacarta-100 dark:border-jacarta-600 flex items-center justify-between rounded-lg border py-3.5 px-3 text-sm dark:text-white w-full"
                   onClick={handleCurrencyDropdown}
                 >
                   <span className="font-display flex items-center">
@@ -562,7 +562,7 @@ const Recently_added_dropdown = ({ data, dropdownFor }) => {
                     return (
                       <button
                         key={id}
-                        className="dropdown-item font-display text-jacarta-700 dark:hover:bg-jacarta-600 hover:bg-jacarta-50 flex w-full items-center justify-between rounded-xl px-5 py-2 text-left text-sm transition-colors dark:text-white"
+                        className="dropdown-item font-display text-jacarta-900 dark:hover:bg-jacarta-600 hover:bg-jacarta-50 flex w-full items-center justify-between rounded-xl px-5 py-2 text-left text-sm transition-colors dark:text-white"
                         onClick={() => setCurrencyDropdown(false)}
                       >
                         <span className="flex items-center">
@@ -588,27 +588,27 @@ const Recently_added_dropdown = ({ data, dropdownFor }) => {
                   placeholder="From"
                   value={currencyValFrom}
                   onChange={(e) => handleCurrencyValFrom(e)}
-                  className="text-jacarta-700 placeholder-jacarta-500 focus:ring-accent border-jacarta-100 w-full max-w-[7.5rem] rounded-lg border py-[0.6875rem] px-4 dark:border-transparent dark:bg-white/[.15] dark:text-white dark:placeholder-white"
+                  className="text-jacarta-900 placeholder-jacarta-500 focus:ring-primaryPurple border-jacarta-100 w-full max-w-[7.5rem] rounded-lg border py-[0.6875rem] px-4 dark:border-transparent dark:bg-white/[.15] dark:text-white dark:placeholder-white"
                 />
                 <input
                   type="number"
                   placeholder="To"
                   value={currencyValTo}
                   onChange={(e) => handleCurrencyValTo(e)}
-                  className="text-jacarta-700 placeholder-jacarta-500 focus:ring-accent border-jacarta-100 w-full max-w-[7.5rem] rounded-lg border py-[0.6875rem] px-4 dark:border-transparent dark:bg-white/[.15] dark:text-white dark:placeholder-white"
+                  className="text-jacarta-900 placeholder-jacarta-500 focus:ring-primaryPurple border-jacarta-100 w-full max-w-[7.5rem] rounded-lg border py-[0.6875rem] px-4 dark:border-transparent dark:bg-white/[.15] dark:text-white dark:placeholder-white"
                 />
               </div>
 
               <div className="dark:border-jacarta-600 border-jacarta-100 -ml-2 -mr-2 mt-4 flex items-center justify-center space-x-3 border-t px-7 pt-4">
                 <button
                   type="button"
-                  className="text-accent shadow-white-volume hover:bg-accent-dark hover:shadow-accent-volume flex-1 rounded-full bg-white py-2 px-6 text-center text-sm font-semibold transition-all hover:text-white"
+                  className="text-primaryPurple shadow-white-volume hover:bg-primaryPurple-dark hover:shadow-primaryPurple-volume flex-1 rounded-full bg-white py-2 px-6 text-center text-sm font-semibold transition-all hover:text-white"
                 >
                   Clear
                 </button>
                 <button
                   type="button"
-                  className="bg-accent shadow-accent-volume hover:bg-accent-dark flex-1 rounded-full py-2 px-6 text-center text-sm font-semibold text-white transition-all"
+                  className="bg-primaryPurple shadow-primaryPurple-volume hover:bg-primaryPurple-dark flex-1 rounded-full py-2 px-6 text-center text-sm font-semibold text-white transition-all"
                 >
                   Apply
                 </button>
@@ -617,7 +617,7 @@ const Recently_added_dropdown = ({ data, dropdownFor }) => {
           }
         >
           <button
-            className="group dropdown-toggle dark:border-jacarta-600 dark:bg-jacarta-700 group dark:hover:bg-accent hover:bg-accent border-jacarta-100 font-display text-jacarta-700 flex h-9 items-center rounded-lg border bg-white px-4 text-sm font-semibold transition-colors hover:border-transparent hover:text-white dark:text-white"
+            className="group dropdown-toggle dark:border-jacarta-600 dark:bg-secondaryBlack group dark:hover:bg-primaryPurple hover:bg-primaryPurple border-jacarta-100 font-display text-jacarta-900 flex h-9 items-center rounded-lg border bg-white px-4 text-sm font-semibold transition-colors hover:border-transparent hover:text-white dark:text-white"
             id="priceRangeFilter"
             data-bs-toggle="dropdown"
             data-bs-auto-close="outside"
@@ -642,7 +642,7 @@ const Recently_added_dropdown = ({ data, dropdownFor }) => {
     return (
       <div className="dropdown relative my-1 cursor-pointer">
         <button
-          className="dark:bg-jacarta-700 itemDateDropdown dropdown-toggle border-jacarta-100 dark:border-jacarta-600 inline-flex w-48 items-center justify-between rounded-lg border bg-white py-2 px-3 text-sm dark:text-white"
+          className="dark:bg-secondaryBlack itemDateDropdown dropdown-toggle border-jacarta-100 dark:border-jacarta-600 inline-flex w-48 items-center justify-between rounded-lg border bg-white py-2 px-3 text-sm dark:text-white"
           onClick={handleItemDateDropdown}
         >
           <span className="font-display">Last 7 Days</span>
@@ -673,7 +673,7 @@ const Recently_added_dropdown = ({ data, dropdownFor }) => {
                   setsortActive(id);
                   dispatch(updateRenkingDataByPostdate(text));
                 }}
-                className="dropdown-item font-display text-jacarta-700 dark:hover:bg-jacarta-600 hover:bg-jacarta-50 flex w-full items-center justify-between rounded-xl px-5 py-2 text-left text-sm transition-colors dark:text-white"
+                className="dropdown-item font-display text-jacarta-900 dark:hover:bg-jacarta-600 hover:bg-jacarta-50 flex w-full items-center justify-between rounded-xl px-5 py-2 text-left text-sm transition-colors dark:text-white"
               >
                 {text}
                 {sortActive === id && (
@@ -682,7 +682,7 @@ const Recently_added_dropdown = ({ data, dropdownFor }) => {
                     viewBox="0 0 24 24"
                     width="24"
                     height="24"
-                    className="fill-accent mb-[3px] h-4 w-4"
+                    className="fill-primaryPurple mb-[3px] h-4 w-4"
                   >
                     <path fill="none" d="M0 0h24v24H0z" />
                     <path d="M10 15.172l9.192-9.193 1.415 1.414L10 18l-6.364-6.364 1.414-1.414z" />
