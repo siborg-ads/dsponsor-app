@@ -6271,3 +6271,23 @@ body {
 .hidden {
   display: none;
 }
+
+.collapse-enter {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.5s ease-in-out;
+}
+
+.collapse-enter-active {
+  max-height: 1000px; 
+}
+
+.collapse-exit {
+  max-height: 1000px; 
+  overflow: hidden;
+  transition: max-height 0.2s ease-in-out;
+}
+
+.collapse-exit-active {
+  max-height: 0;
+}

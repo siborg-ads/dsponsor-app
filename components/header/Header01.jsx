@@ -98,11 +98,11 @@ export default function Header01() {
                   </li>
                 </ConditionalCreateLi>
                 <li className="group">
-                  <Link href={`/marketplace`}>
+                  <Link href={`/`}>
                     <button className="text-jacarta-700 font-display hover:text-accent focus:text-accent dark:hover:text-accent dark:focus:text-accent flex items-center justify-between py-3.5 text-base dark:text-white lg:px-5">
                       <span
                         className={
-                          isChildrenPageActive(route.asPath, `/marketplace`)
+                          isChildrenPageActive(route.asPath, `/`)
                             ? "text-accent dark:text-accent"
                             : ""
                         }
@@ -267,11 +267,11 @@ export default function Header01() {
               </Link>
             </li>
             <li className="group">
-              <Link href={`/marketplace`} onClick={() => setToggle(false)}>
+              <Link href={`/`} onClick={() => setToggle(false)}>
                 <button className="text-jacarta-700 font-display hover:text-accent focus:text-accent dark:hover:text-accent dark:focus:text-accent flex items-center justify-between py-3.5 text-base dark:text-white lg:px-5">
                   <span
                     className={
-                      isChildrenPageActive(route.asPath, `/marketplace`)
+                      isChildrenPageActive(route.asPath, `/`)
                         ? "text-accent dark:text-accent"
                         : ""
                     }
