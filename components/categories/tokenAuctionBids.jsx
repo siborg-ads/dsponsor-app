@@ -34,7 +34,7 @@ const TokenAuctionBids = ({ data, isOwner }) => {
               <OfferItem
                 item={item}
                 key={index}
-                listingType={item?.marketplaceListings[0]?.listingType}
+                listingType={item?.marketplaceListings && item?.marketplaceListings[0]?.listingType}
                 url={
                   !item.tokenData
                     ? `/${item?.chainConfig?.chainId}/offer/${item?.nftContract?.adOffers[0]?.id}/${item.tokenId}`
