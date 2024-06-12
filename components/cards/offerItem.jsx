@@ -17,7 +17,8 @@ const OfferItem = ({
   isOwner,
   isLister,
   isAuction = false,
-  isListing = false
+  isListing = false,
+  listingType
 }) => {
   const { currentChainObject } = useChainContext();
   const [price, setPrice] = useState(null);
@@ -79,7 +80,7 @@ const OfferItem = ({
       setItemStatut("TOKENMINTED");
       return;
     }
-    if (isToken && isAuction && isListing === "Auction") {
+    if (isToken && isAuction && listingType === "Auction") {
       setPrice(
         item?.marketplaceListings?.[0]
           ? item?.marketplaceListings[0]?.bidPriceStructureFormatted?.newPricePerToken
@@ -94,7 +95,7 @@ const OfferItem = ({
       setItemStatut("AUCTION");
       return;
     }
-    if (isToken && item?.marketplaceListings?.length > 0 && isListing === "Direct") {
+    if (isToken && item?.marketplaceListings?.length > 0 && listingType === "Direct") {
       setPrice(item?.marketplaceListings[0]?.buyPriceStructureFormatted?.buyoutPricePerToken);
       setCurrencyToken(item?.marketplaceListings[0]?.currencySymbol);
       setItemStatut("DIRECT");
@@ -228,11 +229,11 @@ const OfferItem = ({
               </div>
             ) : (
               itemStatut === "AUCTION" && (
-               
-                  <span className={`${item.status === "CREATED" ? "text-accent": item.statut === "COMPLETED" ? "text-green" : "text-red"} text-sm font-medium tracking-tight`}>
-                    {item.status}
-                  </span>
-               
+                <span
+                  className={`${item.status === "CREATED" ? "text-accent" : item.statut === "COMPLETED" ? "text-green" : "text-red"} text-sm font-medium tracking-tight`}
+                >
+                  {item.status}
+                </span>
               )
             )}
           </div>
@@ -251,10 +252,14 @@ const OfferItem = ({
                 <div className="flex justify-between w-full items-center">
                   <div className="flex gap-2 items-center justify-center">
                     <span className="dark:text-jacarta-300 text-jacarta-500">
-                      {isListing === "Auction" ? "Auction listing" : "Direct listing"}{" "}
+                      {listingType === "Auction"
+                        ? "Auction listing"
+                        : listingType === "Direct"
+                          ? "Direct listing"
+                          : null}{" "}
                     </span>
 
-                    {isListing === "Auction" ? (
+                    {listingType === "Auction" ? (
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 512 512"

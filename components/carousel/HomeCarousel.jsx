@@ -48,6 +48,7 @@ const HomeCarousel = ({ data, isToken = false, arrowName }) => {
                   {isToken ? (
                     <OfferItem
                       item={item}
+                      listingType={item?.marketplaceListings[0]?.listingType}
                       url={
                         !item.mint?.tokenData
                           ? `/${item?.chainConfig?.chainId}/offer/${item?.offerId}/${item?.tokenId}`
@@ -59,6 +60,7 @@ const HomeCarousel = ({ data, isToken = false, arrowName }) => {
                     />
                   ) : (
                     <OfferItem
+                      listingType={item?.marketplaceListings[0]?.listingType}
                       item={item}
                       url={`/${item?.chainConfig?.chainId}/offer/${item.id}/${item.tokenIdAllowedToMint ? item.tokenIdAllowedToMint : ""}`}
                     />

@@ -51,6 +51,7 @@ const Auctions_categories = ({ data, isOwner }) => {
             return (
               <OfferItem
                 item={item}
+                listingType={item?.marketplaceListings[0]?.listingType}
                 key={index}
                 url={
                   !item.tokenData

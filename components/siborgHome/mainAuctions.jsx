@@ -46,6 +46,7 @@ const MainAuctions = ({ auctions }) => {
                   key={index}
                   item={auction.item}
                   isToken={true}
+                  listingType={auction?.type}
                   isListing={auction?.type}
                   isOwner={isOwner}
                   isAuction={auction?.type === "Auction"}

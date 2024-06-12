@@ -1,4 +1,4 @@
-import React from 'react'
+import React from "react";
 import Image from "next/image";
 import "tippy.js/themes/light.css";
 import { useChainContext } from "../../contexts/hooks/useChainContext";
@@ -21,7 +21,8 @@ const TokenAuctionBids = ({ data, isOwner }) => {
           This section is listing all the tokens where you have placed a bid : <br />
           <span className="text-red font-medium">CANCELLED</span> : You have been out bid by another
           user. <br />
-          <span className="text-accent font-medium">CREATED</span> : You are the highest bidder. <br />
+          <span className="text-accent font-medium">CREATED</span> : You are the highest bidder.{" "}
+          <br />
           <span className="text-green font-medium">COMPLETED</span> : You have been out bid by
           another user.
         </span>
@@ -33,6 +34,7 @@ const TokenAuctionBids = ({ data, isOwner }) => {
               <OfferItem
                 item={item}
                 key={index}
+                listingType={item?.marketplaceListings[0]?.listingType}
                 url={
                   !item.tokenData
                     ? `/${item?.chainConfig?.chainId}/offer/${item?.nftContract?.adOffers[0]?.id}/${item.tokenId}`
@@ -41,7 +43,7 @@ const TokenAuctionBids = ({ data, isOwner }) => {
                 isOwner={isOwner}
                 isToken={true}
                 isAuction={true}
-                isListing="Auction"
+                isListing={true}
               />
             );
           })}
@@ -55,4 +57,4 @@ const TokenAuctionBids = ({ data, isOwner }) => {
   );
 };
 
-export default TokenAuctionBids
+export default TokenAuctionBids;
