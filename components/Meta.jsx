@@ -1,12 +1,11 @@
 import Head from "next/head";
 
-
 const Meta = ({ title, keyword, desc }) => {
   return (
     <div>
       <Head>
         <title>{title}</title>
-        <link rel="icon" href="/favicon.png" />
+        <link rel="icon" href="/siborg-favicon.png" />
         <meta name="description" content={desc} />
         <meta name="keyword" content={keyword} />
       </Head>
@@ -15,10 +14,10 @@ const Meta = ({ title, keyword, desc }) => {
 };
 
 Meta.defaultProps = {
-  title: "SiborgAds | Unlock smarter monetization for your content.",
+  title: "Siborg Ads | Unlock smarter monetization for your content.",
   keyword:
     "audience engagement, web3, creator economic, NFT, creator monetization, creator economy, creator token, creator coin, creator tokenization, creator economy",
-  desc: "Explore the future of media monetization. SiborgAds decentralized platform offers tokenized advertising spaces for dynamic and sustainable media funding."
+  desc: "Explore the future of media monetization. Siborg Ads decentralized platform offers tokenized advertising spaces for dynamic and sustainable media funding."
 };
 
 export default Meta;

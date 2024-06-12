@@ -38,7 +38,7 @@ const socials = [
   },
   {
     name: "Website",
-    href: "https://www.instagram.com/siborgads",
+    href: "https://www.instagram.com/SiBorg Ads",
     icon: (
       <svg
         xmlns="http://www.w3.org/2000/svg"

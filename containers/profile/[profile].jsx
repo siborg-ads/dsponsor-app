@@ -53,7 +53,7 @@ const Edit_user = () => {
 
   return (
     <div>
-      <Meta title="Profil || SiborgAds | smarter monetization for your content" />
+      <Meta title="Profil || SiBorg Ads | smarter monetization for your content" />
       <div className="pt-[5.5rem] lg:pt-24">
         {/* <!-- Banner --> */}
         <div className="relative">

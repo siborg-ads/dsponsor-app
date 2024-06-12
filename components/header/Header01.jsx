@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import Logo from "./../../public/images/logo.png";
+import Logo from "./../../public/images/siborg-ads.png";
 
 import WhiteLogo from "./../../public/images/logo_white.png";
 import { useRouter } from "next/router";
@@ -55,21 +55,19 @@ export default function Header01() {
             <div className="dark:hidden flex justify-center items-center  font-semibold">
               <Image
                 src={Logo}
-                height={80}
-                width={80}
-                alt="SiborgAds | smarter monetization for your content"
+                width={125}
+                height={30}
+                alt="SiBorg Ads | Smarter monetization for your content"
                 className=" h-auto "
               />
-              <span>d&gt;sponsor</span>
             </div>
             <div className="hidden dark:flex flex justify-center items-center text-white font-semibold">
               <Image
-                src={WhiteLogo}
-                height={80}
-                width={80}
-                alt="SiborgAds | smarter monetization for your content"
+                src={Logo}
+                width={125}
+                height={30}
+                alt="SiBorg Ads | Smarter monetization for your content"
               />
-              <span>d&gt;sponsor</span>
             </div>
           </Link>
           {/* End  logo */}
@@ -202,7 +200,7 @@ export default function Header01() {
               src={Logo}
               height={80}
               width={80}
-              alt="SiborgAds | smarter monetization for your content"
+              alt="SiBorg Ads | smarter monetization for your content"
               className="max-h-7 h-auto "
             />
           </div>
@@ -212,7 +210,7 @@ export default function Header01() {
               src={WhiteLogo}
               height={80}
               width={80}
-              alt="SiborgAds | smarter monetization for your content"
+              alt="SiBorg Ads | smarter monetization for your content"
             />
           </div>
 
@@ -271,9 +269,7 @@ export default function Header01() {
                 <button className="text-jacarta-700 font-display hover:text-accent focus:text-accent dark:hover:text-accent dark:focus:text-accent flex items-center justify-between py-3.5 text-base dark:text-white lg:px-5">
                   <span
                     className={
-                      isChildrenPageActive(route.asPath, `/`)
-                        ? "text-accent dark:text-accent"
-                        : ""
+                      isChildrenPageActive(route.asPath, `/`) ? "text-accent dark:text-accent" : ""
                     }
                   >
                     Marketplace

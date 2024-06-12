@@ -19,7 +19,7 @@ const footerMenuList = [
       {
         id: 1,
         href: "/about",
-        text: "About SiborgAds"
+        text: "About SiBorg Ads"
       },
       {
         id: 2,

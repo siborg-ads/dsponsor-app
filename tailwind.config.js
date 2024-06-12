@@ -1,5 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 const { nextui } = require("@nextui-org/react");
+const { usePrimarySaleRecipient } = require("@thirdweb-dev/react");
 module.exports = {
   content: [
     "./pages/**/*.{js,ts,jsx,tsx}",
@@ -27,6 +28,7 @@ module.exports = {
       transparent: "transparent",
       current: "currentColor",
       white: "#ffffff",
+      black: "#000000",
       accent: "#8358FF",
       "accent-light": "#9E7CFF",
       "accent-dark": "#6336E4",
@@ -48,7 +50,14 @@ module.exports = {
         700: "#131740",
         800: "#101436",
         900: "#0D102D"
-      }
+      },
+      primaryBlack: "#0D102D",
+      primaryPurple: "#855AC9",
+      primaryPink: "#B472CA",
+      secondaryBlack: "#35333E",
+      secondaryWhite: "#FFFFFF",
+      logoPink: "#B472CA",
+      logoPurple: "#855AC9"
     },
     boxShadow: {
       none: "none",

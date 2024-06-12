@@ -136,11 +136,11 @@ const OfferPageContainer = () => {
     }
   };
   const metadata = {
-    title: `Offer || SiborgAds | smarter monetization for your content`,
+    title: `Offer || SiBorg Ads | Smarter monetization for your content`,
     keyword:
       "audience engagement, web3, creator economic, NFT, creator monetization, creator economy, creator token, creator coin, creator tokenization, creator economy",
 
-    desc: "Explore the future of media monetization. SiborgAds decentralized platform offers tokenized advertising spaces for dynamic and sustainable media funding."
+    desc: "Explore the future of media monetization. SiBorg Ads decentralized platform offers tokenized advertising spaces for dynamic and sustainable media funding."
   };
   if (!offerData || offerData.length === 0) {
     return (

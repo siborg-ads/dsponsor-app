@@ -48,21 +48,21 @@ const Footer = () => {
               {/* <!-- Logo --> */}
               <Link href="#" className="mb-6 inline-block">
                 <Image
-                  width={80}
-                  height={80}
-                  src="/images/logo.png"
+                  width={110}
+                  height={25}
+                  src="/images/siborg-ads.png"
                   className=" dark:hidden"
-                  alt="d>sponsor | Media sponsoring Marketplace"
+                  alt="SiBorg Ads | Media sponsoring Marketplace"
                 />
               </Link>
 
               <Link href="#" className=" mb-6 inline-block">
                 <Image
-                  width={80}
-                  height={80}
-                  src="/images/logo_white.png"
+                  width={110}
+                  height={25}
+                  src="/images/siborg-ads.png"
                   className="hidden  dark:block mb-6"
-                  alt="d>sponsor | Media sponsoring Marketplace"
+                  alt="SiBorg Ads | Media sponsoring Marketplace"
                 />
               </Link>
               <p className="dark:text-jacarta-300 mb-12">

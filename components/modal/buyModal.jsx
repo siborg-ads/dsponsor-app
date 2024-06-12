@@ -176,7 +176,7 @@ const BuyModal = ({
                   onClick={handleTermService}
                 />
                 <label htmlFor="buyNowTerms" className="dark:text-jacarta-200 text-sm">
-                  By checking this box, I agree to {"SiborgAds's"}{" "}
+                  By checking this box, I agree to {"SiBorg Ads's"}{" "}
                   <Link href="#" className="text-accent">
                     Terms of Service
                   </Link>

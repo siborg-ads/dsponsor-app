@@ -9,7 +9,7 @@ const Wallet = () => {
   const bgImage = "/images/page-title/wallet_banner.jpg";
   return (
     <div>
-      <Meta title="Wallet || SiborgAds | smarter monetization for your content" />
+      <Meta title="Wallet || SiBorg Ads | smarter monetization for your content" />
       <div className="pt-[5.5rem] lg:pt-24">
         {/* <!-- Wallet --> */}
 
