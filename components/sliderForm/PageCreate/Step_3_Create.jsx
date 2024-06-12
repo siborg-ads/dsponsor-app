@@ -39,7 +39,7 @@ const Step_3_Create = ({
   return (
     <div ref={(el) => (stepsRef.current[2] = el)} className={styles.form__step}>
       <div className="pr-6 pl-2">
-        <h3 className="mb-2">Step 3 : URL & Image</h3>
+        <h3 className="mb-2 text-jacarta-200">Step 3 : URL & Image</h3>
         <p className="text-center pt-2  mb-14 dark:text-white">
           {" "}
           Provide the landing page URL, an image and the terms that represent the offer.
@@ -49,7 +49,7 @@ const Step_3_Create = ({
         <div className="mb-6">
           <label
             htmlFor="item-external-link"
-            className="font-display text-jacarta-700 mb-2 block dark:text-white"
+            className="font-display text-jacarta-900 mb-2 block dark:text-white"
           >
             Specifiy where advertisements will be exposed (website URL, mobile app, ...)
             <span className="text-red">*</span>
@@ -57,7 +57,7 @@ const Step_3_Create = ({
           <input
             type="url"
             id="item-external-link"
-            className="dark:bg-jacarta-700 border-jacarta-100 hover:ring-accent/10 focus:ring-accent dark:border-jacarta-600 dark:placeholder:text-jacarta-300 w-full rounded-lg py-3 px-3 hover:ring-2 dark:text-white"
+            className="dark:bg-secondaryBlack border-jacarta-100 hover:ring-primaryPurple/10 focus:ring-primaryPurple dark:border-jacarta-600 dark:placeholder:text-jacarta-100 w-full rounded-lg py-3 px-3 hover:ring-2 dark:text-white"
             placeholder="Provide an url, the name of your app, or what characterizes your platform."
             onChange={handleChange}
             value={link}
@@ -65,23 +65,23 @@ const Step_3_Create = ({
         </div>
 
         <div className="mb-6 flex items-center justify-center flex-col">
-          <label className="font-display text-jacarta-700 mb-2 block dark:text-white">
+          <label className="font-display text-jacarta-900 mb-2 block dark:text-white">
             Illustration
             <span className="text-red">*</span>
           </label>
-          <p className="dark:text-jacarta-300 text-jacarta-400 text-2xs mb-3">
+          <p className="dark:text-jacarta-100 text-jacarta-100 text-2xs mb-3">
             Submit a square image to illustrate your offer
           </p>
           {file.length > 0 ? (
             <p className=" text-2xs mb-3 text-green">successfully uploaded : {file[0].name}</p>
           ) : (
-            <p className="dark:text-jacarta-300 text-jacarta-400 text-2xs mb-3">
+            <p className="dark:text-jacarta-100 text-jacarta-100 text-2xs mb-3">
               Drag or choose your file to upload
             </p>
           )}
 
           <div
-            className={`dark:bg-jacarta-700 dark:border-jacarta-600 border-jacarta-100 group relative flex max-w-md flex-col items-center justify-center rounded-lg border-2 border-dashed bg-white  px-1 text-center ${
+            className={`dark:bg-secondaryBlack dark:border-jacarta-600 border-jacarta-100 group relative flex max-w-md flex-col items-center justify-center rounded-lg border-2 border-dashed bg-white  px-1 text-center ${
               previewImage.length <= 0 ? "py-20" : "p-1"
             }`}
             style={{ width: `300px`, height: `300px` }}
@@ -101,7 +101,7 @@ const Step_3_Create = ({
                     <path fill="none" d="M0 0h24v24H0z" />
                     <path d="M16 13l6.964 4.062-2.973.85 2.125 3.681-1.732 1-2.125-3.68-2.223 2.15L16 13zm-2-7h2v2h5a1 1 0 0 1 1 1v4h-2v-3H10v10h4v2H9a1 1 0 0 1-1-1v-5H6v-2h2V9a1 1 0 0 1 1-1h5V6zM4 14v2H2v-2h2zm0-4v2H2v-2h2zm0-4v2H2V6h2zm0-4v2H2V2h2zm4 0v2H6V2h2zm4 0v2h-2V2h2zm4 0v2h-2V2h2z" />
                   </svg>
-                  <p className="dark:text-jacarta-300 mx-auto max-w-xs text-xs">
+                  <p className="dark:text-jacarta-100 mx-auto max-w-xs text-xs">
                     JPG, PNG, WEBP Max size: 25 MB
                   </p>
                 </div>
@@ -130,10 +130,10 @@ const Step_3_Create = ({
         </div>
         {/* <!-- File Upload --> */}
         <div className="mb-6 flex items-center justify-center flex-col">
-          <label className="font-display text-jacarta-700 mb-2 block dark:text-white">
-            Legal <span className="text-sm text-jacarta-400">(optionnal)</span>{" "}
+          <label className="font-display text-jacarta-900 mb-2 block dark:text-white">
+            Legal <span className="text-sm text-jacarta-100">(optionnal)</span>{" "}
           </label>
-          <p className="dark:text-jacarta-300 text-jacarta-400 text-2xs mb-3">
+          <p className="dark:text-jacarta-100 text-jacarta-100 text-2xs mb-3">
             Provide the terms of use for the ad spaces you are offering. This helps to clearly
             define what is expected of the advertisements displayed in the sold spaces and the rules
             that must be adhered to. <br /> Import a pdf or a link
@@ -144,7 +144,7 @@ const Step_3_Create = ({
               isSelected={isSelected}
               onValueChange={handleTermsSwitch}
               classNames={{
-                wrapper: "p-0 h-4 overflow-visible bg-accent ",
+                wrapper: "p-0 h-4 overflow-visible bg-primaryPurple ",
                 thumb: cn(
                   "w-6 h-6 border-2 shadow-lg",
                   "group-data-[hover=true]:border-primary",
@@ -161,14 +161,14 @@ const Step_3_Create = ({
           {isSelected && terms.length > 0 ? (
             <p className=" text-2xs mb-3 text-green">successfully uploaded : {terms[0].name}</p>
           ) : (
-            <p className="dark:text-jacarta-300 text-jacarta-400 text-2xs mb-3">
+            <p className="dark:text-jacarta-100 text-jacarta-100 text-2xs mb-3">
               Drag or choose your terms to upload
             </p>
           )}
 
           {isSelected ? (
             <div
-              className={`dark:bg-jacarta-700 dark:border-jacarta-600 border-jacarta-100 group relative flex max-w-md flex-col items-center justify-center rounded-lg border-2 border-dashed bg-white  px-5 text-center py-5`}
+              className={`dark:bg-secondaryBlack dark:border-jacarta-600 border-jacarta-100 group relative flex max-w-md flex-col items-center justify-center rounded-lg border-2 border-dashed bg-white  px-5 text-center py-5`}
             >
               <div className={`relative z-10 cursor-pointer px-6`}>
                 <div>
@@ -182,7 +182,7 @@ const Step_3_Create = ({
                     <path fill="none" d="M0 0h24v24H0z" />
                     <path d="M16 13l6.964 4.062-2.973.85 2.125 3.681-1.732 1-2.125-3.68-2.223 2.15L16 13zm-2-7h2v2h5a1 1 0 0 1 1 1v4h-2v-3H10v10h4v2H9a1 1 0 0 1-1-1v-5H6v-2h2V9a1 1 0 0 1 1-1h5V6zM4 14v2H2v-2h2zm0-4v2H2v-2h2zm0-4v2H2V6h2zm0-4v2H2V2h2zm4 0v2H6V2h2zm4 0v2h-2V2h2zm4 0v2h-2V2h2z" />
                   </svg>
-                  <p className="dark:text-jacarta-300 mx-auto max-w-xs text-xs">
+                  <p className="dark:text-jacarta-100 mx-auto max-w-xs text-xs">
                     PDF Max size: 25 MB
                   </p>
                 </div>
@@ -202,14 +202,14 @@ const Step_3_Create = ({
             <div className="mb-6">
               <label
                 htmlFor="item-external-link"
-                className="font-display text-jacarta-700 mb-2 block dark:text-white"
+                className="font-display text-jacarta-900 mb-2 block dark:text-white"
               >
                 Url of your terms
               </label>
               <input
                 type="url"
                 id="item-external-link"
-                className="dark:bg-jacarta-700 border-jacarta-100 hover:ring-accent/10 focus:ring-accent dark:border-jacarta-600 dark:placeholder:text-jacarta-300 w-full rounded-lg py-3 px-3 hover:ring-2 dark:text-white"
+                className="dark:bg-secondaryBlack border-jacarta-100 hover:ring-primaryPurple/10 focus:ring-primaryPurple dark:border-jacarta-600 dark:placeholder:text-jacarta-100 w-full rounded-lg py-3 px-3 hover:ring-2 dark:text-white"
                 placeholder="Url of your terms Eg.  https://yoursite.com"
                 onChange={handleChangeTerms}
                 value={terms}

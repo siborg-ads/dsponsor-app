@@ -4,7 +4,7 @@ const FilterSortHeader = () => {
   return (
     <div className="flex flex-wrap justify-between">
       <div className="flex space-x-2 mb-2">
-        <button className="js-collections-toggle-filters flex h-10 group flex-shrink-0 items-center justify-center space-x-1 rounded-lg border border-jacarta-100 bg-white py-1.5 px-4 font-display text-sm font-semibold text-jacarta-500 hover:bg-accent hover:border-accent dark:hover:bg-accent dark:border-jacarta-600 dark:bg-jacarta-700">
+        <button className="js-collections-toggle-filters flex h-10 group flex-shrink-0 items-center justify-center space-x-1 rounded-lg border border-jacarta-100 bg-white py-1.5 px-4 font-display text-sm font-semibold text-jacarta-100 hover:bg-primaryPurple hover:border-primaryPurple dark:hover:bg-primaryPurple dark:border-jacarta-600 dark:bg-secondaryBlack">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
@@ -17,7 +17,7 @@ const FilterSortHeader = () => {
           </svg>
           <span className="mt-0.5 dark:text-white group-hover:text-white">Filters</span>
         </button>
-        <button className="lex h-10 group flex-shrink-0 items-center justify-center space-x-1 rounded-lg border border-jacarta-100 bg-white py-1.5 px-4 font-medium text-2xs hover:bg-accent hover:border-accent dark:hover:bg-accent dark:border-jacarta-600 dark:bg-jacarta-700">
+        <button className="lex h-10 group flex-shrink-0 items-center justify-center space-x-1 rounded-lg border border-jacarta-100 bg-white py-1.5 px-4 font-medium text-2xs hover:bg-primaryPurple hover:border-primaryPurple dark:hover:bg-primaryPurple dark:border-jacarta-600 dark:bg-secondaryBlack">
           <span className="mt-0.5 dark:text-white group-hover:text-white">Clear All</span>
         </button>
       </div>
@@ -30,7 +30,7 @@ const FilterSortHeader = () => {
         >
           <li className="nav-item" role="presentation">
             <button
-              className="nav-link nav-link--style-5 active group relative flex items-center justify-center whitespace-nowrap h-[2.875rem] w-12 text-jacarta-400 hover:text-jacarta-700 dark:hover:text-white"
+              className="nav-link nav-link--style-5 active group relative flex items-center justify-center whitespace-nowrap h-[2.875rem] w-12 text-jacarta-100 hover:text-jacarta-900 dark:hover:text-white"
               id="view-grid-tab"
               data-bs-toggle="tab"
               data-bs-target="#view-grid"
@@ -57,7 +57,7 @@ const FilterSortHeader = () => {
 
           <li className="nav-item" role="presentation">
             <button
-              className="nav-link nav-link--style-5 relative flex items-center justify-center whitespace-nowrap h-[2.875rem] w-12 text-jacarta-400 hover:text-jacarta-700 dark:hover:text-white"
+              className="nav-link nav-link--style-5 relative flex items-center justify-center whitespace-nowrap h-[2.875rem] w-12 text-jacarta-100 hover:text-jacarta-900 dark:hover:text-white"
               id="view-list-tab"
               data-bs-toggle="tab"
               data-bs-target="#view-list"

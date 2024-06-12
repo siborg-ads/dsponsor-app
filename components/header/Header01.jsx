@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import Logo from "./../../public/images/logo.png";
+import Logo from "./../../public/images/siborg-ads.png";
 
 import WhiteLogo from "./../../public/images/logo_white.png";
 import { useRouter } from "next/router";
@@ -55,21 +55,19 @@ export default function Header01() {
             <div className="dark:hidden flex justify-center items-center  font-semibold">
               <Image
                 src={Logo}
-                height={80}
-                width={80}
-                alt="SiborgAds | smarter monetization for your content"
+                width={125}
+                height={30}
+                alt="SiBorg Ads | Smarter monetization for your content"
                 className=" h-auto "
               />
-              <span>d&gt;sponsor</span>
             </div>
             <div className="hidden dark:flex flex justify-center items-center text-white font-semibold">
               <Image
-                src={WhiteLogo}
-                height={80}
-                width={80}
-                alt="SiborgAds | smarter monetization for your content"
+                src={Logo}
+                width={125}
+                height={30}
+                alt="SiBorg Ads | Smarter monetization for your content"
               />
-              <span>d&gt;sponsor</span>
             </div>
           </Link>
           {/* End  logo */}
@@ -83,11 +81,11 @@ export default function Header01() {
                 <ConditionalCreateLi condition={activated_features.canCreateOffer}>
                   <li className="group">
                     <Link href={`/${chainId}/offer/create`}>
-                      <button className="text-jacarta-700 font-display hover:text-accent focus:text-accent dark:hover:text-accent dark:focus:text-accent flex items-center justify-between py-3.5 text-base dark:text-white lg:px-5">
+                      <button className="text-jacarta-900 font-display hover:text-primaryPurple focus:text-primaryPurple dark:hover:text-primaryPurple dark:focus:text-primaryPurple flex items-center justify-between py-3.5 text-base dark:text-white lg:px-5">
                         <span
                           className={
                             isChildrenPageActive(route.asPath, `/${chainId}/offer/create`)
-                              ? "text-accent dark:text-accent"
+                              ? "text-primaryPurple dark:text-primaryPurple"
                               : ""
                           }
                         >
@@ -99,11 +97,11 @@ export default function Header01() {
                 </ConditionalCreateLi>
                 <li className="group">
                   <Link href={`/`}>
-                    <button className="text-jacarta-700 font-display hover:text-accent focus:text-accent dark:hover:text-accent dark:focus:text-accent flex items-center justify-between py-3.5 text-base dark:text-white lg:px-5">
+                    <button className="text-jacarta-900 font-display hover:text-primaryPurple focus:text-primaryPurple dark:hover:text-primaryPurple dark:focus:text-primaryPurple flex items-center justify-between py-3.5 text-base dark:text-white lg:px-5">
                       <span
                         className={
                           isChildrenPageActive(route.asPath, `/`)
-                            ? "text-accent dark:text-accent"
+                            ? "text-primaryPurple dark:text-primaryPurple"
                             : ""
                         }
                       >
@@ -114,15 +112,15 @@ export default function Header01() {
                 </li>
                 <li className="group">
                   <Link href={`/marketplace/leaderboard`}>
-                    <button className="text-jacarta-700 font-display hover:text-accent focus:text-accent dark:hover:text-accent dark:focus:text-accent flex items-center justify-between py-3.5 text-base dark:text-white lg:px-5">
+                    <button className="text-jacarta-900 font-display hover:text-primaryPurple focus:text-primaryPurple dark:hover:text-primaryPurple dark:focus:text-primaryPurple flex items-center justify-between py-3.5 text-base dark:text-white lg:px-5">
                       <span
                         className={
                           isChildrenPageActive(route.asPath, `/marketplace/leaderboard`)
-                            ? "text-accent dark:text-accent"
+                            ? "text-primaryPurple dark:text-primaryPurple"
                             : ""
                         }
                       >
-                        LeaderBoard
+                        Leaderboard
                       </span>
                     </button>
                   </Link>
@@ -131,11 +129,11 @@ export default function Header01() {
                 {address && (
                   <li className="group">
                     <Link href={`/manage/${address}`}>
-                      <button className="text-jacarta-700 font-display hover:text-accent focus:text-accent dark:hover:text-accent dark:focus:text-accent flex items-center justify-between py-3.5 text-base dark:text-white lg:px-5">
+                      <button className="text-jacarta-900 font-display hover:text-primaryPurple focus:text-primaryPurple dark:hover:text-primaryPurple dark:focus:text-primaryPurple flex items-center justify-between py-3.5 text-base dark:text-white lg:px-5">
                         <span
                           className={
                             isChildrenPageActive(route.asPath, `/manage/${address}`)
-                              ? "text-accent dark:text-accent"
+                              ? "text-primaryPurple dark:text-primaryPurple"
                               : ""
                           }
                         >
@@ -168,7 +166,7 @@ export default function Header01() {
 
           <div className="ml-auto flex lg:hidden">
             <button
-              className="js-mobile-toggle border-jacarta-100 hover:bg-accent dark:hover:bg-accent focus:bg-accent group ml-2 flex h-10 w-10 items-center justify-center rounded-full border bg-white transition-colors hover:border-transparent focus:border-transparent dark:border-transparent dark:bg-white/[.15]"
+              className="js-mobile-toggle border-jacarta-100 hover:bg-primaryPurple dark:hover:bg-primaryPurple focus:bg-primaryPurple group ml-2 flex h-10 w-10 items-center justify-center rounded-full border bg-white transition-colors hover:border-transparent focus:border-transparent dark:border-transparent dark:bg-white/[.15]"
               aria-label="open mobile menu"
               onClick={() => setToggle(true)}
             >
@@ -202,7 +200,7 @@ export default function Header01() {
               src={Logo}
               height={80}
               width={80}
-              alt="SiborgAds | smarter monetization for your content"
+              alt="SiBorg Ads | smarter monetization for your content"
               className="max-h-7 h-auto "
             />
           </div>
@@ -212,12 +210,12 @@ export default function Header01() {
               src={WhiteLogo}
               height={80}
               width={80}
-              alt="SiborgAds | smarter monetization for your content"
+              alt="SiBorg Ads | smarter monetization for your content"
             />
           </div>
 
           <button
-            className="js-mobile-close border-jacarta-100 hover:bg-accent focus:bg-accent group dark:hover:bg-accent ml-2 flex h-10 w-10 items-center justify-center rounded-full border bg-white transition-colors hover:border-transparent focus:border-transparent dark:border-transparent dark:bg-white/[.15]"
+            className="js-mobile-close border-jacarta-100 hover:bg-primaryPurple focus:bg-primaryPurple group dark:hover:bg-primaryPurple ml-2 flex h-10 w-10 items-center justify-center rounded-full border bg-white transition-colors hover:border-transparent focus:border-transparent dark:border-transparent dark:bg-white/[.15]"
             onClick={() => setToggle(false)}
           >
             <svg
@@ -238,10 +236,10 @@ export default function Header01() {
           <ul className="flex flex-col lg:flex-row">
             <li className="group">
               <Link href="/" onClick={() => setToggle(false)}>
-                <button className="text-jacarta-700 font-display hover:text-accent focus:text-accent dark:hover:text-accent dark:focus:text-accent flex items-center justify-between py-3.5 text-base dark:text-white lg:px-5">
+                <button className="text-jacarta-900 font-display hover:text-primaryPurple focus:text-primaryPurple dark:hover:text-primaryPurple dark:focus:text-primaryPurple flex items-center justify-between py-3.5 text-base dark:text-white lg:px-5">
                   <span
                     className={
-                      isChildrenPageActive(route.asPath, "/") ? "text-accent dark:text-accent" : ""
+                      isChildrenPageActive(route.asPath, "/") ? "text-primaryPurple dark:text-primaryPurple" : ""
                     }
                   >
                     Home
@@ -253,11 +251,11 @@ export default function Header01() {
             {/* create */}
             <li className="group">
               <Link href={`/${chainId}/offer/create`} onClick={() => setToggle(false)}>
-                <button className="text-jacarta-700 font-display hover:text-accent focus:text-accent dark:hover:text-accent dark:focus:text-accent flex items-center justify-between py-3.5 text-base dark:text-white lg:px-5">
+                <button className="text-jacarta-900 font-display hover:text-primaryPurple focus:text-primaryPurple dark:hover:text-primaryPurple dark:focus:text-primaryPurple flex items-center justify-between py-3.5 text-base dark:text-white lg:px-5">
                   <span
                     className={
                       isChildrenPageActive(route.asPath, `/${chainId}/offer/create`)
-                        ? "text-accent dark:text-accent"
+                        ? "text-primaryPurple dark:text-primaryPurple"
                         : ""
                     }
                   >
@@ -268,12 +266,10 @@ export default function Header01() {
             </li>
             <li className="group">
               <Link href={`/`} onClick={() => setToggle(false)}>
-                <button className="text-jacarta-700 font-display hover:text-accent focus:text-accent dark:hover:text-accent dark:focus:text-accent flex items-center justify-between py-3.5 text-base dark:text-white lg:px-5">
+                <button className="text-jacarta-900 font-display hover:text-primaryPurple focus:text-primaryPurple dark:hover:text-primaryPurple dark:focus:text-primaryPurple flex items-center justify-between py-3.5 text-base dark:text-white lg:px-5">
                   <span
                     className={
-                      isChildrenPageActive(route.asPath, `/`)
-                        ? "text-accent dark:text-accent"
-                        : ""
+                      isChildrenPageActive(route.asPath, `/`) ? "text-primaryPurple dark:text-primaryPurple" : ""
                     }
                   >
                     Marketplace
@@ -283,15 +279,15 @@ export default function Header01() {
             </li>
             <li className="group">
               <Link href={`/marketplace/leaderboard`} onClick={() => setToggle(false)}>
-                <button className="text-jacarta-700 font-display hover:text-accent focus:text-accent dark:hover:text-accent dark:focus:text-accent flex items-center justify-between py-3.5 text-base dark:text-white lg:px-5">
+                <button className="text-jacarta-900 font-display hover:text-primaryPurple focus:text-primaryPurple dark:hover:text-primaryPurple dark:focus:text-primaryPurple flex items-center justify-between py-3.5 text-base dark:text-white lg:px-5">
                   <span
                     className={
                       isChildrenPageActive(route.asPath, `/marketplace/leaderboard`)
-                        ? "text-accent dark:text-accent"
+                        ? "text-primaryPurple dark:text-primaryPurple"
                         : ""
                     }
                   >
-                    LeaderBoard
+                    Leaderboard
                   </span>
                 </button>
               </Link>
@@ -305,11 +301,11 @@ export default function Header01() {
             {address && (
               <li className="group" onClick={() => setToggle(false)}>
                 <Link href={`/manage/${address}`}>
-                  <button className="text-jacarta-700 font-display hover:text-accent focus:text-accent dark:hover:text-accent dark:focus:text-accent flex items-center justify-between py-3.5 text-base dark:text-white lg:px-5">
+                  <button className="text-jacarta-900 font-display hover:text-primaryPurple focus:text-primaryPurple dark:hover:text-primaryPurple dark:focus:text-primaryPurple flex items-center justify-between py-3.5 text-base dark:text-white lg:px-5">
                     <span
                       className={
                         isChildrenPageActive(route.asPath, `/manage/${address}`)
-                          ? "text-accent dark:text-accent"
+                          ? "text-primaryPurple dark:text-primaryPurple"
                           : ""
                       }
                     >
@@ -333,7 +329,7 @@ export default function Header01() {
                 focusable="false"
                 data-prefix="fab"
                 data-icon="facebook"
-                className="group-hover:fill-accent fill-jacarta-300 h-5 w-5 dark:group-hover:fill-white"
+                className="group-hover:fill-primaryPurple fill-jacarta-300 h-5 w-5 dark:group-hover:fill-white"
                 role="img"
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 512 512"
@@ -347,7 +343,7 @@ export default function Header01() {
                 focusable="false"
                 data-prefix="fab"
                 data-icon="twitter"
-                className="group-hover:fill-accent fill-jacarta-300 h-5 w-5 dark:group-hover:fill-white"
+                className="group-hover:fill-primaryPurple fill-jacarta-300 h-5 w-5 dark:group-hover:fill-white"
                 role="img"
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 512 512"
@@ -361,7 +357,7 @@ export default function Header01() {
                 focusable="false"
                 data-prefix="fab"
                 data-icon="discord"
-                className="group-hover:fill-accent fill-jacarta-300 h-5 w-5 dark:group-hover:fill-white"
+                className="group-hover:fill-primaryPurple fill-jacarta-300 h-5 w-5 dark:group-hover:fill-white"
                 role="img"
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 640 512"
@@ -375,7 +371,7 @@ export default function Header01() {
                 focusable="false"
                 data-prefix="fab"
                 data-icon="instagram"
-                className="group-hover:fill-accent fill-jacarta-300 h-5 w-5 dark:group-hover:fill-white"
+                className="group-hover:fill-primaryPurple fill-jacarta-300 h-5 w-5 dark:group-hover:fill-white"
                 role="img"
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 448 512"
@@ -389,7 +385,7 @@ export default function Header01() {
                 focusable="false"
                 data-prefix="fab"
                 data-icon="tiktok"
-                className="group-hover:fill-accent fill-jacarta-300 h-5 w-5 dark:group-hover:fill-white"
+                className="group-hover:fill-primaryPurple fill-jacarta-300 h-5 w-5 dark:group-hover:fill-white"
                 role="img"
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 448 512"

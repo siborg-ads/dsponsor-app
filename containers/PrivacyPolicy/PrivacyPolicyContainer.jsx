@@ -13,18 +13,18 @@ export default function PrivacyPolicyContainer() {
         <div className="container">
           <div className="mx-auto max-w-lg text-center">
             <div>
-              <h1 className="text-jacarta-700 font-display mb-6 text-2xl dark:text-white md:text-4xl">
+              <h1 className="text-jacarta-900 font-display mb-6 text-2xl dark:text-white md:text-4xl">
                 {privacyPolicyData.title}
               </h1>
-              <p className="dark:text-jacarta-300 mb-12 text-lg leading-normal">
+              <p className="dark:text-jacarta-100 mb-12 text-lg leading-normal">
                 {privacyPolicyData.intro}
               </p>
               {privacyPolicyData.sections.map((section, index) => (
                 <div key={index} className="mb-8">
-                  <h2 className="text-jacarta-700 font-bold font-display mb-6 text-2xl dark:text-white md:text-4xl">
+                  <h2 className="text-jacarta-900 font-bold font-display mb-6 text-2xl dark:text-white md:text-4xl">
                     {section.title}
                   </h2>
-                  <p className="dark:text-jacarta-300 mb-12 text-lg leading-normal">
+                  <p className="dark:text-jacarta-100 mb-12 text-lg leading-normal">
                     {section.content}
                   </p>
                 </div>

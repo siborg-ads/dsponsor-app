@@ -16,25 +16,25 @@ const ItemsTabs = ({ chainId, contractAddress, isUserOwner, initialCreator, isTo
       <div className="scrollbar-custom overflow-x-auto rounded-lg">
         {/* <!-- Details --> */}
         <div className="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
-          <div className="dark:bg-jacarta-700 dark:border-jacarta-600 border-jacarta-100 rounded-t-2lg rounded-b-2lg rounded-tl-none border bg-white p-6 md:p-10">
+          <div className="dark:bg-secondaryBlack rounded-t-2lg rounded-b-2lg rounded-tl-none bg-white p-6 md:p-10">
             <div className="mb-2 flex items-center">
-              <span className="dark:text-jacarta-300 mr-2 min-w-[9rem]">Contract Address:</span>
+              <span className="dark:text-jacarta-100 mr-2 min-w-[9rem]">Contract Address:</span>
               <Link
                 href={`${chainExplorer}${contractAddress}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-accent"
+                className="text-primaryPink hover:text-jacarta-100"
               >
                 {contractAddress}
               </Link>
             </div>
             <div className="mb-2 flex items-center">
-              <span className="dark:text-jacarta-300 mr-2 min-w-[9rem]">Contract Creator:</span>
+              <span className="dark:text-jacarta-100 mr-2 min-w-[9rem]">Contract Creator:</span>
               <Link
                 href={`/manage/${initialCreator}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-accent"
+                className="text-primaryPink hover:text-jacarta-100"
               >
                 {initialCreator}
               </Link>
@@ -42,13 +42,13 @@ const ItemsTabs = ({ chainId, contractAddress, isUserOwner, initialCreator, isTo
 
             {isToken && (
               <div className="mb-2 flex items-center">
-                <span className="dark:text-jacarta-300 mr-2 min-w-[9rem]">Owner:</span>
+                <span className="dark:text-jacarta-100 mr-2 min-w-[9rem]">Owner:</span>
                 {isUserOwner ? (
                   <div>
                     <Link
                       href={`/manage/${isUserOwner}`}
                       rel="noopener noreferrer"
-                      className="text-accent mr-2"
+                      className="text-primaryPink hover:text-jacarta-100 mr-2"
                     >
                       {isUserOwner}
                     </Link>
@@ -71,12 +71,12 @@ const ItemsTabs = ({ chainId, contractAddress, isUserOwner, initialCreator, isTo
               </div>
             )}
             <div className="mb-2 flex items-center">
-              <span className="dark:text-jacarta-300 mr-2 min-w-[9rem]">Token Standard:</span>
-              <span className="text-jacarta-700 dark:text-white">ERC-721</span>
+              <span className="dark:text-jacarta-100 mr-2 min-w-[9rem]">Token Standard:</span>
+              <span className="text-jacarta-900 dark:text-white">ERC-721</span>
             </div>
             <div className="flex items-center">
-              <span className="dark:text-jacarta-300 mr-2 min-w-[9rem]">Blockchain:</span>
-              <span className="text-jacarta-700 dark:text-white">{chainName}</span>
+              <span className="dark:text-jacarta-100 mr-2 min-w-[9rem]">Blockchain:</span>
+              <span className="text-jacarta-900 dark:text-white">{chainName}</span>
             </div>
           </div>
         </div>

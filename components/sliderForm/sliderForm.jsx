@@ -170,7 +170,7 @@ const SliderForm = ({
   return (
     <div className={styles.modal__container}>
       <div
-        className={`${styles.modal} dark:bg-jacarta-700 dark:border-jacarta-700 rounded-lg ring-accent/10 ring-2`}
+        className={`${styles.modal} dark:bg-secondaryBlack dark:border-jacarta-700 rounded-lg ring-primaryPurple/10 ring-2`}
       >
         <div
           className={styles.modal__form__container}
@@ -195,7 +195,7 @@ const SliderForm = ({
                 ></div>
               ))}
             </div>
-            <div className={`${styles.form__nav} bg-accent rounded-lg`}>
+            <div className={`${styles.form__nav} bg-primaryPurple rounded-lg`}>
               <button
                 type="button"
                 onClick={handlePrevClick}
@@ -206,7 +206,7 @@ const SliderForm = ({
               {currentSlide === numSteps - 1 ? (
                 <button
                   type="button"
-                  className="bg-accent cursor-pointer rounded-full py-3 px-3 text-end font-semibold text-white transition-all"
+                  className="bg-primaryPurple cursor-pointer rounded-full py-3 px-3 text-end font-semibold text-white transition-all"
                   onClick={handlePreviewModal}
                 >
                   Show preview

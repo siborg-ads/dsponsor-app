@@ -28,10 +28,10 @@ const SingleWalletFeature = () => {
     <>
       {singleWalletContent.map((item) => (
         <div
-          className="mb-12 rounded-2.5xl border border-jacarta-100 bg-white p-8 pt-0 text-center transition-shadow hover:shadow-xl dark:border-jacarta-600 dark:bg-jacarta-700"
+          className="mb-12 rounded-2.5xl border border-jacarta-100 bg-white p-8 pt-0 text-center transition-shadow hover:shadow-xl dark:border-jacarta-600 dark:bg-secondaryBlack"
           key={item.id}
         >
-          <div className="mb-9 -mt-8 inline-flex h-[5.5rem] w-[5.5rem] items-center justify-center rounded-full border border-jacarta-100 bg-white dark:border-jacarta-600 dark:bg-jacarta-700">
+          <div className="mb-9 -mt-8 inline-flex h-[5.5rem] w-[5.5rem] items-center justify-center rounded-full border border-jacarta-100 bg-white dark:border-jacarta-600 dark:bg-secondaryBlack">
             <Image
               src={`/images/crypto-app/${item.icon}.svg`}
               alt="icon"
@@ -41,10 +41,10 @@ const SingleWalletFeature = () => {
             />
           </div>
 
-          <h3 className="mb-4 font-display text-lg text-jacarta-700 dark:text-white">
+          <h3 className="mb-4 font-display text-lg text-jacarta-900 dark:text-white">
             {item.title}
           </h3>
-          <p className="dark:text-jacarta-300">{item.text}</p>
+          <p className="dark:text-jacarta-100">{item.text}</p>
         </div>
       ))}
     </>

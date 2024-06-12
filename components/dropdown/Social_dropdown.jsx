@@ -6,7 +6,7 @@ import "tippy.js/dist/tippy.css"; // optional
 const Social_dropdown = () => {
   return (
     <>
-      <div className="dark:border-jacarta-600 dark:hover:bg-jacarta-600 border-jacarta-100 dropdown hover:bg-jacarta-100 dark:bg-jacarta-700 rounded-xl border bg-white">
+      <div className="dark:border-jacarta-600 dark:hover:bg-jacarta-600 border-jacarta-100 dropdown hover:bg-jacarta-100 dark:bg-secondaryBlack rounded-xl border bg-white">
         <Tippy
           animation="fade"
           arrow={false}
@@ -15,7 +15,7 @@ const Social_dropdown = () => {
           placement="bottom"
           className="tooltip-container"
           content={
-            <div className="dark:bg-jacarta-800 text-jacarta-700 z-10 min-w-[200px] whitespace-nowrap rounded-xl bg-white py-4 px-2 text-left shadow-xl show">
+            <div className="dark:bg-jacarta-800 text-jacarta-900 z-10 min-w-[200px] whitespace-nowrap rounded-xl bg-white py-4 px-2 text-left shadow-xl show">
               <Link
                 href="#"
                 className="dark:hover:bg-jacarta-600 font-display hover:bg-jacarta-50 flex w-full items-center rounded-xl px-5 py-2 text-left text-sm transition-colors dark:text-white"
@@ -25,7 +25,7 @@ const Social_dropdown = () => {
                   focusable="false"
                   data-prefix="fab"
                   data-icon="facebook"
-                  className="group-hover:fill-accent fill-jacarta-300 mr-2 h-4 w-4 dark:group-hover:fill-white"
+                  className="group-hover:fill-primaryPurple fill-jacarta-300 mr-2 h-4 w-4 dark:group-hover:fill-white"
                   role="img"
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 512 512"
@@ -43,7 +43,7 @@ const Social_dropdown = () => {
                   focusable="false"
                   data-prefix="fab"
                   data-icon="twitter"
-                  className="group-hover:fill-accent fill-jacarta-300 mr-2 h-4 w-4 dark:group-hover:fill-white"
+                  className="group-hover:fill-primaryPurple fill-jacarta-300 mr-2 h-4 w-4 dark:group-hover:fill-white"
                   role="img"
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 512 512"
@@ -61,7 +61,7 @@ const Social_dropdown = () => {
                   focusable="false"
                   data-prefix="fab"
                   data-icon="discord"
-                  className="group-hover:fill-accent fill-jacarta-300 mr-2 h-4 w-4 dark:group-hover:fill-white"
+                  className="group-hover:fill-primaryPurple fill-jacarta-300 mr-2 h-4 w-4 dark:group-hover:fill-white"
                   role="img"
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 640 512"
@@ -79,7 +79,7 @@ const Social_dropdown = () => {
                   viewBox="0 0 24 24"
                   width="24"
                   height="24"
-                  className="group-hover:fill-accent fill-jacarta-300 mr-2 h-4 w-4 dark:group-hover:fill-white"
+                  className="group-hover:fill-primaryPurple fill-jacarta-300 mr-2 h-4 w-4 dark:group-hover:fill-white"
                 >
                   <path fill="none" d="M0 0h24v24H0z" />
                   <path d="M3 3h18a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1zm9.06 8.683L5.648 6.238 4.353 7.762l7.72 6.555 7.581-6.56-1.308-1.513-6.285 5.439z" />
@@ -95,7 +95,7 @@ const Social_dropdown = () => {
                   viewBox="0 0 24 24"
                   width="24"
                   height="24"
-                  className="group-hover:fill-accent fill-jacarta-300 mr-2 h-4 w-4 dark:group-hover:fill-white"
+                  className="group-hover:fill-primaryPurple fill-jacarta-300 mr-2 h-4 w-4 dark:group-hover:fill-white"
                 >
                   <path fill="none" d="M0 0h24v24H0z" />
                   <path d="M18.364 15.536L16.95 14.12l1.414-1.414a5 5 0 1 0-7.071-7.071L9.879 7.05 8.464 5.636 9.88 4.222a7 7 0 0 1 9.9 9.9l-1.415 1.414zm-2.828 2.828l-1.415 1.414a7 7 0 0 1-9.9-9.9l1.415-1.414L7.05 9.88l-1.414 1.414a5 5 0 1 0 7.071 7.071l1.414-1.414 1.415 1.414zm-.708-10.607l1.415 1.415-7.071 7.07-1.415-1.414 7.071-7.07z" />

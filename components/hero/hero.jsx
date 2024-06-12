@@ -33,7 +33,7 @@ const Hero = () => {
       <div className="container h-full mx-auto">
         <div className="grid h-full items-center gap-4 ">
           <div className="col-span-6 flex h-full flex-col items-center justify-center py-10 md:items-start md:py-20 xl:col-span-6">
-            <h1 className="text-jacarta-700 font-bold font-display mb-6 text-center text-5xl dark:text-white  lg:text-6xl xl:text-7xl">
+            <h1 className="text-jacarta-900 font-bold font-display mb-6 text-center text-5xl dark:text-white  lg:text-6xl xl:text-7xl">
               Unlock Smarter Monetization with d&gt;sponsor
             </h1>
             <p className="dark:text-jacarta-200 mb-8 text-center text-lg">

@@ -16,12 +16,12 @@ const Step_1_Mint = ({ stepsRef, styles, adParameters, setImageUrlVariants }) =>
   return (
     <div ref={(el) => (stepsRef.current[0] = el)} className={styles.form__step}>
       <div className="pr-6 pl-2">
-        <h3 className="mb-14">Step 1 : Offer Type</h3>
+        <h3 className="mb-14 !text-jacarta-100">Step 1 : Offer Type</h3>
         <div className="mb-6 flex flex-col justify-center items-center gap-4">
           <div className="flex flex-col items-center">
             <label
               htmlFor="adIntegrationSelect"
-              className="font-display text-jacarta-700 mb-2 block dark:text-white"
+              className="font-display text-jacarta-900 mb-2 block dark:text-white"
             >
               Type of ad spaces for this offer:
             </label>
@@ -58,7 +58,7 @@ const Step_1_Mint = ({ stepsRef, styles, adParameters, setImageUrlVariants }) =>
               </div>
               {/* <select
                 id="adIntegrationSelect"
-                className="dark:bg-jacarta-700 min-w-[110px] border-jacarta-100 hover:ring-accent/10 focus:ring-accent dark:border-jacarta-600 dark:placeholder:text-jacarta-300 w-full rounded-lg py-3 px-5 hover:ring-2 dark:text-white"
+                className="dark:bg-secondaryBlack min-w-[110px] border-jacarta-100 hover:ring-primaryPurple/10 focus:ring-primaryPurple dark:border-jacarta-600 dark:placeholder:text-jacarta-100 w-full rounded-lg py-3 px-5 hover:ring-2 dark:text-white"
                 value={selectedIntegration}
                 onChange={handleSelectionChange}
               >

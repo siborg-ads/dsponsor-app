@@ -58,7 +58,7 @@ const BuyModal = ({
     <div>
       {/* <!-- Buy Now Modal --> */}
       <div className="modal-dialog max-w-2xl">
-        <div className="modal-content">
+        <div className="modal-content !bg-secondaryBlack">
           <div className="modal-header">
             <h5 className="modal-title" id="buyNowModalLabel">
               {!successFullUpload ? "Complete checkout" : successFullBuyModal.title}
@@ -81,10 +81,10 @@ const BuyModal = ({
           {!successFullUpload ? (
             <div className="modal-body p-6">
               <div className="mb-2 flex items-center justify-between">
-                <span className="font-display text-jacarta-700 text-sm font-semibold dark:text-white">
-                  Space # {tokenData ? tokenData : formatTokenId(tokenId)}
+                <span className="font-display text-jacarta-900 text-sm font-semibold dark:text-white">
+                  Space # {tokenData ?? formatTokenId(tokenId)}
                 </span>
-                <span className="font-display text-jacarta-700 text-sm font-semibold dark:text-white">
+                <span className="font-display text-jacarta-900 text-sm font-semibold dark:text-white">
                   Subtotal
                 </span>
               </div>
@@ -101,12 +101,12 @@ const BuyModal = ({
                   />
                 </figure>
                 <div className="overflow-hidden  justify-between flex flex-col  text-ellipsis whitespace-nowrap min-w-[200px]  ">
-                  <h2 className="font-display overflow-hidden text-ellipsis whitespace-nowrap text-jacarta-700 text-base font-semibold dark:text-white">
+                  <h2 className="font-display overflow-hidden text-ellipsis whitespace-nowrap text-jacarta-900 text-base font-semibold dark:text-white">
                     {name}
                   </h2>
                   <div className="overflow-hidden flex flex-col text-ellipsis whitespace-nowrap   ">
                     <div className="flex gap-6  items-center justify-between">
-                      <h3 className="font-display overflow-hidden text-ellipsis whitespace-nowrap text-jacarta-700 text-sm font-semibold dark:text-white">
+                      <h3 className="font-display overflow-hidden text-ellipsis whitespace-nowrap text-jacarta-900 text-sm font-semibold dark:text-white">
                         Price :{" "}
                       </h3>
                       <span className="dark:text-jacarta-100 text-sm font-medium tracking-tight overflow-auto min-w-[70px] flex justify-end">
@@ -115,20 +115,20 @@ const BuyModal = ({
                     </div>
 
                     <div className="flex gap-6  items-center justify-between">
-                      <span className="dark:text-jacarta-300 text-jacarta-500 mr-1 block text-sm">
+                      <span className="dark:text-jacarta-100 text-jacarta-100 mr-1 block text-sm">
                         Protocol fees: 4%
                       </span>
-                      <span className="dark:text-jacarta-300 text-sm  tracking-tight overflow-auto min-w-[60px] flex justify-end">
+                      <span className="dark:text-jacarta-100 text-sm  tracking-tight overflow-auto min-w-[60px] flex justify-end">
                         {feesAmount} {selectedCurrency}
                       </span>
                     </div>
 
                     {tokenStatut === "DIRECT" && (
                       <div className="flex gap-6  items-center justify-between">
-                        <span className="dark:text-jacarta-300 text-jacarta-500 mr-1 block text-sm">
+                        <span className="dark:text-jacarta-100 text-jacarta-100 mr-1 block text-sm">
                           Royalties fees: {royalties}%
                         </span>
-                        <span className="dark:text-jacarta-300 text-sm  tracking-tight overflow-auto min-w-[60px] flex justify-end">
+                        <span className="dark:text-jacarta-100 text-sm  tracking-tight overflow-auto min-w-[60px] flex justify-end">
                           {royaltiesFeesAmount} {selectedCurrency}
                         </span>
                       </div>
@@ -148,13 +148,13 @@ const BuyModal = ({
                       {(price * protocolFees) / 100} {selectedCurrency}
                     </span>
                   </span>
-                  <div className="dark:text-jacarta-300 text-right text-sm">$130.82</div>
+                  <div className="dark:text-jacarta-100 text-right text-sm">$130.82</div>
                 </div> */}
               </div>
 
               {/* <!-- Total --> */}
               <div className="dark:border-jacarta-600 border-jacarta-100 mb-2 flex items-center justify-between border-b py-2.5">
-                <span className="font-display text-jacarta-700 hover:text-accent font-semibold dark:text-white">
+                <span className="font-display text-jacarta-900 hover:text-primaryPurple font-semibold dark:text-white">
                   Total
                 </span>
                 <div className="ml-auto">
@@ -163,7 +163,7 @@ const BuyModal = ({
                       {finalPrice} {selectedCurrency}
                     </span>
                   </span>
-                  {/* <div className="dark:text-jacarta-300 text-right">$130.82</div> */}
+                  {/* <div className="dark:text-jacarta-100 text-right">$130.82</div> */}
                 </div>
               </div>
 
@@ -172,12 +172,12 @@ const BuyModal = ({
                 <input
                   type="checkbox"
                   id="buyNowTerms"
-                  className="checked:bg-accent dark:bg-jacarta-600 text-accent border-jacarta-200 focus:ring-accent/20 dark:border-jacarta-500 h-5 w-5 self-start rounded focus:ring-offset-0"
+                  className="checked:bg-primaryPurple dark:bg-jacarta-600 text-primaryPurple border-jacarta-200 focus:ring-primaryPurple/20 dark:border-jacarta-500 h-5 w-5 self-start rounded focus:ring-offset-0"
                   onClick={handleTermService}
                 />
                 <label htmlFor="buyNowTerms" className="dark:text-jacarta-200 text-sm">
-                  By checking this box, I agree to {"SiborgAds's"}{" "}
-                  <Link href="#" className="text-accent">
+                  By checking this box, I agree to {"SiBorg Ads's"}{" "}
+                  <Link href="#" className="text-primaryPurple">
                     Terms of Service
                   </Link>
                 </label>
@@ -223,7 +223,7 @@ const BuyModal = ({
                       error: "Approval rejected 🤯"
                     });
                   }}
-                  className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate ? "btn-disabled" : "!bg-accent !cursor-pointer"} `}
+                  className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate ? "btn-disabled !text-black" : "!bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer"} `}
                   isDisabled={!validate || isLoadingButton}
                 >
                   {isLoadingButton ? <Spinner size="sm" color="default" /> : "Approve"}
@@ -238,14 +238,14 @@ const BuyModal = ({
                       error: "Transaction rejected 🤯"
                     });
                   }}
-                  className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate ? "btn-disabled" : "!bg-accent !cursor-pointer"} `}
+                  className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate ? "btn-disabled !text-black" : "!bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer"} `}
                   isDisabled={!validate || isLoadingButton}
                 >
                   {isLoadingButton ? <Spinner size="sm" color="default" /> : "Confirm checkout"}
                 </Web3Button>
               ) : (
                 <Link href={successFullBuyModal.hrefButton}>
-                  <button className="!rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all !bg-accent !cursor-pointer">
+                  <button className="!rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all !bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer">
                     {successFullBuyModal.buttonTitle}
                   </button>
                 </Link>

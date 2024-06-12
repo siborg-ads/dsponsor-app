@@ -35,14 +35,14 @@ const Proparties_modal = () => {
 
             {/* <!-- Body --> */}
             <div className="modal-body p-6">
-              <p className="dark:text-jacarta-300 mb-8">
+              <p className="dark:text-jacarta-100 mb-8">
                 Item Properties show up underneath your item, are clickable, and can be filtered in
                 your {"collection's"}
                 sidebar.
               </p>
 
               <div className="relative my-3 flex items-center">
-                <button className="dark:bg-jacarta-700 dark:border-jacarta-600 hover:bg-jacarta-100 border-jacarta-100 bg-jacarta-50 flex h-12 w-12 shrink-0 items-center justify-center self-end rounded-l-lg border border-r-0">
+                <button className="dark:bg-secondaryBlack dark:border-jacarta-600 hover:bg-jacarta-100 border-jacarta-100 bg-jacarta-50 flex h-12 w-12 shrink-0 items-center justify-center self-end rounded-l-lg border border-r-0">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 24 24"
@@ -56,29 +56,29 @@ const Proparties_modal = () => {
                 </button>
 
                 <div className="flex-1">
-                  <label className="font-display text-jacarta-700 mb-3 block text-base font-semibold dark:text-white">
+                  <label className="font-display text-jacarta-900 mb-3 block text-base font-semibold dark:text-white">
                     Type
                   </label>
                   <input
                     type="text"
-                    className="dark:bg-jacarta-700 px-4 dark:border-jacarta-600 focus:ring-accent border-jacarta-100 dark:placeholder-jacarta-300 h-12 w-full border border-r-0 focus:ring-inset dark:text-white"
+                    className="dark:bg-secondaryBlack px-4 dark:border-jacarta-600 focus:ring-primaryPurple border-jacarta-100 dark:placeholder-jacarta-300 h-12 w-full border border-r-0 focus:ring-inset dark:text-white"
                     placeholder="Character"
                   />
                 </div>
 
                 <div className="flex-1">
-                  <label className="font-display text-jacarta-700 mb-3 block text-base font-semibold dark:text-white">
+                  <label className="font-display text-jacarta-900 mb-3 block text-base font-semibold dark:text-white">
                     Name
                   </label>
                   <input
                     type="text"
-                    className="dark:bg-jacarta-700 px-4 dark:border-jacarta-600 focus:ring-accent border-jacarta-100 dark:placeholder-jacarta-300 h-12 w-full rounded-r-lg border focus:ring-inset dark:text-white"
+                    className="dark:bg-secondaryBlack px-4 dark:border-jacarta-600 focus:ring-primaryPurple border-jacarta-100 dark:placeholder-jacarta-300 h-12 w-full rounded-r-lg border focus:ring-inset dark:text-white"
                     placeholder="Male"
                   />
                 </div>
               </div>
 
-              <button className="hover:bg-accent border-accent text-accent mt-2 rounded-full border-2 py-2 px-8 text-center text-sm font-semibold transition-all hover:text-white">
+              <button className="hover:bg-primaryPurple border-primaryPurple text-primaryPurple mt-2 rounded-full border-2 py-2 px-8 text-center text-sm font-semibold transition-all hover:text-white">
                 Add More
               </button>
             </div>
@@ -88,7 +88,7 @@ const Proparties_modal = () => {
               <div className="flex items-center justify-center space-x-4">
                 <button
                   type="button"
-                  className="bg-accent shadow-accent-volume hover:bg-accent-dark rounded-full py-3 px-8 text-center font-semibold text-white transition-all"
+                  className="bg-primaryPurple shadow-primaryPurple-volume hover:bg-primaryPurple-dark rounded-full py-3 px-8 text-center font-semibold text-white transition-all"
                 >
                   Save
                 </button>

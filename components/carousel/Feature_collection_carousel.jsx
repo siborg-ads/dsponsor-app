@@ -63,7 +63,7 @@ const Feature_collections_carousel = () => {
           return (
             <SwiperSlide key={id}>
               <article>
-                <div className="dark:bg-jacarta-700 dark:border-jacarta-700 border-jacarta-100 rounded-2xl border bg-white p-[1.1875rem] transition-shadow hover:shadow-lg">
+                <div className="dark:bg-secondaryBlack dark:border-jacarta-700 border-jacarta-100 rounded-2xl border bg-white p-[1.1875rem] transition-shadow hover:shadow-lg">
                   <Link href={`/item/item_${itemLink}`} className="flex space-x-[0.625rem]">
                     <figure className="w-[74.5%] h-full">
                       <Image
@@ -105,7 +105,7 @@ const Feature_collections_carousel = () => {
 
                   <Link
                     href={`/item/item_${itemLink}`}
-                    className="font-display hover:text-accent dark:hover:text-accent text-jacarta-700 mt-4 block text-base dark:text-white"
+                    className="font-display hover:text-primaryPurple dark:hover:text-primaryPurple text-jacarta-900 mt-4 block text-base dark:text-white"
                   >
                     {title}
                   </Link>
@@ -121,12 +121,12 @@ const Feature_collections_carousel = () => {
                           className="h-5 w-5 rounded-full"
                         />
                       </Link>
-                      <span className="dark:text-jacarta-400 mr-1">by</span>
-                      <Link href={`/item/item_${itemLink}`} className="text-accent">
+                      <span className="dark:text-jacarta-100 mr-1">by</span>
+                      <Link href={`/item/item_${itemLink}`} className="text-primaryPurple">
                         <span>{userName}</span>
                       </Link>
                     </div>
-                    <span className="dark:text-jacarta-300 text-sm">{itemsCount} Items</span>
+                    <span className="dark:text-jacarta-100 text-sm">{itemsCount} Items</span>
                   </div>
                 </div>
               </article>
@@ -136,10 +136,10 @@ const Feature_collections_carousel = () => {
       </Swiper>
 
       {/* <!-- Slider Navigation --> */}
-      <div className="group swiper-button-prev shadow-white-volume absolute !top-1/2 !-left-4 z-10 -mt-6 flex !h-12 !w-12 cursor-pointer items-center justify-center rounded-full bg-white p-3 text-jacarta-700 text-xl sm:!-left-6 after:hidden">
+      <div className="group swiper-button-prev shadow-white-volume absolute !top-1/2 !-left-4 z-10 -mt-6 flex !h-12 !w-12 cursor-pointer items-center justify-center rounded-full bg-white p-3 text-jacarta-900 text-xl sm:!-left-6 after:hidden">
         <MdKeyboardArrowLeft />
       </div>
-      <div className="group swiper-button-next shadow-white-volume absolute !top-1/2 !-right-4 z-10 -mt-6 flex !h-12 !w-12 cursor-pointer items-center justify-center rounded-full bg-white p-3 text-jacarta-700 text-xl sm:!-right-6 after:hidden">
+      <div className="group swiper-button-next shadow-white-volume absolute !top-1/2 !-right-4 z-10 -mt-6 flex !h-12 !w-12 cursor-pointer items-center justify-center rounded-full bg-white p-3 text-jacarta-900 text-xl sm:!-right-6 after:hidden">
         <MdKeyboardArrowRight />
       </div>
     </>

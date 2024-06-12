@@ -9,7 +9,7 @@ const Wallet = () => {
   const bgImage = "/images/page-title/wallet_banner.jpg";
   return (
     <div>
-      <Meta title="Wallet || SiborgAds | smarter monetization for your content" />
+      <Meta title="Wallet || SiBorg Ads | smarter monetization for your content" />
       <div className="pt-[5.5rem] lg:pt-24">
         {/* <!-- Wallet --> */}
 
@@ -32,19 +32,19 @@ const Wallet = () => {
                   <Link
                     href="#"
                     key={id}
-                    className="dark:bg-jacarta-700 dark:border-jacarta-600 border-jacarta-100 rounded-2.5xl mb-8 border bg-white p-8 text-center transition-shadow hover:shadow-lg"
+                    className="dark:bg-secondaryBlack dark:border-jacarta-600 border-jacarta-100 rounded-2.5xl mb-8 border bg-white p-8 text-center transition-shadow hover:shadow-lg"
                   >
                     <Image
                       width={86}
                       height={86}
                       src={image}
-                      className="dark:border-jacarta-600 dark:bg-jacarta-700 border-jacarta-100 mx-auto mb-7 -mt-[3.5rem] h-[5.5rem] w-[5.5rem] rounded-full border bg-white"
+                      className="dark:border-jacarta-600 dark:bg-secondaryBlack border-jacarta-100 mx-auto mb-7 -mt-[3.5rem] h-[5.5rem] w-[5.5rem] rounded-full border bg-white"
                       alt="wallet"
                     />
-                    <h3 className="font-display text-jacarta-700 text-md mb-3 dark:text-white">
+                    <h3 className="font-display text-jacarta-900 text-md mb-3 dark:text-white">
                       {title}
                     </h3>
-                    <p className="dark:text-jacarta-300">{text}</p>
+                    <p className="dark:text-jacarta-100">{text}</p>
                   </Link>
                 );
               })}

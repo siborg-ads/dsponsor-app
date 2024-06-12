@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 
 const Likes = ({
   like,
-  classes = "dark:bg-jacarta-700 absolute top-3 right-3 flex items-center space-x-1 rounded-md bg-white p-2"
+  classes = "dark:bg-secondaryBlack absolute top-3 right-3 flex items-center space-x-1 rounded-md bg-white p-2"
 }) => {
   const [likeState, setLikeState] = useState(typeof like === "string" ? +like - 1 : like - 1);
   const [likeNumber, setlikeNumber] = useState(likeState);

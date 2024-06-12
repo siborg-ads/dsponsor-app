@@ -73,19 +73,19 @@ const AddProposalRefusedModal = ({
                     <div>
                       <label
                         htmlFor="item-description"
-                        className="font-display text-jacarta-700 mb-2 block dark:text-white"
+                        className="font-display text-jacarta-900 mb-2 block dark:text-white"
                       >
                         Comments
                         <span className="text-red">*</span>
                       </label>
                     </div>
-                    <div className="font-display text-jacarta-700 mb-2 block dark:text-white">
-                      Space # <span className="text-accent">{tokenId}</span>
+                    <div className="font-display text-jacarta-900 mb-2 block dark:text-white">
+                      Space # <span className="text-primaryPurple">{tokenId}</span>
                     </div>
                   </div>
                   <textarea
                     id={tokenId}
-                    className="dark:bg-jacarta-700  border-jacarta-100 hover:ring-accent/10 focus:ring-accent dark:border-jacarta-600 dark:placeholder:text-jacarta-300 w-full rounded-lg py-3 px-3 hover:ring-2 dark:text-white"
+                    className="dark:bg-secondaryBlack  border-jacarta-100 hover:ring-primaryPurple/10 focus:ring-primaryPurple dark:border-jacarta-600 dark:placeholder:text-jacarta-100 w-full rounded-lg py-3 px-3 hover:ring-2 dark:text-white"
                     rows="4"
                     required
                     onChange={(e) => handleCommentChange(tokenId, e.target.value)}
@@ -120,7 +120,7 @@ const AddProposalRefusedModal = ({
                 ) : (
                   <button
                     onClick={() => closeRefuseModal()}
-                    className="!rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all !bg-accent !cursor-pointer"
+                    className="!rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all !bg-primaryPurple !cursor-pointer"
                   >
                     Close
                   </button>

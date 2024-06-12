@@ -5,7 +5,7 @@ const DropdownMenu = () => {
   const [selectedFilter, setSelectedFilter] = useState("All");
 
   const filterOptions = [
-    { label: "All", icon: "mb-[3px] h-4 w-4 fill-accent" },
+    { label: "All", icon: "mb-[3px] h-4 w-4 fill-primaryPurple" },
     { label: "Mintable", icon: "" },
     { label: "Free Mints", icon: "" },
     { label: "Paid Mints", icon: "" }
@@ -21,7 +21,7 @@ const DropdownMenu = () => {
   return (
     <div className="dropdown cursor-pointer">
       <div
-        className="dropdown-toggle inline-flex h-10 w-[220px] items-center justify-between rounded-lg border border-jacarta-100 bg-white py-2 px-3 text-sm dark:border-jacarta-600 dark:bg-jacarta-700 dark:text-white lg:w-[8rem]"
+        className="dropdown-toggle inline-flex h-10 w-[220px] items-center justify-between rounded-lg border border-jacarta-100 bg-white py-2 px-3 text-sm dark:border-jacarta-600 dark:bg-secondaryBlack dark:text-white lg:w-[8rem]"
         role="button"
         data-bs-toggle="dropdown"
         aria-expanded="false"
@@ -60,7 +60,7 @@ const DropdownMenu = () => {
                 viewBox="0 0 24 24"
                 width={24}
                 height={24}
-                className="mb-[3px] h-4 w-4 fill-accent"
+                className="mb-[3px] h-4 w-4 fill-primaryPurple"
               >
                 <path fill="none" d="M0 0h24v24H0z" />
                 <path d="M10 15.172l9.192-9.193 1.415 1.414L10 18l-6.364-6.364 1.414-1.414z" />

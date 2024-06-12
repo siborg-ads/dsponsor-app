@@ -198,7 +198,7 @@ const Collection_category_filter = () => {
           {/* <!-- Properties --> */}
           <div className="my-1 mr-2.5">
             <button
-              className="group dropdown-toggle dark:border-jacarta-600 dark:bg-jacarta-700 group dark:hover:bg-accent hover:bg-accent border-jacarta-100 font-display text-jacarta-700 flex h-9 items-center rounded-lg border bg-white px-4 text-sm font-semibold transition-colors hover:border-transparent hover:text-white dark:text-white"
+              className="group dropdown-toggle dark:border-jacarta-600 dark:bg-secondaryBlack group dark:hover:bg-primaryPurple hover:bg-primaryPurple border-jacarta-100 font-display text-jacarta-900 flex h-9 items-center rounded-lg border bg-white px-4 text-sm font-semibold transition-colors hover:border-transparent hover:text-white dark:text-white"
               onClick={() => setPropertiesModal(true)}
             >
               <svg
@@ -255,7 +255,7 @@ const Collection_category_filter = () => {
                                 <AccordionItemHeading>
                                   <AccordionItemButton>
                                     <h2 className="accordion-header" id="prop-heading-1">
-                                      <button className="accordion-button collapsed dark:bg-jacarta-700 font-display text-jacarta-700 relative flex w-full items-center justify-between bg-white px-6 py-5 dark:text-white">
+                                      <button className="accordion-button collapsed dark:bg-secondaryBlack font-display text-jacarta-900 relative flex w-full items-center justify-between bg-white px-6 py-5 dark:text-white">
                                         <span>{titleText}</span>
                                         <svg
                                           xmlns="http://www.w3.org/2000/svg"
@@ -301,13 +301,13 @@ const Collection_category_filter = () => {
                     <div className="flex items-center justify-center space-x-4">
                       <button
                         type="button"
-                        className="text-accent shadow-white-volume hover:bg-accent-dark hover:shadow-accent-volume w-36 rounded-full bg-white py-3 px-8 text-center font-semibold transition-all hover:text-white"
+                        className="text-primaryPurple shadow-white-volume hover:bg-primaryPurple-dark hover:shadow-primaryPurple-volume w-36 rounded-full bg-white py-3 px-8 text-center font-semibold transition-all hover:text-white"
                       >
                         Clear All
                       </button>
                       <button
                         type="button"
-                        className="bg-accent shadow-accent-volume hover:bg-accent-dark w-36 rounded-full py-3 px-8 text-center font-semibold text-white transition-all"
+                        className="bg-primaryPurple shadow-primaryPurple-volume hover:bg-primaryPurple-dark w-36 rounded-full py-3 px-8 text-center font-semibold text-white transition-all"
                       >
                         Apply
                       </button>
@@ -328,13 +328,13 @@ const Collection_category_filter = () => {
                     href="#"
                     className="dropdown-item font-display dark:hover:bg-jacarta-600 hover:bg-jacarta-50 flex w-full items-center justify-between rounded-xl px-5 py-2 text-left text-sm transition-colors dark:text-white"
                   >
-                    <span className="text-jacarta-700 dark:text-white">All</span>
+                    <span className="text-jacarta-900 dark:text-white">All</span>
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       viewBox="0 0 24 24"
                       width="24"
                       height="24"
-                      className="fill-accent mb-[3px] h-4 w-4"
+                      className="fill-primaryPurple mb-[3px] h-4 w-4"
                     >
                       <path fill="none" d="M0 0h24v24H0z"></path>
                       <path d="M10 15.172l9.192-9.193 1.415 1.414L10 18l-6.364-6.364 1.414-1.414z"></path>

@@ -77,7 +77,7 @@ const PreviewModal = ({
   return (
     <div>
       <div className="modal-dialog max-h-[75vh] max-w-2xl">
-        <div className="modal-content">
+        <div className="modal-content !bg-secondaryBlack">
           <div className="modal-header">
             <h5 className="modal-title mr-8" id="placeBidLabel">
               {!successFullUpload ? modalTitle : successFullUploadModal.title}
@@ -102,11 +102,11 @@ const PreviewModal = ({
                 <div>
                   <p className="font-display mb-2 block dark:text-white">
                     {name.length > 0 ? (
-                      <span className="dark:text-jacarta-300 text-jacarta-400 text-sm">
+                      <span className="dark:text-jacarta-100 text-jacarta-100 text-sm">
                         Name : <span className="dark:text-white text-base ml-2"> {name} </span>
                       </span>
                     ) : !name ? (
-                      <span className="dark:text-jacarta-300 text-jacarta-400 text-sm">
+                      <span className="dark:text-jacarta-100 text-jacarta-100 text-sm">
                         Name : <span className="text-red text-base ml-2">{errors.nameError}</span>
                       </span>
                     ) : (
@@ -115,12 +115,12 @@ const PreviewModal = ({
                   </p>
                   <p className="font-display mb-2 block dark:text-white">
                     {description.length > 0 ? (
-                      <span className="dark:text-jacarta-300 text-jacarta-400 text-sm">
+                      <span className="dark:text-jacarta-100 text-jacarta-100 text-sm">
                         Description :{" "}
                         <span className="dark:text-white text-base ml-2"> {description} </span>
                       </span>
                     ) : !description ? (
-                      <span className="dark:text-jacarta-300 text-jacarta-400 text-sm">
+                      <span className="dark:text-jacarta-100 text-jacarta-100 text-sm">
                         Description :{" "}
                         <span className="text-red text-base ml-2">{errors.descriptionError}</span>
                       </span>
@@ -130,7 +130,7 @@ const PreviewModal = ({
                   </p>
 
                   {link?.length ? (
-                    <p className="font-display  mb-2 block text-jacarta-400 text-sm">
+                    <p className="font-display  mb-2 block text-jacarta-100 text-sm">
                       Link :{" "}
                       {!errors?.linkError ? (
                         <span className="dark:text-white text-base ml-2"> {link} </span>
@@ -143,12 +143,12 @@ const PreviewModal = ({
                   )}
                   {imageURLSteps?.length > 0 &&
                     previewImage.filter((item) => item).length < imageURLSteps?.length && (
-                      <p className="font-display  mb-2 block text-jacarta-400 text-sm">
+                      <p className="font-display  mb-2 block text-jacarta-100 text-sm">
                         Image preview :{" "}
                         <span className="text-red text-base ml-2"> {errors.imageError}</span>
                       </p>
                     )}
-                  <p className="font-display  mb-2 block text-jacarta-400 text-sm">
+                  <p className="font-display  mb-2 block text-jacarta-100 text-sm">
                     {startDate ? (
                       <span>
                         Start Date :{" "}
@@ -166,7 +166,7 @@ const PreviewModal = ({
                     )}
                   </p>
                   {endDate ? (
-                    <p className="font-display  mb-2 block text-jacarta-400 text-sm">
+                    <p className="font-display  mb-2 block text-jacarta-100 text-sm">
                       End Date :{" "}
                       {!errors.endDateError ? (
                         <span className="dark:text-white text-base ml-2">
@@ -181,7 +181,7 @@ const PreviewModal = ({
                     ""
                   )}
                   {selectedNumber ? (
-                    <p className="font-display  mb-2 block text-jacarta-400 text-sm">
+                    <p className="font-display  mb-2 block text-jacarta-100 text-sm">
                       Number of Items :{" "}
                       {!errors.numberError ? (
                         <span className="dark:text-white text-base ml-2"> {selectedNumber} </span>
@@ -193,7 +193,7 @@ const PreviewModal = ({
                     ""
                   )}
                   {selectedParameter ? (
-                    <p className="font-display  mb-2 block text-jacarta-400 text-sm">
+                    <p className="font-display  mb-2 block text-jacarta-100 text-sm">
                       Type of Ad :{" "}
                       {!errors.typeAdError && !errors.imageRatioError ? (
                         displayedParameter.map((item, index) => (
@@ -219,7 +219,7 @@ const PreviewModal = ({
                     ""
                   )}
                   {selectedStartingPrice || errors.startingPriceError ? (
-                    <p className="font-display  mb-2 block text-jacarta-400 text-sm">
+                    <p className="font-display  mb-2 block text-jacarta-100 text-sm">
                       Unit starting Price :{" "}
                       {!errors.startingPriceError ? (
                         <span className="dark:text-white text-base ml-2">
@@ -235,7 +235,7 @@ const PreviewModal = ({
                     ""
                   )}
                   {selectedUnitPrice || errors.unitPriceError ? (
-                    <p className="font-display  mb-2 block text-jacarta-400 text-sm">
+                    <p className="font-display  mb-2 block text-jacarta-100 text-sm">
                       Unit Price :{" "}
                       {!errors.unitPriceError ? (
                         <span className="dark:text-white text-base ml-2">
@@ -251,7 +251,7 @@ const PreviewModal = ({
                     ""
                   )}
                   {symbolContract || selectedCurrency ? (
-                    <p className="font-display  mb-2 block text-jacarta-400 text-sm">
+                    <p className="font-display  mb-2 block text-jacarta-100 text-sm">
                       Currency :{" "}
                       {!errors.currencyError ? (
                         <span className="dark:text-white text-base ml-2"> {symbolContract} </span>
@@ -263,7 +263,7 @@ const PreviewModal = ({
                     ""
                   )}
                   {selectedRoyalties ? (
-                    <p className="font-display  mb-2 block text-jacarta-400 text-sm">
+                    <p className="font-display  mb-2 block text-jacarta-100 text-sm">
                       Royalties :{" "}
                       {!errors.royaltyError ? (
                         <span className="dark:text-white text-base ml-2">
@@ -278,7 +278,7 @@ const PreviewModal = ({
                     ""
                   )}
                   {protocolFees ? (
-                    <p className="font-display  mb-2 block text-jacarta-400 text-sm">
+                    <p className="font-display  mb-2 block text-jacarta-100 text-sm">
                       Protocol fees :{" "}
                       <span className="dark:text-white text-base ml-2"> {protocolFees} % </span>
                     </p>
@@ -286,7 +286,7 @@ const PreviewModal = ({
                     ""
                   )}
                   {terms.length > 0 ? (
-                    <p className="font-display  mb-2 block text-jacarta-400 text-sm">
+                    <p className="font-display  mb-2 block text-jacarta-100 text-sm">
                       Terms :{" "}
                       <span className="dark:text-white text-base ml-2">
                         {" "}
@@ -302,13 +302,13 @@ const PreviewModal = ({
                     <div className="mb-6  flex-col items-center justify-center " key={index}>
                       <label
                         htmlFor="item-description"
-                        className="font-display text-jacarta-400 text-sm text-center mb-2 block "
+                        className="font-display text-jacarta-100 text-sm text-center mb-2 block "
                       >
                         Image {imageUrlVariants[index] && `( ratio ${imageUrlVariants[index]} )`}{" "}
                         preview
                       </label>
                       <div
-                        className="dark:bg-jacarta-700 dark:border-jacarta-600 border-jacarta-100  group relative flex max-w-md flex-col items-center justify-center rounded-lg border-2 border-dashed"
+                        className="dark:bg-secondaryBlack dark:border-jacarta-600 border-jacarta-100  group relative flex max-w-md flex-col items-center justify-center rounded-lg border-2 border-dashed"
                         style={{
                           width:
                             imageUrlVariants.length > 0
@@ -370,7 +370,7 @@ const PreviewModal = ({
                           error: "Transaction rejected 🤯"
                         });
                       }}
-                      className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate ? "btn-disabled" : "!bg-accent !cursor-pointer"} `}
+                      className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate ? "btn-disabled !text-black" : "!bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer"} `}
                       isDisabled={!validate || isLoadingButton}
                     >
                       {isLoadingButton ? <Spinner size="sm" color="default" /> : buttonTitle}
@@ -386,7 +386,7 @@ const PreviewModal = ({
                           error: "Approval rejected 🤯"
                         });
                       }}
-                      className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate ? "btn-disabled" : "!bg-accent !cursor-pointer"} `}
+                      className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate ? "btn-disabled !text-black" : "!bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer"} `}
                       isDisabled={!validate || isLoadingButton}
                     >
                       {isLoadingButton ? <Spinner size="sm" color="default" /> : "Approve"}
@@ -394,13 +394,13 @@ const PreviewModal = ({
                   )
                 ) : successFullUploadModal.hrefButton !== null ? (
                   <Link href={successFullUploadModal.hrefButton}>
-                    <button className="!rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all !bg-accent !cursor-pointer">
+                    <button className="!rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all !bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer">
                       {successFullUploadModal.buttonTitle}
                     </button>
                   </Link>
                 ) : (
                   <button
-                    className="!rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all !bg-accent !cursor-pointer"
+                    className="!rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all !bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer"
                     onClick={() => handlePreviewModal()}
                   >
                     Close

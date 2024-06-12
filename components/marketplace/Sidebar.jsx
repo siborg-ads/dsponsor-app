@@ -43,7 +43,7 @@ export default function Sidebar({ setFilterTypes }) {
       <div className="mt-4 pt-4">
         <h2 id="filters-chains-heading">
           <button
-            className="relative flex w-full items-center justify-between py-3 text-left font-display text-xl text-jacarta-700 dark:text-white"
+            className="relative flex w-full items-center justify-between py-3 text-left font-display text-xl text-jacarta-900 dark:text-white"
             type="button"
             onClick={toggleChains}
             aria-expanded={isChainsOpen}
@@ -73,7 +73,7 @@ export default function Sidebar({ setFilterTypes }) {
                 <label className="flex items-center cursor-pointer w-full">
                   <input
                     type="checkbox"
-                    className="h-5 w-5 mr-2 rounded border-jacarta-200 text-accent checked:bg-accent focus:ring-accent/20 focus:ring-offset-0 dark:border-jacarta-500 dark:bg-jacarta-600"
+                    className="h-5 w-5 mr-2 rounded border-jacarta-200 text-primaryPurple checked:bg-primaryPurple focus:ring-primaryPurple/20 focus:ring-offset-0 dark:border-jacarta-500 dark:bg-jacarta-600"
                     onChange={(e) =>
                       handleFilterChange(elm[1].chainName, e.target.checked, "chain")
                     }
@@ -81,7 +81,7 @@ export default function Sidebar({ setFilterTypes }) {
                   <div className="backdrop-blur-sm mr-1 w-7 h-7 rounded-[0.625rem] flex justify-center items-center">
                     <Image src={elm[1].logoURL} width={15} height={15} alt="logo" loading="lazy" />
                   </div>
-                  <span className="font-display text-sm font-semibold text-jacarta-700 dark:text-white">
+                  <span className="font-display text-sm font-semibold text-jacarta-900 dark:text-white">
                     {elm[1].chainName}
                   </span>
                 </label>
@@ -95,7 +95,7 @@ export default function Sidebar({ setFilterTypes }) {
       <div className="mt-4 pt-4">
         <h2 id="filters-status-heading">
           <button
-            className="relative flex w-full items-center justify-between py-3 text-left font-display text-xl text-jacarta-700 dark:text-white"
+            className="relative flex w-full items-center justify-between py-3 text-left font-display text-xl text-jacarta-900 dark:text-white"
             type="button"
             onClick={toggleStatus}
             aria-expanded={isStatusOpen}
@@ -126,7 +126,7 @@ export default function Sidebar({ setFilterTypes }) {
                   <input
                     type="checkbox"
                     id="terms"
-                    className="h-5 w-5 mr-2 rounded border-jacarta-200 text-accent checked:bg-accent focus:ring-accent/20 focus:ring-offset-0 dark:border-jacarta-500 dark:bg-jacarta-600"
+                    className="h-5 w-5 mr-2 rounded border-jacarta-200 text-primaryPurple checked:bg-primaryPurple focus:ring-primaryPurple/20 focus:ring-offset-0 dark:border-jacarta-500 dark:bg-jacarta-600"
                     onChange={(e) =>
                       handleFilterChange(elm.listingType, e.target.checked, "status")
                     }
@@ -143,7 +143,7 @@ export default function Sidebar({ setFilterTypes }) {
       {/* <div className="mt-4 pt-4">
         <h2 id="filters-price-heading">
           <button
-            className="accordion-button relative flex w-full items-center justify-between py-3 text-left font-display text-xl text-jacarta-700 dark:text-white"
+            className="accordion-button relative flex w-full items-center justify-between py-3 text-left font-display text-xl text-jacarta-900 dark:text-white"
             type="button"
             data-bs-toggle="collapse"
             data-bs-target="#filters-price"
@@ -160,7 +160,7 @@ export default function Sidebar({ setFilterTypes }) {
         <div id="filters-price" className="mt-3 mb-8 space-y-4 collapse show visible" aria-labelledby="filters-price-heading">
           <div className="dropdown relative cursor-pointer">
             <div
-              className="dropdown-toggle flex items-center justify-between rounded-lg border border-jacarta-100 bg-white w-full h-12 py-3 px-4 dark:border-jacarta-600 dark:bg-jacarta-700 dark:text-white"
+              className="dropdown-toggle flex items-center justify-between rounded-lg border border-jacarta-100 bg-white w-full h-12 py-3 px-4 dark:border-jacarta-600 dark:bg-secondaryBlack dark:text-white"
               role="button"
               id="filtersPrice"
               data-bs-toggle="dropdown"
@@ -178,11 +178,11 @@ export default function Sidebar({ setFilterTypes }) {
                 <button
                   key={i}
                   onClick={() => setCurrency(elm)}
-                  className="dropdown-item flex w-full items-center justify-between rounded-xl px-5 py-2 text-left font-display text-sm text-jacarta-700 transition-colors hover:bg-jacarta-50 dark:text-white dark:hover:bg-jacarta-600"
+                  className="dropdown-item flex w-full items-center justify-between rounded-xl px-5 py-2 text-left font-display text-sm text-jacarta-900 transition-colors hover:bg-jacarta-50 dark:text-white dark:hover:bg-jacarta-600"
                 >
                   {elm}
                   {currency == elm && (
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" className="h-4 w-4 fill-accent">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" className="h-4 w-4 fill-primaryPurple">
                       <path fill="none" d="M0 0h24v24H0z"></path>
                       <path d="M10 15.172l9.192-9.193 1.415 1.414L10 18l-6.364-6.364 1.414-1.414z"></path>
                     </svg>
@@ -194,18 +194,18 @@ export default function Sidebar({ setFilterTypes }) {
 
           <div className="flex space-x-4">
             <input
-              className="w-full rounded-lg border-jacarta-100 py-3 hover:ring-2 hover:ring-accent/10 focus:ring-accent dark:border-jacarta-600 dark:bg-jacarta-700 dark:text-white dark:placeholder:text-jacarta-300"
+              className="w-full rounded-lg border-jacarta-100 py-3 hover:ring-2 hover:ring-primaryPurple/10 focus:ring-primaryPurple dark:border-jacarta-600 dark:bg-secondaryBlack dark:text-white dark:placeholder:text-jacarta-100"
               type="text"
               placeholder="Min"
             />
             <input
-              className="w-full rounded-lg border-jacarta-100 py-3 hover:ring-2 hover:ring-accent/10 focus:ring-accent dark:border-jacarta-600 dark:bg-jacarta-700 dark:text-white dark:placeholder:text-jacarta-300"
+              className="w-full rounded-lg border-jacarta-100 py-3 hover:ring-2 hover:ring-primaryPurple/10 focus:ring-primaryPurple dark:border-jacarta-600 dark:bg-secondaryBlack dark:text-white dark:placeholder:text-jacarta-100"
               type="text"
               placeholder="Max"
             />
           </div>
 
-          <button type="submit" className="rounded-full bg-accent-lighter w-full py-3 px-8 text-center font-semibold text-white transition-all hover:bg-accent-dark">
+          <button type="submit" className="rounded-full bg-primaryPurple-lighter w-full py-3 px-8 text-center font-semibold text-white transition-all hover:bg-primaryPurple-dark">
             Apply
           </button>
         </div>
@@ -215,7 +215,7 @@ export default function Sidebar({ setFilterTypes }) {
       {/* <div className="mt-4 pt-4">
         <h2 id="filters-categories-heading">
           <button
-            className="accordion-button relative flex w-full items-center justify-between py-3 text-left font-display text-xl text-jacarta-700 dark:text-white"
+            className="accordion-button relative flex w-full items-center justify-between py-3 text-left font-display text-xl text-jacarta-900 dark:text-white"
             type="button"
             data-bs-toggle="collapse"
             data-bs-target="#filters-categories"
@@ -236,8 +236,8 @@ export default function Sidebar({ setFilterTypes }) {
                 <button
                   className={
                     category == elm
-                      ? "group flex h-9 items-center rounded-lg border border-accent bg-accent px-4 font-display text-sm font-semibold text-white transition-colors hover:border-transparent hover:bg-accent hover:text-white dark:border-jacarta-600 dark:bg-jacarta-900 dark:text-white dark:hover:border-transparent dark:hover:bg-accent dark:hover:text-white"
-                      : "group flex h-9 items-center rounded-lg border border-jacarta-100 bg-white px-4 font-display text-sm font-semibold text-jacarta-500 transition-colors hover:border-transparent hover:bg-accent hover:text-white dark:border-jacarta-600 dark:bg-jacarta-900 dark:text-white dark:hover:border-transparent dark:hover:bg-accent dark:hover:text-white"
+                      ? "group flex h-9 items-center rounded-lg border border-primaryPurple bg-primaryPurple px-4 font-display text-sm font-semibold text-white transition-colors hover:border-transparent hover:bg-primaryPurple hover:text-white dark:border-jacarta-600 dark:bg-primaryBlack dark:text-white dark:hover:border-transparent dark:hover:bg-primaryPurple dark:hover:text-white"
+                      : "group flex h-9 items-center rounded-lg border border-jacarta-100 bg-white px-4 font-display text-sm font-semibold text-jacarta-100 transition-colors hover:border-transparent hover:bg-primaryPurple hover:text-white dark:border-jacarta-600 dark:bg-primaryBlack dark:text-white dark:hover:border-transparent dark:hover:bg-primaryPurple dark:hover:text-white"
                   }
                 >
                   <span>{elm}</span>

@@ -28,7 +28,7 @@ const Collection_category = ({ bgWhite = false }) => {
                   className="dark:bg-jacarta-800 bg-light-base rounded-2.5xl p-12 lg:w-1/3"
                   key={parentId}
                 >
-                  <h2 className="text-jacarta-700 font-display mb-8 text-center text-3xl font-semibold dark:text-white">
+                  <h2 className="text-jacarta-900 font-display mb-8 text-center text-3xl font-semibold dark:text-white">
                     {name}
                   </h2>
 
@@ -45,7 +45,7 @@ const Collection_category = ({ bgWhite = false }) => {
                       return (
                         <div
                           key={id}
-                          className="border-jacarta-100 dark:bg-jacarta-700 rounded-2xl flex border bg-white py-4 px-7 transition-shadow hover:shadow-lg dark:border-transparent"
+                          className="border-jacarta-100 dark:bg-secondaryBlack rounded-2xl flex border bg-white py-4 px-7 transition-shadow hover:shadow-lg dark:border-transparent"
                         >
                           <figure className="mr-4 shrink-0">
                             <Link href={"/collection/" + itemLink} className="relative block">
@@ -56,7 +56,7 @@ const Collection_category = ({ bgWhite = false }) => {
                                 alt={title}
                                 className="rounded-2lg h-12 w-12"
                               />
-                              <div className="dark:border-jacarta-600 bg-jacarta-700 absolute -left-3 top-1/2 flex h-6 w-6 -translate-y-2/4 items-center justify-center rounded-full border-2 border-white text-xs text-white">
+                              <div className="dark:border-jacarta-600 bg-secondaryBlack absolute -left-3 top-1/2 flex h-6 w-6 -translate-y-2/4 items-center justify-center rounded-full border-2 border-white text-xs text-white">
                                 {id}
                               </div>
                               {icon && (
@@ -80,11 +80,11 @@ const Collection_category = ({ bgWhite = false }) => {
                           </figure>
                           <div>
                             <Link href={"/collection/" + itemLink} className="block">
-                              <span className="font-display text-jacarta-700 hover:text-accent font-semibold dark:text-white">
+                              <span className="font-display text-jacarta-900 hover:text-primaryPurple font-semibold dark:text-white">
                                 {title}
                               </span>
                             </Link>
-                            <span className="dark:text-jacarta-300 text-sm">{amount} ETH</span>
+                            <span className="dark:text-jacarta-100 text-sm">{amount} ETH</span>
                           </div>
                         </div>
                       );
@@ -92,7 +92,7 @@ const Collection_category = ({ bgWhite = false }) => {
                   </div>
                   <Link
                     href="/collection/avatar_1"
-                    className="text-accent mt-8 block text-center text-sm font-bold tracking-tight"
+                    className="text-primaryPurple mt-8 block text-center text-sm font-bold tracking-tight"
                   >
                     View All Drops
                   </Link>

@@ -16,17 +16,17 @@ const FilterRightMenu = () => {
   };
 
   return (
-    <div className="flex flex-shrink-0 items-center text-xs font-medium text-jacarta-500 dark:text-jacarta-300 sm:text-sm">
+    <div className="flex flex-shrink-0 items-center text-xs font-medium text-jacarta-100 dark:text-jacarta-100 sm:text-sm">
       {menuItems.map((menuItem) => (
         <div
           key={menuItem.id}
           className={`flex h-10 w-full cursor-pointer items-center justify-center whitespace-nowrap border ${
             activeMenu === menuItem.id
-              ? "border-transparent bg-accent text-white"
-              : "border-jacarta-100 bg-white dark:border-jacarta-600 dark:bg-jacarta-700"
+              ? "border-transparent bg-primaryPurple text-white"
+              : "border-jacarta-100 bg-white dark:border-jacarta-600 dark:bg-secondaryBlack"
           } p-3 ${menuItem.id === "24h" ? "first:rounded-l-lg" : ""} ${
             menuItem.id === "15m" ? "last:rounded-r-lg" : ""
-          } hover:border-transparent hover:bg-accent hover:text-white sm:px-4 sm:py-2`}
+          } hover:border-transparent hover:bg-primaryPurple hover:text-white sm:px-4 sm:py-2`}
           onClick={() => handleMenuClick(menuItem.id)}
         >
           {menuItem.label}

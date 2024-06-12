@@ -1,7 +1,7 @@
 const TableHeader = () => {
   return (
     <div
-      className="flex items-center justify-between bg-jacarta-50 py-5 px-4 text-jacarta-700 dark:bg-jacarta-800 dark:text-jacarta-100"
+      className="flex items-center justify-between bg-jacarta-50 py-5 px-4 text-jacarta-900 dark:bg-jacarta-800 dark:text-jacarta-100"
       role="row"
     >
       <div className="w-1/2 truncate text-left sm:w-[30%] lg:w-[24%]" role="columnheader">
@@ -29,7 +29,7 @@ const TableHeader = () => {
         </span>
       </div>
       <div
-        className="hidden w-[18%] cursor-pointer items-center justify-end text-right text-accent sm:flex md:w-[14%] lg:w-[10%]"
+        className="hidden w-[18%] cursor-pointer items-center justify-end text-right text-primaryPurple sm:flex md:w-[14%] lg:w-[10%]"
         role="columnheader"
       >
         30m Mints
@@ -38,7 +38,7 @@ const TableHeader = () => {
           viewBox="0 0 24 24"
           width={16}
           height={16}
-          className="ml-1 flex-shrink-0 fill-accent"
+          className="ml-1 flex-shrink-0 fill-primaryPurple"
         >
           <path fill="none" d="M0 0h24v24H0z" />
           <path d="M12 13.172l4.95-4.95 1.414 1.414L12 16 5.636 9.636 7.05 8.222z" />

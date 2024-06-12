@@ -16,7 +16,7 @@ const DropdownFilter = () => {
   return (
     <div className="dropdown relative cursor-pointer">
       <div
-        className="dropdown-toggle flex items-center justify-between rounded-lg border border-jacarta-100 bg-white w-full h-12 py-3 px-4 dark:border-jacarta-600 dark:bg-jacarta-700 dark:text-white"
+        className="dropdown-toggle flex items-center justify-between rounded-lg border border-jacarta-100 bg-white w-full h-12 py-3 px-4 dark:border-jacarta-600 dark:bg-secondaryBlack dark:text-white"
         role="button"
         id="filtersPrice"
         data-bs-toggle="dropdown"

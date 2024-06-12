@@ -114,10 +114,10 @@ const ManageSpaceContainer = () => {
     }, 2000);
   }, [copied]);
   const metadata = {
-    title: "Manage || SiborgAds - The Web3 Monetization Solution",
+    title: "Manage || SiBorg Ads - The Web3 Monetization Solution",
     keyword:
       "audience engagement, web3, creator economic, NFT, creator monetization, creator economy, creator token, creator coin, creator tokenization, creator economy",
-    desc: "Manage your ad spaces on SiborgAds."
+    desc: "Manage your ad spaces on SiBorg Ads."
   };
   return (
     <>
@@ -141,7 +141,7 @@ const ManageSpaceContainer = () => {
           <div className="absolute left-1/2 top-0 z-10 flex -translate-x-1/2 -translate-y-1/2 items-center justify-center">
             <div className="container">
               <div className="text-center">
-                <div className="dark:bg-jacarta-700 dark:border-jacarta-600 border-jacarta-100  inline-flex items-center justify-center rounded-full border bg-white py-1.5 px-4">
+                <div className="dark:bg-secondaryBlack dark:border-primaryBlack border-jacarta-100  inline-flex items-center justify-center rounded-full border bg-white py-1.5 px-4">
                   <Tippy
                     hideOnClick={false}
                     content={copied ? <span>copied</span> : <span>copy</span>}
@@ -149,7 +149,7 @@ const ManageSpaceContainer = () => {
                     <button
                       style={{ maxWidth: "10rem" }}
                       onClick={() => handleCopy(userAddress, setCopied)}
-                      className="dark:text-jacarta-200  select-none overflow-hidden text-ellipsis whitespace-nowrap"
+                      className="dark:text-jacarta-200 select-none overflow-hidden text-ellipsis whitespace-nowrap"
                     >
                       <span>{address === userAddress ? "You" : userAddress}</span>
                     </button>

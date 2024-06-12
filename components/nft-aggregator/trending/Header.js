@@ -5,7 +5,7 @@ const Header = () => {
   return (
     <div className="flex flex-col justify-between gap-4 rounded-t-2lg border-b border-jacarta-100 bg-jacarta-50 p-4 dark:border-jacarta-600 dark:bg-jacarta-800 md:flex-row md:items-center md:gap-6">
       <div className="hidden flex-shrink-0 items-center gap-3 md:flex">
-        <div className="flex h-10 w-10 group cursor-pointer items-center justify-center rounded-2lg dark:bg-jacarta-700 dark:border-jacarta-600 border border-jacarta-100 bg-white dark:hover:bg-accent hover:bg-accent hover:border-accent">
+        <div className="flex h-10 w-10 group cursor-pointer items-center justify-center rounded-2lg dark:bg-secondaryBlack dark:border-jacarta-600 border border-jacarta-100 bg-white dark:hover:bg-primaryPurple hover:bg-primaryPurple hover:border-primaryPurple">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
@@ -18,16 +18,16 @@ const Header = () => {
           </svg>
         </div>
         <div className="flex flex-shrink-0 flex-col">
-          <div className="text-base font-medium text-jacarta-500 dark:text-jacarta-300 md:whitespace-nowrap">
+          <div className="text-base font-medium text-jacarta-100 dark:text-jacarta-100 md:whitespace-nowrap">
             196 results
           </div>
-          <div className="text-2xs text-jacarta-300 dark:text-jacarta-400">10 min ago</div>
+          <div className="text-2xs text-jacarta-100 dark:text-jacarta-100">10 min ago</div>
         </div>
       </div>
       <Form />
       <div className="flex flex-wrap justify-between gap-2">
         <div className="flex flex-shrink-0 items-center gap-3 md:hidden">
-          <div className="flex h-10 w-10 group cursor-pointer items-center justify-center rounded-2lg dark:bg-jacarta-700 dark:border-jacarta-600 border border-jacarta-100 bg-white dark:hover:bg-accent hover:bg-accent hover:border-accent">
+          <div className="flex h-10 w-10 group cursor-pointer items-center justify-center rounded-2lg dark:bg-secondaryBlack dark:border-jacarta-600 border border-jacarta-100 bg-white dark:hover:bg-primaryPurple hover:bg-primaryPurple hover:border-primaryPurple">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 24 24"
@@ -40,10 +40,10 @@ const Header = () => {
             </svg>
           </div>
           <div className="flex flex-shrink-0 flex-col">
-            <div className="text-left text-base font-medium text-jacarta-500 dark:text-jacarta-300 md:whitespace-nowrap">
+            <div className="text-left text-base font-medium text-jacarta-100 dark:text-jacarta-100 md:whitespace-nowrap">
               196 results
             </div>
-            <div className="text-left text-2xs text-jacarta-300 dark:text-jacarta-400">
+            <div className="text-left text-2xs text-jacarta-100 dark:text-jacarta-100">
               10 min ago
             </div>
           </div>

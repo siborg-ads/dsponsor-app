@@ -71,12 +71,12 @@ const HomeCarousel = ({ data, isToken = false, arrowName }) => {
       </Swiper>
       {/* <!-- Slider Navigation --> */}
       <div
-        className={`group bids-swiper-button-prev-${arrowName} swiper-button-prev shadow-white-volume absolute !top-1/2 !-left-4 z-10 -mt-6 flex !h-12 !w-12 cursor-pointer items-center justify-center rounded-full bg-white p-3 text-jacarta-700 text-xl sm:!-left-6 after:hidden`}
+        className={`group bids-swiper-button-prev-${arrowName} swiper-button-prev shadow-white-volume absolute !top-1/2 !-left-4 z-10 -mt-6 flex !h-12 !w-12 cursor-pointer items-center justify-center rounded-full bg-white p-3 text-jacarta-900 text-xl sm:!-left-6 after:hidden`}
       >
         <MdKeyboardArrowLeft />
       </div>
       <div
-        className={`group bids-swiper-button-next-${arrowName} swiper-button-next shadow-white-volume absolute !top-1/2 !-right-4 z-10 -mt-6 flex !h-12 !w-12 cursor-pointer items-center justify-center rounded-full bg-white p-3 text-jacarta-700 text-xl sm:!-right-6 after:hidden`}
+        className={`group bids-swiper-button-next-${arrowName} swiper-button-next shadow-white-volume absolute !top-1/2 !-right-4 z-10 -mt-6 flex !h-12 !w-12 cursor-pointer items-center justify-center rounded-full bg-white p-3 text-jacarta-900 text-xl sm:!-right-6 after:hidden`}
       >
         <MdKeyboardArrowRight />
       </div>

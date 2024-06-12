@@ -153,7 +153,7 @@ const DataTable = () => {
       {data.map((item) => (
         <div
           key={item.id}
-          className="flex justify-between border-t border-jacarta-100 py-2 px-4 transition-shadow hover:shadow-lg dark:border-jacarta-600 dark:bg-jacarta-900"
+          className="flex justify-between border-t border-jacarta-100 py-2 px-4 transition-shadow hover:shadow-lg dark:border-jacarta-600 dark:bg-primaryBlack"
           role="row"
         >
           <div className="hidden w-[14%] items-center -space-x-2 lg:flex">
@@ -185,7 +185,7 @@ const DataTable = () => {
                 loading="lazy"
               />
             </figure>
-            <span className="text-sm text-jacarta-700 dark:text-white">{item.itemName}</span>
+            <span className="text-sm text-jacarta-900 dark:text-white">{item.itemName}</span>
           </div>
           <div
             className="hidden w-3/12 items-center justify-end whitespace-nowrap md:flex md:w-2/12"
@@ -208,7 +208,7 @@ const DataTable = () => {
           <div className="hidden w-3/12 items-center justify-end md:w-2/12 lg:flex" role="cell">
             -
           </div>
-          <div className="hidden w-2/12 items-center justify-end text-accent md:flex" role="cell">
+          <div className="hidden w-2/12 items-center justify-end text-primaryPurple md:flex" role="cell">
             <a href="#">{item.transactionHash}</a>
           </div>
           <div className="hidden w-2/12 items-center justify-end md:flex" role="cell">

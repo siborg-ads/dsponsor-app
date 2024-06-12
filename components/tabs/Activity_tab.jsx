@@ -8,9 +8,9 @@ const Activity_tab = () => {
       {/* <!-- Activity --> */}
       <div className="tab-pane fade" id="activity" role="tabpanel" aria-labelledby="activity-tab">
         {/* <!-- Filter --> */}
-        <div className="dark:bg-jacarta-700 dark:border-jacarta-600 border-jacarta-100 bg-light-base border border-b-0 px-4 pt-5 pb-2.5">
+        <div className="dark:bg-secondaryBlack dark:border-jacarta-600 border-jacarta-100 bg-light-base border border-b-0 px-4 pt-5 pb-2.5">
           <div className="flex flex-wrap">
-            <button className="dark:border-jacarta-600 dark:bg-jacarta-700 group dark:hover:bg-accent hover:bg-accent border-jacarta-100 mr-2.5 mb-2.5 inline-flex items-center rounded-xl border bg-white px-4 py-3 hover:border-transparent hover:text-white dark:text-white dark:hover:border-transparent">
+            <button className="dark:border-jacarta-600 dark:bg-secondaryBlack group dark:hover:bg-primaryPurple hover:bg-primaryPurple border-jacarta-100 mr-2.5 mb-2.5 inline-flex items-center rounded-xl border bg-white px-4 py-3 hover:border-transparent hover:text-white dark:text-white dark:hover:border-transparent">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 24 24"
@@ -23,7 +23,7 @@ const Activity_tab = () => {
               </svg>
               <span className="text-2xs font-medium">Listing</span>
             </button>
-            <button className="dark:hover:bg-accent-dark hover:bg-accent-dark bg-accent mr-2.5 mb-2.5 inline-flex items-center rounded-xl border border-transparent px-4 py-3">
+            <button className="dark:hover:bg-primaryPurple-dark hover:bg-primaryPurple-dark bg-primaryPurple mr-2.5 mb-2.5 inline-flex items-center rounded-xl border border-transparent px-4 py-3">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 24 24"
@@ -36,7 +36,7 @@ const Activity_tab = () => {
               </svg>
               <span className="text-2xs font-medium text-white">Bids</span>
             </button>
-            <button className="dark:border-jacarta-600 dark:bg-jacarta-700 group dark:hover:bg-accent hover:bg-accent border-jacarta-100 mr-2.5 mb-2.5 inline-flex items-center rounded-xl border bg-white px-4 py-3 hover:border-transparent hover:text-white dark:text-white dark:hover:border-transparent">
+            <button className="dark:border-jacarta-600 dark:bg-secondaryBlack group dark:hover:bg-primaryPurple hover:bg-primaryPurple border-jacarta-100 mr-2.5 mb-2.5 inline-flex items-center rounded-xl border bg-white px-4 py-3 hover:border-transparent hover:text-white dark:text-white dark:hover:border-transparent">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 24 24"
@@ -49,7 +49,7 @@ const Activity_tab = () => {
               </svg>
               <span className="text-2xs font-medium">Transfers</span>
             </button>
-            <button className="dark:border-jacarta-600 dark:bg-jacarta-700 group dark:hover:bg-accent hover:bg-accent border-jacarta-100 mr-2.5 mb-2.5 inline-flex items-center rounded-xl border bg-white px-4 py-3 hover:border-transparent hover:text-white dark:text-white dark:hover:border-transparent">
+            <button className="dark:border-jacarta-600 dark:bg-secondaryBlack group dark:hover:bg-primaryPurple hover:bg-primaryPurple border-jacarta-100 mr-2.5 mb-2.5 inline-flex items-center rounded-xl border bg-white px-4 py-3 hover:border-transparent hover:text-white dark:text-white dark:hover:border-transparent">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 24 24"
@@ -67,31 +67,31 @@ const Activity_tab = () => {
 
         <div
           role="table"
-          className="scrollbar-custom dark:bg-jacarta-700 dark:border-jacarta-600 border-jacarta-100 max-h-72 w-full overflow-y-auto rounded-lg rounded-tl-none border bg-white text-sm dark:text-white"
+          className="scrollbar-custom dark:bg-secondaryBlack dark:border-jacarta-600 border-jacarta-100 max-h-72 w-full overflow-y-auto rounded-lg rounded-tl-none border bg-white text-sm dark:text-white"
         >
           <div className="dark:bg-jacarta-600 bg-light-base sticky top-0 flex" role="row">
             <div className="w-[17%] py-2 px-4" role="columnheader">
-              <span className="text-jacarta-700 dark:text-jacarta-100 w-full overflow-hidden text-ellipsis">
+              <span className="text-jacarta-900 dark:text-jacarta-100 w-full overflow-hidden text-ellipsis">
                 Event
               </span>
             </div>
             <div className="w-[17%] py-2 px-4" role="columnheader">
-              <span className="text-jacarta-700 dark:text-jacarta-100 w-full overflow-hidden text-ellipsis">
+              <span className="text-jacarta-900 dark:text-jacarta-100 w-full overflow-hidden text-ellipsis">
                 Price
               </span>
             </div>
             <div className="w-[22%] py-2 px-4" role="columnheader">
-              <span className="text-jacarta-700 dark:text-jacarta-100 w-full overflow-hidden text-ellipsis">
+              <span className="text-jacarta-900 dark:text-jacarta-100 w-full overflow-hidden text-ellipsis">
                 From
               </span>
             </div>
             <div className="w-[22%] py-2 px-4" role="columnheader">
-              <span className="text-jacarta-700 dark:text-jacarta-100 w-full overflow-hidden text-ellipsis">
+              <span className="text-jacarta-900 dark:text-jacarta-100 w-full overflow-hidden text-ellipsis">
                 To
               </span>
             </div>
             <div className="w-[22%] py-2 px-4" role="columnheader">
-              <span className="text-jacarta-700 dark:text-jacarta-100 w-full overflow-hidden text-ellipsis">
+              <span className="text-jacarta-900 dark:text-jacarta-100 w-full overflow-hidden text-ellipsis">
                 Date
               </span>
             </div>
@@ -131,7 +131,7 @@ const Activity_tab = () => {
                   className="dark:border-jacarta-600 border-jacarta-100 flex w-[22%] items-center border-t py-4 px-4"
                   role="cell"
                 >
-                  <Link href="#" className="text-accent">
+                  <Link href="#" className="text-primaryPurple">
                     {from}
                   </Link>
                 </div>
@@ -139,7 +139,7 @@ const Activity_tab = () => {
                   className="dark:border-jacarta-600 border-jacarta-100 flex w-[22%] items-center border-t py-4 px-4"
                   role="cell"
                 >
-                  <Link href="#" className="text-accent">
+                  <Link href="#" className="text-primaryPurple">
                     {to}
                   </Link>
                 </div>
@@ -149,7 +149,7 @@ const Activity_tab = () => {
                 >
                   <Link
                     href="#"
-                    className="text-accent flex flex-wrap items-center"
+                    className="text-primaryPurple flex flex-wrap items-center"
                     target="_blank"
                     rel="nofollow noopener"
                     title="Opens in a new window"

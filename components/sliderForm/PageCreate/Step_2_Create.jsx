@@ -2,7 +2,7 @@ const Step_2_Create = ({ stepsRef, styles, setName, setDescription }) => {
   return (
     <div ref={(el) => (stepsRef.current[1] = el)} className={styles.form__step}>
       <div className="pr-6 pl-2">
-        <h3 className="mb-2">Step 2 : Name & Description</h3>
+        <h3 className="mb-2 text-jacarta-200">Step 2 : Name & Description</h3>
         <p className="text-center pt-2  mb-14 dark:text-white">
           Provide offer&apos;s name and a brief description.
         </p>
@@ -10,14 +10,14 @@ const Step_2_Create = ({ stepsRef, styles, setName, setDescription }) => {
         <div className="mb-6">
           <label
             htmlFor="item-name"
-            className="font-display text-jacarta-700 mb-2 block dark:text-white"
+            className="font-display text-jacarta-900 mb-2 block dark:text-white"
           >
             Title<span className="text-red">*</span>
           </label>
           <input
             type="text"
             id="item-name"
-            className="dark:bg-jacarta-700 border-jacarta-100 hover:ring-accent/10 focus:ring-accent dark:border-jacarta-600 dark:placeholder:text-jacarta-300 w-full rounded-lg py-3 px-3 hover:ring-2 dark:text-white"
+            className="dark:bg-secondaryBlack border-jacarta-100 hover:ring-primaryPurple/10 focus:ring-primaryPurple dark:border-jacarta-600 dark:placeholder:text-jacarta-100 w-full rounded-lg py-3 px-3 hover:ring-2 dark:text-white"
             placeholder="Provide a title for your offer."
             onChange={(e) => setName(e.target.value)}
             required
@@ -27,17 +27,17 @@ const Step_2_Create = ({ stepsRef, styles, setName, setDescription }) => {
         <div className="mb-6">
           <label
             htmlFor="item-description"
-            className="font-display text-jacarta-700 mb-2 block dark:text-white"
+            className="font-display text-jacarta-900 mb-2 block dark:text-white"
           >
             Description<span className="text-red">*</span>
           </label>
-          <p className="dark:text-jacarta-300 text-jacarta-400 text-2xs mb-3">
+          <p className="dark:text-jacarta-100 text-jacarta-100 text-2xs mb-3">
             The description should briefly introduce your media, specify the location of the ad
             spaces, and describe the type of content expected.
           </p>
           <textarea
             id="item-description"
-            className="dark:bg-jacarta-700 border-jacarta-100 hover:ring-accent/10 focus:ring-accent dark:border-jacarta-600 dark:placeholder:text-jacarta-300 w-full rounded-lg py-3 px-3 hover:ring-2 dark:text-white"
+            className="dark:bg-secondaryBlack border-jacarta-100 hover:ring-primaryPurple/10 focus:ring-primaryPurple dark:border-jacarta-600 dark:placeholder:text-jacarta-100 w-full rounded-lg py-3 px-3 hover:ring-2 dark:text-white"
             rows="4"
             maxLength="250"
             required

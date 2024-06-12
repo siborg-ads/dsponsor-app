@@ -135,7 +135,7 @@ const OfferItem = ({
           style={{
             transitionDuration: "500ms"
           }}
-          className="dark:bg-jacarta-700 cursor-pointer dark:hover:bg-jacarta-800 box-border hover:border-2 hover:-m-1 duration-500 hover:-translate-y-1 dark:hover:border-2 dark:border-jacarta-100 dark:border-opacity-10 border-opacity-10 border-jacarta-900 relative rounded-2xl block border bg-white p-[1.1875rem] transition-shadow hover:shadow-lg text-jacarta-500"
+          className="dark:bg-primaryPurple cursor-pointer dark:hover:bg-opacity-80 box-border hover:border-2 hover:-m-1 duration-1000 hover:duration-1000 hover:-translate-y-1 dark:hover:border-2 dark:border-jacarta-100 dark:border-opacity-10 border-opacity-10 border-jacarta-900 relative rounded-2xl block border bg-white p-4 transition-shadow hover:shadow-lg text-jacarta-100"
         >
           <div className="relative">
             <figure>
@@ -172,11 +172,11 @@ const OfferItem = ({
               style={{
                 transitionDuration: "500ms"
               }}
-              className="bg-jacarta-300 text-jacarta-700 box-border hover:border-2 duration-500 hover:-m-1 dark:hover:border-2 hover:-translate-y-1 dark:border-jacarta-100 border-opacity-10 border dark:border-opacity-10 border-jacarta-900 dark:hover:bg-jacarta-800 hover:bg-jacarta-600 dark:text-jacarta-300 rounded-md p-2"
+              className="bg-jacarta-300 text-jacarta-900 box-border hover:border-2 dark:hover:border-2 hover:-m-1 duration-400 dark:hover:bg-jacarta-800 dark:border-jacarta-100 dark:border-opacity-10 border-opacity-10 border border-jacarta-900 hover:bg-jacarta-600 dark:text-jacarta-100 rounded-md p-2"
             >
               <div
                 style={{ background: "rgba(54, 58, 93, 0.7)", backdropFilter: "blur(20px)" }}
-                className={`absolute ${!isToken ? "-bottom-1" : "bottom-8"} -right-2 flex items-center whitespace-nowrap rounded-md border py-1 px-2`}
+                className={`absolute ${!isToken ? "-bottom-1" : "bottom-8"} -right-2 flex items-center whitespace-nowrap rounded-md py-1 px-2`}
               >
                 <Image
                   src={item?.chainConfig?.logoURL}
@@ -191,7 +191,7 @@ const OfferItem = ({
               <Tippy
                 content={`token  # ${item.tokenData ? item.tokenData : item.tokenId}`}
                 placement="top"
-                className="bg-jacarta-300 text-jacarta-700 box-border hover:border-2 dark:hover:border-2 hover:-m-1 duration-400 dark:hover:bg-jacarta-800 dark:border-jacarta-100 dark:border-opacity-10 border-opacity-10 border border-jacarta-900 hover:bg-jacarta-600 dark:text-jacarta-300 rounded-md p-2"
+                className="bg-jacarta-300 text-jacarta-900 box-border hover:border-2 dark:hover:border-2 hover:-m-1 duration-400 dark:hover:bg-jacarta-800 dark:border-jacarta-100 dark:border-opacity-10 border-opacity-10 border border-jacarta-900 hover:bg-jacarta-600 dark:text-jacarta-100 rounded-md p-2"
               >
                 <div
                   style={{ background: "rgba(54, 58, 93, 0.7)", backdropFilter: "blur(20px)" }}
@@ -204,9 +204,9 @@ const OfferItem = ({
               </Tippy>
             )}
           </div>
-          <div className="mt-4 flex items-center justify-between">
+          <div className="mt-4 flex items-center justify-between gap-2">
             {isSelectionActive ? (
-              <span className="font-display max-w-[150px] text-jacarta-700 hover:text-accent text-base dark:text-white ">
+              <span className="font-display max-w-[150px] text-primaryBlack hover:text-primaryPurple text-base dark:text-white ">
                 {name}
               </span>
             ) : (
@@ -214,7 +214,7 @@ const OfferItem = ({
                 href={url}
                 className="overflow-hidden text-ellipsis whitespace-nowrap max-w-[150px]"
               >
-                <span className="font-display max-w-[150px] text-jacarta-700 hover:text-accent text-base dark:text-white ">
+                <span className="font-display max-w-[150px] text-primaryBlack hover:text-primaryPurple text-base dark:text-white ">
                   {name}
                 </span>
               </Link>
@@ -230,7 +230,7 @@ const OfferItem = ({
             ) : (
               itemStatut === "AUCTION" && (
                 <span
-                  className={`${item.status === "CREATED" ? "text-accent" : item.statut === "COMPLETED" ? "text-green" : "text-red"} text-sm font-medium tracking-tight`}
+                  className={`${item.status === "CREATED" ? "text-primaryPurple" : item.statut === "COMPLETED" ? "text-green" : "text-red"} text-sm font-medium tracking-tight`}
                 >
                   {item.status}
                 </span>
@@ -239,19 +239,19 @@ const OfferItem = ({
           </div>
           <div className="mt-2 text-xs flex items-center justify-between">
             {!isAuction && !isListing ? (
-              <div className="flex justify-between w-full">
-                <span className="dark:text-jacarta-300 text-jacarta-500">
+              <div className="flex justify-between w-full gap-4">
+                <span className="text-jacarta-100">
                   {formatDate(valid_from)} - {formatDate(valid_to)}
                 </span>
-                <span className="dark:text-jacarta-300 text-jacarta-500">
+                <span className="text-jacarta-100">
                   Offer # {isToken ? item?.offerId : item?.id}
                 </span>
               </div>
             ) : (
               (itemStatut === "AUCTION" || itemStatut === "DIRECT") && (
-                <div className="flex justify-between w-full items-center">
+                <div className="flex justify-between w-full items-center gap-4">
                   <div className="flex gap-2 items-center justify-center">
-                    <span className="dark:text-jacarta-300 text-jacarta-500">
+                    <span className="dark:text-jacarta-100 text-jacarta-100">
                       {listingType === "Auction"
                         ? "Auction listing"
                         : listingType === "Direct"
@@ -277,7 +277,7 @@ const OfferItem = ({
                       </svg>
                     )}
                   </div>
-                  <span className="dark:text-jacarta-300 text-jacarta-500">
+                  <span className="dark:text-jacarta-100 text-jacarta-100">
                     Offer #{" "}
                     {item?.nftContract?.adOffers?.[0]
                       ? item?.nftContract?.adOffers?.[0].id
@@ -287,11 +287,11 @@ const OfferItem = ({
               )
             )}
             {/* {!isToken ? (
-              <span className="dark:text-jacarta-300 text-jacarta-500">
+              <span className="dark:text-jacarta-100 text-jacarta-100">
                 {formatDate(valid_from)} - {formatDate(valid_to)}
               </span>
             ) : (
-              <span className={`${adStatut === 0 ? "text-red" : adStatut === 1 ? "text-green" : adStatut === 2 ? "text-accent" : ""} text-sm font-bold`}>
+              <span className={`${adStatut === 0 ? "text-red" : adStatut === 1 ? "text-green" : adStatut === 2 ? "text-primaryPurple" : ""} text-sm font-bold`}>
                 {adStatut === 0 ? "❌ Rejected" : adStatut === 1 ? "✅ Accepted" : adStatut === 2 ? "🔍 Pending" : "Ad space available"}
               </span>
             )} */}

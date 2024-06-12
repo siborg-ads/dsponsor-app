@@ -23,7 +23,7 @@ const AggregratorMain = () => {
           <TabList className="nav nav-tabs mb-4 flex items-center space-x-1 sm:space-x-6">
             <Tab className="nav-item">
               <button
-                className={`nav-link nav-link--style-4 relative flex items-center whitespace-nowrap py-1.5 px-4 font-display font-semibold text-jacarta-400 hover:text-jacarta-700 dark:text-jacarta-200 dark:hover:text-white ${
+                className={`nav-link nav-link--style-4 relative flex items-center whitespace-nowrap py-1.5 px-4 font-display font-semibold text-jacarta-100 hover:text-jacarta-900 dark:text-jacarta-200 dark:hover:text-white ${
                   selectedTabIndex === 0 ? "active" : ""
                 }`}
                 onClick={() => handleTabSelect(0)}
@@ -45,7 +45,7 @@ const AggregratorMain = () => {
 
             <Tab className="nav-item">
               <button
-                className={`nav-link nav-link--style-4 relative flex items-center whitespace-nowrap py-1.5 px-4 font-display font-semibold text-jacarta-400 hover:text-jacarta-700 dark:text-jacarta-200 dark:hover:text-white ${
+                className={`nav-link nav-link--style-4 relative flex items-center whitespace-nowrap py-1.5 px-4 font-display font-semibold text-jacarta-100 hover:text-jacarta-900 dark:text-jacarta-200 dark:hover:text-white ${
                   selectedTabIndex === 1 ? "active" : ""
                 }`}
                 onClick={() => handleTabSelect(1)}
@@ -55,7 +55,7 @@ const AggregratorMain = () => {
                   viewBox="0 0 24 24"
                   width={24}
                   height={24}
-                  className="mr-1 h-5 w-5 fill-accent"
+                  className="mr-1 h-5 w-5 fill-primaryPurple"
                 >
                   <path fill="none" d="M0 0h24v24H0z" />
                   <path d="M17 15.245v6.872a.5.5 0 0 1-.757.429L12 20l-4.243 2.546a.5.5 0 0 1-.757-.43v-6.87a8 8 0 1 1 10 0zM12 15a6 6 0 1 0 0-12 6 6 0 0 0 0 12zm0-2a4 4 0 1 1 0-8 4 4 0 0 1 0 8z" />
@@ -68,7 +68,7 @@ const AggregratorMain = () => {
             <Tab className="nav-item">
               {" "}
               <button
-                className={`nav-link nav-link--style-4 relative flex items-center whitespace-nowrap py-1.5 px-4 font-display font-semibold text-jacarta-400 hover:text-jacarta-700 dark:text-jacarta-200 dark:hover:text-white ${
+                className={`nav-link nav-link--style-4 relative flex items-center whitespace-nowrap py-1.5 px-4 font-display font-semibold text-jacarta-100 hover:text-jacarta-900 dark:text-jacarta-200 dark:hover:text-white ${
                   selectedTabIndex === 2 ? "active" : ""
                 }`}
                 onClick={() => handleTabSelect(2)}

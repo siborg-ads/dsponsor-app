@@ -11,7 +11,7 @@ export default function DarkMode() {
   return (
     <>
       <button
-        className="js-dark-mode-trigger dark:bg-accent group ml-2 flex h-10 w-10 items-center justify-center rounded-full border border-jacarta-100 bg-white transition-colors hover:border-transparent hover:bg-accent focus:border-transparent focus:bg-accent dark:border-transparent dark:bg-white/[.15] dark:hover:bg-accent"
+        className="js-dark-mode-trigger dark:bg-primaryPurple group ml-2 flex h-10 w-10 items-center justify-center rounded-full border border-jacarta-100 bg-white transition-colors hover:border-transparent hover:bg-primaryPurple focus:border-transparent focus:bg-primaryPurple dark:border-transparent dark:bg-white/[.15] dark:hover:bg-primaryPurple"
         aria-label="light"
         onClick={toggle}
       >

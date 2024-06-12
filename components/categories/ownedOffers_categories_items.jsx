@@ -58,7 +58,7 @@ const OwnedOffers_categories_items = ({ data, isPendinAdsOnOffer, isOwner }) => 
   return (
     <>
       {isPendinAdsOnOffer && isOwner && (
-        <div className="dark:bg-jacarta-700 dark:text-jacarta-300 dark:border-jacarta-600 border-jacarta-100 rounded-2lg border bg-white p-3 flex gap-4 justify-center items-center mb-6">
+        <div className="dark:bg-secondaryBlack dark:text-jacarta-100 rounded-2lg bg-white p-3 flex gap-4 justify-center items-center mb-6">
           <span className="bg-red rounded-2xl dark:text-white  px-2">!</span>
           <span> You have 1 or more ads proposals to check on your offer </span>
         </div>

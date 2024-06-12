@@ -20,7 +20,7 @@ const HowItWorks = ({ bgWhite = true }) => {
       <div className="container">
         <HeadLine
           text="How It Works"
-          classes="font-display text-jacarta-700 mb-16 text-center text-3xl dark:text-white"
+          classes="font-display text-jacarta-900 mb-16 text-center text-3xl dark:text-white"
         />
 
         <div className="grid grid-cols-1 gap-12 md:grid-cols-2 lg:grid-cols-3">
@@ -41,10 +41,10 @@ const HowItWorks = ({ bgWhite = true }) => {
                     </svg>
                   </div>
                 </div>
-                <h3 className="font-display text-jacarta-700 mb-4 text-lg dark:text-white">
+                <h3 className="font-display text-jacarta-900 mb-4 text-lg dark:text-white">
                   {id}. {title}
                 </h3>
-                <p className="dark:text-jacarta-300">{text}</p>
+                <p className="dark:text-jacarta-100">{text}</p>
               </div>
             );
           })}

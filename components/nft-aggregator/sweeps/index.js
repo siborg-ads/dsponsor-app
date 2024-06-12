@@ -7,11 +7,11 @@ const SweepsContent = () => {
   return (
     <div
       role="table"
-      className="rounded-2lg border border-jacarta-100 bg-white text-sm dark:border-jacarta-600 dark:bg-jacarta-700 dark:text-white"
+      className="rounded-2lg border border-jacarta-100 bg-white text-sm dark:border-jacarta-600 dark:bg-secondaryBlack dark:text-white"
     >
       <div className="flex flex-col justify-between gap-4 rounded-t-2lg border-b border-jacarta-100 bg-jacarta-50 p-4 dark:border-jacarta-600 dark:bg-jacarta-800 md:flex-row md:items-center md:gap-6">
         <div className="hidden flex-shrink-0 items-center gap-3 md:flex">
-          <div className="flex h-10 w-10 group cursor-pointer items-center justify-center rounded-2lg dark:bg-jacarta-700 dark:border-jacarta-600 border border-jacarta-100 bg-white dark:hover:bg-accent hover:bg-accent hover:border-accent">
+          <div className="flex h-10 w-10 group cursor-pointer items-center justify-center rounded-2lg dark:bg-secondaryBlack dark:border-jacarta-600 border border-jacarta-100 bg-white dark:hover:bg-primaryPurple hover:bg-primaryPurple hover:border-primaryPurple">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 24 24"
@@ -24,10 +24,10 @@ const SweepsContent = () => {
             </svg>
           </div>
           <div className="hidden flex-shrink-0 flex-col sm:flex">
-            <div className="text-base font-medium text-jacarta-500 dark:text-jacarta-300 md:whitespace-nowrap">
+            <div className="text-base font-medium text-jacarta-100 dark:text-jacarta-100 md:whitespace-nowrap">
               196 results
             </div>
-            <div className="text-2xs text-jacarta-300 dark:text-jacarta-400">10 min ago</div>
+            <div className="text-2xs text-jacarta-100 dark:text-jacarta-100">10 min ago</div>
           </div>
         </div>
         <div className="relative flex w-full flex-1">
@@ -39,7 +39,7 @@ const SweepsContent = () => {
           <FilterRightMenu />
           <div className="flex justify-between">
             <div className="flex flex-shrink-0 items-center gap-3 sm:hidden">
-              <div className="flex h-10 w-10 group cursor-pointer items-center justify-center rounded-2lg dark:bg-jacarta-700 dark:border-jacarta-600 border border-jacarta-100 bg-white dark:hover:bg-accent hover:bg-accent hover:border-accent">
+              <div className="flex h-10 w-10 group cursor-pointer items-center justify-center rounded-2lg dark:bg-secondaryBlack dark:border-jacarta-600 border border-jacarta-100 bg-white dark:hover:bg-primaryPurple hover:bg-primaryPurple hover:border-primaryPurple">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 24 24"
@@ -52,15 +52,15 @@ const SweepsContent = () => {
                 </svg>
               </div>
               <div className="flex flex-shrink-0 flex-col">
-                <div className="text-left text-base font-medium text-jacarta-500 dark:text-jacarta-300 md:whitespace-nowrap">
+                <div className="text-left text-base font-medium text-jacarta-100 dark:text-jacarta-100 md:whitespace-nowrap">
                   196 results
                 </div>
-                <div className="text-left text-2xs text-jacarta-300 dark:text-jacarta-400">
+                <div className="text-left text-2xs text-jacarta-100 dark:text-jacarta-100">
                   10 min ago
                 </div>
               </div>
             </div>
-            <button className="flex h-10 group flex-shrink-0 items-center justify-center space-x-1 rounded-lg border border-jacarta-100 bg-white py-1.5 px-4 font-display text-sm font-semibold text-jacarta-500 hover:bg-accent hover:border-accent dark:border-jacarta-600 dark:bg-jacarta-700">
+            <button className="flex h-10 group flex-shrink-0 items-center justify-center space-x-1 rounded-lg border border-jacarta-100 bg-white py-1.5 px-4 font-display text-sm font-semibold text-jacarta-100 hover:bg-primaryPurple hover:border-primaryPurple dark:border-jacarta-600 dark:bg-secondaryBlack">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 24 24"
@@ -71,7 +71,7 @@ const SweepsContent = () => {
                 <path fill="none" d="M0 0H24V24H0z" />
                 <path d="M21 4v2h-1l-5 7.5V22H9v-8.5L4 6H3V4h18zM6.404 6L11 12.894V20h2v-7.106L17.596 6H6.404z" />
               </svg>
-              <span className="mt-0.5 dark:text-jacarta-300 group-hover:text-white">Filter</span>
+              <span className="mt-0.5 dark:text-jacarta-100 group-hover:text-white">Filter</span>
             </button>
           </div>
         </div>

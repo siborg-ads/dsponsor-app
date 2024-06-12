@@ -38,7 +38,7 @@ const socials = [
   },
   {
     name: "Website",
-    href: "https://www.instagram.com/siborgads",
+    href: "https://www.instagram.com/SiBorg Ads",
     icon: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -67,7 +67,7 @@ const Description = ({ description }) => {
               <Link
                 key={social.name}
                 href={social.href}
-                className={`bg-jacarta-600 hover:bg-jacarta-500 ${
+                className={`bg-primaryPurple hover:bg-opacity-80 ${
                   social.circle ? "rounded-full" : "rounded-lg"
                 } text-white p-2`}
               >
@@ -78,7 +78,7 @@ const Description = ({ description }) => {
         </div>
         {description && (
           <div className="flex">
-            <p className="text-gray-200 text-sm">
+            <p className="text-jacarta-100 text-sm">
               SiBorg is a podcast application for Twitter Spaces leveraging Web3 Social
               interactions. SiBorg search bar is composed of parcels. Each parcel is link to a
               search ticker. SiBorg Ads Owner can customize their ad space and be exposed to the
