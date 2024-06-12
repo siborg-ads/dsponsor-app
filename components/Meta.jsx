@@ -15,10 +15,10 @@ const Meta = ({ title, keyword, desc }) => {
 };
 
 Meta.defaultProps = {
-  title: "DSponsor | Unlock smarter monetization for your content.",
+  title: "SiborgAds | Unlock smarter monetization for your content.",
   keyword:
     "audience engagement, web3, creator economic, NFT, creator monetization, creator economy, creator token, creator coin, creator tokenization, creator economy",
-  desc: "Explore the future of media monetization. DSponsor’s decentralized platform offers tokenized advertising spaces for dynamic and sustainable media funding."
+  desc: "Explore the future of media monetization. SiborgAds decentralized platform offers tokenized advertising spaces for dynamic and sustainable media funding."
 };
 
 export default Meta;

@@ -57,7 +57,7 @@ export default function Header01() {
                 src={Logo}
                 height={80}
                 width={80}
-                alt="DSponsor | smarter monetization for your content"
+                alt="SiborgAds | smarter monetization for your content"
                 className=" h-auto "
               />
               <span>d&gt;sponsor</span>
@@ -67,7 +67,7 @@ export default function Header01() {
                 src={WhiteLogo}
                 height={80}
                 width={80}
-                alt="DSponsor | smarter monetization for your content"
+                alt="SiborgAds | smarter monetization for your content"
               />
               <span>d&gt;sponsor</span>
             </div>
@@ -202,7 +202,7 @@ export default function Header01() {
               src={Logo}
               height={80}
               width={80}
-              alt="DSponsor | smarter monetization for your content"
+              alt="SiborgAds | smarter monetization for your content"
               className="max-h-7 h-auto "
             />
           </div>
@@ -212,7 +212,7 @@ export default function Header01() {
               src={WhiteLogo}
               height={80}
               width={80}
-              alt="DSponsor | smarter monetization for your content"
+              alt="SiborgAds | smarter monetization for your content"
             />
           </div>
 
