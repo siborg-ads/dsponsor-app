@@ -2,7 +2,8 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import Timer from "./Timer";
 import BidsModal from "../modal/bidsModal";
-import { ethers, getAddress } from "ethers";
+import { ethers } from "ethers";
+import { getAddress } from "ethers/lib/utils";
 import { Web3Button } from "@thirdweb-dev/react";
 import config from "../../providers/utils/config";
 
