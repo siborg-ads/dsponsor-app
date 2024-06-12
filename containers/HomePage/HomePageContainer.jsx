@@ -66,10 +66,10 @@ const HomePageContainer = () => {
     fetchAdsListings();
   }, [chainId]);
   const metadata = {
-    title: `Home || DSponsor - The Web3 Monetization Solution`,
+    title: `Home || SiborgAds - The Web3 Monetization Solution`,
     keyword:
       "audience engagement, web3, creator economic, NFT, creator monetization, creator economy, creator token, creator coin, creator tokenization, creator economy",
-    desc: "Explore the future of media monetization. DSponsor’s decentralized platform offers tokenized advertising spaces for dynamic and sustainable media funding."
+    desc: "Explore the future of media monetization. SiborgAds decentralized platform offers tokenized advertising spaces for dynamic and sustainable media funding."
   };
 
   return (

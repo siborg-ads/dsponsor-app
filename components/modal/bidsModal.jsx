@@ -308,7 +308,7 @@ const BidsModal = ({
                     onClick={handleTermService}
                   />
                   <label htmlFor="buyNowTerms" className="dark:text-jacarta-200 text-sm">
-                    By checking this box, I agree to {"DSponsor's"}{" "}
+                    By checking this box, I agree to {"SiborgAds's"}{" "}
                     <Link href="#" className="text-accent">
                       Terms of Service
                     </Link>
