@@ -71,7 +71,7 @@ const OwnedOffers_categories_items = ({ data, isPendinAdsOnOffer, isOwner }) => 
             return (
               <OfferItem
                 item={item}
-                listingType={item?.marketplaceListings[0]?.listingType}
+                listingType={item?.marketplaceListings?.[0]?.listingType}
                 key={index}
                 url={`/${item?.chainConfig?.chainId}/offer/${item.id}`}
                 isOwner={isOwner}
