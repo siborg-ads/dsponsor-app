@@ -8,7 +8,8 @@ describe("activityToTopRewarded", () => {
       usdcAmounts: {
         bidRefundReceived: "100"
       },
-      displayAddr: "0x1234",
+      "displayAddr": "0x9a7F...e766",
+      addr: "0x9a7FAC267228f536A8f250E65d7C4CA7d39De766",
       nbRefunds: 5,
       chainId: 11155111,
       currenciesAmounts: {
@@ -22,7 +23,8 @@ describe("activityToTopRewarded", () => {
       usdcAmounts: {
         bidRefundReceived: "50"
       },
-      displayAddr: "0x5678",
+      "displayAddr": "0x9a7F...e766",
+      addr: "0x9a7FAC267228f536A8f250E65d7C4CA7d39De766",
       nbRefunds: 3,
       chainId: 11155111
       // No currenciesAmounts provided here
@@ -35,7 +37,9 @@ describe("activityToTopRewarded", () => {
       {
         rank: 1,
         totalReceived: "100",
-        address: "0x1234",
+        address: "0x9a7FAC267228f536A8f250E65d7C4CA7d39De766",
+        addressDisplay: "0x9a7F...e766",
+        dPoints: 0,
         refunds: 5,
         chainId: 11155111,
         details: [
@@ -48,7 +52,9 @@ describe("activityToTopRewarded", () => {
       {
         rank: 2,
         totalReceived: "50",
-        address: "0x5678",
+        address: "0x9a7FAC267228f536A8f250E65d7C4CA7d39De766",
+        addressDisplay: "0x9a7F...e766",
+        dPoints: 0,
         refunds: 3,
         chainId: 11155111,
         details: []

@@ -115,7 +115,7 @@ const LeaderboardTable = ({ activity }) => {
         </Link>
       )
     },
-    { header: "Number of Refunds", render: (item) => item.refunds },
+    { header: "# of Refunds", render: (item) => item.refunds },
     { header: "Chain ", render: () => config[chainId].chainName }
     // { header: "DPoints", render: (item) => item.dPoints }
   ];

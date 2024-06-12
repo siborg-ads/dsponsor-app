@@ -14,7 +14,7 @@ const activityToTopHolders = (activity) => {
             address: ranking.addr,
             balance: ranking.balance,
             chainId: ranking.chainId,
-            dPoints: ranking.dPoints,
+            dPoints: ranking.dPoints ?? 0,
             details: Object.entries(ranking.currenciesAmounts || {}).map(([currency, amounts]) => ({
                 currency,
                 totalSpent: amounts.totalSpent
