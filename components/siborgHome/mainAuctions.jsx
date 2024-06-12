@@ -1,21 +1,22 @@
 import React, { useState, useEffect } from "react";
-import Link from "next/link";
-import Auction from "./auction";
 import ItemCardSkeleton from "../skeleton/ItemCardSkeleton";
 import OfferItem from "../cards/offerItem";
 
 const MainAuctions = ({ auctions }) => {
-  const [isHoveringCard, setIsHoveringCard] = useState(Array(auctions?.length).fill(false));
   const [randomAuctions, setRandomAuctions] = useState([]);
   const [liveAuctions, setLiveAuctions] = useState([]);
-  const [isOwner, setIsOwner] = useState(false);
+  const [mount, setMount] = useState(false);
 
   useEffect(() => {
+    if (mount) return;
+
     const liveAuctions = auctions?.filter((auction) => auction.live);
     setLiveAuctions(liveAuctions);
-  }, [auctions]);
+  }, [auctions, mount]);
 
   useEffect(() => {
+    if (mount) return;
+
     if (liveAuctions?.length === 0) return;
 
     let tempRandomAuctions = [];
@@ -31,8 +32,8 @@ const MainAuctions = ({ auctions }) => {
     }
 
     setRandomAuctions(tempRandomAuctions);
-    setIsHoveringCard(Array(tempRandomAuctions.length).fill(false));
-  }, [liveAuctions]);
+    setMount(true);
+  }, [liveAuctions, mount]);
 
   return (
     <>
@@ -48,7 +49,6 @@ const MainAuctions = ({ auctions }) => {
                   isToken={true}
                   listingType={auction?.type}
                   isListing={auction?.type}
-                  isOwner={isOwner}
                   isAuction={auction?.type === "Auction"}
                   url={
                     !auction?.tokenData
