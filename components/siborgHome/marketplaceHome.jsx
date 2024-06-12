@@ -15,6 +15,7 @@ const MarketplaceHome = ({ chainIdFilter, auctions, setChainIdFilter, setAllToke
   const [isOwner, setIsOwner] = useState(false);
   const [nameSorting, setNameSorting] = useState(null);
   const [filterListedTokens, setFilterListedTokens] = useState(false);
+  const [auctionsFilter, setAuctionsFilter] = useState(true);
 
   useEffect(() => {
     let tempFilteredAuctions = auctions;
@@ -41,6 +42,18 @@ const MarketplaceHome = ({ chainIdFilter, auctions, setChainIdFilter, setAllToke
 
     setFilteredAuctions(tempFilteredAuctions);
   }, [filterListedTokens, auctions]);
+
+  useEffect(() => {
+    let tempFilteredAuctions = auctions;
+
+    if (auctionsFilter) {
+      tempFilteredAuctions = tempFilteredAuctions.filter((auction) => auction?.type === "Auction");
+    } else {
+      tempFilteredAuctions = auctions;
+    }
+
+    setFilteredAuctions(tempFilteredAuctions);
+  }, [auctionsFilter, auctions]);
 
   useEffect(() => {
     setFilteredAuctions(() => {
@@ -216,6 +229,7 @@ const MarketplaceHome = ({ chainIdFilter, auctions, setChainIdFilter, setAllToke
                       setFilter("All the spaces");
                       setAllTokens(true);
                       setFilterListedTokens(false);
+                      setAuctionsFilter(false);
                     }}
                     className="hover:bg-jacarta-500 p-2 rounded-lg w-full pr-12 md:pr-24"
                   >
@@ -226,10 +240,22 @@ const MarketplaceHome = ({ chainIdFilter, auctions, setChainIdFilter, setAllToke
                       setFilter("Listed tokens");
                       setAllTokens(false);
                       setFilterListedTokens(true);
+                      setAuctionsFilter(false);
                     }}
                     className="hover:bg-jacarta-500 p-2 rounded-lg w-full pr-12 md:pr-24"
                   >
                     <span>Listed tokens</span>
+                  </MenuItem>
+                  <MenuItem
+                    onClick={() => {
+                      setFilter("On auction");
+                      setAllTokens(false);
+                      setFilterListedTokens(false);
+                      setAuctionsFilter(true);
+                    }}
+                    className="hover:bg-jacarta-500 p-2 rounded-lg w-full pr-12 md:pr-24"
+                  >
+                    <span>On auction</span>
                   </MenuItem>
                 </MenuItems>
               </Menu>
