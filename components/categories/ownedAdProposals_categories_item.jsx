@@ -48,7 +48,7 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
   const { mutateAsync: submitAd } = useContractWrite(DsponsorAdminContract, "submitAdProposals");
 
   const chainId = currentChainObject?.chainId;
-console.log(data, "data");
+  console.log(data, "data");
   const handleFilter = (category) => {
     if (category !== "all") {
       setItemdata(trendingCategoryData.filter((item) => item.category === category));
@@ -285,10 +285,8 @@ console.log(data, "data");
                     <OfferItem
                       item={item}
                       isToken={true}
-                      isListing={
-                        item?.marketplaceListings[0]?.listingType &&
-                        item?.marketplaceListings[0]?.listingType
-                      }
+                      listingType={item?.marketplaceListings[0]?.listingType}
+                      isListing={item?.marketplaceListings[0]?.listingType}
                       isSelectionActive={isSelectionActive}
                       url={
                         !item.tokenData
@@ -302,10 +300,8 @@ console.log(data, "data");
                     item={item}
                     key={index}
                     isToken={true}
-                    isListing={
-                      item?.marketplaceListings[0]?.listingType &&
-                      item?.marketplaceListings[0]?.listingType
-                    }
+                    listingType={item?.marketplaceListings[0]?.listingType}
+                    isListing={item?.marketplaceListings[0]?.listingType}
                     isSelectionActive={isSelectionActive}
                     url={
                       !item.tokenData

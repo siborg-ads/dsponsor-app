@@ -4,18 +4,16 @@ import { ChevronDownIcon } from "@heroicons/react/20/solid";
 import ItemCardSkeleton from "../skeleton/ItemCardSkeleton";
 import OfferItem from "../cards/offerItem";
 
-const MarketplaceHome = ({ chainIdFilter, auctions, setChainIdFilter, setAllTokens }) => {
-  const [isHoveringCard, setIsHoveringCard] = useState(Array(auctions?.length).fill(false));
+const MarketplaceHome = ({ auctions, setAllTokens }) => {
   const [filterName, setFilterName] = useState(null);
   const [filteredAuctions, setFilteredAuctions] = useState(auctions);
   const [priceSorting, setPriceSorting] = useState(null);
   const [sort, setSort] = useState("Sort by name");
   const [filter, setFilter] = useState("Filter by");
   const [dateSorting, setDateSorting] = useState(null);
-  const [isOwner, setIsOwner] = useState(false);
   const [nameSorting, setNameSorting] = useState(null);
   const [filterListedTokens, setFilterListedTokens] = useState(false);
-  const [auctionsFilter, setAuctionsFilter] = useState(true);
+  const [auctionsFilter, setAuctionsFilter] = useState(false);
 
   useEffect(() => {
     let tempFilteredAuctions = auctions;
@@ -51,6 +49,8 @@ const MarketplaceHome = ({ chainIdFilter, auctions, setChainIdFilter, setAllToke
     } else {
       tempFilteredAuctions = auctions;
     }
+
+    console.log("tempFilteredAuctions", tempFilteredAuctions);
 
     setFilteredAuctions(tempFilteredAuctions);
   }, [auctionsFilter, auctions]);
@@ -154,65 +154,7 @@ const MarketplaceHome = ({ chainIdFilter, auctions, setChainIdFilter, setAllToke
               className="w-full h-full rounded-xl bg-jacarta-600 focus:border-jacarta-100 focus:border-opacity-10 focus:ring-0 border border-jacarta-100 border-opacity-10 text-placeholder-jacarta-200 text-white py-2 px-4"
             />
             <div className="grid grid-cols-2 md:flex h-full gap-2 w-full md:w-8/12">
-              {/*
-              <Menu as="div" className="py-4 md:py-0 h-full w-full">
-                <MenuButton className="bg-jacarta-600 rounded-xl w-full h-full flex items-center justify-center hover:bg-jacarta-500 border border-jacarta-100 border-opacity-10">
-                  <div className="flex items-center gap-1">
-                    {chainIdFilterText} <ChevronDownIcon className="w-5 h-5" />
-                  </div>
-                </MenuButton>
-                <MenuItems
-                  anchor="bottom start"
-                  className={`rounded-xl [--anchor-gap:1rem] flex flex-col gap-2 bg-jacarta-600 p-2 border border-jacarta-100 border-opacity-10`}
-                >
-                  <MenuItem
-                    onClick={() => {
-                      setChainIdFilter(null);
-                      setChainIdFilterText("All chains");
-                    }}
-                    className="hover:bg-jacarta-500 p-2 rounded-lg w-full pr-12 md:pr-24"
-                  >
-                    <span>All chains</span>
-                  </MenuItem>
-                  <MenuItem
-                    onClick={() => {
-                      setChainIdFilter(1);
-                      setChainIdFilterText("Ethereum");
-                    }}
-                    className="hover:bg-jacarta-500 p-2 rounded-lg w-full pr-12 md:pr-24"
-                  >
-                    <span>Ethereum</span>
-                  </MenuItem>
-                  <MenuItem
-                    onClick={() => {
-                      setChainIdFilter(8453);
-                      setChainIdFilterText("Base");
-                    }}
-                    className="hover:bg-jacarta-500 p-2 rounded-lg w-full pr-12 md:pr-24"
-                  >
-                    <span>Base</span>
-                  </MenuItem>
-                  <MenuItem
-                    onClick={() => {
-                      setChainIdFilter(11155111);
-                      setChainIdFilterText("Sepolia");
-                    }}
-                    className="hover:bg-jacarta-500 p-2 rounded-lg w-full pr-12 md:pr-24"
-                  >
-                    <span>Sepolia</span>
-                  </MenuItem>
-                  <MenuItem
-                    onClick={() => {
-                      setChainIdFilter(84532);
-                      setChainIdFilterText("Base Sepolia");
-                    }}
-                    className="hover:bg-jacarta-500 p-2 rounded-lg w-full pr-12 md:pr-24"
-                  >
-                    <span>Base Sepolia</span>
-                  </MenuItem>
-                </MenuItems>
-              </Menu>
-              */}
+              {}
 
               <Menu as="div" className="py-4 md:py-0 h-full w-full">
                 <MenuButton className="bg-jacarta-600 rounded-xl w-full h-full flex items-center justify-center hover:bg-jacarta-500 border border-jacarta-100 border-opacity-10">
@@ -339,8 +281,8 @@ const MarketplaceHome = ({ chainIdFilter, auctions, setChainIdFilter, setAllToke
                       key={index}
                       item={auction.item}
                       isToken={true}
+                      listingType={auction?.type}
                       isListing={auction?.type}
-                      isOwner={isOwner}
                       isAuction={auction?.type === "Auction"}
                       url={
                         !auction?.tokenData

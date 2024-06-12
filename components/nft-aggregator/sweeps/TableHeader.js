@@ -67,7 +67,7 @@ const TableHeader = () => {
         </svg>
       </div>
       <div className="hidden w-2/12 items-center justify-end lg:flex" role="columnheader">
-        Refund
+        Reward
       </div>
       <div
         className="hidden w-2/12 items-center justify-end text-right md:flex"

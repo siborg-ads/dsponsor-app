@@ -231,7 +231,7 @@ const BidsModal = ({
                     <input
                       type="number"
                       className={`focus:ring-accent relative w-full flex-[3] border-transparent bg-jacarta-600 rounded-xl text-2xl py-2 font-semibold text-white focus:ring-inse`}
-                      placeholder="Amount"
+                      placeholder={`${initialIntPrice} or higher`}
                       value={bidsAmount}
                       onChange={(e) => handleBidsAmount(e)}
                     />

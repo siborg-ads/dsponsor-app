@@ -26,7 +26,7 @@ const topCards = ({activity}) => {
       </div>
       <div className="dark:bg-jacarta-700 flex-grow flex-shrink flex-basis-[200px]  overflow-hidden dark:border-jacarta-600 mb-2 border-jacarta-100 rounded-2lg border flex flex-col gap-4 bg-white p-8">
         <div className=" flex flex-col gap-4 items-center justify-center sm:flex sm:flex-wrap">
-          <p className="dark:text-white font-medium ">Total Refund</p>
+          <p className="dark:text-white font-medium ">Total Reward</p>
           <span className="text-green text-sm font-medium  text-ellipsis whitespace-nowrap overflow-hidden">
             {activity?.totalBidRefundUSDCAmount} USDC
           </span>

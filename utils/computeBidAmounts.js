@@ -23,7 +23,7 @@ export function computeBidAmounts(
   }
 
   if (BigInt(minimalAuctionBps) <= BigInt(bonusRefundBps)) {
-    errors.push("Minimal auction bps must be greater than bonus refund bps");
+    errors.push("Minimal auction bps must be greater than bonus reward bps");
   }
 
   const minimalBidPerToken = BigInt(
@@ -49,7 +49,7 @@ export function computeBidAmounts(
     BigInt(quantity) * BigInt(previousPricePerToken) + refundBonusAmount;
 
   if (refundAmountToPreviousBidder >= totalBidAmount) {
-    errors.push("Refund exceeds new bid amount");
+    errors.push("Reward exceeds new bid amount");
   }
 
   const newPricePerToken = BigInt(newBidPerToken) - BigInt(refundBonusPerToken);
@@ -99,7 +99,7 @@ export function computeBidAmounts(
     newRefundBonusAmount: newRefundBonusAmount.toString(), // bonus the bidder will get
 
     /**
-     * else if bid is successful (bidder will receive nft, no refund)
+     * else if bid is successful (bidder will receive nft, no reward / no refund)
      */
     protocolFeeAmount: protocolFeeAmount.toString(), // how much the protocol will receive
     royaltyAmount: royaltyAmount.toString(), // how much the creator will receive

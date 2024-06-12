@@ -2,7 +2,8 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import Timer from "./Timer";
 import BidsModal from "../modal/bidsModal";
-import { ethers, getAddress } from "ethers";
+import { ethers } from "ethers";
+import { getAddress } from "ethers/lib/utils";
 import { Web3Button } from "@thirdweb-dev/react";
 import config from "../../providers/utils/config";
 
@@ -48,10 +49,10 @@ const ItemBids = ({
   return (
     <div className="rounded-2lg border border-jacarta-100 bg-white p-8 dark:border-jacarta-600 dark:bg-jacarta-700">
       <div className="flex flex-col items-center justify-between gap-8">
-        <div>
-          <div className="mb-8 sm:flex sm:flex-wrap">
+        <div className="flex flex-col items-center justify-center w-full">
+          <div className="mb-8 grid grid-cols-9">
             {/* Highest bid */}
-            <div className="sm:w-1/2 sm:pr-4 lg:pr-8">
+            <div className="col-span-4">
               {bids.length > 0 && (
                 <div className="block overflow-hidden text-ellipsis whitespace-nowrap">
                   <span className="text-sm text-jacarta-400 dark:text-jacarta-300">
@@ -92,8 +93,12 @@ const ItemBids = ({
               </div>
             </div>
 
+            <div className="flex col-span-1 items-center justify-center">
+              <div className="w-[1px] h-full rounded-lg sm:bg-jacarta-100 dark:bg-jacarta-600" />
+            </div>
+
             {/* Countdown */}
-            <div className="mt-4 dark:border-jacarta-600 sm:mt-0 sm:w-1/2 sm:border-l sm:border-jacarta-100 sm:pl-4 lg:pl-8">
+            <div className="col-span-4">
               <span className="js-countdown-ends-label text-sm text-jacarta-400 dark:text-jacarta-300">
                 Auction ends in
               </span>
