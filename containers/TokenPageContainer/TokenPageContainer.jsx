@@ -44,8 +44,8 @@ import { getAddress, parseUnits } from "ethers/lib/utils";
 
 import "react-toastify/dist/ReactToastify.css";
 import ModalHelper from "../../components/Helper/modalHelper.jsx";
-import ItemLastBids from "../../components/item/ItemLastBids";
-import itemLastBids from "../../components/item/ItemLastBids";
+import ItemLastBids from "../../components/tables/ItemLastBids";
+import itemLastBids from "../../components/tables/ItemLastBids";
 
 const TokenPageContainer = () => {
   const router = useRouter();
@@ -304,9 +304,9 @@ const TokenPageContainer = () => {
   useEffect(() => {
     if (!isUserOwner || !marketplaceListings || !address) return;
     if (
-      marketplaceListings[0]?.listingType === "Auction" &&
-      marketplaceListings[0]?.status === "CREATED" &&
-      address?.toLowerCase() === marketplaceListings[0]?.lister
+      firstSelectedListing?.listingType === "Auction" &&
+      firstSelectedListing?.status === "CREATED" &&
+      address?.toLowerCase() === firstSelectedListing?.lister
     ) {
       setIsOwner(true);
       setIsTokenInAuction(true);
@@ -542,11 +542,11 @@ const TokenPageContainer = () => {
     };
 
     const argsdirectBuy = {
-      listingId: marketplaceListings[0]?.id,
+      listingId: firstSelectedListing?.id,
       buyFor: address,
       quantity: 1,
-      currency: marketplaceListings[0]?.currency,
-      totalPrice: marketplaceListings[0]?.buyPriceStructure.buyoutPricePerToken,
+      currency: firstSelectedListing?.currency,
+      totalPrice: firstSelectedListing?.buyPriceStructure.buyoutPricePerToken,
       referralAdditionalInformation: referralAddress
     };
     try {
@@ -667,16 +667,18 @@ const TokenPageContainer = () => {
     validateInputs();
   };
 
+  const firstSelectedListing = marketplaceListings[0];
+
   useEffect(() => {
     if (
-      marketplaceListings[0]?.lister &&
+      firstSelectedListing?.lister &&
       address &&
       marketplaceListings?.lister !== null &&
       marketplaceListings?.lister !== undefined &&
       address !== null &&
       address !== undefined
     ) {
-      setIsLister(getAddress(marketplaceListings[0]?.lister) === getAddress(address));
+      setIsLister(getAddress(firstSelectedListing?.lister) === getAddress(address));
     } else {
       setIsLister(false);
     }
@@ -684,17 +686,17 @@ const TokenPageContainer = () => {
 
   function shouldRenderManageTokenComponent() {
     const isFirstListingAuctionActive =
-      marketplaceListings[0]?.startTime < now &&
-      marketplaceListings[0]?.endTime > now &&
-      marketplaceListings[0]?.listingType === "Auction";
-    const isFirstListingDirect = marketplaceListings[0]?.listingType === "Direct";
+      firstSelectedListing?.startTime < now &&
+      firstSelectedListing?.endTime > now &&
+      firstSelectedListing?.listingType === "Auction";
+    const isFirstListingDirect = firstSelectedListing?.listingType === "Direct";
     const isTokenStatusSpecial = tokenStatut === "MINTABLE" || tokenStatut === "SIBORG";
     const isAuctionWithBids =
-      marketplaceListings[0]?.listingType === "Auction" && marketplaceListings[0]?.bids?.length > 0;
-    const isOwnerAndFinished = isOwner && marketplaceListings[0]?.status === "COMPLETED";
+      firstSelectedListing?.listingType === "Auction" && firstSelectedListing?.bids?.length > 0;
+    const isOwnerAndFinished = isOwner && firstSelectedListing?.status === "COMPLETED";
     const isListerAndEndDateFinishedOrNoBids =
       isLister &&
-      (marketplaceListings[0]?.endTime < now || marketplaceListings[0]?.bids?.length === 0);
+      (firstSelectedListing?.endTime < now || firstSelectedListing?.bids?.length === 0);
 
     return (
       ((isFirstListingAuctionActive && !isOwner) ||
@@ -752,7 +754,7 @@ const TokenPageContainer = () => {
     description = "description not found",
     id = "1",
     image = "/images/gradient_creative.jpg",
-    name = "DefaultName"
+    name = "Unnamed Ad Space",
   } = Object.keys(offerData?.metadata?.offer?.token_metadata).length > 0
     ? tokenMetaData
     : offerData && offerData.metadata
@@ -785,17 +787,18 @@ const TokenPageContainer = () => {
             {/* <!-- Image --> */}
             <figure className="mb-8 md:mb-0 md:w-2/5 md:flex-shrink-0 md:flex-grow-0 md:basis-auto lg:w-1/2 w-full flex justify-center relative">
               <button
-                className=" w-full"
-                onClick={() => setImageModal(true)}
-                style={{ height: "450px" }}
+                  className=" w-full"
+                  onClick={() => setImageModal(true)}
+                  style={{ height: "450px" }}
               >
                 <Image
-                  width={585}
-                  height={726}
-                  src={image ?? "/images/gradient_creative.jpg"}
-                  alt="image"
-                  className="rounded-2xl cursor-pointer h-full object-contain w-full"
+                    width={585}
+                    height={726}
+                    src={image ?? "/images/gradient_creative.jpg"}
+                    alt="image"
+                    className="rounded-2xl cursor-pointer h-full object-contain w-full shadow-lg"
                 />
+
               </button>
 
               {/* <!-- Modal --> */}
@@ -842,7 +845,7 @@ const TokenPageContainer = () => {
               <div className="mb-8 flex items-center gap-4 whitespace-nowrap flex-wrap">
                 {currency &&
                   tokenStatut !== "MINTED" &&
-                  (marketplaceListings[0]?.status === "CREATED" ||
+                  (firstSelectedListing?.status === "CREATED" ||
                     marketplaceListings?.length <= 0) && (
                     <div className="flex items-center">
                       <span className="text-green text-sm font-medium tracking-tight mr-2">
@@ -881,7 +884,7 @@ const TokenPageContainer = () => {
 
               <p className="dark:text-jacarta-100 mb-10">{description}</p>
               {(tokenStatut === "MINTABLE" ||
-                (tokenStatut === "DIRECT" && marketplaceListings[0].startTime < now)) && (
+                (tokenStatut === "DIRECT" && firstSelectedListing.startTime < now)) && (
                 <div className="dark:bg-secondaryBlack dark:border-jacarta-600 mb-2 border-jacarta-100 rounded-2lg border flex flex-col gap-4 bg-white p-8">
                   <div className=" sm:flex sm:flex-wrap">
                     <span className="dark:text-jacarta-100 text-jacarta-100 text-sm">
@@ -925,9 +928,9 @@ const TokenPageContainer = () => {
                   />
                 </>
               )}
-              {marketplaceListings[0]?.listingType === "Auction" &&
-                marketplaceListings[0].startTime < now &&
-                marketplaceListings[0].endTime > now && (
+              {firstSelectedListing?.listingType === "Auction" &&
+                firstSelectedListing.startTime < now &&
+                firstSelectedListing.endTime > now && (
                   <ItemBids
                     setAmountToApprove={setAmountToApprove}
                     bidsAmount={bidsAmount}
@@ -955,15 +958,15 @@ const TokenPageContainer = () => {
         </div>
       </section>
 
-      {marketplaceListings[0]?.listingType === "Auction" &&
-        marketplaceListings[0].startTime < now &&
-        marketplaceListings[0].endTime > now && (
+      {firstSelectedListing?.listingType === "Auction" &&
+        firstSelectedListing.startTime < now &&
+        firstSelectedListing.endTime > now && (
           <div className="container mb-12">
             <Divider className="my-4" />
             <ItemLastBids
               currencySymbol={currency}
               currencyDecimals={currencyDecimals}
-              lastBids={marketplaceListings[0].bids}
+              lastBids={firstSelectedListing.bids}
             />
           </div>
         )}
