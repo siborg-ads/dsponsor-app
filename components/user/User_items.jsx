@@ -14,6 +14,7 @@ const User_items = ({
   tokenAuctionBids,
   isPendinAdsOnOffer,
   isOwner,
+  isLister,
   listedAuctionToken
 }) => {
   const [itemActive, setItemActive] = useState(1);

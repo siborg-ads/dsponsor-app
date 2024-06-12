@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { Web3Button, useContractWrite } from "@thirdweb-dev/react";
+import { Web3Button, useAddress, useContractWrite } from "@thirdweb-dev/react";
 import ItemManageModal from "./ItemManageModal";
 import { toast } from "react-toastify";
 import { Spinner } from "@nextui-org/spinner";
 import { useChainContext } from "../../contexts/hooks/useChainContext";
+import { getAddress } from "ethers/lib/utils";
 
 const ItemManage = ({
   successFullListing,
@@ -13,7 +14,8 @@ const ItemManage = ({
   royalties,
   dsponsorNFTContract,
   dsponsorMpContract,
-  isOwner
+  isOwner,
+  isLister
 }) => {
   const [listingModal, setListingModal] = useState(false);
   const { currentChainObject } = useChainContext();
@@ -48,19 +50,6 @@ const ItemManage = ({
       setIsLoadingButton(false);
     }
   };
-
-  useEffect(() => {
-    console.log(
-      "condition",
-      (marketplaceListings[0]?.status !== "CREATED" || marketplaceListings?.length <= 0) && isOwner,
-      "status",
-      marketplaceListings[0]?.status,
-      "length",
-      marketplaceListings?.length,
-      "isOwner",
-      "isOwner"
-    );
-  }, [marketplaceListings, isOwner]);
 
   return (
     <>
@@ -141,7 +130,7 @@ const ItemManage = ({
           </Web3Button>
         ) : (
           marketplaceListings[0]?.listingType === "Auction" &&
-          isOwner &&
+          (isOwner || isLister) &&
           (marketplaceListings[0]?.bids?.length <= 0 ||
             marketplaceListings[0]?.startTime > now) && (
             <Web3Button

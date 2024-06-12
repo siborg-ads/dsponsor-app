@@ -40,7 +40,7 @@ import { fetchOfferToken } from "../../providers/methods/fetchOfferToken.js";
 // import { fetchAllTokenListedByListingId } from "../../providers/methods/fetchAllTokenListedByListingId.js";
 import config from "../../providers/utils/config.js";
 import stringToUint256 from "../../utils/stringToUnit256.js";
-import { parseUnits } from "ethers/lib/utils";
+import { getAddress, parseUnits } from "ethers/lib/utils";
 
 import "react-toastify/dist/ReactToastify.css";
 import ModalHelper from "../../components/Helper/modalHelper.jsx";
@@ -100,6 +100,7 @@ const TokenPageContainer = () => {
   const [royaltiesFeesAmount, setRoyaltiesFeesAmount] = useState(null);
   const [bidsAmount, setBidsAmount] = useState(null);
   const [currencyDecimals, setCurrencyDecimals] = useState(null);
+  const [isLister, setIsLister] = useState(false);
   const NATIVECurrency = config[chainId]?.smartContracts?.NATIVE;
 
   const { contract: DsponsorAdminContract } = useContract(
@@ -138,6 +139,10 @@ const TokenPageContainer = () => {
 
   // referralAddress is the address of the ?_rid= parameter in the URL
   const referralAddress = getCookie("_rid") || "";
+
+  useEffect(() => {
+    console.log("offerData", offerData);
+  }, [offerData]);
 
   useEffect(() => {
     if (offerId && tokenId && chainId) {
@@ -661,6 +666,21 @@ const TokenPageContainer = () => {
     validateInputs();
   };
 
+  useEffect(() => {
+    if (
+      marketplaceListings[0]?.lister &&
+      address &&
+      marketplaceListings?.lister !== null &&
+      marketplaceListings?.lister !== undefined &&
+      address !== null &&
+      address !== undefined
+    ) {
+      setIsLister(getAddress(marketplaceListings[0]?.lister) === getAddress(address));
+    } else {
+      setIsLister(false);
+    }
+  }, [marketplaceListings, address]);
+
   function shouldRenderManageTokenComponent() {
     const isFirstListingAuctionActive =
       marketplaceListings[0]?.startTime < now &&
@@ -671,6 +691,9 @@ const TokenPageContainer = () => {
     const isAuctionWithBids =
       marketplaceListings[0]?.listingType === "Auction" && marketplaceListings[0]?.bids?.length > 0;
     const isOwnerAndFinished = isOwner && marketplaceListings[0]?.status === "COMPLETED";
+    const isListerAndEndDateFinishedOrNoBids =
+      isLister &&
+      (marketplaceListings[0]?.endTime < now || marketplaceListings[0]?.bids?.length === 0);
 
     return (
       ((isFirstListingAuctionActive && !isOwner) ||
@@ -678,7 +701,8 @@ const TokenPageContainer = () => {
         isTokenStatusSpecial ||
         (!isOwner && !isAllowedToMint) ||
         isAuctionWithBids) &&
-      !isOwnerAndFinished
+      !isOwnerAndFinished &&
+      !isListerAndEndDateFinishedOrNoBids
     );
   }
 
@@ -767,7 +791,7 @@ const TokenPageContainer = () => {
                 <Image
                   width={585}
                   height={726}
-                  src={image ? image : "/images/gradient_creative.jpg"}
+                  src={image ?? "/images/gradient_creative.jpg"}
                   alt="image"
                   className="rounded-2xl cursor-pointer h-full object-contain w-full"
                 />
@@ -779,7 +803,7 @@ const TokenPageContainer = () => {
                   <Image
                     width={582}
                     height={722}
-                    src={image ? image : "/images/gradient_creative.jpg"}
+                    src={image ?? "/images/gradient_creative.jpg"}
                     alt="image"
                     className="h-full object-cover w-full rounded-2xl"
                   />
@@ -814,24 +838,43 @@ const TokenPageContainer = () => {
                 </h2>
               </Link>
 
-              <div className="mb-8 flex items-center  whitespace-nowrap flex-wrap">
+              <div className="mb-8 flex items-center gap-4 whitespace-nowrap flex-wrap">
                 {currency &&
                   tokenStatut !== "MINTED" &&
                   (marketplaceListings[0]?.status === "CREATED" ||
                     marketplaceListings?.length <= 0) && (
-                    <div className="flex items-center mr-4">
+                    <div className="flex items-center">
                       <span className="text-green text-sm font-medium tracking-tight mr-2">
                         {finalPrice} {currency}
                       </span>
                       <ModalHelper {...modalHelper} size="small" />
                     </div>
                   )}
-                <span className="dark:text-jacarta-300 text-jacarta-400 text-sm mr-4">
+                <span className="dark:text-jacarta-300 text-jacarta-400 text-sm">
                   Space #{" "}
                   <strong className="dark:text-white">{tokenData ?? formatTokenId(tokenId)}</strong>{" "}
                 </span>
                 <span className="text-jacarta-300 block text-sm ">
                   Creator <strong className="dark:text-white">{royalties}% royalties</strong>
+                </span>
+                <span className="text-jacarta-300 block text-sm">
+                  Token valid from{" "}
+                  <strong className="dark:text-white">
+                    {offerData?.nftContract?.tokens[0]?.metadata?.valid_from &&
+                      (() => {
+                        const date = new Date(
+                          offerData?.nftContract?.tokens[0]?.metadata?.valid_from
+                        );
+                        return `${date.getDate().toString().padStart(2, "0")}/${(date.getMonth() + 1).toString().padStart(2, "0")}/${date.getFullYear()} at ${date.getHours().toString().padStart(2, "0")}:${date.getMinutes().toString().padStart(2, "0")}:${date.getSeconds().toString().padStart(2, "0")}`;
+                      })()}
+                  </strong>{" "}
+                  to{" "}
+                  <strong className="dark:text-white">
+                    {offerData?.nftContract?.tokens[0]?.metadata?.valid_to &&
+                      new Date(
+                        offerData?.nftContract?.tokens[0]?.metadata?.valid_to
+                      ).toLocaleString()}
+                  </strong>
                 </span>
               </div>
 
@@ -877,10 +920,11 @@ const TokenPageContainer = () => {
                     royalties={royalties}
                     dsponsorMpContract={dsponsorMpContract}
                     isOwner={isOwner}
+                    isLister={isLister}
                   />
                 </>
               )}
-              {tokenStatut === "AUCTION" &&
+              {marketplaceListings[0]?.listingType === "Auction" &&
                 marketplaceListings[0].startTime < now &&
                 marketplaceListings[0].endTime > now && (
                   <ItemBids
@@ -910,7 +954,7 @@ const TokenPageContainer = () => {
         </div>
       </section>
 
-      {tokenStatut === "AUCTION" &&
+      {marketplaceListings[0]?.listingType === "Auction" &&
         marketplaceListings[0].startTime < now &&
         marketplaceListings[0].endTime > now && (
           <div className="container mb-12">
@@ -944,6 +988,7 @@ const TokenPageContainer = () => {
           isOwner={isOwner}
           isToken={true}
           successFullUploadModal={successFullUploadModal}
+          isLister={isLister}
         />
       )}
       {/* <ItemsTabs /> */}
