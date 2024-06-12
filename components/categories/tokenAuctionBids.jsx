@@ -1,33 +1,10 @@
-import React from "react";
-
+import React from 'react'
 import Image from "next/image";
 import "tippy.js/themes/light.css";
 import { useChainContext } from "../../contexts/hooks/useChainContext";
 import OfferItem from "../cards/offerItem";
 
-const Auctions_categories = ({ data, isOwner }) => {
-  const { currentChainObject } = useChainContext();
-  const chainId = currentChainObject?.chainId;
-
-  const sortText = [
-    {
-      id: 1,
-      text: "Recently Added"
-    },
-    {
-      id: 2,
-      text: "Price: Low to High"
-    },
-    {
-      id: 3,
-      text: "Price: high to low"
-    },
-    {
-      id: 4,
-      text: "Auction Ending Soon"
-    }
-  ];
-
+const TokenAuctionBids = ({ data, isOwner }) => {
   if (!data) {
     return (
       <div className="flex w-full justify-center">
@@ -41,8 +18,12 @@ const Auctions_categories = ({ data, isOwner }) => {
       <div className="dark:bg-jacarta-700 dark:text-jacarta-300 dark:border-jacarta-600 border-jacarta-100 rounded-2lg border bg-white p-3 flex gap-4 justify-center items-center mb-6">
         <span>
           {" "}
-          This section lists all the tokens you have placed in auction.
-          <br />
+          This section is listing all the tokens where you have placed a bid : <br />
+          <span className="text-red font-medium">CANCELLED</span> : You have been out bid by another
+          user. <br />
+          <span className="text-accent font-medium">CREATED</span> : You are the highest bidder. <br />
+          <span className="text-green font-medium">COMPLETED</span> : You have been out bid by
+          another user.
         </span>
       </div>
       {data.length > 0 ? (
@@ -74,4 +55,4 @@ const Auctions_categories = ({ data, isOwner }) => {
   );
 };
 
-export default Auctions_categories;
+export default TokenAuctionBids

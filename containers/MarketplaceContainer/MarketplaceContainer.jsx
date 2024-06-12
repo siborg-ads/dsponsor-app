@@ -85,10 +85,11 @@ const MarketplaceContainer = () => {
   }, [filteredTokens]);
 
   const metadata = {
-    title: "Marketplace || DSponsor | smarter monetization for your content",
+    title: "Marketplace || DSponsor - The Web3 Monetization Solution",
     keyword:
-      "DSponsor, marketplace, token, creator, sponsor, monetize, content, creator, sponsor, monetize, content",
-    desc: "DSponsor is a platform that connects content creators with sponsors. Our platform helps creators monetize their content and helps sponsors find creators to promote their products."
+      "audience engagement, web3, creator economic, NFT, creator monetization, creator economy, creator token, creator coin, creator tokenization, creator economy",
+
+    desc: "Explore the future of media monetization. DSponsor’s decentralized platform offers tokenized advertising spaces for dynamic and sustainable media funding."
   };
 
   return (

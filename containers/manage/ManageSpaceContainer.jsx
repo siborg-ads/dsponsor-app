@@ -9,24 +9,15 @@ import Meta from "../../components/Meta";
 
 import {
   useAddress,
-  darkTheme,
-  useBalance,
-  Web3Button,
-  useTokenBalance,
-  useContract,
-  useContractRead,
-  useContractWrite,
-  useStorageUpload,
-  useTokenDecimals,
-  CheckoutWithCard,
-  CheckoutWithEth
+
 } from "@thirdweb-dev/react";
 
 import { fetchAllTokenByOfferForAuser } from "../../providers/methods/fetchAllTokenByOfferForAuser";
 import { fetchAllOffersByUserAddress } from "../../providers/methods/fetchAllOffersByUserAddress";
 import { fetchAllTokenListedByUserAddress } from "../../providers/methods/fetchAllTokenListedByUserAddress";
+import { fetchAllTokenAuctionBidsByUser } from "../../providers/methods/fetchAllTokenAuctionBidsByUser";
 import { useChainContext } from "../../contexts/hooks/useChainContext";
-import { id } from "ethers/lib/utils";
+
 import config from "../../providers/utils/config";
 import handleCopy from "../../utils/handleCopy";
 
@@ -37,6 +28,7 @@ const ManageSpaceContainer = () => {
   const [createdData, setCreatedData] = useState(null);
   const [mappedownedAdProposals, setMappedownedAdProposals] = useState(null);
   const [listedAuctionToken, setListedAuctionToken] = useState(null);
+  const [tokenAuctionBids, setTokenAuctionBids] = useState(null);
   const [copied, setCopied] = useState(false);
   const [isPendinAdsOnOffer, setIsPendinAdsOnOffer] = useState(false);
   const [isOwner, setIsOwner] = useState(false);
@@ -45,75 +37,84 @@ const ManageSpaceContainer = () => {
   const chainId = currentChainObject?.chainId;
   const chainConfig = config[chainId];
 
-  useEffect(() => {
-    if (userAddress && chainId) {
-      const fetchAdsOffers = async () => {
-        const offersByUserAddressArray = [];
+   useEffect(() => {
+     if (userAddress && chainId) {
+       const fetchDataByUserAddress = async (fetchFunction) => {
+         const dataArray = [];
+         for (const [chainId] of Object.entries(config)) {
+           const data = await fetchFunction(userAddress, chainId);
+           dataArray.push(...data);
+         }
+         return dataArray;
+       };
 
-        for (const [chainId] of Object.entries(config)) {
-          const offersByUserAddress = await fetchAllOffersByUserAddress(userAddress, chainId);
-          offersByUserAddressArray.push(...offersByUserAddress);
-        }
+       const fetchOwnedAdProposals = async () => {
+         const ownedAdProposalsArray = await fetchDataByUserAddress(fetchAllTokenByOfferForAuser);
+         console.log(ownedAdProposalsArray);
+         const mappedOwnedAdProposals = ownedAdProposalsArray.flatMap((element) =>
+           element.nftContract.tokens.map((token) => ({
+             chainConfig: element.chainConfig,
+             adParameters: element.adParameters,
+             id: `${element.id}-${token.tokenId}`,
+             offerId: element.id,
+             ...token,
+             ...(token.mint.tokenData ? { tokenData: token.mint.tokenData } : {})
+           }))
+         );
+         console.log(mappedOwnedAdProposals, "mappedOwnedAdProposals");
+         setMappedownedAdProposals(mappedOwnedAdProposals);
+       };
 
-        setCreatedData(offersByUserAddressArray);
-        console.log(offersByUserAddressArray);
-        const ownedAdProposalsArray = [];
-        for (const [chainId] of Object.entries(config)) {
-          const ownedAdProposals = await fetchAllTokenByOfferForAuser(userAddress, chainId);
-          ownedAdProposalsArray.push(...ownedAdProposals);
-        }
-        console.log(ownedAdProposalsArray);
-        const listedTokenArray = [];
-        for (const [chainId] of Object.entries(config)) {
-          const listedToken = await fetchAllTokenListedByUserAddress(userAddress, chainId);
-          listedTokenArray.push(...listedToken);
-        }
-        console.log(listedTokenArray, "listedTokenArray");
-        const mappedListedToken = [];
-        for (const element of listedTokenArray) {
-          if (element?.listingType === "Auction") {
-            const combinedData = {
-              chainConfig: element.chainConfig,
-              tokenData: element?.token.mint.tokenData,
-              startTime: element?.startTime,
-              endTime: element?.endTime,
-              ...element?.token
-            };
-            mappedListedToken.push(combinedData);
-          }
-        }
+       const fetchCreatedData = async () => {
+         const offersByUserAddressArray = await fetchDataByUserAddress(fetchAllOffersByUserAddress);
+         setCreatedData(offersByUserAddressArray);
+         console.log(offersByUserAddressArray);
+       };
 
-        const mappedownedAdProposals = [];
+       const fetchListedTokens = async () => {
+         const listedTokenArray = await fetchDataByUserAddress(fetchAllTokenListedByUserAddress);
+         console.log(listedTokenArray, "listedTokenArray");
+         const mappedListedToken = listedTokenArray
+           .filter((element) => element?.listingType === "Auction")
+           .map((element) => ({
+             chainConfig: element.chainConfig,
+             tokenData: element?.token.mint.tokenData,
+             startTime: element?.startTime,
+             endTime: element?.endTime,
+             ...element?.token
+           }));
+         setListedAuctionToken(mappedListedToken);
+       };
 
-        for (const element of ownedAdProposalsArray) {
-          for (const token of element.nftContract.tokens) {
-            const combinedData = {
-              chainConfig: element.chainConfig,
-              adParameters: element.adParameters,
-              id: `${element.id}-${token.tokenId}`,
-              offerId: element.id,
-              ...token,
-              ...(token.mint.tokenData ? { tokenData: token.mint.tokenData } : {})
-            };
-            mappedownedAdProposals.push(combinedData);
-          }
-        }
-        console.log(mappedownedAdProposals, "mappedownedAdProposals");
+       const fetchAuctionBidsTokens = async () => {
+         const auctionBidsTokensArray = await fetchDataByUserAddress(
+           fetchAllTokenAuctionBidsByUser
+         );
+         const mappedAuctionBidsTokens = auctionBidsTokensArray.map((element) => ({
+           ...element,
+           metadata: element.listing.token.metadata,
+           tokenData: element.listing.token.mint.tokenData,
+           offerId: element.listing.token.nftContract.adOffers[0].id,
+           tokenId: element.listing.token.tokenId
+         }));
+         console.log(mappedAuctionBidsTokens, "auctionBidsTokensArray");
+         setTokenAuctionBids(mappedAuctionBidsTokens);
+       };
 
-        setMappedownedAdProposals(mappedownedAdProposals);
-        setListedAuctionToken(mappedListedToken);
-      };
-      if (address === userAddress) setIsOwner(true);
-      fetchAdsOffers();
-    }
-  }, [userAddress, router, address, chainId, chainConfig]);
+       if (address === userAddress) setIsOwner(true);
+       fetchOwnedAdProposals(); 
+       fetchCreatedData();
+       fetchListedTokens();
+       fetchAuctionBidsTokens();
+     }
+   }, [userAddress, router, address, chainId, chainConfig]);
   useEffect(() => {
     setTimeout(() => {
       setCopied(false);
     }, 2000);
   }, [copied]);
   const metadata = {
-    title: "DSponsor | Manage your ad spaces - " + address,
+    title: "Manage || DSponsor - The Web3 Monetization Solution",
     keyword:
       "audience engagement, web3, creator economic, NFT, creator monetization, creator economy, creator token, creator coin, creator tokenization, creator economy",
     desc: "Manage your ad spaces on DSponsor."
@@ -163,6 +164,7 @@ const ManageSpaceContainer = () => {
           createdData={createdData}
           listedAuctionToken={listedAuctionToken}
           mappedownedAdProposals={mappedownedAdProposals}
+          tokenAuctionBids={tokenAuctionBids}
           isPendinAdsOnOffer={isPendinAdsOnOffer}
           isOwner={isOwner}
         />
