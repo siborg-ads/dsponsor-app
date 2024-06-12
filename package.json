@@ -12,6 +12,7 @@
     "test": "vitest"
   },
   "dependencies": {
+    "@crossmint/client-sdk-react-ui": "^1.1.9",
     "@emotion/react": "^11.9.3",
     "@emotion/styled": "^11.9.3",
     "@headlessui/react": "^2.0.4",

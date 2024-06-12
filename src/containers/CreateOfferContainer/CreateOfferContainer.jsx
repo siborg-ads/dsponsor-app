@@ -329,7 +329,7 @@ const CreateOfferContainer = () => {
   const successFullUploadModal = {
     body: "Your offer has been created successfully",
     subBody:
-      "❕❕ On your offer management page, you will find the integration code to copy/paste onto your platform.",
+      "Find the integration code to copy/paste onto your platform in your offer management page",
     buttonTitle: "Manage Spaces",
     hrefButton: `/manage/${address}`
   };
