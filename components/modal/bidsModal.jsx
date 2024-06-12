@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, {useEffect, useRef, useState} from "react";
 import { ethers } from "ethers";
 import { Web3Button, useContractWrite } from "@thirdweb-dev/react";
 import { Spinner } from "@nextui-org/spinner";
@@ -41,6 +41,9 @@ const BidsModal = ({
   const [endDateHour, setEndDateHour] = useState(null);
   const [tokenPrice, setTokenPrice] = useState(null);
   const [buyoutPriceReached, setBuyoutPriceReached] = useState(false);
+
+  const modalRef = useRef();
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -188,11 +191,27 @@ const BidsModal = ({
     setCheckTerms(e.target.checked);
   };
 
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (modalRef.current && !modalRef.current.contains(event.target)) {
+        toggleBidsModal();
+        // We would love the button to not spin after closing the modal
+        setIsLoadingButton(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [toggleBidsModal]);
+
+
   return (
     <div>
       <div className="modal fade show block">
         <div className="modal-dialog max-w-2xl">
-          <div className="modal-content">
+          <div className="modal-content" ref={modalRef}>
             <div className="modal-header">
               <h5 className="modal-title" id="placeBidLabel">
                 Place a bid
@@ -352,8 +371,8 @@ const BidsModal = ({
                       error: "Approval rejected 🤯"
                     });
                   }}
-                  className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${
-                    !isPriceGood || !checkTerms ? "btn-disabled" : "!bg-primaryPurple !cursor-pointer"
+                  className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-black !transition-all ${
+                    !isPriceGood || !checkTerms ? "btn-disabled" : "!text-white !bg-primaryPurple !cursor-pointer"
                   } `}
                   isDisabled={!isPriceGood || !checkTerms}
                 >

@@ -1,15 +1,11 @@
 import Link from "next/link";
-import React from "react";
-import { useSelector, useDispatch } from "react-redux";
-import { buyModalHide } from "../../redux/counterSlice";
+import React, {useEffect, useRef} from "react";
 import Image from "next/image";
 import { Web3Button } from "@thirdweb-dev/react";
 import { useState } from "react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { protocolFeesBigNumber } from "../../utils/constUtils";
 import { Divider } from "@nextui-org/react";
-import { ethers } from "ethers";
 import { Spinner } from "@nextui-org/spinner";
 import { useChainContext } from "../../contexts/hooks/useChainContext";
 
@@ -38,6 +34,7 @@ const BuyModal = ({
 }) => {
   const [validate, setValidate] = useState(false);
   const { currentChainObject } = useChainContext();
+  const modalRef = useRef();
 
   const handleTermService = (e) => {
     setValidate(e.target.checked);
@@ -54,11 +51,25 @@ const BuyModal = ({
     return netPrice.toFixed(tokenDecimals); // Formatage avec le nombre spécifié de décimales pour les smart contracts
   };
 
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (modalRef.current && !modalRef.current.contains(event.target)) {
+        handleBuyModal();
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [modalRef]);
+
+
   return (
     <div>
       {/* <!-- Buy Now Modal --> */}
       <div className="modal-dialog max-w-2xl">
-        <div className="modal-content !bg-secondaryBlack">
+        <div className="modal-content !bg-secondaryBlack" ref={modalRef}>
           <div className="modal-header">
             <h5 className="modal-title" id="buyNowModalLabel">
               {!successFullUpload ? "Complete checkout" : successFullBuyModal.title}
@@ -223,7 +234,7 @@ const BuyModal = ({
                       error: "Approval rejected 🤯"
                     });
                   }}
-                  className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate ? "btn-disabled !text-black" : "!bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer"} `}
+                  className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-black  !transition-all ${!validate ? "btn-disabled !text-black" : "!text-white !bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer"} `}
                   isDisabled={!validate || isLoadingButton}
                 >
                   {isLoadingButton ? <Spinner size="sm" color="default" /> : "Approve"}
