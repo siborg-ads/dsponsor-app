@@ -7,7 +7,7 @@ import {
   useContractWrite,
   useStorageUpload
 } from "@thirdweb-dev/react";
-import { ethers } from "ethers";
+import {BigNumber, ethers} from "ethers";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -120,6 +120,7 @@ const TokenPageContainer = () => {
     tokenContract,
     "approve"
   );
+
   const { data: bps } = useContractRead(DsponsorAdminContract, "feeBps");
   const { data: isAllowedToMint, isLoading: isLoadingAllowedToMint } = useContractRead(
     DsponsorNFTContract,
@@ -136,6 +137,10 @@ const TokenPageContainer = () => {
   );
   const { mutateAsync: directBuy } = useContractWrite(dsponsorMpContract, "buy");
   const { setSelectedChain } = useSwitchChainContext();
+
+  const { contract: wrapContract } = useContract(config[chainId]?.smartContracts.WNATIVE.address);
+  const { mutateAsync: wrapNative } = useContractWrite(wrapContract, "deposit");
+
   const now = Math.floor(new Date().getTime() / 1000);
 
   // referralAddress is the address of the ?_rid= parameter in the URL
@@ -497,7 +502,30 @@ const TokenPageContainer = () => {
   const handleApprove = async () => {
     try {
       setIsLoadingButton(true);
-      const hasEnoughBalance = checkUserBalance(tokenBalance, price);
+      const parsedFeesAmount = ethers.utils.parseUnits(feesAmount.toString(), currencyDecimals);
+      const parsedPriceAmount = ethers.utils.parseUnits(price.toString(), currencyDecimals);
+
+      const parsedPriceAndProtocolFeesAmount = parsedPriceAmount.add(parsedFeesAmount);
+      let hasEnoughBalance = checkUserBalance(tokenBalance, parsedPriceAndProtocolFeesAmount);
+      const isWrappedNative = currency === "WETH";
+      const isNative = currency === "ETH";
+      console.log(`Checking if the user has enough balance for approval: ${hasEnoughBalance}`);
+      // If it's a wrapped native token, that the user has agreed to approve the contract
+      // But he has not enough balance as wrapped native token but he has enough balance as native token
+      // We need to convert the native token to wrapped native token
+      if (isWrappedNative && !hasEnoughBalance) {
+        const missingBalance = BigNumber.from(parsedPriceAndProtocolFeesAmount).sub(BigNumber.from(tokenBalance.value));
+        const missingBalanceWithProtocolFee = missingBalance.add(parsedFeesAmount);
+        console.log(`Wrapping ${missingBalanceWithProtocolFee.toNumber()} native token to wrapped native token`)
+        await wrapNative({
+          overrides: {
+            value: missingBalanceWithProtocolFee
+          }
+        });
+        console.log(`Wrapped ${missingBalanceWithProtocolFee.toString()} native token to wrapped native token`)
+        hasEnoughBalance = true;
+      }
+
       if (!hasEnoughBalance) {
         throw new Error("Not enough balance for approval.");
       }
@@ -525,6 +553,7 @@ const TokenPageContainer = () => {
       setIsLoadingButton(false);
     }
   };
+
   const handleBuySubmit = async () => {
     const hasEnoughBalance = checkUserBalance(tokenBalance, price);
     if (!hasEnoughBalance) {
@@ -695,8 +724,7 @@ const TokenPageContainer = () => {
       firstSelectedListing?.listingType === "Auction" && firstSelectedListing?.bids?.length > 0;
     const isOwnerAndFinished = isOwner && firstSelectedListing?.status === "COMPLETED";
     const isListerAndEndDateFinishedOrNoBids =
-      isLister &&
-      (firstSelectedListing?.endTime < now || firstSelectedListing?.bids?.length === 0);
+      isLister && (firstSelectedListing?.endTime < now || firstSelectedListing?.bids?.length === 0);
 
     return (
       ((isFirstListingAuctionActive && !isOwner) ||
@@ -754,7 +782,7 @@ const TokenPageContainer = () => {
     description = "description not found",
     id = "1",
     image = "/images/gradient_creative.jpg",
-    name = "Unnamed Ad Space",
+    name = "Unnamed Ad Space"
   } = Object.keys(offerData?.metadata?.offer?.token_metadata).length > 0
     ? tokenMetaData
     : offerData && offerData.metadata
@@ -787,18 +815,17 @@ const TokenPageContainer = () => {
             {/* <!-- Image --> */}
             <figure className="mb-8 md:mb-0 md:w-2/5 md:flex-shrink-0 md:flex-grow-0 md:basis-auto lg:w-1/2 w-full flex justify-center relative">
               <button
-                  className=" w-full"
-                  onClick={() => setImageModal(true)}
-                  style={{ height: "450px" }}
+                className=" w-full"
+                onClick={() => setImageModal(true)}
+                style={{ height: "450px" }}
               >
                 <Image
-                    width={585}
-                    height={726}
-                    src={image ?? "/images/gradient_creative.jpg"}
-                    alt="image"
-                    className="rounded-2xl cursor-pointer h-full object-contain w-full shadow-lg"
+                  width={585}
+                  height={726}
+                  src={image ?? "/images/gradient_creative.jpg"}
+                  alt="image"
+                  className="rounded-2xl cursor-pointer h-full object-contain w-full shadow-lg"
                 />
-
               </button>
 
               {/* <!-- Modal --> */}
