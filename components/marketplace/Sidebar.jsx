@@ -17,12 +17,17 @@ const status = [
 
 
 export default function Sidebar({ setFilterTypes }) {
+ const [isChainsOpen, setIsChainsOpen] = useState(false);
+ const [isStatusOpen, setIsStatusOpen] = useState(false);
 
+ const toggleChains = () => setIsChainsOpen(!isChainsOpen);
+ const toggleStatus = () => setIsStatusOpen(!isStatusOpen);
   useEffect(() => {
     tippy("[data-tippy-content]");
   }, []);
 
   const handleFilterChange = (type, checked, category) => {
+  
     setFilterTypes((prev) => {
       if (checked) {
         return [...new Set([...prev, { type, category }])];
@@ -38,11 +43,10 @@ export default function Sidebar({ setFilterTypes }) {
       <div className="mt-4 pt-4">
         <h2 id="filters-chains-heading">
           <button
-            className="accordion-button collapsed relative flex w-full items-center justify-between py-3 text-left font-display text-xl text-jacarta-700 dark:text-white"
+            className="relative flex w-full items-center justify-between py-3 text-left font-display text-xl text-jacarta-700 dark:text-white"
             type="button"
-            data-bs-toggle="collapse"
-            data-bs-target="#filters-chains"
-            aria-expanded="false"
+            onClick={toggleChains}
+            aria-expanded={isChainsOpen}
             aria-controls="filters-chains"
           >
             <span>Chains</span>
@@ -51,7 +55,7 @@ export default function Sidebar({ setFilterTypes }) {
               viewBox="0 0 24 24"
               width="24"
               height="24"
-              className="accordion-arrow h-5 w-5 shrink-0 fill-jacarta-700 transition-transform dark:fill-white"
+              className={`accordion-arrow h-5 w-5 shrink-0 fill-jacarta-700 transition-transform dark:fill-white ${isChainsOpen ? "rotate-180" : "rotate-0"}`}
             >
               <path fill="none" d="M0 0h24v24H0z"></path>
               <path d="M12 13.172l4.95-4.95 1.414 1.414L12 16 5.636 9.636 7.05 8.222z"></path>
@@ -60,7 +64,7 @@ export default function Sidebar({ setFilterTypes }) {
         </h2>
         <div
           id="filters-chains"
-          className="mt-3 collapse visible"
+          className={`mt-3 ${isChainsOpen ? "collapse-enter collapse-enter-active" : "collapse-exit collapse-exit-active"}`}
           aria-labelledby="filters-chains-heading"
         >
           <ul className="space-y-6 mb-8">
@@ -91,11 +95,10 @@ export default function Sidebar({ setFilterTypes }) {
       <div className="mt-4 pt-4">
         <h2 id="filters-status-heading">
           <button
-            className="accordion-button collapsed relative flex w-full items-center justify-between py-3 text-left font-display text-xl text-jacarta-700 dark:text-white"
+            className="relative flex w-full items-center justify-between py-3 text-left font-display text-xl text-jacarta-700 dark:text-white"
             type="button"
-            data-bs-toggle="collapse"
-            data-bs-target="#filters-status"
-            aria-expanded="false"
+            onClick={toggleStatus}
+            aria-expanded={isStatusOpen}
             aria-controls="filters-status"
           >
             <span>Status</span>
@@ -104,7 +107,7 @@ export default function Sidebar({ setFilterTypes }) {
               viewBox="0 0 24 24"
               width="24"
               height="24"
-              className="accordion-arrow h-5 w-5 shrink-0 fill-jacarta-700 transition-transform dark:fill-white"
+              className={`accordion-arrow h-5 w-5 shrink-0 fill-jacarta-700 transition-transform dark:fill-white ${isStatusOpen ? "rotate-180" : "rotate-0"}`}
             >
               <path fill="none" d="M0 0h24v24H0z"></path>
               <path d="M12 13.172l4.95-4.95 1.414 1.414L12 16 5.636 9.636 7.05 8.222z"></path>
@@ -113,7 +116,7 @@ export default function Sidebar({ setFilterTypes }) {
         </h2>
         <div
           id="filters-status"
-          className="mt-3 collapse visible"
+          className={`mt-3 ${isStatusOpen ? "collapse-enter collapse-enter-active" : "collapse-exit collapse-exit-active"}`}
           aria-labelledby="filters-status-heading"
         >
           <ul className="space-y-6 mb-8">

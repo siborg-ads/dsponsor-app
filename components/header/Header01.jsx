@@ -57,7 +57,7 @@ export default function Header01() {
                 src={Logo}
                 height={80}
                 width={80}
-                alt="DSponsor | smarter monetization for your content"
+                alt="SiborgAds | smarter monetization for your content"
                 className=" h-auto "
               />
               <span>d&gt;sponsor</span>
@@ -67,7 +67,7 @@ export default function Header01() {
                 src={WhiteLogo}
                 height={80}
                 width={80}
-                alt="DSponsor | smarter monetization for your content"
+                alt="SiborgAds | smarter monetization for your content"
               />
               <span>d&gt;sponsor</span>
             </div>
@@ -98,11 +98,11 @@ export default function Header01() {
                   </li>
                 </ConditionalCreateLi>
                 <li className="group">
-                  <Link href={`/marketplace`}>
+                  <Link href={`/`}>
                     <button className="text-jacarta-700 font-display hover:text-accent focus:text-accent dark:hover:text-accent dark:focus:text-accent flex items-center justify-between py-3.5 text-base dark:text-white lg:px-5">
                       <span
                         className={
-                          isChildrenPageActive(route.asPath, `/marketplace`)
+                          isChildrenPageActive(route.asPath, `/`)
                             ? "text-accent dark:text-accent"
                             : ""
                         }
@@ -202,7 +202,7 @@ export default function Header01() {
               src={Logo}
               height={80}
               width={80}
-              alt="DSponsor | smarter monetization for your content"
+              alt="SiborgAds | smarter monetization for your content"
               className="max-h-7 h-auto "
             />
           </div>
@@ -212,7 +212,7 @@ export default function Header01() {
               src={WhiteLogo}
               height={80}
               width={80}
-              alt="DSponsor | smarter monetization for your content"
+              alt="SiborgAds | smarter monetization for your content"
             />
           </div>
 
@@ -267,11 +267,11 @@ export default function Header01() {
               </Link>
             </li>
             <li className="group">
-              <Link href={`/marketplace`} onClick={() => setToggle(false)}>
+              <Link href={`/`} onClick={() => setToggle(false)}>
                 <button className="text-jacarta-700 font-display hover:text-accent focus:text-accent dark:hover:text-accent dark:focus:text-accent flex items-center justify-between py-3.5 text-base dark:text-white lg:px-5">
                   <span
                     className={
-                      isChildrenPageActive(route.asPath, `/marketplace`)
+                      isChildrenPageActive(route.asPath, `/`)
                         ? "text-accent dark:text-accent"
                         : ""
                     }
