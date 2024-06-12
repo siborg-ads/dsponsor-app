@@ -5,11 +5,13 @@ import OwnedOffers_categories_items from "../categories/ownedOffers_categories_i
 
 import OwnedAdProposals_categories_items from "../categories/ownedAdProposals_categories_item";
 import Auctions_categories from "../categories/Auctions_categories";
+import TokenAuctionBids from "../categories/tokenAuctionBids";
 import { activated_features } from "../../data/activated_features";
 
 const User_items = ({
   createdData,
   mappedownedAdProposals,
+  tokenAuctionBids,
   isPendinAdsOnOffer,
   isOwner,
   listedAuctionToken
@@ -19,10 +21,11 @@ const User_items = ({
   const tabItem = [
     { id: 1, text: "Owned tokens", icon: "owned" },
     { id: 2, text: "Auction listed tokens", icon: "activity" },
+    { id: 3, text: "Token Auction Bids ", icon: "activity" },
     ...(activated_features.canCreateOffer
       ? [
           {
-            id: 3,
+            id: 4,
             text: "Created Offers",
             icon: "owned"
           }
@@ -81,6 +84,11 @@ const User_items = ({
             </TabPanel>
             <TabPanel>
               <Auctions_categories data={listedAuctionToken} isOwner={isOwner} />
+            </TabPanel>
+            <TabPanel>
+              <div>
+                <TokenAuctionBids data={tokenAuctionBids} isOwner={isOwner} />
+              </div>
             </TabPanel>
             <TabPanel>
               <div>

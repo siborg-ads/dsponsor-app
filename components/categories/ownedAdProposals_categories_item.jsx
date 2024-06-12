@@ -48,7 +48,7 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
   const { mutateAsync: submitAd } = useContractWrite(DsponsorAdminContract, "submitAdProposals");
 
   const chainId = currentChainObject?.chainId;
-
+console.log(data, "data");
   const handleFilter = (category) => {
     if (category !== "all") {
       setItemdata(trendingCategoryData.filter((item) => item.category === category));
@@ -247,7 +247,14 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
   return (
     <>
       {/* <!-- Filter --> */}
-
+      <div className="dark:bg-jacarta-700 dark:text-jacarta-300 dark:border-jacarta-600 border-jacarta-100 rounded-2lg border bg-white p-3 flex gap-4 justify-center items-center mb-6">
+        <span>
+          {" "}
+          This section lists all your tokens that are either currently in a direct listing or not
+          listed at all.
+          <br />
+        </span>
+      </div>
       {/* <!-- Grid --> */}
       {data.length > 0 ? (
         <div className="flex flex-col justify-center items-center">
@@ -278,6 +285,10 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
                     <OfferItem
                       item={item}
                       isToken={true}
+                      isListing={
+                        item?.marketplaceListings[0]?.listingType &&
+                        item?.marketplaceListings[0]?.listingType
+                      }
                       isSelectionActive={isSelectionActive}
                       url={
                         !item.tokenData
@@ -291,6 +302,10 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
                     item={item}
                     key={index}
                     isToken={true}
+                    isListing={
+                      item?.marketplaceListings[0]?.listingType &&
+                      item?.marketplaceListings[0]?.listingType
+                    }
                     isSelectionActive={isSelectionActive}
                     url={
                       !item.tokenData

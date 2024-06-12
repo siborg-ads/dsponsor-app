@@ -136,9 +136,11 @@ const OfferPageContainer = () => {
     }
   };
   const metadata = {
-    title: `${offerData?.metadata?.offer?.name} || DSponsor | smarter monetization for your content`,
-    keyword: `DSponsor, offer, ${offerData?.metadata?.offer?.name}, ${offerData?.metadata?.offer?.description}`,
-    desc: offerData?.metadata?.offer?.description
+    title: `Offer || DSponsor | smarter monetization for your content`,
+    keyword:
+      "audience engagement, web3, creator economic, NFT, creator monetization, creator economy, creator token, creator coin, creator tokenization, creator economy",
+
+    desc: "Explore the future of media monetization. DSponsor’s decentralized platform offers tokenized advertising spaces for dynamic and sustainable media funding."
   };
   if (!offerData || offerData.length === 0) {
     return (

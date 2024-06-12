@@ -54,6 +54,7 @@ const HomeCarousel = ({ data, isToken = false, arrowName }) => {
                           : `/${item?.chainConfig?.chainId}/offer/${item?.nftContract?.adOffers[0]?.id}/${item?.tokenId}?tokenData=${item?.mint?.tokenData}`
                       }
                       isToken={isToken}
+                      isAuction={item?.marketplaceListings[0]?.listingType === "Auction"}
                       isListing={item?.marketplaceListings[0]?.listingType}
                     />
                   ) : (

@@ -22,7 +22,7 @@ const OfferItem = ({
   const [price, setPrice] = useState(null);
   const [currencyToken, setCurrencyToken] = useState(null);
   const [itemData, setItemData] = useState({});
-  const [, setItemStatut] = useState(null);
+  const [itemStatut, setItemStatut] = useState(null);
   const { contract: tokenContract } = useContract(
     (!isToken || (isToken && isListing)) && item?.nftContract?.prices[0]?.currency,
     "token"
@@ -59,7 +59,7 @@ const OfferItem = ({
   };
   useEffect(() => {
     if (!item) return;
-    console.log(item, "item");
+
     if (!isToken && !isListing && !isAuction) {
       setItemStatut("OFFER");
       setPrice(item.nftContract.prices[0].mintPriceStructureFormatted.totalAmount);
@@ -73,14 +73,23 @@ const OfferItem = ({
       return;
     }
     if (isToken && item?.marketplaceListings?.length <= 0 && item.mint !== null) {
-      setPrice(item?.nftContract?.prices[0]?.mintPriceStructureFormatted.totalAmount);
+      setPrice(null);
       setCurrencyToken(item.nftContract.prices[0].currencySymbol);
       setItemStatut("TOKENMINTED");
       return;
     }
-    if (isToken && item?.marketplaceListings?.length > 0 && isListing === "Auction") {
-      setPrice(item?.marketplaceListings[0]?.bidPriceStructureFormatted.newPricePerToken);
-      setCurrencyToken(item?.marketplaceListings[0]?.currencySymbol);
+    if (isToken && isAuction && isListing === "Auction") {
+      setPrice(
+        item?.marketplaceListings?.[0]
+          ? item?.marketplaceListings[0]?.bidPriceStructureFormatted?.newPricePerToken
+          : item?.bidPriceStructureFormatted?.newPricePerToken
+      );
+      setCurrencyToken(
+        item?.marketplaceListings?.[0]
+          ? item?.marketplaceListings[0]?.currencySymbol
+          : item?.currencySymbol
+      );
+
       setItemStatut("AUCTION");
       return;
     }
@@ -209,13 +218,21 @@ const OfferItem = ({
               </Link>
             )}
 
-            {currencyToken && (
+            {currencyToken && price ? (
               <div className="dark:border-jacarta-600 border-jacarta-100 flex items-center whitespace-nowrap rounded-md border py-1 px-2">
                 {" "}
                 <span className="text-green text-sm font-medium tracking-tight">
                   {price} {currencyToken}
                 </span>
               </div>
+            ) : (
+              itemStatut === "AUCTION" && (
+               
+                  <span className={`${item.status === "CREATED" ? "text-accent": item.statut === "COMPLETED" ? "text-green" : "text-red"} text-sm font-medium tracking-tight`}>
+                    {item.status}
+                  </span>
+               
+              )
             )}
           </div>
           <div className="mt-2 text-xs flex items-center justify-between">
@@ -228,29 +245,8 @@ const OfferItem = ({
                   Offer # {isToken ? item?.offerId : item?.id}
                 </span>
               </div>
-            ) : isAuction && isToken && !isListing ? (
-              <div className="flex justify-between w-full items-center">
-                <div className="flex flex-col">
-                  <span className="dark:text-jacarta-300 text-jacarta-500">
-                    Auction Start :{" "}
-                    <span className="text-green text-xs font-medium">
-                      {formatAuctionDate(item.startTime)}{" "}
-                    </span>
-                  </span>
-                  <span className="dark:text-jacarta-300 text-jacarta-500">
-                    Auction End :{" "}
-                    <span className="text-green text-xs font-medium">
-                      {formatAuctionDate(item.endTime)}
-                    </span>{" "}
-                  </span>
-                </div>
-                <span className="dark:text-jacarta-300 text-jacarta-500">
-                  Offer # {item?.nftContract?.adOffers[0]?.id}
-                </span>
-              </div>
             ) : (
-              isToken &&
-              isListing && (
+              (itemStatut === "AUCTION" || itemStatut === "DIRECT") && (
                 <div className="flex justify-between w-full items-center">
                   <div className="flex gap-2 items-center justify-center">
                     <span className="dark:text-jacarta-300 text-jacarta-500">
@@ -276,7 +272,10 @@ const OfferItem = ({
                     )}
                   </div>
                   <span className="dark:text-jacarta-300 text-jacarta-500">
-                    Offer # {item?.nftContract?.adOffers[0]?.id}
+                    Offer #{" "}
+                    {item?.nftContract?.adOffers?.[0]
+                      ? item?.nftContract?.adOffers?.[0].id
+                      : item?.offerId}
                   </span>
                 </div>
               )

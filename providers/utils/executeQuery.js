@@ -10,7 +10,7 @@ export const executeQuery = async (url, query, variables) => {
         variables
       })
     });
-
+console.log(response, "response");
     if (!response.ok) {
       console.error("Network response was not ok", response.statusText);
       throw new Error(`Network response was not ok: ${response.statusText}`);
