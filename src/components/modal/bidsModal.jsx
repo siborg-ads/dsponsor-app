@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { ethers } from "ethers";
 import { Web3Button, useContractWrite } from "@thirdweb-dev/react";
 import { Spinner } from "@nextui-org/spinner";
@@ -9,6 +9,8 @@ import { computeBidAmounts } from "../../utils/computeBidAmounts";
 import { formatUnits, parseUnits } from "ethers/lib/utils";
 import { formatAndRoundPrice } from "../../utils/formatAndRound";
 import { fetchTokenPrice } from "../../utils/fetchTokenPrice";
+import { CrossmintPayButton } from "@crossmint/client-sdk-react-ui";
+import {activated_features} from "../../data/activated_features";
 
 const BidsModal = ({
   setAmountToApprove,
@@ -26,7 +28,7 @@ const BidsModal = ({
   tokenBalance,
   allowanceTrue,
   currencyTokenDecimals,
-  handleApprove,
+  handleApprove: handleParentApprove,
   checkAllowance,
   isLoadingButton,
   setIsLoadingButton
@@ -42,8 +44,10 @@ const BidsModal = ({
   const [tokenPrice, setTokenPrice] = useState(null);
   const [buyoutPriceReached, setBuyoutPriceReached] = useState(false);
 
-  const modalRef = useRef();
+  // If currency is WETH, we can pay with Crossmint
+  const canPayWithCrossmint = marketplaceListings[0]?.currency === config[chainId]?.crossmint?.WETH && activated_features.canPayWithCrossmintEnabled;
 
+  const modalRef = useRef();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -167,6 +171,20 @@ const BidsModal = ({
     }
   };
 
+  const handleApprove = async () => {
+    try {
+      setIsLoadingButton(true);
+
+      // await handleParentApprove();
+      setSuccessFullBid(true);
+    } catch (error) {
+      setIsLoadingButton(false);
+      throw new Error(error);
+    } finally {
+      setIsLoadingButton(false);
+    }
+  };
+
   const handleSubmit = async () => {
     const hasEnoughBalance = checkUserBalance(tokenBalance, bidsAmount);
     if (!hasEnoughBalance) {
@@ -205,7 +223,6 @@ const BidsModal = ({
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [toggleBidsModal]);
-
 
   return (
     <div>
@@ -360,49 +377,54 @@ const BidsModal = ({
             )}
             {/* <!-- end body --> */}
 
-            <div className="modal-footer">
-              {allowanceTrue && !successFullBid ? (
-                <Web3Button
-                  contractAddress={config[chainId]?.smartContracts?.DSPONSORMP?.address}
-                  action={() => {
-                    toast.promise(handleApprove, {
-                      pending: "Waiting for confirmation 🕒",
-                      success: "Approval confirmed 👌",
-                      error: "Approval rejected 🤯"
-                    });
-                  }}
-                  className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-black !transition-all ${
-                    !isPriceGood || !checkTerms ? "btn-disabled" : "!text-white !bg-primaryPurple !cursor-pointer"
-                  } `}
-                  isDisabled={!isPriceGood || !checkTerms}
-                >
-                  {isLoadingButton ? <Spinner size="sm" color="default" /> : "Approve"}
-                </Web3Button>
-              ) : !successFullBid ? (
-                <div className="flex items-center justify-center space-x-4">
+            <div className="modal-footer flex items-center justify-center gap-4 p-6">
+              <div className="flex flex-col items-center space-y-6">
+                {allowanceTrue && !successFullBid ? (
                   <Web3Button
                     contractAddress={config[chainId]?.smartContracts?.DSPONSORMP?.address}
                     action={() => {
-                      toast.promise(handleSubmit, {
+                      toast.promise(handleApprove, {
                         pending: "Waiting for confirmation 🕒",
-                        success: "Bid confirmed 👌",
-                        error: "Bid rejected 🤯"
+                        success: "Approval confirmed 👌",
+                        error: "Approval rejected 🤯"
                       });
                     }}
-                    className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${
-                      !isPriceGood || !checkTerms ? "btn-disabled" : "!bg-primaryPurple !cursor-pointer"
+                    className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-black !transition-all ${
+                      !isPriceGood || !checkTerms
+                        ? "btn-disabled"
+                        : "!text-white !bg-primaryPurple !cursor-pointer"
                     } `}
                     isDisabled={!isPriceGood || !checkTerms}
                   >
-                    {isLoadingButton ? (
-                      <Spinner size="sm" color="default" />
-                    ) : buyoutPriceReached ? (
-                      "Buy Now"
-                    ) : (
-                      "Place Bid"
-                    )}
+                    {isLoadingButton ? <Spinner size="sm" color="default" /> : "Approve"}
                   </Web3Button>
-                  {/* <button
+                ) : !successFullBid ? (
+                  <div className="flex items-center justify-center space-x-4">
+                    <Web3Button
+                      contractAddress={config[chainId]?.smartContracts?.DSPONSORMP?.address}
+                      action={() => {
+                        toast.promise(handleSubmit, {
+                          pending: "Waiting for confirmation 🕒",
+                          success: "Bid confirmed 👌",
+                          error: "Bid rejected 🤯"
+                        });
+                      }}
+                      className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${
+                        !isPriceGood || !checkTerms
+                          ? "btn-disabled"
+                          : "!bg-primaryPurple !cursor-pointer"
+                      } `}
+                      isDisabled={!isPriceGood || !checkTerms}
+                    >
+                      {isLoadingButton ? (
+                        <Spinner size="sm" color="default" />
+                      ) : buyoutPriceReached ? (
+                        "Buy Now"
+                      ) : (
+                        "Place Bid"
+                      )}
+                    </Web3Button>
+                    {/* <button
                   type="button"
                   disabled={!isPriceGood}
                   className={`  ${!isPriceGood ? "btn-disabled" : "bg-primaryPurple shadow-primaryPurple-volume"} hover:bg-primaryPurple-dark rounded-full py-3 px-8 text-center font-semibold text-white transition-all`}
@@ -410,14 +432,50 @@ const BidsModal = ({
                 >
                   Place Bid
                 </button> */}
-                </div>
-              ) : (
-                <button
-                  className="!rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all !bg-primaryPurple !cursor-pointer"
-                  onClick={toggleBidsModal}
-                >
-                  Close
-                </button>
+                  </div>
+                ) : (
+                  <button
+                    className="!rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all !bg-primaryPurple !cursor-pointer"
+                    onClick={toggleBidsModal}
+                  >
+                    Close
+                  </button>
+                )}
+              </div>
+              {canPayWithCrossmint && (
+                <>
+                  <div className="flex items-center justify-center w-full">
+                    <div className="flex-grow border-t border-gray-300"></div>
+                    <span className="mx-4 text-gray-500">or</span>
+                    <div className="flex-grow border-t border-gray-300"></div>
+                  </div>
+                  <div className="flex items-center justify-center space-x-4">
+                    <CrossmintPayButton
+                      contractAddress={config[chainId]?.smartContracts?.DSPONSORMP?.address}
+                      action={() => {
+                        toast.promise(handleSubmit, {
+                          pending: "Waiting for confirmation 🕒",
+                          success: "Bid confirmed 👌",
+                          error: "Bid rejected 🤯"
+                        });
+                      }}
+                      className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${
+                        !isPriceGood || !checkTerms
+                          ? "btn-disabled"
+                          : "!bg-primaryPurple !cursor-pointer"
+                      } `}
+                      isDisabled={!isPriceGood || !checkTerms}
+                    >
+                      {isLoadingButton ? (
+                        <Spinner size="sm" color="default" />
+                      ) : buyoutPriceReached ? (
+                        "Buy Now"
+                      ) : (
+                        "Place Bid"
+                      )}
+                    </CrossmintPayButton>
+                  </div>
+                </>
               )}
             </div>
           </div>

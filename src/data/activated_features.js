@@ -10,5 +10,7 @@ const isDevelopment = env === "development";
 export const activated_features = {
   canCreateOffer: !!isDevelopment,
   // by default, first item used
-  canHaveMultipleCurrencies: !!isDevelopment
+  canHaveMultipleCurrencies: !!isDevelopment,
+  // crossmint payment enabled
+  canPayWithCrossmintEnabled: !!isDevelopment
 };
