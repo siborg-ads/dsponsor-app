@@ -10,8 +10,6 @@ const Review_adProposal_data = [
     itemsCount: "10K",
     title: "Art Me Outside",
     category: "art",
-    category: "Collectibles",
-    category: "photography",
     top: true,
     trending: true,
     recent: true
@@ -27,8 +25,6 @@ const Review_adProposal_data = [
     itemsCount: "2.8K",
     title: "PankySkal",
     category: "Collectibles",
-    category: "photography",
-    category: "music",
     top: false,
     trending: false,
     recent: false
@@ -43,7 +39,6 @@ const Review_adProposal_data = [
     userName: "Origin Morish",
     itemsCount: "8K",
     title: "VR Space_287",
-    category: "domain",
     category: "photography",
     top: true,
     trending: false,
@@ -60,8 +55,6 @@ const Review_adProposal_data = [
     itemsCount: "1.5K",
     title: "Metasmorf",
     category: "music",
-    category: "photography",
-    category: "art",
     top: false,
     trending: true,
     recent: false

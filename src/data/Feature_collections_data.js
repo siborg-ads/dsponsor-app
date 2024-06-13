@@ -10,8 +10,6 @@ const Feature_collections_data = [
     itemsCount: "10K",
     title: "Art Me Outside",
     category: "art",
-    category: "Collectibles",
-    category: "photography",
     top: true,
     trending: true,
     recent: true
@@ -26,8 +24,6 @@ const Feature_collections_data = [
     userName: "NFT stars",
     itemsCount: "2.8K",
     title: "PankySkal",
-    category: "Collectibles",
-    category: "photography",
     category: "music",
     top: false,
     trending: false,
@@ -44,7 +40,6 @@ const Feature_collections_data = [
     itemsCount: "8K",
     title: "VR Space_287",
     category: "domain",
-    category: "photography",
     top: true,
     trending: false,
     recent: true
@@ -60,8 +55,6 @@ const Feature_collections_data = [
     itemsCount: "1.5K",
     title: "Metasmorf",
     category: "music",
-    category: "photography",
-    category: "art",
     top: false,
     trending: true,
     recent: false
@@ -77,8 +70,6 @@ const Feature_collections_data = [
     itemsCount: "15K",
     title: "3Landers",
     category: "photography",
-    category: "Collectibles",
-    category: "music",
     top: true,
     trending: false,
     recent: true
@@ -94,8 +85,6 @@ const Feature_collections_data = [
     itemsCount: "8.8K",
     title: "SlimHoods",
     category: "virtual world",
-    category: "music",
-    category: "art",
     top: true,
     trending: true,
     recent: false
@@ -111,7 +100,6 @@ const Feature_collections_data = [
     itemsCount: "13K",
     title: "The Overseers",
     category: "art",
-    category: "Collectibles",
     top: false,
     trending: true,
     recent: true
@@ -127,7 +115,6 @@ const Feature_collections_data = [
     userName: "alyxbow",
     itemsCount: "3K",
     title: "Dope Shibas",
-    category: "Collectibles",
     category: "art",
     top: true,
     trending: false,
@@ -174,7 +161,6 @@ const Feature_collections_data = [
     itemsCount: "8K",
     title: "VR Space_287",
     category: "domain",
-    category: "Collectibles",
     top: true,
     trending: false,
     recent: true
@@ -190,8 +176,6 @@ const Feature_collections_data = [
     itemsCount: "1.5K",
     title: "Metasmorf",
     category: "music",
-    category: "Collectibles",
-    category: "virtual world",
     top: true,
     trending: true,
     recent: false
@@ -207,8 +191,6 @@ const Feature_collections_data = [
     itemsCount: "15K",
     title: "3Landers",
     category: "photography",
-    category: "domain",
-    category: "virtual world",
     top: false,
     trending: true,
     recent: true
@@ -224,7 +206,6 @@ const Feature_collections_data = [
     itemsCount: "8.8K",
     title: "SlimHoods",
     category: "virtual world",
-    category: "domain",
     top: true,
     trending: false,
     recent: true
@@ -240,7 +221,6 @@ const Feature_collections_data = [
     itemsCount: "13K",
     title: "The Overseers",
     category: "domain",
-    category: "virtual world",
     top: true,
     trending: true,
     recent: false

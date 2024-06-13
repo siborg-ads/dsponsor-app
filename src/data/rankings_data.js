@@ -47,8 +47,6 @@ const rankings_data = [
     h24Color: "green",
     d7Color: "red",
     category: "Domain",
-
-    category: "Virtual World",
     blockchain: "Flow",
     postDate: "Last 30 Days"
   },
@@ -99,8 +97,6 @@ const rankings_data = [
     icon: false,
     h24Color: "red",
     d7Color: "green",
-    category: "Virtual World",
-
     category: "art",
     blockchain: "Polygon",
     postDate: "Last 7 Days"
@@ -119,8 +115,6 @@ const rankings_data = [
     h24Color: "green",
     d7Color: "red",
     category: "art",
-
-    category: "Collectibles",
     blockchain: "Flow",
     postDate: "Last 14 Days"
   },
@@ -139,11 +133,8 @@ const rankings_data = [
     h24Color: "red",
     d7Color: "green",
     category: "Collectibles",
-
     postDate: "Last 90 Days",
-    category: "Domain",
     blockchain: "Tezos",
-    postDate: "Last 30 Days"
   },
   {
     id: "9",
@@ -194,9 +185,6 @@ const rankings_data = [
     h24Color: "red",
     d7Color: "green",
     category: "Music",
-
-    postDate: "Last 90 Days",
-    category: "Virtual World",
     blockchain: "Flow",
     postDate: "Last 7 Days"
   },
@@ -216,9 +204,7 @@ const rankings_data = [
     category: "Photography",
 
     postDate: "Last 90 Days",
-    category: "Art",
     blockchain: "Tezos",
-    postDate: "Last 14 Days"
   },
   {
     id: "13",
@@ -234,9 +220,6 @@ const rankings_data = [
     h24Color: "red",
     d7Color: "green",
     category: "Virtual World",
-
-    postDate: "Last 90 Days",
-    category: "Collectibles",
     blockchain: "Ethereum",
     postDate: "Last 30 Days"
   },
@@ -272,9 +255,6 @@ const rankings_data = [
     h24Color: "red",
     d7Color: "green",
     category: "Collectibles",
-
-    postDate: "Last 90 Days",
-    category: "Domain",
     blockchain: "Flow",
     postDate: "Last 90 Days"
   },
@@ -292,9 +272,6 @@ const rankings_data = [
     h24Color: "green",
     d7Color: "red",
     category: "Domain",
-
-    postDate: "Last 90 Days",
-    category: "Music",
     blockchain: "Tezos",
     postDate: "Last 7 Days"
   },
@@ -329,9 +306,6 @@ const rankings_data = [
     h24Color: "red",
     d7Color: "green",
     category: "Music",
-
-    postDate: "Last 90 Days",
-    category: "Domain",
     blockchain: "Polygon",
     postDate: "Last 30 Days"
   },
