@@ -3,7 +3,7 @@ import React from "react";
 import renderDateToHumanString from "../../providers/utils/renderDateToHumanString";
 import renderPriceToHumanString from "../../providers/utils/renderPriceToHumanString";
 
-const ItemLastBids = ({ lastBids, currencySymbol, currencyDecimals= 18 }) => {
+const ItemLastBids = ({ lastBids, currencySymbol, currencyDecimals = 18 }) => {
   const transformStatus = (status) => {
     switch (status) {
       case "CREATED":
@@ -45,21 +45,26 @@ const ItemLastBids = ({ lastBids, currencySymbol, currencyDecimals= 18 }) => {
             {lastBids.map((bid, index) => (
               <tr key={index}>
                 <td className="text-sm text-jacarta-100 dark:text-jacarta-100">
-                  <Link href={`/manage/${bid.bidder}`} className="text-primaryPink hover:text-jacarta-100">
+                  <Link
+                    href={`/manage/${bid.bidder}`}
+                    className="text-primaryPink hover:text-jacarta-100"
+                  >
                     {bid.bidder}
                   </Link>
                 </td>
                 <td className="text-sm text-jacarta-100 dark:text-jacarta-100">
                   {renderPriceToHumanString(
                     bid.totalBidAmount / Math.pow(10, currencyDecimals),
-                    currencySymbol,
+                    currencySymbol
                   )}
                 </td>
                 <td className="text-sm text-jacarta-100 dark:text-jacarta-100">
                   {renderDateToHumanString(new Date(parseInt(bid.creationTimestamp) * 1000))}
                 </td>
                 <td className="text-sm text-jacarta-100 dark:text-jacarta-100">
-                  {bid.reward ? `${bid.reward} ${currencySymbol}` : "-"}
+                  {bid.amountsFormatted?.refundProfit
+                    ? `${bid.amountsFormatted.refundProfit} ${currencySymbol}`
+                    : "-"}
                 </td>
                 <td className="text-sm text-jacarta-100 dark:text-jacarta-100">
                   {transformStatus(bid.status)}

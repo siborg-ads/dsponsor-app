@@ -142,7 +142,7 @@ const BidsModal = ({
 
   useEffect(() => {
     const minimalBidPerToken = marketplaceListings[0]?.bidPriceStructure?.minimalBidPerToken;
-    if (minimalBidPerToken) {
+    if (minimalBidPerToken && !bidsAmount) {
       const minimalBid = ethers.utils.formatUnits(minimalBidPerToken, currencyTokenDecimals);
       setInitialIntPrice(minimalBid);
       setBidsAmount(minimalBid);
@@ -174,7 +174,7 @@ const BidsModal = ({
   const handleApprove = async () => {
     try {
       setIsLoadingButton(true);
-
+      await handleParentApprove();
       // await handleParentApprove();
       setSuccessFullBid(true);
     } catch (error) {
