@@ -507,17 +507,23 @@ const TokenPageContainer = () => {
       const parsedPriceAmount = ethers.utils.parseUnits(price.toString(), currencyDecimals);
       const computedFeesAmount = parsedPriceAmount.mul(protocolFeeBps).div(maxBps);
       const parsedPriceAndProtocolFeesAmount = parsedPriceAmount.add(computedFeesAmount);
+      console.log(`Parsed price and protocol fees amount: ${parsedPriceAndProtocolFeesAmount.toString()} - has token balance: ${tokenBalance.value.toString()} - Price: ${price.toString()} - Protocol fees: ${computedFeesAmount.toString()}`);
       let hasEnoughBalance = checkUserBalance(tokenBalance, parsedPriceAndProtocolFeesAmount);
       const isWrappedNative = currency === "WETH";
       const isNative = currency === "ETH";
-      console.log(`Checking if the user has enough balance for approval: ${hasEnoughBalance}`);
+      console.log(`Checking if the user has enough balance for approval: ${hasEnoughBalance} - is wrappable ${isWrappedNative}`);
       // If it's a wrapped native token, that the user has agreed to approve the contract
       // But he has not enough balance as wrapped native token but he has enough balance as native token
       // We need to convert the native token to wrapped native token
       if (isWrappedNative && !hasEnoughBalance) {
-        const missingBalance = BigNumber.from(parsedPriceAndProtocolFeesAmount).sub(BigNumber.from(tokenBalance.value));
+        console.log(`Has token balance: ${tokenBalance.value.toString()} - Price and protocol fees amount: ${parsedPriceAndProtocolFeesAmount.toString()}`);
+        console.log(parsedPriceAndProtocolFeesAmount.toString(), tokenBalance.value.toString())
+        const missingBalance = parsedPriceAndProtocolFeesAmount.sub(BigNumber.from(tokenBalance.value)).abs()
+        console.log(`Missing balance: ${missingBalance.toString()}`)
+        console.log(computedFeesAmount.toString())
         const missingBalanceWithProtocolFee = missingBalance.add(computedFeesAmount);
-        console.log(`Wrapping ${missingBalanceWithProtocolFee.toNumber()} native token to wrapped native token`)
+        console.log(`Missing balance with protocol fee: ${missingBalanceWithProtocolFee.toString()}`)
+        console.log(`Wrapping ${missingBalanceWithProtocolFee.toString()} native token to wrapped native token`)
         await wrapNative({
           overrides: {
             value: missingBalanceWithProtocolFee
@@ -538,16 +544,17 @@ const TokenPageContainer = () => {
         const bidsBigInt = ethers.utils.parseUnits(bidsAmount.toString(), currencyDecimals);
 
         await approve({
-          args: [config[chainId]?.smartContracts?.DSPONSORMP?.address, bidsBigInt]
+          args: [config[chainId]?.smartContracts?.DSPONSORMP?.address, bidsBigInt.toString()]
         });
       } else {
         await approve({
-          args: [config[chainId]?.smartContracts?.DSPONSORADMIN?.address, amountToApprove]
+          args: [config[chainId]?.smartContracts?.DSPONSORADMIN?.address, amountToApprove.toString()]
         });
       }
       setAllowanceTrue(false);
     } catch (error) {
       setIsLoadingButton(false);
+      console.error(error);
       console.error("Approval failed:", error.message);
       throw new Error("Approval failed.");
     } finally {
@@ -660,9 +667,14 @@ const TokenPageContainer = () => {
 
   const checkUserBalance = (tokenAddressBalance, priceToken) => {
     try {
-      const parsedTokenBalance = parseFloat(tokenAddressBalance.displayValue);
-      const parsedPriceToken = parseFloat(priceToken);
+      console.log("Token balance:", tokenAddressBalance);
+      console.log("displayValue:", tokenAddressBalance.displayValue);
+      console.log("Price token:", priceToken);
+      const parsedTokenBalance = ethers.utils.parseUnits(tokenAddressBalance.displayValue, currencyDecimals);
+      const parsedPriceToken = parseFloat(priceToken.toString());
 
+      console.log("Parsed token balance:", parsedTokenBalance);
+        console.log("Parsed price token:", parsedPriceToken);
       if (parsedTokenBalance >= parsedPriceToken) {
         return true;
       } else {
