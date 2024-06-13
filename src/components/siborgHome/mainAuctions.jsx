@@ -4,7 +4,7 @@ import OfferItem from "../cards/offerItem";
 
 const MainAuctions = ({ auctions, isAuctionsLoading }) => {
   const [mount, setMount] = useState(false);
-  const [randomAuctions, setRandomAuctions] = useState([]);
+  const [hotAuctions, setHotAuctions] = useState([]);
 
   const liveAuctions = useMemo(() => {
     return auctions?.filter(
@@ -20,22 +20,12 @@ const MainAuctions = ({ auctions, isAuctionsLoading }) => {
   useMemo(() => {
     if (liveAuctions?.length === 0) return [];
 
-    let tempRandomAuctions = [];
+    let tempAuctions = liveAuctions;
 
     if (!mount) {
-      tempRandomAuctions = [];
-      let seenIndexes = new Set();
+      tempAuctions = liveAuctions.sort((a, b) => b.numberOfBids - a.numberOfBids).slice(0, 4);
 
-      while (tempRandomAuctions.length < 4 && seenIndexes.size < liveAuctions?.length) {
-        let randomIndex = Math.floor(Math.random() * liveAuctions?.length);
-
-        if (!seenIndexes.has(randomIndex)) {
-          tempRandomAuctions.push(liveAuctions[randomIndex]);
-          seenIndexes.add(randomIndex);
-        }
-      }
-
-      setRandomAuctions(tempRandomAuctions);
+      setHotAuctions(tempAuctions);
       setMount(true);
     }
   }, [liveAuctions, mount]);
@@ -43,11 +33,11 @@ const MainAuctions = ({ auctions, isAuctionsLoading }) => {
   return (
     <>
       <div className="flex flex-col gap-4">
-        <div className="text-xl font-semibold text-white">Live Auctions 🔥</div>
+        <div className="text-xl font-semibold text-white">Hot Auctions 🔥</div>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {!isAuctionsLoading ? (
             <>
-              {randomAuctions.map((auction, index) => (
+              {hotAuctions.map((auction, index) => (
                 <OfferItem
                   key={index}
                   item={auction.item}

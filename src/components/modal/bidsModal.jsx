@@ -10,7 +10,7 @@ import { formatUnits, parseUnits } from "ethers/lib/utils";
 import { formatAndRoundPrice } from "../../utils/formatAndRound";
 import { fetchTokenPrice } from "../../utils/fetchTokenPrice";
 import { CrossmintPayButton } from "@crossmint/client-sdk-react-ui";
-import {activated_features} from "../../data/activated_features";
+import { activated_features } from "../../data/activated_features";
 
 const BidsModal = ({
   setAmountToApprove,
@@ -45,7 +45,9 @@ const BidsModal = ({
   const [buyoutPriceReached, setBuyoutPriceReached] = useState(false);
 
   // If currency is WETH, we can pay with Crossmint
-  const canPayWithCrossmint = marketplaceListings[0]?.currency === config[chainId]?.crossmint?.WETH && activated_features.canPayWithCrossmintEnabled;
+  const canPayWithCrossmint =
+    marketplaceListings[0]?.currency === config[chainId]?.crossmint?.WETH &&
+    activated_features.canPayWithCrossmintEnabled;
 
   const modalRef = useRef();
 
@@ -222,7 +224,7 @@ const BidsModal = ({
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [toggleBidsModal]);
+  }, [setIsLoadingButton, toggleBidsModal]);
 
   return (
     <div>
@@ -292,7 +294,12 @@ const BidsModal = ({
 
                 <div className="flex flex-col gap-8 py-4 items-center justify-center">
                   {buyoutPriceReached ? (
-                    <></>
+                    <>
+                      <div className="flex items-center justify-center text-center">
+                        Your bid is higher than the buyout price. You&apos;ll own the ad space
+                        immediately once the transaction is confirmed.
+                      </div>
+                    </>
                   ) : (
                     <>
                       <div className="flex flex-col gap-2 items-center text-center">
