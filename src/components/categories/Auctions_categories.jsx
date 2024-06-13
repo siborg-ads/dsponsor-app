@@ -51,7 +51,7 @@ const Auctions_categories = ({ data, isOwner }) => {
             return (
               <OfferItem
                 item={item}
-                listingType={item?.marketplaceListings && item?.marketplaceListings[0]?.listingType}
+                listingType={"Auction"}
                 key={index}
                 url={
                   !item.tokenData
@@ -61,7 +61,7 @@ const Auctions_categories = ({ data, isOwner }) => {
                 isOwner={isOwner}
                 isToken={true}
                 isAuction={true}
-                isListing="Auction"
+                isListing={true}
               />
             );
           })}

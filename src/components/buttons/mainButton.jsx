@@ -2,10 +2,10 @@ import Link from "next/link";
 import React from "react";
 
 const whiteClass =
-  "text-primaryPurple flex items-center justify-center hover:bg-opacity-80 rounded-full bg-white py-3 px-8 text-center font-semibold transition-all hover:text-white";
+  "text-primaryPurple mb-6 flex items-center justify-center hover:bg-opacity-80 rounded-full bg-white py-3 px-8 text-center font-semibold transition-all hover:text-white";
 
 const purpleClass =
-  "bg-primaryPurple flex items-center justify-center hover:bg-opacity-80 rounded-full py-3 px-8 text-center font-semibold text-white transition-all";
+  "bg-primaryPurple  mb-6 flex items-center justify-center hover:bg-opacity-80 rounded-full py-3 px-8 text-center font-semibold text-white transition-all";
 
 const MainButton = ({ link, isPurple, text, isFullWidth }) => {
   return (

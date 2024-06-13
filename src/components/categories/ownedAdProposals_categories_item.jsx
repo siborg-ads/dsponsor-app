@@ -48,7 +48,7 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
   const { mutateAsync: submitAd } = useContractWrite(DsponsorAdminContract, "submitAdProposals");
 
   const chainId = currentChainObject?.chainId;
-  console.log(data, "data");
+ 
   const handleFilter = (category) => {
     if (category !== "all") {
       setItemdata(trendingCategoryData.filter((item) => item.category === category));
@@ -257,7 +257,7 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
       </div>
       {/* <!-- Grid --> */}
       {data.length > 0 ? (
-        <div className="flex flex-col justify-center items-center">
+        <div className="flex flex-col justify-center items-center ">
           {" "}
           {isOwner && (
             <MainButton

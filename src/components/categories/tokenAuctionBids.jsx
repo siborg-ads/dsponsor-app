@@ -21,10 +21,9 @@ const TokenAuctionBids = ({ data, isOwner }) => {
           This section is listing all the tokens where you have placed a bid. <br />
           <span className="text-red font-medium">CANCELLED</span> : You have been out bid by another
           user. <br />
-          <span className="text-primaryPurple font-medium">CREATED</span> : You are the highest bidder.{" "}
-          <br />
-          <span className="text-green font-medium">COMPLETED</span> : You have been out bid by
-          another user.
+          <span className="text-primaryPurple font-medium">CREATED</span> : You are the highest
+          bidder. <br />
+          <span className="text-green font-medium">COMPLETED</span> : You have won the auction.
         </span>
       </div>
       {data.length > 0 ? (
@@ -34,11 +33,11 @@ const TokenAuctionBids = ({ data, isOwner }) => {
               <OfferItem
                 item={item}
                 key={index}
-                listingType={item?.marketplaceListings && item?.marketplaceListings[0]?.listingType}
+                listingType={"Auction"}
                 url={
                   !item.tokenData
-                    ? `/${item?.chainConfig?.chainId}/offer/${item?.nftContract?.adOffers[0]?.id}/${item.tokenId}`
-                    : `/${item?.chainConfig?.chainId}/offer/${item?.nftContract?.adOffers[0]?.id}/${item.tokenId}?tokenData=${item.tokenData}`
+                    ? `/${item?.chainConfig?.chainId}/offer/${item?.offerId}/${item.tokenId}`
+                    : `/${item?.chainConfig?.chainId}/offer/${item?.offerId}/${item.tokenId}?tokenData=${item.tokenData}`
                 }
                 isOwner={isOwner}
                 isToken={true}

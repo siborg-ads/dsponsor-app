@@ -50,7 +50,7 @@ const ManageSpaceContainer = () => {
 
        const fetchOwnedAdProposals = async () => {
          const ownedAdProposalsArray = await fetchDataByUserAddress(fetchAllTokenByOfferForAuser);
-         console.log(ownedAdProposalsArray);
+
          const mappedOwnedAdProposals = ownedAdProposalsArray.flatMap((element) =>
            element.nftContract.tokens.map((token) => ({
              chainConfig: element.chainConfig,
