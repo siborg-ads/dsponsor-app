@@ -10,12 +10,16 @@ const MarketplaceHome = ({ auctions, setAllTokens, isAuctionsLoading }) => {
   const [filterOption, setFilterOption] = useState("All the spaces");
 
   const filteredAuctions = useMemo(() => {
-    let tempAuctions = auctions.filter(
-      (auction) =>
-        auction?.status === "CREATED" &&
-        new Date(auction?.startTime * 1000) < Date.now() &&
-        new Date(auction?.endTime * 1000) > Date.now()
-    );
+    let tempAuctions = auctions;
+
+    if (filterName !== "All the spaces") {
+      tempAuctions.filter(
+        (auction) =>
+          auction?.status === "CREATED" &&
+          new Date(auction?.startTime * 1000) < Date.now() &&
+          new Date(auction?.endTime * 1000) > Date.now()
+      );
+    }
 
     if (filterName && filterName.length > 0 && filterName !== "") {
       tempAuctions = tempAuctions.filter((auction) =>

@@ -16,8 +16,11 @@ const HomeContainer = () => {
   const [auctions, setAuctions] = useState([]);
   const [allTokens, setAllTokens] = useState(true);
   const [isAuctionsLoading, setIsAuctionsLoading] = useState(true);
+  const [auctionsFetched, setAuctionsFetched] = useState(false);
 
   useEffect(() => {
+    if (auctionsFetched) return;
+
     const fetchData = async () => {
       setIsAuctionsLoading(true);
 
@@ -28,11 +31,12 @@ const HomeContainer = () => {
         setAuctionsTemp([]);
       }
 
+      setAuctionsFetched(true);
       setIsAuctionsLoading(false);
     };
 
     fetchData();
-  }, [allTokens]);
+  }, [allTokens, auctionsFetched]);
 
   useEffect(() => {
     if (auctionsTemp.length === 0) return;
