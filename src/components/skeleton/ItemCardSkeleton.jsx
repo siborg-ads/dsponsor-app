@@ -4,7 +4,7 @@ import { Card, Skeleton } from "@nextui-org/react";
 const ItemCardSkeleton = ({ widthSize }) => {
   return (
     <Card
-      className={`dark:bg-primaryPurple dark:border-jacarta-700 border-jacarta-100 relative rounded-2xl block border bg-white  transition-shadow hover:shadow-lg text-jacarta-100 w-[${widthSize}px] space-y-5 p-4`}
+      className={`dark:bg-secondaryBlack dark:border-jacarta-700 border-jacarta-100 relative rounded-2xl block border bg-white  transition-shadow hover:shadow-lg text-jacarta-100 w-[${widthSize}px] space-y-5 p-4`}
       radius="lg"
     >
       <Skeleton className="rounded-lg">

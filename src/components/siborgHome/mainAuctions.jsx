@@ -1,38 +1,43 @@
-import React, { useState, useEffect } from "react";
+import React, { useMemo, useState } from "react";
 import ItemCardSkeleton from "../skeleton/ItemCardSkeleton";
 import OfferItem from "../cards/offerItem";
 
 const MainAuctions = ({ auctions }) => {
-  const [randomAuctions, setRandomAuctions] = useState([]);
-  const [liveAuctions, setLiveAuctions] = useState([]);
   const [mount, setMount] = useState(false);
+  const [randomAuctions, setRandomAuctions] = useState([]);
 
-  useEffect(() => {
-    if (mount) return;
+  const liveAuctions = useMemo(() => {
+    return auctions?.filter(
+      (auction) =>
+        auction.status === "CREATED" &&
+        auction?.listingType === "Auction" &&
+        auction?.quantity > 0 &&
+        new Date(auction?.startTime * 1000) < Date.now() &&
+        new Date(auction?.endTime * 1000) > Date.now()
+    );
+  }, [auctions]);
 
-    const liveAuctions = auctions?.filter((auction) => auction.live);
-    setLiveAuctions(liveAuctions);
-  }, [auctions, mount]);
-
-  useEffect(() => {
-    if (mount) return;
-
-    if (liveAuctions?.length === 0) return;
+  useMemo(() => {
+    if (liveAuctions?.length === 0) return [];
 
     let tempRandomAuctions = [];
-    let seenIndexes = new Set();
 
-    while (tempRandomAuctions.length < 4 && seenIndexes.size < liveAuctions?.length) {
-      let randomIndex = Math.floor(Math.random() * liveAuctions?.length);
+    if (!mount) {
+      tempRandomAuctions = [];
+      let seenIndexes = new Set();
 
-      if (!seenIndexes.has(randomIndex)) {
-        tempRandomAuctions.push(liveAuctions[randomIndex]);
-        seenIndexes.add(randomIndex);
+      while (tempRandomAuctions.length < 4 && seenIndexes.size < liveAuctions?.length) {
+        let randomIndex = Math.floor(Math.random() * liveAuctions?.length);
+
+        if (!seenIndexes.has(randomIndex)) {
+          tempRandomAuctions.push(liveAuctions[randomIndex]);
+          seenIndexes.add(randomIndex);
+        }
       }
-    }
 
-    setRandomAuctions(tempRandomAuctions);
-    setMount(true);
+      setRandomAuctions(tempRandomAuctions);
+      setMount(true);
+    }
   }, [liveAuctions, mount]);
 
   return (
@@ -47,9 +52,9 @@ const MainAuctions = ({ auctions }) => {
                   key={index}
                   item={auction.item}
                   isToken={true}
-                  listingType={auction?.type}
-                  isListing={auction?.type}
-                  isAuction={auction?.type === "Auction"}
+                  listingType={auction?.listingType}
+                  isListing={auction?.listingType}
+                  isAuction={auction?.listingType === "Auction"}
                   url={
                     !auction?.tokenData
                       ? `/${auction?.chainId}/offer/${auction?.offerId}/${auction?.tokenId}`

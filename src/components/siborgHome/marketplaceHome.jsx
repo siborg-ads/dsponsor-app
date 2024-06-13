@@ -1,141 +1,71 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useMemo } from "react";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
 import ItemCardSkeleton from "../skeleton/ItemCardSkeleton";
 import OfferItem from "../cards/offerItem";
 
 const MarketplaceHome = ({ auctions, setAllTokens }) => {
-  const [filterName, setFilterName] = useState(null);
-  const [filteredAuctions, setFilteredAuctions] = useState(auctions);
-  const [priceSorting, setPriceSorting] = useState(null);
-  const [sort, setSort] = useState("Sort by name");
-  const [filter, setFilter] = useState("Filter by");
-  const [dateSorting, setDateSorting] = useState(null);
-  const [nameSorting, setNameSorting] = useState(null);
-  const [filterListedTokens, setFilterListedTokens] = useState(false);
-  const [auctionsFilter, setAuctionsFilter] = useState(false);
+  const [filterName, setFilterName] = useState("");
+  const [sortOption, setSortOption] = useState(null);
+  const [filterOption, setFilterOption] = useState("All the spaces");
 
-  useEffect(() => {
-    let tempFilteredAuctions = auctions;
+  const filteredAuctions = useMemo(() => {
+    let tempAuctions = auctions.filter(
+      (auction) =>
+        auction?.status === "CREATED" &&
+        new Date(auction?.startTime * 1000) < Date.now() &&
+        new Date(auction?.endTime * 1000) > Date.now()
+    );
 
-    if (filterName !== null && filterName !== "" && filterName !== undefined) {
-      tempFilteredAuctions = tempFilteredAuctions.filter((auction) =>
-        auction.name?.toLowerCase().includes(filterName?.toLowerCase())
+    if (filterName && filterName.length > 0 && filterName !== "") {
+      tempAuctions = tempAuctions.filter((auction) =>
+        auction.name?.toLowerCase().includes(filterName.toLowerCase())
       );
     }
 
-    setFilteredAuctions(tempFilteredAuctions);
-  }, [filterName, auctions]);
-
-  useEffect(() => {
-    let tempFilteredAuctions = auctions;
-
-    if (filterListedTokens) {
-      tempFilteredAuctions = tempFilteredAuctions.filter(
-        (auction) => auction?.type === "Auction" || auction?.type === "Direct"
-      );
-    } else {
-      tempFilteredAuctions = auctions;
-    }
-
-    setFilteredAuctions(tempFilteredAuctions);
-  }, [filterListedTokens, auctions]);
-
-  useEffect(() => {
-    let tempFilteredAuctions = auctions;
-
-    if (auctionsFilter) {
-      tempFilteredAuctions = tempFilteredAuctions.filter((auction) => auction?.type === "Auction");
-    } else {
-      tempFilteredAuctions = auctions;
-    }
-
-    console.log("tempFilteredAuctions", tempFilteredAuctions);
-
-    setFilteredAuctions(tempFilteredAuctions);
-  }, [auctionsFilter, auctions]);
-
-  useEffect(() => {
-    setFilteredAuctions(() => {
-      let tempAuctions = auctions;
-
-      // create two arrays for auctions and direct listing with the type of listing
-      let auctionsArray = [];
-      let directListingArray = [];
-
-      tempAuctions.forEach((auction) => {
-        if (auction?.type === "Auction") {
-          auctionsArray.push(auction);
-        } else if (auction?.type === "Direct") {
-          directListingArray.push(auction);
-        }
-      });
-
-      if (priceSorting === 1) {
-        // sort by price low to high
-        auctionsArray = auctionsArray.sort((a, b) => a.auctionPrice - b.auctionPrice);
-        directListingArray = directListingArray.sort((a, b) => a.directPrice - b.directPrice);
-      } else if (priceSorting === -1) {
-        // sort by price high to low
-        auctionsArray = auctionsArray.sort((a, b) => b.auctionPrice - a.auctionPrice);
-        directListingArray = directListingArray.sort((a, b) => b.directPrice - a.directPrice);
-      } else {
-        tempAuctions = auctions;
-      }
-
-      // merge the two arrays with auctions first and direct listing second
-      tempAuctions = auctionsArray.concat(directListingArray);
-
-      // remove listing not live
+    if (filterOption === "Listed tokens") {
       tempAuctions = tempAuctions.filter(
-        (auction) => auction?.type === "Auction" || auction?.type === "Direct"
+        (auction) => auction?.listingType === "Auction" || auction?.listingType === "Direct"
       );
+    } else if (filterOption === "On auction") {
+      tempAuctions = tempAuctions.filter((auction) => auction?.listingType === "Auction");
+    }
 
-      return tempAuctions;
-    });
-  }, [priceSorting, auctions]);
-
-  useEffect(() => {
-    setFilteredAuctions(() => {
-      let tempAuctions = auctions.filter(
-        (auction) =>
-          new Date(auction.startTime * 1000) < new Date() &&
-          new Date(auction.endTime * 1000) > new Date()
-      );
-
-      if (dateSorting === 1) {
-        // end time is the closest to the current date
-        tempAuctions = tempAuctions.sort((a, b) => a.endTime - b.endTime);
-      } else if (dateSorting === -1) {
-        // start time is the closest to the current date
-        tempAuctions = tempAuctions.sort((a, b) => a.startTime - b.startTime);
-      } else {
-        tempAuctions = auctions;
+    if (sortOption) {
+      tempAuctions = [...tempAuctions];
+      switch (sortOption) {
+        case "Price: low to high":
+          tempAuctions.sort(
+            (a, b) =>
+              (a.listingType === "Auction" ? a.auctionPrice : a.directPrice) -
+              (b.listingType === "Auction" ? b.auctionPrice : b.directPrice)
+          );
+          break;
+        case "Price: high to low":
+          tempAuctions.sort(
+            (a, b) =>
+              (b.listingType === "Auction" ? b.auctionPrice : b.directPrice) -
+              (a.listingType === "Auction" ? a.auctionPrice : a.directPrice)
+          );
+          break;
+        case "Ending soon":
+          tempAuctions.sort((a, b) => a.endTime - b.endTime);
+          break;
+        case "Newest":
+          tempAuctions.sort((a, b) => b.startTime - a.startTime);
+          break;
+        case "Sort by name":
+          tempAuctions.sort((a, b) => a.name.localeCompare(b.name));
+          break;
+        default:
+          break;
       }
+    } else {
+      tempAuctions.sort((a, b) => a.name.localeCompare(b.name)); // default sort
+    }
 
-      // remove listing not live
-      tempAuctions = tempAuctions.filter(
-        (auction) => auction?.type === "Auction" || auction?.type === "Direct"
-      );
-
-      return tempAuctions;
-    });
-  }, [dateSorting, auctions]);
-
-  useEffect(() => {
-    setFilteredAuctions(() => {
-      let tempAuctions = auctions;
-
-      if (nameSorting === 1) {
-        // sort by name
-        tempAuctions = auctions.sort((a, b) => a.name.localeCompare(b.name));
-      } else {
-        tempAuctions = auctions;
-      }
-
-      return tempAuctions;
-    });
-  }, [nameSorting, auctions]);
+    return tempAuctions;
+  }, [filterName, filterOption, sortOption, auctions]);
 
   return (
     <>
@@ -159,7 +89,7 @@ const MarketplaceHome = ({ auctions, setAllTokens }) => {
               <Menu as="div" className="py-4 md:py-0 h-full w-full">
                 <MenuButton className="bg-secondaryBlack rounded-xl w-full h-full flex items-center justify-center hover:bg-opacity-80 border border-jacarta-100 border-opacity-10">
                   <div className="flex items-center gap-1">
-                    {filter} <ChevronDownIcon className="w-5 h-5" />
+                    {filterOption} <ChevronDownIcon className="w-5 h-5" />
                   </div>
                 </MenuButton>
                 <MenuItems
@@ -168,10 +98,8 @@ const MarketplaceHome = ({ auctions, setAllTokens }) => {
                 >
                   <MenuItem
                     onClick={() => {
-                      setFilter("All the spaces");
+                      setFilterOption("All the spaces");
                       setAllTokens(true);
-                      setFilterListedTokens(false);
-                      setAuctionsFilter(false);
                     }}
                     className="hover:bg-primaryBlack p-2 rounded-lg w-full pr-12 md:pr-24"
                   >
@@ -179,10 +107,8 @@ const MarketplaceHome = ({ auctions, setAllTokens }) => {
                   </MenuItem>
                   <MenuItem
                     onClick={() => {
-                      setFilter("Listed tokens");
+                      setFilterOption("Listed tokens");
                       setAllTokens(false);
-                      setFilterListedTokens(true);
-                      setAuctionsFilter(false);
                     }}
                     className="hover:bg-primaryBlack p-2 rounded-lg w-full pr-12 md:pr-24"
                   >
@@ -190,10 +116,8 @@ const MarketplaceHome = ({ auctions, setAllTokens }) => {
                   </MenuItem>
                   <MenuItem
                     onClick={() => {
-                      setFilter("On auction");
+                      setFilterOption("On auction");
                       setAllTokens(false);
-                      setFilterListedTokens(false);
-                      setAuctionsFilter(true);
                     }}
                     className="hover:bg-primaryBlack p-2 rounded-lg w-full pr-12 md:pr-24"
                   >
@@ -205,7 +129,7 @@ const MarketplaceHome = ({ auctions, setAllTokens }) => {
               <Menu as="div" className="py-4 md:py-0 h-full w-full">
                 <MenuButton className="bg-secondaryBlack rounded-xl w-full h-full flex items-center justify-center hover:bg-opacity-80 border border-jacarta-100 border-opacity-10">
                   <div className="flex items-center gap-1">
-                    {sort} <ChevronDownIcon className="w-5 h-5" />
+                    {sortOption ?? "Sort by"} <ChevronDownIcon className="w-5 h-5" />
                   </div>
                 </MenuButton>
                 <MenuItems
@@ -213,56 +137,31 @@ const MarketplaceHome = ({ auctions, setAllTokens }) => {
                   className={`rounded-xl flex flex-col gap-2 [--anchor-gap:1rem] bg-secondaryBlack p-2 border border-jacarta-100 border-opacity-10`}
                 >
                   <MenuItem
-                    onClick={() => {
-                      setSort("Sort by name");
-                      setPriceSorting(null);
-                      setDateSorting(null);
-                      setNameSorting(1);
-                    }}
+                    onClick={() => setSortOption("Sort by name")}
                     className="hover:bg-primaryBlack p-2 rounded-lg w-full pr-12 md:pr-24"
                   >
                     <span>Sort by name</span>
                   </MenuItem>
                   <MenuItem
-                    onClick={() => {
-                      setSort("Price: low to high");
-                      setPriceSorting(1);
-                      setDateSorting(null);
-                      setNameSorting(null);
-                    }}
+                    onClick={() => setSortOption("Price: low to high")}
                     className="hover:bg-primaryBlack p-2 rounded-lg w-full pr-12 md:pr-24"
                   >
                     <span>Price: low to high</span>
                   </MenuItem>
                   <MenuItem
-                    onClick={() => {
-                      setSort("Price: high to low");
-                      setPriceSorting(-1);
-                      setDateSorting(null);
-                      setNameSorting(null);
-                    }}
+                    onClick={() => setSortOption("Price: high to low")}
                     className="hover:bg-primaryBlack p-2 rounded-lg w-full pr-12 md:pr-24"
                   >
                     <span>Price: high to low</span>
                   </MenuItem>
                   <MenuItem
-                    onClick={() => {
-                      setSort("Ending soon");
-                      setDateSorting(1);
-                      setPriceSorting(null);
-                      setNameSorting(null);
-                    }}
+                    onClick={() => setSortOption("Ending soon")}
                     className="hover:bg-primaryBlack p-2 rounded-lg w-full pr-12 md:pr-24"
                   >
                     <span>Ending soon</span>
                   </MenuItem>
                   <MenuItem
-                    onClick={() => {
-                      setSort("Newest");
-                      setDateSorting(-1);
-                      setPriceSorting(null);
-                      setNameSorting(null);
-                    }}
+                    onClick={() => setSortOption("Newest")}
                     className="hover:bg-primaryBlack p-2 rounded-lg w-full pr-12 md:pr-24"
                   >
                     <span>Newest</span>
@@ -281,9 +180,9 @@ const MarketplaceHome = ({ auctions, setAllTokens }) => {
                       key={index}
                       item={auction.item}
                       isToken={true}
-                      listingType={auction?.type}
-                      isListing={auction?.type}
-                      isAuction={auction?.type === "Auction"}
+                      listingType={auction?.listingType}
+                      isListing={auction?.listingType}
+                      isAuction={auction?.listingType === "Auction"}
                       url={
                         !auction?.tokenData
                           ? `/${auction?.chainId}/offer/${auction?.offerId}/${auction?.tokenId}`

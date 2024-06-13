@@ -101,7 +101,7 @@ const OfferItem = ({
       setItemStatut("DIRECT");
       return;
     }
-  }, [item, isToken, isListing, isAuction]);
+  }, [item, isToken, isListing, isAuction, listingType]);
 
   useEffect(() => {
     if (!item) return;
@@ -135,7 +135,7 @@ const OfferItem = ({
           style={{
             transitionDuration: "500ms"
           }}
-          className="dark:bg-primaryPurple cursor-pointer dark:hover:bg-opacity-80 box-border hover:border-2 hover:-m-1 duration-1000 hover:duration-1000 hover:-translate-y-1 dark:hover:border-2 dark:border-jacarta-100 dark:border-opacity-10 border-opacity-10 border-jacarta-900 relative rounded-2xl block border bg-white p-4 transition-shadow hover:shadow-lg text-jacarta-100"
+          className="dark:bg-secondaryBlack cursor-pointer dark:hover:bg-opacity-80 box-border hover:border-2 hover:-m-1 duration-1000 hover:duration-1000 hover:-translate-y-1 dark:hover:border-2 dark:border-jacarta-100 dark:border-opacity-10 border-opacity-10 border-jacarta-900 relative rounded-2xl block border bg-white p-4 transition-shadow hover:shadow-lg text-jacarta-100"
         >
           <div className="relative">
             <figure>
@@ -197,7 +197,7 @@ const OfferItem = ({
                   style={{ background: "rgba(54, 58, 93, 0.7)", backdropFilter: "blur(20px)" }}
                   className="absolute backdrop-blur-1 -bottom-1 -right-2 dark:border-jacarta-600 border-jacarta-100 flex items-center whitespace-nowrap rounded-md border py-1 px-2"
                 >
-                  <span className="text-green text-sm font-medium tracking-tight">
+                  <span className="text-primaryPink text-sm font-medium tracking-tight">
                     # {item.tokenData ? item.tokenData : item.tokenId}
                   </span>
                 </div>
@@ -243,9 +243,6 @@ const OfferItem = ({
                 <span className="text-jacarta-100">
                   {formatDate(valid_from)} - {formatDate(valid_to)}
                 </span>
-                <span className="text-jacarta-100">
-                  Offer # {isToken ? item?.offerId : item?.id}
-                </span>
               </div>
             ) : (
               (itemStatut === "AUCTION" || itemStatut === "DIRECT") && (
@@ -277,12 +274,6 @@ const OfferItem = ({
                       </svg>
                     )}
                   </div>
-                  <span className="dark:text-jacarta-100 text-jacarta-100">
-                    Offer #{" "}
-                    {item?.nftContract?.adOffers?.[0]
-                      ? item?.nftContract?.adOffers?.[0].id
-                      : item?.offerId}
-                  </span>
                 </div>
               )
             )}

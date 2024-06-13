@@ -32,11 +32,13 @@ const HomeContainer = () => {
   useEffect(() => {
     if (auctionsTemp.length === 0) return;
 
+    console.log("auctionsTemp", auctionsTemp);
+
     const auctions = auctionsTemp.map((token) => {
       const name = token.metadata.name;
       const category = token.metadata.categories[0];
       const chain = token.chainConfig.chainName;
-      const price = token.marketplaceListings[0]?.buyPriceStructureFormatted.buyoutPricePerToken;
+      const price = token.marketplaceListings[0]?.buyPriceStructure.buyoutPricePerToken;
       const chainId = token.chainConfig.chainId;
       const offerId = token.offerId;
       const tokenId = token.tokenId;
@@ -60,9 +62,11 @@ const HomeContainer = () => {
       );
       const directPrice = token.marketplaceListings[0]?.buyPriceStructure.buyoutPricePerToken;
       const auctionPrice = token.marketplaceListings[0]?.bidPriceStructure.minimalBidPerToken;
-      const type = token.marketplaceListings[0]?.listingType;
+      const listingType = token.marketplaceListings[0]?.listingType;
       const startTime = token?.marketplaceListings[0]?.startTime;
       const endTime = token?.marketplaceListings[0]?.endTime;
+      const status = token?.marketplaceListings[0]?.status;
+      const quantity = token.marketplaceListings[0]?.quantity;
 
       const object = {
         name: name,
@@ -84,7 +88,9 @@ const HomeContainer = () => {
         priceUSD: priceUSD,
         directPrice: directPrice,
         auctionPrice: auctionPrice,
-        type: type,
+        listingType: listingType,
+        status: status,
+        quantity: quantity,
         item: {
           metadata: token.metadata,
           mint: token.mint,
@@ -98,8 +104,6 @@ const HomeContainer = () => {
           endTime: endTime
         }
       };
-
-      console.log("object", object);
 
       return object;
     });
