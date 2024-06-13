@@ -82,9 +82,16 @@ export const fetchAllListedTokenWithoutFilter = async (chainId, allTokens) => {
               reservePricePerToken
               buyoutPricePerToken
               bids(orderBy: totalBidAmount, orderDirection: desc, first: 1) {
+                 creationTimestamp
                 bidder
                 totalBidAmount
                 status
+                newPricePerToken
+                totalBidAmount
+                paidBidAmount
+                refundBonus
+                refundAmount
+                refundProfit
               }
 
               lister

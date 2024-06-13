@@ -89,6 +89,12 @@ export const fetchOfferToken = async (offerId, tokenId, chainId) => {
                 bidder
                 totalBidAmount
                 status
+                newPricePerToken
+                totalBidAmount
+                paidBidAmount
+                refundBonus
+                refundAmount
+                refundProfit
               }
 
               lister
