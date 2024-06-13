@@ -63,6 +63,8 @@ const OfferPageContainer = () => {
   const { data: bps } = useContractRead(DsponsorAdminContract, "feeBps");
   const maxBps = 10000;
 
+  let tokenCurrencyAddress = offerData?.nftContract?.prices[0]?.currency;
+
   useEffect(() => {
     if (offerId && chainId) {
       const fetchAdsOffers = async () => {
