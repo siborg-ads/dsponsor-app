@@ -185,7 +185,7 @@ const TokenPageContainer = () => {
   }, [offerData]);
 
   useEffect(() => {
-    console.log("offerData", offerData);
+    
 
     if (!offerData) return;
     if (
@@ -247,7 +247,7 @@ const TokenPageContainer = () => {
         setTokenBigIntPrice(
           offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.bids[0]?.totalBidAmount
         );
-        setTokenStatut("AUCTION");
+      
         setPrice(
           offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.bidPriceStructureFormatted
             .minimalBidPerToken
@@ -271,12 +271,14 @@ const TokenPageContainer = () => {
               .minimalBidPerToken
           )
         );
-      } else if (offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.bids.length <= 0) {
+       if (offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.bids.length <= 0) {
+        
         setTokenBigIntPrice(
           offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.reservePricePerToken
         );
-        setTokenStatut("AUCTION");
-      }
+        }
+      setTokenStatut("AUCTION");
+      } 
       setCurrencyDecimals(
         offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.currencyDecimals
       );

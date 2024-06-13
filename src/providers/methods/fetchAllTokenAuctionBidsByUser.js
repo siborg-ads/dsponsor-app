@@ -8,7 +8,7 @@ export const fetchAllTokenAuctionBidsByUser = async (address, chainId) => {
 query FetchAllTokenAuctionBidsByUser($userAddr: ID!) {
      marketplaceBids(
     orderBy: creationTimestamp
-    orderDirection: asc
+    orderDirection: desc
     where: {
       bidder: $userAddr
     }
@@ -44,15 +44,22 @@ query FetchAllTokenAuctionBidsByUser($userAddr: ID!) {
 
   `;
 
-  const response = await executeQuery(path.href, GET_DATA, {userAddr: address});
+  const response = await executeQuery(path.href, GET_DATA, { userAddr: address });
+  const bids = response?.marketplaceBids;
 
-  const resultMappedData = response?.marketplaceBids.map((item) => {
-    const combinedData = {
-      ...item,
-      chainConfig: config[chainId]
-    };
-    return combinedData;
-  });
+
+  const mostRecentBids = bids.reduce((acc, bid) => {
+    const tokenKey = `${bid.listing.token.tokenId}-${bid.listing.token.nftContract.adOffers.find((offer) => offer).id}`;
+    if (!acc[tokenKey] || acc[tokenKey].creationTimestamp < bid.creationTimestamp) {
+      acc[tokenKey] = bid;
+    }
+    return acc;
+  }, {});
+
+  const resultMappedData = Object.values(mostRecentBids).map((item) => ({
+    ...item,
+    chainConfig: config[chainId]
+  }));
 
   return resultMappedData;
 

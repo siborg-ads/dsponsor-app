@@ -15,6 +15,6 @@ export const fetchAllTokenByOfferForAuser = async (ownerAddress, chainId) => {
     };
     return combinedData;
   });
-  console.log(resultMappedData, "resultMappedData");
+
   return resultMappedData;
 };

@@ -59,6 +59,7 @@ const OfferItem = ({
 
     return dates;
   };
+  // console.log(itemStatut);
   useEffect(() => {
     if (!item) return;
 
