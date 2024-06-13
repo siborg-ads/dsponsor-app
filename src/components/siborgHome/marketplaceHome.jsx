@@ -45,12 +45,16 @@ const MarketplaceHome = ({ auctions, setAllTokens }) => {
     let tempFilteredAuctions = auctions;
 
     if (auctionsFilter) {
-      tempFilteredAuctions = tempFilteredAuctions.filter((auction) => auction?.type === "Auction");
+      tempFilteredAuctions = tempFilteredAuctions.filter(
+        (auction) =>
+          auction?.type === "Auction" &&
+          auction?.status === "CREATED" &&
+          auction?.startTime < new Date() &&
+          auction?.endTime > new Date()
+      );
     } else {
       tempFilteredAuctions = auctions;
     }
-
-    console.log("tempFilteredAuctions", tempFilteredAuctions);
 
     setFilteredAuctions(tempFilteredAuctions);
   }, [auctionsFilter, auctions]);
@@ -88,7 +92,11 @@ const MarketplaceHome = ({ auctions, setAllTokens }) => {
 
       // remove listing not live
       tempAuctions = tempAuctions.filter(
-        (auction) => auction?.type === "Auction" || auction?.type === "Direct"
+        (auction) =>
+          (auction?.type === "Auction" || auction?.type === "Direct") &&
+          auction?.status === "CREATED" &&
+          auction?.startTime < new Date() &&
+          auction?.endTime > new Date()
       );
 
       return tempAuctions;

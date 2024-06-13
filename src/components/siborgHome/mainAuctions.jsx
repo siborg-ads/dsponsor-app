@@ -10,7 +10,10 @@ const MainAuctions = ({ auctions }) => {
   useEffect(() => {
     if (mount) return;
 
-    const liveAuctions = auctions?.filter((auction) => auction.live);
+    const liveAuctions = auctions?.filter(
+      (auction) =>
+        auction.status === "CREATED" && auction?.type === "Auction" && auction?.quantity > 0
+    );
     setLiveAuctions(liveAuctions);
   }, [auctions, mount]);
 
