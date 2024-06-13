@@ -66,6 +66,7 @@ const HomeContainer = () => {
       const startTime = token?.marketplaceListings[0]?.startTime;
       const endTime = token?.marketplaceListings[0]?.endTime;
       const status = token?.marketplaceListings[0]?.status;
+      const quantity = token.marketplaceListings[0]?.quantity;
 
       const object = {
         name: name,
@@ -89,6 +90,7 @@ const HomeContainer = () => {
         auctionPrice: auctionPrice,
         listingType: listingType,
         status: status,
+        quantity: quantity,
         item: {
           metadata: token.metadata,
           mint: token.mint,

@@ -101,7 +101,7 @@ const OfferItem = ({
       setItemStatut("DIRECT");
       return;
     }
-  }, [item, isToken, isListing, isAuction]);
+  }, [item, isToken, isListing, isAuction, listingType]);
 
   useEffect(() => {
     if (!item) return;
@@ -243,9 +243,6 @@ const OfferItem = ({
                 <span className="text-jacarta-100">
                   {formatDate(valid_from)} - {formatDate(valid_to)}
                 </span>
-                <span className="text-jacarta-100">
-                  Offer # {isToken ? item?.offerId : item?.id}
-                </span>
               </div>
             ) : (
               (itemStatut === "AUCTION" || itemStatut === "DIRECT") && (
@@ -277,12 +274,6 @@ const OfferItem = ({
                       </svg>
                     )}
                   </div>
-                  <span className="dark:text-jacarta-100 text-jacarta-100">
-                    Offer #{" "}
-                    {item?.nftContract?.adOffers?.[0]
-                      ? item?.nftContract?.adOffers?.[0].id
-                      : item?.offerId}
-                  </span>
                 </div>
               )
             )}
