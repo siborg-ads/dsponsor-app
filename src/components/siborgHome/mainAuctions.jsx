@@ -2,7 +2,7 @@ import React, { useMemo, useState } from "react";
 import ItemCardSkeleton from "../skeleton/ItemCardSkeleton";
 import OfferItem from "../cards/offerItem";
 
-const MainAuctions = ({ auctions }) => {
+const MainAuctions = ({ auctions, isAuctionsLoading }) => {
   const [mount, setMount] = useState(false);
   const [randomAuctions, setRandomAuctions] = useState([]);
 
@@ -45,7 +45,7 @@ const MainAuctions = ({ auctions }) => {
       <div className="flex flex-col gap-4">
         <div className="text-xl font-semibold text-white">Live Auctions 🔥</div>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {randomAuctions.length !== 0 ? (
+          {!isAuctionsLoading ? (
             <>
               {randomAuctions.map((auction, index) => (
                 <OfferItem
