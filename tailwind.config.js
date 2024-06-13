@@ -3,8 +3,8 @@ const { nextui } = require("@nextui-org/react");
 const { usePrimarySaleRecipient } = require("@thirdweb-dev/react");
 module.exports = {
   content: [
-    "./pages/**/*.{js,ts,jsx,tsx}",
-    "./components/**/*.{js,ts,jsx,tsx}",
+    "./src/pages/**/*.{js,ts,jsx,tsx}",
+    "./src/components/**/*.{js,ts,jsx,tsx}",
     "./node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}"
   ],
   darkMode: "class",
