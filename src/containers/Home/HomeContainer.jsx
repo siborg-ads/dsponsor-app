@@ -76,6 +76,7 @@ const HomeContainer = () => {
       const endTime = token?.marketplaceListings[0]?.endTime;
       const status = token?.marketplaceListings[0]?.status;
       const quantity = token.marketplaceListings[0]?.quantity;
+      const numberOfBids = token.marketplaceListings[0]?.bids.length;
 
       const object = {
         name: name,
@@ -100,6 +101,7 @@ const HomeContainer = () => {
         listingType: listingType,
         status: status,
         quantity: quantity,
+        numberOfBids: numberOfBids,
         item: {
           metadata: token.metadata,
           mint: token.mint,
