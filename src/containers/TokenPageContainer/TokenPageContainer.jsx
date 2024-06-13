@@ -502,10 +502,11 @@ const TokenPageContainer = () => {
   const handleApprove = async () => {
     try {
       setIsLoadingButton(true);
-      const parsedFeesAmount = ethers.utils.parseUnits(feesAmount.toString(), currencyDecimals);
+      // const royaltyFeeBps = offerData?.nftContract?.royalty.bps;
+      const protocolFeeBps = bps;
       const parsedPriceAmount = ethers.utils.parseUnits(price.toString(), currencyDecimals);
-
-      const parsedPriceAndProtocolFeesAmount = parsedPriceAmount.add(parsedFeesAmount);
+      const computedFeesAmount = parsedPriceAmount.mul(protocolFeeBps).div(maxBps);
+      const parsedPriceAndProtocolFeesAmount = parsedPriceAmount.add(computedFeesAmount);
       let hasEnoughBalance = checkUserBalance(tokenBalance, parsedPriceAndProtocolFeesAmount);
       const isWrappedNative = currency === "WETH";
       const isNative = currency === "ETH";
@@ -515,7 +516,7 @@ const TokenPageContainer = () => {
       // We need to convert the native token to wrapped native token
       if (isWrappedNative && !hasEnoughBalance) {
         const missingBalance = BigNumber.from(parsedPriceAndProtocolFeesAmount).sub(BigNumber.from(tokenBalance.value));
-        const missingBalanceWithProtocolFee = missingBalance.add(parsedFeesAmount);
+        const missingBalanceWithProtocolFee = missingBalance.add(computedFeesAmount);
         console.log(`Wrapping ${missingBalanceWithProtocolFee.toNumber()} native token to wrapped native token`)
         await wrapNative({
           overrides: {
@@ -593,7 +594,7 @@ const TokenPageContainer = () => {
       if (marketplaceListings.length <= 0) {
         console.log("mintAndSubmit", argsWithPossibleOverrides, "mintAndSubmit");
         // address of the minter as referral
-        argsWithPossibleOverrides.referralAdditionalInformation = referralAddress;
+        argsWithPossibleOverrides.args[0].referralAdditionalInformation = referralAddress;
         await mintAndSubmit(argsWithPossibleOverrides);
         setSuccessFullUpload(true);
       } else {
@@ -777,6 +778,10 @@ const TokenPageContainer = () => {
     title: "Protocol Fees",
     body: `The protocol fees (4%) are used to maintain the platform and the services provided. The fees are calculated based on the price of the ad space and are automatically deducted from the total amount paid by the buyer.`
   };
+
+  if(!offerData){
+    return null;
+  }
 
   const {
     description = "description not found",

@@ -281,8 +281,7 @@ const BuyModal = ({
                   </Link>
                 )}
               </div>
-              (
-              {canPayWithCrossmint && (
+              {canPayWithCrossmint && !successFullUpload && (
                 <>
                   <div className="flex items-center justify-center w-full">
                     <div className="flex-grow border-t border-gray-300"></div>
