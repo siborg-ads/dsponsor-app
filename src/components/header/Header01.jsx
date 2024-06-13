@@ -55,8 +55,8 @@ export default function Header01() {
             <div className="dark:hidden flex justify-center items-center  font-semibold">
               <Image
                 src={Logo}
-                width={125}
-                height={30}
+                width={220}
+                height={50}
                 alt="SiBorg Ads | Smarter monetization for your content"
                 className=" h-auto "
               />
@@ -64,8 +64,8 @@ export default function Header01() {
             <div className="hidden dark:flex flex justify-center items-center text-white font-semibold">
               <Image
                 src={Logo}
-                width={125}
-                height={30}
+                width={220}
+                height={50}
                 alt="SiBorg Ads | Smarter monetization for your content"
               />
             </div>
@@ -198,9 +198,9 @@ export default function Header01() {
           <div className="dark:hidden">
             <Image
               src={Logo}
-              height={80}
-              width={80}
-              alt="SiBorg Ads | smarter monetization for your content"
+              height={220}
+              width={50}
+              alt="SiBorg Ads | Smarter monetization for your content"
               className="max-h-7 h-auto "
             />
           </div>
@@ -208,9 +208,9 @@ export default function Header01() {
           <div className="hidden dark:block">
             <Image
               src={WhiteLogo}
-              height={80}
-              width={80}
-              alt="SiBorg Ads | smarter monetization for your content"
+              height={220}
+              width={50}
+              alt="SiBorg Ads | Smarter monetization for your content"
             />
           </div>
 
@@ -239,7 +239,9 @@ export default function Header01() {
                 <button className="text-jacarta-900 font-display hover:text-primaryPurple focus:text-primaryPurple dark:hover:text-primaryPurple dark:focus:text-primaryPurple flex items-center justify-between py-3.5 text-base dark:text-white lg:px-5">
                   <span
                     className={
-                      isChildrenPageActive(route.asPath, "/") ? "text-primaryPurple dark:text-primaryPurple" : ""
+                      isChildrenPageActive(route.asPath, "/")
+                        ? "text-primaryPurple dark:text-primaryPurple"
+                        : ""
                     }
                   >
                     Home
@@ -269,7 +271,9 @@ export default function Header01() {
                 <button className="text-jacarta-900 font-display hover:text-primaryPurple focus:text-primaryPurple dark:hover:text-primaryPurple dark:focus:text-primaryPurple flex items-center justify-between py-3.5 text-base dark:text-white lg:px-5">
                   <span
                     className={
-                      isChildrenPageActive(route.asPath, `/`) ? "text-primaryPurple dark:text-primaryPurple" : ""
+                      isChildrenPageActive(route.asPath, `/`)
+                        ? "text-primaryPurple dark:text-primaryPurple"
+                        : ""
                     }
                   >
                     Marketplace

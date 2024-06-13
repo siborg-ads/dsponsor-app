@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useChainContext } from "../contexts/hooks/useChainContext";
 import { useAddress } from "@thirdweb-dev/react";
 import { activated_features } from "../data/activated_features";
+import Logo from "./../public/images/siborg-ads.png";
 
 const Footer = () => {
   const { currentChainObject } = useChainContext();
@@ -48,9 +49,9 @@ const Footer = () => {
               {/* <!-- Logo --> */}
               <Link href="#" className="mb-6 inline-block">
                 <Image
-                  width={110}
-                  height={25}
-                  src="/images/siborg-ads.png"
+                  width={220}
+                  height={50}
+                  src={Logo}
                   className=" dark:hidden"
                   alt="SiBorg Ads | Media sponsoring Marketplace"
                 />
@@ -58,9 +59,9 @@ const Footer = () => {
 
               <Link href="#" className=" mb-6 inline-block">
                 <Image
-                  width={110}
-                  height={25}
-                  src="/images/siborg-ads.png"
+                  width={220}
+                  height={50}
+                  src={Logo}
                   className="hidden  dark:block mb-6"
                   alt="SiBorg Ads | Media sponsoring Marketplace"
                 />
@@ -97,7 +98,10 @@ const Footer = () => {
                     const { id, href, text } = item;
                     return (
                       <li key={id}>
-                        <Link href={href} className="hover:text-primaryPurple dark:hover:text-white">
+                        <Link
+                          href={href}
+                          className="hover:text-primaryPurple dark:hover:text-white"
+                        >
                           {text}
                         </Link>
                       </li>
@@ -123,7 +127,10 @@ const Footer = () => {
                 </Link>
               </li>
               <li>
-                <Link href="/privacy-policy" className="hover:text-primaryPurple dark:hover:text-white">
+                <Link
+                  href="/privacy-policy"
+                  className="hover:text-primaryPurple dark:hover:text-white"
+                >
                   Privacy policy
                 </Link>
               </li>
