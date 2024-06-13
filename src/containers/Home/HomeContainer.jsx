@@ -15,15 +15,20 @@ const HomeContainer = () => {
   const [auctionsTemp, setAuctionsTemp] = useState([]);
   const [auctions, setAuctions] = useState([]);
   const [allTokens, setAllTokens] = useState(true);
+  const [isAuctionsLoading, setIsAuctionsLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
+      setIsAuctionsLoading(true);
+
       if (mainChainId !== null && mainChainId !== undefined) {
         const data = await fetchAllListedTokenWithoutFilter(mainChainId, allTokens);
         setAuctionsTemp(data);
       } else {
         setAuctionsTemp([]);
       }
+
+      setIsAuctionsLoading(false);
     };
 
     fetchData();
@@ -122,12 +127,13 @@ const HomeContainer = () => {
         }}
       >
         <Description description={true} />
-        <MainAuctions auctions={auctions} />
+        <MainAuctions auctions={auctions} isAuctionsLoading={isAuctionsLoading} />
         <MarketplaceHome
           auctions={auctions}
           chainIdFilter={chainIdFilter}
           setChainIdFilter={setChainIdFilter}
           setAllTokens={setAllTokens}
+          isAuctionsLoading={isAuctionsLoading}
         />
       </div>
     </>

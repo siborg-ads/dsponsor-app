@@ -4,7 +4,7 @@ import { ChevronDownIcon } from "@heroicons/react/20/solid";
 import ItemCardSkeleton from "../skeleton/ItemCardSkeleton";
 import OfferItem from "../cards/offerItem";
 
-const MarketplaceHome = ({ auctions, setAllTokens }) => {
+const MarketplaceHome = ({ auctions, setAllTokens, isAuctionsLoading }) => {
   const [filterName, setFilterName] = useState("");
   const [sortOption, setSortOption] = useState(null);
   const [filterOption, setFilterOption] = useState("All the spaces");
@@ -172,7 +172,7 @@ const MarketplaceHome = ({ auctions, setAllTokens }) => {
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {filteredAuctions?.length !== 0 ? (
+            {!isAuctionsLoading ? (
               <>
                 {filteredAuctions?.map((auction, index) => (
                   <>
