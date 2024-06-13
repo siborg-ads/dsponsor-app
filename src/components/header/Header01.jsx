@@ -198,8 +198,8 @@ export default function Header01() {
           <div className="dark:hidden">
             <Image
               src={Logo}
-              height={220}
-              width={50}
+              height={660}
+              width={150}
               alt="SiBorg Ads | Smarter monetization for your content"
               className="max-h-7 h-auto "
             />
@@ -207,9 +207,9 @@ export default function Header01() {
 
           <div className="hidden dark:block">
             <Image
-              src={WhiteLogo}
-              height={220}
-              width={50}
+              src={Logo}
+              height={660}
+              width={150}
               alt="SiBorg Ads | Smarter monetization for your content"
             />
           </div>
