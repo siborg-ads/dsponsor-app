@@ -23,6 +23,7 @@ import { useChainContext } from "../../contexts/hooks/useChainContext";
 import { fetchOffer } from "../../providers/methods/fetchOffer";
 import config from "../../providers/utils/config";
 import { useSwitchChainContext } from "../../contexts/hooks/useSwitchChainContext";
+import {activated_features} from "../../data/activated_features";
 
 const OfferPageContainer = () => {
   const router = useRouter();
@@ -378,21 +379,24 @@ const OfferPageContainer = () => {
         </div>
       )}
 
-      <Validation
-        chainId={chainId}
-        setSuccessFullRefuseModal={setSuccessFullRefuseModal}
-        setSelectedItems={setSelectedItems}
-        selectedItems={selectedItems}
-        offer={offerData}
-        offerId={offerId}
-        isOwner={isOwner}
-        handleSubmit={handleSubmit}
-        successFullRefuseModal={successFullRefuseModal}
-        setRefusedValidatedAdModal={setRefusedValidatedAdModal}
-        refusedValidatedAdModal={refusedValidatedAdModal}
-      />
+      {(activated_features.canSeeSubmittedAds && (
+          <Validation
+              chainId={chainId}
+              setSuccessFullRefuseModal={setSuccessFullRefuseModal}
+              setSelectedItems={setSelectedItems}
+              selectedItems={selectedItems}
+              offer={offerData}
+              offerId={offerId}
+              isOwner={isOwner}
+              handleSubmit={handleSubmit}
+              successFullRefuseModal={successFullRefuseModal}
+              setRefusedValidatedAdModal={setRefusedValidatedAdModal}
+              refusedValidatedAdModal={refusedValidatedAdModal}
+          />
+      ))}
 
-      {isOwner && (
+
+      {isOwner && activated_features.canSeeIntegrationDetails && (
         <div className="container">
           <Divider className="my-4" />
           <h2 className="text-jacarta-900 font-bold font-display mb-6 text-center text-3xl dark:text-white ">
