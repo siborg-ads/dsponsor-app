@@ -6,7 +6,7 @@ const adParameters = {
   },
   linkURL: {
     required: true,
-    validation: /^https:\/\/[^\[\s()<>]+(?:\([\w\d]+\)|([^[:punct:]\s]|\/))$/
+    validation: /^https:\/\/[^[\s()<>]+(?:\([\w\d]+\)|([^[:punct:]\s]|\/))$/
   },
   xCreatorHandle: {
     required: false,
