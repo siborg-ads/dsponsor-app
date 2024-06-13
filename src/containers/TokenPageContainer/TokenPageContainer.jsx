@@ -604,6 +604,7 @@ const TokenPageContainer = () => {
         argsWithPossibleOverrides.args[0].referralAdditionalInformation = referralAddress;
         await mintAndSubmit(argsWithPossibleOverrides);
         setSuccessFullUpload(true);
+        setIsOwner(true);
       } else {
         console.log("directBuy", argsWithPossibleOverrides, "directBuy");
         await directBuy(argsWithPossibleOverrides);
