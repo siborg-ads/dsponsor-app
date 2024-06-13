@@ -714,6 +714,23 @@ const TokenPageContainer = () => {
     }
   }, [marketplaceListings, address]);
 
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (event.target.closest('.modal-content') === null) {
+        setImageModal(false);
+      }
+    };
+
+    if (imageModal) {
+      document.addEventListener('mousedown', handleClickOutside);
+    } else {
+      document.removeEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [imageModal]);
   function shouldRenderManageTokenComponent() {
     const isFirstListingAuctionActive =
       firstSelectedListing?.startTime < now &&
@@ -726,6 +743,7 @@ const TokenPageContainer = () => {
     const isOwnerAndFinished = isOwner && firstSelectedListing?.status === "COMPLETED";
     const isListerAndEndDateFinishedOrNoBids =
       isLister && (firstSelectedListing?.endTime < now || firstSelectedListing?.bids?.length === 0);
+
 
     return (
       ((isFirstListingAuctionActive && !isOwner) ||
