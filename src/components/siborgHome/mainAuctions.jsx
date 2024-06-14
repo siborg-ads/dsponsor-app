@@ -29,7 +29,7 @@ const MainAuctions = ({ auctions, isAuctionsLoading }) => {
     <>
       <div className="flex flex-col gap-4">
         <div className="text-xl font-semibold text-white">Hot Auctions 🔥</div>
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {!isAuctionsLoading ? (
             <>
               {hotAuctions.map((auction, index) => (

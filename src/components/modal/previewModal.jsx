@@ -11,6 +11,7 @@ import { useChainContext } from "../../contexts/hooks/useChainContext";
 const PreviewModal = ({
   approvalForAllToken = true,
   handleApprove,
+  isListing = false,
   helperFeesListing = null,
   selectedStartingPrice = null,
   handlePreviewModal,
@@ -386,10 +387,16 @@ const PreviewModal = ({
                           error: "Approval rejected 🤯"
                         });
                       }}
-                      className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate ? "btn-disabled !text-black" : "!bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer"} `}
+                      className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate ? "btn-disabled !text-black opacity-30" : "!bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer"} `}
                       isDisabled={!validate || isLoadingButton}
                     >
-                      {isLoadingButton ? <Spinner size="sm" color="default" /> : "Approve"}
+                      {isLoadingButton ? (
+                        <Spinner size="sm" color="default" />
+                      ) : !isListing ? (
+                        "Approve"
+                      ) : (
+                        "Authorize Marketplace"
+                      )}
                     </Web3Button>
                   )
                 ) : successFullUploadModal.hrefButton !== null ? (

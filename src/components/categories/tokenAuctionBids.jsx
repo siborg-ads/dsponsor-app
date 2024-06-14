@@ -19,11 +19,12 @@ const TokenAuctionBids = ({ data, isOwner }) => {
         <span>
           {" "}
           This section is listing all the tokens where you have placed a bid. <br />
-          <span className="text-red font-medium">CANCELLED</span> : You have been out bid by another
+          <span className="text-primaryPurple font-medium">HIGHER BIDDER</span> : You are the
+          highest bidder. <br />
+          <span className="text-green font-medium">AUCTION WON</span> : You have won the auction.
+          <br />
+          <span className="text-red font-medium">OUTBID</span> : You have been out bid by another
           user. <br />
-          <span className="text-primaryPurple font-medium">CREATED</span> : You are the highest
-          bidder. <br />
-          <span className="text-green font-medium">COMPLETED</span> : You have won the auction.
         </span>
       </div>
       {data.length > 0 ? (

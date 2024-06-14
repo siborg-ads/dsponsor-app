@@ -92,6 +92,7 @@ const ManageSpaceContainer = () => {
          );
          const mappedAuctionBidsTokens = auctionBidsTokensArray.map((element) => ({
            ...element,
+           status: handleStatusType(element.status),
            metadata: element.listing.token.metadata,
            tokenData: element.listing.token.mint.tokenData,
            offerId: element.listing.token.nftContract.adOffers[0].id,
@@ -108,6 +109,18 @@ const ManageSpaceContainer = () => {
        fetchAuctionBidsTokens();
      }
    }, [userAddress, router, address, chainId, chainConfig]);
+   const handleStatusType = (status) => {
+    switch (status) {
+      case "CREATED":
+        return "HIGHEST BIDDER";
+      case "CONFIRMED":
+        return "AUCTION WON";
+      case "CANCELLED":
+        return "OUTBID";
+      default:
+        return "HIGHEST BIDDER";
+    }
+  };
   useEffect(() => {
     setTimeout(() => {
       setCopied(false);
