@@ -11,6 +11,7 @@ import { formatAndRoundPrice } from "../../utils/formatAndRound";
 import { fetchTokenPrice } from "../../utils/fetchTokenPrice";
 import { CrossmintPayButton } from "@crossmint/client-sdk-react-ui";
 import { activated_features } from "../../data/activated_features";
+import { getCookie } from "cookies-next";
 
 const BidsModal = ({
   setAmountToApprove,
@@ -196,8 +197,10 @@ const BidsModal = ({
       setIsLoadingButton(true);
       const bidsBigInt = ethers.utils.parseUnits(bidsAmount.toString(), currencyTokenDecimals);
 
+      const referralAddress = getCookie("_rid") || "";
+
       await auctionBids({
-        args: [marketplaceListings[0].id, bidsBigInt, address, ""]
+        args: [marketplaceListings[0].id, bidsBigInt, address, referralAddress]
       });
       setSuccessFullBid(true);
     } catch (error) {

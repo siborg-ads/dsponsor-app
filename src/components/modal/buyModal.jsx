@@ -10,7 +10,7 @@ import { Spinner } from "@nextui-org/spinner";
 import { useChainContext } from "../../contexts/hooks/useChainContext";
 import { CrossmintPayButton } from "@crossmint/client-sdk-react-ui";
 import config from "../../providers/utils/config";
-import {activated_features} from "../../data/activated_features";
+import { activated_features } from "../../data/activated_features";
 
 const BuyModal = ({
   formatTokenId,
@@ -40,7 +40,8 @@ const BuyModal = ({
   const modalRef = useRef();
 
   // If currency is WETH, we can pay with Crossmint
-  const canPayWithCrossmint = selectedCurrency === "WETH" && activated_features.canPayWithCrossmintEnabled;
+  const canPayWithCrossmint =
+    selectedCurrency === "WETH" && activated_features.canPayWithCrossmintEnabled;
 
   const handleTermService = (e) => {
     setValidate(e.target.checked);
