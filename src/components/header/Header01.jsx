@@ -1,8 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
-import Logo from "./../../public/images/siborg-ads.png";
+import Logo from "./../../../public/images/siborg-ads.png";
 
-import WhiteLogo from "./../../public/images/logo_white.png";
+import WhiteLogo from "./../../../public/images/logo_white.png";
 import { useRouter } from "next/router";
 import { isChildrenPageActive } from "../../utils/daynamicNavigation";
 import { useEffect, useState } from "react";
