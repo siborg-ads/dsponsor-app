@@ -521,7 +521,7 @@ const ItemManageModal = ({
                                   >
                                     <option value="USDC">USDC</option>
                                     <option value="WETH">WETH</option>
-                                    <option value="USDT">USDT</option>
+                                    {/*<option value="USDT">USDT</option>*/}
                                     <option value="custom">Custom</option>
                                   </select>
                                   {selectedCurrency === "custom" && (
