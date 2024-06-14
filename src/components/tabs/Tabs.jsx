@@ -4,6 +4,7 @@ import Tippy from "@tippyjs/react";
 import { whiteListedAddress } from "../../utils/whiteListedAddress";
 import { useChainContext } from "../../contexts/hooks/useChainContext";
 import config from "../../providers/utils/config";
+import displayOrCheckKnownAddress from "../../utils/displayOrCheckKnownAddress";
 
 const ItemsTabs = ({ chainId, contractAddress, isUserOwner, initialCreator, isToken = true }) => {
   const { currentChainObject } = useChainContext();
@@ -36,7 +37,7 @@ const ItemsTabs = ({ chainId, contractAddress, isUserOwner, initialCreator, isTo
                 rel="noopener noreferrer"
                 className="text-primaryPink hover:text-jacarta-100"
               >
-                {initialCreator}
+                {displayOrCheckKnownAddress(initialCreator)}
               </Link>
             </div>
 
