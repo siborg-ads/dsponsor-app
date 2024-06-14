@@ -585,6 +585,7 @@ const Recently_added_dropdown = ({ data, dropdownFor }) => {
               <div className="flex items-center space-x-3 px-5 pb-2">
                 <input
                   type="number"
+                  onWheel={(e) => e.target.blur()}
                   placeholder="From"
                   value={currencyValFrom}
                   onChange={(e) => handleCurrencyValFrom(e)}
@@ -592,6 +593,7 @@ const Recently_added_dropdown = ({ data, dropdownFor }) => {
                 />
                 <input
                   type="number"
+                  onWheel={(e) => e.target.blur()}
                   placeholder="To"
                   value={currencyValTo}
                   onChange={(e) => handleCurrencyValTo(e)}

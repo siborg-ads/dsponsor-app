@@ -271,6 +271,7 @@ const BidsModal = ({
                   <div className="flex items-center relative w-full">
                     <input
                       type="number"
+                      onWheel={(e) => e.target.blur()}
                       className={`focus:ring-primaryPurple relative w-full flex-[3] border-transparent bg-jacarta-600 rounded-xl text-2xl py-2 font-semibold text-white focus:ring-inse`}
                       placeholder={`${initialIntPrice} or higher`}
                       value={bidsAmount}

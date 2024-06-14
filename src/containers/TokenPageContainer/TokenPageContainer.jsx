@@ -148,10 +148,6 @@ const TokenPageContainer = () => {
   const referralAddress = getCookie("_rid") || "";
 
   useEffect(() => {
-    console.log("offerData", offerData);
-  }, [offerData]);
-
-  useEffect(() => {
     if (offerId && tokenId && chainId) {
       const fetchAdsOffers = async () => {
         const offer = await fetchOfferToken(offerId, tokenId, chainId);
@@ -160,7 +156,6 @@ const TokenPageContainer = () => {
           ...offer
         };
 
-        console.log(combinedData, "combinedData");
         setOfferData(combinedData);
       };
       setSelectedChain(config[chainId]?.chainNameProvider);
@@ -394,11 +389,6 @@ const TokenPageContainer = () => {
   }, [offerData]);
 
   useEffect(() => {
-    console.log("currencySymbol:", currency);
-    console.log("currencyDecimals:", currencyDecimals);
-  }, [currency, currencyDecimals]);
-
-  useEffect(() => {
     if (!offerData || !adParameters) return;
     try {
       const params = [];
@@ -483,12 +473,12 @@ const TokenPageContainer = () => {
       let allowance;
 
       if (tokenStatut === "DIRECT" || tokenStatut === "AUCTION") {
-        allowance = await tokenContract.call("allowance", [
+        allowance = await tokenContract?.call("allowance", [
           address,
           config[chainId]?.smartContracts?.DSPONSORMP?.address
         ]);
       } else {
-        allowance = await tokenContract.call("allowance", [
+        allowance = await tokenContract?.call("allowance", [
           address,
           config[chainId]?.smartContracts?.DSPONSORADMIN?.address
         ]);
