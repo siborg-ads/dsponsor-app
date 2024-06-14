@@ -7,7 +7,7 @@ import {
   useContractWrite,
   useStorageUpload
 } from "@thirdweb-dev/react";
-import {BigNumber, ethers} from "ethers";
+import { BigNumber, ethers } from "ethers";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -185,8 +185,6 @@ const TokenPageContainer = () => {
   }, [offerData]);
 
   useEffect(() => {
-    
-
     if (!offerData) return;
     if (
       !offerNotFormated &&
@@ -247,7 +245,7 @@ const TokenPageContainer = () => {
         setTokenBigIntPrice(
           offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.bids[0]?.totalBidAmount
         );
-      
+
         setPrice(
           offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.bidPriceStructureFormatted
             .minimalBidPerToken
@@ -271,14 +269,13 @@ const TokenPageContainer = () => {
               .minimalBidPerToken
           )
         );
-       if (offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.bids.length <= 0) {
-        
-        setTokenBigIntPrice(
-          offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.reservePricePerToken
-        );
+        if (offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.bids.length <= 0) {
+          setTokenBigIntPrice(
+            offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.reservePricePerToken
+          );
         }
-      setTokenStatut("AUCTION");
-      } 
+        setTokenStatut("AUCTION");
+      }
       setCurrencyDecimals(
         offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.currencyDecimals
       );
@@ -509,29 +506,43 @@ const TokenPageContainer = () => {
       const parsedPriceAmount = ethers.utils.parseUnits(price.toString(), currencyDecimals);
       const computedFeesAmount = parsedPriceAmount.mul(protocolFeeBps).div(maxBps);
       const parsedPriceAndProtocolFeesAmount = parsedPriceAmount.add(computedFeesAmount);
-      console.log(`Parsed price and protocol fees amount: ${parsedPriceAndProtocolFeesAmount.toString()} - has token balance: ${tokenBalance.value.toString()} - Price: ${price.toString()} - Protocol fees: ${computedFeesAmount.toString()}`);
+      console.log(
+        `Parsed price and protocol fees amount: ${parsedPriceAndProtocolFeesAmount.toString()} - has token balance: ${tokenBalance.value.toString()} - Price: ${price.toString()} - Protocol fees: ${computedFeesAmount.toString()}`
+      );
       let hasEnoughBalance = checkUserBalance(tokenBalance, parsedPriceAndProtocolFeesAmount);
       const isWrappedNative = currency === "WETH";
       const isNative = currency === "ETH";
-      console.log(`Checking if the user has enough balance for approval: ${hasEnoughBalance} - is wrappable ${isWrappedNative}`);
+      console.log(
+        `Checking if the user has enough balance for approval: ${hasEnoughBalance} - is wrappable ${isWrappedNative}`
+      );
       // If it's a wrapped native token, that the user has agreed to approve the contract
       // But he has not enough balance as wrapped native token but he has enough balance as native token
       // We need to convert the native token to wrapped native token
       if (isWrappedNative && !hasEnoughBalance) {
-        console.log(`Has token balance: ${tokenBalance.value.toString()} - Price and protocol fees amount: ${parsedPriceAndProtocolFeesAmount.toString()}`);
-        console.log(parsedPriceAndProtocolFeesAmount.toString(), tokenBalance.value.toString())
-        const missingBalance = parsedPriceAndProtocolFeesAmount.sub(BigNumber.from(tokenBalance.value)).abs()
-        console.log(`Missing balance: ${missingBalance.toString()}`)
-        console.log(computedFeesAmount.toString())
+        console.log(
+          `Has token balance: ${tokenBalance.value.toString()} - Price and protocol fees amount: ${parsedPriceAndProtocolFeesAmount.toString()}`
+        );
+        console.log(parsedPriceAndProtocolFeesAmount.toString(), tokenBalance.value.toString());
+        const missingBalance = parsedPriceAndProtocolFeesAmount
+          .sub(BigNumber.from(tokenBalance.value))
+          .abs();
+        console.log(`Missing balance: ${missingBalance.toString()}`);
+        console.log(computedFeesAmount.toString());
         const missingBalanceWithProtocolFee = missingBalance.add(computedFeesAmount);
-        console.log(`Missing balance with protocol fee: ${missingBalanceWithProtocolFee.toString()}`)
-        console.log(`Wrapping ${missingBalanceWithProtocolFee.toString()} native token to wrapped native token`)
+        console.log(
+          `Missing balance with protocol fee: ${missingBalanceWithProtocolFee.toString()}`
+        );
+        console.log(
+          `Wrapping ${missingBalanceWithProtocolFee.toString()} native token to wrapped native token`
+        );
         await wrapNative({
           overrides: {
             value: missingBalanceWithProtocolFee
           }
         });
-        console.log(`Wrapped ${missingBalanceWithProtocolFee.toString()} native token to wrapped native token`)
+        console.log(
+          `Wrapped ${missingBalanceWithProtocolFee.toString()} native token to wrapped native token`
+        );
         hasEnoughBalance = true;
       }
 
@@ -550,7 +561,10 @@ const TokenPageContainer = () => {
         });
       } else {
         await approve({
-          args: [config[chainId]?.smartContracts?.DSPONSORADMIN?.address, amountToApprove.toString()]
+          args: [
+            config[chainId]?.smartContracts?.DSPONSORADMIN?.address,
+            amountToApprove.toString()
+          ]
         });
       }
       setAllowanceTrue(false);
@@ -673,11 +687,14 @@ const TokenPageContainer = () => {
       console.log("Token balance:", tokenAddressBalance);
       console.log("displayValue:", tokenAddressBalance.displayValue);
       console.log("Price token:", priceToken);
-      const parsedTokenBalance = ethers.utils.parseUnits(tokenAddressBalance.displayValue, currencyDecimals);
+      const parsedTokenBalance = ethers.utils.parseUnits(
+        tokenAddressBalance.displayValue,
+        currencyDecimals
+      );
       const parsedPriceToken = parseFloat(priceToken.toString());
 
       console.log("Parsed token balance:", parsedTokenBalance);
-        console.log("Parsed price token:", parsedPriceToken);
+      console.log("Parsed price token:", parsedPriceToken);
       if (parsedTokenBalance >= parsedPriceToken) {
         return true;
       } else {
@@ -731,19 +748,19 @@ const TokenPageContainer = () => {
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (event.target.closest('.modal-content') === null) {
+      if (event.target.closest(".modal-content") === null) {
         setImageModal(false);
       }
     };
 
     if (imageModal) {
-      document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener("mousedown", handleClickOutside);
     } else {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     }
 
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [imageModal]);
   function shouldRenderManageTokenComponent() {
@@ -758,7 +775,6 @@ const TokenPageContainer = () => {
     const isOwnerAndFinished = isOwner && firstSelectedListing?.status === "COMPLETED";
     const isListerAndEndDateFinishedOrNoBids =
       isLister && (firstSelectedListing?.endTime < now || firstSelectedListing?.bids?.length === 0);
-
 
     return (
       ((isFirstListingAuctionActive && !isOwner) ||
@@ -812,7 +828,7 @@ const TokenPageContainer = () => {
     body: `The protocol fees (4%) are used to maintain the platform and the services provided. The fees are calculated based on the price of the ad space and are automatically deducted from the total amount paid by the buyer.`
   };
 
-  if(!offerData){
+  if (!offerData) {
     return null;
   }
 
@@ -995,7 +1011,8 @@ const TokenPageContainer = () => {
               )}
               {firstSelectedListing?.listingType === "Auction" &&
                 firstSelectedListing.startTime < now &&
-                firstSelectedListing.endTime > now && (
+                firstSelectedListing.endTime > now &&
+                firstSelectedListing?.status === "CREATED" && (
                   <ItemBids
                     setAmountToApprove={setAmountToApprove}
                     bidsAmount={bidsAmount}
