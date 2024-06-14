@@ -305,9 +305,9 @@ const BidsModal = ({
                       <div className="flex flex-col gap-2 items-center text-center">
                         <span className="font-semibold text-white">What&apos;s next?</span>
                         <span className="text-white text-sm">
-                          If someone outbids you by at least {minBid} {currencySymbol}, you will
-                          receive your bid amount back plus an additional reward. However, if no one
-                          outbids you by the {endDate} at {endDateHour}, you will get the ad space.
+                          If someone outbids you, you will receive your bid amount back plus an
+                          additional rewards. However, if no one outbids you, you will get the ad
+                          space.
                         </span>
                       </div>
                       <div className="flex flex-col gap-2">
@@ -328,13 +328,13 @@ const BidsModal = ({
                         </div>
                         <div className="grid grid-cols-7 items-center gap-4 mx-auto w-full">
                           <div className="w-full col-span-3 text-base text-white flex justify-center items-center text-center">
-                            Case 1
+                            If auction winner
                           </div>
 
                           <div />
 
                           <div className="w-full col-span-3 text-base text-white flex justify-center items-center text-center">
-                            Case 2
+                            If outbided
                           </div>
                         </div>
                       </div>

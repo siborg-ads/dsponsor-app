@@ -251,9 +251,9 @@ const OfferItem = ({
                   <div className="flex gap-2 items-center justify-center">
                     <span className="dark:text-jacarta-100 text-jacarta-100">
                       {listingType === "Auction"
-                        ? "Auction listing"
+                        ? "Live Auction"
                         : listingType === "Direct"
-                          ? "Direct listing"
+                          ? "Buy Now"
                           : null}{" "}
                     </span>
 

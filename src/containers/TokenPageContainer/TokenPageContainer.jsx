@@ -46,6 +46,7 @@ import "react-toastify/dist/ReactToastify.css";
 import ModalHelper from "../../components/Helper/modalHelper.jsx";
 import ItemLastBids from "../../components/tables/ItemLastBids";
 import itemLastBids from "../../components/tables/ItemLastBids";
+import { activated_features } from "../../data/activated_features.js";
 
 const TokenPageContainer = () => {
   const router = useRouter();
@@ -391,6 +392,11 @@ const TokenPageContainer = () => {
     setImageURLSteps(imageURLSteps);
     setNumSteps(totalNumSteps);
   }, [offerData]);
+
+  useEffect(() => {
+    console.log("currencySymbol:", currency);
+    console.log("currencyDecimals:", currencyDecimals);
+  }, [currency, currencyDecimals]);
 
   useEffect(() => {
     if (!offerData || !adParameters) return;
@@ -943,7 +949,7 @@ const TokenPageContainer = () => {
                   Creator <strong className="dark:text-white">{royalties}% royalties</strong>
                 </span>
                 <span className="text-jacarta-100 block text-sm">
-                  Token valid from{" "}
+                  Ownership period:{" "}
                   <strong className="dark:text-white">
                     {offerData?.nftContract?.tokens[0]?.metadata?.valid_from &&
                       (() => {
@@ -1067,20 +1073,22 @@ const TokenPageContainer = () => {
           initialCreator={offerData?.initialCreator}
         />
       </div>
-      {offerData.nftContract?.tokens[0]?.mint && isValidId && (
-        <Validation
-          offer={offerData}
-          offerId={offerId}
-          isOwner={isOwner}
-          isToken={true}
-          successFullUploadModal={successFullUploadModal}
-          isLister={isLister}
-          setSelectedItems={setSelectedItems}
-        />
-      )}
+      {offerData.nftContract?.tokens[0]?.mint &&
+        isValidId &&
+        activated_features.canSeeSubmittedAds && (
+          <Validation
+            offer={offerData}
+            offerId={offerId}
+            isOwner={isOwner}
+            isToken={true}
+            successFullUploadModal={successFullUploadModal}
+            isLister={isLister}
+            setSelectedItems={setSelectedItems}
+          />
+        )}
       {/* <ItemsTabs /> */}
       <div>
-        {isOwner && isValidId ? (
+        {isOwner && activated_features.canSeeSubmittedAds && isValidId ? (
           <div className="container">
             <Divider className="my-4" />
             <h2 className="text-jacarta-900 font-bold font-display mb-6 text-center text-3xl dark:text-white ">

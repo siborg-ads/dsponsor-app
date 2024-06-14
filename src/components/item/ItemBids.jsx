@@ -121,7 +121,7 @@ const ItemBids = ({
 
         <div>
           <span className="text-jacarta-100 block text-xs text-center">
-            Listing live from{" "}
+            Auction live from{" "}
             {marketplaceListings[0]?.startTime &&
               new Date(marketplaceListings[0]?.startTime * 1000).toLocaleString()}{" "}
             to{" "}
