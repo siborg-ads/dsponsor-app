@@ -129,6 +129,7 @@ const Step_4_Create = ({
           <div className="flex gap-4 items-center text-jacarta-900 dark:text-white mb-3">
             <div className="flex flex-col justify-center items-center gap-1">
               <DatePicker
+                minDate={new Date()}
                 selected={startDate}
                 onChange={(date) => setStartDate(date)}
                 showMonthDropdown
@@ -147,6 +148,7 @@ const Step_4_Create = ({
             </div>
             <div className="flex flex-col justify-center items-center gap-1">
               <DatePicker
+                minDate={new Date()}
                 selected={endDate}
                 onChange={(date) => setEndDate(date)}
                 showMonthDropdown

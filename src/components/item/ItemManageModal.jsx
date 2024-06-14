@@ -439,6 +439,7 @@ const ItemManageModal = ({
                                 <div className="flex flex-col gap-4 items-center text-jacarta-900 dark:text-white mb-3">
                                   <div className="flex flex-col justify-center items-center gap-1">
                                     <DatePicker
+                                      minDate={new Date()}
                                       selected={startDate}
                                       onChange={(date) => {
                                         if (date < new Date()) {
@@ -464,6 +465,7 @@ const ItemManageModal = ({
                                   </div>
                                   <div className="flex flex-col justify-center items-center gap-1">
                                     <DatePicker
+                                      minDate={new Date()}
                                       selected={endDate}
                                       onChange={(date) => {
                                         if (date < new Date()) {

@@ -740,7 +740,7 @@ const TokenPageContainer = () => {
     } else {
       setIsLister(false);
     }
-  }, [marketplaceListings, address]);
+  }, [marketplaceListings, address, firstSelectedListing]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
