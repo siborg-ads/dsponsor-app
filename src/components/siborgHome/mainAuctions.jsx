@@ -6,29 +6,24 @@ const MainAuctions = ({ auctions, isAuctionsLoading }) => {
   const [mount, setMount] = useState(false);
   const [hotAuctions, setHotAuctions] = useState([]);
 
-  const liveAuctions = useMemo(() => {
-    return auctions?.filter(
-      (auction) =>
-        auction.status === "CREATED" &&
-        auction?.listingType === "Auction" &&
-        auction?.quantity > 0 &&
-        new Date(auction?.startTime * 1000) < Date.now() &&
-        new Date(auction?.endTime * 1000) > Date.now()
-    );
-  }, [auctions]);
-
   useMemo(() => {
-    if (liveAuctions?.length === 0) return [];
+    if (!mount && auctions?.length > 0) {
+      const tempHotAuctions = auctions
+        ?.filter(
+          (auction) =>
+            auction.status === "CREATED" &&
+            auction?.listingType === "Auction" &&
+            auction?.quantity > 0 &&
+            new Date(auction?.startTime * 1000) < Date.now() &&
+            new Date(auction?.endTime * 1000) > Date.now()
+        )
+        .sort((a, b) => b.numberOfBids - a.numberOfBids)
+        .slice(0, 4);
 
-    let tempAuctions = liveAuctions;
-
-    if (!mount) {
-      tempAuctions = liveAuctions.sort((a, b) => b.numberOfBids - a.numberOfBids).slice(0, 4);
-
-      setHotAuctions(tempAuctions);
+      setHotAuctions(tempHotAuctions);
       setMount(true);
     }
-  }, [liveAuctions, mount]);
+  }, [auctions, mount]);
 
   return (
     <>
