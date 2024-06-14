@@ -148,10 +148,6 @@ const TokenPageContainer = () => {
   const referralAddress = getCookie("_rid") || "";
 
   useEffect(() => {
-    console.log("offerData", offerData);
-  }, [offerData]);
-
-  useEffect(() => {
     if (offerId && tokenId && chainId) {
       const fetchAdsOffers = async () => {
         const offer = await fetchOfferToken(offerId, tokenId, chainId);
@@ -160,7 +156,6 @@ const TokenPageContainer = () => {
           ...offer
         };
 
-        console.log(combinedData, "combinedData");
         setOfferData(combinedData);
       };
       setSelectedChain(config[chainId]?.chainNameProvider);
@@ -392,11 +387,6 @@ const TokenPageContainer = () => {
     setImageURLSteps(imageURLSteps);
     setNumSteps(totalNumSteps);
   }, [offerData]);
-
-  useEffect(() => {
-    console.log("currencySymbol:", currency);
-    console.log("currencyDecimals:", currencyDecimals);
-  }, [currency, currencyDecimals]);
 
   useEffect(() => {
     if (!offerData || !adParameters) return;
