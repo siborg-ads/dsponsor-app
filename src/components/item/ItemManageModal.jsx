@@ -110,8 +110,10 @@ const ItemManageModal = ({
       try {
         setIsLoadingButton(true);
         const startDateFormated = Math.floor(startDate.getTime() / 1000);
+        const nowFormated = Math.floor(Date().now().getTime() / 1000);
+        const startTime = Math.max(startDateFormated, nowFormated);
         const endDateFormated = Math.floor(endDate.getTime() / 1000);
-        const secondsUntilEndTime = endDateFormated - startDateFormated;
+        const secondsUntilEndTime = endDateFormated - startTime;
         const startingPriceWithTaxes = calculatePriceWithTaxes(selectedStartingPrice, true);
         const startingPrice = ethers.utils
           .parseUnits(startingPriceWithTaxes.toString(), tokenDecimals)
@@ -122,14 +124,14 @@ const ItemManageModal = ({
         const args = {
           assetContract: offerData?.nftContract?.id,
           tokenId: offerData?.nftContract?.tokens[0].tokenId,
-          startTime: startDateFormated,
+          startTime: startTime,
           secondsUntilEndTime: secondsUntilEndTime,
           quantityToList: 1,
           currencyToAccept: tokenContract,
           reservePricePerToken: isAuction ? startingPrice : price,
           buyoutPricePerToken: price,
           transferType: 1,
-          rentalExpirationTimestamp: startDateFormated + secondsUntilEndTime,
+          rentalExpirationTimestamp: startTime + secondsUntilEndTime,
           listingType: selectedListingType[0]
         };
         await createListing({ args: [args] });

@@ -273,7 +273,9 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
             />
           )}
           {!showSliderForm && (
-            <div className={` grid grid-cols-1 gap-[1.875rem] md:grid-cols-2 lg:grid-cols-4`}>
+            <div
+              className={`grid w-full grid-cols-1 gap-[1.875rem] md:grid-cols-2 lg:grid-cols-4`}
+            >
               {data?.map((item, index) => {
                 return isSelectionActive ? (
                   <div
