@@ -61,6 +61,7 @@ const TokenPageContainer = () => {
   const [offerData, setOfferData] = useState(null);
   const address = useAddress();
   const [isOwner, setIsOwner] = useState(false);
+  const [firstSelectedListing, setFirstSelectedListing] = useState({});
   const [files, setFiles] = useState([]);
   const [previewImages, setPreviewImages] = useState([]);
   const [imageModal, setImageModal] = useState(false);
@@ -279,6 +280,13 @@ const TokenPageContainer = () => {
       setCurrency(offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.currencySymbol);
       return;
     }
+    if (offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.status === "COMPLETED") {
+      setTokenStatut("COMPLETED");
+      setTokenCurrencyAddress(offerData?.nftContract?.prices[0]?.currency);
+      setCurrency(offerData?.nftContract?.prices[0]?.currencySymbol);
+      setCurrencyDecimals(offerData?.nftContract?.prices[0]?.currencyDecimals);
+      return;
+    }
     if (
       offerData?.nftContract?.tokens[0]?.mint !== null &&
       offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.length === 0
@@ -286,10 +294,6 @@ const TokenPageContainer = () => {
       setTokenStatut("MINTED");
       setTokenCurrencyAddress(offerData?.nftContract?.prices[0]?.currency);
       setTokenBigIntPrice(offerData?.nftContract?.prices[0]?.amount);
-    }
-
-    if (offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.status === "COMPLETED") {
-      setTokenStatut("COMPLETED");
     }
   }, [
     offerData,
@@ -317,7 +321,7 @@ const TokenPageContainer = () => {
         setIsOwner(true);
       }
     }
-  }, [isUserOwner, address, marketplaceListings]);
+  }, [isUserOwner, address, marketplaceListings, firstSelectedListing]);
 
   useEffect(() => {
     if (!tokenId || !offerData) return;
@@ -725,7 +729,9 @@ const TokenPageContainer = () => {
     validateInputs();
   };
 
-  const firstSelectedListing = marketplaceListings[0];
+  useEffect(() => {
+    setFirstSelectedListing(marketplaceListings[0]);
+  }, [marketplaceListings]);
 
   useEffect(() => {
     if (
