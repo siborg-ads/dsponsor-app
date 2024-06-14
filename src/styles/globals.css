@@ -73,6 +73,16 @@ html {
     transition-timing-function: linear;
   }
 
+  input::-webkit-outer-spin-button,
+  input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  input[type="number"] {
+    -moz-appearance: textfield;
+  }
+
   .modal-backdrop.fade {
     opacity: 0;
   }
@@ -3969,7 +3979,6 @@ html {
     flex: 1 1 auto;
     position: relative;
   }
-
 
   .modal-backdrop {
     --tw-bg-opacity: 1;
