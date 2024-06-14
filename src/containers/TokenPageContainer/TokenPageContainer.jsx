@@ -483,12 +483,12 @@ const TokenPageContainer = () => {
       let allowance;
 
       if (tokenStatut === "DIRECT" || tokenStatut === "AUCTION") {
-        allowance = await tokenContract.call("allowance", [
+        allowance = await tokenContract?.call("allowance", [
           address,
           config[chainId]?.smartContracts?.DSPONSORMP?.address
         ]);
       } else {
-        allowance = await tokenContract.call("allowance", [
+        allowance = await tokenContract?.call("allowance", [
           address,
           config[chainId]?.smartContracts?.DSPONSORADMIN?.address
         ]);

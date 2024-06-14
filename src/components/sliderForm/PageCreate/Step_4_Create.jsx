@@ -179,6 +179,7 @@ const Step_4_Create = ({
               <input
                 id="numberInput"
                 type="number"
+                onWheel={(e) => e.target.blur()}
                 step="0.1"
                 value={selectedUnitPrice}
                 onChange={handleUnitPriceChange}

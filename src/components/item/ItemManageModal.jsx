@@ -44,7 +44,7 @@ const ItemManageModal = ({
   const { currentChainObject } = useChainContext();
   const [selectedUnitPrice, setSelectedUnitPrice] = useState(0);
   const [selectedStartingPrice, setSelectedStartingPrice] = useState(0);
-  const [selectedCurrency, setSelectedCurrency] = useState("USDC");
+  const [selectedCurrency, setSelectedCurrency] = useState("WETH");
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date(new Date().setDate(new Date().getDate() + 7)));
   const [errors, setErrors] = useState({});
@@ -55,14 +55,14 @@ const ItemManageModal = ({
   const [isLoadingButton, setIsLoadingButton] = useState(false);
   const [customContract, setCustomContract] = useState(null);
   const [tokenDecimals, setTokenDecimals] = useState(18);
-  const [symbolContract, setSymbolContract] = useState("USDC");
+  const [symbolContract, setSymbolContract] = useState("WETH");
   const [tokenContract, setTokenContract] = useState("");
   const [customTokenContract, setCustomTokenContract] = useState("");
   const USDCCurrency = currentChainObject?.smartContracts?.USDC;
   const WETHCurrency = currentChainObject?.smartContracts?.WETH;
   const USDTCurrency = currentChainObject?.smartContracts?.USDT;
   const NATIVECurrency = currentChainObject?.smartContracts?.NATIVE;
-  const [selectedCurrencyContract, setSelectedCurrencyContract] = useState(USDCCurrency?.address);
+  const [selectedCurrencyContract, setSelectedCurrencyContract] = useState(WETHCurrency?.address);
   const { contract: tokenContractAsync } = useContract(selectedCurrencyContract, "token");
   const { data: symbolContractAsync } = useContractRead(tokenContractAsync, "symbol");
   const { data: decimalsContractAsync } = useContractRead(tokenContractAsync, "decimals");
@@ -91,6 +91,23 @@ const ItemManageModal = ({
     setCustomTokenContract
   ]);
 
+  useEffect(() => {
+    // update start date every seconds to avoid the user to set a start date in the past
+    const interval = setInterval(() => {
+      if (startDate < new Date()) {
+        setStartDate(new Date());
+      }
+
+      if (endDate < new Date()) {
+        setEndDate(new Date());
+      }
+
+      return () => clearInterval(interval);
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [startDate, endDate]);
+
   const handlePreviewModal = async () => {
     const isApprovedForAll = await dsponsorNFTContract.call("isApprovedForAll", [
       address,
@@ -110,7 +127,7 @@ const ItemManageModal = ({
       try {
         setIsLoadingButton(true);
         const startDateFormated = Math.floor(startDate.getTime() / 1000);
-        const nowFormated = Math.floor(Date().now().getTime() / 1000);
+        const nowFormated = Math.floor(new Date().getTime() / 1000);
         const startTime = Math.max(startDateFormated, nowFormated);
         const endDateFormated = Math.floor(endDate.getTime() / 1000);
         const secondsUntilEndTime = endDateFormated - startTime;
@@ -423,7 +440,13 @@ const ItemManageModal = ({
                                   <div className="flex flex-col justify-center items-center gap-1">
                                     <DatePicker
                                       selected={startDate}
-                                      onChange={(date) => setStartDate(date)}
+                                      onChange={(date) => {
+                                        if (date < new Date()) {
+                                          setStartDate(new Date());
+                                        } else {
+                                          setStartDate(date);
+                                        }
+                                      }}
                                       showMonthDropdown
                                       popperPlacement="bottom-start"
                                       showYearDropdown
@@ -442,7 +465,13 @@ const ItemManageModal = ({
                                   <div className="flex flex-col justify-center items-center gap-1">
                                     <DatePicker
                                       selected={endDate}
-                                      onChange={(date) => setEndDate(date)}
+                                      onChange={(date) => {
+                                        if (date < new Date()) {
+                                          setEndDate(new Date());
+                                        } else {
+                                          setEndDate(date);
+                                        }
+                                      }}
                                       showMonthDropdown
                                       popperPlacement="bottom-end"
                                       showYearDropdown
@@ -473,6 +502,7 @@ const ItemManageModal = ({
                                       <input
                                         id="numberInput"
                                         type="number"
+                                        onWheel={(e) => e.target.blur()}
                                         step="0.1"
                                         value={selectedStartingPrice}
                                         onChange={handleStartingPriceChange}
@@ -502,6 +532,7 @@ const ItemManageModal = ({
                                     <input
                                       id="numberInput"
                                       type="number"
+                                      onWheel={(e) => e.target.blur()}
                                       step="0.1"
                                       value={selectedUnitPrice}
                                       onChange={handleUnitPriceChange}
@@ -522,10 +553,10 @@ const ItemManageModal = ({
                                     onChange={handleCurrencyChange}
                                     className="dark:bg-secondaryBlack min-w-[110px] border-jacarta-100 hover:ring-primaryPurple/10 focus:ring-primaryPurple dark:border-jacarta-600 dark:placeholder:text-jacarta-100 w-full rounded-lg py-3 px-5 hover:ring-2 dark:text-white"
                                   >
+                                    <option value="WETH">WETH</option>
                                     {activated_features.canAcceptUSDC && (
                                       <option value="USDC">USDC</option>
                                     )}
-                                    <option value="WETH">WETH</option>
                                     {activated_features.canAcceptUSDT && (
                                       <option value="USDT">USDT</option>
                                     )}
