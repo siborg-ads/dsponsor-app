@@ -6,8 +6,13 @@ const footerMenuList = [
     list: [
       {
         id: 1,
-        href: "/marketplace",
-        text: "All Offers"
+        href: "/",
+        text: "Homepage"
+      },
+      {
+        id: 2,
+        href: "/leaderboard",
+        text: "Leaderboard"
       }
     ]
   },
@@ -18,13 +23,8 @@ const footerMenuList = [
     list: [
       {
         id: 1,
-        href: "/about",
-        text: "About SiBorg Ads"
-      },
-      {
-        id: 2,
-        href: "/",
-        text: "Explore"
+        href: "https://siborg.io",
+        text: "SiBorg"
       }
     ]
   }

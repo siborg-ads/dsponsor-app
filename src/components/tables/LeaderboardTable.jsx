@@ -28,7 +28,10 @@ const renderTable = (title, data, columns) => {
         </thead>
         <tbody>
           {data.map((item, index) => (
-            <tr key={index} className="border-t border-jacarta-100 dark:border-primaryPink dark:border-opacity-10">
+            <tr
+              key={index}
+              className="border-t border-jacarta-100 dark:border-primaryPink dark:border-opacity-10"
+            >
               {columns.map((col, colIndex) => (
                 <td key={colIndex} className="py-4 px-4">
                   {col.render(item)}
@@ -76,15 +79,15 @@ const LeaderboardTable = ({ activity }) => {
     { header: "Rank", render: (item) => item.rank },
     { header: "Total Amount Spent", render: (item) => `${item.totalSpent} USDC` },
     {
-      header: "Address",
+      header: "Wallet",
       render: (item) => (
         <Link href={`/manage/${item.address}`}>
           <span className="text-primaryPink hover:text-jacarta-100">{item.addressDisplay}</span>
         </Link>
       )
     },
-    { header: "Balance", render: (item) => item.balance },
-    { header: "Chain", render: () => config[chainId].chainName }
+    { header: "Owned", render: (item) => item.balance }
+    //{ header: "Chain", render: () => config[chainId].chainName }
     // { header: "DPoints", render: (item) => item.dPoints }
   ];
 
@@ -92,7 +95,7 @@ const LeaderboardTable = ({ activity }) => {
     { header: "Rank", render: (item) => item.rank },
     { header: "Total Amount Spent", render: (item) => `${item.totalSpent} USDC` },
     {
-      header: "Address",
+      header: "Wallet",
       render: (item) => (
         <Link href={`/manage/${item.address}`}>
           <span className="text-primaryPink hover:text-jacarta-100">{item.addressDisplay}</span>
@@ -106,7 +109,7 @@ const LeaderboardTable = ({ activity }) => {
 
   const rewardedColumns = [
     { header: "Rank", render: (item) => item.rank },
-    { header: "Total Amount Received", render: (item) => `${item.totalReceived} USDC` },
+    { header: "Total Amount Earned", render: (item) => `${item.totalReceived} USDC` },
     {
       header: "Address",
       render: (item) => (

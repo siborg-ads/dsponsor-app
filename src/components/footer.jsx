@@ -2,7 +2,7 @@ import Link from "next/link";
 import { footerMenuList as defaultFooterMenuList } from "../data/footer_data";
 import Image from "next/image";
 import { useChainContext } from "../contexts/hooks/useChainContext";
-import { useAddress } from "@thirdweb-dev/react";
+import { useAddress, useUser } from "@thirdweb-dev/react";
 import { activated_features } from "../data/activated_features";
 import Logo from "./../public/images/siborg-ads.png";
 
@@ -12,31 +12,33 @@ const Footer = () => {
 
   const address = useAddress();
 
-  const footerMenuList = defaultFooterMenuList.concat([
-    {
-      id: 3,
-      title: "My Account",
-      diffClass: "",
-      list: address
-        ? [
-            {
-              id: 1,
-              href: `/manage/${address}`,
-              text: "My Creator Space"
-            },
-            ...(activated_features.canCreateOffer
-              ? [
-                  {
-                    id: 2,
-                    href: `${chainId}/offer/create`,
-                    text: "Create Offer"
-                  }
-                ]
-              : [])
-          ]
-        : []
-    }
-  ]);
+  const footerMenuList = defaultFooterMenuList.concat(
+    address !== undefined
+      ? [
+          {
+            id: 3,
+            title: "My Account",
+            diffClass: "",
+            list: [
+              {
+                id: 1,
+                href: `/manage/${address}`,
+                text: "My Creator Space"
+              },
+              ...(activated_features.canCreateOffer
+                ? [
+                    {
+                      id: 2,
+                      href: `${chainId}/offer/create`,
+                      text: "Create Offer"
+                    }
+                  ]
+                : [])
+            ]
+          }
+        ]
+      : []
+  );
 
   return (
     <>
@@ -66,9 +68,6 @@ const Footer = () => {
                   alt="SiBorg Ads | Media sponsoring Marketplace"
                 />
               </Link>
-              <p className="dark:text-jacarta-100 mb-12">
-                Investing in the Potential of independent media
-              </p>
 
               {/* <!-- Socials --> */}
               {/* <div className="flex space-x-5">
@@ -114,7 +113,7 @@ const Footer = () => {
 
           <div className="flex flex-col items-center justify-between space-y-2 py-8 sm:flex-row sm:space-y-0">
             <span className="dark:text-jacarta-100 text-sm">
-              <span>© {new Date().getFullYear()} d&gt;sponsor </span>
+              <span>© {new Date().getFullYear()} SiBorg Ads </span>
             </span>
 
             <ul className="dark:text-jacarta-100 flex flex-wrap space-x-4 text-sm">
@@ -124,14 +123,6 @@ const Footer = () => {
                   className="hover:text-primaryPurple dark:hover:text-white"
                 >
                   Terms and conditions
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/privacy-policy"
-                  className="hover:text-primaryPurple dark:hover:text-white"
-                >
-                  Privacy policy
                 </Link>
               </li>
             </ul>

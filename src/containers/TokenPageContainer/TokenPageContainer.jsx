@@ -393,6 +393,11 @@ const TokenPageContainer = () => {
   }, [offerData]);
 
   useEffect(() => {
+    console.log("currencySymbol:", currency);
+    console.log("currencyDecimals:", currencyDecimals);
+  }, [currency, currencyDecimals]);
+
+  useEffect(() => {
     if (!offerData || !adParameters) return;
     try {
       const params = [];
@@ -943,7 +948,7 @@ const TokenPageContainer = () => {
                   Creator <strong className="dark:text-white">{royalties}% royalties</strong>
                 </span>
                 <span className="text-jacarta-100 block text-sm">
-                  Token valid from{" "}
+                  Ownership period:{" "}
                   <strong className="dark:text-white">
                     {offerData?.nftContract?.tokens[0]?.metadata?.valid_from &&
                       (() => {
