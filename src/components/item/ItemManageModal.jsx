@@ -3,6 +3,7 @@ import React from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { buyModalHide } from "../../redux/counterSlice";
 import Image from "next/image";
+import { activated_features } from "../../data/activated_features";
 import {
   useAddress,
   useSwitchChain,
@@ -519,10 +520,16 @@ const ItemManageModal = ({
                                     onChange={handleCurrencyChange}
                                     className="dark:bg-secondaryBlack min-w-[110px] border-jacarta-100 hover:ring-primaryPurple/10 focus:ring-primaryPurple dark:border-jacarta-600 dark:placeholder:text-jacarta-100 w-full rounded-lg py-3 px-5 hover:ring-2 dark:text-white"
                                   >
-                                    <option value="USDC">USDC</option>
+                                    {activated_features.canAcceptUSDC && (
+                                      <option value="USDC">USDC</option>
+                                    )}
                                     <option value="WETH">WETH</option>
-                                    {/*<option value="USDT">USDT</option>*/}
-                                    <option value="custom">Custom</option>
+                                    {activated_features.canAcceptUSDT && (
+                                      <option value="USDT">USDT</option>
+                                    )}
+                                    {activated_features.canAcceptCustomTokens && (
+                                      <option value="custom">Custom</option>
+                                    )}
                                   </select>
                                   {selectedCurrency === "custom" && (
                                     <input

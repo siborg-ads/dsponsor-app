@@ -13,6 +13,7 @@ import { useChainContext } from "../../contexts/hooks/useChainContext";
 
 import PreviewModal from "../modal/previewModal";
 import MainButton from "../buttons/mainButton";
+import { activated_features } from "../../data/activated_features";
 
 const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
   const [itemdata, setItemdata] = useState(trendingCategoryData);
@@ -48,7 +49,7 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
   const { mutateAsync: submitAd } = useContractWrite(DsponsorAdminContract, "submitAdProposals");
 
   const chainId = currentChainObject?.chainId;
- 
+
   const handleFilter = (category) => {
     if (category !== "all") {
       setItemdata(trendingCategoryData.filter((item) => item.category === category));
@@ -259,7 +260,7 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
       {data.length > 0 ? (
         <div className="flex flex-col justify-center items-center ">
           {" "}
-          {isOwner && (
+          {isOwner && activated_features.canSeeSubmittedAds && (
             <MainButton
               onClick={handleSelectionTokens}
               isPurple={true}

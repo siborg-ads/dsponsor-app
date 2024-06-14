@@ -251,21 +251,23 @@ export default function Header01() {
             </li>
 
             {/* create */}
-            <li className="group">
-              <Link href={`/${chainId}/offer/create`} onClick={() => setToggle(false)}>
-                <button className="text-jacarta-900 font-display hover:text-primaryPurple focus:text-primaryPurple dark:hover:text-primaryPurple dark:focus:text-primaryPurple flex items-center justify-between py-3.5 text-base dark:text-white lg:px-5">
-                  <span
-                    className={
-                      isChildrenPageActive(route.asPath, `/${chainId}/offer/create`)
-                        ? "text-primaryPurple dark:text-primaryPurple"
-                        : ""
-                    }
-                  >
-                    Create offer
-                  </span>
-                </button>
-              </Link>
-            </li>
+            <ConditionalCreateLi condition={activated_features.canCreateOffer}>
+              <li className="group">
+                <Link href={`/${chainId}/offer/create`} onClick={() => setToggle(false)}>
+                  <button className="text-jacarta-900 font-display hover:text-primaryPurple focus:text-primaryPurple dark:hover:text-primaryPurple dark:focus:text-primaryPurple flex items-center justify-between py-3.5 text-base dark:text-white lg:px-5">
+                    <span
+                      className={
+                        isChildrenPageActive(route.asPath, `/${chainId}/offer/create`)
+                          ? "text-primaryPurple dark:text-primaryPurple"
+                          : ""
+                      }
+                    >
+                      Create offer
+                    </span>
+                  </button>
+                </Link>
+              </li>
+            </ConditionalCreateLi>
             <li className="group">
               <Link href={`/`} onClick={() => setToggle(false)}>
                 <button className="text-jacarta-900 font-display hover:text-primaryPurple focus:text-primaryPurple dark:hover:text-primaryPurple dark:focus:text-primaryPurple flex items-center justify-between py-3.5 text-base dark:text-white lg:px-5">

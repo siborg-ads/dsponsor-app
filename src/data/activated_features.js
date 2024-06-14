@@ -16,5 +16,15 @@ export const activated_features = {
   // Whether to show the "Submitted Ads" in offer details
   canSeeSubmittedAds: false,
   // Whether to show the Integration tab in offer details
-  canSeeIntegrationDetails: true
+  canSeeIntegrationDetails: true,
+  // Whether to show the "Create Offer" button in the footer
+  canSeeCreateOfferButton: !!isDevelopment,
+  // Whether to accept USDC as payment
+  canAcceptUSDC: false,
+  // Whether to accept custom tokens as payment
+  canAcceptCustomTokens: false,
+  // Whether to accept Native Tokens as payment
+  canAcceptNativeTokens: false,
+  // Whether to accept USDT as payment
+  canAcceptUSDT: false,
 };

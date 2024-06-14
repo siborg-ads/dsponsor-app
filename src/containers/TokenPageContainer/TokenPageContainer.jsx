@@ -46,6 +46,7 @@ import "react-toastify/dist/ReactToastify.css";
 import ModalHelper from "../../components/Helper/modalHelper.jsx";
 import ItemLastBids from "../../components/tables/ItemLastBids";
 import itemLastBids from "../../components/tables/ItemLastBids";
+import { activated_features } from "../../data/activated_features.js";
 
 const TokenPageContainer = () => {
   const router = useRouter();
@@ -1072,20 +1073,22 @@ const TokenPageContainer = () => {
           initialCreator={offerData?.initialCreator}
         />
       </div>
-      {offerData.nftContract?.tokens[0]?.mint && isValidId && (
-        <Validation
-          offer={offerData}
-          offerId={offerId}
-          isOwner={isOwner}
-          isToken={true}
-          successFullUploadModal={successFullUploadModal}
-          isLister={isLister}
-          setSelectedItems={setSelectedItems}
-        />
-      )}
+      {offerData.nftContract?.tokens[0]?.mint &&
+        isValidId &&
+        activated_features.canSeeSubmittedAds && (
+          <Validation
+            offer={offerData}
+            offerId={offerId}
+            isOwner={isOwner}
+            isToken={true}
+            successFullUploadModal={successFullUploadModal}
+            isLister={isLister}
+            setSelectedItems={setSelectedItems}
+          />
+        )}
       {/* <ItemsTabs /> */}
       <div>
-        {isOwner && isValidId ? (
+        {isOwner && activated_features.canSeeSubmittedAds && isValidId ? (
           <div className="container">
             <Divider className="my-4" />
             <h2 className="text-jacarta-900 font-bold font-display mb-6 text-center text-3xl dark:text-white ">
