@@ -4,7 +4,7 @@ import Image from "next/image";
 import { useChainContext } from "../contexts/hooks/useChainContext";
 import { useAddress } from "@thirdweb-dev/react";
 import { activated_features } from "../data/activated_features";
-import Logo from "./../public/images/siborg-ads.png";
+import Logo from "./../../public/images/siborg-ads.png";
 
 const Footer = () => {
   const { currentChainObject } = useChainContext();
