@@ -11,9 +11,9 @@ const renderTable = (data, currencySymbol, currencyDecimals) => {
  const transformStatus = (status) => {
    switch (status) {
      case "CREATED":
-       return "Best Bid";
+       return "Best Bid 🎉";
      case "CANCELLED":
-       return "Outbid";
+       return "Outbid ❌";
      default:
        return status;
    }
