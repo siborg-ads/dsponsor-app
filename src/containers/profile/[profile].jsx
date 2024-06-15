@@ -61,7 +61,7 @@ const Edit_user = () => {
             width={1519}
             height={300}
             priority
-            src={coverPreview ? coverPreview : "/images/user/banner.jpg"}
+            src={coverPreview ?? "/images/user/banner.jpg"}
             alt="banner"
             className="h-[18.75rem] w-full object-cover"
           />
@@ -223,7 +223,7 @@ const Edit_user = () => {
                 <form className="shrink-0">
                   <figure className="relative inline-block">
                     <Image
-                      src={preview ? preview : "/images/user/user_avatar.gif"}
+                      src={preview ?? "/images/user/user_avatar.gif"}
                       alt="collection avatar"
                       className="dark:border-jacarta-600 rounded-xl border-[5px] border-white"
                       height={140}

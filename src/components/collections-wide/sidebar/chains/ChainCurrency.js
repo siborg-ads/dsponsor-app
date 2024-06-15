@@ -42,7 +42,7 @@ const ChainCurrency = () => {
               <Image
                 width={32}
                 height={32}
-                src={currency.imageSrc}
+                src={currency.imageSrc ?? ""}
                 alt={currency.alt}
                 className="rounded-2lg"
                 loading="lazy"

@@ -8,7 +8,7 @@ describe("activityToTopHolders", () => {
       usdcAmounts: {
         totalSpent: "1000"
       },
-      "displayAddr": "0x9a7F...e766",
+      displayAddr: "0x9a7F...e766",
       addr: "0x9a7FAC267228f536A8f250E65d7C4CA7d39De766",
       balance: 10,
       chainId: 11155111,
@@ -23,7 +23,7 @@ describe("activityToTopHolders", () => {
       usdcAmounts: {
         totalSpent: "500"
       },
-      "displayAddr": "0x9a7F...e766",
+      displayAddr: "0x9a7F...e766",
       addr: "0x9a7FAC267228f536A8f250E65d7C4CA7d39De766",
       balance: 5,
       chainId: 11155111

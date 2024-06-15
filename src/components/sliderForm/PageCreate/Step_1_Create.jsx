@@ -224,7 +224,7 @@ const Step_1_Create = ({
                           dark={true}
                           title={integration.integrationName}
                           body={integration.bodyDescription}
-                          image={integration.imageExemple}
+                          image={integration.imageExemple ?? ""}
                         />
                       </div>
                       {selectedIntegration.includes(index) && (
@@ -233,8 +233,7 @@ const Step_1_Create = ({
                             htmlFor={`imageRatioSelect-${index}`}
                             className="font-display text-sm mb-2 block text-white"
                           >
-                            Select Image Ratio
-                            <span className="text-red">*</span>
+                            Select Image Ratio <span className="text-red">*</span>
                           </label>
                           <select
                             id={`imageRatioSelect-${index}`}
@@ -296,8 +295,7 @@ const Step_1_Create = ({
             htmlFor="item-description"
             className="font-display text-jacarta-900 mb-2 block dark:text-white"
           >
-            Number of ad spaces for this offer
-            <span className="text-red">*</span>
+            Number of ad spaces for this offer <span className="text-red">*</span>
           </label>
           <p className="dark:text-jacarta-100 text-jacarta-100 text-2xs mb-3">
             Warning: d&gt;sponsor works with a fixed supply of ad spaces. You won&apos;t be able to

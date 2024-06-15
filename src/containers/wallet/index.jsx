@@ -6,7 +6,6 @@ import Meta from "../../components/Meta";
 import Image from "next/image";
 
 const Wallet = () => {
-  const bgImage = "/images/page-title/wallet_banner.jpg";
   return (
     <div>
       <Meta title="Wallet || SiBorg Ads | smarter monetization for your content" />
@@ -37,7 +36,7 @@ const Wallet = () => {
                     <Image
                       width={86}
                       height={86}
-                      src={image}
+                      src={image ?? ""}
                       className="dark:border-jacarta-600 dark:bg-secondaryBlack border-jacarta-100 mx-auto mb-7 -mt-[3.5rem] h-[5.5rem] w-[5.5rem] rounded-full border bg-white"
                       alt="wallet"
                     />

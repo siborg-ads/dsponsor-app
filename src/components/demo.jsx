@@ -29,11 +29,7 @@ const Demo = () => {
                 <div className="carousel-inner">
                   <div className="carousel-item active" style="min-height:100px">
                     <div className="position-absolute top-50 start-50 translate-middle text-white">
-                      <div
-                        className="spinner-border"
-                        style="width:3rem;height:3rem"
-                        role="status"
-                      ></div>
+                      <div className="spinner-border" style="width:3rem;height:3rem"></div>
                     </div>
                     <div className="ratio ratio-16x9" style="background-color:#000">
                       <iframe
@@ -72,5 +68,3 @@ export default Demo;
 // 	};
 // 	objectData.push(obj);
 // });
-
-// console.log(objectData);

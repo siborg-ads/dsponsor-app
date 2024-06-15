@@ -1,32 +1,15 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { useRouter } from "next/router";
 import Image from "next/image";
-import Link from "next/link";
 import Sidebar from "../../components/marketplace/Sidebar";
 
-import User_items from "../../components/user/User_items";
-import Tippy from "@tippyjs/react";
 import "tippy.js/dist/tippy.css"; // optional
 import Meta from "../../components/Meta";
 import OfferItem from "../../components/cards/offerItem";
-import {
-  useAddress,
-  darkTheme,
-  useBalance,
-  Web3Button,
-  useTokenBalance,
-  useContract,
-  useContractRead,
-  useContractWrite,
-  useStorageUpload,
-  useTokenDecimals,
-  CheckoutWithCard,
-  CheckoutWithEth
-} from "@thirdweb-dev/react";
+import { useAddress } from "@thirdweb-dev/react";
 
 import { fetchAllListedToken } from "../../providers/methods/fetchAllListedToken";
 import { useChainContext } from "../../contexts/hooks/useChainContext";
-import { id } from "ethers/lib/utils";
 import config from "../../providers/utils/config";
 import ItemCardSkeleton from "../../components/skeleton/ItemCardSkeleton";
 
@@ -36,9 +19,8 @@ const MarketplaceContainer = () => {
   const address = useAddress();
 
   const [listedAuctionToken, setListedAuctionToken] = useState(null);
-  const [copied, setCopied] = useState(false);
 
-  const [isOwner, setIsOwner] = useState(false);
+  const [isOwner] = useState(false);
   const [filterTypes, setFilterTypes] = useState([]);
 
   const { currentChainObject } = useChainContext();
@@ -79,10 +61,6 @@ const MarketplaceContainer = () => {
       return statusMatch && chainMatch;
     });
   }, [listedAuctionToken, filterTypes]);
-
-  useEffect(() => {
-    console.log("filteredTokens", filteredTokens);
-  }, [filteredTokens]);
 
   const metadata = {
     title: "Marketplace || SiBorg Ads - The Web3 Monetization Solution",

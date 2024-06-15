@@ -1,6 +1,6 @@
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { useChainContext } from "../../contexts/hooks/useChainContext";
 import { activated_features } from "../../data/activated_features";
 import { trendingCategoryData } from "../../data/categories_data";
@@ -10,39 +10,10 @@ import OfferItem from "../cards/offerItem";
 import MainButton from "../buttons/mainButton";
 
 const OwnedOffers_categories_items = ({ data, isPendinAdsOnOffer, isOwner }) => {
-  const [itemdata, setItemdata] = useState(trendingCategoryData);
+  const [itemdata] = useState(trendingCategoryData);
   const dispatch = useDispatch();
   const { currentChainObject } = useChainContext();
   const chainId = currentChainObject?.chainId;
-  const { trendingCategorySorText } = useSelector((state) => state.counter);
-  const [filterVal, setFilterVal] = useState(0);
-
-  const handleFilter = (category) => {
-    if (category !== "all") {
-      setItemdata(trendingCategoryData.filter((item) => item.category === category));
-    } else {
-      setItemdata(trendingCategoryData);
-    }
-  };
-
-  const sortText = [
-    {
-      id: 1,
-      text: "Recently Added"
-    },
-    {
-      id: 2,
-      text: "Price: Low to High"
-    },
-    {
-      id: 3,
-      text: "Price: high to low"
-    },
-    {
-      id: 4,
-      text: "Auction Ending Soon"
-    }
-  ];
 
   useEffect(() => {
     dispatch(updateTrendingCategoryItemData(itemdata.slice(0, 8)));

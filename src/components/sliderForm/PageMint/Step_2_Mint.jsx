@@ -1,9 +1,3 @@
-import { useState } from "react";
-import DatePicker from "react-datepicker";
-// import styles from "../../../styles/createPage/style.module.scss";
-
-import { FileUploader } from "react-drag-drop-files";
-
 const Step_2_Mint = ({ stepsRef, styles, setLink, link }) => {
   const handleChange = (e) => {
     let value = e.target.value;

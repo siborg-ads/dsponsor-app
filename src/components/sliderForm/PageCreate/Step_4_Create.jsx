@@ -30,7 +30,6 @@ const Step_4_Create = ({
   customContract,
   selectedRoyalties,
   setTokenDecimals,
-  tokenDecimals,
   handleRoyaltiesChange,
   setSymbolContract,
   symbolContract,
@@ -167,8 +166,7 @@ const Step_4_Create = ({
               htmlFor="item-description"
               className="font-display text-jacarta-900 mb-2 block dark:text-white"
             >
-              Unit selling price
-              <span className="text-red">*</span>
+              Unit selling price <span className="text-red">*</span>
             </label>
             <ConditionalUSDPaymentText condition={selectedCurrency.includes(["USDT", "USDC"])}>
               <p className="dark:text-jacarta-100 text-jacarta-100 text-2xs mb-3">
@@ -224,11 +222,10 @@ const Step_4_Create = ({
               </ConditionalCurrencySelector>
             </div>
             <p className="dark:text-jacarta-100 text-jacarta-100 text-2xs mt-3">
-              You&apos;ll earn up to {selectedUnitPrice}{" "}
-              {symbolContract ? symbolContract : selectedCurrency}. As d&gt;sponsor charges a fee of
-              4%, sponsors will pay{" "}
+              You&apos;ll earn up to {selectedUnitPrice} {symbolContract ?? selectedCurrency}. As
+              d&gt;sponsor charges a fee of 4%, sponsors will pay{" "}
               {parseFloat(selectedUnitPrice) + parseFloat(selectedUnitPrice) * (4 / 100)}{" "}
-              {symbolContract ? symbolContract : selectedCurrency}.
+              {symbolContract ?? selectedCurrency}.
             </p>
           </div>
 
@@ -238,8 +235,7 @@ const Step_4_Create = ({
               htmlFor="item-description"
               className="font-display text-jacarta-900 mb-2 block dark:text-white"
             >
-              Royalties
-              <span className="text-red">*</span>
+              Royalties <span className="text-red">*</span>
             </label>
             <p className="dark:text-jacarta-100 text-jacarta-100  text-2xs mb-3">
               Sponsors can sell an ad space ownership on the marketplace. Define the fee you want to

@@ -34,7 +34,7 @@ const Collection_category = ({ bgWhite = false }) => {
 
                   <div className="flex flex-col space-y-5">
                     {collections.map((item) => {
-                      const { id, image, title, icon, amount, postTime } = item;
+                      const { id, image, title, icon, amount } = item;
                       const itemLink = image
                         .split("/")
                         .slice(-1)
@@ -48,11 +48,11 @@ const Collection_category = ({ bgWhite = false }) => {
                           className="border-jacarta-100 dark:bg-secondaryBlack rounded-2xl flex border bg-white py-4 px-7 transition-shadow hover:shadow-lg dark:border-transparent"
                         >
                           <figure className="mr-4 shrink-0">
-                            <Link href={"/collection/" + itemLink} className="relative block">
+                            <Link href={`/collection/${itemLink ?? ""}`} className="relative block">
                               <Image
                                 width={48}
                                 height={48}
-                                src={image}
+                                src={image ?? ""}
                                 alt={title}
                                 className="rounded-2lg h-12 w-12"
                               />
@@ -79,7 +79,7 @@ const Collection_category = ({ bgWhite = false }) => {
                             </Link>
                           </figure>
                           <div>
-                            <Link href={"/collection/" + itemLink} className="block">
+                            <Link href={`/collection/${itemLink ?? ""}`} className="block">
                               <span className="font-display text-jacarta-900 hover:text-primaryPurple font-semibold dark:text-white">
                                 {title}
                               </span>

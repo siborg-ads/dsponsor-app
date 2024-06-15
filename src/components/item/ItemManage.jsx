@@ -1,10 +1,9 @@
-import React, { useEffect, useState } from "react";
-import { Web3Button, useAddress, useContractWrite } from "@thirdweb-dev/react";
+import React, { useState } from "react";
+import { Web3Button, useContractWrite } from "@thirdweb-dev/react";
 import ItemManageModal from "./ItemManageModal";
 import { toast } from "react-toastify";
 import { Spinner } from "@nextui-org/spinner";
 import { useChainContext } from "../../contexts/hooks/useChainContext";
-import { getAddress } from "ethers/lib/utils";
 
 const ItemManage = ({
   successFullListing,
@@ -19,7 +18,6 @@ const ItemManage = ({
 }) => {
   const [listingModal, setListingModal] = useState(false);
   const { currentChainObject } = useChainContext();
-  const [buyModal, setBuyModal] = useState(false);
   const { mutateAsync: cancelDirectListing } = useContractWrite(
     dsponsorMpContract,
     "cancelDirectListing"

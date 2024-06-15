@@ -88,9 +88,8 @@ export const fetchAllOffersByUserAddress = async (userAddress, chainId) => {
     }
   `;
 
-
-  const response = await executeQuery(path.href, GET_DATA,  { userAddress: userAddress });
-   const chainConfig = config[chainId];
+  const response = await executeQuery(path.href, GET_DATA, { userAddress: userAddress });
+  const chainConfig = config[chainId];
 
   const resultMappedData = response.adOffers
     .map((element) => {

@@ -23,7 +23,6 @@ const ItemsTabs = ({ chainId, contractAddress, isUserOwner, initialCreator, isTo
               <Link
                 href={`${chainExplorer}${contractAddress}`}
                 target="_blank"
-                rel="noopener noreferrer"
                 className="text-primaryPink hover:text-jacarta-100"
               >
                 {contractAddress}
@@ -34,7 +33,6 @@ const ItemsTabs = ({ chainId, contractAddress, isUserOwner, initialCreator, isTo
               <Link
                 href={`/manage/${initialCreator}`}
                 target="_blank"
-                rel="noopener noreferrer"
                 className="text-primaryPink hover:text-jacarta-100"
               >
                 {displayOrCheckKnownAddress(initialCreator)}
@@ -48,7 +46,6 @@ const ItemsTabs = ({ chainId, contractAddress, isUserOwner, initialCreator, isTo
                   <div>
                     <Link
                       href={`/manage/${isUserOwner}`}
-                      rel="noopener noreferrer"
                       className="text-primaryPink hover:text-jacarta-100 mr-2"
                     >
                       {isUserOwner}

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import React, { useEffect } from "react";
+import React from "react";
 import renderDateToHumanString from "../../providers/utils/renderDateToHumanString";
 import renderPriceToHumanString from "../../providers/utils/renderPriceToHumanString";
 import formatLongAddress from "../../utils/formatLongAddress";

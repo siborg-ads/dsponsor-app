@@ -6,28 +6,22 @@ import tippy from "tippy.js";
 
 import config from "../../providers/utils/config";
 
-
-
-
-
 const status = [
   { id: 1, label: "Buy Now", listingType: "Direct" },
   { id: 2, label: "On Auction", listingType: "Auction" }
 ];
 
-
 export default function Sidebar({ setFilterTypes }) {
- const [isChainsOpen, setIsChainsOpen] = useState(false);
- const [isStatusOpen, setIsStatusOpen] = useState(false);
+  const [isChainsOpen, setIsChainsOpen] = useState(false);
+  const [isStatusOpen, setIsStatusOpen] = useState(false);
 
- const toggleChains = () => setIsChainsOpen(!isChainsOpen);
- const toggleStatus = () => setIsStatusOpen(!isStatusOpen);
+  const toggleChains = () => setIsChainsOpen(!isChainsOpen);
+  const toggleStatus = () => setIsStatusOpen(!isStatusOpen);
   useEffect(() => {
     tippy("[data-tippy-content]");
   }, []);
 
   const handleFilterChange = (type, checked, category) => {
-  
     setFilterTypes((prev) => {
       if (checked) {
         return [...new Set([...prev, { type, category }])];
@@ -79,7 +73,13 @@ export default function Sidebar({ setFilterTypes }) {
                     }
                   />
                   <div className="backdrop-blur-sm mr-1 w-7 h-7 rounded-[0.625rem] flex justify-center items-center">
-                    <Image src={elm[1].logoURL} width={15} height={15} alt="logo" loading="lazy" />
+                    <Image
+                      src={elm[1].logoURL ?? ""}
+                      width={15}
+                      height={15}
+                      alt="logo"
+                      loading="lazy"
+                    />
                   </div>
                   <span className="font-display text-sm font-semibold text-jacarta-900 dark:text-white">
                     {elm[1].chainName}

@@ -1,20 +1,5 @@
-import React from "react";
-import { useEffect, useState } from "react";
-import {
-  useAddress,
-  darkTheme,
-  Web3Button,
-  useTokenBalance,
-  useContract,
-  useContractRead,
-  useContractWrite,
-  useStorageUpload,
-  useTokenDecimals,
-  CheckoutWithCard,
-  CheckoutWithEth
-} from "@thirdweb-dev/react";
-
-import { Hero, LastOffers, Top_collection, LastListings } from "../../components/component";
+import React, { useEffect, useState } from "react";
+import { Hero, LastOffers, LastListings } from "../../components/component";
 import Meta from "../../components/Meta";
 
 import HowItWorks from "../../components/explication/howItWorks";
@@ -42,8 +27,6 @@ const HomePageContainer = () => {
         lastOffersArray.push(...lastOffers);
       }
 
-      console.log(lastOffersArray, "lastOffers");
-
       setLastOffers(lastOffersArray);
     };
     fetchAdsOffers();
@@ -58,8 +41,6 @@ const HomePageContainer = () => {
         const lastListings = await fetchAllListedToken(chainId);
         lastListingsArray.push(...lastListings);
       }
-
-      console.log("lastListingsArray", lastListingsArray);
 
       setLastListings(lastListingsArray);
     };

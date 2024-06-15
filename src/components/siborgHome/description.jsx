@@ -66,7 +66,7 @@ const Description = ({ description }) => {
             {socials.map((social) => (
               <Link
                 key={social.name}
-                href={social.href}
+                href={social.href ?? "#"}
                 className={`bg-primaryPurple hover:bg-opacity-80 ${
                   social.circle ? "rounded-full" : "rounded-lg"
                 } text-white p-2`}

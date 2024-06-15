@@ -2,13 +2,12 @@ import React from "react";
 import { useMetaMask } from "metamask-react";
 import { useDispatch } from "react-redux";
 import { walletModalShow } from "../../redux/counterSlice";
-import { useMetamask } from "@thirdweb-dev/react";
 import Image from "next/image";
 
 const Metamask_comp_text = () => {
   const dispatch = useDispatch();
 
-  const { status, connect, account, chainId, ethereum } = useMetaMask();
+  const { status, connect } = useMetaMask();
 
   if (status === "initializing")
     return (
@@ -55,7 +54,7 @@ const Metamask_comp_text = () => {
 };
 
 const Metamask_comp_login = () => {
-  const { status, connect, account, chainId, ethereum } = useMetaMask();
+  const { status, connect } = useMetaMask();
 
   if (status === "initializing")
     return (
@@ -132,7 +131,7 @@ const Metamask_comp_login = () => {
 };
 
 const Confirm_checkout = () => {
-  const { status, connect, account, chainId, ethereum } = useMetaMask();
+  const { status, connect } = useMetaMask();
 
   if (status === "initializing")
     return (
@@ -188,7 +187,7 @@ const Confirm_checkout = () => {
 
 const Metamask_comp_icon = ({ prop }) => {
   const dispatch = useDispatch();
-  const { status, connect, account, chainId, ethereum } = useMetaMask();
+  const { status, connect } = useMetaMask();
 
   if (status === "initializing")
     return (

@@ -1,15 +1,17 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import SwitchChainContext from "../../contexts/SwitchChainContext";
 
 const SwitchChainProvider = ({ children }) => {
   const [selectedChain, setSelectedChain] = useState("sepolia");
 
-  const value = {
-    selectedChain,
-    setSelectedChain
-  };
+  const contextValue = useMemo(() => {
+    return {
+      selectedChain,
+      setSelectedChain
+    };
+  }, [selectedChain, setSelectedChain]);
 
-  return <SwitchChainContext.Provider value={value}>{children}</SwitchChainContext.Provider>;
+  return <SwitchChainContext.Provider value={contextValue}>{children}</SwitchChainContext.Provider>;
 };
 
 export default SwitchChainProvider;

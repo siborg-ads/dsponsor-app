@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Web3Button } from "@thirdweb-dev/react";
@@ -323,7 +323,7 @@ const PreviewModal = ({
                         }}
                       >
                         <Image
-                          src={image}
+                          src={image ?? ""}
                           fill={true}
                           alt="Preview"
                           className="object-contain h-full p-1"
@@ -400,7 +400,7 @@ const PreviewModal = ({
                     </Web3Button>
                   )
                 ) : successFullUploadModal.hrefButton !== null ? (
-                  <Link href={successFullUploadModal.hrefButton}>
+                  <Link href={successFullUploadModal.hrefButton ?? "#"}>
                     <button className="!rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all !bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer">
                       {successFullUploadModal.buttonTitle}
                     </button>

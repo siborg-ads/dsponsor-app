@@ -2,24 +2,22 @@ import React, { useEffect, useState } from "react";
 import Tippy from "@tippyjs/react";
 import {
   updatetrendingCategorySorText,
-  updateTrendingCategoryItemByInput
-} from "../../redux/counterSlice";
-import { useDispatch } from "react-redux";
-import {
+  updateTrendingCategoryItemByInput,
   updateRenkingData,
   updateRenkingDataByBlockchain,
   updateRenkingDataByPostdate
 } from "../../redux/counterSlice";
+import { useDispatch } from "react-redux";
 import Image from "next/image";
 
 const Recently_added_dropdown = ({ data, dropdownFor }) => {
   const dispatch = useDispatch();
   const [currencyValFrom, setCurrencyValFrom] = useState("");
   const [currencyValTo, setCurrencyValTo] = useState("");
-  const [sortActive, setsortActive] = useState(1);
+  const [sortActive, setSortActive] = useState(1);
   const [sortFilterText, setSortFilterText] = useState("");
-  const [renkingCategoriesdropdownShow, setRenkingCategoriesDropdownShow] = useState(false);
-  const [blockChaindropdownShow, setBlockChainDropdownShow] = useState(false);
+  const [renkingCategoriesDropdownShow, setRenkingCategoriesDropdownShow] = useState(false);
+  const [blockChainDropdownShow, setBlockChainDropdownShow] = useState(false);
   const [itemDateDropdown, setItemDateDropdown] = useState(false);
   const [categoryDropdown, setCategoryDropdown] = useState(false);
   const [dropdownSale, setDropdownSale] = useState(false);
@@ -28,7 +26,7 @@ const Recently_added_dropdown = ({ data, dropdownFor }) => {
   const handleRenkingCategoriesDropdown = () => {
     window.addEventListener("click", (w) => {
       if (w.target.closest(".rankingCategoriesDropdown")) {
-        if (renkingCategoriesdropdownShow) {
+        if (renkingCategoriesDropdownShow) {
           setRenkingCategoriesDropdownShow(false);
         } else {
           setRenkingCategoriesDropdownShow(true);
@@ -41,7 +39,7 @@ const Recently_added_dropdown = ({ data, dropdownFor }) => {
   const handleBlockChainDropdown = () => {
     window.addEventListener("click", (w) => {
       if (w.target.closest(".blockchainDropdown")) {
-        if (blockChaindropdownShow) {
+        if (blockChainDropdownShow) {
           setBlockChainDropdownShow(false);
         } else {
           setBlockChainDropdownShow(true);
@@ -95,15 +93,12 @@ const Recently_added_dropdown = ({ data, dropdownFor }) => {
   };
 
   const handleCurrencyDropdown = () => {
-    console.log("first");
     if (currencyDropdown) {
       setCurrencyDropdown(false);
     } else {
       setCurrencyDropdown(true);
     }
   };
-
-  // console.log(blockChaindropdownShow);
 
   useEffect(() => {
     dispatch(updatetrendingCategorySorText(sortFilterText));
@@ -126,7 +121,6 @@ const Recently_added_dropdown = ({ data, dropdownFor }) => {
 
   const handleInput = (e, text) => {
     if (e.target.checked) {
-      // console.log(text);
       dispatch(updateTrendingCategoryItemByInput(text));
     } else {
       dispatch(updateTrendingCategoryItemByInput(""));
@@ -177,7 +171,7 @@ const Recently_added_dropdown = ({ data, dropdownFor }) => {
                       key={id}
                       className="dropdown-item font-display text-jacarta-900 dark:hover:bg-jacarta-600 hover:bg-jacarta-50 flex w-full items-center justify-between rounded-xl px-5 py-2 text-left text-sm transition-colors dark:text-white"
                       onClick={() => {
-                        setsortActive(id);
+                        setSortActive(id);
 
                         setSortFilterText(text);
                       }}
@@ -262,7 +256,7 @@ const Recently_added_dropdown = ({ data, dropdownFor }) => {
 
         <div
           className={
-            blockChaindropdownShow
+            blockChainDropdownShow
               ? "dropdown-menu dark:bg-jacarta-800 z-10 min-w-[220px] whitespace-nowrap rounded-xl bg-white py-4 px-2 text-left shadow-xl show absolute top-full right-0"
               : "dropdown-menu dark:bg-jacarta-800 z-10 min-w-[220px] whitespace-nowrap rounded-xl bg-white py-4 px-2 text-left shadow-xl hidden absolute top-full right-0"
           }
@@ -270,7 +264,7 @@ const Recently_added_dropdown = ({ data, dropdownFor }) => {
           <ul className="flex flex-col flex-wrap">
             {data.map(({ id, text }) => {
               return (
-                <li key={id} onClick={() => setsortActive(id)}>
+                <li key={id} onClick={() => setSortActive(id)}>
                   <button
                     className="dropdown-item font-display dark:hover:bg-jacarta-600 hover:bg-jacarta-50 flex w-full items-center justify-between rounded-xl px-5 py-2 text-left text-sm transition-colors dark:text-white"
                     onClick={() => dispatch(updateRenkingDataByBlockchain(text))}
@@ -326,7 +320,7 @@ const Recently_added_dropdown = ({ data, dropdownFor }) => {
           <ul className="flex flex-col flex-wrap">
             {data.map(({ id, text }) => {
               return (
-                <li key={id} onClick={() => setsortActive(id)}>
+                <li key={id} onClick={() => setSortActive(id)}>
                   <button className="dropdown-item font-display dark:hover:bg-jacarta-600 hover:bg-jacarta-50 flex w-full items-center justify-between rounded-xl px-5 py-2 text-left text-sm transition-colors dark:text-white">
                     <span className="text-jacarta-900 dark:text-white">{text}</span>
                     {sortActive === id && (
@@ -371,7 +365,7 @@ const Recently_added_dropdown = ({ data, dropdownFor }) => {
 
         <div
           className={
-            renkingCategoriesdropdownShow
+            renkingCategoriesDropdownShow
               ? "dropdown-menu dark:bg-jacarta-800 z-10 min-w-[220px] whitespace-nowrap rounded-xl bg-white py-4 px-2 text-left shadow-xl show absolute top-full right-0"
               : "dropdown-menu dark:bg-jacarta-800 z-10 min-w-[220px] whitespace-nowrap rounded-xl bg-white py-4 px-2 text-left shadow-xl absolute top-full right-0 hidden"
           }
@@ -379,7 +373,7 @@ const Recently_added_dropdown = ({ data, dropdownFor }) => {
           <ul className="flex flex-col flex-wrap">
             {data.map(({ id, text }) => {
               return (
-                <li key={id} onClick={() => setsortActive(id)}>
+                <li key={id} onClick={() => setSortActive(id)}>
                   <button
                     className="dropdown-item font-display dark:hover:bg-jacarta-600 hover:bg-jacarta-50 flex w-full items-center justify-between rounded-xl px-5 py-2 text-left text-sm transition-colors dark:text-white"
                     onClick={() => dispatch(updateRenkingData(text))}
@@ -438,7 +432,7 @@ const Recently_added_dropdown = ({ data, dropdownFor }) => {
                 <li key={id}>
                   <button
                     className="dropdown-item font-display dark:hover:bg-jacarta-600 hover:bg-jacarta-50 flex w-full items-center justify-between rounded-xl px-5 py-2 text-left text-sm transition-colors dark:text-white"
-                    onClick={() => setsortActive(id)}
+                    onClick={() => setSortActive(id)}
                   >
                     <span className="text-jacarta-900 dark:text-white">{text}</span>
                     {sortActive === id && (
@@ -569,7 +563,7 @@ const Recently_added_dropdown = ({ data, dropdownFor }) => {
                           <Image
                             width={24}
                             height={24}
-                            src={image}
+                            src={image ?? ""}
                             alt="eth"
                             className="mr-2 h-5 w-5 rounded-full"
                           />
@@ -672,7 +666,7 @@ const Recently_added_dropdown = ({ data, dropdownFor }) => {
               <button
                 key={id}
                 onClick={() => {
-                  setsortActive(id);
+                  setSortActive(id);
                   dispatch(updateRenkingDataByPostdate(text));
                 }}
                 className="dropdown-item font-display text-jacarta-900 dark:hover:bg-jacarta-600 hover:bg-jacarta-50 flex w-full items-center justify-between rounded-xl px-5 py-2 text-left text-sm transition-colors dark:text-white"

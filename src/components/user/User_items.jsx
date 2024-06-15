@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import Image from "next/image";
-import OwnedOffers_categories_items from "../categories/ownedOffers_categories_items";
+import OwnedOffersCategoriesItems from "../categories/ownedOffers_categories_items";
 
-import OwnedAdProposals_categories_items from "../categories/ownedAdProposals_categories_item";
-import Auctions_categories from "../categories/Auctions_categories";
+import OwnedAdProposalsCategoriesItems from "../categories/ownedAdProposals_categories_item";
+import AuctionsCategories from "../categories/Auctions_categories";
 import TokenAuctionBids from "../categories/tokenAuctionBids";
 import { activated_features } from "../../data/activated_features";
 
@@ -14,7 +14,6 @@ const User_items = ({
   tokenAuctionBids,
   isPendinAdsOnOffer,
   isOwner,
-  isLister,
   listedAuctionToken
 }) => {
   const [itemActive, setItemActive] = useState(1);
@@ -53,12 +52,7 @@ const User_items = ({
             <TabList className="nav nav-tabs scrollbar-custom mb-12 flex items-center justify-start overflow-x-auto overflow-y-hidden border-b border-jacarta-100 pb-px dark:border-jacarta-600 md:justify-center">
               {tabItem.map(({ id, text, icon }) => {
                 return (
-                  <Tab
-                    className="nav-item"
-                    role="presentation"
-                    key={id}
-                    onClick={() => setItemActive(id)}
-                  >
+                  <Tab className="nav-item" key={id} onClick={() => setItemActive(id)}>
                     <button
                       className={
                         itemActive === id
@@ -77,14 +71,11 @@ const User_items = ({
             </TabList>
             <TabPanel>
               <div>
-                <OwnedAdProposals_categories_items
-                  data={mappedownedAdProposals}
-                  isOwner={isOwner}
-                />
+                <OwnedAdProposalsCategoriesItems data={mappedownedAdProposals} isOwner={isOwner} />
               </div>
             </TabPanel>
             <TabPanel>
-              <Auctions_categories data={listedAuctionToken} isOwner={isOwner} />
+              <AuctionsCategories data={listedAuctionToken} isOwner={isOwner} />
             </TabPanel>
             <TabPanel>
               <div>
@@ -93,7 +84,7 @@ const User_items = ({
             </TabPanel>
             <TabPanel>
               <div>
-                <OwnedOffers_categories_items
+                <OwnedOffersCategoriesItems
                   data={createdData}
                   isPendinAdsOnOffer={isPendinAdsOnOffer}
                   isOwner={isOwner}

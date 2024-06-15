@@ -122,7 +122,7 @@ const GridItems = () => {
               <Image
                 width={270}
                 height={270}
-                src={item.imageSrc}
+                src={item.imageSrc ?? ""}
                 alt={item.alt}
                 className="w-full h-full object-cover rounded-[0.625rem]"
                 loading="lazy"

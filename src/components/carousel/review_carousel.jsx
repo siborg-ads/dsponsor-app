@@ -21,14 +21,13 @@ const Review_carousel = ({
   setSuccessFullRefuseModal,
   isToken,
   isOwner,
-  isLister,
   setRefusedValidatedAdModal,
   refusedValidatedAdModal
 }) => {
   const [validate, setValidate] = useState({});
   const [comments, setComments] = useState({});
   const [isApprouvedAd, setIsApprouvedAd] = useState(false);
-  const [tokenId, setTokenId] = useState(null);
+  const [tokenId] = useState(null);
   const [isFirstSelection, setIsFirstSelection] = useState(true);
   const [isSelectedItem, setIsSelectedItem] = useState({});
   const [modalStates, setModalStates] = useState({});
@@ -84,7 +83,6 @@ const Review_carousel = ({
     let submissionArgs = [];
     setIsApprouvedAd(approuved);
     for (const item of selectedItems) {
-      console.log(item, "item");
       let argObject = {
         ...item,
         ...(approuved && { reason: "" }),
@@ -220,7 +218,7 @@ const Review_carousel = ({
 
       <div className="grid grid-cols-1 gap-[1.875rem] md:grid-cols-2 lg:grid-cols-4">
         {pendingProposalData.map((item) => {
-          const { adParametersList, tokenId, proposalIds, tokenData } = item;
+          const { adParametersList, tokenId, tokenData } = item;
 
           return (
             <article
@@ -233,7 +231,7 @@ const Review_carousel = ({
                   <button onClick={() => openModal(tokenId)}>
                     {getImageUrl(adParametersList) && (
                       <Image
-                        src={getImageUrl(adParametersList)}
+                        src={getImageUrl(adParametersList) ?? ""}
                         alt="logo"
                         height={75}
                         width={75}
@@ -251,7 +249,7 @@ const Review_carousel = ({
                   >
                     <div className="modal-dialog !my-0 flex h-full max-w-4xl items-center justify-center">
                       <Image
-                        src={getImageUrl(adParametersList)}
+                        src={getImageUrl(adParametersList) ?? ""}
                         alt="logo"
                         height={250}
                         width={250}
@@ -281,11 +279,11 @@ const Review_carousel = ({
                   {/* <!-- end modal --> */}
                 </figure>
                 {/* <figure className="flex justify-center">
-                  <Image src={adParametersList?.imageURL ? adParametersList?.imageURL : "/"} alt="logo" height={230} width={230} className="rounded-[0.625rem] w-auto   h-[150px] object-contain" loading="lazy" />
+                  <Image src={adParametersList.imageURL ?? "/"} alt="logo" height={230} width={230} className="rounded-[0.625rem] w-auto   h-[150px] object-contain" loading="lazy" />
                 </figure> */}
                 <div className="mt-4 flex items-center justify-between ">
                   <Link
-                    href={adParametersList?.linkURL ? adParametersList.linkURL : "/"}
+                    href={adParametersList.linkURL ?? ""}
                     target="_blank"
                     className="font-display  text-jacarta-900 hover:text-primaryPurple text-base dark:text-white  overflow-hidden text-ellipsis whitespace-nowrap "
                   >

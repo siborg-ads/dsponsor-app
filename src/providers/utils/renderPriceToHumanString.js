@@ -18,10 +18,10 @@ function renderPriceToHumanString(decimalPrice, currencySymbol) {
   const formattedPrice = decimalPrice.toFixed(precision);
 
   // Add spaces as thousands separators
-  const parts = formattedPrice.split('.');
-  parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+  const parts = formattedPrice.split(".");
+  parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, " ");
 
-  return `${parts.join('.')} ${currencySymbol}`;
+  return `${parts.join(".")} ${currencySymbol}`;
 }
 
 export default renderPriceToHumanString;

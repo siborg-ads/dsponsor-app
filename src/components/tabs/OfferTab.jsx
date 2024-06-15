@@ -12,94 +12,61 @@ const OfferTab = () => {
         role="tabpanel"
         aria-labelledby="offers-tab"
       >
-        <div
-          role="table"
-          className="scrollbar-custom dark:bg-secondaryBlack dark:border-jacarta-600 border-jacarta-100 grid max-h-72 w-full grid-cols-5 overflow-y-auto rounded-lg rounded-tl-none border bg-white text-sm dark:text-white"
-        >
-          <div className="contents" role="row">
-            <div
-              className="dark:bg-jacarta-600 bg-light-base sticky top-0 py-2 px-4"
-              role="columnheader"
-            >
+        <table className="scrollbar-custom dark:bg-secondaryBlack dark:border-jacarta-600 border-jacarta-100 grid max-h-72 w-full grid-cols-5 overflow-y-auto rounded-lg rounded-tl-none border bg-white text-sm dark:text-white">
+          <tr className="contents">
+            <th className="dark:bg-jacarta-600 bg-light-base sticky top-0 py-2 px-4">
               <span className="text-jacarta-900 dark:text-jacarta-100 w-full overflow-hidden text-ellipsis">
                 Price
               </span>
-            </div>
-            <div
-              className="dark:bg-jacarta-600 bg-light-base sticky top-0 py-2 px-4"
-              role="columnheader"
-            >
+            </th>
+            <th className="dark:bg-jacarta-600 bg-light-base sticky top-0 py-2 px-4">
               <span className="text-jacarta-900 dark:text-jacarta-100 w-full overflow-hidden text-ellipsis">
                 USD Price
               </span>
-            </div>
-            <div
-              className="dark:bg-jacarta-600 bg-light-base sticky top-0 py-2 px-4"
-              role="columnheader"
-            >
+            </th>
+            <th className="dark:bg-jacarta-600 bg-light-base sticky top-0 py-2 px-4">
               <span className="text-jacarta-900 dark:text-jacarta-100 w-full overflow-hidden text-ellipsis">
                 Floor Difference
               </span>
-            </div>
-            <div
-              className="dark:bg-jacarta-600 bg-light-base sticky top-0 py-2 px-4"
-              role="columnheader"
-            >
+            </th>
+            <th className="dark:bg-jacarta-600 bg-light-base sticky top-0 py-2 px-4">
               <span className="text-jacarta-900 dark:text-jacarta-100 w-full overflow-hidden text-ellipsis">
                 Expiration
               </span>
-            </div>
-            <div
-              className="dark:bg-jacarta-600 bg-light-base sticky top-0 py-2 px-4"
-              role="columnheader"
-            >
+            </th>
+            <th className="dark:bg-jacarta-600 bg-light-base sticky top-0 py-2 px-4">
               <span className="text-jacarta-900 dark:text-jacarta-100 w-full overflow-hidden text-ellipsis">
                 From
               </span>
-            </div>
-          </div>
+            </th>
+          </tr>
           {items_offer_data.map((item) => {
             const { ethPrice, id, usdPrice, difference, Expiration, user } = item;
             return (
-              <div className="contents" role="row" key={id}>
-                <div
-                  className="dark:border-jacarta-600 border-jacarta-100 flex items-center whitespace-nowrap border-t py-4 px-4"
-                  role="cell"
-                >
+              <tr className="contents" key={id}>
+                <td className="dark:border-jacarta-600 border-jacarta-100 flex items-center whitespace-nowrap border-t py-4 px-4">
                   <span className="text-green text-sm font-medium tracking-tight">
                     {ethPrice} ETH
                   </span>
-                </div>
-                <div
-                  className="dark:border-jacarta-600 border-jacarta-100 flex items-center border-t py-4 px-4"
-                  role="cell"
-                >
+                </td>
+                <td className="dark:border-jacarta-600 border-jacarta-100 flex items-center border-t py-4 px-4">
                   {usdPrice}
-                </div>
-                <div
-                  className="dark:border-jacarta-600 border-jacarta-100 flex items-center border-t py-4 px-4"
-                  role="cell"
-                >
+                </td>
+                <td className="dark:border-jacarta-600 border-jacarta-100 flex items-center border-t py-4 px-4">
                   {difference} below
-                </div>
-                <div
-                  className="dark:border-jacarta-600 border-jacarta-100 flex items-center border-t py-4 px-4"
-                  role="cell"
-                >
+                </td>
+                <td className="dark:border-jacarta-600 border-jacarta-100 flex items-center border-t py-4 px-4">
                   in {Expiration} months
-                </div>
-                <div
-                  className="dark:border-jacarta-600 border-jacarta-100 flex items-center border-t py-4 px-4"
-                  role="cell"
-                >
+                </td>
+                <td className="dark:border-jacarta-600 border-jacarta-100 flex items-center border-t py-4 px-4">
                   <Link href="#" className="text-primaryPurple">
                     {user}
                   </Link>
-                </div>
-              </div>
+                </td>
+              </tr>
             );
           })}
-        </div>
+        </table>
       </div>
     </>
   );

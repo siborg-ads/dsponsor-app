@@ -1,5 +1,4 @@
 import React from "react";
-import { useState } from "react";
 import {
   Modal,
   ModalContent,
@@ -12,7 +11,7 @@ import {
 import Image from "next/image";
 const ModalHelper = ({ title, body, image, dark, size = "default" }) => {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
-  const [sizeModal, setSizeModal] = useState(size);
+
   const displaySize = {
     small: "15",
     medium: "20",
@@ -61,7 +60,7 @@ const ModalHelper = ({ title, body, image, dark, size = "default" }) => {
                 {image && (
                   <div className="flex justify-center">
                     <Image
-                      src={image}
+                      src={image ?? ""}
                       alt="image"
                       width={150}
                       height={150}

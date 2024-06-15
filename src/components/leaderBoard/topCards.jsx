@@ -1,8 +1,7 @@
-import React from 'react'
+import React from "react";
 import Link from "next/link";
 
-const topCards = ({activity}) => {
-    console.log("activity", activity)
+const topCards = ({ activity }) => {
   return (
     <div className="flex flex-wrap justify-between gap-4">
       <div className="dark:bg-primaryPurple flex-grow flex-shrink flex-basis-[200px]   overflow-hidden dark:border-jacarta-100 dark:border-opacity-10 mb-2 border-jacarta-100 rounded-2lg border flex flex-col gap-4 bg-white p-8">
@@ -42,6 +41,6 @@ const topCards = ({activity}) => {
       </div>
     </div>
   );
-}
+};
 
-export default topCards
+export default topCards;

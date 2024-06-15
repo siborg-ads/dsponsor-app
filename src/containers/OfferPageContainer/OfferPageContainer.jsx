@@ -1,7 +1,6 @@
-import React, { useState, useEffect, useCallback, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";
-import "tippy.js/dist/tippy.css";
 
 import Meta from "../../components/Meta";
 import { ethers } from "ethers";
@@ -9,7 +8,6 @@ import Image from "next/image";
 import { useContract, useContractWrite, useContractRead, useAddress } from "@thirdweb-dev/react";
 import Tippy from "@tippyjs/react";
 import handleCopy from "../../utils/handleCopy";
-import "tippy.js/dist/tippy.css";
 
 import OfferSkeleton from "../../components/skeleton/offerSkeleton";
 
@@ -19,11 +17,10 @@ import "tippy.js/dist/tippy.css";
 import Validation from "../../components/offer-section/validation";
 import ModalHelper from "../../components/Helper/modalHelper";
 import { ItemsTabs } from "../../components/component";
-import { useChainContext } from "../../contexts/hooks/useChainContext";
 import { fetchOffer } from "../../providers/methods/fetchOffer";
 import config from "../../providers/utils/config";
 import { useSwitchChainContext } from "../../contexts/hooks/useSwitchChainContext";
-import {activated_features} from "../../data/activated_features";
+import { activated_features } from "../../data/activated_features";
 
 const OfferPageContainer = () => {
   const router = useRouter();
@@ -44,10 +41,7 @@ const OfferPageContainer = () => {
     config[chainId]?.smartContracts?.DSPONSORADMIN?.address,
     config[chainId]?.smartContracts?.DSPONSORADMIN?.abi
   );
-  const { mutateAsync, isLoadingreviewAdProposal } = useContractWrite(
-    DsponsorAdminContract,
-    "reviewAdProposals"
-  );
+  const { mutateAsync } = useContractWrite(DsponsorAdminContract, "reviewAdProposals");
   const [urlFromChild, setUrlFromChild] = useState("");
   const [successFullRefuseModal, setSuccessFullRefuseModal] = useState(false);
   const [tokenData, setTokenData] = useState("");
@@ -71,7 +65,6 @@ const OfferPageContainer = () => {
       const fetchAdsOffers = async () => {
         const offer = await fetchOffer(offerId, chainId);
 
-        console.log("combinedData", offer);
         setOfferData(offer);
         if (userAddress?.toLowerCase() === offer?.initialCreator) {
           setIsOwner(true);
@@ -108,7 +101,7 @@ const OfferPageContainer = () => {
     } catch (e) {
       console.error("Error: Currency not found for address", offerData?.nftContract?.prices[0], e);
     }
-  }, [symbolContract, decimalsContract, offerData, bps]);
+  }, [symbolContract, decimalsContract, offerData, bps, NATIVECurrency, tokenCurrencyAddress]);
 
   useEffect(() => {
     if (offerData?.nftContract?.royaltyBps) setRoyalties(offerData?.nftContract?.royaltyBps / 100);
@@ -160,8 +153,7 @@ const OfferPageContainer = () => {
     description = "description not found",
     id = "1",
     image = ["/images/gradient_creative.jpg"],
-    name = "DefaultName",
-    nftContract = "N/A"
+    name = "DefaultName"
   } = offerData.metadata.offer ? offerData.metadata.offer : {};
 
   return (
@@ -199,7 +191,7 @@ const OfferPageContainer = () => {
                   <Image
                     width={585}
                     height={726}
-                    src={image}
+                    src={image ?? ""}
                     alt="image"
                     className="rounded-2xl cursor-pointer h-full object-contain w-full"
                   />
@@ -212,7 +204,7 @@ const OfferPageContainer = () => {
                   <Image
                     width={582}
                     height={722}
-                    src={image}
+                    src={image ?? ""}
                     alt="image"
                     className="h-full object-cover w-full rounded-2xl"
                   />
@@ -338,10 +330,10 @@ const OfferPageContainer = () => {
                     <span className="text-green ">This word is available 🎉</span>
                   )}
                   <figure className="mt-2">
-                    <Link href={urlFromChild}>
+                    <Link href={urlFromChild ?? "#"}>
                       {image && (
                         <Image
-                          src={image}
+                          src={image ?? ""}
                           alt="logo"
                           height={230}
                           width={230}
@@ -354,7 +346,7 @@ const OfferPageContainer = () => {
                   <div className="mt-4 flex items-center justify-between gap-4">
                     <Tippy content={<span className="p-2">{name}</span>}>
                       <Link
-                        href={urlFromChild}
+                        href={urlFromChild ?? "#"}
                         className="overflow-hidden text-ellipsis whitespace-nowrap min-w-[120px]"
                       >
                         <span className="font-display  text-jacarta-900 hover:text-primaryPurple text-base dark:text-white ">
@@ -379,22 +371,21 @@ const OfferPageContainer = () => {
         </div>
       )}
 
-      {(activated_features.canSeeSubmittedAds && (
-          <Validation
-              chainId={chainId}
-              setSuccessFullRefuseModal={setSuccessFullRefuseModal}
-              setSelectedItems={setSelectedItems}
-              selectedItems={selectedItems}
-              offer={offerData}
-              offerId={offerId}
-              isOwner={isOwner}
-              handleSubmit={handleSubmit}
-              successFullRefuseModal={successFullRefuseModal}
-              setRefusedValidatedAdModal={setRefusedValidatedAdModal}
-              refusedValidatedAdModal={refusedValidatedAdModal}
-          />
-      ))}
-
+      {activated_features.canSeeSubmittedAds && (
+        <Validation
+          chainId={chainId}
+          setSuccessFullRefuseModal={setSuccessFullRefuseModal}
+          setSelectedItems={setSelectedItems}
+          selectedItems={selectedItems}
+          offer={offerData}
+          offerId={offerId}
+          isOwner={isOwner}
+          handleSubmit={handleSubmit}
+          successFullRefuseModal={successFullRefuseModal}
+          setRefusedValidatedAdModal={setRefusedValidatedAdModal}
+          refusedValidatedAdModal={refusedValidatedAdModal}
+        />
+      )}
 
       {isOwner && activated_features.canSeeIntegrationDetails && (
         <div className="container">
@@ -427,7 +418,6 @@ const OfferPageContainer = () => {
               <Tippy hideOnClick={false} content={copied ? <span>copied</span> : <span>copy</span>}>
                 <div className=" cursor-pointer">
                   <button
-                    text={`<iframe src="https://relayer.dsponsor.com/${chainId}/integrations/${offerId}/ClickableLogosGrid/iFrame" height="315" width="1000px" className={'h-screen w-full'} />`}
                     onClick={() =>
                       handleCopy(
                         `<iframe
@@ -453,6 +443,7 @@ const OfferPageContainer = () => {
             </div>
           </div>
           <iframe
+            title="offer"
             loading="lazy"
             src={`https://relayer.dsponsor.com/${chainId}/integrations/${offerId}/ClickableLogosGrid/iFrame`}
             height="315"

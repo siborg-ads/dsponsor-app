@@ -143,7 +143,5 @@ export const fetchAllListedToken = async (chainId) => {
     )
     .sort((a, b) => b.marketplaceListings[0]?.startTime - a.marketplaceListings[0]?.startTime);
 
-
-
   return mappedListedToken;
 };

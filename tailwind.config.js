@@ -10,7 +10,7 @@ module.exports = {
   darkMode: "class",
   theme: {
     screens: {
-      xs: '425px',
+      xs: "425px",
       sm: "575px",
       md: "768px",
       lg: "1025px",
@@ -53,7 +53,7 @@ module.exports = {
         900: "#0D102D"
       },
       primaryBlack: "#0D102D",
-     
+
       primaryPink: "#B472CA",
       secondaryBlack: "#35333E",
       secondaryWhite: "#FFFFFF",
@@ -91,7 +91,7 @@ module.exports = {
       none: "0",
       sm: "0.125rem",
       DEFAULT: "0.25rem",
-     
+
       md: "0.375rem",
       lg: "0.5rem",
       full: "9999px",

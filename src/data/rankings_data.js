@@ -134,7 +134,7 @@ const rankings_data = [
     d7Color: "green",
     category: "Collectibles",
     postDate: "Last 90 Days",
-    blockchain: "Tezos",
+    blockchain: "Tezos"
   },
   {
     id: "9",
@@ -204,7 +204,7 @@ const rankings_data = [
     category: "Photography",
 
     postDate: "Last 90 Days",
-    blockchain: "Tezos",
+    blockchain: "Tezos"
   },
   {
     id: "13",

@@ -1,10 +1,9 @@
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
 import Review_adProposal_data from "../../data/review_adProposal_data";
 import Image from "next/image";
 
-const Review_adProposal_items = ({ itemFor }) => {
+const Review_adProposal_items = () => {
   const [itemData, setItemData] = useState([]);
 
   useEffect(() => {
@@ -33,7 +32,7 @@ const Review_adProposal_items = ({ itemFor }) => {
                   <Image
                     width={152}
                     height={242}
-                    src={bigImage}
+                    src={bigImage ?? ""}
                     alt="item 1"
                     className="h-full w-full rounded-[0.625rem] object-cover"
                     loading="lazy"
@@ -43,7 +42,7 @@ const Review_adProposal_items = ({ itemFor }) => {
                   <Image
                     width={68}
                     height={74}
-                    src={subImage1}
+                    src={subImage1 ?? ""}
                     alt="item 1"
                     className="h-full w-full rounded-[0.625rem] object-cover"
                     loading="lazy"
@@ -51,7 +50,7 @@ const Review_adProposal_items = ({ itemFor }) => {
                   <Image
                     width={68}
                     height={74}
-                    src={subImage2}
+                    src={subImage2 ?? ""}
                     alt="item 1"
                     className="h-full w-full rounded-[0.625rem] object-cover"
                     loading="lazy"
@@ -59,7 +58,7 @@ const Review_adProposal_items = ({ itemFor }) => {
                   <Image
                     width={68}
                     height={74}
-                    src={subImage3}
+                    src={subImage3 ?? ""}
                     alt="item 1"
                     className="h-full w-full rounded-[0.625rem] object-cover"
                     loading="lazy"
@@ -80,7 +79,7 @@ const Review_adProposal_items = ({ itemFor }) => {
                     <Image
                       width={20}
                       height={20}
-                      src={userImage}
+                      src={userImage ?? ""}
                       alt="owner"
                       className="h-5 w-5 rounded-full"
                     />

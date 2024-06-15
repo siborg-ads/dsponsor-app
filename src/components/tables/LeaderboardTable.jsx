@@ -161,7 +161,7 @@ const LeaderboardTable = ({ activity }) => {
               <div className="flex gap-2">
                 <span>{config[activeBlockchain]?.chainName}</span>
                 <Image
-                  src={config[activeBlockchain]?.logoURL}
+                  src={config[activeBlockchain].logoURL ?? ""}
                   width={17}
                   height={17}
                   alt="blockchain logo"
@@ -183,7 +183,7 @@ const LeaderboardTable = ({ activity }) => {
                             {config[option]?.chainName}
                           </span>
                           <Image
-                            src={config[option]?.logoURL}
+                            src={config[option].logoURL ?? ""}
                             width={17}
                             height={17}
                             alt="blockchain logo"
@@ -204,7 +204,7 @@ const LeaderboardTable = ({ activity }) => {
                       <div className="dropdown-item flex gap-2 w-full items-center rounded-xl px-5 py-2 text-left font-display text-sm transition-colors hover:bg-jacarta-50 dark:text-white dark:hover:bg-jacarta-600">
                         {config[option]?.chainName}
                         <Image
-                          src={config[option]?.logoURL}
+                          src={config[option].logoURL ?? ""}
                           width={17}
                           height={17}
                           alt="blockchain logo"

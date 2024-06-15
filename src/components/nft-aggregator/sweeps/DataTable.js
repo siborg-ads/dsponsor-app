@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 
 const data = [
   {
@@ -160,7 +161,7 @@ const DataTable = () => {
             <Image
               width={24}
               height={24}
-              src={item.creatorAvatar}
+              src={item.creatorAvatar ?? ""}
               alt="creator"
               className="h-6 w-6 rounded-full"
               title="Creator: Sussygirl"
@@ -168,7 +169,7 @@ const DataTable = () => {
             <Image
               width={24}
               height={24}
-              src={item.ownerAvatar}
+              src={item.ownerAvatar ?? ""}
               alt="owner"
               className="h-6 w-6 rounded-full"
               title="Owner: Sussygirl"
@@ -179,7 +180,7 @@ const DataTable = () => {
               <Image
                 width={40}
                 height={40}
-                src={item.itemImage}
+                src={item.itemImage ?? ""}
                 alt="items"
                 className="rounded-2lg"
                 loading="lazy"
@@ -199,7 +200,7 @@ const DataTable = () => {
               <Image
                 width={14}
                 height={14}
-                src={item.chainIcon}
+                src={item.chainIcon ?? ""}
                 alt="items"
                 className="ml-0.5 h-4 w-4"
               />
@@ -208,8 +209,11 @@ const DataTable = () => {
           <div className="hidden w-3/12 items-center justify-end md:w-2/12 lg:flex" role="cell">
             -
           </div>
-          <div className="hidden w-2/12 items-center justify-end text-primaryPurple md:flex" role="cell">
-            <a href="#">{item.transactionHash}</a>
+          <div
+            className="hidden w-2/12 items-center justify-end text-primaryPurple md:flex"
+            role="cell"
+          >
+            <Link href="#">{item.transactionHash}</Link>
           </div>
           <div className="hidden w-2/12 items-center justify-end md:flex" role="cell">
             {item.timestamp}

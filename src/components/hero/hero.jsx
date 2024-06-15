@@ -1,5 +1,4 @@
 import Image from "next/image";
-import Link from "next/link";
 import { useChainContext } from "../../contexts/hooks/useChainContext";
 import MainButton from "../buttons/mainButton";
 import { activated_features } from "../../data/activated_features";

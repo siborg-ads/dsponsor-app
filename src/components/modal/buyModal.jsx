@@ -1,15 +1,13 @@
 import Link from "next/link";
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { Web3Button } from "@thirdweb-dev/react";
-import { useState } from "react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Divider } from "@nextui-org/react";
 import { Spinner } from "@nextui-org/spinner";
 import { useChainContext } from "../../contexts/hooks/useChainContext";
 import { CrossmintPayButton } from "@crossmint/client-sdk-react-ui";
-import config from "../../providers/utils/config";
 import { activated_features } from "../../data/activated_features";
 
 const BuyModal = ({
@@ -19,12 +17,10 @@ const BuyModal = ({
   handleApprove: handleProtocolApprove,
   finalPrice,
   royaltiesFeesAmount,
-  buyoutPriceAmount,
   successFullUpload,
   feesAmount,
   successFullBuyModal,
   royalties,
-  marketplaceListings = null,
   price,
   tokenId,
   selectedCurrency,
@@ -45,17 +41,6 @@ const BuyModal = ({
 
   const handleTermService = (e) => {
     setValidate(e.target.checked);
-  };
-  const calculateOriginalPriceFromTotal = (totalPrice, royalties, tokenDecimals = 2) => {
-    let netPrice = parseFloat(totalPrice); // Convertir en float si la saisie est une chaîne
-    const fees = [0.04, royalties / 100];
-
-    // Inverser le calcul en multipliant par (1 - fee) pour chaque frais
-    for (let i = fees.length - 1; i >= 0; i--) {
-      netPrice *= 1 - fees[i];
-    }
-
-    return netPrice.toFixed(tokenDecimals); // Formatage avec le nombre spécifié de décimales pour les smart contracts
   };
 
   const handleApprove = async () => {
@@ -80,7 +65,7 @@ const BuyModal = ({
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [modalRef]);
+  }, [handleBuyModal, modalRef]);
 
   return (
     <div>
@@ -122,7 +107,7 @@ const BuyModal = ({
                   <Image
                     width={150}
                     height={150}
-                    src={image}
+                    src={image ?? ""}
                     alt="logo"
                     className="rounded-2lg"
                     loading="lazy"
@@ -275,7 +260,7 @@ const BuyModal = ({
                     {isLoadingButton ? <Spinner size="sm" color="default" /> : "Confirm checkout"}
                   </Web3Button>
                 ) : (
-                  <Link href={successFullBuyModal.hrefButton}>
+                  <Link href={successFullBuyModal.hrefButton ?? "#"}>
                     <button className="!rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all !bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer">
                       {successFullBuyModal.buttonTitle}
                     </button>

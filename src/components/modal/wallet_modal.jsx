@@ -1,7 +1,7 @@
-import { display } from "@mui/system";
 import React from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { walletModalhide } from "../../redux/counterSlice";
+import Link from "next/link";
 
 const Wallet_modal = () => {
   const walletModal = useSelector((state) => state.counter.walletModal);
@@ -41,28 +41,22 @@ const Wallet_modal = () => {
               </svg>
               <p className="text-center dark:text-white">
                 You {"don't"} have MetaMask in your browser, please download it from
-                <a
-                  href="https://metamask.io/"
-                  className="text-primaryPurple"
-                  target="_blank"
-                  rel="noreferrer noopener"
-                >
+                <Link href="https://metamask.io/" className="text-primaryPurple" target="_blank">
                   &nbsp; MetaMask
-                </a>
+                </Link>
               </p>
             </div>
             {/* <!-- end body --> */}
 
             <div className="modal-footer">
               <div className="flex items-center justify-center space-x-4">
-                <a
+                <Link
                   href="https://metamask.io/"
                   target="_blank"
-                  rel="noreferrer noopener"
                   className="bg-primaryPurple shadow-primaryPurple-volume hover:bg-primaryPurple-dark rounded-full py-3 px-8 text-center font-semibold text-white transition-all"
                 >
                   Get Metamask
-                </a>
+                </Link>
               </div>
             </div>
           </div>

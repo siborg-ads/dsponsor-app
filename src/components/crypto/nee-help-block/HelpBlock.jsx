@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 const HelpBlock = () => {
   return (
     <>
@@ -20,9 +22,9 @@ const HelpBlock = () => {
             <p className="mb-4 text-white">
               Stay up to date with the latest stories and commentary.
             </p>
-            <a href="#" className="font-bold text-white underline">
+            <Link href="#" className="font-bold text-white underline">
               Learn More
-            </a>
+            </Link>
           </div>
         </div>
         <div className="relative mb-8 flex-1 self-end rounded-2.5xl bg-primaryPurple p-8 py-16 shadow-2xl">
@@ -43,9 +45,9 @@ const HelpBlock = () => {
             <p className="mb-4 text-white">
               Get our friendly customer service agents at your service.
             </p>
-            <a href="#" className="font-bold text-white underline">
+            <Link href="#" className="font-bold text-white underline">
               Chat Now
-            </a>
+            </Link>
           </div>
         </div>
       </div>
@@ -71,9 +73,9 @@ const HelpBlock = () => {
             <p className="mb-4 text-white">
               View FAQs for detailed instructions on specific features.
             </p>
-            <a href="#" className="font-bold text-white underline">
+            <Link href="#" className="font-bold text-white underline">
               Learn More
-            </a>
+            </Link>
           </div>
         </div>
       </div>
