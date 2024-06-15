@@ -23,7 +23,7 @@ const Footer = () => {
               {
                 id: 1,
                 href: `/manage/${address}`,
-                text: "My Creator Space"
+                text: "Manage"
               },
               ...(activated_features.canCreateOffer
                 ? [
