@@ -77,11 +77,14 @@ const ManageSpaceContainer = () => {
          const mappedListedToken = listedTokenArray
            .filter((element) => element?.listingType === "Auction")
            .map((element) => ({
+             ...element,
+             metadata: element?.token?.metadata,
+             offerId: element?.token?.nftContract?.adOffers[0]?.id,
+             tokenId: element?.token?.tokenId,
              chainConfig: element.chainConfig,
              tokenData: element?.token.mint.tokenData,
              startTime: element?.startTime,
              endTime: element?.endTime,
-             ...element?.token
            }));
          setListedAuctionToken(mappedListedToken);
        };

@@ -155,7 +155,7 @@ const TokenPageContainer = () => {
         const combinedData = {
           ...offer
         };
-
+console.log(combinedData, "combinedData")
         setOfferData(combinedData);
       };
       setSelectedChain(config[chainId]?.chainNameProvider);
@@ -819,10 +819,7 @@ const TokenPageContainer = () => {
     );
   }
 
-  const modalHelper = {
-    title: "Protocol Fees",
-    body: `The protocol fees (4%) are used to maintain the platform and the services provided. The fees are calculated based on the price of the ad space and are automatically deducted from the total amount paid by the buyer.`
-  };
+
 
   if (!offerData) {
     return null;
@@ -928,7 +925,7 @@ const TokenPageContainer = () => {
                       <span className="text-green text-sm font-medium tracking-tight mr-2">
                         {finalPrice} {currency}
                       </span>
-                      <ModalHelper {...modalHelper} size="small" />
+                   
                     </div>
                   )}
                 <span className="dark:text-jacarta-100 text-jacarta-100 text-sm">

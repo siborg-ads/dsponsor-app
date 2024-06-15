@@ -103,7 +103,7 @@ const LeaderboardTable = ({ activity }) => {
       )
     },
     { header: "Balance", render: (item) => item.balance },
-    { header: "Chain", render: () => config[chainId].chainName }
+    // { header: "Chain", render: () => config[chainId].chainName }
     // { header: "DPoints", render: (item) => item.dPoints }
   ];
 
@@ -119,7 +119,7 @@ const LeaderboardTable = ({ activity }) => {
       )
     },
     { header: "# of Refunds", render: (item) => item.refunds },
-    { header: "Chain ", render: () => config[chainId].chainName }
+    // { header: "Chain ", render: () => config[chainId].chainName }
     // { header: "DPoints", render: (item) => item.dPoints }
   ];
   const columns = {
@@ -135,12 +135,12 @@ const LeaderboardTable = ({ activity }) => {
 
   return (
     <div className="container ">
-      <h1 className="text-4xl font-medium text-center pt-8 pb-4 dark:text-white">
+      <h1 className="text-4xl font-medium text-center pt-8 pb-4 mb-4 dark:text-white">
         Leaderboard Rankings
       </h1>
       <div className="mb-8 flex flex-col gap-6 flex-wrap items-center justify-between">
-        <div className="flex flex-wrap items-center">
-          {/* Blockchain Filter */}
+        {/* <div className="flex flex-wrap items-center">
+          
           <div className="my-1 mr-2.5">
             <button
               className="dropdown-toggle group group flex h-9 items-center rounded-lg border border-jacarta-100 bg-white px-4 font-display text-sm font-semibold text-jacarta-900 transition-colors hover:border-transparent hover:bg-primaryPurple hover:text-white dark:border-primaryBlack dark:bg-secondaryBlack dark:text-white dark:hover:bg-primaryPurple"
@@ -216,7 +216,7 @@ const LeaderboardTable = ({ activity }) => {
               </ul>
             </div>
           </div>
-        </div>
+        </div> */}
         <TopCards activity={filteredActivity} />
       </div>
       <div className="scrollbar-custom overflow-x-auto">
