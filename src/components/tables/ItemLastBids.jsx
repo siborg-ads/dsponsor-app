@@ -12,7 +12,7 @@ const ItemLastBids = ({ bids }) => {
       case "CANCELLED":
         return "Outbid";
       case "COMPLETED":
-        return "Best Bid";
+        return "Won";
       default:
         return status;
     }
@@ -72,7 +72,7 @@ const ItemLastBids = ({ bids }) => {
                       </td>
                       <td className="text-sm text-jacarta-100 dark:text-jacarta-100">
                         {renderPriceToHumanString(
-                          bid.bid.totalBidAmount / Math.pow(10, bid.currency.currencyDecimals),
+                          bid.bid.paidBidAmount / Math.pow(10, bid.currency.currencyDecimals),
                           bid.currency.currencySymbol
                         )}
                       </td>
@@ -82,7 +82,8 @@ const ItemLastBids = ({ bids }) => {
                         )}
                       </td>
                       <td className="text-sm text-jacarta-100 dark:text-jacarta-100">
-                        {bid.bid.amountsFormatted?.refundProfit
+                        {bid.bid.amountsFormatted.refundProfit &&
+                        Number(bid.bid.amountsFormatted.refundProfit) !== 0
                           ? `${bid.bid.amountsFormatted.refundProfit} ${bid.currency.currencySymbol}`
                           : "-"}
                       </td>
