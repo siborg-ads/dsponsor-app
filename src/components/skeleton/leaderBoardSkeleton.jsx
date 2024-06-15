@@ -3,7 +3,7 @@ import { Skeleton } from "@nextui-org/react";
 
 const LeaderBoardSkeleton = () => {
   return (
-    <section className="relative lg:mt-24 lg:pt-12  mt-24 pt-12 pb-8 container items-center flex flex-col justify-center">
+    <section className="relative lg:mt-12 lg:pt-12  mt-12 pt-8 pb-8 container items-center flex flex-col justify-center">
       <div className="mb-4 container  flex justify-center flex-col items-center w-full ">
         <div className=" flex justify-center w-full  ">
           <h1 className="text-4xl font-medium text-center py-16 dark:text-white">
@@ -13,9 +13,9 @@ const LeaderBoardSkeleton = () => {
       </div>
 
       <div className="container items-center flex flex-col gap-6">
-        <Skeleton className="rounded-lg w-[100px]">
+        {/* <Skeleton className="rounded-lg w-[100px]">
           <div className="h-5 rounded-lg bg-default-300"></div>
-        </Skeleton>
+        </Skeleton> */}
         <div className="flex flex-wrap justify-between gap-4">
           <Skeleton className=" flex-grow flex-shrink flex-basis-[200px] h-[100px] w-[200px]    overflow-hidden  rounded-2lg  flex flex-col gap-4 p-8"></Skeleton>
           <Skeleton className=" flex-grow flex-shrink flex-basis-[200px] h-[100px] w-[200px]    overflow-hidden  rounded-2lg  flex flex-col gap-4 p-8"></Skeleton>

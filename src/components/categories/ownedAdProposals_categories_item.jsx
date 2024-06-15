@@ -205,6 +205,7 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
   };
 
   const handleSelectionTokens = () => {
+    console.log("ici")
     setIsSelectionActive(!isSelectionActive);
     setShowSliderForm(false);
     setIsSelectedItem({});
@@ -246,17 +247,26 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
       {data.length > 0 ? (
         <div className="flex flex-col justify-center items-center ">
           {" "}
-          {isOwner && activated_features.canSeeSubmittedAds && (
-            <MainButton
-              onClick={handleSelectionTokens}
-              isPurple={true}
-              isFullWidth={false}
-              text={
-                showSliderForm || isSelectionActive
-                  ? "Close selection"
-                  : "Submit ad for multiple tokens"
-              }
-            />
+      
+          {isOwner &&  activated_features.canSeeSubmittedAds && (
+            <div className="flex flex-col items-center justify-center">
+              <div onClick={handleSelectionTokens}>
+                <MainButton
+                  isPurple={true}
+                  isFullWidth={false}
+                  text={
+                    showSliderForm || isSelectionActive
+                      ? "Close selection"
+                      : "Submit ad for multiple tokens"
+                  }
+                />
+              </div>
+              {isSelectionActive && (
+                <div className="dark:bg-secondaryBlack dark:text-jacarta-100 rounded-2lg bg-white p-3 flex gap-4 justify-center items-center mb-6">
+                  <span>Select tokens to submit and ads</span>
+                </div>
+              )}
+            </div>
           )}
           {!showSliderForm && (
             <div className={`grid w-full grid-cols-1 gap-[1.875rem] md:grid-cols-2 lg:grid-cols-4`}>
@@ -265,13 +275,13 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
                   <div
                     onClick={() => handleSelection(item)}
                     key={index}
-                    className={`  ${isSelectedItem[item.id] ? "border-4 border-jacarta-100 rounded-2xl" : ""}`}
+                    className={`  ${isSelectedItem[item.id] ? "border-4 border-jacarta-100 rounded-2xl " : ""} `}
                   >
                     <OfferItem
                       item={item}
                       isToken={true}
                       listingType={item?.marketplaceListings[0]?.listingType}
-                      isListing={item?.marketplaceListings[0]?.listingType}
+                      isListing={false}
                       isSelectionActive={isSelectionActive}
                       url={
                         !item.tokenData
@@ -286,7 +296,7 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
                     key={index}
                     isToken={true}
                     listingType={item?.marketplaceListings[0]?.listingType}
-                    isListing={item?.marketplaceListings[0]?.listingType}
+                    isListing={false}
                     isSelectionActive={isSelectionActive}
                     url={
                       !item.tokenData

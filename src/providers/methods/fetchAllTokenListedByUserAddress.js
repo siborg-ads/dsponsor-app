@@ -12,11 +12,15 @@ export const fetchAllTokenListedByUserAddress = async (lister, chainId) => {
         where: { and: [{ status: CREATED, quantity_gt: 0, lister: $lister }] }
       ) {
         id # listingId
+        quantity
         token {
           tokenId
 
           nftContract {
             id # = assetContract
+            royalty {
+            bps
+          }
             adOffers {
               id
               metadataURL # offerMetadata

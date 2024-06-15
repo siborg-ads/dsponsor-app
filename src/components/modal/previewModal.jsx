@@ -107,7 +107,7 @@ const PreviewModal = ({
                         Name : <span className="dark:text-white text-base ml-2"> {name} </span>
                       </span>
                     ) : !name ? (
-                      <span className="dark:text-jacarta-100 text-jacarta-100 text-sm">
+                      <span className="dark:text-jacarta-100 text-jacarta-100 font-display">
                         Name : <span className="text-red text-base ml-2">{errors.nameError}</span>
                       </span>
                     ) : (
@@ -121,7 +121,7 @@ const PreviewModal = ({
                         <span className="dark:text-white text-base ml-2"> {description} </span>
                       </span>
                     ) : !description ? (
-                      <span className="dark:text-jacarta-100 text-jacarta-100 text-sm">
+                      <span className="dark:text-jacarta-100 text-jacarta-100 font-display">
                         Description :{" "}
                         <span className="text-red text-base ml-2">{errors.descriptionError}</span>
                       </span>
@@ -131,14 +131,19 @@ const PreviewModal = ({
                   </p>
 
                   {link?.length ? (
-                    <p className="font-display  mb-2 block text-jacarta-100 text-sm">
-                      Link :{" "}
+                    <div className="font-display  mb-2  text-jacarta-100 text-sm flex justify-between ">
+                      <span className="mr-2 ">Link : </span>{" "}
                       {!errors?.linkError ? (
                         <span className="dark:text-white text-base ml-2"> {link} </span>
                       ) : (
                         <span className="text-red text-base ml-2"> {errors.linkError}</span>
                       )}
-                    </p>
+                    </div>
+                  ) : !link ? (
+                    <div className="dark:text-jacarta-100 text-jacarta-100 font-display flex gap-2">
+                      <span> Link :</span>
+                      <span className="text-red text-base ml-2">{errors.linkError}</span>
+                    </div>
                   ) : (
                     ""
                   )}
@@ -371,7 +376,7 @@ const PreviewModal = ({
                           error: "Transaction rejected 🤯"
                         });
                       }}
-                      className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate ? "btn-disabled !text-black" : "!bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer"} `}
+                      className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate ? "btn-disabled cursor-not-allowed !text-black" : "!bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer"} `}
                       isDisabled={!validate || isLoadingButton}
                     >
                       {isLoadingButton ? <Spinner size="sm" color="default" /> : buttonTitle}
@@ -387,7 +392,7 @@ const PreviewModal = ({
                           error: "Approval rejected 🤯"
                         });
                       }}
-                      className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate ? "btn-disabled !text-black opacity-30" : "!bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer"} `}
+                      className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate ? "btn-disabled cursor-not-allowed !text-black opacity-30" : "!bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer"} `}
                       isDisabled={!validate || isLoadingButton}
                     >
                       {isLoadingButton ? (
