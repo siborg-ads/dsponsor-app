@@ -234,21 +234,23 @@ export default function Header01() {
 
         <nav className="navbar w-full">
           <ul className="flex flex-col lg:flex-row">
-            <li className="group">
-              <Link href="/" onClick={() => setToggle(false)}>
-                <button className="text-jacarta-900 font-display hover:text-primaryPurple focus:text-primaryPurple dark:hover:text-primaryPurple dark:focus:text-primaryPurple flex items-center justify-between py-3.5 text-base dark:text-white lg:px-5">
-                  <span
-                    className={
-                      isChildrenPageActive(route.asPath, "/")
-                        ? "text-primaryPurple dark:text-primaryPurple"
-                        : ""
-                    }
-                  >
-                    Home
-                  </span>
-                </button>
-              </Link>
-            </li>
+            <ConditionalCreateLi condition={activated_features.canSeeHomeInMobileMenu}>
+              <li className="group">
+                <Link href="/" onClick={() => setToggle(false)}>
+                  <button className="text-jacarta-900 font-display hover:text-primaryPurple focus:text-primaryPurple dark:hover:text-primaryPurple dark:focus:text-primaryPurple flex items-center justify-between py-3.5 text-base dark:text-white lg:px-5">
+                    <span
+                      className={
+                        isChildrenPageActive(route.asPath, "/")
+                          ? "text-primaryPurple dark:text-primaryPurple"
+                          : ""
+                      }
+                    >
+                      Home
+                    </span>
+                  </button>
+                </Link>
+              </li>
+            </ConditionalCreateLi>
 
             {/* create */}
             <ConditionalCreateLi condition={activated_features.canCreateOffer}>

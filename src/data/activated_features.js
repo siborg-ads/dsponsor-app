@@ -27,4 +27,6 @@ export const activated_features = {
   canAcceptNativeTokens: false,
   // Whether to accept USDT as payment
   canAcceptUSDT: false,
+  // Whether to see home in the mobile menu
+  canSeeHomeInMobileMenu: false
 };
