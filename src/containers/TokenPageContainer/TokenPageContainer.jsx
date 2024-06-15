@@ -42,7 +42,6 @@ import stringToUint256 from "../../utils/stringToUnit256.js";
 import { getAddress } from "ethers/lib/utils";
 
 import "react-toastify/dist/ReactToastify.css";
-import ModalHelper from "../../components/Helper/modalHelper.jsx";
 import ItemLastBids from "../../components/tables/ItemLastBids";
 import { activated_features } from "../../data/activated_features.js";
 
@@ -145,7 +144,7 @@ const TokenPageContainer = () => {
         const combinedData = {
           ...offer
         };
-console.log(combinedData, "combinedData")
+        console.log(combinedData, "combinedData");
         setOfferData(combinedData);
       };
       setSelectedChain(config[chainId]?.chainNameProvider);
@@ -821,8 +820,6 @@ console.log(combinedData, "combinedData")
     );
   }
 
-
-
   if (!offerData) {
     return null;
   }
@@ -927,7 +924,6 @@ console.log(combinedData, "combinedData")
                       <span className="text-green text-sm font-medium tracking-tight mr-2">
                         {finalPrice} {currency}
                       </span>
-                   
                     </div>
                   )}
                 <span className="dark:text-jacarta-100 text-jacarta-100 text-sm">
