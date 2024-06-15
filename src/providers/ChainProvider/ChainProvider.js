@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect } from "react";
 import { useAddress, useChainId } from "@thirdweb-dev/react";
 import ChainContext from "../../contexts/ChainContext";
 import config from "../utils/config";
@@ -17,6 +17,7 @@ const ChainProvider = ({ children }) => {
       setCurrentChainObject(config[11155111]);
     }
   }, [chainId]);
+
   const value = {
     currentChainObject,
     connectedAddress

@@ -108,7 +108,7 @@ const Step_3_Create = ({
               ) : (
                 <div className="flex justify-center  " style={{ width: `300px`, height: `300px` }}>
                   <Image
-                    src={previewImage[0] ? previewImage[0] : "/"}
+                    src={previewImage[0] ?? ""}
                     fill={true}
                     alt="Preview"
                     className="object-contain h-full"

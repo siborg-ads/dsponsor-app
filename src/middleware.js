@@ -12,7 +12,6 @@ export function middleware(request) {
     response.cookies.set("_rid", _rid, {
       expires
     });
-    console.log("Setting _rid cookie", _rid, "expires", expires);
     return response;
   }
 

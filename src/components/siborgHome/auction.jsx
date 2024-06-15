@@ -7,7 +7,7 @@ const Auction = ({ auction, isHoveringCard, index }) => {
       <div className="p-2 flex flex-col h-full gap-2 border box-border hover:border-2 border-jacarta-100 shadow-lg hover:shadow-xl border-opacity-10 rounded-xl bg-jacarta-800 hover:bg-secondaryBlack hover:-translate-y-0.5 duration-200">
         <div className="w-full h-full bg-jacarta-600 rounded-lg relative">
           <Image
-            src={auction.image}
+            src={auction.image ?? ""}
             alt="Auction Image"
             width={400}
             height={400}

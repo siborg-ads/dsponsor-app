@@ -65,45 +65,39 @@ const Activity_tab = () => {
           </div>
         </div>
 
-        <div
-          role="table"
-          className="scrollbar-custom dark:bg-secondaryBlack dark:border-jacarta-600 border-jacarta-100 max-h-72 w-full overflow-y-auto rounded-lg rounded-tl-none border bg-white text-sm dark:text-white"
-        >
+        <table className="scrollbar-custom dark:bg-secondaryBlack dark:border-jacarta-600 border-jacarta-100 max-h-72 w-full overflow-y-auto rounded-lg rounded-tl-none border bg-white text-sm dark:text-white">
           <div className="dark:bg-jacarta-600 bg-light-base sticky top-0 flex" role="row">
-            <div className="w-[17%] py-2 px-4" role="columnheader">
+            <th className="w-[17%] py-2 px-4">
               <span className="text-jacarta-900 dark:text-jacarta-100 w-full overflow-hidden text-ellipsis">
                 Event
               </span>
-            </div>
-            <div className="w-[17%] py-2 px-4" role="columnheader">
+            </th>
+            <th className="w-[17%] py-2 px-4">
               <span className="text-jacarta-900 dark:text-jacarta-100 w-full overflow-hidden text-ellipsis">
                 Price
               </span>
-            </div>
-            <div className="w-[22%] py-2 px-4" role="columnheader">
+            </th>
+            <th className="w-[22%] py-2 px-4">
               <span className="text-jacarta-900 dark:text-jacarta-100 w-full overflow-hidden text-ellipsis">
                 From
               </span>
-            </div>
-            <div className="w-[22%] py-2 px-4" role="columnheader">
+            </th>
+            <th className="w-[22%] py-2 px-4">
               <span className="text-jacarta-900 dark:text-jacarta-100 w-full overflow-hidden text-ellipsis">
                 To
               </span>
-            </div>
-            <div className="w-[22%] py-2 px-4" role="columnheader">
+            </th>
+            <th className="w-[22%] py-2 px-4">
               <span className="text-jacarta-900 dark:text-jacarta-100 w-full overflow-hidden text-ellipsis">
                 Date
               </span>
-            </div>
+            </th>
           </div>
           {items_activity_data.map((item) => {
             const { id, price, from, to, text, date } = item;
             return (
-              <div className="flex" role="row" key={id}>
-                <div
-                  className="dark:border-jacarta-600 border-jacarta-100 flex w-[17%] items-center border-t py-4 px-4"
-                  role="cell"
-                >
+              <tr className="flex" key={id}>
+                <td className="dark:border-jacarta-600 border-jacarta-100 flex w-[17%] items-center border-t py-4 px-4">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 24 24"
@@ -115,44 +109,30 @@ const Activity_tab = () => {
                     <path d="M14 20v2H2v-2h12zM14.586.686l7.778 7.778L20.95 9.88l-1.06-.354L17.413 12l5.657 5.657-1.414 1.414L16 13.414l-2.404 2.404.283 1.132-1.415 1.414-7.778-7.778 1.415-1.414 1.13.282 6.294-6.293-.353-1.06L14.586.686zm.707 3.536l-7.071 7.07 3.535 3.536 7.071-7.07-3.535-3.536z"></path>
                   </svg>
                   {text}
-                </div>
-                <div
-                  className="dark:border-jacarta-600 border-jacarta-100 flex w-[17%] items-center whitespace-nowrap border-t py-4 px-4"
-                  role="cell"
-                >
+                </td>
+                <td className="dark:border-jacarta-600 border-jacarta-100 flex w-[17%] items-center whitespace-nowrap border-t py-4 px-4">
                   <span className="-ml-1" data-tippy-content="ETH">
                     <svg className="icon mr-1 h-4 w-4">
                       <use xlinkHref="icons.svg#icon-ETH"></use>
                     </svg>
                   </span>
                   <span className="text-green text-sm font-medium tracking-tight">{price} ETH</span>
-                </div>
-                <div
-                  className="dark:border-jacarta-600 border-jacarta-100 flex w-[22%] items-center border-t py-4 px-4"
-                  role="cell"
-                >
+                </td>
+                <td className="dark:border-jacarta-600 border-jacarta-100 flex w-[22%] items-center border-t py-4 px-4">
                   <Link href="#" className="text-primaryPurple">
                     {from}
                   </Link>
-                </div>
-                <div
-                  className="dark:border-jacarta-600 border-jacarta-100 flex w-[22%] items-center border-t py-4 px-4"
-                  role="cell"
-                >
+                </td>
+                <td className="dark:border-jacarta-600 border-jacarta-100 flex w-[22%] items-center border-t py-4 px-4">
                   <Link href="#" className="text-primaryPurple">
                     {to}
                   </Link>
-                </div>
-                <div
-                  className="dark:border-jacarta-600 border-jacarta-100 flex w-[22%] items-center border-t py-4 px-4"
-                  role="cell"
-                >
+                </td>
+                <td className="dark:border-jacarta-600 border-jacarta-100 flex w-[22%] items-center border-t py-4 px-4">
                   <Link
                     href="#"
                     className="text-primaryPurple flex flex-wrap items-center"
                     target="_blank"
-                    rel="nofollow noopener"
-                    title="Opens in a new window"
                     data-tippy-content="March 13 2022, 2:32 pm"
                   >
                     <span className="mr-1">{date}</span>
@@ -167,11 +147,11 @@ const Activity_tab = () => {
                       <path d="M10 6v2H5v11h11v-5h2v6a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h6zm11-3v8h-2V6.413l-7.793 7.794-1.414-1.414L17.585 5H13V3h8z" />
                     </svg>
                   </Link>
-                </div>
-              </div>
+                </td>
+              </tr>
             );
           })}
-        </div>
+        </table>
       </div>
     </>
   );

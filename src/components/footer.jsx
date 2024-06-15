@@ -2,7 +2,7 @@ import Link from "next/link";
 import { footerMenuList as defaultFooterMenuList } from "../data/footer_data";
 import Image from "next/image";
 import { useChainContext } from "../contexts/hooks/useChainContext";
-import { useAddress, useUser } from "@thirdweb-dev/react";
+import { useAddress } from "@thirdweb-dev/react";
 import { activated_features } from "../data/activated_features";
 import Logo from "./../../public/images/siborg-ads.png";
 
@@ -23,7 +23,7 @@ const Footer = () => {
               {
                 id: 1,
                 href: `/manage/${address}`,
-                text: "My Creator Space"
+                text: "Manage"
               },
               ...(activated_features.canCreateOffer
                 ? [
@@ -49,21 +49,21 @@ const Footer = () => {
           <div className="grid grid-cols-6 gap-x-7 gap-y-14 pt-24 pb-12 md:grid-cols-12">
             <div className="col-span-3 md:col-span-4">
               {/* <!-- Logo --> */}
-              <Link href="#" className="mb-6 inline-block">
+              <Link href="" className="mb-6 inline-block">
                 <Image
                   width={220}
                   height={50}
-                  src={Logo}
+                  src={Logo ?? ""}
                   className=" dark:hidden"
                   alt="SiBorg Ads | Media sponsoring Marketplace"
                 />
               </Link>
 
-              <Link href="#" className=" mb-6 inline-block">
+              <Link href="" className=" mb-6 inline-block">
                 <Image
                   width={220}
                   height={50}
-                  src={Logo}
+                  src={Logo ?? ""}
                   className="hidden  dark:block mb-6"
                   alt="SiBorg Ads | Media sponsoring Marketplace"
                 />
@@ -74,7 +74,7 @@ const Footer = () => {
                 {socialIcons.map((item) => {
                   const { id, href, text } = item;
                   return (
-                    <Link href={href} key={id} target="_blank" rel="noopener noreferrer" className="group cursor-pointer">
+                    <Link href={href ?? ""} key={id} target="_blank" rel="noopener noreferrer" className="group cursor-pointer">
                       <svg className="icon group-hover:fill-primaryPurple fill-jacarta-300 h-5 w-5 dark:group-hover:fill-white">
                         <use xlinkHref={`/icons.svg#icon-${text}`}></use>
                       </svg>
@@ -98,7 +98,7 @@ const Footer = () => {
                     return (
                       <li key={id}>
                         <Link
-                          href={href}
+                          href={href ?? ""}
                           className="hover:text-primaryPurple dark:hover:text-white"
                         >
                           {text}

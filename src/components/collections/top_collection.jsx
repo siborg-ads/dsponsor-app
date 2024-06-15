@@ -1,4 +1,3 @@
-/* eslint-disable @next/next/no-img-element */
 import React, { useState } from "react";
 import Link from "next/link";
 import { collection_data } from "../../data/collection_data";
@@ -35,7 +34,7 @@ const Top_collection = () => {
     setData(newCollectionData);
   };
 
-  const handleDropdown = (e) => {
+  const handleDropdown = () => {
     window.addEventListener("click", (w) => {
       if (w.target.closest(".dropdown-toggle")) {
         if (dropdownShow) {
@@ -70,7 +69,7 @@ const Top_collection = () => {
               <button
                 className="dropdown-toggle text-primaryPurple inline-flex items-center"
                 type="button"
-                onClick={(e) => handleDropdown(e)}
+                onClick={() => handleDropdown()}
               >
                 {timeActiveText}
                 <svg
@@ -113,7 +112,7 @@ const Top_collection = () => {
 
           <div className="grid grid-cols-1 gap-3 md:grid-cols-2 md:gap-[1.875rem] lg:grid-cols-4">
             {data.map((item) => {
-              const { id, image, title, icon, amount, postTime } = item;
+              const { id, image, title, icon, amount } = item;
               const itemLink = image.split("/").slice(-1).toString().replace(".jpg", "");
 
               return (
@@ -122,9 +121,9 @@ const Top_collection = () => {
                   key={id}
                 >
                   <figure className="mr-4 shrink-0">
-                    <Link href={"/collection/" + itemLink} className="relative block">
+                    <Link href={`/collection/${itemLink ?? ""}`} className="relative block">
                       <Image
-                        src={image}
+                        src={image ?? ""}
                         alt={title}
                         className="rounded-2lg"
                         height={48}
@@ -153,7 +152,7 @@ const Top_collection = () => {
                     </Link>
                   </figure>
                   <div>
-                    <Link href={"/collection/" + itemLink} className="block">
+                    <Link href={`/collection/${itemLink ?? ""}`} className="block">
                       <span className="font-display text-jacarta-900 hover:text-primaryPurple font-semibold dark:text-white">
                         {title}
                       </span>

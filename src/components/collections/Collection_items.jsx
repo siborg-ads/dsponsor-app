@@ -1,13 +1,11 @@
 import React, { useState } from "react";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
-import { trendingCategoryData } from "../../data/categories_data";
 
 import Image from "next/image";
 import FilterCategoryItem from "../categories/filterCategoryItem";
 
 const Collection_items = () => {
   const [itemsTabs, setItemsTabs] = useState(1);
-  const [categoryItemData, setCategoryItemData] = useState(trendingCategoryData);
 
   const collectionItemsTabs = [
     {

@@ -1,16 +1,14 @@
-import React from "react";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Tab, TabList, TabPanel, Tabs } from "react-tabs";
 import { Divider } from "@nextui-org/react";
-import Validated_refused_items from "../collections/validated_refused_items";
-import Review_carousel from "../carousel/review_carousel";
+import ValidatedRefusedItems from "../collections/validated_refused_items";
+import ReviewCarousel from "../carousel/review_carousel";
 
 const Validation = ({
   chainId,
   offer,
   offerId,
   isOwner,
-  isLister,
   handleSubmit,
   successFullRefuseModal,
   setSuccessFullRefuseModal,
@@ -49,7 +47,7 @@ const Validation = ({
     const groupedValidatedAds = {};
     const groupedRefusedAds = {};
 
-    function processProposal(token, element, groupedAds, statusKey, statusId) {
+    function processProposal(token, element, groupedAds, statusKey) {
       if (element[statusKey] !== null) {
         if (!groupedAds[token.tokenId]) {
           groupedAds[token.tokenId] = {
@@ -107,12 +105,7 @@ const Validation = ({
         <TabList className="nav nav-tabs scrollbar-custom mb-12 flex items-center justify-start overflow-x-auto overflow-y-hidden border-b border-jacarta-100 pb-px dark:border-jacarta-600 md:justify-center">
           {tabItem.map(({ id, text, icon }) => {
             return (
-              <Tab
-                className="nav-item"
-                role="presentation"
-                key={id}
-                onClick={() => setItemActive(id)}
-              >
+              <Tab className="nav-item" key={id} onClick={() => setItemActive(id)}>
                 <button
                   className={
                     itemActive === id
@@ -134,7 +127,7 @@ const Validation = ({
           <TabPanel>
             <div className="container mb-12 relative p-0">
               {/* <!-- Filter --> */}
-              <Review_carousel
+              <ReviewCarousel
                 chainId={chainId}
                 setSelectedItems={setSelectedItems}
                 selectedItems={selectedItems}
@@ -154,7 +147,7 @@ const Validation = ({
         <TabPanel>
           <div className="container mb-12 relative p-0">
             {/* <!-- Filter --> */}
-            <Validated_refused_items
+            <ValidatedRefusedItems
               statut={true}
               proposalData={validatedProposalData}
               isToken={isToken}
@@ -164,7 +157,7 @@ const Validation = ({
         <TabPanel>
           <div className="container mb-12 relative p-0">
             {/* <!-- Filter --> */}
-            <Validated_refused_items statut={false} proposalData={refusedProposalData} />
+            <ValidatedRefusedItems statut={false} proposalData={refusedProposalData} />
           </div>
         </TabPanel>
       </Tabs>

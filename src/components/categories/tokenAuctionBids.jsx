@@ -1,7 +1,6 @@
 import React from "react";
 import Image from "next/image";
 import "tippy.js/themes/light.css";
-import { useChainContext } from "../../contexts/hooks/useChainContext";
 import OfferItem from "../cards/offerItem";
 
 const TokenAuctionBids = ({ data, isOwner }) => {

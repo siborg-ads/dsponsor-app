@@ -6,36 +6,20 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "tippy.js/dist/tippy.css";
 
-import { useContract, useContractRead } from "@thirdweb-dev/react";
-import { useChainContext } from "../../contexts/hooks/useChainContext";
-
 const OfferItem = ({
   item,
-  url,
+  url = "",
   isToken = false,
   isSelectionActive,
   isOwner,
-  isLister,
   isAuction = false,
   isListing = false,
   listingType
 }) => {
-  const { currentChainObject } = useChainContext();
   const [price, setPrice] = useState(null);
   const [currencyToken, setCurrencyToken] = useState(null);
   const [itemData, setItemData] = useState({});
   const [itemStatut, setItemStatut] = useState(null);
-  const { contract: tokenContract } = useContract(
-    (!isToken || (isToken && isListing)) && item?.nftContract?.prices[0]?.currency,
-    "token"
-  );
-  const { data: symbolContract } = useContractRead(tokenContract, "symbol");
-  const { data: decimalsContract } = useContractRead(tokenContract, "decimals");
-  const { contract: DsponsorAdminContract } = useContract(
-    currentChainObject?.smartContracts?.DSPONSORADMIN?.address,
-    currentChainObject?.smartContracts?.DSPONSORADMIN?.abi
-  );
-  const { data: bps } = useContractRead(DsponsorAdminContract, "feeBps");
 
   function formatDate(dateIsoString) {
     if (!dateIsoString) return "date not found";
@@ -43,23 +27,6 @@ const OfferItem = ({
     return new Date(dateIsoString).toLocaleDateString("en-EN", options);
   }
 
-  const formatAuctionDate = (timestamp) => {
-    if (!timestamp) return "";
-
-    // Convertir le timestamp en objet Date
-    const date = new Date(timestamp * 1000);
-
-    const dates = date.toLocaleString("en-EN", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-
-      hour12: true
-    });
-
-    return dates;
-  };
-  // console.log(itemStatut);
   useEffect(() => {
     if (!item) return;
 
@@ -100,7 +67,6 @@ const OfferItem = ({
       setPrice(item?.marketplaceListings[0]?.buyPriceStructureFormatted?.buyoutPricePerToken);
       setCurrencyToken(item?.marketplaceListings[0]?.currencySymbol);
       setItemStatut("DIRECT");
-      return;
     }
   }, [item, isToken, isListing, isAuction, listingType]);
 
@@ -152,7 +118,7 @@ const OfferItem = ({
                   />
                 )
               ) : (
-                <Link href={url}>
+                <Link href={url ?? ""}>
                   {image && (
                     <Image
                       src={image ?? "/images/gradient_creative.jpg"}
@@ -212,7 +178,7 @@ const OfferItem = ({
               </span>
             ) : (
               <Link
-                href={url}
+                href={url ?? "#"}
                 className="overflow-hidden text-ellipsis whitespace-nowrap max-w-[150px]"
               >
                 <span className="font-display max-w-[150px] text-primaryBlack hover:text-primaryPurple text-base dark:text-white ">

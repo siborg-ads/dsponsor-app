@@ -7,8 +7,7 @@ import Description from "../../components/siborgHome/description";
 import { fetchAllListedTokenWithoutFilter } from "../../providers/methods/fetchAllListedTokenWithoutFilter";
 import { formatUnits } from "ethers/lib/utils";
 import formatAndRound from "../../utils/formatAndRound";
-import { chainIds, mainChainId } from "../../data/chainIds";
-import { useChainContext } from "../../contexts/hooks/useChainContext";
+import { mainChainId } from "../../data/chainIds";
 
 const HomeContainer = () => {
   const [chainIdFilter, setChainIdFilter] = useState(null);
@@ -40,8 +39,6 @@ const HomeContainer = () => {
 
   useEffect(() => {
     if (auctionsTemp.length === 0) return;
-
-    console.log("auctionsTemp", auctionsTemp);
 
     const auctions = auctionsTemp.map((token) => {
       const name = token.metadata.name;
@@ -87,7 +84,7 @@ const HomeContainer = () => {
         currencySymbol: currencySymbol,
         link: `/${chainId}/offer/${offerId}/${tokenId}?tokenData=${tokenData}`,
         live: live,
-        image: image,
+        image: image ?? "",
         latestBid: latestBid,
         currencyDecimals: currencyDecimals,
         startTime: startTime,
@@ -118,8 +115,6 @@ const HomeContainer = () => {
 
       return object;
     });
-
-    console.log("auctions", auctions);
 
     setAuctions(auctions);
   }, [auctionsTemp]);

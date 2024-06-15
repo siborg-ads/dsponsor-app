@@ -27,12 +27,12 @@ const MarketplaceLeaderboardContainer = () => {
           };
           mergedActivitiesArray.push(mergedActivities);
         }
-        console.log("Processed activity:", mergedActivitiesArray);
+
         // const mergedActivities = activities.flatMap(activity => activity.rankings.map(ranking => ({
         //     ...ranking,
         //     chainId: activity.chainId
         // })));
-        // console.log("Processed activity:", mergedActivities);
+
         // const processedActivity = processBidsAndCalculateRewards(mergedActivities);
         setActivity(mergedActivitiesArray);
         setLoading(false);

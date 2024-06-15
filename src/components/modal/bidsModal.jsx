@@ -39,9 +39,9 @@ const BidsModal = ({
   const { mutateAsync: auctionBids } = useContractWrite(dsponsorMpContract, "bid");
   const [checkTerms, setCheckTerms] = useState(false);
   const [refundedPrice, setRefundedPrice] = useState(null);
-  const [endDate, setEndDate] = useState(null);
-  const [minBid, setMinBid] = useState(null);
-  const [endDateHour, setEndDateHour] = useState(null);
+  const [, setEndDate] = useState(null);
+  const [, setMinBid] = useState(null);
+  const [, setEndDateHour] = useState(null);
   const [tokenPrice, setTokenPrice] = useState(null);
   const [buyoutPriceReached, setBuyoutPriceReached] = useState(false);
 
@@ -150,7 +150,7 @@ const BidsModal = ({
       setInitialIntPrice(minimalBid);
       setBidsAmount(minimalBid);
     }
-  }, [marketplaceListings, setBidsAmount, currencyTokenDecimals]);
+  }, [marketplaceListings, setBidsAmount, currencyTokenDecimals, bidsAmount]);
 
   const handleBidsAmount = async (e) => {
     if (Number(e.target.value) < initialIntPrice) {

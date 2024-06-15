@@ -14,10 +14,9 @@ export const bufferAdParams = (data) => {
     console.error("Invalid input data");
     return;
   }
-  console.log("ici");
   const adParamsData = [];
-  for (let i = 0; i < data.length; i++) {
-    const validParam = data[i].adParameter;
+  for (const element of data) {
+    const validParam = element.adParameter;
     const normalizedParams = Buffer.from(validParam).toString("hex");
     const foundItem = buffedArray.find((item) => item.key === normalizedParams);
 
@@ -27,7 +26,6 @@ export const bufferAdParams = (data) => {
   if (adParamsData.length > 1) {
     return adParamsData;
   } else {
-    console.log("No matching key found");
-    return undefined;
+    throw new Error("No matching key found");
   }
 };

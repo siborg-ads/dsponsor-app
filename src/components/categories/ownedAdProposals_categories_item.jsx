@@ -1,12 +1,11 @@
 import { useContract, useContractWrite, useStorageUpload } from "@thirdweb-dev/react";
 import Image from "next/image";
 import React, { useRef, useState } from "react";
-import { trendingCategoryData } from "../../data/categories_data";
 import styles from "../../styles/createPage/style.module.scss";
 import OfferItem from "../cards/offerItem";
-import Step_1_Mint from "../sliderForm/PageMint/Step_1_Mint";
-import Step_2_Mint from "../sliderForm/PageMint/Step_2_Mint";
-import Step_3_Mint from "../sliderForm/PageMint/Step_3_Mint";
+import Step1Mint from "../sliderForm/PageMint/Step_1_Mint";
+import Step2Mint from "../sliderForm/PageMint/Step_2_Mint";
+import Step3Mint from "../sliderForm/PageMint/Step_3_Mint";
 import SliderForm from "../sliderForm/sliderForm";
 
 import { useChainContext } from "../../contexts/hooks/useChainContext";
@@ -16,9 +15,7 @@ import MainButton from "../buttons/mainButton";
 import { activated_features } from "../../data/activated_features";
 
 const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
-  const [itemdata, setItemdata] = useState(trendingCategoryData);
   const { currentChainObject } = useChainContext();
-  const [filterVal, setFilterVal] = useState(0);
   const [selectedItems, setSelectedItems] = useState([]);
   const [isSelectedItem, setIsSelectedItem] = useState({});
   const [validate, setValidate] = useState({});
@@ -31,7 +28,6 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
   const [previewImages, setPreviewImages] = useState([]);
   const [link, setLink] = useState("");
   const [errors, setErrors] = useState({});
-  const [selectedParamsIntegration, setSelectedParamsIntegration] = useState([]);
   const [showSliderForm, setShowSliderForm] = useState(false);
   const [adParameters, setAdParameters] = useState([]);
   const [imageURLSteps, setImageURLSteps] = useState([]);
@@ -45,18 +41,9 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
   );
   const [isLoadingButton, setIsLoadingButton] = useState(false);
 
-  const { mutateAsync: uploadToIPFS, isLoading: isUploading } = useStorageUpload();
+  const { mutateAsync: uploadToIPFS } = useStorageUpload();
   const { mutateAsync: submitAd } = useContractWrite(DsponsorAdminContract, "submitAdProposals");
 
-  const chainId = currentChainObject?.chainId;
-
-  const handleFilter = (category) => {
-    if (category !== "all") {
-      setItemdata(trendingCategoryData.filter((item) => item.category === category));
-    } else {
-      setItemdata(trendingCategoryData);
-    }
-  };
   const handlePreviewModal = () => {
     if (successFullUpload) {
       setSuccessFullUpload(false);
@@ -65,6 +52,7 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
     validateInputs();
     setShowPreviewModal(!showPreviewModal);
   };
+
   const handleSelection = (item) => {
     setIsFirstSelection(false);
     setIsSelectedItem((prevState) => ({
@@ -83,6 +71,7 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
       }
     });
   };
+
   const handleLogoUpload = (file, index, step) => {
     if (file) {
       const newFiles = [...files];
@@ -94,6 +83,7 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
       setPreviewImages(newPreviewImages);
     }
   };
+
   const validateInputs = () => {
     let isValid = true;
     let newErrors = {};
@@ -123,11 +113,9 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
 
   const handleSliderForm = () => {
     setShowSliderForm(!showSliderForm);
-    console.log(selectedItems, "selectedItems");
-    let adParams = [];
+
     const uniqueIds = new Set();
     const adDetails = {};
-    console.log(selectedItems, "selectedItems");
     for (const token of selectedItems) {
       for (const param of token.adParameters) {
         const paramId = param.adParameter.id;
@@ -206,11 +194,9 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
         adParameters: adParametersItems,
         data: dataItems
       };
-      console.log(argsAdSubmited, "argsAdSubmited");
       await submitAd({ args: Object.values(argsAdSubmited) });
       setSuccessFullUpload(true);
     } catch (err) {
-      console.log("ici");
       setIsLoadingButton(false);
       throw new Error("Upload to Blockchain failed.");
     } finally {
@@ -376,15 +362,15 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
             stepsRef={stepsRef}
             numSteps={numSteps}
           >
-            <Step_1_Mint
+            <Step1Mint
               stepsRef={stepsRef}
               styles={styles}
               adParameters={adParameters}
               setImageUrlVariants={setImageUrlVariants}
             />
-            <Step_2_Mint stepsRef={stepsRef} styles={styles} setLink={setLink} link={link} />
+            <Step2Mint stepsRef={stepsRef} styles={styles} setLink={setLink} link={link} />
             {imageURLSteps.map((step, index) => (
-              <Step_3_Mint
+              <Step3Mint
                 key={step.uniqueId}
                 stepsRef={stepsRef}
                 currentStep={index + 2}

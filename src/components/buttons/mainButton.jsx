@@ -12,7 +12,7 @@ const MainButton = ({ link , isPurple, text, isFullWidth }) => {
     <>
       {link ? (
         <Link
-          href={link}
+          href={link ?? ""}
           className={`${isFullWidth && "w-full"} ${isPurple ? purpleClass : whiteClass}`}
         >
           {text}

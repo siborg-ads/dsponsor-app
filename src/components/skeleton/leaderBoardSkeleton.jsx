@@ -1,6 +1,5 @@
-import React from 'react'
+import React from "react";
 import { Skeleton } from "@nextui-org/react";
-
 
 const LeaderBoardSkeleton = () => {
   return (
@@ -35,6 +34,6 @@ const LeaderBoardSkeleton = () => {
       </div>
     </section>
   );
-}
+};
 
-export default LeaderBoardSkeleton
+export default LeaderBoardSkeleton;

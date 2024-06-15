@@ -93,7 +93,7 @@ const Collection_dropdown2 = ({ data, collection }) => {
                     <Image
                       width={32}
                       height={32}
-                      src={image}
+                      src={image ?? ""}
                       className="h-8 w-8 rounded-full"
                       alt="avatar"
                     />

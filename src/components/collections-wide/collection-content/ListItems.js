@@ -92,22 +92,14 @@ const ListItems = () => {
   return (
     <>
       {tableData.map((row) => (
-        <Link
-          href="/user/avatar_6"
-          key={row.id}
-          className="flex transition-shadow hover:shadow-lg"
-          role="row"
-        >
-          <div
-            className="flex md:w-2/5 w-1/4 items-center border-t border-jacarta-100 py-4 px-4 dark:border-jacarta-600"
-            role="cell"
-          >
+        <Link href="/user/avatar_6" key={row.id} className="flex transition-shadow hover:shadow-lg">
+          <tr className="flex md:w-2/5 w-1/4 items-center border-t border-jacarta-100 py-4 px-4 dark:border-jacarta-600">
             <span className="mr-3 lg:mr-5">{row.id}</span>
             <figure className="relative mr-2 w-8 shrink-0 self-start lg:mr-5 lg:w-12">
               <Image
                 width={48}
                 height={48}
-                src={row.avatarSrc}
+                src={row.avatarSrc ?? ""}
                 alt={`avatar ${row.id}`}
                 className="rounded-2lg"
                 loading="lazy"
@@ -133,11 +125,8 @@ const ListItems = () => {
             <span className="font-display text-sm font-semibold text-jacarta-900 dark:text-white">
               {row.name}
             </span>
-          </div>
-          <div
-            className="flex justify-end items-center md:w-[12%] w-[15%] whitespace-nowrap border-t border-jacarta-100 py-4 px-4 dark:border-jacarta-600"
-            role="cell"
-          >
+          </tr>
+          <tr className="flex justify-end items-center md:w-[12%] w-[15%] whitespace-nowrap border-t border-jacarta-100 py-4 px-4 dark:border-jacarta-600">
             <span className="-ml-1" title="ETH">
               <Image
                 width={14}
@@ -148,11 +137,8 @@ const ListItems = () => {
               />
             </span>
             <span className="text-sm font-medium tracking-tight">{row.ethValue}</span>
-          </div>
-          <div
-            className="flex justify-end md:w-[12%] w-[15%] items-center border-t border-jacarta-100 py-4 px-4 dark:border-jacarta-600"
-            role="cell"
-          >
+          </tr>
+          <tr className="flex justify-end md:w-[12%] w-[15%] items-center border-t border-jacarta-100 py-4 px-4 dark:border-jacarta-600">
             <span className="-ml-1" title="ETH">
               <Image
                 width={14}
@@ -163,25 +149,16 @@ const ListItems = () => {
               />
             </span>
             <span className="text-sm font-medium tracking-tight">{row.ethVolume}</span>
-          </div>
-          <div
-            className="flex justify-end md:w-[12%] w-[15%] items-center border-t border-jacarta-100 py-4 px-4 dark:border-jacarta-600"
-            role="cell"
-          >
+          </tr>
+          <tr className="flex justify-end md:w-[12%] w-[15%] items-center border-t border-jacarta-100 py-4 px-4 dark:border-jacarta-600">
             <span className={row.isIncrease ? "text-green" : "text-red"}>{row.ethChange}</span>
-          </div>
-          <div
-            className="flex justify-end md:w-[12%] w-[15%] items-center border-t border-jacarta-100 py-4 px-4 dark:border-jacarta-600"
-            role="cell"
-          >
+          </tr>
+          <tr className="flex justify-end md:w-[12%] w-[15%] items-center border-t border-jacarta-100 py-4 px-4 dark:border-jacarta-600">
             {row.views}
-          </div>
-          <div
-            className="flex justify-end md:w-[12%] w-[15%] items-center border-t border-jacarta-100 py-4 px-4 dark:border-jacarta-600"
-            role="cell"
-          >
+          </tr>
+          <tr className="flex justify-end md:w-[12%] w-[15%] items-center border-t border-jacarta-100 py-4 px-4 dark:border-jacarta-600">
             {row.likes}
-          </div>
+          </tr>
         </Link>
       ))}
     </>

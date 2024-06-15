@@ -1,5 +1,4 @@
-import { useEffect, useState, createContext, useContext, useChain, use } from "react";
-import { useNetwork } from "@thirdweb-dev/react";
+import { useEffect, useState } from "react";
 import { Ethereum, Polygon, BaseSepoliaTestnet, Sepolia, Base } from "@thirdweb-dev/chains";
 
 import {
@@ -28,7 +27,6 @@ function InnerProviders({ children }) {
 
   useEffect(() => {
     if (selectedChain) {
-      console.log(selectedChain, "selectedChain");
       setChain(selectedChain.toString());
     }
   }, [selectedChain]);

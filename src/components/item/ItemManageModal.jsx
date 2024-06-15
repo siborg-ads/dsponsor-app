@@ -1,29 +1,9 @@
-import Link from "next/link";
 import React from "react";
-import { useSelector, useDispatch } from "react-redux";
-import { buyModalHide } from "../../redux/counterSlice";
-import Image from "next/image";
 import { activated_features } from "../../data/activated_features";
-import {
-  useAddress,
-  useSwitchChain,
-  useContract,
-  useContractWrite,
-  Web3Button,
-  useContractRead,
-  useStorageUpload,
-  useTokenDecimals,
-  CheckoutWithCard,
-  CheckoutWithEth,
-  EndDateSchema
-} from "@thirdweb-dev/react";
+import { useAddress, useContract, useContractWrite, useContractRead } from "@thirdweb-dev/react";
 import { useState, useEffect } from "react";
-import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { protocolFeesBigNumber } from "../../utils/constUtils";
-import { Divider } from "@nextui-org/react";
 import { ethers } from "ethers";
-import { Spinner } from "@nextui-org/spinner";
 import DatePicker from "react-datepicker";
 import ModalHelper from "../Helper/modalHelper";
 import PreviewModal from "../modal/previewModal";
@@ -35,7 +15,6 @@ const ItemManageModal = ({
   offerData,
   setSuccessFullListing,
   successFullListing,
-  marketplaceListings,
   royalties,
   dsponsorNFTContract,
   dsponsorMpContract
@@ -269,7 +248,6 @@ const ItemManageModal = ({
       newErrors.currencyError = "Custom contract is missing or invalid.";
       isValid = false;
     }
-    console.log(selectedCurrency);
 
     if (!selectedCurrency) {
       newErrors.currencyError = "Currency is missing or invalid.";
@@ -283,11 +261,9 @@ const ItemManageModal = ({
   const calculatePriceWithTaxes = (price, smartContract = false) => {
     const fees = [0.04, royalties / 100];
 
-  
-    const finalPrice = price -  (price * ( fees[0] + fees[1]));
-  
+    const finalPrice = price - price * (fees[0] + fees[1]);
+
     if (smartContract) {
-      console.log(finalPrice.toFixed(tokenDecimals));
       return finalPrice.toFixed(tokenDecimals);
     } else {
       return finalPrice.toFixed(3);
@@ -446,6 +422,7 @@ const ItemManageModal = ({
                                 <div className="flex flex-col gap-4 items-center text-jacarta-900 dark:text-white mb-3">
                                   <div className="flex flex-col justify-center items-center gap-1">
                                     <DatePicker
+                                      minDate={new Date()}
                                       selected={startDate}
                                       onChange={(date) => {
                                         if (date < new Date()) {
@@ -471,6 +448,7 @@ const ItemManageModal = ({
                                   </div>
                                   <div className="flex flex-col justify-center items-center gap-1">
                                     <DatePicker
+                                      minDate={new Date()}
                                       selected={endDate}
                                       onChange={(date) => {
                                         if (date < new Date()) {

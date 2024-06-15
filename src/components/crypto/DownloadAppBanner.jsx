@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 
 const DownloadAppBanner = () => {
   return (
@@ -36,7 +37,7 @@ const DownloadAppBanner = () => {
                 </span>
               </h2>
               <div className="inline-flex space-x-4">
-                <a
+                <Link
                   href="#"
                   className="group flex items-center rounded-full bg-white py-3 px-6 text-center font-semibold text-jacarta-100 shadow-white-volume transition-all hover:bg-primaryPurple-dark hover:text-white hover:shadow-primaryPurple-volume"
                 >
@@ -48,8 +49,8 @@ const DownloadAppBanner = () => {
                     alt="app store"
                   />
                   App Store
-                </a>
-                <a
+                </Link>
+                <Link
                   href="#"
                   className="flex items-center rounded-full bg-white py-3 px-6 text-center font-semibold text-jacarta-100 shadow-white-volume transition-all hover:bg-primaryPurple-dark hover:text-white hover:shadow-primaryPurple-volume"
                 >
@@ -61,7 +62,7 @@ const DownloadAppBanner = () => {
                     alt="play store"
                   />
                   Google play
-                </a>
+                </Link>
               </div>
             </div>
           </div>

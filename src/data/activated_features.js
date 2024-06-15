@@ -2,7 +2,7 @@
 // If a new feature is added there, it shall be known that one user can just devtool change it
 
 const env = process.env.NODE_ENV;
-const isProduction = env === "production";
+//const isProduction = env === "production";
 const isDevelopment = env === "development";
 
 // In development mode, we display create offer and multiple currencies (by default to allow easier dev).
@@ -27,4 +27,6 @@ export const activated_features = {
   canAcceptNativeTokens: false,
   // Whether to accept USDT as payment
   canAcceptUSDT: false,
+  // Whether to see home in the mobile menu
+  canSeeHomeInMobileMenu: false
 };

@@ -1,7 +1,5 @@
 import OfferPageContainer from "../../../containers/OfferPageContainer/OfferPageContainer";
 
-import fetchOffer from "../../../providers/methods/fetchOffer";
-
 // export async function generateMetadata({
 //                                            params,
 //                                        }) {

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import Recently_added_dropdown from "../dropdown/recently_added_dropdown";
+import RecentlyAddedDropdown from "../dropdown/RecentlyAddedDropdown";
 import {
   Accordion,
   AccordionItem,
@@ -7,16 +7,10 @@ import {
   AccordionItemButton,
   AccordionItemPanel
 } from "react-accessible-accordion";
+import Link from "next/link";
 
 const Collection_category_filter = () => {
   const [propertiesModal, setPropertiesModal] = useState(false);
-  const [propetiesAccordionValue, setPropetiesAccordionValue] = useState(null);
-
-  const handlePropartiesAccordion = (parentId, e) => {
-    setPropetiesAccordionValue(parentId);
-    const target = e.target.closest(".accordion-item");
-    target.classList.toggle("show-accordion");
-  };
 
   const sortText = [
     {
@@ -190,10 +184,10 @@ const Collection_category_filter = () => {
       <div className="mb-8 flex flex-wrap items-center justify-between">
         <div className="flex flex-wrap items-center">
           {/* <!-- Blockchain --> */}
-          <Recently_added_dropdown data={blockchainText} dropdownFor="blockchain" />
+          <RecentlyAddedDropdown data={blockchainText} dropdownFor="blockchain" />
 
           {/* <!-- Category --> */}
-          <Recently_added_dropdown data={categoryText} dropdownFor="category" />
+          <RecentlyAddedDropdown data={categoryText} dropdownFor="category" />
 
           {/* <!-- Properties --> */}
           <div className="my-1 mr-2.5">
@@ -324,7 +318,7 @@ const Collection_category_filter = () => {
             >
               <ul className="flex flex-col flex-wrap">
                 <li>
-                  <a
+                  <Link
                     href="#"
                     className="dropdown-item font-display dark:hover:bg-jacarta-600 hover:bg-jacarta-50 flex w-full items-center justify-between rounded-xl px-5 py-2 text-left text-sm transition-colors dark:text-white"
                   >
@@ -339,69 +333,69 @@ const Collection_category_filter = () => {
                       <path fill="none" d="M0 0h24v24H0z"></path>
                       <path d="M10 15.172l9.192-9.193 1.415 1.414L10 18l-6.364-6.364 1.414-1.414z"></path>
                     </svg>
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a
+                  <Link
                     href="#"
                     className="dropdown-item font-display dark:hover:bg-jacarta-600 hover:bg-jacarta-50 flex w-full items-center rounded-xl px-5 py-2 text-left text-sm transition-colors dark:text-white"
                   >
                     Art
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a
+                  <Link
                     href="#"
                     className="dropdown-item font-display dark:hover:bg-jacarta-600 hover:bg-jacarta-50 flex w-full items-center rounded-xl px-5 py-2 text-left text-sm transition-colors dark:text-white"
                   >
                     Collectibles
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a
+                  <Link
                     href="#"
                     className="dropdown-item font-display dark:hover:bg-jacarta-600 hover:bg-jacarta-50 flex w-full items-center rounded-xl px-5 py-2 text-left text-sm transition-colors dark:text-white"
                   >
                     Domain
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a
+                  <Link
                     href="#"
                     className="dropdown-item font-display dark:hover:bg-jacarta-600 hover:bg-jacarta-50 flex w-full items-center rounded-xl px-5 py-2 text-left text-sm transition-colors dark:text-white"
                   >
                     Music
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a
+                  <Link
                     href="#"
                     className="dropdown-item font-display dark:hover:bg-jacarta-600 hover:bg-jacarta-50 flex w-full items-center rounded-xl px-5 py-2 text-left text-sm transition-colors dark:text-white"
                   >
                     Photography
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a
+                  <Link
                     href="#"
                     className="dropdown-item font-display dark:hover:bg-jacarta-600 hover:bg-jacarta-50 flex w-full items-center rounded-xl px-5 py-2 text-left text-sm transition-colors dark:text-white"
                   >
                     Virtual World
-                  </a>
+                  </Link>
                 </li>
               </ul>
             </div>
           </div>
 
           {/* <!-- Sale Type --> */}
-          <Recently_added_dropdown data={saleTypeText} dropdownFor="sale-type" />
+          <RecentlyAddedDropdown data={saleTypeText} dropdownFor="sale-type" />
 
           {/* <!-- Price Range --> */}
-          <Recently_added_dropdown data={saleTypeText} dropdownFor="price-range" />
+          <RecentlyAddedDropdown data={saleTypeText} dropdownFor="price-range" />
         </div>
 
         {/* <!-- Sort --> */}
-        <Recently_added_dropdown data={sortText} dropdownFor="recently_added" />
+        <RecentlyAddedDropdown data={sortText} dropdownFor="recently_added" />
       </div>
     </>
   );

@@ -2,12 +2,10 @@ import React, { useEffect, useState } from "react";
 import { collection_activity_item_data } from "../../data/collection_data";
 import Link from "next/link";
 import Image from "next/image";
-import Tippy from "@tippyjs/react";
 import "tippy.js/dist/tippy.css";
 
 const Validated_refused_items = ({ statut, proposalData, isToken }) => {
   const [modalStates, setModalStates] = useState({});
-  const [data, setData] = useState(collection_activity_item_data);
   const [statutItem, setStatutItem] = useState(null);
 
   const openModal = (tokenId) => {
@@ -21,35 +19,21 @@ const Validated_refused_items = ({ statut, proposalData, isToken }) => {
     return self.indexOf(value) === index;
   }
 
-  const [filterData, setfilterData] = useState(
+  const [filterData, setFilterData] = useState(
     collection_activity_item_data.map((item) => {
       const { category } = item;
       return category;
     })
   );
 
-  const [inputText, setInputText] = useState("");
-
-  const handleFilter = (category) => {
-    setData(collection_activity_item_data.filter((item) => item.category === category));
-  };
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const newArray = collection_activity_item_data.filter((item) => {
-      return item.title?.toLowerCase().includes(inputText);
-    });
-    setData(newArray);
-    setInputText("");
-  };
-
   useEffect(() => {
-    setfilterData(filterData.filter(onlyUnique));
+    setFilterData(filterData.filter(onlyUnique));
     if (statut) {
       setStatutItem("check");
     } else {
       setStatutItem("refused");
     }
-  }, []);
+  }, [filterData, statut]);
   function formatTokenId(str) {
     if (str.length <= 6) {
       return str;
@@ -90,7 +74,7 @@ const Validated_refused_items = ({ statut, proposalData, isToken }) => {
 
           <div className="mb-10 shrink-0 basis-8/12 space-y-5 lg:mb-0 lg:pr-10">
             {proposalData?.map((item) => {
-              const { adParametersList, proposalIds, tokenId, reason, title, tokenData } = item;
+              const { adParametersList, tokenId, reason, tokenData } = item;
 
               return (
                 <div
@@ -102,7 +86,7 @@ const Validated_refused_items = ({ statut, proposalData, isToken }) => {
                       <button className="w-full" onClick={() => openModal(tokenId)}>
                         {getImageUrl(adParametersList) && (
                           <Image
-                            src={getImageUrl(adParametersList)}
+                            src={getImageUrl(adParametersList) ?? ""}
                             alt={item.title}
                             height={75}
                             width={75}
@@ -119,7 +103,7 @@ const Validated_refused_items = ({ statut, proposalData, isToken }) => {
                       >
                         <div className="modal-dialog !my-0 flex h-full max-w-4xl items-center justify-center relative">
                           <Image
-                            src={getImageUrl(adParametersList)}
+                            src={getImageUrl(adParametersList) ?? ""}
                             alt={item.title}
                             height={300}
                             width={300}
@@ -145,13 +129,12 @@ const Validated_refused_items = ({ statut, proposalData, isToken }) => {
                             <path d="M12 10.586l4.95-4.95 1.414 1.414-4.95 4.95 4.95 4.95-1.414 1.414-4.95-4.95-4.95 4.95-1.414-1.414 4.95-4.95-4.95-4.95L7.05 5.636z" />
                           </svg>
                         </button>
-                        <a
-                          href={getImageUrl(adParametersList)}
-                          download
+                        <Link
+                          href={getImageUrl(adParametersList) ?? ""}
                           className="absolute bottom-6 right-6 btn btn-primary flex items-center justify-center p-2"
                         >
                           {/* SVG icon for download */}
-                        </a>
+                        </Link>
                       </div>
                       {/* End Modal */}
                     </figure>
@@ -164,10 +147,7 @@ const Validated_refused_items = ({ statut, proposalData, isToken }) => {
 
                       <div className="flex flex-col">
                         <button className="flex min-w-[20px] text-white max-w-[20rem]  select-none overflow-hidden text-ellipsis whitespace-nowrap">
-                          <Link
-                            href={adParametersList?.linkURL ? adParametersList.linkURL : "/"}
-                            target="_blank"
-                          >
+                          <Link href={adParametersList.linkURL ?? ""} target="_blank">
                             {adParametersList?.linkURL}
                           </Link>
                         </button>

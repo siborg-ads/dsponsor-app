@@ -2,32 +2,10 @@ import React from "react";
 
 import Image from "next/image";
 import "tippy.js/themes/light.css";
-import { useChainContext } from "../../contexts/hooks/useChainContext";
+
 import OfferItem from "../cards/offerItem";
 
 const Auctions_categories = ({ data, isOwner }) => {
-  const { currentChainObject } = useChainContext();
-  const chainId = currentChainObject?.chainId;
-
-  const sortText = [
-    {
-      id: 1,
-      text: "Recently Added"
-    },
-    {
-      id: 2,
-      text: "Price: Low to High"
-    },
-    {
-      id: 3,
-      text: "Price: high to low"
-    },
-    {
-      id: 4,
-      text: "Auction Ending Soon"
-    }
-  ];
-
   if (!data) {
     return (
       <div className="flex w-full justify-center">

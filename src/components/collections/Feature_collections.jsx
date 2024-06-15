@@ -1,6 +1,6 @@
 import React from "react";
 import HeadLine from "../headLine";
-import Feature_collections_carousel from "../carousel/Feature_collection_carousel";
+import FeatureCollectionsCarousel from "../carousel/Feature_collection_carousel";
 import Image from "next/image";
 
 const Feature_collections = ({ bgWhite = false }) => {
@@ -25,7 +25,7 @@ const Feature_collections = ({ bgWhite = false }) => {
             classes="font-display text-jacarta-900 mb-8 text-center text-3xl dark:text-white"
           />
           <div className="relative">
-            <Feature_collections_carousel />
+            <FeatureCollectionsCarousel />
           </div>
         </div>
       </section>

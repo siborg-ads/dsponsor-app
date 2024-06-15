@@ -36,8 +36,10 @@ export function computeBidAmounts(
     bonusRefundBps
   );
 
-  if(newBidPerToken.lt(minimalBidPerToken)) {
-    errors.push(`New bid per token must be greater than ${minimalBidPerToken.toString()} (minimal bid per token) - ${newBidPerToken.toString()}`);
+  if (newBidPerToken.lt(minimalBidPerToken)) {
+    errors.push(
+      `New bid per token must be greater than ${minimalBidPerToken.toString()} (minimal bid per token) - ${newBidPerToken.toString()}`
+    );
   }
 
   const refundBonusPerToken =

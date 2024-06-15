@@ -8,7 +8,7 @@ const headLine = ({ text, classes, image, pera }) => {
           <Image
             width={80}
             height={80}
-            src={image}
+            src={image ?? ""}
             alt="headling"
             className={"mr-1 inline-block h-6 w-6 bg-contain bg-center text-xl"}
           />

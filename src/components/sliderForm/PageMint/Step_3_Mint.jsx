@@ -8,7 +8,6 @@ import { FileUploader } from "react-drag-drop-files";
 const Step_3_Mint = ({
   id,
   stepsRef,
-  offerIds,
   styles,
   file,
   handleLogoUpload,
@@ -101,7 +100,7 @@ const Step_3_Mint = ({
                   style={{ width: `${widthRatioImage}px`, height: `${heightRatioImage}px` }}
                 >
                   <Image
-                    src={previewImage ? previewImage : "/"}
+                    src={previewImage ?? ""}
                     fill={true}
                     alt="Preview"
                     className="object-contain h-full"

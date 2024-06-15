@@ -7,7 +7,7 @@ const MainAuctions = ({ auctions, isAuctionsLoading }) => {
   const [hotAuctions, setHotAuctions] = useState([]);
 
   useMemo(() => {
-    if (!mount && auctions?.length > 0) {
+    if (!mount && auctions && auctions.length > 0) {
       const tempHotAuctions = auctions
         ?.filter(
           (auction) =>

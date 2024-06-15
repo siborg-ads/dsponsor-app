@@ -64,10 +64,10 @@ const Feature_collections_carousel = () => {
             <SwiperSlide key={id}>
               <article>
                 <div className="dark:bg-secondaryBlack dark:border-jacarta-700 border-jacarta-100 rounded-2xl border bg-white p-[1.1875rem] transition-shadow hover:shadow-lg">
-                  <Link href={`/item/item_${itemLink}`} className="flex space-x-[0.625rem]">
+                  <Link href={`/item/item_${itemLink ?? ""}`} className="flex space-x-[0.625rem]">
                     <figure className="w-[74.5%] h-full">
                       <Image
-                        src={bigImage}
+                        src={bigImage ?? ""}
                         alt="item 1"
                         className="rounded-[0.625rem] w-full h-full object-cover"
                         width={150}
@@ -78,7 +78,7 @@ const Feature_collections_carousel = () => {
                       <Image
                         width={68}
                         height={74}
-                        src={subImage1}
+                        src={subImage1 ?? ""}
                         alt="item 1"
                         className="h-full rounded-[0.625rem] object-cover"
                         loading="lazy"
@@ -87,7 +87,7 @@ const Feature_collections_carousel = () => {
                       <Image
                         width={68}
                         height={74}
-                        src={subImage2}
+                        src={subImage2 ?? ""}
                         alt="item 1"
                         className="h-full rounded-[0.625rem] object-cover"
                         loading="lazy"
@@ -95,7 +95,7 @@ const Feature_collections_carousel = () => {
                       <Image
                         width={68}
                         height={74}
-                        src={subImage3}
+                        src={subImage3 ?? ""}
                         alt="item 1"
                         className="h-full rounded-[0.625rem] object-cover"
                         loading="lazy"
@@ -104,7 +104,7 @@ const Feature_collections_carousel = () => {
                   </Link>
 
                   <Link
-                    href={`/item/item_${itemLink}`}
+                    href={`/item/item_${itemLink ?? ""}`}
                     className="font-display hover:text-primaryPurple dark:hover:text-primaryPurple text-jacarta-900 mt-4 block text-base dark:text-white"
                   >
                     {title}
@@ -112,17 +112,17 @@ const Feature_collections_carousel = () => {
 
                   <div className="mt-2 flex items-center justify-between text-sm font-medium tracking-tight">
                     <div className="flex flex-wrap items-center">
-                      <Link href={`/item/item_${itemLink}`} className="mr-2 shrink-0">
+                      <Link href={`/item/item_${itemLink ?? ""}`} className="mr-2 shrink-0">
                         <Image
                           width={20}
                           height={20}
-                          src={userImage}
+                          src={userImage ?? ""}
                           alt="owner"
                           className="h-5 w-5 rounded-full"
                         />
                       </Link>
                       <span className="dark:text-jacarta-100 mr-1">by</span>
-                      <Link href={`/item/item_${itemLink}`} className="text-primaryPurple">
+                      <Link href={`/item/item_${itemLink ?? ""}`} className="text-primaryPurple">
                         <span>{userName}</span>
                       </Link>
                     </div>

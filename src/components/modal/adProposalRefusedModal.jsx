@@ -1,18 +1,14 @@
 import React, { useEffect, useState } from "react";
-import Link from "next/link";
-import Image from "next/image";
 import { Web3Button } from "@thirdweb-dev/react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useChainContext } from "../../contexts/hooks/useChainContext";
 const AddProposalRefusedModal = ({
-  id,
   selectedItems,
   successFullModalObject,
   closeRefuseModal,
   handleCommentChange,
   handleItemSubmit,
-  setRefusedAdModal,
   successFullRefuseModal
 }) => {
   const [filteredItems, setFilteredItems] = useState([]);
@@ -66,7 +62,7 @@ const AddProposalRefusedModal = ({
           </div>
           <div className="modal-body max-h-[400px] overflow-auto p-6 flex gap-4 flex-col items-center ">
             {filteredItems.map((item) => {
-              const { tokenId, offerId, recordsProposalId } = item;
+              const { tokenId } = item;
               return !successFullRefuseModal ? (
                 <div className="mb-6 w-full ">
                   <div className="flex justify-between">

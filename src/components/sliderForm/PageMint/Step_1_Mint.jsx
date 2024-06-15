@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import Image from "next/image";
 
 const Step_1_Mint = ({ stepsRef, styles, adParameters, setImageUrlVariants }) => {
   const [selectedItems, setSelectedItems] = useState([]);

@@ -15,14 +15,13 @@ import React, { useEffect, useRef, useState } from "react";
 import "tippy.js/dist/tippy.css";
 import Meta from "../../components/Meta.jsx";
 import PreviewModal from "../../components/modal/previewModal.jsx";
-import Step_1_Mint from "../../components/sliderForm/PageMint/Step_1_Mint.jsx";
-import Step_2_Mint from "../../components/sliderForm/PageMint/Step_2_Mint.jsx";
-import Step_3_Mint from "../../components/sliderForm/PageMint/Step_3_Mint.jsx";
+import Step1Mint from "../../components/sliderForm/PageMint/Step_1_Mint.jsx";
+import Step2Mint from "../../components/sliderForm/PageMint/Step_2_Mint.jsx";
+import Step3Mint from "../../components/sliderForm/PageMint/Step_3_Mint.jsx";
 import SliderForm from "../../components/sliderForm/sliderForm.jsx";
 import styles from "../../styles/createPage/style.module.scss";
 
 import { getCookie } from "cookies-next";
-import "tippy.js/dist/tippy.css";
 import { ItemsTabs } from "../../components/component.js";
 
 import BuyModal from "../../components/modal/buyModal.jsx";
@@ -40,12 +39,10 @@ import { fetchOfferToken } from "../../providers/methods/fetchOfferToken.js";
 // import { fetchAllTokenListedByListingId } from "../../providers/methods/fetchAllTokenListedByListingId.js";
 import config from "../../providers/utils/config.js";
 import stringToUint256 from "../../utils/stringToUnit256.js";
-import { getAddress, parseUnits } from "ethers/lib/utils";
+import { getAddress } from "ethers/lib/utils";
 
 import "react-toastify/dist/ReactToastify.css";
-import ModalHelper from "../../components/Helper/modalHelper.jsx";
 import ItemLastBids from "../../components/tables/ItemLastBids";
-import itemLastBids from "../../components/tables/ItemLastBids";
 import { activated_features } from "../../data/activated_features.js";
 
 const TokenPageContainer = () => {
@@ -57,10 +54,10 @@ const TokenPageContainer = () => {
 
   const [tokenIdString, setTokenIdString] = useState(null);
   const maxBps = 10000;
-  const [data, setData] = useState([]);
   const [offerData, setOfferData] = useState(null);
   const address = useAddress();
   const [isOwner, setIsOwner] = useState(false);
+  const [firstSelectedListing, setFirstSelectedListing] = useState({});
   const [files, setFiles] = useState([]);
   const [previewImages, setPreviewImages] = useState([]);
   const [imageModal, setImageModal] = useState(false);
@@ -74,8 +71,8 @@ const TokenPageContainer = () => {
   const [showPreviewModal, setShowPreviewModal] = useState(false);
   const [validate, setValidate] = useState(false);
   const [currency, setCurrency] = useState(null);
-  const [adStatut, setAdStatut] = useState(null);
-  const [offerNotFormated, setOfferNotFormated] = useState(false);
+  const [, setAdStatut] = useState(null);
+  const [offerNotFormated] = useState(false);
   const [price, setPrice] = useState(null);
   const [buyModal, setBuyModal] = useState(false);
   const [buyMethod, setBuyMethod] = useState(false);
@@ -93,46 +90,38 @@ const TokenPageContainer = () => {
   const [numSteps, setNumSteps] = useState(2);
   const [tokenStatut, setTokenStatut] = useState(null);
   const [tokenCurrencyAddress, setTokenCurrencyAddress] = useState(null);
-  const [tokenBigIntPrice, setTokenBigIntPrice] = useState(null);
+  const [, setTokenBigIntPrice] = useState(null);
   const [successFullBid, setSuccessFullBid] = useState(false);
   const [isTokenInAuction, setIsTokenInAuction] = useState(false);
   const [successFullListing, setSuccessFullListing] = useState(false);
-  const [buyoutPriceAmount, setBuyoutPriceAmount] = useState(null);
+  const [buyoutPriceAmount] = useState(null);
   const [royaltiesFeesAmount, setRoyaltiesFeesAmount] = useState(null);
   const [bidsAmount, setBidsAmount] = useState(null);
   const [currencyDecimals, setCurrencyDecimals] = useState(null);
   const [isLister, setIsLister] = useState(false);
-  const [selectedItems, setSelectedItems] = useState([]);
-  const NATIVECurrency = config[chainId]?.smartContracts?.NATIVE;
+  const [, setSelectedItems] = useState([]);
+  const [bids, setBids] = useState([]);
 
   const { contract: DsponsorAdminContract } = useContract(
     config[chainId]?.smartContracts?.DSPONSORADMIN?.address,
     config[chainId]?.smartContracts?.DSPONSORADMIN?.abi
   );
   const { contract: DsponsorNFTContract } = useContract(offerData?.nftContract?.id);
-  const { mutateAsync: uploadToIPFS, isLoading: isUploading } = useStorageUpload();
+  const { mutateAsync: uploadToIPFS } = useStorageUpload();
   const { mutateAsync: mintAndSubmit } = useContractWrite(DsponsorAdminContract, "mintAndSubmit");
   const { mutateAsync: submitAd } = useContractWrite(DsponsorAdminContract, "submitAdProposals");
   const { contract: tokenContract } = useContract(tokenCurrencyAddress, "token");
-  const { data: symbolContract } = useContractRead(tokenContract && tokenContract, "symbol");
-  const { data: decimalsContract } = useContractRead(tokenContract && tokenContract, "decimals");
   const { data: tokenBalance } = useBalance(tokenCurrencyAddress);
-  const { mutateAsync: approve, isLoading: isLoadingApprove } = useContractWrite(
-    tokenContract,
-    "approve"
-  );
+  const { mutateAsync: approve } = useContractWrite(tokenContract, "approve");
 
   const { data: bps } = useContractRead(DsponsorAdminContract, "feeBps");
-  const { data: isAllowedToMint, isLoading: isLoadingAllowedToMint } = useContractRead(
+  const { data: isAllowedToMint } = useContractRead(
     DsponsorNFTContract,
     "tokenIdIsAllowedToMint",
     tokenIdString
   );
   const { data: isUserOwner } = useContractRead(DsponsorNFTContract, "ownerOf", [tokenIdString]);
-  const { data: royaltiesInfo } = useContractRead(DsponsorNFTContract, "royaltyInfo", [
-    tokenIdString,
-    100
-  ]);
+
   const { contract: dsponsorMpContract } = useContract(
     config[chainId]?.smartContracts?.DSPONSORMP?.address
   );
@@ -155,7 +144,7 @@ const TokenPageContainer = () => {
         const combinedData = {
           ...offer
         };
-console.log(combinedData, "combinedData")
+        console.log(combinedData, "combinedData");
         setOfferData(combinedData);
       };
       setSelectedChain(config[chainId]?.chainNameProvider);
@@ -179,6 +168,47 @@ console.log(combinedData, "combinedData")
       setMarketplaceListings(offerData?.nftContract?.tokens[0]?.marketplaceListings);
     }
   }, [offerData]);
+
+  useEffect(() => {
+    let bids = [];
+
+    if (marketplaceListings.length > 0) {
+      marketplaceListings.map((listing) => {
+        if (listing?.bids) {
+          // bids is an array of arrays of bids + currency symbol and decimals
+          // bids is [{bid1, currency, listing}, {bid2, currency, listing}] with currency = {symbol, decimals} and listing = {id, listingType}
+          bids = [
+            ...bids,
+            ...listing.bids.map((bid) => ({
+              bid: bid,
+              currency: {
+                contract: listing.currency,
+                currencySymbol: listing.currencySymbol,
+                currencyDecimals: listing.currencyDecimals
+              },
+              listing: {
+                id: listing.id,
+                listingType: listing.listingType
+              }
+            }))
+          ];
+        }
+      });
+    }
+
+    // regroup by listing id so we have a final array of [[bid1, bid2], [bid3, bid4], ...] with currency = {symbol, decimals} and listing = {id, listingType}
+    bids = bids.reduce((acc, bid) => {
+      const listingIndex = acc.findIndex((listing) => listing[0].listing.id === bid.listing.id);
+      if (listingIndex === -1) {
+        acc.push([bid]);
+      } else {
+        acc[listingIndex].push(bid);
+      }
+      return acc;
+    }, []);
+
+    setBids(bids);
+  }, [marketplaceListings]);
 
   useEffect(() => {
     if (!offerData) return;
@@ -279,6 +309,13 @@ console.log(combinedData, "combinedData")
       setCurrency(offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.currencySymbol);
       return;
     }
+    if (offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.status === "COMPLETED") {
+      setTokenStatut("COMPLETED");
+      setTokenCurrencyAddress(offerData?.nftContract?.prices[0]?.currency);
+      setCurrency(offerData?.nftContract?.prices[0]?.currencySymbol);
+      setCurrencyDecimals(offerData?.nftContract?.prices[0]?.currencyDecimals);
+      return;
+    }
     if (
       offerData?.nftContract?.tokens[0]?.mint !== null &&
       offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.length === 0
@@ -286,10 +323,6 @@ console.log(combinedData, "combinedData")
       setTokenStatut("MINTED");
       setTokenCurrencyAddress(offerData?.nftContract?.prices[0]?.currency);
       setTokenBigIntPrice(offerData?.nftContract?.prices[0]?.amount);
-    }
-
-    if (offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.status === "COMPLETED") {
-      setTokenStatut("COMPLETED");
     }
   }, [
     offerData,
@@ -317,7 +350,7 @@ console.log(combinedData, "combinedData")
         setIsOwner(true);
       }
     }
-  }, [isUserOwner, address, marketplaceListings]);
+  }, [isUserOwner, address, marketplaceListings, firstSelectedListing]);
 
   useEffect(() => {
     if (!tokenId || !offerData) return;
@@ -502,43 +535,21 @@ console.log(combinedData, "combinedData")
       const parsedPriceAmount = ethers.utils.parseUnits(price.toString(), currencyDecimals);
       const computedFeesAmount = parsedPriceAmount.mul(protocolFeeBps).div(maxBps);
       const parsedPriceAndProtocolFeesAmount = parsedPriceAmount.add(computedFeesAmount);
-      console.log(
-        `Parsed price and protocol fees amount: ${parsedPriceAndProtocolFeesAmount.toString()} - has token balance: ${tokenBalance.value.toString()} - Price: ${price.toString()} - Protocol fees: ${computedFeesAmount.toString()}`
-      );
       let hasEnoughBalance = checkUserBalance(tokenBalance, parsedPriceAndProtocolFeesAmount);
       const isWrappedNative = currency === "WETH";
-      const isNative = currency === "ETH";
-      console.log(
-        `Checking if the user has enough balance for approval: ${hasEnoughBalance} - is wrappable ${isWrappedNative}`
-      );
       // If it's a wrapped native token, that the user has agreed to approve the contract
       // But he has not enough balance as wrapped native token but he has enough balance as native token
       // We need to convert the native token to wrapped native token
       if (isWrappedNative && !hasEnoughBalance) {
-        console.log(
-          `Has token balance: ${tokenBalance.value.toString()} - Price and protocol fees amount: ${parsedPriceAndProtocolFeesAmount.toString()}`
-        );
-        console.log(parsedPriceAndProtocolFeesAmount.toString(), tokenBalance.value.toString());
         const missingBalance = parsedPriceAndProtocolFeesAmount
           .sub(BigNumber.from(tokenBalance.value))
           .abs();
-        console.log(`Missing balance: ${missingBalance.toString()}`);
-        console.log(computedFeesAmount.toString());
         const missingBalanceWithProtocolFee = missingBalance.add(computedFeesAmount);
-        console.log(
-          `Missing balance with protocol fee: ${missingBalanceWithProtocolFee.toString()}`
-        );
-        console.log(
-          `Wrapping ${missingBalanceWithProtocolFee.toString()} native token to wrapped native token`
-        );
         await wrapNative({
           overrides: {
             value: missingBalanceWithProtocolFee
           }
         });
-        console.log(
-          `Wrapped ${missingBalanceWithProtocolFee.toString()} native token to wrapped native token`
-        );
         hasEnoughBalance = true;
       }
 
@@ -611,14 +622,12 @@ console.log(combinedData, "combinedData")
         : { args: [functionWithPossibleArgs] };
 
       if (marketplaceListings.length <= 0) {
-        console.log("mintAndSubmit", argsWithPossibleOverrides, "mintAndSubmit");
         // address of the minter as referral
         argsWithPossibleOverrides.args[0].referralAdditionalInformation = referralAddress;
         await mintAndSubmit(argsWithPossibleOverrides);
         setSuccessFullUpload(true);
         setIsOwner(true);
       } else {
-        console.log("directBuy", argsWithPossibleOverrides, "directBuy");
         await directBuy(argsWithPossibleOverrides);
         setSuccessFullUpload(true);
       }
@@ -631,7 +640,7 @@ console.log(combinedData, "combinedData")
       setIsLoadingButton(false);
     }
   };
-  const handleSubmit = async (preview = false) => {
+  const handleSubmit = async () => {
     if (!buyMethod) {
       if (!validateInputs()) {
         return;
@@ -665,7 +674,6 @@ console.log(combinedData, "combinedData")
 
       const functionWithPossibleArgs = Object.values(argsAdSubmited);
 
-      console.log("submitAd", functionWithPossibleArgs, "submitAd");
       await submitAd({ args: functionWithPossibleArgs });
       setSuccessFullUpload(true);
     } catch (error) {
@@ -680,17 +688,12 @@ console.log(combinedData, "combinedData")
 
   const checkUserBalance = (tokenAddressBalance, priceToken) => {
     try {
-      console.log("Token balance:", tokenAddressBalance);
-      console.log("displayValue:", tokenAddressBalance.displayValue);
-      console.log("Price token:", priceToken);
       const parsedTokenBalance = ethers.utils.parseUnits(
         tokenAddressBalance.displayValue,
         currencyDecimals
       );
       const parsedPriceToken = parseFloat(priceToken.toString());
 
-      console.log("Parsed token balance:", parsedTokenBalance);
-      console.log("Parsed price token:", parsedPriceToken);
       if (parsedTokenBalance >= parsedPriceToken) {
         return true;
       } else {
@@ -725,7 +728,9 @@ console.log(combinedData, "combinedData")
     validateInputs();
   };
 
-  const firstSelectedListing = marketplaceListings[0];
+  useEffect(() => {
+    setFirstSelectedListing(marketplaceListings[0]);
+  }, [marketplaceListings]);
 
   useEffect(() => {
     if (
@@ -740,7 +745,7 @@ console.log(combinedData, "combinedData")
     } else {
       setIsLister(false);
     }
-  }, [marketplaceListings, address]);
+  }, [marketplaceListings, address, firstSelectedListing]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -798,11 +803,7 @@ console.log(combinedData, "combinedData")
     buttonTitle: "Manage Spaces",
     hrefButton: `/manage/${address}`
   };
-  const statutAds = {
-    pending: "🔍 Your ad is pending, wait the validation of the creator",
-    rejected: "❌ Your ad has been rejected, you can submit an other ads below",
-    accepted: "🎉 Congratulations ! Your ad has been accepted by the creator ! "
-  };
+
   const metadata = {
     title: `Token || SiBorg Ads - The Web3 Monetization Solution`,
     keyword:
@@ -818,8 +819,6 @@ console.log(combinedData, "combinedData")
       </div>
     );
   }
-
-
 
   if (!offerData) {
     return null;
@@ -925,7 +924,6 @@ console.log(combinedData, "combinedData")
                       <span className="text-green text-sm font-medium tracking-tight mr-2">
                         {finalPrice} {currency}
                       </span>
-                   
                     </div>
                   )}
                 <span className="dark:text-jacarta-100 text-jacarta-100 text-sm">
@@ -935,7 +933,7 @@ console.log(combinedData, "combinedData")
                 <span className="text-jacarta-100 block text-sm ">
                   Creator <strong className="dark:text-white">{royalties}% royalties</strong>
                 </span>
-                <span className="text-jacarta-100 block text-sm flex flex-wrap gap-1">
+                <span className="text-jacarta-100 text-sm flex flex-wrap gap-1">
                   Ownership period:{" "}
                   <strong className="dark:text-white">
                     {offerData?.nftContract?.tokens[0]?.metadata?.valid_from &&
@@ -1033,16 +1031,15 @@ console.log(combinedData, "combinedData")
         </div>
       </section>
 
-      {firstSelectedListing?.listingType === "Auction" &&
-        firstSelectedListing.startTime < now &&
-        firstSelectedListing.endTime > now && (
+      {bids &&
+        bids.filter((listing) =>
+          listing.map((bid) => {
+            bid.listing.listingType === "Auction";
+          })
+        ).length > 0 && (
           <div className="container mb-12">
             <Divider className="my-4" />
-            <ItemLastBids
-              currencySymbol={currency}
-              currencyDecimals={currencyDecimals}
-              lastBids={firstSelectedListing.bids}
-            />
+            <ItemLastBids bids={bids} />
           </div>
         )}
 
@@ -1095,15 +1092,15 @@ console.log(combinedData, "combinedData")
                 stepsRef={stepsRef}
                 numSteps={numSteps}
               >
-                <Step_1_Mint
+                <Step1Mint
                   stepsRef={stepsRef}
                   styles={styles}
                   adParameters={adParameters}
                   setImageUrlVariants={setImageUrlVariants}
                 />
-                <Step_2_Mint stepsRef={stepsRef} styles={styles} setLink={setLink} link={link} />
+                <Step2Mint stepsRef={stepsRef} styles={styles} setLink={setLink} link={link} />
                 {imageURLSteps.map((id, index) => (
-                  <Step_3_Mint
+                  <Step3Mint
                     key={id}
                     stepsRef={stepsRef}
                     currentStep={index + 2}
@@ -1171,7 +1168,7 @@ console.log(combinedData, "combinedData")
             handleBuyModal={handleBuyModal}
             name={name}
             marketplaceListings={marketplaceListings}
-            image={image}
+            image={image ?? ""}
             selectedCurrency={currency}
             royalties={royalties}
             tokenId={tokenId}

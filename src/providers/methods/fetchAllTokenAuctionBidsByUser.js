@@ -47,7 +47,6 @@ query FetchAllTokenAuctionBidsByUser($userAddr: ID!) {
   const response = await executeQuery(path.href, GET_DATA, { userAddr: address });
   const bids = response?.marketplaceBids;
 
-
   const mostRecentBids = bids.reduce((acc, bid) => {
     const tokenKey = `${bid.listing.token.tokenId}-${bid.listing.token.nftContract.adOffers.find((offer) => offer).id}`;
     if (!acc[tokenKey] || acc[tokenKey].creationTimestamp < bid.creationTimestamp) {
@@ -62,6 +61,4 @@ query FetchAllTokenAuctionBidsByUser($userAddr: ID!) {
   }));
 
   return resultMappedData;
-
-
 };

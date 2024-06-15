@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
-import Image from "next/image";
 import Link from "next/link";
 import activityToTopHolders from "./utils/activityToTopHolders";
 import activityToTopSpenders from "./utils/activityToTopSpenders";
@@ -9,7 +8,7 @@ import config from "../../providers/utils/config";
 import { useChainContext } from "../../contexts/hooks/useChainContext";
 import TopCards from "../leaderBoard/topCards";
 
-const renderTable = (title, data, columns) => {
+const renderTable = (data, columns) => {
   if (!data || data.length === 0) {
     return <div className="text-center py-4">No data available</div>;
   }
@@ -47,12 +46,12 @@ const renderTable = (title, data, columns) => {
 
 const LeaderboardTable = ({ activity }) => {
   const { currentChainObject } = useChainContext();
-  const [activeBlockchain, setActiveBlockchain] = useState(currentChainObject?.chainId);
+  const [activeBlockchain] = useState(currentChainObject?.chainId);
   const [itemActive, setItemActive] = useState(1);
-  const [chainId, setChainId] = useState();
+  const [, setChainId] = useState();
   const [filteredActivity, setFilteredActivity] = useState([]);
 
-  const [blockChainOptions, setBlockChainOptions] = useState([]);
+  const [, setBlockChainOptions] = useState([]);
   const [leaderboards, setLeaderboards] = useState({});
 
   useEffect(() => {
@@ -102,7 +101,7 @@ const LeaderboardTable = ({ activity }) => {
         </Link>
       )
     },
-    { header: "Balance", render: (item) => item.balance },
+    { header: "Balance", render: (item) => item.balance }
     // { header: "Chain", render: () => config[chainId].chainName }
     // { header: "DPoints", render: (item) => item.dPoints }
   ];
@@ -118,7 +117,7 @@ const LeaderboardTable = ({ activity }) => {
         </Link>
       )
     },
-    { header: "# of Refunds", render: (item) => item.refunds },
+    { header: "# of Refunds", render: (item) => item.refunds }
     // { header: "Chain ", render: () => config[chainId].chainName }
     // { header: "DPoints", render: (item) => item.dPoints }
   ];
@@ -161,7 +160,7 @@ const LeaderboardTable = ({ activity }) => {
               <div className="flex gap-2">
                 <span>{config[activeBlockchain]?.chainName}</span>
                 <Image
-                  src={config[activeBlockchain]?.logoURL}
+                  src={config[activeBlockchain].logoURL ?? ""}
                   width={17}
                   height={17}
                   alt="blockchain logo"
@@ -183,7 +182,7 @@ const LeaderboardTable = ({ activity }) => {
                             {config[option]?.chainName}
                           </span>
                           <Image
-                            src={config[option]?.logoURL}
+                            src={config[option].logoURL ?? ""}
                             width={17}
                             height={17}
                             alt="blockchain logo"
@@ -204,7 +203,7 @@ const LeaderboardTable = ({ activity }) => {
                       <div className="dropdown-item flex gap-2 w-full items-center rounded-xl px-5 py-2 text-left font-display text-sm transition-colors hover:bg-jacarta-50 dark:text-white dark:hover:bg-jacarta-600">
                         {config[option]?.chainName}
                         <Image
-                          src={config[option]?.logoURL}
+                          src={config[option].logoURL ?? ""}
                           width={17}
                           height={17}
                           alt="blockchain logo"

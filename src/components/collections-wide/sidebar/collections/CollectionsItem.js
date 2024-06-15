@@ -46,7 +46,7 @@ const CollectionsItem = () => {
               <Image
                 width={40}
                 height={40}
-                src={item.imageSrc}
+                src={item.imageSrc ?? ""}
                 alt={item.alt}
                 className="rounded-2lg"
                 loading="lazy"

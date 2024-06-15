@@ -1,4 +1,5 @@
 import SingleWalletFeature from "./SingleWalletFeature";
+import Link from "@/components/ui/Link";
 
 const index = () => {
   return (
@@ -21,9 +22,9 @@ const index = () => {
 
         <p className="mt-4 text-center text-lg dark:text-jacarta-100">
           Your funds will always be safe with DSponsor.{" "}
-          <a href="#" className="text-primaryPurple">
+          <Link href="#" className="text-primaryPurple">
             Learn More.
-          </a>
+          </Link>
         </p>
       </div>
     </section>

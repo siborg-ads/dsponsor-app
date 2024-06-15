@@ -1,29 +1,16 @@
-import React, { useEffect, useState, useRef, useCallback } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/router";
-import { FileUploader } from "react-drag-drop-files";
 import Meta from "../../components/Meta";
 import Image from "next/image";
-import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import {
-  useAddress,
-  useSwitchChain,
-  useContract,
-  useContractWrite,
-  Web3Button,
-  useContractRead,
-  useStorageUpload,
-  useTokenDecimals,
-  CheckoutWithCard,
-  CheckoutWithEth
-} from "@thirdweb-dev/react";
+import { useAddress, useContract, useContractWrite, useStorageUpload } from "@thirdweb-dev/react";
 
 import styles from "../../styles/createPage/style.module.scss";
 import PreviewModal from "../../components/modal/previewModal";
-import Step_1_Create from "../../components/sliderForm/PageCreate/Step_1_Create";
-import Step_2_Create from "../../components/sliderForm/PageCreate/Step_2_Create";
-import Step_3_Create from "../../components/sliderForm/PageCreate/Step_3_Create";
-import Step_4_Create from "../../components/sliderForm/PageCreate/Step_4_Create";
+import Step1Create from "../../components/sliderForm/PageCreate/Step_1_Create";
+import Step2Create from "../../components/sliderForm/PageCreate/Step_2_Create";
+import Step3Create from "../../components/sliderForm/PageCreate/Step_3_Create";
+import Step4Create from "../../components/sliderForm/PageCreate/Step_4_Create";
 import config from "../../providers/utils/config";
 
 import SliderForm from "../../components/sliderForm/sliderForm";
@@ -31,7 +18,7 @@ import { useSwitchChainContext } from "../../contexts/hooks/useSwitchChainContex
 
 const CreateOfferContainer = () => {
   const [files, setFiles] = useState([]);
-  const { mutateAsync: upload, isLoading } = useStorageUpload();
+  const { mutateAsync: upload } = useStorageUpload();
 
   const router = useRouter();
   const chainId = router.query?.chainName;
@@ -54,7 +41,7 @@ const CreateOfferContainer = () => {
   const [selectedIntegration, setSelectedIntegration] = useState([]);
   const [selectedParameter, setSelectedParameter] = useState([]);
   const [displayedParameter, setDisplayedParameter] = useState([]);
-  const [selectedTypeParameter, setSelectedTypeParameter] = useState(0);
+  const [selectedTypeParameter] = useState(0);
   const { contract: DsponsorAdminContract } = useContract(
     config[chainId]?.smartContracts?.DSPONSORADMIN?.address,
     config[chainId]?.smartContracts?.DSPONSORADMIN?.abi
@@ -87,13 +74,11 @@ const CreateOfferContainer = () => {
 
     const price = value;
 
-    console.log(price);
-
     setSelectedUnitPrice(value === "" ? null : price);
   };
 
   const handleRoyaltiesChange = (e) => {
-    let { name, value } = e.target;
+    let { value } = e.target;
     setSelectedRoyalties(value);
   };
 
@@ -123,7 +108,6 @@ const CreateOfferContainer = () => {
       newErrors.descriptionError = "Description is missing.";
       isValid = false;
     }
-    console.log(files);
     if (files.length === 0) {
       newErrors.imageError = "Image is missing.";
       isValid = false;
@@ -142,7 +126,6 @@ const CreateOfferContainer = () => {
 
     for (let i = 0; i < selectedIntegration.length; i++) {
       if (imageRatios[i] === "custom") {
-        console.log("ici");
         newErrors.imageRatioError = "Image ratio is missing.";
         isValid = false;
       }
@@ -154,13 +137,11 @@ const CreateOfferContainer = () => {
       newErrors.endDateError = "End date cannot be in the past.";
       isValid = false;
     }
-    console.log(parseFloat(selectedUnitPrice));
     if (
       parseFloat(selectedUnitPrice) < 1 * 10 ** -tokenDecimals ||
       isNaN(selectedUnitPrice) ||
       selectedUnitPrice === null
     ) {
-      console.log("là");
       newErrors.unitPriceError = `Unit price must be at least ${1 * 10 ** -tokenDecimals}.`;
       isValid = false;
     }
@@ -189,7 +170,7 @@ const CreateOfferContainer = () => {
         "Royalties are missing or invalid. They should be between 0.01% and 100%.";
       isValid = false;
     }
-    console.log(previewImages, "previewImages");
+
     setValidate(isValid);
     setErrors(newErrors);
     return isValid;
@@ -209,12 +190,10 @@ const CreateOfferContainer = () => {
       let paramsFormated = [];
       selectedParameter.forEach((param) => {
         const a = param.split("-");
-        const b = a.splice(1, 1);
         const c = a.join("-");
         paramsFormated.push(c);
       });
       let uniqueParams = [...new Set(paramsFormated)];
-      console.log(uniqueParams);
 
       const uploadUrl = await upload({
         data: [files[0]],
@@ -247,7 +226,7 @@ const CreateOfferContainer = () => {
         offer: {
           name: name,
           description: description,
-          image: uploadUrl[0],
+          image: uploadUrl[0] ?? "",
           terms: uploadTerms[0],
           external_link: link,
           valid_from: startDate || "1970-01-01T00:00:00Z",
@@ -256,11 +235,11 @@ const CreateOfferContainer = () => {
           token_metadata: {}
         }
       });
-      console.log(jsonMetadata, "jsonMetadata");
+
       const jsonContractURI = JSON.stringify({
         name: name,
         description: description,
-        image: uploadUrl[0],
+        image: uploadUrl[0] ?? "",
         external_link: link,
         collaborators: [address]
       });
@@ -306,14 +285,14 @@ const CreateOfferContainer = () => {
         })
       ];
       const preparedArgs = [Object.values(JSON.parse(args[0])), Object.values(JSON.parse(args[1]))];
-      console.log(preparedArgs, DsponsorAdminContract, "preparedArgs");
+
       await createDSponsorNFTAndOffer({ args: preparedArgs });
 
       setSuccessFullUpload(true);
     } catch (error) {
       setIsLoadingButton(false);
       setSuccessFullUpload(false);
-      console.log(error);
+
       throw error;
     } finally {
       setIsLoadingButton(false);
@@ -374,7 +353,7 @@ const CreateOfferContainer = () => {
           numSteps={numSteps}
           selectedIntegration={selectedIntegration}
         >
-          <Step_1_Create
+          <Step1Create
             stepsRef={stepsRef}
             styles={styles}
             selectedTypeParameter={selectedTypeParameter}
@@ -388,14 +367,14 @@ const CreateOfferContainer = () => {
             imageRatios={imageRatios}
             setImageRatios={setImageRatios}
           />
-          <Step_2_Create
+          <Step2Create
             stepsRef={stepsRef}
             styles={styles}
             setName={setName}
             setDescription={setDescription}
           />
 
-          <Step_3_Create
+          <Step3Create
             stepsRef={stepsRef}
             styles={styles}
             setLink={setLink}
@@ -409,7 +388,7 @@ const CreateOfferContainer = () => {
             handleLogoUpload={handleLogoUpload}
           />
 
-          <Step_4_Create
+          <Step4Create
             chainId={chainId}
             stepsRef={stepsRef}
             styles={styles}
