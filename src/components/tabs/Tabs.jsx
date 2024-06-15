@@ -14,10 +14,10 @@ const ItemsTabs = ({ chainId, contractAddress, isUserOwner, initialCreator, isTo
 
   return (
     <>
-      <div className="scrollbar-custom overflow-x-auto rounded-lg">
+      <div className="scrollbar-custom overflow-x-auto rounded-lg dark:bg-secondaryBlack">
         {/* <!-- Details --> */}
         <div className="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
-          <div className="dark:bg-secondaryBlack rounded-t-2lg rounded-b-2lg rounded-tl-none bg-white p-6 md:p-10">
+          <div className=" dark:bg-secondaryBlack rounded-t-2lg rounded-b-2lg rounded-tl-none bg-white p-6 md:p-10">
             <div className="mb-2 flex items-center">
               <span className="dark:text-jacarta-100 mr-2 min-w-[9rem]">Contract Address:</span>
               <Link

@@ -944,7 +944,7 @@ const TokenPageContainer = () => {
                 <span className="text-jacarta-100 block text-sm ">
                   Creator <strong className="dark:text-white">{royalties}% royalties</strong>
                 </span>
-                <span className="text-jacarta-100 block text-sm">
+                <span className="text-jacarta-100 block text-sm flex flex-wrap gap-1">
                   Ownership period:{" "}
                   <strong className="dark:text-white">
                     {offerData?.nftContract?.tokens[0]?.metadata?.valid_from &&
@@ -1093,7 +1093,7 @@ const TokenPageContainer = () => {
             {isTokenInAuction && (
               <div className="text-center w-full">
                 <span className="dark:text-warning text-md ">
-                  ⚠️ You canno&apos;t submit an ad while your token is in auction
+                  ⚠️ You cannot submit an ad while your token is in auction
                 </span>
               </div>
             )}

@@ -281,16 +281,16 @@ const ItemManageModal = ({
     return isValid;
   };
   const calculatePriceWithTaxes = (price, smartContract = false) => {
-    let grossPrice = price;
     const fees = [0.04, royalties / 100];
-    for (let i = 0; i < fees.length; i++) {
-      grossPrice /= 1 - fees[i];
-    }
+
+  
+    const finalPrice = price -  (price * ( fees[0] + fees[1]));
+  
     if (smartContract) {
-      console.log(grossPrice.toFixed(tokenDecimals));
-      return grossPrice.toFixed(tokenDecimals);
+      console.log(finalPrice.toFixed(tokenDecimals));
+      return finalPrice.toFixed(tokenDecimals);
     } else {
-      return grossPrice.toFixed(3);
+      return finalPrice.toFixed(3);
     }
   };
 
@@ -304,8 +304,8 @@ const ItemManageModal = ({
     {
       title: "Direct Listing",
 
-      picture: (
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512">
+      picture: (color) => (
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512" fill={color}>
           <path d="M64 64C28.7 64 0 92.7 0 128V384c0 35.3 28.7 64 64 64H512c35.3 0 64-28.7 64-64V128c0-35.3-28.7-64-64-64H64zm64 320H64V320c35.3 0 64 28.7 64 64zM64 192V128h64c0 35.3-28.7 64-64 64zM448 384c0-35.3 28.7-64 64-64v64H448zm64-192c-35.3 0-64-28.7-64-64h64v64zM288 160a96 96 0 1 1 0 192 96 96 0 1 1 0-192z" />
         </svg>
       ),
@@ -314,8 +314,8 @@ const ItemManageModal = ({
     {
       title: "Auction Listing",
 
-      picture: (
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+      picture: (color) => (
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill={color}>
           <path d="M318.6 9.4c-12.5-12.5-32.8-12.5-45.3 0l-120 120c-12.5 12.5-12.5 32.8 0 45.3l16 16c12.5 12.5 32.8 12.5 45.3 0l4-4L325.4 293.4l-4 4c-12.5 12.5-12.5 32.8 0 45.3l16 16c12.5 12.5 32.8 12.5 45.3 0l120-120c12.5-12.5 12.5-32.8 0-45.3l-16-16c-12.5-12.5-32.8-12.5-45.3 0l-4 4L330.6 74.6l4-4c12.5-12.5 12.5-32.8 0-45.3l-16-16zm-152 288c-12.5-12.5-32.8-12.5-45.3 0l-112 112c-12.5 12.5-12.5 32.8 0 45.3l48 48c12.5 12.5 32.8 12.5 45.3 0l112-112c12.5-12.5 12.5-32.8 0-45.3l-1.4-1.4L272 285.3 226.7 240 168 298.7l-1.4-1.4z" />
         </svg>
       ),
@@ -341,16 +341,16 @@ const ItemManageModal = ({
 
   const helperFeesListing = {
     title: "Fees",
-    body: `The fees are calculated on the final price. The fees are 4% for the platform and ${royalties} % royalties for the creator. We have calculated the price for you to get the exact amount you put in the listing. 
-    e.g. If you put 100 USDC, the buyer will pay 100 USDC + 4% fees + ${royalties} % royalties = 114 USDC. You will receive 100 USDC.
+    body: `The fees are calculated on the final price. The fees are 4% for the platform and ${royalties} % royalties for the creator.  
+    e.g. If you put 100 USDC, the buyer will pay 100 USDC. You will receive 100 - 4%  (protocol fees) - ${royalties}% (royalties fees) USDC.
     `,
     size: "small"
   };
 
   return (
-    <div>
+    <div className="w-full">
       {/* <!-- Buy Now Modal --> */}
-      <div className="modal-dialog max-w-2xl">
+      <div className="modal-dialog max-w-xl">
         <div className="modal-content !bg-secondaryBlack">
           <div className="modal-header">
             <h5 className="modal-title mr-8" id="buyNowModalLabel">
@@ -383,12 +383,15 @@ const ItemManageModal = ({
                   <p className="dark:text-jacarta-100 text-jacarta-100 text-2xs mb-3">
                     Select the appropriate type:
                   </p>
-                  <div className="flex flex-col gap-4 justify-center items-center w-full text-jacarta-900 dark:text-white">
-                    <div id="adsType" className="flex flex-wrap justify-center gap-2">
+                  <div className="flex flex-col-reverse gap-4 justify-center items-center w-full text-jacarta-900 dark:text-white">
+                    <div
+                      id="adsType"
+                      className={`flex ${selectedListingType.includes(0) ? "flex-col-reverse" : "flex-col"} flex-col justify-center gap-2`}
+                    >
                       {listingType.map((listing, index) => (
                         <div key={index} className="relative ">
                           <div
-                            className={`card relative ${selectedListingType.includes(index) ? "bg-primaryPurple" : "bg-white"} ${selectedListingType[0] !== index && selectedListingType.length > 0 ? "closed" : "open"}`}
+                            className={`card relative ${selectedListingType.includes(index) ? "bg-primaryPurple" : "bg-white"} open`}
                             onClick={() => {
                               document.getElementById(`checkbox-${index}`).click();
                             }}
@@ -414,12 +417,16 @@ const ItemManageModal = ({
                                   document.getElementById(`checkbox-${index}`).click();
                                 }}
                               >
-                                {selectedListingType[0] !== index &&
-                                selectedListingType.length > 0 ? (
-                                  listing.picture
+                                {selectedListingType[0] !== index ? (
+                                  <div className="flex gap-2 justify-center items-center">
+                                    <span className="w-[25px]">{listing.picture("black")}</span>
+                                    <span>{listing.title}</span>
+                                    <ModalHelper dark={true} {...listing} />
+                                  </div>
                                 ) : (
                                   <div className="flex gap-2 justify-center">
-                                    <span>{listing.title}</span>{" "}
+                                    <span className="w-[25px]">{listing.picture("white")}</span>
+                                    <span>{listing.title}</span>
                                     <ModalHelper dark={false} {...listing} />
                                   </div>
                                 )}
@@ -513,7 +520,7 @@ const ItemManageModal = ({
                                       />
                                     </div>
                                     <p className="dark:text-jacarta-100 text-jacarta-100 text-2xs ">
-                                      Starting price display :{" "}
+                                      You will receive :{" "}
                                       {calculatePriceWithTaxes(selectedStartingPrice)}{" "}
                                       {selectedCurrency}
                                     </p>
@@ -542,7 +549,7 @@ const ItemManageModal = ({
                                       className="dark:bg-secondaryBlack flex-grow border-jacarta-100 hover:ring-primaryPurple/10 focus:ring-primaryPurple dark:border-jacarta-600 dark:placeholder:text-jacarta-100  rounded-lg py-3 px-3 hover:ring-2 dark:text-white"
                                     />
                                     <p className="dark:text-jacarta-100 text-jacarta-100 text-2xs ">
-                                      Selling price display :{" "}
+                                      You will receive :{" "}
                                       {calculatePriceWithTaxes(selectedUnitPrice)}{" "}
                                       {selectedCurrency}
                                     </p>
@@ -594,7 +601,8 @@ const ItemManageModal = ({
           <div className="modal-footer">
             <button
               type="button"
-              className="bg-primaryPurple hover:bg-opacity-80 cursor-pointer rounded-full py-3 px-3 text-end font-semibold text-white transition-all"
+              disabled={selectedListingType.length <= 0}
+              className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-black  !transition-all ${selectedListingType.length <= 0 ? "btn-disabled !bg-white !text-black opacity-30" : "!text-white !bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer"} `}
               onClick={handlePreviewModal}
             >
               Show preview
@@ -603,6 +611,7 @@ const ItemManageModal = ({
               <div className="modal fade show bloc">
                 <PreviewModal
                   handlePreviewModal={handlePreviewModal}
+                  isListing={true}
                   handleSubmit={handleSubmit}
                   startDate={startDate}
                   endDate={endDate}
@@ -611,10 +620,8 @@ const ItemManageModal = ({
                   link={true}
                   helperFeesListing={helperFeesListing}
                   protocolFees={4}
-                  selectedUnitPrice={calculatePriceWithTaxes(selectedUnitPrice)}
-                  selectedStartingPrice={
-                    selectedListingType[0] === 1 && calculatePriceWithTaxes(selectedStartingPrice)
-                  }
+                  selectedUnitPrice={selectedUnitPrice}
+                  selectedStartingPrice={selectedListingType[0] === 1 && selectedStartingPrice}
                   selectedRoyalties={royalties}
                   selectedCurrency={selectedCurrency}
                   validate={validate}

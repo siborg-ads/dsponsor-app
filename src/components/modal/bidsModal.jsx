@@ -402,7 +402,7 @@ const BidsModal = ({
                     }}
                     className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-black !transition-all ${
                       !isPriceGood || !checkTerms
-                        ? "btn-disabled"
+                        ? "btn-disabled !text-black opacity-30"
                         : "!text-white !bg-primaryPurple !cursor-pointer"
                     } `}
                     isDisabled={!isPriceGood || !checkTerms}

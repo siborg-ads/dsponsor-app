@@ -7,12 +7,12 @@ import OfferItem from "../cards/offerItem";
 const MarketplaceHome = ({ auctions, setAllTokens, isAuctionsLoading }) => {
   const [filterName, setFilterName] = useState("");
   const [sortOption, setSortOption] = useState(null);
-  const [filterOption, setFilterOption] = useState("All the spaces");
+  const [filterOption, setFilterOption] = useState("All tokens");
 
   const filteredAuctions = useMemo(() => {
     let tempAuctions = auctions;
 
-    if (filterName !== "All the spaces") {
+    if (filterName !== "All tokens") {
       tempAuctions.filter(
         (auction) =>
           auction?.status === "CREATED" &&
@@ -102,12 +102,12 @@ const MarketplaceHome = ({ auctions, setAllTokens, isAuctionsLoading }) => {
                 >
                   <MenuItem
                     onClick={() => {
-                      setFilterOption("All the spaces");
+                      setFilterOption("All tokens");
                       setAllTokens(true);
                     }}
                     className="hover:bg-primaryBlack p-2 rounded-lg w-full pr-12 md:pr-24"
                   >
-                    <span>All the spaces</span>
+                    <span>All tokens</span>
                   </MenuItem>
                   <MenuItem
                     onClick={() => {
@@ -175,7 +175,7 @@ const MarketplaceHome = ({ auctions, setAllTokens, isAuctionsLoading }) => {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {!isAuctionsLoading ? (
               <>
                 {filteredAuctions?.map((auction, index) => (
