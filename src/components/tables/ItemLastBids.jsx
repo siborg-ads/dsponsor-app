@@ -1,20 +1,26 @@
 import Link from "next/link";
-import React from "react";
+import React, { useEffect } from "react";
 import renderDateToHumanString from "../../providers/utils/renderDateToHumanString";
 import renderPriceToHumanString from "../../providers/utils/renderPriceToHumanString";
 import formatLongAddress from "../../utils/formatLongAddress";
 
-const ItemLastBids = ({ lastBids, currencySymbol, currencyDecimals = 18 }) => {
+const ItemLastBids = ({ bids }) => {
   const transformStatus = (status) => {
     switch (status) {
       case "CREATED":
         return "Best Bid";
       case "CANCELLED":
         return "Outbid";
+      case "COMPLETED":
+        return "Best Bid";
       default:
         return status;
     }
   };
+
+  const sortedBids = bids
+    .map((listing) => listing.sort((a, b) => b.bid.creationTimestamp - a.bid.creationTimestamp))
+    .sort((a, b) => b[0].bid.creationTimestamp - a[0].bid.creationTimestamp);
 
   return (
     <div className="overflow-x-auto mt-4">
@@ -22,9 +28,12 @@ const ItemLastBids = ({ lastBids, currencySymbol, currencyDecimals = 18 }) => {
         Latest Bids
       </h2>
       <div className="overflow-x-auto mt-4">
-        <table className="w-8/12 mx-auto text-left">
+        <table className="w-full mx-auto text-left">
           <thead>
             <tr>
+              <th className="text-sm font-semibold text-jacarta-100 dark:text-jacarta-100">
+                Listing
+              </th>
               <th className="text-sm font-semibold text-jacarta-100 dark:text-jacarta-100">
                 Bidder
               </th>
@@ -44,35 +53,46 @@ const ItemLastBids = ({ lastBids, currencySymbol, currencyDecimals = 18 }) => {
           </thead>
 
           <tbody>
-            {lastBids.map((bid, index) => (
-              <tr key={index}>
-                <td className="text-sm text-jacarta-100 dark:text-jacarta-100">
-                  <Link
-                    href={`/manage/${bid.bidder}`}
-                    className="text-primaryPink hover:text-jacarta-100"
-                  >
-                    {formatLongAddress(bid.bidder)}
-                  </Link>
-                </td>
-                <td className="text-sm text-jacarta-100 dark:text-jacarta-100">
-                  {renderPriceToHumanString(
-                    bid.totalBidAmount / Math.pow(10, currencyDecimals),
-                    currencySymbol
-                  )}
-                </td>
-                <td className="text-sm text-jacarta-100 dark:text-jacarta-100">
-                  {renderDateToHumanString(new Date(parseInt(bid.creationTimestamp) * 1000))}
-                </td>
-                <td className="text-sm text-jacarta-100 dark:text-jacarta-100">
-                  {bid.amountsFormatted?.refundProfit
-                    ? `${bid.amountsFormatted.refundProfit} ${currencySymbol}`
-                    : "-"}
-                </td>
-                <td className="text-sm text-jacarta-100 dark:text-jacarta-100">
-                  {transformStatus(bid.status)}
-                </td>
-              </tr>
-            ))}
+            {sortedBids &&
+              sortedBids.length > 0 &&
+              sortedBids.map((listing, listingIndex) => (
+                <React.Fragment key={listingIndex}>
+                  {listing.map((bid, bidIndex) => (
+                    <tr key={bidIndex}>
+                      <td className="text-sm text-jacarta-100 dark:text-jacarta-100">
+                        {bidIndex === 0 ? <>Listing {sortedBids.length - listingIndex}</> : <></>}
+                      </td>
+                      <td className="text-sm text-jacarta-100 dark:text-jacarta-100">
+                        <Link
+                          href={`/manage/${bid.bid.bidder}`}
+                          className="text-primaryPink hover:text-jacarta-100"
+                        >
+                          {formatLongAddress(bid.bid.bidder)}
+                        </Link>
+                      </td>
+                      <td className="text-sm text-jacarta-100 dark:text-jacarta-100">
+                        {renderPriceToHumanString(
+                          bid.bid.totalBidAmount / Math.pow(10, bid.currency.currencyDecimals),
+                          bid.currency.currencySymbol
+                        )}
+                      </td>
+                      <td className="text-sm text-jacarta-100 dark:text-jacarta-100">
+                        {renderDateToHumanString(
+                          new Date(parseInt(bid.bid.creationTimestamp) * 1000)
+                        )}
+                      </td>
+                      <td className="text-sm text-jacarta-100 dark:text-jacarta-100">
+                        {bid.bid.amountsFormatted?.refundProfit
+                          ? `${bid.bid.amountsFormatted.refundProfit} ${bid.currency.currencySymbol}`
+                          : "-"}
+                      </td>
+                      <td className="text-sm text-jacarta-100 dark:text-jacarta-100">
+                        {transformStatus(bid.bid.status)}
+                      </td>
+                    </tr>
+                  ))}
+                </React.Fragment>
+              ))}
           </tbody>
         </table>
       </div>

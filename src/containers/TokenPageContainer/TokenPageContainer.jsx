@@ -104,6 +104,7 @@ const TokenPageContainer = () => {
   const [currencyDecimals, setCurrencyDecimals] = useState(null);
   const [isLister, setIsLister] = useState(false);
   const [selectedItems, setSelectedItems] = useState([]);
+  const [bids, setBids] = useState([]);
   const NATIVECurrency = config[chainId]?.smartContracts?.NATIVE;
 
   const { contract: DsponsorAdminContract } = useContract(
@@ -180,6 +181,47 @@ const TokenPageContainer = () => {
       setMarketplaceListings(offerData?.nftContract?.tokens[0]?.marketplaceListings);
     }
   }, [offerData]);
+
+  useEffect(() => {
+    let bids = [];
+
+    if (marketplaceListings.length > 0) {
+      marketplaceListings.map((listing) => {
+        if (listing?.bids) {
+          // bids is an array of arrays of bids + currency symbol and decimals
+          // bids is [{bid1, currency, listing}, {bid2, currency, listing}] with currency = {symbol, decimals} and listing = {id, listingType}
+          bids = [
+            ...bids,
+            ...listing.bids.map((bid) => ({
+              bid: bid,
+              currency: {
+                contract: listing.currency,
+                currencySymbol: listing.currencySymbol,
+                currencyDecimals: listing.currencyDecimals
+              },
+              listing: {
+                id: listing.id,
+                listingType: listing.listingType
+              }
+            }))
+          ];
+        }
+      });
+    }
+
+    // regroup by listing id so we have a final array of [[bid1, bid2], [bid3, bid4], ...] with currency = {symbol, decimals} and listing = {id, listingType}
+    bids = bids.reduce((acc, bid) => {
+      const listingIndex = acc.findIndex((listing) => listing[0].listing.id === bid.listing.id);
+      if (listingIndex === -1) {
+        acc.push([bid]);
+      } else {
+        acc[listingIndex].push(bid);
+      }
+      return acc;
+    }, []);
+
+    setBids(bids);
+  }, [marketplaceListings]);
 
   useEffect(() => {
     if (!offerData) return;
@@ -1042,18 +1084,12 @@ const TokenPageContainer = () => {
         </div>
       </section>
 
-      {firstSelectedListing?.listingType === "Auction" &&
-        firstSelectedListing.startTime < now &&
-        firstSelectedListing.endTime > now && (
-          <div className="container mb-12">
-            <Divider className="my-4" />
-            <ItemLastBids
-              currencySymbol={currency}
-              currencyDecimals={currencyDecimals}
-              lastBids={firstSelectedListing.bids}
-            />
-          </div>
-        )}
+      {bids && bids.length > 0 && (
+        <div className="container mb-12">
+          <Divider className="my-4" />
+          <ItemLastBids bids={bids} />
+        </div>
+      )}
 
       {/* <!-- end item --> */}
       <div className="container mb-12">
