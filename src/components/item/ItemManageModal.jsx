@@ -600,7 +600,7 @@ const ItemManageModal = ({
             <button
               type="button"
               disabled={selectedListingType.length <= 0}
-              className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-black  !transition-all ${selectedListingType.length <= 0 ? "btn-disabled !bg-white !text-black opacity-30" : "!text-white !bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer"} `}
+              className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-black  !transition-all ${selectedListingType.length <= 0 ? "btn-disabled !bg-white !text-black opacity-30 cursor-not-allowed" : "!text-white !bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer"} `}
               onClick={handlePreviewModal}
             >
               Show preview

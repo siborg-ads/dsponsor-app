@@ -112,7 +112,7 @@ const AddProposalRefusedModal = ({
                         error: "Transaction rejected 🤯"
                       })
                     }
-                    className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!allCommentsOk ? "btn-disabled" : "!bg-red !cursor-pointer"} `}
+                    className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!allCommentsOk ? "btn-disabled cursor-not-allowed" : "!bg-red !cursor-pointer"} `}
                     disabled={!allCommentsOk}
                   >
                     Refuse Ad Proposal
