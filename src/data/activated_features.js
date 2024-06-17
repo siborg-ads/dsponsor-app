@@ -28,5 +28,7 @@ export const activated_features = {
   // Whether to accept USDT as payment
   canAcceptUSDT: false,
   // Whether to see home in the mobile menu
-  canSeeHomeInMobileMenu: false
+  canSeeHomeInMobileMenu: false,
+  // Whether to filter transactions in activity with WETH only
+  canFilterTransactionsWithWETH: true
 };
