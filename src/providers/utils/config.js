@@ -9,7 +9,7 @@ const config = {
     chainNameProvider: "sepolia",
     network: Network.ETH_SEPOLIA,
     logoURL: "/images/ethereum-logo.png",
-    explorerBaseUrl: "https://sepolia.etherscan.io/address/",
+    explorerBaseUrl: "https://sepolia.etherscan.io",
 
     rpcURL: "https://ethereum-sepolia-rpc.publicnode.com",
     smartContracts: {
@@ -45,7 +45,7 @@ const config = {
     chainNameProvider: "base-sepolia-testnet",
     network: Network.BASE_SEPOLIA,
     logoURL: "/images/base-logo.png",
-    explorerBaseURL: "https://sepolia.basescan.org/",
+    explorerBaseURL: "https://sepolia.basescan.org",
     relayerURL: process.env.DEV ? process.env.DEV : "https://relayer.dsponsor.com",
     rpcURL: "https://sepolia.base.org",
     subgraphURL: "https://api.studio.thegraph.com/proxy/65744/dsponsor-base-sepolia/version/latest",

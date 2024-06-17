@@ -34,6 +34,7 @@ const activityToTopHolders = (activities) => {
       date: new Date(activity.date).toLocaleString(),
       transactionHash:
         activity.transactionHash.slice(0, 6) + "..." + activity.transactionHash.slice(-4),
+      fullTransactionHash: activity.transactionHash,
       points: activity.points,
       spender: activity.spender,
       enabler: activity.enabler,
