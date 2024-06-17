@@ -59,7 +59,6 @@ const LeaderboardTable = ({ activity }) => {
 
   useEffect(() => {
     const filteredActivity = activity?.filter((item) => Number(item.chainId) === Number(activeBlockchain));
-    console.log(filteredActivity, activeBlockchain);
     setChainId(filteredActivity[0].chainId);
     setFilteredActivity(filteredActivity[0]);
 

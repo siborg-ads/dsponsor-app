@@ -17,7 +17,7 @@ const MarketplaceLeaderboardContainer = () => {
         chainId
       }))
     );
-    console.log(promises, "promises");
+ 
 
     Promise.all(promises)
       .then((activities) => {
