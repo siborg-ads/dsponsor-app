@@ -39,7 +39,7 @@ export default function Header01() {
       {/* main desktop menu sart*/}
       <header className="js-page-header fixed top-0 z-20 w-full backdrop-blur transition-colors">
         <div className="flex items-center px-6 py-6 xl:px-24 ">
-          <Link className="shrink-0" href="#">
+          <Link className="shrink-0" href="/">
             <div className="dark:hidden flex justify-center items-center  font-semibold">
               <Image
                 src={Logo ?? ""}
