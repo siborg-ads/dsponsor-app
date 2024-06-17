@@ -5,9 +5,11 @@ import activityToTopPoints from "./utils/activityToTopPoints";
 import activityToTopHolders from "./utils/activityToTopHolders";
 import activityToTopSpenders from "./utils/activityToTopSpenders";
 import activityToTopRewarded from "./utils/activityToTopRewarded";
+import activityToHighestTransactions from "./utils/activityToHighestTransactions";
 import config from "../../providers/utils/config";
 import { useChainContext } from "../../contexts/hooks/useChainContext";
 import TopCards from "../leaderBoard/topCards";
+import formatLongAddress from "../../utils/formatLongAddress";
 
 const renderTable = (data, columns) => {
   if (!data || data.length === 0 || !Array.isArray(data)) {
@@ -64,7 +66,8 @@ const LeaderboardTable = ({ activity }) => {
       topPoints: activityToTopPoints(filteredActivity[0]?.rankings),
       topHolders: activityToTopHolders(filteredActivity[0]?.rankings),
       topSpenders: activityToTopSpenders(filteredActivity[0]?.rankings),
-      topRewarded: activityToTopRewarded(filteredActivity[0]?.rankings)
+      topRewarded: activityToTopRewarded(filteredActivity[0]?.rankings),
+      highestTransactions: activityToHighestTransactions(filteredActivity[0]?.lastActivities)
     });
   }, [activeBlockchain, activity]);
 
@@ -136,17 +139,66 @@ const LeaderboardTable = ({ activity }) => {
     // { header: "Chain ", render: () => config[chainId].chainName },
     //{ header: "Total Points", render: (item) => item.dPoints }
   ];
+
+  const highestTransactionsColumns = [
+    { header: "Type", render: (item) => item.type },
+    { header: "Date", render: (item) => `${item.date}` },
+    {
+      header: "Transaction",
+      render: (item) => (
+        <Link href={`https://sepolia.etherscan.io/tx/${item.transactionHash}`} passHref>
+          {/* to change */}
+          <span className="text-primaryPink hover:text-jacarta-100">{item.transactionHash}</span>
+        </Link>
+      )
+    },
+    { header: "Points", render: (item) => item.points },
+    {
+      header: "Seller",
+      render: (item) => (
+        <Link href={`https://sepolia.etherscan.io/address/${item.enabler}`} passHref>
+          <span className="text-primaryPink hover:text-jacarta-100">
+            {formatLongAddress(item.enabler)}
+          </span>
+        </Link>
+      )
+    },
+    {
+      header: "Buyer",
+      render: (item) => (
+        <Link href={`https://sepolia.etherscan.io/address/${item.spender}`} passHref>
+          <span className="text-primaryPink hover:text-jacarta-100">
+            {formatLongAddress(item.spender)}
+          </span>
+        </Link>
+      )
+    },
+    {
+      header: "Referrer",
+      render: (item) => (
+        <Link href={`https://sepolia.etherscan.io/address/${item.refAddr}`} passHref>
+          <span className="text-primaryPink hover:text-jacarta-100">
+            {formatLongAddress(item.refAddr)}
+          </span>
+        </Link>
+      )
+    }
+  ];
+
   const columns = {
     topPoints: pointColumns,
     topHolders: holderColumns,
     topSpenders: spenderColumns,
-    topRewarded: rewardedColumns
+    topRewarded: rewardedColumns,
+    highestTransactions: highestTransactionsColumns
   };
+
   const tabItem = [
     { id: 1, text: "Top Points", icon: "activity" },
     { id: 2, text: "Top Holders", icon: "owned" },
     { id: 3, text: "Top Spenders", icon: "activity" },
-    { id: 4, text: "Top Rewarded", icon: "activity" }
+    { id: 4, text: "Top Rewarded", icon: "activity" },
+    { id: 5, text: "Highest Transactions", icon: "activity" }
   ];
 
   return (
