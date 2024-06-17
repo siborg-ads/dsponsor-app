@@ -8,6 +8,7 @@ import { fetchAllListedTokenWithoutFilter } from "../../providers/methods/fetchA
 import { formatUnits } from "ethers/lib/utils";
 import formatAndRound from "../../utils/formatAndRound";
 import config from "../../config/config";
+import Meta from "../../components/Meta";
 
 const HomeContainer = () => {
   const [chainIdFilter, setChainIdFilter] = useState(null);
@@ -123,8 +124,15 @@ const HomeContainer = () => {
     setAuctions(auctions);
   }, [auctionsTemp]);
 
+ const metadata = {
+   title: `Home || SiBorg Ads - The Web3 Monetization Solution`,
+   keyword:
+     "audience engagement, web3, creator economic, NFT, creator monetization, creator economy, creator token, creator coin, creator tokenization, creator economy",
+   desc: "Explore the future of media monetization. SiBorg Ads decentralized platform offers tokenized advertising spaces for dynamic and sustainable media funding."
+ };
   return (
     <>
+      <Meta {...metadata} />
       <div
         className="mt-48 px-4 max-w-5xl mx-auto flex flex-col gap-12"
         style={{
