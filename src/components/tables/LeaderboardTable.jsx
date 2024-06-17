@@ -57,9 +57,11 @@ const LeaderboardTable = ({ activity }) => {
   const [blockChainOptions, setBlockChainOptions] = useState([]);
   const [leaderboards, setLeaderboards] = useState({});
 
+  const chainExplorer = currentChainObject?.explorerBaseUrl;
+
   useEffect(() => {
-    const filteredActivity = activity?.filter((item) => Number(item.chainId) === Number(activeBlockchain));
-    setChainId(filteredActivity[0].chainId);
+    const filteredActivity = activity?.filter((item) => Number(item?.chainId) === Number(activeBlockchain));
+    setChainId(filteredActivity[0]?.chainId);
     setFilteredActivity(filteredActivity[0]);
 
     setLeaderboards({
@@ -73,11 +75,11 @@ const LeaderboardTable = ({ activity }) => {
 
   useEffect(() => {
     const chains = Object.entries(config).map((value) => {
-      return value[1].chainId;
+      return value[1]?.chainId;
     });
 
     setBlockChainOptions(chains);
-  }, [activity]);
+  }, []);
 
   const pointColumns = [
     { header: "Rank", render: (item) => item.rank },
@@ -146,7 +148,7 @@ const LeaderboardTable = ({ activity }) => {
     {
       header: "Transaction",
       render: (item) => (
-        <Link href={`https://sepolia.etherscan.io/tx/${item.transactionHash}`} passHref>
+        <Link href={`${chainExplorer}/tx/${item.fullTransactionHash}`}>
           {/* to change */}
           <span className="text-primaryPink hover:text-jacarta-100">{item.transactionHash}</span>
         </Link>
@@ -156,7 +158,7 @@ const LeaderboardTable = ({ activity }) => {
     {
       header: "Seller",
       render: (item) => (
-        <Link href={`https://sepolia.etherscan.io/address/${item.enabler}`} passHref>
+        <Link href={`/manage/${item.enabler}`}>
           <span className="text-primaryPink hover:text-jacarta-100">
             {formatLongAddress(item.enabler)}
           </span>
@@ -166,7 +168,7 @@ const LeaderboardTable = ({ activity }) => {
     {
       header: "Buyer",
       render: (item) => (
-        <Link href={`https://sepolia.etherscan.io/address/${item.spender}`} passHref>
+        <Link href={`/manage/${item.spender}`}>
           <span className="text-primaryPink hover:text-jacarta-100">
             {formatLongAddress(item.spender)}
           </span>
@@ -176,7 +178,7 @@ const LeaderboardTable = ({ activity }) => {
     {
       header: "Referrer",
       render: (item) => (
-        <Link href={`https://sepolia.etherscan.io/address/${item.refAddr}`} passHref>
+        <Link href={`/manage/${item.refAddr}`}>
           <span className="text-primaryPink hover:text-jacarta-100">
             {formatLongAddress(item.refAddr)}
           </span>
