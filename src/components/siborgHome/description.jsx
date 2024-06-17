@@ -4,7 +4,7 @@ import Link from "next/link";
 const socials = [
   {
     name: "X / Twitter",
-    href: "https://x.com/",
+    href: "https://x.com/siborgapp",
     icon: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -21,7 +21,7 @@ const socials = [
   },
   {
     name: "Discord",
-    href: "https://discord.gg/",
+    href: "https://discord.gg/siborgapp",
     icon: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -38,7 +38,7 @@ const socials = [
   },
   {
     name: "Website",
-    href: "https://www.instagram.com/SiBorg Ads",
+    href: "https://www.siborg.io/",
     icon: (
       <svg
         xmlns="http://www.w3.org/2000/svg"

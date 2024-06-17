@@ -50,18 +50,7 @@ const ItemsTabs = ({ chainId, contractAddress, isUserOwner, initialCreator, isTo
                     >
                       {isUserOwner}
                     </Link>
-                    {whiteListedAddress.includes(isUserOwner) && (
-                      <span
-                        className="dark:border-jacarta-600 bg-green inline-flex h-6 w-6 items-center justify-center rounded-full border-2 border-white"
-                        data-tippy-content="Verified Collection"
-                      >
-                        <Tippy content={<span>Verified Collection</span>}>
-                          <svg className="icon h-[.875rem] w-[.875rem] fill-white">
-                            <use xlinkHref="/icons.svg#icon-right-sign"></use>
-                          </svg>
-                        </Tippy>
-                      </span>
-                    )}
+                  
                   </div>
                 ) : (
                   "No owner"
