@@ -10,7 +10,7 @@ import { useAddress } from "@thirdweb-dev/react";
 
 import { fetchAllListedToken } from "../../providers/methods/fetchAllListedToken";
 import { useChainContext } from "../../contexts/hooks/useChainContext";
-import config from "../../providers/utils/config";
+import config from "../../config/config";
 import ItemCardSkeleton from "../../components/skeleton/ItemCardSkeleton";
 
 const MarketplaceContainer = () => {
@@ -57,7 +57,7 @@ const MarketplaceContainer = () => {
         filterCategories.status.includes(item.marketplaceListings[0]?.listingType);
       const chainMatch =
         filterCategories.chain.length === 0 ||
-        filterCategories.chain.includes(item.chainConfig.chainName);
+        filterCategories.chain.includes(item.chainConfig.network);
       return statusMatch && chainMatch;
     });
   }, [listedAuctionToken, filterTypes]);

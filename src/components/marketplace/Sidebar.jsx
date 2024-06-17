@@ -4,7 +4,7 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import tippy from "tippy.js";
 
-import config from "../../providers/utils/config";
+import config from "../../config/config";
 
 const status = [
   { id: 1, label: "Buy Now", listingType: "Direct" },
@@ -68,9 +68,7 @@ export default function Sidebar({ setFilterTypes }) {
                   <input
                     type="checkbox"
                     className="h-5 w-5 mr-2 rounded border-jacarta-200 text-primaryPurple checked:bg-primaryPurple focus:ring-primaryPurple/20 focus:ring-offset-0 dark:border-jacarta-500 dark:bg-jacarta-600"
-                    onChange={(e) =>
-                      handleFilterChange(elm[1].chainName, e.target.checked, "chain")
-                    }
+                    onChange={(e) => handleFilterChange(elm[1].network, e.target.checked, "chain")}
                   />
                   <div className="backdrop-blur-sm mr-1 w-7 h-7 rounded-[0.625rem] flex justify-center items-center">
                     <Image
@@ -82,7 +80,7 @@ export default function Sidebar({ setFilterTypes }) {
                     />
                   </div>
                   <span className="font-display text-sm font-semibold text-jacarta-900 dark:text-white">
-                    {elm[1].chainName}
+                    {elm[1].network}
                   </span>
                 </label>
               </li>

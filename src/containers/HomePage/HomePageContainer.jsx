@@ -7,7 +7,7 @@ import HowItWorks from "../../components/explication/howItWorks";
 import fetchLastOffers from "../../providers/methods/fetchLastOffers";
 import { fetchAllListedToken } from "../../providers/methods/fetchAllListedToken";
 import { useChainContext } from "../../contexts/hooks/useChainContext";
-import config from "../../providers/utils/config";
+import config from "../../config/config";
 
 const HomePageContainer = () => {
   const [lastOffers, setLastOffers] = useState([]);

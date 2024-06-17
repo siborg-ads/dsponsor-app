@@ -37,7 +37,7 @@ import ItemManage from "../../components/item/ItemManage.jsx";
 import { useSwitchChainContext } from "../../contexts/hooks/useSwitchChainContext.js";
 import { fetchOfferToken } from "../../providers/methods/fetchOfferToken.js";
 // import { fetchAllTokenListedByListingId } from "../../providers/methods/fetchAllTokenListedByListingId.js";
-import config from "../../providers/utils/config.js";
+import config from "../../config/config.js";
 import stringToUint256 from "../../utils/stringToUnit256.js";
 import { getAddress } from "ethers/lib/utils";
 

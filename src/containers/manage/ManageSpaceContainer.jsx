@@ -15,7 +15,7 @@ import { fetchAllTokenListedByUserAddress } from "../../providers/methods/fetchA
 import { fetchAllTokenAuctionBidsByUser } from "../../providers/methods/fetchAllTokenAuctionBidsByUser";
 import { useChainContext } from "../../contexts/hooks/useChainContext";
 
-import config from "../../providers/utils/config";
+import config from "../../config/config";
 import handleCopy from "../../utils/handleCopy";
 
 const ManageSpaceContainer = () => {

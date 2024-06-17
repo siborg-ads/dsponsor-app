@@ -12,6 +12,7 @@ import {
 import ChainProvider from "./ChainProvider/ChainProvider";
 import SwitchChainProvider from "./SwitchChainProvider/SwitchChainProvider";
 import { useSwitchChainContext } from "../contexts/hooks/useSwitchChainContext";
+import config from "../config/config";
 
 function Providers({ children }) {
   return (
@@ -22,7 +23,7 @@ function Providers({ children }) {
 }
 
 function InnerProviders({ children }) {
-  const [chain, setChain] = useState("sepolia");
+  const [chain, setChain] = useState(Object.entries(config)[0].network);
   const { selectedChain } = useSwitchChainContext();
 
   useEffect(() => {
