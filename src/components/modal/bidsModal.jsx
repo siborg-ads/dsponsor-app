@@ -356,7 +356,7 @@ const BidsModal = ({
                   />
                   <label htmlFor="buyNowTerms" className="dark:text-jacarta-200 text-sm">
                     By checking this box, I agree to {"SiBorg Ads's"}{" "}
-                    <Link href="#" className="text-primaryPurple">
+                    <Link href="/terms-and-conditions" className="text-primaryPurple">
                       Terms of Service
                     </Link>
                   </label>

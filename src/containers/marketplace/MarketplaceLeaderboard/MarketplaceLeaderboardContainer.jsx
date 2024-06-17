@@ -10,14 +10,12 @@ const MarketplaceLeaderboardContainer = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    
-    const promises = Object.entries(config).map(([chainId, chainConfig]) =>
+    const promises = Object.entries(config).map(([chainId]) =>
       fetchMarketplaceActivity(chainId).then((activity) => ({
         ...activity,
         chainId
       }))
     );
- 
 
     Promise.all(promises)
       .then((activities) => {

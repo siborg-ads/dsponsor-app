@@ -39,7 +39,7 @@ export default function Header01() {
       {/* main desktop menu sart*/}
       <header className="js-page-header fixed top-0 z-20 w-full backdrop-blur transition-colors">
         <div className="flex items-center px-6 py-6 xl:px-24 ">
-          <Link className="shrink-0" href="#">
+          <Link className="shrink-0" href="/">
             <div className="dark:hidden flex justify-center items-center  font-semibold">
               <Image
                 src={Logo ?? ""}
@@ -99,11 +99,11 @@ export default function Header01() {
                   </Link>
                 </li>
                 <li className="group">
-                  <Link href={`/marketplace/leaderboard`}>
+                  <Link href={`/leaderboard`}>
                     <button className="text-jacarta-900 font-display hover:text-primaryPurple focus:text-primaryPurple dark:hover:text-primaryPurple dark:focus:text-primaryPurple flex items-center justify-between py-3.5 text-base dark:text-white lg:px-5">
                       <span
                         className={
-                          isChildrenPageActive(route.asPath, `/marketplace/leaderboard`)
+                          isChildrenPageActive(route.asPath, `/leaderboard`)
                             ? "text-primaryPurple dark:text-primaryPurple"
                             : ""
                         }
@@ -224,7 +224,7 @@ export default function Header01() {
           <ul className="flex flex-col lg:flex-row">
             <ConditionalCreateLi condition={activated_features.canSeeHomeInMobileMenu}>
               <li className="group">
-                <Link href="#">
+                <Link href="/">
                   <button
                     onClick={() => setToggle(false)}
                     className="text-jacarta-900 font-display hover:text-primaryPurple focus:text-primaryPurple dark:hover:text-primaryPurple dark:focus:text-primaryPurple flex items-center justify-between py-3.5 text-base dark:text-white lg:px-5"
@@ -246,7 +246,7 @@ export default function Header01() {
             {/* create */}
             <ConditionalCreateLi condition={activated_features.canCreateOffer}>
               <li className="group">
-                <Link href={`/${chainId ?? ""}/offer/create`}>
+                <Link href={chainId ? `/${chainId}/offer/create` : "/offer/create"}>
                   <button
                     onClick={() => setToggle(false)}
                     className="text-jacarta-900 font-display hover:text-primaryPurple focus:text-primaryPurple dark:hover:text-primaryPurple dark:focus:text-primaryPurple flex items-center justify-between py-3.5 text-base dark:text-white lg:px-5"
@@ -265,7 +265,7 @@ export default function Header01() {
               </li>
             </ConditionalCreateLi>
             <li className="group">
-              <Link href={`#`}>
+              <Link href={`/`}>
                 <button
                   onClick={() => setToggle(false)}
                   className="text-jacarta-900 font-display hover:text-primaryPurple focus:text-primaryPurple dark:hover:text-primaryPurple dark:focus:text-primaryPurple flex items-center justify-between py-3.5 text-base dark:text-white lg:px-5"
@@ -283,14 +283,14 @@ export default function Header01() {
               </Link>
             </li>
             <li className="group">
-              <Link href={`/marketplace/leaderboard`}>
+              <Link href={`/leaderboard`}>
                 <button
                   onClick={() => setToggle(false)}
                   className="text-jacarta-900 font-display hover:text-primaryPurple focus:text-primaryPurple dark:hover:text-primaryPurple dark:focus:text-primaryPurple flex items-center justify-between py-3.5 text-base dark:text-white lg:px-5"
                 >
                   <span
                     className={
-                      isChildrenPageActive(route.asPath, `/marketplace/leaderboard`)
+                      isChildrenPageActive(route.asPath, `/leaderboard`)
                         ? "text-primaryPurple dark:text-primaryPurple"
                         : ""
                     }

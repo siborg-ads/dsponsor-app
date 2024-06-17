@@ -6,7 +6,15 @@ import { useChainContext } from "../../contexts/hooks/useChainContext";
 import config from "../../config/config";
 import displayOrCheckKnownAddress from "../../utils/displayOrCheckKnownAddress";
 
-const ItemsTabs = ({ chainId, contractAddress, isUserOwner, initialCreator, isToken = true }) => {
+const ItemsTabs = ({
+  chainId,
+  contractAddress,
+  isUserOwner,
+  initialCreator,
+  isToken = true,
+  status,
+  listerAddress
+}) => {
   const { currentChainObject } = useChainContext();
 
   const chainName = config[chainId]?.network;
@@ -42,13 +50,13 @@ const ItemsTabs = ({ chainId, contractAddress, isUserOwner, initialCreator, isTo
             {isToken && (
               <div className="mb-2 flex items-center">
                 <span className="dark:text-jacarta-100 mr-2 min-w-[9rem]">Owner:</span>
-                {isUserOwner ? (
+                {isUserOwner || (listerAddress && status) ? (
                   <div>
                     <Link
-                      href={`/manage/${isUserOwner}`}
+                      href={`/manage/${status === "CREATED" ? listerAddress : isUserOwner}`}
                       className="text-primaryPink hover:text-jacarta-100 mr-2"
                     >
-                      {isUserOwner}
+                      {status === "CREATED" ? listerAddress : isUserOwner}
                     </Link>
                     {whiteListedAddress.includes(isUserOwner) && (
                       <span

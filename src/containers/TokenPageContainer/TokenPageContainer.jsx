@@ -1055,6 +1055,8 @@ const TokenPageContainer = () => {
           offerId={offerId}
           isUserOwner={isUserOwner}
           initialCreator={offerData?.initialCreator}
+          status={firstSelectedListing?.status}
+          listerAddress={firstSelectedListing?.lister}
         />
       </div>
       {offerData.nftContract?.tokens[0]?.mint &&
