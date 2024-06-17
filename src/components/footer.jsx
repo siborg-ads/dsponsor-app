@@ -49,7 +49,7 @@ const Footer = () => {
           <div className="grid grid-cols-6 gap-x-7 gap-y-14 pt-24 pb-12 md:grid-cols-12">
             <div className="col-span-3 md:col-span-4">
               {/* <!-- Logo --> */}
-              <Link href="" className="mb-6 inline-block">
+              <Link href="/" className="mb-6 inline-block">
                 <Image
                   width={220}
                   height={50}
@@ -59,7 +59,7 @@ const Footer = () => {
                 />
               </Link>
 
-              <Link href="" className=" mb-6 inline-block">
+              <Link href="/" className=" mb-6 inline-block">
                 <Image
                   width={220}
                   height={50}

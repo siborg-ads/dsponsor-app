@@ -224,7 +224,7 @@ export default function Header01() {
           <ul className="flex flex-col lg:flex-row">
             <ConditionalCreateLi condition={activated_features.canSeeHomeInMobileMenu}>
               <li className="group">
-                <Link href="#">
+                <Link href="/">
                   <button
                     onClick={() => setToggle(false)}
                     className="text-jacarta-900 font-display hover:text-primaryPurple focus:text-primaryPurple dark:hover:text-primaryPurple dark:focus:text-primaryPurple flex items-center justify-between py-3.5 text-base dark:text-white lg:px-5"
@@ -265,7 +265,7 @@ export default function Header01() {
               </li>
             </ConditionalCreateLi>
             <li className="group">
-              <Link href={`#`}>
+              <Link href={`/`}>
                 <button
                   onClick={() => setToggle(false)}
                   className="text-jacarta-900 font-display hover:text-primaryPurple focus:text-primaryPurple dark:hover:text-primaryPurple dark:focus:text-primaryPurple flex items-center justify-between py-3.5 text-base dark:text-white lg:px-5"
