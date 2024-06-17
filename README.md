@@ -54,7 +54,7 @@ npm run build
 
  2. Start the application using the production build:
   ```bash
-npm run build
+
 npm run start
 ```
 
