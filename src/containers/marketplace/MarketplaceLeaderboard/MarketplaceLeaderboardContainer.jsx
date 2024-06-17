@@ -3,14 +3,15 @@ import LeaderboardTable from "../../../components/tables/LeaderboardTable";
 import { fetchMarketplaceActivity } from "../../../providers/methods/fetchMarketplaceActivity";
 import processBidsAndCalculateRewards from "./processBidsAndCalculateRewards";
 import LeaderBoardSkeleton from "../../../components/skeleton/leaderBoardSkeleton";
+import config from "../../../config/config";
 
 const MarketplaceLeaderboardContainer = () => {
   const [activity, setActivity] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const chainIds = [11155111, 84532];
-    const promises = chainIds.map((chainId) =>
+    
+    const promises = Object.entries(config).map((chainId) =>
       fetchMarketplaceActivity(chainId).then((activity) => ({
         ...activity,
         chainId

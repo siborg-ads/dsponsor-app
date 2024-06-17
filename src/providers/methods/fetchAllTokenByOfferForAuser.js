@@ -1,4 +1,4 @@
-import config from "../utils/config";
+import config from "../../config/config";
 
 export const fetchAllTokenByOfferForAuser = async (ownerAddress, chainId) => {
   const options = { method: "GET", headers: { accept: "application/json" } };

@@ -9,7 +9,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { useEffect, useState } from "react";
 import { Web3Button } from "@thirdweb-dev/react";
 import AddProposalRefusedModal from "../modal/adProposalRefusedModal";
-import config from "../../providers/utils/config";
+import config from "../../config/config";
 
 const Review_carousel = ({
   chainId,

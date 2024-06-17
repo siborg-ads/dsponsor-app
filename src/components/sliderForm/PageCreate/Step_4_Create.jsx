@@ -5,7 +5,7 @@ import { useContract, useContractRead } from "@thirdweb-dev/react";
 import { activated_features } from "../../../data/activated_features";
 
 import ModalHelper from "../../Helper/modalHelper";
-import config from "../../../providers/utils/config";
+import config from "../../../config/config";
 
 const ConditionalUSDPaymentText = ({ children, condition }) => {
   return condition ? <div>{children}</div> : "";

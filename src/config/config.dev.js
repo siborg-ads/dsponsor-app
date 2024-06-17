@@ -1,5 +1,5 @@
-import contractABI from "../../abi/dsponsorAdmin.json";
-import Network from "./networks";
+import contractABI from "../abi/dsponsorAdmin.json";
+import Network from "../providers/utils/networks";
 
 const config = {
   // sepolia

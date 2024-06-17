@@ -1,8 +1,9 @@
 import React, { useMemo, useState } from "react";
 import SwitchChainContext from "../../contexts/SwitchChainContext";
+import config from "../../config/config";
 
 const SwitchChainProvider = ({ children }) => {
-  const [selectedChain, setSelectedChain] = useState("sepolia");
+  const [selectedChain, setSelectedChain] = useState(Object.entries(config)[0].network);
 
   const contextValue = useMemo(() => {
     return {

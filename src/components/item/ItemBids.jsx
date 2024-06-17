@@ -5,7 +5,7 @@ import BidsModal from "../modal/bidsModal";
 import { ethers } from "ethers";
 import { getAddress } from "ethers/lib/utils";
 import { Web3Button } from "@thirdweb-dev/react";
-import config from "../../providers/utils/config";
+import config from "../../config/config";
 
 const ItemBids = ({
   setAmountToApprove,

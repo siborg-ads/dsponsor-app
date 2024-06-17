@@ -7,7 +7,7 @@ import Description from "../../components/siborgHome/description";
 import { fetchAllListedTokenWithoutFilter } from "../../providers/methods/fetchAllListedTokenWithoutFilter";
 import { formatUnits } from "ethers/lib/utils";
 import formatAndRound from "../../utils/formatAndRound";
-import { mainChainId } from "../../data/chainIds";
+import config from "../../config/config";
 
 const HomeContainer = () => {
   const [chainIdFilter, setChainIdFilter] = useState(null);
@@ -22,10 +22,14 @@ const HomeContainer = () => {
 
     const fetchData = async () => {
       setIsAuctionsLoading(true);
-
-      if (mainChainId !== null && mainChainId !== undefined) {
-        const data = await fetchAllListedTokenWithoutFilter(mainChainId, allTokens);
-        setAuctionsTemp(data);
+      const allListedTokenWithoutFilterArray = [];
+      if (config !== null && config !== undefined) {
+        for (const [chainId] of Object.entries(config)) {
+        
+          const data = await fetchAllListedTokenWithoutFilter(chainId, allTokens);
+          allListedTokenWithoutFilterArray.push(...data);
+        }
+        setAuctionsTemp(allListedTokenWithoutFilterArray);
       } else {
         setAuctionsTemp([]);
       }
@@ -43,7 +47,7 @@ const HomeContainer = () => {
     const auctions = auctionsTemp.map((token) => {
       const name = token.metadata.name;
       const category = token.metadata.categories[0];
-      const chain = token.chainConfig.chainName;
+      const chain = token.chainConfig.network;
       const price = token.marketplaceListings[0]?.buyPriceStructure.buyoutPricePerToken;
       const chainId = token.chainConfig.chainId;
       const offerId = token.offerId;

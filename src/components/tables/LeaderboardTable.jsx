@@ -4,7 +4,7 @@ import Link from "next/link";
 import activityToTopHolders from "./utils/activityToTopHolders";
 import activityToTopSpenders from "./utils/activityToTopSpenders";
 import activityToTopRewarded from "./utils/activityToTopRewarded";
-import config from "../../providers/utils/config";
+import config from "../../config/config";
 import { useChainContext } from "../../contexts/hooks/useChainContext";
 import TopCards from "../leaderBoard/topCards";
 
@@ -86,7 +86,7 @@ const LeaderboardTable = ({ activity }) => {
       )
     },
     { header: "Owned", render: (item) => item.balance }
-    //{ header: "Chain", render: () => config[chainId].chainName }
+    //{ header: "Chain", render: () => config[chainId].network }
     // { header: "DPoints", render: (item) => item.dPoints }
   ];
 
@@ -102,7 +102,7 @@ const LeaderboardTable = ({ activity }) => {
       )
     },
     { header: "Balance", render: (item) => item.balance }
-    // { header: "Chain", render: () => config[chainId].chainName }
+    // { header: "Chain", render: () => config[chainId].network}
     // { header: "DPoints", render: (item) => item.dPoints }
   ];
 
@@ -118,7 +118,7 @@ const LeaderboardTable = ({ activity }) => {
       )
     },
     { header: "# of Refunds", render: (item) => item.refunds }
-    // { header: "Chain ", render: () => config[chainId].chainName }
+    // { header: "Chain ", render: () => config[chainId].network}
     // { header: "DPoints", render: (item) => item.dPoints }
   ];
   const columns = {
@@ -158,7 +158,7 @@ const LeaderboardTable = ({ activity }) => {
                 <path d="M14 10v4h-4v-4h4zm2 0h5v4h-5v-4zm-2 11h-4v-5h4v5zm2 0v-5h5v4a1 1 0 0 1-1 1h-4zM14 3v5h-4V3h4zm2 0h4a1 1 0 0 1 1 1v4h-5V3zm-8 7v4H3v-4h5zm0 11H4a1 1 0 0 1-1-1v-4h5v5zM8 3v5H3V4a1 1 0 0 1 1-1h4z" />
               </svg>
               <div className="flex gap-2">
-                <span>{config[activeBlockchain]?.chainName}</span>
+                <span>{config[activeBlockchain]?.network}</span>
                 <Image
                   src={config[activeBlockchain].logoURL ?? ""}
                   width={17}
@@ -179,7 +179,7 @@ const LeaderboardTable = ({ activity }) => {
                       <div className="dropdown-item flex w-full items-center justify-between rounded-xl px-5 py-2 text-left font-display text-sm transition-colors hover:bg-jacarta-50 dark:text-white dark:hover:bg-jacarta-600">
                         <div className="flex gap-2">
                           <span className="text-jacarta-900 dark:text-white">
-                            {config[option]?.chainName}
+                            {config[option]?.network}
                           </span>
                           <Image
                             src={config[option].logoURL ?? ""}
@@ -201,7 +201,7 @@ const LeaderboardTable = ({ activity }) => {
                       </div>
                     ) : (
                       <div className="dropdown-item flex gap-2 w-full items-center rounded-xl px-5 py-2 text-left font-display text-sm transition-colors hover:bg-jacarta-50 dark:text-white dark:hover:bg-jacarta-600">
-                        {config[option]?.chainName}
+                        {config[option]?.network}
                         <Image
                           src={config[option].logoURL ?? ""}
                           width={17}

@@ -3,13 +3,13 @@ import Link from "next/link";
 import Tippy from "@tippyjs/react";
 import { whiteListedAddress } from "../../utils/whiteListedAddress";
 import { useChainContext } from "../../contexts/hooks/useChainContext";
-import config from "../../providers/utils/config";
+import config from "../../config/config";
 import displayOrCheckKnownAddress from "../../utils/displayOrCheckKnownAddress";
 
 const ItemsTabs = ({ chainId, contractAddress, isUserOwner, initialCreator, isToken = true }) => {
   const { currentChainObject } = useChainContext();
 
-  const chainName = config[chainId]?.chainName;
+  const chainName = config[chainId]?.network;
   const chainExplorer = currentChainObject?.explorerBaseUrl;
 
   return (
