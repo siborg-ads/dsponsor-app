@@ -9,7 +9,7 @@ import { useChainContext } from "../../contexts/hooks/useChainContext";
 import TopCards from "../leaderBoard/topCards";
 
 const renderTable = (data, columns) => {
-  if (!data || data.length === 0) {
+  if (!data || data.length === 0 || !Array.isArray(data)) {
     return <div className="text-center py-4">No data available</div>;
   }
 
@@ -26,7 +26,7 @@ const renderTable = (data, columns) => {
           </tr>
         </thead>
         <tbody>
-          {data.map((item, index) => (
+          {data?.map((item, index) => (
             <tr
               key={index}
               className="border-t border-jacarta-100 dark:border-primaryPink dark:border-opacity-10"
@@ -248,9 +248,7 @@ const LeaderboardTable = ({ activity }) => {
           </TabList>
           {Object.entries(leaderboards).map(([key, data]) => (
             <TabPanel key={key}>
-              <div className="overflow-x-auto">
-                {renderTable(`Top ${key.replace("top", "")}`, data, columns[key])}
-              </div>
+              <div className="overflow-x-auto">{renderTable(data, columns[key])}</div>
             </TabPanel>
           ))}
         </Tabs>
