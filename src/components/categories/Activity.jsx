@@ -122,14 +122,14 @@ const Activity = ({ isUserConnected, userAddr, chainId }) => {
                       hideOnClick={false}
                       content={copied ? <span>copied</span> : <span>copy</span>}
                     >
-                      <span
+                      <button
                         onClick={() => {
                           handleCopy(`${frontURL}/?_rid=${userAddr}`, setCopied);
                         }}
                         className="text-primaryPurple hover:text-opacity-80 cursor-pointer"
                       >
                         click here
-                      </span>
+                      </button>
                     </Tippy>
                     .
                   </p>
