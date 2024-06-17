@@ -1,7 +1,7 @@
 import React from "react";
 import Link from "next/link";
-import Tippy from "@tippyjs/react";
-import { whiteListedAddress } from "../../utils/whiteListedAddress";
+
+
 import { useChainContext } from "../../contexts/hooks/useChainContext";
 import config from "../../config/config";
 import displayOrCheckKnownAddress from "../../utils/displayOrCheckKnownAddress";
