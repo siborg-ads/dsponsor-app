@@ -26,7 +26,6 @@ const BidsModal = ({
   marketplaceListings,
   currencySymbol,
   checkUserBalance,
-  // nativeTokenBalance,
   tokenBalance,
   allowanceTrue,
   currencyTokenDecimals,
@@ -485,7 +484,7 @@ const BidsModal = ({
                     {isLoadingButton ? (
                       <Spinner size="sm" color="default" />
                     ) : (
-                      `Approve ${currencySymbol} ${JSON.stringify(tokenBalance)}`
+                      `Approve ${currencySymbol}`
                     )}
                   </Web3Button>
                 ) : !successFullBid ? (

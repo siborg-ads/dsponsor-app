@@ -101,8 +101,6 @@ const TokenPageContainer = () => {
   const [, setSelectedItems] = useState([]);
   const [bids, setBids] = useState([]);
 
-  // const [nativeTokenBalance, setNativeTokenBalance] = useState(null);
-
   const { contract: DsponsorAdminContract } = useContract(
     config[chainId]?.smartContracts?.DSPONSORADMIN?.address,
     config[chainId]?.smartContracts?.DSPONSORADMIN?.abi
@@ -128,9 +126,6 @@ const TokenPageContainer = () => {
   );
   const { mutateAsync: directBuy } = useContractWrite(dsponsorMpContract, "buy");
   const { setSelectedChain } = useSwitchChainContext();
-
-  const { contract: wrapContract } = useContract(config[chainId]?.smartContracts.WNATIVE.address);
-  const { mutateAsync: wrapNative } = useContractWrite(wrapContract, "deposit");
 
   const now = Math.floor(new Date().getTime() / 1000);
 
@@ -1003,7 +998,6 @@ const TokenPageContainer = () => {
                     marketplaceListings={marketplaceListings}
                     currencySymbol={currency}
                     tokenBalance={tokenBalance}
-                    // nativeTokenBalance={nativeTokenBalance}
                     currencyTokenDecimals={currencyDecimals}
                     setSuccessFullBid={setSuccessFullBid}
                     successFullBid={successFullBid}
