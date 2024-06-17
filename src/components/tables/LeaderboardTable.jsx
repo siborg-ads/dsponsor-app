@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import Link from "next/link";
+import activityToTopPoints from "./utils/activityToTopPoints";
 import activityToTopHolders from "./utils/activityToTopHolders";
 import activityToTopSpenders from "./utils/activityToTopSpenders";
 import activityToTopRewarded from "./utils/activityToTopRewarded";
@@ -60,6 +61,7 @@ const LeaderboardTable = ({ activity }) => {
     setFilteredActivity(filteredActivity[0]);
 
     setLeaderboards({
+      topPoints: activityToTopPoints(filteredActivity[0]?.rankings),
       topHolders: activityToTopHolders(filteredActivity[0]?.rankings),
       topSpenders: activityToTopSpenders(filteredActivity[0]?.rankings),
       topRewarded: activityToTopRewarded(filteredActivity[0]?.rankings)
@@ -73,6 +75,19 @@ const LeaderboardTable = ({ activity }) => {
 
     setBlockChainOptions(chains);
   }, [activity]);
+
+  const pointColumns = [
+    { header: "Rank", render: (item) => item.rank },
+    {
+      header: "Wallet",
+      render: (item) => (
+        <Link href={`/manage/${item.address}`}>
+          <span className="text-primaryPink hover:text-jacarta-100">{item.addressDisplay}</span>
+        </Link>
+      )
+    },
+    { header: "Total Points", render: (item) => item.totalPoints }
+  ];
 
   const holderColumns = [
     { header: "Rank", render: (item) => item.rank },
@@ -118,18 +133,20 @@ const LeaderboardTable = ({ activity }) => {
       )
     },
     { header: "# of Refunds", render: (item) => item.refunds }
-    // { header: "Chain ", render: () => config[chainId].chainName }
-    // { header: "DPoints", render: (item) => item.dPoints }
+    // { header: "Chain ", render: () => config[chainId].chainName },
+    //{ header: "Total Points", render: (item) => item.dPoints }
   ];
   const columns = {
+    topPoints: pointColumns,
     topHolders: holderColumns,
     topSpenders: spenderColumns,
     topRewarded: rewardedColumns
   };
   const tabItem = [
-    { id: 1, text: "Top Holders", icon: "owned" },
-    { id: 2, text: "Top Spenders", icon: "activity" },
-    { id: 3, text: "Top Rewarded", icon: "activity" }
+    { id: 1, text: "Top Points", icon: "activity" },
+    { id: 2, text: "Top Holders", icon: "owned" },
+    { id: 3, text: "Top Spenders", icon: "activity" },
+    { id: 4, text: "Top Rewarded", icon: "activity" }
   ];
 
   return (
@@ -221,15 +238,10 @@ const LeaderboardTable = ({ activity }) => {
       <div className="scrollbar-custom overflow-x-auto">
         {/* <!-- Tabs Nav --> */}
         <Tabs className="tabs scrollbar-custom ">
-          <TabList className="nav nav-tabs scrollbar-custom mb-12 flex items-center justify-start  overflow-y-hidden border-b border-jacarta-100 pb-px dark:border-jacarta-600 md:justify-center">
+          <TabList className="nav nav-tabs scrollbar-custom mb-6 flex items-center justify-start  overflow-y-hidden border-b border-jacarta-100 pb-px dark:border-jacarta-600 md:justify-center">
             {tabItem.map(({ id, text, icon }) => {
               return (
-                <Tab
-                  className="nav-item "
-                  role="presentation"
-                  key={id}
-                  onClick={() => setItemActive(id)}
-                >
+                <Tab className="nav-item " key={id} onClick={() => setItemActive(id)}>
                   <button
                     className={
                       itemActive === id
@@ -246,6 +258,9 @@ const LeaderboardTable = ({ activity }) => {
               );
             })}
           </TabList>
+
+          <p className="text-xs text-jacarta-100 mb-4">Data is updated every 15 minutes</p>
+
           {Object.entries(leaderboards).map(([key, data]) => (
             <TabPanel key={key}>
               <div className="overflow-x-auto">{renderTable(data, columns[key])}</div>
