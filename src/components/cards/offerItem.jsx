@@ -51,8 +51,8 @@ const OfferItem = ({
     if (isToken && isAuction && listingType === "Auction") {
       setPrice(
         item?.marketplaceListings?.[0]
-          ? item?.marketplaceListings[0]?.bidPriceStructureFormatted?.newPricePerToken
-          : item?.bidPriceStructureFormatted?.newPricePerToken
+          ? item?.marketplaceListings[0]?.bidPriceStructureFormatted?.minimalBidPerToken
+          : item?.bidPriceStructureFormatted?.minimalBidPerToken
       );
       setCurrencyToken(
         item?.marketplaceListings?.[0]
@@ -69,7 +69,7 @@ const OfferItem = ({
       setItemStatut("DIRECT");
     }
   }, [item, isToken, isListing, isAuction, listingType]);
-
+  console.log(price, currencyToken, itemStatut, item);
   useEffect(() => {
     if (!item) return;
 

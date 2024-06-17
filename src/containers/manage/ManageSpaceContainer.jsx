@@ -77,7 +77,9 @@ const ManageSpaceContainer = () => {
             tokenData: element?.token.mint.tokenData,
             startTime: element?.startTime,
             endTime: element?.endTime,
-            ...element?.token
+            offerId: element?.token?.nftContract?.adOffers[0]?.id,
+            ...element.token,
+            ...element
           }));
         setListedAuctionToken(mappedListedToken);
       };
