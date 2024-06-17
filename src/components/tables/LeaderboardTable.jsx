@@ -51,16 +51,18 @@ const LeaderboardTable = ({ activity }) => {
   const { currentChainObject } = useChainContext();
   const [activeBlockchain] = useState(currentChainObject?.chainId);
   const [itemActive, setItemActive] = useState(1);
-  const [chainId, setChainId] = useState();
+  const [, setChainId] = useState();
   const [filteredActivity, setFilteredActivity] = useState([]);
 
-  const [blockChainOptions, setBlockChainOptions] = useState([]);
+  const [, setBlockChainOptions] = useState([]);
   const [leaderboards, setLeaderboards] = useState({});
 
   const chainExplorer = currentChainObject?.explorerBaseUrl;
 
   useEffect(() => {
-    const filteredActivity = activity?.filter((item) => Number(item?.chainId) === Number(activeBlockchain));
+    const filteredActivity = activity?.filter(
+      (item) => Number(item?.chainId) === Number(activeBlockchain)
+    );
     setChainId(filteredActivity[0]?.chainId);
     setFilteredActivity(filteredActivity[0]);
 
