@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import Image from "next/image";
 import OwnedOffersCategoriesItems from "../categories/ownedOffers_categories_items";
@@ -7,6 +7,10 @@ import OwnedAdProposalsCategoriesItems from "../categories/ownedAdProposals_cate
 import AuctionsCategories from "../categories/Auctions_categories";
 import TokenAuctionBids from "../categories/tokenAuctionBids";
 import { activated_features } from "../../data/activated_features";
+import Activity from "../categories/Activity";
+import { useAddress } from "@thirdweb-dev/react";
+import { getAddress } from "ethers/lib/utils";
+import { useChainContext } from "../../contexts/hooks/useChainContext";
 
 const User_items = ({
   createdData,
@@ -14,18 +18,42 @@ const User_items = ({
   tokenAuctionBids,
   isPendinAdsOnOffer,
   isOwner,
-  listedAuctionToken
+  listedAuctionToken,
+  manageAddress
 }) => {
   const [itemActive, setItemActive] = useState(1);
+  const [isUserConnected, setIsUserConnected] = useState(false);
+
+  const chainObject = useChainContext();
+  const chainId = chainObject?.currentChainObject?.chainId;
+
+  const address = useAddress();
+
+  useEffect(() => {
+    if (!address || !manageAddress) return;
+
+    if (address === "" || manageAddress === "") return;
+
+    if (getAddress(address) === getAddress(manageAddress)) {
+      setIsUserConnected(true);
+    } else {
+      setIsUserConnected(false);
+    }
+  }, [address, manageAddress]);
 
   const tabItem = [
-    { id: 1, text: "Owned tokens", icon: "owned" },
-    { id: 2, text: "Auction listed tokens", icon: "activity" },
-    { id: 3, text: "Token Auction Bids ", icon: "activity" },
+    {
+      id: 1,
+      text: "Activity",
+      icon: "activity"
+    },
+    { id: 2, text: "Owned tokens", icon: "owned" },
+    { id: 3, text: "Auction listed tokens", icon: "activity" },
+    { id: 4, text: "Token Auction Bids ", icon: "activity" },
     ...(activated_features.canCreateOffer
       ? [
           {
-            id: 4,
+            id: 5,
             text: "Created Offers",
             icon: "owned"
           }
@@ -69,6 +97,11 @@ const User_items = ({
                 );
               })}
             </TabList>
+            <TabPanel>
+              <div>
+                <Activity isUserConnected={isUserConnected} userAddr={address} chainId={chainId} />
+              </div>
+            </TabPanel>
             <TabPanel>
               <div>
                 <OwnedAdProposalsCategoriesItems data={mappedownedAdProposals} isOwner={isOwner} />
