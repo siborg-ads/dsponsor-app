@@ -3,6 +3,7 @@ import LeaderboardTable from "../../../components/tables/LeaderboardTable";
 import { fetchMarketplaceActivity } from "../../../providers/methods/fetchMarketplaceActivity";
 import processBidsAndCalculateRewards from "./processBidsAndCalculateRewards";
 import LeaderBoardSkeleton from "../../../components/skeleton/leaderBoardSkeleton";
+import Meta from "../../../components/Meta";
 import config from "../../../config/config";
 
 const MarketplaceLeaderboardContainer = () => {
@@ -50,9 +51,15 @@ const MarketplaceLeaderboardContainer = () => {
       </>
     );
   }
-
+const metadata = {
+  title: `Leaderboard || SiBorg Ads - The Web3 Monetization Solution`,
+  keyword:
+    "audience engagement, web3, creator economic, NFT, creator monetization, creator economy, creator token, creator coin, creator tokenization, creator economy",
+  desc: "Explore the future of media monetization. SiBorg Ads decentralized platform offers tokenized advertising spaces for dynamic and sustainable media funding."
+};
   return (
     <>
+      <Meta {...metadata} />
       <section className="relative py-24">
         <LeaderboardTable activity={activity} />
       </section>

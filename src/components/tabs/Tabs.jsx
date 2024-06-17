@@ -1,7 +1,7 @@
 import React from "react";
 import Link from "next/link";
-import Tippy from "@tippyjs/react";
-import { whiteListedAddress } from "../../utils/whiteListedAddress";
+
+
 import { useChainContext } from "../../contexts/hooks/useChainContext";
 import config from "../../config/config";
 import displayOrCheckKnownAddress from "../../utils/displayOrCheckKnownAddress";
@@ -58,18 +58,7 @@ const ItemsTabs = ({
                     >
                       {status === "CREATED" ? listerAddress : isUserOwner}
                     </Link>
-                    {whiteListedAddress.includes(isUserOwner) && (
-                      <span
-                        className="dark:border-jacarta-600 bg-green inline-flex h-6 w-6 items-center justify-center rounded-full border-2 border-white"
-                        data-tippy-content="Verified Collection"
-                      >
-                        <Tippy content={<span>Verified Collection</span>}>
-                          <svg className="icon h-[.875rem] w-[.875rem] fill-white">
-                            <use xlinkHref="/icons.svg#icon-right-sign"></use>
-                          </svg>
-                        </Tippy>
-                      </span>
-                    )}
+                  
                   </div>
                 ) : (
                   "No owner"
