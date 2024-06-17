@@ -36,7 +36,6 @@ import ItemBids from "../../components/item/ItemBids.jsx";
 import ItemManage from "../../components/item/ItemManage.jsx";
 import { useSwitchChainContext } from "../../contexts/hooks/useSwitchChainContext.js";
 import { fetchOfferToken } from "../../providers/methods/fetchOfferToken.js";
-// import { fetchAllTokenListedByListingId } from "../../providers/methods/fetchAllTokenListedByListingId.js";
 import config from "../../providers/utils/config.js";
 import stringToUint256 from "../../utils/stringToUnit256.js";
 import { getAddress } from "ethers/lib/utils";
@@ -101,6 +100,8 @@ const TokenPageContainer = () => {
   const [isLister, setIsLister] = useState(false);
   const [, setSelectedItems] = useState([]);
   const [bids, setBids] = useState([]);
+
+  // const [nativeTokenBalance, setNativeTokenBalance] = useState(null);
 
   const { contract: DsponsorAdminContract } = useContract(
     config[chainId]?.smartContracts?.DSPONSORADMIN?.address,
@@ -536,22 +537,6 @@ const TokenPageContainer = () => {
       const computedFeesAmount = parsedPriceAmount.mul(protocolFeeBps).div(maxBps);
       const parsedPriceAndProtocolFeesAmount = parsedPriceAmount.add(computedFeesAmount);
       let hasEnoughBalance = checkUserBalance(tokenBalance, parsedPriceAndProtocolFeesAmount);
-      const isWrappedNative = currency === "WETH";
-      // If it's a wrapped native token, that the user has agreed to approve the contract
-      // But he has not enough balance as wrapped native token but he has enough balance as native token
-      // We need to convert the native token to wrapped native token
-      if (isWrappedNative && !hasEnoughBalance) {
-        const missingBalance = parsedPriceAndProtocolFeesAmount
-          .sub(BigNumber.from(tokenBalance.value))
-          .abs();
-        const missingBalanceWithProtocolFee = missingBalance.add(computedFeesAmount);
-        await wrapNative({
-          overrides: {
-            value: missingBalanceWithProtocolFee
-          }
-        });
-        hasEnoughBalance = true;
-      }
 
       if (!hasEnoughBalance) {
         throw new Error("Not enough balance for approval.");
@@ -1018,6 +1003,7 @@ const TokenPageContainer = () => {
                     marketplaceListings={marketplaceListings}
                     currencySymbol={currency}
                     tokenBalance={tokenBalance}
+                    // nativeTokenBalance={nativeTokenBalance}
                     currencyTokenDecimals={currencyDecimals}
                     setSuccessFullBid={setSuccessFullBid}
                     successFullBid={successFullBid}
