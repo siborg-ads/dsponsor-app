@@ -1,5 +1,5 @@
 import { executeQuery } from "../utils/executeQuery";
-import config from "../utils/config";
+import config from "../../config/config";
 
 export const fetchAllTokenListedByUserAddress = async (lister, chainId) => {
   const path = new URL(`https://relayer.dsponsor.com/api/${chainId}/graph`);

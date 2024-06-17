@@ -4,7 +4,7 @@ import { Web3Button, useContractWrite } from "@thirdweb-dev/react";
 import { Spinner } from "@nextui-org/spinner";
 import { toast } from "react-toastify";
 import Link from "next/link";
-import config from "../../providers/utils/config";
+import config from "../../config/config";
 import { computeBidAmounts } from "../../utils/computeBidAmounts";
 import { formatUnits, parseUnits } from "ethers/lib/utils";
 import { formatAndRoundPrice } from "../../utils/formatAndRound";

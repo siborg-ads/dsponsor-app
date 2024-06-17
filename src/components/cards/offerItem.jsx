@@ -134,7 +134,7 @@ const OfferItem = ({
             </figure>
 
             <Tippy
-              content={item?.chainConfig?.chainName}
+              content={item?.chainConfig?.network}
               placement="top"
               style={{
                 transitionDuration: "500ms"

@@ -18,7 +18,7 @@ import Validation from "../../components/offer-section/validation";
 import ModalHelper from "../../components/Helper/modalHelper";
 import { ItemsTabs } from "../../components/component";
 import { fetchOffer } from "../../providers/methods/fetchOffer";
-import config from "../../providers/utils/config";
+import config from "../../config/config";
 import { useSwitchChainContext } from "../../contexts/hooks/useSwitchChainContext";
 import { activated_features } from "../../data/activated_features";
 

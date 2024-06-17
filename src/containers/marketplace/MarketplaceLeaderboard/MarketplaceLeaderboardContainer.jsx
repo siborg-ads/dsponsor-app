@@ -4,19 +4,21 @@ import { fetchMarketplaceActivity } from "../../../providers/methods/fetchMarket
 import processBidsAndCalculateRewards from "./processBidsAndCalculateRewards";
 import LeaderBoardSkeleton from "../../../components/skeleton/leaderBoardSkeleton";
 import Meta from "../../../components/Meta";
+import config from "../../../config/config";
 
 const MarketplaceLeaderboardContainer = () => {
   const [activity, setActivity] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const chainIds = [11155111, 84532];
-    const promises = chainIds.map((chainId) =>
+    
+    const promises = Object.entries(config).map(([chainId, chainConfig]) =>
       fetchMarketplaceActivity(chainId).then((activity) => ({
         ...activity,
         chainId
       }))
     );
+ 
 
     Promise.all(promises)
       .then((activities) => {

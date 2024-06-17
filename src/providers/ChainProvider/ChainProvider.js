@@ -2,21 +2,22 @@
 import React, { useState, useEffect } from "react";
 import { useAddress, useChainId } from "@thirdweb-dev/react";
 import ChainContext from "../../contexts/ChainContext";
-import config from "../utils/config";
+import config from "../../config/config";
 
 const ChainProvider = ({ children }) => {
   const chainId = useChainId();
   const connectedAddress = useAddress();
   const [currentChainObject, setCurrentChainObject] = useState({});
 
-  useEffect(() => {
-    if (config[chainId]) {
-      setCurrentChainObject(config[chainId]);
-    } else {
-      console.warn(`Unknown chainId: ${chainId} - Using default chainId: 11155111`);
-      setCurrentChainObject(config[11155111]);
-    }
-  }, [chainId]);
+   useEffect(() => {
+     if (config[chainId]) {
+       setCurrentChainObject(config[chainId]);
+     } else {
+       const [firstChainId, firstChainConfig] = Object.entries(config)[0];
+       console.warn(`Unknown chainId: ${chainId} - Using default chainId: ${firstChainId}`);
+       setCurrentChainObject(firstChainConfig);
+     }
+   }, [chainId]);
 
   const value = {
     currentChainObject,

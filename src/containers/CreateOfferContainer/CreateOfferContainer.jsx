@@ -11,7 +11,7 @@ import Step1Create from "../../components/sliderForm/PageCreate/Step_1_Create";
 import Step2Create from "../../components/sliderForm/PageCreate/Step_2_Create";
 import Step3Create from "../../components/sliderForm/PageCreate/Step_3_Create";
 import Step4Create from "../../components/sliderForm/PageCreate/Step_4_Create";
-import config from "../../providers/utils/config";
+import config from "../../config/config";
 
 import SliderForm from "../../components/sliderForm/sliderForm";
 import { useSwitchChainContext } from "../../contexts/hooks/useSwitchChainContext";
