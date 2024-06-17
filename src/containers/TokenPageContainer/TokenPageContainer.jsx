@@ -829,7 +829,8 @@ const TokenPageContainer = () => {
     id = "1",
     image = "/images/gradient_creative.jpg",
     name = "Unnamed Ad Space"
-  } = Object.keys(offerData?.metadata?.offer?.token_metadata).length > 0
+  } = offerData?.metadata?.offer?.token_metadata &&
+  Object.keys(offerData?.metadata?.offer?.token_metadata).length > 0
     ? tokenMetaData
     : offerData && offerData.metadata
       ? offerData.metadata.offer

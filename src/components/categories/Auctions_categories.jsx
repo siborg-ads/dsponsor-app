@@ -13,6 +13,7 @@ const Auctions_categories = ({ data, isOwner }) => {
       </div>
     );
   }
+
   return (
     <>
       {/* <!-- Grid --> */}
@@ -33,8 +34,8 @@ const Auctions_categories = ({ data, isOwner }) => {
                 key={index}
                 url={
                   !item.tokenData
-                    ? `/${item?.chainConfig?.chainId}/offer/${item?.offerId}/${item.tokenId}`
-                    : `/${item?.chainConfig?.chainId}/offer/${item?.offerId}/${item.tokenId}?tokenData=${item.tokenData}`
+                    ? `/${item?.chainConfig?.chainId}/offer/${item?.nftContract?.adOffers[0]?.id}/${item.tokenId}`
+                    : `/${item?.chainConfig?.chainId}/offer/${item?.nftContract?.adOffers[0]?.id}/${item.tokenId}?tokenData=${item.tokenData}`
                 }
                 isOwner={isOwner}
                 isToken={true}
