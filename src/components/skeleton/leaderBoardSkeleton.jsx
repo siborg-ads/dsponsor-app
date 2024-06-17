@@ -29,6 +29,8 @@ const LeaderBoardSkeleton = () => {
           <Skeleton className="w-[100px] h-[25px] rounded-lg"></Skeleton>
           <Skeleton className="w-[100px] h-[25px] rounded-lg"></Skeleton>
           <Skeleton className="w-[100px] h-[25px] rounded-lg"></Skeleton>
+          <Skeleton className="w-[100px] h-[25px] rounded-lg"></Skeleton>
+          <Skeleton className="w-[100px] h-[25px] rounded-lg"></Skeleton>
         </div>
         <Skeleton className="w-full h-[250px] rounded-lg"></Skeleton>
       </div>

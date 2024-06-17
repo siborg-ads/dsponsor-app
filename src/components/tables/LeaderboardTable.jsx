@@ -1,15 +1,18 @@
 import React, { useState, useEffect } from "react";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import Link from "next/link";
+import activityToTopPoints from "./utils/activityToTopPoints";
 import activityToTopHolders from "./utils/activityToTopHolders";
 import activityToTopSpenders from "./utils/activityToTopSpenders";
 import activityToTopRewarded from "./utils/activityToTopRewarded";
+import activityToHighestTransactions from "./utils/activityToHighestTransactions";
 import config from "../../config/config";
 import { useChainContext } from "../../contexts/hooks/useChainContext";
 import TopCards from "../leaderBoard/topCards";
+import formatLongAddress from "../../utils/formatLongAddress";
 
 const renderTable = (data, columns) => {
-  if (!data || data.length === 0) {
+  if (!data || data.length === 0 || !Array.isArray(data)) {
     return <div className="text-center py-4">No data available</div>;
   }
 
@@ -26,7 +29,7 @@ const renderTable = (data, columns) => {
           </tr>
         </thead>
         <tbody>
-          {data.map((item, index) => (
+          {data?.map((item, index) => (
             <tr
               key={index}
               className="border-t border-jacarta-100 dark:border-primaryPink dark:border-opacity-10"
@@ -60,9 +63,11 @@ const LeaderboardTable = ({ activity }) => {
     setFilteredActivity(filteredActivity[0]);
 
     setLeaderboards({
+      topPoints: activityToTopPoints(filteredActivity[0]?.rankings),
       topHolders: activityToTopHolders(filteredActivity[0]?.rankings),
       topSpenders: activityToTopSpenders(filteredActivity[0]?.rankings),
-      topRewarded: activityToTopRewarded(filteredActivity[0]?.rankings)
+      topRewarded: activityToTopRewarded(filteredActivity[0]?.rankings),
+      highestTransactions: activityToHighestTransactions(filteredActivity[0]?.lastActivities)
     });
   }, [activeBlockchain, activity]);
 
@@ -73,6 +78,19 @@ const LeaderboardTable = ({ activity }) => {
 
     setBlockChainOptions(chains);
   }, [activity]);
+
+  const pointColumns = [
+    { header: "Rank", render: (item) => item.rank },
+    {
+      header: "Wallet",
+      render: (item) => (
+        <Link href={`/manage/${item.address}`}>
+          <span className="text-primaryPink hover:text-jacarta-100">{item.addressDisplay}</span>
+        </Link>
+      )
+    },
+    { header: "Total Points", render: (item) => item.totalPoints }
+  ];
 
   const holderColumns = [
     { header: "Rank", render: (item) => item.rank },
@@ -118,18 +136,69 @@ const LeaderboardTable = ({ activity }) => {
       )
     },
     { header: "# of Refunds", render: (item) => item.refunds }
-    // { header: "Chain ", render: () => config[chainId].network}
-    // { header: "DPoints", render: (item) => item.dPoints }
+    // { header: "Chain ", render: () => config[chainId].network},
+    //{ header: "Total Points", render: (item) => item.dPoints }
   ];
+
+  const highestTransactionsColumns = [
+    { header: "Type", render: (item) => item.type },
+    { header: "Date", render: (item) => `${item.date}` },
+    {
+      header: "Transaction",
+      render: (item) => (
+        <Link href={`https://sepolia.etherscan.io/tx/${item.transactionHash}`} passHref>
+          {/* to change */}
+          <span className="text-primaryPink hover:text-jacarta-100">{item.transactionHash}</span>
+        </Link>
+      )
+    },
+    { header: "Points", render: (item) => item.points },
+    {
+      header: "Seller",
+      render: (item) => (
+        <Link href={`https://sepolia.etherscan.io/address/${item.enabler}`} passHref>
+          <span className="text-primaryPink hover:text-jacarta-100">
+            {formatLongAddress(item.enabler)}
+          </span>
+        </Link>
+      )
+    },
+    {
+      header: "Buyer",
+      render: (item) => (
+        <Link href={`https://sepolia.etherscan.io/address/${item.spender}`} passHref>
+          <span className="text-primaryPink hover:text-jacarta-100">
+            {formatLongAddress(item.spender)}
+          </span>
+        </Link>
+      )
+    },
+    {
+      header: "Referrer",
+      render: (item) => (
+        <Link href={`https://sepolia.etherscan.io/address/${item.refAddr}`} passHref>
+          <span className="text-primaryPink hover:text-jacarta-100">
+            {formatLongAddress(item.refAddr)}
+          </span>
+        </Link>
+      )
+    }
+  ];
+
   const columns = {
+    topPoints: pointColumns,
     topHolders: holderColumns,
     topSpenders: spenderColumns,
-    topRewarded: rewardedColumns
+    topRewarded: rewardedColumns,
+    highestTransactions: highestTransactionsColumns
   };
+
   const tabItem = [
-    { id: 1, text: "Top Holders", icon: "owned" },
-    { id: 2, text: "Top Spenders", icon: "activity" },
-    { id: 3, text: "Top Rewarded", icon: "activity" }
+    { id: 1, text: "Top Points", icon: "activity" },
+    { id: 2, text: "Top Holders", icon: "owned" },
+    { id: 3, text: "Top Spenders", icon: "activity" },
+    { id: 4, text: "Top Rewarded", icon: "activity" },
+    { id: 5, text: "Highest Transactions", icon: "activity" }
   ];
 
   return (
@@ -221,15 +290,10 @@ const LeaderboardTable = ({ activity }) => {
       <div className="scrollbar-custom overflow-x-auto">
         {/* <!-- Tabs Nav --> */}
         <Tabs className="tabs scrollbar-custom ">
-          <TabList className="nav nav-tabs scrollbar-custom mb-12 flex items-center justify-start  overflow-y-hidden border-b border-jacarta-100 pb-px dark:border-jacarta-600 md:justify-center">
+          <TabList className="nav nav-tabs scrollbar-custom mb-6 flex items-center justify-start  overflow-y-hidden border-b border-jacarta-100 pb-px dark:border-jacarta-600 md:justify-center">
             {tabItem.map(({ id, text, icon }) => {
               return (
-                <Tab
-                  className="nav-item "
-                  role="presentation"
-                  key={id}
-                  onClick={() => setItemActive(id)}
-                >
+                <Tab className="nav-item " key={id} onClick={() => setItemActive(id)}>
                   <button
                     className={
                       itemActive === id
@@ -246,11 +310,12 @@ const LeaderboardTable = ({ activity }) => {
               );
             })}
           </TabList>
+
+          <p className="text-xs text-jacarta-100 mb-4">Data is updated every 15 minutes</p>
+
           {Object.entries(leaderboards).map(([key, data]) => (
             <TabPanel key={key}>
-              <div className="overflow-x-auto">
-                {renderTable(`Top ${key.replace("top", "")}`, data, columns[key])}
-              </div>
+              <div className="overflow-x-auto">{renderTable(data, columns[key])}</div>
             </TabPanel>
           ))}
         </Tabs>
