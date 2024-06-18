@@ -102,6 +102,33 @@ const TokenPageContainer = () => {
   const [, setSelectedItems] = useState([]);
   const [bids, setBids] = useState([]);
 
+  const [offerDO, setOfferDO] = useState({
+    offerId: null
+  });
+  const [tokenDO, setTokenDO] = useState({
+    // Required
+    tokenId: null,
+    currency: null,
+    tokenData: null,
+
+    price: null,
+    fee: null,
+
+    royalties: null
+  });
+
+  const [userDO, setUserDO] = useState({
+    address: address
+  });
+
+  useEffect(() => {
+    if (address !== userDO.address) {
+      setUserDO({
+        address: address
+      });
+    }
+  }, [address]);
+
   const { contract: DsponsorAdminContract } = useContract(
     config[chainId]?.smartContracts?.DSPONSORADMIN?.address,
     config[chainId]?.smartContracts?.DSPONSORADMIN?.abi
@@ -212,6 +239,20 @@ const TokenPageContainer = () => {
 
   useEffect(() => {
     if (!offerData) return;
+    setOfferDO({
+      offerId: offerId
+    });
+    setTokenDO({
+      currency: offerData?.nftContract?.prices[0]?.currency,
+      tokenId: tokenId,
+      tokenData: null,
+
+      price: offerData?.nftContract?.prices[0]?.amount,
+      feeBPS: offerData?.nftContract?.prices[0]?.protocolFeeBps,
+      royaltiesBPS: offerData?.nftContract?.royalty.bps,
+      fee: offerData?.nftContract?.prices[0]?.protocolFeeAmount
+    });
+
 
     if (
       !isOwner &&
@@ -1197,6 +1238,17 @@ const TokenPageContainer = () => {
             formatTokenId={formatTokenId}
             isLoadingButton={isLoadingButton}
             address={address}
+            token={tokenDO}
+            user={{
+              address: address,
+              isOwner: isOwner,
+              isLister: isLister,
+              isUserOwner: isUserOwner
+            }}
+            offer={offerDO}
+            referrer={{
+              address: referralAddress
+            }}
           />
         </div>
       )}

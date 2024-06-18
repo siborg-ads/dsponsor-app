@@ -9,6 +9,7 @@ import { Spinner } from "@nextui-org/spinner";
 import { useChainContext } from "../../contexts/hooks/useChainContext";
 import { CrossmintPayButton } from "@crossmint/client-sdk-react-ui";
 import { activated_features } from "../../data/activated_features";
+import MintWithCrossmintButton from "../buttons/MintWithCrossmintButton/MintWithCrossmintButton";
 
 const BuyModal = ({
   formatTokenId,
@@ -31,6 +32,12 @@ const BuyModal = ({
   tokenData,
   isLoadingButton,
   address
+  isLoadingButton,
+
+  token,
+  user,
+  offer,
+  referrer
 }) => {
   const [validate, setValidate] = useState(false);
   const { currentChainObject } = useChainContext();
@@ -67,6 +74,14 @@ const BuyModal = ({
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [handleBuyModal, modalRef]);
+
+  // Ref instead of state to avoid re-renders
+  const isProcessingRef = useRef(false);
+  const onProcessingMint = async () => {
+    if (isProcessingRef.current) return;
+    isProcessingRef.current = true;
+    toast.info("Processing mint.");
+  };
 
   return (
     <div>
@@ -246,55 +261,67 @@ const BuyModal = ({
                     <Web3Button
                       contractAddress={currentChainObject?.smartContracts?.DSPONSORADMIN?.address}
                       action={() => {
-                        toast.promise(handleSubmit, {
+                        toast.promise(handleApprove, {
                           pending: "Waiting for confirmation 🕒",
-                          success: "Transaction confirmed 👌",
-                          error: "Transaction rejected 🤯"
+                          success: "Approval confirmed 👌",
+                          error: "Approval rejected 🤯"
                         });
                       }}
-                      className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate ? "btn-disabled cursor-not-allowed !text-black" : "!bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer"} `}
+                      className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-black  !transition-all ${!validate ? "btn-disabled cursor-not-allowed !text-black opacity-30" : "!text-white !bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer"} `}
                       isDisabled={!validate || isLoadingButton}
                     >
-                      {isLoadingButton ? <Spinner size="sm" color="default" /> : "Confirm checkout"}
+                      {isLoadingButton ? <Spinner size="sm" color="default" /> : "Approve"}
                     </Web3Button>
-                  ) : (
-                    <Link href={successFullBuyModal.hrefButton ?? "#"}>
-                      <button className="!rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all !bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer">
-                        {successFullBuyModal.buttonTitle}
-                      </button>
-                    </Link>
-                  )}
-                </div>
-                {canPayWithCrossmint && !successFullUpload && (
-                  <>
-                    <div className="flex items-center justify-center w-full">
-                      <div className="flex-grow border-t border-gray-300"></div>
-                      <span className="mx-4 text-gray-500">or</span>
-                      <div className="flex-grow border-t border-gray-300"></div>
-                    </div>
-                    <div className="flex items-center justify-center space-x-4">
-                      <CrossmintPayButton
-                        contractAddress={currentChainObject?.smartContracts?.DSPONSORADMIN?.address}
-                        action={() => {
-                          toast.promise(handleSubmit, {
-                            pending: "Waiting for confirmation 🕒",
-                            success: "Transaction confirmed 👌",
-                            error: "Transaction rejected 🤯"
-                          });
-                        }}
-                        className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate ? "btn-disabled cursor-not-allowed !text-black" : "!bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer"} `}
-                        isDisabled={!validate || isLoadingButton}
-                      >
-                        {isLoadingButton ? (
-                          <Spinner size="sm" color="default" />
-                        ) : (
-                          "Confirm checkout"
-                        )}
-                      </CrossmintPayButton>
-                    </div>
                   </>
+                ) : !successFullUpload ? (
+                  <Web3Button
+                    contractAddress={currentChainObject?.smartContracts?.DSPONSORADMIN?.address}
+                    action={() => {
+                      toast.promise(handleSubmit, {
+                        pending: "Waiting for confirmation 🕒",
+                        success: "Transaction confirmed 👌",
+                        error: "Transaction rejected 🤯"
+                      });
+                    }}
+                    className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate ? "btn-disabled cursor-not-allowed !text-black" : "!bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer"} `}
+                    isDisabled={!validate || isLoadingButton}
+                  >
+                    {isLoadingButton ? <Spinner size="sm" color="default" /> : "Confirm checkout"}
+                  </Web3Button>
+                ) : (
+                  <Link href={successFullBuyModal.hrefButton ?? "#"}>
+                    <button className="!rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all !bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer">
+                      {successFullBuyModal.buttonTitle}
+                    </button>
+                  </Link>
                 )}
               </div>
+              {canPayWithCrossmint && !successFullUpload && (
+                <>
+                  <div className="flex items-center justify-center w-full">
+                    <div className="flex-grow border-t border-gray-300"></div>
+                    <span className="mx-4 text-gray-500">or</span>
+                    <div className="flex-grow border-t border-gray-300"></div>
+                  </div>
+                  <div className="flex items-center justify-center space-x-4">
+                    <MintWithCrossmintButton
+                      offer={offer}
+                      token={token}
+                      user={user}
+                      referrer={referrer}
+                      actions={{
+                        processing: onProcessingMint,
+                        success: () => {
+                          toast.success("Minting successful");
+                        },
+                        error: (error) => {
+                          toast.error(`Minting failed: ${error.message}`);
+                        }
+                      }}
+                    />
+                  </div>
+                </>
+              )}
             </div>
           )}
         </div>
