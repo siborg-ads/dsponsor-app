@@ -26,7 +26,6 @@ const HomeContainer = () => {
       const allListedTokenWithoutFilterArray = [];
       if (config !== null && config !== undefined) {
         for (const [chainId] of Object.entries(config)) {
-        
           const data = await fetchAllListedTokenWithoutFilter(chainId, allTokens);
           allListedTokenWithoutFilterArray.push(...data);
         }

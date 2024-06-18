@@ -190,6 +190,7 @@ console.log(mappedAuctionBidsTokens, "mappedAuctionBidsTokens");
           tokenAuctionBids={tokenAuctionBids}
           isPendinAdsOnOffer={isPendinAdsOnOffer}
           isOwner={isOwner}
+          manageAddress={userAddress}
         />
       </div>
     </>
