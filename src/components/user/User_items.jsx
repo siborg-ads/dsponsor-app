@@ -141,7 +141,11 @@ const User_items = ({
             </TabList>
             <TabPanel>
               <div>
-                <Activity isUserConnected={isUserConnected} userAddr={address} chainId={chainId} />
+                <Activity
+                  isUserConnected={isUserConnected}
+                  userAddr={address ?? manageAddress}
+                  chainId={chainId}
+                />
               </div>
             </TabPanel>
             <TabPanel>
