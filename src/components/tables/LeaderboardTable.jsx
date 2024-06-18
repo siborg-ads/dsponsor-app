@@ -3,7 +3,6 @@ import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import Link from "next/link";
 import activityToTopPoints from "./utils/activityToTopPoints";
 import activityToTopHolders from "./utils/activityToTopHolders";
-import activityToTopSpenders from "./utils/activityToTopSpenders";
 import activityToTopRewarded from "./utils/activityToTopRewarded";
 import activityToHighestTransactions from "./utils/activityToHighestTransactions";
 import config from "../../config/config";

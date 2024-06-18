@@ -101,7 +101,6 @@ const TokenPageContainer = () => {
   const [isLister, setIsLister] = useState(false);
   const [, setSelectedItems] = useState([]);
   const [bids, setBids] = useState([]);
-  const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   const { contract: DsponsorAdminContract } = useContract(
     config[chainId]?.smartContracts?.DSPONSORADMIN?.address,
