@@ -44,9 +44,8 @@ import { getAddress } from "ethers/lib/utils";
 import "react-toastify/dist/ReactToastify.css";
 import ItemLastBids from "../../components/tables/ItemLastBids";
 import { activated_features } from "../../data/activated_features.js";
-import SuccessModal from "../../components/modal/successModal.jsx";
 
-const test = process.env.NODE_ENV === "development";
+const test = process.env.NODE_ENV === "development" && false;
 
 const TokenPageContainer = () => {
   const router = useRouter();
@@ -807,8 +806,8 @@ const TokenPageContainer = () => {
   };
   const successFullBuyModal = {
     title: "Checkout",
-    body: "Congratulations, you purchase this ad space.",
-    subBody: "Check your ad space in your manage section to submit your ad.",
+    body: "Congratulations, you purchased this ad space. 🎉",
+    subBody: "Check your ad space in your profile page.",
     buttonTitle: "Manage Spaces",
     hrefButton: `/profile/${address}`
   };
@@ -1162,7 +1161,7 @@ const TokenPageContainer = () => {
           />
         </div>
       )}
-      {buyModal && (
+      {(buyModal || test) && (
         <div className="modal fade show block">
           <BuyModal
             finalPrice={finalPrice}
@@ -1187,14 +1186,8 @@ const TokenPageContainer = () => {
             tokenData={tokenData}
             formatTokenId={formatTokenId}
             isLoadingButton={isLoadingButton}
-          />
-        </div>
-      )}
-      {(successFullBid || test) && (
-        <div className="modal fade show block">
-          <SuccessModal
-            toggleSuccessModal={toggleSuccessModal}
-            setIsLoadingButton={setIsLoadingButton}
+            address={address}
+            test={test}
           />
         </div>
       )}

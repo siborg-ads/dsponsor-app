@@ -112,26 +112,11 @@ const Activity = ({ isUserConnected, userAddr, chainId }) => {
                   Data is updated every 15 minutes
                 </p>
                 <div className="dark:bg-secondaryBlack dark:text-jacarta-100 rounded-2lg bg-white p-3 flex gap-4 justify-center items-center">
-                  <p className="text-center text-sm text-white">
+                  <p className="text-center text-white">
                     The more active you are on the platform, the more points you earn! The more
-                    points you have, the better the surprises you&apos;ll get. 🎁 <br />
-                    You gain points by participating in a token sale, whether as a buyer, seller, or
-                    even a referrer! 💸 <br />
-                    Share your referral code to earn points:{" "}
-                    <Tippy
-                      hideOnClick={false}
-                      content={copied ? <span>copied</span> : <span>copy</span>}
-                    >
-                      <button
-                        onClick={() => {
-                          handleCopy(`${frontURL}/?_rid=${userAddr}`, setCopied);
-                        }}
-                        className="text-primaryPurple hover:text-opacity-80 cursor-pointer"
-                      >
-                        click here
-                      </button>
-                    </Tippy>
-                    .
+                    points you have, the better the surprises you&apos;ll get. You gain points by
+                    participating in a token sale, whether as a buyer, seller, or even a referrer!
+                    💸
                   </p>
                 </div>
               </div>
@@ -139,13 +124,13 @@ const Activity = ({ isUserConnected, userAddr, chainId }) => {
               <div className="flex flex-col justify-center gap-8 mt-4">
                 <div className="flex flex-col gap-4">
                   <span className="text-white text-lg font-bold">Share your referral code</span>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <div className="grid grid-cols-2 gap-4">
                     <div className="flex flex-col bg-primaryPurple text-white items-center justify-center p-4 rounded-2lg">
                       <span className="text-2xl font-bold">{0}</span>
                       <span>Number of Referrals</span>
                     </div>
 
-                    <div className="flex flex-col md:col-span-2 text-white items-start justify-between">
+                    <div className="flex flex-col text-white items-start justify-between">
                       <Tippy
                         hideOnClick={false}
                         content={copied ? <span>copied</span> : <span>copy</span>}
@@ -245,7 +230,7 @@ const Activity = ({ isUserConnected, userAddr, chainId }) => {
                       <span className="text-2xl font-bold">
                         ${ranking?.usdcAmounts.bidRefundReceived ?? 0}
                       </span>
-                      <span>Refunded</span>
+                      <span>Rewarded</span>
                     </div>
                   </div>
                 </div>
