@@ -532,7 +532,7 @@ const TokenPageContainer = () => {
       setIsLoadingButton(true);
       // const royaltyFeeBps = offerData?.nftContract?.royalty.bps;
       const protocolFeeBps = bps;
-      const parsedPriceAmount = ethers.utils.parseUnits(price.toString(), currencyDecimals);
+      const parsedPriceAmount = ethers.utils.parseUnits(price.replace(/[^\d.-]/g, '').toString(), Number(currencyDecimals));
       const computedFeesAmount = parsedPriceAmount.mul(protocolFeeBps).div(maxBps);
       const parsedPriceAndProtocolFeesAmount = parsedPriceAmount.add(computedFeesAmount);
       let hasEnoughBalance = checkUserBalance(tokenBalance, parsedPriceAndProtocolFeesAmount);
@@ -568,10 +568,7 @@ const TokenPageContainer = () => {
         });
       } else {
         await approve({
-          args: [
-            config[chainId]?.smartContracts?.DSPONSORADMIN?.address,
-            amountToApprove.toString()
-          ]
+          args: [config[chainId]?.smartContracts?.DSPONSORADMIN?.address, amountToApprove]
         });
       }
       setAllowanceTrue(false);

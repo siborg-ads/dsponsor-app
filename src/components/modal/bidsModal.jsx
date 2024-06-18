@@ -167,13 +167,13 @@ const BidsModal = ({
       setBidsAmount(e.target.value);
       setAmountToApprove(
         ethers.utils.parseUnits(
-          new BigNumber(e.target.value).toFixed(Number(currencyTokenDecimals)).toString(),
+          new BigNumber(Number(e.target.value)).toFixed(Number(currencyTokenDecimals)).toString(),
           Number(currencyTokenDecimals)
         )
       );
       await checkAllowance(
         ethers.utils.parseUnits(
-          new BigNumber(e.target.value).toFixed(Number(currencyTokenDecimals)).toString(),
+          new BigNumber(Number(e.target.value)).toFixed(Number(currencyTokenDecimals)).toString(),
           Number(currencyTokenDecimals)
         )
       );
