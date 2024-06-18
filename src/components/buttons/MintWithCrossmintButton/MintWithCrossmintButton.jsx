@@ -92,8 +92,8 @@ export default function MintWithCrossmintButton(props = {}) {
             actions.processing();
           }
           return connecting
-            ? "Processing..."
-            : `Buy NOW with ${paymentMethod} for ${totalPriceFormatted}`;
+            ? props?.isLoadingRender ?? "Connecting..."
+            : props?.isActiveRender ?? `Buy NOW with ${paymentMethod} for ${totalPriceFormatted}`;
         }}
         {...buttonProps}
         onEvent={(event) => {
@@ -110,7 +110,7 @@ export default function MintWithCrossmintButton(props = {}) {
               break;
           }
         }}
-      />
+      ></CrossmintPayButton>
     </>
   );
 }

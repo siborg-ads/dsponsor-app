@@ -30,8 +30,7 @@ const BuyModal = ({
   handleSubmit,
   handleBuyModal,
   tokenData,
-  isLoadingButton,
-  address
+  address,
   isLoadingButton,
 
   token,
@@ -261,67 +260,56 @@ const BuyModal = ({
                     <Web3Button
                       contractAddress={currentChainObject?.smartContracts?.DSPONSORADMIN?.address}
                       action={() => {
-                        toast.promise(handleApprove, {
+                        toast.promise(handleSubmit, {
                           pending: "Waiting for confirmation 🕒",
-                          success: "Approval confirmed 👌",
-                          error: "Approval rejected 🤯"
+                          success: "Transaction confirmed 👌",
+                          error: "Transaction rejected 🤯"
                         });
                       }}
-                      className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-black  !transition-all ${!validate ? "btn-disabled cursor-not-allowed !text-black opacity-30" : "!text-white !bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer"} `}
+                      className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate ? "btn-disabled cursor-not-allowed !text-black" : "!bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer"} `}
                       isDisabled={!validate || isLoadingButton}
                     >
-                      {isLoadingButton ? <Spinner size="sm" color="default" /> : "Approve"}
+                      {isLoadingButton ? <Spinner size="sm" color="default" /> : "Confirm checkout"}
                     </Web3Button>
+                  ) : (
+                    <Link href={successFullBuyModal.hrefButton ?? "#"}>
+                      <button className="!rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all !bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer">
+                        {successFullBuyModal.buttonTitle}
+                      </button>
+                    </Link>
+                  )}
+                </div>
+                {canPayWithCrossmint && !successFullUpload && (
+                  <>
+                    <div className="flex items-center justify-center w-full">
+                      <div className="flex-grow border-t border-gray-300"></div>
+                      <span className="mx-4 text-gray-500">or</span>
+                      <div className="flex-grow border-t border-gray-300"></div>
+                    </div>
+                    <div className="flex items-center justify-center space-x-4">
+                      <MintWithCrossmintButton
+                        offer={offer}
+                        token={token}
+                        user={user}
+                        referrer={referrer}
+                        actions={{
+                          processing: onProcessingMint,
+                          success: () => {
+                            toast.success("Minting successful");
+                          },
+                          error: (error) => {
+                            toast.error(`Minting failed: ${error.message}`);
+                          }
+                        }}
+                        isLoading={isLoadingButton}
+                        isLoadingRender={() => <Spinner size="sm" color="default" />}
+                        isActiveRender={`Buy NOW with card for ${finalPrice}`}
+                        isDisabled={!validate || isLoadingButton}
+                      />
+                    </div>
                   </>
-                ) : !successFullUpload ? (
-                  <Web3Button
-                    contractAddress={currentChainObject?.smartContracts?.DSPONSORADMIN?.address}
-                    action={() => {
-                      toast.promise(handleSubmit, {
-                        pending: "Waiting for confirmation 🕒",
-                        success: "Transaction confirmed 👌",
-                        error: "Transaction rejected 🤯"
-                      });
-                    }}
-                    className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate ? "btn-disabled cursor-not-allowed !text-black" : "!bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer"} `}
-                    isDisabled={!validate || isLoadingButton}
-                  >
-                    {isLoadingButton ? <Spinner size="sm" color="default" /> : "Confirm checkout"}
-                  </Web3Button>
-                ) : (
-                  <Link href={successFullBuyModal.hrefButton ?? "#"}>
-                    <button className="!rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all !bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer">
-                      {successFullBuyModal.buttonTitle}
-                    </button>
-                  </Link>
                 )}
               </div>
-              {canPayWithCrossmint && !successFullUpload && (
-                <>
-                  <div className="flex items-center justify-center w-full">
-                    <div className="flex-grow border-t border-gray-300"></div>
-                    <span className="mx-4 text-gray-500">or</span>
-                    <div className="flex-grow border-t border-gray-300"></div>
-                  </div>
-                  <div className="flex items-center justify-center space-x-4">
-                    <MintWithCrossmintButton
-                      offer={offer}
-                      token={token}
-                      user={user}
-                      referrer={referrer}
-                      actions={{
-                        processing: onProcessingMint,
-                        success: () => {
-                          toast.success("Minting successful");
-                        },
-                        error: (error) => {
-                          toast.error(`Minting failed: ${error.message}`);
-                        }
-                      }}
-                    />
-                  </div>
-                </>
-              )}
             </div>
           )}
         </div>
