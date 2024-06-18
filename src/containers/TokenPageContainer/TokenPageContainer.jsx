@@ -532,7 +532,10 @@ const TokenPageContainer = () => {
       setIsLoadingButton(true);
       // const royaltyFeeBps = offerData?.nftContract?.royalty.bps;
       const protocolFeeBps = bps;
-      const parsedPriceAmount = ethers.utils.parseUnits(price.replace(/[^\d.-]/g, '').toString(), Number(currencyDecimals));
+      const parsedPriceAmount = ethers.utils.parseUnits(
+        price.replace(/[^\d.-]/g, "").toString(),
+        Number(currencyDecimals)
+      );
       const computedFeesAmount = parsedPriceAmount.mul(protocolFeeBps).div(maxBps);
       const parsedPriceAndProtocolFeesAmount = parsedPriceAmount.add(computedFeesAmount);
       let hasEnoughBalance = checkUserBalance(tokenBalance, parsedPriceAndProtocolFeesAmount);
@@ -761,28 +764,50 @@ const TokenPageContainer = () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [imageModal]);
-  function shouldRenderManageTokenComponent() {
-    const isFirstListingAuctionActive =
-      firstSelectedListing?.startTime < now &&
-      firstSelectedListing?.endTime > now &&
-      firstSelectedListing?.listingType === "Auction";
-    const isFirstListingDirect = firstSelectedListing?.listingType === "Direct";
-    const isTokenStatusSpecial = tokenStatut === "MINTABLE" || tokenStatut === "SIBORG";
-    const isAuctionWithBids =
-      firstSelectedListing?.listingType === "Auction" && firstSelectedListing?.bids?.length > 0;
-    const isOwnerAndFinished = isOwner && firstSelectedListing?.status === "COMPLETED";
-    const isListerAndEndDateFinishedOrNoBids =
-      isLister && (firstSelectedListing?.endTime < now || firstSelectedListing?.bids?.length === 0);
 
-    return (
-      ((isFirstListingAuctionActive && !isOwner) ||
-        (isFirstListingDirect && !isOwner) ||
-        isTokenStatusSpecial ||
-        (!isOwner && !isAllowedToMint) ||
-        isAuctionWithBids) &&
-      !isOwnerAndFinished &&
-      !isListerAndEndDateFinishedOrNoBids
-    );
+  function shouldRenderManageTokenComponent() {
+    const isAuction = firstSelectedListing?.listingType === "Auction";
+    const isDirect = firstSelectedListing?.listingType === "Direct";
+    const startTimePassed = firstSelectedListing?.startTime < now;
+    const endTimeNotPassed = firstSelectedListing?.endTime > now;
+    const isActive = startTimePassed && endTimeNotPassed;
+    const isCreated = firstSelectedListing?.status === "CREATED";
+    const isFinished = firstSelectedListing?.status === "COMPLETED";
+    const hasBids = firstSelectedListing?.bids?.length > 0;
+    const isTokenMintable = tokenStatut === "MINTABLE";
+    const isTokenSiborg = tokenStatut === "SIBORG";
+    const isTokenStatusSpecial = isTokenMintable || isTokenSiborg;
+    const isAuctionWithBids = isAuction && hasBids;
+    const isListerAndEndDateFinishedOrNoBids = isLister && (!endTimeNotPassed || !hasBids);
+    const auctionHasNotStarted = startTimePassed && isAuction && !hasBids;
+    const isAllowedToMint = isTokenMintable && isOwner;
+
+    const finalCondition =
+      (isActive && isOwner && ((isAuction && !hasBids) || isDirect)) ||
+      isAllowedToMint ||
+      !endTimeNotPassed ||
+      (isFinished && isOwner);
+
+    const conditionsObject = {
+      isAuction: isAuction,
+      isDirect: isDirect,
+      startTimePassed: startTimePassed,
+      endTimeNotPassed: endTimeNotPassed,
+      isActive: isActive,
+      isCreated: isCreated,
+      isFinished: isFinished,
+      hasBids: hasBids,
+      isTokenMintable: isTokenMintable,
+      isTokenSiborg: isTokenSiborg,
+      isTokenStatusSpecial: isTokenStatusSpecial,
+      isAuctionWithBids: isAuctionWithBids,
+      isListerAndEndDateFinishedOrNoBids: isListerAndEndDateFinishedOrNoBids,
+      auctionHasNotStarted: auctionHasNotStarted,
+      isOwner: isOwner,
+      isLister: isLister
+    };
+
+    return { condition: finalCondition, conditionsObject: conditionsObject };
   }
 
   const successFullUploadModal = {
@@ -981,9 +1006,7 @@ const TokenPageContainer = () => {
                 </div>
               )}
 
-              {shouldRenderManageTokenComponent() ? (
-                ""
-              ) : (
+              {shouldRenderManageTokenComponent().condition ? (
                 <>
                   <ItemManage
                     successFullListing={successFullListing}
@@ -995,8 +1018,11 @@ const TokenPageContainer = () => {
                     dsponsorMpContract={dsponsorMpContract}
                     isOwner={isOwner}
                     isLister={isLister}
+                    conditions={shouldRenderManageTokenComponent().conditionsObject}
                   />
                 </>
+              ) : (
+                <></>
               )}
               {firstSelectedListing?.listingType === "Auction" &&
                 firstSelectedListing.startTime < now &&
