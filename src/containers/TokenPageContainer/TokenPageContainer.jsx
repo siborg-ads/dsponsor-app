@@ -789,11 +789,6 @@ const TokenPageContainer = () => {
     );
   }
 
-  const toggleSuccessModal = async () => {
-    setShowSuccessModal(!showSuccessModal);
-    setSuccessFullBid(false);
-  };
-
   const successFullUploadModal = {
     title: "Submit ad",
     body: "Congratulations, you have proposed an ad. 🎉",
@@ -1064,6 +1059,7 @@ const TokenPageContainer = () => {
           initialCreator={offerData?.initialCreator}
           status={firstSelectedListing?.status}
           listerAddress={firstSelectedListing?.lister}
+          offerData={offerData}
         />
       </div>
       {offerData.nftContract?.tokens[0]?.mint &&
