@@ -45,8 +45,6 @@ import "react-toastify/dist/ReactToastify.css";
 import ItemLastBids from "../../components/tables/ItemLastBids";
 import { activated_features } from "../../data/activated_features.js";
 
-const test = process.env.NODE_ENV === "development" && false;
-
 const TokenPageContainer = () => {
   const router = useRouter();
 
@@ -1161,7 +1159,7 @@ const TokenPageContainer = () => {
           />
         </div>
       )}
-      {(buyModal || test) && (
+      {buyModal && (
         <div className="modal fade show block">
           <BuyModal
             finalPrice={finalPrice}
@@ -1187,7 +1185,6 @@ const TokenPageContainer = () => {
             formatTokenId={formatTokenId}
             isLoadingButton={isLoadingButton}
             address={address}
-            test={test}
           />
         </div>
       )}

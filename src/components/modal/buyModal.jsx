@@ -9,7 +9,6 @@ import { Spinner } from "@nextui-org/spinner";
 import { useChainContext } from "../../contexts/hooks/useChainContext";
 import { CrossmintPayButton } from "@crossmint/client-sdk-react-ui";
 import { activated_features } from "../../data/activated_features";
-import MainButton from "../buttons/mainButton";
 
 const BuyModal = ({
   formatTokenId,
@@ -31,8 +30,7 @@ const BuyModal = ({
   handleBuyModal,
   tokenData,
   isLoadingButton,
-  address,
-  test
+  address
 }) => {
   const [validate, setValidate] = useState(false);
   const { currentChainObject } = useChainContext();
@@ -98,7 +96,7 @@ const BuyModal = ({
           </div>
 
           {/* <!-- Body --> */}
-          {!successFullUpload && !test ? (
+          {!successFullUpload ? (
             <div className="modal-body p-6">
               <div className="mb-2 flex items-center justify-between">
                 <span className="font-display text-jacarta-900 text-sm font-semibold dark:text-white">
