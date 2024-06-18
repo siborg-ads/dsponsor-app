@@ -269,8 +269,9 @@ const Activity = ({ isUserConnected, userAddr, chainId }) => {
                 </div>
 
                 <p className="text-jacarta-100 text-sm">
-                  Each paid token transaction rewards the seller, buyer, and referrer based on the
-                  amount paid. Here are the transactions for each role that reward this profile.
+                  Each transaction where a sale or auction closes rewards the seller, buyer, and
+                  referrer based on the amount paid. Here are the transactions for each role that
+                  reward this profile.
                 </p>
 
                 <table className="w-full rounded-2lg">
