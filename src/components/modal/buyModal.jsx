@@ -221,7 +221,7 @@ const BuyModal = ({
           )}
 
           {/* <!-- end body --> */}
-          {!successFullUpload && !test && (
+          {!successFullUpload && (
             <div className="modal-footer p-6">
               <div className="flex flex-col items-center space-y-6">
                 <div className="flex items-center justify-center space-x-4">
