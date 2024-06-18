@@ -24,7 +24,7 @@ const LeaderBoardSkeleton = () => {
         </div>
       </div>
 
-      <div className="mt-8 grid grid-cols-2 md:grid-cols-4 gap-4 w-full items-center">
+      <div className="mt-8 flex flex-wrap justify-center gap-4 w-full items-center">
         <div className="flex gap-4 items-center">
           <Skeleton className="w-[100px] h-[25px] rounded-lg"></Skeleton>
           <Skeleton className="w-[100px] h-[25px] rounded-lg"></Skeleton>
