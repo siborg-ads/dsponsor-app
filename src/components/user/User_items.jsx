@@ -24,8 +24,7 @@ const User_items = ({
 }) => {
   const [itemActive, setItemActive] = useState(1);
   const [isUserConnected, setIsUserConnected] = useState(false);
-  const [code, setCode] = useState("");
-  const [errorCode, setErrorCode] = useState(true);
+  const [code, setCode] = useState(null);
 
   const chainObject = useChainContext();
   const chainId = chainObject?.currentChainObject?.chainId;
@@ -57,7 +56,6 @@ const User_items = ({
         .then((response) => response.json())
         .then((data) => {
           setCode(data.code);
-          setErrorCode(false);
         })
         .catch((error) => {
           console.error("Error getting SiBorg code:", error);
@@ -102,7 +100,7 @@ const User_items = ({
         </picture>
 
         <div className="container">
-          {!errorCode && (
+          <>
             <div className="mb-4 max-w-2xl text-center mx-auto">
               Ad spaces token owners will soon be able to submit an ad to be displayed in the SiBorg
               App. Here is your exclusive code to join the beta (
@@ -113,9 +111,18 @@ const User_items = ({
               >
                 beta.siborg.io
               </Link>
-              ) : {code ?? ""}
+              ).
             </div>
-          )}
+
+            <div className="mb-4 max-w-sm text-center flex items-center justify-center mx-auto">
+              <input
+                type="text"
+                value={code ?? "Loading..."}
+                className="bg-white w-full text-center dark:bg-secondaryBlack dark:text-white border hover:border-opacity-20 border-white border-opacity-10 rounded-2lg p-2 focus:border-white focus:border-opacity-20 focus:ring-transparent"
+                readOnly
+              />
+            </div>
+          </>
 
           {/* <!-- Tabs Nav --> */}
           <Tabs className="tabs">
