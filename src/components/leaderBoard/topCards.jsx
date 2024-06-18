@@ -8,7 +8,7 @@ const topCards = ({ activity }) => {
         <div className=" flex flex-col gap-2 items-center justify-center sm:flex sm:flex-wrap">
           <p className="dark:text-white font-medium ">Last Bidder</p>
           <Link
-            href={`/manage/${activity?.lastBid?.bidderAddr}`}
+            href={`/profile/${activity?.lastBid?.bidderAddr}`}
             className="text-jacarta-100 font-semibold w-[125px] text-ellipsis whitespace-nowrap overflow-hidden"
           >
             {activity?.lastBid?.bidderAddr}

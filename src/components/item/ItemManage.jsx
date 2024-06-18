@@ -145,7 +145,7 @@ const ItemManage = ({
                 !cursor-pointer `}
               isDisabled={isLoadingButton}
             >
-              {isLoadingButton ? <Spinner size="sm" color="default" /> : "Close auction"}
+              {isLoadingButton ? <Spinner size="sm" color="default" /> : "Cancel auction"}
             </Web3Button>
           )
         )}

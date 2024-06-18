@@ -101,6 +101,7 @@ const TokenPageContainer = () => {
   const [isLister, setIsLister] = useState(false);
   const [, setSelectedItems] = useState([]);
   const [bids, setBids] = useState([]);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   const { contract: DsponsorAdminContract } = useContract(
     config[chainId]?.smartContracts?.DSPONSORADMIN?.address,
@@ -788,6 +789,11 @@ const TokenPageContainer = () => {
     );
   }
 
+  const toggleSuccessModal = async () => {
+    setShowSuccessModal(!showSuccessModal);
+    setSuccessFullBid(false);
+  };
+
   const successFullUploadModal = {
     title: "Submit ad",
     body: "Congratulations, you have proposed an ad. 🎉",
@@ -798,10 +804,10 @@ const TokenPageContainer = () => {
   };
   const successFullBuyModal = {
     title: "Checkout",
-    body: "Congratulations, you purchase this ad space.",
-    subBody: "Check your ad space in your manage section to submit your ad.",
+    body: "Congratulations, you purchased this ad space. 🎉",
+    subBody: "Check your ad space in your profile page.",
     buttonTitle: "Manage Spaces",
-    hrefButton: `/manage/${address}`
+    hrefButton: `/profile/${address}`
   };
 
   const metadata = {
@@ -1178,6 +1184,7 @@ const TokenPageContainer = () => {
             tokenData={tokenData}
             formatTokenId={formatTokenId}
             isLoadingButton={isLoadingButton}
+            address={address}
           />
         </div>
       )}

@@ -1,7 +1,6 @@
 import React from "react";
 import Link from "next/link";
 
-
 import { useChainContext } from "../../contexts/hooks/useChainContext";
 import config from "../../config/config";
 import displayOrCheckKnownAddress from "../../utils/displayOrCheckKnownAddress";
@@ -29,7 +28,7 @@ const ItemsTabs = ({
             <div className="mb-2 flex items-center">
               <span className="dark:text-jacarta-100 mr-2 min-w-[9rem]">Contract Address:</span>
               <Link
-                href={`${chainExplorer}${contractAddress}`}
+                href={`${chainExplorer}/address/${contractAddress}`}
                 target="_blank"
                 className="text-primaryPink hover:text-jacarta-100"
               >
@@ -39,7 +38,7 @@ const ItemsTabs = ({
             <div className="mb-2 flex items-center">
               <span className="dark:text-jacarta-100 mr-2 min-w-[9rem]">Contract Creator:</span>
               <Link
-                href={`/manage/${initialCreator}`}
+                href={`/profile/${initialCreator}`}
                 target="_blank"
                 className="text-primaryPink hover:text-jacarta-100"
               >
@@ -53,12 +52,11 @@ const ItemsTabs = ({
                 {isUserOwner || (listerAddress && status) ? (
                   <div>
                     <Link
-                      href={`/manage/${status === "CREATED" ? listerAddress : isUserOwner}`}
+                      href={`/profile/${status === "CREATED" ? listerAddress : isUserOwner}`}
                       className="text-primaryPink hover:text-jacarta-100 mr-2"
                     >
                       {status === "CREATED" ? listerAddress : isUserOwner}
                     </Link>
-                  
                   </div>
                 ) : (
                   "No owner"

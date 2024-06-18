@@ -63,7 +63,7 @@ const ItemLastBids = ({ bids }) => {
                       </td>
                       <td className="py-4 px-4 text-jacarta-100 dark:text-jacarta-100">
                         <Link
-                          href={`/manage/${bid.bid.bidder}`}
+                          href={`/profile/${bid.bid.bidder}`}
                           className="text-primaryPink hover:text-jacarta-100"
                         >
                           {formatLongAddress(bid.bid.bidder)}

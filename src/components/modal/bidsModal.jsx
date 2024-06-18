@@ -44,6 +44,7 @@ const BidsModal = ({
   const [, setEndDateHour] = useState(null);
   const [tokenPrice, setTokenPrice] = useState(null);
   const [buyoutPriceReached, setBuyoutPriceReached] = useState(false);
+  const [protocolFeeAmount, setProtocolFeeAmount] = useState(0);
 
   // If currency is WETH, we can pay with Crossmint
   const canPayWithCrossmint =
@@ -108,17 +109,18 @@ const BidsModal = ({
       const royaltyBps = 0;
       const protocolFeeBps = marketplaceListings[0]?.protocolFeeBps;
 
-      const { newAmount, newRefundBonusAmount, nextReservePricePerToken } = computeBidAmounts(
-        newBidPerToken,
-        1,
-        reservePricePerToken,
-        buyoutPricePerToken,
-        previousPricePerToken,
-        minimalAuctionBps,
-        bonusRefundBps,
-        royaltyBps,
-        protocolFeeBps
-      );
+      const { newAmount, newRefundBonusAmount, nextReservePricePerToken, protocolFeeAmount } =
+        computeBidAmounts(
+          newBidPerToken,
+          1,
+          reservePricePerToken,
+          buyoutPricePerToken,
+          previousPricePerToken,
+          minimalAuctionBps,
+          bonusRefundBps,
+          royaltyBps,
+          protocolFeeBps
+        );
 
       const newRefundBonusAmountAdded = BigInt(newRefundBonusAmount) + BigInt(newAmount);
       const newRefundBonusFormatted = formatUnits(newRefundBonusAmountAdded, currencyTokenDecimals);
@@ -128,6 +130,9 @@ const BidsModal = ({
         currencyTokenDecimals
       );
 
+      const protocolFeeAmountFormatted = formatUnits(protocolFeeAmount.toString(), 13);
+
+      setProtocolFeeAmount(protocolFeeAmountFormatted);
       setRefundedPrice(newRefundBonusFormatted);
       setMinBid(nextReservePricePerTokenFormatted);
     } else {
@@ -236,7 +241,7 @@ const BidsModal = ({
           <div className="modal-content" ref={modalRef}>
             <div className="modal-header">
               <h5 className="modal-title" id="placeBidLabel">
-                Place a bid
+                {!successFullBid ? "Place a bid" : "Bid submitted"}
               </h5>
               <button type="button" className="btn-close" onClick={toggleBidsModal}>
                 <svg
@@ -347,7 +352,7 @@ const BidsModal = ({
                 </div>
 
                 {/* <!-- Terms --> */}
-                <div className="mt-4 flex items-center space-x-2">
+                <div className="mt-8 flex items-center space-x-2">
                   <input
                     type="checkbox"
                     id="buyNowTerms"
@@ -362,7 +367,7 @@ const BidsModal = ({
                   </label>
                 </div>
               </div>
-            ) : (
+            ) : !buyoutPriceReached ? (
               <div className="modal-body p-6">
                 <div className="flex flex-col gap-2">
                   <div className="flex gap-4">
@@ -384,7 +389,76 @@ const BidsModal = ({
                     </div>
                   </div>
                 </div>
+
+                <div className="flex flex-col justify-center my-8">
+                  {currencySymbol === "WETH" && (
+                    <div className="flex flex-col items-center gap-1">
+                      <span className="text-lg text-white font-semibold text-center">
+                        You will earn {Math.floor(protocolFeeAmount) ?? 0} boxes if you win the
+                        auction.
+                      </span>
+                      <span className="text-lg text-white font-semibold text-center">
+                        Want to earn more?
+                      </span>{" "}
+                      <span className="text-lg text-white font-semibold text-center">
+                        Check and share your referral link in your{" "}
+                        <Link
+                          href={`/profile/${address}`}
+                          className="text-primaryPurple hover:text-opacity-80"
+                        >
+                          profile
+                        </Link>{" "}
+                        page.
+                      </span>
+                    </div>
+                  )}
+                </div>
+
+                <div className="mt-4 flex items-center">
+                  <span>You can check the bid status at anytime in your profile page.</span>
+                </div>
               </div>
+            ) : (
+              <>
+                <div className="modal-body p-6">
+                  <div className="flex flex-col gap-2">
+                    <div className="flex gap-4">
+                      <p>Congratulations ! 🎉 </p>
+                      <div
+                        className="dark:border-jacarta-600 bg-green   flex h-6 w-6 items-center justify-center rounded-full border-2 border-white"
+                        data-tippy-content="Verified Collection"
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 24 24"
+                          width="24"
+                          height="24"
+                          className="h-[.875rem] w-[.875rem] fill-white"
+                        >
+                          <path fill="none" d="M0 0h24v24H0z"></path>
+                          <path d="M10 15.172l9.192-9.193 1.415 1.414L10 18l-6.364-6.364 1.414-1.414z"></path>
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col justify-center my-8">
+                    {currencySymbol === "WETH" && (
+                      <div className="flex flex-col items-center gap-1">
+                        <span className="text-lg text-white font-semibold text-center">
+                          Congratulations, you have increased your number of boxes by{" "}
+                          {Math.floor(protocolFeeAmount) ?? 0}. Check your profile page and referral
+                          link to earn more.
+                        </span>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="mt-4 flex items-center">
+                    <span>You can check the bid status at anytime in your profile page.</span>
+                  </div>
+                </div>
+              </>
             )}
             {/* <!-- end body --> */}
 
@@ -445,12 +519,21 @@ const BidsModal = ({
                 </button> */}
                   </div>
                 ) : (
-                  <button
-                    className="!rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all !bg-primaryPurple !cursor-pointer"
-                    onClick={toggleBidsModal}
-                  >
-                    Close
-                  </button>
+                  <>
+                    <div className="grid grid-cols-2 gap-4">
+                      <button
+                        className="!rounded-full hover:!bg-opacity-80 !py-3 !px-8 !text-center !font-semibold !text-white !transition-all !bg-primaryPurple !cursor-pointer"
+                        onClick={toggleBidsModal}
+                      >
+                        Close
+                      </button>
+                      <Link href={`/profile/${address}`}>
+                        <button className="!rounded-full hover:!bg-opacity-80 !py-3 !px-8 !text-center !font-semibold !text-white !transition-all !bg-primaryPurple !cursor-pointer">
+                          My profile
+                        </button>
+                      </Link>
+                    </div>
+                  </>
                 )}
               </div>
               {canPayWithCrossmint && !successFullBid && (

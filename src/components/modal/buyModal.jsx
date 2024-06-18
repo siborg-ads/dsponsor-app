@@ -29,7 +29,8 @@ const BuyModal = ({
   handleSubmit,
   handleBuyModal,
   tokenData,
-  isLoadingButton
+  isLoadingButton,
+  address
 }) => {
   const [validate, setValidate] = useState(false);
   const { currentChainObject } = useChainContext();
@@ -74,7 +75,11 @@ const BuyModal = ({
         <div className="modal-content !bg-secondaryBlack" ref={modalRef}>
           <div className="modal-header">
             <h5 className="modal-title" id="buyNowModalLabel">
-              {!successFullUpload ? "Complete checkout" : successFullBuyModal.title}
+              {!successFullUpload
+                ? !successFullBuyModal
+                  ? "Complete checkout"
+                  : "Check your ad space"
+                : successFullBuyModal.title}
             </h5>
             <button type="button" className="btn-close" onClick={handleBuyModal}>
               <svg
@@ -201,81 +206,44 @@ const BuyModal = ({
               <div className="flex flex-col gap-2">
                 <div className="flex gap-4">
                   <p>{successFullBuyModal.body} </p>
-                  <div
-                    className="dark:border-jacarta-600 bg-green   flex h-6 w-6 items-center justify-center rounded-full border-2 border-white"
-                    data-tippy-content="Verified Collection"
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 24 24"
-                      width="24"
-                      height="24"
-                      className="h-[.875rem] w-[.875rem] fill-white"
-                    >
-                      <path fill="none" d="M0 0h24v24H0z"></path>
-                      <path d="M10 15.172l9.192-9.193 1.415 1.414L10 18l-6.364-6.364 1.414-1.414z"></path>
-                    </svg>
-                  </div>
                 </div>
                 {successFullBuyModal.subBody && <p>{successFullBuyModal.subBody} </p>}
+              </div>
+
+              <div className="flex flex-col items-center mt-8">
+                <Link href={`/profile/${address}`}>
+                  <button className="!rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all !bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer">
+                    My profile
+                  </button>
+                </Link>
               </div>
             </div>
           )}
 
           {/* <!-- end body --> */}
-
-          <div className="modal-footer p-6">
-            <div className="flex flex-col items-center space-y-6">
-              <div className="flex items-center justify-center space-x-4">
-                {allowanceTrue && !successFullUpload ? (
-                  <>
+          {!successFullUpload && (
+            <div className="modal-footer p-6">
+              <div className="flex flex-col items-center space-y-6">
+                <div className="flex items-center justify-center space-x-4">
+                  {allowanceTrue && !successFullUpload ? (
+                    <>
+                      <Web3Button
+                        contractAddress={currentChainObject?.smartContracts?.DSPONSORADMIN?.address}
+                        action={() => {
+                          toast.promise(handleApprove, {
+                            pending: "Waiting for confirmation 🕒",
+                            success: "Approval confirmed 👌",
+                            error: "Approval rejected 🤯"
+                          });
+                        }}
+                        className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-black  !transition-all ${!validate ? "btn-disabled cursor-not-allowed !text-black opacity-30" : "!text-white !bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer"} `}
+                        isDisabled={!validate || isLoadingButton}
+                      >
+                        {isLoadingButton ? <Spinner size="sm" color="default" /> : "Approve"}
+                      </Web3Button>
+                    </>
+                  ) : !successFullUpload ? (
                     <Web3Button
-                      contractAddress={currentChainObject?.smartContracts?.DSPONSORADMIN?.address}
-                      action={() => {
-                        toast.promise(handleApprove, {
-                          pending: "Waiting for confirmation 🕒",
-                          success: "Approval confirmed 👌",
-                          error: "Approval rejected 🤯"
-                        });
-                      }}
-                      className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-black  !transition-all ${!validate ? "btn-disabled cursor-not-allowed !text-black opacity-30" : "!text-white !bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer"} `}
-                      isDisabled={!validate || isLoadingButton}
-                    >
-                      {isLoadingButton ? <Spinner size="sm" color="default" /> : "Approve"}
-                    </Web3Button>
-                  </>
-                ) : !successFullUpload ? (
-                  <Web3Button
-                    contractAddress={currentChainObject?.smartContracts?.DSPONSORADMIN?.address}
-                    action={() => {
-                      toast.promise(handleSubmit, {
-                        pending: "Waiting for confirmation 🕒",
-                        success: "Transaction confirmed 👌",
-                        error: "Transaction rejected 🤯"
-                      });
-                    }}
-                    className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate ? "btn-disabled cursor-not-allowed !text-black" : "!bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer"} `}
-                    isDisabled={!validate || isLoadingButton}
-                  >
-                    {isLoadingButton ? <Spinner size="sm" color="default" /> : "Confirm checkout"}
-                  </Web3Button>
-                ) : (
-                  <Link href={successFullBuyModal.hrefButton ?? "#"}>
-                    <button className="!rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all !bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer">
-                      {successFullBuyModal.buttonTitle}
-                    </button>
-                  </Link>
-                )}
-              </div>
-              {canPayWithCrossmint && !successFullUpload && (
-                <>
-                  <div className="flex items-center justify-center w-full">
-                    <div className="flex-grow border-t border-gray-300"></div>
-                    <span className="mx-4 text-gray-500">or</span>
-                    <div className="flex-grow border-t border-gray-300"></div>
-                  </div>
-                  <div className="flex items-center justify-center space-x-4">
-                    <CrossmintPayButton
                       contractAddress={currentChainObject?.smartContracts?.DSPONSORADMIN?.address}
                       action={() => {
                         toast.promise(handleSubmit, {
@@ -288,12 +256,47 @@ const BuyModal = ({
                       isDisabled={!validate || isLoadingButton}
                     >
                       {isLoadingButton ? <Spinner size="sm" color="default" /> : "Confirm checkout"}
-                    </CrossmintPayButton>
-                  </div>
-                </>
-              )}
+                    </Web3Button>
+                  ) : (
+                    <Link href={successFullBuyModal.hrefButton ?? "#"}>
+                      <button className="!rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all !bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer">
+                        {successFullBuyModal.buttonTitle}
+                      </button>
+                    </Link>
+                  )}
+                </div>
+                {canPayWithCrossmint && !successFullUpload && (
+                  <>
+                    <div className="flex items-center justify-center w-full">
+                      <div className="flex-grow border-t border-gray-300"></div>
+                      <span className="mx-4 text-gray-500">or</span>
+                      <div className="flex-grow border-t border-gray-300"></div>
+                    </div>
+                    <div className="flex items-center justify-center space-x-4">
+                      <CrossmintPayButton
+                        contractAddress={currentChainObject?.smartContracts?.DSPONSORADMIN?.address}
+                        action={() => {
+                          toast.promise(handleSubmit, {
+                            pending: "Waiting for confirmation 🕒",
+                            success: "Transaction confirmed 👌",
+                            error: "Transaction rejected 🤯"
+                          });
+                        }}
+                        className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate ? "btn-disabled cursor-not-allowed !text-black" : "!bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer"} `}
+                        isDisabled={!validate || isLoadingButton}
+                      >
+                        {isLoadingButton ? (
+                          <Spinner size="sm" color="default" />
+                        ) : (
+                          "Confirm checkout"
+                        )}
+                      </CrossmintPayButton>
+                    </div>
+                  </>
+                )}
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
     </div>

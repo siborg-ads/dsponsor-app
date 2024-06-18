@@ -310,7 +310,7 @@ const CreateOfferContainer = () => {
     subBody:
       "Find the integration code to copy/paste onto your platform in your offer management page",
     buttonTitle: "Manage Spaces",
-    hrefButton: `/manage/${address}`
+    hrefButton: `/profile/${address}`
   };
   const metadata = {
     title: "Create Offer || SiBorg Ads | Smarter monetization for your content",

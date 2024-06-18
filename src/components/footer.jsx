@@ -22,8 +22,8 @@ const Footer = () => {
             list: [
               {
                 id: 1,
-                href: `/manage/${address}`,
-                text: "Manage"
+                href: `/profile/${address}`,
+                text: "Profile"
               },
               ...(activated_features.canCreateOffer
                 ? [

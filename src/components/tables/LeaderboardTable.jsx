@@ -88,7 +88,7 @@ const LeaderboardTable = ({ activity }) => {
     {
       header: "Wallet",
       render: (item) => (
-        <Link href={`/manage/${item.address}`}>
+        <Link href={`/profile/${item.address}`}>
           <span className="text-primaryPink hover:text-jacarta-100">{item.addressDisplay}</span>
         </Link>
       )
@@ -102,7 +102,7 @@ const LeaderboardTable = ({ activity }) => {
     {
       header: "Wallet",
       render: (item) => (
-        <Link href={`/manage/${item.address}`}>
+        <Link href={`/profile/${item.address}`}>
           <span className="text-primaryPink hover:text-jacarta-100">{item.addressDisplay}</span>
         </Link>
       )
@@ -118,7 +118,7 @@ const LeaderboardTable = ({ activity }) => {
     {
       header: "Wallet",
       render: (item) => (
-        <Link href={`/manage/${item.address}`}>
+        <Link href={`/profile/${item.address}`}>
           <span className="text-primaryPink hover:text-jacarta-100">{item.addressDisplay}</span>
         </Link>
       )
@@ -134,12 +134,12 @@ const LeaderboardTable = ({ activity }) => {
     {
       header: "Address",
       render: (item) => (
-        <Link href={`/manage/${item.address}`}>
+        <Link href={`/profile/${item.address}`}>
           <span className="text-primaryPink hover:text-jacarta-100">{item.addressDisplay}</span>
         </Link>
       )
     },
-    { header: "# of Refunds", render: (item) => item.refunds }
+    { header: "# of Outbids", render: (item) => item.refunds }
     // { header: "Chain ", render: () => config[chainId].network},
     //{ header: "Total Points", render: (item) => item.dPoints }
   ];
@@ -160,7 +160,7 @@ const LeaderboardTable = ({ activity }) => {
     {
       header: "Seller",
       render: (item) => (
-        <Link href={`/manage/${item.enabler}`}>
+        <Link href={`/profile/${item.enabler}`}>
           <span className="text-primaryPink hover:text-jacarta-100">
             {formatLongAddress(item.enabler)}
           </span>
@@ -170,7 +170,7 @@ const LeaderboardTable = ({ activity }) => {
     {
       header: "Buyer",
       render: (item) => (
-        <Link href={`/manage/${item.spender}`}>
+        <Link href={`/profile/${item.spender}`}>
           <span className="text-primaryPink hover:text-jacarta-100">
             {formatLongAddress(item.spender)}
           </span>
@@ -180,7 +180,7 @@ const LeaderboardTable = ({ activity }) => {
     {
       header: "Referrer",
       render: (item) => (
-        <Link href={`/manage/${item.refAddr}`}>
+        <Link href={`/profile/${item.refAddr}`}>
           <span className="text-primaryPink hover:text-jacarta-100">
             {formatLongAddress(item.refAddr)}
           </span>
