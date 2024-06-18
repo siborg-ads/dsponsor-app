@@ -90,17 +90,17 @@ const OfferItem = ({
     valid_to = null
   } = itemData ?? {};
   const listingActive = {
-    title: "Active",
+    title: "Status : Active",
     body: "Auction still running, you can place a bid.",
     size: "small"
   };
   const listingFinished = {
-    title: "Finished",
+    title: "Status : Finished",
     body: "The auction has ended, you can complete the auction in the token page.",
     size: "small"
   };
   const listingCancelled = {
-    title: "Cancelled",
+    title: "Status : Cancelled",
     body: "The auction has been cancelled.",
     size: "small"
   };
@@ -246,7 +246,7 @@ const OfferItem = ({
                   <div className="flex gap-2 items-center justify-center">
                     <span className="dark:text-jacarta-100 text-jacarta-100">
                       {listingType === "Auction"
-                        ? "Live Auction"
+                        ? "Auction"
                         : listingType === "Direct"
                           ? "Buy Now"
                           : null}{" "}
@@ -282,11 +282,17 @@ const OfferItem = ({
                 {adStatut === 0 ? "❌ Rejected" : adStatut === 1 ? "✅ Accepted" : adStatut === 2 ? "🔍 Pending" : "Ad space available"}
               </span>
             )} */}
-            {isAuction && listingType === "Auction" && (
-              <div className="flex gap-1">
-
-                <span className="dark:text-jacarta-100 text-jacarta-100">{item.listingStatus}</span>
-                <ModalHelper dark={false} {...handleListingsStatusHelperModal(item.listingStatus)} />
+            {isAuction && listingType === "Auction" && item.listingStatus && (
+              <div className="flex gap-1 items-center justify-center">
+                <span
+                  className={`font-display ${item.listingStatus === "Active" ? "text-primaryPink" : item.listingStatus === "Finished" ? "text-green" : "text-red"}`}
+                >
+                  {item.listingStatus}
+                </span>
+                <ModalHelper
+                  dark={false}
+                  {...handleListingsStatusHelperModal(item.listingStatus)}
+                />
               </div>
             )}
           </div>

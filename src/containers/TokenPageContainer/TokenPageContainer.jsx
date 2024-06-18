@@ -209,21 +209,14 @@ const TokenPageContainer = () => {
 
     setBids(bids);
   }, [marketplaceListings]);
-console.log(tokenStatut, "tokenStatut");
+
   useEffect(() => {
     if (!offerData) return;
-    if (
-      !offerNotFormated &&
-      offerData?.metadata?.offer?.token_metadata &&
-      offerData?.nftContract?.tokens.length <= 0
-    ) {
-      setTokenStatut("SIBORG");
-      return;
-    }
+  
     if (
       !isOwner &&
       !offerNotFormated &&
-      offerData?.nftContract?.tokens[0]?.mint === null &&
+      (offerData?.nftContract?.tokens[0]?.mint === null || offerData?.nftContract?.tokens?.length <= 0) &&
       isAllowedToMint !== null
     ) {
       setTokenStatut("MINTABLE");
@@ -516,7 +509,7 @@ console.log(tokenStatut, "tokenStatut");
           config[chainId]?.smartContracts?.DSPONSORADMIN?.address
         ]);
       }
-
+console.log( tokenCurrencyAddress, "allowance, amountToApprove");
       if (allowance.gte(amountToApprove)) {
         setAllowanceTrue(false);
         return false;
@@ -770,7 +763,7 @@ console.log(tokenStatut, "tokenStatut");
       firstSelectedListing?.endTime > now &&
       firstSelectedListing?.listingType === "Auction";
     const isFirstListingDirect = firstSelectedListing?.listingType === "Direct";
-    const isTokenStatusSpecial = tokenStatut === "MINTABLE" || tokenStatut === "SIBORG";
+    const isTokenStatusSpecial = tokenStatut === "MINTABLE" ;
     const isAuctionWithBids =
       firstSelectedListing?.listingType === "Auction" && firstSelectedListing?.bids?.length > 0;
     const isOwnerAndFinished = isOwner && firstSelectedListing?.status === "COMPLETED";
@@ -957,8 +950,7 @@ console.log(tokenStatut, "tokenStatut");
 
               <p className="dark:text-jacarta-100 mb-10">{description}</p>
               {(tokenStatut === "MINTABLE" ||
-                tokenStatut ===
-                  "SIBORG" || (
+                 (
                     tokenStatut === "DIRECT" && firstSelectedListing?.startTime < now
                   )) && (
                 <div className="dark:bg-secondaryBlack dark:border-jacarta-600 mb-2 border-jacarta-100 rounded-2lg border flex flex-col gap-4 bg-white p-8">
