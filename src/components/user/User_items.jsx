@@ -103,18 +103,29 @@ const User_items = ({
 
         <div className="container">
           {!errorCode && (
-            <div className="mb-4 max-w-2xl text-center mx-auto">
-              Ad spaces token owners will soon be able to submit an ad to be displayed in the SiBorg
-              App. Here is your exclusive code to join the beta (
-              <Link
-                href="https://beta.siborg.io"
-                target="_blank"
-                className="text-primaryPurple hover:text-opacity-80"
-              >
-                beta.siborg.io
-              </Link>
-              ) : {code ?? ""}
-            </div>
+            <>
+              <div className="mb-4 max-w-2xl text-center mx-auto">
+                Ad spaces token owners will soon be able to submit an ad to be displayed in the
+                SiBorg App. Here is your exclusive code to join the beta (
+                <Link
+                  href="https://beta.siborg.io"
+                  target="_blank"
+                  className="text-primaryPurple hover:text-opacity-80"
+                >
+                  beta.siborg.io
+                </Link>
+                ).
+              </div>
+
+              <div className="mb-4 max-w-sm text-center flex items-center justify-center mx-auto">
+                <input
+                  type="text"
+                  value={code}
+                  className="bg-white w-full text-center dark:bg-secondaryBlack dark:text-white border hover:border-opacity-20 border-white border-opacity-10 rounded-2lg p-2 focus:border-white focus:border-opacity-20 focus:ring-transparent"
+                  readOnly
+                />
+              </div>
+            </>
           )}
 
           {/* <!-- Tabs Nav --> */}
