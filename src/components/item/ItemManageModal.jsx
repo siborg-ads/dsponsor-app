@@ -110,13 +110,15 @@ const ItemManageModal = ({
         const startTime = Math.max(startDateFormated, nowFormated);
         const endDateFormated = Math.floor(endDate.getTime() / 1000);
         const secondsUntilEndTime = endDateFormated - startTime;
-        const startingPriceWithTaxes = calculatePriceWithTaxes(selectedStartingPrice, true);
+        
         const startingPrice = ethers.utils
-          .parseUnits(startingPriceWithTaxes.toString(), tokenDecimals)
+          .parseUnits(selectedStartingPrice.toString(), tokenDecimals)
           .toString();
+          
         const isAuction = selectedListingType[0] === 1;
-        const priceWithTaxes = calculatePriceWithTaxes(selectedUnitPrice, true);
-        const price = ethers.utils.parseUnits(priceWithTaxes.toString(), tokenDecimals).toString();
+        const price = ethers.utils
+          .parseUnits(selectedUnitPrice.toString(), tokenDecimals)
+          .toString();
         const args = {
           assetContract: offerData?.nftContract?.id,
           tokenId: offerData?.nftContract?.tokens[0].tokenId,
