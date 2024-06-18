@@ -297,7 +297,7 @@ const LeaderboardTable = ({ activity }) => {
 
           {Object.entries(leaderboards).map(([key, data]) => (
             <TabPanel key={key}>
-              <div className="max-w-2xl">
+              <div className="max-w-2xl text-center mx-auto">
                 {key === "topPoints" && (
                   <p className="text-jacarta-100 text-sm md:text-base mb-4">
                     Each transaction where a sale or auction closes rewards the seller, buyer, and
