@@ -13,8 +13,7 @@ const ItemManage = ({
   royalties,
   dsponsorNFTContract,
   dsponsorMpContract,
-  isOwner,
-  isLister
+  conditions
 }) => {
   const [listingModal, setListingModal] = useState(false);
   const { currentChainObject } = useChainContext();
@@ -25,8 +24,6 @@ const ItemManage = ({
   const { mutateAsync: closeAuctionListing } = useContractWrite(dsponsorMpContract, "closeAuction");
 
   const [isLoadingButton, setIsLoadingButton] = useState(false);
-
-  const now = Math.floor(new Date().getTime() / 1000);
 
   const handleListingModal = () => {
     setListingModal(!listingModal);
@@ -53,37 +50,37 @@ const ItemManage = ({
     <>
       <div className="dark:bg-secondaryBlack mb-2 rounded-2lg flex flex-col gap-4 bg-white p-8">
         <div className=" sm:flex sm:flex-wrap">
-          {marketplaceListings[0]?.endTime < now &&
-            marketplaceListings[0]?.listingType === "Auction" && (
-              <span className="dark:text-jacarta-100 text-jacarta-100 text-sm">
-                Auction has ended, you can complete the auction by clicking the button bellow.{" "}
-              </span>
-            )}
-          {marketplaceListings[0]?.startTime > now &&
-            marketplaceListings[0]?.listingType === "Auction" &&
-            marketplaceListings[0]?.status === "CREATED" && (
-              <span className="dark:text-jacarta-100 text-jacarta-100 text-sm">
-                Auction will start soon, wait{" "}
-                {new Date(marketplaceListings[0]?.startTime * 1000).toString()}.{" "}
-              </span>
-            )}
-          {(marketplaceListings[0]?.status !== "CREATED" || marketplaceListings?.length <= 0) &&
-            isOwner && (
-              <span className="dark:text-jacarta-100 text-jacarta-100 text-sm">
-                Click the button below to sell your item in auction or direct listing.{" "}
-              </span>
-            )}
-          {marketplaceListings[0]?.listingType === "Direct" &&
-            isOwner &&
-            marketplaceListings[0]?.status === "CREATED" && (
+          {!conditions?.endTimeNotPassed && (
+            <span className="dark:text-jacarta-100 text-jacarta-100 text-sm">
+              Auction has ended, you can complete the auction by clicking the button bellow.{" "}
+            </span>
+          )}
+          {!conditions?.startTimePassed && conditions?.isAuction && conditions?.isCreated && (
+            <span className="dark:text-jacarta-100 text-jacarta-100 text-sm">
+              Auction will start soon, wait{" "}
+              {new Date(marketplaceListings[0]?.startTime * 1000).toString()}.{" "}
+            </span>
+          )}
+          {(!conditions?.isCreated || marketplaceListings?.length <= 0) && conditions?.isOwner && (
+            <span className="dark:text-jacarta-100 text-jacarta-100 text-sm">
+              Click the button below to sell your item in auction or direct listing.{" "}
+            </span>
+          )}
+          {conditions?.isDirect &&
+            (conditions?.isLister || conditions?.isOwner) &&
+            conditions?.isCreated && (
               <span className="dark:text-jacarta-100 text-jacarta-100 text-sm">
                 Click the button below to cancel the listing.{" "}
               </span>
             )}
+          {conditions?.isListerAndEndDateFinishedOrNoBids && (
+            <span className="dark:text-jacarta-100 text-jacarta-100 text-sm">
+              Click the button below to cancel the auction.{" "}
+            </span>
+          )}
         </div>
 
-        {(marketplaceListings[0]?.status !== "CREATED" || marketplaceListings?.length <= 0) &&
-        isOwner ? (
+        {(!conditions?.isCreated || marketplaceListings?.length <= 0) && conditions?.isOwner ? (
           <div className="w-full flex justify-center">
             <button
               type="button"
@@ -93,7 +90,7 @@ const ItemManage = ({
               Create a listing
             </button>
           </div>
-        ) : marketplaceListings[0]?.listingType === "Direct" && isOwner ? (
+        ) : conditions?.isDirect && (conditions?.isOwner || conditions?.isLister) ? (
           <Web3Button
             contractAddress={currentChainObject?.smartContracts?.DSPONSORMP?.address}
             action={() => {
@@ -108,8 +105,7 @@ const ItemManage = ({
           >
             {isLoadingButton ? <Spinner size="sm" color="default" /> : "Cancel listing"}
           </Web3Button>
-        ) : marketplaceListings[0]?.listingType === "Auction" &&
-          marketplaceListings[0]?.endTime < now ? (
+        ) : !conditions?.endTimeNotPassed ? (
           <Web3Button
             contractAddress={currentChainObject?.smartContracts?.DSPONSORMP?.address}
             action={() => {
@@ -127,10 +123,10 @@ const ItemManage = ({
             {isLoadingButton ? <Spinner size="sm" color="default" /> : "Close auction"}
           </Web3Button>
         ) : (
-          marketplaceListings[0]?.listingType === "Auction" &&
-          (isOwner || isLister) &&
-          (marketplaceListings[0]?.bids?.length <= 0 ||
-            marketplaceListings[0]?.startTime > now) && (
+          conditions?.isAuction &&
+          (conditions?.isOwner || conditions?.isLister) &&
+          !conditions?.hasBids &&
+          conditions?.startTimePassed && (
             <Web3Button
               contractAddress={currentChainObject?.smartContracts?.DSPONSORMP?.address}
               action={() => {
