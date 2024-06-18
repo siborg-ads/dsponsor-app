@@ -90,13 +90,13 @@ console.log(listedTokenArray, "listedTokenArray");
         const mappedAuctionBidsTokens = auctionBidsTokensArray.map((element) => ({
           ...element,
           status: handleBidsStatusType(element.status),
-          listingStatus: element.listing.status,
+          listingStatus: handleListingsStatusType(element.listing.status),
           metadata: element.listing.token.metadata,
           tokenData: element.listing.token.mint.tokenData,
           offerId: element.listing.token.nftContract.adOffers[0].id,
           tokenId: element.listing.token.tokenId
         }));
-
+console.log(mappedAuctionBidsTokens, "mappedAuctionBidsTokens");
         setTokenAuctionBids(mappedAuctionBidsTokens);
       };
 
@@ -111,7 +111,7 @@ console.log(listedTokenArray, "listedTokenArray");
     switch (status) {
       case "CREATED":
         return "Active";
-      case "CONFIRMED":
+      case "COMPLETED":
         return "Finished";
       case "CANCELLED":
         return "Cancelled";

@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import "swiper/css";
 import "swiper/css/navigation";
 import "tippy.js/dist/tippy.css";
+import  ModalHelper  from "../Helper/modalHelper";
 
 const OfferItem = ({
   item,
@@ -88,6 +89,34 @@ const OfferItem = ({
     valid_from = null,
     valid_to = null
   } = itemData ?? {};
+  const listingActive = {
+    title: "Active",
+    body: "Auction still running, you can place a bid.",
+    size: "small"
+  };
+  const listingFinished = {
+    title: "Finished",
+    body: "The auction has ended, you can complete the auction in the token page.",
+    size: "small"
+  };
+  const listingCancelled = {
+    title: "Cancelled",
+    body: "The auction has been cancelled.",
+    size: "small"
+  };
+
+  const handleListingsStatusHelperModal = (status) => {
+    switch (status) {
+      case "Active":
+        return { ...listingActive };
+      case "Finished":
+        return { ...listingFinished };
+      case "Cancelled":
+        return { ...listingCancelled};
+      default:
+        return { ...listingActive };
+    }
+  };
 
   return (
     <>
@@ -254,7 +283,11 @@ const OfferItem = ({
               </span>
             )} */}
             {isAuction && listingType === "Auction" && (
-              <span className="dark:text-jacarta-100 text-jacarta-100">{item.listingStatus}</span>
+              <div className="flex gap-1">
+
+                <span className="dark:text-jacarta-100 text-jacarta-100">{item.listingStatus}</span>
+                <ModalHelper dark={false} {...handleListingsStatusHelperModal(item.listingStatus)} />
+              </div>
             )}
           </div>
         </div>
