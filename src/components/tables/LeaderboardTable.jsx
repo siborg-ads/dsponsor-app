@@ -295,10 +295,40 @@ const LeaderboardTable = ({ activity }) => {
             })}
           </TabList>
 
-          <p className="text-xs text-jacarta-100 mb-4">Data is updated every 15 minutes</p>
-
           {Object.entries(leaderboards).map(([key, data]) => (
             <TabPanel key={key}>
+              <div className="max-w-2xl">
+                {key === "topPoints" && (
+                  <p className="text-jacarta-100 text-sm md:text-base mb-4">
+                    Each transaction where a sale or auction closes rewards the seller, buyer, and
+                    referrer based on the amount paid. Here are the profiles with the highest
+                    rewards.
+                  </p>
+                )}
+
+                {key === "topHolders" && (
+                  <p className="text-jacarta-100 text-sm md:text-base mb-4">
+                    Here is the list of wallets that acquired the most tokens, along with the total
+                    amount spent.
+                  </p>
+                )}
+
+                {key === "topRewarded" && (
+                  <p className="text-jacarta-100 text-sm md:text-base mb-4">
+                    For each outbid, the outbid bidder receives a bonus in addition to their bid.
+                    Here is the list of those who received the most bonuses.
+                  </p>
+                )}
+
+                {key === "topSpenders" && (
+                  <p className="text-jacarta-100 text-sm md:text-base mb-4">
+                    Each transaction where a sale or auction closes rewards the seller, buyer, and
+                    referrer based on the amount paid. Here are the transactions with the highest
+                    rewards.
+                  </p>
+                )}
+              </div>
+              <p className="text-xs text-jacarta-100 mb-4">Data is updated every 15 minutes</p>
               <div className="overflow-x-auto">{renderTable(data, columns[key])}</div>
             </TabPanel>
           ))}
