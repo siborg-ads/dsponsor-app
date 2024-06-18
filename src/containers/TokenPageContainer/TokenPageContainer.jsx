@@ -44,6 +44,9 @@ import { getAddress } from "ethers/lib/utils";
 import "react-toastify/dist/ReactToastify.css";
 import ItemLastBids from "../../components/tables/ItemLastBids";
 import { activated_features } from "../../data/activated_features.js";
+import SuccessModal from "../../components/modal/successModal.jsx";
+
+const test = process.env.NODE_ENV === "development";
 
 const TokenPageContainer = () => {
   const router = useRouter();
@@ -101,6 +104,7 @@ const TokenPageContainer = () => {
   const [isLister, setIsLister] = useState(false);
   const [, setSelectedItems] = useState([]);
   const [bids, setBids] = useState([]);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   const { contract: DsponsorAdminContract } = useContract(
     config[chainId]?.smartContracts?.DSPONSORADMIN?.address,
@@ -788,6 +792,11 @@ const TokenPageContainer = () => {
     );
   }
 
+  const toggleSuccessModal = async () => {
+    setShowSuccessModal(!showSuccessModal);
+    setSuccessFullBid(false);
+  };
+
   const successFullUploadModal = {
     title: "Submit ad",
     body: "Congratulations, you have proposed an ad. 🎉",
@@ -801,7 +810,7 @@ const TokenPageContainer = () => {
     body: "Congratulations, you purchase this ad space.",
     subBody: "Check your ad space in your manage section to submit your ad.",
     buttonTitle: "Manage Spaces",
-    hrefButton: `/manage/${address}`
+    hrefButton: `/profile/${address}`
   };
 
   const metadata = {
@@ -1178,6 +1187,14 @@ const TokenPageContainer = () => {
             tokenData={tokenData}
             formatTokenId={formatTokenId}
             isLoadingButton={isLoadingButton}
+          />
+        </div>
+      )}
+      {(successFullBid || test) && (
+        <div className="modal fade show block">
+          <SuccessModal
+            toggleSuccessModal={toggleSuccessModal}
+            setIsLoadingButton={setIsLoadingButton}
           />
         </div>
       )}

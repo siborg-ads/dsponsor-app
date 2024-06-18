@@ -150,7 +150,7 @@ const Activity = ({ isUserConnected, userAddr, chainId }) => {
 
                     <div className="flex flex-col bg-primaryPurple text-white items-center justify-center p-4 rounded-2lg">
                       <span className="text-2xl font-bold">{ranking?.nbRefunds ?? 0}</span>
-                      <span>Refunds</span>
+                      <span>Outbids</span>
                     </div>
 
                     <div className="flex flex-col bg-primaryPurple text-white items-center justify-center p-4 rounded-2lg">

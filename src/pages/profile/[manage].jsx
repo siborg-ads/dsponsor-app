@@ -1,4 +1,4 @@
-import ManageSpaceContainer from "../../containers/manage/ManageSpaceContainer";
+import ManageSpaceContainer from "../../containers/profile/ManageSpaceContainer";
 
 export async function generateMetadata({ params }) {
   const { manage } = params;
