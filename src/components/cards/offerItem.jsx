@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import "swiper/css";
 import "swiper/css/navigation";
 import "tippy.js/dist/tippy.css";
+import  ModalHelper  from "../Helper/modalHelper";
 
 const OfferItem = ({
   item,
@@ -69,7 +70,7 @@ const OfferItem = ({
       setItemStatut("DIRECT");
     }
   }, [item, isToken, isListing, isAuction, listingType]);
-  console.log(price, currencyToken, itemStatut, item);
+ 
   useEffect(() => {
     if (!item) return;
 
@@ -88,6 +89,34 @@ const OfferItem = ({
     valid_from = null,
     valid_to = null
   } = itemData ?? {};
+  const listingActive = {
+    title: "Status : Active",
+    body: "Auction still running, you can place a bid.",
+    size: "small"
+  };
+  const listingFinished = {
+    title: "Status : Finished",
+    body: "The auction has ended, you can complete the auction in the token page.",
+    size: "small"
+  };
+  const listingCancelled = {
+    title: "Status : Cancelled",
+    body: "The auction has been cancelled.",
+    size: "small"
+  };
+
+  const handleListingsStatusHelperModal = (status) => {
+    switch (status) {
+      case "Active":
+        return { ...listingActive };
+      case "Finished":
+        return { ...listingFinished };
+      case "Cancelled":
+        return { ...listingCancelled};
+      default:
+        return { ...listingActive };
+    }
+  };
 
   return (
     <>
@@ -217,7 +246,7 @@ const OfferItem = ({
                   <div className="flex gap-2 items-center justify-center">
                     <span className="dark:text-jacarta-100 text-jacarta-100">
                       {listingType === "Auction"
-                        ? "Live Auction"
+                        ? "Auction"
                         : listingType === "Direct"
                           ? "Buy Now"
                           : null}{" "}
@@ -253,6 +282,19 @@ const OfferItem = ({
                 {adStatut === 0 ? "❌ Rejected" : adStatut === 1 ? "✅ Accepted" : adStatut === 2 ? "🔍 Pending" : "Ad space available"}
               </span>
             )} */}
+            {isAuction && listingType === "Auction" && item.listingStatus && (
+              <div className="flex gap-1 items-center justify-center">
+                <span
+                  className={`font-display ${item.listingStatus === "Active" ? "text-primaryPink" : item.listingStatus === "Finished" ? "text-green" : "text-red"}`}
+                >
+                  {item.listingStatus}
+                </span>
+                <ModalHelper
+                  dark={false}
+                  {...handleListingsStatusHelperModal(item.listingStatus)}
+                />
+              </div>
+            )}
           </div>
         </div>
       </article>

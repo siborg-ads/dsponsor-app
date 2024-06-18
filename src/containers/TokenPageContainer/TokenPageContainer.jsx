@@ -212,18 +212,11 @@ const TokenPageContainer = () => {
 
   useEffect(() => {
     if (!offerData) return;
-    if (
-      !offerNotFormated &&
-      offerData?.metadata?.offer?.token_metadata &&
-      offerData?.nftContract?.tokens.length <= 0
-    ) {
-      setTokenStatut("SIBORG");
-      return;
-    }
+  
     if (
       !isOwner &&
       !offerNotFormated &&
-      offerData?.nftContract?.tokens[0]?.mint === null &&
+      (offerData?.nftContract?.tokens[0]?.mint === null || offerData?.nftContract?.tokens?.length <= 0) &&
       isAllowedToMint !== null
     ) {
       setTokenStatut("MINTABLE");
@@ -956,25 +949,27 @@ const TokenPageContainer = () => {
                 <span className="text-jacarta-100 block text-sm ">
                   Creator <strong className="dark:text-white">{royalties}% royalties</strong>
                 </span>
-                <span className="text-jacarta-100 text-sm flex flex-wrap gap-1">
-                  Ownership period:{" "}
-                  <strong className="dark:text-white">
-                    {offerData?.nftContract?.tokens[0]?.metadata?.valid_from &&
-                      (() => {
-                        const date = new Date(
-                          offerData?.nftContract?.tokens[0]?.metadata?.valid_from
-                        );
-                        return `${date.getDate().toString().padStart(2, "0")}/${(date.getMonth() + 1).toString().padStart(2, "0")}/${date.getFullYear()} at ${date.getHours().toString().padStart(2, "0")}:${date.getMinutes().toString().padStart(2, "0")}:${date.getSeconds().toString().padStart(2, "0")}`;
-                      })()}
-                  </strong>{" "}
-                  to{" "}
-                  <strong className="dark:text-white">
-                    {offerData?.nftContract?.tokens[0]?.metadata?.valid_to &&
-                      new Date(
-                        offerData?.nftContract?.tokens[0]?.metadata?.valid_to
-                      ).toLocaleString()}
-                  </strong>
-                </span>
+                {offerData?.nftContract?.tokens[0]?.metadata?.valid_from && (
+                  <span className="text-jacarta-100 text-sm flex flex-wrap gap-1">
+                    Ownership period:{" "}
+                    <strong className="dark:text-white">
+                      {offerData?.nftContract?.tokens[0]?.metadata?.valid_from &&
+                        (() => {
+                          const date = new Date(
+                            offerData?.nftContract?.tokens[0]?.metadata?.valid_from
+                          );
+                          return `${date.getDate().toString().padStart(2, "0")}/${(date.getMonth() + 1).toString().padStart(2, "0")}/${date.getFullYear()} at ${date.getHours().toString().padStart(2, "0")}:${date.getMinutes().toString().padStart(2, "0")}:${date.getSeconds().toString().padStart(2, "0")}`;
+                        })()}
+                    </strong>{" "}
+                    to{" "}
+                    <strong className="dark:text-white">
+                      {offerData?.nftContract?.tokens[0]?.metadata?.valid_to &&
+                        new Date(
+                          offerData?.nftContract?.tokens[0]?.metadata?.valid_to
+                        ).toLocaleString()}
+                    </strong>
+                  </span>
+                )}
               </div>
 
               <p className="dark:text-jacarta-100 mb-10">{description}</p>
