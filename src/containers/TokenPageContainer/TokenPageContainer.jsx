@@ -927,32 +927,32 @@ console.log( tokenCurrencyAddress, "allowance, amountToApprove");
                 <span className="text-jacarta-100 block text-sm ">
                   Creator <strong className="dark:text-white">{royalties}% royalties</strong>
                 </span>
-                <span className="text-jacarta-100 text-sm flex flex-wrap gap-1">
-                  Ownership period:{" "}
-                  <strong className="dark:text-white">
-                    {offerData?.nftContract?.tokens[0]?.metadata?.valid_from &&
-                      (() => {
-                        const date = new Date(
-                          offerData?.nftContract?.tokens[0]?.metadata?.valid_from
-                        );
-                        return `${date.getDate().toString().padStart(2, "0")}/${(date.getMonth() + 1).toString().padStart(2, "0")}/${date.getFullYear()} at ${date.getHours().toString().padStart(2, "0")}:${date.getMinutes().toString().padStart(2, "0")}:${date.getSeconds().toString().padStart(2, "0")}`;
-                      })()}
-                  </strong>{" "}
-                  to{" "}
-                  <strong className="dark:text-white">
-                    {offerData?.nftContract?.tokens[0]?.metadata?.valid_to &&
-                      new Date(
-                        offerData?.nftContract?.tokens[0]?.metadata?.valid_to
-                      ).toLocaleString()}
-                  </strong>
-                </span>
+                {offerData?.nftContract?.tokens[0]?.metadata?.valid_from && (
+                  <span className="text-jacarta-100 text-sm flex flex-wrap gap-1">
+                    Ownership period:{" "}
+                    <strong className="dark:text-white">
+                      {offerData?.nftContract?.tokens[0]?.metadata?.valid_from &&
+                        (() => {
+                          const date = new Date(
+                            offerData?.nftContract?.tokens[0]?.metadata?.valid_from
+                          );
+                          return `${date.getDate().toString().padStart(2, "0")}/${(date.getMonth() + 1).toString().padStart(2, "0")}/${date.getFullYear()} at ${date.getHours().toString().padStart(2, "0")}:${date.getMinutes().toString().padStart(2, "0")}:${date.getSeconds().toString().padStart(2, "0")}`;
+                        })()}
+                    </strong>{" "}
+                    to{" "}
+                    <strong className="dark:text-white">
+                      {offerData?.nftContract?.tokens[0]?.metadata?.valid_to &&
+                        new Date(
+                          offerData?.nftContract?.tokens[0]?.metadata?.valid_to
+                        ).toLocaleString()}
+                    </strong>
+                  </span>
+                )}
               </div>
 
               <p className="dark:text-jacarta-100 mb-10">{description}</p>
               {(tokenStatut === "MINTABLE" ||
-                 (
-                    tokenStatut === "DIRECT" && firstSelectedListing?.startTime < now
-                  )) && (
+                (tokenStatut === "DIRECT" && firstSelectedListing?.startTime < now)) && (
                 <div className="dark:bg-secondaryBlack dark:border-jacarta-600 mb-2 border-jacarta-100 rounded-2lg border flex flex-col gap-4 bg-white p-8">
                   <div className=" sm:flex sm:flex-wrap">
                     <span className="dark:text-jacarta-100 text-jacarta-100 text-sm">
