@@ -69,9 +69,8 @@ const LeaderboardTable = ({ activity }) => {
     setLeaderboards({
       topPoints: activityToTopPoints(filteredActivity[0]?.rankings),
       topHolders: activityToTopHolders(filteredActivity[0]?.rankings),
-      topSpenders: activityToTopSpenders(filteredActivity[0]?.rankings),
       topRewarded: activityToTopRewarded(filteredActivity[0]?.rankings),
-      highestTransactions: activityToHighestTransactions(filteredActivity[0]?.lastActivities)
+      topSpenders: activityToHighestTransactions(filteredActivity[0]?.lastActivities)
     });
   }, [activeBlockchain, activity]);
 
@@ -109,22 +108,6 @@ const LeaderboardTable = ({ activity }) => {
     },
     { header: "Owned", render: (item) => item.balance }
     //{ header: "Chain", render: () => config[chainId].network }
-    // { header: "DPoints", render: (item) => item.dPoints }
-  ];
-
-  const spenderColumns = [
-    { header: "Rank", render: (item) => item.rank },
-    { header: "Total Amount Spent", render: (item) => `${item.totalSpent} USDC` },
-    {
-      header: "Wallet",
-      render: (item) => (
-        <Link href={`/profile/${item.address}`}>
-          <span className="text-primaryPink hover:text-jacarta-100">{item.addressDisplay}</span>
-        </Link>
-      )
-    },
-    { header: "Balance", render: (item) => item.balance }
-    // { header: "Chain", render: () => config[chainId].network}
     // { header: "DPoints", render: (item) => item.dPoints }
   ];
 
@@ -192,17 +175,15 @@ const LeaderboardTable = ({ activity }) => {
   const columns = {
     topPoints: pointColumns,
     topHolders: holderColumns,
-    topSpenders: spenderColumns,
     topRewarded: rewardedColumns,
-    highestTransactions: highestTransactionsColumns
+    topSpenders: highestTransactionsColumns
   };
 
   const tabItem = [
     { id: 1, text: "Top Boxes", icon: "activity" },
     { id: 2, text: "Top Holders", icon: "owned" },
-    { id: 3, text: "Top Spenders", icon: "activity" },
-    { id: 4, text: "Top Rewarded", icon: "activity" },
-    { id: 5, text: "Highest Transactions", icon: "activity" }
+    { id: 3, text: "Top Rewarded", icon: "activity" },
+    { id: 4, text: "Top Spenders", icon: "activity" }
   ];
 
   return (
