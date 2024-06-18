@@ -59,7 +59,7 @@ const ItemBids = ({
                     Highest bid by{" "}
                   </span>
                   <Link
-                    href={`/manage/${marketplaceListings[0].bids[0].bidder}`}
+                    href={`/profile/${marketplaceListings[0].bids[0].bidder}`}
                     className="text-sm font-bold text-primaryPurple"
                   >
                     {address &&

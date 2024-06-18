@@ -1,7 +1,6 @@
 import React from "react";
 import Link from "next/link";
 
-
 import { useChainContext } from "../../contexts/hooks/useChainContext";
 import config from "../../config/config";
 import displayOrCheckKnownAddress from "../../utils/displayOrCheckKnownAddress";
@@ -13,12 +12,17 @@ const ItemsTabs = ({
   initialCreator,
   isToken = true,
   status,
-  listerAddress
+  listerAddress,
+  offerData
 }) => {
   const { currentChainObject } = useChainContext();
 
   const chainName = config[chainId]?.network;
   const chainExplorer = currentChainObject?.explorerBaseUrl;
+
+  React.useEffect(() => {
+    console.log("offer", offerData);
+  }, [offerData]);
 
   return (
     <>
@@ -29,7 +33,7 @@ const ItemsTabs = ({
             <div className="mb-2 flex items-center">
               <span className="dark:text-jacarta-100 mr-2 min-w-[9rem]">Contract Address:</span>
               <Link
-                href={`${chainExplorer}${contractAddress}`}
+                href={`${chainExplorer}/address/${contractAddress}`}
                 target="_blank"
                 className="text-primaryPink hover:text-jacarta-100"
               >
@@ -39,7 +43,7 @@ const ItemsTabs = ({
             <div className="mb-2 flex items-center">
               <span className="dark:text-jacarta-100 mr-2 min-w-[9rem]">Contract Creator:</span>
               <Link
-                href={`/manage/${initialCreator}`}
+                href={`/profile/${initialCreator}`}
                 target="_blank"
                 className="text-primaryPink hover:text-jacarta-100"
               >
@@ -53,25 +57,55 @@ const ItemsTabs = ({
                 {isUserOwner || (listerAddress && status) ? (
                   <div>
                     <Link
-                      href={`/manage/${status === "CREATED" ? listerAddress : isUserOwner}`}
+                      href={`/profile/${status === "CREATED" ? listerAddress : isUserOwner}`}
                       className="text-primaryPink hover:text-jacarta-100 mr-2"
                     >
                       {status === "CREATED" ? listerAddress : isUserOwner}
                     </Link>
-                  
                   </div>
                 ) : (
                   "No owner"
                 )}
               </div>
             )}
-            <div className="mb-2 flex items-center">
-              <span className="dark:text-jacarta-100 mr-2 min-w-[9rem]">Token Standard:</span>
-              <span className="text-jacarta-900 dark:text-white">ERC-721</span>
-            </div>
-            <div className="flex items-center">
-              <span className="dark:text-jacarta-100 mr-2 min-w-[9rem]">Blockchain:</span>
-              <span className="text-jacarta-900 dark:text-white">{chainName}</span>
+            <div className="flex flex-col gap-2 justify-center">
+              <div className="flex items-center">
+                <span className="dark:text-jacarta-100 mr-2 min-w-[9rem]">Validity Period:</span>
+                <span className="text-jacarta-900 dark:text-white">
+                  {new Date(offerData?.metadata?.offer?.valid_from).toLocaleDateString() ?? ""} to{" "}
+                  {new Date(offerData?.metadata?.offer?.valid_to).toLocaleDateString() ?? ""}
+                </span>
+              </div>
+              {offerData?.nftContract?.royalty?.bps && (
+                <div className="flex items-center">
+                  <span className="dark:text-jacarta-100 mr-2 min-w-[9rem]">Royalties:</span>
+                  <span className="text-jacarta-900 dark:text-white">
+                    {Number(offerData?.nftContract?.royalty?.bps) / 100}%
+                  </span>
+                </div>
+              )}
+              <div className="flex items-center">
+                <span className="dark:text-jacarta-100 mr-2 min-w-[9rem]">Token Standard:</span>
+                <span className="text-jacarta-900 dark:text-white">ERC-721</span>
+              </div>
+              <div className="flex items-center">
+                <span className="dark:text-jacarta-100 mr-2 min-w-[9rem]">Blockchain:</span>
+                <span className="text-jacarta-900 dark:text-white">{chainName}</span>
+              </div>
+              {offerData?.metadata?.offer?.terms && (
+                <div className="flex items-center">
+                  <span className="dark:text-jacarta-100 mr-2 min-w-[9rem]">
+                    Terms and conditions:
+                  </span>
+                  <Link
+                    href={offerData?.metadata?.offer?.terms ?? "#"}
+                    className="text-primaryPink hover:text-jacarta-100"
+                    target="_blank"
+                  >
+                    <span>{offerData?.metadata?.offer?.terms ?? ""}</span>
+                  </Link>
+                </div>
+              )}
             </div>
           </div>
         </div>

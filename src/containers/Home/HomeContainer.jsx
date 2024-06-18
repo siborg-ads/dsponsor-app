@@ -133,9 +133,9 @@ const HomeContainer = () => {
     <>
       <Meta {...metadata} />
       <div
-        className="mt-48 px-4 max-w-5xl mx-auto flex flex-col gap-12"
+        className="mt-32 px-4 max-w-5xl mx-auto flex flex-col gap-12"
         style={{
-          marginTop: "12rem"
+          marginTop: "8rem"
         }}
       >
         <Description description={true} />

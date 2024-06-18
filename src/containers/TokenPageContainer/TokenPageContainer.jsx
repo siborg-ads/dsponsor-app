@@ -509,8 +509,8 @@ const TokenPageContainer = () => {
           config[chainId]?.smartContracts?.DSPONSORADMIN?.address
         ]);
       }
-console.log( tokenCurrencyAddress, "allowance, amountToApprove");
-      if (allowance.gte(amountToApprove)) {
+
+      if (allowance?.gte(amountToApprove)) {
         setAllowanceTrue(false);
         return false;
       }
@@ -525,7 +525,7 @@ console.log( tokenCurrencyAddress, "allowance, amountToApprove");
       setIsLoadingButton(true);
       // const royaltyFeeBps = offerData?.nftContract?.royalty.bps;
       const protocolFeeBps = bps;
-      const parsedPriceAmount = ethers.utils.parseUnits(price.toString(), currencyDecimals);
+      const parsedPriceAmount = ethers.utils.parseUnits(price.replace(/[^\d.-]/g, '').toString(), Number(currencyDecimals));
       const computedFeesAmount = parsedPriceAmount.mul(protocolFeeBps).div(maxBps);
       const parsedPriceAndProtocolFeesAmount = parsedPriceAmount.add(computedFeesAmount);
       let hasEnoughBalance = checkUserBalance(tokenBalance, parsedPriceAndProtocolFeesAmount);
@@ -561,10 +561,7 @@ console.log( tokenCurrencyAddress, "allowance, amountToApprove");
         });
       } else {
         await approve({
-          args: [
-            config[chainId]?.smartContracts?.DSPONSORADMIN?.address,
-            amountToApprove.toString()
-          ]
+          args: [config[chainId]?.smartContracts?.DSPONSORADMIN?.address, amountToApprove]
         });
       }
       setAllowanceTrue(false);
@@ -791,10 +788,10 @@ console.log( tokenCurrencyAddress, "allowance, amountToApprove");
   };
   const successFullBuyModal = {
     title: "Checkout",
-    body: "Congratulations, you purchase this ad space.",
-    subBody: "Check your ad space in your manage section to submit your ad.",
+    body: "Congratulations, you purchased this ad space. 🎉",
+    subBody: "Check your ad space in your profile page.",
     buttonTitle: "Manage Spaces",
-    hrefButton: `/manage/${address}`
+    hrefButton: `/profile/${address}`
   };
 
   const metadata = {
@@ -1053,6 +1050,7 @@ console.log( tokenCurrencyAddress, "allowance, amountToApprove");
           initialCreator={offerData?.initialCreator}
           status={firstSelectedListing?.status}
           listerAddress={firstSelectedListing?.lister}
+          offerData={offerData}
         />
       </div>
       {offerData.nftContract?.tokens[0]?.mint &&
@@ -1173,6 +1171,7 @@ console.log( tokenCurrencyAddress, "allowance, amountToApprove");
             tokenData={tokenData}
             formatTokenId={formatTokenId}
             isLoadingButton={isLoadingButton}
+            address={address}
           />
         </div>
       )}

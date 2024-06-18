@@ -6248,3 +6248,12 @@ body {
 .collapse-exit-active {
   max-height: 0;
 }
+
+.hide-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}

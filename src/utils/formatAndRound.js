@@ -1,35 +1,29 @@
-const formatAndRound = (value) => {
-  const num = parseFloat(value);
-  if (num > 1) {
-    return num.toFixed(3);
-  } else if (num > 0.1) {
-    return num.toFixed(4);
-  } else if (num > 0.01) {
-    return num.toFixed(5);
-  } else if (num > 0.001) {
-    return num.toFixed(6);
-  } else if (num > 0.0001) {
-    return num.toFixed(7);
-  } else {
-    return num.toFixed(8);
+export function round(value, decimals) {
+  return Number(Math.round(value + "e" + decimals) + "e-" + decimals);
+}
+
+const formatAndRoundPrice = (value) => {
+  let num = parseFloat(value);
+
+  if (num === 0) {
+    num = round(num, 0).toLocaleString("en-US");
   }
+
+  if (num > 1) {
+    num = round(num, 3).toLocaleString("en-US");
+  } else if (num > 0.1) {
+    num = round(num, 4).toLocaleString("en-US");
+  } else if (num > 0.01) {
+    num = round(num, 5).toLocaleString("en-US");
+  } else if (num > 0.001) {
+    num = round(num, 6).toLocaleString("en-US");
+  } else if (num > 0.0001) {
+    num = round(num, 7).toLocaleString("en-US");
+  } else {
+    num = round(num, 8).toLocaleString("en-US");
+  }
+
+  return num;
 };
 
-export default formatAndRound;
-
-export const formatAndRoundPrice = (value) => {
-  const num = parseFloat(value);
-  if (num > 1) {
-    return num.toFixed(3);
-  } else if (num > 0.1) {
-    return num.toFixed(4);
-  } else if (num > 0.01) {
-    return num.toFixed(5);
-  } else if (num > 0.001) {
-    return num.toFixed(6);
-  } else if (num > 0.0001) {
-    return num.toFixed(7);
-  } else {
-    return num.toFixed(8);
-  }
-};
+export default formatAndRoundPrice;

@@ -16,7 +16,7 @@ const LeaderBoardSkeleton = () => {
         {/* <Skeleton className="rounded-lg w-[100px]">
           <div className="h-5 rounded-lg bg-default-300"></div>
         </Skeleton> */}
-        <div className="flex flex-wrap justify-between gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <Skeleton className=" flex-grow flex-shrink flex-basis-[200px] h-[100px] w-[200px]    overflow-hidden  rounded-2lg  flex flex-col gap-4 p-8"></Skeleton>
           <Skeleton className=" flex-grow flex-shrink flex-basis-[200px] h-[100px] w-[200px]    overflow-hidden  rounded-2lg  flex flex-col gap-4 p-8"></Skeleton>
           <Skeleton className=" flex-grow flex-shrink flex-basis-[200px] h-[100px] w-[200px]    overflow-hidden  rounded-2lg  flex flex-col gap-4 p-8"></Skeleton>
@@ -24,7 +24,7 @@ const LeaderBoardSkeleton = () => {
         </div>
       </div>
 
-      <div className="mt-8 flex flex-col gap-4 w-full items-center">
+      <div className="mt-8 flex flex-wrap justify-center gap-4 w-full items-center">
         <div className="flex gap-4 items-center">
           <Skeleton className="w-[100px] h-[25px] rounded-lg"></Skeleton>
           <Skeleton className="w-[100px] h-[25px] rounded-lg"></Skeleton>

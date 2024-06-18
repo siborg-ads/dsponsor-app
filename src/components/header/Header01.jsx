@@ -116,16 +116,16 @@ export default function Header01() {
 
                 {address && (
                   <li className="group">
-                    <Link href={`/manage/${address}`}>
+                    <Link href={`/profile/${address}`}>
                       <button className="text-jacarta-900 font-display hover:text-primaryPurple focus:text-primaryPurple dark:hover:text-primaryPurple dark:focus:text-primaryPurple flex items-center justify-between py-3.5 text-base dark:text-white lg:px-5">
                         <span
                           className={
-                            isChildrenPageActive(route.asPath, `/manage/${address}`)
+                            isChildrenPageActive(route.asPath, `/profile/${address}`)
                               ? "text-primaryPurple dark:text-primaryPurple"
                               : ""
                           }
                         >
-                          Manage
+                          Profile
                         </span>
                       </button>
                     </Link>
@@ -308,19 +308,19 @@ export default function Header01() {
             </li> */}
             {address && (
               <li className="group">
-                <Link href={`/manage/${address}`}>
+                <Link href={`/profile/${address}`}>
                   <button
                     onClick={() => setToggle(false)}
                     className="text-jacarta-900 font-display hover:text-primaryPurple focus:text-primaryPurple dark:hover:text-primaryPurple dark:focus:text-primaryPurple flex items-center justify-between py-3.5 text-base dark:text-white lg:px-5"
                   >
                     <span
                       className={
-                        isChildrenPageActive(route.asPath, `/manage/${address}`)
+                        isChildrenPageActive(route.asPath, `/profile/${address}`)
                           ? "text-primaryPurple dark:text-primaryPurple"
                           : ""
                       }
                     >
-                      Manage
+                      Profile
                     </span>
                   </button>
                 </Link>

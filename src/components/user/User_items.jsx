@@ -11,6 +11,7 @@ import Activity from "../categories/Activity";
 import { useAddress } from "@thirdweb-dev/react";
 import { getAddress } from "ethers/lib/utils";
 import { useChainContext } from "../../contexts/hooks/useChainContext";
+import Link from "next/link";
 
 const User_items = ({
   createdData,
@@ -23,6 +24,7 @@ const User_items = ({
 }) => {
   const [itemActive, setItemActive] = useState(1);
   const [isUserConnected, setIsUserConnected] = useState(false);
+  const [code, setCode] = useState(null);
 
   const chainObject = useChainContext();
   const chainId = chainObject?.currentChainObject?.chainId;
@@ -40,6 +42,28 @@ const User_items = ({
       setIsUserConnected(false);
     }
   }, [address, manageAddress]);
+
+  useEffect(() => {
+    if (!address) return;
+
+    const fetchCode = async () => {
+      await fetch(`https://api.siborg.io/users/code?ethAddr=${address}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json"
+        }
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          setCode(data.code);
+        })
+        .catch((error) => {
+          console.error("Error getting SiBorg code:", error);
+        });
+    };
+
+    fetchCode();
+  }, [address]);
 
   const tabItem = [
     {
@@ -63,7 +87,7 @@ const User_items = ({
 
   return (
     <>
-      <section className="relative py-24">
+      <section className="relative py-12">
         <picture className="pointer-events-none absolute inset-0 -z-10 dark:hidden">
           <Image
             width={1519}
@@ -74,10 +98,35 @@ const User_items = ({
             className="h-full w-full object-cover"
           />
         </picture>
+
         <div className="container">
+          <>
+            <div className="mb-4 max-w-2xl text-center mx-auto">
+              Ad spaces token owners will soon be able to submit an ad to be displayed in the SiBorg
+              App. Here is your exclusive code to join the beta (
+              <Link
+                href="https://beta.siborg.io"
+                target="_blank"
+                className="text-primaryPurple hover:text-opacity-80"
+              >
+                beta.siborg.io
+              </Link>
+              ).
+            </div>
+
+            <div className="mb-4 max-w-sm text-center flex items-center justify-center mx-auto">
+              <input
+                type="text"
+                value={code ?? "Loading..."}
+                className="bg-white w-full text-center dark:bg-secondaryBlack dark:text-white border hover:border-opacity-20 border-white border-opacity-10 rounded-2lg p-2 focus:border-white focus:border-opacity-20 focus:ring-transparent"
+                readOnly
+              />
+            </div>
+          </>
+
           {/* <!-- Tabs Nav --> */}
           <Tabs className="tabs">
-            <TabList className="nav nav-tabs scrollbar-custom mb-12 flex items-center justify-start overflow-x-auto overflow-y-hidden border-b border-jacarta-100 pb-px dark:border-jacarta-600 md:justify-center">
+            <TabList className="nav nav-tabs hide-scrollbar mb-12 flex items-center justify-start overflow-x-auto overflow-y-hidden border-b border-jacarta-100 pb-px dark:border-jacarta-600 md:justify-center">
               {tabItem.map(({ id, text, icon }) => {
                 return (
                   <Tab className="nav-item" key={id} onClick={() => setItemActive(id)}>
@@ -99,7 +148,11 @@ const User_items = ({
             </TabList>
             <TabPanel>
               <div>
-                <Activity isUserConnected={isUserConnected} userAddr={address} chainId={chainId} />
+                <Activity
+                  isUserConnected={isUserConnected}
+                  userAddr={address ?? manageAddress}
+                  chainId={chainId}
+                />
               </div>
             </TabPanel>
             <TabPanel>
