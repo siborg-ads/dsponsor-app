@@ -209,7 +209,7 @@ const TokenPageContainer = () => {
 
     setBids(bids);
   }, [marketplaceListings]);
-
+console.log(tokenStatut, "tokenStatut");
   useEffect(() => {
     if (!offerData) return;
     if (
@@ -956,7 +956,10 @@ const TokenPageContainer = () => {
 
               <p className="dark:text-jacarta-100 mb-10">{description}</p>
               {(tokenStatut === "MINTABLE" ||
-                (tokenStatut === "DIRECT" && firstSelectedListing?.startTime < now)) && (
+                tokenStatut ===
+                  "SIBORG" || (
+                    tokenStatut === "DIRECT" && firstSelectedListing?.startTime < now
+                  )) && (
                 <div className="dark:bg-secondaryBlack dark:border-jacarta-600 mb-2 border-jacarta-100 rounded-2lg border flex flex-col gap-4 bg-white p-8">
                   <div className=" sm:flex sm:flex-wrap">
                     <span className="dark:text-jacarta-100 text-jacarta-100 text-sm">

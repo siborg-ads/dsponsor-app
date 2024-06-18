@@ -69,7 +69,7 @@ const OfferItem = ({
       setItemStatut("DIRECT");
     }
   }, [item, isToken, isListing, isAuction, listingType]);
-  console.log(price, currencyToken, itemStatut, item);
+ 
   useEffect(() => {
     if (!item) return;
 
@@ -253,6 +253,9 @@ const OfferItem = ({
                 {adStatut === 0 ? "❌ Rejected" : adStatut === 1 ? "✅ Accepted" : adStatut === 2 ? "🔍 Pending" : "Ad space available"}
               </span>
             )} */}
+            {isAuction && listingType === "Auction" && (
+              <span className="dark:text-jacarta-100 text-jacarta-100">{item.listingStatus}</span>
+            )}
           </div>
         </div>
       </article>

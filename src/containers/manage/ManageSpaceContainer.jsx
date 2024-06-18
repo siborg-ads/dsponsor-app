@@ -69,17 +69,18 @@ const ManageSpaceContainer = () => {
 
       const fetchListedTokens = async () => {
         const listedTokenArray = await fetchDataByUserAddress(fetchAllTokenListedByUserAddress);
-
+console.log(listedTokenArray, "listedTokenArray");
         const mappedListedToken = listedTokenArray
           .filter((element) => element?.listingType === "Auction")
           .map((element) => ({
+            ...element,
+            ...element.token,
+            listingStatus: handleListingsStatusType(element.status),
             chainConfig: element.chainConfig,
             tokenData: element?.token.mint.tokenData,
             startTime: element?.startTime,
             endTime: element?.endTime,
-            offerId: element?.token?.nftContract?.adOffers[0]?.id,
-            ...element.token,
-            ...element
+            offerId: element?.token?.nftContract?.adOffers[0]?.id
           }));
         setListedAuctionToken(mappedListedToken);
       };
@@ -88,7 +89,8 @@ const ManageSpaceContainer = () => {
         const auctionBidsTokensArray = await fetchDataByUserAddress(fetchAllTokenAuctionBidsByUser);
         const mappedAuctionBidsTokens = auctionBidsTokensArray.map((element) => ({
           ...element,
-          status: handleStatusType(element.status),
+          status: handleBidsStatusType(element.status),
+          listingStatus: element.listing.status,
           metadata: element.listing.token.metadata,
           tokenData: element.listing.token.mint.tokenData,
           offerId: element.listing.token.nftContract.adOffers[0].id,
@@ -105,7 +107,19 @@ const ManageSpaceContainer = () => {
       fetchAuctionBidsTokens();
     }
   }, [userAddress, router, address, chainId, chainConfig]);
-  const handleStatusType = (status) => {
+  const handleListingsStatusType = (status) => {
+    switch (status) {
+      case "CREATED":
+        return "Active";
+      case "CONFIRMED":
+        return "Finished";
+      case "CANCELLED":
+        return "Cancelled";
+      default:
+        return "Active";
+    }
+  };
+  const handleBidsStatusType = (status) => {
     switch (status) {
       case "CREATED":
         return "HIGHEST BIDDER";
