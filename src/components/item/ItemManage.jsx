@@ -13,8 +13,6 @@ const ItemManage = ({
   royalties,
   dsponsorNFTContract,
   dsponsorMpContract,
-  isOwner,
-  isLister,
   conditions
 }) => {
   const [listingModal, setListingModal] = useState(false);
@@ -26,8 +24,6 @@ const ItemManage = ({
   const { mutateAsync: closeAuctionListing } = useContractWrite(dsponsorMpContract, "closeAuction");
 
   const [isLoadingButton, setIsLoadingButton] = useState(false);
-
-  const now = Math.floor(new Date().getTime() / 1000);
 
   const handleListingModal = () => {
     setListingModal(!listingModal);
@@ -65,7 +61,7 @@ const ItemManage = ({
               {new Date(marketplaceListings[0]?.startTime * 1000).toString()}.{" "}
             </span>
           )}
-          {(!conditions?.isCreated || marketplaceListings?.length <= 0) && isOwner && (
+          {(!conditions?.isCreated || marketplaceListings?.length <= 0) && conditions?.isOwner && (
             <span className="dark:text-jacarta-100 text-jacarta-100 text-sm">
               Click the button below to sell your item in auction or direct listing.{" "}
             </span>
@@ -84,7 +80,7 @@ const ItemManage = ({
           )}
         </div>
 
-        {(!conditions?.isCreated || marketplaceListings?.length <= 0) && isOwner ? (
+        {(!conditions?.isCreated || marketplaceListings?.length <= 0) && conditions?.isOwner ? (
           <div className="w-full flex justify-center">
             <button
               type="button"

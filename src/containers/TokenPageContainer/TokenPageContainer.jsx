@@ -212,11 +212,12 @@ const TokenPageContainer = () => {
 
   useEffect(() => {
     if (!offerData) return;
-  
+
     if (
       !isOwner &&
       !offerNotFormated &&
-      (offerData?.nftContract?.tokens[0]?.mint === null || offerData?.nftContract?.tokens?.length <= 0) &&
+      (offerData?.nftContract?.tokens[0]?.mint === null ||
+        offerData?.nftContract?.tokens?.length <= 0) &&
       isAllowedToMint !== null
     ) {
       setTokenStatut("MINTABLE");
@@ -1011,8 +1012,6 @@ const TokenPageContainer = () => {
                     marketplaceListings={marketplaceListings}
                     royalties={royalties}
                     dsponsorMpContract={dsponsorMpContract}
-                    isOwner={isOwner}
-                    isLister={isLister}
                     conditions={shouldRenderManageTokenComponent().conditionsObject}
                   />
                 </>
