@@ -113,8 +113,8 @@ const Activity = ({ isUserConnected, userAddr, chainId }) => {
                 </p>
                 <div className="dark:bg-secondaryBlack dark:text-jacarta-100 rounded-2lg bg-white p-3 flex gap-4 justify-center items-center">
                   <p className="text-center text-white">
-                    The more active you are on the platform, the more points you earn! The more
-                    points you have, the better the surprises you&apos;ll get. You gain points by
+                    The more active you are on the platform, the more boxes you earn! The more
+                    boxes you have, the better the surprises you&apos;ll get. You gain boxes by
                     participating in a token sale, whether as a buyer, seller, or even a referrer!
                     💸
                   </p>
@@ -213,7 +213,7 @@ const Activity = ({ isUserConnected, userAddr, chainId }) => {
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                     <div className="flex flex-col bg-primaryPurple text-white items-center justify-center p-4 rounded-2lg">
                       <span className="text-2xl font-bold">{ranking?.points ?? 0}</span>
-                      <span>Points</span>
+                      <span>Boxes</span>
                     </div>
 
                     <div className="flex flex-col bg-primaryPurple text-white items-center justify-center p-4 rounded-2lg">
@@ -274,13 +274,13 @@ const Activity = ({ isUserConnected, userAddr, chainId }) => {
                           Transaction Hash
                         </th>
                         <th className="py-3 px-4 font-medium text-jacarta-100 dark:text-jacarta-100">
-                          Buyer Points
+                          Buyer Boxes
                         </th>
                         <th className="py-3 px-4 font-medium text-jacarta-100 dark:text-jacarta-100">
-                          Seller Points
+                          Seller Boxes
                         </th>
                         <th className="py-3 px-4 font-medium text-jacarta-100 dark:text-jacarta-100">
-                          Referrer Points
+                          Referrer Boxes
                         </th>
                       </tr>
                     </thead>
