@@ -517,7 +517,7 @@ const TokenPageContainer = () => {
         ]);
       }
 
-      if (allowance.gte(amountToApprove)) {
+      if (allowance?.gte(amountToApprove)) {
         setAllowanceTrue(false);
         return false;
       }

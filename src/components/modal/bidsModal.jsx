@@ -7,11 +7,12 @@ import Link from "next/link";
 import config from "../../config/config";
 import { computeBidAmounts } from "../../utils/computeBidAmounts";
 import { formatUnits, parseUnits } from "ethers/lib/utils";
-import { formatAndRoundPrice } from "../../utils/formatAndRound";
+import formatAndRoundPrice from "../../utils/formatAndRound";
 import { fetchTokenPrice } from "../../utils/fetchTokenPrice";
 import { CrossmintPayButton } from "@crossmint/client-sdk-react-ui";
 import { activated_features } from "../../data/activated_features";
 import { getCookie } from "cookies-next";
+import { BigNumber } from "bignumber.js";
 
 const BidsModal = ({
   setAmountToApprove,
@@ -34,7 +35,7 @@ const BidsModal = ({
   isLoadingButton,
   setIsLoadingButton
 }) => {
-  const [initialIntPrice, setInitialIntPrice] = useState(0);
+  const [initialIntPrice, setInitialIntPrice] = useState(null);
   const [isPriceGood, setIsPriceGood] = useState(true);
   const { mutateAsync: auctionBids } = useContractWrite(dsponsorMpContract, "bid");
   const [checkTerms, setCheckTerms] = useState(false);
@@ -45,6 +46,7 @@ const BidsModal = ({
   const [tokenPrice, setTokenPrice] = useState(null);
   const [buyoutPriceReached, setBuyoutPriceReached] = useState(false);
   const [protocolFeeAmount, setProtocolFeeAmount] = useState(0);
+  const [mount, setMount] = useState(false);
 
   // If currency is WETH, we can pay with Crossmint
   const canPayWithCrossmint =
@@ -59,8 +61,8 @@ const BidsModal = ({
         marketplaceListings[0]?.currency,
         Number(chainId),
         parseUnits(
-          Number(bidsAmount).toFixed(currencyTokenDecimals).toString(),
-          currencyTokenDecimals
+          new BigNumber(bidsAmount).toFixed(Number(currencyTokenDecimals)).toString(),
+          Number(currencyTokenDecimals)
         )
       ).then((price) => {
         setTokenPrice(price);
@@ -96,10 +98,8 @@ const BidsModal = ({
 
   useEffect(() => {
     if (marketplaceListings[0] && bidsAmount && bidsAmount > 0 && currencyTokenDecimals) {
-      const newBidPerToken = parseUnits(
-        Number(bidsAmount).toFixed(6).toString(),
-        currencyTokenDecimals
-      );
+      const bidsAmountFixed = new BigNumber(bidsAmount).toFixed(Number(currencyTokenDecimals));
+      const newBidPerToken = parseUnits(bidsAmountFixed, Number(currencyTokenDecimals));
       const reservePricePerToken = marketplaceListings[0]?.reservePricePerToken;
       const buyoutPricePerToken = marketplaceListings[0]?.buyoutPricePerToken;
       const previousPricePerToken =
@@ -150,12 +150,13 @@ const BidsModal = ({
 
   useEffect(() => {
     const minimalBidPerToken = marketplaceListings[0]?.bidPriceStructure?.minimalBidPerToken;
-    if (minimalBidPerToken && !bidsAmount) {
+    if (minimalBidPerToken && !bidsAmount && !mount) {
       const minimalBid = ethers.utils.formatUnits(minimalBidPerToken, currencyTokenDecimals);
       setInitialIntPrice(minimalBid);
       setBidsAmount(minimalBid);
+      setMount(true);
     }
-  }, [marketplaceListings, setBidsAmount, currencyTokenDecimals, bidsAmount]);
+  }, [marketplaceListings, setBidsAmount, currencyTokenDecimals, bidsAmount, mount]);
 
   const handleBidsAmount = async (e) => {
     if (Number(e.target.value) < initialIntPrice) {
@@ -166,14 +167,14 @@ const BidsModal = ({
       setBidsAmount(e.target.value);
       setAmountToApprove(
         ethers.utils.parseUnits(
-          Number(e.target.value).toFixed(currencyTokenDecimals).toString(),
-          currencyTokenDecimals
+          new BigNumber(e.target.value).toFixed(Number(currencyTokenDecimals)).toString(),
+          Number(currencyTokenDecimals)
         )
       );
       await checkAllowance(
         ethers.utils.parseUnits(
-          Number(e.target.value).toFixed(currencyTokenDecimals).toString(),
-          currencyTokenDecimals
+          new BigNumber(e.target.value).toFixed(Number(currencyTokenDecimals)).toString(),
+          Number(currencyTokenDecimals)
         )
       );
     }
@@ -273,23 +274,23 @@ const BidsModal = ({
                   </div>
                 </div>
                 <div className="flex items-center gap-4">
-                  <div className="flex items-center relative w-full">
+                  <div className="flex items-center relative w-full overflow-hidden -pr-4">
                     <input
                       type="number"
                       onWheel={(e) => e.target.blur()}
-                      className={`focus:ring-primaryPurple relative w-full flex-[3] border-transparent bg-jacarta-600 rounded-xl text-2xl py-2 font-semibold text-white focus:ring-inse`}
+                      className={`focus:ring-primaryPurple pr-20 relative w-full flex-[3] border-transparent bg-jacarta-600 rounded-xl text-2xl py-2 font-semibold text-white focus:ring-inse`}
                       placeholder={`${initialIntPrice} or higher`}
-                      value={bidsAmount}
+                      value={bidsAmount ?? ""}
                       onChange={(e) => handleBidsAmount(e)}
                     />
                     <span className="text-white font-semibold absolute right-0 px-4">
-                      {currencySymbol}
+                      {currencySymbol.substring(0, 6)}
                     </span>
                   </div>
 
                   <div className="bg-jacarta-600 w-1/4 border border-jacarta-900 border-opacity-10 rounded-xl flex flex-1 justify-center self-stretch border-l">
                     <span className="self-center px-4 text-xl text-center text-white font-semibold">
-                      ${formatAndRoundPrice(tokenPrice) ?? 0}
+                      ${formatAndRoundPrice(tokenPrice ?? 0)}
                     </span>
                   </div>
                 </div>
@@ -332,7 +333,8 @@ const BidsModal = ({
                           </div>
 
                           <div className="bg-jacarta-600 col-span-3 duration-400 shadow p-4 rounded-xl font-semibold text-base text-white flex justify-center items-center text-center">
-                            {refundedPrice} {currencySymbol} Outbid reward
+                            {bidsAmount >= initialIntPrice ? formatAndRoundPrice(refundedPrice) : 0}{" "}
+                            {currencySymbol} Reward
                           </div>
                         </div>
                         <div className="grid grid-cols-7 items-center gap-4 mx-auto w-full">
@@ -361,7 +363,11 @@ const BidsModal = ({
                   />
                   <label htmlFor="buyNowTerms" className="dark:text-jacarta-200 text-sm">
                     By checking this box, I agree to {"SiBorg Ads's"}{" "}
-                    <Link href="/terms-and-conditions" className="text-primaryPurple">
+                    <Link
+                      href="/terms-and-conditions"
+                      target="_blank"
+                      className="text-primaryPurple"
+                    >
                       Terms of Service
                     </Link>
                   </label>
