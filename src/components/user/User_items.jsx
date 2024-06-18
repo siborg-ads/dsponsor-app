@@ -77,7 +77,7 @@ const User_items = ({
         <div className="container">
           {/* <!-- Tabs Nav --> */}
           <Tabs className="tabs">
-            <TabList className="nav nav-tabs scrollbar-custom mb-12 flex items-center justify-start overflow-x-auto overflow-y-hidden border-b border-jacarta-100 pb-px dark:border-jacarta-600 md:justify-center">
+            <TabList className="nav nav-tabs hide-scrollbar mb-12 flex items-center justify-start overflow-x-auto overflow-y-hidden border-b border-jacarta-100 pb-px dark:border-jacarta-600 md:justify-center">
               {tabItem.map(({ id, text, icon }) => {
                 return (
                   <Tab className="nav-item" key={id} onClick={() => setItemActive(id)}>

@@ -210,7 +210,7 @@ const LeaderboardTable = ({ activity }) => {
       <h1 className="text-4xl font-medium text-center pt-8 pb-4 mb-4 dark:text-white">
         Leaderboard Rankings
       </h1>
-      <div className="mb-8 flex flex-col gap-6 flex-wrap items-center justify-between">
+      <div className="mb-8 grid grid-cols-2 md:grid-cols-4 gap-4 flex-wrap items-center justify-between">
         {/* <div className="flex flex-wrap items-center">
           
           <div className="my-1 mr-2.5">
@@ -291,10 +291,10 @@ const LeaderboardTable = ({ activity }) => {
         </div> */}
         <TopCards activity={filteredActivity} />
       </div>
-      <div className="scrollbar-custom overflow-x-auto">
+      <div className="hide-scrollbar overflow-x-auto">
         {/* <!-- Tabs Nav --> */}
-        <Tabs className="tabs scrollbar-custom ">
-          <TabList className="nav nav-tabs scrollbar-custom mb-6 flex items-center justify-start  overflow-y-hidden border-b border-jacarta-100 pb-px dark:border-jacarta-600 md:justify-center">
+        <Tabs className="tabs hide-scrollbar">
+          <TabList className="nav nav-tabs hide-scrollbar mb-6 flex items-center justify-start  overflow-y-hidden border-b border-jacarta-100 pb-px dark:border-jacarta-600 md:justify-center">
             {tabItem.map(({ id, text, icon }) => {
               return (
                 <Tab className="nav-item " key={id} onClick={() => setItemActive(id)}>
