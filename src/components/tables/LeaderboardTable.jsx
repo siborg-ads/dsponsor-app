@@ -69,9 +69,8 @@ const LeaderboardTable = ({ activity }) => {
     setLeaderboards({
       topPoints: activityToTopPoints(filteredActivity[0]?.rankings),
       topHolders: activityToTopHolders(filteredActivity[0]?.rankings),
-      topSpenders: activityToTopSpenders(filteredActivity[0]?.rankings),
       topRewarded: activityToTopRewarded(filteredActivity[0]?.rankings),
-      highestTransactions: activityToHighestTransactions(filteredActivity[0]?.lastActivities)
+      topSpenders: activityToHighestTransactions(filteredActivity[0]?.lastActivities)
     });
   }, [activeBlockchain, activity]);
 
@@ -93,7 +92,7 @@ const LeaderboardTable = ({ activity }) => {
         </Link>
       )
     },
-    { header: "Total Points", render: (item) => item.totalPoints }
+    { header: "Total Boxes", render: (item) => item.totalPoints }
   ];
 
   const holderColumns = [
@@ -112,22 +111,6 @@ const LeaderboardTable = ({ activity }) => {
     // { header: "DPoints", render: (item) => item.dPoints }
   ];
 
-  const spenderColumns = [
-    { header: "Rank", render: (item) => item.rank },
-    { header: "Total Amount Spent", render: (item) => `${item.totalSpent} USDC` },
-    {
-      header: "Wallet",
-      render: (item) => (
-        <Link href={`/profile/${item.address}`}>
-          <span className="text-primaryPink hover:text-jacarta-100">{item.addressDisplay}</span>
-        </Link>
-      )
-    },
-    { header: "Balance", render: (item) => item.balance }
-    // { header: "Chain", render: () => config[chainId].network}
-    // { header: "DPoints", render: (item) => item.dPoints }
-  ];
-
   const rewardedColumns = [
     { header: "Rank", render: (item) => item.rank },
     { header: "Total Amount Earned", render: (item) => `${item.totalReceived} USDC` },
@@ -141,7 +124,7 @@ const LeaderboardTable = ({ activity }) => {
     },
     { header: "# of Outbids", render: (item) => item.refunds }
     // { header: "Chain ", render: () => config[chainId].network},
-    //{ header: "Total Points", render: (item) => item.dPoints }
+    //{ header: "Total Boxes", render: (item) => item.dPoints }
   ];
 
   const highestTransactionsColumns = [
@@ -156,7 +139,7 @@ const LeaderboardTable = ({ activity }) => {
         </Link>
       )
     },
-    { header: "Points", render: (item) => item.points },
+    { header: "Boxes", render: (item) => item.points },
     {
       header: "Seller",
       render: (item) => (
@@ -192,17 +175,15 @@ const LeaderboardTable = ({ activity }) => {
   const columns = {
     topPoints: pointColumns,
     topHolders: holderColumns,
-    topSpenders: spenderColumns,
     topRewarded: rewardedColumns,
-    highestTransactions: highestTransactionsColumns
+    topSpenders: highestTransactionsColumns
   };
 
   const tabItem = [
-    { id: 1, text: "Top Points", icon: "activity" },
+    { id: 1, text: "Top Boxes", icon: "activity" },
     { id: 2, text: "Top Holders", icon: "owned" },
-    { id: 3, text: "Top Spenders", icon: "activity" },
-    { id: 4, text: "Top Rewarded", icon: "activity" },
-    { id: 5, text: "Highest Transactions", icon: "activity" }
+    { id: 3, text: "Top Rewarded", icon: "activity" },
+    { id: 4, text: "Top Spenders", icon: "activity" }
   ];
 
   return (
@@ -210,7 +191,7 @@ const LeaderboardTable = ({ activity }) => {
       <h1 className="text-4xl font-medium text-center pt-8 pb-4 mb-4 dark:text-white">
         Leaderboard Rankings
       </h1>
-      <div className="mb-8 flex flex-col gap-6 flex-wrap items-center justify-between">
+      <div className="mb-8 grid grid-cols-2 md:grid-cols-4 gap-4 flex-wrap items-center justify-between">
         {/* <div className="flex flex-wrap items-center">
           
           <div className="my-1 mr-2.5">
@@ -291,10 +272,10 @@ const LeaderboardTable = ({ activity }) => {
         </div> */}
         <TopCards activity={filteredActivity} />
       </div>
-      <div className="scrollbar-custom overflow-x-auto">
+      <div className="hide-scrollbar overflow-x-auto">
         {/* <!-- Tabs Nav --> */}
-        <Tabs className="tabs scrollbar-custom ">
-          <TabList className="nav nav-tabs scrollbar-custom mb-6 flex items-center justify-start  overflow-y-hidden border-b border-jacarta-100 pb-px dark:border-jacarta-600 md:justify-center">
+        <Tabs className="tabs hide-scrollbar">
+          <TabList className="nav nav-tabs hide-scrollbar mb-6 flex items-center justify-start  overflow-y-hidden border-b border-jacarta-100 pb-px dark:border-jacarta-600 md:justify-center">
             {tabItem.map(({ id, text, icon }) => {
               return (
                 <Tab className="nav-item " key={id} onClick={() => setItemActive(id)}>
