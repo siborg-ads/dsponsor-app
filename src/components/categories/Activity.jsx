@@ -32,11 +32,6 @@ const Activity = ({ isUserConnected, userAddr, chainId }) => {
   }, [copied]);
 
   useEffect(() => {
-    console.log("startDate", startDate);
-    console.log("endDate", endDate);
-  }, [startDate, endDate]);
-
-  useEffect(() => {
     const fetchData = async () => {
       const data = await fetch(
         `https://relayer.dsponsor.com/api/${chainId}/activity?userAddress=${userAddr}`,

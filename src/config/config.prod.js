@@ -9,7 +9,7 @@ const config = {
     chainNameProvider: "sepolia",
     network: Network.ETH_SEPOLIA,
     logoURL: "/images/ethereum-logo.png",
-    explorerBaseUrl: "https://sepolia.etherscan.io/address/",
+    explorerBaseUrl: "https://sepolia.etherscan.io/",
 
     rpcURL: "https://ethereum-sepolia-rpc.publicnode.com",
     smartContracts: {
@@ -38,7 +38,7 @@ const config = {
         address: "0xd36097D256F31F1BF5aa597dA7C3E098d466aD13"
       }
     }
-  },
+  }
 };
 
 export default config;
