@@ -34,7 +34,7 @@ import { formatUnits } from "ethers/lib/utils";
  * @constructor
  */
 export default function MintWithCrossmintButton(props = {}) {
-  const { offer, token, user, referrer, actions } = props;
+  const { offer, token, tokenData, user, referrer, actions } = props;
 
   const price = ethers.utils.parseUnits(props.token.price, "wei");
 
@@ -92,7 +92,7 @@ export default function MintWithCrossmintButton(props = {}) {
         tokenId: token.tokenId,
         to: user.address,
         currency: token.currency,
-        tokenData: token.tokenData ?? "",
+        tokenData: tokenData ? tokenData : "",
         offerId: offer.offerId,
         adParameters: [],
         adDatas: [],
