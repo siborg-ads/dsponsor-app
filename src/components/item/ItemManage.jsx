@@ -54,14 +54,6 @@ const ItemManage = ({
         </span>
       );
     }
-    if (!conditions?.startTimePassed && conditions?.isAuction && conditions?.isCreated) {
-      return (
-        <span className="dark:text-jacarta-100 text-jacarta-100 text-sm">
-          Auction will start soon, wait{" "}
-          {new Date(marketplaceListings[0]?.startTime * 1000).toString()}.
-        </span>
-      );
-    }
     if ((!conditions?.isCreated || marketplaceListings?.length <= 0) && conditions?.isOwner) {
       return (
         <span className="dark:text-jacarta-100 text-jacarta-100 text-sm">
@@ -80,7 +72,11 @@ const ItemManage = ({
         </span>
       );
     }
-    if (conditions?.isListerOrOwnerAndEndDateFinishedOrNoBids) {
+    if (
+      conditions?.isAuction &&
+      (conditions?.isListerOrOwnerAndEndDateFinishedOrNoBids ||
+        conditions?.isListerOrOwnerAndStartDateNotPassed)
+    ) {
       return (
         <span className="dark:text-jacarta-100 text-jacarta-100 text-sm">
           Click the button below to cancel the auction.
@@ -145,9 +141,8 @@ const ItemManage = ({
     }
     if (
       conditions?.isAuction &&
-      (conditions?.isOwner || conditions?.isLister) &&
-      !conditions?.hasBids &&
-      conditions?.startTimePassed
+      (conditions?.isListerOrOwnerAndEndDateFinishedOrNoBids ||
+        conditions?.isListerOrOwnerAndStartDateNotPassed)
     ) {
       return (
         <Web3Button

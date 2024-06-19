@@ -827,6 +827,7 @@ const TokenPageContainer = () => {
     const isAuctionWithBids = isAuction && hasBids;
     const isListerOrOwnerAndEndDateFinishedOrNoBids =
       (isLister || isOwner) && (!endTimeNotPassed || !hasBids);
+    const isListerOrOwnerAndStartDateNotPassed = (isLister || isOwner) && !startTimePassed;
     const auctionHasNotStarted = startTimePassed && isAuction && !hasBids;
     const isAllowedToMint = isTokenMintable && isOwner;
 
@@ -839,7 +840,8 @@ const TokenPageContainer = () => {
       (!startTimePassed && isAuction && isCreated) ||
       ((!isCreated || marketplaceListings?.length <= 0) && isOwner) ||
       (isDirect && (isLister || isOwner) && isCreated) ||
-      isListerOrOwnerAndEndDateFinishedOrNoBids;
+      isListerOrOwnerAndEndDateFinishedOrNoBids ||
+      isListerOrOwnerAndStartDateNotPassed;
 
     const conditionsObject = {
       isAuction: isAuction,
@@ -856,6 +858,7 @@ const TokenPageContainer = () => {
       isTokenStatusSpecial: isTokenStatusSpecial,
       isAuctionWithBids: isAuctionWithBids,
       isListerOrOwnerAndEndDateFinishedOrNoBids: isListerOrOwnerAndEndDateFinishedOrNoBids,
+      isListerOrOwnerAndStartDateNotPassed: isListerOrOwnerAndStartDateNotPassed,
       auctionHasNotStarted: auctionHasNotStarted,
       isOwner: isOwner,
       isLister: isLister
@@ -1071,18 +1074,31 @@ const TokenPageContainer = () => {
                 </div>
               )}
 
-              <>
-                <ItemManage
-                  successFullListing={successFullListing}
-                  setSuccessFullListing={setSuccessFullListing}
-                  dsponsorNFTContract={DsponsorNFTContract}
-                  offerData={offerData}
-                  marketplaceListings={marketplaceListings}
-                  royalties={royalties}
-                  dsponsorMpContract={dsponsorMpContract}
-                  conditions={shouldRenderManageTokenComponent().conditionsObject}
-                />
-              </>
+              {(firstSelectedListing?.status === "CREATED" ||
+                (firstSelectedListing?.listingType === "Auction" &&
+                  firstSelectedListing?.startTime >= now)) && (
+                <div className="dark:bg-secondaryBlack dark:border-jacarta-600 mb-2 border-jacarta-100 rounded-2lg border flex flex-col gap-4 bg-white p-8">
+                  <div className="sm:flex sm:flex-wrap flex-col gap-8">
+                    <div className="flex items-center justify-between gap-4 w-full">
+                      <span className="js-countdown-ends-label text-base text-jacarta-100 dark:text-jacarta-100">
+                        Auction will start in:
+                      </span>
+                      <Timer endTime={marketplaceListings[0].startTime} />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              <ItemManage
+                successFullListing={successFullListing}
+                setSuccessFullListing={setSuccessFullListing}
+                dsponsorNFTContract={DsponsorNFTContract}
+                offerData={offerData}
+                marketplaceListings={marketplaceListings}
+                royalties={royalties}
+                dsponsorMpContract={dsponsorMpContract}
+                conditions={shouldRenderManageTokenComponent().conditionsObject}
+              />
 
               {firstSelectedListing?.listingType === "Auction" &&
                 firstSelectedListing.startTime < now &&
