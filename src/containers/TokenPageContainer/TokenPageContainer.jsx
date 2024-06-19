@@ -172,6 +172,7 @@ const TokenPageContainer = () => {
         const combinedData = {
           ...offer
         };
+      
         // FIXME: Removed console.log, opening 1 token page execute all this multiple times it seems
         setOfferData(combinedData);
       };
@@ -279,7 +280,11 @@ const TokenPageContainer = () => {
         offerData?.nftContract?.prices[0]?.mintPriceStructureFormatted.protocolFeeAmount
       );
       setFinalPrice(offerData?.nftContract?.prices[0]?.mintPriceStructureFormatted.totalAmount);
-      setAmountToApprove(BigInt(offerData?.nftContract?.prices[0]?.mintPriceStructure.totalAmount));
+      setAmountToApprove(
+        offerData?.nftContract?.prices[0]?.mintPriceStructure.totalAmount && BigInt(
+          offerData?.nftContract?.prices[0]?.mintPriceStructure.totalAmount
+        )
+      );
       setCurrency(offerData?.nftContract?.prices[0]?.currencySymbol);
       return;
     }
