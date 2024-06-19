@@ -270,7 +270,8 @@ const TokenPageContainer = () => {
       !offerNotFormated &&
       (offerData?.nftContract?.tokens[0]?.mint === null ||
         offerData?.nftContract?.tokens?.length <= 0) &&
-      isAllowedToMint !== null
+      isAllowedToMint !== null &&
+      offerData?.nftContract?.prices[0]?.currency
     ) {
       setTokenStatut("MINTABLE");
       setTokenCurrencyAddress(offerData?.nftContract?.prices[0]?.currency);
