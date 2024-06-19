@@ -1074,20 +1074,35 @@ const TokenPageContainer = () => {
                 </div>
               )}
 
-              {(firstSelectedListing?.status === "CREATED" ||
-                (firstSelectedListing?.listingType === "Auction" &&
-                  firstSelectedListing?.startTime >= now)) && (
-                <div className="dark:bg-secondaryBlack dark:border-jacarta-600 mb-2 border-jacarta-100 rounded-2lg border flex flex-col gap-4 bg-white p-8">
-                  <div className="sm:flex sm:flex-wrap flex-col gap-8">
-                    <div className="flex items-center justify-between gap-4 w-full">
-                      <span className="js-countdown-ends-label text-base text-jacarta-100 dark:text-jacarta-100">
-                        Auction will start in:
-                      </span>
-                      <Timer endTime={marketplaceListings[0].startTime} />
+              {firstSelectedListing?.status === "CREATED" &&
+                firstSelectedListing?.listingType === "Auction" &&
+                firstSelectedListing?.startTime >= now && (
+                  <div className="dark:bg-secondaryBlack dark:border-jacarta-600 mb-2 border-jacarta-100 rounded-2lg border flex flex-col gap-4 bg-white p-8">
+                    <div className="sm:flex sm:flex-wrap flex-col gap-8">
+                      <div className="flex items-center justify-between gap-4 w-full">
+                        <span className="js-countdown-ends-label text-base text-jacarta-100 dark:text-jacarta-100">
+                          Auction will start in:
+                        </span>
+                        <Timer endTime={marketplaceListings[0].startTime} />
+                      </div>
                     </div>
                   </div>
-                </div>
-              )}
+                )}
+
+              {firstSelectedListing?.status === "CREATED" &&
+                firstSelectedListing?.listingType === "Direct" &&
+                firstSelectedListing?.startTime >= now && (
+                  <div className="dark:bg-secondaryBlack dark:border-jacarta-600 mb-2 border-jacarta-100 rounded-2lg border flex flex-col gap-4 bg-white p-8">
+                    <div className="sm:flex sm:flex-wrap flex-col gap-8">
+                      <div className="flex items-center justify-between gap-4 w-full">
+                        <span className="js-countdown-ends-label text-base text-jacarta-100 dark:text-jacarta-100">
+                          Direct listing will start in:
+                        </span>
+                        <Timer endTime={marketplaceListings[0].startTime} />
+                      </div>
+                    </div>
+                  </div>
+                )}
 
               <ItemManage
                 successFullListing={successFullListing}
