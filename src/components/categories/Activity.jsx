@@ -16,6 +16,7 @@ const Activity = ({ isUserConnected, userAddr, chainId }) => {
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [filteredLastActivities, setFilteredLastActivities] = useState(null);
+  const [mount, setMount] = useState(false);
 
   let frontURL;
   if (typeof window !== "undefined") {
@@ -59,12 +60,13 @@ const Activity = ({ isUserConnected, userAddr, chainId }) => {
       setUserData(data);
       setRanking(data?.rankings[0]);
       setLastActivities(lastActivities);
+      setMount(true);
     };
 
-    if (userAddr && chainId) {
+    if (userAddr && chainId && !mount) {
       fetchData();
     }
-  }, [userAddr, chainId]);
+  }, [userAddr, chainId, mount]);
 
   useEffect(() => {
     if (startDate && endDate) {

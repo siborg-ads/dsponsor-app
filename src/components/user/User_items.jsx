@@ -152,7 +152,7 @@ const User_items = ({
               <div>
                 <Activity
                   isUserConnected={isUserConnected}
-                  userAddr={address ?? manageAddress}
+                  userAddr={manageAddress}
                   chainId={chainId}
                 />
               </div>
