@@ -15,15 +15,7 @@ const TokenAuctionBids = ({ data, isOwner }) => {
     <>
       {/* <!-- Grid --> */}
       <div className="dark:bg-secondaryBlack dark:text-jacarta-100 rounded-2lg bg-white p-3 flex gap-4 justify-center items-center mb-6">
-        <span>
-          {" "}
-          This section lists all tokens with a placed bid. <br />
-          <span className="text-primaryPurple font-medium">HIGHER BIDDER</span> <br />
-          <span className="text-green font-medium">AUCTION WON</span>
-          <br />
-          <span className="text-red font-medium">OUTBID</span>
-          <br />
-        </span>
+        <span> This section lists all tokens with a placed bid.</span>
       </div>
       {data.length > 0 ? (
         <div className="grid grid-cols-1 gap-[1.875rem] md:grid-cols-2 lg:grid-cols-4">

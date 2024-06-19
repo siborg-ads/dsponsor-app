@@ -32,9 +32,15 @@ const User_items = ({
   const address = useAddress();
 
   useEffect(() => {
-    if (!address || !manageAddress) return;
+    if (!address || !manageAddress) {
+      setIsUserConnected(false);
+      return;
+    }
 
-    if (address === "" || manageAddress === "") return;
+    if (address === "" || manageAddress === "") {
+      setIsUserConnected(false);
+      return;
+    }
 
     if (getAddress(address) === getAddress(manageAddress)) {
       setIsUserConnected(true);
