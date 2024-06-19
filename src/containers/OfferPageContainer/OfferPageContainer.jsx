@@ -104,7 +104,12 @@ const OfferPageContainer = () => {
   }, [symbolContract, decimalsContract, offerData, bps, NATIVECurrency, tokenCurrencyAddress]);
 
   useEffect(() => {
-    if (offerData?.nftContract?.royaltyBps) setRoyalties(offerData?.nftContract?.royaltyBps / 100);
+    console.log("offerData", offerData);
+    if (offerData?.nftContract?.royalty?.bps) {
+      setRoyalties(offerData?.nftContract?.royalty?.bps / 100);
+    } else {
+      setRoyalties(0);
+    }
   }, [offerData]);
 
   const handleSubmit = async (submissionArgs) => {
@@ -299,6 +304,8 @@ const OfferPageContainer = () => {
           offerId={offerId}
           initialCreator={offerData?.initialCreator}
           isToken={false}
+          offerData={offerData}
+          chainId={chainId}
         />
       </div>
       {!offerData.nftContract.allowList && (

@@ -17,12 +17,12 @@ const ItemsTabs = ({
 }) => {
   const { currentChainObject } = useChainContext();
 
-  const chainName = config[chainId]?.network;
+  const chainName = config[chainId]?.chainName;
   const chainExplorer = currentChainObject?.explorerBaseUrl;
 
   React.useEffect(() => {
-    console.log("offer", offerData);
-  }, [offerData]);
+    console.log("chainId", chainId);
+  }, [chainId]);
 
   return (
     <>
