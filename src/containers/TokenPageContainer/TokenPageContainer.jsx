@@ -127,7 +127,7 @@ const TokenPageContainer = () => {
         address: address
       });
     }
-  }, [address]);
+  }, [address, userDO]);
 
   const { contract: DsponsorAdminContract } = useContract(
     config[chainId]?.smartContracts?.DSPONSORADMIN?.address,
@@ -375,7 +375,8 @@ const TokenPageContainer = () => {
     offerNotFormated,
     tokenId,
     successFullUpload,
-    marketplaceListings
+    marketplaceListings,
+    offerId
   ]);
 
   useEffect(() => {
