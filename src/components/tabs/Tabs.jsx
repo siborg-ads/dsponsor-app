@@ -69,13 +69,15 @@ const ItemsTabs = ({
               </div>
             )}
             <div className="flex flex-col gap-2 justify-center">
-              <div className="flex items-center">
-                <span className="dark:text-jacarta-100 mr-2 min-w-[9rem]">Validity Period:</span>
-                <span className="text-jacarta-900 dark:text-white">
-                  {new Date(offerData?.metadata?.offer?.valid_from).toLocaleDateString() ?? ""} to{" "}
-                  {new Date(offerData?.metadata?.offer?.valid_to).toLocaleDateString() ?? ""}
-                </span>
-              </div>
+              {offerData?.metadata?.offer?.valid_from && offerData?.metadata?.offer?.valid_to && (
+                <div className="flex items-center">
+                  <span className="dark:text-jacarta-100 mr-2 min-w-[9rem]">Validity Period:</span>
+                  <span className="text-jacarta-900 dark:text-white">
+                    {new Date(offerData?.metadata?.offer?.valid_from).toLocaleDateString() ?? ""} to{" "}
+                    {new Date(offerData?.metadata?.offer?.valid_to).toLocaleDateString() ?? ""}
+                  </span>
+                </div>
+              )}
               {offerData?.nftContract?.royalty?.bps && (
                 <div className="flex items-center">
                   <span className="dark:text-jacarta-100 mr-2 min-w-[9rem]">Royalties:</span>
