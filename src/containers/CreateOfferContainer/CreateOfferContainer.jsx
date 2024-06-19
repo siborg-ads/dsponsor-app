@@ -19,6 +19,7 @@ import { useSwitchChainContext } from "../../contexts/hooks/useSwitchChainContex
 const CreateOfferContainer = () => {
   const [files, setFiles] = useState([]);
   const { mutateAsync: upload } = useStorageUpload();
+  const [currentSlide, setCurrentSlide] = useState(0);
 
   const router = useRouter();
   const chainId = router.query?.chainName;
@@ -352,6 +353,8 @@ const CreateOfferContainer = () => {
           stepsRef={stepsRef}
           numSteps={numSteps}
           selectedIntegration={selectedIntegration}
+          currentSlide={currentSlide}
+          setCurrentSlide={setCurrentSlide}
         >
           <Step1Create
             stepsRef={stepsRef}
@@ -366,12 +369,16 @@ const CreateOfferContainer = () => {
             setSelectedIntegration={setSelectedIntegration}
             imageRatios={imageRatios}
             setImageRatios={setImageRatios}
+            numSteps={numSteps}
+            currentSlide={currentSlide}
           />
           <Step2Create
             stepsRef={stepsRef}
             styles={styles}
             setName={setName}
             setDescription={setDescription}
+            numSteps={numSteps}
+            currentSlide={currentSlide}
           />
 
           <Step3Create
@@ -386,6 +393,8 @@ const CreateOfferContainer = () => {
             previewImage={previewImages}
             file={files}
             handleLogoUpload={handleLogoUpload}
+            numSteps={numSteps}
+            currentSlide={currentSlide}
           />
 
           <Step4Create
@@ -411,6 +420,8 @@ const CreateOfferContainer = () => {
             tokenDecimals={tokenDecimals}
             tokenContract={tokenContract}
             setCustomTokenContract={setCustomTokenContract}
+            numSteps={numSteps}
+            currentSlide={currentSlide}
           />
         </SliderForm>
       </section>
