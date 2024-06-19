@@ -172,7 +172,7 @@ const TokenPageContainer = () => {
         const combinedData = {
           ...offer
         };
-      
+
         // FIXME: Removed console.log, opening 1 token page execute all this multiple times it seems
         setOfferData(combinedData);
       };
@@ -270,7 +270,8 @@ const TokenPageContainer = () => {
       !offerNotFormated &&
       (offerData?.nftContract?.tokens[0]?.mint === null ||
         offerData?.nftContract?.tokens?.length <= 0) &&
-      isAllowedToMint !== null
+      isAllowedToMint !== null &&
+      offerData?.nftContract?.prices[0]?.currency
     ) {
       setTokenStatut("MINTABLE");
       setTokenCurrencyAddress(offerData?.nftContract?.prices[0]?.currency);
@@ -281,9 +282,8 @@ const TokenPageContainer = () => {
       );
       setFinalPrice(offerData?.nftContract?.prices[0]?.mintPriceStructureFormatted.totalAmount);
       setAmountToApprove(
-        offerData?.nftContract?.prices[0]?.mintPriceStructure.totalAmount && BigInt(
-          offerData?.nftContract?.prices[0]?.mintPriceStructure.totalAmount
-        )
+        offerData?.nftContract?.prices[0]?.mintPriceStructure.totalAmount &&
+          BigInt(offerData?.nftContract?.prices[0]?.mintPriceStructure.totalAmount)
       );
       setCurrency(offerData?.nftContract?.prices[0]?.currencySymbol);
       return;
@@ -581,42 +581,13 @@ const TokenPageContainer = () => {
   const handleApprove = async () => {
     try {
       setIsLoadingButton(true);
-      // const royaltyFeeBps = offerData?.nftContract?.royalty.bps;
-      const protocolFeeBps = bps;
-      const parsedPriceAmount = ethers.utils.parseUnits(
-        price.replace(/[^\d.-]/g, "").toString(),
-        Number(currencyDecimals)
-      );
-      const computedFeesAmount = parsedPriceAmount.mul(protocolFeeBps).div(maxBps);
-      const parsedPriceAndProtocolFeesAmount = parsedPriceAmount.add(computedFeesAmount);
-      let hasEnoughBalance = checkUserBalance(tokenBalance, parsedPriceAndProtocolFeesAmount);
-      const isWrappedNative = currency === "WETH";
-      // If it's a wrapped native token, that the user has agreed to approve the contract
-      // But he has not enough balance as wrapped native token but he has enough balance as native token
-      // We need to convert the native token to wrapped native token
-      if (isWrappedNative && !hasEnoughBalance) {
-        const missingBalance = parsedPriceAndProtocolFeesAmount
-          .sub(BigNumber.from(tokenBalance.value))
-          .abs();
-        const missingBalanceWithProtocolFee = missingBalance.add(computedFeesAmount);
-        await wrapNative({
-          overrides: {
-            value: missingBalanceWithProtocolFee
-          }
-        });
-        hasEnoughBalance = true;
-      }
 
-      if (!hasEnoughBalance) {
-        throw new Error("Not enough balance for approval.");
-      }
       if (marketplaceListings.length > 0 && tokenStatut === "DIRECT") {
         await approve({
           args: [config[chainId]?.smartContracts?.DSPONSORMP?.address, amountToApprove]
         });
       } else if (tokenStatut === "AUCTION" && marketplaceListings.length > 0) {
         const bidsBigInt = ethers.utils.parseUnits(bidsAmount.toString(), currencyDecimals);
-
         await approve({
           args: [config[chainId]?.smartContracts?.DSPONSORMP?.address, bidsBigInt.toString()]
         });
@@ -1042,18 +1013,20 @@ const TokenPageContainer = () => {
               </div>
 
               <p className="dark:text-jacarta-100 mb-10">{description}</p>
-              {(firstSelectedListing?.status === "MINTABLE" ||
+              {(tokenStatut === "MINTABLE" ||
                 (firstSelectedListing?.listingType === "Direct" &&
                   firstSelectedListing?.startTime < now &&
                   firstSelectedListing?.endTime > now)) && (
                 <div className="dark:bg-secondaryBlack dark:border-jacarta-600 mb-2 border-jacarta-100 rounded-2lg border flex flex-col gap-4 bg-white p-8">
                   <div className="sm:flex sm:flex-wrap flex-col gap-8">
-                    <div className="flex items-center justify-between gap-4 w-full">
-                      <span className="js-countdown-ends-label text-base text-jacarta-100 dark:text-jacarta-100">
-                        Direct listing ends in:
-                      </span>
-                      <Timer endTime={marketplaceListings[0].endTime} />
-                    </div>
+                    {firstSelectedListing?.listingType === "Direct" && (
+                      <div className="flex items-center justify-between gap-4 w-full">
+                        <span className="js-countdown-ends-label text-base text-jacarta-100 dark:text-jacarta-100">
+                          Direct listing ends in:
+                        </span>
+                        <Timer endTime={marketplaceListings[0].endTime} />
+                      </div>
+                    )}
 
                     <span className="dark:text-jacarta-100 text-jacarta-100 text-sm">
                       Buying the ad space give you the exclusive right to submit an ad. The media
