@@ -782,13 +782,11 @@ const TokenPageContainer = () => {
       isAllowedToMint ||
       !endTimeNotPassed ||
       (isFinished && isOwner) ||
-      (!conditions?.endTimeNotPassed && conditions?.isCreated && conditions?.isAuction) ||
-      (!conditions?.startTimePassed && conditions?.isAuction && conditions?.isCreated) ||
-      ((!conditions?.isCreated || marketplaceListings?.length <= 0) && conditions?.isOwner) ||
-      (conditions?.isDirect &&
-        (conditions?.isLister || conditions?.isOwner) &&
-        conditions?.isCreated) ||
-      conditions?.isListerAndEndDateFinishedOrNoBids;
+      (!endTimeNotPassed && isCreated && isAuction) ||
+      (!startTimePassed && isAuction && isCreated) ||
+      ((!isCreated || marketplaceListings?.length <= 0) && isOwner) ||
+      (isDirect && (isLister || isOwner) && isCreated) ||
+      isListerAndEndDateFinishedOrNoBids;
 
     const conditionsObject = {
       isAuction: isAuction,
