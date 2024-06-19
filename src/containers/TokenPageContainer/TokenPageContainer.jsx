@@ -773,7 +773,8 @@ const TokenPageContainer = () => {
     const isTokenSiborg = tokenStatut === "SIBORG";
     const isTokenStatusSpecial = isTokenMintable || isTokenSiborg;
     const isAuctionWithBids = isAuction && hasBids;
-    const isListerAndEndDateFinishedOrNoBids = isLister && (!endTimeNotPassed || !hasBids);
+    const isListerOrOwnerAndEndDateFinishedOrNoBids =
+      (isLister || isOwner) && (!endTimeNotPassed || !hasBids);
     const auctionHasNotStarted = startTimePassed && isAuction && !hasBids;
     const isAllowedToMint = isTokenMintable && isOwner;
 
@@ -786,7 +787,7 @@ const TokenPageContainer = () => {
       (!startTimePassed && isAuction && isCreated) ||
       ((!isCreated || marketplaceListings?.length <= 0) && isOwner) ||
       (isDirect && (isLister || isOwner) && isCreated) ||
-      isListerAndEndDateFinishedOrNoBids;
+      isListerOrOwnerAndEndDateFinishedOrNoBids;
 
     const conditionsObject = {
       isAuction: isAuction,
@@ -802,7 +803,7 @@ const TokenPageContainer = () => {
       isTokenSiborg: isTokenSiborg,
       isTokenStatusSpecial: isTokenStatusSpecial,
       isAuctionWithBids: isAuctionWithBids,
-      isListerAndEndDateFinishedOrNoBids: isListerAndEndDateFinishedOrNoBids,
+      isListerOrOwnerAndEndDateFinishedOrNoBids: isListerOrOwnerAndEndDateFinishedOrNoBids,
       auctionHasNotStarted: auctionHasNotStarted,
       isOwner: isOwner,
       isLister: isLister

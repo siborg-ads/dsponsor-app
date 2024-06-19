@@ -80,7 +80,7 @@ const ItemManage = ({
         </span>
       );
     }
-    if (conditions?.isListerAndEndDateFinishedOrNoBids) {
+    if (conditions?.isListerOrOwnerAndEndDateFinishedOrNoBids) {
       return (
         <span className="dark:text-jacarta-100 text-jacarta-100 text-sm">
           Click the button below to cancel the auction.
