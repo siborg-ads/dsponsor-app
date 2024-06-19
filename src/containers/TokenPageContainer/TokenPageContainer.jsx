@@ -581,44 +581,13 @@ const TokenPageContainer = () => {
   const handleApprove = async () => {
     try {
       setIsLoadingButton(true);
-      // const royaltyFeeBps = offerData?.nftContract?.royalty.bps;
-      const protocolFeeBps = bps;
-      const parsedPriceAmount = ethers.utils.parseUnits(
-        price.replace(/[^\d.-]/g, "").toString(),
-        Number(currencyDecimals)
-      );
 
-      const computedFeesAmount = parsedPriceAmount.mul(protocolFeeBps).div(maxBps);
-      const parsedPriceAndProtocolFeesAmount = parsedPriceAmount.add(computedFeesAmount);
-      let hasEnoughBalance = checkUserBalance(tokenBalance, parsedPriceAndProtocolFeesAmount);
-      const isWrappedNative = currency === "WETH";
-      // If it's a wrapped native token, that the user has agreed to approve the contract
-      // But he has not enough balance as wrapped native token but he has enough balance as native token
-      // We need to convert the native token to wrapped native token
-
-      if (isWrappedNative && !hasEnoughBalance) {
-        const missingBalance = parsedPriceAndProtocolFeesAmount
-          .sub(BigNumber.from(tokenBalance.value))
-          .abs();
-        const missingBalanceWithProtocolFee = missingBalance.add(computedFeesAmount);
-        await wrapNative({
-          overrides: {
-            value: missingBalanceWithProtocolFee
-          }
-        });
-        hasEnoughBalance = true;
-      }
-
-      if (!hasEnoughBalance) {
-        throw new Error("Not enough balance for approval.");
-      }
       if (marketplaceListings.length > 0 && tokenStatut === "DIRECT") {
         await approve({
           args: [config[chainId]?.smartContracts?.DSPONSORMP?.address, amountToApprove]
         });
       } else if (tokenStatut === "AUCTION" && marketplaceListings.length > 0) {
         const bidsBigInt = ethers.utils.parseUnits(bidsAmount.toString(), currencyDecimals);
-
         await approve({
           args: [config[chainId]?.smartContracts?.DSPONSORMP?.address, bidsBigInt.toString()]
         });
