@@ -260,7 +260,10 @@ const PreviewModal = ({
                     <p className="font-display  mb-2 block text-jacarta-100 text-sm">
                       Currency :{" "}
                       {!errors.currencyError ? (
-                        <span className="dark:text-white text-base ml-2"> {symbolContract} </span>
+                        <span className="dark:text-white text-base ml-2">
+                          {" "}
+                          {symbolContract ?? selectedCurrency}{" "}
+                        </span>
                       ) : (
                         <span className="text-red text-base ml-2">{errors.currencyError}</span>
                       )}
