@@ -767,6 +767,7 @@ const TokenPageContainer = () => {
     const isActive = startTimePassed && endTimeNotPassed;
     const isCreated = firstSelectedListing?.status === "CREATED";
     const isFinished = firstSelectedListing?.status === "COMPLETED";
+    const isCancelled = firstSelectedListing?.status === "CANCELLED";
     const hasBids = firstSelectedListing?.bids?.length > 0;
     const isTokenMintable = tokenStatut === "MINTABLE";
     const isTokenSiborg = tokenStatut === "SIBORG";
@@ -780,7 +781,14 @@ const TokenPageContainer = () => {
       (isActive && isOwner && ((isAuction && !hasBids) || isDirect)) ||
       isAllowedToMint ||
       !endTimeNotPassed ||
-      (isFinished && isOwner);
+      (isFinished && isOwner) ||
+      (!conditions?.endTimeNotPassed && conditions?.isCreated && conditions?.isAuction) ||
+      (!conditions?.startTimePassed && conditions?.isAuction && conditions?.isCreated) ||
+      ((!conditions?.isCreated || marketplaceListings?.length <= 0) && conditions?.isOwner) ||
+      (conditions?.isDirect &&
+        (conditions?.isLister || conditions?.isOwner) &&
+        conditions?.isCreated) ||
+      conditions?.isListerAndEndDateFinishedOrNoBids;
 
     const conditionsObject = {
       isAuction: isAuction,
@@ -790,6 +798,7 @@ const TokenPageContainer = () => {
       isActive: isActive,
       isCreated: isCreated,
       isFinished: isFinished,
+      isCancelled: isCancelled,
       hasBids: hasBids,
       isTokenMintable: isTokenMintable,
       isTokenSiborg: isTokenSiborg,
@@ -1002,22 +1011,19 @@ const TokenPageContainer = () => {
                 </div>
               )}
 
-              {shouldRenderManageTokenComponent().condition ? (
-                <>
-                  <ItemManage
-                    successFullListing={successFullListing}
-                    setSuccessFullListing={setSuccessFullListing}
-                    dsponsorNFTContract={DsponsorNFTContract}
-                    offerData={offerData}
-                    marketplaceListings={marketplaceListings}
-                    royalties={royalties}
-                    dsponsorMpContract={dsponsorMpContract}
-                    conditions={shouldRenderManageTokenComponent().conditionsObject}
-                  />
-                </>
-              ) : (
-                <></>
-              )}
+              <>
+                <ItemManage
+                  successFullListing={successFullListing}
+                  setSuccessFullListing={setSuccessFullListing}
+                  dsponsorNFTContract={DsponsorNFTContract}
+                  offerData={offerData}
+                  marketplaceListings={marketplaceListings}
+                  royalties={royalties}
+                  dsponsorMpContract={dsponsorMpContract}
+                  conditions={shouldRenderManageTokenComponent().conditionsObject}
+                />
+              </>
+
               {firstSelectedListing?.listingType === "Auction" &&
                 firstSelectedListing.startTime < now &&
                 firstSelectedListing.endTime > now &&
