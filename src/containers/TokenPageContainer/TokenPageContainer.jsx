@@ -1150,6 +1150,7 @@ const TokenPageContainer = () => {
                     referrer={{
                       address: referralAddress
                     }}
+                    currencyContract={tokenCurrencyAddress}
                   />
                 )}
             </div>

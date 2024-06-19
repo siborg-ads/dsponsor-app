@@ -28,7 +28,7 @@ const ItemBids = ({
   chainId,
   isLoadingButton,
   setIsLoadingButton,
-
+  currencyContract,
   token,
   user,
   offer,
@@ -163,6 +163,7 @@ const ItemBids = ({
             user={user}
             offer={offer}
             referrer={referrer}
+            currencyContract={currencyContract}
           />
         </div>
       )}
