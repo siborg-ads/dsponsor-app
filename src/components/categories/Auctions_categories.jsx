@@ -20,7 +20,7 @@ const Auctions_categories = ({ data, isOwner }) => {
       <div className="dark:bg-secondaryBlack dark:text-jacarta-100 rounded-2lg bg-white p-3 flex gap-4 justify-center items-center mb-6">
         <span>
           {" "}
-          This section lists all the tokens you have placed in auction.
+          This section lists all owned tokens currently placed in auction.
           <br />
         </span>
       </div>

@@ -205,7 +205,7 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
   };
 
   const handleSelectionTokens = () => {
-    console.log("ici")
+    console.log("ici");
     setIsSelectionActive(!isSelectionActive);
     setShowSliderForm(false);
     setIsSelectedItem({});
@@ -238,8 +238,8 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
       <div className="dark:bg-secondaryBlack dark:text-jacarta-100 rounded-2lg bg-white p-3 flex gap-4 justify-center items-center mb-6">
         <span>
           {" "}
-          This section lists all your tokens that are either currently in a direct listing or not
-          listed at all.
+          This section lists all owned tokens, either currently in a direct listing or not listed at
+          all.
           <br />
         </span>
       </div>
@@ -247,8 +247,7 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
       {data.length > 0 ? (
         <div className="flex flex-col justify-center items-center ">
           {" "}
-      
-          {isOwner &&  activated_features.canSeeSubmittedAds && (
+          {isOwner && activated_features.canSeeSubmittedAds && (
             <div className="flex flex-col items-center justify-center">
               <div onClick={handleSelectionTokens}>
                 <MainButton
