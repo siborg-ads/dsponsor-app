@@ -100,33 +100,35 @@ const User_items = ({
         </picture>
 
         <div className="container">
-          <>
-            <div className="mb-4 max-w-2xl text-center mx-auto">
-              Ad spaces token owners will soon be able to submit an ad to be displayed in the SiBorg
-              App. Here is your exclusive code to join the beta (
-              <Link
-                href="https://beta.siborg.io"
-                target="_blank"
-                className="text-primaryPurple hover:text-opacity-80"
-              >
-                beta.siborg.io
-              </Link>
-              ).
-            </div>
+          {isUserConnected && (
+            <>
+              <div className="mb-4 max-w-2xl text-center mx-auto">
+                Ad spaces token owners will soon be able to submit an ad to be displayed in the
+                SiBorg App. Here is your exclusive code to join the beta (
+                <Link
+                  href="https://beta.siborg.io"
+                  target="_blank"
+                  className="text-primaryPurple hover:text-opacity-80"
+                >
+                  beta.siborg.io
+                </Link>
+                ).
+              </div>
 
-            <div className="mb-4 max-w-sm text-center flex items-center justify-center mx-auto">
-              <input
-                type="text"
-                value={code ?? "Loading..."}
-                className="bg-white w-full text-center dark:bg-secondaryBlack dark:text-white border hover:border-opacity-20 border-white border-opacity-10 rounded-2lg p-2 focus:border-white focus:border-opacity-20 focus:ring-transparent"
-                readOnly
-              />
-            </div>
-          </>
+              <div className="mb-4 max-w-sm text-center flex items-center justify-center mx-auto">
+                <input
+                  type="text"
+                  value={code ?? "Loading..."}
+                  className="bg-white w-full text-center dark:bg-secondaryBlack dark:text-white border hover:border-opacity-20 border-white border-opacity-10 rounded-2lg p-2 focus:border-white focus:border-opacity-20 focus:ring-transparent"
+                  readOnly
+                />
+              </div>
+            </>
+          )}
 
           {/* <!-- Tabs Nav --> */}
           <Tabs className="tabs">
-            <TabList className="nav nav-tabs hide-scrollbar mb-12 flex items-center justify-start overflow-x-auto overflow-y-hidden border-b border-jacarta-100 pb-px dark:border-jacarta-600 md:justify-center">
+            <TabList className="nav nav-tabs hide-scrollbar my-12 flex items-center justify-start overflow-x-auto overflow-y-hidden border-b border-jacarta-100 pb-px dark:border-jacarta-600 md:justify-center">
               {tabItem.map(({ id, text, icon }) => {
                 return (
                   <Tab className="nav-item" key={id} onClick={() => setItemActive(id)}>
@@ -150,7 +152,7 @@ const User_items = ({
               <div>
                 <Activity
                   isUserConnected={isUserConnected}
-                  userAddr={address ?? manageAddress}
+                  userAddr={manageAddress}
                   chainId={chainId}
                 />
               </div>

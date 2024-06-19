@@ -192,7 +192,7 @@ const BidsModal = ({
       setIsLoadingButton(true);
       await handleParentApprove();
       // await handleParentApprove();
-      setSuccessFullBid(true);
+      setSuccessFullBid(false);
     } catch (error) {
       setIsLoadingButton(false);
       throw new Error(error);

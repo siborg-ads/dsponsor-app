@@ -127,7 +127,7 @@ const TokenPageContainer = () => {
         address: address
       });
     }
-  }, [address]);
+  }, [address, userDO]);
 
   const { contract: DsponsorAdminContract } = useContract(
     config[chainId]?.smartContracts?.DSPONSORADMIN?.address,
@@ -375,7 +375,8 @@ const TokenPageContainer = () => {
     offerNotFormated,
     tokenId,
     successFullUpload,
-    marketplaceListings
+    marketplaceListings,
+    offerId
   ]);
 
   useEffect(() => {
@@ -817,12 +818,14 @@ const TokenPageContainer = () => {
     const isActive = startTimePassed && endTimeNotPassed;
     const isCreated = firstSelectedListing?.status === "CREATED";
     const isFinished = firstSelectedListing?.status === "COMPLETED";
+    const isCancelled = firstSelectedListing?.status === "CANCELLED";
     const hasBids = firstSelectedListing?.bids?.length > 0;
     const isTokenMintable = tokenStatut === "MINTABLE";
     const isTokenSiborg = tokenStatut === "SIBORG";
     const isTokenStatusSpecial = isTokenMintable || isTokenSiborg;
     const isAuctionWithBids = isAuction && hasBids;
-    const isListerAndEndDateFinishedOrNoBids = isLister && (!endTimeNotPassed || !hasBids);
+    const isListerOrOwnerAndEndDateFinishedOrNoBids =
+      (isLister || isOwner) && (!endTimeNotPassed || !hasBids);
     const auctionHasNotStarted = startTimePassed && isAuction && !hasBids;
     const isAllowedToMint = isTokenMintable && isOwner;
 
@@ -830,7 +833,12 @@ const TokenPageContainer = () => {
       (isActive && isOwner && ((isAuction && !hasBids) || isDirect)) ||
       isAllowedToMint ||
       !endTimeNotPassed ||
-      (isFinished && isOwner);
+      (isFinished && isOwner) ||
+      (!endTimeNotPassed && isCreated && isAuction) ||
+      (!startTimePassed && isAuction && isCreated) ||
+      ((!isCreated || marketplaceListings?.length <= 0) && isOwner) ||
+      (isDirect && (isLister || isOwner) && isCreated) ||
+      isListerOrOwnerAndEndDateFinishedOrNoBids;
 
     const conditionsObject = {
       isAuction: isAuction,
@@ -840,12 +848,13 @@ const TokenPageContainer = () => {
       isActive: isActive,
       isCreated: isCreated,
       isFinished: isFinished,
+      isCancelled: isCancelled,
       hasBids: hasBids,
       isTokenMintable: isTokenMintable,
       isTokenSiborg: isTokenSiborg,
       isTokenStatusSpecial: isTokenStatusSpecial,
       isAuctionWithBids: isAuctionWithBids,
-      isListerAndEndDateFinishedOrNoBids: isListerAndEndDateFinishedOrNoBids,
+      isListerOrOwnerAndEndDateFinishedOrNoBids: isListerOrOwnerAndEndDateFinishedOrNoBids,
       auctionHasNotStarted: auctionHasNotStarted,
       isOwner: isOwner,
       isLister: isLister
@@ -1052,22 +1061,19 @@ const TokenPageContainer = () => {
                 </div>
               )}
 
-              {shouldRenderManageTokenComponent().condition ? (
-                <>
-                  <ItemManage
-                    successFullListing={successFullListing}
-                    setSuccessFullListing={setSuccessFullListing}
-                    dsponsorNFTContract={DsponsorNFTContract}
-                    offerData={offerData}
-                    marketplaceListings={marketplaceListings}
-                    royalties={royalties}
-                    dsponsorMpContract={dsponsorMpContract}
-                    conditions={shouldRenderManageTokenComponent().conditionsObject}
-                  />
-                </>
-              ) : (
-                <></>
-              )}
+              <>
+                <ItemManage
+                  successFullListing={successFullListing}
+                  setSuccessFullListing={setSuccessFullListing}
+                  dsponsorNFTContract={DsponsorNFTContract}
+                  offerData={offerData}
+                  marketplaceListings={marketplaceListings}
+                  royalties={royalties}
+                  dsponsorMpContract={dsponsorMpContract}
+                  conditions={shouldRenderManageTokenComponent().conditionsObject}
+                />
+              </>
+
               {firstSelectedListing?.listingType === "Auction" &&
                 firstSelectedListing.startTime < now &&
                 firstSelectedListing.endTime > now &&

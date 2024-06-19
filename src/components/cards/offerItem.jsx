@@ -45,7 +45,7 @@ const OfferItem = ({
     }
     if (isToken && item?.marketplaceListings?.length <= 0 && item.mint !== null) {
       setPrice(null);
-      setCurrencyToken(item.nftContract.prices[0].currencySymbol);
+      setCurrencyToken(item.nftContract.prices[0]?.currencySymbol);
       setItemStatut("TOKENMINTED");
       return;
     }
