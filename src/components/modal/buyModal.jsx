@@ -67,7 +67,13 @@ const BuyModal = ({
     } else {
       setCanPayWithNativeToken(true);
     }
-  }, [nativeTokenBalance, currencyBalance, setInsufficentBalance, setCanPayWithNativeToken, finalPrice]);
+  }, [
+    nativeTokenBalance,
+    currencyBalance,
+    setInsufficentBalance,
+    setCanPayWithNativeToken,
+    finalPrice
+  ]);
 
   // If currency is WETH, we can pay with Crossmint
   const canPayWithCrossmint =
@@ -277,7 +283,6 @@ const BuyModal = ({
                 <div className="flex items-center justify-center space-x-4">
                   {allowanceTrue && !successFullUpload && (
                     <>
-                      {" "}
                       <Web3Button
                         contractAddress={currentChainObject?.smartContracts?.DSPONSORADMIN?.address}
                         action={() => {
@@ -296,7 +301,7 @@ const BuyModal = ({
                   )}
 
                   {!successFullUpload &&
-                    allowanceTrue &&
+                    !allowanceTrue &&
                     (canPayWithNativeToken && insufficentBalance ? (
                       <>
                         <Web3Button

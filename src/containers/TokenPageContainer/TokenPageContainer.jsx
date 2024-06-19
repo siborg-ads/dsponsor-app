@@ -145,8 +145,6 @@ const TokenPageContainer = () => {
   const { data: tokenBalance } = useBalance(tokenCurrencyAddress);
   const { mutateAsync: approve } = useContractWrite(tokenContract, "approve");
 
-  const { data: nativeTokenBalance } = useBalanceForAddress(address);
-
   const { data: isAllowedToMint } = useContractRead(
     DsponsorNFTContract,
     "tokenIdIsAllowedToMint",
@@ -161,6 +159,8 @@ const TokenPageContainer = () => {
   const { setSelectedChain } = useSwitchChainContext();
 
   const now = Math.floor(new Date().getTime() / 1000);
+
+  const { data: nativeTokenBalance } = useBalanceForAddress({ walletAddress: address });
 
   // referralAddress is the address of the ?_rid= parameter in the URL
   const referralAddress = getCookie("_rid") || "";
@@ -596,7 +596,7 @@ const TokenPageContainer = () => {
         ]);
       }
 
-      if (allowance?.gte(amountToApprove)) {
+      if (allowance && amountToApprove && allowance?.gte(amountToApprove)) {
         setAllowanceTrue(false);
         return false;
       }
@@ -1105,6 +1105,7 @@ const TokenPageContainer = () => {
               <p className="dark:text-jacarta-100 mb-10">{description}</p>
               {(tokenStatut === "MINTABLE" ||
                 (firstSelectedListing?.listingType === "Direct" &&
+                  firstSelectedListing?.status === "CREATED" &&
                   firstSelectedListing?.startTime < now &&
                   firstSelectedListing?.endTime > now)) && (
                 <div className="dark:bg-secondaryBlack dark:border-jacarta-600 mb-2 border-jacarta-100 rounded-2lg border flex flex-col gap-4 bg-white p-8">
