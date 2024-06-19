@@ -297,6 +297,7 @@ const BidsModal = ({
                       placeholder={`${initialIntPrice} or higher`}
                       value={bidsAmount ?? ""}
                       onChange={(e) => handleBidsAmount(e)}
+                      maxLength={currencyTokenDecimals}
                     />
                     <span className="text-white font-semibold absolute right-0 px-4">
                       {currencySymbol.substring(0, 6)}
