@@ -131,7 +131,7 @@ const Activity = ({ isUserConnected, userAddr, chainId }) => {
                   <span className="text-white text-lg font-bold">Share your referral code</span>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="flex flex-col bg-primaryPurple text-white items-center justify-center p-4 rounded-2lg">
-                      <span className="text-2xl font-bold">{0}</span>
+                      <span className="text-2xl font-bold">{ranking?.nbProtocolFeeReferrals}</span>
                       <span>Number of Referrals</span>
                     </div>
 
