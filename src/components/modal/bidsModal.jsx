@@ -103,7 +103,8 @@ const BidsModal = ({
   useEffect(() => {
     if (!bidsAmount || bidsAmount <= 0) return;
 
-    const bidsAmountDecimals = parseUnits(bidsAmount.toString(), currencyTokenDecimals);
+    const fixedBidsAmount = Number(bidsAmount).toFixed(currencyTokenDecimals);
+    const bidsAmountDecimals = parseUnits(fixedBidsAmount, currencyTokenDecimals);
 
     if (currencyBalance && currencyBalance?.value.lt(bidsAmountDecimals)) {
       setInsufficentBalance(true);
@@ -148,7 +149,8 @@ const BidsModal = ({
 
   useEffect(() => {
     if (marketplaceListings && marketplaceListings[0] && bidsAmount && bidsAmount > 0) {
-      const bidsAmountLocal = parseUnits(bidsAmount, currencyTokenDecimals);
+      const fixedBidsAmount = Number(bidsAmount).toFixed(currencyTokenDecimals);
+      const bidsAmountLocal = parseUnits(fixedBidsAmount, currencyTokenDecimals);
       const minimalBuyoutPerToken =
         marketplaceListings[0]?.bidPriceStructure?.minimalBuyoutPerToken;
       const buyoutPrice = marketplaceListings[0]?.buyoutPricePerToken;
@@ -410,13 +412,12 @@ const BidsModal = ({
                     </span>
                   </div>
                 </div>
-                {!isPriceGood && (
-                  <div className="text-left">
-                    <span className="dark:text-warning text-sm">
-                      ⚠️ Bid Price must be higher than {initialIntPrice} {currencySymbol}
-                    </span>
-                  </div>
-                )}
+
+                <div className={`text-left ${!isPriceGood ? "" : "opacity-0"}`}>
+                  <span className="dark:text-warning text-sm">
+                    ⚠️ Bid Price must be higher than {initialIntPrice} {currencySymbol}
+                  </span>
+                </div>
 
                 <div className="flex flex-col gap-8 py-4 items-center justify-center">
                   {buyoutPriceReached ? (
@@ -437,30 +438,30 @@ const BidsModal = ({
                         </span>
                       </div>
                       <div className="flex flex-col gap-2">
-                        <div className="grid grid-cols-7 items-center gap-4 mx-auto w-full">
-                          <div className="bg-jacarta-600 col-span-3 duration-400 shadow p-4 rounded-xl font-semibold text-base text-white flex justify-center items-center text-center">
+                        <div className="grid grid-cols-7 items-center gap-4 mx-auto w-full min-w-max">
+                          <div className="bg-jacarta-600 col-span-3 duration-400 shadow p-4 rounded-xl font-semibold text-base text-white text-center min-w-[200px] max-w-[200px]">
                             Ad Space bought
                           </div>
 
-                          <div className="flex justify-center">
-                            <span className="text-white text-center items-center font-semibold text-sm">
+                          <div className="text-center flex justify-center items-center min-w-max">
+                            <span className="text-white text-center flex items-center font-semibold text-sm min-w-[50px] max-w-[50px]">
                               OR
                             </span>
                           </div>
 
-                          <div className="bg-jacarta-600 col-span-3 duration-400 shadow p-4 rounded-xl font-semibold text-base text-white flex justify-center items-center text-center">
+                          <div className="bg-jacarta-600 col-span-3 duration-400 shadow p-4 rounded-xl font-semibold text-base text-white text-center min-w-[200px] max-w-[200px]">
                             {bidsAmount >= initialIntPrice ? formatAndRoundPrice(refundedPrice) : 0}{" "}
                             {currencySymbol} Reward
                           </div>
                         </div>
                         <div className="grid grid-cols-7 items-center gap-4 mx-auto w-full">
-                          <div className="w-full col-span-3 text-base text-white flex justify-center items-center text-center">
+                          <div className="w-full col-span-3 text-base text-white flex justify-center items-center text-center min-w-[200px] max-w-[200px]">
                             If auction winner
                           </div>
 
                           <div />
 
-                          <div className="w-full col-span-3 text-base text-white flex justify-center items-center text-center">
+                          <div className="w-full col-span-3 text-base text-white flex justify-center items-center text-center min-w-[200px] max-w-[200px]">
                             If outbided
                           </div>
                         </div>
