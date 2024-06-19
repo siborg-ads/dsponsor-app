@@ -3,8 +3,6 @@ import { useState } from "react";
 import ModalHelper from "../../Helper/modalHelper";
 
 const Step_1_Create = ({
-  stepsRef,
-  styles,
   setDisplayedParameter,
   displayedParameter,
   selectedNumber,

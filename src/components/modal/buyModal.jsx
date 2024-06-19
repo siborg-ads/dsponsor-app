@@ -1,16 +1,16 @@
 import Link from "next/link";
 import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import { Web3Button } from "@thirdweb-dev/react";
+import { Web3Button, useBalance } from "@thirdweb-dev/react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Divider } from "@nextui-org/react";
 import { Spinner } from "@nextui-org/spinner";
 import { useChainContext } from "../../contexts/hooks/useChainContext";
-import { CrossmintPayButton } from "@crossmint/client-sdk-react-ui";
 import { activated_features } from "../../data/activated_features";
 import MintWithCrossmintButton from "../buttons/MintWithCrossmintButton/MintWithCrossmintButton";
 import BuyWithCrossmintButton from "../buttons/BuyWithCrossmintButton/BuyWithCrossmintButton";
+import { parseUnits } from "ethers/lib/utils";
 
 const BuyModal = ({
   formatTokenId,
@@ -30,18 +30,44 @@ const BuyModal = ({
   image,
   handleSubmit,
   handleBuyModal,
+  handleBuySubmitWithNative,
   tokenData,
   address,
   isLoadingButton,
-
   token,
   user,
   offer,
-  referrer
+  referrer,
+  currencyContract,
+  insufficentBalance,
+  canPayWithNativeToken,
+  setInsufficentBalance,
+  setCanPayWithNativeToken,
+  nativeTokenBalance
 }) => {
   const [validate, setValidate] = useState(false);
   const { currentChainObject } = useChainContext();
   const modalRef = useRef();
+
+  const { data: currencyBalance } = useBalance(currencyContract);
+
+  useEffect(() => {
+    if (!finalPrice || finalPrice <= 0) return;
+
+    const buyAmountDecimals = parseUnits(finalPrice.toString(), currencyBalance?.decimals);
+
+    if (currencyBalance && currencyBalance?.value.lt(buyAmountDecimals)) {
+      setInsufficentBalance(true);
+    } else {
+      setInsufficentBalance(false);
+    }
+
+    if (nativeTokenBalance && nativeTokenBalance?.value.lt(buyAmountDecimals)) {
+      setCanPayWithNativeToken(false);
+    } else {
+      setCanPayWithNativeToken(true);
+    }
+  }, [nativeTokenBalance, currencyBalance, setInsufficentBalance, setCanPayWithNativeToken, finalPrice]);
 
   // If currency is WETH, we can pay with Crossmint
   const canPayWithCrossmint =
@@ -158,7 +184,8 @@ const BuyModal = ({
                         Protocol fees: 4%
                       </span>
                       <span className="dark:text-jacarta-100 text-sm  tracking-tight overflow-auto min-w-[60px] flex justify-end">
-                        {feesAmount} {selectedCurrency}
+                        {feesAmount}{" "}
+                        {canPayWithNativeToken && insufficentBalance ? "ETH" : selectedCurrency}
                       </span>
                     </div>
 
@@ -168,7 +195,8 @@ const BuyModal = ({
                           Royalties fees: {royalties}%
                         </span>
                         <span className="dark:text-jacarta-100 text-sm  tracking-tight overflow-auto min-w-[60px] flex justify-end">
-                          {royaltiesFeesAmount} {selectedCurrency}
+                          {royaltiesFeesAmount}{" "}
+                          {canPayWithNativeToken && insufficentBalance ? "ETH" : selectedCurrency}
                         </span>
                       </div>
                     )}
@@ -199,7 +227,8 @@ const BuyModal = ({
                 <div className="ml-auto">
                   <span className="flex items-center whitespace-nowrap">
                     <span className="text-green font-medium tracking-tight">
-                      {finalPrice} {selectedCurrency}
+                      {finalPrice}{" "}
+                      {canPayWithNativeToken && insufficentBalance ? "ETH" : selectedCurrency}
                     </span>
                   </span>
                   {/* <div className="dark:text-jacarta-100 text-right">$130.82</div> */}
@@ -246,8 +275,9 @@ const BuyModal = ({
             <div className="modal-footer p-6">
               <div className="flex flex-col items-center space-y-6">
                 <div className="flex items-center justify-center space-x-4">
-                  {allowanceTrue && !successFullUpload ? (
+                  {allowanceTrue && !successFullUpload && (
                     <>
+                      {" "}
                       <Web3Button
                         contractAddress={currentChainObject?.smartContracts?.DSPONSORADMIN?.address}
                         action={() => {
@@ -263,22 +293,63 @@ const BuyModal = ({
                         {isLoadingButton ? <Spinner size="sm" color="default" /> : "Approve"}
                       </Web3Button>
                     </>
-                  ) : !successFullUpload ? (
-                    <Web3Button
-                      contractAddress={currentChainObject?.smartContracts?.DSPONSORADMIN?.address}
-                      action={() => {
-                        toast.promise(handleSubmit, {
-                          pending: "Waiting for confirmation 🕒",
-                          success: "Transaction confirmed 👌",
-                          error: "Transaction rejected 🤯"
-                        });
-                      }}
-                      className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate ? "btn-disabled cursor-not-allowed !text-black" : "!bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer"} `}
-                      isDisabled={!validate || isLoadingButton}
-                    >
-                      {isLoadingButton ? <Spinner size="sm" color="default" /> : "Confirm checkout"}
-                    </Web3Button>
-                  ) : (
+                  )}
+
+                  {!successFullUpload &&
+                    allowanceTrue &&
+                    (canPayWithNativeToken && insufficentBalance ? (
+                      <>
+                        <Web3Button
+                          contractAddress={
+                            currentChainObject?.smartContracts?.DSPONSORADMIN?.address
+                          }
+                          action={() => {
+                            toast.promise(handleBuySubmitWithNative, {
+                              pending: "Waiting for confirmation 🕒",
+                              success: "Transaction confirmed 👌",
+                              error: "Transaction rejected 🤯"
+                            });
+                          }}
+                          className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate || (insufficentBalance && !canPayWithNativeToken) ? "btn-disabled cursor-not-allowed !text-black" : "!bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer"} `}
+                          isDisabled={
+                            !validate ||
+                            isLoadingButton ||
+                            (insufficentBalance && !canPayWithNativeToken)
+                          }
+                        >
+                          {isLoadingButton ? (
+                            <Spinner size="sm" color="default" />
+                          ) : (
+                            "Confirm checkout with ETH"
+                          )}
+                        </Web3Button>
+                      </>
+                    ) : (
+                      <>
+                        <Web3Button
+                          contractAddress={
+                            currentChainObject?.smartContracts?.DSPONSORADMIN?.address
+                          }
+                          action={() => {
+                            toast.promise(handleSubmit, {
+                              pending: "Waiting for confirmation 🕒",
+                              success: "Transaction confirmed 👌",
+                              error: "Transaction rejected 🤯"
+                            });
+                          }}
+                          className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate ? "btn-disabled cursor-not-allowed !text-black" : "!bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer"} `}
+                          isDisabled={!validate || isLoadingButton}
+                        >
+                          {isLoadingButton ? (
+                            <Spinner size="sm" color="default" />
+                          ) : (
+                            "Confirm checkout"
+                          )}
+                        </Web3Button>
+                      </>
+                    ))}
+
+                  {successFullUpload && (
                     <Link href={successFullBuyModal.hrefButton ?? "#"}>
                       <button className="!rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all !bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer">
                         {successFullBuyModal.buttonTitle}

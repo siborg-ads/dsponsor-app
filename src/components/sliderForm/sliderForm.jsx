@@ -1,13 +1,6 @@
 import React from "react";
 
-const SliderForm = ({
-  styles,
-  handlePreviewModal,
-  numSteps,
-  children,
-  currentSlide,
-  setCurrentSlide
-}) => {
+const SliderForm = ({ handlePreviewModal, numSteps, children, currentSlide, setCurrentSlide }) => {
   const handleNextClick = () => {
     if (currentSlide < numSteps - 1) {
       setCurrentSlide(currentSlide + 1);

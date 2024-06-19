@@ -1,6 +1,11 @@
 import React, { useEffect, useRef, useState } from "react";
 import { ethers } from "ethers";
-import { Web3Button, useContractWrite, useBalanceForAddress } from "@thirdweb-dev/react";
+import {
+  Web3Button,
+  useContractWrite,
+  useBalanceForAddress,
+  useBalance
+} from "@thirdweb-dev/react";
 import { Spinner } from "@nextui-org/spinner";
 import { toast } from "react-toastify";
 import Link from "next/link";
@@ -9,12 +14,12 @@ import { computeBidAmounts } from "../../utils/computeBidAmounts";
 import { formatUnits, parseUnits } from "ethers/lib/utils";
 import formatAndRoundPrice from "../../utils/formatAndRound";
 import { fetchTokenPrice } from "../../utils/fetchTokenPrice";
-import { CrossmintPayButton } from "@crossmint/client-sdk-react-ui";
 import { activated_features } from "../../data/activated_features";
 import { getCookie } from "cookies-next";
 import { BigNumber } from "bignumber.js";
-import BuyWithCrossmintButton from "../buttons/BuyWithCrossmintButton/BuyWithCrossmintButton";
 import BidWithCrossmintButton from "../buttons/BidWithCrossmintButton/BidWithCrossmintButton";
+
+const nativeTokenDecimals = 18;
 
 const BidsModal = ({
   setAmountToApprove,
@@ -64,23 +69,9 @@ const BidsModal = ({
     marketplaceListings[0]?.currency.toLowerCase() === chainWETH &&
     activated_features.canPayWithCrossmintEnabled;
   const modalRef = useRef();
-  const chainObject = config[chainId];
 
   const { data: nativeTokenBalance } = useBalanceForAddress(address);
-  const { data: currencyBalance } = useWalletBalance({
-    chain: chainObject,
-    tokenAddress: currencyContract,
-    address: address
-  });
-
-  useEffect(() => {
-    console.log("chainObject", chainObject);
-    console.log("currencyContract", currencyContract);
-    console.log("address", address);
-
-    console.log("nativeTokenBalance", nativeTokenBalance);
-    console.log("currencyBalance", currencyBalance);
-  }, [chainObject, currencyContract, address, nativeTokenBalance, currencyBalance]);
+  const { data: currencyBalance } = useBalance(currencyContract);
 
   useEffect(() => {
     const fetchEtherPrice = async () => {
@@ -104,24 +95,35 @@ const BidsModal = ({
       setTokenEtherPrice(tokenEtherPrice?.amountInEth);
     };
 
-    if (token && bidsAmount && bidsAmount > 0 && chainId && insufficentBalance) {
+    if (bidsAmount && bidsAmount > 0 && chainId && insufficentBalance) {
       fetchEtherPrice();
     }
-  }, [bidsAmount, token, chainId]);
+  }, [bidsAmount, chainId, insufficentBalance, currencyContract]);
 
   useEffect(() => {
-    if (currencyBalance < bidsAmount) {
+    if (!bidsAmount || bidsAmount <= 0) return;
+
+    const bidsAmountDecimals = parseUnits(bidsAmount.toString(), currencyTokenDecimals);
+
+    if (currencyBalance && currencyBalance?.value.lt(bidsAmountDecimals)) {
       setInsufficentBalance(true);
     } else {
       setInsufficentBalance(false);
     }
 
-    if (nativeTokenBalance < bidsAmount) {
+    if (nativeTokenBalance && nativeTokenBalance?.value.lt(bidsAmountDecimals)) {
       setCanPayWithNativeToken(false);
     } else {
       setCanPayWithNativeToken(true);
     }
-  }, [marketplaceListings, chainId, bidsAmount, nativeTokenBalance]);
+  }, [
+    marketplaceListings,
+    chainId,
+    bidsAmount,
+    nativeTokenBalance,
+    currencyBalance,
+    currencyTokenDecimals
+  ]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -262,7 +264,33 @@ const BidsModal = ({
     }
   };
 
-  const handleSubmitWithNative = async () => {};
+  const handleSubmitWithNative = async () => {
+    const hasEnoughBalance = checkUserBalance(nativeTokenBalance, bidsAmount);
+    if (!hasEnoughBalance) {
+      throw new Error("Not enough balance for approval.");
+    }
+
+    try {
+      setIsLoadingButton(true);
+      const bidsBigInt = ethers.utils.parseUnits(bidsAmount.toString(), nativeTokenDecimals);
+      const tokenEtherPriceBigNumber = new BigNumber(tokenEtherPrice.toString());
+
+      const referralAddress = getCookie("_rid") || "";
+
+      await auctionBids({
+        args: [marketplaceListings[0].id, bidsBigInt, address, referralAddress],
+        overrides: { value: tokenEtherPriceBigNumber }
+      });
+
+      setSuccessFullBid(true);
+    } catch (error) {
+      setIsLoadingButton(false);
+      console.error(error);
+      throw new Error(error);
+    } finally {
+      setIsLoadingButton(false);
+    }
+  };
 
   const handleSubmit = async () => {
     const hasEnoughBalance = checkUserBalance(tokenBalance, bidsAmount);
@@ -281,6 +309,7 @@ const BidsModal = ({
       setSuccessFullBid(true);
     } catch (error) {
       setIsLoadingButton(false);
+      console.error(error);
       throw new Error(error);
     } finally {
       setIsLoadingButton(false);
@@ -347,7 +376,13 @@ const BidsModal = ({
                   </div>
                   <div>
                     <span className="dark:text-jacarta-100 text-sm">
-                      Balance: {tokenBalance?.displayValue ?? 0} {currencySymbol}
+                      {canPayWithNativeToken && insufficentBalance ? (
+                        <>Balance: {nativeTokenBalance?.displayValue ?? 0} ETH</>
+                      ) : (
+                        <>
+                          Balance: {tokenBalance?.displayValue ?? 0} {currencySymbol}
+                        </>
+                      )}
                     </span>
                   </div>
                 </div>
@@ -363,7 +398,9 @@ const BidsModal = ({
                       maxLength={currencyTokenDecimals}
                     />
                     <span className="text-white font-semibold absolute right-0 px-4">
-                      {currencySymbol.substring(0, 6)}
+                      {canPayWithNativeToken && insufficentBalance
+                        ? "ETH"
+                        : currencySymbol.substring(0, 6)}
                     </span>
                   </div>
 
@@ -578,7 +615,10 @@ const BidsModal = ({
                   </>
                 )}
 
-                {canPayWithNativeToken && insufficentBalance ? (
+                {canPayWithNativeToken &&
+                !allowanceTrue &&
+                !successFullBid &&
+                insufficentBalance ? (
                   <>
                     <div className="flex items-center justify-center space-x-4">
                       <Web3Button
@@ -606,42 +646,45 @@ const BidsModal = ({
                         {isLoadingButton ? (
                           <Spinner size="sm" color="default" />
                         ) : buyoutPriceReached ? (
-                          "Buy Now"
+                          "Buy Now with ETH"
                         ) : (
-                          "Place Bid"
+                          "Place Bid with ETH"
                         )}
                       </Web3Button>
                     </div>
                   </>
                 ) : (
-                  <>
-                    <div className="flex items-center justify-center space-x-4">
-                      <Web3Button
-                        contractAddress={config[chainId]?.smartContracts?.DSPONSORMP?.address}
-                        action={() => {
-                          toast.promise(handleSubmit, {
-                            pending: "Waiting for confirmation 🕒",
-                            success: "Bid confirmed 👌",
-                            error: "Bid rejected 🤯"
-                          });
-                        }}
-                        className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${
-                          !isPriceGood || !checkTerms
-                            ? "btn-disabled cursor-not-allowed"
-                            : "!bg-primaryPurple !cursor-pointer"
-                        } `}
-                        isDisabled={!isPriceGood || !checkTerms}
-                      >
-                        {isLoadingButton ? (
-                          <Spinner size="sm" color="default" />
-                        ) : buyoutPriceReached ? (
-                          "Buy Now"
-                        ) : (
-                          "Place Bid"
-                        )}
-                      </Web3Button>
-                    </div>
-                  </>
+                  !allowanceTrue &&
+                  !successFullBid && (
+                    <>
+                      <div className="flex items-center justify-center space-x-4">
+                        <Web3Button
+                          contractAddress={config[chainId]?.smartContracts?.DSPONSORMP?.address}
+                          action={() => {
+                            toast.promise(handleSubmit, {
+                              pending: "Waiting for confirmation 🕒",
+                              success: "Bid confirmed 👌",
+                              error: "Bid rejected 🤯"
+                            });
+                          }}
+                          className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${
+                            !isPriceGood || !checkTerms
+                              ? "btn-disabled cursor-not-allowed"
+                              : "!bg-primaryPurple !cursor-pointer"
+                          } `}
+                          isDisabled={!isPriceGood || !checkTerms}
+                        >
+                          {isLoadingButton ? (
+                            <Spinner size="sm" color="default" />
+                          ) : buyoutPriceReached ? (
+                            "Buy Now"
+                          ) : (
+                            "Place Bid"
+                          )}
+                        </Web3Button>
+                      </div>
+                    </>
+                  )
                 )}
 
                 {successFullBid && (
