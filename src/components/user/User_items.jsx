@@ -12,6 +12,9 @@ import { useAddress } from "@thirdweb-dev/react";
 import { getAddress } from "ethers/lib/utils";
 import { useChainContext } from "../../contexts/hooks/useChainContext";
 import Link from "next/link";
+import { ClipboardIcon } from "@heroicons/react/20/solid";
+import Tippy from "@tippyjs/react";
+import "tippy.js/dist/tippy.css";
 
 const User_items = ({
   createdData,
@@ -25,6 +28,7 @@ const User_items = ({
   const [itemActive, setItemActive] = useState(1);
   const [isUserConnected, setIsUserConnected] = useState(false);
   const [code, setCode] = useState(null);
+  const [copied, setCopied] = useState(false);
 
   const chainObject = useChainContext();
   const chainId = chainObject?.currentChainObject?.chainId;
@@ -110,24 +114,37 @@ const User_items = ({
             <>
               <div className="mb-4 max-w-2xl text-center mx-auto">
                 Ad spaces token owners will soon be able to submit an ad to be displayed in the
-                SiBorg App. Here is your exclusive code to join the beta (
+                SiBorg App. Here is your exclusive code to{" "}
                 <Link
                   href="https://beta.siborg.io"
                   target="_blank"
                   className="text-primaryPurple hover:text-opacity-80"
                 >
-                  beta.siborg.io
+                  join the beta
                 </Link>
-                ).
+                .
               </div>
 
               <div className="mb-4 max-w-sm text-center flex items-center justify-center mx-auto">
-                <input
-                  type="text"
-                  value={code ?? "Loading..."}
-                  className="bg-white w-full text-center dark:bg-secondaryBlack dark:text-white border hover:border-opacity-20 border-white border-opacity-10 rounded-2lg p-2 focus:border-white focus:border-opacity-20 focus:ring-transparent"
-                  readOnly
-                />
+                <div className="relative w-full">
+                  <input
+                    type="text"
+                    value={code ?? "Loading..."}
+                    className="pr-2 h-full w-full bg-secondaryBlack border hover:border-opacity-20 border-white border-opacity-10 rounded-2lg p-2 focus:border-white focus:border-opacity-20 focus:ring-transparent dark:bg-secondaryBlack dark:text-white"
+                    readOnly
+                  />
+                  <Tippy content={copied ? "Copied!" : "Copy"} placement="top" trigger="click">
+                    <button
+                      onClick={() => {
+                        navigator.clipboard.writeText(code);
+                        setCopied(true);
+                      }}
+                      className="absolute right-0 top-0 h-full px-4 text-white hover:text-jacarta-100 rounded-r-lg"
+                    >
+                      <ClipboardIcon className="h-5 w-5" />
+                    </button>
+                  </Tippy>
+                </div>
               </div>
             </>
           )}
