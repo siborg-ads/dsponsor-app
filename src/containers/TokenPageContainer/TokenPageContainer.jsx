@@ -171,7 +171,7 @@ const TokenPageContainer = () => {
         const combinedData = {
           ...offer
         };
-        console.log(combinedData, "combinedData");
+        // FIXME: Removed console.log, opening 1 token page execute all this multiple times it seems
         setOfferData(combinedData);
       };
       setSelectedChain(config[chainId]?.chainNameProvider);
@@ -243,16 +243,25 @@ const TokenPageContainer = () => {
       offerId: offerId
     });
     setTokenDO({
-      currency: offerData?.nftContract?.prices[0]?.currency,
+      currency:
+        offerData?.nftContract?.prices[0]?.currency ??
+        offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.currency,
       tokenId: tokenId,
       tokenData: null,
 
-      price: offerData?.nftContract?.prices[0]?.amount,
-      feeBPS: offerData?.nftContract?.prices[0]?.protocolFeeBps,
+      fee: offerData?.nftContract?.prices[0]?.protocolFeeAmount,
+      price:
+        offerData?.nftContract?.prices[0]?.amount ??
+        offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.pricePerToken,
+      protocolFeeBPS: offerData?.nftContract?.prices[0]?.protocolFeeBps,
       royaltiesBPS: offerData?.nftContract?.royalty.bps,
-      fee: offerData?.nftContract?.prices[0]?.protocolFeeAmount
-    });
 
+      isListed: offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.status === "CREATED",
+      listingId: offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.id,
+      minimalBidBps: offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.minimalBidBps,
+      buyoutPricePerToken:
+        offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.buyoutPricePerToken
+    });
 
     if (
       !isOwner &&
@@ -1083,6 +1092,17 @@ const TokenPageContainer = () => {
                     address={address}
                     isLoadingButton={isLoadingButton}
                     setIsLoadingButton={setIsLoadingButton}
+                    token={tokenDO}
+                    user={{
+                      address: address,
+                      isOwner: isOwner,
+                      isLister: isLister,
+                      isUserOwner: isUserOwner
+                    }}
+                    offer={offerDO}
+                    referrer={{
+                      address: referralAddress
+                    }}
                   />
                 )}
             </div>

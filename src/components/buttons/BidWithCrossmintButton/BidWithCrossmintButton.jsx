@@ -1,11 +1,12 @@
 import { CrossmintPayButton } from "@crossmint/client-sdk-react-ui";
 import React from "react";
-import { ethers } from "ethers";
+import { BigNumber, ethers } from "ethers";
 import { formatUnits } from "ethers/lib/utils";
 
 /**
- * Mint with Crossmint Button
- * @description Allow to use card to mint a new available a token. Specific to Mint collection / configuration.
+ * Bid with Crossmint Button
+ * @description Allow to use card to bid on a token. Specific to Auction collection for bid.
+ * @description Mint params is used to allow integration with the card payment system.
  * @param props
  * @param {Object} props.offer
  * @param {String} props.offer.offerId - Offer ID
@@ -33,17 +34,22 @@ import { formatUnits } from "ethers/lib/utils";
  * @returns {Element} - CrossmintPayButton
  * @constructor
  */
-export default function MintWithCrossmintButton(props = {}) {
+export default function BidWithCrossmintButton(props = {}) {
   const { offer, token, user, referrer, actions } = props;
 
-  const price = ethers.utils.parseUnits(props.token.price, "wei");
-
+  const price = ethers.utils.parseUnits(props.token.buyoutPricePerToken, "wei");
   if (!token.fee) {
     console.warn("MintWithCrossmint: Token fee not found - Using default fee");
   }
 
   let reason = null;
-  const expected = ["token.currency", "token.tokenId", "offer.offerId", "user.address"];
+  const expected = [
+    "token.currency",
+    "token.tokenId",
+    "offer.offerId",
+    "user.address",
+    "token.buyoutPricePerToken"
+  ];
   for (const fullKey of expected) {
     const [parent, key] = fullKey.split(".");
 
@@ -63,16 +69,21 @@ export default function MintWithCrossmintButton(props = {}) {
     );
   }
 
-  const feesBPS = token.protocolFeeBPS ?? 400;
-  const fee = price.mul(feesBPS).div(10000);
-  const totalFee = fee;
-  const totalPriceFormatted = formatUnits(price.add(totalFee), "ether");
+  const royaltyBPS = BigNumber.from(token.royaltiesBPS || 0);
+  const protocolBPS = BigNumber.from(token.protocolFeeBPS || 0);
+
+  const royalty = price.mul(royaltyBPS).div(10000);
+  const protocolFee = price.mul(protocolBPS).div(10000);
+  const totalFees = royalty.add(protocolFee);
+
+  const cumulativePrice = price.add(totalFees);
+  const totalPriceFormatted = formatUnits(cumulativePrice, "ether");
 
   const config = {
     // No matter what, will be exposed to the client (SPA)
     // TODO: May be have we have a RSC Rendering via specific route ?
     crossmintProjectId: "82d192a5-c754-4280-a6cb-cb3d7b0f9bd9",
-    crossmintCollectionId: "9d83e973-d852-4b9d-80a8-0da10c8ae451",
+    crossmintCollectionId: "e22acedd-c541-40b7-b194-89c494fe0a9e",
     crossmintEnvironment: "staging",
     currency: "EUR",
     locale: "en-EN",
@@ -88,16 +99,11 @@ export default function MintWithCrossmintButton(props = {}) {
     mintTo: user.address,
     mintConfig: {
       totalPrice: totalPriceFormatted,
-      params: {
-        tokenId: token.tokenId,
-        to: user.address,
-        currency: token.currency,
-        tokenData: token.tokenData ?? "",
-        offerId: offer.offerId,
-        adParameters: [],
-        adDatas: [],
-        referralAdditionalInformation: referrer.address ?? "0x"
-      }
+      quantity: 1,
+      _listingId: token.listingId,
+      _pricePerToken: token.price,
+      _bidder: user.address,
+      _referralAdditionalInformation: referrer.address ?? "0x"
     }
   };
 
@@ -128,7 +134,6 @@ export default function MintWithCrossmintButton(props = {}) {
         }}
         {...buttonProps}
         onEvent={(event) => {
-          console.log("Event", event);
           switch (event.type) {
             case "payment:process.succeeded":
               actions?.success?.(event);

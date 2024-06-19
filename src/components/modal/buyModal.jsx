@@ -10,6 +10,7 @@ import { useChainContext } from "../../contexts/hooks/useChainContext";
 import { CrossmintPayButton } from "@crossmint/client-sdk-react-ui";
 import { activated_features } from "../../data/activated_features";
 import MintWithCrossmintButton from "../buttons/MintWithCrossmintButton/MintWithCrossmintButton";
+import BuyWithCrossmintButton from "../buttons/BuyWithCrossmintButton/BuyWithCrossmintButton";
 
 const BuyModal = ({
   formatTokenId,
@@ -80,6 +81,12 @@ const BuyModal = ({
     if (isProcessingRef.current) return;
     isProcessingRef.current = true;
     toast.info("Processing mint.");
+  };
+
+  const onProcessingBuy = async () => {
+    if (isProcessingRef.current) return;
+    isProcessingRef.current = true;
+    toast.info("Processing buy.");
   };
 
   return (
@@ -287,25 +294,48 @@ const BuyModal = ({
                       <div className="flex-grow border-t border-gray-300"></div>
                     </div>
                     <div className="flex items-center justify-center space-x-4">
-                      <MintWithCrossmintButton
-                        offer={offer}
-                        token={token}
-                        user={user}
-                        referrer={referrer}
-                        actions={{
-                          processing: onProcessingMint,
-                          success: () => {
-                            toast.success("Minting successful");
-                          },
-                          error: (error) => {
-                            toast.error(`Minting failed: ${error.message}`);
-                          }
-                        }}
-                        isLoading={isLoadingButton}
-                        isLoadingRender={() => <Spinner size="sm" color="default" />}
-                        isActiveRender={`Buy NOW with card for ${finalPrice}`}
-                        isDisabled={!validate || isLoadingButton}
-                      />
+                      {!token.isListed && (
+                        <MintWithCrossmintButton
+                          offer={offer}
+                          token={token}
+                          user={user}
+                          referrer={referrer}
+                          actions={{
+                            processing: onProcessingMint,
+                            success: () => {
+                              toast.success("Minting successful");
+                            },
+                            error: (error) => {
+                              toast.error(`Minting failed: ${error.message}`);
+                            }
+                          }}
+                          isLoading={isLoadingButton}
+                          isLoadingRender={() => <Spinner size="sm" color="default" />}
+                          isActiveRender={`Buy NOW ${finalPrice} ${selectedCurrency} with card `}
+                          isDisabled={!validate || isLoadingButton}
+                        />
+                      )}
+                      {token.isListed && (
+                        <BuyWithCrossmintButton
+                          offer={offer}
+                          token={token}
+                          user={user}
+                          referrer={referrer}
+                          actions={{
+                            processing: onProcessingBuy,
+                            success: () => {
+                              toast.success("Buying successful");
+                            },
+                            error: (error) => {
+                              toast.error(`Buying failed: ${error.message}`);
+                            }
+                          }}
+                          isLoading={isLoadingButton}
+                          isLoadingRender={() => <Spinner size="sm" color="default" />}
+                          isActiveRender={`Buy NOW ${finalPrice} ${selectedCurrency} with card `}
+                          isDisabled={!validate || isLoadingButton}
+                        />
+                      )}
                     </div>
                   </>
                 )}
