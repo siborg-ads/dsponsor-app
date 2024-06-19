@@ -155,7 +155,7 @@ const Activity = ({ isUserConnected, userAddr, chainId }) => {
                         <button
                           onClick={() => {
                             const text = encodeURIComponent(
-                              `Participate in @siborgapp's "bid to earn" auction to secure ad space NFT on @siborgapp search results!\n\nEarn perks with boxes and get rewarded when outbid! 💰\n\n#Web3Monetization #DigitalRWA #SiBorgAds\n ${frontURL}/_rid=${userAddr}`
+                              `Participate in @siborgapp's "bid to earn" auction to secure ad space NFT on @siborgapp search results!\n\nEarn perks with boxes and get rewarded when outbid! 💰\n\n#Web3Monetization #DigitalRWA #SiBorgAds\n ${frontURL}/?_rid=${userAddr}`
                             );
                             const url = `https://twitter.com/intent/tweet?text=${text}`;
                             window.open(url, "_blank");
