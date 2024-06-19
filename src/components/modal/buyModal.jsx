@@ -297,6 +297,7 @@ const BuyModal = ({
                       {!token.isListed && (
                         <MintWithCrossmintButton
                           offer={offer}
+                          tokenData={tokenData}
                           token={token}
                           user={user}
                           referrer={referrer}
