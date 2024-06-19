@@ -27,7 +27,12 @@ const ItemBids = ({
   checkAllowance,
   chainId,
   isLoadingButton,
-  setIsLoadingButton
+  setIsLoadingButton,
+
+  token,
+  user,
+  offer,
+  referrer
 }) => {
   const [showBidsModal, setShowBidsModal] = useState(false);
   const [minimalBidPerToken, setMinimalBidPerToken] = useState(null);
@@ -154,6 +159,10 @@ const ItemBids = ({
             marketplaceListings={marketplaceListings}
             currencySymbol={currencySymbol}
             address={address}
+            token={token}
+            user={user}
+            offer={offer}
+            referrer={referrer}
           />
         </div>
       )}

@@ -102,6 +102,33 @@ const TokenPageContainer = () => {
   const [, setSelectedItems] = useState([]);
   const [bids, setBids] = useState([]);
 
+  const [offerDO, setOfferDO] = useState({
+    offerId: null
+  });
+  const [tokenDO, setTokenDO] = useState({
+    // Required
+    tokenId: null,
+    currency: null,
+    tokenData: null,
+
+    price: null,
+    fee: null,
+
+    royalties: null
+  });
+
+  const [userDO, setUserDO] = useState({
+    address: address
+  });
+
+  useEffect(() => {
+    if (address !== userDO.address) {
+      setUserDO({
+        address: address
+      });
+    }
+  }, [address]);
+
   const { contract: DsponsorAdminContract } = useContract(
     config[chainId]?.smartContracts?.DSPONSORADMIN?.address,
     config[chainId]?.smartContracts?.DSPONSORADMIN?.abi
@@ -144,7 +171,7 @@ const TokenPageContainer = () => {
         const combinedData = {
           ...offer
         };
-        console.log(combinedData, "combinedData");
+        // FIXME: Removed console.log, opening 1 token page execute all this multiple times it seems
         setOfferData(combinedData);
       };
       setSelectedChain(config[chainId]?.chainNameProvider);
@@ -212,6 +239,29 @@ const TokenPageContainer = () => {
 
   useEffect(() => {
     if (!offerData) return;
+    setOfferDO({
+      offerId: offerId
+    });
+    setTokenDO({
+      currency:
+        offerData?.nftContract?.prices[0]?.currency ??
+        offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.currency,
+      tokenId: tokenId,
+      tokenData: null,
+
+      fee: offerData?.nftContract?.prices[0]?.protocolFeeAmount,
+      price:
+        offerData?.nftContract?.prices[0]?.amount ??
+        offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.pricePerToken,
+      protocolFeeBPS: offerData?.nftContract?.prices[0]?.protocolFeeBps,
+      royaltiesBPS: offerData?.nftContract?.royalty.bps,
+
+      isListed: offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.status === "CREATED",
+      listingId: offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.id,
+      minimalBidBps: offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.minimalBidBps,
+      buyoutPricePerToken:
+        offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.buyoutPricePerToken
+    });
 
     if (
       !isOwner &&
@@ -1047,6 +1097,17 @@ const TokenPageContainer = () => {
                     address={address}
                     isLoadingButton={isLoadingButton}
                     setIsLoadingButton={setIsLoadingButton}
+                    token={tokenDO}
+                    user={{
+                      address: address,
+                      isOwner: isOwner,
+                      isLister: isLister,
+                      isUserOwner: isUserOwner
+                    }}
+                    offer={offerDO}
+                    referrer={{
+                      address: referralAddress
+                    }}
                   />
                 )}
             </div>
@@ -1202,6 +1263,17 @@ const TokenPageContainer = () => {
             formatTokenId={formatTokenId}
             isLoadingButton={isLoadingButton}
             address={address}
+            token={tokenDO}
+            user={{
+              address: address,
+              isOwner: isOwner,
+              isLister: isLister,
+              isUserOwner: isUserOwner
+            }}
+            offer={offerDO}
+            referrer={{
+              address: referralAddress
+            }}
           />
         </div>
       )}

@@ -13,6 +13,8 @@ import { CrossmintPayButton } from "@crossmint/client-sdk-react-ui";
 import { activated_features } from "../../data/activated_features";
 import { getCookie } from "cookies-next";
 import { BigNumber } from "bignumber.js";
+import BuyWithCrossmintButton from "../buttons/BuyWithCrossmintButton/BuyWithCrossmintButton";
+import BidWithCrossmintButton from "../buttons/BidWithCrossmintButton/BidWithCrossmintButton";
 
 const BidsModal = ({
   setAmountToApprove,
@@ -33,7 +35,12 @@ const BidsModal = ({
   handleApprove: handleParentApprove,
   checkAllowance,
   isLoadingButton,
-  setIsLoadingButton
+  setIsLoadingButton,
+
+  token,
+  user,
+  offer,
+  referrer
 }) => {
   const [initialIntPrice, setInitialIntPrice] = useState(null);
   const [isPriceGood, setIsPriceGood] = useState(true);
@@ -48,11 +55,11 @@ const BidsModal = ({
   const [protocolFeeAmount, setProtocolFeeAmount] = useState(0);
   const [mount, setMount] = useState(false);
 
+  const chainWETH = config[chainId]?.smartContracts.WETH.address.toLowerCase();
   // If currency is WETH, we can pay with Crossmint
   const canPayWithCrossmint =
-    marketplaceListings[0]?.currency === config[chainId]?.crossmint?.WETH &&
+    marketplaceListings[0]?.currency.toLowerCase() === chainWETH &&
     activated_features.canPayWithCrossmintEnabled;
-
   const modalRef = useRef();
 
   useEffect(() => {
@@ -234,6 +241,14 @@ const BidsModal = ({
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [setIsLoadingButton, toggleBidsModal]);
+
+  // Ref instead of state to avoid re-renders
+  const isProcessingRef = useRef(false);
+  const onProcessingBid = async () => {
+    if (isProcessingRef.current) return;
+    isProcessingRef.current = true;
+    toast.info("Processing mint.");
+  };
 
   return (
     <div>
@@ -542,7 +557,7 @@ const BidsModal = ({
                   </>
                 )}
               </div>
-              {canPayWithCrossmint && !successFullBid && (
+              {canPayWithCrossmint && (
                 <>
                   <div className="flex items-center justify-center w-full">
                     <div className="flex-grow border-t border-gray-300"></div>
@@ -550,30 +565,26 @@ const BidsModal = ({
                     <div className="flex-grow border-t border-gray-300"></div>
                   </div>
                   <div className="flex items-center justify-center space-x-4">
-                    <CrossmintPayButton
-                      contractAddress={config[chainId]?.smartContracts?.DSPONSORMP?.address}
-                      action={() => {
-                        toast.promise(handleSubmit, {
-                          pending: "Waiting for confirmation 🕒",
-                          success: "Bid confirmed 👌",
-                          error: "Bid rejected 🤯"
-                        });
+                    <BidWithCrossmintButton
+                      offer={offer}
+                      token={token}
+                      user={user}
+                      referrer={referrer}
+                      actions={{
+                        processing: onProcessingBid,
+                        success: () => {
+                          toast.success("Buying successful");
+                        },
+                        error: (error) => {
+                          toast.error(`Buying failed: ${error.message}`);
+                        }
                       }}
-                      className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${
-                        !isPriceGood || !checkTerms
-                          ? "btn-disabled cursor-not-allowed"
-                          : "!bg-primaryPurple !cursor-pointer"
-                      } `}
-                      isDisabled={!isPriceGood || !checkTerms}
-                    >
-                      {isLoadingButton ? (
-                        <Spinner size="sm" color="default" />
-                      ) : buyoutPriceReached ? (
-                        "Buy Now"
-                      ) : (
-                        "Place Bid"
-                      )}
-                    </CrossmintPayButton>
+                      isDisabled={!checkTerms}
+                      isLoading={isLoadingButton}
+                      isLoadingRender={() => <Spinner size="sm" color="default" />}
+                      // isActiveRender={`Buy NOW ${finalPrice} ${selectedCurrency} with card `}
+                      // isDisabled={!validate || isLoadingButton}
+                    />
                   </div>
                 </>
               )}
