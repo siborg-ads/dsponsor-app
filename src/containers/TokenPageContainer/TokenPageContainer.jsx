@@ -172,7 +172,7 @@ const TokenPageContainer = () => {
         const combinedData = {
           ...offer
         };
-        console.log("combinedData", combinedData)
+      
         // FIXME: Removed console.log, opening 1 token page execute all this multiple times it seems
         setOfferData(combinedData);
       };
