@@ -8,6 +8,19 @@ const Meta = ({ title, keyword, desc }) => {
         <link rel="icon" href="/favicon-siborg.png" />
         <meta name="description" content={desc} />
         <meta name="keyword" content={keyword} />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="author" content="Siborg Ads" />
+        <meta property="og:title" content={title} />
+        <meta property="og:description" content={desc} />
+        <meta property="og:image" content="/opengraph-image.jpeg" />
+        <meta property="og:url" content="https://app.dsponsor.com" />
+        <meta property="og:type" content="website" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:site" content="@siborgapp" />
+        <meta name="twitter:creator" content="@siborgapp" />
+        <meta name="twitter:title" content={title} />
+        <meta name="twitter:description" content={desc} />
+        <meta name="twitter:image" content="/opengraph-image.jpeg" />
       </Head>
     </div>
   );
