@@ -347,6 +347,12 @@ const BidsModal = ({
     toast.info("Processing mint.");
   };
 
+  const successCallbackURL = new URL(window.location.href);
+  successCallbackURL.searchParams.set("success", "true");
+
+  const errorCallbackURL = new URL(window.location.href);
+  errorCallbackURL.searchParams.set("success", "false");
+
   return (
     <div>
       <div className="modal fade show block">
@@ -736,6 +742,8 @@ const BidsModal = ({
                       isDisabled={!checkTerms}
                       isLoading={isLoadingButton}
                       isLoadingRender={() => <Spinner size="sm" color="default" />}
+                      successCallbackURL={successCallbackURL.toString()}
+                      errorCallbackURL={errorCallbackURL.toString()}
                       // isActiveRender={`Buy NOW ${finalPrice} ${selectedCurrency} with card `}
                       // isDisabled={!validate || isLoadingButton}
                     />

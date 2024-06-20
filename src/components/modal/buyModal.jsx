@@ -124,6 +124,12 @@ const BuyModal = ({
     toast.info("Processing buy.");
   };
 
+  const successCallbackURL = new URL(window.location.href);
+  successCallbackURL.searchParams.set("success", "true");
+
+  const errorCallbackURL = new URL(window.location.href);
+  errorCallbackURL.searchParams.set("success", "false");
+
   return (
     <div>
       {/* <!-- Buy Now Modal --> */}
@@ -414,6 +420,8 @@ const BuyModal = ({
                           isLoadingRender={() => <Spinner size="sm" color="default" />}
                           isActiveRender={`Buy NOW ${finalPrice} ${selectedCurrency} with card `}
                           isDisabled={!validate || isLoadingButton}
+                          successCallbackURL={successCallbackURL.toString()}
+                          errorCallbackURL={errorCallbackURL.toString()}
                         />
                       )}
                     </div>
