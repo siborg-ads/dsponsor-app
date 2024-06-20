@@ -81,23 +81,13 @@ export default function BidWithCrossmintButton(props = {}) {
   */
   const totalPriceFormatted = formatUnits(price, "ether");
 
-  const config = {
-    // No matter what, will be exposed to the client (SPA)
-    // TODO: May be have we have a RSC Rendering via specific route ?
-    crossmintProjectId: "82d192a5-c754-4280-a6cb-cb3d7b0f9bd9",
-    crossmintCollectionId: "e22acedd-c541-40b7-b194-89c494fe0a9e",
-    crossmintEnvironment: "staging",
-    currency: "EUR",
-    locale: "en-EN",
-    paymentMethod: "fiat"
-  };
   const buttonProps = {
-    projectId: config.crossmintProjectId,
-    collectionId: config.crossmintCollectionId,
-    environment: config.crossmintEnvironment,
-    currency: config.currency,
-    locale: config.locale,
-    paymentMethod: config.paymentMethod,
+    projectId: props.config?.projectId,
+    collectionId: props.config?.bidCollectionId,
+    environment: props.config?.environment,
+    currency: props.config?.currency,
+    locale: props.config?.locale,
+    paymentMethod: props.config?.paymentMethod,
     mintTo: user.address,
     mintConfig: {
       totalPrice: totalPriceFormatted,
@@ -113,18 +103,18 @@ export default function BidWithCrossmintButton(props = {}) {
     buttonProps.emailTo = user.email;
   }
 
-  if (config.successCallbackURL) {
-    buttonProps.successCallbackURL = config.successCallbackURL;
+  if (props?.successCallbackURL) {
+    buttonProps.successCallbackURL = props.successCallbackURL;
   }
 
-  if (config.errorCallbackURL) {
-    buttonProps.errorCallbackURL = config.errorCallbackURL;
+  if (props?.errorCallbackURL) {
+    buttonProps.errorCallbackURL = props.errorCallbackURL;
   }
 
   return (
     <>
       <CrossmintPayButton
-        disabled={props?.isDisabled}
+        disabled={props?.isDisabled === true}
         className={(props?.isDisabled && "opacity-50 cursor-not-allowed") || ""}
         getButtonText={(connecting, paymentMethod) => {
           if (actions?.processing && connecting) {
