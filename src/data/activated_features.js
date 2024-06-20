@@ -11,8 +11,6 @@ export const activated_features = {
   canCreateOffer: !!isDevelopment,
   // by default, first item used
   canHaveMultipleCurrencies: !!isDevelopment,
-  // crossmint payment enabled
-  canPayWithCrossmintEnabled: !!isDevelopment,
   // Whether to show the "Submitted Ads" in offer details
   canSeeSubmittedAds: false,
   // Whether to show the Integration tab in offer details
