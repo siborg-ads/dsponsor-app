@@ -1,4 +1,3 @@
-import { user } from "@nextui-org/react";
 import { getAddress } from "ethers/lib/utils";
 
 /**

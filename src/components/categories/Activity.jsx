@@ -307,71 +307,73 @@ const Activity = ({ isUserConnected, userAddr, chainId }) => {
                   reward this profile.
                 </p>
 
-                <table className="w-full rounded-2lg">
-                  <thead className="text-white bg-primaryPurple rounded-2lg">
-                    <tr className="bg-jacarta-50 dark:bg-primaryPurple rounded-2lg text-base">
-                      <th className="py-3 px-4 font-medium text-jacarta-100 dark:text-jacarta-100">
-                        Operation
-                      </th>
-                      <th className="py-3 px-4 font-medium text-jacarta-100 dark:text-jacarta-100">
-                        Date
-                      </th>
-                      <th className="py-3 px-4 font-medium text-jacarta-100 dark:text-jacarta-100">
-                        Transaction Hash
-                      </th>
-                      <th className="py-3 px-4 font-medium text-jacarta-100 dark:text-jacarta-100">
-                        Buyer Boxes
-                      </th>
-                      <th className="py-3 px-4 font-medium text-jacarta-100 dark:text-jacarta-100">
-                        Seller Boxes
-                      </th>
-                      <th className="py-3 px-4 font-medium text-jacarta-100 dark:text-jacarta-100">
-                        Referrer Boxes
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="rounded-2lg">
-                    {filteredLastActivities?.map((activity, index) => {
-                      return (
-                        <tr key={index}>
-                          <td className="py-4 px-4 text-jacarta-100 dark:text-jacarta-100">
-                            {toDisplayType(activity?.type)}
-                          </td>
-                          <td className="py-4 px-4 text-jacarta-100 dark:text-jacarta-100">
-                            {new Date(activity?.date).toLocaleString()}
-                          </td>
-                          <td className="py-4 px-4 text-jacarta-100 dark:text-jacarta-100">
-                            <Link
-                              target="_blank"
-                              href={`${chainExplorer}/tx/${activity?.transactionHash}`}
-                            >
-                              <span className="text-primaryPurple hover:text-opacity-80">
-                                {activity?.transactionHash.slice(0, 6) +
-                                  "..." +
-                                  activity?.transactionHash.slice(-4)}
-                              </span>
-                            </Link>
-                          </td>
-                          <td className="py-4 px-4 text-jacarta-100 dark:text-jacarta-100">
-                            {getAddress(activity?.spender) === getAddress(userAddr)
-                              ? activity?.points
-                              : 0}
-                          </td>
-                          <td className="py-4 px-4 text-jacarta-100 dark:text-jacarta-100">
-                            {getAddress(activity?.enabler) === getAddress(userAddr)
-                              ? activity?.points
-                              : 0}
-                          </td>
-                          <td className="py-4 px-4 text-jacarta-100 dark:text-jacarta-100">
-                            {getAddress(activity?.refAddr) === getAddress(userAddr)
-                              ? activity?.points
-                              : 0}
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
+                <div className="overflow-x-auto">
+                  <table className="w-full rounded-2lg overflow-x-auto hide-scrollbar">
+                    <thead className="text-white bg-primaryPurple rounded-2lg">
+                      <tr className="bg-jacarta-50 dark:bg-primaryPurple rounded-2lg text-base">
+                        <th className="py-3 px-4 font-medium text-jacarta-100 dark:text-jacarta-100">
+                          Operation
+                        </th>
+                        <th className="py-3 px-4 font-medium text-jacarta-100 dark:text-jacarta-100">
+                          Date
+                        </th>
+                        <th className="py-3 px-4 font-medium text-jacarta-100 dark:text-jacarta-100">
+                          Transaction Hash
+                        </th>
+                        <th className="py-3 px-4 font-medium text-jacarta-100 dark:text-jacarta-100">
+                          Buyer Boxes
+                        </th>
+                        <th className="py-3 px-4 font-medium text-jacarta-100 dark:text-jacarta-100">
+                          Seller Boxes
+                        </th>
+                        <th className="py-3 px-4 font-medium text-jacarta-100 dark:text-jacarta-100">
+                          Referrer Boxes
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody className="rounded-2lg overflow-x-auto">
+                      {filteredLastActivities?.map((activity, index) => {
+                        return (
+                          <tr key={index}>
+                            <td className="py-4 px-4 text-jacarta-100 dark:text-jacarta-100">
+                              {toDisplayType(activity?.type)}
+                            </td>
+                            <td className="py-4 px-4 text-jacarta-100 dark:text-jacarta-100">
+                              {new Date(activity?.date).toLocaleString()}
+                            </td>
+                            <td className="py-4 px-4 text-jacarta-100 dark:text-jacarta-100">
+                              <Link
+                                target="_blank"
+                                href={`${chainExplorer}/tx/${activity?.transactionHash}`}
+                              >
+                                <span className="text-primaryPurple hover:text-opacity-80">
+                                  {activity?.transactionHash.slice(0, 6) +
+                                    "..." +
+                                    activity?.transactionHash.slice(-4)}
+                                </span>
+                              </Link>
+                            </td>
+                            <td className="py-4 px-4 text-jacarta-100 dark:text-jacarta-100">
+                              {getAddress(activity?.spender) === getAddress(userAddr)
+                                ? activity?.points
+                                : 0}
+                            </td>
+                            <td className="py-4 px-4 text-jacarta-100 dark:text-jacarta-100">
+                              {getAddress(activity?.enabler) === getAddress(userAddr)
+                                ? activity?.points
+                                : 0}
+                            </td>
+                            <td className="py-4 px-4 text-jacarta-100 dark:text-jacarta-100">
+                              {getAddress(activity?.refAddr) === getAddress(userAddr)
+                                ? activity?.points
+                                : 0}
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </div>
           </div>
