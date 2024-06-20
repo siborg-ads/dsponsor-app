@@ -68,6 +68,7 @@ export default function BuyWithCrossmintButton(props = {}) {
     );
   }
 
+  /*
   const royaltyBPS = BigNumber.from(token.royaltiesBPS || 0);
   const protocolBPS = BigNumber.from(token.protocolFeeBPS || 0);
 
@@ -76,25 +77,16 @@ export default function BuyWithCrossmintButton(props = {}) {
   const totalFees = royalty.add(protocolFee);
 
   const cumulativePrice = price.add(totalFees);
-  const totalPriceFormatted = formatUnits(cumulativePrice, "ether");
+  */
+  const totalPriceFormatted = formatUnits(price, "ether");
 
-  const config = {
-    // No matter what, will be exposed to the client (SPA)
-    // TODO: May be have we have a RSC Rendering via specific route ?
-    crossmintProjectId: "82d192a5-c754-4280-a6cb-cb3d7b0f9bd9",
-    crossmintCollectionId: "a092b1ee-b2c0-42b7-aede-e4f67aab9e91",
-    crossmintEnvironment: "staging",
-    currency: "EUR",
-    locale: "en-EN",
-    paymentMethod: "fiat"
-  };
   const buttonProps = {
-    projectId: config.crossmintProjectId,
-    collectionId: config.crossmintCollectionId,
-    environment: config.crossmintEnvironment,
-    currency: config.currency,
-    locale: config.locale,
-    paymentMethod: config.paymentMethod,
+    projectId: props.config?.projectId,
+    collectionId: props.config?.buyCollectionId,
+    environment: props.config?.environment,
+    currency: props.config?.currency,
+    locale: props.config?.locale,
+    paymentMethod: props.config?.paymentMethod,
     mintTo: user.address,
     mintConfig: {
       totalPrice: totalPriceFormatted,
@@ -113,12 +105,12 @@ export default function BuyWithCrossmintButton(props = {}) {
     buttonProps.emailTo = user.email;
   }
 
-  if (config.successCallbackURL) {
-    buttonProps.successCallbackURL = config.successCallbackURL;
+  if (props?.successCallbackURL) {
+    buttonProps.successCallbackURL = props.successCallbackURL;
   }
 
-  if (config.errorCallbackURL) {
-    buttonProps.errorCallbackURL = config.errorCallbackURL;
+  if (props?.errorCallbackURL) {
+    buttonProps.errorCallbackURL = props.errorCallbackURL;
   }
 
   return (

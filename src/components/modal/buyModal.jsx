@@ -56,8 +56,8 @@ const BuyModal = ({
     if (!finalPriceNotFormatted || finalPriceNotFormatted <= 0) return;
 
     const buyAmountDecimals = parseUnits(
-      finalPriceNotFormatted.toString(),
-      1
+      token.buyoutPricePerToken.toString(),
+      currencyBalance?.decimals
     );
 
     if (currencyBalance && currencyBalance?.value.lt(buyAmountDecimals)) {
@@ -373,6 +373,7 @@ const BuyModal = ({
                       {!token.isListed && (
                         <MintWithCrossmintButton
                           offer={offer}
+                          tokenData={tokenData}
                           token={token}
                           user={user}
                           referrer={referrer}
