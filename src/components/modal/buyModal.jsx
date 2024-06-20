@@ -55,7 +55,7 @@ const BuyModal = ({
     if (!finalPrice || finalPrice <= 0) return;
 
     const buyAmountDecimals = parseUnits(
-      token.buyoutPricePerToken.toString(),
+      token.buyoutPricePerToken?.toString() ?? token.price.toString(),
       currencyBalance?.decimals
     );
 
