@@ -69,7 +69,6 @@ export default function BidWithCrossmintButton(props = {}) {
     );
   }
 
-  /*
   const royaltyBPS = BigNumber.from(token.royaltiesBPS || 0);
   const protocolBPS = BigNumber.from(token.protocolFeeBPS || 0);
 
@@ -78,22 +77,31 @@ export default function BidWithCrossmintButton(props = {}) {
   const totalFees = royalty.add(protocolFee);
 
   const cumulativePrice = price.add(totalFees);
-  */
-  const totalPriceFormatted = formatUnits(price, "ether");
+  const totalPriceFormatted = formatUnits(cumulativePrice, "ether");
 
+  const config = {
+    // No matter what, will be exposed to the client (SPA)
+    // TODO: May be have we have a RSC Rendering via specific route ?
+    crossmintProjectId: "82d192a5-c754-4280-a6cb-cb3d7b0f9bd9",
+    crossmintCollectionId: "e22acedd-c541-40b7-b194-89c494fe0a9e",
+    crossmintEnvironment: "staging",
+    currency: "EUR",
+    locale: "en-EN",
+    paymentMethod: "fiat"
+  };
   const buttonProps = {
-    projectId: props.config?.projectId,
-    collectionId: props.config?.bidCollectionId,
-    environment: props.config?.environment,
-    currency: props.config?.currency,
-    locale: props.config?.locale,
-    paymentMethod: props.config?.paymentMethod,
+    projectId: config.crossmintProjectId,
+    collectionId: config.crossmintCollectionId,
+    environment: config.crossmintEnvironment,
+    currency: config.currency,
+    locale: config.locale,
+    paymentMethod: config.paymentMethod,
     mintTo: user.address,
     mintConfig: {
       totalPrice: totalPriceFormatted,
       quantity: 1,
       _listingId: token.listingId,
-      _pricePerToken: price.toString(),
+      _pricePerToken: token.price,
       _bidder: user.address,
       _referralAdditionalInformation: referrer.address ?? "0x"
     }
@@ -103,18 +111,18 @@ export default function BidWithCrossmintButton(props = {}) {
     buttonProps.emailTo = user.email;
   }
 
-  if (props?.successCallbackURL) {
-    buttonProps.successCallbackURL = props.successCallbackURL;
+  if (config.successCallbackURL) {
+    buttonProps.successCallbackURL = config.successCallbackURL;
   }
 
-  if (props?.errorCallbackURL) {
-    buttonProps.errorCallbackURL = props.errorCallbackURL;
+  if (config.errorCallbackURL) {
+    buttonProps.errorCallbackURL = config.errorCallbackURL;
   }
 
   return (
     <>
       <CrossmintPayButton
-        disabled={props?.isDisabled === true}
+        disabled={props?.isDisabled}
         className={(props?.isDisabled && "opacity-50 cursor-not-allowed") || ""}
         getButtonText={(connecting, paymentMethod) => {
           if (actions?.processing && connecting) {

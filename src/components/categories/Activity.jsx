@@ -88,11 +88,11 @@ const Activity = ({ isUserConnected, userAddr, chainId }) => {
   const toDisplayType = (type) => {
     switch (type) {
       case "buy":
-        return "Buy";
+        return "Bought";
       case "auction":
         return "Auction Closed";
       case "mint":
-        return "Mint";
+        return "Minted";
       default:
         return "Unknown";
     }
