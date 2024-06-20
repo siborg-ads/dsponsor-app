@@ -14,6 +14,7 @@ const Meta = ({ title, keyword, desc }) => {
         <meta property="og:description" content={desc} />
         <meta property="og:image" content="/opengraph-image.jpeg" />
         <meta property="og:url" content="https://app.dsponsor.com" />
+        <meta name="og:site_name" content={title} />
         <meta property="og:type" content="website" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:site" content="@siborgapp" />

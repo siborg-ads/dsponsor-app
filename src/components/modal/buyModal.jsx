@@ -55,10 +55,7 @@ const BuyModal = ({
   useEffect(() => {
     if (!finalPriceNotFormatted || finalPriceNotFormatted <= 0) return;
 
-    const buyAmountDecimals = parseUnits(
-      finalPriceNotFormatted.toString(),
-      1
-    );
+    const buyAmountDecimals = parseUnits(finalPriceNotFormatted.toString(), 1);
 
     if (currencyBalance && currencyBalance?.value.lt(buyAmountDecimals)) {
       setInsufficentBalance(true);
@@ -185,7 +182,8 @@ const BuyModal = ({
                         Price :{" "}
                       </h3>
                       <span className="dark:text-jacarta-100 text-sm font-medium tracking-tight overflow-auto min-w-[70px] flex justify-end">
-                        {price} {selectedCurrency}
+                        {price}{" "}
+                        {canPayWithNativeToken && insufficentBalance ? "ETH" : selectedCurrency}
                       </span>
                     </div>
 
@@ -219,10 +217,10 @@ const BuyModal = ({
                 {/* <div className="ml-auto h-full">
                   <span className="mb-1 flex flex-col items-end justify-end whitespace-nowrap">
                     <span className="dark:text-jacarta-100 text-sm font-medium tracking-tight">
-                      {price} {selectedCurrency}
+                      {price} {canPayWithNativeToken && insufficentBalance ? "ETH" : selectedCurrency}
                     </span>
                     <span className="dark:text-jacarta-100 text-sm font-medium tracking-tight">
-                      {(price * protocolFees) / 100} {selectedCurrency}
+                      {(price * protocolFees) / 100} {canPayWithNativeToken && insufficentBalance ? "ETH" : selectedCurrency}
                     </span>
                   </span>
                   <div className="dark:text-jacarta-100 text-right text-sm">$130.82</div>
