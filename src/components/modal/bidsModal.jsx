@@ -108,7 +108,7 @@ const BidsModal = ({
     if (bidsAmount && bidsAmount > 0 && chainId) {
       fetchEtherPrice();
     }
-  }, [bidsAmount, chainId, currencyContract]);
+  }, [bidsAmount, chainId, currencyContract, currencyTokenDecimals]);
 
   useEffect(() => {
     if (!tokenEtherPrice || tokenEtherPrice <= 0) return;
