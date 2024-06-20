@@ -54,7 +54,10 @@ const BuyModal = ({
   useEffect(() => {
     if (!finalPrice || finalPrice <= 0) return;
 
-    const buyAmountDecimals = parseUnits(finalPrice.toString(), currencyBalance?.decimals);
+    const buyAmountDecimals = parseUnits(
+      token.buyoutPricePerToken.toString(),
+      currencyBalance?.decimals
+    );
 
     if (currencyBalance && currencyBalance?.value.lt(buyAmountDecimals)) {
       setInsufficentBalance(true);
