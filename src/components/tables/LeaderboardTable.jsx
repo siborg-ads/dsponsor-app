@@ -9,8 +9,10 @@ import config from "../../config/config";
 import { useChainContext } from "../../contexts/hooks/useChainContext";
 import TopCards from "../leaderBoard/topCards";
 import formatLongAddress from "../../utils/formatLongAddress";
+import { useAddress } from "@thirdweb-dev/react";
+import { getAddress } from "ethers/lib/utils";
 
-const renderTable = (data, columns) => {
+const renderTable = (data, columns, userAddress) => {
   if (!data || data.length === 0 || !Array.isArray(data)) {
     return <div className="text-center py-4">No data available</div>;
   }
@@ -31,7 +33,7 @@ const renderTable = (data, columns) => {
           {data?.map((item, index) => (
             <tr
               key={index}
-              className="border-t border-jacarta-100 dark:border-primaryPink dark:border-opacity-10"
+              className={`border-t border-jacarta-100 dark:border-primaryPink dark:border-opacity-10 ${userAddress && item.address && getAddress(item.address) === getAddress(userAddress) ? "bg-primaryPurple bg-opacity-5" : ""}`}
             >
               {columns.map((col, colIndex) => (
                 <td key={colIndex} className="py-4 px-4">
@@ -56,6 +58,7 @@ const LeaderboardTable = ({ activity }) => {
   const [, setBlockChainOptions] = useState([]);
   const [leaderboards, setLeaderboards] = useState({});
 
+  const address = useAddress();
   const chainExplorer = currentChainObject?.explorerBaseUrl;
 
   useEffect(() => {
@@ -66,12 +69,12 @@ const LeaderboardTable = ({ activity }) => {
     setFilteredActivity(filteredActivity[0]);
 
     setLeaderboards({
-      topPoints: activityToTopPoints(filteredActivity[0]?.rankings),
-      topHolders: activityToTopHolders(filteredActivity[0]?.rankings),
-      topRewarded: activityToTopRewarded(filteredActivity[0]?.rankings),
-      topSpenders: activityToHighestTransactions(filteredActivity[0]?.lastActivities)
+      topPoints: activityToTopPoints(filteredActivity[0]?.rankings, address),
+      topHolders: activityToTopHolders(filteredActivity[0]?.rankings, address),
+      topRewarded: activityToTopRewarded(filteredActivity[0]?.rankings, address),
+      topSpenders: activityToHighestTransactions(filteredActivity[0]?.lastActivities, address)
     });
-  }, [activeBlockchain, activity]);
+  }, [activeBlockchain, activity, address]);
 
   useEffect(() => {
     const chains = Object.entries(config).map((value) => {
@@ -132,7 +135,7 @@ const LeaderboardTable = ({ activity }) => {
     {
       header: "Transaction",
       render: (item) => (
-        <Link href={`${chainExplorer}/tx/${item.fullTransactionHash}`}>
+        <Link target="_blank" href={`${chainExplorer}/tx/${item.fullTransactionHash}`}>
           {/* to change */}
           <span className="text-primaryPink hover:text-jacarta-100">{item.transactionHash}</span>
         </Link>
@@ -329,7 +332,7 @@ const LeaderboardTable = ({ activity }) => {
                 )}
               </div>
               <p className="text-xs text-jacarta-100 mb-4">Data is updated every 15 minutes</p>
-              <div className="overflow-x-auto">{renderTable(data, columns[key])}</div>
+              <div className="overflow-x-auto">{renderTable(data, columns[key], address)}</div>
             </TabPanel>
           ))}
         </Tabs>
