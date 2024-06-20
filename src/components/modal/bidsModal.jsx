@@ -80,8 +80,10 @@ const BidsModal = ({
 
   useEffect(() => {
     const fetchEtherPrice = async () => {
+      const bidsAmountDecimals = parseUnits(bidsAmount, currencyTokenDecimals);
+
       const tokenEtherPrice = await fetch(
-        `https://relayer.dsponsor.com/api/${chainId}/prices?token=${currencyContract}&amount=${bidsAmount}&slippage=0.3`,
+        `https://relayer.dsponsor.com/api/${chainId}/prices?token=${currencyContract}&amount=${bidsAmountDecimals}&slippage=0.3`,
         {
           method: "GET",
           headers: {
@@ -97,27 +99,29 @@ const BidsModal = ({
           return error;
         });
 
-      setTokenEtherPrice(tokenEtherPrice?.amountInEth);
+      const tokenEtherPriceDecimals = formatUnits(tokenEtherPrice?.amountInEth, 18);
+
+      setTokenEtherPrice(tokenEtherPriceDecimals);
     };
 
-    if (bidsAmount && bidsAmount > 0 && chainId && insufficentBalance) {
+    if (bidsAmount && bidsAmount > 0 && chainId) {
       fetchEtherPrice();
     }
-  }, [bidsAmount, chainId, insufficentBalance, currencyContract]);
+  }, [bidsAmount, chainId, currencyContract]);
 
   useEffect(() => {
-    if (!bidsAmount || bidsAmount <= 0) return;
+    if (!tokenEtherPrice || tokenEtherPrice <= 0) return;
 
-    const fixedBidsAmount = Number(bidsAmount).toFixed(currencyTokenDecimals);
-    const bidsAmountDecimals = parseUnits(fixedBidsAmount, currencyTokenDecimals);
+    const fixedBidsAmount = Number(tokenEtherPrice).toFixed(currencyTokenDecimals);
+    const tokenEtherPriceDecimals = parseUnits(fixedBidsAmount, currencyTokenDecimals);
 
-    if (currencyBalance && currencyBalance?.value.lt(bidsAmountDecimals)) {
+    if (currencyBalance && currencyBalance?.value.lt(tokenEtherPriceDecimals)) {
       setInsufficentBalance(true);
     } else {
       setInsufficentBalance(false);
     }
 
-    if (nativeTokenBalance && nativeTokenBalance?.value.lt(bidsAmountDecimals)) {
+    if (nativeTokenBalance && nativeTokenBalance?.value.lt(tokenEtherPriceDecimals)) {
       setCanPayWithNativeToken(false);
     } else {
       setCanPayWithNativeToken(true);
@@ -128,7 +132,8 @@ const BidsModal = ({
     bidsAmount,
     nativeTokenBalance,
     currencyBalance,
-    currencyTokenDecimals
+    currencyTokenDecimals,
+    tokenEtherPrice
   ]);
 
   useEffect(() => {
@@ -272,7 +277,7 @@ const BidsModal = ({
   };
 
   const handleSubmitWithNative = async () => {
-    const hasEnoughBalance = checkUserBalance(nativeTokenBalance, bidsAmount);
+    const hasEnoughBalance = checkUserBalance(nativeTokenBalance, bidsAmount, nativeTokenDecimals);
     if (!hasEnoughBalance) {
       throw new Error("Not enough balance for approval.");
     }
@@ -280,7 +285,7 @@ const BidsModal = ({
     try {
       setIsLoadingButton(true);
       const bidsBigInt = ethers.utils.parseUnits(bidsAmount.toString(), nativeTokenDecimals);
-      const tokenEtherPriceBigNumber = new BigNumber(tokenEtherPrice.toString());
+      const tokenEtherPriceBigNumber = parseUnits(tokenEtherPrice, nativeTokenDecimals);
 
       const referralAddress = getCookie("_rid") || "";
 
@@ -300,7 +305,7 @@ const BidsModal = ({
   };
 
   const handleSubmit = async () => {
-    const hasEnoughBalance = checkUserBalance(tokenBalance, bidsAmount);
+    const hasEnoughBalance = checkUserBalance(tokenBalance, bidsAmount, currencyTokenDecimals);
     if (!hasEnoughBalance) {
       throw new Error("Not enough balance for approval.");
     }
@@ -420,7 +425,11 @@ const BidsModal = ({
 
                 <div className={`text-left ${!isPriceGood ? "" : "opacity-0"}`}>
                   <span className="dark:text-warning text-sm">
-                    ⚠️ Bid Price must be higher than {initialIntPrice} {currencySymbol}
+                    {insufficentBalance && isPriceGood
+                      ? `
+                      ⚠️ Insufficient token balance, you can pay with ETH or increase your balance.
+                    `
+                      : `⚠️ Bid Price must be higher than ${initialIntPrice} ${currencySymbol}`}
                   </span>
                 </div>
 
@@ -594,103 +603,87 @@ const BidsModal = ({
               <div className="flex flex-col items-center space-y-6">
                 {!successFullBid && (
                   <>
-                    {allowanceTrue ? (
+                    {!insufficentBalance ? (
+                      <>
+                        {allowanceTrue ? (
+                          <>
+                            <Web3Button
+                              contractAddress={config[chainId]?.smartContracts?.DSPONSORMP?.address}
+                              action={() => {
+                                toast.promise(handleApprove, {
+                                  pending: "Waiting for confirmation 🕒",
+                                  success: "Approval confirmed 👌",
+                                  error: "Approval rejected 🤯"
+                                });
+                              }}
+                              className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-black !transition-all ${
+                                !isPriceGood || !checkTerms
+                                  ? "btn-disabled cursor-not-allowed !text-black opacity-30"
+                                  : "!text-white !bg-primaryPurple !cursor-pointer"
+                              } `}
+                              isDisabled={!isPriceGood || !checkTerms}
+                            >
+                              {isLoadingButton ? <Spinner size="sm" color="default" /> : "Approve"}
+                            </Web3Button>
+                          </>
+                        ) : (
+                          <>
+                            <Web3Button
+                              contractAddress={config[chainId]?.smartContracts?.DSPONSORMP?.address}
+                              action={() => {
+                                toast.promise(handleSubmit, {
+                                  pending: "Waiting for confirmation 🕒",
+                                  success: "Bid confirmed 👌",
+                                  error: "Bid rejected 🤯"
+                                });
+                              }}
+                              className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${
+                                !isPriceGood || !checkTerms
+                                  ? "btn-disabled cursor-not-allowed"
+                                  : "!bg-primaryPurple !cursor-pointer"
+                              } `}
+                              isDisabled={!isPriceGood || !checkTerms}
+                            >
+                              {isLoadingButton ? (
+                                <Spinner size="sm" color="default" />
+                              ) : buyoutPriceReached ? (
+                                "Buy Now"
+                              ) : (
+                                "Place Bid"
+                              )}
+                            </Web3Button>
+                          </>
+                        )}
+                      </>
+                    ) : (
                       <>
                         <Web3Button
                           contractAddress={config[chainId]?.smartContracts?.DSPONSORMP?.address}
                           action={() => {
-                            toast.promise(handleApprove, {
-                              pending: "Waiting for confirmation 🕒",
-                              success: "Approval confirmed 👌",
-                              error: "Approval rejected 🤯"
-                            });
-                          }}
-                          className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-black !transition-all ${
-                            !isPriceGood || !checkTerms
-                              ? "btn-disabled cursor-not-allowed !text-black opacity-30"
-                              : "!text-white !bg-primaryPurple !cursor-pointer"
-                          } `}
-                          isDisabled={!isPriceGood || !checkTerms}
-                        >
-                          {isLoadingButton ? <Spinner size="sm" color="default" /> : "Approve"}
-                        </Web3Button>
-                      </>
-                    ) : (
-                      <>{canPayWithNativeToken && insufficentBalance ? <></> : <></>}</>
-                    )}
-                  </>
-                )}
-
-                {canPayWithNativeToken &&
-                !allowanceTrue &&
-                !successFullBid &&
-                insufficentBalance ? (
-                  <>
-                    <div className="flex items-center justify-center space-x-4">
-                      <Web3Button
-                        contractAddress={config[chainId]?.smartContracts?.DSPONSORMP?.address}
-                        action={() => {
-                          toast.promise(handleSubmitWithNative, {
-                            pending: "Waiting for confirmation 🕒",
-                            success: "Bid confirmed 👌",
-                            error: "Bid rejected 🤯"
-                          });
-                        }}
-                        className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${
-                          !isPriceGood ||
-                          !checkTerms ||
-                          (insufficentBalance && !canPayWithNativeToken)
-                            ? "btn-disabled cursor-not-allowed"
-                            : "!bg-primaryPurple !cursor-pointer"
-                        } `}
-                        isDisabled={
-                          !isPriceGood ||
-                          !checkTerms ||
-                          (insufficentBalance && !canPayWithNativeToken)
-                        }
-                      >
-                        {isLoadingButton ? (
-                          <Spinner size="sm" color="default" />
-                        ) : buyoutPriceReached ? (
-                          "Buy Now with ETH"
-                        ) : (
-                          "Place Bid with ETH"
-                        )}
-                      </Web3Button>
-                    </div>
-                  </>
-                ) : (
-                  !allowanceTrue &&
-                  !successFullBid && (
-                    <>
-                      <div className="flex items-center justify-center space-x-4">
-                        <Web3Button
-                          contractAddress={config[chainId]?.smartContracts?.DSPONSORMP?.address}
-                          action={() => {
-                            toast.promise(handleSubmit, {
+                            toast.promise(handleSubmitWithNative, {
                               pending: "Waiting for confirmation 🕒",
                               success: "Bid confirmed 👌",
                               error: "Bid rejected 🤯"
                             });
                           }}
                           className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${
-                            !isPriceGood || !checkTerms
+                            !isPriceGood || !checkTerms || !canPayWithNativeToken
                               ? "btn-disabled cursor-not-allowed"
                               : "!bg-primaryPurple !cursor-pointer"
                           } `}
-                          isDisabled={!isPriceGood || !checkTerms}
+                          isDisabled={!isPriceGood || !checkTerms || !canPayWithNativeToken}
                         >
                           {isLoadingButton ? (
                             <Spinner size="sm" color="default" />
                           ) : buyoutPriceReached ? (
-                            "Buy Now"
+                            "Buy Now with ETH"
                           ) : (
-                            "Place Bid"
+                            "Place Bid with ETH"
                           )}
                         </Web3Button>
-                      </div>
-                    </>
-                  )
+                      </>
+                    )}
+                  </>
                 )}
 
                 {successFullBid && (

@@ -22,6 +22,7 @@ const BuyModal = ({
   successFullUpload,
   feesAmount,
   successFullBuyModal,
+  finalPriceNotFormatted,
   royalties,
   price,
   tokenId,
@@ -52,11 +53,11 @@ const BuyModal = ({
   const { data: currencyBalance } = useBalance(currencyContract);
 
   useEffect(() => {
-    if (!finalPrice || finalPrice <= 0) return;
+    if (!finalPriceNotFormatted || finalPriceNotFormatted <= 0) return;
 
     const buyAmountDecimals = parseUnits(
-      token.buyoutPricePerToken?.toString() ?? token.price.toString(),
-      currencyBalance?.decimals
+      finalPriceNotFormatted.toString(),
+      1
     );
 
     if (currencyBalance && currencyBalance?.value.lt(buyAmountDecimals)) {
@@ -75,7 +76,7 @@ const BuyModal = ({
     currencyBalance,
     setInsufficentBalance,
     setCanPayWithNativeToken,
-    finalPrice
+    finalPriceNotFormatted
   ]);
 
   // If currency is WETH, we can pay with Crossmint
@@ -284,78 +285,74 @@ const BuyModal = ({
             <div className="modal-footer p-6">
               <div className="flex flex-col items-center space-y-6">
                 <div className="flex items-center justify-center space-x-4">
-                  {allowanceTrue && !successFullUpload && (
+                  {insufficentBalance ? (
+                    <>
+                      {allowanceTrue ? (
+                        <>
+                          <Web3Button
+                            contractAddress={
+                              currentChainObject?.smartContracts?.DSPONSORADMIN?.address
+                            }
+                            action={() => {
+                              toast.promise(handleApprove, {
+                                pending: "Waiting for confirmation 🕒",
+                                success: "Approval confirmed 👌",
+                                error: "Approval rejected 🤯"
+                              });
+                            }}
+                            className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-black  !transition-all ${!validate ? "btn-disabled cursor-not-allowed !text-black opacity-30" : "!text-white !bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer"} `}
+                            isDisabled={!validate || isLoadingButton}
+                          >
+                            {isLoadingButton ? <Spinner size="sm" color="default" /> : "Approve"}
+                          </Web3Button>
+                        </>
+                      ) : (
+                        <>
+                          <Web3Button
+                            contractAddress={
+                              currentChainObject?.smartContracts?.DSPONSORADMIN?.address
+                            }
+                            action={() => {
+                              toast.promise(handleBuySubmitWithNative, {
+                                pending: "Waiting for confirmation 🕒",
+                                success: "Transaction confirmed 👌",
+                                error: "Transaction rejected 🤯"
+                              });
+                            }}
+                            className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate || !canPayWithNativeToken ? "btn-disabled cursor-not-allowed !text-black" : "!bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer"} `}
+                            isDisabled={!validate || isLoadingButton || !canPayWithNativeToken}
+                          >
+                            {isLoadingButton ? (
+                              <Spinner size="sm" color="default" />
+                            ) : (
+                              "Confirm checkout with ETH"
+                            )}
+                          </Web3Button>
+                        </>
+                      )}
+                    </>
+                  ) : (
                     <>
                       <Web3Button
                         contractAddress={currentChainObject?.smartContracts?.DSPONSORADMIN?.address}
                         action={() => {
-                          toast.promise(handleApprove, {
+                          toast.promise(handleSubmit, {
                             pending: "Waiting for confirmation 🕒",
-                            success: "Approval confirmed 👌",
-                            error: "Approval rejected 🤯"
+                            success: "Transaction confirmed 👌",
+                            error: "Transaction rejected 🤯"
                           });
                         }}
-                        className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-black  !transition-all ${!validate ? "btn-disabled cursor-not-allowed !text-black opacity-30" : "!text-white !bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer"} `}
+                        className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate ? "btn-disabled cursor-not-allowed !text-black" : "!bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer"} `}
                         isDisabled={!validate || isLoadingButton}
                       >
-                        {isLoadingButton ? <Spinner size="sm" color="default" /> : "Approve"}
+                        {isLoadingButton ? (
+                          <Spinner size="sm" color="default" />
+                        ) : (
+                          "Confirm checkout"
+                        )}
                       </Web3Button>
                     </>
                   )}
-
-                  {!successFullUpload &&
-                    !allowanceTrue &&
-                    (canPayWithNativeToken && insufficentBalance ? (
-                      <>
-                        <Web3Button
-                          contractAddress={
-                            currentChainObject?.smartContracts?.DSPONSORADMIN?.address
-                          }
-                          action={() => {
-                            toast.promise(handleBuySubmitWithNative, {
-                              pending: "Waiting for confirmation 🕒",
-                              success: "Transaction confirmed 👌",
-                              error: "Transaction rejected 🤯"
-                            });
-                          }}
-                          className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate || (insufficentBalance && !canPayWithNativeToken) ? "btn-disabled cursor-not-allowed !text-black" : "!bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer"} `}
-                          isDisabled={
-                            !validate ||
-                            isLoadingButton ||
-                            (insufficentBalance && !canPayWithNativeToken)
-                          }
-                        >
-                          {isLoadingButton ? (
-                            <Spinner size="sm" color="default" />
-                          ) : (
-                            "Confirm checkout with ETH"
-                          )}
-                        </Web3Button>
-                      </>
-                    ) : (
-                      <>
-                        <Web3Button
-                          contractAddress={
-                            currentChainObject?.smartContracts?.DSPONSORADMIN?.address
-                          }
-                          action={() => {
-                            toast.promise(handleSubmit, {
-                              pending: "Waiting for confirmation 🕒",
-                              success: "Transaction confirmed 👌",
-                              error: "Transaction rejected 🤯"
-                            });
-                          }}
-                          className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate ? "btn-disabled cursor-not-allowed !text-black" : "!bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer"} `}
-                          isDisabled={!validate || isLoadingButton}
-                        >
-                          {isLoadingButton ? (
-                            <Spinner size="sm" color="default" />
-                          ) : (
-                            "Confirm checkout"
-                          )}
-                        </Web3Button>
-                      </>
-                    ))}
 
                   {successFullUpload && (
                     <Link href={successFullBuyModal.hrefButton ?? "#"}>
