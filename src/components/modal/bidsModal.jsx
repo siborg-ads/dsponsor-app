@@ -80,7 +80,8 @@ const BidsModal = ({
 
   useEffect(() => {
     const fetchEtherPrice = async () => {
-      const bidsAmountDecimals = parseUnits(bidsAmount, currencyTokenDecimals);
+      const roundedBidsAmount = parseFloat(bidsAmount).toFixed(currencyTokenDecimals);
+      const bidsAmountDecimals = parseUnits(roundedBidsAmount, currencyTokenDecimals);
 
       const tokenEtherPrice = await fetch(
         `https://relayer.dsponsor.com/api/${chainId}/prices?token=${currencyContract}&amount=${bidsAmountDecimals}&slippage=0.3`,
