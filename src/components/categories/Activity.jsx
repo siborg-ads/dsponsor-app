@@ -163,8 +163,7 @@ const Activity = ({ isUserConnected, userAddr, chainId }) => {
                           >
                             <button
                               onClick={() => {
-                                navigator.clipboard.writeText(`${frontURL}/?_rid=${userAddr}`);
-                                setCopied(true);
+                                handleCopy(`${frontURL}/?_rid=${userAddr}`, setCopied);
                               }}
                               className="absolute right-0 top-0 h-full px-4 text-white hover:text-jacarta-100 rounded-r-lg"
                             >
