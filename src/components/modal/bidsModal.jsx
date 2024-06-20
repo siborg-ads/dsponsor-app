@@ -63,16 +63,11 @@ const BidsModal = ({
   const [tokenEtherPrice, setTokenEtherPrice] = useState(null);
   const [canPayWithNativeToken, setCanPayWithNativeToken] = useState(false);
 
-  const chainConfig = config[chainId];
-  const chainWETH = chainConfig?.smartContracts.WETH.address.toLowerCase();
-
+  const chainWETH = config[chainId]?.smartContracts.WETH.address.toLowerCase();
   // If currency is WETH, we can pay with Crossmint
-  // const canPayWithCrossmint =
-  //   marketplaceListings[0]?.currency.toLowerCase() === chainWETH &&
-  //   activated_features.canPayWithCrossmintEnabled;
-
-  const isWETH = currencyContract.toLowerCase() === chainWETH;
-  const canPayWithCrossmint = isWETH && chainConfig?.features?.crossmint?.enabled;
+  const canPayWithCrossmint =
+    marketplaceListings[0]?.currency.toLowerCase() === chainWETH &&
+    activated_features.canPayWithCrossmintEnabled;
   const modalRef = useRef();
 
   const { data: nativeTokenBalance } = useBalanceForAddress(address);
@@ -720,7 +715,6 @@ const BidsModal = ({
                       token={token}
                       user={user}
                       referrer={referrer}
-                      config={chainConfig?.features.crossmint.config}
                       actions={{
                         processing: onProcessingBid,
                         success: () => {

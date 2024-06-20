@@ -1,9 +1,9 @@
-import { user } from "@nextui-org/react";
 import { getAddress } from "ethers/lib/utils";
 
 /**
  * Converts activity data to top holders format.
  * @param {Array} activity - The activity data.
+ * @param {string} userAddress - The user's address.
  * @param {string} userAddress - The user's address.
  * @returns {Array} Formatted top holders data.
  */
