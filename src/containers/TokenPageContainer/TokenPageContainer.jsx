@@ -5,8 +5,7 @@ import {
   useContract,
   useContractRead,
   useContractWrite,
-  useStorageUpload,
-  useBalanceForAddress
+  useStorageUpload
 } from "@thirdweb-dev/react";
 import { ethers } from "ethers";
 import Image from "next/image";
@@ -64,7 +63,7 @@ const TokenPageContainer = () => {
   const [imageModal, setImageModal] = useState(false);
   const [link, setLink] = useState("");
   const [amountToApprove, setAmountToApprove] = useState(null);
-  const [buyTokenEtherPrice, setBuyTokenEtherPrice] = useState(null);
+  const [, setBuyTokenEtherPrice] = useState(null);
   const [royalties, setRoyalties] = useState(null);
   const [errors, setErrors] = useState({});
   const [marketplaceListings, setMarketplaceListings] = useState([]);
@@ -195,7 +194,7 @@ const TokenPageContainer = () => {
     if (finalPriceNotFormatted && finalPriceNotFormatted > 0 && chainId) {
       fetchBuyEtherPrice();
     }
-  }, [finalPriceNotFormatted, chainId, tokenCurrencyAddress]);
+  }, [finalPriceNotFormatted, chainId, tokenCurrencyAddress, currencyDecimals]);
 
   useEffect(() => {
     if (offerId && tokenId && chainId) {
