@@ -34,7 +34,7 @@ import { formatUnits } from "ethers/lib/utils";
  * @constructor
  */
 export default function MintWithCrossmintButton(props = {}) {
-  const { offer, token, tokenData, user, referrer, actions } = props;
+  const { offer, token, user, referrer, actions } = props;
 
   const price = ethers.utils.parseUnits(props.token.price, "wei");
 
@@ -68,13 +68,23 @@ export default function MintWithCrossmintButton(props = {}) {
   const totalFee = fee;
   const totalPriceFormatted = formatUnits(price.add(totalFee), "ether");
 
+  const config = {
+    // No matter what, will be exposed to the client (SPA)
+    // TODO: May be have we have a RSC Rendering via specific route ?
+    crossmintProjectId: "82d192a5-c754-4280-a6cb-cb3d7b0f9bd9",
+    crossmintCollectionId: "9d83e973-d852-4b9d-80a8-0da10c8ae451",
+    crossmintEnvironment: "staging",
+    currency: "EUR",
+    locale: "en-EN",
+    paymentMethod: "fiat"
+  };
   const buttonProps = {
-    projectId: props.config?.projectId,
-    collectionId: props.config?.mintCollectionId,
-    environment: props.config?.environment,
-    currency: props.config?.currency,
-    locale: props.config?.locale,
-    paymentMethod: props.config?.paymentMethod,
+    projectId: config.crossmintProjectId,
+    collectionId: config.crossmintCollectionId,
+    environment: config.crossmintEnvironment,
+    currency: config.currency,
+    locale: config.locale,
+    paymentMethod: config.paymentMethod,
     mintTo: user.address,
     mintConfig: {
       totalPrice: totalPriceFormatted,
@@ -82,7 +92,7 @@ export default function MintWithCrossmintButton(props = {}) {
         tokenId: token.tokenId,
         to: user.address,
         currency: token.currency,
-        tokenData: tokenData ? tokenData : "",
+        tokenData: token.tokenData ?? "",
         offerId: offer.offerId,
         adParameters: [],
         adDatas: [],
@@ -95,12 +105,12 @@ export default function MintWithCrossmintButton(props = {}) {
     buttonProps.emailTo = user.email;
   }
 
-  if (props?.successCallbackURL) {
-    buttonProps.successCallbackURL = props.successCallbackURL;
+  if (config.successCallbackURL) {
+    buttonProps.successCallbackURL = config.successCallbackURL;
   }
 
-  if (props?.errorCallbackURL) {
-    buttonProps.errorCallbackURL = props.errorCallbackURL;
+  if (config.errorCallbackURL) {
+    buttonProps.errorCallbackURL = config.errorCallbackURL;
   }
 
   return (
