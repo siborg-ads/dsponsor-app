@@ -186,7 +186,7 @@ const TokenPageContainer = () => {
           return error;
         });
 
-      const tokenEtherPriceDecimals = formatUnits(tokenEtherPrice?.amountInEth, 18);
+      const tokenEtherPriceDecimals = formatUnits(tokenEtherPrice?.amountInEthWithSlippage, 18);
 
       setBuyTokenEtherPrice(tokenEtherPriceDecimals);
     };

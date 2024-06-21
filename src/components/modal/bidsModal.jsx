@@ -101,7 +101,7 @@ const BidsModal = ({
           return error;
         });
 
-      const tokenEtherPriceDecimals = formatUnits(tokenEtherPrice?.amountInEth, 18);
+      const tokenEtherPriceDecimals = formatUnits(tokenEtherPrice?.amountInEthWithSlippage, 18);
 
       setTokenEtherPrice(tokenEtherPriceDecimals);
     };
@@ -292,14 +292,23 @@ const BidsModal = ({
   };
 
   const handleSubmitWithNative = async () => {
-    const hasEnoughBalance = checkUserBalance(nativeTokenBalance, bidsAmount, nativeTokenDecimals);
-    if (!hasEnoughBalance) {
-      throw new Error("Not enough balance for approval.");
+    const hasEnoughBalance = checkUserBalance(tokenBalance, bidsAmount, currencyTokenDecimals);
+
+    if (!hasEnoughBalance && !canPayWithNativeToken) {
+      console.error("Not enough balance to confirm checkout");
+      throw new Error("Not enough balance to confirm checkout");
+    }
+
+    const hasEnoughBalanceForNative = checkUserBalance(nativeTokenBalance, tokenEtherPrice, 18);
+
+    if (!hasEnoughBalanceForNative) {
+      console.error("Not enough balance to confirm checkout");
+      throw new Error("Not enough balance to confirm checkout");
     }
 
     try {
       setIsLoadingButton(true);
-      const bidsBigInt = ethers.utils.parseUnits(bidsAmount.toString(), nativeTokenDecimals);
+      const bidsBigInt = ethers.utils.parseUnits(bidsAmount.toString(), currencyTokenDecimals);
       const tokenEtherPriceBigNumber = parseUnits(tokenEtherPrice, nativeTokenDecimals);
 
       const referralAddress = getCookie("_rid") || "";
@@ -322,6 +331,7 @@ const BidsModal = ({
   const handleSubmit = async () => {
     const hasEnoughBalance = checkUserBalance(tokenBalance, bidsAmount, currencyTokenDecimals);
     if (!hasEnoughBalance) {
+      console.error("Not enough balance for approval.");
       throw new Error("Not enough balance for approval.");
     }
     try {
