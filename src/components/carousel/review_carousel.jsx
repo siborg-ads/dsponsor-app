@@ -94,7 +94,7 @@ const Review_carousel = ({
     try {
       await handleSubmit(submissionArgs);
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
   const openRefuseModal = () => {

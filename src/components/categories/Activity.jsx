@@ -50,7 +50,7 @@ const Activity = ({ isUserConnected, userAddr, chainId }) => {
         .then((data) => {
           return data;
         })
-        .catch((err) => console.log(err));
+        .catch((err) => console.error(err));
 
       let lastActivities = activated_features.canFilterTransactionsWithWETH
         ? data?.lastActivities.filter(
@@ -205,10 +205,9 @@ const Activity = ({ isUserConnected, userAddr, chainId }) => {
                                   text: `You can now use my referral code on SiBorg Ads.\n ${frontURL}/?_rid=${userAddr}`,
                                   url: `${frontURL}/?_rid=${userAddr}`
                                 })
-                                .then(() => console.log("Successful share"))
-                                .catch((error) => console.log("Error sharing", error));
+                                .catch((error) => console.error("Error sharing", error));
                             } else {
-                              console.log("Web Share API is not supported in this browser");
+                              console.error("Web Share API is not supported in this browser");
                             }
                           }}
                           className={`bg-primaryPurple hover:bg-opacity-80 rounded-2lg text-center flex items-center justify-center text-white p-2 w-full`}

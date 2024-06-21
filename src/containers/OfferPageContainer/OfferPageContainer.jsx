@@ -104,7 +104,6 @@ const OfferPageContainer = () => {
   }, [symbolContract, decimalsContract, offerData, bps, NATIVECurrency, tokenCurrencyAddress]);
 
   useEffect(() => {
-    console.log("offerData", offerData);
     if (offerData?.nftContract?.royalty?.bps) {
       setRoyalties(offerData?.nftContract?.royalty?.bps / 100);
     } else {

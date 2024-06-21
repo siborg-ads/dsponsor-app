@@ -44,7 +44,8 @@ const BuyModal = ({
   canPayWithNativeToken,
   setInsufficentBalance,
   setCanPayWithNativeToken,
-  nativeTokenBalance
+  nativeTokenBalance,
+  buyTokenEtherPrice
 }) => {
   const [validate, setValidate] = useState(false);
   const [notEnoughFunds, setNotEnoughFunds] = useState(false);
@@ -54,17 +55,21 @@ const BuyModal = ({
   const { data: currencyBalance } = useBalance(currencyContract);
 
   useEffect(() => {
-    if (!finalPriceNotFormatted || finalPriceNotFormatted <= 0) return;
+    if (!buyTokenEtherPrice || buyTokenEtherPrice <= 0) return;
 
-    const buyAmountDecimals = parseUnits(finalPriceNotFormatted.toString(), 1);
+    const fixedBuyTokenEtherPrice = Number(buyTokenEtherPrice).toFixed(currencyBalance?.decimals);
+    const buyTokenEtherPriceDecimals = parseUnits(
+      fixedBuyTokenEtherPrice.toString(),
+      currencyBalance?.decimals
+    );
 
-    if (currencyBalance && currencyBalance?.value.lt(buyAmountDecimals)) {
+    if (currencyBalance && currencyBalance?.value.lt(buyTokenEtherPriceDecimals)) {
       setInsufficentBalance(true);
     } else {
       setInsufficentBalance(false);
     }
 
-    if (nativeTokenBalance && nativeTokenBalance?.value.lt(buyAmountDecimals)) {
+    if (nativeTokenBalance && nativeTokenBalance?.value.lt(buyTokenEtherPriceDecimals)) {
       setCanPayWithNativeToken(false);
     } else {
       setCanPayWithNativeToken(true);
@@ -74,7 +79,8 @@ const BuyModal = ({
     currencyBalance,
     setInsufficentBalance,
     setCanPayWithNativeToken,
-    finalPriceNotFormatted
+    finalPriceNotFormatted,
+    buyTokenEtherPrice
   ]);
 
   useEffect(() => {
@@ -191,8 +197,7 @@ const BuyModal = ({
                         Price :{" "}
                       </h3>
                       <span className="dark:text-jacarta-100 text-sm font-medium tracking-tight overflow-auto min-w-[70px] flex justify-end">
-                        {price}{" "}
-                        {selectedCurrency}
+                        {price} {selectedCurrency}
                       </span>
                     </div>
 
@@ -201,8 +206,7 @@ const BuyModal = ({
                         Protocol fees: 4%
                       </span>
                       <span className="dark:text-jacarta-100 text-sm  tracking-tight overflow-auto min-w-[60px] flex justify-end">
-                        {feesAmount}{" "}
-                        {selectedCurrency}
+                        {feesAmount} {selectedCurrency}
                       </span>
                     </div>
 
@@ -212,8 +216,7 @@ const BuyModal = ({
                           Royalties fees: {royalties}%
                         </span>
                         <span className="dark:text-jacarta-100 text-sm  tracking-tight overflow-auto min-w-[60px] flex justify-end">
-                          {royaltiesFeesAmount}{" "}
-                          {selectedCurrency}
+                          {royaltiesFeesAmount} {selectedCurrency}
                         </span>
                       </div>
                     )}

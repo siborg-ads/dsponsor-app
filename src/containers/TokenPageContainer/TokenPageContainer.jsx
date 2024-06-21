@@ -7,7 +7,7 @@ import {
   useContractWrite,
   useStorageUpload
 } from "@thirdweb-dev/react";
-import { ethers } from "ethers";
+import { BigNumber, ethers } from "ethers";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -63,7 +63,7 @@ const TokenPageContainer = () => {
   const [imageModal, setImageModal] = useState(false);
   const [link, setLink] = useState("");
   const [amountToApprove, setAmountToApprove] = useState(null);
-  const [, setBuyTokenEtherPrice] = useState(null);
+  const [buyTokenEtherPrice, setBuyTokenEtherPrice] = useState(null);
   const [royalties, setRoyalties] = useState(null);
   const [errors, setErrors] = useState({});
   const [marketplaceListings, setMarketplaceListings] = useState([]);
@@ -167,7 +167,7 @@ const TokenPageContainer = () => {
 
   useEffect(() => {
     const fetchBuyEtherPrice = async () => {
-      const finalPriceDecimals = parseUnits(finalPriceNotFormatted.toString(), currencyDecimals);
+      const finalPriceDecimals = BigNumber.from(finalPriceNotFormatted.toString());
 
       const tokenEtherPrice = await fetch(
         `https://relayer.dsponsor.com/api/${chainId}/prices?token=${tokenCurrencyAddress}&amount=${finalPriceDecimals}&slippage=0.3`,
@@ -205,7 +205,6 @@ const TokenPageContainer = () => {
           ...offer
         };
 
-        // FIXME: Removed console.log, opening 1 token page execute all this multiple times it seems
         setOfferData(combinedData);
       };
       setSelectedChain(config[chainId]?.chainNameProvider);
@@ -658,7 +657,7 @@ const TokenPageContainer = () => {
       throw new Error("Not enough balance to confirm checkout");
     }
 
-    const hasEnoughBalanceForNative = checkUserBalance(nativeTokenBalance, finalPriceLocal, 18);
+    const hasEnoughBalanceForNative = checkUserBalance(nativeTokenBalance, buyTokenEtherPrice, 18);
 
     if (!hasEnoughBalanceForNative) {
       console.error("Not enough balance to confirm checkout");
@@ -687,13 +686,15 @@ const TokenPageContainer = () => {
     try {
       setIsLoadingButton(true);
 
+      const tokenEtherPriceBigNumber = parseUnits(buyTokenEtherPrice, 18);
+
       const functionWithPossibleArgs =
         marketplaceListings.length <= 0 ? argsMintAndSubmit : argsdirectBuy;
       const argsWithPossibleOverrides =
         canPayWithNativeToken && insufficentBalance && hasEnoughBalanceForNative
           ? {
               args: [functionWithPossibleArgs],
-              overrides: { value: amountToApprove }
+              overrides: { value: tokenEtherPriceBigNumber }
             }
           : { args: [functionWithPossibleArgs] };
 
@@ -789,7 +790,6 @@ const TokenPageContainer = () => {
   }
 
   const handleBuyModal = async () => {
-    console.log("amountToApprove", amountToApprove);
     await checkAllowance(amountToApprove);
     setSuccessFullUpload(false);
     setBuyModal(!buyModal);
@@ -1343,6 +1343,7 @@ const TokenPageContainer = () => {
             canPayWithNativeToken={canPayWithNativeToken}
             setCanPayWithNativeToken={setCanPayWithNativeToken}
             token={tokenDO}
+            buyTokenEtherPrice={buyTokenEtherPrice}
             user={{
               address: address,
               isOwner: isOwner,

@@ -114,14 +114,18 @@ const BidsModal = ({
   useEffect(() => {
     if (!tokenEtherPrice || tokenEtherPrice <= 0) return;
 
-    const fixedBidsAmount = Number(tokenEtherPrice).toFixed(currencyTokenDecimals);
-    const tokenEtherPriceDecimals = parseUnits(fixedBidsAmount, currencyTokenDecimals);
+    const fixedEtherPrice = Number(tokenEtherPrice).toFixed(currencyTokenDecimals);
+    const tokenEtherPriceDecimals = parseUnits(fixedEtherPrice, currencyTokenDecimals);
 
-    if (currencyBalance && currencyBalance?.value.lt(tokenEtherPriceDecimals)) {
-      setInsufficentBalance(true);
-    } else {
-      setInsufficentBalance(false);
-    }
+    const fixedBidsAmount = Number(bidsAmount).toFixed(currencyTokenDecimals);
+    const bidsAmountDecimals = parseUnits(fixedBidsAmount, currencyTokenDecimals);
+
+    const hasInsufficientBalance =
+      currencyBalance &&
+      (currencyBalance?.value.lt(tokenEtherPriceDecimals) ||
+        bidsAmountDecimals?.gt(currencyBalance?.value));
+
+    setInsufficentBalance(hasInsufficientBalance);
 
     if (nativeTokenBalance && nativeTokenBalance?.value.lt(tokenEtherPriceDecimals)) {
       setCanPayWithNativeToken(false);

@@ -206,7 +206,6 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
   };
 
   const handleSelectionTokens = () => {
-    console.log("ici");
     setIsSelectionActive(!isSelectionActive);
     setShowSliderForm(false);
     setIsSelectedItem({});
