@@ -1,5 +1,5 @@
 import Link from "next/link";
-import React, { useEffect, useRef, useState } from "react";
+import React, { use, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { Web3Button, useBalance } from "@thirdweb-dev/react";
 import { toast } from "react-toastify";
@@ -47,6 +47,7 @@ const BuyModal = ({
   nativeTokenBalance
 }) => {
   const [validate, setValidate] = useState(false);
+  const [notEnoughFunds, setNotEnoughFunds] = useState(false);
   const { currentChainObject } = useChainContext();
   const modalRef = useRef();
 
@@ -75,6 +76,14 @@ const BuyModal = ({
     setCanPayWithNativeToken,
     finalPriceNotFormatted
   ]);
+
+  useEffect(() => {
+    if (insufficentBalance && !canPayWithNativeToken) {
+      setNotEnoughFunds(true);
+    } else {
+      setNotEnoughFunds(false);
+    }
+  }, [insufficentBalance, canPayWithNativeToken]);
 
   // If currency is WETH, we can pay with Crossmint
   const canPayWithCrossmint =
@@ -301,7 +310,13 @@ const BuyModal = ({
                             className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-black  !transition-all ${!validate ? "btn-disabled cursor-not-allowed !text-black opacity-30" : "!text-white !bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer"} `}
                             isDisabled={!validate || isLoadingButton}
                           >
-                            {isLoadingButton ? <Spinner size="sm" color="default" /> : "Approve"}
+                            {isLoadingButton ? (
+                              <Spinner size="sm" color="default" />
+                            ) : notEnoughFunds ? (
+                              "Not enough funds"
+                            ) : (
+                              "Approve"
+                            )}
                           </Web3Button>
                         </>
                       ) : (
@@ -317,11 +332,13 @@ const BuyModal = ({
                                 error: "Transaction rejected 🤯"
                               });
                             }}
-                            className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate || !canPayWithNativeToken ? "btn-disabled cursor-not-allowed !text-black" : "!bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer"} `}
-                            isDisabled={!validate || isLoadingButton || !canPayWithNativeToken}
+                            className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate ? "btn-disabled cursor-not-allowed !text-black" : "!bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer"} `}
+                            isDisabled={!validate || isLoadingButton}
                           >
                             {isLoadingButton ? (
                               <Spinner size="sm" color="default" />
+                            ) : notEnoughFunds ? (
+                              "Not enough funds"
                             ) : (
                               "Confirm checkout"
                             )}
@@ -340,11 +357,13 @@ const BuyModal = ({
                             error: "Transaction rejected 🤯"
                           });
                         }}
-                        className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate ? "btn-disabled cursor-not-allowed !text-black" : "!bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer"} `}
-                        isDisabled={!validate || isLoadingButton}
+                        className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate || !canPayWithNativeToken ? "btn-disabled cursor-not-allowed !text-black" : "!bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer"} `}
+                        isDisabled={!validate || isLoadingButton || !canPayWithNativeToken}
                       >
                         {isLoadingButton ? (
                           <Spinner size="sm" color="default" />
+                        ) : notEnoughFunds ? (
+                          "Not enough funds"
                         ) : (
                           "Confirm checkout with ETH"
                         )}

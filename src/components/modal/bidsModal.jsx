@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { use, useEffect, useRef, useState } from "react";
 import { ethers } from "ethers";
 import {
   Web3Button,
@@ -62,6 +62,7 @@ const BidsModal = ({
   const [insufficentBalance, setInsufficentBalance] = useState(false);
   const [tokenEtherPrice, setTokenEtherPrice] = useState(null);
   const [canPayWithNativeToken, setCanPayWithNativeToken] = useState(false);
+  const [notEnoughFunds, setNotEnoughFunds] = useState(false);
 
   const chainWETH = config[chainId]?.smartContracts.WETH.address.toLowerCase();
   // If currency is WETH, we can pay with Crossmint
@@ -131,6 +132,14 @@ const BidsModal = ({
     currencyTokenDecimals,
     tokenEtherPrice
   ]);
+
+  useEffect(() => {
+    if (insufficentBalance && !canPayWithNativeToken) {
+      setNotEnoughFunds(true);
+    } else {
+      setNotEnoughFunds(false);
+    }
+  }, [insufficentBalance, canPayWithNativeToken]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -621,7 +630,13 @@ const BidsModal = ({
                               } `}
                               isDisabled={!isPriceGood || !checkTerms}
                             >
-                              {isLoadingButton ? <Spinner size="sm" color="default" /> : "Approve"}
+                              {isLoadingButton ? (
+                                <Spinner size="sm" color="default" />
+                              ) : notEnoughFunds ? (
+                                "Not enough funds"
+                              ) : (
+                                "Approve"
+                              )}
                             </Web3Button>
                           </>
                         ) : (
@@ -645,7 +660,13 @@ const BidsModal = ({
                               {isLoadingButton ? (
                                 <Spinner size="sm" color="default" />
                               ) : buyoutPriceReached ? (
-                                "Buy Now"
+                                notEnoughFunds ? (
+                                  "Not enough funds"
+                                ) : (
+                                  "Buy Now"
+                                )
+                              ) : notEnoughFunds ? (
+                                "Not enough funds"
                               ) : (
                                 "Place Bid"
                               )}
@@ -674,7 +695,13 @@ const BidsModal = ({
                           {isLoadingButton ? (
                             <Spinner size="sm" color="default" />
                           ) : buyoutPriceReached ? (
-                            "Buy Now with ETH"
+                            notEnoughFunds ? (
+                              "Not enough funds"
+                            ) : (
+                              "Buy Now with ETH"
+                            )
+                          ) : notEnoughFunds ? (
+                            "Not enough funds"
                           ) : (
                             "Place Bid with ETH"
                           )}
