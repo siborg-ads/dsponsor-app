@@ -68,6 +68,8 @@ const LeaderboardTable = ({ activity }) => {
     setChainId(filteredActivity[0]?.chainId);
     setFilteredActivity(filteredActivity[0]);
 
+    console.log("filteredActivity", filteredActivity);
+
     setLeaderboards({
       topPoints: activityToTopPoints(filteredActivity[0]?.rankings, address),
       topHolders: activityToTopHolders(filteredActivity[0]?.rankings, address),
