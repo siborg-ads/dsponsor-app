@@ -4,6 +4,7 @@ import "tippy.js/themes/light.css";
 import OfferItem from "../cards/offerItem";
 
 const TokenAuctionBids = ({ data, isOwner }) => {
+  console.log(data);
   if (!data) {
     return (
       <div className="flex w-full justify-center">
