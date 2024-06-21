@@ -192,7 +192,7 @@ const BuyModal = ({
                       </h3>
                       <span className="dark:text-jacarta-100 text-sm font-medium tracking-tight overflow-auto min-w-[70px] flex justify-end">
                         {price}{" "}
-                        {canPayWithNativeToken && insufficentBalance ? "ETH" : selectedCurrency}
+                        {selectedCurrency}
                       </span>
                     </div>
 
@@ -202,7 +202,7 @@ const BuyModal = ({
                       </span>
                       <span className="dark:text-jacarta-100 text-sm  tracking-tight overflow-auto min-w-[60px] flex justify-end">
                         {feesAmount}{" "}
-                        {canPayWithNativeToken && insufficentBalance ? "ETH" : selectedCurrency}
+                        {selectedCurrency}
                       </span>
                     </div>
 
@@ -213,7 +213,7 @@ const BuyModal = ({
                         </span>
                         <span className="dark:text-jacarta-100 text-sm  tracking-tight overflow-auto min-w-[60px] flex justify-end">
                           {royaltiesFeesAmount}{" "}
-                          {canPayWithNativeToken && insufficentBalance ? "ETH" : selectedCurrency}
+                          {selectedCurrency}
                         </span>
                       </div>
                     )}
@@ -244,8 +244,7 @@ const BuyModal = ({
                 <div className="ml-auto">
                   <span className="flex items-center whitespace-nowrap">
                     <span className="text-green font-medium tracking-tight">
-                      {finalPrice}{" "}
-                      {canPayWithNativeToken && insufficentBalance ? "ETH" : selectedCurrency}
+                      {finalPrice} {selectedCurrency}
                     </span>
                   </span>
                   {/* <div className="dark:text-jacarta-100 text-right">$130.82</div> */}

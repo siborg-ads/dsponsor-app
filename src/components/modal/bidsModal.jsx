@@ -249,12 +249,18 @@ const BidsModal = ({
     }
   }, [marketplaceListings, currencyTokenDecimals, bidsAmount, mount]);
 
+  useEffect(() => {
+    if (bidsAmount && bidsAmount >= initialIntPrice) {
+      setIsPriceGood(true);
+    } else {
+      setIsPriceGood(false);
+    }
+  }, [bidsAmount]);
+
   const handleBidsAmount = async (e) => {
     if (Number(e.target.value) < initialIntPrice) {
-      setIsPriceGood(false);
       setBidsAmount(e.target.value);
     } else {
-      setIsPriceGood(true);
       setBidsAmount(e.target.value);
       setAmountToApprove(
         ethers.utils.parseUnits(
@@ -391,19 +397,13 @@ const BidsModal = ({
               <div className="modal-body p-6">
                 <div className="flex justify-between mb-2">
                   <div className="flex items-center justify-between">
-                    <span className="font-display text-jacarta-900 text-sm font-semibold dark:text-white">
+                    <span className="font-display flex items-center gap-4 text-jacarta-900 text-sm font-semibold dark:text-white">
                       Price
                     </span>
                   </div>
                   <div>
                     <span className="dark:text-jacarta-100 text-sm">
-                      {canPayWithNativeToken && insufficentBalance ? (
-                        <>Balance: {nativeTokenBalance?.displayValue ?? 0} ETH</>
-                      ) : (
-                        <>
-                          Balance: {tokenBalance?.displayValue ?? 0} {currencySymbol}
-                        </>
-                      )}
+                      Balance: {tokenBalance?.displayValue ?? 0} {currencySymbol}
                     </span>
                   </div>
                 </div>
@@ -419,9 +419,7 @@ const BidsModal = ({
                       maxLength={currencyTokenDecimals}
                     />
                     <span className="text-white font-semibold absolute right-0 px-4">
-                      {canPayWithNativeToken && insufficentBalance
-                        ? "ETH"
-                        : currencySymbol.substring(0, 6)}
+                      {currencySymbol.substring(0, 6)}
                     </span>
                   </div>
 
@@ -432,14 +430,31 @@ const BidsModal = ({
                   </div>
                 </div>
 
-                <div className={`text-left ${!isPriceGood ? "" : "opacity-0"}`}>
-                  <span className="dark:text-warning text-sm">
-                    {insufficentBalance && isPriceGood
-                      ? `
+                <div className="flex items-center gap-4">
+                  {bidsAmount < initialIntPrice && (
+                    <button
+                      className="text-primaryPurple hover:text-opacity-80"
+                      onClick={() => {
+                        setBidsAmount(initialIntPrice);
+                      }}
+                    >
+                      Use minimal bid
+                    </button>
+                  )}
+
+                  <div className={`text-left ${!isPriceGood ? "" : "opacity-0"}`}>
+                    <span className="dark:text-warning text-sm">
+                      {insufficentBalance && isPriceGood ? (
+                        `
                       ⚠️ Insufficient token balance, you can pay with ETH or increase your balance.
                     `
-                      : `⚠️ Bid Price must be higher than ${initialIntPrice} ${currencySymbol}`}
-                  </span>
+                      ) : (
+                        <>
+                          ⚠️ Bid Price must be higher than {initialIntPrice} {currencySymbol}{" "}
+                        </>
+                      )}
+                    </span>
+                  </div>
                 </div>
 
                 <div className="flex flex-col gap-8 py-4 items-center justify-center">
