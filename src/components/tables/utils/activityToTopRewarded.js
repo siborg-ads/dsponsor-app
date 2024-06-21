@@ -8,19 +8,21 @@ import { getAddress } from "ethers/lib/utils";
  */
 const activityToTopRewarded = (activity, userAddress) => {
   if (userAddress === undefined) {
-    return activity.map((ranking) => ({
-      rank: ranking.bidRefundsRank,
-      totalReceived: ranking.usdcAmounts.bidRefundReceived,
-      addressDisplay: ranking.displayAddr,
-      address: ranking.addr,
-      refunds: ranking.nbRefunds,
-      chainId: ranking.chainId,
-      dPoints: ranking.dPoints ?? 0,
-      details: Object.entries(ranking.currenciesAmounts || {}).map(([currency, amounts]) => ({
-        currency,
-        totalReceived: amounts.bidRefundReceived
-      }))
-    }));
+    return activity
+      .sort((a, b) => a.bidRefundsRank - b.bidRefundsRank)
+      .map((ranking) => ({
+        rank: ranking.bidRefundsRank,
+        totalReceived: ranking.usdcAmounts.bidRefundReceived,
+        addressDisplay: ranking.displayAddr,
+        address: ranking.addr,
+        refunds: ranking.nbRefunds,
+        chainId: ranking.chainId,
+        dPoints: ranking.dPoints ?? 0,
+        details: Object.entries(ranking.currenciesAmounts || {}).map(([currency, amounts]) => ({
+          currency,
+          totalReceived: amounts.bidRefundReceived
+        }))
+      }));
   }
 
   const userActivity = activity.filter((item) => getAddress(item.addr) === getAddress(userAddress));

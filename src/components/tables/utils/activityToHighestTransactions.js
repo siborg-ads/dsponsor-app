@@ -28,17 +28,19 @@ const activityToTopHolders = (activities, userAddress) => {
   };
 
   if (userAddress === undefined) {
-    return activities.map((activity) => ({
-      type: toDisplayType(activity.type),
-      date: new Date(activity.date).toLocaleString(),
-      transactionHash:
-        activity.transactionHash.slice(0, 6) + "..." + activity.transactionHash.slice(-4),
-      fullTransactionHash: activity.transactionHash,
-      points: activity.points,
-      spender: activity.spender,
-      enabler: activity.enabler,
-      refAddr: activity.refAddr
-    }));
+    return activities
+      .sort((a, b) => b.points - a.points)
+      .map((activity) => ({
+        type: toDisplayType(activity.type),
+        date: new Date(activity.date).toLocaleString(),
+        transactionHash:
+          activity.transactionHash.slice(0, 6) + "..." + activity.transactionHash.slice(-4),
+        fullTransactionHash: activity.transactionHash,
+        points: activity.points,
+        spender: activity.spender,
+        enabler: activity.enabler,
+        refAddr: activity.refAddr
+      }));
   }
 
   const userActivity = activities.filter(
