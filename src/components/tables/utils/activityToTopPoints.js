@@ -7,12 +7,14 @@ import { getAddress } from "ethers/lib/utils";
  */
 const activityToTopPoints = (activity, userAddress) => {
   if (userAddress === undefined) {
-    return activity.map((ranking) => ({
-      rank: ranking.totalProtocolFeeRank,
-      totalPoints: ranking.points,
-      addressDisplay: ranking.displayAddr,
-      address: ranking.addr
-    }));
+    return activity
+      .sort((a, b) => a.totalProtocolFeeRank - b.totalProtocolFeeRank)
+      .map((ranking) => ({
+        rank: ranking.totalProtocolFeeRank,
+        totalPoints: ranking.points,
+        addressDisplay: ranking.displayAddr,
+        address: ranking.addr
+      }));
   }
 
   const userActivity = activity.filter((item) => getAddress(item.addr) === getAddress(userAddress));
