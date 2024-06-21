@@ -421,7 +421,8 @@ const BidsModal = ({
                   </div>
                   <div>
                     <span className="dark:text-jacarta-100 text-sm">
-                      Balance: {tokenBalance?.displayValue ?? 0} {currencySymbol}
+                      Balance: {formatAndRoundPrice(tokenBalance?.displayValue) ?? 0}{" "}
+                      {currencySymbol}
                     </span>
                   </div>
                 </div>
