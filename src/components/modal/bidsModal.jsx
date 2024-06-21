@@ -250,12 +250,12 @@ const BidsModal = ({
   }, [marketplaceListings, currencyTokenDecimals, bidsAmount, mount]);
 
   useEffect(() => {
-    if (bidsAmount && bidsAmount >= initialIntPrice) {
+    if (bidsAmount && Number(bidsAmount) >= Number(initialIntPrice)) {
       setIsPriceGood(true);
     } else {
       setIsPriceGood(false);
     }
-  }, [bidsAmount]);
+  }, [bidsAmount, initialIntPrice]);
 
   const handleBidsAmount = async (e) => {
     if (Number(e.target.value) < initialIntPrice) {
@@ -444,11 +444,7 @@ const BidsModal = ({
 
                   <div className={`text-left ${!isPriceGood ? "" : "opacity-0"}`}>
                     <span className="dark:text-warning text-sm">
-                      {insufficentBalance && isPriceGood ? (
-                        `
-                      ⚠️ Insufficient token balance, you can pay with ETH or increase your balance.
-                    `
-                      ) : (
+                      {!isPriceGood && (
                         <>
                           ⚠️ Bid Price must be higher than {initialIntPrice} {currencySymbol}{" "}
                         </>
@@ -489,7 +485,9 @@ const BidsModal = ({
 
                           <div className="bg-jacarta-600 col-span-3 duration-400 shadow p-4 rounded-xl font-semibold text-base text-white text-center min-w-[200px] max-w-[200px]">
                             Your bid back +{" "}
-                            {bidsAmount >= initialIntPrice ? formatAndRoundPrice(refundedPrice) : 0}{" "}
+                            {Number(bidsAmount) >= Number(initialIntPrice)
+                              ? formatAndRoundPrice(refundedPrice)
+                              : 0}{" "}
                             {currencySymbol} Reward
                           </div>
                         </div>
