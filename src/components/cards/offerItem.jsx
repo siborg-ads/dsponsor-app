@@ -6,6 +6,7 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "tippy.js/dist/tippy.css";
 import  ModalHelper  from "../Helper/modalHelper";
+import Timer from "../item/Timer";
 
 const OfferItem = ({
   item,
@@ -234,20 +235,32 @@ const OfferItem = ({
             )}
           </div>
           <div className="mt-2 text-xs flex items-center justify-between">
-            {!isAuction && !isListing ? (
-              <div className="flex justify-between w-full gap-4">
-                <span className="text-jacarta-100">
-                  {formatDate(valid_from)} - {formatDate(valid_to)}
-                </span>
+            {!isToken ? (
+              <span className="dark:text-jacarta-100 text-jacarta-100">
+                {formatDate(valid_from)} - {formatDate(valid_to)}
+              </span>
+            ) : (!isAuction && !isListing && itemStatut !== "TOKENMINTABLE") ||
+              item?.listing?.status === "COMPLETED" ? (
+              <div className="flex  w-full gap-2 items-center ">
+                <span className="text-jacarta-100">Sold</span>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 576 512"
+                  className="h-6 w-6 fill-red"
+                >
+                  <path d="M253.3 35.1c6.1-11.8 1.5-26.3-10.2-32.4s-26.3-1.5-32.4 10.2L117.6 192H32c-17.7 0-32 14.3-32 32s14.3 32 32 32L83.9 463.5C91 492 116.6 512 146 512H430c29.4 0 55-20 62.1-48.5L544 256c17.7 0 32-14.3 32-32s-14.3-32-32-32H458.4L365.3 12.9C359.2 1.2 344.7-3.4 332.9 2.7s-16.3 20.6-10.2 32.4L404.3 192H171.7L253.3 35.1zM192 304v96c0 8.8-7.2 16-16 16s-16-7.2-16-16V304c0-8.8 7.2-16 16-16s16 7.2 16 16zm96-16c8.8 0 16 7.2 16 16v96c0 8.8-7.2 16-16 16s-16-7.2-16-16V304c0-8.8 7.2-16 16-16zm128 16v96c0 8.8-7.2 16-16 16s-16-7.2-16-16V304c0-8.8 7.2-16 16-16s16 7.2 16 16z" />
+                </svg>
               </div>
             ) : (
-              (itemStatut === "AUCTION" || itemStatut === "DIRECT") && (
+              (itemStatut === "AUCTION" ||
+                itemStatut === "DIRECT" ||
+                itemStatut === "TOKENMINTABLE") && (
                 <div className="flex justify-between w-full items-center gap-4">
                   <div className="flex gap-2 items-center justify-center">
                     <span className="dark:text-jacarta-100 text-jacarta-100">
                       {listingType === "Auction"
-                        ? "Auction"
-                        : listingType === "Direct"
+                        ? "Live Auction"
+                        : listingType === "Direct" || itemStatut === "TOKENMINTABLE"
                           ? "Buy Now"
                           : null}{" "}
                     </span>
@@ -282,20 +295,8 @@ const OfferItem = ({
                 {adStatut === 0 ? "❌ Rejected" : adStatut === 1 ? "✅ Accepted" : adStatut === 2 ? "🔍 Pending" : "Ad space available"}
               </span>
             )} */}
-            {isAuction && listingType === "Auction" && item.listingStatus && (
-              <div className="flex gap-1 items-center justify-center">
-                <span
-                  className={`font-display ${item.listingStatus === "Active" ? "text-primaryPink" : item.listingStatus === "Finished" ? "text-green" : "text-red"}`}
-                >
-                  {item.listingStatus}
-                </span>
-                <ModalHelper
-                  dark={false}
-                  {...handleListingsStatusHelperModal(item.listingStatus)}
-                />
-              </div>
-            )}
           </div>
+          
         </div>
       </article>
     </>
