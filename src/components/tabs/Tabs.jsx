@@ -20,10 +20,6 @@ const ItemsTabs = ({
   const chainName = config[chainId]?.chainName;
   const chainExplorer = currentChainObject?.explorerBaseUrl;
 
-  React.useEffect(() => {
-    console.log("chainId", chainId);
-  }, [chainId]);
-
   return (
     <>
       <div className="scrollbar-custom overflow-x-auto rounded-lg dark:bg-secondaryBlack">

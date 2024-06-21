@@ -15,8 +15,6 @@ const activityToTopPoints = (activity, userAddress) => {
     }));
   }
 
-  console.log("activity", activity);
-
   const userActivity = activity.filter((item) => getAddress(item.addr) === getAddress(userAddress));
   const otherActivity = activity;
 

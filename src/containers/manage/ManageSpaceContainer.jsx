@@ -69,7 +69,7 @@ const ManageSpaceContainer = () => {
 
       const fetchListedTokens = async () => {
         const listedTokenArray = await fetchDataByUserAddress(fetchAllTokenListedByUserAddress);
-console.log(listedTokenArray, "listedTokenArray");
+
         const mappedListedToken = listedTokenArray
           .filter((element) => element?.listingType === "Auction")
           .map((element) => ({
@@ -96,7 +96,7 @@ console.log(listedTokenArray, "listedTokenArray");
           offerId: element.listing.token.nftContract.adOffers[0].id,
           tokenId: element.listing.token.tokenId
         }));
-console.log(mappedAuctionBidsTokens, "mappedAuctionBidsTokens");
+
         setTokenAuctionBids(mappedAuctionBidsTokens);
       };
 
