@@ -488,9 +488,8 @@ const BidsModal = ({
                           </div>
 
                           <div className="bg-jacarta-600 col-span-3 duration-400 shadow p-4 rounded-xl font-semibold text-base text-white text-center min-w-[200px] max-w-[200px]">
-                            {bidsAmount >= initialIntPrice
-                              ? formatAndRoundPrice(refundedPrice + bidsAmount)
-                              : 0}{" "}
+                            Your bid back +{" "}
+                            {bidsAmount >= initialIntPrice ? formatAndRoundPrice(refundedPrice) : 0}{" "}
                             {currencySymbol} Reward
                           </div>
                         </div>
