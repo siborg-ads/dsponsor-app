@@ -197,6 +197,7 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
       await submitAd({ args: Object.values(argsAdSubmited) });
       setSuccessFullUpload(true);
     } catch (err) {
+      console.error("Erreur lors de l'upload à Blockchain:", err);
       setIsLoadingButton(false);
       throw new Error("Upload to Blockchain failed.");
     } finally {

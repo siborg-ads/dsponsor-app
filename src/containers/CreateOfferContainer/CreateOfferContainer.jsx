@@ -293,7 +293,7 @@ const CreateOfferContainer = () => {
     } catch (error) {
       setIsLoadingButton(false);
       setSuccessFullUpload(false);
-
+      console.error(error);
       throw error;
     } finally {
       setIsLoadingButton(false);
