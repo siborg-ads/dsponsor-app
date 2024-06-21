@@ -11,6 +11,7 @@ const activityToTopSpenders = (activity, userAddress) => {
       rank: ranking.spendersRank,
       totalSpent: ranking.usdcAmounts.totalSpent,
       addressDisplay: ranking.displayAddr,
+      points: ranking.points,
       address: ranking.addr,
       balance: ranking.balance,
       chainId: ranking.chainId,
@@ -27,7 +28,7 @@ const activityToTopSpenders = (activity, userAddress) => {
     (item) => getAddress(item.addr) !== getAddress(userAddress)
   );
 
-  const sortedOtherActivity = otherActivity.sort((a, b) => a.spendersRank - b.spendersRank);
+  const sortedOtherActivity = otherActivity.sort((a, b) => a.points - b.points);
 
   const sortedActivity = [...userActivity, ...sortedOtherActivity];
 
@@ -35,6 +36,7 @@ const activityToTopSpenders = (activity, userAddress) => {
     rank: ranking.spendersRank,
     totalSpent: ranking.usdcAmounts.totalSpent,
     addressDisplay: ranking.displayAddr,
+    points: ranking.points,
     address: ranking.addr,
     balance: ranking.balance,
     dPoints: ranking.dPoints ?? 0,
