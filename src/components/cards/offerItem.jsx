@@ -276,6 +276,7 @@ const OfferItem = ({
               )}
             </div>
           </div>
+          
         </div>
       </article>
     </>
