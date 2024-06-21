@@ -240,10 +240,9 @@ const BidsModal = ({
     if (minimalBidPerToken && !bidsAmount && !mount) {
       const minimalBid = ethers.utils.formatUnits(minimalBidPerToken, currencyTokenDecimals);
       setInitialIntPrice(minimalBid);
-      setBidsAmount(minimalBid);
       setMount(true);
     }
-  }, [marketplaceListings, setBidsAmount, currencyTokenDecimals, bidsAmount, mount]);
+  }, [marketplaceListings, currencyTokenDecimals, bidsAmount, mount]);
 
   const handleBidsAmount = async (e) => {
     if (Number(e.target.value) < initialIntPrice) {
@@ -624,11 +623,11 @@ const BidsModal = ({
                                 });
                               }}
                               className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-black !transition-all ${
-                                !isPriceGood || !checkTerms
+                                !isPriceGood || !checkTerms || !bidsAmount
                                   ? "btn-disabled cursor-not-allowed !text-black opacity-30"
                                   : "!text-white !bg-primaryPurple !cursor-pointer"
                               } `}
-                              isDisabled={!isPriceGood || !checkTerms}
+                              isDisabled={!isPriceGood || !checkTerms || !bidsAmount}
                             >
                               {isLoadingButton ? (
                                 <Spinner size="sm" color="default" />
