@@ -39,6 +39,7 @@ const ItemManage = ({
       }
       setSuccessFullListing(true);
     } catch (e) {
+      console.error(e);
       setIsLoadingButton(false);
       throw new Error(e);
     } finally {

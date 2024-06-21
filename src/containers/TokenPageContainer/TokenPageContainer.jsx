@@ -597,7 +597,7 @@ const TokenPageContainer = () => {
     if (tokenCurrencyAddress !== "0x0000000000000000000000000000000000000000" && address) {
       let allowance;
 
-      if (tokenStatut === "DIRECT" || tokenStatut === "AUCTION") {
+      if ((tokenStatut === "DIRECT" || tokenStatut === "AUCTION") && tokenStatut !== "MINTABLE") {
         allowance = await tokenContract?.call("allowance", [
           address,
           config[chainId]?.smartContracts?.DSPONSORMP?.address
@@ -654,12 +654,14 @@ const TokenPageContainer = () => {
     const hasEnoughBalance = checkUserBalance(tokenBalance, finalPriceLocal, currencyDecimals);
 
     if (!hasEnoughBalance && !canPayWithNativeToken) {
+      console.error("Not enough balance to confirm checkout");
       throw new Error("Not enough balance to confirm checkout");
     }
 
     const hasEnoughBalanceForNative = checkUserBalance(nativeTokenBalance, finalPriceLocal, 18);
 
     if (!hasEnoughBalanceForNative) {
+      console.error("Not enough balance to confirm checkout");
       throw new Error("Not enough balance to confirm checkout");
     }
 
@@ -698,11 +700,17 @@ const TokenPageContainer = () => {
       if (marketplaceListings.length <= 0) {
         // address of the minter as referral
         argsWithPossibleOverrides.args[0].referralAdditionalInformation = referralAddress;
-        await mintAndSubmit(argsWithPossibleOverrides);
+        await mintAndSubmit(argsWithPossibleOverrides).catch((error) => {
+          console.error("Error while minting and submitting:", error);
+          throw error;
+        });
         setSuccessFullUpload(true);
         setIsOwner(true);
       } else {
-        await directBuy(argsWithPossibleOverrides);
+        await directBuy(argsWithPossibleOverrides).catch((error) => {
+          console.error("Error while buying:", error);
+          throw error;
+        });
         setSuccessFullUpload(true);
       }
     } catch (error) {
@@ -781,6 +789,7 @@ const TokenPageContainer = () => {
   }
 
   const handleBuyModal = async () => {
+    console.log("amountToApprove", amountToApprove);
     await checkAllowance(amountToApprove);
     setSuccessFullUpload(false);
     setBuyModal(!buyModal);

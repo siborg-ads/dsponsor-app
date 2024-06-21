@@ -91,7 +91,11 @@ const Review_carousel = ({
       submissionArgs.push(argObject);
     }
 
-    await handleSubmit(submissionArgs);
+    try {
+      await handleSubmit(submissionArgs);
+    } catch (error) {
+      console.log(error);
+    }
   };
   const openRefuseModal = () => {
     setRefusedValidatedAdModal(true);

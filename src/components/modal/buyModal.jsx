@@ -283,7 +283,7 @@ const BuyModal = ({
             <div className="modal-footer p-6">
               <div className="flex flex-col items-center space-y-6">
                 <div className="flex items-center justify-center space-x-4">
-                  {insufficentBalance ? (
+                  {!insufficentBalance ? (
                     <>
                       {allowanceTrue ? (
                         <>
@@ -311,7 +311,7 @@ const BuyModal = ({
                               currentChainObject?.smartContracts?.DSPONSORADMIN?.address
                             }
                             action={() => {
-                              toast.promise(handleBuySubmitWithNative, {
+                              toast.promise(handleSubmit, {
                                 pending: "Waiting for confirmation 🕒",
                                 success: "Transaction confirmed 👌",
                                 error: "Transaction rejected 🤯"
@@ -323,7 +323,7 @@ const BuyModal = ({
                             {isLoadingButton ? (
                               <Spinner size="sm" color="default" />
                             ) : (
-                              "Confirm checkout with ETH"
+                              "Confirm checkout"
                             )}
                           </Web3Button>
                         </>
@@ -334,7 +334,7 @@ const BuyModal = ({
                       <Web3Button
                         contractAddress={currentChainObject?.smartContracts?.DSPONSORADMIN?.address}
                         action={() => {
-                          toast.promise(handleSubmit, {
+                          toast.promise(handleBuySubmitWithNative, {
                             pending: "Waiting for confirmation 🕒",
                             success: "Transaction confirmed 👌",
                             error: "Transaction rejected 🤯"
@@ -346,7 +346,7 @@ const BuyModal = ({
                         {isLoadingButton ? (
                           <Spinner size="sm" color="default" />
                         ) : (
-                          "Confirm checkout"
+                          "Confirm checkout with ETH"
                         )}
                       </Web3Button>
                     </>
