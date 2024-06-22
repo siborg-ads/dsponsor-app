@@ -1,5 +1,7 @@
 import Head from "next/head";
 
+const isStaging = process.env.DSPONSOR_ENV !== "production";
+
 const Meta = ({ title, keyword, desc }) => {
   return (
     <div>
@@ -13,7 +15,10 @@ const Meta = ({ title, keyword, desc }) => {
         <meta property="og:title" content={title} />
         <meta property="og:description" content={desc} />
         <meta property="og:image" content="/opengraph-image.jpeg" />
-        <meta property="og:url" content="https://app.dsponsor.com" />
+        <meta
+          property="og:url"
+          content={isStaging ? "https://app.staging.dsponsor.com" : "https://app.dsponsor.com"}
+        />
         <meta name="og:site_name" content={title} />
         <meta property="og:type" content="website" />
         <meta name="twitter:card" content="summary_large_image" />
@@ -21,7 +26,14 @@ const Meta = ({ title, keyword, desc }) => {
         <meta name="twitter:creator" content="@siborgapp" />
         <meta name="twitter:title" content={title} />
         <meta name="twitter:description" content={desc} />
-        <meta name="twitter:image" content="/opengraph-image.jpeg" />
+        <meta
+          name="twitter:image"
+          content={
+            isStaging
+              ? "https://app.staging.dsponsor.com/opengraph-image.jpeg"
+              : "https://app.dsponsor.com/opengraph-image.jpeg"
+          }
+        />{" "}
       </Head>
     </div>
   );
