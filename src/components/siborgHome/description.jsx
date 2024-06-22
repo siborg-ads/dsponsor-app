@@ -59,9 +59,11 @@ const socials = [
 const Description = ({ description }) => {
   return (
     <>
-      <div className="flex flex-col gap-2 md:w-3/4">
+      <div className="flex flex-col gap-2">
         <div className="flex items-center gap-4">
-          <h1 className="text-white font-semibold text-2xl lg:text-4xl">SiBorg</h1>
+          <h1 className="text-white font-semibold text-2xl lg:text-4xl">
+            Own the Ad Spaces of the SiBorg App
+          </h1>
           <div className="flex items-center gap-2">
             {socials.map((social) => (
               <Link
@@ -78,11 +80,10 @@ const Description = ({ description }) => {
         </div>
         {description && (
           <div className="flex">
-            <p className="text-jacarta-100 text-sm">
-              SiBorg is a podcast application for Twitter Spaces leveraging Web3 Social
-              interactions. SiBorg search bar is composed of parcels. Each parcel is link to a
-              search ticker. SiBorg Ads Owner can customize their ad space and be exposed to the
-              visibility associated to the platform.
+            <p className="text-jacarta-100">
+              Purchase Ad Space NFTs and gain exclusive control over key search terms in our app.
+              Monetize your ad spaces by displaying your own ads, renting them out, or speculating
+              on their value increase.
             </p>
           </div>
         )}

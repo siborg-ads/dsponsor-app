@@ -35,12 +35,6 @@ export const fetchAllListedTokenWithoutFilter = async (chainId, allTokens) => {
             marketplaceListings(
               orderBy: endTime
               orderDirection: asc
-              where: {
-                status: CREATED
-                quantity_gt: 0
-                startTime_lte: $currentTimestamp
-                endTime_gte: $currentTimestamp
-              }
             ) {
               id # listingId
               quantity

@@ -4,7 +4,8 @@ import {
   Web3Button,
   useContractWrite,
   useBalanceForAddress,
-  useBalance
+  useBalance,
+  useAddress
 } from "@thirdweb-dev/react";
 import { Spinner } from "@nextui-org/spinner";
 import { toast } from "react-toastify";
@@ -17,8 +18,11 @@ import { fetchTokenPrice } from "../../utils/fetchTokenPrice";
 import { getCookie } from "cookies-next";
 import { BigNumber } from "bignumber.js";
 import BidWithCrossmintButton from "../buttons/BidWithCrossmintButton/BidWithCrossmintButton";
-
-const nativeTokenDecimals = 18;
+import Tippy from "@tippyjs/react";
+import { ClipboardIcon } from "@heroicons/react/20/solid";
+import handleCopy from "../../utils/handleCopy";
+import "tippy.js/dist/tippy.css";
+import { ShareIcon } from "@heroicons/react/20/solid";
 
 const BidsModal = ({
   setAmountToApprove,
@@ -62,6 +66,7 @@ const BidsModal = ({
   const [tokenEtherPrice, setTokenEtherPrice] = useState(null);
   const [canPayWithNativeToken, setCanPayWithNativeToken] = useState(false);
   const [notEnoughFunds, setNotEnoughFunds] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   const chainConfig = config[chainId];
   const chainWETH = chainConfig?.smartContracts.WETH.address.toLowerCase();
@@ -71,11 +76,19 @@ const BidsModal = ({
   //   marketplaceListings[0]?.currency.toLowerCase() === chainWETH &&
   //   activated_features.canPayWithCrossmintEnabled;
 
+  let frontURL;
+  if (typeof window !== "undefined") {
+    frontURL = window.location.origin;
+  }
+
   const isWETH = currencyContract.toLowerCase() === chainWETH;
   const canPayWithCrossmint = isWETH && chainConfig?.features?.crossmint?.enabled;
   const modalRef = useRef();
+  const inputRef = useRef(null);
 
-  const { data: nativeTokenBalance } = useBalanceForAddress(address);
+  const userAddr = useAddress();
+
+  const { data: nativeTokenBalance } = useBalance();
   const { data: currencyBalance } = useBalance(currencyContract);
 
   useEffect(() => {
@@ -393,7 +406,7 @@ const BidsModal = ({
           <div className="modal-content" ref={modalRef}>
             <div className="modal-header">
               <h5 className="modal-title" id="placeBidLabel">
-                {!successFullBid ? "Place a bid" : "Bid submitted"}
+                {!successFullBid && false ? "Place a bid" : "Bid submitted"}
               </h5>
               <button type="button" className="btn-close" onClick={toggleBidsModal}>
                 <svg
@@ -410,7 +423,7 @@ const BidsModal = ({
             </div>
 
             {/* <!-- Body --> */}
-            {!successFullBid ? (
+            {!successFullBid && false ? (
               <div className="modal-body p-6">
                 <div className="flex justify-between mb-2">
                   <div className="flex items-center justify-between">
@@ -550,50 +563,79 @@ const BidsModal = ({
                 <div className="flex flex-col gap-2">
                   <div className="flex gap-4">
                     <p>Congratulations your bid has been submit ! 🎉 </p>
-                    <div
-                      className="dark:border-jacarta-600 bg-green   flex h-6 w-6 items-center justify-center rounded-full border-2 border-white"
-                      data-tippy-content="Verified Collection"
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 24 24"
-                        width="24"
-                        height="24"
-                        className="h-[.875rem] w-[.875rem] fill-white"
-                      >
-                        <path fill="none" d="M0 0h24v24H0z"></path>
-                        <path d="M10 15.172l9.192-9.193 1.415 1.414L10 18l-6.364-6.364 1.414-1.414z"></path>
-                      </svg>
-                    </div>
+                  </div>
+                  <div className="flex items-center">
+                    <span>You can check the bid status at anytime in your profile page.</span>
                   </div>
                 </div>
 
                 <div className="flex flex-col justify-center my-8">
                   {currencySymbol === "WETH" && (
                     <div className="flex flex-col items-center gap-1">
-                      <span className="text-lg text-white font-semibold text-center">
+                      <span className="text-lg text-primaryPink font-semibold text-center">
                         You will earn {Math.floor(protocolFeeAmount) ?? 0} boxes if you win the
-                        auction.
+                        auction !
                       </span>
                       <span className="text-lg text-white font-semibold text-center">
                         Want to earn more?
-                      </span>{" "}
-                      <span className="text-lg text-white font-semibold text-center">
-                        Check and share your referral link in your{" "}
-                        <Link
-                          href={`/profile/${address}`}
-                          className="text-primaryPurple hover:text-opacity-80"
-                        >
-                          profile
-                        </Link>{" "}
-                        page.
                       </span>
+
+                      <div className="flex items-center gap-4 mt-8">
+                        <button
+                          onClick={() => {
+                            const text = encodeURIComponent(
+                              `Participate in @siborgapp's "bid to earn" auction to secure ad space NFT on @siborgapp search results!\n\nEarn perks with boxes and get rewarded when outbid! 💰\n\n#Web3Monetization #DigitalRWA #SiBorgAds\n ${frontURL}/?_rid=${userAddr}`
+                            );
+                            const url = `https://twitter.com/intent/tweet?text=${text}`;
+                            window.open(url, "_blank");
+                          }}
+                          className={`bg-primaryPurple hover:bg-opacity-80 rounded-2lg text-white p-2 flex items-center justify-center text-center gap-2`}
+                        >
+                          <span className="flex items-center justify-center gap-2 w-full text-center">
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              x="0px"
+                              y="0px"
+                              viewBox="0 0 50 50"
+                              className="text-white w-5 h-5 fill-white"
+                            >
+                              <path d="M 5.9199219 6 L 20.582031 27.375 L 6.2304688 44 L 9.4101562 44 L 21.986328 29.421875 L 31.986328 44 L 44 44 L 28.681641 21.669922 L 42.199219 6 L 39.029297 6 L 27.275391 19.617188 L 17.933594 6 L 5.9199219 6 z M 9.7167969 8 L 16.880859 8 L 40.203125 42 L 33.039062 42 L 9.7167969 8 z"></path>
+                            </svg>
+                            Share on X / Twitter
+                          </span>
+                        </button>
+
+                        <Tippy
+                          content={copied ? "Copied!" : "Copy"}
+                          placement="top"
+                          trigger="click"
+                        >
+                          <button
+                            onClick={() => {
+                              if (navigator.share) {
+                                navigator
+                                  .share({
+                                    title: "My referral code",
+                                    text: `You can now use my referral code on SiBorg Ads.\n ${frontURL}/?_rid=${userAddr}`,
+                                    url: `${frontURL}/?_rid=${userAddr}`
+                                  })
+                                  .catch((error) => console.error("Error sharing", error));
+                              } else {
+                                handleCopy(`${frontURL}/?_rid=${userAddr}`, setCopied);
+                                console.error("Web Share API is not supported in this browser");
+                              }
+                            }}
+                            className={`bg-primaryPurple hover:bg-opacity-80 rounded-2lg text-center flex items-center justify-center text-white p-2`}
+                          >
+                            <span className="flex items-center justify-center gap-2 w-full text-center">
+                              <ClipboardIcon className="w-5 h-5" />
+                              Copy
+                            </span>
+                          </button>
+                        </Tippy>
+                      </div>
                     </div>
                   )}
-                </div>
-
-                <div className="mt-4 flex items-center">
-                  <span>You can check the bid status at anytime in your profile page.</span>
                 </div>
               </div>
             ) : (
@@ -639,11 +681,10 @@ const BidsModal = ({
               </>
             )}
             {/* <!-- end body --> */}
-
-            <div className="modal-footer flex items-center justify-center gap-4 p-6">
-              <div className="flex flex-col items-center space-y-6">
-                {!successFullBid && (
-                  <>
+            {!successFullBid && false && (
+              <div className="modal-footer flex items-center justify-center gap-4 p-6">
+                <>
+                  <div className="flex flex-col items-center space-y-6">
                     {!insufficentBalance ? (
                       <>
                         {allowanceTrue ? (
@@ -742,60 +783,43 @@ const BidsModal = ({
                         </Web3Button>
                       </>
                     )}
-                  </>
-                )}
+                  </div>
+                </>
 
-                {successFullBid && (
+                {canPayWithCrossmint && false && (
                   <>
-                    <div className="grid grid-cols-2 gap-4">
-                      <button
-                        className="!rounded-full hover:!bg-opacity-80 !py-3 !px-8 !text-center !font-semibold !text-white !transition-all !bg-primaryPurple !cursor-pointer"
-                        onClick={toggleBidsModal}
-                      >
-                        Close
-                      </button>
-                      <Link href={`/profile/${address}`}>
-                        <button className="!rounded-full hover:!bg-opacity-80 !py-3 !px-8 !text-center !font-semibold !text-white !transition-all !bg-primaryPurple !cursor-pointer">
-                          My profile
-                        </button>
-                      </Link>
+                    <div className="flex items-center justify-center w-full">
+                      <div className="flex-grow border-t border-gray-300"></div>
+                      <span className="mx-4 text-gray-500">or</span>
+                      <div className="flex-grow border-t border-gray-300"></div>
+                    </div>
+                    <div className="flex items-center justify-center space-x-4">
+                      <BidWithCrossmintButton
+                        offer={offer}
+                        token={token}
+                        user={user}
+                        referrer={referrer}
+                        config={chainConfig?.features.crossmint.config}
+                        actions={{
+                          processing: onProcessingBid,
+                          success: () => {
+                            toast.success("Buying successful");
+                          },
+                          error: (error) => {
+                            toast.error(`Buying failed: ${error.message}`);
+                          }
+                        }}
+                        isDisabled={!checkTerms}
+                        isLoading={isLoadingButton}
+                        isLoadingRender={() => <Spinner size="sm" color="default" />}
+                        // isActiveRender={`Buy NOW ${finalPrice} ${selectedCurrency} with card `}
+                        // isDisabled={!validate || isLoadingButton}
+                      />
                     </div>
                   </>
                 )}
               </div>
-              {canPayWithCrossmint && (
-                <>
-                  <div className="flex items-center justify-center w-full">
-                    <div className="flex-grow border-t border-gray-300"></div>
-                    <span className="mx-4 text-gray-500">or</span>
-                    <div className="flex-grow border-t border-gray-300"></div>
-                  </div>
-                  <div className="flex items-center justify-center space-x-4">
-                    <BidWithCrossmintButton
-                      offer={offer}
-                      token={token}
-                      user={user}
-                      referrer={referrer}
-                      config={chainConfig?.features.crossmint.config}
-                      actions={{
-                        processing: onProcessingBid,
-                        success: () => {
-                          toast.success("Buying successful");
-                        },
-                        error: (error) => {
-                          toast.error(`Buying failed: ${error.message}`);
-                        }
-                      }}
-                      isDisabled={!checkTerms}
-                      isLoading={isLoadingButton}
-                      isLoadingRender={() => <Spinner size="sm" color="default" />}
-                      // isActiveRender={`Buy NOW ${finalPrice} ${selectedCurrency} with card `}
-                      // isDisabled={!validate || isLoadingButton}
-                    />
-                  </div>
-                </>
-              )}
-            </div>
+            )}
           </div>
         </div>
       </div>
