@@ -15,6 +15,8 @@ const MarketplaceHome = ({ auctions, setAllTokens, allTokens, isAuctionsLoading 
   const filteredAuctions = useMemo(() => {
     let tempAuctions = auctions;
 
+    console.log("allTokens", allTokens);
+
     if (!allTokens) {
       tempAuctions.filter(
         (auction) =>
@@ -46,22 +48,62 @@ const MarketplaceHome = ({ auctions, setAllTokens, allTokens, isAuctionsLoading 
         case "Price: low to high":
           tempAuctions.sort(
             (a, b) =>
-              (a.listingType === "Auction" ? a.auctionPrice : a.directPrice) -
-              (b.listingType === "Auction" ? b.auctionPrice : b.directPrice)
+              (a.listingType === "Auction"
+                ? a.auctionPrice
+                : a.listingType === "Direct"
+                  ? a.directPrice
+                  : a.mintPrice) -
+              (b.listingType === "Auction"
+                ? b.auctionPrice
+                : b.listingType === "Direct"
+                  ? b.directPrice
+                  : b.mintPrice)
+          );
+          console.log(
+            "tempAuctions price",
+            tempAuctions.map((auction) => auction?.directPrice)
+          );
+          console.log(
+            "tempAuctions auction price",
+            tempAuctions.map((auction) => auction?.auctionPrice)
           );
           break;
         case "Price: high to low":
           tempAuctions.sort(
             (a, b) =>
-              (b.listingType === "Auction" ? b.auctionPrice : b.directPrice) -
-              (a.listingType === "Auction" ? a.auctionPrice : a.directPrice)
+              (b.listingType === "Auction"
+                ? b.auctionPrice
+                : b.listingType === "Direct"
+                  ? b.directPrice
+                  : b.mintPrice) -
+              (a.listingType === "Auction"
+                ? a.auctionPrice
+                : a.listingType === "Direct"
+                  ? a.directPrice
+                  : a.mintPrice)
+          );
+          console.log(
+            "tempAuctions price",
+            tempAuctions.map((auction) => auction?.directPrice)
+          );
+          console.log(
+            "tempAuctions auction price",
+            tempAuctions.map((auction) => auction?.auctionPrice)
           );
           break;
         case "Ending soon":
           tempAuctions.sort((a, b) => a.endTime - b.endTime);
+          console.log(
+            "tempAuctions end time",
+            tempAuctions.map((auction) => auction?.endTime)
+          );
           break;
         case "Newest":
           tempAuctions.sort((a, b) => b.startTime - a.startTime);
+          console.log(
+            "tempAuctions start time",
+            tempAuctions.map((auction) => auction?.startTime)
+          );
           break;
         case "Sort by name":
           tempAuctions.sort((a, b) => a.name.localeCompare(b.name));
@@ -175,31 +217,46 @@ const MarketplaceHome = ({ auctions, setAllTokens, allTokens, isAuctionsLoading 
                   className={`rounded-xl flex flex-col gap-2 [--anchor-gap:1rem] bg-secondaryBlack p-2 border border-jacarta-100 border-opacity-10`}
                 >
                   <MenuItem
-                    onClick={() => setSortOption("Sort by name")}
+                    onClick={() => {
+                      setSortOption("Sort by name");
+                      setAllTokens(false);
+                    }}
                     className="hover:bg-primaryBlack p-2 rounded-lg w-full pr-12 md:pr-24"
                   >
                     <span>Sort by name</span>
                   </MenuItem>
                   <MenuItem
-                    onClick={() => setSortOption("Price: low to high")}
+                    onClick={() => {
+                      setSortOption("Price: low to high");
+                      setAllTokens(false);
+                    }}
                     className="hover:bg-primaryBlack p-2 rounded-lg w-full pr-12 md:pr-24"
                   >
                     <span>Price: low to high</span>
                   </MenuItem>
                   <MenuItem
-                    onClick={() => setSortOption("Price: high to low")}
+                    onClick={() => {
+                      setSortOption("Price: high to low");
+                      setAllTokens(false);
+                    }}
                     className="hover:bg-primaryBlack p-2 rounded-lg w-full pr-12 md:pr-24"
                   >
                     <span>Price: high to low</span>
                   </MenuItem>
                   <MenuItem
-                    onClick={() => setSortOption("Ending soon")}
+                    onClick={() => {
+                      setSortOption("Ending soon");
+                      setAllTokens(false);
+                    }}
                     className="hover:bg-primaryBlack p-2 rounded-lg w-full pr-12 md:pr-24"
                   >
                     <span>Ending soon</span>
                   </MenuItem>
                   <MenuItem
-                    onClick={() => setSortOption("Newest")}
+                    onClick={() => {
+                      setSortOption("Newest");
+                      setAllTokens(false);
+                    }}
                     className="hover:bg-primaryBlack p-2 rounded-lg w-full pr-12 md:pr-24"
                   >
                     <span>Newest</span>
