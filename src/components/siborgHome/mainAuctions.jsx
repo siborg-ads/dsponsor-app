@@ -23,6 +23,7 @@ const MainAuctions = ({ auctions, isAuctionsLoading }) => {
         .sort((a, b) => b.numberOfBids - a.numberOfBids)
         .slice(0, 4);
 
+        console.log(tempHotAuctions);
       setHotAuctions(tempHotAuctions);
       setMount(true);
     }
