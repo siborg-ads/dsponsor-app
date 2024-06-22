@@ -218,8 +218,12 @@ const BidsModal = ({
           protocolFeeBps
         );
 
-      const newRefundBonusAmountAdded = BigInt(newRefundBonusAmount) + BigInt(newAmount);
-      const newRefundBonusFormatted = formatUnits(newRefundBonusAmountAdded, currencyTokenDecimals);
+      //const newRefundBonusAmountAdded = BigInt(newRefundBonusAmount) + BigInt(newAmount);
+      const newRefundBonusFormatted = formatUnits(newRefundBonusAmount, currencyTokenDecimals);
+      //const newRefundBonusAddedFormatted = formatUnits(
+      //  newRefundBonusAmountAdded,
+      //  currencyTokenDecimals
+      //);
 
       const nextReservePricePerTokenFormatted = formatUnits(
         nextReservePricePerToken,
@@ -417,7 +421,8 @@ const BidsModal = ({
                   </div>
                   <div>
                     <span className="dark:text-jacarta-100 text-sm">
-                      Balance: {tokenBalance?.displayValue ?? 0} {currencySymbol}
+                      Balance: {formatAndRoundPrice(tokenBalance?.displayValue) ?? 0}{" "}
+                      {currencySymbol}
                     </span>
                   </div>
                 </div>

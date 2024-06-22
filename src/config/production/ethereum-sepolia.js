@@ -7,7 +7,7 @@ const prodEthereumSepolia = {
   chainNameProvider: "sepolia",
   network: Network.ETH_SEPOLIA,
   logoURL: "/images/ethereum-logo.png",
-  explorerBaseUrl: "https://sepolia.etherscan.io/",
+  explorerBaseUrl: "https://sepolia.etherscan.io",
 
   rpcURL: "https://ethereum-sepolia-rpc.publicnode.com",
   smartContracts: {

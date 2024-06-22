@@ -1,29 +1,27 @@
-export function round(value, decimals) {
-  return Number(Math.round(value + "e" + decimals) + "e-" + decimals);
-}
-
 const formatAndRoundPrice = (value) => {
   let num = parseFloat(value);
 
   if (num === 0) {
-    num = round(num, 0).toLocaleString("en-US");
+    return 0;
   }
 
   if (num > 1) {
-    num = round(num, 3).toLocaleString("en-US");
+    return 1;
   } else if (num > 0.1) {
-    num = round(num, 4).toLocaleString("en-US");
+    return parseFloat(num.toFixed(3));
   } else if (num > 0.01) {
-    num = round(num, 5).toLocaleString("en-US");
+    return parseFloat(num.toFixed(4));
   } else if (num > 0.001) {
-    num = round(num, 6).toLocaleString("en-US");
+    return parseFloat(num.toFixed(5));
   } else if (num > 0.0001) {
-    num = round(num, 7).toLocaleString("en-US");
+    return parseFloat(num.toFixed(6));
+  } else if (num > 0.00001) {
+    return parseFloat(num.toFixed(7));
+  } else if (num > 0.000001) {
+    return parseFloat(num.toFixed(8));
   } else {
-    num = round(num, 8).toLocaleString("en-US");
+    return parseFloat(num.toFixed(9));
   }
-
-  return num;
 };
 
 export default formatAndRoundPrice;
