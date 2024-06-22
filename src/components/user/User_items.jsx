@@ -67,7 +67,7 @@ const User_items = ({
       text: "Activity",
       icon: "activity"
     },
-    { id: 2, text: "Join SiBorg App", icon: "owned" },
+    ...(isUserConnected ? [{ id: 2, text: "Join SiBorg App", icon: "owned" }] : []),
     { id: 3, text: "Owned tokens", icon: "owned" },
     { id: 4, text: "Auction listed tokens", icon: "activity" },
     { id: 5, text: "Token Auction Bids ", icon: "activity" },
@@ -183,11 +183,13 @@ const User_items = ({
                 />
               </div>
             </TabPanel>
-            <TabPanel>
-              <div>
-                <JoinSiBorgApp manageAddress={manageAddress} />
-              </div>
-            </TabPanel>
+            {isUserConnected && (
+              <TabPanel>
+                <div>
+                  <JoinSiBorgApp manageAddress={manageAddress} />
+                </div>
+              </TabPanel>
+            )}
             <TabPanel>
               <div>
                 <OwnedAdProposalsCategoriesItems data={mappedownedAdProposals} isOwner={isOwner} />
