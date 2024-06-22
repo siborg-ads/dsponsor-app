@@ -1,13 +1,10 @@
-import React, { useState, useEffect, useRef } from "react";
-import handleCopy from "../../utils/handleCopy";
-import Tippy from "@tippyjs/react";
+import React, { useState, useEffect } from "react";
 import "tippy.js/dist/tippy.css";
 import { activated_features } from "../../data/activated_features";
 import Link from "next/link";
 import { useChainContext } from "../../contexts/hooks/useChainContext";
 import { getAddress } from "ethers/lib/utils";
 import { DateRangePicker } from "@nextui-org/date-picker";
-import { ClipboardIcon } from "@heroicons/react/20/solid";
 
 const Activity = ({ isUserConnected, userAddr, chainId }) => {
   const [copied, setCopied] = useState(false);
@@ -19,15 +16,8 @@ const Activity = ({ isUserConnected, userAddr, chainId }) => {
   const [filteredLastActivities, setFilteredLastActivities] = useState(null);
   const [mount, setMount] = useState(false);
 
-  let frontURL;
-  if (typeof window !== "undefined") {
-    frontURL = window.location.origin;
-  }
-
   const { currentChainObject } = useChainContext();
   const chainExplorer = currentChainObject?.explorerBaseUrl;
-
-  const inputRef = useRef(null);
 
   useEffect(() => {
     setTimeout(() => {

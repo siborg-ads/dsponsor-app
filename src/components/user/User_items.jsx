@@ -41,7 +41,7 @@ const User_items = ({
     frontURL = window.location.origin;
   }
 
-  const inputRef = React.createRef();
+  const inputRef = React.useRef();
 
   useEffect(() => {
     if (!address || !manageAddress) {

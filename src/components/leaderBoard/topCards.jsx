@@ -3,7 +3,7 @@ import Link from "next/link";
 import { InformationCircleIcon } from "@heroicons/react/20/solid";
 import { Popover, PopoverTrigger, PopoverContent } from "@nextui-org/popover";
 
-const topCards = ({ activity }) => {
+const TopCards = ({ activity }) => {
   const [hoveredIcon, setHoveredIcon] = useState(null);
 
   const handleMouseEnter = (icon) => {
@@ -125,4 +125,4 @@ const topCards = ({ activity }) => {
   );
 };
 
-export default topCards;
+export default TopCards;

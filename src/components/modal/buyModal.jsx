@@ -1,5 +1,5 @@
 import Link from "next/link";
-import React, { use, useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { Web3Button, useBalance } from "@thirdweb-dev/react";
 import { toast } from "react-toastify";

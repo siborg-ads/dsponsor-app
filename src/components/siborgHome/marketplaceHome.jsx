@@ -74,7 +74,7 @@ const MarketplaceHome = ({ auctions, setAllTokens, allTokens, isAuctionsLoading 
     }
 
     return tempAuctions;
-  }, [filterName, filterOption, sortOption, auctions]);
+  }, [filterName, filterOption, sortOption, auctions, allTokens]);
 
   return (
     <>

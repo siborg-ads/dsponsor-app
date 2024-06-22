@@ -1,12 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { ethers } from "ethers";
-import {
-  Web3Button,
-  useContractWrite,
-  useBalanceForAddress,
-  useBalance,
-  useAddress
-} from "@thirdweb-dev/react";
+import { Web3Button, useContractWrite, useBalance, useAddress } from "@thirdweb-dev/react";
 import { Spinner } from "@nextui-org/spinner";
 import { toast } from "react-toastify";
 import Link from "next/link";
@@ -22,7 +16,6 @@ import Tippy from "@tippyjs/react";
 import { ClipboardIcon } from "@heroicons/react/20/solid";
 import handleCopy from "../../utils/handleCopy";
 import "tippy.js/dist/tippy.css";
-import { ShareIcon } from "@heroicons/react/20/solid";
 
 const BidsModal = ({
   setAmountToApprove,
@@ -84,7 +77,6 @@ const BidsModal = ({
   const isWETH = currencyContract.toLowerCase() === chainWETH;
   const canPayWithCrossmint = isWETH && chainConfig?.features?.crossmint?.enabled;
   const modalRef = useRef();
-  const inputRef = useRef(null);
 
   const userAddr = useAddress();
 
@@ -406,7 +398,7 @@ const BidsModal = ({
           <div className="modal-content" ref={modalRef}>
             <div className="modal-header">
               <h5 className="modal-title" id="placeBidLabel">
-                {!successFullBid && false ? "Place a bid" : "Bid submitted"}
+                {!successFullBid ? "Place a bid" : "Bid submitted"}
               </h5>
               <button type="button" className="btn-close" onClick={toggleBidsModal}>
                 <svg
@@ -423,7 +415,7 @@ const BidsModal = ({
             </div>
 
             {/* <!-- Body --> */}
-            {!successFullBid && false ? (
+            {!successFullBid ? (
               <div className="modal-body p-6">
                 <div className="flex justify-between mb-2">
                   <div className="flex items-center justify-between">
@@ -681,7 +673,7 @@ const BidsModal = ({
               </>
             )}
             {/* <!-- end body --> */}
-            {!successFullBid && false && (
+            {!successFullBid && (
               <div className="modal-footer flex items-center justify-center gap-4 p-6">
                 <>
                   <div className="flex flex-col items-center space-y-6">
@@ -786,7 +778,7 @@ const BidsModal = ({
                   </div>
                 </>
 
-                {canPayWithCrossmint && false && (
+                {canPayWithCrossmint && (
                   <>
                     <div className="flex items-center justify-center w-full">
                       <div className="flex-grow border-t border-gray-300"></div>
