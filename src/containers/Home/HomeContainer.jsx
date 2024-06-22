@@ -72,6 +72,7 @@ const HomeContainer = () => {
       );
       const directPrice = token.marketplaceListings[0]?.buyPriceStructure?.buyoutPricePerToken;
       const auctionPrice = token.marketplaceListings[0]?.bidPriceStructure?.minimalBidPerToken;
+      const mintPrice = token?.nftContract?.prices[0]?.amount;
       const listingType = token.marketplaceListings[0]?.listingType;
       const startTime = token?.marketplaceListings[0]?.startTime;
       const endTime = token?.marketplaceListings[0]?.endTime;
@@ -105,6 +106,7 @@ const HomeContainer = () => {
         priceUSD: priceUSD,
         directPrice: directPrice,
         auctionPrice: auctionPrice,
+        mintPrice: mintPrice,
         listingType: listingType,
         status: status,
         quantity: quantity,
@@ -126,6 +128,8 @@ const HomeContainer = () => {
 
       return object;
     });
+
+    console.log(auctions);
 
     setAuctions(auctions);
   }, [auctionsTemp]);
