@@ -1,23 +1,20 @@
 import React, { useState, useMemo } from "react";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
-import { ChevronDownIcon } from "@heroicons/react/20/solid";
+import { ChevronDownIcon, InformationCircleIcon } from "@heroicons/react/20/solid";
 import ItemCardSkeleton from "../skeleton/ItemCardSkeleton";
 import OfferItem from "../cards/offerItem";
-import { InformationCircleIcon } from "@heroicons/react/20/solid";
 import { Popover, PopoverTrigger, PopoverContent } from "@nextui-org/popover";
 
 const MarketplaceHome = ({ auctions, setAllTokens, allTokens, isAuctionsLoading }) => {
   const [filterName, setFilterName] = useState("");
   const [sortOption, setSortOption] = useState(null);
   const [filterOption, setFilterOption] = useState("All tokens");
-  const [IsInformationHovered, setIsInformationHovered] = useState(false);
+  const [isInformationHovered, setIsInformationHovered] = useState(false);
 
   const filteredAuctions = useMemo(() => {
     let tempAuctions = auctions;
 
-    console.log("allTokens", allTokens);
-
-    if (!allTokens) {
+    if (!allTokens || filterOption !== "All tokens") {
       tempAuctions.filter(
         (auction) =>
           auction?.status === "CREATED" &&
@@ -122,7 +119,7 @@ const MarketplaceHome = ({ auctions, setAllTokens, allTokens, isAuctionsLoading 
     <>
       <div className="flex flex-col gap-4">
         <span className="text-xl text-white font-semibold flex items-center gap-2">
-          <Popover placement="top-start" isOpen={IsInformationHovered}>
+          <Popover placement="top-start" isOpen={isInformationHovered}>
             <PopoverTrigger>
               <InformationCircleIcon
                 className="h-6 w-6 text-white cursor-pointer"
