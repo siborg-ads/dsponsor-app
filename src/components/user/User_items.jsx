@@ -98,7 +98,7 @@ const User_items = ({
 
         {isUserConnected && (
           <>
-            <div className="flex flex-col gap-4 max-w-lg mx-auto">
+            <div className="flex flex-col gap-4 max-w-lg mx-auto px-4">
               <span className="text-white text-center">
                 Find your referral link below. It allows you to earn rewards when someone uses it on
                 SiBorg Ads.
