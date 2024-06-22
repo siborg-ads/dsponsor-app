@@ -204,7 +204,7 @@ const TokenPageContainer = () => {
         const combinedData = {
           ...offer
         };
-
+        console.log("combinedData", combinedData);
         setOfferData(combinedData);
       };
       setSelectedChain(config[chainId]?.chainNameProvider);
