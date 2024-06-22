@@ -15,7 +15,7 @@ function renderPriceToHumanString(decimalPrice, currencySymbol) {
     precision = 6;
   }
 
-  const formattedPrice = decimalPrice.toFixed(precision);
+  const formattedPrice = Number(decimalPrice).toFixed(precision);
 
   // Add spaces as thousands separators
   const parts = formattedPrice.split(".");

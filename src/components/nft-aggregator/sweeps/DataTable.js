@@ -195,7 +195,7 @@ const DataTable = () => {
             {item.count}
           </div>
           <div className="flex w-2/12 items-center justify-end" role="cell">
-            <span className="text-green">{item.price.toFixed(4)}</span>
+            <span className="text-green">{Number(item.price).toFixed(4)}</span>
             <span title="ETH">
               <Image
                 width={14}
