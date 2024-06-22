@@ -1,10 +1,13 @@
 import Link from "next/link";
-import React from "react";
+import React, { useState } from "react";
 import renderDateToHumanString from "../../providers/utils/renderDateToHumanString";
 import renderPriceToHumanString from "../../providers/utils/renderPriceToHumanString";
 import formatLongAddress from "../../utils/formatLongAddress";
+import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/20/solid";
 
 const ItemLastBids = ({ bids }) => {
+  const [visibleListings, setVisibleListings] = useState(1);
+
   const transformStatus = (status) => {
     switch (status) {
       case "CREATED":
@@ -21,6 +24,14 @@ const ItemLastBids = ({ bids }) => {
   const sortedBids = bids
     .map((listing) => listing.sort((a, b) => b.bid.creationTimestamp - a.bid.creationTimestamp))
     .sort((a, b) => b[0].bid.creationTimestamp - a[0].bid.creationTimestamp);
+
+  const handleViewMore = () => {
+    setVisibleListings((prev) => Math.min(prev + 5, sortedBids.length));
+  };
+
+  const handleViewLess = () => {
+    setVisibleListings((prev) => Math.max(prev - 5, 1));
+  };
 
   return (
     <div className="overflow-x-auto mt-4">
@@ -54,7 +65,7 @@ const ItemLastBids = ({ bids }) => {
           <tbody>
             {sortedBids &&
               sortedBids.length > 0 &&
-              sortedBids.map((listing, listingIndex) => (
+              sortedBids.slice(0, visibleListings).map((listing, listingIndex) => (
                 <React.Fragment key={listingIndex}>
                   {listing.map((bid, bidIndex) => (
                     <tr key={bidIndex}>
@@ -95,6 +106,29 @@ const ItemLastBids = ({ bids }) => {
               ))}
           </tbody>
         </table>
+      </div>
+
+      <div className="text-center flex items-center justify-center gap-4 mt-4 mx-auto">
+        {visibleListings > 1 && (
+          <button
+            className="px-4 py-2 bg-secondaryBlack hover:bg-opacity-80 text-white rounded-lg"
+            onClick={handleViewLess}
+          >
+            <span className="flex items-center gap-1">
+              View Less <ChevronUpIcon className="h-4 w-4" />
+            </span>
+          </button>
+        )}
+        {visibleListings < sortedBids.length && (
+          <button
+            className="px-4 py-2 bg-secondaryBlack hover:bg-opacity-80 text-white rounded-lg"
+            onClick={handleViewMore}
+          >
+            <span className="flex items-center gap-1">
+              View More <ChevronDownIcon className="h-4 w-4" />
+            </span>
+          </button>
+        )}
       </div>
     </div>
   );
