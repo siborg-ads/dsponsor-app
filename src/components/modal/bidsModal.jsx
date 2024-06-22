@@ -1,4 +1,4 @@
-import React, { use, useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { ethers } from "ethers";
 import {
   Web3Button,
@@ -14,7 +14,6 @@ import { computeBidAmounts } from "../../utils/computeBidAmounts";
 import { formatUnits, parseUnits } from "ethers/lib/utils";
 import formatAndRoundPrice from "../../utils/formatAndRound";
 import { fetchTokenPrice } from "../../utils/fetchTokenPrice";
-import { activated_features } from "../../data/activated_features";
 import { getCookie } from "cookies-next";
 import { BigNumber } from "bignumber.js";
 import BidWithCrossmintButton from "../buttons/BidWithCrossmintButton/BidWithCrossmintButton";
@@ -205,7 +204,7 @@ const BidsModal = ({
       const royaltyBps = 0;
       const protocolFeeBps = marketplaceListings[0]?.protocolFeeBps;
 
-      const { newAmount, newRefundBonusAmount, nextReservePricePerToken, protocolFeeAmount } =
+      const { newRefundBonusAmount, nextReservePricePerToken, protocolFeeAmount } =
         computeBidAmounts(
           newBidPerToken,
           1,
@@ -266,22 +265,16 @@ const BidsModal = ({
   }, [bidsAmount, initialIntPrice]);
 
   const handleBidsAmount = async (e) => {
-    if (Number(e.target.value) < initialIntPrice) {
-      setBidsAmount(e.target.value);
+    const value = e.target.value;
+    const fixedValue = parseFloat(value).toFixed(currencyTokenDecimals);
+    const parsedValue = ethers.utils.parseUnits(fixedValue, currencyTokenDecimals);
+
+    if (Number(value) < initialIntPrice) {
+      setBidsAmount(value);
     } else {
-      setBidsAmount(e.target.value);
-      setAmountToApprove(
-        ethers.utils.parseUnits(
-          new BigNumber(Number(e.target.value)).toFixed(Number(currencyTokenDecimals)).toString(),
-          Number(currencyTokenDecimals)
-        )
-      );
-      await checkAllowance(
-        ethers.utils.parseUnits(
-          new BigNumber(Number(e.target.value)).toFixed(Number(currencyTokenDecimals)).toString(),
-          Number(currencyTokenDecimals)
-        )
-      );
+      setBidsAmount(value);
+      setAmountToApprove(parsedValue);
+      await checkAllowance(parsedValue);
     }
   };
 
@@ -316,8 +309,11 @@ const BidsModal = ({
 
     try {
       setIsLoadingButton(true);
-      const bidsBigInt = ethers.utils.parseUnits(bidsAmount.toString(), currencyTokenDecimals);
-      const tokenEtherPriceBigNumber = parseUnits(tokenEtherPrice, nativeTokenDecimals);
+      const bidsBigInt = ethers.utils.parseUnits(
+        bidsAmount.toFixed(currencyTokenDecimals).toString(),
+        Number(currencyTokenDecimals)
+      );
+      const tokenEtherPriceBigNumber = parseUnits(tokenEtherPrice.toFixed(18).toString(), 18);
 
       const referralAddress = getCookie("_rid") || "";
 
@@ -344,7 +340,10 @@ const BidsModal = ({
     }
     try {
       setIsLoadingButton(true);
-      const bidsBigInt = ethers.utils.parseUnits(bidsAmount.toString(), currencyTokenDecimals);
+      const bidsBigInt = ethers.utils.parseUnits(
+        Number(bidsAmount).toFixed(currencyTokenDecimals).toString(),
+        Number(currencyTokenDecimals)
+      );
 
       const referralAddress = getCookie("_rid") || "";
 
