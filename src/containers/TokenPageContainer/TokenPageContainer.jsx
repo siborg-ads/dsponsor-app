@@ -627,7 +627,10 @@ const TokenPageContainer = () => {
           args: [config[chainId]?.smartContracts?.DSPONSORMP?.address, amountToApprove]
         });
       } else if (tokenStatut === "AUCTION" && marketplaceListings.length > 0) {
-        const bidsBigInt = ethers.utils.parseUnits(bidsAmount.toString(), currencyDecimals);
+        const bidsBigInt = ethers.utils.parseUnits(
+          bidsAmount.toFixed(currencyDecimals).toString(),
+          Number(currencyDecimals)
+        );
         await approve({
           args: [config[chainId]?.smartContracts?.DSPONSORMP?.address, bidsBigInt.toString()]
         });
@@ -686,7 +689,7 @@ const TokenPageContainer = () => {
     try {
       setIsLoadingButton(true);
 
-      const tokenEtherPriceBigNumber = parseUnits(buyTokenEtherPrice, 18);
+      const tokenEtherPriceBigNumber = parseUnits(buyTokenEtherPrice.toFixed(18).toString(), 18);
 
       const functionWithPossibleArgs =
         marketplaceListings.length <= 0 ? argsMintAndSubmit : argsdirectBuy;
@@ -771,14 +774,31 @@ const TokenPageContainer = () => {
 
   const checkUserBalance = (tokenAddressBalance, priceToken, decimals) => {
     try {
-      const parsedTokenBalance = tokenAddressBalance?.value;
-      const parsedPriceToken = parseUnits(priceToken.toString(), decimals);
+      if (!tokenAddressBalance || !priceToken) {
+        throw new Error("Invalid balance or price token");
+      }
 
-      return !!parsedTokenBalance.gte(parsedPriceToken);
+      const parsedTokenBalance = tokenAddressBalance?.value;
+
+      if (!parsedTokenBalance) {
+        throw new Error("Failed to parse token balance");
+      }
+
+      const priceTokenNumber = Number(priceToken);
+      if (isNaN(priceTokenNumber)) {
+        throw new Error("Invalid price token amount");
+      }
+
+      const parsedPriceToken = ethers.utils.parseUnits(
+        priceTokenNumber.toFixed(decimals).toString(),
+        Number(decimals)
+      );
+
+      return parsedTokenBalance.gte(parsedPriceToken);
     } catch (error) {
       toast.error("Error while checking user balance");
       console.error("Failed to fetch token balance:", error);
-      throw new Error("Failed to fetch token balance");
+      throw Error("Failed to fetch token balance");
     }
   };
 
