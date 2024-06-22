@@ -225,7 +225,9 @@ const TokenPageContainer = () => {
 
   useEffect(() => {
     if (offerData?.nftContract?.tokens.length > 0) {
-      setMarketplaceListings(offerData?.nftContract?.tokens[0]?.marketplaceListings);
+      setMarketplaceListings(
+        offerData?.nftContract?.tokens[0]?.marketplaceListings.sort((a, b) => b.id - a.id)
+      );
     }
   }, [offerData]);
 
@@ -628,7 +630,7 @@ const TokenPageContainer = () => {
         });
       } else if (tokenStatut === "AUCTION" && marketplaceListings.length > 0) {
         const bidsBigInt = ethers.utils.parseUnits(
-          bidsAmount.toFixed(currencyDecimals).toString(),
+          Number(bidsAmount).toFixed(currencyDecimals).toString(),
           Number(currencyDecimals)
         );
         await approve({
@@ -689,7 +691,10 @@ const TokenPageContainer = () => {
     try {
       setIsLoadingButton(true);
 
-      const tokenEtherPriceBigNumber = parseUnits(buyTokenEtherPrice.toFixed(18).toString(), 18);
+      const tokenEtherPriceBigNumber = parseUnits(
+        Number(buyTokenEtherPrice).toFixed(18).toString(),
+        18
+      );
 
       const functionWithPossibleArgs =
         marketplaceListings.length <= 0 ? argsMintAndSubmit : argsdirectBuy;
@@ -790,7 +795,7 @@ const TokenPageContainer = () => {
       }
 
       const parsedPriceToken = ethers.utils.parseUnits(
-        priceTokenNumber.toFixed(decimals).toString(),
+        Number(priceTokenNumber).toFixed(decimals).toString(),
         Number(decimals)
       );
 

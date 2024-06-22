@@ -10,7 +10,6 @@ import { formatUnits, parseUnits } from "ethers/lib/utils";
 import formatAndRoundPrice from "../../utils/formatAndRound";
 import { fetchTokenPrice } from "../../utils/fetchTokenPrice";
 import { getCookie } from "cookies-next";
-import { BigNumber } from "bignumber.js";
 import BidWithCrossmintButton from "../buttons/BidWithCrossmintButton/BidWithCrossmintButton";
 import Tippy from "@tippyjs/react";
 import { ClipboardIcon } from "@heroicons/react/20/solid";
@@ -160,7 +159,7 @@ const BidsModal = ({
         marketplaceListings[0]?.currency,
         Number(chainId),
         parseUnits(
-          new BigNumber(bidsAmount).toFixed(Number(currencyTokenDecimals)).toString(),
+          Number(bidsAmount).toFixed(Number(currencyTokenDecimals)).toString(),
           Number(currencyTokenDecimals)
         )
       ).then((price) => {
@@ -198,7 +197,7 @@ const BidsModal = ({
 
   useEffect(() => {
     if (marketplaceListings[0] && bidsAmount && bidsAmount > 0 && currencyTokenDecimals) {
-      const bidsAmountFixed = new BigNumber(bidsAmount).toFixed(Number(currencyTokenDecimals));
+      const bidsAmountFixed = Number(bidsAmount).toFixed(Number(currencyTokenDecimals));
       const newBidPerToken = parseUnits(bidsAmountFixed, Number(currencyTokenDecimals));
       const reservePricePerToken = marketplaceListings[0]?.reservePricePerToken;
       const buyoutPricePerToken = marketplaceListings[0]?.buyoutPricePerToken;
@@ -315,7 +314,7 @@ const BidsModal = ({
     try {
       setIsLoadingButton(true);
       const bidsBigInt = ethers.utils.parseUnits(
-        bidsAmount.toFixed(currencyTokenDecimals).toString(),
+        Number(bidsAmount).toFixed(currencyTokenDecimals).toString(),
         Number(currencyTokenDecimals)
       );
       const tokenEtherPriceBigNumber = parseUnits(tokenEtherPrice.toFixed(18).toString(), 18);
