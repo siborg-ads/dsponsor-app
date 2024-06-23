@@ -243,6 +243,7 @@ const BidsModal = ({
       //const newRefundBonusAmountAdded = BigInt(newRefundBonusAmount) + BigInt(newAmount);
       // const newRefundBonusFormatted = formatUnits(newRefundBonusAmount, currencyTokenDecimals);
       const newProfitAmountFormatted = formatUnits(newProfitAmount, currencyTokenDecimals);
+
       //const newRefundBonusAddedFormatted = formatUnits(
       //  newRefundBonusAmountAdded,
       //  currencyTokenDecimals
