@@ -84,8 +84,10 @@ const BidsModal = ({
 
   useEffect(() => {
     const fetchEtherPrice = async () => {
-      const roundedBidsAmount = parseFloat(bidsAmount).toFixed(currencyTokenDecimals);
-      const bidsAmountDecimals = parseUnits(roundedBidsAmount, currencyTokenDecimals);
+      const precision = bidsAmount.split(".")[1]?.length || 0;
+      const bidsAmountDecimals = parseUnits(
+        Number(bidsAmount).toFixed(Math.min(Number(currencyTokenDecimals), precision))
+      );
 
       const tokenEtherPrice = await fetch(
         `https://relayer.dsponsor.com/api/${chainId}/prices?token=${currencyContract}&amount=${bidsAmountDecimals}&slippage=0.3`,
@@ -120,7 +122,10 @@ const BidsModal = ({
     const fixedEtherPrice = Number(tokenEtherPrice).toFixed(currencyTokenDecimals);
     const tokenEtherPriceDecimals = parseUnits(fixedEtherPrice, currencyTokenDecimals);
 
-    const fixedBidsAmount = Number(bidsAmount).toFixed(currencyTokenDecimals);
+    const precision = bidsAmount.split(".")[1]?.length || 0;
+    const fixedBidsAmount = Number(bidsAmount).toFixed(
+      Math.min(Number(currencyTokenDecimals), precision)
+    );
     const bidsAmountDecimals = parseUnits(fixedBidsAmount, currencyTokenDecimals);
 
     const hasInsufficientBalance =
@@ -155,11 +160,12 @@ const BidsModal = ({
 
   useEffect(() => {
     const fetchData = async () => {
+      const precision = bidsAmount.split(".")[1]?.length || 0;
       await fetchTokenPrice(
         marketplaceListings[0]?.currency,
         Number(chainId),
         parseUnits(
-          Number(bidsAmount).toFixed(Number(currencyTokenDecimals)).toString(),
+          Number(bidsAmount).toFixed(Math.min(Number(currencyTokenDecimals), precision)),
           Number(currencyTokenDecimals)
         )
       ).then((price) => {
@@ -176,7 +182,10 @@ const BidsModal = ({
 
   useEffect(() => {
     if (marketplaceListings && marketplaceListings[0] && bidsAmount && bidsAmount > 0) {
-      const fixedBidsAmount = Number(bidsAmount).toFixed(currencyTokenDecimals);
+      const precision = bidsAmount.split(".")[1]?.length || 0;
+      const fixedBidsAmount = Number(bidsAmount).toFixed(
+        Math.min(Number(currencyTokenDecimals), precision)
+      );
       const bidsAmountLocal = parseUnits(fixedBidsAmount, currencyTokenDecimals);
       const minimalBuyoutPerToken =
         marketplaceListings[0]?.bidPriceStructure?.minimalBuyoutPerToken;
@@ -197,7 +206,10 @@ const BidsModal = ({
 
   useEffect(() => {
     if (marketplaceListings[0] && bidsAmount && bidsAmount > 0 && currencyTokenDecimals) {
-      const bidsAmountFixed = Number(bidsAmount).toFixed(Number(currencyTokenDecimals));
+      const precision = bidsAmount.split(".")[1]?.length || 0;
+      const bidsAmountFixed = Number(bidsAmount).toFixed(
+        Math.min(Number(currencyTokenDecimals), precision)
+      );
       const newBidPerToken = parseUnits(bidsAmountFixed, Number(currencyTokenDecimals));
       const reservePricePerToken = marketplaceListings[0]?.reservePricePerToken;
       const buyoutPricePerToken = marketplaceListings[0]?.buyoutPricePerToken;
@@ -275,7 +287,10 @@ const BidsModal = ({
 
   const handleBidsAmount = async (e) => {
     const value = e.target.value;
-    const fixedValue = parseFloat(value).toFixed(currencyTokenDecimals);
+    const valuePrecision = value.split(".")[1]?.length || 0;
+    const fixedValue = parseFloat(value).toFixed(
+      Math.min(Number(currencyTokenDecimals), valuePrecision)
+    );
     const parsedValue = ethers.utils.parseUnits(fixedValue, currencyTokenDecimals);
 
     if (Number(value) < initialIntPrice) {
@@ -318,11 +333,12 @@ const BidsModal = ({
 
     try {
       setIsLoadingButton(true);
+      const precision = bidsAmount.split(".")[1]?.length || 0;
       const bidsBigInt = ethers.utils.parseUnits(
-        Number(bidsAmount).toFixed(currencyTokenDecimals).toString(),
+        Number(bidsAmount).toFixed(Math.min(Number(currencyTokenDecimals), precision)),
         Number(currencyTokenDecimals)
       );
-      const tokenEtherPriceBigNumber = parseUnits(tokenEtherPrice.toFixed(18).toString(), 18);
+      const tokenEtherPriceBigNumber = parseUnits(tokenEtherPrice.toFixed(18), 18);
 
       const referralAddress = getCookie("_rid") || "";
 
@@ -349,8 +365,9 @@ const BidsModal = ({
     }
     try {
       setIsLoadingButton(true);
+      const precision = bidsAmount.split(".")[1]?.length || 0;
       const bidsBigInt = ethers.utils.parseUnits(
-        Number(bidsAmount).toFixed(currencyTokenDecimals).toString(),
+        Number(bidsAmount).toFixed(Math.min(Number(currencyTokenDecimals), precision)),
         Number(currencyTokenDecimals)
       );
 

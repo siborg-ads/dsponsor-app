@@ -629,10 +629,11 @@ const TokenPageContainer = () => {
           args: [config[chainId]?.smartContracts?.DSPONSORMP?.address, amountToApprove]
         });
       } else if (tokenStatut === "AUCTION" && marketplaceListings.length > 0) {
-        const bidsBigInt = ethers.utils.parseUnits(
-          Number(bidsAmount).toFixed(currencyDecimals).toString(),
-          Number(currencyDecimals)
+        const precision = bidsAmount.split(".")[1]?.length || 0;
+        const bidsBigInt = parseUnits(
+          Number(bidsAmount).toFixed(Math.min(Number(currencyDecimals), precision))
         );
+
         await approve({
           args: [config[chainId]?.smartContracts?.DSPONSORMP?.address, bidsBigInt.toString()]
         });
