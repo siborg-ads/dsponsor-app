@@ -149,7 +149,7 @@ const LeaderboardTable = ({ activity }) => {
       render: (item) => (
         <Link href={`/profile/${item.enabler}`}>
           <span className="text-primaryPink hover:text-jacarta-100">
-            {formatLongAddress(item.enabler)}
+            {formatLongAddress(item.enablerDisplayAddr)}
           </span>
         </Link>
       )
@@ -159,7 +159,7 @@ const LeaderboardTable = ({ activity }) => {
       render: (item) => (
         <Link href={`/profile/${item.spender}`}>
           <span className="text-primaryPink hover:text-jacarta-100">
-            {formatLongAddress(item.spender)}
+            {formatLongAddress(item.spenderDisplayAddr)}
           </span>
         </Link>
       )
@@ -169,7 +169,7 @@ const LeaderboardTable = ({ activity }) => {
       render: (item) => (
         <Link href={`/profile/${item.refAddr}`}>
           <span className="text-primaryPink hover:text-jacarta-100">
-            {formatLongAddress(item.refAddr)}
+            {formatLongAddress(item.refAddrDisplayAddr)}
           </span>
         </Link>
       )

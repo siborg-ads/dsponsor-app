@@ -56,6 +56,7 @@ const BidsModal = ({
   const [mount, setMount] = useState(false);
   const [insufficentBalance, setInsufficentBalance] = useState(false);
   const [tokenEtherPrice, setTokenEtherPrice] = useState(null);
+  const [amountInEthWithSlippage, setAmountInEthWithSlippage] = useState(null);
   const [canPayWithNativeToken, setCanPayWithNativeToken] = useState(false);
   const [notEnoughFunds, setNotEnoughFunds] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -84,8 +85,11 @@ const BidsModal = ({
 
   useEffect(() => {
     const fetchEtherPrice = async () => {
-      const roundedBidsAmount = parseFloat(bidsAmount).toFixed(currencyTokenDecimals);
-      const bidsAmountDecimals = parseUnits(roundedBidsAmount, currencyTokenDecimals);
+      const precision = bidsAmount.split(".")[1]?.length || 0;
+      const bidsAmountDecimals = parseUnits(
+        Number(bidsAmount).toFixed(Math.min(Number(currencyTokenDecimals), precision)),
+        Number(currencyTokenDecimals)
+      );
 
       const tokenEtherPrice = await fetch(
         `https://relayer.dsponsor.com/api/${chainId}/prices?token=${currencyContract}&amount=${bidsAmountDecimals}&slippage=0.3`,
@@ -106,6 +110,7 @@ const BidsModal = ({
 
       const tokenEtherPriceDecimals = formatUnits(tokenEtherPrice?.amountInEthWithSlippage, 18);
 
+      setAmountInEthWithSlippage(tokenEtherPrice?.amountInEthWithSlippage);
       setTokenEtherPrice(tokenEtherPriceDecimals);
     };
 
@@ -120,7 +125,10 @@ const BidsModal = ({
     const fixedEtherPrice = Number(tokenEtherPrice).toFixed(currencyTokenDecimals);
     const tokenEtherPriceDecimals = parseUnits(fixedEtherPrice, currencyTokenDecimals);
 
-    const fixedBidsAmount = Number(bidsAmount).toFixed(currencyTokenDecimals);
+    const precision = bidsAmount.split(".")[1]?.length || 0;
+    const fixedBidsAmount = Number(bidsAmount).toFixed(
+      Math.min(Number(currencyTokenDecimals), precision)
+    );
     const bidsAmountDecimals = parseUnits(fixedBidsAmount, currencyTokenDecimals);
 
     const hasInsufficientBalance =
@@ -155,11 +163,12 @@ const BidsModal = ({
 
   useEffect(() => {
     const fetchData = async () => {
+      const precision = bidsAmount.split(".")[1]?.length || 0;
       await fetchTokenPrice(
         marketplaceListings[0]?.currency,
         Number(chainId),
         parseUnits(
-          Number(bidsAmount).toFixed(Number(currencyTokenDecimals)).toString(),
+          Number(bidsAmount).toFixed(Math.min(Number(currencyTokenDecimals), precision)),
           Number(currencyTokenDecimals)
         )
       ).then((price) => {
@@ -176,7 +185,10 @@ const BidsModal = ({
 
   useEffect(() => {
     if (marketplaceListings && marketplaceListings[0] && bidsAmount && bidsAmount > 0) {
-      const fixedBidsAmount = Number(bidsAmount).toFixed(currencyTokenDecimals);
+      const precision = bidsAmount.split(".")[1]?.length || 0;
+      const fixedBidsAmount = Number(bidsAmount).toFixed(
+        Math.min(Number(currencyTokenDecimals), precision)
+      );
       const bidsAmountLocal = parseUnits(fixedBidsAmount, currencyTokenDecimals);
       const minimalBuyoutPerToken =
         marketplaceListings[0]?.bidPriceStructure?.minimalBuyoutPerToken;
@@ -197,7 +209,10 @@ const BidsModal = ({
 
   useEffect(() => {
     if (marketplaceListings[0] && bidsAmount && bidsAmount > 0 && currencyTokenDecimals) {
-      const bidsAmountFixed = Number(bidsAmount).toFixed(Number(currencyTokenDecimals));
+      const precision = bidsAmount.split(".")[1]?.length || 0;
+      const bidsAmountFixed = Number(bidsAmount).toFixed(
+        Math.min(Number(currencyTokenDecimals), precision)
+      );
       const newBidPerToken = parseUnits(bidsAmountFixed, Number(currencyTokenDecimals));
       const reservePricePerToken = marketplaceListings[0]?.reservePricePerToken;
       const buyoutPricePerToken = marketplaceListings[0]?.buyoutPricePerToken;
@@ -208,21 +223,27 @@ const BidsModal = ({
       const royaltyBps = 0;
       const protocolFeeBps = marketplaceListings[0]?.protocolFeeBps;
 
-      const { newRefundBonusAmount, nextReservePricePerToken, protocolFeeAmount } =
-        computeBidAmounts(
-          newBidPerToken,
-          1,
-          reservePricePerToken,
-          buyoutPricePerToken,
-          previousPricePerToken,
-          minimalAuctionBps,
-          bonusRefundBps,
-          royaltyBps,
-          protocolFeeBps
-        );
+      const {
+        // newRefundBonusAmount,
+        nextReservePricePerToken,
+        protocolFeeAmount,
+        newProfitAmount
+      } = computeBidAmounts(
+        newBidPerToken,
+        1,
+        reservePricePerToken,
+        buyoutPricePerToken,
+        previousPricePerToken,
+        minimalAuctionBps,
+        bonusRefundBps,
+        royaltyBps,
+        protocolFeeBps
+      );
 
       //const newRefundBonusAmountAdded = BigInt(newRefundBonusAmount) + BigInt(newAmount);
-      const newRefundBonusFormatted = formatUnits(newRefundBonusAmount, currencyTokenDecimals);
+      // const newRefundBonusFormatted = formatUnits(newRefundBonusAmount, currencyTokenDecimals);
+      const newProfitAmountFormatted = formatUnits(newProfitAmount, currencyTokenDecimals);
+
       //const newRefundBonusAddedFormatted = formatUnits(
       //  newRefundBonusAmountAdded,
       //  currencyTokenDecimals
@@ -236,7 +257,7 @@ const BidsModal = ({
       const protocolFeeAmountFormatted = formatUnits(protocolFeeAmount.toString(), 13);
 
       setProtocolFeeAmount(protocolFeeAmountFormatted);
-      setRefundedPrice(newRefundBonusFormatted);
+      setRefundedPrice(newProfitAmountFormatted);
       setMinBid(nextReservePricePerTokenFormatted);
     } else {
       setMinBid(0);
@@ -270,7 +291,10 @@ const BidsModal = ({
 
   const handleBidsAmount = async (e) => {
     const value = e.target.value;
-    const fixedValue = parseFloat(value).toFixed(currencyTokenDecimals);
+    const valuePrecision = value.split(".")[1]?.length || 0;
+    const fixedValue = parseFloat(value).toFixed(
+      Math.min(Number(currencyTokenDecimals), valuePrecision)
+    );
     const parsedValue = ethers.utils.parseUnits(fixedValue, currencyTokenDecimals);
 
     if (Number(value) < initialIntPrice) {
@@ -313,17 +337,17 @@ const BidsModal = ({
 
     try {
       setIsLoadingButton(true);
+      const precision = bidsAmount.split(".")[1]?.length || 0;
       const bidsBigInt = ethers.utils.parseUnits(
-        Number(bidsAmount).toFixed(currencyTokenDecimals).toString(),
+        Number(bidsAmount).toFixed(Math.min(Number(currencyTokenDecimals), precision)),
         Number(currencyTokenDecimals)
       );
-      const tokenEtherPriceBigNumber = parseUnits(tokenEtherPrice.toFixed(18).toString(), 18);
 
       const referralAddress = getCookie("_rid") || "";
 
       await auctionBids({
         args: [marketplaceListings[0].id, bidsBigInt, address, referralAddress],
-        overrides: { value: tokenEtherPriceBigNumber }
+        overrides: { value: amountInEthWithSlippage }
       });
 
       setSuccessFullBid(true);
@@ -344,8 +368,9 @@ const BidsModal = ({
     }
     try {
       setIsLoadingButton(true);
+      const precision = bidsAmount.split(".")[1]?.length || 0;
       const bidsBigInt = ethers.utils.parseUnits(
-        Number(bidsAmount).toFixed(currencyTokenDecimals).toString(),
+        Number(bidsAmount).toFixed(Math.min(Number(currencyTokenDecimals), precision)),
         Number(currencyTokenDecimals)
       );
 
@@ -496,7 +521,7 @@ const BidsModal = ({
                       <div className="flex flex-col gap-2">
                         <div className="grid grid-cols-7 items-center gap-4 mx-auto w-full min-w-max">
                           <div className="bg-jacarta-600 col-span-3 duration-400 shadow p-4 rounded-xl font-semibold text-base text-white text-center min-w-[200px] max-w-[200px]">
-                            Ad Space bought
+                            Ad space NFT in your wallet
                           </div>
 
                           <div className="text-center flex justify-center items-center min-w-max">
@@ -515,13 +540,13 @@ const BidsModal = ({
                         </div>
                         <div className="grid grid-cols-7 items-center gap-4 mx-auto w-full">
                           <div className="w-full col-span-3 text-base text-white flex justify-center items-center text-center min-w-[200px] max-w-[200px]">
-                            If auction winner
+                            If you are still the highest bidder when the auction closes
                           </div>
 
                           <div />
 
                           <div className="w-full col-span-3 text-base text-white flex justify-center items-center text-center min-w-[200px] max-w-[200px]">
-                            If outbided
+                            If someone outbids
                           </div>
                         </div>
                       </div>

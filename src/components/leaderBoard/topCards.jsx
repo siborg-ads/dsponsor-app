@@ -65,7 +65,7 @@ const TopCards = ({ activity }) => {
         <div className="flex flex-col gap-2 items-center justify-center sm:flex sm:flex-wrap">
           <p className="dark:text-white font-medium">Total Sales</p>
           <span className="text-jacarta-100 font-semibold text-ellipsis whitespace-nowrap overflow-hidden">
-            {activity?.totalSpentUSDCAmount} USDC
+            ${activity?.totalSpentUSDCAmount}
           </span>
         </div>
       </div>
@@ -89,9 +89,9 @@ const TopCards = ({ activity }) => {
           </Popover>
         </div>
         <div className="flex flex-col gap-2 items-center justify-center sm:flex sm:flex-wrap">
-          <p className="dark:text-white font-medium">Total Reward</p>
+          <p className="dark:text-white font-medium">Total Rewards</p>
           <span className="text-jacarta-100 font-semibold text-ellipsis whitespace-nowrap overflow-hidden">
-            {activity?.totalBidRefundUSDCAmount} USDC
+            ${activity?.totalBidRefundUSDCAmount}
           </span>
         </div>
       </div>

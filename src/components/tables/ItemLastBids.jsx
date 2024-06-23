@@ -13,7 +13,7 @@ const ItemLastBids = ({ bids }) => {
       case "CREATED":
         return "Best Bid 🎉";
       case "CANCELLED":
-        return "Outbid ❌";
+        return "Outbid 💸";
       case "COMPLETED":
         return "Won 👑";
       default:
