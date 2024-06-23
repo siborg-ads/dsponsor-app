@@ -631,7 +631,8 @@ const TokenPageContainer = () => {
       } else if (tokenStatut === "AUCTION" && marketplaceListings.length > 0) {
         const precision = bidsAmount.split(".")[1]?.length || 0;
         const bidsBigInt = parseUnits(
-          Number(bidsAmount).toFixed(Math.min(Number(currencyDecimals), precision))
+          Number(bidsAmount).toFixed(Math.min(Number(currencyDecimals), precision)),
+          Number(currencyDecimals)
         );
 
         await approve({

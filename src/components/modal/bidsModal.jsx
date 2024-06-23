@@ -86,7 +86,8 @@ const BidsModal = ({
     const fetchEtherPrice = async () => {
       const precision = bidsAmount.split(".")[1]?.length || 0;
       const bidsAmountDecimals = parseUnits(
-        Number(bidsAmount).toFixed(Math.min(Number(currencyTokenDecimals), precision))
+        Number(bidsAmount).toFixed(Math.min(Number(currencyTokenDecimals), precision)),
+        Number(currencyTokenDecimals)
       );
 
       const tokenEtherPrice = await fetch(
