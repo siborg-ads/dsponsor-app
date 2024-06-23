@@ -226,7 +226,7 @@ const PreviewModal = ({
                   )}
                   {selectedStartingPrice || errors.startingPriceError ? (
                     <p className="font-display  mb-2 block text-jacarta-100 text-sm">
-                      Unit starting Price :{" "}
+                      Bid starting price :{" "}
                       {!errors.startingPriceError ? (
                         <span className="dark:text-white text-base ml-2">
                           {" "}
@@ -242,7 +242,7 @@ const PreviewModal = ({
                   )}
                   {selectedUnitPrice || errors.unitPriceError ? (
                     <p className="font-display  mb-2 block text-jacarta-100 text-sm">
-                      Unit Price :{" "}
+                      Buy Price :{" "}
                       {!errors.unitPriceError ? (
                         <span className="dark:text-white text-base ml-2">
                           {" "}

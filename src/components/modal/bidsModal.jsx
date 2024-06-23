@@ -501,7 +501,7 @@ const BidsModal = ({
                       <div className="flex flex-col gap-2">
                         <div className="grid grid-cols-7 items-center gap-4 mx-auto w-full min-w-max">
                           <div className="bg-jacarta-600 col-span-3 duration-400 shadow p-4 rounded-xl font-semibold text-base text-white text-center min-w-[200px] max-w-[200px]">
-                            Ad Space bought
+                            Ad space NFT in your wallet
                           </div>
 
                           <div className="text-center flex justify-center items-center min-w-max">
@@ -520,13 +520,13 @@ const BidsModal = ({
                         </div>
                         <div className="grid grid-cols-7 items-center gap-4 mx-auto w-full">
                           <div className="w-full col-span-3 text-base text-white flex justify-center items-center text-center min-w-[200px] max-w-[200px]">
-                            If auction winner
+                            If you are still the highest bidder when the auction closes
                           </div>
 
                           <div />
 
                           <div className="w-full col-span-3 text-base text-white flex justify-center items-center text-center min-w-[200px] max-w-[200px]">
-                            If outbided
+                            If someone outbids
                           </div>
                         </div>
                       </div>
