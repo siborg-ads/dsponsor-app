@@ -56,6 +56,7 @@ const BidsModal = ({
   const [mount, setMount] = useState(false);
   const [insufficentBalance, setInsufficentBalance] = useState(false);
   const [tokenEtherPrice, setTokenEtherPrice] = useState(null);
+  const [amountInEthWithSlippage, setAmountInEthWithSlippage] = useState(null);
   const [canPayWithNativeToken, setCanPayWithNativeToken] = useState(false);
   const [notEnoughFunds, setNotEnoughFunds] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -109,6 +110,7 @@ const BidsModal = ({
 
       const tokenEtherPriceDecimals = formatUnits(tokenEtherPrice?.amountInEthWithSlippage, 18);
 
+      setAmountInEthWithSlippage(tokenEtherPrice?.amountInEthWithSlippage);
       setTokenEtherPrice(tokenEtherPriceDecimals);
     };
 
@@ -339,13 +341,12 @@ const BidsModal = ({
         Number(bidsAmount).toFixed(Math.min(Number(currencyTokenDecimals), precision)),
         Number(currencyTokenDecimals)
       );
-      const tokenEtherPriceBigNumber = parseUnits(tokenEtherPrice.toFixed(18), 18);
 
       const referralAddress = getCookie("_rid") || "";
 
       await auctionBids({
         args: [marketplaceListings[0].id, bidsBigInt, address, referralAddress],
-        overrides: { value: tokenEtherPriceBigNumber }
+        overrides: { value: amountInEthWithSlippage }
       });
 
       setSuccessFullBid(true);
