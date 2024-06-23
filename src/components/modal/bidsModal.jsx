@@ -208,21 +208,26 @@ const BidsModal = ({
       const royaltyBps = 0;
       const protocolFeeBps = marketplaceListings[0]?.protocolFeeBps;
 
-      const { newRefundBonusAmount, nextReservePricePerToken, protocolFeeAmount } =
-        computeBidAmounts(
-          newBidPerToken,
-          1,
-          reservePricePerToken,
-          buyoutPricePerToken,
-          previousPricePerToken,
-          minimalAuctionBps,
-          bonusRefundBps,
-          royaltyBps,
-          protocolFeeBps
-        );
+      const {
+        // newRefundBonusAmount,
+        nextReservePricePerToken,
+        protocolFeeAmount,
+        newProfitAmount
+      } = computeBidAmounts(
+        newBidPerToken,
+        1,
+        reservePricePerToken,
+        buyoutPricePerToken,
+        previousPricePerToken,
+        minimalAuctionBps,
+        bonusRefundBps,
+        royaltyBps,
+        protocolFeeBps
+      );
 
       //const newRefundBonusAmountAdded = BigInt(newRefundBonusAmount) + BigInt(newAmount);
-      const newRefundBonusFormatted = formatUnits(newRefundBonusAmount, currencyTokenDecimals);
+      // const newRefundBonusFormatted = formatUnits(newRefundBonusAmount, currencyTokenDecimals);
+      const newProfitAmountFormatted = formatUnits(newProfitAmount, currencyTokenDecimals);
       //const newRefundBonusAddedFormatted = formatUnits(
       //  newRefundBonusAmountAdded,
       //  currencyTokenDecimals
@@ -236,7 +241,7 @@ const BidsModal = ({
       const protocolFeeAmountFormatted = formatUnits(protocolFeeAmount.toString(), 13);
 
       setProtocolFeeAmount(protocolFeeAmountFormatted);
-      setRefundedPrice(newRefundBonusFormatted);
+      setRefundedPrice(newProfitAmountFormatted);
       setMinBid(nextReservePricePerTokenFormatted);
     } else {
       setMinBid(0);
