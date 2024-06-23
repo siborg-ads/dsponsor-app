@@ -6,7 +6,7 @@ const formatAndRoundPrice = (value) => {
   }
 
   if (num > 1) {
-    return 1;
+    return parseFloat(num.toFixed(2));
   } else if (num > 0.1) {
     return parseFloat(num.toFixed(3));
   } else if (num > 0.01) {
