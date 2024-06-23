@@ -13,7 +13,7 @@ const activityToTopHolders = (activity, userAddress) => {
       .sort((a, b) => a.holdersRank - b.holdersRank)
       .map((ranking) => ({
         rank: ranking.holdersRank,
-        totalSpent: Math.min(0, ranking.usdcAmounts.totalSpent),
+        totalSpent: ranking.usdcAmounts.totalSpent,
         addressDisplay: ranking.displayAddr,
         address: ranking.addr,
         balance: ranking.balance,
@@ -35,7 +35,7 @@ const activityToTopHolders = (activity, userAddress) => {
 
   return sortedActivity.map((ranking) => ({
     rank: ranking.holdersRank,
-    totalSpent: Math.min(0, ranking.usdcAmounts.totalSpent),
+    totalSpent: ranking.usdcAmounts.totalSpent,
     addressDisplay: getAddress(ranking.addr) === getAddress(userAddress) ? "You" : ranking.addr,
     address: ranking.addr,
     balance: ranking.balance,
