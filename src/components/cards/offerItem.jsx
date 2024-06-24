@@ -175,15 +175,15 @@ const OfferItem = ({
           <div className="flex flex-col justify-between flex-1">
             <div className="mt-4 flex items-center justify-between gap-2">
               {isSelectionActive ? (
-                <span className="font-display max-w-[150px] text-primaryBlack hover:text-primaryPurple text-base dark:text-white ">
+                <span className="font-display  text-primaryBlack hover:text-primaryPurple text-base dark:text-white ">
                   {name}
                 </span>
               ) : (
                 <Link
                   href={url ?? "#"}
-                  className="overflow-hidden text-ellipsis whitespace-nowrap max-w-[150px]"
+                  className="overflow-hidden text-ellipsis whitespace-nowrap "
                 >
-                  <span className="font-display max-w-[150px] text-primaryBlack hover:text-primaryPurple text-base dark:text-white ">
+                  <span className="font-display  text-primaryBlack hover:text-primaryPurple text-base dark:text-white ">
                     {name}
                   </span>
                 </Link>
@@ -199,7 +199,7 @@ const OfferItem = ({
               ) : (
                 itemStatut === "AUCTION" && (
                   <span
-                    className={`${item.status === "CREATED" ? "text-primaryPurple" : item.statut === "COMPLETED" ? "text-green" : "text-red"} text-sm font-medium tracking-tight`}
+                    className={`${item.status === "AUCTION WON" ? "text-primaryPurple" : item.status === "HIGHEST BIDDER" ? "text-green" : "text-red"} whitespace-nowrap  min-w-[100px] text-xs text-end font-medium tracking-tight`}
                   >
                     {item.status}
                   </span>
@@ -212,7 +212,10 @@ const OfferItem = ({
                   <span className="dark:text-jacarta-100 text-jacarta-100">
                     {formatDate(valid_from)} - {formatDate(valid_to)}
                   </span>
-                ) : (!isAuction && !isListing && itemStatut !== "TOKENMINTABLE") ||
+                ) : (!isAuction &&
+                    !isListing &&
+                    itemStatut !== "TOKENMINTABLE" &&
+                    itemStatut !== "DIRECT") ||
                   item?.listing?.status === "COMPLETED" ? (
                   <div className="flex  w-full gap-2 items-center ">
                     <span className="text-jacarta-100">Sold</span>
