@@ -40,7 +40,7 @@ export const fetchAllListedTokenWithoutFilter = async (chainId, allTokens) => {
                 quantity_gt: 0
                 startTime_lte: $currentTimestamp
                 endTime_gte: $currentTimestamp
-              }
+             }
             ) {
               id # listingId
               quantity

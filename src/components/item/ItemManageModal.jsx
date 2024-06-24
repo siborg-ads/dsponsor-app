@@ -110,11 +110,11 @@ const ItemManageModal = ({
         const startTime = Math.max(startDateFormated, nowFormated);
         const endDateFormated = Math.floor(endDate.getTime() / 1000);
         const secondsUntilEndTime = endDateFormated - startTime;
-        
+
         const startingPrice = ethers.utils
           .parseUnits(selectedStartingPrice.toString(), tokenDecimals)
           .toString();
-          
+
         const isAuction = selectedListingType[0] === 1;
         const price = ethers.utils
           .parseUnits(selectedUnitPrice.toString(), tokenDecimals)
@@ -266,9 +266,9 @@ const ItemManageModal = ({
     const finalPrice = price - price * (fees[0] + fees[1]);
 
     if (smartContract) {
-      return finalPrice.toFixed(tokenDecimals);
+      return Number(finalPrice).toFixed(tokenDecimals);
     } else {
-      return finalPrice.toFixed(3);
+      return Number(finalPrice).toFixed(3);
     }
   };
 

@@ -5,7 +5,6 @@ import { useEffect, useState } from "react";
 import "swiper/css";
 import "swiper/css/navigation";
 import "tippy.js/dist/tippy.css";
-import  ModalHelper  from "../Helper/modalHelper";
 import TimerCard from "./TimerCard";
 
 const OfferItem = ({
@@ -71,7 +70,7 @@ const OfferItem = ({
       setItemStatut("DIRECT");
     }
   }, [item, isToken, isListing, isAuction, listingType]);
- 
+
   useEffect(() => {
     if (!item) return;
 
@@ -90,34 +89,6 @@ const OfferItem = ({
     valid_from = null,
     valid_to = null
   } = itemData ?? {};
-  const listingActive = {
-    title: "Status : Active",
-    body: "Auction still running, you can place a bid.",
-    size: "small"
-  };
-  const listingFinished = {
-    title: "Status : Finished",
-    body: "The auction has ended, you can complete the auction in the token page.",
-    size: "small"
-  };
-  const listingCancelled = {
-    title: "Status : Cancelled",
-    body: "The auction has been cancelled.",
-    size: "small"
-  };
-
-  const handleListingsStatusHelperModal = (status) => {
-    switch (status) {
-      case "Active":
-        return { ...listingActive };
-      case "Finished":
-        return { ...listingFinished };
-      case "Cancelled":
-        return { ...listingCancelled};
-      default:
-        return { ...listingActive };
-    }
-  };
 
   return (
     <>

@@ -19,8 +19,8 @@ const renderTable = (data, columns, userAddress) => {
 
   return (
     <div className="w-full text-left min-w-[736px] border dark:border-primaryPink dark:border-opacity-10 dark:bg-primaryBlack dark:text-white rounded-2lg">
-      <table className="w-full rounded-2lg">
-        <thead className="rounded-2lg">
+      <table className="w-full rounded-2lg overflow-hidden">
+        <thead className="rounded-2lg border border-primaryPurple">
           <tr className="bg-jacarta-50 dark:bg-primaryPurple rounded-2lg">
             {columns.map((col, index) => (
               <th key={index} className="py-3 px-4 font-medium">
@@ -33,7 +33,7 @@ const renderTable = (data, columns, userAddress) => {
           {data?.map((item, index) => (
             <tr
               key={index}
-              className={`border-t border-jacarta-100 dark:border-primaryPink dark:border-opacity-10 ${userAddress && item.address && getAddress(item.address) === getAddress(userAddress) ? "bg-primaryPurple bg-opacity-5" : ""}`}
+              className={`${userAddress && item.address && getAddress(item.address) === getAddress(userAddress) ? (index === 0 ? "bg-primaryPurple bg-opacity-10 border-primaryPurple border" : "bg-primaryPurple bg-opacity-10") : "border-t border-opacity-10 border-jacarta-100 dark:border-primaryPink dark:border-opacity-10"}`}
             >
               {columns.map((col, colIndex) => (
                 <td key={colIndex} className="py-4 px-4">
@@ -149,7 +149,7 @@ const LeaderboardTable = ({ activity }) => {
       render: (item) => (
         <Link href={`/profile/${item.enabler}`}>
           <span className="text-primaryPink hover:text-jacarta-100">
-            {formatLongAddress(item.enabler)}
+            {formatLongAddress(item.enablerDisplayAddr)}
           </span>
         </Link>
       )
@@ -159,7 +159,7 @@ const LeaderboardTable = ({ activity }) => {
       render: (item) => (
         <Link href={`/profile/${item.spender}`}>
           <span className="text-primaryPink hover:text-jacarta-100">
-            {formatLongAddress(item.spender)}
+            {formatLongAddress(item.spenderDisplayAddr)}
           </span>
         </Link>
       )
@@ -169,7 +169,7 @@ const LeaderboardTable = ({ activity }) => {
       render: (item) => (
         <Link href={`/profile/${item.refAddr}`}>
           <span className="text-primaryPink hover:text-jacarta-100">
-            {formatLongAddress(item.refAddr)}
+            {formatLongAddress(item.refAddrDisplayAddr)}
           </span>
         </Link>
       )

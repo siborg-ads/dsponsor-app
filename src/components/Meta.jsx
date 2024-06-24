@@ -12,7 +12,10 @@ const Meta = ({ title, keyword, desc }) => {
         <meta name="author" content="Siborg Ads" />
         <meta property="og:title" content={title} />
         <meta property="og:description" content={desc} />
-        <meta property="og:image" content="/opengraph-image.jpeg" />
+        <meta
+          property="og:image"
+          content="https://bafkreid34t3gzornuxdflj32gcy3qzfd7y77kjwnhgl2gfcxij2g65r6py.ipfs.nftstorage.link"
+        />
         <meta property="og:url" content="https://app.dsponsor.com" />
         <meta name="og:site_name" content={title} />
         <meta property="og:type" content="website" />
@@ -21,7 +24,10 @@ const Meta = ({ title, keyword, desc }) => {
         <meta name="twitter:creator" content="@siborgapp" />
         <meta name="twitter:title" content={title} />
         <meta name="twitter:description" content={desc} />
-        <meta name="twitter:image" content="/opengraph-image.jpeg" />
+        <meta
+          name="twitter:image"
+          content="https://bafkreid34t3gzornuxdflj32gcy3qzfd7y77kjwnhgl2gfcxij2g65r6py.ipfs.nftstorage.link"
+        />
       </Head>
     </div>
   );

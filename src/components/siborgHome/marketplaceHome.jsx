@@ -1,18 +1,20 @@
 import React, { useState, useMemo } from "react";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
-import { ChevronDownIcon } from "@heroicons/react/20/solid";
+import { ChevronDownIcon, InformationCircleIcon } from "@heroicons/react/20/solid";
 import ItemCardSkeleton from "../skeleton/ItemCardSkeleton";
 import OfferItem from "../cards/offerItem";
+import { Popover, PopoverTrigger, PopoverContent } from "@nextui-org/popover";
 
-const MarketplaceHome = ({ auctions, setAllTokens, isAuctionsLoading }) => {
+const MarketplaceHome = ({ auctions, setAllTokens, allTokens, isAuctionsLoading }) => {
   const [filterName, setFilterName] = useState("");
   const [sortOption, setSortOption] = useState(null);
   const [filterOption, setFilterOption] = useState("All tokens");
+  const [isInformationHovered, setIsInformationHovered] = useState(false);
 
   const filteredAuctions = useMemo(() => {
     let tempAuctions = auctions;
 
-    if (filterName !== "All tokens") {
+    if (!allTokens) {
       tempAuctions.filter(
         (auction) =>
           auction?.status === "CREATED" &&
@@ -33,48 +35,88 @@ const MarketplaceHome = ({ auctions, setAllTokens, isAuctionsLoading }) => {
       );
     } else if (filterOption === "On auction") {
       tempAuctions = tempAuctions.filter((auction) => auction?.listingType === "Auction");
+    } else if (filterOption === "Sold") {
+      tempAuctions = tempAuctions.filter((auction) => auction?.sold);
     }
 
-    if (sortOption) {
+    if (sortOption && sortOption.length > 0 && sortOption !== "") {
       tempAuctions = [...tempAuctions];
+      tempAuctions = tempAuctions.filter(
+        (auction) => auction?.listingType === "Auction" || auction?.listingType === "Direct"
+      );
       switch (sortOption) {
         case "Price: low to high":
-          tempAuctions.sort(
+          tempAuctions = tempAuctions.sort(
             (a, b) =>
-              (a.listingType === "Auction" ? a.auctionPrice : a.directPrice) -
-              (b.listingType === "Auction" ? b.auctionPrice : b.directPrice)
+              (a.listingType === "Auction"
+                ? a.auctionPrice
+                : a.listingType === "Direct"
+                  ? a.directPrice
+                  : a.mintPrice) -
+              (b.listingType === "Auction"
+                ? b.auctionPrice
+                : b.listingType === "Direct"
+                  ? b.directPrice
+                  : b.mintPrice)
           );
           break;
         case "Price: high to low":
-          tempAuctions.sort(
+          tempAuctions = tempAuctions.sort(
             (a, b) =>
-              (b.listingType === "Auction" ? b.auctionPrice : b.directPrice) -
-              (a.listingType === "Auction" ? a.auctionPrice : a.directPrice)
+              (b.listingType === "Auction"
+                ? b.auctionPrice
+                : b.listingType === "Direct"
+                  ? b.directPrice
+                  : b.mintPrice) -
+              (a.listingType === "Auction"
+                ? a.auctionPrice
+                : a.listingType === "Direct"
+                  ? a.directPrice
+                  : a.mintPrice)
           );
           break;
         case "Ending soon":
-          tempAuctions.sort((a, b) => a.endTime - b.endTime);
+          tempAuctions = tempAuctions.sort((a, b) => a.endTime - b.endTime);
           break;
         case "Newest":
-          tempAuctions.sort((a, b) => b.startTime - a.startTime);
+          tempAuctions = tempAuctions.sort((a, b) => b.startTime - a.startTime);
           break;
         case "Sort by name":
-          tempAuctions.sort((a, b) => a.name.localeCompare(b.name));
+          tempAuctions = tempAuctions.sort((a, b) => a.name.localeCompare(b.name));
           break;
         default:
           break;
       }
     } else {
-      tempAuctions.sort((a, b) => a.name.localeCompare(b.name)); // default sort
+      tempAuctions = tempAuctions.sort((a, b) => a.name.localeCompare(b.name)); // default sort
     }
 
     return tempAuctions;
-  }, [filterName, filterOption, sortOption, auctions]);
+  }, [filterName, filterOption, sortOption, auctions, allTokens]);
 
   return (
     <>
       <div className="flex flex-col gap-4">
-        <span className="text-xl text-white font-semibold">Marketplace</span>
+        <span className="text-xl text-white font-semibold flex items-center gap-2">
+          <Popover placement="top-start" isOpen={isInformationHovered}>
+            <PopoverTrigger>
+              <InformationCircleIcon
+                className="h-6 w-6 text-white cursor-pointer"
+                onMouseEnter={() => setIsInformationHovered(true)}
+                onMouseLeave={() => setIsInformationHovered(false)}
+              />
+            </PopoverTrigger>
+            <PopoverContent className="bg-secondaryBlack shadow border border-white border-opacity-10">
+              <div className="px-1 py-2">
+                <div className="text-small">
+                  The marketplace lists all available ad spaces for sale, you can filter and sort
+                  them as you wish
+                </div>
+              </div>
+            </PopoverContent>
+          </Popover>
+          <span>Marketplace</span>
+        </span>
         <div className="flex flex-col gap-20 md:gap-8">
           <div className="flex flex-col md:flex-row items-center gap-2 h-10">
             <input
@@ -127,6 +169,16 @@ const MarketplaceHome = ({ auctions, setAllTokens, isAuctionsLoading }) => {
                   >
                     <span>On auction</span>
                   </MenuItem>
+
+                  <MenuItem
+                    onClick={() => {
+                      setFilterOption("Sold");
+                      setAllTokens(true);
+                    }}
+                    className="hover:bg-primaryBlack p-2 rounded-lg w-full pr-12 md:pr-24"
+                  >
+                    <span>Sold</span>
+                  </MenuItem>
                 </MenuItems>
               </Menu>
 
@@ -141,34 +193,40 @@ const MarketplaceHome = ({ auctions, setAllTokens, isAuctionsLoading }) => {
                   className={`rounded-xl flex flex-col gap-2 [--anchor-gap:1rem] bg-secondaryBlack p-2 border border-jacarta-100 border-opacity-10`}
                 >
                   <MenuItem
-                    onClick={() => setSortOption("Sort by name")}
+                    onClick={() => {
+                      setSortOption("Sort by name");
+                      setAllTokens(false);
+                    }}
                     className="hover:bg-primaryBlack p-2 rounded-lg w-full pr-12 md:pr-24"
                   >
                     <span>Sort by name</span>
                   </MenuItem>
                   <MenuItem
-                    onClick={() => setSortOption("Price: low to high")}
+                    onClick={() => {
+                      setSortOption("Price: low to high");
+                      setAllTokens(false);
+                    }}
                     className="hover:bg-primaryBlack p-2 rounded-lg w-full pr-12 md:pr-24"
                   >
                     <span>Price: low to high</span>
                   </MenuItem>
                   <MenuItem
-                    onClick={() => setSortOption("Price: high to low")}
+                    onClick={() => {
+                      setSortOption("Price: high to low");
+                      setAllTokens(false);
+                    }}
                     className="hover:bg-primaryBlack p-2 rounded-lg w-full pr-12 md:pr-24"
                   >
                     <span>Price: high to low</span>
                   </MenuItem>
                   <MenuItem
-                    onClick={() => setSortOption("Ending soon")}
+                    onClick={() => {
+                      setSortOption("Ending soon");
+                      setAllTokens(false);
+                    }}
                     className="hover:bg-primaryBlack p-2 rounded-lg w-full pr-12 md:pr-24"
                   >
                     <span>Ending soon</span>
-                  </MenuItem>
-                  <MenuItem
-                    onClick={() => setSortOption("Newest")}
-                    className="hover:bg-primaryBlack p-2 rounded-lg w-full pr-12 md:pr-24"
-                  >
-                    <span>Newest</span>
                   </MenuItem>
                 </MenuItems>
               </Menu>
@@ -179,21 +237,19 @@ const MarketplaceHome = ({ auctions, setAllTokens, isAuctionsLoading }) => {
             {!isAuctionsLoading ? (
               <>
                 {filteredAuctions?.map((auction, index) => (
-                  <>
-                    <OfferItem
-                      key={index}
-                      item={auction.item}
-                      isToken={true}
-                      listingType={auction?.listingType}
-                      isListing={auction?.listingType}
-                      isAuction={auction?.listingType === "Auction"}
-                      url={
-                        !auction?.tokenData
-                          ? `/${auction?.chainId}/offer/${auction?.offerId}/${auction?.tokenId}`
-                          : `/${auction?.chainId}/offer/${auction.item?.nftContract?.adOffers[0]?.id}/${auction?.tokenId}?tokenData=${auction.item?.mint?.tokenData}`
-                      }
-                    />
-                  </>
+                  <OfferItem
+                    key={index}
+                    item={auction.item}
+                    isToken={true}
+                    listingType={auction?.listingType}
+                    isListing={auction?.listingType}
+                    isAuction={auction?.listingType === "Auction"}
+                    url={
+                      !auction?.tokenData
+                        ? `/${auction?.chainId}/offer/${auction?.offerId}/${auction?.tokenId}`
+                        : `/${auction?.chainId}/offer/${auction.item?.nftContract?.adOffers[0]?.id}/${auction?.tokenId}?tokenData=${auction.item?.mint?.tokenData}`
+                    }
+                  />
                 ))}
               </>
             ) : (

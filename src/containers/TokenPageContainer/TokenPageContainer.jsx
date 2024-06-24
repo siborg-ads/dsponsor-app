@@ -98,7 +98,7 @@ const TokenPageContainer = () => {
   const [successFullListing, setSuccessFullListing] = useState(false);
   const [buyoutPriceAmount] = useState(null);
   const [royaltiesFeesAmount, setRoyaltiesFeesAmount] = useState(null);
-  const [bidsAmount, setBidsAmount] = useState(null);
+  const [bidsAmount, setBidsAmount] = useState("");
   const [currencyDecimals, setCurrencyDecimals] = useState(null);
   const [isLister, setIsLister] = useState(false);
   const [, setSelectedItems] = useState([]);
@@ -204,7 +204,7 @@ const TokenPageContainer = () => {
         const combinedData = {
           ...offer
         };
-        console.log("combinedData", combinedData);
+
         setOfferData(combinedData);
       };
       setSelectedChain(config[chainId]?.chainNameProvider);
@@ -224,8 +224,23 @@ const TokenPageContainer = () => {
   ]);
 
   useEffect(() => {
+    if (successFullBid) {
+      const fetchUpdatedData = async () => {
+        const offer = await fetchOfferToken(offerId, tokenId, chainId);
+        const combinedData = { ...offer };
+
+        setOfferData(combinedData);
+        setBidsAmount("");
+      };
+      fetchUpdatedData();
+    }
+  }, [successFullBid, offerId, tokenId, chainId]);
+
+  useEffect(() => {
     if (offerData?.nftContract?.tokens.length > 0) {
-      setMarketplaceListings(offerData?.nftContract?.tokens[0]?.marketplaceListings);
+      setMarketplaceListings(
+        offerData?.nftContract?.tokens[0]?.marketplaceListings.sort((a, b) => b.id - a.id)
+      );
     }
   }, [offerData]);
 
@@ -627,7 +642,12 @@ const TokenPageContainer = () => {
           args: [config[chainId]?.smartContracts?.DSPONSORMP?.address, amountToApprove]
         });
       } else if (tokenStatut === "AUCTION" && marketplaceListings.length > 0) {
-        const bidsBigInt = ethers.utils.parseUnits(bidsAmount.toString(), currencyDecimals);
+        const precision = bidsAmount.split(".")[1]?.length || 0;
+        const bidsBigInt = parseUnits(
+          Number(bidsAmount).toFixed(Math.min(Number(currencyDecimals), precision)),
+          Number(currencyDecimals)
+        );
+
         await approve({
           args: [config[chainId]?.smartContracts?.DSPONSORMP?.address, bidsBigInt.toString()]
         });
@@ -686,7 +706,10 @@ const TokenPageContainer = () => {
     try {
       setIsLoadingButton(true);
 
-      const tokenEtherPriceBigNumber = parseUnits(buyTokenEtherPrice, 18);
+      const tokenEtherPriceBigNumber = parseUnits(
+        Number(buyTokenEtherPrice).toFixed(18).toString(),
+        18
+      );
 
       const functionWithPossibleArgs =
         marketplaceListings.length <= 0 ? argsMintAndSubmit : argsdirectBuy;
@@ -771,14 +794,31 @@ const TokenPageContainer = () => {
 
   const checkUserBalance = (tokenAddressBalance, priceToken, decimals) => {
     try {
-      const parsedTokenBalance = tokenAddressBalance?.value;
-      const parsedPriceToken = parseUnits(priceToken.toString(), decimals);
+      if (!tokenAddressBalance || !priceToken) {
+        throw new Error("Invalid balance or price token");
+      }
 
-      return !!parsedTokenBalance.gte(parsedPriceToken);
+      const parsedTokenBalance = tokenAddressBalance?.value;
+
+      if (!parsedTokenBalance) {
+        throw new Error("Failed to parse token balance");
+      }
+
+      const priceTokenNumber = Number(priceToken);
+      if (isNaN(priceTokenNumber)) {
+        throw new Error("Invalid price token amount");
+      }
+
+      const parsedPriceToken = ethers.utils.parseUnits(
+        Number(priceTokenNumber).toFixed(decimals).toString(),
+        Number(decimals)
+      );
+
+      return parsedTokenBalance.gte(parsedPriceToken);
     } catch (error) {
       toast.error("Error while checking user balance");
       console.error("Failed to fetch token balance:", error);
-      throw new Error("Failed to fetch token balance");
+      throw Error("Failed to fetch token balance");
     }
   };
 
