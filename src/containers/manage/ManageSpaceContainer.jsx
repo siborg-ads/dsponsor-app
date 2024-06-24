@@ -50,15 +50,16 @@ const ManageSpaceContainer = () => {
 
         const mappedOwnedAdProposals = ownedAdProposalsArray.flatMap((element) =>
           element.nftContract.tokens.map((token) => ({
+            ...token,
+            ...(token.mint.tokenData ? { tokenData: token.mint.tokenData } : {}),
             chainConfig: element.chainConfig,
             adParameters: element.adParameters,
             id: `${element.id}-${token.tokenId}`,
             offerId: element.id,
-            ...token,
-            ...(token.mint.tokenData ? { tokenData: token.mint.tokenData } : {})
+            endTime: token?.marketplaceListings?.length > 0 && token?.marketplaceListings[0]?.endTime,
           }))
         );
-
+        
         setMappedownedAdProposals(mappedOwnedAdProposals);
       };
 
