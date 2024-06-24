@@ -14,7 +14,7 @@ export const fetchAllListedToken = async (chainId) => {
           royalty {
             bps
           }
-          tokens {
+          tokens(first: 1000) {
             tokenId
             mint {
               blockTimestamp

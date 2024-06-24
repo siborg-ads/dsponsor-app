@@ -309,13 +309,13 @@ const BuyModal = ({
                                 error: "Approval rejected 🤯"
                               });
                             }}
-                            className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-black  !transition-all ${!validate || !finalPriceNotFormatted ? "btn-disabled cursor-not-allowed !text-black opacity-30" : "!text-white !bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer"} `}
+                            className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-black  !transition-all ${!validate || !finalPriceNotFormatted ? "!btn-disabled !cursor-not-allowed !text-black opacity-30" : "!text-white !bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer"} `}
                             isDisabled={!validate || isLoadingButton || !finalPriceNotFormatted}
                           >
                             {isLoadingButton ? (
                               <Spinner size="sm" color="default" />
                             ) : notEnoughFunds ? (
-                              "Not enough funds"
+                              <span className="text-black">Not enough funds</span>
                             ) : (
                               "Approve"
                             )}
@@ -334,13 +334,13 @@ const BuyModal = ({
                                 error: "Transaction rejected 🤯"
                               });
                             }}
-                            className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate ? "btn-disabled cursor-not-allowed !text-black" : "!bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer"} `}
+                            className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate ? "!btn-disabled !cursor-not-allowed !text-black" : "!bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer"} `}
                             isDisabled={!validate || isLoadingButton}
                           >
                             {isLoadingButton ? (
                               <Spinner size="sm" color="default" />
                             ) : notEnoughFunds ? (
-                              "Not enough funds"
+                              <span className="text-black">Not enough funds</span>
                             ) : (
                               "Confirm checkout"
                             )}
@@ -359,13 +359,13 @@ const BuyModal = ({
                             error: "Transaction rejected 🤯"
                           });
                         }}
-                        className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate || !canPayWithNativeToken ? "btn-disabled cursor-not-allowed !text-black" : "!bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer"} `}
+                        className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate || !canPayWithNativeToken ? "!btn-disabled !cursor-not-allowed !text-black" : "!bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer"} `}
                         isDisabled={!validate || isLoadingButton || !canPayWithNativeToken}
                       >
                         {isLoadingButton ? (
                           <Spinner size="sm" color="default" />
                         ) : notEnoughFunds ? (
-                          "Not enough funds"
+                          <span className="text-black">Not enough funds</span>
                         ) : (
                           "Confirm checkout with ETH"
                         )}
