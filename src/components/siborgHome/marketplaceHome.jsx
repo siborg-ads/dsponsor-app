@@ -14,7 +14,7 @@ const MarketplaceHome = ({ auctions, setAllTokens, allTokens, isAuctionsLoading 
   const filteredAuctions = useMemo(() => {
     let tempAuctions = auctions;
 
-    if (!allTokens || filterOption !== "All tokens") {
+    if (!allTokens) {
       tempAuctions.filter(
         (auction) =>
           auction?.status === "CREATED" &&
@@ -39,11 +39,14 @@ const MarketplaceHome = ({ auctions, setAllTokens, allTokens, isAuctionsLoading 
       tempAuctions = tempAuctions.filter((auction) => auction?.sold);
     }
 
-    if (sortOption) {
+    if (sortOption && sortOption.length > 0 && sortOption !== "") {
       tempAuctions = [...tempAuctions];
+      tempAuctions = tempAuctions.filter(
+        (auction) => auction?.listingType === "Auction" || auction?.listingType === "Direct"
+      );
       switch (sortOption) {
         case "Price: low to high":
-          tempAuctions.sort(
+          tempAuctions = tempAuctions.sort(
             (a, b) =>
               (a.listingType === "Auction"
                 ? a.auctionPrice
@@ -56,17 +59,9 @@ const MarketplaceHome = ({ auctions, setAllTokens, allTokens, isAuctionsLoading 
                   ? b.directPrice
                   : b.mintPrice)
           );
-          console.log(
-            "tempAuctions price",
-            tempAuctions.map((auction) => auction?.directPrice)
-          );
-          console.log(
-            "tempAuctions auction price",
-            tempAuctions.map((auction) => auction?.auctionPrice)
-          );
           break;
         case "Price: high to low":
-          tempAuctions.sort(
+          tempAuctions = tempAuctions.sort(
             (a, b) =>
               (b.listingType === "Auction"
                 ? b.auctionPrice
@@ -79,37 +74,21 @@ const MarketplaceHome = ({ auctions, setAllTokens, allTokens, isAuctionsLoading 
                   ? a.directPrice
                   : a.mintPrice)
           );
-          console.log(
-            "tempAuctions price",
-            tempAuctions.map((auction) => auction?.directPrice)
-          );
-          console.log(
-            "tempAuctions auction price",
-            tempAuctions.map((auction) => auction?.auctionPrice)
-          );
           break;
         case "Ending soon":
-          tempAuctions.sort((a, b) => a.endTime - b.endTime);
-          console.log(
-            "tempAuctions end time",
-            tempAuctions.map((auction) => auction?.endTime)
-          );
+          tempAuctions = tempAuctions.sort((a, b) => a.endTime - b.endTime);
           break;
         case "Newest":
-          tempAuctions.sort((a, b) => b.startTime - a.startTime);
-          console.log(
-            "tempAuctions start time",
-            tempAuctions.map((auction) => auction?.startTime)
-          );
+          tempAuctions = tempAuctions.sort((a, b) => b.startTime - a.startTime);
           break;
         case "Sort by name":
-          tempAuctions.sort((a, b) => a.name.localeCompare(b.name));
+          tempAuctions = tempAuctions.sort((a, b) => a.name.localeCompare(b.name));
           break;
         default:
           break;
       }
     } else {
-      tempAuctions.sort((a, b) => a.name.localeCompare(b.name)); // default sort
+      tempAuctions = tempAuctions.sort((a, b) => a.name.localeCompare(b.name)); // default sort
     }
 
     return tempAuctions;
@@ -248,15 +227,6 @@ const MarketplaceHome = ({ auctions, setAllTokens, allTokens, isAuctionsLoading 
                     className="hover:bg-primaryBlack p-2 rounded-lg w-full pr-12 md:pr-24"
                   >
                     <span>Ending soon</span>
-                  </MenuItem>
-                  <MenuItem
-                    onClick={() => {
-                      setSortOption("Newest");
-                      setAllTokens(false);
-                    }}
-                    className="hover:bg-primaryBlack p-2 rounded-lg w-full pr-12 md:pr-24"
-                  >
-                    <span>Newest</span>
                   </MenuItem>
                 </MenuItems>
               </Menu>
