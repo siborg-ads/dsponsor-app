@@ -98,7 +98,7 @@ const TokenPageContainer = () => {
   const [successFullListing, setSuccessFullListing] = useState(false);
   const [buyoutPriceAmount] = useState(null);
   const [royaltiesFeesAmount, setRoyaltiesFeesAmount] = useState(null);
-  const [bidsAmount, setBidsAmount] = useState(null);
+  const [bidsAmount, setBidsAmount] = useState("");
   const [currencyDecimals, setCurrencyDecimals] = useState(null);
   const [isLister, setIsLister] = useState(false);
   const [, setSelectedItems] = useState([]);
@@ -204,7 +204,7 @@ const TokenPageContainer = () => {
         const combinedData = {
           ...offer
         };
-        console.log("combinedData", combinedData);
+
         setOfferData(combinedData);
       };
       setSelectedChain(config[chainId]?.chainNameProvider);
@@ -222,6 +222,19 @@ const TokenPageContainer = () => {
     chainId,
     setSelectedChain
   ]);
+
+  useEffect(() => {
+    if (successFullBid) {
+      const fetchUpdatedData = async () => {
+        const offer = await fetchOfferToken(offerId, tokenId, chainId);
+        const combinedData = { ...offer };
+
+        setOfferData(combinedData);
+        setBidsAmount("");
+      };
+      fetchUpdatedData();
+    }
+  }, [successFullBid, offerId, tokenId, chainId]);
 
   useEffect(() => {
     if (offerData?.nftContract?.tokens.length > 0) {

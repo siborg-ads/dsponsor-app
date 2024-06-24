@@ -50,7 +50,7 @@ const BidsModal = ({
   const [, setEndDate] = useState(null);
   const [, setMinBid] = useState(null);
   const [, setEndDateHour] = useState(null);
-  const [tokenPrice, setTokenPrice] = useState(null);
+  const [, setTokenPrice] = useState(null);
   const [buyoutPriceReached, setBuyoutPriceReached] = useState(false);
   const [protocolFeeAmount, setProtocolFeeAmount] = useState(0);
   const [mount, setMount] = useState(false);
@@ -60,6 +60,7 @@ const BidsModal = ({
   const [canPayWithNativeToken, setCanPayWithNativeToken] = useState(false);
   const [notEnoughFunds, setNotEnoughFunds] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [displayedPrice, setDisplayedPrice] = useState(null);
 
   const chainConfig = config[chainId];
   const chainWETH = chainConfig?.smartContracts.WETH.address.toLowerCase();
@@ -112,9 +113,10 @@ const BidsModal = ({
 
       setAmountInEthWithSlippage(tokenEtherPrice?.amountInEthWithSlippage);
       setTokenEtherPrice(tokenEtherPriceDecimals);
+      setDisplayedPrice(tokenEtherPrice?.amountUSDCFormatted);
     };
 
-    if (bidsAmount && bidsAmount > 0 && chainId) {
+    if (!!bidsAmount && Number(bidsAmount) > 0 && chainId) {
       fetchEtherPrice();
     }
   }, [bidsAmount, chainId, currencyContract, currencyTokenDecimals]);
@@ -291,6 +293,11 @@ const BidsModal = ({
 
   const handleBidsAmount = async (e) => {
     const value = e.target.value;
+    if (value === "") {
+      setBidsAmount("");
+      setAmountToApprove(null);
+      return;
+    }
     const valuePrecision = value.split(".")[1]?.length || 0;
     const fixedValue = parseFloat(value).toFixed(
       Math.min(Number(currencyTokenDecimals), valuePrecision)
@@ -472,7 +479,7 @@ const BidsModal = ({
 
                   <div className="bg-jacarta-600 w-1/4 border border-jacarta-900 border-opacity-10 rounded-xl flex flex-1 justify-center self-stretch border-l">
                     <span className="self-center px-4 text-xl text-center text-white font-semibold">
-                      ${formatAndRoundPrice(tokenPrice ?? 0)}
+                      ${displayedPrice ?? 0}
                     </span>
                   </div>
                 </div>

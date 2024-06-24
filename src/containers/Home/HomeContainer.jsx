@@ -82,9 +82,7 @@ const HomeContainer = () => {
       const sold =
         token?.marketplaceListings[0]?.status === "COMPLETED" ||
         (token?.marketplaceListings[0]?.listingType !== "Auction" &&
-          token?.marketplaceListings[0]?.listingType !== "Direct" &&
-          token?.marketplaceListings?.length > 0 &&
-          token?.mint !== null);
+          token?.marketplaceListings[0]?.listingType !== "Direct" && token?.mint !== null);
 
       const object = {
         name: name,
