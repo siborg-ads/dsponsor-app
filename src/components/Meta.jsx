@@ -14,7 +14,7 @@ const Meta = ({ title, keyword, desc }) => {
         <meta property="og:description" content={desc} />
         <meta
           property="og:image"
-          content="https://bafkreid34t3gzornuxdflj32gcy3qzfd7y77kjwnhgl2gfcxij2g65r6py.ipfs.nftstorage.link"
+          content="https://orange-elegant-swallow-161.mypinata.cloud/ipfs/QmaKVtq9B8UaraFDfkYaodti2VummZ4FvR2MZeTTV7Ycke"
         />
         <meta property="og:url" content="https://app.dsponsor.com" />
         <meta name="og:site_name" content={title} />
@@ -26,7 +26,7 @@ const Meta = ({ title, keyword, desc }) => {
         <meta name="twitter:description" content={desc} />
         <meta
           name="twitter:image"
-          content="https://bafkreid34t3gzornuxdflj32gcy3qzfd7y77kjwnhgl2gfcxij2g65r6py.ipfs.nftstorage.link"
+          content="https://orange-elegant-swallow-161.mypinata.cloud/ipfs/QmaKVtq9B8UaraFDfkYaodti2VummZ4FvR2MZeTTV7Ycke"
         />
       </Head>
     </div>
