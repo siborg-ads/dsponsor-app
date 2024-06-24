@@ -199,7 +199,7 @@ const OfferItem = ({
               ) : (
                 itemStatut === "AUCTION" && (
                   <span
-                    className={`${item.status === "AUCTION WON" ? "text-primaryPurple" : item.status === "HIGHEST BIDDER" ? "text-green" : "text-red"} whitespace-nowrap  min-w-[100px] text-xs text-end font-medium tracking-tight`}
+                    className={`${item.status === "CREATED" ? "text-primaryPurple" : item.status !== "OUTBID" ? "text-green" : "text-red"} text-sm font-medium tracking-tight`}
                   >
                     {item.status}
                   </span>
