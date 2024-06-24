@@ -5,7 +5,7 @@ export const fetchAllTokenListedByListingId = async (chainId) => {
 
   const GET_DATA = `
     query getMarketplaceListingsForUser {
-      marketplaceListings {
+      marketplaceListings(first: 1000) {
         id # listingId
         token {
           tokenId
