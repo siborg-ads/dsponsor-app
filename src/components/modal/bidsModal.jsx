@@ -425,7 +425,7 @@ const BidsModal = ({
   return (
     <div>
       <div className="modal fade show block">
-        <div className="modal-dialog max-w-2xl">
+        <div className="modal-dialog max-w-4xl mx-4">
           <div className="modal-content" ref={modalRef}>
             <div className="modal-header">
               <h5 className="modal-title" id="placeBidLabel">
@@ -484,10 +484,10 @@ const BidsModal = ({
                   </div>
                 </div>
 
-                <div className="flex items-center gap-4">
+                <div className="flex flex-col justify-center text-left md:flex-row items-center md:justify-between mb-8 mt-2 gap-2 md:gap-4">
                   {bidsAmount < initialIntPrice && (
                     <button
-                      className="text-primaryPurple hover:text-opacity-80"
+                      className="text-sm text-left md:text-base whitespace-nowrap  text-primaryPurple hover:text-opacity-80"
                       onClick={() => {
                         setBidsAmount(initialIntPrice);
                       }}
@@ -496,15 +496,15 @@ const BidsModal = ({
                     </button>
                   )}
 
-                  <div className={`text-left ${!isPriceGood ? "" : "opacity-0"}`}>
-                    <span className="dark:text-warning text-sm">
-                      {!isPriceGood && (
-                        <>
-                          ⚠️ Bid Price must be higher than {initialIntPrice} {currencySymbol}{" "}
-                        </>
-                      )}
-                    </span>
-                  </div>
+                  <span
+                    className={`text-left text-sm md:text-base break-words dark:text-warning ${!isPriceGood ? "" : "opacity-0"}`}
+                  >
+                    {!isPriceGood && (
+                      <>
+                        ⚠️ Bid Price must be higher than {initialIntPrice} {currencySymbol}{" "}
+                      </>
+                    )}
+                  </span>
                 </div>
 
                 <div className="flex flex-col gap-8 py-4 items-center justify-center">
@@ -527,17 +527,17 @@ const BidsModal = ({
                       </div>
                       <div className="flex flex-col gap-2">
                         <div className="grid grid-cols-7 items-center gap-4 mx-auto w-full min-w-max">
-                          <div className="bg-jacarta-600 col-span-3 duration-400 shadow p-4 rounded-xl font-semibold text-base text-white text-center min-w-[200px] max-w-[200px]">
+                          <div className="bg-jacarta-600 col-span-3 duration-400 shadow p-4 rounded-xl font-semibold text-xs md:text-base text-white text-center min-w-[125px] max-w-[125px] md:min-w-[200px] md:max-w-[200px]">
                             Ad space NFT in your wallet
                           </div>
 
                           <div className="text-center flex justify-center items-center min-w-max">
-                            <span className="text-white text-center flex items-center font-semibold text-sm min-w-[50px] max-w-[50px]">
+                            <span className="text-white mx-auto text-center flex items-center justify-center font-semibold text-sm min-w-[25px] max-w-[25px] md:min-w-[50px] md:max-w-[50px]">
                               OR
                             </span>
                           </div>
 
-                          <div className="bg-jacarta-600 col-span-3 duration-400 shadow p-4 rounded-xl font-semibold text-base text-white text-center min-w-[200px] max-w-[200px]">
+                          <div className="bg-jacarta-600 col-span-3 duration-400 shadow p-4 rounded-xl font-semibold text-xs md:text-base text-white text-center min-w-[125px] max-w-[125px] md:min-w-[200px] md:max-w-[200px]">
                             Your bid back +{" "}
                             {Number(bidsAmount) >= Number(initialIntPrice)
                               ? formatAndRoundPrice(refundedPrice)
@@ -545,14 +545,14 @@ const BidsModal = ({
                             {currencySymbol} Reward
                           </div>
                         </div>
-                        <div className="grid grid-cols-7 items-center gap-4 mx-auto w-full">
-                          <div className="w-full col-span-3 text-base text-white flex justify-center items-center text-center min-w-[200px] max-w-[200px]">
+                        <div className="hidden md:grid grid-cols-7 items-start gap-4 mx-auto w-full">
+                          <div className="hidden w-full col-span-3 text-base text-white md:flex justify-center items-center text-center min-w-[200px] max-w-[200px]">
                             If you are still the highest bidder when the auction closes
                           </div>
 
                           <div />
 
-                          <div className="w-full col-span-3 text-base text-white flex justify-center items-center text-center min-w-[200px] max-w-[200px]">
+                          <div className="hidden w-full col-span-3 text-base text-white md:flex justify-center items-center text-center min-w-[200px] max-w-[200px]">
                             If someone outbids
                           </div>
                         </div>
@@ -723,7 +723,7 @@ const BidsModal = ({
                               }}
                               className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-black !transition-all ${
                                 !isPriceGood || !checkTerms || !bidsAmount
-                                  ? "btn-disabled cursor-not-allowed !text-black opacity-30"
+                                  ? "!btn-disabled !cursor-not-allowed !text-black opacity-30"
                                   : "!text-white !bg-primaryPurple !cursor-pointer"
                               } `}
                               isDisabled={!isPriceGood || !checkTerms || !bidsAmount}
@@ -731,7 +731,7 @@ const BidsModal = ({
                               {isLoadingButton ? (
                                 <Spinner size="sm" color="default" />
                               ) : notEnoughFunds ? (
-                                "Not enough funds"
+                                <span className="text-black">Not enough funds</span>
                               ) : (
                                 "Approve"
                               )}
@@ -750,7 +750,7 @@ const BidsModal = ({
                               }}
                               className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${
                                 !isPriceGood || !checkTerms
-                                  ? "btn-disabled cursor-not-allowed"
+                                  ? "!btn-disabled !cursor-not-allowed"
                                   : "!bg-primaryPurple !cursor-pointer"
                               } `}
                               isDisabled={!isPriceGood || !checkTerms}
@@ -759,12 +759,12 @@ const BidsModal = ({
                                 <Spinner size="sm" color="default" />
                               ) : buyoutPriceReached ? (
                                 notEnoughFunds ? (
-                                  "Not enough funds"
+                                  <span className="text-black">Not enough funds</span>
                                 ) : (
                                   "Buy Now"
                                 )
                               ) : notEnoughFunds ? (
-                                "Not enough funds"
+                                <span className="text-black">Not enough funds</span>
                               ) : (
                                 "Place Bid"
                               )}
@@ -785,7 +785,7 @@ const BidsModal = ({
                           }}
                           className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${
                             !isPriceGood || !checkTerms || !canPayWithNativeToken
-                              ? "btn-disabled cursor-not-allowed"
+                              ? "!btn-disabled !cursor-not-allowed"
                               : "!bg-primaryPurple !cursor-pointer"
                           } `}
                           isDisabled={!isPriceGood || !checkTerms || !canPayWithNativeToken}
@@ -794,12 +794,12 @@ const BidsModal = ({
                             <Spinner size="sm" color="default" />
                           ) : buyoutPriceReached ? (
                             notEnoughFunds ? (
-                              "Not enough funds"
+                              <span className="text-black">Not enough funds</span>
                             ) : (
                               "Buy Now with ETH"
                             )
                           ) : notEnoughFunds ? (
-                            "Not enough funds"
+                            <span className="text-black">Not enough funds</span>
                           ) : (
                             "Place Bid with ETH"
                           )}

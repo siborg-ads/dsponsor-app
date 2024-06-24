@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Countdown from "react-countdown";
 
 const Completionist = () => (
-  <div className="absolute bottom-4 left-1/2 flex -translate-x-1/2 items-center justify-center space-x-1 rounded-full bg-white py-2.5 px-6 text-2xs font-medium">
+  <div className="absolute bottom-4 left-1/2 flex -translate-x-1/2 text-black dark:text-black items-center justify-center space-x-1 rounded-full bg-white py-2.5 px-6 text-2xs font-medium">
     <span>This auction has ended</span>
   </div>
 );

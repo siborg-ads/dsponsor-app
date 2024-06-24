@@ -39,7 +39,10 @@ const activityToTopHolders = (activities, userAddress) => {
         points: activity.points,
         spender: activity.spender,
         enabler: activity.enabler,
-        refAddr: activity.refAddr
+        refAddr: activity.refAddr,
+        spenderDisplayAddr: activity.spender,
+        enablerDisplayAddr: activity.enabler,
+        refAddrDisplayAddr: activity.refAddr
       }));
   }
 
