@@ -41,12 +41,18 @@ const MarketplaceHome = ({ auctions, setAllTokens, allTokens, isAuctionsLoading 
 
     if (sortOption && sortOption.length > 0 && sortOption !== "") {
       tempAuctions = [...tempAuctions];
-      tempAuctions = tempAuctions.filter(
+
+      let matchingAuctions = tempAuctions.filter(
         (auction) => auction?.listingType === "Auction" || auction?.listingType === "Direct"
       );
+
+      let nonMatchingAuctions = tempAuctions.filter(
+        (auction) => !(auction?.listingType === "Auction" || auction?.listingType === "Direct")
+      );
+
       switch (sortOption) {
         case "Price: low to high":
-          tempAuctions = tempAuctions.sort(
+          matchingAuctions = matchingAuctions.sort(
             (a, b) =>
               (a.listingType === "Auction"
                 ? a.auctionPrice
@@ -61,7 +67,7 @@ const MarketplaceHome = ({ auctions, setAllTokens, allTokens, isAuctionsLoading 
           );
           break;
         case "Price: high to low":
-          tempAuctions = tempAuctions.sort(
+          matchingAuctions = matchingAuctions.sort(
             (a, b) =>
               (b.listingType === "Auction"
                 ? b.auctionPrice
@@ -76,16 +82,20 @@ const MarketplaceHome = ({ auctions, setAllTokens, allTokens, isAuctionsLoading 
           );
           break;
         case "Ending soon":
-          tempAuctions = tempAuctions.sort((a, b) => a.endTime - b.endTime);
+          matchingAuctions = matchingAuctions.sort((a, b) => a.endTime - b.endTime);
           break;
         case "Newest":
-          tempAuctions = tempAuctions.sort((a, b) => b.startTime - a.startTime);
+          matchingAuctions = matchingAuctions.sort((a, b) => b.startTime - a.startTime);
           break;
         case "Sort by name":
           tempAuctions = tempAuctions.sort((a, b) => a.name.localeCompare(b.name));
           break;
         default:
           break;
+      }
+
+      if (sortOption !== "Sort by name") {
+        tempAuctions = [...matchingAuctions, ...nonMatchingAuctions];
       }
     } else {
       tempAuctions = tempAuctions.sort((a, b) => a.name.localeCompare(b.name)); // default sort
@@ -195,7 +205,6 @@ const MarketplaceHome = ({ auctions, setAllTokens, allTokens, isAuctionsLoading 
                   <MenuItem
                     onClick={() => {
                       setSortOption("Sort by name");
-                      setAllTokens(false);
                     }}
                     className="hover:bg-primaryBlack p-2 rounded-lg w-full pr-12 md:pr-24"
                   >
@@ -204,7 +213,6 @@ const MarketplaceHome = ({ auctions, setAllTokens, allTokens, isAuctionsLoading 
                   <MenuItem
                     onClick={() => {
                       setSortOption("Price: low to high");
-                      setAllTokens(false);
                     }}
                     className="hover:bg-primaryBlack p-2 rounded-lg w-full pr-12 md:pr-24"
                   >
@@ -213,7 +221,6 @@ const MarketplaceHome = ({ auctions, setAllTokens, allTokens, isAuctionsLoading 
                   <MenuItem
                     onClick={() => {
                       setSortOption("Price: high to low");
-                      setAllTokens(false);
                     }}
                     className="hover:bg-primaryBlack p-2 rounded-lg w-full pr-12 md:pr-24"
                   >
@@ -222,7 +229,6 @@ const MarketplaceHome = ({ auctions, setAllTokens, allTokens, isAuctionsLoading 
                   <MenuItem
                     onClick={() => {
                       setSortOption("Ending soon");
-                      setAllTokens(false);
                     }}
                     className="hover:bg-primaryBlack p-2 rounded-lg w-full pr-12 md:pr-24"
                   >

@@ -22,7 +22,7 @@ export default async function fetchLastOffers(chainId) {
             amount # wei, mind decimals() function to transform in human readable value !
             enabled
           }
-          tokens {
+          tokens(fist: 1000) {
             tokenId
             mint {
               transactionHash # if = null => not minted yet, so it's available
