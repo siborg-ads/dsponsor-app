@@ -355,7 +355,7 @@ const ItemManageModal = ({
                     htmlFor="item-description"
                     className="font-display text-jacarta-900 mb-2 block dark:text-white "
                   >
-                    Type of ad spaces for this offer
+                    Type of listing for this ad space
                     <span className="text-red">*</span>
                   </label>
                   <p className="dark:text-jacarta-100 text-jacarta-100 text-2xs mb-3">

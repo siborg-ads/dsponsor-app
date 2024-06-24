@@ -22,7 +22,7 @@ const Step_1_Mint = ({ stepsRef, styles, adParameters, setImageUrlVariants }) =>
               htmlFor="adIntegrationSelect"
               className="font-display text-jacarta-900 mb-2 block dark:text-white"
             >
-              Type of ad spaces for this offer:
+              Type of listing for this ad space:
             </label>
             <div className="flex flex-col gap-4">
               To display your ad you need to provide the following parameters:
