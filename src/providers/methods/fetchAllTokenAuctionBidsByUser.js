@@ -9,9 +9,7 @@ query FetchAllTokenAuctionBidsByUser($userAddr: ID!) {
      marketplaceBids(
     orderBy: creationTimestamp
     orderDirection: desc
-    where: {
-      bidder: $userAddr
-    }
+       where: {bidder: "0x9a7fac267228f536a8f250e65d7c4ca7d39de766", listing_: {status: CREATED}}
   ) {
     bidder
     quantity
@@ -24,6 +22,7 @@ query FetchAllTokenAuctionBidsByUser($userAddr: ID!) {
       status
       token {
         tokenId
+        
         mint {
           tokenData
         }
@@ -37,6 +36,7 @@ query FetchAllTokenAuctionBidsByUser($userAddr: ID!) {
           }
         }
       }
+        endTime
     }
     creationTimestamp
   }

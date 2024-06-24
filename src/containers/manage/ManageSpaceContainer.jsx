@@ -50,15 +50,16 @@ const ManageSpaceContainer = () => {
 
         const mappedOwnedAdProposals = ownedAdProposalsArray.flatMap((element) =>
           element.nftContract.tokens.map((token) => ({
+            ...token,
+            ...(token.mint.tokenData ? { tokenData: token.mint.tokenData } : {}),
             chainConfig: element.chainConfig,
             adParameters: element.adParameters,
             id: `${element.id}-${token.tokenId}`,
             offerId: element.id,
-            ...token,
-            ...(token.mint.tokenData ? { tokenData: token.mint.tokenData } : {})
+            endTime: token?.marketplaceListings?.length > 0 && token?.marketplaceListings[0]?.endTime,
           }))
         );
-
+        
         setMappedownedAdProposals(mappedOwnedAdProposals);
       };
 
@@ -82,6 +83,7 @@ const ManageSpaceContainer = () => {
             endTime: element?.endTime,
             offerId: element?.token?.nftContract?.adOffers[0]?.id
           }));
+        
         setListedAuctionToken(mappedListedToken);
       };
 
@@ -94,7 +96,8 @@ const ManageSpaceContainer = () => {
           metadata: element.listing.token.metadata,
           tokenData: element.listing.token.mint.tokenData,
           offerId: element.listing.token.nftContract.adOffers[0].id,
-          tokenId: element.listing.token.tokenId
+          tokenId: element.listing.token.tokenId,
+          endTime: element?.listing?.endTime,
         }));
 
         setTokenAuctionBids(mappedAuctionBidsTokens);
