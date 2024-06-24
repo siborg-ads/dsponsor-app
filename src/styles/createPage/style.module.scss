@@ -1,0 +1,165 @@
+.modal {
+  background: white;
+  padding: 20px;
+  width: 90%;
+  max-width: 750px;
+  margin: 10px auto;
+  text-align: center;
+  position: relative;
+  padding-bottom: 100px;
+  box-shadow:
+    0 5px 20px rgba(0, 0, 0, 0.2),
+    0 30px 20px -20px rgba(0, 0, 0, 0.4);
+  &__form__container {
+    transition: height 0.3s ease-in-out;
+    height: auto;
+  }
+  &__container {
+    height: 100%;
+    transition: height 0.3s ease-in-out;
+  }
+}
+
+.form {
+  overflow: hidden;
+  &__step__container {
+    display: flex;
+    height: 100%;
+    transition: 0.5s ease-in-out;
+  }
+
+  &__step {
+    h3 {
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+    h4 {
+      opacity: 0.6;
+      position: relative;
+
+      &:after {
+        content: "";
+        display: block;
+        position: absolute;
+        background: #333;
+        opacity: 0.4;
+        bottom: -10px;
+        height: 1.5px;
+        width: 40%;
+        margin: 0 30%;
+      }
+    }
+  }
+
+  &__nav {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 50px;
+    display: flex;
+
+    & > button {
+      display: block;
+      width: 50%;
+      line-height: 50px;
+      text-decoration: none;
+      padding: 0 4%;
+      color: white;
+      border: none;
+      background: transparent;
+
+      &.disabled {
+        opacity: 0.2;
+        cursor-events: none;
+      }
+    }
+
+    &__prev {
+      text-align: left;
+    }
+
+    &__next {
+      text-align: right;
+    }
+  }
+}
+
+.donation_boxes {
+  display: flex;
+  justify-content: center;
+
+  .box {
+    input {
+      display: none;
+
+      &:checked ~ label {
+        box-shadow: 0 0 8px 2px #fdcb6e;
+      }
+    }
+    label {
+      display: block;
+      width: 100px;
+      height: 100px;
+      line-height: 100px;
+      text-align: center;
+      box-shadow: 0 0 0px 1px #eee;
+      border-radius: 5px;
+      margin: 10px;
+      font-size: 2em;
+      transition: 0.3s;
+      cursor: pointer;
+
+      &:hover {
+        background: #fafafa;
+      }
+    }
+  }
+}
+
+a.btn,
+button.btn {
+  display: inline-block;
+  text-decoration: none;
+  padding: 0 25px;
+  height: 50px;
+  line-height: 50px;
+  background: #fdcb6e;
+  border-radius: 5px;
+  color: white;
+  margin: 10px;
+  border: none;
+  cursor: pointer;
+  transition: 0.3s;
+
+  &--cta {
+    background: linear-gradient(36deg, #d63031, #e17055);
+
+    &:hover {
+      background: linear-gradient(36deg, #e17055, #d63031);
+    }
+  }
+}
+.img-preview {
+  height: 200px;
+}
+.form__bullet {
+  height: 12px;
+  width: 12px;
+  border-radius: 50%;
+  margin: 8px;
+  background: #ccc;
+  cursor: pointer;
+  transition: 0.5s 0.15s;
+
+  &__container {
+    display: flex;
+    justify-content: center;
+  }
+
+  &--active {
+    background: rgb(131 88 255);
+    box-shadow: 0 0 4px rgb(131 88 255);
+    pointer-events: none;
+  }
+}
