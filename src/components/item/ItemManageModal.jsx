@@ -419,7 +419,7 @@ const ItemManageModal = ({
                                   Validity period<span className="text-red">*</span>
                                 </label>
                                 <p className="dark:text-jacarta-100 text-jacarta-100 text-2xs mb-3">
-                                  Set the validity period for the spaces.
+                                  Set the validity period for this listing.
                                 </p>
                                 <div className="flex flex-col gap-4 items-center text-jacarta-900 dark:text-white mb-3">
                                   <div className="flex flex-col justify-center items-center gap-1">

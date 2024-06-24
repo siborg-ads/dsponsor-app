@@ -147,6 +147,7 @@ const Activity = ({ isUserConnected, userAddr, chainId }) => {
                 <span className="text-white text-lg font-bold">Transactions</span>
                 <div>
                   <DateRangePicker
+                    size="sm"
                     onChange={(value) => {
                       const startDateObject = value?.start;
                       const endDateObject = value?.end;

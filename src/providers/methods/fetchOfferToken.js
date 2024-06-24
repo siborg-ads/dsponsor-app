@@ -42,7 +42,10 @@ export const fetchOfferToken = async (offerId, tokenId, chainId) => {
           }
 
           # to replace by $tokenId
-          tokens(where: { tokenId: $tokenId }) {
+          tokens(
+            where: { tokenId: $tokenId }
+            first: 1000
+          ) {
             tokenId
             marketplaceListings(orderBy: id, orderDirection: desc) {
               id # listingId
