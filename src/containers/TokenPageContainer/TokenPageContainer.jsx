@@ -207,7 +207,7 @@ const TokenPageContainer = () => {
 
         setOfferData(combinedData);
       };
-      setSelectedChain(config[chainId]?.chainNameProvider);
+      setSelectedChain(config[chainId]?.network);
       fetchAdsOffers();
     }
 

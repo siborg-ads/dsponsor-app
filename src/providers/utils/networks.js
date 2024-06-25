@@ -15,7 +15,7 @@ const networks = {
   ASTAR_MAINNET: "astar-mainnet",
   POLYGONZKEVM_MAINNET: "polygonzkevm-mainnet",
   POLYGONZKEVM_TESTNET: "polygonzkevm-testnet",
-  BASE_MAINNET: "base-mainnet",
+  BASE_MAINNET: "base",
   BASE_GOERLI: "base-goerli",
   BASE_SEPOLIA: "base-sepolia",
   ZKSYNC_MAINNET: "zksync-mainnet",

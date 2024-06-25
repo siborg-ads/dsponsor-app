@@ -13,6 +13,12 @@ const footerMenuList = [
         id: 2,
         href: "/leaderboard",
         text: "Leaderboard"
+      },
+      {
+        id: 3,
+        target: "_blank",
+        href: "https://docs.google.com/document/d/1pKqqDFvHfYqTiUv6C_HeRU-jaTMwfdLOcLJoqlIDS3U/edit?usp=sharing",
+        text: "FAQ"
       }
     ]
   },

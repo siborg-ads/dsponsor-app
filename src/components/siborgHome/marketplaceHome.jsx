@@ -180,7 +180,8 @@ const MarketplaceHome = ({ auctions, setAllTokens, allTokens, isAuctionsLoading 
                     <span>On auction</span>
                   </MenuItem>
 
-                  <MenuItem
+                  {/*}
+                    <MenuItem
                     onClick={() => {
                       setFilterOption("Sold");
                       setAllTokens(true);
@@ -189,6 +190,7 @@ const MarketplaceHome = ({ auctions, setAllTokens, allTokens, isAuctionsLoading 
                   >
                     <span>Sold</span>
                   </MenuItem>
+                  */}
                 </MenuItems>
               </Menu>
 

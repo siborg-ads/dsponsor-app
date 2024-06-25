@@ -264,7 +264,10 @@ const BuyModal = ({
                 />
                 <label htmlFor="buyNowTerms" className="dark:text-jacarta-200 text-sm">
                   By checking this box, I agree to {"SiBorg Ads's"}{" "}
-                  <Link href="/terms-and-conditions" className="text-primaryPurple">
+                  <Link
+                    href="https://docs.google.com/document/d/15um5c6mMoKc8V1rVyRJ7tcIxFDmtE8xe75mx-CdB84w"
+                    className="text-primaryPurple"
+                  >
                     Terms of Service
                   </Link>
                 </label>
