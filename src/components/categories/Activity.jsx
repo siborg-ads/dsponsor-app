@@ -92,26 +92,11 @@ const Activity = ({ isUserConnected, userAddr, chainId }) => {
     <>
       <div className="flex flex-col justify-center max-w-4xl mx-auto">
         <div className="flex flex-col justify-center gap-8">
-          <div className="flex flex-col gap-2">
-            {isUserConnected && (
-              <>
-                <div className="dark:bg-secondaryBlack dark:text-jacarta-100 rounded-2lg bg-white p-3 flex gap-4 justify-center items-center">
-                  <p className="text-center text-white">
-                    The more active you are on the platform, the more boxes you earn! The more boxes
-                    you have, the better the surprises you&apos;ll get. You gain boxes by
-                    participating in a token sale, whether as a buyer, seller, or even a referrer!
-                    💸
-                  </p>
-                </div>
-              </>
-            )}
-          </div>
-
           <div className="flex flex-col justify-center gap-16 mt-4">
             <div className={`flex flex-col gap-16`}>
               <div className="flex flex-col justify-center gap-4">
                 <div className="flex items-center gap-4 justify-between">
-                  <span className="text-white text-lg font-bold">Activity</span>
+                  <span className="text-white text-lg font-bold">{/* Activity */}</span>
                   <p className="text-left text-xs text-jacarta-100">
                     Data is updated every 15 minutes
                   </p>
@@ -139,6 +124,22 @@ const Activity = ({ isUserConnected, userAddr, chainId }) => {
                     <span>Rewarded</span>
                   </div>
                 </div>
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-4">
+              <span className="text-white text-lg font-bold">Boxes</span>
+              <div className="dark:bg-secondaryBlack dark:text-jacarta-100 rounded-2lg bg-white p-3 flex gap-4 justify-center items-center">
+                <p className="text-center text-white">
+                  Boxes are a new type of incentive introduced in the SiBorg ecosystem. The content
+                  of the boxes will be revealed later and will include various rewards. The number
+                  of boxes received is proportionate to the value of the bid. This means the higher
+                  a user&apos;s bid, the higher the reward will be if they win the auction.
+                  {/* The more active you are on the platform, the more boxes you earn! The more
+                        boxes you have, the better the surprises you&apos;ll get. You gain boxes by
+                        participating in a token sale, whether as a buyer, seller, or even a
+                        referrer! 💸 */}
+                </p>
               </div>
             </div>
 

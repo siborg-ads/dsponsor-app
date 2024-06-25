@@ -67,7 +67,7 @@ const CreateOfferContainer = () => {
 
   useEffect(() => {
     if (!chainId) return;
-    setSelectedChain(config[chainId]?.chainNameProvider);
+    setSelectedChain(config[chainId]?.network);
   }, [chainId, setSelectedChain]);
 
   const handleUnitPriceChange = (e) => {

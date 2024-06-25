@@ -70,7 +70,7 @@ const OfferPageContainer = () => {
           setIsOwner(true);
         }
       };
-      setSelectedChain(config[chainId]?.chainNameProvider);
+      setSelectedChain(config[chainId]?.network);
       fetchAdsOffers();
     }
   }, [offerId, successFullRefuseModal, userAddress, chainId, setSelectedChain]);
