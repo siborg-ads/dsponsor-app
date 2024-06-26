@@ -970,25 +970,17 @@ const TokenPageContainer = () => {
     return null;
   }
 
-  let description = "description not found";
-  let id = "1";
-  let image = "/images/gradient_creative.jpg";
-  let name = "Unnamed Ad Space";
-
-  if (offerData?.metadata?.offer) {
-    const embeddedTokenMetaData = offerData?.metadata?.offer?.token_metadata;
-    if (embeddedTokenMetaData && Object.keys(embeddedTokenMetaData).length > 0) {
-      description = embeddedTokenMetaData.description;
-      id = embeddedTokenMetaData.id;
-      image = embeddedTokenMetaData.image;
-      name = embeddedTokenMetaData.name;
-    } else {
-      description = offerData?.metadata?.offer?.description;
-      id = offerData?.metadata?.offer?.id;
-      image = offerData?.metadata?.offer?.image;
-      name = offerData?.metadata?.offer?.name;
-    }
-  }
+  const {
+    description = "description not found",
+    id = "1",
+    image = "/images/gradient_creative.jpg",
+    name = "Unnamed Ad Space"
+  } = offerData?.metadata?.offer?.token_metadata &&
+  Object.keys(offerData?.metadata?.offer?.token_metadata).length > 0
+    ? tokenMetaData
+    : offerData && offerData.metadata
+      ? offerData.metadata.offer
+      : undefined;
 
   return (
     <>
