@@ -977,11 +977,16 @@ const TokenPageContainer = () => {
 
   if (offerData?.metadata?.offer) {
     const embeddedTokenMetaData = offerData?.metadata?.offer?.token_metadata;
-    if (embeddedTokenMetaData && Object.keys(embeddedTokenMetaData).length > 0) {
-      description = embeddedTokenMetaData.description;
-      id = embeddedTokenMetaData.id;
-      image = embeddedTokenMetaData.image;
-      name = embeddedTokenMetaData.name;
+    if (tokenMetaData && Object.keys(tokenMetaData).length > 0) {
+      description = tokenMetaData.description;
+      id = tokenMetaData.id;
+      image = tokenMetaData.image;
+      name = tokenMetaData.name;
+    } else if (embeddedTokenMetaData && Object.keys(embeddedTokenMetaData).length > 0) {
+      description = embeddedTokenMetaData?.description;
+      id = embeddedTokenMetaData?.id;
+      image = embeddedTokenMetaData?.image;
+      name = embeddedTokenMetaData?.name;
     } else {
       description = offerData?.metadata?.offer?.description;
       id = offerData?.metadata?.offer?.id;
