@@ -976,18 +976,17 @@ const TokenPageContainer = () => {
   let name = "Unnamed Ad Space";
 
   if (offerData?.metadata?.offer) {
-    const offer = offerData?.metadata?.offer;
-
-    if (tokenMetaData && Object.keys(tokenMetaData).length > 0) {
-      description = tokenMetaData.description || description;
-      id = tokenMetaData.id || id;
-      image = tokenMetaData.image || image;
-      name = tokenMetaData.name || name;
+    const embeddedTokenMetaData = offerData?.metadata?.offer?.token_metadata;
+    if (embeddedTokenMetaData && Object.keys(embeddedTokenMetaData).length > 0) {
+      description = embeddedTokenMetaData.description;
+      id = embeddedTokenMetaData.id;
+      image = embeddedTokenMetaData.image;
+      name = embeddedTokenMetaData.name;
     } else {
-      description = offer.description || description;
-      id = offer.id || id;
-      image = offer.image || image;
-      name = offer.name || name;
+      description = offerData?.metadata?.offer?.description;
+      id = offerData?.metadata?.offer?.id;
+      image = offerData?.metadata?.offer?.image;
+      name = offerData?.metadata?.offer?.name;
     }
   }
 
