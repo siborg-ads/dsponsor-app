@@ -7,7 +7,7 @@ import { Popover, PopoverTrigger, PopoverContent } from "@nextui-org/popover";
 const MainAuctions = ({ auctions, isAuctionsLoading }) => {
   const [mount, setMount] = useState(false);
   const [hotAuctions, setHotAuctions] = useState([]);
-  const [IsInformationHovered, setIsInformationHovered] = useState(false);
+  const [isInformationHovered, setIsInformationHovered] = useState(false);
 
   useMemo(() => {
     if (!mount && auctions && auctions.length > 0) {
@@ -20,11 +20,11 @@ const MainAuctions = ({ auctions, isAuctionsLoading }) => {
             new Date(auction?.startTime * 1000) < Date.now() &&
             new Date(auction?.endTime * 1000) > Date.now()
         )
-        .sort((a, b) => b.numberOfBids - a.numberOfBids)
-        .slice(0, 4);
+        .sort((a, b) => b.numberOfBids - a.numberOfBids);
 
-        console.log(tempHotAuctions);
-      setHotAuctions(tempHotAuctions);
+      const slicedHotAuctions = tempHotAuctions.slice(0, 4);
+
+      setHotAuctions(slicedHotAuctions);
       setMount(true);
     }
   }, [auctions, mount]);
@@ -33,7 +33,7 @@ const MainAuctions = ({ auctions, isAuctionsLoading }) => {
     <>
       <div className="flex flex-col gap-4">
         <div className="text-xl font-semibold text-white flex items-center gap-2">
-          <Popover placement="top-start" isOpen={IsInformationHovered}>
+          <Popover placement="top-start" isOpen={isInformationHovered}>
             <PopoverTrigger>
               <InformationCircleIcon
                 className="h-6 w-6 text-white cursor-pointer"
