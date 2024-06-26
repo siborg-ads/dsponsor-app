@@ -296,6 +296,11 @@ const BidsModal = ({
       return;
     }
 
+    const [, decimal] = value.split("." || ",");
+    if (decimal && decimal.length > currencyTokenDecimals) {
+      return;
+    }
+
     try {
       const parsedValue = ethers.utils.parseUnits(value, currencyTokenDecimals);
       setBidsAmount(value);
