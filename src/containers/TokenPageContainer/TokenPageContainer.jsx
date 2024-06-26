@@ -978,8 +978,8 @@ const TokenPageContainer = () => {
   } = offerData?.metadata?.offer?.token_metadata &&
   Object.keys(offerData?.metadata?.offer?.token_metadata).length > 0
     ? tokenMetaData
-    : offerData && offerData.metadata
-      ? offerData.metadata.offer
+    : offerData && offerData?.metadata
+      ? offerData?.metadata?.offer
       : undefined;
 
   return (
