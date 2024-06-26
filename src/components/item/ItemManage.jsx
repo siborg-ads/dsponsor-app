@@ -39,6 +39,7 @@ const ItemManage = ({
       }
       setSuccessFullListing(true);
     } catch (e) {
+      console.error(e);
       setIsLoadingButton(false);
       throw new Error(e);
     } finally {
@@ -121,7 +122,14 @@ const ItemManage = ({
         </Web3Button>
       );
     }
-    if (!conditions?.endTimeNotPassed && conditions?.isCreated && conditions?.isAuction) {
+    if (
+      (!conditions?.endTimeNotPassed &&
+        conditions?.isCreated &&
+        conditions?.isAuction &&
+        !conditions?.isLister &&
+        conditions?.hasBids) ||
+      (conditions?.isLister && !conditions?.hasBids)
+    ) {
       return (
         <Web3Button
           contractAddress={currentChainObject?.smartContracts?.DSPONSORMP?.address}

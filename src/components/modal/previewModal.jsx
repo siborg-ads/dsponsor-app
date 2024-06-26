@@ -226,7 +226,7 @@ const PreviewModal = ({
                   )}
                   {selectedStartingPrice || errors.startingPriceError ? (
                     <p className="font-display  mb-2 block text-jacarta-100 text-sm">
-                      Unit starting Price :{" "}
+                      Bid starting price :{" "}
                       {!errors.startingPriceError ? (
                         <span className="dark:text-white text-base ml-2">
                           {" "}
@@ -242,7 +242,7 @@ const PreviewModal = ({
                   )}
                   {selectedUnitPrice || errors.unitPriceError ? (
                     <p className="font-display  mb-2 block text-jacarta-100 text-sm">
-                      Unit Price :{" "}
+                      Buy Price :{" "}
                       {!errors.unitPriceError ? (
                         <span className="dark:text-white text-base ml-2">
                           {" "}
@@ -379,7 +379,7 @@ const PreviewModal = ({
                           error: "Transaction rejected 🤯"
                         });
                       }}
-                      className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate ? "btn-disabled cursor-not-allowed !text-black" : "!bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer"} `}
+                      className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate ? "!btn-disabled !cursor-not-allowed !text-black" : "!bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer"} `}
                       isDisabled={!validate || isLoadingButton}
                     >
                       {isLoadingButton ? <Spinner size="sm" color="default" /> : buttonTitle}
@@ -395,7 +395,7 @@ const PreviewModal = ({
                           error: "Approval rejected 🤯"
                         });
                       }}
-                      className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate ? "btn-disabled cursor-not-allowed !text-black opacity-30" : "!bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer"} `}
+                      className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate ? "!btn-disabled !cursor-not-allowed !text-black opacity-30" : "!bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer"} `}
                       isDisabled={!validate || isLoadingButton}
                     >
                       {isLoadingButton ? (

@@ -67,7 +67,7 @@ const CreateOfferContainer = () => {
 
   useEffect(() => {
     if (!chainId) return;
-    setSelectedChain(config[chainId]?.chainNameProvider);
+    setSelectedChain(config[chainId]?.network);
   }, [chainId, setSelectedChain]);
 
   const handleUnitPriceChange = (e) => {
@@ -293,7 +293,7 @@ const CreateOfferContainer = () => {
     } catch (error) {
       setIsLoadingButton(false);
       setSuccessFullUpload(false);
-
+      console.error(error);
       throw error;
     } finally {
       setIsLoadingButton(false);

@@ -91,7 +91,11 @@ const Review_carousel = ({
       submissionArgs.push(argObject);
     }
 
-    await handleSubmit(submissionArgs);
+    try {
+      await handleSubmit(submissionArgs);
+    } catch (error) {
+      console.error(error);
+    }
   };
   const openRefuseModal = () => {
     setRefusedValidatedAdModal(true);
@@ -199,7 +203,7 @@ const Review_carousel = ({
                     error: "Transaction rejected 🤯"
                   })
                 }
-                className={` !rounded-full !min-w-[100px] !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate[tokenId] ? "btn-disabled cursor-not-allowed" : "!bg-green !cursor-pointer"} `}
+                className={` !rounded-full !min-w-[100px] !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate[tokenId] ? "!btn-disabled !cursor-not-allowed" : "!bg-green !cursor-pointer"} `}
               >
                 Validate
               </Web3Button>
@@ -207,7 +211,7 @@ const Review_carousel = ({
               <Web3Button
                 contractAddress={config[chainId]?.smartContracts?.DSPONSORADMIN?.address}
                 action={() => openRefuseModal()}
-                className={` !rounded-full !min-w-[100px] !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate[tokenId] ? "btn-disabled cursor-not-allowed" : "!bg-red !cursor-pointer"} `}
+                className={` !rounded-full !min-w-[100px] !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate[tokenId] ? "!btn-disabled !cursor-not-allowed" : "!bg-red !cursor-pointer"} `}
               >
                 Reject
               </Web3Button>

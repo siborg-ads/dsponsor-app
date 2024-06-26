@@ -42,7 +42,7 @@ export const fetchOffer = async (offerId, chainId) => {
           }
 
           # to replace by $tokenId
-          tokens {
+          tokens(first: 1000) {
             tokenId
             mint {
               transactionHash # if = null => not minted yet, so it's available

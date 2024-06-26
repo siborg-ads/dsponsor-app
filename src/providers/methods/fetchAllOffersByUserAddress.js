@@ -43,7 +43,7 @@ export const fetchAllOffersByUserAddress = async (userAddress, chainId) => {
           tokens(
             # you can paginate with this type or filtering
             # where: { and: [{ tokenId_lte: "200" }, { tokenId_lte: "100" }]
-
+            first: 1000
             orderBy: tokenId
           ) {
             tokenId

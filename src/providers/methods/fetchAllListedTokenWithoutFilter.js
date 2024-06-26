@@ -14,7 +14,7 @@ export const fetchAllListedTokenWithoutFilter = async (chainId, allTokens) => {
           royalty {
             bps
           }
-          tokens {
+          tokens(first: 1000) {
             tokenId
             mint {
               blockTimestamp
@@ -40,7 +40,7 @@ export const fetchAllListedTokenWithoutFilter = async (chainId, allTokens) => {
                 quantity_gt: 0
                 startTime_lte: $currentTimestamp
                 endTime_gte: $currentTimestamp
-              }
+             }
             ) {
               id # listingId
               quantity
@@ -81,7 +81,7 @@ export const fetchAllListedTokenWithoutFilter = async (chainId, allTokens) => {
               #    price = bids[0].totalBidAmount || reservePricePerToken
               reservePricePerToken
               buyoutPricePerToken
-              bids(orderBy: totalBidAmount, orderDirection: desc, first: 1) {
+              bids(orderBy: totalBidAmount, orderDirection: desc) {
                  creationTimestamp
                 bidder
                 totalBidAmount

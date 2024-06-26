@@ -110,11 +110,11 @@ const ItemManageModal = ({
         const startTime = Math.max(startDateFormated, nowFormated);
         const endDateFormated = Math.floor(endDate.getTime() / 1000);
         const secondsUntilEndTime = endDateFormated - startTime;
-        
+
         const startingPrice = ethers.utils
           .parseUnits(selectedStartingPrice.toString(), tokenDecimals)
           .toString();
-          
+
         const isAuction = selectedListingType[0] === 1;
         const price = ethers.utils
           .parseUnits(selectedUnitPrice.toString(), tokenDecimals)
@@ -266,9 +266,9 @@ const ItemManageModal = ({
     const finalPrice = price - price * (fees[0] + fees[1]);
 
     if (smartContract) {
-      return finalPrice.toFixed(tokenDecimals);
+      return Number(finalPrice).toFixed(tokenDecimals);
     } else {
-      return finalPrice.toFixed(3);
+      return Number(finalPrice).toFixed(3);
     }
   };
 
@@ -355,7 +355,7 @@ const ItemManageModal = ({
                     htmlFor="item-description"
                     className="font-display text-jacarta-900 mb-2 block dark:text-white "
                   >
-                    Type of ad spaces for this offer
+                    Type of listing for this ad space
                     <span className="text-red">*</span>
                   </label>
                   <p className="dark:text-jacarta-100 text-jacarta-100 text-2xs mb-3">
@@ -419,7 +419,7 @@ const ItemManageModal = ({
                                   Validity period<span className="text-red">*</span>
                                 </label>
                                 <p className="dark:text-jacarta-100 text-jacarta-100 text-2xs mb-3">
-                                  Set the validity period for the spaces.
+                                  Set the validity period for this listing.
                                 </p>
                                 <div className="flex flex-col gap-4 items-center text-jacarta-900 dark:text-white mb-3">
                                   <div className="flex flex-col justify-center items-center gap-1">

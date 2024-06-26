@@ -68,7 +68,6 @@ export default function BuyWithCrossmintButton(props = {}) {
     );
   }
 
-  /*
   const royaltyBPS = BigNumber.from(token.royaltiesBPS || 0);
   const protocolBPS = BigNumber.from(token.protocolFeeBPS || 0);
 
@@ -77,8 +76,7 @@ export default function BuyWithCrossmintButton(props = {}) {
   const totalFees = royalty.add(protocolFee);
 
   const cumulativePrice = price.add(totalFees);
-  */
-  const totalPriceFormatted = formatUnits(price, "ether");
+  const totalPriceFormatted = formatUnits(cumulativePrice, "ether");
 
   const buttonProps = {
     projectId: props.config?.projectId,

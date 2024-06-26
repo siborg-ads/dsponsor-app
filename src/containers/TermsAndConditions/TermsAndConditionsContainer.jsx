@@ -1,4 +1,4 @@
-import termsAndConditionsData from "../../data/terms-and-conditions";
+// import termsAndConditionsData from "../../data/terms-and-conditions";
 import Image from "next/image";
 import React from "react";
 export default function TermsAndConditionsContainer() {
@@ -13,12 +13,18 @@ export default function TermsAndConditionsContainer() {
           <div className="mx-auto max-w-lg text-center">
             <div>
               <h1 className="text-jacarta-900 font-display mb-6 text-2xl dark:text-white md:text-4xl">
-                {termsAndConditionsData.title}
+                {/* termsAndConditionsData.title */}
               </h1>
               <p className="dark:text-jacarta-100 mb-12 text-lg leading-normal">
-                {termsAndConditionsData.intro}
+                <a
+                  href="https://docs.google.com/document/d/15um5c6mMoKc8V1rVyRJ7tcIxFDmtE8xe75mx-CdB84w"
+                  target="_blank"
+                >
+                  Terms and conditions
+                </a>
+                {/* termsAndConditionsData.intro */}
               </p>
-              {termsAndConditionsData.sections.map((section, index) => (
+              {/* termsAndConditionsData.sections.map((section, index) => (
                 <div key={index} className="mb-8">
                   <h2 className="text-jacarta-900 font-bold font-display mb-6 text-2xl dark:text-white md:text-4xl">
                     {section.title}
@@ -27,8 +33,8 @@ export default function TermsAndConditionsContainer() {
                     {section.content}
                   </p>
                 </div>
-              ))}
-              <p>Last updated: {termsAndConditionsData.lastUpdated}</p>
+              )) */}
+              {/* <p>Last updated: {termsAndConditionsData.lastUpdated}</p> */}
             </div>
           </div>
         </div>

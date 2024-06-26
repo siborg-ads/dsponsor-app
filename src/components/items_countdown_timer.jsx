@@ -4,7 +4,7 @@ const Completionist = () => {
   return (
     <div className="text-2xs absolute bottom-4 left-1/2 flex -translate-x-1/2 items-center justify-center space-x-1 rounded-full bg-white py-2.5 px-6 font-medium">
       <span
-        className="js-countdown-timer text-jacarta-900 shrink-0 whitespace-nowrap"
+        className="js-countdown-timer text-black shrink-0 whitespace-nowrap"
         data-countdown="2022-05-14T10:45:30"
         data-expired="This auction has ended"
       >

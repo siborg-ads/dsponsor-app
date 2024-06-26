@@ -7,7 +7,7 @@ const prodEthereumSepolia = {
   chainNameProvider: "sepolia",
   network: Network.ETH_SEPOLIA,
   logoURL: "/images/ethereum-logo.png",
-  explorerBaseUrl: "https://sepolia.etherscan.io/",
+  explorerBaseUrl: "https://sepolia.etherscan.io",
 
   rpcURL: "https://ethereum-sepolia-rpc.publicnode.com",
   smartContracts: {
@@ -29,11 +29,11 @@ const prodEthereumSepolia = {
       address: "0xEd1f6473345F45b75F8179591dd5bA1888cf2FB3"
     },
     DSPONSORADMIN: {
-      address: "0x22554D70702C60A5fa30297908005B6cE19eEf51",
+      address: "0x10E0447dDB66f1d33E6b10dB5099FBa231ceCE5C",
       abi: contractABI
     },
     DSPONSORMP: {
-      address: "0xd36097D256F31F1BF5aa597dA7C3E098d466aD13"
+      address: "0x0B7f100940f4152D01B42A626ab73f7A62dd7cdC"
     }
   },
   features: {

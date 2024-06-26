@@ -48,7 +48,7 @@ const HomeContainer = () => {
       const name = token.metadata.name;
       const category = token.metadata.categories[0];
       const chain = token.chainConfig.network;
-      const price = token.marketplaceListings[0]?.buyPriceStructure.buyoutPricePerToken;
+      const price = token.marketplaceListings[0]?.buyPriceStructure?.buyoutPricePerToken;
       const chainId = token.chainConfig.chainId;
       const offerId = token.offerId;
       const tokenId = token.tokenId;
@@ -61,7 +61,7 @@ const HomeContainer = () => {
       const currencySymbol = token?.marketplaceListings[0]?.currencySymbol;
       const latestBid = Number(
         formatUnits(
-          token?.marketplaceListings[0]?.bidPriceStructure.previousBidAmount ?? 0,
+          token?.marketplaceListings[0]?.bidPriceStructure?.previousBidAmount ?? 0,
           currencyDecimals
         )
       );
@@ -70,14 +70,19 @@ const HomeContainer = () => {
           Number(formatUnits(token.marketplaceListings[0]?.currencyPriceUSDC ?? 0, 6))
         ) ?? 0
       );
-      const directPrice = token.marketplaceListings[0]?.buyPriceStructure.buyoutPricePerToken;
-      const auctionPrice = token.marketplaceListings[0]?.bidPriceStructure.minimalBidPerToken;
+      const directPrice = token.marketplaceListings[0]?.buyPriceStructure?.buyoutPricePerToken;
+      const auctionPrice = token.marketplaceListings[0]?.bidPriceStructure?.minimalBidPerToken;
+      const mintPrice = token?.nftContract?.prices[0]?.amount;
       const listingType = token.marketplaceListings[0]?.listingType;
       const startTime = token?.marketplaceListings[0]?.startTime;
       const endTime = token?.marketplaceListings[0]?.endTime;
       const status = token?.marketplaceListings[0]?.status;
       const quantity = token.marketplaceListings[0]?.quantity;
       const numberOfBids = token.marketplaceListings[0]?.bids.length;
+      const sold =
+        token?.marketplaceListings[0]?.status === "COMPLETED" ||
+        (token?.marketplaceListings[0]?.listingType !== "Auction" &&
+          token?.marketplaceListings[0]?.listingType !== "Direct" && token?.mint !== null);
 
       const object = {
         name: name,
@@ -99,9 +104,11 @@ const HomeContainer = () => {
         priceUSD: priceUSD,
         directPrice: directPrice,
         auctionPrice: auctionPrice,
+        mintPrice: mintPrice,
         listingType: listingType,
         status: status,
         quantity: quantity,
+        sold: sold,
         numberOfBids: numberOfBids,
         item: {
           metadata: token.metadata,
@@ -120,15 +127,17 @@ const HomeContainer = () => {
       return object;
     });
 
+    console.log(auctions);
+
     setAuctions(auctions);
   }, [auctionsTemp]);
 
- const metadata = {
-   title: `Home || SiBorg Ads - The Web3 Monetization Solution`,
-   keyword:
-     "audience engagement, web3, creator economic, NFT, creator monetization, creator economy, creator token, creator coin, creator tokenization, creator economy",
-   desc: "Explore the future of media monetization. SiBorg Ads decentralized platform offers tokenized advertising spaces for dynamic and sustainable media funding."
- };
+  const metadata = {
+    title: `SiBorg Ads - The Web3 Monetization Solution`,
+    keyword:
+      "audience engagement, web3, creator economic, NFT, creator monetization, creator economy, creator token, creator coin, creator tokenization, creator economy",
+    desc: "Explore the future of media monetization. SiBorg Ads decentralized platform offers tokenized advertising spaces for dynamic and sustainable media funding."
+  };
   return (
     <>
       <Meta {...metadata} />
@@ -146,6 +155,7 @@ const HomeContainer = () => {
           setChainIdFilter={setChainIdFilter}
           setAllTokens={setAllTokens}
           isAuctionsLoading={isAuctionsLoading}
+          allTokens={allTokens}
         />
       </div>
     </>

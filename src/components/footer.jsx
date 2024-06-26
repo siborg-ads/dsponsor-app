@@ -94,11 +94,12 @@ const Footer = () => {
                 </h3>
                 <ul className="dark:text-jacarta-100 flex flex-col space-y-1">
                   {single.list.map((item) => {
-                    const { id, href, text } = item;
+                    const { id, href, text, target } = item;
                     return (
                       <li key={id}>
                         <Link
                           href={href ?? ""}
+                          target={target ?? ""}
                           className="hover:text-primaryPurple dark:hover:text-white"
                         >
                           {text}
@@ -119,7 +120,8 @@ const Footer = () => {
             <ul className="dark:text-jacarta-100 flex flex-wrap space-x-4 text-sm">
               <li>
                 <Link
-                  href="/terms-and-conditions"
+                  href="https://docs.google.com/document/d/15um5c6mMoKc8V1rVyRJ7tcIxFDmtE8xe75mx-CdB84w"
+                  target="_blank"
                   className="hover:text-primaryPurple dark:hover:text-white"
                 >
                   Terms and conditions

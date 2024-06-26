@@ -70,7 +70,7 @@ const OfferPageContainer = () => {
           setIsOwner(true);
         }
       };
-      setSelectedChain(config[chainId]?.chainNameProvider);
+      setSelectedChain(config[chainId]?.network);
       fetchAdsOffers();
     }
   }, [offerId, successFullRefuseModal, userAddress, chainId, setSelectedChain]);
@@ -104,7 +104,6 @@ const OfferPageContainer = () => {
   }, [symbolContract, decimalsContract, offerData, bps, NATIVECurrency, tokenCurrencyAddress]);
 
   useEffect(() => {
-    console.log("offerData", offerData);
     if (offerData?.nftContract?.royalty?.bps) {
       setRoyalties(offerData?.nftContract?.royalty?.bps / 100);
     } else {

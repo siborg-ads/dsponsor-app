@@ -5,10 +5,9 @@ import {
   useContract,
   useContractRead,
   useContractWrite,
-  useStorageUpload,
-  useBalanceForAddress
+  useStorageUpload
 } from "@thirdweb-dev/react";
-import { ethers } from "ethers";
+import { BigNumber, ethers } from "ethers";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -41,7 +40,7 @@ import { fetchOfferToken } from "../../providers/methods/fetchOfferToken.js";
 // import { fetchAllTokenListedByListingId } from "../../providers/methods/fetchAllTokenListedByListingId.js";
 import config from "../../config/config.js";
 import stringToUint256 from "../../utils/stringToUnit256.js";
-import { getAddress } from "ethers/lib/utils";
+import { formatUnits, getAddress, parseUnits } from "ethers/lib/utils";
 
 import "react-toastify/dist/ReactToastify.css";
 import ItemLastBids from "../../components/tables/ItemLastBids";
@@ -69,6 +68,7 @@ const TokenPageContainer = () => {
   const [errors, setErrors] = useState({});
   const [marketplaceListings, setMarketplaceListings] = useState([]);
   const [finalPrice, setFinalPrice] = useState(null);
+  const [finalPriceNotFormatted, setFinalPriceNotFormatted] = useState(null);
   const [successFullUpload, setSuccessFullUpload] = useState(false);
   const [showPreviewModal, setShowPreviewModal] = useState(false);
   const [validate, setValidate] = useState(false);
@@ -98,7 +98,7 @@ const TokenPageContainer = () => {
   const [successFullListing, setSuccessFullListing] = useState(false);
   const [buyoutPriceAmount] = useState(null);
   const [royaltiesFeesAmount, setRoyaltiesFeesAmount] = useState(null);
-  const [bidsAmount, setBidsAmount] = useState(null);
+  const [bidsAmount, setBidsAmount] = useState("");
   const [currencyDecimals, setCurrencyDecimals] = useState(null);
   const [isLister, setIsLister] = useState(false);
   const [, setSelectedItems] = useState([]);
@@ -160,15 +160,17 @@ const TokenPageContainer = () => {
 
   const now = Math.floor(new Date().getTime() / 1000);
 
-  const { data: nativeTokenBalance } = useBalanceForAddress({ walletAddress: address });
+  const { data: nativeTokenBalance } = useBalance();
 
   // referralAddress is the address of the ?_rid= parameter in the URL
   const referralAddress = getCookie("_rid") || "";
 
   useEffect(() => {
     const fetchBuyEtherPrice = async () => {
+      const finalPriceDecimals = BigNumber.from(finalPriceNotFormatted.toString());
+
       const tokenEtherPrice = await fetch(
-        `https://relayer.dsponsor.com/api/${chainId}/prices?token=${tokenCurrencyAddress}&amount=${finalPrice}&slippage=0.3`,
+        `https://relayer.dsponsor.com/api/${chainId}/prices?token=${tokenCurrencyAddress}&amount=${finalPriceDecimals}&slippage=0.3`,
         {
           method: "GET",
           headers: {
@@ -184,13 +186,15 @@ const TokenPageContainer = () => {
           return error;
         });
 
-      setBuyTokenEtherPrice(tokenEtherPrice?.amountInEth);
+      const tokenEtherPriceDecimals = formatUnits(tokenEtherPrice?.amountInEthWithSlippage, 18);
+
+      setBuyTokenEtherPrice(tokenEtherPriceDecimals);
     };
 
-    if (finalPrice && finalPrice > 0 && chainId && insufficentBalance) {
+    if (finalPriceNotFormatted && finalPriceNotFormatted > 0 && chainId) {
       fetchBuyEtherPrice();
     }
-  }, [finalPrice, chainId, insufficentBalance, tokenCurrencyAddress]);
+  }, [finalPriceNotFormatted, chainId, tokenCurrencyAddress, currencyDecimals]);
 
   useEffect(() => {
     if (offerId && tokenId && chainId) {
@@ -201,10 +205,9 @@ const TokenPageContainer = () => {
           ...offer
         };
 
-        // FIXME: Removed console.log, opening 1 token page execute all this multiple times it seems
         setOfferData(combinedData);
       };
-      setSelectedChain(config[chainId]?.chainNameProvider);
+      setSelectedChain(config[chainId]?.network);
       fetchAdsOffers();
     }
 
@@ -221,8 +224,23 @@ const TokenPageContainer = () => {
   ]);
 
   useEffect(() => {
+    if (successFullBid) {
+      const fetchUpdatedData = async () => {
+        const offer = await fetchOfferToken(offerId, tokenId, chainId);
+        const combinedData = { ...offer };
+
+        setOfferData(combinedData);
+        setBidsAmount("");
+      };
+      fetchUpdatedData();
+    }
+  }, [successFullBid, offerId, tokenId, chainId]);
+
+  useEffect(() => {
     if (offerData?.nftContract?.tokens.length > 0) {
-      setMarketplaceListings(offerData?.nftContract?.tokens[0]?.marketplaceListings);
+      setMarketplaceListings(
+        offerData?.nftContract?.tokens[0]?.marketplaceListings.sort((a, b) => b.id - a.id)
+      );
     }
   }, [offerData]);
 
@@ -309,6 +327,7 @@ const TokenPageContainer = () => {
         offerData?.nftContract?.prices[0]?.mintPriceStructureFormatted.protocolFeeAmount
       );
       setFinalPrice(offerData?.nftContract?.prices[0]?.mintPriceStructureFormatted.totalAmount);
+      setFinalPriceNotFormatted(offerData?.nftContract?.prices[0]?.mintPriceStructure.totalAmount);
       setAmountToApprove(
         offerData?.nftContract?.prices[0]?.mintPriceStructure.totalAmount &&
           BigInt(offerData?.nftContract?.prices[0]?.mintPriceStructure.totalAmount)
@@ -338,6 +357,10 @@ const TokenPageContainer = () => {
           offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.buyPriceStructureFormatted
             .buyoutPricePerToken
         );
+        setFinalPriceNotFormatted(
+          offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.buyPriceStructure
+            .buyoutPricePerToken
+        );
         setAmountToApprove(
           BigInt(
             offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.buyPriceStructure
@@ -364,6 +387,10 @@ const TokenPageContainer = () => {
         );
         setFinalPrice(
           offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.bidPriceStructureFormatted
+            .minimalBidPerToken
+        );
+        setFinalPriceNotFormatted(
+          offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.bidPriceStructure
             .minimalBidPerToken
         );
 
@@ -584,7 +611,7 @@ const TokenPageContainer = () => {
     if (tokenCurrencyAddress !== "0x0000000000000000000000000000000000000000" && address) {
       let allowance;
 
-      if (tokenStatut === "DIRECT" || tokenStatut === "AUCTION") {
+      if ((tokenStatut === "DIRECT" || tokenStatut === "AUCTION") && tokenStatut !== "MINTABLE") {
         allowance = await tokenContract?.call("allowance", [
           address,
           config[chainId]?.smartContracts?.DSPONSORMP?.address
@@ -615,7 +642,12 @@ const TokenPageContainer = () => {
           args: [config[chainId]?.smartContracts?.DSPONSORMP?.address, amountToApprove]
         });
       } else if (tokenStatut === "AUCTION" && marketplaceListings.length > 0) {
-        const bidsBigInt = ethers.utils.parseUnits(bidsAmount.toString(), currencyDecimals);
+        const precision = bidsAmount.split(".")[1]?.length || 0;
+        const bidsBigInt = parseUnits(
+          Number(bidsAmount).toFixed(Math.min(Number(currencyDecimals), precision)),
+          Number(currencyDecimals)
+        );
+
         await approve({
           args: [config[chainId]?.smartContracts?.DSPONSORMP?.address, bidsBigInt.toString()]
         });
@@ -635,11 +667,21 @@ const TokenPageContainer = () => {
     }
   };
 
-  const handleBuySubmitWithNative = async () => {
-    const hasEnoughBalance = checkUserBalance(nativeTokenBalance, price);
+  const handleBuySubmit = async () => {
+    const finalPriceLocal = formatUnits(finalPriceNotFormatted.toString(), currencyDecimals);
 
-    if (!hasEnoughBalance) {
-      throw new Error("Not enough balance for approval.");
+    const hasEnoughBalance = checkUserBalance(tokenBalance, finalPriceLocal, currencyDecimals);
+
+    if (!hasEnoughBalance && !canPayWithNativeToken) {
+      console.error("Not enough balance to confirm checkout");
+      throw new Error("Not enough balance to confirm checkout");
+    }
+
+    const hasEnoughBalanceForNative = checkUserBalance(nativeTokenBalance, buyTokenEtherPrice, 18);
+
+    if (!hasEnoughBalanceForNative) {
+      console.error("Not enough balance to confirm checkout");
+      throw new Error("Not enough balance to confirm checkout");
     }
 
     const argsMintAndSubmit = {
@@ -661,86 +703,38 @@ const TokenPageContainer = () => {
       totalPrice: firstSelectedListing?.buyPriceStructure.buyoutPricePerToken,
       referralAdditionalInformation: referralAddress
     };
-
     try {
       setIsLoadingButton(true);
+
+      const tokenEtherPriceBigNumber = parseUnits(
+        Number(buyTokenEtherPrice).toFixed(18).toString(),
+        18
+      );
+
       const functionWithPossibleArgs =
         marketplaceListings.length <= 0 ? argsMintAndSubmit : argsdirectBuy;
-
       const argsWithPossibleOverrides =
-        canPayWithNativeToken && insufficentBalance
+        canPayWithNativeToken && insufficentBalance && hasEnoughBalanceForNative
           ? {
               args: [functionWithPossibleArgs],
-              overrides: { value: buyTokenEtherPrice }
+              overrides: { value: tokenEtherPriceBigNumber }
             }
           : { args: [functionWithPossibleArgs] };
 
       if (marketplaceListings.length <= 0) {
         // address of the minter as referral
         argsWithPossibleOverrides.args[0].referralAdditionalInformation = referralAddress;
-
-        await mintAndSubmit(argsWithPossibleOverrides);
-
+        await mintAndSubmit(argsWithPossibleOverrides).catch((error) => {
+          console.error("Error while minting and submitting:", error);
+          throw error;
+        });
         setSuccessFullUpload(true);
         setIsOwner(true);
       } else {
-        await directBuy(argsWithPossibleOverrides);
-        setSuccessFullUpload(true);
-      }
-    } catch (error) {
-      console.error("Erreur de soumission du token:", error);
-      setSuccessFullUpload(false);
-      setIsLoadingButton(false);
-      throw error;
-    } finally {
-      setIsLoadingButton(false);
-    }
-  };
-
-  const handleBuySubmit = async () => {
-    const hasEnoughBalance = checkUserBalance(tokenBalance, price);
-    if (!hasEnoughBalance) {
-      throw new Error("Not enough balance for approval.");
-    }
-    const argsMintAndSubmit = {
-      tokenId: tokenIdString,
-      to: address,
-      currency: offerData?.nftContract?.prices[0]?.currency,
-      tokenData: tokenData ?? "",
-      offerId: offerId,
-      adParameters: [],
-      adDatas: [],
-      referralAdditionalInformation: referralAddress
-    };
-
-    const argsdirectBuy = {
-      listingId: firstSelectedListing?.id,
-      buyFor: address,
-      quantity: 1,
-      currency: firstSelectedListing?.currency,
-      totalPrice: firstSelectedListing?.buyPriceStructure.buyoutPricePerToken,
-      referralAdditionalInformation: referralAddress
-    };
-    try {
-      setIsLoadingButton(true);
-      const isEthCurrency = tokenCurrencyAddress === "0x0000000000000000000000000000000000000000";
-      const functionWithPossibleArgs =
-        marketplaceListings.length <= 0 ? argsMintAndSubmit : argsdirectBuy;
-      const argsWithPossibleOverrides = isEthCurrency
-        ? {
-            args: [functionWithPossibleArgs],
-            overrides: { value: amountToApprove }
-          }
-        : { args: [functionWithPossibleArgs] };
-
-      if (marketplaceListings.length <= 0) {
-        // address of the minter as referral
-        argsWithPossibleOverrides.args[0].referralAdditionalInformation = referralAddress;
-        await mintAndSubmit(argsWithPossibleOverrides);
-        setSuccessFullUpload(true);
-        setIsOwner(true);
-      } else {
-        await directBuy(argsWithPossibleOverrides);
+        await directBuy(argsWithPossibleOverrides).catch((error) => {
+          console.error("Error while buying:", error);
+          throw error;
+        });
         setSuccessFullUpload(true);
       }
     } catch (error) {
@@ -798,26 +792,33 @@ const TokenPageContainer = () => {
     }
   };
 
-  const checkUserBalance = (tokenAddressBalance, priceToken) => {
+  const checkUserBalance = (tokenAddressBalance, priceToken, decimals) => {
     try {
-      const parsedTokenBalance = ethers.utils.parseUnits(
-        tokenAddressBalance?.displayValue,
-        currencyDecimals
-      );
-      const parsedPriceToken = parseFloat(priceToken.toString());
-
-      if (parsedTokenBalance >= parsedPriceToken) {
-        return true;
-      } else {
-        toast.error("You have not enough balance to confirm checkout", {
-          autoClose: false
-        });
-        return false;
+      if (!tokenAddressBalance || !priceToken) {
+        throw new Error("Invalid balance or price token");
       }
+
+      const parsedTokenBalance = tokenAddressBalance?.value;
+
+      if (!parsedTokenBalance) {
+        throw new Error("Failed to parse token balance");
+      }
+
+      const priceTokenNumber = Number(priceToken);
+      if (isNaN(priceTokenNumber)) {
+        throw new Error("Invalid price token amount");
+      }
+
+      const parsedPriceToken = ethers.utils.parseUnits(
+        Number(priceTokenNumber).toFixed(decimals).toString(),
+        Number(decimals)
+      );
+
+      return parsedTokenBalance.gte(parsedPriceToken);
     } catch (error) {
       toast.error("Error while checking user balance");
       console.error("Failed to fetch token balance:", error);
-      throw new Error("Failed to fetch token balance");
+      throw Error("Failed to fetch token balance");
     }
   };
 
@@ -1353,6 +1354,7 @@ const TokenPageContainer = () => {
         <div className="modal fade show block">
           <BuyModal
             finalPrice={finalPrice}
+            finalPriceNotFormatted={finalPriceNotFormatted}
             tokenStatut={tokenStatut}
             allowanceTrue={allowanceTrue}
             handleApprove={handleApprove}
@@ -1365,7 +1367,7 @@ const TokenPageContainer = () => {
             initialCreator={offerData?.initialCreator}
             handleSubmit={handleBuySubmit}
             handleBuyModal={handleBuyModal}
-            handleBuySubmitWithNative={handleBuySubmitWithNative}
+            handleBuySubmitWithNative={handleBuySubmit}
             name={name}
             marketplaceListings={marketplaceListings}
             image={image ?? ""}
@@ -1381,6 +1383,7 @@ const TokenPageContainer = () => {
             canPayWithNativeToken={canPayWithNativeToken}
             setCanPayWithNativeToken={setCanPayWithNativeToken}
             token={tokenDO}
+            buyTokenEtherPrice={buyTokenEtherPrice}
             user={{
               address: address,
               isOwner: isOwner,

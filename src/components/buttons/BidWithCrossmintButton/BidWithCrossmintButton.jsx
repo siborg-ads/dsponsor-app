@@ -69,7 +69,6 @@ export default function BidWithCrossmintButton(props = {}) {
     );
   }
 
-  /*
   const royaltyBPS = BigNumber.from(token.royaltiesBPS || 0);
   const protocolBPS = BigNumber.from(token.protocolFeeBPS || 0);
 
@@ -78,8 +77,7 @@ export default function BidWithCrossmintButton(props = {}) {
   const totalFees = royalty.add(protocolFee);
 
   const cumulativePrice = price.add(totalFees);
-  */
-  const totalPriceFormatted = formatUnits(price, "ether");
+  const totalPriceFormatted = formatUnits(cumulativePrice, "ether");
 
   const buttonProps = {
     projectId: props.config?.projectId,
@@ -93,7 +91,7 @@ export default function BidWithCrossmintButton(props = {}) {
       totalPrice: totalPriceFormatted,
       quantity: 1,
       _listingId: token.listingId,
-      _pricePerToken: price.toString(),
+      _pricePerToken: token.price,
       _bidder: user.address,
       _referralAdditionalInformation: referrer.address ?? "0x"
     }
