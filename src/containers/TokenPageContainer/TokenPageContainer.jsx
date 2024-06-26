@@ -970,17 +970,26 @@ const TokenPageContainer = () => {
     return null;
   }
 
-  const {
-    description = "description not found",
-    id = "1",
-    image = "/images/gradient_creative.jpg",
-    name = "Unnamed Ad Space"
-  } = offerData?.metadata?.offer?.token_metadata &&
-  Object.keys(offerData?.metadata?.offer?.token_metadata).length > 0
-    ? tokenMetaData
-    : offerData && offerData?.metadata
-      ? offerData?.metadata?.offer
-      : undefined;
+  let description = "description not found";
+  let id = "1";
+  let image = "/images/gradient_creative.jpg";
+  let name = "Unnamed Ad Space";
+
+  if (offerData?.metadata?.offer) {
+    const offer = offerData?.metadata?.offer;
+
+    if (tokenMetaData && Object.keys(tokenMetaData).length > 0) {
+      description = tokenMetaData.description || description;
+      id = tokenMetaData.id || id;
+      image = tokenMetaData.image || image;
+      name = tokenMetaData.name || name;
+    } else {
+      description = offer.description || description;
+      id = offer.id || id;
+      image = offer.image || image;
+      name = offer.name || name;
+    }
+  }
 
   return (
     <>
