@@ -7,7 +7,7 @@ import { Popover, PopoverTrigger, PopoverContent } from "@nextui-org/popover";
 
 const MarketplaceHome = ({ auctions, setAllTokens, allTokens, isAuctionsLoading }) => {
   const [filterName, setFilterName] = useState("");
-  const [sortOption, setSortOption] = useState(null);
+  const [sortOption, setSortOption] = useState("Ending soon");
   const [filterOption, setFilterOption] = useState("All tokens");
   const [isInformationHovered, setIsInformationHovered] = useState(false);
 
