@@ -81,7 +81,7 @@ export const fetchAllListedTokenWithoutFilter = async (chainId, allTokens) => {
               #    price = bids[0].totalBidAmount || reservePricePerToken
               reservePricePerToken
               buyoutPricePerToken
-              bids(orderBy: totalBidAmount, orderDirection: desc, first: 1) {
+              bids(orderBy: totalBidAmount, orderDirection: desc) {
                  creationTimestamp
                 bidder
                 totalBidAmount
