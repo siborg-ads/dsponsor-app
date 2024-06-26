@@ -462,8 +462,14 @@ const TokenPageContainer = () => {
     if (!tokenId || !offerData) return;
     if (tokenId.length > 6) {
       const url = new URL(window.location.href);
-      const tokenData = url.searchParams.get("tokenData");
+      let tokenData = url.searchParams.get("tokenData");
       setTokenData(tokenData);
+
+      if (offerData?.nftContract?.tokens?.[0]?.mint?.tokenData) {
+        tokenData = offerData.nftContract.tokens[0].mint.tokenData;
+        setTokenData(tokenData);
+      }
+
       let isValidId = false;
       if (tokenData) {
         const stringToUnit = stringToUint256(tokenData);
