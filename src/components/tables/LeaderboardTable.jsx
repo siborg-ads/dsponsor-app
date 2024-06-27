@@ -185,7 +185,7 @@ const LeaderboardTable = ({ activity }) => {
 
   const tabItem = [
     { id: 1, text: "Top Boxes", icon: "activity" },
-    { id: 2, text: "Top Holders", icon: "owned" },
+    // { id: 2, text: "Top Holders", icon: "owned" },
     { id: 3, text: "Top Rewarded", icon: "activity" },
     { id: 4, text: "Top Spenders", icon: "activity" }
   ];
@@ -195,7 +195,7 @@ const LeaderboardTable = ({ activity }) => {
       <h1 className="text-4xl font-medium text-center pt-8 pb-4 mb-4 dark:text-white">
         Leaderboard Rankings
       </h1>
-      <div className="mb-8 grid grid-cols-2 md:grid-cols-4 gap-4 flex-wrap items-center justify-between">
+      <div className="mb-8 grid grid-cols-2 md:grid-cols-3 gap-4 flex-wrap items-center justify-between">
         {/* <div className="flex flex-wrap items-center">
           
           <div className="my-1 mr-2.5">

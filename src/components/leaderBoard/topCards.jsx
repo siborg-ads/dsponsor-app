@@ -95,6 +95,7 @@ const TopCards = ({ activity }) => {
           </span>
         </div>
       </div>
+      {/*}
       <div className="relative dark:bg-primaryPurple flex-grow flex-shrink flex-basis-[200px] overflow-hidden dark:border-jacarta-100 dark:border-opacity-10 mb-2 border-jacarta-100 rounded-2lg border flex flex-col gap-4 bg-white p-8">
         <div className="absolute top-0 right-0 p-2">
           <Popover placement="top" isOpen={hoveredIcon === "totalHolders"}>
@@ -114,13 +115,16 @@ const TopCards = ({ activity }) => {
             </PopoverContent>
           </Popover>
         </div>
+       
         <div className="flex flex-col gap-2 items-center justify-center sm:flex sm:flex-wrap">
           <p className="dark:text-white font-medium">Total Holders</p>
           <span className="text-jacarta-100 font-semibold text-ellipsis whitespace-nowrap overflow-hidden">
             {activity?.nbHolders}
           </span>
         </div>
+        
       </div>
+      */}
     </>
   );
 };
