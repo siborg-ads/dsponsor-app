@@ -72,7 +72,7 @@ const LeaderboardTable = ({ activity }) => {
 
     setLeaderboards({
       topPoints: activityToTopPoints(filteredActivity[0]?.rankings, address),
-      topHolders: activityToTopHolders(filteredActivity[0]?.rankings, address),
+      // topHolders: activityToTopHolders(filteredActivity[0]?.rankings, address),
       topRewarded: activityToTopRewarded(filteredActivity[0]?.rankings, address),
       topSpenders: activityToHighestTransactions(filteredActivity[0]?.lastActivities, address)
     });
@@ -99,6 +99,7 @@ const LeaderboardTable = ({ activity }) => {
     { header: "Total Boxes", render: (item) => item.totalPoints }
   ];
 
+  /*
   const holderColumns = [
     { header: "Rank", render: (item) => item.rank },
     { header: "Total Amount Spent", render: (item) => `${item.totalSpent} USDC` },
@@ -114,6 +115,7 @@ const LeaderboardTable = ({ activity }) => {
     //{ header: "Chain", render: () => config[chainId].network }
     // { header: "DPoints", render: (item) => item.dPoints }
   ];
+  */
 
   const rewardedColumns = [
     { header: "Rank", render: (item) => item.rank },
@@ -178,7 +180,7 @@ const LeaderboardTable = ({ activity }) => {
 
   const columns = {
     topPoints: pointColumns,
-    topHolders: holderColumns,
+    // topHolders: holderColumns,
     topRewarded: rewardedColumns,
     topSpenders: highestTransactionsColumns
   };
