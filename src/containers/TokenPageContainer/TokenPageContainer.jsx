@@ -465,7 +465,7 @@ const TokenPageContainer = () => {
       let tokenData = url.searchParams.get("tokenData");
       setTokenData(tokenData);
 
-      if (offerData?.nftContract?.tokens?.[0]?.mint?.tokenData) {
+      if (offerData?.nftContract?.tokens?.[0]?.mint?.tokenData?.length) {
         tokenData = offerData.nftContract.tokens[0].mint.tokenData;
         setTokenData(tokenData);
       }
