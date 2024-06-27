@@ -28,7 +28,11 @@ const Meta = ({ title, keyword, desc }) => {
           name="twitter:image"
           content="https://orange-elegant-swallow-161.mypinata.cloud/ipfs/QmaKVtq9B8UaraFDfkYaodti2VummZ4FvR2MZeTTV7Ycke"
         />
-        <script defer data-domain="dsponsor.com" src="https://plausible.io/js/script.js"></script>
+        <script
+          defer
+          data-domain="app.dsponsor.com"
+          src="https://plausible.io/js/script.js"
+        ></script>
       </Head>
     </div>
   );
