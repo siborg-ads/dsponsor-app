@@ -14,8 +14,8 @@ const ProfileOverview = ({ userData, ownedTokens }) => {
   const overviewCards = [
     {
       value: ownedTokens?.length ?? 0,
-      label: "Ad Spaces",
-      informations: "The number of ad spaces owned"
+      label: "Your Ad Spaces",
+      informations: "The number of ad spaces you own"
     },
     {
       value: ranking?.nbBids ?? 0,
