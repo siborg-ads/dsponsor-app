@@ -1,38 +1,84 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import Image from "next/image";
-
-import UserItems from "../../components/user/User_items";
-import Tippy from "@tippyjs/react";
 import "tippy.js/dist/tippy.css"; // optional
 import Meta from "../../components/Meta";
-
+import ProfileOverview from "../../components/user/ProfileOverview";
+import ProfileReferrals from "../../components/user/ProfileReferrals";
+import UserTabs from "../../components/user/UserTabs";
 import { useAddress } from "@thirdweb-dev/react";
-
 import { fetchAllTokenByOfferForAuser } from "../../providers/methods/fetchAllTokenByOfferForAuser";
 import { fetchAllOffersByUserAddress } from "../../providers/methods/fetchAllOffersByUserAddress";
 import { fetchAllTokenListedByUserAddress } from "../../providers/methods/fetchAllTokenListedByUserAddress";
 import { fetchAllTokenAuctionBidsByUser } from "../../providers/methods/fetchAllTokenAuctionBidsByUser";
 import { useChainContext } from "../../contexts/hooks/useChainContext";
-
 import config from "../../config/config";
-import handleCopy from "../../utils/handleCopy";
+import { getAddress } from "ethers/lib/utils";
 
 const ManageSpaceContainer = () => {
   const router = useRouter();
   const userAddress = router.query.manage;
   const address = useAddress();
   const [createdData, setCreatedData] = useState(null);
-  const [mappedownedAdProposals, setMappedownedAdProposals] = useState(null);
+  const [mappedOwnedAdProposals, setMappedOwnedAdProposals] = useState(null);
   const [listedAuctionToken, setListedAuctionToken] = useState(null);
   const [tokenAuctionBids, setTokenAuctionBids] = useState(null);
   const [copied, setCopied] = useState(false);
-  const [isPendinAdsOnOffer] = useState(false);
   const [isOwner, setIsOwner] = useState(false);
   const { currentChainObject } = useChainContext();
+  const [isPendingAdsOnOffer] = useState(false);
+  const [initialWallet, setInitialWallet] = useState(null);
+  const [mount, setMount] = useState(false);
+  const [userData, setUserData] = useState(null);
+  const [isUserConnected, setIsUserConnected] = useState(false);
 
   const chainId = currentChainObject?.chainId;
   const chainConfig = config[chainId];
+
+  useEffect(() => {
+    if (address && userAddress && getAddress(address) === getAddress(userAddress)) {
+      setIsUserConnected(true);
+    } else {
+      setIsUserConnected(false);
+    }
+  }, [address, userAddress]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const data = await fetch(
+        `https://relayer.dsponsor.com/api/${chainId}/activity?userAddress=${address}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json"
+          }
+        }
+      )
+        .then((res) => res.json())
+        .then((data) => {
+          return data;
+        })
+        .catch((err) => console.error(err));
+
+      setUserData(data);
+      setMount(true);
+    };
+
+    if (address && chainId && !mount) {
+      fetchData();
+    }
+  }, [address, chainId, mount]);
+
+  useEffect(() => {
+    if (address && !initialWallet) {
+      setInitialWallet(address);
+    }
+
+    if (address && initialWallet && address !== initialWallet) {
+      setInitialWallet(address);
+      router.push(`/profile/${address}`);
+    }
+  }, [address, initialWallet, router]);
 
   useEffect(() => {
     if (userAddress && chainId) {
@@ -56,11 +102,12 @@ const ManageSpaceContainer = () => {
             adParameters: element.adParameters,
             id: `${element.id}-${token.tokenId}`,
             offerId: element.id,
-            endTime: token?.marketplaceListings?.length > 0 && token?.marketplaceListings[0]?.endTime,
+            endTime:
+              token?.marketplaceListings?.length > 0 && token?.marketplaceListings[0]?.endTime
           }))
         );
-        
-        setMappedownedAdProposals(mappedOwnedAdProposals);
+
+        setMappedOwnedAdProposals(mappedOwnedAdProposals);
       };
 
       const fetchCreatedData = async () => {
@@ -83,7 +130,7 @@ const ManageSpaceContainer = () => {
             endTime: element?.endTime,
             offerId: element?.token?.nftContract?.adOffers[0]?.id
           }));
-        
+
         setListedAuctionToken(mappedListedToken);
       };
 
@@ -97,7 +144,7 @@ const ManageSpaceContainer = () => {
           tokenData: element.listing.token.mint.tokenData,
           offerId: element.listing.token.nftContract.adOffers[0].id,
           tokenId: element.listing.token.tokenId,
-          endTime: element?.listing?.endTime,
+          endTime: element?.listing?.endTime
         }));
 
         setTokenAuctionBids(mappedAuctionBidsTokens);
@@ -152,7 +199,7 @@ const ManageSpaceContainer = () => {
 
       <div className=" " key="5">
         {/* <!-- Banner --> */}
-        <div className="relative " style={{ height: "13rem" }}>
+        <div className="relative " style={{ height: "8rem" }}>
           <Image
             width={1519}
             height={150}
@@ -162,39 +209,30 @@ const ManageSpaceContainer = () => {
           />
         </div>
         {/* <!-- end banner --> */}
-        <section className="dark:bg-jacarta-800 bg-light-base relative ">
-          {/* <!-- Avatar --> */}
-          <div className="absolute left-1/2 top-0 z-10 flex -translate-x-1/2 -translate-y-1/2 items-center justify-center">
-            <div className="container">
-              <div className="text-center">
-                <div className="dark:bg-secondaryBlack dark:border-primaryBlack border-jacarta-100  inline-flex items-center justify-center rounded-full border bg-white py-1.5 px-4">
-                  <Tippy
-                    hideOnClick={false}
-                    content={copied ? <span>copied</span> : <span>copy</span>}
-                  >
-                    <button
-                      style={{ maxWidth: "10rem" }}
-                      onClick={() => handleCopy(userAddress, setCopied)}
-                      className="dark:text-jacarta-200 select-none overflow-hidden text-ellipsis whitespace-nowrap"
-                    >
-                      <span>{address === userAddress ? "You" : userAddress}</span>
-                    </button>
-                  </Tippy>
-                </div>
-              </div>
-            </div>
+
+        <div className="max-w-5xl mx-auto mt-12">
+          <div className="flex flex-col gap-16 mx-4">
+            <ProfileOverview userData={userData} ownedTokens={mappedOwnedAdProposals} />
+
+            {isUserConnected && (
+              <ProfileReferrals
+                userData={userData}
+                userAddr={address}
+                manageAddress={userAddress}
+              />
+            )}
+
+            <UserTabs
+              mappedownedAdProposals={mappedOwnedAdProposals}
+              createdData={createdData}
+              listedAuctionToken={listedAuctionToken}
+              tokenAuctionBids={tokenAuctionBids}
+              isPendingAdsOnOffer={isPendingAdsOnOffer}
+              isOwner={isOwner}
+              manageAddress={userAddress}
+            />
           </div>
-        </section>
-        {/* <!-- end profile --> */}
-        <UserItems
-          createdData={createdData}
-          listedAuctionToken={listedAuctionToken}
-          mappedownedAdProposals={mappedownedAdProposals}
-          tokenAuctionBids={tokenAuctionBids}
-          isPendinAdsOnOffer={isPendinAdsOnOffer}
-          isOwner={isOwner}
-          manageAddress={userAddress}
-        />
+        </div>
       </div>
     </>
   );
