@@ -20,22 +20,22 @@ const ProfileOverview = ({ userData, ownedTokens }) => {
     {
       value: ranking?.nbBids ?? 0,
       label: "Total Bids",
-      informations: "The total number of bids you have placed"
+      informations: "The total number of bids placed"
     },
     {
       value: ranking?.nbRefunds ?? 0,
       label: "Outbided",
-      informations: "The total number of times you have been outbided"
+      informations: "The total number of outbids received"
     },
     {
       value: `$${ranking?.usdcAmounts.bidRefundReceived ?? 0}`,
       label: "Rewards Earned",
-      informations: "The total amount of rewards in USD you have earned"
+      informations: "The total amount of rewards earned"
     },
     {
       value: ranking?.points ?? 0,
       label: "Boxes Won",
-      informations: "The total number of boxes you have won"
+      informations: "The total number of boxes won"
     }
   ];
 
