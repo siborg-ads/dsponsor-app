@@ -29,9 +29,16 @@ function MyApp({ Component, pageProps }) {
 
   const value = useMemo(() => ({ scrollRef }), [scrollRef]);
 
+  const metadata = {
+    title: "SiBorg Ads - The Web3 Monetization Solution",
+    keyword:
+      "audience engagement, web3, creator economic, NFT, creator monetization, creator economy, creator token, creator coin, creator tokenization, creator economy",
+    desc: "Unlock The Web3 Monetization Solution."
+  };
+
   return (
     <>
-      <Meta title="Home" />
+      <Meta {...metadata} />
       <Providers>
         <Provider store={store}>
           <ThemeProvider enableSystem={true} attribute="class" defaultTheme="dark">
