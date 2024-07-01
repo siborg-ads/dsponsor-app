@@ -136,7 +136,7 @@ const OfferPageContainer = () => {
     }
   };
   const metadata = {
-    title: `Offer || SiBorg Ads - Smarter Monetization for your content`,
+    title: `Offer || SiBorg Ads - The Web3 Monetization Solution`,
     keyword:
       "audience engagement, web3, creator economic, NFT, creator monetization, creator economy, creator token, creator coin, creator tokenization, creator economy",
 

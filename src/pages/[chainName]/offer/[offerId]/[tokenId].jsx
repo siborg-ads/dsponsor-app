@@ -16,7 +16,7 @@ import TokenPageContainer from "../../../../containers/TokenPageContainer/TokenP
 //     const offer = lastOffersRequest?.adOffers?.[0] || null
 
 //     return {
-//         title: `${offer?.metadata?.offer?.name} - Token ${tokenId} || DSponsor | smarter monetization for your content`,
+//         title: `${offer?.metadata?.offer?.name} - Token ${tokenId} || DSponsor | The Web3 Monetization Solution`,
 //         description: offer?.metadata?.offer?.description,
 //         keywords: `DSponsor, offer, ${offer?.metadata?.offer?.name}, ${offer?.metadata?.offer?.description}`,
 //     }

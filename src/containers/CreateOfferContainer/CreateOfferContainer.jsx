@@ -314,7 +314,7 @@ const CreateOfferContainer = () => {
     hrefButton: `/profile/${address}`
   };
   const metadata = {
-    title: "Create Offer || SiBorg Ads - Smarter Monetization for your content",
+    title: "Create Offer || SiBorg Ads - The Web3 Monetization Solution",
     description:
       "SiBorg Ads is a platform that connects content creators with sponsors. Our platform helps creators monetize their content and helps sponsors find creators to promote their products."
   };

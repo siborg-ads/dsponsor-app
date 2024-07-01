@@ -39,7 +39,7 @@ const Meta = ({ title, keyword, desc }) => {
 };
 
 Meta.defaultProps = {
-  title: "Siborg Ads | Unlock smarter monetization for your content.",
+  title: "Siborg Ads | Unlock The Web3 Monetization Solution.",
   keyword:
     "audience engagement, web3, creator economic, NFT, creator monetization, creator economy, creator token, creator coin, creator tokenization, creator economy",
   desc: "Explore the future of media monetization. Siborg Ads decentralized platform offers tokenized advertising spaces for dynamic and sustainable media funding."

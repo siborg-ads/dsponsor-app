@@ -189,7 +189,7 @@ const ManageSpaceContainer = () => {
     }, 2000);
   }, [copied]);
   const metadata = {
-    title: "Profile || SiBorg Ads - Smarter Monetization for your content",
+    title: "Profile || SiBorg Ads - The Web3 Monetization Solution",
     keyword:
       "audience engagement, web3, creator economic, NFT, creator monetization, creator economy, creator token, creator coin, creator tokenization, creator economy",
     desc: "Profile your ad spaces on SiBorg Ads."
