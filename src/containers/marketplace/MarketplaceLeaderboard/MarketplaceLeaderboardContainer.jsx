@@ -52,7 +52,7 @@ const MarketplaceLeaderboardContainer = () => {
     );
   }
   const metadata = {
-    title: `Leaderboard || SiBorg Ads - The Web3 Monetization Solution`,
+    title: `Leaderboard || SiBorg Ads - Smarter Monetization for your content`,
     keyword:
       "audience engagement, web3, creator economic, NFT, creator monetization, creator economy, creator token, creator coin, creator tokenization, creator economy",
     desc: "Explore the future of media monetization. SiBorg Ads decentralized platform offers tokenized advertising spaces for dynamic and sustainable media funding."

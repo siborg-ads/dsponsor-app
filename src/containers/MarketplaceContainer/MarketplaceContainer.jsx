@@ -63,7 +63,7 @@ const MarketplaceContainer = () => {
   }, [listedAuctionToken, filterTypes]);
 
   const metadata = {
-    title: "Marketplace || SiBorg Ads - The Web3 Monetization Solution",
+    title: "Marketplace || SiBorg Ads - Smarter Monetization for your content",
     keyword:
       "audience engagement, web3, creator economic, NFT, creator monetization, creator economy, creator token, creator coin, creator tokenization, creator economy",
 
