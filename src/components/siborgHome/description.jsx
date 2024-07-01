@@ -3,6 +3,7 @@ import Link from "next/link";
 import Modal from "react-modal";
 import Image from "next/image";
 import { XMarkIcon } from "@heroicons/react/20/solid";
+import { ArrowRightIcon } from "@heroicons/react/24/solid";
 
 const socials = [
   {
@@ -155,29 +156,46 @@ const Description = ({ description }) => {
         <div className="flex flex-col gap-4">
           <span className="text-white font-semibold text-2xl lg:text-4xl">How does it work?</span>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {steps.map((step, index) => {
-              return (
+            {steps.map((step, index) => (
+              <React.Fragment key={index}>
                 <div
-                  className="flex flex-col justify-between gap-4 p-6 bg-primaryPurple hover:-translate-y-1 duration-300 rounded-lg"
-                  key={index}
+                  className="flex p-[1px] bg-primaryBlack hover:-translate-y-1 duration-300 rounded-lg"
+                  style={{
+                    backgroundImage:
+                      "linear-gradient(176deg, #ea465c, #8a4cef 18%, #b649ac 51%, #ea465c 86%, #8a4cef)"
+                  }}
                 >
-                  <div className="gap-4 flex flex-col">
-                    <span className="text-white font-semibold text-lg h-12">
-                      {index + 1}. {step.title}
-                    </span>
-                    <span className="text-jacarta-100 text-sm">{step.description}</span>
-                  </div>
-
-                  {step.image && (
-                    <button onClick={() => openModal(step.image)} className="text-left">
-                      <span className="underline text-white hover:text-jacarta-100 text-left text-xs cursor-pointer">
-                        See example
+                  <div
+                    className="flex flex-col justify-between gap-4 p-6 bg-primaryBlack rounded-lg"
+                    key={index}
+                  >
+                    <div className="gap-4 flex flex-col">
+                      <span className="text-white text-center font-semibold">
+                        {index + 1}. {step.title}
                       </span>
-                    </button>
-                  )}
+
+                      <div
+                        className="flex w-full h-[1px]"
+                        style={{
+                          backgroundImage:
+                            "linear-gradient(176deg, #ea465c, #8a4cef 18%, #b649ac 51%, #ea465c 86%, #8a4cef)"
+                        }}
+                      />
+
+                      <span className="text-jacarta-100 text-sm">{step.description}</span>
+                    </div>
+
+                    {step.image && (
+                      <button onClick={() => openModal(step.image)} className="text-left">
+                        <span className="underline text-white hover:text-jacarta-100 text-left text-xs cursor-pointer">
+                          See example
+                        </span>
+                      </button>
+                    )}
+                  </div>
                 </div>
-              );
-            })}
+              </React.Fragment>
+            ))}
           </div>
         </div>
       </div>
