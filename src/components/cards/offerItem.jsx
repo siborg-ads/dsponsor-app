@@ -1,11 +1,13 @@
 import Tippy from "@tippyjs/react";
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import "swiper/css";
 import "swiper/css/navigation";
 import "tippy.js/dist/tippy.css";
 import TimerCard from "./TimerCard";
+import { shortenAddress, useAddress } from "@thirdweb-dev/react";
+import { getAddress } from "ethers/lib/utils";
 
 const OfferItem = ({
   item,
@@ -22,6 +24,10 @@ const OfferItem = ({
   const [itemData, setItemData] = useState({});
   const [itemStatut, setItemStatut] = useState(null);
   const [lastSalePrice, setLastSalePrice] = useState(null);
+  const [lastBidder, setLastBidder] = useState(null);
+  const [isLastBidder, setIsLastBidder] = useState(false);
+
+  const address = useAddress();
 
   useEffect(() => {
     if (item && item?.marketplaceListings?.length > 0) {
@@ -38,6 +44,23 @@ const OfferItem = ({
       }
     }
   }, [item]);
+
+  useEffect(() => {
+    if (!item) return;
+
+    const sortedListings = item?.marketplaceListings?.sort((a, b) => b.id - a.id);
+    const lastBidder = sortedListings[0]?.bids[0]?.bidder;
+
+    console.log("lastBidder", lastBidder);
+
+    setLastBidder(lastBidder);
+  }, [item]);
+
+  useEffect(() => {
+    if (address && lastBidder && getAddress(address) === getAddress(lastBidder)) {
+      setIsLastBidder(true);
+    }
+  }, [address, lastBidder]);
 
   function formatDate(dateIsoString) {
     if (!dateIsoString) return "date not found";
@@ -295,8 +318,16 @@ const OfferItem = ({
               </div>
             </div>
 
+            {lastBidder && (
+              <div className={`flex items-center gap-1 mt-4 text-sm`}>
+                Last Bidder:{" "}
+                <span className={`${isLastBidder ? "text-primaryPurple" : "text-jacarta-100"}`}>
+                  {isLastBidder ? "You" : shortenAddress(lastBidder)}
+                </span>
+              </div>
+            )}
             {lastSalePrice && (
-              <div className="flex items-center mt-4 text-sm">
+              <div className="flex items-center mt-4 text-sm text-jacarta-100">
                 Last Sale: {lastSalePrice} {currencyToken}
               </div>
             )}
