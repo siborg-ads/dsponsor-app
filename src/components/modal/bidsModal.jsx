@@ -61,6 +61,7 @@ const BidsModal = ({
   const [notEnoughFunds, setNotEnoughFunds] = useState(false);
   const [copied, setCopied] = useState(false);
   const [displayedPrice, setDisplayedPrice] = useState(null);
+  const [parsedBidsAmount, setParsedBidsAmount] = useState(null);
 
   const chainConfig = config[chainId];
   const chainWETH = chainConfig?.smartContracts.WETH.address.toLowerCase();
@@ -288,7 +289,7 @@ const BidsModal = ({
   }, [bidsAmount, initialIntPrice]);
 
   const handleBidsAmount = async (e) => {
-    const value = e.target.value;
+    let value = String(e.target.value).trim();
 
     if (value === "") {
       setBidsAmount("");
@@ -296,18 +297,33 @@ const BidsModal = ({
       return;
     }
 
-    const [, decimal] = value.split("." || ",");
-    if (decimal && decimal.length > currencyTokenDecimals) {
+    const decimalSeparator = value.includes(".") ? "." : ",";
+    const parts = value.split(decimalSeparator);
+
+    if (parts.length > 2) {
+      console.error("Invalid input format: multiple decimal separators");
+      return;
+    }
+
+    if (parts.length === 2 && parts[1].length > currencyTokenDecimals) {
+      console.error("Too many decimals for token precision");
+      return;
+    }
+
+    if (!/^\d*\.?\d*$/.test(value)) {
+      console.error("Invalid input format: must be numeric");
       return;
     }
 
     try {
-      const parsedValue = ethers.utils.parseUnits(value, currencyTokenDecimals);
+      const parsedValue = ethers.utils.parseUnits(value.replace(",", "."), currencyTokenDecimals);
       setBidsAmount(value);
+      setParsedBidsAmount(parsedValue);
       setAmountToApprove(parsedValue);
       await checkAllowance(parsedValue);
     } catch (error) {
       console.error("Invalid input for bids amount:", error);
+      setParsedBidsAmount(null);
       setBidsAmount("");
       setAmountToApprove(null);
     }
