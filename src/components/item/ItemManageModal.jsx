@@ -506,7 +506,7 @@ const ItemManageModal = ({
                                       htmlFor="item-description"
                                       className="font-display text-jacarta-900 mb-2 text-sm block dark:text-white"
                                     >
-                                      Unit selling price <span className="text-red">*</span>
+                                      Direct selling price <span className="text-red">*</span>
                                       <ModalHelper {...helperBuyoutPrice} size="small" />
                                     </label>
                                   </div>
@@ -519,7 +519,7 @@ const ItemManageModal = ({
                                       step="0.1"
                                       value={selectedUnitPrice}
                                       onChange={handleUnitPriceChange}
-                                      placeholder="Unit selling price"
+                                      placeholder="Direct selling price"
                                       className="dark:bg-secondaryBlack flex-grow border-jacarta-100 hover:ring-primaryPurple/10 focus:ring-primaryPurple dark:border-jacarta-600 dark:placeholder:text-jacarta-100  rounded-lg py-3 px-3 hover:ring-2 dark:text-white"
                                     />
                                     <p className="dark:text-jacarta-100 text-jacarta-100 text-2xs ">
