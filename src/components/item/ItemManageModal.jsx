@@ -1,7 +1,6 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { activated_features } from "../../data/activated_features";
 import { useAddress, useContract, useContractWrite, useContractRead } from "@thirdweb-dev/react";
-import { useState, useEffect } from "react";
 import "react-toastify/dist/ReactToastify.css";
 import { ethers } from "ethers";
 import DatePicker from "react-datepicker";

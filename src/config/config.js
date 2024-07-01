@@ -1,11 +1,9 @@
 let config;
 
-if (process.env.NODE_ENV === "development") {
+if (process.env.NEXT_PUBLIC_CONFIG_MODE === "dev") {
   config = require("./config.dev").default;
-} else if (process.env.NODE_ENV === "production" || process.env.VERCEL_ENV === "production") {
-  config = require("./config.prod").default;
 } else {
-  throw new Error("Unsupported environment");
+  config = require("./config.prod").default;
 }
 
 export default config;

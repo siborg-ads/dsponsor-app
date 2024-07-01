@@ -6,7 +6,7 @@ import { useChainContext } from "../../contexts/hooks/useChainContext";
 import { getAddress } from "ethers/lib/utils";
 import { DateRangePicker } from "@nextui-org/date-picker";
 
-const Activity = ({ isUserConnected, userAddr, chainId }) => {
+const Activity = ({ userAddr, chainId }) => {
   const [copied, setCopied] = useState(false);
   const [, setUserData] = useState(null);
   const [ranking, setRanking] = useState(null);
