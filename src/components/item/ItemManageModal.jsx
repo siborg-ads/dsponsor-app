@@ -365,7 +365,7 @@ const ItemManageModal = ({
                       {listingType.map((listing, index) => (
                         <div key={index} className="relative">
                           <div
-                            className={`card relative ${selectedListingType.includes(index) ? "bg-primaryPurple" : "bg-white"} open`}
+                            className={`card z-0 relative ${selectedListingType.includes(index) ? "bg-primaryPurple" : "bg-white"} open`}
                             onClick={() => {
                               document.getElementById(`checkbox-${index}`).click();
                             }}
@@ -434,7 +434,7 @@ const ItemManageModal = ({
                                       showYearDropdown
                                       showTimeSelect
                                       dateFormat="MMMM d, yyyy h:mm aa"
-                                      className="dark:bg-secondaryBlack border-jacarta-100 hover:ring-primaryPurple/10 focus:ring-primaryPurple dark:border-jacarta-600 dark:placeholder:text-jacarta-100 w-full rounded-lg py-3 px-3 hover:ring-2 dark:text-white"
+                                      className="z-50 dark:bg-secondaryBlack border-jacarta-100 hover:ring-primaryPurple/10 focus:ring-primaryPurple dark:border-jacarta-600 dark:placeholder:text-jacarta-100 w-full rounded-lg py-3 px-3 hover:ring-2 dark:text-white"
                                       style={{ width: "357px" }}
                                     />
                                     <div className="flex gap-2 justify-center items-center">
@@ -460,7 +460,7 @@ const ItemManageModal = ({
                                       showYearDropdown
                                       showTimeSelect
                                       dateFormat="MMMM d, yyyy h:mm aa"
-                                      className="dark:bg-secondaryBlack border-jacarta-100 hover:ring-primaryPurple/10 focus:ring-primaryPurple dark:border-jacarta-600 dark:placeholder:text-jacarta-100 w-full rounded-lg py-3 px-3 hover:ring-2 dark:text-white"
+                                      className="z-50 dark:bg-secondaryBlack border-jacarta-100 hover:ring-primaryPurple/10 focus:ring-primaryPurple dark:border-jacarta-600 dark:placeholder:text-jacarta-100 w-full rounded-lg py-3 px-3 hover:ring-2 dark:text-white"
                                     />
                                     <div className="flex gap-2 justify-center items-center">
                                       <span className="text-jacarta-900 dark:text-white">
