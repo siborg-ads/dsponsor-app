@@ -327,7 +327,7 @@ const ItemManageModal = ({
   return (
     <div className="w-full">
       {/* <!-- Buy Now Modal --> */}
-      <div className="modal-dialog max-w-xl">
+      <div className="modal-dialog max-w-3xl">
         <div className="modal-content !bg-secondaryBlack">
           <div className="modal-header">
             <h5 className="modal-title mr-8" id="buyNowModalLabel">
@@ -361,12 +361,9 @@ const ItemManageModal = ({
                     Select the appropriate type:
                   </p>
                   <div className="flex flex-col-reverse gap-4 justify-center items-center w-full text-jacarta-900 dark:text-white">
-                    <div
-                      id="adsType"
-                      className={`flex ${selectedListingType.includes(0) ? "flex-col-reverse" : "flex-col"} flex-col justify-center gap-2`}
-                    >
+                    <div id="adsType" className={`grid grid-cols-1 md:grid-cols-2 gap-2`}>
                       {listingType.map((listing, index) => (
-                        <div key={index} className="relative ">
+                        <div key={index} className="relative">
                           <div
                             className={`card relative ${selectedListingType.includes(index) ? "bg-primaryPurple" : "bg-white"} open`}
                             onClick={() => {
@@ -509,7 +506,7 @@ const ItemManageModal = ({
                                       htmlFor="item-description"
                                       className="font-display text-jacarta-900 mb-2 text-sm block dark:text-white"
                                     >
-                                      Unit selling price <span className="text-red">*</span>
+                                      Direct selling price <span className="text-red">*</span>
                                       <ModalHelper {...helperBuyoutPrice} size="small" />
                                     </label>
                                   </div>
@@ -522,7 +519,7 @@ const ItemManageModal = ({
                                       step="0.1"
                                       value={selectedUnitPrice}
                                       onChange={handleUnitPriceChange}
-                                      placeholder="Unit selling price"
+                                      placeholder="Direct selling price"
                                       className="dark:bg-secondaryBlack flex-grow border-jacarta-100 hover:ring-primaryPurple/10 focus:ring-primaryPurple dark:border-jacarta-600 dark:placeholder:text-jacarta-100  rounded-lg py-3 px-3 hover:ring-2 dark:text-white"
                                     />
                                     <p className="dark:text-jacarta-100 text-jacarta-100 text-2xs ">
@@ -582,7 +579,7 @@ const ItemManageModal = ({
               className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-black  !transition-all ${selectedListingType.length <= 0 ? "btn-disabled !bg-white !text-black opacity-30 cursor-not-allowed" : "!text-white !bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer"} `}
               onClick={handlePreviewModal}
             >
-              Show preview
+              Show {selectedListingType[0] === 1 ? "Auction" : "Listing"} Preview
             </button>
             {showPreviewModal && (
               <div className="modal fade show bloc">
