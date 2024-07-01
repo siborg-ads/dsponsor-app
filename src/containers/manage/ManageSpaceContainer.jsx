@@ -73,7 +73,9 @@ const ManageSpaceContainer = () => {
     if (address && !initialWallet) {
       setInitialWallet(address);
     }
+  }, [address, initialWallet]);
 
+  useEffect(() => {
     if (address && initialWallet && address !== initialWallet) {
       setInitialWallet(address);
       router.push(`/profile/${address}`);
