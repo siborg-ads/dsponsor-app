@@ -37,7 +37,7 @@ const ItemManage = ({
         setIsLastBidder(false);
       }
     }
-  }, [marketplaceListings, address, getAddress, setIsLastBidder]);
+  }, [marketplaceListings, address, setIsLastBidder]);
 
   const handleListingModal = () => {
     setListingModal(!listingModal);
