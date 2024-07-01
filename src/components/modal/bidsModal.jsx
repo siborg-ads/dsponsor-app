@@ -661,6 +661,8 @@ const BidsModal = ({
                         >
                           <button
                             onClick={() => {
+                              handleCopy(`${frontURL}/?_rid=${userAddr}`, setCopied);
+
                               if (navigator.share) {
                                 navigator
                                   .share({
@@ -670,7 +672,6 @@ const BidsModal = ({
                                   })
                                   .catch((error) => console.error("Error sharing", error));
                               } else {
-                                handleCopy(`${frontURL}/?_rid=${userAddr}`, setCopied);
                                 console.error("Web Share API is not supported in this browser");
                               }
                             }}
@@ -678,7 +679,7 @@ const BidsModal = ({
                           >
                             <span className="flex items-center justify-center gap-2 w-full text-center">
                               <ClipboardIcon className="w-5 h-5" />
-                              Copy
+                              Share Referral
                             </span>
                           </button>
                         </Tippy>
