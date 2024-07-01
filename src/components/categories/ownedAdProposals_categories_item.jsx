@@ -310,7 +310,7 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
         </div>
       ) : (
         <div className="w-full flex flex-col gap-4 justify-center items-center">
-          <span>You have no ad space yet...</span>
+          <span>No ad space yet...</span>
           <MainButton link={`/#hot-offers`} isPurple={true} text="Buy" />
         </div>
       )}
