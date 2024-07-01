@@ -8,7 +8,7 @@ import Image from "next/image";
 const Wallet = () => {
   return (
     <div>
-      <Meta title="Wallet || SiBorg Ads - The Web3 Monetization Solution" />
+      <Meta title="Wallet || SiBorg Ads | smarter monetization for your content" />
       <div className="pt-[5.5rem] lg:pt-24">
         {/* <!-- Wallet --> */}
 
