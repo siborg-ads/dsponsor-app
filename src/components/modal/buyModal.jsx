@@ -297,169 +297,186 @@ const BuyModal = ({
           {/* <!-- end body --> */}
           {!successFullUpload && (
             <div className="modal-footer p-6">
-              <div className="flex flex-col items-center space-y-6">
-                <div className="flex items-center justify-center space-x-4">
-                  {!insufficentBalance ? (
-                    <>
-                      {allowanceTrue ? (
-                        <>
-                          <div className="flex flex-col items-center gap-2">
-                            <Web3Button
-                              contractAddress={
-                                currentChainObject?.smartContracts?.DSPONSORADMIN?.address
-                              }
-                              action={() => {
-                                toast.promise(handleApprove, {
-                                  pending: "Waiting for confirmation 🕒",
-                                  success: "Approval confirmed 👌",
-                                  error: "Approval rejected 🤯"
-                                });
-                              }}
-                              className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-black  !transition-all ${!validate || !finalPriceNotFormatted ? "!btn-disabled !cursor-not-allowed !text-black opacity-30" : "!text-white !bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer"} `}
-                              isDisabled={!validate || isLoadingButton || !finalPriceNotFormatted}
-                            >
-                              {isLoadingButton ? (
-                                <Spinner size="sm" color="default" />
-                              ) : notEnoughFunds ? (
-                                <span className="text-black">Not enough funds</span>
-                              ) : (
-                                "Approve 🔓 (1/2)"
-                              )}
-                            </Web3Button>
-                            <Popover placement="bottom" isOpen={isHovered}>
-                              <PopoverTrigger
-                                className="cursor-help"
-                                onMouseEnter={() => setIsHovered(true)}
-                                onMouseLeave={() => setIsHovered(false)}
-                              >
-                                <span className="text-xs text-jacarta-100 inline-flex items-center gap-1">
-                                  <InformationCircleIcon className="w-4 h-4 text-jacarta-100" />
-                                  Why do I have to approve ?
-                                </span>
-                              </PopoverTrigger>
-                              <PopoverContent className="p-4 bg-primaryBlack text-white rounded-lg">
-                                <p className="text-sm">
-                                  You need to approve the marketplace contract to spend your{" "}
-                                  {selectedCurrency} on this transaction.
-                                </p>
-                              </PopoverContent>
-                            </Popover>
-                          </div>
-                        </>
-                      ) : (
-                        <>
-                          <Web3Button
-                            contractAddress={
-                              currentChainObject?.smartContracts?.DSPONSORADMIN?.address
-                            }
-                            action={() => {
-                              toast.promise(handleSubmit, {
-                                pending: "Waiting for confirmation 🕒",
-                                success: "Transaction confirmed 👌",
-                                error: "Transaction rejected 🤯"
-                              });
-                            }}
-                            className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate ? "!btn-disabled !cursor-not-allowed !text-black" : "!bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer"} `}
-                            isDisabled={!validate || isLoadingButton}
-                          >
-                            {isLoadingButton ? (
-                              <Spinner size="sm" color="default" />
-                            ) : notEnoughFunds ? (
-                              <span className="text-black">Not enough funds</span>
-                            ) : (
-                              "Confirm checkout 💸 (2/2)"
-                            )}
-                          </Web3Button>
-                        </>
-                      )}
-                    </>
-                  ) : (
-                    <>
+              <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
+                {!insufficentBalance ? (
+                  <>
+                    {allowanceTrue ? (
+                      <div className="flex flex-col items-center gap-2">
+                        {/* Approve Button */}
+                        <Web3Button
+                          contractAddress={
+                            currentChainObject?.smartContracts?.DSPONSORADMIN?.address
+                          }
+                          action={() => {
+                            toast.promise(handleApprove, {
+                              pending: "Waiting for confirmation 🕒",
+                              success: "Approval confirmed 👌",
+                              error: "Approval rejected 🤯"
+                            });
+                          }}
+                          className={`!rounded-full !py-3 !px-8 !text-center !font-semibold !text-black !transition-all ${
+                            !validate || !finalPriceNotFormatted
+                              ? "!btn-disabled !cursor-not-allowed !text-black !opacity-30"
+                              : "!text-white !bg-primaryPurple !cursor-pointer"
+                          }`}
+                          isDisabled={!validate || isLoadingButton || !finalPriceNotFormatted}
+                        >
+                          {isLoadingButton ? (
+                            <Spinner size="sm" color="default" />
+                          ) : notEnoughFunds ? (
+                            <span className="text-black">Not enough funds</span>
+                          ) : (
+                            "Approve 🔓 (1/2)"
+                          )}
+                        </Web3Button>
+                        {/* Place Bid Button */}
+                        <Web3Button
+                          contractAddress={
+                            currentChainObject?.smartContracts?.DSPONSORADMIN?.address
+                          }
+                          action={() => {
+                            toast.promise(handleSubmit, {
+                              pending: "Waiting for confirmation 🕒",
+                              success: "Bid confirmed 👌",
+                              error: "Bid rejected 🤯"
+                            });
+                          }}
+                          className={`!rounded-full !py-3 !px-8 !text-center !font-semibold !text-black !transition-all ${
+                            !validate
+                              ? "!btn-disabled !cursor-not-allowed !text-black !opacity-30"
+                              : "!text-white !bg-primaryPurple !cursor-pointer"
+                          }`}
+                          isDisabled={!validate || isLoadingButton}
+                        >
+                          {isLoadingButton ? (
+                            <Spinner size="sm" color="default" />
+                          ) : notEnoughFunds ? (
+                            <span className="text-black">Not enough funds</span>
+                          ) : (
+                            "Place Bid 💸 (2/2)"
+                          )}
+                        </Web3Button>
+                      </div>
+                    ) : (
+                      // If allowance is not true, show this button
                       <Web3Button
                         contractAddress={currentChainObject?.smartContracts?.DSPONSORADMIN?.address}
                         action={() => {
-                          toast.promise(handleBuySubmitWithNative, {
+                          toast.promise(handleSubmit, {
                             pending: "Waiting for confirmation 🕒",
                             success: "Transaction confirmed 👌",
                             error: "Transaction rejected 🤯"
                           });
                         }}
-                        className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate || !canPayWithNativeToken ? "!btn-disabled !cursor-not-allowed !text-black" : "!bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer"} `}
-                        isDisabled={!validate || isLoadingButton || !canPayWithNativeToken}
+                        className={`!rounded-full !py-3 !px-8 !text-center !font-semibold !text-black !transition-all ${
+                          !validate
+                            ? "!btn-disabled !cursor-not-allowed !text-black !opacity-30"
+                            : "!text-white !bg-primaryPurple !cursor-pointer"
+                        }`}
+                        isDisabled={!validate || isLoadingButton}
                       >
                         {isLoadingButton ? (
                           <Spinner size="sm" color="default" />
                         ) : notEnoughFunds ? (
                           <span className="text-black">Not enough funds</span>
                         ) : (
-                          "Confirm checkout with ETH 💸"
+                          "Confirm checkout 💸 (2/2)"
                         )}
                       </Web3Button>
-                    </>
-                  )}
-
-                  {successFullUpload && (
-                    <Link href={successFullBuyModal.hrefButton ?? "#"}>
-                      <button className="!rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all !bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer">
-                        {successFullBuyModal.buttonTitle}
-                      </button>
-                    </Link>
-                  )}
-                </div>
-                {canPayWithCrossmint && !successFullUpload && (
-                  <>
-                    <div className="flex items-center justify-center w-full">
-                      <div className="flex-grow border-t border-gray-300"></div>
-                      <span className="mx-4 text-gray-500">or</span>
-                      <div className="flex-grow border-t border-gray-300"></div>
-                    </div>
-                    <div className="flex items-center justify-center space-x-4">
-                      {!token.isListed && (
-                        <MintWithCrossmintButton
-                          offer={offer}
-                          token={token}
-                          user={user}
-                          referrer={referrer}
-                          actions={{
-                            processing: onProcessingMint,
-                            success: () => {
-                              toast.success("Minting successful");
-                            },
-                            error: (error) => {
-                              toast.error(`Minting failed: ${error.message}`);
-                            }
-                          }}
-                          isLoading={isLoadingButton}
-                          isLoadingRender={() => <Spinner size="sm" color="default" />}
-                          isActiveRender={`Buy NOW ${finalPrice} ${selectedCurrency} with card `}
-                          isDisabled={!validate || isLoadingButton}
-                        />
-                      )}
-                      {token.isListed && (
-                        <BuyWithCrossmintButton
-                          offer={offer}
-                          token={token}
-                          user={user}
-                          referrer={referrer}
-                          actions={{
-                            processing: onProcessingBuy,
-                            success: () => {
-                              toast.success("Buying successful");
-                            },
-                            error: (error) => {
-                              toast.error(`Buying failed: ${error.message}`);
-                            }
-                          }}
-                          isLoading={isLoadingButton}
-                          isLoadingRender={() => <Spinner size="sm" color="default" />}
-                          isActiveRender={`Buy NOW ${finalPrice} ${selectedCurrency} with card `}
-                          isDisabled={!validate || isLoadingButton}
-                        />
-                      )}
-                    </div>
+                    )}
                   </>
+                ) : (
+                  // If insufficient balance, show this button
+                  <Web3Button
+                    contractAddress={currentChainObject?.smartContracts?.DSPONSORADMIN?.address}
+                    action={() => {
+                      toast.promise(handleBuySubmitWithNative, {
+                        pending: "Waiting for confirmation 🕒",
+                        success: "Transaction confirmed 👌",
+                        error: "Transaction rejected 🤯"
+                      });
+                    }}
+                    className={`!rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${
+                      !validate || !canPayWithNativeToken
+                        ? "!btn-disabled !cursor-not-allowed !text-black !opacity-30"
+                        : "!text-white !bg-primaryPurple !cursor-pointer"
+                    }`}
+                    isDisabled={!validate || isLoadingButton || !canPayWithNativeToken}
+                  >
+                    {isLoadingButton ? (
+                      <Spinner size="sm" color="default" />
+                    ) : notEnoughFunds ? (
+                      <span className="text-black">Not enough funds</span>
+                    ) : (
+                      "Confirm checkout with ETH 💸"
+                    )}
+                  </Web3Button>
+                )}
+
+                {/* SuccessFullUpload condition to show a Link */}
+                {successFullUpload && (
+                  <Link href={successFullBuyModal.hrefButton ?? "#"}>
+                    <button className="!rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all !bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer">
+                      {successFullBuyModal.buttonTitle}
+                    </button>
+                  </Link>
                 )}
               </div>
+
+              {/* Crossmint buttons section */}
+              {canPayWithCrossmint && !successFullUpload && (
+                <>
+                  <div className="flex items-center justify-center w-full">
+                    <div className="flex-grow border-t border-gray-300"></div>
+                    <span className="mx-4 text-gray-500">or</span>
+                    <div className="flex-grow border-t border-gray-300"></div>
+                  </div>
+                  <div className="flex items-center justify-center space-x-4">
+                    {/* Render appropriate button based on token.isListed */}
+                    {!token.isListed ? (
+                      <MintWithCrossmintButton
+                        offer={offer}
+                        token={token}
+                        user={user}
+                        referrer={referrer}
+                        actions={{
+                          processing: onProcessingMint,
+                          success: () => {
+                            toast.success("Minting successful");
+                          },
+                          error: (error) => {
+                            toast.error(`Minting failed: ${error.message}`);
+                          }
+                        }}
+                        isLoading={isLoadingButton}
+                        isLoadingRender={() => <Spinner size="sm" color="default" />}
+                        isActiveRender={`Buy NOW ${finalPrice} ${selectedCurrency} with card `}
+                        isDisabled={!validate || isLoadingButton}
+                      />
+                    ) : (
+                      <BuyWithCrossmintButton
+                        offer={offer}
+                        token={token}
+                        user={user}
+                        referrer={referrer}
+                        actions={{
+                          processing: onProcessingBuy,
+                          success: () => {
+                            toast.success("Buying successful");
+                          },
+                          error: (error) => {
+                            toast.error(`Buying failed: ${error.message}`);
+                          }
+                        }}
+                        isLoading={isLoadingButton}
+                        isLoadingRender={() => <Spinner size="sm" color="default" />}
+                        isActiveRender={`Buy NOW ${finalPrice} ${selectedCurrency} with card `}
+                        isDisabled={!validate || isLoadingButton}
+                      />
+                    )}
+                  </div>
+                </>
+              )}
             </div>
           )}
         </div>

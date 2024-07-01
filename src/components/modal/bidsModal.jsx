@@ -709,7 +709,7 @@ const BidsModal = ({
             {!successFullBid && (
               <div className="modal-footer flex items-center justify-center gap-4 p-6">
                 <>
-                  <div className="flex flex-col items-center space-y-6">
+                  <div className="flex flex-col md:flex-row md:items-start items-center gap-6">
                     {!insufficentBalance ? (
                       <>
                         {allowanceTrue ? (
@@ -728,7 +728,7 @@ const BidsModal = ({
                                 }}
                                 className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-black !transition-all ${
                                   !isPriceGood || !checkTerms || !bidsAmount
-                                    ? "!btn-disabled !cursor-not-allowed !text-black opacity-30"
+                                    ? "!btn-disabled !cursor-not-allowed !text-black !opacity-30"
                                     : "!text-white !bg-primaryPurple !cursor-pointer"
                                 } `}
                                 isDisabled={!isPriceGood || !checkTerms || !bidsAmount}
@@ -760,9 +760,7 @@ const BidsModal = ({
                                 </PopoverContent>
                               </Popover>
                             </div>
-                          </>
-                        ) : (
-                          <>
+                            {/* Added next button */}
                             <Web3Button
                               contractAddress={config[chainId]?.smartContracts?.DSPONSORMP?.address}
                               action={() => {
@@ -772,10 +770,10 @@ const BidsModal = ({
                                   error: "Bid rejected 🤯"
                                 });
                               }}
-                              className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${
+                              className={`!rounded-full !py-3 !px-8 !text-center !font-semibold !text-black !transition-all ${
                                 !isPriceGood || !checkTerms
-                                  ? "!btn-disabled !cursor-not-allowed"
-                                  : "!bg-primaryPurple !cursor-pointer"
+                                  ? "!btn-disabled !cursor-not-allowed !text-black !opacity-30"
+                                  : "!text-white !bg-primaryPurple !cursor-pointer"
                               } `}
                               isDisabled={!isPriceGood || !checkTerms}
                             >
@@ -794,6 +792,39 @@ const BidsModal = ({
                               )}
                             </Web3Button>
                           </>
+                        ) : (
+                          <>
+                            <Web3Button
+                              contractAddress={config[chainId]?.smartContracts?.DSPONSORMP?.address}
+                              action={() => {
+                                toast.promise(handleSubmitWithNative, {
+                                  pending: "Waiting for confirmation 🕒",
+                                  success: "Bid confirmed 👌",
+                                  error: "Bid rejected 🤯"
+                                });
+                              }}
+                              className={`!rounded-full !py-3 !px-8 !text-center !font-semibold !text-black !transition-all ${
+                                !isPriceGood || !checkTerms || !canPayWithNativeToken
+                                  ? "!btn-disabled !cursor-not-allowed !text-black !opacity-30"
+                                  : "!text-white !bg-primaryPurple !cursor-pointer"
+                              } `}
+                              isDisabled={!isPriceGood || !checkTerms || !canPayWithNativeToken}
+                            >
+                              {isLoadingButton ? (
+                                <Spinner size="sm" color="default" />
+                              ) : buyoutPriceReached ? (
+                                notEnoughFunds ? (
+                                  <span className="text-black">Not enough funds</span>
+                                ) : (
+                                  "Buy Now with ETH 💸"
+                                )
+                              ) : notEnoughFunds ? (
+                                <span className="text-black">Not enough funds</span>
+                              ) : (
+                                "Place Bid with ETH 💸"
+                              )}
+                            </Web3Button>
+                          </>
                         )}
                       </>
                     ) : (
@@ -807,10 +838,10 @@ const BidsModal = ({
                               error: "Bid rejected 🤯"
                             });
                           }}
-                          className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${
+                          className={`!rounded-full !py-3 !px-8 !text-center !font-semibold !text-black !transition-all ${
                             !isPriceGood || !checkTerms || !canPayWithNativeToken
-                              ? "!btn-disabled !cursor-not-allowed"
-                              : "!bg-primaryPurple !cursor-pointer"
+                              ? "!btn-disabled !cursor-not-allowed !text-black !opacity-30"
+                              : "!text-white !bg-primaryPurple !cursor-pointer"
                           } `}
                           isDisabled={!isPriceGood || !checkTerms || !canPayWithNativeToken}
                         >
