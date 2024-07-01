@@ -7,7 +7,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { Spinner } from "@nextui-org/spinner";
 import ModalHelper from "../Helper/modalHelper";
 import { useChainContext } from "../../contexts/hooks/useChainContext";
-import { Popover, PopoverTrigger, PopoverContent } from "@headlessui/react";
+import { Popover, PopoverButton, PopoverPanel } from "@headlessui/react";
 import { InformationCircleIcon } from "@heroicons/react/20/solid";
 
 const PreviewModal = ({
@@ -413,7 +413,7 @@ const PreviewModal = ({
                           )}
                         </Web3Button>
                         <Popover placement="bottom" isOpen={isHovered}>
-                          <PopoverTrigger
+                          <PopoverButton
                             className="cursor-help"
                             onMouseEnter={() => setIsHovered(true)}
                             onMouseLeave={() => setIsHovered(false)}
@@ -422,14 +422,13 @@ const PreviewModal = ({
                               <InformationCircleIcon className="w-4 h-4 text-jacarta-100" />
                               Why do I have to approve ?
                             </span>
-                          </PopoverTrigger>
-                          <PopoverContent className="p-4 bg-primaryBlack text-white rounded-lg">
+                          </PopoverButton>
+                          <PopoverPanel className="p-4 bg-primaryBlack text-white rounded-lg">
                             <p className="text-sm">
                               You need to approve the marketplace contract to spend your{" "}
-                              {selectedCurrency}
-                              on this transaction.
+                              {selectedCurrency} on this transaction.
                             </p>
-                          </PopoverContent>
+                          </PopoverPanel>
                         </Popover>
                       </div>
                     </>
