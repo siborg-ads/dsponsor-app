@@ -298,6 +298,7 @@ const BidsModal = ({
 
     if (value === "") {
       setBidsAmount("");
+      setParsedBidsAmount(null);
       setAmountToApprove(null);
       return;
     }
