@@ -5,7 +5,14 @@ const Meta = ({ title, keyword, desc }) => {
     <div>
       <Head>
         <title>{title}</title>
-        <link rel="icon" href="/favicon-siborg.png" />
+        <link
+          rel="icon"
+          href={
+            process.env.NEXT_PUBLIC_CONFIG_MODE === "dev"
+              ? "/favicon-siborg-testnet.png"
+              : "/favicon-siborg.png"
+          }
+        />
         <meta name="description" content={desc} />
         <meta name="keyword" content={keyword} />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
