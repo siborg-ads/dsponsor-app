@@ -16,6 +16,7 @@ import { ClipboardIcon, InformationCircleIcon } from "@heroicons/react/20/solid"
 import handleCopy from "../../utils/handleCopy";
 import "tippy.js/dist/tippy.css";
 import { Popover, PopoverTrigger, PopoverContent } from "@nextui-org/react";
+import { BigNumber } from "ethers";
 
 const BidsModal = ({
   setAmountToApprove,
@@ -62,6 +63,7 @@ const BidsModal = ({
   const [notEnoughFunds, setNotEnoughFunds] = useState(false);
   const [copied, setCopied] = useState(false);
   const [displayedPrice, setDisplayedPrice] = useState(null);
+  const [parsedBidsAmount, setParsedBidsAmount] = useState(null);
   const [isHovered, setIsHovered] = useState(false);
 
   const chainConfig = config[chainId];
@@ -122,23 +124,18 @@ const BidsModal = ({
   }, [bidsAmount, chainId, currencyContract, currencyTokenDecimals]);
 
   useEffect(() => {
-    if (!tokenEtherPrice || tokenEtherPrice <= 0) return;
+    if (!amountInEthWithSlippage || amountInEthWithSlippage.lte(BigNumber.from(0))) return;
 
-    if (!bidsAmount || bidsAmount === "" || bidsAmount <= 0) return;
-
-    const fixedEtherPrice = Number(tokenEtherPrice).toFixed(currencyTokenDecimals);
-    const tokenEtherPriceDecimals = parseUnits(fixedEtherPrice, currencyTokenDecimals);
-
-    const bidsAmountDecimals = parseUnits(bidsAmount, currencyTokenDecimals);
+    if (!parsedBidsAmount || parsedBidsAmount.lte(BigNumber.from(0))) return;
 
     const hasInsufficientBalance =
       currencyBalance &&
-      (currencyBalance?.value.lt(tokenEtherPriceDecimals) ||
-        bidsAmountDecimals?.gt(currencyBalance?.value));
+      (currencyBalance?.value.lt(amountInEthWithSlippage) ||
+        parsedBidsAmount?.gt(currencyBalance?.value));
 
     setInsufficentBalance(hasInsufficientBalance);
 
-    if (nativeTokenBalance && nativeTokenBalance?.value.lt(tokenEtherPriceDecimals)) {
+    if (nativeTokenBalance && nativeTokenBalance?.value.lt(amountInEthWithSlippage)) {
       setCanPayWithNativeToken(false);
     } else {
       setCanPayWithNativeToken(true);
@@ -146,11 +143,11 @@ const BidsModal = ({
   }, [
     marketplaceListings,
     chainId,
-    bidsAmount,
+    parsedBidsAmount,
     nativeTokenBalance,
     currencyBalance,
     currencyTokenDecimals,
-    tokenEtherPrice
+    amountInEthWithSlippage
   ]);
 
   useEffect(() => {
@@ -163,39 +160,42 @@ const BidsModal = ({
 
   useEffect(() => {
     const fetchData = async () => {
-      const precision = bidsAmount.split(".")[1]?.length || 0;
       await fetchTokenPrice(
         marketplaceListings[0]?.currency,
         Number(chainId),
-        parseUnits(
-          parseFloat(bidsAmount).toFixed(Math.min(Number(currencyTokenDecimals), precision)),
-          Number(currencyTokenDecimals)
-        )
+        parsedBidsAmount
       ).then((price) => {
         setTokenPrice(price);
       });
     };
 
-    if (marketplaceListings && marketplaceListings[0] && bidsAmount && bidsAmount > 0 && chainId) {
+    if (
+      marketplaceListings &&
+      marketplaceListings[0] &&
+      parsedBidsAmount &&
+      parsedBidsAmount.gt(BigNumber.from(0)) &&
+      chainId
+    ) {
       fetchData();
     } else {
       setTokenPrice(0);
     }
-  }, [bidsAmount, chainId, marketplaceListings, currencyTokenDecimals]);
+  }, [parsedBidsAmount, chainId, marketplaceListings, currencyTokenDecimals]);
 
   useEffect(() => {
-    if (marketplaceListings && marketplaceListings[0] && bidsAmount && bidsAmount > 0) {
-      const precision = bidsAmount.split(".")[1]?.length || 0;
-      const fixedBidsAmount = parseFloat(bidsAmount).toFixed(
-        Math.min(Number(currencyTokenDecimals), precision)
-      );
-      const bidsAmountLocal = parseUnits(fixedBidsAmount, currencyTokenDecimals);
+    if (
+      marketplaceListings &&
+      marketplaceListings[0] &&
+      parsedBidsAmount &&
+      parsedBidsAmount.gt(BigNumber.from(0))
+    ) {
+      console.log("parsedBidsAmount", parsedBidsAmount.toString());
       const minimalBuyoutPerToken =
         marketplaceListings[0]?.bidPriceStructure?.minimalBuyoutPerToken;
       const buyoutPrice = marketplaceListings[0]?.buyoutPricePerToken;
 
-      const isMinimalBuyout = bidsAmountLocal.gte(minimalBuyoutPerToken);
-      const isBuyout = bidsAmountLocal.gte(buyoutPrice);
+      const isMinimalBuyout = parsedBidsAmount.gte(minimalBuyoutPerToken);
+      const isBuyout = parsedBidsAmount.gte(buyoutPrice);
 
       if (isBuyout && isMinimalBuyout) {
         setBuyoutPriceReached(true);
@@ -205,15 +205,16 @@ const BidsModal = ({
     } else {
       setBuyoutPriceReached(false);
     }
-  }, [marketplaceListings, bidsAmount, currencyTokenDecimals]);
+  }, [marketplaceListings, currencyTokenDecimals, parsedBidsAmount]);
 
   useEffect(() => {
-    if (marketplaceListings[0] && bidsAmount && bidsAmount > 0 && currencyTokenDecimals) {
-      const precision = bidsAmount.split(".")[1]?.length || 0;
-      const bidsAmountFixed = parseFloat(bidsAmount).toFixed(
-        Math.min(Number(currencyTokenDecimals), precision)
-      );
-      const newBidPerToken = parseUnits(bidsAmountFixed, Number(currencyTokenDecimals));
+    if (
+      marketplaceListings[0] &&
+      parsedBidsAmount &&
+      parsedBidsAmount.gt(BigNumber.from(0)) &&
+      currencyTokenDecimals
+    ) {
+      const newBidPerToken = parsedBidsAmount;
       const reservePricePerToken = marketplaceListings[0]?.reservePricePerToken;
       const buyoutPricePerToken = marketplaceListings[0]?.buyoutPricePerToken;
       const previousPricePerToken =
@@ -263,7 +264,7 @@ const BidsModal = ({
       setMinBid(0);
       setRefundedPrice(0);
     }
-  }, [bidsAmount, marketplaceListings, currencyTokenDecimals]);
+  }, [parsedBidsAmount, marketplaceListings, currencyTokenDecimals]);
 
   useEffect(() => {
     const endTime = marketplaceListings[0]?.endTime;
@@ -292,7 +293,7 @@ const BidsModal = ({
   }, [bidsAmount, initialIntPrice]);
 
   const handleBidsAmount = async (e) => {
-    const value = e.target.value;
+    let value = String(e.target.value).trim();
 
     if (value === "") {
       setBidsAmount("");
@@ -300,18 +301,33 @@ const BidsModal = ({
       return;
     }
 
-    const [, decimal] = value.split("." || ",");
-    if (decimal && decimal.length > currencyTokenDecimals) {
+    const decimalSeparator = value.includes(".") ? "." : ",";
+    const parts = value.split(decimalSeparator);
+
+    if (parts.length > 2) {
+      console.error("Invalid input format: multiple decimal separators");
+      return;
+    }
+
+    if (parts.length === 2 && parts[1].length > currencyTokenDecimals) {
+      console.error("Too many decimals for token precision");
+      return;
+    }
+
+    if (!/^\d*\.?\d*$/.test(value)) {
+      console.error("Invalid input format: must be numeric");
       return;
     }
 
     try {
-      const parsedValue = ethers.utils.parseUnits(value, currencyTokenDecimals);
+      const parsedValue = ethers.utils.parseUnits(value.replace(",", "."), currencyTokenDecimals);
       setBidsAmount(value);
+      setParsedBidsAmount(parsedValue);
       setAmountToApprove(parsedValue);
       await checkAllowance(parsedValue);
     } catch (error) {
       console.error("Invalid input for bids amount:", error);
+      setParsedBidsAmount(null);
       setBidsAmount("");
       setAmountToApprove(null);
     }
