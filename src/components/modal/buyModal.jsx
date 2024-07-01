@@ -300,7 +300,7 @@ const BuyModal = ({
               <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
                 {!insufficentBalance ? (
                   <>
-                    {allowanceTrue ? (
+                    <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
                       <div className="flex flex-col items-center gap-2">
                         {/* Approve Button */}
                         <Web3Button
@@ -315,11 +315,16 @@ const BuyModal = ({
                             });
                           }}
                           className={`!rounded-full !py-3 !px-8 !text-center !font-semibold !text-black !transition-all ${
-                            !validate || !finalPriceNotFormatted
+                            !validate || !finalPriceNotFormatted || !allowanceTrue
                               ? "!btn-disabled !cursor-not-allowed !text-black !opacity-30"
                               : "!text-white !bg-primaryPurple !cursor-pointer"
                           }`}
-                          isDisabled={!validate || isLoadingButton || !finalPriceNotFormatted}
+                          isDisabled={
+                            !validate ||
+                            isLoadingButton ||
+                            !finalPriceNotFormatted ||
+                            !allowanceTrue
+                          }
                         >
                           {isLoadingButton ? (
                             <Spinner size="sm" color="default" />
@@ -329,61 +334,51 @@ const BuyModal = ({
                             "Approve 🔓 (1/2)"
                           )}
                         </Web3Button>
-                        {/* Place Bid Button */}
-                        <Web3Button
-                          contractAddress={
-                            currentChainObject?.smartContracts?.DSPONSORADMIN?.address
-                          }
-                          action={() => {
-                            toast.promise(handleSubmit, {
-                              pending: "Waiting for confirmation 🕒",
-                              success: "Bid confirmed 👌",
-                              error: "Bid rejected 🤯"
-                            });
-                          }}
-                          className={`!rounded-full !py-3 !px-8 !text-center !font-semibold !text-black !transition-all ${
-                            !validate
-                              ? "!btn-disabled !cursor-not-allowed !text-black !opacity-30"
-                              : "!text-white !bg-primaryPurple !cursor-pointer"
-                          }`}
-                          isDisabled={!validate || isLoadingButton}
-                        >
-                          {isLoadingButton ? (
-                            <Spinner size="sm" color="default" />
-                          ) : notEnoughFunds ? (
-                            <span className="text-black">Not enough funds</span>
-                          ) : (
-                            "Place Bid 💸 (2/2)"
-                          )}
-                        </Web3Button>
+                        <Popover placement="bottom" isOpen={isHovered}>
+                          <PopoverTrigger
+                            className="cursor-help"
+                            onMouseEnter={() => setIsHovered(true)}
+                            onMouseLeave={() => setIsHovered(false)}
+                          >
+                            <span className="text-xs text-jacarta-100 inline-flex items-center gap-1">
+                              <InformationCircleIcon className="w-4 h-4 text-jacarta-100" />
+                              Why do I have to approve ?
+                            </span>
+                          </PopoverTrigger>
+                          <PopoverContent className="p-4 bg-primaryBlack text-white rounded-lg">
+                            <p className="text-sm">
+                              You need to approve the marketplace contract to spend your{" "}
+                              {selectedCurrency} on this transaction.
+                            </p>
+                          </PopoverContent>
+                        </Popover>
                       </div>
-                    ) : (
-                      // If allowance is not true, show this button
+                      {/* Place Bid Button */}
                       <Web3Button
                         contractAddress={currentChainObject?.smartContracts?.DSPONSORADMIN?.address}
                         action={() => {
                           toast.promise(handleSubmit, {
                             pending: "Waiting for confirmation 🕒",
-                            success: "Transaction confirmed 👌",
-                            error: "Transaction rejected 🤯"
+                            success: "Bid confirmed 👌",
+                            error: "Bid rejected 🤯"
                           });
                         }}
                         className={`!rounded-full !py-3 !px-8 !text-center !font-semibold !text-black !transition-all ${
-                          !validate
+                          !validate || allowanceTrue
                             ? "!btn-disabled !cursor-not-allowed !text-black !opacity-30"
                             : "!text-white !bg-primaryPurple !cursor-pointer"
                         }`}
-                        isDisabled={!validate || isLoadingButton}
+                        isDisabled={!validate || isLoadingButton || allowanceTrue}
                       >
                         {isLoadingButton ? (
                           <Spinner size="sm" color="default" />
                         ) : notEnoughFunds ? (
                           <span className="text-black">Not enough funds</span>
                         ) : (
-                          "Confirm checkout 💸 (2/2)"
+                          "Buy Now 💸 (2/2)"
                         )}
                       </Web3Button>
-                    )}
+                    </div>
                   </>
                 ) : (
                   // If insufficient balance, show this button
