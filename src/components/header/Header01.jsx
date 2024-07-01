@@ -45,7 +45,7 @@ export default function Header01() {
                 src={Logo ?? ""}
                 width={220}
                 height={50}
-                alt="SiBorg Ads | Smarter monetization for your content"
+                alt="SiBorg Ads | The Web3 Monetization Solution"
                 className=" h-auto "
               />
             </div>
@@ -54,7 +54,7 @@ export default function Header01() {
                 src={Logo ?? ""}
                 width={220}
                 height={50}
-                alt="SiBorg Ads | Smarter monetization for your content"
+                alt="SiBorg Ads | The Web3 Monetization Solution"
               />
             </div>
           </Link>
@@ -188,7 +188,7 @@ export default function Header01() {
               src={Logo ?? ""}
               height={660}
               width={150}
-              alt="SiBorg Ads | Smarter monetization for your content"
+              alt="SiBorg Ads | The Web3 Monetization Solution"
               className="max-h-7 h-auto "
             />
           </div>
@@ -198,7 +198,7 @@ export default function Header01() {
               src={Logo ?? ""}
               height={660}
               width={150}
-              alt="SiBorg Ads | Smarter monetization for your content"
+              alt="SiBorg Ads | The Web3 Monetization Solution"
             />
           </div>
 
