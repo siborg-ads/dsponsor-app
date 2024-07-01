@@ -21,6 +21,23 @@ const OfferItem = ({
   const [currencyToken, setCurrencyToken] = useState(null);
   const [itemData, setItemData] = useState({});
   const [itemStatut, setItemStatut] = useState(null);
+  const [lastSalePrice, setLastSalePrice] = useState(null);
+
+  useEffect(() => {
+    if (item && item?.marketplaceListings?.length > 0) {
+      // we look for the latest completed listing
+      const latestListing = item?.marketplaceListings
+        .reverse()
+        .find((listing) => listing.status === "COMPLETED");
+
+      if (latestListing) {
+        // if yes we get the last sale price
+        const lastSalePrice = latestListing?.buyPriceStructureFormatted?.buyoutPricePerToken;
+
+        setLastSalePrice(lastSalePrice);
+      }
+    }
+  }, [item]);
 
   function formatDate(dateIsoString) {
     if (!dateIsoString) return "date not found";
@@ -92,10 +109,10 @@ const OfferItem = ({
 
   return (
     <>
-      <Link href={url ?? "#"}>
-        <article className="relative">
+      <Link href={url ?? "#"} className="h-full">
+        <article className="relative h-full">
           {item?.isPending && isOwner && (
-            <div className="absolute -top-2 -right-2 rounded-2xl bg-red rounded-2xl dark:text-white  px-2">
+            <div className="absolute -top-2 -right-2 rounded-2xl bg-red rounded-2xl dark:text-white px-2">
               !
             </div>
           )}
@@ -104,7 +121,7 @@ const OfferItem = ({
             style={{
               transitionDuration: "500ms"
             }}
-            className="dark:bg-secondaryBlack h-full cursor-pointer dark:hover:bg-opacity-80 box-border hover:border-2 hover:-m-1 duration-1000 hover:duration-1000 hover:-translate-y-1 dark:hover:border-2 dark:border-jacarta-100 dark:border-opacity-10 border-opacity-10 border-jacarta-900 relative rounded-2xl flex flex-col border bg-white p-4 transition-shadow hover:shadow-lg text-jacarta-100"
+            className="dark:bg-secondaryBlack h-full cursor-pointer dark:hover:bg-opacity-80 box-border hover:border-2 duration-1000 hover:duration-1000 hover:-translate-y-1 dark:hover:border-2 dark:border-jacarta-100 dark:border-opacity-10 border-opacity-10 border-jacarta-900 relative rounded-2xl flex flex-col border bg-white p-4 transition-shadow hover:shadow-lg text-jacarta-100"
           >
             <div className="relative">
               <figure>
@@ -173,7 +190,7 @@ const OfferItem = ({
                 </Tippy>
               )}
             </div>
-            <div className="flex flex-col justify-between flex-1">
+            <div className="flex flex-col flex-1">
               <div className="mt-4 flex items-center justify-between gap-2">
                 {isSelectionActive ? (
                   <span className="font-display  text-primaryBlack hover:text-primaryPurple text-base dark:text-white ">
@@ -277,6 +294,12 @@ const OfferItem = ({
                 )}
               </div>
             </div>
+
+            {lastSalePrice && (
+              <div className="flex items-center mt-4 text-sm">
+                Last Sale: {lastSalePrice} {currencyToken}
+              </div>
+            )}
           </div>
         </article>
       </Link>

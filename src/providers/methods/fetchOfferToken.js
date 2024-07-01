@@ -47,7 +47,7 @@ export const fetchOfferToken = async (offerId, tokenId, chainId) => {
             first: 1000
           ) {
             tokenId
-            marketplaceListings(orderBy: id, orderDirection: desc) {
+            marketplaceListings(first: 1000, orderBy: id, orderDirection: desc) {
               id # listingId
               quantity
               # METADATA - if INVALID, ignore this listing
