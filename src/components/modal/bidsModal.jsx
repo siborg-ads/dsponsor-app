@@ -214,6 +214,7 @@ const BidsModal = ({
       parsedBidsAmount.gt(BigNumber.from(0)) &&
       currencyTokenDecimals
     ) {
+      console.log("parsedBidsAmount", parsedBidsAmount.toString());
       const newBidPerToken = parsedBidsAmount;
       const reservePricePerToken = marketplaceListings[0]?.reservePricePerToken;
       const buyoutPricePerToken = marketplaceListings[0]?.buyoutPricePerToken;
@@ -297,6 +298,7 @@ const BidsModal = ({
 
     if (value === "") {
       setBidsAmount("");
+      setParsedBidsAmount(null);
       setAmountToApprove(null);
       return;
     }
@@ -508,6 +510,12 @@ const BidsModal = ({
                       className="text-sm text-left md:text-base whitespace-nowrap  text-primaryPurple hover:text-opacity-80"
                       onClick={() => {
                         setBidsAmount(initialIntPrice);
+
+                        const parsedInitialIntPrice = ethers.utils.parseUnits(
+                          initialIntPrice,
+                          currencyTokenDecimals
+                        );
+                        setParsedBidsAmount(parsedInitialIntPrice);
                       }}
                     >
                       Use minimal bid
