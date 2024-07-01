@@ -12,9 +12,10 @@ import { fetchTokenPrice } from "../../utils/fetchTokenPrice";
 import { getCookie } from "cookies-next";
 import BidWithCrossmintButton from "../buttons/BidWithCrossmintButton/BidWithCrossmintButton";
 import Tippy from "@tippyjs/react";
-import { ClipboardIcon } from "@heroicons/react/20/solid";
+import { ClipboardIcon, InformationCircleIcon } from "@heroicons/react/20/solid";
 import handleCopy from "../../utils/handleCopy";
 import "tippy.js/dist/tippy.css";
+import { Popover, PopoverTrigger, PopoverContent } from "@nextui-org/react";
 
 const BidsModal = ({
   setAmountToApprove,
@@ -61,6 +62,7 @@ const BidsModal = ({
   const [notEnoughFunds, setNotEnoughFunds] = useState(false);
   const [copied, setCopied] = useState(false);
   const [displayedPrice, setDisplayedPrice] = useState(null);
+  const [isHovered, setIsHovered] = useState(false);
 
   const chainConfig = config[chainId];
   const chainWETH = chainConfig?.smartContracts.WETH.address.toLowerCase();
@@ -75,7 +77,7 @@ const BidsModal = ({
     frontURL = window.location.origin;
   }
 
-  const isWETH = currencyContract.toLowerCase() === chainWETH;
+  const isWETH = currencyContract?.toLowerCase() === chainWETH;
   const canPayWithCrossmint = isWETH && chainConfig?.features?.crossmint?.enabled;
   const modalRef = useRef();
 
@@ -271,13 +273,15 @@ const BidsModal = ({
   }, [marketplaceListings]);
 
   useEffect(() => {
+    console.log("mount", mount);
+
     const minimalBidPerToken = marketplaceListings[0]?.bidPriceStructure?.minimalBidPerToken;
-    if (minimalBidPerToken && !bidsAmount && !mount) {
+    if (minimalBidPerToken && !mount) {
       const minimalBid = ethers.utils.formatUnits(minimalBidPerToken, currencyTokenDecimals);
       setInitialIntPrice(minimalBid);
       setMount(true);
     }
-  }, [marketplaceListings, currencyTokenDecimals, bidsAmount, mount]);
+  }, [marketplaceListings, currencyTokenDecimals, mount]);
 
   useEffect(() => {
     if (bidsAmount && parseFloat(bidsAmount) >= parseFloat(initialIntPrice)) {
@@ -705,11 +709,11 @@ const BidsModal = ({
             {!successFullBid && (
               <div className="modal-footer flex items-center justify-center gap-4 p-6">
                 <>
-                  <div className="flex flex-col items-center space-y-6">
+                  <div className="flex flex-col md:flex-row md:items-start items-center gap-6">
                     {!insufficentBalance ? (
                       <>
-                        {allowanceTrue ? (
-                          <>
+                        <>
+                          <div className="flex flex-col items-center gap-2">
                             <Web3Button
                               contractAddress={config[chainId]?.smartContracts?.DSPONSORMP?.address}
                               action={() => {
@@ -720,55 +724,73 @@ const BidsModal = ({
                                 });
                               }}
                               className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-black !transition-all ${
-                                !isPriceGood || !checkTerms || !bidsAmount
-                                  ? "!btn-disabled !cursor-not-allowed !text-black opacity-30"
+                                !isPriceGood || !checkTerms || !bidsAmount || !allowanceTrue
+                                  ? "!btn-disabled !cursor-not-allowed !text-black !opacity-30"
                                   : "!text-white !bg-primaryPurple !cursor-pointer"
                               } `}
-                              isDisabled={!isPriceGood || !checkTerms || !bidsAmount}
+                              isDisabled={
+                                !isPriceGood || !checkTerms || !bidsAmount || !allowanceTrue
+                              }
                             >
                               {isLoadingButton ? (
                                 <Spinner size="sm" color="default" />
                               ) : notEnoughFunds ? (
                                 <span className="text-black">Not enough funds</span>
                               ) : (
-                                "Approve"
+                                "Approve 🔓 (1/2)"
                               )}
                             </Web3Button>
-                          </>
-                        ) : (
-                          <>
-                            <Web3Button
-                              contractAddress={config[chainId]?.smartContracts?.DSPONSORMP?.address}
-                              action={() => {
-                                toast.promise(handleSubmit, {
-                                  pending: "Waiting for confirmation 🕒",
-                                  success: "Bid confirmed 👌",
-                                  error: "Bid rejected 🤯"
-                                });
-                              }}
-                              className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${
-                                !isPriceGood || !checkTerms
-                                  ? "!btn-disabled !cursor-not-allowed"
-                                  : "!bg-primaryPurple !cursor-pointer"
-                              } `}
-                              isDisabled={!isPriceGood || !checkTerms}
-                            >
-                              {isLoadingButton ? (
-                                <Spinner size="sm" color="default" />
-                              ) : buyoutPriceReached ? (
-                                notEnoughFunds ? (
-                                  <span className="text-black">Not enough funds</span>
-                                ) : (
-                                  "Buy Now"
-                                )
-                              ) : notEnoughFunds ? (
+                            <Popover placement="bottom" isOpen={isHovered}>
+                              <PopoverTrigger
+                                className="cursor-help"
+                                onMouseEnter={() => setIsHovered(true)}
+                                onMouseLeave={() => setIsHovered(false)}
+                              >
+                                <span className="text-xs text-jacarta-100 inline-flex items-center gap-1">
+                                  <InformationCircleIcon className="w-4 h-4 text-jacarta-100" />
+                                  Why do I have to approve ?
+                                </span>
+                              </PopoverTrigger>
+                              <PopoverContent className="p-4 bg-primaryBlack text-white rounded-lg">
+                                <p className="text-sm">
+                                  You need to approve the marketplace contract to spend your{" "}
+                                  {currencySymbol} on this transaction.
+                                </p>
+                              </PopoverContent>
+                            </Popover>
+                          </div>
+                          {/* Added next button */}
+                          <Web3Button
+                            contractAddress={config[chainId]?.smartContracts?.DSPONSORMP?.address}
+                            action={() => {
+                              toast.promise(handleSubmit, {
+                                pending: "Waiting for confirmation 🕒",
+                                success: "Bid confirmed 👌",
+                                error: "Bid rejected 🤯"
+                              });
+                            }}
+                            className={`!rounded-full !py-3 !px-8 !text-center !font-semibold !text-black !transition-all ${
+                              !isPriceGood || !checkTerms || allowanceTrue
+                                ? "!btn-disabled !cursor-not-allowed !text-black !opacity-30"
+                                : "!text-white !bg-primaryPurple !cursor-pointer"
+                            } `}
+                            isDisabled={!isPriceGood || !checkTerms || allowanceTrue}
+                          >
+                            {isLoadingButton ? (
+                              <Spinner size="sm" color="default" />
+                            ) : buyoutPriceReached ? (
+                              notEnoughFunds ? (
                                 <span className="text-black">Not enough funds</span>
                               ) : (
-                                "Place Bid"
-                              )}
-                            </Web3Button>
-                          </>
-                        )}
+                                "Buy Now 💸 (2/2)"
+                              )
+                            ) : notEnoughFunds ? (
+                              <span className="text-black">Not enough funds</span>
+                            ) : (
+                              "Place Bid 💸 (2/2)"
+                            )}
+                          </Web3Button>
+                        </>
                       </>
                     ) : (
                       <>
@@ -781,10 +803,10 @@ const BidsModal = ({
                               error: "Bid rejected 🤯"
                             });
                           }}
-                          className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${
+                          className={`!rounded-full !py-3 !px-8 !text-center !font-semibold !text-black !transition-all ${
                             !isPriceGood || !checkTerms || !canPayWithNativeToken
-                              ? "!btn-disabled !cursor-not-allowed"
-                              : "!bg-primaryPurple !cursor-pointer"
+                              ? "!btn-disabled !cursor-not-allowed !text-black !opacity-30"
+                              : "!text-white !bg-primaryPurple !cursor-pointer"
                           } `}
                           isDisabled={!isPriceGood || !checkTerms || !canPayWithNativeToken}
                         >
@@ -794,12 +816,12 @@ const BidsModal = ({
                             notEnoughFunds ? (
                               <span className="text-black">Not enough funds</span>
                             ) : (
-                              "Buy Now with ETH"
+                              "Buy Now with ETH 💸"
                             )
                           ) : notEnoughFunds ? (
                             <span className="text-black">Not enough funds</span>
                           ) : (
-                            "Place Bid with ETH"
+                            "Place Bid with ETH 💸"
                           )}
                         </Web3Button>
                       </>

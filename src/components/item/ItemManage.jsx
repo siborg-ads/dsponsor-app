@@ -1,9 +1,10 @@
-import React, { useState } from "react";
-import { Web3Button, useContractWrite } from "@thirdweb-dev/react";
+import React, { useEffect, useState } from "react";
+import { Web3Button, useAddress, useContractWrite } from "@thirdweb-dev/react";
 import ItemManageModal from "./ItemManageModal";
 import { toast } from "react-toastify";
 import { Spinner } from "@nextui-org/spinner";
 import { useChainContext } from "../../contexts/hooks/useChainContext";
+import { getAddress } from "ethers/lib/utils";
 
 const ItemManage = ({
   successFullListing,
@@ -17,12 +18,26 @@ const ItemManage = ({
 }) => {
   const [listingModal, setListingModal] = useState(false);
   const [isLoadingButton, setIsLoadingButton] = useState(false);
+  const [isLastBidder, setIsLastBidder] = useState(false);
   const { currentChainObject } = useChainContext();
   const { mutateAsync: cancelDirectListing } = useContractWrite(
     dsponsorMpContract,
     "cancelDirectListing"
   );
   const { mutateAsync: closeAuctionListing } = useContractWrite(dsponsorMpContract, "closeAuction");
+
+  const address = useAddress();
+
+  useEffect(() => {
+    if (marketplaceListings?.length > 0) {
+      const lastBidder = marketplaceListings[0]?.bids[0]?.bidder;
+      if (lastBidder && address && getAddress(lastBidder) === getAddress(address)) {
+        setIsLastBidder(true);
+      } else {
+        setIsLastBidder(false);
+      }
+    }
+  }, [marketplaceListings, address, setIsLastBidder]);
 
   const handleListingModal = () => {
     setListingModal(!listingModal);
@@ -143,7 +158,13 @@ const ItemManage = ({
           className="!rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all !bg-green !cursor-pointer"
           isDisabled={isLoadingButton}
         >
-          {isLoadingButton ? <Spinner size="sm" color="default" /> : "Close auction"}
+          {isLoadingButton ? (
+            <Spinner size="sm" color="default" />
+          ) : isLastBidder ? (
+            "Claim your earned Ad Space"
+          ) : (
+            "Close auction"
+          )}
         </Web3Button>
       );
     }
