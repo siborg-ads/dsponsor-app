@@ -36,11 +36,6 @@ export const fetchAllListedTokenWithoutFilter = async (chainId, allTokens) => {
               first: 1000
               orderBy: endTime
               orderDirection: asc
-              where: {
-                quantity_gt: 0
-                startTime_lte: $currentTimestamp
-                endTime_gte: $currentTimestamp
-             }
             ) {
               id # listingId
               quantity

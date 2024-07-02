@@ -1,13 +1,13 @@
 import Tippy from "@tippyjs/react";
 import Image from "next/image";
 import Link from "next/link";
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import "swiper/css";
 import "swiper/css/navigation";
 import "tippy.js/dist/tippy.css";
 import TimerCard from "./TimerCard";
 import { shortenAddress, useAddress } from "@thirdweb-dev/react";
-import { getAddress } from "ethers/lib/utils";
+import { getAddress, formatUnits } from "ethers/lib/utils";
 
 const OfferItem = ({
   item,
@@ -33,17 +33,29 @@ const OfferItem = ({
     if (item && item?.marketplaceListings?.length > 0) {
       // we look for the latest completed listing
       const latestListing = item?.marketplaceListings
-        .reverse()
+        .sort((a, b) => b.id - a.id)
         .find((listing) => listing.status === "COMPLETED");
+
+      console.log("latestListing", latestListing);
 
       if (latestListing) {
         // if yes we get the last sale price
         let lastSalePrice;
-        if (listing.listingType === "Direct") {
-          latestListing?.buyPriceStructureFormatted?.buyoutPricePerToken;
-        } else if (listing.listingType === "Auction") {
-          latestListing?.bidPriceStructureFormatted?.minimalBidPerToken;
+        if (latestListing?.listingType === "Direct") {
+          // direct price
+          lastSalePrice = formatUnits(
+            BigInt(latestListing?.buyoutPricePerToken),
+            Number(latestListing?.currencyDecimals)
+          );
+        } else if (latestListing?.listingType === "Auction") {
+          // auction price
+          lastSalePrice = formatUnits(
+            BigInt(latestListing?.bids[0]?.paidBidAmount),
+            Number(latestListing?.currencyDecimals)
+          );
         }
+
+        console.log("lastSalePrice", lastSalePrice);
 
         setLastSalePrice(lastSalePrice);
       }
@@ -55,8 +67,6 @@ const OfferItem = ({
 
     const sortedListings = item?.marketplaceListings?.sort((a, b) => b.id - a.id);
     const lastBidder = sortedListings[0]?.bids[0]?.bidder;
-
-    console.log("lastBidder", lastBidder);
 
     setLastBidder(lastBidder);
   }, [item]);
@@ -315,7 +325,7 @@ const OfferItem = ({
                 {adStatut === 0 ? "❌ Rejected" : adStatut === 1 ? "✅ Accepted" : adStatut === 2 ? "🔍 Pending" : "Ad space available"}
               </span>
             )} */}
-                {item?.endTime && (
+                {item?.endTime && item?.listing?.status === "CREATED" && (
                   <div className="dark:border-jacarta-600 flex items-center whitespace-nowrap rounded-md border p-1">
                     <TimerCard endTime={item.endTime} />
                   </div>
