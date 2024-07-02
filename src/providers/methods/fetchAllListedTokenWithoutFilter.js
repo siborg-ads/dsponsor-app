@@ -117,7 +117,7 @@ export const fetchAllListedTokenWithoutFilter = async (chainId, allTokens) => {
   };
   const response = await executeQuery(path.href, GET_DATA, variables);
   const chainConfig = config[chainId];
-  const mappedListedToken = response.adOffers
+  const mappedListedToken = response?.adOffers
     .map((offer) => {
       const newOffer = {
         ...offer,

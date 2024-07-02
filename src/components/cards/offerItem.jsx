@@ -38,7 +38,12 @@ const OfferItem = ({
 
       if (latestListing) {
         // if yes we get the last sale price
-        const lastSalePrice = latestListing?.buyPriceStructureFormatted?.buyoutPricePerToken;
+        let lastSalePrice;
+        if (listing.listingType === "Direct") {
+          latestListing?.buyPriceStructureFormatted?.buyoutPricePerToken;
+        } else if (listing.listingType === "Auction") {
+          latestListing?.bidPriceStructureFormatted?.minimalBidPerToken;
+        }
 
         setLastSalePrice(lastSalePrice);
       }
