@@ -55,8 +55,6 @@ const OfferItem = ({
           );
         }
 
-        console.log("lastSalePrice", lastSalePrice);
-
         setLastSalePrice(lastSalePrice);
       }
     }
