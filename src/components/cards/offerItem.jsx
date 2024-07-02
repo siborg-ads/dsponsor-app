@@ -64,6 +64,8 @@ const OfferItem = ({
     if (!item) return;
 
     const sortedListings = item?.marketplaceListings?.sort((a, b) => b.id - a.id);
+    if (!sortedListings) return;
+
     const lastBidder = sortedListings[0]?.bids[0]?.bidder;
 
     setLastBidder(lastBidder);
