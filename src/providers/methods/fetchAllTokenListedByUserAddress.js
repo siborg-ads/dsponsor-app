@@ -7,6 +7,7 @@ export const fetchAllTokenListedByUserAddress = async (lister, chainId) => {
   const GET_DATA = `
     query getMarketplaceListingsForUser($lister: Bytes) {
       marketplaceListings(
+        first: 1000
         orderBy: endTime
         orderDirection: asc
         where: { and: [{ status: CREATED, quantity_gt: 0, lister: $lister }] }

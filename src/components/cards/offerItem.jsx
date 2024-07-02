@@ -6,6 +6,8 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "tippy.js/dist/tippy.css";
 import TimerCard from "./TimerCard";
+import { shortenAddress, useAddress } from "@thirdweb-dev/react";
+import { getAddress, formatUnits } from "ethers/lib/utils";
 
 const OfferItem = ({
   item,
@@ -21,6 +23,57 @@ const OfferItem = ({
   const [currencyToken, setCurrencyToken] = useState(null);
   const [itemData, setItemData] = useState({});
   const [itemStatut, setItemStatut] = useState(null);
+  const [lastSalePrice, setLastSalePrice] = useState(null);
+  const [lastBidder, setLastBidder] = useState(null);
+  const [isLastBidder, setIsLastBidder] = useState(false);
+
+  const address = useAddress();
+
+  useEffect(() => {
+    if (item && item?.marketplaceListings?.length > 0) {
+      // we look for the latest completed listing
+      const latestListing = item?.marketplaceListings
+        .sort((a, b) => b.id - a.id)
+        .find((listing) => listing.status === "COMPLETED");
+
+      console.log("latestListing", latestListing);
+
+      if (latestListing) {
+        // if yes we get the last sale price
+        let lastSalePrice;
+        if (latestListing?.listingType === "Direct") {
+          // direct price
+          lastSalePrice = formatUnits(
+            BigInt(latestListing?.buyoutPricePerToken),
+            Number(latestListing?.currencyDecimals)
+          );
+        } else if (latestListing?.listingType === "Auction") {
+          // auction price
+          lastSalePrice = formatUnits(
+            BigInt(latestListing?.bids[0]?.paidBidAmount),
+            Number(latestListing?.currencyDecimals)
+          );
+        }
+
+        setLastSalePrice(lastSalePrice);
+      }
+    }
+  }, [item]);
+
+  useEffect(() => {
+    if (!item) return;
+
+    const sortedListings = item?.marketplaceListings?.sort((a, b) => b.id - a.id);
+    const lastBidder = sortedListings[0]?.bids[0]?.bidder;
+
+    setLastBidder(lastBidder);
+  }, [item]);
+
+  useEffect(() => {
+    if (address && lastBidder && getAddress(address) === getAddress(lastBidder)) {
+      setIsLastBidder(true);
+    }
+  }, [address, lastBidder]);
 
   function formatDate(dateIsoString) {
     if (!dateIsoString) return "date not found";
@@ -92,10 +145,10 @@ const OfferItem = ({
 
   return (
     <>
-      <Link href={url ?? "#"}>
-        <article className="relative">
+      <Link href={url ?? "#"} className="h-full">
+        <article className="relative h-full">
           {item?.isPending && isOwner && (
-            <div className="absolute -top-2 -right-2 rounded-2xl bg-red rounded-2xl dark:text-white  px-2">
+            <div className="absolute -top-2 -right-2 rounded-2xl bg-red rounded-2xl dark:text-white px-2">
               !
             </div>
           )}
@@ -104,7 +157,7 @@ const OfferItem = ({
             style={{
               transitionDuration: "500ms"
             }}
-            className="dark:bg-secondaryBlack h-full cursor-pointer dark:hover:bg-opacity-80 box-border hover:border-2 hover:-m-1 duration-1000 hover:duration-1000 hover:-translate-y-1 dark:hover:border-2 dark:border-jacarta-100 dark:border-opacity-10 border-opacity-10 border-jacarta-900 relative rounded-2xl flex flex-col border bg-white p-4 transition-shadow hover:shadow-lg text-jacarta-100"
+            className="dark:bg-secondaryBlack h-full cursor-pointer dark:hover:bg-opacity-80 box-border hover:border-2 duration-1000 hover:duration-1000 hover:-translate-y-1 dark:hover:border-2 dark:border-jacarta-100 dark:border-opacity-10 border-opacity-10 border-jacarta-900 relative rounded-2xl flex flex-col border bg-white p-4 transition-shadow hover:shadow-lg text-jacarta-100"
           >
             <div className="relative">
               <figure>
@@ -173,7 +226,7 @@ const OfferItem = ({
                 </Tippy>
               )}
             </div>
-            <div className="flex flex-col justify-between flex-1">
+            <div className="flex flex-col flex-1">
               <div className="mt-4 flex items-center justify-between gap-2">
                 {isSelectionActive ? (
                   <span className="font-display  text-primaryBlack hover:text-primaryPurple text-base dark:text-white ">
@@ -270,13 +323,27 @@ const OfferItem = ({
                 {adStatut === 0 ? "❌ Rejected" : adStatut === 1 ? "✅ Accepted" : adStatut === 2 ? "🔍 Pending" : "Ad space available"}
               </span>
             )} */}
-                {item?.endTime && (
+                {item?.endTime && item?.listing?.status === "CREATED" && (
                   <div className="dark:border-jacarta-600 flex items-center whitespace-nowrap rounded-md border p-1">
                     <TimerCard endTime={item.endTime} />
                   </div>
                 )}
               </div>
             </div>
+
+            {lastBidder && (
+              <div className={`flex items-center gap-1 mt-4 text-sm`}>
+                Last Bidder:{" "}
+                <span className={`${isLastBidder ? "text-primaryPurple" : "text-jacarta-100"}`}>
+                  {isLastBidder ? "You" : shortenAddress(lastBidder)}
+                </span>
+              </div>
+            )}
+            {lastSalePrice && (
+              <div className="flex items-center mt-4 text-sm text-jacarta-100">
+                Last Sale: {lastSalePrice} {currencyToken}
+              </div>
+            )}
           </div>
         </article>
       </Link>
