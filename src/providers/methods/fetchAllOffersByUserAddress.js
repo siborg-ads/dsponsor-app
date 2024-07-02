@@ -91,7 +91,7 @@ export const fetchAllOffersByUserAddress = async (userAddress, chainId) => {
   const response = await executeQuery(path.href, GET_DATA, { userAddress: userAddress });
   const chainConfig = config[chainId];
 
-  const resultMappedData = response.adOffers
+  const resultMappedData = response?.adOffers
     .map((element) => {
       const sortByTokenId = element.nftContract.tokens.sort((a, b) => a.tokenId - b.tokenId);
       const tokenIdAllowedToMint =
