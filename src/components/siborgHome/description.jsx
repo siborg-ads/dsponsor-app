@@ -102,7 +102,8 @@ const steps = [
         displayed in the SiBog App.
       </span>
     ),
-    image: "/images/home/siborg-preview.png"
+    image: "/images/home/siborg-preview.png",
+    comingSoon: true
   }
 ];
 
@@ -166,9 +167,16 @@ const Description = ({ description }) => {
                   }}
                 >
                   <div
-                    className="flex flex-col justify-between gap-4 p-6 bg-primaryBlack rounded-lg"
+                    className="flex flex-col justify-between gap-4 p-6 bg-primaryBlack rounded-lg relative"
                     key={index}
                   >
+                    {step.comingSoon && (
+                      <div className="absolute -top-2 md:-top-4 -right-4 md:-right-8">
+                        <div className="rainbow-background shadow rotate-12 flex justify-center items-center rounded-full py-2 px-3">
+                          <span className="text-white text-xs font-semibold">Coming Soon</span>
+                        </div>
+                      </div>
+                    )}
                     <div className="gap-4 flex flex-col">
                       <span className="text-white text-center font-semibold">
                         {index + 1}. {step.title}

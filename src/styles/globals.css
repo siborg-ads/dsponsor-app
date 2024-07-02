@@ -6257,3 +6257,21 @@ body {
 .hide-scrollbar::-webkit-scrollbar {
   display: none;
 }
+
+.rainbow-background {
+  background: linear-gradient(176deg, #ea465c, #8a4cef 18%, #b649ac 51%, #ea465c 86%, #8a4cef);
+  background-size: 1400% 1400%;
+  animation: rainbow 2s linear infinite;
+}
+
+@keyframes rainbow {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
