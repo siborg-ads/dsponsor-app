@@ -483,16 +483,16 @@ const TokenPageContainer = () => {
       }
 
       let tokenMetaData = {};
-      if (offerData?.metadata.offer?.token_metadata && isValidId) {
-        tokenMetaData.description = offerData.metadata.offer.token_metadata.description.replace(
+      if (offerData?.metadata?.offer?.token_metadata && isValidId) {
+        tokenMetaData.description = offerData?.metadata.offer?.token_metadata.description.replace(
           /{tokenData}/g,
           `${tokenData}`
         );
-        tokenMetaData.image = offerData.metadata.offer.token_metadata.image.replace(
+        tokenMetaData.image = offerData?.metadata?.offer?.token_metadata?.image?.replace(
           /{tokenData}/g,
           `${tokenData}`
         );
-        tokenMetaData.name = offerData.metadata.offer.token_metadata.name.replace(
+        tokenMetaData.name = offerData?.metadata?.offer?.token_metadata?.name?.replace(
           /{tokenData}/g,
           `${tokenData}`
         );
@@ -1267,7 +1267,7 @@ const TokenPageContainer = () => {
         </h2>
         <ItemsTabs
           chainId={chainId}
-          contractAddress={offerData?.nftContract.id}
+          contractAddress={offerData?.nftContract?.id}
           offerId={offerId}
           isUserOwner={isUserOwner}
           initialCreator={offerData?.initialCreator}
