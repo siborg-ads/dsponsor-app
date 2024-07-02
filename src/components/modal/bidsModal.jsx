@@ -214,7 +214,6 @@ const BidsModal = ({
       parsedBidsAmount.gt(BigNumber.from(0)) &&
       currencyTokenDecimals
     ) {
-      console.log("parsedBidsAmount", parsedBidsAmount.toString());
       const newBidPerToken = parsedBidsAmount;
       const reservePricePerToken = marketplaceListings[0]?.reservePricePerToken;
       const buyoutPricePerToken = marketplaceListings[0]?.buyoutPricePerToken;
@@ -441,6 +440,20 @@ const BidsModal = ({
     isProcessingRef.current = true;
     toast.info("Processing mint.");
   };
+
+
+
+  useEffect(() => {
+    const resetRewardsAndAmount = () => {
+      setBidsAmount(null);
+      setParsedBidsAmount(null);
+      setRefundedPrice(null);
+      setAmountToApprove(null);
+      setDisplayedPrice(null);
+    };
+
+    resetRewardsAndAmount();
+  }, []);
 
   return (
     <div>
