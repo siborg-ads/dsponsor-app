@@ -33,6 +33,7 @@ export const fetchAllListedToken = async (chainId) => {
               }
             }
             marketplaceListings(
+              first: 1000
               orderBy: endTime
               orderDirection: asc
               where: {
