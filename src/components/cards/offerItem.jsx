@@ -36,8 +36,6 @@ const OfferItem = ({
         .sort((a, b) => b.id - a.id)
         .find((listing) => listing.status === "COMPLETED");
 
-      console.log("latestListing", latestListing);
-
       if (latestListing) {
         // if yes we get the last sale price
         let lastSalePrice;
@@ -142,6 +140,8 @@ const OfferItem = ({
     valid_from = null,
     valid_to = null
   } = itemData ?? {};
+
+  console.log("item", item);
 
   return (
     <>
@@ -267,7 +267,8 @@ const OfferItem = ({
                       !isListing &&
                       itemStatut !== "TOKENMINTABLE" &&
                       itemStatut !== "DIRECT") ||
-                    item?.listing?.status === "COMPLETED" ? (
+                    item?.marketplaceListings.sort((a, b) => Number(b.id) - Number(a.id))[0]
+                      ?.status === "COMPLETED" ? (
                     <div className="flex  w-full gap-2 items-center ">
                       <span className="text-jacarta-100">Sold</span>
                       <svg
@@ -323,11 +324,13 @@ const OfferItem = ({
                 {adStatut === 0 ? "❌ Rejected" : adStatut === 1 ? "✅ Accepted" : adStatut === 2 ? "🔍 Pending" : "Ad space available"}
               </span>
             )} */}
-                {item?.endTime && item?.listing?.status === "CREATED" && (
-                  <div className="dark:border-jacarta-600 flex items-center whitespace-nowrap rounded-md border p-1">
-                    <TimerCard endTime={item.endTime} />
-                  </div>
-                )}
+                {item?.endTime &&
+                  item?.marketplaceListings.sort((a, b) => Number(b.id) - Number(a.id))[0]
+                    ?.status !== "COMPLETED" && (
+                    <div className="dark:border-jacarta-600 flex items-center whitespace-nowrap rounded-md border p-1">
+                      <TimerCard endTime={item.endTime} />
+                    </div>
+                  )}
               </div>
             </div>
 
