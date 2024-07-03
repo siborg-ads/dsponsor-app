@@ -64,10 +64,10 @@ const ManageSpaceContainer = () => {
       setMount(true);
     };
 
-    if (address && chainId && !mount) {
+    if (userAddress && chainId && !mount) {
       fetchData();
     }
-  }, [address, chainId, mount]);
+  }, [userAddress, chainId, mount]);
 
   useEffect(() => {
     if (address && !initialWallet) {
