@@ -269,7 +269,7 @@ const OfferItem = ({
                       !isListing &&
                       itemStatut !== "TOKENMINTABLE" &&
                       itemStatut !== "DIRECT") ||
-                    item?.marketplaceListings.sort((a, b) => Number(b.id) - Number(a.id))[0]
+                    item?.marketplaceListings?.sort((a, b) => Number(b.id) - Number(a.id))[0]
                       ?.status === "COMPLETED" ? (
                     <div className="flex  w-full gap-2 items-center ">
                       <span className="text-jacarta-100">Sold</span>
@@ -327,7 +327,7 @@ const OfferItem = ({
               </span>
             )} */}
                 {item?.endTime &&
-                  item?.marketplaceListings.sort((a, b) => Number(b.id) - Number(a.id))[0]
+                  item?.marketplaceListings?.sort((a, b) => Number(b.id) - Number(a.id))[0]
                     ?.status !== "COMPLETED" && (
                     <div className="dark:border-jacarta-600 flex items-center whitespace-nowrap rounded-md border p-1">
                       <TimerCard endTime={item.endTime} />
