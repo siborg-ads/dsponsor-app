@@ -105,6 +105,7 @@ const TokenPageContainer = () => {
   const [bids, setBids] = useState([]);
   const [insufficentBalance, setInsufficentBalance] = useState(false);
   const [canPayWithNativeToken, setCanPayWithNativeToken] = useState(false);
+  const [currentSlide, setCurrentSlide] = useState(0);
 
   const [offerDO, setOfferDO] = useState({
     offerId: null
@@ -1310,6 +1311,8 @@ const TokenPageContainer = () => {
                 handlePreviewModal={handlePreviewModal}
                 stepsRef={stepsRef}
                 numSteps={numSteps}
+                currentSlide={currentSlide}
+                setCurrentSlide={setCurrentSlide}
               >
                 <Step1Mint
                   stepsRef={stepsRef}
