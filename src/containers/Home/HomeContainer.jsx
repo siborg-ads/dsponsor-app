@@ -48,41 +48,54 @@ const HomeContainer = () => {
       const name = token.metadata.name;
       const category = token.metadata.categories[0];
       const chain = token.chainConfig.network;
-      const price = token.marketplaceListings[0]?.buyPriceStructure?.buyoutPricePerToken;
+      const price = token.marketplaceListings.sort((a, b) => Number(b.id) - Number(a.id))[0]?.buyPriceStructure
+        ?.buyoutPricePerToken;
       const chainId = token.chainConfig.chainId;
       const offerId = token.offerId;
       const tokenId = token.tokenId;
       const tokenData = token.tokenData;
       const live =
-        token.marketplaceListings[0]?.status === "CREATED" &&
-        token.marketplaceListings[0].quantity > 0;
+        token.marketplaceListings.sort((a, b) => Number(b.id) - Number(a.id))[0]?.status === "CREATED" &&
+        token.marketplaceListings.sort((a, b) => Number(b.id) - Number(a.id))[0].quantity > 0;
       const image = token.metadata.image;
-      const currencyDecimals = Number(token.marketplaceListings[0]?.currencyDecimals ?? 0);
-      const currencySymbol = token?.marketplaceListings[0]?.currencySymbol;
+      const currencyDecimals = Number(
+        token.marketplaceListings.sort((a, b) => Number(b.id) - Number(a.id))[0]?.currencyDecimals ?? 0
+      );
+      const currencySymbol = token?.marketplaceListings.sort((a, b) => Number(b.id) - Number(a.id))[0]
+        ?.currencySymbol;
       const latestBid = Number(
         formatUnits(
-          token?.marketplaceListings[0]?.bidPriceStructure?.previousBidAmount ?? 0,
+          token?.marketplaceListings.sort((a, b) => Number(b.id) - Number(a.id))[0]?.bidPriceStructure
+            ?.previousBidAmount ?? 0,
           currencyDecimals
         )
       );
       const priceUSD = Number(
         formatAndRound(
-          Number(formatUnits(token.marketplaceListings[0]?.currencyPriceUSDC ?? 0, 6))
+          Number(
+            formatUnits(
+              token.marketplaceListings.sort((a, b) => Number(b.id) - Number(a.id))[0]?.currencyPriceUSDC ?? 0,
+              6
+            )
+          )
         ) ?? 0
       );
-      const directPrice = token.marketplaceListings[0]?.buyPriceStructure?.buyoutPricePerToken;
-      const auctionPrice = token.marketplaceListings[0]?.bidPriceStructure?.minimalBidPerToken;
+      const directPrice = token.marketplaceListings.sort((a, b) => Number(b.id) - Number(a.id))[0]
+        ?.buyPriceStructure?.buyoutPricePerToken;
+      const auctionPrice = token.marketplaceListings.sort((a, b) => Number(b.id) - Number(a.id))[0]
+        ?.bidPriceStructure?.minimalBidPerToken;
       const mintPrice = token?.nftContract?.prices[0]?.amount;
-      const listingType = token.marketplaceListings[0]?.listingType;
-      const startTime = token?.marketplaceListings[0]?.startTime;
-      const endTime = token?.marketplaceListings[0]?.endTime;
-      const status = token?.marketplaceListings[0]?.status;
-      const quantity = token.marketplaceListings[0]?.quantity;
-      const numberOfBids = token.marketplaceListings[0]?.bids.length;
+      const listingType = token.marketplaceListings.sort((a, b) => Number(b.id) - Number(a.id))[0]?.listingType;
+      const startTime = token?.marketplaceListings.sort((a, b) => Number(b.id) - Number(a.id))[0]?.startTime;
+      const endTime = token?.marketplaceListings.sort((a, b) => Number(b.id) - Number(a.id))[0]?.endTime;
+      const status = token?.marketplaceListings.sort((a, b) => Number(b.id) - Number(a.id))[0]?.status;
+      const quantity = token.marketplaceListings.sort((a, b) => Number(b.id) - Number(a.id))[0]?.quantity;
+      const numberOfBids = token.marketplaceListings.sort((a, b) => Number(b.id) - Number(a.id))[0]?.bids.length;
       const sold =
-        token?.marketplaceListings[0]?.status === "COMPLETED" ||
-        (token?.marketplaceListings[0]?.listingType !== "Auction" &&
-          token?.marketplaceListings[0]?.listingType !== "Direct" && token?.mint !== null);
+        token?.marketplaceListings.sort((a, b) => Number(b.id) - Number(a.id))[0]?.status === "COMPLETED" ||
+        (token?.marketplaceListings.sort((a, b) => Number(b.id) - Number(a.id))[0]?.listingType !== "Auction" &&
+          token?.marketplaceListings.sort((a, b) => Number(b.id) - Number(a.id))[0]?.listingType !== "Direct" &&
+          token?.mint !== null);
 
       const object = {
         name: name,
@@ -126,8 +139,6 @@ const HomeContainer = () => {
 
       return object;
     });
-
-    console.log(auctions);
 
     setAuctions(auctions);
   }, [auctionsTemp]);

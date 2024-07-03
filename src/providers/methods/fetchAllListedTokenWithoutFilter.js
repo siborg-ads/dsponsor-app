@@ -33,14 +33,9 @@ export const fetchAllListedTokenWithoutFilter = async (chainId, allTokens) => {
               }
             }
             marketplaceListings(
+              first: 1000
               orderBy: endTime
               orderDirection: asc
-              where: {
-                status: CREATED
-                quantity_gt: 0
-                startTime_lte: $currentTimestamp
-                endTime_gte: $currentTimestamp
-             }
             ) {
               id # listingId
               quantity
@@ -117,7 +112,7 @@ export const fetchAllListedTokenWithoutFilter = async (chainId, allTokens) => {
   };
   const response = await executeQuery(path.href, GET_DATA, variables);
   const chainConfig = config[chainId];
-  const mappedListedToken = response.adOffers
+  const mappedListedToken = response?.adOffers
     .map((offer) => {
       const newOffer = {
         ...offer,
