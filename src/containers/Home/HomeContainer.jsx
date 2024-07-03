@@ -48,25 +48,28 @@ const HomeContainer = () => {
       const name = token.metadata.name;
       const category = token.metadata.categories[0];
       const chain = token.chainConfig.network;
-      const price = token.marketplaceListings.sort((a, b) => Number(b.id) - Number(a.id))[0]?.buyPriceStructure
-        ?.buyoutPricePerToken;
+      const price = token.marketplaceListings.sort((a, b) => Number(b.id) - Number(a.id))[0]
+        ?.buyPriceStructure?.buyoutPricePerToken;
       const chainId = token.chainConfig.chainId;
       const offerId = token.offerId;
       const tokenId = token.tokenId;
       const tokenData = token.tokenData;
       const live =
-        token.marketplaceListings.sort((a, b) => Number(b.id) - Number(a.id))[0]?.status === "CREATED" &&
+        token.marketplaceListings.sort((a, b) => Number(b.id) - Number(a.id))[0]?.status ===
+          "CREATED" &&
         token.marketplaceListings.sort((a, b) => Number(b.id) - Number(a.id))[0].quantity > 0;
       const image = token.metadata.image;
       const currencyDecimals = Number(
-        token.marketplaceListings.sort((a, b) => Number(b.id) - Number(a.id))[0]?.currencyDecimals ?? 0
+        token.marketplaceListings.sort((a, b) => Number(b.id) - Number(a.id))[0]
+          ?.currencyDecimals ?? 0
       );
-      const currencySymbol = token?.marketplaceListings.sort((a, b) => Number(b.id) - Number(a.id))[0]
-        ?.currencySymbol;
+      const currencySymbol = token?.marketplaceListings.sort(
+        (a, b) => Number(b.id) - Number(a.id)
+      )[0]?.currencySymbol;
       const latestBid = Number(
         formatUnits(
-          token?.marketplaceListings.sort((a, b) => Number(b.id) - Number(a.id))[0]?.bidPriceStructure
-            ?.previousBidAmount ?? 0,
+          token?.marketplaceListings.sort((a, b) => Number(b.id) - Number(a.id))[0]
+            ?.bidPriceStructure?.previousBidAmount ?? 0,
           currencyDecimals
         )
       );
@@ -74,7 +77,8 @@ const HomeContainer = () => {
         formatAndRound(
           Number(
             formatUnits(
-              token.marketplaceListings.sort((a, b) => Number(b.id) - Number(a.id))[0]?.currencyPriceUSDC ?? 0,
+              token.marketplaceListings.sort((a, b) => Number(b.id) - Number(a.id))[0]
+                ?.currencyPriceUSDC ?? 0,
               6
             )
           )
@@ -85,16 +89,25 @@ const HomeContainer = () => {
       const auctionPrice = token.marketplaceListings.sort((a, b) => Number(b.id) - Number(a.id))[0]
         ?.bidPriceStructure?.minimalBidPerToken;
       const mintPrice = token?.nftContract?.prices[0]?.amount;
-      const listingType = token.marketplaceListings.sort((a, b) => Number(b.id) - Number(a.id))[0]?.listingType;
-      const startTime = token?.marketplaceListings.sort((a, b) => Number(b.id) - Number(a.id))[0]?.startTime;
-      const endTime = token?.marketplaceListings.sort((a, b) => Number(b.id) - Number(a.id))[0]?.endTime;
-      const status = token?.marketplaceListings.sort((a, b) => Number(b.id) - Number(a.id))[0]?.status;
-      const quantity = token.marketplaceListings.sort((a, b) => Number(b.id) - Number(a.id))[0]?.quantity;
-      const numberOfBids = token.marketplaceListings.sort((a, b) => Number(b.id) - Number(a.id))[0]?.bids.length;
+      const listingType = token.marketplaceListings.sort((a, b) => Number(b.id) - Number(a.id))[0]
+        ?.listingType;
+      const startTime = token?.marketplaceListings.sort((a, b) => Number(b.id) - Number(a.id))[0]
+        ?.startTime;
+      const endTime = token?.marketplaceListings.sort((a, b) => Number(b.id) - Number(a.id))[0]
+        ?.endTime;
+      const status = token?.marketplaceListings.sort((a, b) => Number(b.id) - Number(a.id))[0]
+        ?.status;
+      const quantity = token.marketplaceListings.sort((a, b) => Number(b.id) - Number(a.id))[0]
+        ?.quantity;
+      const numberOfBids = token.marketplaceListings.sort((a, b) => Number(b.id) - Number(a.id))[0]
+        ?.bids.length;
       const sold =
-        token?.marketplaceListings.sort((a, b) => Number(b.id) - Number(a.id))[0]?.status === "COMPLETED" ||
-        (token?.marketplaceListings.sort((a, b) => Number(b.id) - Number(a.id))[0]?.listingType !== "Auction" &&
-          token?.marketplaceListings.sort((a, b) => Number(b.id) - Number(a.id))[0]?.listingType !== "Direct" &&
+        token?.marketplaceListings.sort((a, b) => Number(b.id) - Number(a.id))[0]?.status ===
+          "COMPLETED" ||
+        (token?.marketplaceListings.sort((a, b) => Number(b.id) - Number(a.id))[0]?.listingType !==
+          "Auction" &&
+          token?.marketplaceListings.sort((a, b) => Number(b.id) - Number(a.id))[0]?.listingType !==
+            "Direct" &&
           token?.mint !== null);
 
       const object = {
@@ -111,6 +124,7 @@ const HomeContainer = () => {
         currencyDecimals: currencyDecimals,
         startTime: startTime,
         endTime: endTime,
+        nowTime: Date.now(),
         offerId: offerId,
         tokenId: tokenId,
         tokenData: tokenData,

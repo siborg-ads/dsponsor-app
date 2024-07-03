@@ -89,7 +89,22 @@ const MarketplaceHome = ({ auctions, setAllTokens, allTokens, isAuctionsLoading 
           );
           break;
         case "Ending soon":
-          matchingAuctions = matchingAuctions.sort((a, b) => a.endTime - b.endTime);
+          const condition = (auction) => {
+            return (
+              auction?.listingType === "Auction" &&
+              auction?.status === "CREATED" &&
+              Number(auction?.quantity) > 0 &&
+              new Date(Number(auction?.startTime) * 1000).getTime() < Date.now() &&
+              new Date(Number(auction?.endTime) * 1000).getTime() > Date.now()
+            );
+          };
+          const liveAuctions = matchingAuctions
+            .filter((auction) => condition(auction))
+            .sort((a, b) => a.endTime - b.endTime);
+          const otherAuctions = matchingAuctions
+            .filter((auction) => !condition(auction))
+            .sort((a, b) => a.endTime - b.endTime);
+          matchingAuctions = [...liveAuctions, ...otherAuctions];
           break;
         case "Newest":
           matchingAuctions = matchingAuctions.sort((a, b) => b.startTime - a.startTime);

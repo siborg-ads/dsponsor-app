@@ -143,10 +143,6 @@ const OfferItem = ({
     valid_to = null
   } = itemData ?? {};
 
-  if (item.tokenData === "Degen" || item.tokenData === "degen") {
-    console.log("itemData: ", item);
-  }
-
   return (
     <>
       <Link href={url ?? "#"} className="h-full">
@@ -331,7 +327,8 @@ const OfferItem = ({
               </span>
             )} */}
                 {item?.endTime &&
-                  new Date(Number(item?.endTime) * 1000).getTime() >= new Date().getTime() && (
+                  item?.marketplaceListings.sort((a, b) => Number(b.id) - Number(a.id))[0]
+                    ?.status === "CREATED" && (
                     <div className="dark:border-jacarta-600 flex items-center whitespace-nowrap rounded-md border p-1">
                       <TimerCard endTime={item.endTime} />
                     </div>
