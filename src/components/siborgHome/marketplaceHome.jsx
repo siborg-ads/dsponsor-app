@@ -5,6 +5,16 @@ import ItemCardSkeleton from "../skeleton/ItemCardSkeleton";
 import OfferItem from "../cards/offerItem";
 import { Popover, PopoverTrigger, PopoverContent } from "@nextui-org/popover";
 
+const onAuctionCondition = (auction) => {
+  return (
+    auction?.listingType === "Auction" &&
+    auction?.status === "CREATED" &&
+    Number(auction?.quantity) > 0 &&
+    new Date(Number(auction?.startTime) * 1000).getTime() < Date.now() &&
+    new Date(Number(auction?.endTime) * 1000).getTime() > Date.now()
+  );
+};
+
 const MarketplaceHome = ({ auctions, setAllTokens, allTokens, isAuctionsLoading }) => {
   const [filterName, setFilterName] = useState("");
   const [sortOption, setSortOption] = useState("Ending soon");
@@ -34,14 +44,7 @@ const MarketplaceHome = ({ auctions, setAllTokens, allTokens, isAuctionsLoading 
         (auction) => auction?.listingType === "Auction" || auction?.listingType === "Direct"
       );
     } else if (filterOption === "On auction") {
-      tempAuctions = tempAuctions.filter(
-        (auction) =>
-          auction?.listingType === "Auction" &&
-          auction?.status === "CREATED" &&
-          Number(auction?.quantity) > 0 &&
-          new Date(Number(auction?.startTime) * 1000).getTime() < Date.now() &&
-          new Date(Number(auction?.endTime) * 1000).getTime() > Date.now()
-      );
+      tempAuctions = tempAuctions.filter((auction) => onAuctionCondition(auction));
     } else if (filterOption === "Sold") {
       tempAuctions = tempAuctions.filter((auction) => auction?.sold);
     }
@@ -88,9 +91,15 @@ const MarketplaceHome = ({ auctions, setAllTokens, allTokens, isAuctionsLoading 
                   : a.mintPrice)
           );
           break;
-        case "Ending soon":
-          matchingAuctions = matchingAuctions.sort((a, b) => a.endTime - b.endTime);
+        case "Ending soon": {
+          matchingAuctions.sort((a, b) => a.endTime - b.endTime);
+
+          const liveAuctions = matchingAuctions.filter((auction) => onAuctionCondition(auction));
+          const otherAuctions = matchingAuctions.filter((auction) => !onAuctionCondition(auction));
+
+          matchingAuctions = [...liveAuctions, ...otherAuctions];
           break;
+        }
         case "Newest":
           matchingAuctions = matchingAuctions.sort((a, b) => b.startTime - a.startTime);
           break;
