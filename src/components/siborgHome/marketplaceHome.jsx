@@ -34,7 +34,14 @@ const MarketplaceHome = ({ auctions, setAllTokens, allTokens, isAuctionsLoading 
         (auction) => auction?.listingType === "Auction" || auction?.listingType === "Direct"
       );
     } else if (filterOption === "On auction") {
-      tempAuctions = tempAuctions.filter((auction) => auction?.listingType === "Auction");
+      tempAuctions = tempAuctions.filter(
+        (auction) =>
+          auction?.listingType === "Auction" &&
+          auction?.status === "CREATED" &&
+          Number(auction?.quantity) > 0 &&
+          new Date(Number(auction?.startTime) * 1000).getTime() < Date.now() &&
+          new Date(Number(auction?.endTime) * 1000).getTime() > Date.now()
+      );
     } else if (filterOption === "Sold") {
       tempAuctions = tempAuctions.filter((auction) => auction?.sold);
     }
