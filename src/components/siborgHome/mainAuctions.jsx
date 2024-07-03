@@ -14,11 +14,11 @@ const MainAuctions = ({ auctions, isAuctionsLoading }) => {
       const tempHotAuctions = auctions
         ?.filter(
           (auction) =>
-            auction.status === "CREATED" &&
+            auction?.status === "CREATED" &&
             auction?.listingType === "Auction" &&
-            auction?.quantity > 0 &&
-            new Date(auction?.startTime * 1000) < Date.now() &&
-            new Date(auction?.endTime * 1000) > Date.now()
+            Number(auction?.quantity) > 0 &&
+            new Date(Number(auction?.startTime) * 1000).getTime() < Date.now() &&
+            new Date(Number(auction?.endTime) * 1000).getTime() > Date.now()
         )
         .sort((a, b) => b.numberOfBids - a.numberOfBids);
 

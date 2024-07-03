@@ -8,7 +8,7 @@ export const fetchAllTokenByOfferForAuser = async (ownerAddress, chainId) => {
   );
   const data = await response.json();
 
-  const resultMappedData = data.map((item) => {
+  const resultMappedData = data?.map((item) => {
     const combinedData = {
       ...item,
       chainConfig: config[chainId]

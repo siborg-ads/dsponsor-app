@@ -46,7 +46,7 @@ const ManageSpaceContainer = () => {
   useEffect(() => {
     const fetchData = async () => {
       const data = await fetch(
-        `https://relayer.dsponsor.com/api/${chainId}/activity?userAddress=${address}`,
+        `https://relayer.dsponsor.com/api/${chainId}/activity?userAddress=${userAddress}`,
         {
           method: "GET",
           headers: {
@@ -88,7 +88,7 @@ const ManageSpaceContainer = () => {
         const dataArray = [];
         for (const [chainId] of Object.entries(config)) {
           const data = await fetchFunction(userAddress, chainId);
-          dataArray.push(...data);
+          dataArray?.push(...data);
         }
         return dataArray;
       };
