@@ -99,7 +99,7 @@ const steps = [
     description: (
       <span>
         <span className="font-semibold text-white">Submit an ad proposal</span> that will be
-        displayed in the SiBog App.
+        displayed in the SiBorg App.
       </span>
     ),
     image: "/images/home/siborg-preview.png",
