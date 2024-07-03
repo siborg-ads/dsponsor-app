@@ -17,7 +17,6 @@ import { getAddress } from "ethers/lib/utils";
 
 const ManageSpaceContainer = () => {
   const router = useRouter();
-  const userAddress = router.query.manage;
   const address = useAddress();
   const [createdData, setCreatedData] = useState(null);
   const [mappedOwnedAdProposals, setMappedOwnedAdProposals] = useState(null);
@@ -32,6 +31,7 @@ const ManageSpaceContainer = () => {
   const [userData, setUserData] = useState(null);
   const [isUserConnected, setIsUserConnected] = useState(false);
 
+  const userAddress = router.query.manage;
   const chainId = currentChainObject?.chainId;
   const chainConfig = config[chainId];
 
@@ -64,10 +64,10 @@ const ManageSpaceContainer = () => {
       setMount(true);
     };
 
-    if (userAddress && chainId && !mount) {
+    if (userAddress && chainId) {
       fetchData();
     }
-  }, [userAddress, chainId, mount]);
+  }, [userAddress, chainId]);
 
   useEffect(() => {
     if (address && !initialWallet) {
