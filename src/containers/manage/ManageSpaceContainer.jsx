@@ -88,7 +88,7 @@ const ManageSpaceContainer = () => {
         const dataArray = [];
         for (const [chainId] of Object.entries(config)) {
           const data = await fetchFunction(userAddress, chainId);
-          dataArray.push(...data);
+          dataArray?.push(...data);
         }
         return dataArray;
       };
