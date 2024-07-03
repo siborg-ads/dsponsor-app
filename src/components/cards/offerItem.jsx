@@ -143,7 +143,9 @@ const OfferItem = ({
     valid_to = null
   } = itemData ?? {};
 
-  console.log("item", item);
+  if (item.tokenData === "Degen" || item.tokenData === "degen") {
+    console.log("itemData: ", item);
+  }
 
   return (
     <>
@@ -242,9 +244,13 @@ const OfferItem = ({
                   </div>
                 )}
 
-                {currencyToken && price ? (
+                {currencyToken &&
+                price &&
+                item?.marketplaceListings?.sort((a, b) => Number(b.id) - Number(a.id))[0]
+                  ?.status !== "COMPLETED" &&
+                item?.marketplaceListings?.sort((a, b) => Number(b.id) - Number(a.id))[0]
+                  ?.status !== "CANCELLED" ? (
                   <div className="dark:border-jacarta-600 border-jacarta-100 flex items-center whitespace-nowrap rounded-md border py-1 px-2">
-                    {" "}
                     <span className="text-green text-sm font-medium tracking-tight">
                       {price} {currencyToken}
                     </span>
@@ -270,7 +276,9 @@ const OfferItem = ({
                       itemStatut !== "TOKENMINTABLE" &&
                       itemStatut !== "DIRECT") ||
                     item?.marketplaceListings?.sort((a, b) => Number(b.id) - Number(a.id))[0]
-                      ?.status === "COMPLETED" ? (
+                      ?.status === "COMPLETED" ||
+                    item?.marketplaceListings?.sort((a, b) => Number(b.id) - Number(a.id))[0]
+                      ?.status === "CANCELLED" ? (
                     <div className="flex  w-full gap-2 items-center ">
                       <span className="text-jacarta-100">Sold</span>
                       <svg
@@ -327,8 +335,7 @@ const OfferItem = ({
               </span>
             )} */}
                 {item?.endTime &&
-                  item?.marketplaceListings?.sort((a, b) => Number(b.id) - Number(a.id))[0]
-                    ?.status !== "COMPLETED" && (
+                  new Date(Number(item?.endTime) * 1000).getTime() >= new Date().getTime() && (
                     <div className="dark:border-jacarta-600 flex items-center whitespace-nowrap rounded-md border p-1">
                       <TimerCard endTime={item.endTime} />
                     </div>
@@ -336,14 +343,16 @@ const OfferItem = ({
               </div>
             </div>
 
-            {lastBidder && (
-              <div className={`flex items-center gap-1 mt-4 text-sm`}>
-                Last Bidder:{" "}
-                <span className={`${isLastBidder ? "text-primaryPurple" : "text-jacarta-100"}`}>
-                  {isLastBidder ? "You" : shortenAddress(lastBidder)}
-                </span>
-              </div>
-            )}
+            {lastBidder &&
+              item?.marketplaceListings?.sort((a, b) => Number(b.id) - Number(a.id))[0]?.status !==
+                "COMPLETED" && (
+                <div className={`flex items-center gap-1 mt-4 text-sm`}>
+                  Last Bidder:{" "}
+                  <span className={`${isLastBidder ? "text-primaryPurple" : "text-jacarta-100"}`}>
+                    {isLastBidder ? "You" : shortenAddress(lastBidder)}
+                  </span>
+                </div>
+              )}
             {lastSalePrice && (
               <div className="flex items-center mt-4 text-sm text-jacarta-100">
                 Last Sale: {lastSalePrice} {currencyToken}

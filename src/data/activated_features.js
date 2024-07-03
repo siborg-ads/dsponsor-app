@@ -1,7 +1,7 @@
 // This is not a secure way to handle feature flags.
 // If a new feature is added there, it shall be known that one user can just devtool change it
 
-const env = process.env.NODE_ENV;
+const env = process.env.NEXT_PUBLIC_CONFIG_MODE;
 //const isProduction = env === "production";
 const isDevelopment = env === "development";
 
