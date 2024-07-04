@@ -1322,10 +1322,10 @@ const TokenPageContainer = () => {
                     setImageUrlVariants={setImageUrlVariants}
                   />
                 )}
-                {currentSlide === 1 && (
+                {currentSlide === 2 && (
                   <Step2Mint stepsRef={stepsRef} styles={styles} setLink={setLink} link={link} />
                 )}
-                {currentSlide === 2 && (
+                {currentSlide === 1 && (
                   <>
                     {imageURLSteps.map((id, index) => (
                       <Step3Mint
