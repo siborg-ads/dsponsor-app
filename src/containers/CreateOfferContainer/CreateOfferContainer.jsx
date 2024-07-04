@@ -61,6 +61,8 @@ const CreateOfferContainer = () => {
   const [isLoadingButton, setIsLoadingButton] = useState(false);
   const { setSelectedChain } = useSwitchChainContext();
 
+  const address = useAddress();
+
   const [name, setName] = useState(false);
   const stepsRef = useRef([]);
   const { ethers } = require("ethers");
@@ -83,8 +85,6 @@ const CreateOfferContainer = () => {
     setSelectedRoyalties(value);
   };
 
-  const address = useAddress();
-
   const handleLogoUpload = (file) => {
     if (file) {
       setFiles([file]);
@@ -92,11 +92,16 @@ const CreateOfferContainer = () => {
     }
   };
 
-  const validateInputs = () => {
+  const validateInputs = (minterAddress) => {
     let isValid = true;
     let newErrors = {};
     if (!name) {
       newErrors.nameError = "Name is missing.";
+      isValid = false;
+    }
+
+    if (!minterAddress || minterAddress === undefined) {
+      newErrors.addressError = "Address is missing.";
       isValid = false;
     }
 
@@ -179,11 +184,11 @@ const CreateOfferContainer = () => {
 
   const handlePreviewModal = () => {
     setShowPreviewModal(!showPreviewModal);
-    validateInputs();
+    validateInputs(address);
   };
 
   const handleSubmit = async () => {
-    if (!validateInputs()) {
+    if (!validateInputs(address)) {
       return;
     }
     try {

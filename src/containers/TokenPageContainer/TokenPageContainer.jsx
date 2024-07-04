@@ -105,6 +105,7 @@ const TokenPageContainer = () => {
   const [bids, setBids] = useState([]);
   const [insufficentBalance, setInsufficentBalance] = useState(false);
   const [canPayWithNativeToken, setCanPayWithNativeToken] = useState(false);
+  const [currentSlide, setCurrentSlide] = useState(0);
 
   const [offerDO, setOfferDO] = useState({
     offerId: null
@@ -1295,7 +1296,7 @@ const TokenPageContainer = () => {
           <div className="container">
             <Divider className="my-4" />
             <h2 className="text-jacarta-900 font-bold font-display mb-6 text-center text-3xl dark:text-white ">
-              Submission{" "}
+              Ad Submission{" "}
             </h2>
             {isTokenInAuction && (
               <div className="text-center w-full">
@@ -1310,26 +1311,36 @@ const TokenPageContainer = () => {
                 handlePreviewModal={handlePreviewModal}
                 stepsRef={stepsRef}
                 numSteps={numSteps}
+                currentSlide={currentSlide}
+                setCurrentSlide={setCurrentSlide}
               >
-                <Step1Mint
-                  stepsRef={stepsRef}
-                  styles={styles}
-                  adParameters={adParameters}
-                  setImageUrlVariants={setImageUrlVariants}
-                />
-                <Step2Mint stepsRef={stepsRef} styles={styles} setLink={setLink} link={link} />
-                {imageURLSteps.map((id, index) => (
-                  <Step3Mint
-                    key={id}
+                {currentSlide === 0 && (
+                  <Step1Mint
                     stepsRef={stepsRef}
-                    currentStep={index + 2}
-                    id={id}
                     styles={styles}
-                    file={files[index]}
-                    previewImage={previewImages[index]}
-                    handleLogoUpload={(file) => handleLogoUpload(file, index)}
+                    adParameters={adParameters}
+                    setImageUrlVariants={setImageUrlVariants}
                   />
-                ))}
+                )}
+                {currentSlide === 2 && (
+                  <Step2Mint stepsRef={stepsRef} styles={styles} setLink={setLink} link={link} />
+                )}
+                {currentSlide === 1 && (
+                  <>
+                    {imageURLSteps.map((id, index) => (
+                      <Step3Mint
+                        key={id}
+                        stepsRef={stepsRef}
+                        currentStep={index + 2}
+                        id={id}
+                        styles={styles}
+                        file={files[index]}
+                        previewImage={previewImages[index]}
+                        handleLogoUpload={(file) => handleLogoUpload(file, index)}
+                      />
+                    ))}
+                  </>
+                )}
               </SliderForm>
             )}
           </div>
@@ -1366,6 +1377,7 @@ const TokenPageContainer = () => {
             modalTitle="Ad Space Preview"
             successFullUploadModal={successFullUploadModal}
             isLoadingButton={isLoadingButton}
+            adSubmission={true}
           />
         </div>
       )}

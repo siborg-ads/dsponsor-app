@@ -31,6 +31,7 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
   const [showSliderForm, setShowSliderForm] = useState(false);
   const [adParameters, setAdParameters] = useState([]);
   const [imageURLSteps, setImageURLSteps] = useState([]);
+  const [currentSlide, setCurrentSlide] = useState(0);
 
   const [imageUrlVariants, setImageUrlVariants] = useState([]);
   const stepsRef = useRef([]);
@@ -282,6 +283,7 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
                       listingType={item?.marketplaceListings[0]?.listingType}
                       isListing={false}
                       isSelectionActive={isSelectionActive}
+                      disableLink={isSelectionActive}
                       url={
                         !item.tokenData
                           ? `/${item?.chainConfig?.chainId}/offer/${item.offerId}/${item.tokenId}`
@@ -360,27 +362,41 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
             handlePreviewModal={handlePreviewModal}
             stepsRef={stepsRef}
             numSteps={numSteps}
+            currentSlide={currentSlide}
+            setCurrentSlide={setCurrentSlide}
           >
-            <Step1Mint
-              stepsRef={stepsRef}
-              styles={styles}
-              adParameters={adParameters}
-              setImageUrlVariants={setImageUrlVariants}
-            />
-            <Step2Mint stepsRef={stepsRef} styles={styles} setLink={setLink} link={link} />
-            {imageURLSteps.map((step, index) => (
-              <Step3Mint
-                key={step.uniqueId}
+            {currentSlide === 0 && (
+              <Step1Mint
                 stepsRef={stepsRef}
-                currentStep={index + 2}
-                offerIds={step.offerIds}
-                id={step.uniqueId}
                 styles={styles}
-                file={files[index]}
-                previewImage={previewImages[index]}
-                handleLogoUpload={(file) => handleLogoUpload(file, index, step)}
+                adParameters={adParameters}
+                setImageUrlVariants={setImageUrlVariants}
               />
-            ))}
+            )}
+
+            <>
+              {imageURLSteps.map((step, index) => (
+                <>
+                  {currentSlide === index + 1 && (
+                    <Step3Mint
+                      key={step.uniqueId}
+                      stepsRef={stepsRef}
+                      currentStep={index + 2}
+                      offerIds={step.offerIds}
+                      id={step.uniqueId}
+                      styles={styles}
+                      file={files[index]}
+                      previewImage={previewImages[index]}
+                      handleLogoUpload={(file) => handleLogoUpload(file, index, step)}
+                    />
+                  )}
+                </>
+              ))}
+            </>
+
+            {currentSlide === imageURLSteps.length + 1 && (
+              <Step2Mint stepsRef={stepsRef} styles={styles} setLink={setLink} link={link} />
+            )}
           </SliderForm>
         </div>
       )}
@@ -402,6 +418,7 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
             modalTitle="Ad Space Preview"
             successFullUploadModal={successFullUploadModal}
             isLoadingButton={isLoadingButton}
+            multipleAdsSubmission={true}
           />
         </div>
       )}
