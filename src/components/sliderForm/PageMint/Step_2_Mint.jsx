@@ -6,7 +6,7 @@ const Step_2_Mint = ({ stepsRef, styles, setLink, link }) => {
   return (
     <div ref={(el) => (stepsRef.current[1] = el)} className={styles.form__step}>
       <div className="pr-6 pl-2">
-        <h3 className="mb-14 text-jacarta-200">Step 2 : Ad URL</h3>
+        <h3 className="mb-12 text-jacarta-200">Step 2 : Ad URL</h3>
         {/* <!-- Link --> */}
         <div className="mb-6">
           <label
