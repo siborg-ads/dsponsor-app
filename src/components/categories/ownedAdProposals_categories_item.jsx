@@ -373,25 +373,29 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
                 setImageUrlVariants={setImageUrlVariants}
               />
             )}
-            {currentSlide === 1 && (
+
+            <>
+              {imageURLSteps.map((step, index) => (
+                <>
+                  {currentSlide === index + 1 && (
+                    <Step3Mint
+                      key={step.uniqueId}
+                      stepsRef={stepsRef}
+                      currentStep={index + 2}
+                      offerIds={step.offerIds}
+                      id={step.uniqueId}
+                      styles={styles}
+                      file={files[index]}
+                      previewImage={previewImages[index]}
+                      handleLogoUpload={(file) => handleLogoUpload(file, index, step)}
+                    />
+                  )}
+                </>
+              ))}
+            </>
+
+            {currentSlide === imageURLSteps.length + 1 && (
               <Step2Mint stepsRef={stepsRef} styles={styles} setLink={setLink} link={link} />
-            )}
-            {currentSlide === 2 && (
-              <>
-                {imageURLSteps.map((step, index) => (
-                  <Step3Mint
-                    key={step.uniqueId}
-                    stepsRef={stepsRef}
-                    currentStep={index + 2}
-                    offerIds={step.offerIds}
-                    id={step.uniqueId}
-                    styles={styles}
-                    file={files[index]}
-                    previewImage={previewImages[index]}
-                    handleLogoUpload={(file) => handleLogoUpload(file, index, step)}
-                  />
-                ))}
-              </>
             )}
           </SliderForm>
         </div>
@@ -414,6 +418,7 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
             modalTitle="Ad Space Preview"
             successFullUploadModal={successFullUploadModal}
             isLoadingButton={isLoadingButton}
+            multipleAdsSubmission={true}
           />
         </div>
       )}
