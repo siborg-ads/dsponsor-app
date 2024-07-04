@@ -105,7 +105,8 @@ const OfferItem = ({
     if (isToken && isAuction && listingType === "Auction") {
       setPrice(
         item?.marketplaceListings?.[0]
-          ? item?.marketplaceListings[0]?.bidPriceStructureFormatted?.minimalBidPerToken
+          ? item?.marketplaceListings.sort((a, b) => Number(b.id) - Number(a.id))[0]
+              ?.bidPriceStructureFormatted?.minimalBidPerToken
           : item?.bidPriceStructureFormatted?.minimalBidPerToken
       );
       setCurrencyToken(
@@ -118,7 +119,10 @@ const OfferItem = ({
       return;
     }
     if (isToken && item?.marketplaceListings?.length > 0 && listingType === "Direct") {
-      setPrice(item?.marketplaceListings[0]?.buyPriceStructureFormatted?.buyoutPricePerToken);
+      setPrice(
+        item?.marketplaceListings.sort((a, b) => Number(b.id) - Number(a.id))[0]
+          ?.buyPriceStructureFormatted?.buyoutPricePerToken
+      );
       setCurrencyToken(item?.marketplaceListings[0]?.currencySymbol);
       setItemStatut("DIRECT");
     }
