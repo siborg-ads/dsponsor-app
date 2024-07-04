@@ -33,7 +33,7 @@ const OfferItem = ({
     if (item && item?.marketplaceListings?.length > 0) {
       // we look for the latest completed listing
       const latestListing = item?.marketplaceListings
-        .sort((a, b) => b.id - a.id)
+        .sort((a, b) => Number(b.id) - Number(a.id))
         .find((listing) => listing.status === "COMPLETED");
 
       if (latestListing) {
@@ -61,7 +61,7 @@ const OfferItem = ({
   useEffect(() => {
     if (!item) return;
 
-    const sortedListings = item?.marketplaceListings?.sort((a, b) => b.id - a.id);
+    const sortedListings = item?.marketplaceListings?.sort((a, b) => Number(b.id) - Number(a.id));
     if (!sortedListings) return;
 
     const lastBidder = sortedListings[0]?.bids?.[0]?.bidder;
@@ -104,13 +104,15 @@ const OfferItem = ({
     }
     if (isToken && isAuction && listingType === "Auction") {
       setPrice(
-        item?.marketplaceListings?.[0]
-          ? item?.marketplaceListings[0]?.bidPriceStructureFormatted?.minimalBidPerToken
+        item?.marketplaceListings?.sort((a, b) => Number(b.id) - Number(a.id))[0]
+          ? item?.marketplaceListings.sort((a, b) => Number(b.id) - Number(a.id))[0]
+              ?.bidPriceStructureFormatted?.minimalBidPerToken
           : item?.bidPriceStructureFormatted?.minimalBidPerToken
       );
       setCurrencyToken(
-        item?.marketplaceListings?.[0]
-          ? item?.marketplaceListings[0]?.currencySymbol
+        item?.marketplaceListings?.sort((a, b) => Number(b.id) - Number(a.id))[0]
+          ? item?.marketplaceListings?.sort((a, b) => Number(b.id) - Number(a.id))[0]
+              ?.currencySymbol
           : item?.currencySymbol
       );
 
@@ -118,8 +120,13 @@ const OfferItem = ({
       return;
     }
     if (isToken && item?.marketplaceListings?.length > 0 && listingType === "Direct") {
-      setPrice(item?.marketplaceListings[0]?.buyPriceStructureFormatted?.buyoutPricePerToken);
-      setCurrencyToken(item?.marketplaceListings[0]?.currencySymbol);
+      setPrice(
+        item?.marketplaceListings?.sort((a, b) => Number(b.id) - Number(a.id))[0]
+          ?.buyPriceStructureFormatted?.buyoutPricePerToken
+      );
+      setCurrencyToken(
+        item?.marketplaceListings?.sort((a, b) => Number(b.id) - Number(a.id))[0]?.currencySymbol
+      );
       setItemStatut("DIRECT");
     }
   }, [item, isToken, isListing, isAuction, listingType]);

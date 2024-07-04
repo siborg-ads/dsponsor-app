@@ -5,10 +5,10 @@ import ItemCardSkeleton from "../skeleton/ItemCardSkeleton";
 import OfferItem from "../cards/offerItem";
 import { Popover, PopoverTrigger, PopoverContent } from "@nextui-org/popover";
 
-const onAuctionCondition = (auction) => {
+const onAuctionCondition = (auction, mint) => {
   return (
-    auction?.listingType === "Auction" &&
     auction?.status === "CREATED" &&
+    (auction?.listingType === "Auction" || (mint && auction?.item?.mint)) &&
     Number(auction?.quantity) > 0 &&
     new Date(Number(auction?.startTime) * 1000).getTime() < Date.now() &&
     new Date(Number(auction?.endTime) * 1000).getTime() > Date.now()
@@ -44,7 +44,7 @@ const MarketplaceHome = ({ auctions, setAllTokens, allTokens, isAuctionsLoading 
         (auction) => auction?.listingType === "Auction" || auction?.listingType === "Direct"
       );
     } else if (filterOption === "On auction") {
-      tempAuctions = tempAuctions.filter((auction) => onAuctionCondition(auction));
+      tempAuctions = tempAuctions.filter((auction) => onAuctionCondition(auction, false));
     } else if (filterOption === "Sold") {
       tempAuctions = tempAuctions.filter((auction) => auction?.sold);
     }
@@ -61,7 +61,7 @@ const MarketplaceHome = ({ auctions, setAllTokens, allTokens, isAuctionsLoading 
       );
 
       switch (sortOption) {
-        case "Price: low to high":
+        case "Price: low to high": {
           matchingAuctions = matchingAuctions.sort(
             (a, b) =>
               (a.listingType === "Auction"
@@ -75,8 +75,19 @@ const MarketplaceHome = ({ auctions, setAllTokens, allTokens, isAuctionsLoading 
                   ? b.directPrice
                   : b.mintPrice)
           );
+
+          const liveAuctions = matchingAuctions.filter((auction) =>
+            onAuctionCondition(auction, true)
+          );
+          const otherAuctions = matchingAuctions.filter(
+            (auction) => !onAuctionCondition(auction, true)
+          );
+
+          matchingAuctions = [...liveAuctions, ...otherAuctions];
+
           break;
-        case "Price: high to low":
+        }
+        case "Price: high to low": {
           matchingAuctions = matchingAuctions.sort(
             (a, b) =>
               (b.listingType === "Auction"
@@ -90,12 +101,26 @@ const MarketplaceHome = ({ auctions, setAllTokens, allTokens, isAuctionsLoading 
                   ? a.directPrice
                   : a.mintPrice)
           );
+
+          const liveAuctions = matchingAuctions.filter((auction) =>
+            onAuctionCondition(auction, true)
+          );
+          const otherAuctions = matchingAuctions.filter(
+            (auction) => !onAuctionCondition(auction, true)
+          );
+
+          matchingAuctions = [...liveAuctions, ...otherAuctions];
           break;
+        }
         case "Ending soon": {
           matchingAuctions.sort((a, b) => a.endTime - b.endTime);
 
-          const liveAuctions = matchingAuctions.filter((auction) => onAuctionCondition(auction));
-          const otherAuctions = matchingAuctions.filter((auction) => !onAuctionCondition(auction));
+          const liveAuctions = matchingAuctions.filter((auction) =>
+            onAuctionCondition(auction, true)
+          );
+          const otherAuctions = matchingAuctions.filter(
+            (auction) => !onAuctionCondition(auction, true)
+          );
 
           matchingAuctions = [...liveAuctions, ...otherAuctions];
           break;
