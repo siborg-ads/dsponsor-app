@@ -42,7 +42,6 @@ const HomeContainer = () => {
   }, [allTokens, auctionsFetched]);
 
   useEffect(() => {
-    console.log("auctionsTemp", auctionsTemp);
     if (auctionsTemp.length === 0) return;
 
     const auctions = auctionsTemp.map((token) => {
