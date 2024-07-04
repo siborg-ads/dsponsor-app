@@ -789,6 +789,12 @@ const TokenPageContainer = () => {
 
       await submitAd({ args: functionWithPossibleArgs });
       setSuccessFullUpload(true);
+
+      // reset form
+      setFiles([]);
+      setPreviewImages([]);
+      setLink("");
+      setCurrentSlide(0);
     } catch (error) {
       console.error("Erreur de soumission du token:", error);
       setSuccessFullUpload(false);

@@ -328,6 +328,23 @@ const CreateOfferContainer = () => {
       await createDSponsorNFTAndOffer({ args: preparedArgs });
 
       setSuccessFullUpload(true);
+
+      // reset form data
+      setName("");
+      setDescription("");
+      setLink("");
+      setFiles([]);
+      setPreviewImages([]);
+      setStartDate(new Date());
+      setEndDate(new Date(new Date().setFullYear(new Date().getFullYear() + 1)));
+      setSelectedNumber(1);
+      setSelectedUnitPrice(1);
+      setSelectedCurrency("WETH");
+      setCustomContract(null);
+      setSelectedRoyalties(10);
+      setTokenContract(WETHCurrency?.address);
+      setCustomTokenContract(null);
+      setCurrentSlide(0);
     } catch (error) {
       setIsLoadingButton(false);
       setSuccessFullUpload(false);
