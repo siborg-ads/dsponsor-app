@@ -16,10 +16,9 @@ const Step_2_Mint = ({ stepsRef, styles, setLink, link }) => {
             External link<span className="text-red">*</span>
           </label>
           <p className="dark:text-jacarta-100 text-jacarta-100 text-2xs mb-3">
-            Enter the URL to which users will be redirected upon clicking the previously uploaded
-            image. This link should lead to a page that expands on the content or service
-            represented by the image. Make sure the URL is correct and leads to a safe, relevant
-            webpage.
+            Enter the URL to which users will be redirected upon clicking on the ad image. This link
+            should lead to a page that expands on the content or service represented by the image.
+            Make sure the URL is correct and leads to a safe, relevant webpage.
           </p>
           <input
             type="url"

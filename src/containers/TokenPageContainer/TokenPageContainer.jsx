@@ -1296,7 +1296,7 @@ const TokenPageContainer = () => {
           <div className="container">
             <Divider className="my-4" />
             <h2 className="text-jacarta-900 font-bold font-display mb-6 text-center text-3xl dark:text-white ">
-              Submission{" "}
+              Ad Submission{" "}
             </h2>
             {isTokenInAuction && (
               <div className="text-center w-full">
@@ -1322,10 +1322,10 @@ const TokenPageContainer = () => {
                     setImageUrlVariants={setImageUrlVariants}
                   />
                 )}
-                {currentSlide === 1 && (
+                {currentSlide === 2 && (
                   <Step2Mint stepsRef={stepsRef} styles={styles} setLink={setLink} link={link} />
                 )}
-                {currentSlide === 2 && (
+                {currentSlide === 1 && (
                   <>
                     {imageURLSteps.map((id, index) => (
                       <Step3Mint
