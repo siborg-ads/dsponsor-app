@@ -1377,6 +1377,7 @@ const TokenPageContainer = () => {
             modalTitle="Ad Space Preview"
             successFullUploadModal={successFullUploadModal}
             isLoadingButton={isLoadingButton}
+            adSubmission={true}
           />
         </div>
       )}

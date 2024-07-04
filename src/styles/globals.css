@@ -3949,8 +3949,6 @@ html {
     font-weight: 600;
     line-height: normal;
     line-height: 1.5;
-    margin-bottom: 0;
-    margin-top: 0.25rem;
   }
 
   .dark .modal-title {
@@ -3969,6 +3967,20 @@ html {
   }
 
   .btn-close:hover {
+    --tw-rotate: 180deg;
+    transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate))
+      skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x))
+      scaleY(var(--tw-scale-y));
+  }
+
+  .btn-close-preview {
+    background-color: transparent;
+    transition-duration: 0.15s;
+    transition-property: transform;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .btn-close-preview:hover {
     --tw-rotate: 180deg;
     transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate))
       skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x))
