@@ -105,6 +105,7 @@ const TokenPageContainer = () => {
   const [bids, setBids] = useState([]);
   const [insufficentBalance, setInsufficentBalance] = useState(false);
   const [canPayWithNativeToken, setCanPayWithNativeToken] = useState(false);
+  const [currentSlide, setCurrentSlide] = useState(0);
 
   const [offerDO, setOfferDO] = useState({
     offerId: null
@@ -1310,26 +1311,36 @@ const TokenPageContainer = () => {
                 handlePreviewModal={handlePreviewModal}
                 stepsRef={stepsRef}
                 numSteps={numSteps}
+                currentSlide={currentSlide}
+                setCurrentSlide={setCurrentSlide}
               >
-                <Step1Mint
-                  stepsRef={stepsRef}
-                  styles={styles}
-                  adParameters={adParameters}
-                  setImageUrlVariants={setImageUrlVariants}
-                />
-                <Step2Mint stepsRef={stepsRef} styles={styles} setLink={setLink} link={link} />
-                {imageURLSteps.map((id, index) => (
-                  <Step3Mint
-                    key={id}
+                {currentSlide === 0 && (
+                  <Step1Mint
                     stepsRef={stepsRef}
-                    currentStep={index + 2}
-                    id={id}
                     styles={styles}
-                    file={files[index]}
-                    previewImage={previewImages[index]}
-                    handleLogoUpload={(file) => handleLogoUpload(file, index)}
+                    adParameters={adParameters}
+                    setImageUrlVariants={setImageUrlVariants}
                   />
-                ))}
+                )}
+                {currentSlide === 1 && (
+                  <Step2Mint stepsRef={stepsRef} styles={styles} setLink={setLink} link={link} />
+                )}
+                {currentSlide === 2 && (
+                  <>
+                    {imageURLSteps.map((id, index) => (
+                      <Step3Mint
+                        key={id}
+                        stepsRef={stepsRef}
+                        currentStep={index + 2}
+                        id={id}
+                        styles={styles}
+                        file={files[index]}
+                        previewImage={previewImages[index]}
+                        handleLogoUpload={(file) => handleLogoUpload(file, index)}
+                      />
+                    ))}
+                  </>
+                )}
               </SliderForm>
             )}
           </div>
