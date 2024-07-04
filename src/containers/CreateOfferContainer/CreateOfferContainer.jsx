@@ -3,7 +3,13 @@ import { useRouter } from "next/router";
 import Meta from "../../components/Meta";
 import Image from "next/image";
 import "react-datepicker/dist/react-datepicker.css";
-import { useAddress, useContract, useContractWrite, useStorageUpload } from "@thirdweb-dev/react";
+import {
+  useAddress,
+  useChainId,
+  useContract,
+  useContractWrite,
+  useStorageUpload
+} from "@thirdweb-dev/react";
 
 import styles from "../../styles/createPage/style.module.scss";
 import PreviewModal from "../../components/modal/previewModal";
@@ -22,7 +28,7 @@ const CreateOfferContainer = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
 
   const router = useRouter();
-  const chainId = router.query?.chainName;
+  const chainId = useChainId();
   const [link, setLink] = useState(null);
   const [errors, setErrors] = useState({});
   const [description, setDescription] = useState(false);
@@ -36,7 +42,7 @@ const CreateOfferContainer = () => {
   const [selectedCurrency, setSelectedCurrency] = useState("WETH");
   const [customContract, setCustomContract] = useState(null);
   const [selectedRoyalties, setSelectedRoyalties] = useState(10);
-  const [validate, setValidate] = useState(false);
+  const [validate, setValidate] = useState(true);
   const [showPreviewModal, setShowPreviewModal] = useState(false);
   const [successFullUpload, setSuccessFullUpload] = useState(false);
   const [selectedIntegration, setSelectedIntegration] = useState([]);
@@ -51,17 +57,29 @@ const CreateOfferContainer = () => {
     DsponsorAdminContract,
     "createDSponsorNFTAndOffer"
   );
+  const WETHCurrency = config[chainId]?.smartContracts?.WETH;
   const [imageRatios, setImageRatios] = useState([]);
   const [tokenDecimals, setTokenDecimals] = useState(0);
   const [symbolContract, setSymbolContract] = useState(null);
-  const [tokenContract, setTokenContract] = useState(null);
+  const [tokenContract, setTokenContract] = useState(WETHCurrency?.address);
   const [customTokenContract, setCustomTokenContract] = useState(null);
   const [terms, setTerms] = useState([]);
   const [previewTerms, setPreviewTerms] = useState([]);
   const [isLoadingButton, setIsLoadingButton] = useState(false);
+  const [minterAddress, setMinterAddress] = useState(null);
   const { setSelectedChain } = useSwitchChainContext();
 
   const address = useAddress();
+
+  useEffect(() => {
+    if (!address) return;
+    setMinterAddress(address);
+  }, [address]);
+
+  useEffect(() => {
+    if (!WETHCurrency) return;
+    setTokenContract(WETHCurrency?.address);
+  }, [tokenContract, WETHCurrency]);
 
   const [name, setName] = useState(false);
   const stepsRef = useRef([]);
@@ -92,15 +110,16 @@ const CreateOfferContainer = () => {
     }
   };
 
-  const validateInputs = (minterAddress) => {
+  useEffect(() => {
     let isValid = true;
     let newErrors = {};
+
     if (!name) {
       newErrors.nameError = "Name is missing.";
       isValid = false;
     }
 
-    if (!minterAddress || minterAddress === undefined) {
+    if (!minterAddress) {
       newErrors.addressError = "Address is missing.";
       isValid = false;
     }
@@ -114,8 +133,14 @@ const CreateOfferContainer = () => {
       newErrors.descriptionError = "Description is missing.";
       isValid = false;
     }
+
     if (files.length === 0) {
       newErrors.imageError = "Image is missing.";
+      isValid = false;
+    }
+
+    if (!tokenContract) {
+      newErrors.tokenError = "Token contract is missing.";
       isValid = false;
     }
 
@@ -136,6 +161,7 @@ const CreateOfferContainer = () => {
         isValid = false;
       }
     }
+
     if (!endDate) {
       newErrors.endDateError = "End date is missing.";
       isValid = false;
@@ -143,11 +169,8 @@ const CreateOfferContainer = () => {
       newErrors.endDateError = "End date cannot be in the past.";
       isValid = false;
     }
-    if (
-      parseFloat(selectedUnitPrice) < 1 * 10 ** -tokenDecimals ||
-      isNaN(selectedUnitPrice) ||
-      selectedUnitPrice === null
-    ) {
+
+    if (parseFloat(selectedUnitPrice) < 1 * 10 ** -tokenDecimals) {
       newErrors.unitPriceError = `Unit price must be at least ${1 * 10 ** -tokenDecimals}.`;
       isValid = false;
     }
@@ -161,12 +184,7 @@ const CreateOfferContainer = () => {
       isValid = false;
     }
 
-    if (!selectedCurrency) {
-      newErrors.currencyError = "Currency is missing or invalid.";
-      isValid = false;
-    }
-
-    if (selectedCurrency === "custom" && customTokenContract === undefined) {
+    if (selectedCurrency === "custom" && customContract === undefined) {
       newErrors.currencyError = "Custom contract is missing or invalid.";
       isValid = false;
     }
@@ -179,18 +197,31 @@ const CreateOfferContainer = () => {
 
     setValidate(isValid);
     setErrors(newErrors);
-    return isValid;
-  };
+  }, [
+    customContract,
+    description,
+    endDate,
+    files.length,
+    imageRatios,
+    link,
+    minterAddress,
+    name,
+    selectedCurrency,
+    selectedIntegration.length,
+    selectedNumber,
+    selectedParameter.length,
+    selectedRoyalties,
+    selectedUnitPrice,
+    startDate,
+    tokenDecimals,
+    tokenContract
+  ]);
 
   const handlePreviewModal = () => {
     setShowPreviewModal(!showPreviewModal);
-    validateInputs(address);
   };
 
-  const handleSubmit = async () => {
-    if (!validateInputs(address)) {
-      return;
-    }
+  const handleSubmit = async (userMinterAddress) => {
     try {
       setIsLoadingButton(true);
       let paramsFormated = [];
@@ -247,7 +278,7 @@ const CreateOfferContainer = () => {
         description: description,
         image: uploadUrl[0] ?? "",
         external_link: link,
-        collaborators: [address]
+        collaborators: [userMinterAddress]
       });
       // upload json to IPFS
       const jsonMetadataURL = await upload({
@@ -270,10 +301,10 @@ const CreateOfferContainer = () => {
           symbol: "DSPONSORNFT", // symbol
           baseURI: "https://api.dsponsor.com/tokenMetadata/", // baseURI
           contractURI: jsonIpfsLinkContractURI, // contractURI from json
-          minter: address,
+          minter: userMinterAddress,
           maxSupply: selectedNumber, // max supply
           forwarder: "0x0000000000000000000000000000000000000000", // forwarder
-          initialOwner: address, // owner
+          initialOwner: userMinterAddress, // owner
           royaltyBps: selectedRoyalties * 100, // royalties
           currencies: [tokenContract], // accepted token
           prices: [ethers.utils.parseUnits(selectedUnitPrice.toString(), tokenDecimals)], // prices with decimals
@@ -284,7 +315,7 @@ const CreateOfferContainer = () => {
           offerMetadata: jsonIpfsLinkMetadata, // rulesURI
 
           options: {
-            admins: [address], // admin
+            admins: [userMinterAddress], // admin
             validators: [], // validator
             adParameters: uniqueParams // ad parameters
           }
@@ -292,13 +323,14 @@ const CreateOfferContainer = () => {
       ];
       const preparedArgs = [Object.values(JSON.parse(args[0])), Object.values(JSON.parse(args[1]))];
 
+      console.log("tokenContract", tokenContract);
+
       await createDSponsorNFTAndOffer({ args: preparedArgs });
 
       setSuccessFullUpload(true);
     } catch (error) {
       setIsLoadingButton(false);
       setSuccessFullUpload(false);
-      console.error(error);
       throw error;
     } finally {
       setIsLoadingButton(false);
@@ -316,7 +348,7 @@ const CreateOfferContainer = () => {
     subBody:
       "Find the integration code to copy/paste onto your platform in your offer management page",
     buttonTitle: "Manage Spaces",
-    hrefButton: `/profile/${address}`
+    hrefButton: `/profile/${minterAddress}`
   };
   const metadata = {
     title: "Create Offer || SiBorg Ads - The Web3 Monetization Solution",
@@ -455,7 +487,7 @@ const CreateOfferContainer = () => {
             validate={validate}
             errors={errors}
             successFullUpload={successFullUpload}
-            address={address}
+            address={minterAddress}
             buttonTitle="Create ad space offer"
             modalTitle="Ad Space Offer "
             successFullUploadModal={successFullUploadModal}
