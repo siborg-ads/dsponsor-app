@@ -15,7 +15,7 @@ const Step_1_Mint = ({ stepsRef, styles, adParameters, setImageUrlVariants }) =>
   return (
     <div ref={(el) => (stepsRef.current[0] = el)} className={styles.form__step}>
       <div className="pr-6 pl-2">
-        <h3 className="mb-14 !text-jacarta-100">Step 1 : Offer Type</h3>
+        <h3 className="mb-12 !text-jacarta-100">Step 1 : Offer Type</h3>
         <div className="mb-6 flex flex-col gap-4">
           <div className="flex flex-col">
             <label
