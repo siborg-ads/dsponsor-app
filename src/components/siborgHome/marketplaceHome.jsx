@@ -202,6 +202,7 @@ const MarketplaceHome = ({ auctions, setAllTokens, allTokens, isAuctionsLoading 
                   >
                     <span>All tokens</span>
                   </MenuItem>
+                  {/* 
                   <MenuItem
                     onClick={() => {
                       setFilterOption("Listed tokens");
@@ -211,6 +212,7 @@ const MarketplaceHome = ({ auctions, setAllTokens, allTokens, isAuctionsLoading 
                   >
                     <span>Listed tokens</span>
                   </MenuItem>
+                  */}
                   <MenuItem
                     onClick={() => {
                       setFilterOption("On auction");
