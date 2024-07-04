@@ -91,7 +91,7 @@ export default function BidWithCrossmintButton(props = {}) {
       totalPrice: totalPriceFormatted,
       quantity: 1,
       _listingId: token.listingId,
-      _pricePerToken: token.price,
+      _pricePerToken: cumulativePrice,
       _bidder: user.address,
       _referralAdditionalInformation: referrer.address ?? "0x"
     }
