@@ -41,7 +41,8 @@ const PreviewModal = ({
   buttonTitle,
   modalTitle,
   successFullUploadModal,
-  address,  adSubmission,
+  address,
+  adSubmission,
   isLoadingButton,
   multipleAdsSubmission
 }) => {
@@ -559,7 +560,9 @@ const PreviewModal = ({
                 {!successFullUpload ? (
                   approvalForAllToken ? (
                     <Web3Button
-                      contractAddress={currentChainObject?.smartContracts?.DSPONSORADMIN?.address ?? "no address"}
+                      contractAddress={
+                        currentChainObject?.smartContracts?.DSPONSORADMIN?.address ?? "no address"
+                      }
                       action={() => {
                         toast.promise(handleSubmit(address), {
                           pending: "Waiting for confirmation 🕒",
@@ -577,7 +580,9 @@ const PreviewModal = ({
                     <>
                       <div className="flex flex-col items-center gap-2">
                         <Web3Button
-                          contractAddress={currentChainObject?.smartContracts?.DSPONSORMP?.address ?? "no address"}
+                          contractAddress={
+                            currentChainObject?.smartContracts?.DSPONSORMP?.address ?? "no address"
+                          }
                           action={() => {
                             toast.promise(handleApprove, {
                               pending: "Waiting for confirmation 🕒",
