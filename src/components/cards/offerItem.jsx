@@ -6,8 +6,9 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "tippy.js/dist/tippy.css";
 import TimerCard from "./TimerCard";
-import { shortenAddress, useAddress } from "@thirdweb-dev/react";
+import { shortenAddress, useAddress, useChainId } from "@thirdweb-dev/react";
 import { getAddress, formatUnits } from "ethers/lib/utils";
+import { fetchAllOffers } from "../../providers/methods/fetchAllOffers";
 
 const OfferItem = ({
   item,
@@ -18,7 +19,8 @@ const OfferItem = ({
   isAuction = false,
   isListing = false,
   listingType,
-  disableLink
+  disableLink,
+  availableToSubmitAdFromOwnedTokens
 }) => {
   const [price, setPrice] = useState(null);
   const [currencyToken, setCurrencyToken] = useState(null);
@@ -27,8 +29,108 @@ const OfferItem = ({
   const [lastSalePrice, setLastSalePrice] = useState(null);
   const [lastBidder, setLastBidder] = useState(null);
   const [isLastBidder, setIsLastBidder] = useState(false);
+  const [offers, setOffers] = useState(null);
+  const [itemProposals, setItemProposals] = useState(null);
+  const [availableToSubmitAd, setAvailableToSubmitAd] = useState(false);
 
   const address = useAddress();
+  const chainId = useChainId();
+
+  useEffect(() => {
+    const fetchOffers = async () => {
+      const offers = await fetchAllOffers(chainId);
+      setOffers(offers);
+    };
+
+    fetchOffers();
+  }, [chainId, item]);
+
+  useEffect(() => {
+    if (offers) {
+      // we want to get all the proposals for the current item (accept, reject, pending, all)
+      // for that we filter the offers to extract the token that match the current item
+      const itemOffers = offers
+        ?.map((offer) =>
+          offer?.nftContract?.tokens?.filter(
+            (token) => Number(token?.tokenId) === Number(item?.tokenId)
+          )
+        )
+        .flat()
+        .filter(Boolean);
+
+      // we extract the unique token that match the current item
+      // itemOffers is an array of one item
+      // so we get the first item
+      const tokenOffers = itemOffers[0];
+
+      // then we get the proposals for the current item
+      // we get the accepted, pending, rejected and all proposals
+      // token offers has a "all proposals" key that contains all the proposals
+      // we filter the proposals to get the accepted, pending and rejected proposals
+      // for that we can use the status key of the proposal "CURRENT_ACCEPTED", "CURRENT_PENDING", "CURRENT_REJECTED"
+      const allProposals = tokenOffers?.allProposals;
+      const acceptedProposals = allProposals?.filter(
+        (proposal) => proposal?.status === "CURRENT_ACCEPTED"
+      );
+      const pendingProposals = allProposals?.filter(
+        (proposal) => proposal?.status === "CURRENT_PENDING"
+      );
+      const rejectedProposals = allProposals?.filter(
+        (proposal) => proposal?.status === "CURRENT_REJECTED"
+      );
+
+      const itemProposals = {
+        name: item?.metadata?.name,
+        pendingProposals,
+        rejectedProposals,
+        acceptedProposals,
+        allProposals
+      };
+
+      setItemProposals(itemProposals);
+    }
+  }, [offers, item]);
+
+  useEffect(() => {
+    // the sponsor can submit an ads if one of the following conditions is met:
+    // - the item has no pending proposals AND no accepted proposals
+    // - there is one rejected proposal more recent than the last accepted proposal and the last pending proposal
+    // each proposal has a creationTimestamp and a lastUpdateTimestamp
+
+    if (itemProposals) {
+      const { pendingProposals, rejectedProposals, acceptedProposals } = itemProposals;
+
+      if (pendingProposals?.length === 0 && acceptedProposals?.length === 0) {
+        setAvailableToSubmitAd(true);
+        return;
+      }
+
+      const lastAcceptedProposal = acceptedProposals?.sort(
+        (a, b) => Number(b?.creationTimestamp) - Number(a?.creationTimestamp)
+      )[0];
+      const lastPendingProposal = pendingProposals?.sort(
+        (a, b) => Number(b?.creationTimestamp) - Number(a?.creationTimestamp)
+      )[0];
+      const lastRejectedProposal = rejectedProposals?.sort(
+        (a, b) => Number(b?.creationTimestamp) - Number(a?.creationTimestamp)
+      )[0];
+
+      if (
+        lastRejectedProposal &&
+        lastAcceptedProposal &&
+        Number(lastRejectedProposal?.creationTimestamp) >
+          Number(lastAcceptedProposal?.creationTimestamp) &&
+        lastPendingProposal &&
+        Number(lastRejectedProposal?.creationTimestamp) >
+          Number(lastPendingProposal?.creationTimestamp)
+      ) {
+        setAvailableToSubmitAd(true);
+        return;
+      }
+
+      setAvailableToSubmitAd(false);
+    }
+  }, [itemProposals]);
 
   useEffect(() => {
     if (item && item?.marketplaceListings?.length > 0) {
@@ -237,12 +339,12 @@ const OfferItem = ({
             <div className="mt-4 flex items-center justify-between gap-2">
               {isSelectionActive ? (
                 <span className="font-display  text-primaryBlack hover:text-primaryPurple text-base dark:text-white ">
-                  {name}
+                  {availableToSubmitAd && availableToSubmitAdFromOwnedTokens && "❗️"} {name}
                 </span>
               ) : (
                 <div className="overflow-hidden text-ellipsis whitespace-nowrap ">
                   <span className="font-display  text-primaryBlack hover:text-primaryPurple text-base dark:text-white ">
-                    {name}
+                    {availableToSubmitAd && availableToSubmitAdFromOwnedTokens && "❗️"} {name}
                   </span>
                 </div>
               )}
