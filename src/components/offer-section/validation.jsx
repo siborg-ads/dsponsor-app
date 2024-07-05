@@ -3,6 +3,7 @@ import { Tab, TabList, TabPanel, Tabs } from "react-tabs";
 import { Divider } from "@nextui-org/react";
 import ValidatedRefusedItems from "../collections/validated_refused_items";
 import ReviewCarousel from "../carousel/review_carousel";
+import AddProposalRefusedModal from "../modal/adProposalRefusedModal";
 
 const Validation = ({
   chainId,
@@ -23,6 +24,9 @@ const Validation = ({
   const [validatedProposalData, setValidatedProposalData] = useState([]);
   const [refusedProposalData, setRefusedProposalData] = useState([]);
   const [itemActive, setItemActive] = useState(1);
+  const [comments, setComments] = useState({});
+  const [isApprouvedAd, setIsApprouvedAd] = useState(false);
+
   const tabItem = [
     {
       id: 1,
@@ -94,6 +98,61 @@ const Validation = ({
     setPendingProposalData(formattedPendingAds);
   }, [offer, offerId, successFullUploadModal]);
 
+  const handleItemSubmit = async (approuved = false) => {
+    let submissionArgs = [];
+    setIsApprouvedAd(approuved);
+    for (const item of selectedItems) {
+      let argObject = {
+        ...item,
+        ...(approuved && { reason: "" }),
+        validated: approuved
+      };
+
+      submissionArgs.push(argObject);
+    }
+
+    try {
+      await handleSubmit(submissionArgs);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const successFullRefusedAdModalObject = {
+    title: "Refused",
+    body: "The ad has been refused successfully ✅",
+    button: "Close"
+  };
+
+  const successFullValidatedAdModalObject = {
+    title: "Validated",
+    body: "The ad has been validated successfully 🎉",
+    button: "Close"
+  };
+
+  const closeRefuseModal = () => {
+    setRefusedValidatedAdModal(null);
+    if (successFullRefuseModal) {
+      setSelectedItems([]);
+      setSuccessFullRefuseModal(false);
+    }
+  };
+
+  const handleCommentChange = (tokenId, value) => {
+    setComments((currentComments) => ({
+      ...currentComments,
+      [tokenId]: value
+    }));
+    setSelectedItems((currentItems) => {
+      return currentItems.map((item) => {
+        if (item.tokenId === tokenId) {
+          return { ...item, reason: value };
+        }
+        return item;
+      });
+    });
+  };
+
   return (
     <div className="container">
       <Divider className="my-4" />
@@ -139,6 +198,7 @@ const Validation = ({
                 isToken={isToken}
                 isOwner={isOwner}
                 setSuccessFullRefuseModal={setSuccessFullRefuseModal}
+                handleItemSubmit={handleItemSubmit}
               />
             </div>
           </TabPanel>
@@ -161,6 +221,24 @@ const Validation = ({
           </div>
         </TabPanel>
       </Tabs>
+
+      {refusedValidatedAdModal && (
+        <div className="modal fade show bloc">
+          <AddProposalRefusedModal
+            refusedValidatedAdModal={refusedValidatedAdModal}
+            selectedItems={selectedItems}
+            handleCommentChange={handleCommentChange}
+            handleItemSubmit={handleItemSubmit}
+            closeRefuseModal={closeRefuseModal}
+            successFullRefuseModal={successFullRefuseModal}
+            successFullModalObject={
+              isApprouvedAd ? successFullValidatedAdModalObject : successFullRefusedAdModalObject
+            }
+            comments={comments}
+            setIsApprouvedAd={setIsApprouvedAd}
+          />
+        </div>
+      )}
     </div>
   );
 };

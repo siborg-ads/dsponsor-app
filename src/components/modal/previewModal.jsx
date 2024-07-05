@@ -204,7 +204,7 @@ const PreviewModal = ({
           <div className="modal-header">
             <div className="flex items-center justify-between w-full space-x-4">
               <h5 className="modal-title" id="placeBidLabel">
-                Preview your ad submission
+                Preview your multiple tokens ad submission
               </h5>
               <button
                 type="button"
