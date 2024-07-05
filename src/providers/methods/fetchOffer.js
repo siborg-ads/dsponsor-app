@@ -17,6 +17,7 @@ export const fetchOffer = async (offerId, chainId) => {
         metadataURL
 
         initialCreator # from which address the offer has been created
+        admins # list of admins
         creationTimestamp # data (unix time)
         adParameters(where: { enable: true }) {
           enable
