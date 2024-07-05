@@ -27,7 +27,7 @@ const Review_carousel = ({
   const [validate, setValidate] = useState({});
   const [comments, setComments] = useState({});
   const [isApprouvedAd, setIsApprouvedAd] = useState(false);
-  const [tokenId] = useState(null);
+  const [tokenId, setTokenId] = useState(null);
   const [isFirstSelection, setIsFirstSelection] = useState(true);
   const [isSelectedItem, setIsSelectedItem] = useState({});
   const [modalStates, setModalStates] = useState({});
@@ -51,10 +51,11 @@ const Review_carousel = ({
   }, [copied]);
 
   const openModal = (tokenId) => {
+    setTokenId(tokenId);
     setModalStates((prev) => ({ ...prev, [tokenId]: true }));
   };
 
-  const closeModal = (tokenId) => {
+  const closeModal = () => {
     setModalStates((prev) => ({ ...prev, [tokenId]: false }));
   };
 
@@ -64,6 +65,7 @@ const Review_carousel = ({
       [id]: !currentState[id]
     }));
   };
+
   const handleCommentChange = (tokenId, value) => {
     setComments((currentComments) => ({
       ...currentComments,
@@ -97,15 +99,18 @@ const Review_carousel = ({
       console.error(error);
     }
   };
+
   const openRefuseModal = () => {
     setRefusedValidatedAdModal(true);
   };
-  function formatTokenId(str) {
+
+  const formatTokenId = (str) => {
     if (str.length <= 6) {
       return str;
     }
     return str.slice(0, 3) + "..." + str.slice(-3);
-  }
+  };
+
   const closeRefuseModal = () => {
     setRefusedValidatedAdModal(null);
     if (successFullRefuseModal) {
@@ -139,17 +144,20 @@ const Review_carousel = ({
       }
     });
   };
+
   const getImageUrl = (adParams) => {
     if (!adParams) return "/";
 
     const imageKey = Object.keys(adParams).find((key) => key.startsWith("imageURL"));
     return imageKey ? adParams[imageKey] : "/";
   };
+
   const successFullRefusedAdModalObject = {
     title: "Refused",
     body: "The ad has been refused successfully ✅",
     button: "Close"
   };
+
   const successFullValidatedAdModalObject = {
     title: "Validated",
     body: "The ad has been validated successfully 🎉",
@@ -157,8 +165,9 @@ const Review_carousel = ({
   };
 
   if (pendingProposalData.length === 0) {
-    return <div className="flex justify-center">No pendings ads...</div>;
+    return <div className="flex justify-center">No pending ads...</div>;
   }
+
   return (
     <div>
       {!isToken && (
@@ -237,54 +246,16 @@ const Review_carousel = ({
                       <Image
                         src={getImageUrl(adParametersList) ?? ""}
                         alt="logo"
-                        height={75}
-                        width={75}
-                        objectFit="contain"
+                        height={500}
+                        width={500}
+                        style={{ objectFit: "contain" }}
                         className="rounded-[0.625rem] w-auto h-[150px] object-contain"
                         loading="lazy"
                       />
                     )}
                   </button>
-
-                  {/* <!-- Modal --> */}
-                  <div
-                    className={modalStates[tokenId] ? "modal fade show block" : "modal fade"}
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    <div className="modal-dialog !my-0 flex h-full max-w-4xl items-center justify-center">
-                      <Image
-                        src={getImageUrl(adParametersList) ?? ""}
-                        alt="logo"
-                        height={250}
-                        width={250}
-                        objectFit="contain"
-                        className="rounded-2lg min-w-[75px]"
-                        loading="lazy"
-                      />
-                    </div>
-
-                    <button
-                      type="button"
-                      className="btn-close absolute top-6 right-6"
-                      onClick={() => closeModal(tokenId)}
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 24 24"
-                        width="24"
-                        height="24"
-                        className="h-6 w-6 fill-white"
-                      >
-                        <path fill="none" d="M0 0h24v24H0z" />
-                        <path d="M12 10.586l4.95-4.95 1.414 1.414-4.95 4.95 4.95 4.95-1.414 1.414-4.95-4.95-4.95 4.95-1.414-1.414 4.95-4.95-4.95-4.95L7.05 5.636z" />
-                      </svg>
-                    </button>
-                  </div>
-                  {/* <!-- end modal --> */}
                 </figure>
-                {/* <figure className="flex justify-center">
-                  <Image src={adParametersList.imageURL ?? "/"} alt="logo" height={230} width={230} className="rounded-[0.625rem] w-auto   h-[150px] object-contain" loading="lazy" />
-                </figure> */}
+
                 <div className="mt-4 flex items-center justify-between ">
                   <Link
                     href={adParametersList.linkURL ?? ""}
@@ -310,6 +281,39 @@ const Review_carousel = ({
           );
         })}
       </div>
+
+      {modalStates[tokenId] && (
+        <div className="modal fade show block">
+          <div className="modal-dialog !my-0 flex h-screen max-w-4xl items-center justify-center">
+            <Image
+              src={
+                getImageUrl(
+                  pendingProposalData.find((item) => item.tokenId === tokenId).adParametersList
+                ) ?? ""
+              }
+              alt="logo"
+              height={500}
+              width={500}
+              style={{ objectFit: "contain" }}
+              className="rounded-2lg min-w-[75px]"
+              loading="lazy"
+            />
+          </div>
+          <button type="button" className="btn-close absolute top-6 right-6" onClick={closeModal}>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              width="24"
+              height="24"
+              className="h-6 w-6 fill-white"
+            >
+              <path fill="none" d="M0 0h24v24H0z" />
+              <path d="M12 10.586l4.95-4.95 1.414 1.414-4.95 4.95 4.95 4.95-1.414 1.414-4.95-4.95-4.95 4.95-1.414-1.414 4.95-4.95-4.95-4.95L7.05 5.636z" />
+            </svg>
+          </button>
+        </div>
+      )}
+
       {refusedValidatedAdModal && (
         <div className="modal fade show bloc">
           <AddProposalRefusedModal

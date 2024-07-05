@@ -125,6 +125,7 @@ const ManageSpaceContainer = () => {
           .map((element) => ({
             ...element,
             ...element.token,
+            marketplaceListings: [element],
             listingStatus: handleListingsStatusType(element.status),
             chainConfig: element.chainConfig,
             tokenData: element?.token.mint.tokenData,
@@ -140,6 +141,7 @@ const ManageSpaceContainer = () => {
         const auctionBidsTokensArray = await fetchDataByUserAddress(fetchAllTokenAuctionBidsByUser);
         const mappedAuctionBidsTokens = auctionBidsTokensArray.map((element) => ({
           ...element,
+          marketplaceListings: [element.listing],
           status: handleBidsStatusType(element.status),
           listingStatus: handleListingsStatusType(element.listing.status),
           metadata: element.listing.token.metadata,
@@ -152,11 +154,15 @@ const ManageSpaceContainer = () => {
         setTokenAuctionBids(mappedAuctionBidsTokens);
       };
 
+      const fetchAllManageData = async () => {
+        await fetchOwnedAdProposals();
+        await fetchCreatedData();
+        await fetchListedTokens();
+        await fetchAuctionBidsTokens();
+      };
+
       if (address === userAddress) setIsOwner(true);
-      fetchOwnedAdProposals();
-      fetchCreatedData();
-      fetchListedTokens();
-      fetchAuctionBidsTokens();
+      fetchAllManageData();
     }
   }, [userAddress, router, address, chainId, chainConfig]);
   const handleListingsStatusType = (status) => {

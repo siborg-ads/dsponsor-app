@@ -1,7 +1,7 @@
 import React from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Web3Button } from "@thirdweb-dev/react";
+import { shortenAddress, useAddress, Web3Button } from "@thirdweb-dev/react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Spinner } from "@nextui-org/spinner";
@@ -41,8 +41,10 @@ const PreviewModal = ({
   buttonTitle,
   modalTitle,
   successFullUploadModal,
-
-  isLoadingButton
+  address,
+  adSubmission,
+  isLoadingButton,
+  multipleAdsSubmission
 }) => {
   const [isHovered, setIsHovered] = React.useState(false);
 
@@ -78,6 +80,178 @@ const PreviewModal = ({
 
     return ratioArray;
   };
+
+  if (adSubmission && !successFullUpload) {
+    return (
+      <div className="modal-dialog max-h-[75vh] max-w-2xl">
+        <div className="modal-content !bg-secondaryBlack">
+          <div className="modal-header">
+            <div className="flex items-center justify-between w-full space-x-4">
+              <h5 className="modal-title" id="placeBidLabel">
+                Preview your ad submission
+              </h5>
+              <button
+                type="button"
+                className="btn-close-preview"
+                onClick={() => handlePreviewModal()}
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  width="24"
+                  height="24"
+                  className="fill-jacarta-700 h-6 w-6 dark:fill-white"
+                >
+                  <path fill="none" d="M0 0h24v24H0z"></path>
+                  <path d="M12 10.586l4.95-4.95 1.414 1.414-4.95 4.95 4.95 4.95-1.414 1.414-4.95-4.95-4.95 4.95-1.414-1.414 4.95-4.95-4.95-4.95L7.05 5.636z"></path>
+                </svg>
+              </button>
+            </div>
+          </div>
+          <div className="modal-body p-6 flex gap-4">
+            <div className="flex flex-wrap gap-4 md:flex-row flex-col w-full">
+              <div className="flex items-center justify-between gap-2 w-full">
+                <span className="block dark:text-jacarta-100">Link </span>
+                <span className="dark:text-white font-semibold text-white">
+                  {link ?? "No link provided"}
+                </span>
+              </div>
+
+              <div className="flex flex-col gap-2 w-full">
+                <div className="flex items-center gap-2">
+                  <span className="block dark:text-jacarta-100">Image 5:1</span>
+                </div>
+                <div className="flex flex-col justify-center items-center gap-2">
+                  <Image
+                    src={previewImage[0]}
+                    width={800}
+                    height={160}
+                    className="w-full h-auto"
+                    alt="Preview image"
+                    style={{ objectFit: "cover", objectPosition: "center", aspectRatio: "5/1" }}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* submit ad button */}
+          <div className="modal-footer">
+            <div className="flex items-center justify-center space-x-4">
+              <Web3Button
+                contractAddress={currentChainObject?.smartContracts?.DSPONSORADMIN?.address}
+                action={() => {
+                  toast.promise(handleSubmit(true), {
+                    pending: "Waiting for confirmation 🕒",
+                    success: "Transaction confirmed 👌",
+                    error: "Transaction rejected 🤯"
+                  });
+                }}
+                className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate ? "!btn-disabled !cursor-not-allowed !text-black" : "!bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer"} `}
+                isDisabled={!validate || isLoadingButton}
+              >
+                {isLoadingButton ? <Spinner size="sm" color="default" /> : buttonTitle}
+              </Web3Button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (multipleAdsSubmission && !successFullUpload) {
+    return (
+      <div className="modal-dialog max-h-[75vh] max-w-2xl">
+        <div className="modal-content !bg-secondaryBlack">
+          <div className="modal-header">
+            <div className="flex items-center justify-between w-full space-x-4">
+              <h5 className="modal-title" id="placeBidLabel">
+                Preview your ad submission
+              </h5>
+              <button
+                type="button"
+                className="btn-close-preview"
+                onClick={() => handlePreviewModal()}
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  width="24"
+                  height="24"
+                  className="fill-jacarta-700 h-6 w-6 dark:fill-white"
+                >
+                  <path fill="none" d="M0 0h24v24H0z"></path>
+                  <path d="M12 10.586l4.95-4.95 1.414 1.414-4.95 4.95 4.95 4.95-1.414 1.414-4.95-4.95-4.95 4.95-1.414-1.414 4.95-4.95-4.95-4.95L7.05 5.636z"></path>
+                </svg>
+              </button>
+            </div>
+          </div>
+          <div className="modal-body p-6 flex gap-4">
+            <div className="flex flex-wrap gap-4 md:flex-row flex-col w-full">
+              <div className="flex items-center justify-between gap-2 w-full">
+                <span className="block dark:text-jacarta-100">Link </span>
+                <span className="dark:text-white font-semibold text-white">
+                  {link ?? "No link provided"}
+                </span>
+              </div>
+
+              <div className="flex flex-col gap-2 w-full">
+                <div className="flex items-center gap-2">
+                  <span className="block dark:text-jacarta-100">Image 1:1</span>
+                </div>
+                <div className="flex flex-col justify-center items-center gap-2">
+                  <Image
+                    src={previewImage[0]}
+                    width={400}
+                    height={400}
+                    className="w-full h-auto aspect-square overflow-hidden"
+                    alt="Preview image"
+                    style={{ objectFit: "cover", objectPosition: "center" }}
+                  />
+                </div>
+              </div>
+
+              <div className="flex flex-col gap-2 w-full">
+                <div className="flex items-center gap-2">
+                  <span className="block dark:text-jacarta-100">Image 5:1</span>
+                </div>
+                <div className="flex flex-col justify-center items-center gap-2">
+                  <Image
+                    src={previewImage[1]}
+                    width={800}
+                    height={160}
+                    className="w-full h-auto"
+                    alt="Preview image"
+                    style={{ objectFit: "cover", objectPosition: "center", aspectRatio: "5/1" }}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* submit ad button */}
+          <div className="modal-footer">
+            <div className="flex items-center justify-center space-x-4">
+              <Web3Button
+                contractAddress={currentChainObject?.smartContracts?.DSPONSORADMIN?.address}
+                action={() => {
+                  toast.promise(handleSubmit(true), {
+                    pending: "Waiting for confirmation 🕒",
+                    success: "Transaction confirmed 👌",
+                    error: "Transaction rejected 🤯"
+                  });
+                }}
+                className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate ? "!btn-disabled !cursor-not-allowed !text-black" : "!bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer"} `}
+                isDisabled={!validate || isLoadingButton}
+              >
+                {isLoadingButton ? <Spinner size="sm" color="default" /> : buttonTitle}
+              </Web3Button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -290,6 +464,17 @@ const PreviewModal = ({
                   ) : (
                     ""
                   )}
+                  {address ? (
+                    <p className="font-display  mb-2 block text-jacarta-100 text-sm">
+                      Address :{" "}
+                      <span className="dark:text-white text-base ml-2">
+                        {" "}
+                        {shortenAddress(address)}{" "}
+                      </span>
+                    </p>
+                  ) : (
+                    ""
+                  )}
                   {protocolFees ? (
                     <p className="font-display  mb-2 block text-jacarta-100 text-sm">
                       Protocol fees :{" "}
@@ -375,15 +560,17 @@ const PreviewModal = ({
                 {!successFullUpload ? (
                   approvalForAllToken ? (
                     <Web3Button
-                      contractAddress={currentChainObject?.smartContracts?.DSPONSORADMIN?.address}
+                      contractAddress={
+                        currentChainObject?.smartContracts?.DSPONSORADMIN?.address ?? "no address"
+                      }
                       action={() => {
-                        toast.promise(handleSubmit(true), {
+                        toast.promise(handleSubmit(address), {
                           pending: "Waiting for confirmation 🕒",
                           success: "Transaction confirmed 👌",
                           error: "Transaction rejected 🤯"
                         });
                       }}
-                      className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate ? "!btn-disabled !cursor-not-allowed !text-black" : "!bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer"} `}
+                      className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate || isLoadingButton ? "!btn-disabled !cursor-not-allowed !text-black" : "!bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer"} `}
                       isDisabled={!validate || isLoadingButton}
                     >
                       {isLoadingButton ? <Spinner size="sm" color="default" /> : buttonTitle}
@@ -393,7 +580,9 @@ const PreviewModal = ({
                     <>
                       <div className="flex flex-col items-center gap-2">
                         <Web3Button
-                          contractAddress={currentChainObject?.smartContracts?.DSPONSORMP?.address}
+                          contractAddress={
+                            currentChainObject?.smartContracts?.DSPONSORMP?.address ?? "no address"
+                          }
                           action={() => {
                             toast.promise(handleApprove, {
                               pending: "Waiting for confirmation 🕒",
@@ -401,7 +590,7 @@ const PreviewModal = ({
                               error: "Approval rejected 🤯"
                             });
                           }}
-                          className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate ? "!btn-disabled !cursor-not-allowed !text-black opacity-30" : "!bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer"} `}
+                          className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate || isLoadingButton ? "!btn-disabled !cursor-not-allowed !text-black opacity-30" : "!bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer"} `}
                           isDisabled={!validate || isLoadingButton}
                         >
                           {isLoadingButton ? (
