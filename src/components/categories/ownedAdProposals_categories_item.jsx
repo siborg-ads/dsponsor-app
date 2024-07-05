@@ -1,6 +1,6 @@
 import { useContract, useContractWrite, useStorageUpload } from "@thirdweb-dev/react";
 import Image from "next/image";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import styles from "../../styles/createPage/style.module.scss";
 import OfferItem from "../cards/offerItem";
 import Step1Mint from "../sliderForm/PageMint/Step_1_Mint";
@@ -50,7 +50,7 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
       setSuccessFullUpload(false);
       handleSelectionTokens();
     }
-    validateInputs();
+
     setShowPreviewModal(!showPreviewModal);
   };
 
@@ -85,7 +85,7 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
     }
   };
 
-  const validateInputs = () => {
+  useEffect(() => {
     let isValid = true;
     let newErrors = {};
 
@@ -98,10 +98,10 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
       newErrors.linkError = "The link is missing or invalid.";
       isValid = false;
     }
+
     setValidate(isValid);
     setErrors(newErrors);
-    return isValid;
-  };
+  }, [files, imageURLSteps.length, link]);
 
   const isValidURL = (url) => {
     try {
@@ -151,7 +151,7 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
     setNumSteps(totalNumSteps);
   };
   const handleSubmit = async () => {
-    if (!validateInputs()) {
+    if (!validate) {
       return;
     }
 
@@ -371,6 +371,7 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
                 styles={styles}
                 adParameters={adParameters}
                 setImageUrlVariants={setImageUrlVariants}
+                currentSlide={currentSlide}
               />
             )}
 
@@ -388,6 +389,7 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
                       file={files[index]}
                       previewImage={previewImages[index]}
                       handleLogoUpload={(file) => handleLogoUpload(file, index, step)}
+                      currentSlide={currentSlide}
                     />
                   )}
                 </>
@@ -395,7 +397,13 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
             </>
 
             {currentSlide === imageURLSteps.length + 1 && (
-              <Step2Mint stepsRef={stepsRef} styles={styles} setLink={setLink} link={link} />
+              <Step2Mint
+                stepsRef={stepsRef}
+                styles={styles}
+                setLink={setLink}
+                link={link}
+                currentSlide={currentSlide}
+              />
             )}
           </SliderForm>
         </div>

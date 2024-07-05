@@ -1326,10 +1326,17 @@ const TokenPageContainer = () => {
                     styles={styles}
                     adParameters={adParameters}
                     setImageUrlVariants={setImageUrlVariants}
+                    currentSlide={currentSlide}
                   />
                 )}
                 {currentSlide === 2 && (
-                  <Step2Mint stepsRef={stepsRef} styles={styles} setLink={setLink} link={link} />
+                  <Step2Mint
+                    stepsRef={stepsRef}
+                    styles={styles}
+                    setLink={setLink}
+                    link={link}
+                    currentSlide={currentSlide}
+                  />
                 )}
                 {currentSlide === 1 && (
                   <>
@@ -1343,6 +1350,7 @@ const TokenPageContainer = () => {
                         file={files[index]}
                         previewImage={previewImages[index]}
                         handleLogoUpload={(file) => handleLogoUpload(file, index)}
+                        currentSlide={currentSlide}
                       />
                     ))}
                   </>

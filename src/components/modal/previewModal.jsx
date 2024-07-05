@@ -166,7 +166,7 @@ const PreviewModal = ({
           <div className="modal-header">
             <div className="flex items-center justify-between w-full space-x-4">
               <h5 className="modal-title" id="placeBidLabel">
-                Preview your ad submission
+                Preview your multiple tokens ad submission
               </h5>
               <button
                 type="button"
@@ -211,21 +211,23 @@ const PreviewModal = ({
                 </div>
               </div>
 
-              <div className="flex flex-col gap-2 w-full">
-                <div className="flex items-center gap-2">
-                  <span className="block dark:text-jacarta-100">Image 5:1</span>
+              {previewImage[1] && (
+                <div className="flex flex-col gap-2 w-full">
+                  <div className="flex items-center gap-2">
+                    <span className="block dark:text-jacarta-100">Image 5:1</span>
+                  </div>
+                  <div className="flex flex-col justify-center items-center gap-2">
+                    <Image
+                      src={previewImage[1]}
+                      width={800}
+                      height={160}
+                      className="w-full h-auto"
+                      alt="Preview image"
+                      style={{ objectFit: "cover", objectPosition: "center", aspectRatio: "5/1" }}
+                    />
+                  </div>
                 </div>
-                <div className="flex flex-col justify-center items-center gap-2">
-                  <Image
-                    src={previewImage[1]}
-                    width={800}
-                    height={160}
-                    className="w-full h-auto"
-                    alt="Preview image"
-                    style={{ objectFit: "cover", objectPosition: "center", aspectRatio: "5/1" }}
-                  />
-                </div>
-              </div>
+              )}
             </div>
           </div>
 

@@ -65,8 +65,10 @@ const OfferPageContainer = () => {
       const fetchAdsOffers = async () => {
         const offer = await fetchOffer(offerId, chainId);
 
+        console.log("offer", offer);
+
         setOfferData(offer);
-        if (userAddress?.toLowerCase() === offer?.initialCreator) {
+        if (userAddress && offer?.admins?.includes(userAddress.toLowerCase())) {
           setIsOwner(true);
         }
       };
