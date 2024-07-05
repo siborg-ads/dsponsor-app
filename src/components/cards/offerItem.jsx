@@ -351,8 +351,9 @@ const OfferItem = ({
 
               {currencyToken &&
               price &&
-              item?.marketplaceListings?.sort((a, b) => Number(b.id) - Number(a.id))[0]?.status ===
-                "CREATED" ? (
+              (item?.marketplaceListings?.sort((a, b) => Number(b.id) - Number(a.id))[0]?.status ===
+                "CREATED" ||
+                itemStatut === "TOKENMINTABLE") ? (
                 <div className="dark:border-jacarta-600 border-jacarta-100 flex items-center whitespace-nowrap rounded-md border py-1 px-2">
                   <span className="text-green text-sm font-medium tracking-tight">
                     {price} {currencyToken}
@@ -378,8 +379,9 @@ const OfferItem = ({
                     !isListing &&
                     itemStatut !== "TOKENMINTABLE" &&
                     itemStatut !== "DIRECT") ||
-                  item?.marketplaceListings?.sort((a, b) => Number(b.id) - Number(a.id))[0]
-                    ?.status !== "CREATED" ? (
+                  (item?.marketplaceListings?.sort((a, b) => Number(b.id) - Number(a.id))[0]
+                    ?.status !== "CREATED" &&
+                    itemStatut !== "TOKENMINTABLE") ? (
                   <div className="flex  w-full gap-2 items-center ">
                     <span className="text-jacarta-100">Sold</span>
                     <svg

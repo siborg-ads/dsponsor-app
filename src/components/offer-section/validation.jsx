@@ -184,7 +184,21 @@ const Validation = ({
                   <svg className="icon mr-1 h-5 w-5 fill-current">
                     <use xlinkHref={`/icons.svg#icon-${icon}`}></use>
                   </svg>
-                  <span className="font-display text-base font-medium">{text}</span>
+                  <span className="font-display text-base font-medium">
+                    <div className="flex gap-2 items-center">
+                      <span>
+                        {text === "Pending"
+                          ? pendingProposalData?.length
+                          : text === "Validated"
+                            ? validatedProposalData?.length
+                            : text === "Refused"
+                              ? refusedProposalData?.length
+                              : 0}
+                      </span>
+                      <span>-</span>
+                      <span>{text}</span>
+                    </div>
+                  </span>
                 </button>
               </Tab>
             );

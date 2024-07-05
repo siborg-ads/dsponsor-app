@@ -139,6 +139,9 @@ export const fetchOfferToken = async (offerId, tokenId, chainId) => {
             setInAllowList # to check is allowList (above) is true, define if is in allowlist
             # current ad data proposals, per adParameter
             currentProposals {
+              adOffer {
+                id
+              }
               adParameter {
                 id
                 base
@@ -146,16 +149,22 @@ export const fetchOfferToken = async (offerId, tokenId, chainId) => {
               }
               acceptedProposal {
                 id
+                status
                 data
+                creationTimestamp
               }
               pendingProposal {
                 id
+                status
                 data
+                creationTimestamp
               }
               rejectedProposal {
                 id
+                status
                 data
                 rejectReason
+                creationTimestamp
               }
             }
 

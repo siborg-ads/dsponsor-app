@@ -41,6 +41,8 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
     currentChainObject?.smartContracts?.DSPONSORADMIN?.abi
   );
   const [isLoadingButton, setIsLoadingButton] = useState(false);
+  const [isSponsor, setIsSponsor] = useState(false);
+  const [isMedia, setIsMedia] = useState(false);
 
   const { mutateAsync: uploadToIPFS } = useStorageUpload();
   const { mutateAsync: submitAd } = useContractWrite(DsponsorAdminContract, "submitAdProposals");
@@ -300,6 +302,7 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
                     listingType={item?.marketplaceListings[0]?.listingType}
                     isListing={false}
                     isSelectionActive={isSelectionActive}
+                    canSubmitAdFromProfileOwnedTokens={true}
                     url={
                       !item.tokenData
                         ? `/${item?.chainConfig?.chainId}/offer/${item.offerId}/${item.tokenId}`
