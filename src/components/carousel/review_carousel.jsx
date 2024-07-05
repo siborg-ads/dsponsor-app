@@ -74,30 +74,38 @@ const Review_carousel = ({
 
   const handleSelection = (item) => {
     if (!isOwner) return;
+
     setIsFirstSelection(false);
+
     setIsSelectedItem((prevState) => ({
       ...prevState,
       [item.tokenId]: !prevState[item.tokenId]
     }));
 
     setSelectedItems((previousItems) => {
-      const isAlreadySelected = previousItems.some((i) =>
-        i?.tokenId ? i?.tokenId === item?.tokenId : false
-      );
+      if (previousItems.length === 0) {
+        return item.adParametersKeys.map((key, idx) => ({
+          offerId: item.offerId,
+          tokenId: item.tokenId,
+          proposalId: item.proposalIds[idx],
+          adParameter: key,
+          reason: comments?.[item.tokenId] ?? ""
+        }));
+      }
+
+      const isAlreadySelected = previousItems.some((i) => i.tokenId === item.tokenId);
 
       if (isAlreadySelected) {
         return previousItems.filter((i) => i.tokenId !== item.tokenId);
       } else {
-        const newItems = item.adParametersKeys.map((key, idx) => {
-          console.log("comments", comments);
-          ({
-            offerId: item.offerId,
-            tokenId: item.tokenId,
-            proposalId: item.proposalIds[idx],
-            adParameter: key,
-            reason: comments !== undefined ? comments[item?.tokenId] : ""
-          });
-        });
+        const newItems = item.adParametersKeys.map((key, idx) => ({
+          offerId: item.offerId,
+          tokenId: item.tokenId,
+          proposalId: item.proposalIds[idx],
+          adParameter: key,
+          reason: comments?.[item.tokenId] ?? ""
+        }));
+
         return [...previousItems, ...newItems];
       }
     });

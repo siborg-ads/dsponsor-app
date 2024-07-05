@@ -107,6 +107,7 @@ const Validation = ({
         ...(approuved && { reason: "" }),
         validated: approuved
       };
+
       submissionArgs.push(argObject);
     }
 
@@ -197,6 +198,7 @@ const Validation = ({
                 isToken={isToken}
                 isOwner={isOwner}
                 setSuccessFullRefuseModal={setSuccessFullRefuseModal}
+                handleItemSubmit={handleItemSubmit}
               />
             </div>
           </TabPanel>
