@@ -10,6 +10,9 @@ import Tippy from "@tippyjs/react";
 import handleCopy from "../../utils/handleCopy";
 
 import OfferSkeleton from "../../components/skeleton/offerSkeleton";
+import { fetchAllOffers } from "../../providers/methods/fetchAllOffers";
+
+import { fetchOffer } from "../../providers/methods/fetchOffer";
 
 import Form from "../../components/collections-wide/sidebar/collections/Form";
 import { Divider } from "@nextui-org/react";
@@ -17,7 +20,6 @@ import "tippy.js/dist/tippy.css";
 import Validation from "../../components/offer-section/validation";
 import ModalHelper from "../../components/Helper/modalHelper";
 import { ItemsTabs } from "../../components/component";
-import { fetchOffer } from "../../providers/methods/fetchOffer";
 import config from "../../config/config";
 import { useSwitchChainContext } from "../../contexts/hooks/useSwitchChainContext";
 import { activated_features } from "../../data/activated_features";
@@ -37,6 +39,7 @@ const OfferPageContainer = () => {
   const [price, setPrice] = useState(null);
   const [imageModal, setImageModal] = useState(false);
   const [isOwner, setIsOwner] = useState(false);
+  const address = useAddress();
   const { contract: DsponsorAdminContract } = useContract(
     config[chainId]?.smartContracts?.DSPONSORADMIN?.address,
     config[chainId]?.smartContracts?.DSPONSORADMIN?.abi
@@ -60,13 +63,123 @@ const OfferPageContainer = () => {
 
   let tokenCurrencyAddress = offerData?.nftContract?.prices[0]?.currency;
 
+  const {
+    description = "description not found",
+    id = "1",
+    image = ["/images/gradient_creative.jpg"],
+    name = "DefaultName"
+  } = offerData?.metadata?.offer ? offerData.metadata.offer : {};
+
+  const [itemProposals, setItemProposals] = useState(null);
+  const [mediaShouldValidateAnAd, setMediaShouldValidateAnAd] = useState(false);
+  const [
+    sponsorHasAtLeastOneRejectedProposalAndNoPending,
+    setSponsorHasAtLeastOneRejectedProposalAndNoPending
+  ] = useState(false);
+  const [offers, setOffers] = useState(null);
+  const [isMedia, setIsMedia] = useState(false);
+
+  useEffect(() => {
+    const fetchOffers = async () => {
+      const offers = await fetchAllOffers(chainId);
+      setOffers(offers);
+    };
+
+    fetchOffers();
+  }, [chainId]);
+
+  useEffect(() => {
+    const fetchingOffer = async () => {
+      const offer = await fetchOffer(offerId, chainId);
+
+      if (offer) {
+        if (offer?.admins?.includes(address?.toLowerCase())) {
+          setIsMedia(true);
+        } else {
+          setIsMedia(false);
+        }
+      }
+    };
+
+    fetchingOffer();
+  }, [address, chainId, offerData, offerId]);
+
+  useEffect(() => {
+    if (offers) {
+      // we want to get all the proposals for all the items from an offer (accept, reject, pending, all)
+      // for that we filter the offers to associate the offer with the offerId
+      const itemsOffers = offers?.filter((offer) => offer?.id === offerId);
+
+      // we extract the only element from the array
+      const tokenOffers = itemsOffers[0];
+
+      // then we get the proposals for the offer but the offer contains multiple tokens in the nftContract key
+      // we get the accepted, pending, rejected and all proposals
+      // so we need get every proposals for every tokens in the nftContract key of tokenOffers
+      // we filter the proposals to get the accepted, pending and rejected proposals
+      // for that we can use the status key of the proposal "CURRENT_ACCEPTED", "CURRENT_PENDING", "CURRENT_REJECTED"
+      const allProposals = tokenOffers?.nftContract?.tokens?.map((token) => {
+        const acceptedProposals = token?.allProposals?.filter(
+          (proposal) => proposal?.status === "CURRENT_ACCEPTED"
+        );
+        const pendingProposals = token?.allProposals?.filter(
+          (proposal) => proposal?.status === "CURRENT_PENDING"
+        );
+        const rejectedProposals = token?.allProposals?.filter(
+          (proposal) => proposal?.status === "CURRENT_REJECTED"
+        );
+
+        return {
+          acceptedProposals,
+          pendingProposals,
+          rejectedProposals
+        };
+      });
+
+      // we flatten the array of proposals
+      const acceptedProposals = allProposals?.map((proposal) => proposal?.acceptedProposals).flat();
+      const pendingProposals = allProposals?.map((proposal) => proposal?.pendingProposals).flat();
+      const rejectedProposals = allProposals?.map((proposal) => proposal?.rejectedProposals).flat();
+
+      const itemProposals = {
+        name: name ?? "",
+        pendingProposals,
+        rejectedProposals,
+        acceptedProposals,
+        allProposals
+      };
+
+      setItemProposals(itemProposals);
+    }
+  }, [name, offers, offerId]);
+
+  useEffect(() => {
+    // now we want to check one thing from the sponsor side and one thing from the media side
+    // we want to check if the sponsor has at least one rejected proposal and no pending proposal
+    // we want to check if the media should validate an ad or not (i.e. if the media has at least one pending proposal)
+
+    // we check if the sponsor has only rejected proposals
+    const sponsorHasAtLeastOneRejectedProposal = itemProposals?.rejectedProposals?.length > 0;
+    const sponsorHasNoPendingProposal = itemProposals?.pendingProposals?.length === 0;
+
+    setSponsorHasAtLeastOneRejectedProposalAndNoPending(
+      sponsorHasAtLeastOneRejectedProposal && sponsorHasNoPendingProposal
+    );
+
+    // now we check if the media should validate an ad
+    const mediaShouldValidateAnAd = itemProposals?.pendingProposals?.length > 0;
+    setMediaShouldValidateAnAd(mediaShouldValidateAnAd);
+  }, [itemProposals]);
+
   useEffect(() => {
     if (offerId && chainId) {
       const fetchAdsOffers = async () => {
         const offer = await fetchOffer(offerId, chainId);
 
+        console.log("offer", offer);
+
         setOfferData(offer);
-        if (userAddress?.toLowerCase() === offer?.initialCreator) {
+        if (userAddress && offer?.admins?.includes(userAddress.toLowerCase())) {
           setIsOwner(true);
         }
       };
@@ -153,12 +266,6 @@ const OfferPageContainer = () => {
     title: "Protocol Fees",
     body: `The protocol fees (4%) are used to maintain the platform and the services provided. The fees are calculated based on the price of the ad space and are automatically deducted from the total amount paid by the buyer.`
   };
-  const {
-    description = "description not found",
-    id = "1",
-    image = ["/images/gradient_creative.jpg"],
-    name = "DefaultName"
-  } = offerData.metadata.offer ? offerData.metadata.offer : {};
 
   return (
     <>
@@ -390,6 +497,12 @@ const OfferPageContainer = () => {
           successFullRefuseModal={successFullRefuseModal}
           setRefusedValidatedAdModal={setRefusedValidatedAdModal}
           refusedValidatedAdModal={refusedValidatedAdModal}
+          sponsorHasAtLeastOneRejectedProposalAndNoPending={
+            sponsorHasAtLeastOneRejectedProposalAndNoPending
+          }
+          mediaShouldValidateAnAd={mediaShouldValidateAnAd}
+          isMedia={isMedia}
+          isSponsor={isOwner}
         />
       )}
 

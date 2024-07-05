@@ -8,25 +8,20 @@ import "react-toastify/dist/ReactToastify.css";
 
 import { useEffect, useState } from "react";
 import { Web3Button } from "@thirdweb-dev/react";
-import AddProposalRefusedModal from "../modal/adProposalRefusedModal";
 import config from "../../config/config";
 
 const Review_carousel = ({
   chainId,
   setSelectedItems,
   selectedItems,
-  handleSubmit,
+  handleItemSubmit,
   pendingProposalData,
-  successFullRefuseModal,
-  setSuccessFullRefuseModal,
+  comments,
   isToken,
   isOwner,
-  setRefusedValidatedAdModal,
-  refusedValidatedAdModal
+  setRefusedValidatedAdModal
 }) => {
   const [validate, setValidate] = useState({});
-  const [comments, setComments] = useState({});
-  const [isApprouvedAd, setIsApprouvedAd] = useState(false);
   const [tokenId, setTokenId] = useState(null);
   const [isFirstSelection, setIsFirstSelection] = useState(true);
   const [isSelectedItem, setIsSelectedItem] = useState({});
@@ -66,40 +61,6 @@ const Review_carousel = ({
     }));
   };
 
-  const handleCommentChange = (tokenId, value) => {
-    setComments((currentComments) => ({
-      ...currentComments,
-      [tokenId]: value
-    }));
-    setSelectedItems((currentItems) => {
-      return currentItems.map((item) => {
-        if (item.tokenId === tokenId) {
-          return { ...item, reason: value };
-        }
-        return item;
-      });
-    });
-  };
-
-  const handleItemSubmit = async (approuved = false) => {
-    let submissionArgs = [];
-    setIsApprouvedAd(approuved);
-    for (const item of selectedItems) {
-      let argObject = {
-        ...item,
-        ...(approuved && { reason: "" }),
-        validated: approuved
-      };
-      submissionArgs.push(argObject);
-    }
-
-    try {
-      await handleSubmit(submissionArgs);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
   const openRefuseModal = () => {
     setRefusedValidatedAdModal(true);
   };
@@ -111,23 +72,27 @@ const Review_carousel = ({
     return str.slice(0, 3) + "..." + str.slice(-3);
   };
 
-  const closeRefuseModal = () => {
-    setRefusedValidatedAdModal(null);
-    if (successFullRefuseModal) {
-      setSelectedItems([]);
-      setSuccessFullRefuseModal(false);
-    }
-  };
-
   const handleSelection = (item) => {
     if (!isOwner) return;
+
     setIsFirstSelection(false);
+
     setIsSelectedItem((prevState) => ({
       ...prevState,
       [item.tokenId]: !prevState[item.tokenId]
     }));
 
     setSelectedItems((previousItems) => {
+      if (previousItems.length === 0) {
+        return item.adParametersKeys.map((key, idx) => ({
+          offerId: item.offerId,
+          tokenId: item.tokenId,
+          proposalId: item.proposalIds[idx],
+          adParameter: key,
+          reason: comments?.[item.tokenId] ?? ""
+        }));
+      }
+
       const isAlreadySelected = previousItems.some((i) => i.tokenId === item.tokenId);
 
       if (isAlreadySelected) {
@@ -138,8 +103,9 @@ const Review_carousel = ({
           tokenId: item.tokenId,
           proposalId: item.proposalIds[idx],
           adParameter: key,
-          reason: comments[item.tokenId] || ""
+          reason: comments?.[item.tokenId] ?? ""
         }));
+
         return [...previousItems, ...newItems];
       }
     });
@@ -152,18 +118,6 @@ const Review_carousel = ({
     return imageKey ? adParams[imageKey] : "/";
   };
 
-  const successFullRefusedAdModalObject = {
-    title: "Refused",
-    body: "The ad has been refused successfully ✅",
-    button: "Close"
-  };
-
-  const successFullValidatedAdModalObject = {
-    title: "Validated",
-    body: "The ad has been validated successfully 🎉",
-    button: "Close"
-  };
-
   if (pendingProposalData.length === 0) {
     return <div className="flex justify-center">No pending ads...</div>;
   }
@@ -172,15 +126,18 @@ const Review_carousel = ({
     <div>
       {!isToken && (
         <div>
-          <div className="dark:bg-secondaryBlack dark:border-jacarta-600 border-jacarta-100 rounded-2lg border bg-white p-6 mb-4">
-            <div className=" sm:flex sm:flex-wrap">
-              <span className="dark:text-jacarta-100 text-jacarta-100 text-sm">
-                Select an advertisement below to manage its status. If you approve an ad, it will be
-                displayed on your media platform. The owner of your ad space retains the ability to
-                submit an advertisement even if its status is Pending, Approved, or Denied.{" "}
-              </span>
+          {isOwner && (
+            <div className="dark:bg-secondaryBlack dark:border-jacarta-600 border-jacarta-100 rounded-2lg border bg-white p-6 mb-4">
+              <div className=" sm:flex sm:flex-wrap">
+                <span className="dark:text-jacarta-100 text-jacarta-100 text-sm">
+                  Select an advertisement below to manage its status. If you approve an ad, it will
+                  be displayed on your media platform. The owner of your ad space retains the
+                  ability to submit an advertisement even if its status is Pending, Approved, or
+                  Denied.{" "}
+                </span>
+              </div>
             </div>
-          </div>
+          )}
           <div
             className={`fixed dark:border-jacarta-500 border  bottom-0 blury-background left-0 right-0 px-4 py-3  ${isFirstSelection ? "hidden" : selectedItems?.length === 0 ? "animated-modalSelectedItemDown" : "animated-modalSelectedItemUp"}`}
           >
@@ -311,22 +268,6 @@ const Review_carousel = ({
               <path d="M12 10.586l4.95-4.95 1.414 1.414-4.95 4.95 4.95 4.95-1.414 1.414-4.95-4.95-4.95 4.95-1.414-1.414 4.95-4.95-4.95-4.95L7.05 5.636z" />
             </svg>
           </button>
-        </div>
-      )}
-
-      {refusedValidatedAdModal && (
-        <div className="modal fade show bloc">
-          <AddProposalRefusedModal
-            refusedValidatedAdModal={refusedValidatedAdModal}
-            selectedItems={selectedItems}
-            handleCommentChange={handleCommentChange}
-            handleItemSubmit={handleItemSubmit}
-            closeRefuseModal={closeRefuseModal}
-            successFullRefuseModal={successFullRefuseModal}
-            successFullModalObject={
-              isApprouvedAd ? successFullValidatedAdModalObject : successFullRefusedAdModalObject
-            }
-          />
         </div>
       )}
     </div>
