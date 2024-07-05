@@ -20,7 +20,7 @@ const OfferItem = ({
   isListing = false,
   listingType,
   disableLink,
-  canSubmitAdFromProfileOwnedTokens
+  availableToSubmitAdFromOwnedTokens
 }) => {
   const [price, setPrice] = useState(null);
   const [currencyToken, setCurrencyToken] = useState(null);
@@ -29,9 +29,9 @@ const OfferItem = ({
   const [lastSalePrice, setLastSalePrice] = useState(null);
   const [lastBidder, setLastBidder] = useState(null);
   const [isLastBidder, setIsLastBidder] = useState(false);
-  const [availableToSubmitAd, setAvailableToSubmitAd] = useState(false);
   const [offers, setOffers] = useState(null);
   const [itemProposals, setItemProposals] = useState(null);
+  const [availableToSubmitAd, setAvailableToSubmitAd] = useState(false);
 
   const address = useAddress();
   const chainId = useChainId();
@@ -338,13 +338,13 @@ const OfferItem = ({
           <div className="flex flex-col flex-1">
             <div className="mt-4 flex items-center justify-between gap-2">
               {isSelectionActive ? (
-                <span className="font-display text-primaryBlack hover:text-primaryPurple text-base dark:text-white ">
-                  {canSubmitAdFromProfileOwnedTokens && availableToSubmitAd && "❗️"} {name}
+                <span className="font-display  text-primaryBlack hover:text-primaryPurple text-base dark:text-white ">
+                  {availableToSubmitAd && availableToSubmitAdFromOwnedTokens && "❗️"} {name}
                 </span>
               ) : (
                 <div className="overflow-hidden text-ellipsis whitespace-nowrap ">
-                  <span className="font-display text-primaryBlack hover:text-primaryPurple text-base dark:text-white ">
-                    {canSubmitAdFromProfileOwnedTokens && availableToSubmitAd && "❗️"} {name}
+                  <span className="font-display  text-primaryBlack hover:text-primaryPurple text-base dark:text-white ">
+                    {availableToSubmitAd && availableToSubmitAdFromOwnedTokens && "❗️"} {name}
                   </span>
                 </div>
               )}

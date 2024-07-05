@@ -291,7 +291,7 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
                           ? `/${item?.chainConfig?.chainId}/offer/${item.offerId}/${item.tokenId}`
                           : `/${item?.chainConfig?.chainId}/offer/${item.offerId}/${item.tokenId}?tokenData=${item.tokenData}`
                       }
-                      canSubmitAdFromProfileOwnedTokens={true}
+                      availableToSubmitAdFromOwnedTokens={true}
                     />
                   </div>
                 ) : (
@@ -308,6 +308,7 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
                         ? `/${item?.chainConfig?.chainId}/offer/${item.offerId}/${item.tokenId}`
                         : `/${item?.chainConfig?.chainId}/offer/${item.offerId}/${item.tokenId}?tokenData=${item.tokenData}`
                     }
+                    availableToSubmitAdFromOwnedTokens={true}
                   />
                 );
               })}
