@@ -28,10 +28,10 @@ const CreateOfferContainer = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
 
   const router = useRouter();
-  const chainId = useChainId();
+  const chainId = router.query?.chainName;
   const [link, setLink] = useState(null);
   const [errors, setErrors] = useState({});
-  const [description, setDescription] = useState(false);
+  const [description, setDescription] = useState("");
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(
     new Date(new Date().setFullYear(new Date().getFullYear() + 1))
@@ -81,7 +81,7 @@ const CreateOfferContainer = () => {
     setTokenContract(WETHCurrency?.address);
   }, [tokenContract, WETHCurrency]);
 
-  const [name, setName] = useState(false);
+  const [name, setName] = useState("");
   const stepsRef = useRef([]);
   const { ethers } = require("ethers");
 
@@ -194,7 +194,7 @@ const CreateOfferContainer = () => {
         "Royalties are missing or invalid. They should be between 0.01% and 100%.";
       isValid = false;
     }
-
+console.log(selectedIntegration, selectedParameter);
     setValidate(isValid);
     setErrors(newErrors);
   }, [
@@ -323,9 +323,9 @@ const CreateOfferContainer = () => {
       ];
       const preparedArgs = [Object.values(JSON.parse(args[0])), Object.values(JSON.parse(args[1]))];
 
-      console.log("tokenContract", tokenContract);
+      console.log("preparedArgs", preparedArgs);
 
-      await createDSponsorNFTAndOffer({ args: preparedArgs });
+      // await createDSponsorNFTAndOffer({ args: preparedArgs });
 
       setSuccessFullUpload(true);
 
@@ -430,7 +430,9 @@ const CreateOfferContainer = () => {
             stepsRef={stepsRef}
             styles={styles}
             setName={setName}
+            name={name}
             setDescription={setDescription}
+            description={description}
             numSteps={numSteps}
             currentSlide={currentSlide}
           />

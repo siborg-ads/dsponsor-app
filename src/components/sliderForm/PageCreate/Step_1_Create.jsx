@@ -169,14 +169,16 @@ const Step_1_Create = ({
     <>
       {currentSlide === 0 && (
         <>
-          <div className="flex flex-col gap-16">
+          <div className="flex flex-col gap-10">
             <div className="absolute top-0 right-0">
               {currentSlide + 1}/{numSteps}
             </div>
 
-            <div className="flex flex-col w-full">
-              <h3 className="mb-2 text-jacarta-100 font-semibold">OFFER TYPE & AVAILABILITY</h3>
-              <p className="dark:text-white">
+            <div className="flex flex-col w-full items-center border-b-1 border-primaryPurple shadow-2xl pb-2   ">
+              <h3 className="mb-2 text-jacarta-100 font-semibold bg-primaryPurple rounded-md px-4 py-2">
+                OFFER TYPE & AVAILABILITY
+              </h3>
+              <p className="dark:text-white text-center">
                 Choose the type of ad space suitable for your media and the number of spaces
                 available for purchase.
               </p>
@@ -188,12 +190,12 @@ const Step_1_Create = ({
                 <div className="">
                   <label
                     htmlFor="item-description"
-                    className="font-display text-jacarta-900 mb-2 block dark:text-white "
+                    className="font-display text-jacarta-900 mb-2 block dark:text-white text-center "
                   >
                     Type of ad spaces for this offer
                     <span className="text-red">*</span>
                   </label>
-                  <p className="dark:text-jacarta-100 text-jacarta-100 text-2xs mb-3">
+                  <p className="dark:text-jacarta-100 text-jacarta-100 text-2xs mb-3 text-center">
                     Select the appropriate type.
                   </p>
                   <div className="flex flex-col gap-4 justify-center items-center w-full text-jacarta-900 dark:text-white">
@@ -201,7 +203,7 @@ const Step_1_Create = ({
                       {AdIntegrationData.map((integration, index) => (
                         <div key={index} className="relative ">
                           <div
-                            className={`card relative ${selectedIntegration.includes(index) ? "bg-primaryPurple-dark" : ""}`}
+                            className={`card relative  ${selectedIntegration.includes(index) ? "bg-primaryPurple-dark" : " hover:ring-primaryPurple/30 border-primaryPurple border-2"}`}
                             onClick={() => {
                               document.getElementById(`checkbox-${index}`).click();
                             }}
@@ -222,7 +224,7 @@ const Step_1_Create = ({
                             <div className="flex gap-3">
                               <label
                                 htmlFor={`checkbox-${index}`}
-                                className={`card-label ${selectedIntegration.includes(index) ? "text-white" : "text-jacarta-900"}`}
+                                className={`card-label ${selectedIntegration.includes(index) ? "text-white" : "text-white"}`}
                                 onClick={() => {
                                   document.getElementById(`checkbox-${index}`).click();
                                 }}
@@ -230,7 +232,7 @@ const Step_1_Create = ({
                                 {integration.integrationName}
                               </label>
                               <ModalHelper
-                                dark={true}
+                                dark={false}
                                 title={integration.integrationName}
                                 body={integration.bodyDescription}
                                 image={integration.imageExemple ?? ""}
@@ -316,7 +318,7 @@ const Step_1_Create = ({
                     id="numberSelect"
                     value={selectedNumber}
                     onChange={handleNumberChange}
-                    className="dark:bg-secondaryBlack border-jacarta-100 hover:ring-primaryPurple/10 focus:ring-primaryPurple dark:border-jacarta-600 dark:placeholder:text-jacarta-100  rounded-lg py-3 px-15 hover:ring-2 dark:text-white"
+                    className="dark:bg-secondaryBlack  border-jacarta-100 hover:ring-primaryPurple/10 focus:ring-primaryPurple dark:border-primaryPurple dark:placeholder:text-jacarta-100  rounded-lg py-3 px-15 hover:ring-2 dark:text-white"
                   >
                     {[...Array(25)].map((_, index) => (
                       <option key={index + 1} value={index + 1}>

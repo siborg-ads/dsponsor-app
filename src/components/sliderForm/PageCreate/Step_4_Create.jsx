@@ -111,15 +111,18 @@ const Step_4_Create = ({
     <>
       {currentSlide === 3 && (
         <div ref={(el) => (stepsRef.current[3] = el)} className={styles.form__step}>
-          <div className="pr-6 pl-2 relative">
+          <div className="pr-6 pl-2 relative flex flex-col gap-8 items-center">
             <div className="absolute top-0 right-0">
               {currentSlide + 1}/{numSteps}
             </div>
-            <h3 className="mb-2 text-jacarta-100">Validity & Financials</h3>
-            <p className="text-center pt-2  mb-14 dark:text-white">
-              Set offer&apos;s validity period, currency, and royalties.
-            </p>
-            <div className="mb-6 flex flex-col items-center">
+            <div className="flex flex-col w-full items-center border-b-1 border-primaryPurple shadow-2xl pb-2 ">
+              <h3 className="mb-2 text-jacarta-100">Validity & Financials</h3>
+              <p className="text-center pt-2  dark:text-white">
+                Set offer&apos;s validity period, currency, and royalties.
+              </p>
+            </div>
+           <div className="flex flex-col items-center">
+
               <label
                 htmlFor="item-description"
                 className="font-display text-jacarta-900 mb-2 block dark:text-white"
@@ -141,7 +144,7 @@ const Step_4_Create = ({
                     showMonthDropdown
                     popperPlacement="bottom-end"
                     showYearDropdown
-                    className="dark:bg-secondaryBlack border-jacarta-100 hover:ring-primaryPurple/10 focus:ring-primaryPurple dark:border-jacarta-600 dark:placeholder:text-jacarta-100 w-full rounded-lg py-3 px-3 hover:ring-2 dark:text-white"
+                    className="dark:bg-secondaryBlack border-jacarta-100 hover:ring-primaryPurple/10 focus:ring-primaryPurple dark:border-primaryPurple dark:placeholder:text-jacarta-100 w-full rounded-lg py-3 px-3 hover:ring-2 dark:text-white"
                   />
                   <div className="flex gap-2 justify-center items-center">
                     <span className="text-jacarta-900 dark:text-white">Start date</span>
@@ -160,7 +163,7 @@ const Step_4_Create = ({
                     showMonthDropdown
                     popperPlacement="bottom-end"
                     showYearDropdown
-                    className="dark:bg-secondaryBlack border-jacarta-100 hover:ring-primaryPurple/10 focus:ring-primaryPurple dark:border-jacarta-600 dark:placeholder:text-jacarta-100 w-full rounded-lg py-3 px-3 hover:ring-2 dark:text-white"
+                    className="dark:bg-secondaryBlack border-jacarta-100 hover:ring-primaryPurple/10 focus:ring-primaryPurple dark:border-primaryPurple dark:placeholder:text-jacarta-100 w-full rounded-lg py-3 px-3 hover:ring-2 dark:text-white"
                   />
                   <div className="flex gap-2 justify-center items-center">
                     <span className="text-jacarta-900 dark:text-white">End date</span>
@@ -172,6 +175,7 @@ const Step_4_Create = ({
                   </div>
                 </div>
               </div>
+           </div>
               <div className="mb-6 flex flex-col items-center">
                 <label
                   htmlFor="item-description"
@@ -195,7 +199,7 @@ const Step_4_Create = ({
                     value={selectedUnitPrice}
                     onChange={handleUnitPriceChange}
                     placeholder="Unit selling price"
-                    className="dark:bg-secondaryBlack flex-grow border-jacarta-100 hover:ring-primaryPurple/10 focus:ring-primaryPurple dark:border-jacarta-600 dark:placeholder:text-jacarta-100  rounded-lg py-3 px-3 hover:ring-2 dark:text-white"
+                    className="dark:bg-secondaryBlack flex-grow border-jacarta-100 hover:ring-primaryPurple/10 focus:ring-primaryPurple dark:border-primaryPurple dark:placeholder:text-jacarta-100  rounded-lg py-3 px-3 hover:ring-2 dark:text-white"
                   />
 
                   <ConditionalCurrencySelector
@@ -206,7 +210,7 @@ const Step_4_Create = ({
                         id="currency"
                         value={selectedCurrency}
                         onChange={handleCurrencyChange}
-                        className="dark:bg-secondaryBlack min-w-[110px] border-jacarta-100 hover:ring-primaryPurple/10 focus:ring-primaryPurple dark:border-jacarta-600 dark:placeholder:text-jacarta-100 w-full rounded-lg py-3 px-5 hover:ring-2 dark:text-white"
+                        className="dark:bg-secondaryBlack min-w-[110px] border-jacarta-100 hover:ring-primaryPurple/10 focus:ring-primaryPurple dark:border-primaryPurple dark:placeholder:text-jacarta-100 w-full rounded-lg py-3 px-5 hover:ring-2 dark:text-white"
                       >
                         <option value="WETH">WETH</option>
                         {activated_features.canAcceptUSDC && <option value="USDC">USDC</option>}
@@ -267,12 +271,12 @@ const Step_4_Create = ({
                     value={selectedRoyalties}
                     onChange={handleRoyaltiesChange}
                     placeholder="Royalties"
-                    className="dark:bg-secondaryBlack border-jacarta-100 hover:ring-primaryPurple/10 focus:ring-primaryPurple dark:border-jacarta-600 dark:placeholder:text-jacarta-100  rounded-lg py-3 px-15 hover:ring-2 dark:text-white"
+                    className="dark:bg-secondaryBlack border-jacarta-100 hover:ring-primaryPurple/10 focus:ring-primaryPurple dark:border-primaryPurple dark:placeholder:text-jacarta-100  rounded-lg py-3 px-15 hover:ring-2 dark:text-white"
                   />
                   <span>%</span>
                 </div>
               </div>
-            </div>
+            
           </div>
         </div>
       )}
