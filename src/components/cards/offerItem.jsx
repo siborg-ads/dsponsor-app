@@ -87,26 +87,26 @@ const OfferItem = ({
 
     if (!isToken && !isListing && !isAuction) {
       setItemStatut("OFFER");
-      setPrice(item.nftContract.prices[0].mintPriceStructureFormatted.totalAmount);
-      setCurrencyToken(item.nftContract.prices[0].currencySymbol);
+      setPrice(item?.nftContract.prices[0]?.mintPriceStructureFormatted?.totalAmount);
+      setCurrencyToken(item?.nftContract?.prices[0]?.currencySymbol);
       return;
     }
     if (isToken && item?.marketplaceListings?.length <= 0 && item.mint === null) {
       setItemStatut("TOKENMINTABLE");
-      setPrice(item?.nftContract?.prices[0]?.mintPriceStructureFormatted.totalAmount);
-      setCurrencyToken(item.nftContract.prices[0].currencySymbol);
+      setPrice(item?.nftContract?.prices[0]?.mintPriceStructureFormatted?.totalAmount);
+      setCurrencyToken(item?.nftContract?.prices[0]?.currencySymbol);
       return;
     }
     if (isToken && item?.marketplaceListings?.length <= 0 && item.mint !== null) {
       setPrice(null);
-      setCurrencyToken(item.nftContract.prices[0]?.currencySymbol);
+      setCurrencyToken(item?.nftContract?.prices[0]?.currencySymbol);
       setItemStatut("TOKENMINTED");
       return;
     }
     if (isToken && isAuction && listingType === "Auction") {
       setPrice(
         item?.marketplaceListings?.sort((a, b) => Number(b.id) - Number(a.id))[0]
-          ? item?.marketplaceListings.sort((a, b) => Number(b.id) - Number(a.id))[0]
+          ? item?.marketplaceListings?.sort((a, b) => Number(b.id) - Number(a.id))[0]
               ?.bidPriceStructureFormatted?.minimalBidPerToken
           : item?.bidPriceStructureFormatted?.minimalBidPerToken
       );
@@ -137,9 +137,9 @@ const OfferItem = ({
 
     let data = null;
     if (isToken) {
-      data = item.metadata ? item.metadata : null;
+      data = item?.metadata ? item?.metadata : null;
     } else {
-      data = item.metadata.offer ? item.metadata.offer : null;
+      data = item?.metadata?.offer ? item?.metadata?.offer : null;
     }
     setItemData(data);
   }, [item, isToken]);
