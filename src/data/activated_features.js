@@ -1,9 +1,9 @@
 // This is not a secure way to handle feature flags.
 // If a new feature is added there, it shall be known that one user can just devtool change it
 
-const env = process.env.NODE_ENV;
+const env = process.env.NEXT_PUBLIC_CONFIG_MODE;
 //const isProduction = env === "production";
-const isDevelopment = env === "development";
+const isDevelopment = env === "dev";
 
 // In development mode, we display create offer and multiple currencies (by default to allow easier dev).
 // We also later have those put in env variables to allow for easier testing
@@ -12,7 +12,7 @@ export const activated_features = {
   // by default, first item used
   canHaveMultipleCurrencies: !!isDevelopment,
   // Whether to show the "Submitted Ads" in offer details
-  canSeeSubmittedAds: false,
+  canSeeSubmittedAds: !!isDevelopment,
   // Whether to show the Integration tab in offer details
   canSeeIntegrationDetails: true,
   // Whether to show the "Create Offer" button in the footer

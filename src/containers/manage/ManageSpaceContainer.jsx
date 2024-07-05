@@ -17,7 +17,6 @@ import { getAddress } from "ethers/lib/utils";
 
 const ManageSpaceContainer = () => {
   const router = useRouter();
-  const userAddress = router.query.manage;
   const address = useAddress();
   const [createdData, setCreatedData] = useState(null);
   const [mappedOwnedAdProposals, setMappedOwnedAdProposals] = useState(null);
@@ -32,6 +31,7 @@ const ManageSpaceContainer = () => {
   const [userData, setUserData] = useState(null);
   const [isUserConnected, setIsUserConnected] = useState(false);
 
+  const userAddress = router.query.manage;
   const chainId = currentChainObject?.chainId;
   const chainConfig = config[chainId];
 
@@ -46,7 +46,7 @@ const ManageSpaceContainer = () => {
   useEffect(() => {
     const fetchData = async () => {
       const data = await fetch(
-        `https://relayer.dsponsor.com/api/${chainId}/activity?userAddress=${address}`,
+        `https://relayer.dsponsor.com/api/${chainId}/activity?userAddress=${userAddress}`,
         {
           method: "GET",
           headers: {
@@ -64,10 +64,10 @@ const ManageSpaceContainer = () => {
       setMount(true);
     };
 
-    if (address && chainId && !mount) {
+    if (userAddress && chainId) {
       fetchData();
     }
-  }, [address, chainId, mount]);
+  }, [userAddress, chainId]);
 
   useEffect(() => {
     if (address && !initialWallet) {
@@ -125,6 +125,7 @@ const ManageSpaceContainer = () => {
           .map((element) => ({
             ...element,
             ...element.token,
+            marketplaceListings: [element],
             listingStatus: handleListingsStatusType(element.status),
             chainConfig: element.chainConfig,
             tokenData: element?.token.mint.tokenData,
@@ -140,6 +141,7 @@ const ManageSpaceContainer = () => {
         const auctionBidsTokensArray = await fetchDataByUserAddress(fetchAllTokenAuctionBidsByUser);
         const mappedAuctionBidsTokens = auctionBidsTokensArray.map((element) => ({
           ...element,
+          marketplaceListings: [element.listing],
           status: handleBidsStatusType(element.status),
           listingStatus: handleListingsStatusType(element.listing.status),
           metadata: element.listing.token.metadata,
@@ -152,11 +154,15 @@ const ManageSpaceContainer = () => {
         setTokenAuctionBids(mappedAuctionBidsTokens);
       };
 
+      const fetchAllManageData = async () => {
+        await fetchOwnedAdProposals();
+        await fetchCreatedData();
+        await fetchListedTokens();
+        await fetchAuctionBidsTokens();
+      };
+
       if (address === userAddress) setIsOwner(true);
-      fetchOwnedAdProposals();
-      fetchCreatedData();
-      fetchListedTokens();
-      fetchAuctionBidsTokens();
+      fetchAllManageData();
     }
   }, [userAddress, router, address, chainId, chainConfig]);
   const handleListingsStatusType = (status) => {

@@ -5,6 +5,16 @@ import ItemCardSkeleton from "../skeleton/ItemCardSkeleton";
 import OfferItem from "../cards/offerItem";
 import { Popover, PopoverTrigger, PopoverContent } from "@nextui-org/popover";
 
+const onAuctionCondition = (auction, mint) => {
+  return (
+    auction?.status === "CREATED" &&
+    (auction?.listingType === "Auction" || (mint && auction?.item?.mint)) &&
+    Number(auction?.quantity) > 0 &&
+    new Date(Number(auction?.startTime) * 1000).getTime() < Date.now() &&
+    new Date(Number(auction?.endTime) * 1000).getTime() > Date.now()
+  );
+};
+
 const MarketplaceHome = ({ auctions, setAllTokens, allTokens, isAuctionsLoading }) => {
   const [filterName, setFilterName] = useState("");
   const [sortOption, setSortOption] = useState("Ending soon");
@@ -34,14 +44,7 @@ const MarketplaceHome = ({ auctions, setAllTokens, allTokens, isAuctionsLoading 
         (auction) => auction?.listingType === "Auction" || auction?.listingType === "Direct"
       );
     } else if (filterOption === "On auction") {
-      tempAuctions = tempAuctions.filter(
-        (auction) =>
-          auction?.listingType === "Auction" &&
-          auction?.status === "CREATED" &&
-          Number(auction?.quantity) > 0 &&
-          new Date(Number(auction?.startTime) * 1000).getTime() < Date.now() &&
-          new Date(Number(auction?.endTime) * 1000).getTime() > Date.now()
-      );
+      tempAuctions = tempAuctions.filter((auction) => onAuctionCondition(auction, false));
     } else if (filterOption === "Sold") {
       tempAuctions = tempAuctions.filter((auction) => auction?.sold);
     }
@@ -58,7 +61,7 @@ const MarketplaceHome = ({ auctions, setAllTokens, allTokens, isAuctionsLoading 
       );
 
       switch (sortOption) {
-        case "Price: low to high":
+        case "Price: low to high": {
           matchingAuctions = matchingAuctions.sort(
             (a, b) =>
               (a.listingType === "Auction"
@@ -72,8 +75,19 @@ const MarketplaceHome = ({ auctions, setAllTokens, allTokens, isAuctionsLoading 
                   ? b.directPrice
                   : b.mintPrice)
           );
+
+          const liveAuctions = matchingAuctions.filter((auction) =>
+            onAuctionCondition(auction, true)
+          );
+          const otherAuctions = matchingAuctions.filter(
+            (auction) => !onAuctionCondition(auction, true)
+          );
+
+          matchingAuctions = [...liveAuctions, ...otherAuctions];
+
           break;
-        case "Price: high to low":
+        }
+        case "Price: high to low": {
           matchingAuctions = matchingAuctions.sort(
             (a, b) =>
               (b.listingType === "Auction"
@@ -87,10 +101,30 @@ const MarketplaceHome = ({ auctions, setAllTokens, allTokens, isAuctionsLoading 
                   ? a.directPrice
                   : a.mintPrice)
           );
+
+          const liveAuctions = matchingAuctions.filter((auction) =>
+            onAuctionCondition(auction, true)
+          );
+          const otherAuctions = matchingAuctions.filter(
+            (auction) => !onAuctionCondition(auction, true)
+          );
+
+          matchingAuctions = [...liveAuctions, ...otherAuctions];
           break;
-        case "Ending soon":
-          matchingAuctions = matchingAuctions.sort((a, b) => a.endTime - b.endTime);
+        }
+        case "Ending soon": {
+          matchingAuctions.sort((a, b) => a.endTime - b.endTime);
+
+          const liveAuctions = matchingAuctions.filter((auction) =>
+            onAuctionCondition(auction, true)
+          );
+          const otherAuctions = matchingAuctions.filter(
+            (auction) => !onAuctionCondition(auction, true)
+          );
+
+          matchingAuctions = [...liveAuctions, ...otherAuctions];
           break;
+        }
         case "Newest":
           matchingAuctions = matchingAuctions.sort((a, b) => b.startTime - a.startTime);
           break;
@@ -168,6 +202,7 @@ const MarketplaceHome = ({ auctions, setAllTokens, allTokens, isAuctionsLoading 
                   >
                     <span>All tokens</span>
                   </MenuItem>
+                  {/* 
                   <MenuItem
                     onClick={() => {
                       setFilterOption("Listed tokens");
@@ -177,6 +212,7 @@ const MarketplaceHome = ({ auctions, setAllTokens, allTokens, isAuctionsLoading 
                   >
                     <span>Listed tokens</span>
                   </MenuItem>
+                  */}
                   <MenuItem
                     onClick={() => {
                       setFilterOption("On auction");
