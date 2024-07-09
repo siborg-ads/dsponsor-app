@@ -101,17 +101,29 @@ const Validated_refused_items = ({ statut, proposalData, isToken }) => {
                       <div
                         className={modalStates[tokenId] ? "modal fade show block" : "modal fade"}
                       >
-                        <div className="modal-dialog !my-0 flex h-full max-w-6xl items-center justify-center relative">
-                          <Image
-                            src={getImageUrl(adParametersList) ?? ""}
-                            alt={item.title}
-                            height={600}
-                            width={600}
-                            objectFit="contain"
-                            style={{ objectFit: "contain" }}
-                            className="rounded-2lg w-full h-auto"
-                            loading="lazy"
-                          />
+                        <div className="modal-dialog !my-0 flex h-screen backdrop-blur-lg w-full p-12 items-center justify-center">
+                          {/* we need to show the image in a dotted grid with the image aspect ratio */}
+                          <div
+                            className="relative w-full border dotted border-jacarta-100 bg-white dark:bg-jacarta-200 bg-opacity-20 backdrop-blur-xl dark:bg-opacity-20 dark:border-jacarta-100 overflow-hidden"
+                            style={{
+                              aspectRatio: `${proposalData?.find((item) => item.tokenId === tokenId)?.adParametersList?.cssAspectRatio}`
+                            }}
+                          >
+                            <Image
+                              src={
+                                getImageUrl(
+                                  proposalData?.find((item) => item.tokenId === tokenId)
+                                    ?.adParametersList
+                                ) ?? ""
+                              }
+                              alt="logo"
+                              height={1000}
+                              width={1000}
+                              style={{ objectFit: "contain" }}
+                              className="w-full h-full"
+                              loading="lazy"
+                            />
+                          </div>
                         </div>
 
                         <button

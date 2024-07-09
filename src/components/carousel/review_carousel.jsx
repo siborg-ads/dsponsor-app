@@ -208,7 +208,7 @@ const Review_carousel = ({
                         style={{ objectFit: "contain" }}
                         className="rounded-[0.625rem] w-full h-auto object-contain"
                         loading="lazy"
-                        onClick={() => {
+                        onClick={(event) => {
                           openModal(tokenId);
 
                           // prevent the parent onClick event from firing
@@ -220,7 +220,7 @@ const Review_carousel = ({
                           onClick={() => openModal(tokenId)}
                           className="text-left text-xs hover:cursor-pointer hover:underline"
                         >
-                          See fullscreen
+                          Preview Image
                         </button>
                         <div className="dark:border-primaryPink dark:border-opacity-10 ms-14 border-jacarta-100 flex items-center whitespace-nowrap rounded-md border py-1 px-2">
                           <span className="text-green text-sm font-medium tracking-tight">
@@ -257,20 +257,28 @@ const Review_carousel = ({
 
       {modalStates[tokenId] && (
         <div className="modal fade show block">
-          <div className="modal-dialog !my-0 flex h-screen max-w-6xl p-12 items-center justify-center">
-            <Image
-              src={
-                getImageUrl(
-                  pendingProposalData.find((item) => item.tokenId === tokenId).adParametersList
-                ) ?? ""
-              }
-              alt="logo"
-              height={600}
-              width={600}
-              style={{ objectFit: "contain" }}
-              className="rounded-2lg w-full"
-              loading="lazy"
-            />
+          <div className="modal-dialog !my-0 flex h-screen backdrop-blur-lg w-full p-12 items-center justify-center">
+            {/* we need to show the image in a dotted grid with the image aspect ratio */}
+            <div
+              className="w-full border dotted border-jacarta-100 bg-white dark:bg-jacarta-200 bg-opacity-20 backdrop-blur-xl dark:bg-opacity-20 dark:border-jacarta-100 overflow-hidden"
+              style={{
+                aspectRatio: `${pendingProposalData?.find((item) => item.tokenId === tokenId)?.adParametersList?.cssAspectRatio}`
+              }}
+            >
+              <Image
+                src={
+                  getImageUrl(
+                    pendingProposalData?.find((item) => item.tokenId === tokenId)?.adParametersList
+                  ) ?? ""
+                }
+                alt="logo"
+                height={2000}
+                width={2000}
+                style={{ objectFit: "contain" }}
+                className="w-full h-full"
+                loading="lazy"
+              />
+            </div>
           </div>
           <button type="button" className="btn-close absolute top-6 right-6" onClick={closeModal}>
             <svg

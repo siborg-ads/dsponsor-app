@@ -51,6 +51,7 @@ const Validation = ({
   ];
   useEffect(() => {
     if (!offer) return;
+
     const groupedPendingAds = {};
     const groupedValidatedAds = {};
     const groupedRefusedAds = {};
@@ -79,6 +80,13 @@ const Validation = ({
         }
 
         groupedAds[token.tokenId].adParametersList[adParamBase] = element[statusKey].data;
+
+        if (adParamBase.startsWith("imageURL") && element.adParameter.variants.length > 0) {
+          groupedAds[token.tokenId].adParametersList[`aspectRatio`] =
+            element.adParameter.variants[0];
+          groupedAds[token.tokenId].adParametersList[`cssAspectRatio`] =
+            element.adParameter.variants[0].replace(":", "/");
+        }
       }
     }
 
@@ -96,9 +104,12 @@ const Validation = ({
     const formattedValidatedAds = Object.values(groupedValidatedAds);
     const formattedRefusedAds = Object.values(groupedRefusedAds);
 
+    console.log("formattedPendingAds", formattedPendingAds);
+    console.log("formattedValidatedAds", formattedValidatedAds);
+    console.log("formattedRefusedAds", formattedRefusedAds);
+
     setValidatedProposalData(formattedValidatedAds);
     setRefusedProposalData(formattedRefusedAds);
-
     setPendingProposalData(formattedPendingAds);
   }, [offer, offerId, successFullUploadModal]);
 
