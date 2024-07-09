@@ -9,6 +9,10 @@ import TimerCard from "./TimerCard";
 import { shortenAddress, useAddress, useChainId } from "@thirdweb-dev/react";
 import { getAddress, formatUnits } from "ethers/lib/utils";
 import { fetchAllOffers } from "../../providers/methods/fetchAllOffers";
+import { ExclamationCircleIcon } from "@heroicons/react/24/solid";
+import * as Popover from "@radix-ui/react-popover";
+import * as Tooltip from "@radix-ui/react-tooltip";
+import InfoIcon from "../informations/infoIcon";
 
 const OfferItem = ({
   item,
@@ -338,13 +342,23 @@ const OfferItem = ({
           <div className="flex flex-col flex-1">
             <div className="mt-4 flex items-center justify-between gap-2">
               {isSelectionActive ? (
-                <span className="font-display  text-primaryBlack hover:text-primaryPurple text-base dark:text-white ">
-                  {availableToSubmitAd && availableToSubmitAdFromOwnedTokens && "❗️"} {name}
+                <span className="font-display  text-primaryBlack hover:text-primaryPurple text-base dark:text-white flex items-center gap-1">
+                  {availableToSubmitAd && availableToSubmitAdFromOwnedTokens && (
+                    <InfoIcon text="You can submit an ad for this item">
+                      <ExclamationCircleIcon className="h-5 w-5 text-red dark:text-red" />
+                    </InfoIcon>
+                  )}{" "}
+                  {name}
                 </span>
               ) : (
                 <div className="overflow-hidden text-ellipsis whitespace-nowrap ">
-                  <span className="font-display  text-primaryBlack hover:text-primaryPurple text-base dark:text-white ">
-                    {availableToSubmitAd && availableToSubmitAdFromOwnedTokens && "❗️"} {name}
+                  <span className="font-display  text-primaryBlack hover:text-primaryPurple text-base dark:text-white flex items-center gap-1">
+                    {availableToSubmitAd && availableToSubmitAdFromOwnedTokens && (
+                      <InfoIcon text="You can submit an ad for this item">
+                        <ExclamationCircleIcon className="h-5 w-5 text-red dark:text-red" />
+                      </InfoIcon>
+                    )}{" "}
+                    {name}
                   </span>
                 </div>
               )}

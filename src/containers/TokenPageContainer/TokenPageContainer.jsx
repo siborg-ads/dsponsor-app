@@ -203,9 +203,12 @@ const TokenPageContainer = () => {
     // we check if the sponsor has only rejected proposals
     const sponsorHasAtLeastOneRejectedProposal = itemProposals?.rejectedProposals?.length > 0;
     const sponsorHasNoPendingProposal = itemProposals?.pendingProposals?.length === 0;
+    const sponsorHasNoAcceptedProposal = itemProposals?.acceptedProposals?.length === 0;
 
     setSponsorHasAtLeastOneRejectedProposalAndNoPending(
-      sponsorHasAtLeastOneRejectedProposal && sponsorHasNoPendingProposal
+      sponsorHasAtLeastOneRejectedProposal &&
+        sponsorHasNoPendingProposal &&
+        sponsorHasNoAcceptedProposal
     );
 
     // now we check if the media should validate an ad
