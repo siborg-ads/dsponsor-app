@@ -94,7 +94,6 @@ const MarketplaceHome = ({ auctions, setAllTokens, allTokens, isAuctionsLoading 
           );
 
           const liveAuctions = tempAuctions.filter((auction) => onAuctionCondition(auction, true));
-          console.log(liveAuctions);
           const otherAuctions = tempAuctions.filter(
             (auction) => !onAuctionCondition(auction, true)
           );
@@ -129,8 +128,6 @@ const MarketplaceHome = ({ auctions, setAllTokens, allTokens, isAuctionsLoading 
     } else {
       tempAuctions = tempAuctions.sort((a, b) => a.name.localeCompare(b.name)); // default sort
     }
-
-    console.log(tempAuctions);
 
     return tempAuctions;
   }, [filterName, filterOption, sortOption, auctions, allTokens]);
