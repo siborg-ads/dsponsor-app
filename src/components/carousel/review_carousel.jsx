@@ -198,39 +198,55 @@ const Review_carousel = ({
             >
               <div className="dark:bg-secondaryBlack hover:-translate-y-1 duration-500 cursor-pointer dark:border-jacarta-700 border-jacarta-100 rounded-2xl block border bg-white p-[1.1875rem] transition-shadow hover:shadow-lg text-jacarta-100">
                 <figure className="flex justify-center">
-                  <button onClick={() => openModal(tokenId)}>
-                    {getImageUrl(adParametersList) && (
+                  {getImageUrl(adParametersList) && (
+                    <div className="flex flex-col gap-2">
                       <Image
                         src={getImageUrl(adParametersList) ?? ""}
                         alt="logo"
-                        height={500}
-                        width={500}
+                        height={600}
+                        width={600}
                         style={{ objectFit: "contain" }}
-                        className="rounded-[0.625rem] w-auto h-[150px] object-contain"
+                        className="rounded-[0.625rem] w-full h-auto object-contain"
                         loading="lazy"
+                        onClick={(event) => {
+                          openModal(tokenId);
+
+                          // prevent the parent onClick event from firing
+                          event.stopPropagation(); // it won't select the item
+                        }}
                       />
-                    )}
-                  </button>
+                      <div className="flex items-center justify-between">
+                        <button
+                          onClick={() => openModal(tokenId)}
+                          className="text-left text-xs hover:cursor-pointer hover:underline"
+                        >
+                          Preview Image
+                        </button>
+                        <div className="dark:border-primaryPink dark:border-opacity-10 ms-14 border-jacarta-100 flex items-center whitespace-nowrap rounded-md border py-1 px-2">
+                          <span className="text-green text-sm font-medium tracking-tight">
+                            # {tokenData ?? formatTokenId(tokenId)}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </figure>
 
                 <div className="mt-4 flex items-center justify-between ">
                   <Link
                     href={adParametersList.linkURL ?? ""}
                     target="_blank"
-                    className="font-display  text-jacarta-900 hover:text-primaryPurple text-base dark:text-white  overflow-hidden text-ellipsis whitespace-nowrap "
+                    className="font-display text-jacarta-900 hover:text-primaryPurple text-sm dark:text-white  overflow-hidden text-ellipsis whitespace-nowrap "
                   >
                     <span>{adParametersList?.linkURL}</span>
                   </Link>
-
-                  <div className="dark:border-primaryPink dark:border-opacity-10 ms-14 border-jacarta-100 flex items-center whitespace-nowrap rounded-md border py-1 px-2">
-                    <span className="text-green text-sm font-medium tracking-tight">
-                      # {tokenData ?? formatTokenId(tokenId)}
-                    </span>
-                  </div>
                 </div>
                 <div className="mt-2 text-xs flex justify-between">
-                  <span className="text-primaryPurple text-sm font-bold">
-                    <span className="mr-1">🔍</span> Pending
+                  <span
+                    className={`${!isSelectedItem[tokenId] || isToken ? "text-primaryPurple" : "text-green"} text-sm font-bold`}
+                  >
+                    <span>{isSelectedItem[tokenId] && !isToken && "🔍 "}</span>
+                    Pending
                   </span>
                 </div>
               </div>
@@ -241,20 +257,28 @@ const Review_carousel = ({
 
       {modalStates[tokenId] && (
         <div className="modal fade show block">
-          <div className="modal-dialog !my-0 flex h-screen max-w-4xl items-center justify-center">
-            <Image
-              src={
-                getImageUrl(
-                  pendingProposalData.find((item) => item.tokenId === tokenId).adParametersList
-                ) ?? ""
-              }
-              alt="logo"
-              height={500}
-              width={500}
-              style={{ objectFit: "contain" }}
-              className="rounded-2lg min-w-[75px]"
-              loading="lazy"
-            />
+          <div className="modal-dialog !my-0 flex h-screen backdrop-blur-lg w-full p-12 items-center justify-center">
+            {/* we need to show the image in a dotted grid with the image aspect ratio */}
+            <div
+              className="w-full border dotted border-jacarta-100 bg-white dark:bg-jacarta-200 bg-opacity-20 backdrop-blur-xl dark:bg-opacity-20 dark:border-jacarta-100 overflow-hidden"
+              style={{
+                aspectRatio: `${pendingProposalData?.find((item) => item.tokenId === tokenId)?.adParametersList?.cssAspectRatio}`
+              }}
+            >
+              <Image
+                src={
+                  getImageUrl(
+                    pendingProposalData?.find((item) => item.tokenId === tokenId)?.adParametersList
+                  ) ?? ""
+                }
+                alt="logo"
+                height={2000}
+                width={2000}
+                style={{ objectFit: "contain" }}
+                className="w-full h-full"
+                loading="lazy"
+              />
+            </div>
           </div>
           <button type="button" className="btn-close absolute top-6 right-6" onClick={closeModal}>
             <svg

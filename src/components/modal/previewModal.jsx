@@ -156,8 +156,8 @@ const PreviewModal = ({
                 <div className="flex flex-col justify-center items-center gap-2">
                   <Image
                     src={previewImage[0]}
-                    width={800}
-                    height={160}
+                    width={1600}
+                    height={380}
                     className="w-full h-auto"
                     alt="Preview image"
                     style={{
@@ -247,8 +247,8 @@ const PreviewModal = ({
                   <div className="flex flex-col justify-center items-center gap-2">
                     <Image
                       src={image}
-                      width={800}
-                      height={160}
+                      width={1600}
+                      height={380}
                       className="w-full h-auto bg-jacarta-200"
                       alt="Preview image"
                       style={{
