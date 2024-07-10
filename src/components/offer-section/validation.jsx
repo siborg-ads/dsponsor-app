@@ -90,13 +90,13 @@ const Validation = ({
           if (adParamBase.includes("-0")) {
             const split = adParamBase.split("-");
             const aspectRatio = split[2];
-            const cssAspectRatio = aspectRatio.replace(":", "/");
+            const cssAspectRatio = aspectRatio?.replace(":", "/");
             groupedAds[token.tokenId].adParametersList[`aspectRatio`] = aspectRatio;
             groupedAds[token.tokenId].adParametersList[`cssAspectRatio`] = cssAspectRatio;
           } else {
             const split = adParamBase.split("-");
             const aspectRatio = split[1];
-            const cssAspectRatio = aspectRatio.replace(":", "/");
+            const cssAspectRatio = aspectRatio?.replace(":", "/");
             groupedAds[token.tokenId].adParametersList[`aspectRatio`] = aspectRatio;
             groupedAds[token.tokenId].adParametersList[`cssAspectRatio`] = cssAspectRatio;
           }

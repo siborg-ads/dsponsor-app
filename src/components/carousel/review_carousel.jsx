@@ -256,39 +256,46 @@ const Review_carousel = ({
       </div>
 
       {modalStates[tokenId] && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-xl">
-          <div className="relative flex items-center justify-center w-3/4 h-3/4 p-6">
-            <div
-              className="relative flex justify-center items-center w-full max-w-full max-h-full border border-dotted border-jacarta-100 bg-white dark:bg-jacarta-200 bg-opacity-20 backdrop-blur-xl dark:bg-opacity-20 dark:border-jacarta-100 overflow-hidden"
-              style={{
-                aspectRatio: `${pendingProposalData?.find((item) => item.tokenId === tokenId)?.adParametersList?.cssAspectRatio}`
-              }}
-            >
-              <Image
-                src={
-                  getImageUrl(
-                    pendingProposalData?.find((item) => item.tokenId === tokenId)?.adParametersList
-                  ) ?? ""
-                }
-                alt="logo"
-                height={500}
-                width={500}
-                className="max-w-full max-h-full object-contain"
-                loading="lazy"
-              />
-            </div>
-            <button type="button" className="absolute -top-6 -right-6" onClick={closeModal}>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                width="24"
-                height="24"
-                className="h-6 w-6 fill-white"
+        <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-xl h-screen w-full max-h-screen max-w-full">
+          <div
+            className="flex justify-center items-center max-w-full max-h-full"
+            style={{
+              aspectRatio: `${pendingProposalData?.find((item) => item.tokenId === tokenId)?.adParametersList?.cssAspectRatio}`
+            }}
+          >
+            <div className="relative flex items-center justify-center max-w-full max-h-full w-3/4 h-3/4 p-6">
+              <div className="relative flex justify-center items-center max-w-full max-h-full border-2 border-dotted border-jacarta-100 bg-white dark:bg-jacarta-200 bg-opacity-20 backdrop-blur-xl dark:bg-opacity-20 dark:border-jacarta-100 overflow-hidden">
+                <Image
+                  src={
+                    getImageUrl(
+                      pendingProposalData?.find((item) => item.tokenId === tokenId)
+                        ?.adParametersList
+                    ) ?? ""
+                  }
+                  alt="logo"
+                  height={2000}
+                  width={2000}
+                  className="max-w-full max-h-full object-contain"
+                  loading="lazy"
+                />
+              </div>
+              <button
+                type="button"
+                className="absolute top-0 right-0 -p-10"
+                onClick={() => closeModal()}
               >
-                <path fill="none" d="M0 0h24v24H0z" />
-                <path d="M12 10.586l4.95-4.95 1.414 1.414-4.95 4.95 4.95 4.95-1.414 1.414-4.95-4.95-4.95 4.95-1.414-1.414 4.95-4.95-4.95-4.95L7.05 5.636z" />
-              </svg>
-            </button>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  width="24"
+                  height="24"
+                  className="h-6 w-6 fill-white"
+                >
+                  <path fill="none" d="M0 0h24v24H0z" />
+                  <path d="M12 10.586l4.95-4.95 1.414 1.414-4.95 4.95 4.95 4.95-1.414 1.414-4.95-4.95-4.95 4.95-1.414-1.414 4.95-4.95-4.95-4.95L7.05 5.636z" />
+                </svg>
+              </button>
+            </div>
           </div>
         </div>
       )}
