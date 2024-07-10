@@ -11,7 +11,7 @@ import { BigNumber, ethers } from "ethers";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
 import { fetchOffer } from "../../providers/methods/fetchOffer";
 import "tippy.js/dist/tippy.css";
 import Meta from "../../components/Meta.jsx";
@@ -23,6 +23,8 @@ import SliderForm from "../../components/sliderForm/sliderForm.jsx";
 import styles from "../../styles/createPage/style.module.scss";
 import Timer from "../../components/item/Timer.jsx";
 import { fetchAllOffers } from "../../providers/methods/fetchAllOffers";
+import ItemLastestSales from "../../components/tables/ItemLastestSales.jsx";
+import { fetchMintingInfoFromTokenId } from "../../providers/methods/fetchMintingInfoFromTokenId.js";
 
 import { getCookie } from "cookies-next";
 import { ItemsTabs } from "../../components/component.js";
@@ -116,6 +118,7 @@ const TokenPageContainer = () => {
   ] = useState(false);
   const [offers, setOffers] = useState(null);
   const [isMedia, setIsMedia] = useState(false);
+  const [sales, setSales] = useState([]);
 
   let description = "description not found";
   let id = "1";
@@ -153,8 +156,6 @@ const TokenPageContainer = () => {
 
   useEffect(() => {
     if (offers) {
-      console.log("offers", offers);
-
       // we want to get all the proposals for all the item (accept, reject, pending, all)
       // for that we filter the offers to match the offer with the current tokenId
       const itemsOffers = offers
@@ -394,6 +395,118 @@ const TokenPageContainer = () => {
 
     setBids(bids);
   }, [marketplaceListings]);
+
+  const fetchSales = useCallback(async (tokenId, chainId) => {
+    const response = await fetchMintingInfoFromTokenId(Number(tokenId), Number(chainId));
+    return response;
+  }, []);
+
+  useEffect(() => {
+    let sales = [];
+
+    if (marketplaceListings.length > 0) {
+      marketplaceListings.forEach((listing) => {
+        if (listing?.bids) {
+          const sortedBids = listing.bids.sort(
+            (a, b) => new Date(b.creationTimestamp * 1000) - new Date(a.creationTimestamp * 1000)
+          );
+          const winnerBid = sortedBids[0];
+
+          const auction = listing?.listingType === "Auction" && listing?.status === "COMPLETED";
+          const direct = listing?.listingType === "Direct" && listing?.status === "COMPLETED";
+          const mint =
+            !listing?.item?.mint &&
+            !listing?.listingType === "Direct" &&
+            !listing?.listingType === "Auction";
+
+          let saleInfo;
+
+          if (auction) {
+            saleInfo = {
+              address: winnerBid.bidder,
+              amount: winnerBid.totalBidAmount / Math.pow(10, listing.currencyDecimals),
+              date: winnerBid.creationTimestamp,
+              currency: {
+                contract: listing.currency,
+                currencySymbol: listing.currencySymbol,
+                currencyDecimals: listing.currencyDecimals
+              },
+              listing: {
+                id: listing.id,
+                listingType: listing.listingType
+              }
+            };
+          }
+
+          if (direct) {
+            saleInfo = {
+              address: undefined, // not available
+              amount: listing.buyoutPricePerToken / Math.pow(10, listing.currencyDecimals),
+              date: undefined, // not available
+              currency: {
+                contract: listing.currency,
+                currencySymbol: listing.currencySymbol,
+                currencyDecimals: listing.currencyDecimals
+              },
+              listing: {
+                id: listing.id,
+                listingType: listing.listingType
+              }
+            };
+          }
+
+          if (mint) {
+            fetchSales(listing.tokenId, listing.chainId)
+              .then((response) => {
+                console.log("response", response);
+
+                // response has the structure { tokens: [{ id, mint: { currency, amount } }] }
+                const tokenData = response.tokens.find((token) => token.id === listing.tokenId);
+
+                if (tokenData && tokenData.mint) {
+                  const { currency, amount } = tokenData.mint;
+
+                  saleInfo = {
+                    address: undefined, // minter address
+                    amount: amount / Math.pow(10, listing.currencyDecimals),
+                    date: undefined, // not available
+                    currency: currency,
+                    listing: {
+                      id: listing.id,
+                      listingType: listing.listingType
+                    }
+                  };
+                } else {
+                  console.error("Token data or mint information not found in the response.");
+                }
+              })
+              .catch((error) => {
+                console.error("Error fetching sales data:", error);
+              });
+          }
+
+          if (saleInfo) {
+            sales.push(saleInfo);
+          }
+        }
+      });
+    }
+
+    // Group sales by listing id
+    const groupedSales = sales.reduce((acc, sale) => {
+      const listingIndex = acc.findIndex((listing) => listing[0].listing.id === sale.listing.id);
+      if (listingIndex === -1) {
+        acc.push([sale]);
+      } else {
+        acc[listingIndex].push(sale);
+      }
+      return acc;
+    }, []);
+
+    console.log("sales", groupedSales);
+
+    setSales(groupedSales);
+  }, [fetchSales, marketplaceListings]);
 
   useEffect(() => {
     if (!offerData) return;
@@ -1353,6 +1466,13 @@ const TokenPageContainer = () => {
           </div>
         </div>
       </section>
+
+      {sales && sales.length > 0 && (
+        <div className="container mb-12">
+          <Divider className="my-4" />
+          <ItemLastestSales sales={sales} />
+        </div>
+      )}
 
       {bids &&
         bids.filter((listing) =>
