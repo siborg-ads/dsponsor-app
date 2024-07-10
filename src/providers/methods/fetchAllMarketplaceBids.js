@@ -46,28 +46,24 @@ export const fetchAllMarketplaceBidsByBidder = async (chainId, address) => {
           marketplaceBids(first: 1000,
             where: { bidder: "${address}" }) {
               id
-              listing
               bidder
               quantity
-              newPricePerToken
-              totalBidAmount
-              paidBidAmount
               refundBonus
               refundAmount
               refundProfit
               currency
-              status
-              creationTxHash
-              revenueTransaction
               creationTimestamp
               lastUpdateTimestamp
-              feeMethodology
-              amountSentToProtocol
-              protocolRecipient
-              amountSentToSeller
-              sellerRecipient
-              amountSentToCreator
-              creatorRecipient
+              creationTxHash
+              listing {
+                token {
+                  nftContract {
+                    adOffers(first: 1, orderBy: creationTimestamp, orderDirection: desc) {
+                      name
+                    }
+                  }
+                }
+              }
           }
       }
     `;

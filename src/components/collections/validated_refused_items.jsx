@@ -47,7 +47,7 @@ const Validated_refused_items = ({ statut, proposalData, isToken }) => {
     return imageKey ? adParams[imageKey] : "/";
   };
 
-  if (proposalData.length === 0) {
+  if (proposalData?.length === 0) {
     return (
       <div className="flex justify-center">
         {statut ? "No validated ads..." : "No refused ads..."}
@@ -98,57 +98,50 @@ const Validated_refused_items = ({ statut, proposalData, isToken }) => {
                       </button>
 
                       {/* Modal */}
-                      <div
-                        className={modalStates[tokenId] ? "modal fade show block" : "modal fade"}
-                      >
-                        <div className="modal-dialog !my-0 flex h-screen backdrop-blur-lg w-full p-12 items-center justify-center">
-                          {/* we need to show the image in a dotted grid with the image aspect ratio */}
+                      {modalStates[tokenId] && (
+                        <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-xl h-screen w-full max-h-screen max-w-full">
                           <div
-                            className="relative w-full border dotted border-jacarta-100 bg-white dark:bg-jacarta-200 bg-opacity-20 backdrop-blur-xl dark:bg-opacity-20 dark:border-jacarta-100 overflow-hidden"
+                            className="flex justify-center items-center max-w-full max-h-full"
                             style={{
                               aspectRatio: `${proposalData?.find((item) => item.tokenId === tokenId)?.adParametersList?.cssAspectRatio}`
                             }}
                           >
-                            <Image
-                              src={
-                                getImageUrl(
-                                  proposalData?.find((item) => item.tokenId === tokenId)
-                                    ?.adParametersList
-                                ) ?? ""
-                              }
-                              alt="logo"
-                              height={1000}
-                              width={1000}
-                              style={{ objectFit: "contain" }}
-                              className="w-full h-full"
-                              loading="lazy"
-                            />
+                            <div className="relative flex items-center justify-center max-w-full max-h-full w-3/4 h-3/4 p-6">
+                              <div className="relative flex justify-center items-center max-w-full max-h-full border-2 border-dotted border-jacarta-100 bg-white dark:bg-jacarta-200 bg-opacity-20 backdrop-blur-xl dark:bg-opacity-20 dark:border-jacarta-100 overflow-hidden">
+                                <Image
+                                  src={
+                                    getImageUrl(
+                                      proposalData?.find((item) => item.tokenId === tokenId)
+                                        ?.adParametersList
+                                    ) ?? ""
+                                  }
+                                  alt="logo"
+                                  height={2000}
+                                  width={2000}
+                                  className="max-w-full max-h-full object-contain"
+                                  loading="lazy"
+                                />
+                              </div>
+                              <button
+                                type="button"
+                                className="absolute top-0 right-0 -p-10"
+                                onClick={() => closeModal(tokenId)}
+                              >
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  viewBox="0 0 24 24"
+                                  width="24"
+                                  height="24"
+                                  className="h-6 w-6 fill-white"
+                                >
+                                  <path fill="none" d="M0 0h24v24H0z" />
+                                  <path d="M12 10.586l4.95-4.95 1.414 1.414-4.95 4.95 4.95 4.95-1.414 1.414-4.95-4.95-4.95 4.95-1.414-1.414 4.95-4.95-4.95-4.95L7.05 5.636z" />
+                                </svg>
+                              </button>
+                            </div>
                           </div>
                         </div>
-
-                        <button
-                          type="button"
-                          className="btn-close absolute top-6 right-6"
-                          onClick={() => closeModal(tokenId)}
-                        >
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 24 24"
-                            width="24"
-                            height="24"
-                            className="h-6 w-6 fill-white"
-                          >
-                            <path fill="none" d="M0 0h24v24H0z" />
-                            <path d="M12 10.586l4.95-4.95 1.414 1.414-4.95 4.95 4.95 4.95-1.414 1.414-4.95-4.95-4.95 4.95-1.414-1.414 4.95-4.95-4.95-4.95L7.05 5.636z" />
-                          </svg>
-                        </button>
-                        <Link
-                          href={getImageUrl(adParametersList) ?? ""}
-                          className="absolute bottom-6 right-6 btn btn-primary flex items-center justify-center p-2"
-                        >
-                          {/* SVG icon for download */}
-                        </Link>
-                      </div>
+                      )}
                       {/* End Modal */}
                     </figure>
 

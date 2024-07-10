@@ -220,7 +220,7 @@ const Review_carousel = ({
                           onClick={() => openModal(tokenId)}
                           className="text-left text-xs hover:cursor-pointer hover:underline"
                         >
-                          Preview Image
+                          Preview Image 🔎
                         </button>
                         <div className="dark:border-primaryPink dark:border-opacity-10 ms-14 border-jacarta-100 flex items-center whitespace-nowrap rounded-md border py-1 px-2">
                           <span className="text-green text-sm font-medium tracking-tight">
@@ -245,7 +245,7 @@ const Review_carousel = ({
                   <span
                     className={`${!isSelectedItem[tokenId] || isToken ? "text-primaryPurple" : "text-green"} text-sm font-bold`}
                   >
-                    <span>{isSelectedItem[tokenId] && !isToken && "🔍 "}</span>
+                    <span>{isSelectedItem[tokenId] && !isToken && "✅ "}</span>
                     Pending
                   </span>
                 </div>
@@ -256,42 +256,47 @@ const Review_carousel = ({
       </div>
 
       {modalStates[tokenId] && (
-        <div className="modal fade show block">
-          <div className="modal-dialog !my-0 flex h-screen backdrop-blur-lg w-full p-12 items-center justify-center">
-            {/* we need to show the image in a dotted grid with the image aspect ratio */}
-            <div
-              className="w-full border dotted border-jacarta-100 bg-white dark:bg-jacarta-200 bg-opacity-20 backdrop-blur-xl dark:bg-opacity-20 dark:border-jacarta-100 overflow-hidden"
-              style={{
-                aspectRatio: `${pendingProposalData?.find((item) => item.tokenId === tokenId)?.adParametersList?.cssAspectRatio}`
-              }}
-            >
-              <Image
-                src={
-                  getImageUrl(
-                    pendingProposalData?.find((item) => item.tokenId === tokenId)?.adParametersList
-                  ) ?? ""
-                }
-                alt="logo"
-                height={2000}
-                width={2000}
-                style={{ objectFit: "contain" }}
-                className="w-full h-full"
-                loading="lazy"
-              />
+        <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-xl h-screen w-full max-h-screen max-w-full">
+          <div
+            className="flex justify-center items-center max-w-full max-h-full"
+            style={{
+              aspectRatio: `${pendingProposalData?.find((item) => item.tokenId === tokenId)?.adParametersList?.cssAspectRatio}`
+            }}
+          >
+            <div className="relative flex items-center justify-center max-w-full max-h-full w-3/4 h-3/4 p-6">
+              <div className="relative flex justify-center items-center max-w-full max-h-full border-2 border-dotted border-jacarta-100 bg-white dark:bg-jacarta-200 bg-opacity-20 backdrop-blur-xl dark:bg-opacity-20 dark:border-jacarta-100 overflow-hidden">
+                <Image
+                  src={
+                    getImageUrl(
+                      pendingProposalData?.find((item) => item.tokenId === tokenId)
+                        ?.adParametersList
+                    ) ?? ""
+                  }
+                  alt="logo"
+                  height={2000}
+                  width={2000}
+                  className="max-w-full max-h-full object-contain"
+                  loading="lazy"
+                />
+              </div>
+              <button
+                type="button"
+                className="absolute top-0 right-0 -p-10"
+                onClick={() => closeModal()}
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  width="24"
+                  height="24"
+                  className="h-6 w-6 fill-white"
+                >
+                  <path fill="none" d="M0 0h24v24H0z" />
+                  <path d="M12 10.586l4.95-4.95 1.414 1.414-4.95 4.95 4.95 4.95-1.414 1.414-4.95-4.95-4.95 4.95-1.414-1.414 4.95-4.95-4.95-4.95L7.05 5.636z" />
+                </svg>
+              </button>
             </div>
           </div>
-          <button type="button" className="btn-close absolute top-6 right-6" onClick={closeModal}>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              width="24"
-              height="24"
-              className="h-6 w-6 fill-white"
-            >
-              <path fill="none" d="M0 0h24v24H0z" />
-              <path d="M12 10.586l4.95-4.95 1.414 1.414-4.95 4.95 4.95 4.95-1.414 1.414-4.95-4.95-4.95 4.95-1.414-1.414 4.95-4.95-4.95-4.95L7.05 5.636z" />
-            </svg>
-          </button>
         </div>
       )}
     </div>
