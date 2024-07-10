@@ -245,7 +245,7 @@ const Review_carousel = ({
                   <span
                     className={`${!isSelectedItem[tokenId] || isToken ? "text-primaryPurple" : "text-green"} text-sm font-bold`}
                   >
-                    <span>{isSelectedItem[tokenId] && !isToken && "🔍 "}</span>
+                    <span>{isSelectedItem[tokenId] && !isToken && "✅ "}</span>
                     Pending
                   </span>
                 </div>
