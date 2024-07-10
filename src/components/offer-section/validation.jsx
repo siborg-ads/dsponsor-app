@@ -105,10 +105,6 @@ const Validation = ({
     const formattedValidatedAds = Object.values(groupedValidatedAds);
     const formattedRefusedAds = Object.values(groupedRefusedAds);
 
-    console.log("formattedPendingAds", formattedPendingAds);
-    console.log("formattedValidatedAds", formattedValidatedAds);
-    console.log("formattedRefusedAds", formattedRefusedAds);
-
     setValidatedProposalData(formattedValidatedAds);
     setRefusedProposalData(formattedRefusedAds);
     setPendingProposalData(formattedPendingAds);

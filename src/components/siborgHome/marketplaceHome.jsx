@@ -7,11 +7,12 @@ import { Popover, PopoverTrigger, PopoverContent } from "@nextui-org/popover";
 
 const onAuctionCondition = (auction, mint) => {
   return (
-    auction?.status === "CREATED" &&
-    (auction?.listingType === "Auction" || (mint && auction?.item?.mint)) &&
-    Number(auction?.quantity) > 0 &&
-    new Date(Number(auction?.startTime) * 1000).getTime() < Date.now() &&
-    new Date(Number(auction?.endTime) * 1000).getTime() > Date.now()
+    (auction?.status === "CREATED" &&
+      (auction?.listingType === "Auction" || auction?.listingType === "Direct") &&
+      Number(auction?.quantity) > 0 &&
+      new Date(Number(auction?.startTime) * 1000).getTime() < Date.now() &&
+      new Date(Number(auction?.endTime) * 1000).getTime() > Date.now()) ||
+    (mint && !auction?.sold)
   );
 };
 
@@ -52,17 +53,9 @@ const MarketplaceHome = ({ auctions, setAllTokens, allTokens, isAuctionsLoading 
     if (sortOption && sortOption.length > 0 && sortOption !== "") {
       tempAuctions = [...tempAuctions];
 
-      let matchingAuctions = tempAuctions.filter(
-        (auction) => auction?.listingType === "Auction" || auction?.listingType === "Direct"
-      );
-
-      let nonMatchingAuctions = tempAuctions.filter(
-        (auction) => !(auction?.listingType === "Auction" || auction?.listingType === "Direct")
-      );
-
       switch (sortOption) {
         case "Price: low to high": {
-          matchingAuctions = matchingAuctions.sort(
+          tempAuctions = tempAuctions.sort(
             (a, b) =>
               (a.listingType === "Auction"
                 ? a.auctionPrice
@@ -76,19 +69,17 @@ const MarketplaceHome = ({ auctions, setAllTokens, allTokens, isAuctionsLoading 
                   : b.mintPrice)
           );
 
-          const liveAuctions = matchingAuctions.filter((auction) =>
-            onAuctionCondition(auction, true)
-          );
-          const otherAuctions = matchingAuctions.filter(
+          const liveAuctions = tempAuctions.filter((auction) => onAuctionCondition(auction, true));
+          const otherAuctions = tempAuctions.filter(
             (auction) => !onAuctionCondition(auction, true)
           );
 
-          matchingAuctions = [...liveAuctions, ...otherAuctions];
+          tempAuctions = [...liveAuctions, ...otherAuctions];
 
           break;
         }
         case "Price: high to low": {
-          matchingAuctions = matchingAuctions.sort(
+          tempAuctions = tempAuctions.sort(
             (a, b) =>
               (b.listingType === "Auction"
                 ? b.auctionPrice
@@ -102,31 +93,27 @@ const MarketplaceHome = ({ auctions, setAllTokens, allTokens, isAuctionsLoading 
                   : a.mintPrice)
           );
 
-          const liveAuctions = matchingAuctions.filter((auction) =>
-            onAuctionCondition(auction, true)
-          );
-          const otherAuctions = matchingAuctions.filter(
+          const liveAuctions = tempAuctions.filter((auction) => onAuctionCondition(auction, true));
+          const otherAuctions = tempAuctions.filter(
             (auction) => !onAuctionCondition(auction, true)
           );
 
-          matchingAuctions = [...liveAuctions, ...otherAuctions];
+          tempAuctions = [...liveAuctions, ...otherAuctions];
           break;
         }
         case "Ending soon": {
-          matchingAuctions.sort((a, b) => a.endTime - b.endTime);
+          tempAuctions.sort((a, b) => a.endTime - b.endTime);
 
-          const liveAuctions = matchingAuctions.filter((auction) =>
-            onAuctionCondition(auction, true)
-          );
-          const otherAuctions = matchingAuctions.filter(
+          const liveAuctions = tempAuctions.filter((auction) => onAuctionCondition(auction, true));
+          const otherAuctions = tempAuctions.filter(
             (auction) => !onAuctionCondition(auction, true)
           );
 
-          matchingAuctions = [...liveAuctions, ...otherAuctions];
+          tempAuctions = [...liveAuctions, ...otherAuctions];
           break;
         }
         case "Newest":
-          matchingAuctions = matchingAuctions.sort((a, b) => b.startTime - a.startTime);
+          tempAuctions = tempAuctions.sort((a, b) => b.startTime - a.startTime);
           break;
         case "Sort by name":
           tempAuctions = tempAuctions.sort((a, b) => a.name.localeCompare(b.name));
@@ -136,7 +123,7 @@ const MarketplaceHome = ({ auctions, setAllTokens, allTokens, isAuctionsLoading 
       }
 
       if (sortOption !== "Sort by name") {
-        tempAuctions = [...matchingAuctions, ...nonMatchingAuctions];
+        tempAuctions = [...tempAuctions];
       }
     } else {
       tempAuctions = tempAuctions.sort((a, b) => a.name.localeCompare(b.name)); // default sort
