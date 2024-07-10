@@ -546,7 +546,7 @@ const TokenPageContainer = () => {
         console.error("Error fetching sales data:", error);
       }
 
-      if (saleMintInfo) {
+      if (saleMintInfo && saleMintInfo?.amount > 0) {
         sales.push(saleMintInfo);
       }
 
