@@ -6,13 +6,12 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "tippy.js/dist/tippy.css";
 import TimerCard from "./TimerCard";
-import { shortenAddress, useAddress, useChainId } from "@thirdweb-dev/react";
+import { shortenAddress, useAddress } from "@thirdweb-dev/react";
 import { getAddress, formatUnits } from "ethers/lib/utils";
 import { fetchAllOffers } from "../../providers/methods/fetchAllOffers";
 import { ExclamationCircleIcon } from "@heroicons/react/24/solid";
-import * as Popover from "@radix-ui/react-popover";
-import * as Tooltip from "@radix-ui/react-tooltip";
 import InfoIcon from "../informations/infoIcon";
+import { useChainContext } from "../../contexts/hooks/useChainContext";
 
 const OfferItem = ({
   item,
@@ -37,8 +36,9 @@ const OfferItem = ({
   const [itemProposals, setItemProposals] = useState(null);
   const [availableToSubmitAd, setAvailableToSubmitAd] = useState(false);
 
+  const currentChainObject = useChainContext();
   const address = useAddress();
-  const chainId = useChainId();
+  const chainId = currentChainObject?.chainId;
 
   useEffect(() => {
     const fetchOffers = async () => {
