@@ -49,13 +49,15 @@ import { formatUnits, getAddress, parseUnits } from "ethers/lib/utils";
 import "react-toastify/dist/ReactToastify.css";
 import ItemLastBids from "../../components/tables/ItemLastBids";
 import { activated_features } from "../../data/activated_features.js";
+import { useChainContext } from "../../contexts/hooks/useChainContext.js";
 
 const TokenPageContainer = () => {
   const router = useRouter();
 
+  const { currentChainObject } = useChainContext();
   const offerId = router.query?.offerId;
   const tokenId = router.query?.tokenId;
-  const chainId = router.query?.chainName;
+  const chainId = currentChainObject?.chainId;
 
   const [tokenIdString, setTokenIdString] = useState(null);
   const [offerData, setOfferData] = useState(null);
@@ -397,34 +399,33 @@ const TokenPageContainer = () => {
   }, [marketplaceListings]);
 
   const fetchSales = useCallback(async (tokenId, chainId) => {
-    const response = await fetchMintingInfoFromTokenId(Number(tokenId), Number(chainId));
+    const response = await fetchMintingInfoFromTokenId(tokenId, Number(chainId));
     return response;
   }, []);
 
   useEffect(() => {
-    let sales = [];
+    const fetchSalesData = async () => {
+      let sales = [];
 
-    if (marketplaceListings.length > 0) {
-      marketplaceListings.forEach((listing) => {
-        if (listing?.bids) {
-          const sortedBids = listing.bids.sort(
-            (a, b) => new Date(b.creationTimestamp * 1000) - new Date(a.creationTimestamp * 1000)
-          );
-          const winnerBid = sortedBids[0];
-
+      if (marketplaceListings.length > 0) {
+        for (const listing of marketplaceListings) {
+          let saleInfo;
           const auction = listing?.listingType === "Auction" && listing?.status === "COMPLETED";
           const direct = listing?.listingType === "Direct" && listing?.status === "COMPLETED";
-          const mint =
-            !listing?.item?.mint &&
-            !listing?.listingType === "Direct" &&
-            !listing?.listingType === "Auction";
-
-          let saleInfo;
 
           if (auction) {
+            let winnerBid;
+            if (listing?.bids) {
+              const sortedBids = listing.bids.sort(
+                (a, b) =>
+                  new Date(b.creationTimestamp * 1000) - new Date(a.creationTimestamp * 1000)
+              );
+              winnerBid = sortedBids[0];
+            }
+
             saleInfo = {
               address: winnerBid.bidder,
-              amount: winnerBid.totalBidAmount / Math.pow(10, listing.currencyDecimals),
+              amount: Number(winnerBid.paidBidAmount) / Math.pow(10, listing.currencyDecimals),
               date: winnerBid.creationTimestamp,
               currency: {
                 contract: listing.currency,
@@ -439,74 +440,142 @@ const TokenPageContainer = () => {
           }
 
           if (direct) {
-            saleInfo = {
-              address: undefined, // not available
-              amount: listing.buyoutPricePerToken / Math.pow(10, listing.currencyDecimals),
-              date: undefined, // not available
-              currency: {
-                contract: listing.currency,
-                currencySymbol: listing.currencySymbol,
-                currencyDecimals: listing.currencyDecimals
-              },
-              listing: {
-                id: listing.id,
-                listingType: listing.listingType
-              }
-            };
-          }
+            try {
+              const response = await fetchSales(
+                listing?.token?.nftContract?.id + "-" + listing?.token?.tokenId,
+                Number(chainId)
+              );
+              const tokenData = response.tokens.find(
+                (token) =>
+                  token.id === listing?.token?.nftContract?.id + "-" + listing?.token?.tokenId
+              );
 
-          if (mint) {
-            fetchSales(listing.tokenId, listing.chainId)
-              .then((response) => {
-                console.log("response", response);
+              if (tokenData) {
+                // need to match listing id and direct buys listing id
+                const tempTokenData = tokenData?.marketplaceListings?.find((marketplaceListing) =>
+                  marketplaceListing?.directBuys.find((buy) => buy?.listing?.id === listing?.id)
+                );
 
-                // response has the structure { tokens: [{ id, mint: { currency, amount } }] }
-                const tokenData = response.tokens.find((token) => token.id === listing.tokenId);
+                const directBuy = tempTokenData?.directBuys[0]; // only one direct buy per listing so we can take the first one
 
-                if (tokenData && tokenData.mint) {
-                  const { currency, amount } = tokenData.mint;
+                const smartContracts = currentChainObject?.smartContracts;
+                const targetAddress = listing?.currency;
 
-                  saleInfo = {
-                    address: undefined, // minter address
-                    amount: amount / Math.pow(10, listing.currencyDecimals),
-                    date: undefined, // not available
-                    currency: currency,
-                    listing: {
-                      id: listing.id,
-                      listingType: listing.listingType
+                let tempCurrency = null;
+
+                if (smartContracts) {
+                  for (const key in smartContracts) {
+                    if (
+                      smartContracts[key]?.address?.toLowerCase() === targetAddress?.toLowerCase()
+                    ) {
+                      tempCurrency = smartContracts[key];
+                      break;
                     }
-                  };
-                } else {
-                  console.error("Token data or mint information not found in the response.");
+                  }
                 }
-              })
-              .catch((error) => {
-                console.error("Error fetching sales data:", error);
-              });
+
+                saleInfo = {
+                  address: directBuy.buyer,
+                  amount: Number(directBuy.totalPricePaid) / Math.pow(10, tempCurrency?.decimals),
+                  date: directBuy.revenueTransaction?.blockTimestamp,
+                  currency: {
+                    contract: listing?.currency,
+                    currencySymbol: tempCurrency?.symbol,
+                    currencyDecimals: tempCurrency?.decimals
+                  },
+                  listing: {
+                    id: directBuy?.listing?.id,
+                    listingType: directBuy?.listing?.listingType
+                  }
+                };
+              } else {
+                console.error("Token data or mint information not found in the response.");
+              }
+            } catch (error) {
+              console.error("Error fetching sales data:", error);
+            }
           }
 
           if (saleInfo) {
             sales.push(saleInfo);
           }
         }
-      });
-    }
-
-    // Group sales by listing id
-    const groupedSales = sales.reduce((acc, sale) => {
-      const listingIndex = acc.findIndex((listing) => listing[0].listing.id === sale.listing.id);
-      if (listingIndex === -1) {
-        acc.push([sale]);
-      } else {
-        acc[listingIndex].push(sale);
       }
-      return acc;
-    }, []);
 
-    console.log("sales", groupedSales);
+      let saleMintInfo;
 
-    setSales(groupedSales);
-  }, [fetchSales, marketplaceListings]);
+      try {
+        const response = await fetchSales(
+          offerData?.nftContract?.id + "-" + offerData?.nftContract?.tokens[0]?.tokenId,
+          Number(chainId)
+        );
+
+        const tokenData = response?.tokens[0]; // it is already filtered by tokenId so we can take the first element
+
+        const smartContracts = currentChainObject?.smartContracts;
+        const targetAddress = tokenData?.mint?.currency;
+
+        let tempCurrency = null;
+
+        if (smartContracts) {
+          for (const key in smartContracts) {
+            if (smartContracts[key]?.address?.toLowerCase() === targetAddress?.toLowerCase()) {
+              tempCurrency = smartContracts[key];
+              break;
+            }
+          }
+        }
+
+        if (tokenData) {
+          saleMintInfo = {
+            address: tokenData?.mint?.to,
+            amount: Number(tokenData?.mint?.amount) / Math.pow(10, tempCurrency?.decimals),
+            date: tokenData?.mint?.revenueTransaction?.blockTimestamp,
+            currency: {
+              contract: tokenData?.mint?.currency,
+              currencySymbol: tempCurrency?.symbol,
+              currencyDecimals: tempCurrency?.decimals
+            },
+            listing: {
+              id: 1,
+              listingType: "Mint"
+            }
+          };
+        }
+      } catch (error) {
+        console.error("Error fetching sales data:", error);
+      }
+
+      if (saleMintInfo) {
+        sales.push(saleMintInfo);
+      }
+
+      // Group sales by listing id
+      const groupedSales = sales.reduce((acc, sale) => {
+        const listingIndex = acc.findIndex(
+          (listing) => listing[0]?.listing?.id === sale?.listing?.id
+        );
+        if (listingIndex === -1) {
+          acc.push([sale]);
+        } else {
+          acc[listingIndex].push(sale);
+        }
+        return acc;
+      }, []);
+
+      setSales(groupedSales);
+    };
+
+    fetchSalesData();
+  }, [
+    fetchSales,
+    marketplaceListings,
+    chainId,
+    currency,
+    currentChainObject,
+    offerData?.nftContract?.id,
+    offerData?.nftContract?.tokens
+  ]);
 
   useEffect(() => {
     if (!offerData) return;
@@ -725,8 +794,8 @@ const TokenPageContainer = () => {
   }, [tokenId, offerData, tokenData]);
 
   useEffect(() => {
-    if (!offerData) return;
-    if (offerData.adParameters.length === 0) return;
+    if (!offerData || !offerData?.adParameters) return;
+    if (offerData?.adParameters?.length === 0) return;
 
     setImageURLSteps([]);
     setNumSteps(2);
