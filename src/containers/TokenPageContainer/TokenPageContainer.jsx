@@ -726,6 +726,8 @@ const TokenPageContainer = () => {
 
   useEffect(() => {
     if (!offerData) return;
+    if (offerData.adParameters.length === 0) return;
+
     setImageURLSteps([]);
     setNumSteps(2);
     const uniqueIds = new Set();
