@@ -12,7 +12,7 @@ const onAuctionCondition = (auction, mint) => {
       Number(auction?.quantity) > 0 &&
       new Date(Number(auction?.startTime) * 1000).getTime() < Date.now() &&
       new Date(Number(auction?.endTime) * 1000).getTime() > Date.now()) ||
-    (mint && !auction?.sold)
+    (mint && auction?.item?.mint === null)
   );
 };
 
@@ -55,7 +55,8 @@ const MarketplaceHome = ({ auctions, setAllTokens, allTokens, isAuctionsLoading 
 
       switch (sortOption) {
         case "Price: low to high": {
-          tempAuctions = tempAuctions.sort(
+          let liveAuctions = tempAuctions.filter((auction) => onAuctionCondition(auction, true));
+          liveAuctions = liveAuctions.sort(
             (a, b) =>
               (a.listingType === "Auction"
                 ? a.auctionPrice
@@ -69,7 +70,6 @@ const MarketplaceHome = ({ auctions, setAllTokens, allTokens, isAuctionsLoading 
                   : b.mintPrice)
           );
 
-          const liveAuctions = tempAuctions.filter((auction) => onAuctionCondition(auction, true));
           const otherAuctions = tempAuctions.filter(
             (auction) => !onAuctionCondition(auction, true)
           );
@@ -79,24 +79,24 @@ const MarketplaceHome = ({ auctions, setAllTokens, allTokens, isAuctionsLoading 
           break;
         }
         case "Price: high to low": {
-          tempAuctions = tempAuctions.sort(
-            (a, b) =>
-              (b.listingType === "Auction"
-                ? b.auctionPrice
-                : b.listingType === "Direct"
-                  ? b.directPrice
-                  : b.mintPrice) -
-              (a.listingType === "Auction"
-                ? a.auctionPrice
-                : a.listingType === "Direct"
-                  ? a.directPrice
-                  : a.mintPrice)
-          );
+          let liveAuctions = tempAuctions.filter((auction) => onAuctionCondition(auction, true));
+          liveAuctions = liveAuctions
+            .sort(
+              (a, b) =>
+                (a.listingType === "Auction"
+                  ? a.auctionPrice
+                  : a.listingType === "Direct"
+                    ? a.directPrice
+                    : a.mintPrice) -
+                (b.listingType === "Auction"
+                  ? b.auctionPrice
+                  : b.listingType === "Direct"
+                    ? b.directPrice
+                    : b.mintPrice)
+            )
+            .reverse();
 
-          const liveAuctions = tempAuctions.filter((auction) => onAuctionCondition(auction, true));
-          const otherAuctions = tempAuctions.filter(
-            (auction) => !onAuctionCondition(auction, true)
-          );
+          let otherAuctions = tempAuctions.filter((auction) => !onAuctionCondition(auction, true));
 
           tempAuctions = [...liveAuctions, ...otherAuctions];
           break;
