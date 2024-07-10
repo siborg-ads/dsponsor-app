@@ -6,8 +6,13 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "tippy.js/dist/tippy.css";
 import TimerCard from "./TimerCard";
-import { shortenAddress, useAddress } from "@thirdweb-dev/react";
+import { shortenAddress, useAddress, useChainId } from "@thirdweb-dev/react";
 import { getAddress, formatUnits } from "ethers/lib/utils";
+import { fetchAllOffers } from "../../providers/methods/fetchAllOffers";
+import { ExclamationCircleIcon } from "@heroicons/react/24/solid";
+import * as Popover from "@radix-ui/react-popover";
+import * as Tooltip from "@radix-ui/react-tooltip";
+import InfoIcon from "../informations/infoIcon";
 
 const OfferItem = ({
   item,
@@ -18,7 +23,8 @@ const OfferItem = ({
   isAuction = false,
   isListing = false,
   listingType,
-  disableLink
+  disableLink,
+  availableToSubmitAdFromOwnedTokens
 }) => {
   const [price, setPrice] = useState(null);
   const [currencyToken, setCurrencyToken] = useState(null);
@@ -27,8 +33,108 @@ const OfferItem = ({
   const [lastSalePrice, setLastSalePrice] = useState(null);
   const [lastBidder, setLastBidder] = useState(null);
   const [isLastBidder, setIsLastBidder] = useState(false);
+  const [offers, setOffers] = useState(null);
+  const [itemProposals, setItemProposals] = useState(null);
+  const [availableToSubmitAd, setAvailableToSubmitAd] = useState(false);
 
   const address = useAddress();
+  const chainId = useChainId();
+
+  useEffect(() => {
+    const fetchOffers = async () => {
+      const offers = await fetchAllOffers(chainId);
+      setOffers(offers);
+    };
+
+    fetchOffers();
+  }, [chainId, item]);
+
+  useEffect(() => {
+    if (offers) {
+      // we want to get all the proposals for the current item (accept, reject, pending, all)
+      // for that we filter the offers to extract the token that match the current item
+      const itemOffers = offers
+        ?.map((offer) =>
+          offer?.nftContract?.tokens?.filter(
+            (token) => Number(token?.tokenId) === Number(item?.tokenId)
+          )
+        )
+        .flat()
+        .filter(Boolean);
+
+      // we extract the unique token that match the current item
+      // itemOffers is an array of one item
+      // so we get the first item
+      const tokenOffers = itemOffers[0];
+
+      // then we get the proposals for the current item
+      // we get the accepted, pending, rejected and all proposals
+      // token offers has a "all proposals" key that contains all the proposals
+      // we filter the proposals to get the accepted, pending and rejected proposals
+      // for that we can use the status key of the proposal "CURRENT_ACCEPTED", "CURRENT_PENDING", "CURRENT_REJECTED"
+      const allProposals = tokenOffers?.allProposals;
+      const acceptedProposals = allProposals?.filter(
+        (proposal) => proposal?.status === "CURRENT_ACCEPTED"
+      );
+      const pendingProposals = allProposals?.filter(
+        (proposal) => proposal?.status === "CURRENT_PENDING"
+      );
+      const rejectedProposals = allProposals?.filter(
+        (proposal) => proposal?.status === "CURRENT_REJECTED"
+      );
+
+      const itemProposals = {
+        name: item?.metadata?.name,
+        pendingProposals,
+        rejectedProposals,
+        acceptedProposals,
+        allProposals
+      };
+
+      setItemProposals(itemProposals);
+    }
+  }, [offers, item]);
+
+  useEffect(() => {
+    // the sponsor can submit an ads if one of the following conditions is met:
+    // - the item has no pending proposals AND no accepted proposals
+    // - there is one rejected proposal more recent than the last accepted proposal and the last pending proposal
+    // each proposal has a creationTimestamp and a lastUpdateTimestamp
+
+    if (itemProposals) {
+      const { pendingProposals, rejectedProposals, acceptedProposals } = itemProposals;
+
+      if (pendingProposals?.length === 0 && acceptedProposals?.length === 0) {
+        setAvailableToSubmitAd(true);
+        return;
+      }
+
+      const lastAcceptedProposal = acceptedProposals?.sort(
+        (a, b) => Number(b?.creationTimestamp) - Number(a?.creationTimestamp)
+      )[0];
+      const lastPendingProposal = pendingProposals?.sort(
+        (a, b) => Number(b?.creationTimestamp) - Number(a?.creationTimestamp)
+      )[0];
+      const lastRejectedProposal = rejectedProposals?.sort(
+        (a, b) => Number(b?.creationTimestamp) - Number(a?.creationTimestamp)
+      )[0];
+
+      if (
+        lastRejectedProposal &&
+        lastAcceptedProposal &&
+        Number(lastRejectedProposal?.creationTimestamp) >
+          Number(lastAcceptedProposal?.creationTimestamp) &&
+        lastPendingProposal &&
+        Number(lastRejectedProposal?.creationTimestamp) >
+          Number(lastPendingProposal?.creationTimestamp)
+      ) {
+        setAvailableToSubmitAd(true);
+        return;
+      }
+
+      setAvailableToSubmitAd(false);
+    }
+  }, [itemProposals]);
 
   useEffect(() => {
     if (item && item?.marketplaceListings?.length > 0) {
@@ -87,26 +193,26 @@ const OfferItem = ({
 
     if (!isToken && !isListing && !isAuction) {
       setItemStatut("OFFER");
-      setPrice(item.nftContract.prices[0].mintPriceStructureFormatted.totalAmount);
-      setCurrencyToken(item.nftContract.prices[0].currencySymbol);
+      setPrice(item?.nftContract.prices[0]?.mintPriceStructureFormatted?.totalAmount);
+      setCurrencyToken(item?.nftContract?.prices[0]?.currencySymbol);
       return;
     }
     if (isToken && item?.marketplaceListings?.length <= 0 && item.mint === null) {
       setItemStatut("TOKENMINTABLE");
-      setPrice(item?.nftContract?.prices[0]?.mintPriceStructureFormatted.totalAmount);
-      setCurrencyToken(item.nftContract.prices[0].currencySymbol);
+      setPrice(item?.nftContract?.prices[0]?.mintPriceStructureFormatted?.totalAmount);
+      setCurrencyToken(item?.nftContract?.prices[0]?.currencySymbol);
       return;
     }
     if (isToken && item?.marketplaceListings?.length <= 0 && item.mint !== null) {
       setPrice(null);
-      setCurrencyToken(item.nftContract.prices[0]?.currencySymbol);
+      setCurrencyToken(item?.nftContract?.prices[0]?.currencySymbol);
       setItemStatut("TOKENMINTED");
       return;
     }
     if (isToken && isAuction && listingType === "Auction") {
       setPrice(
         item?.marketplaceListings?.sort((a, b) => Number(b.id) - Number(a.id))[0]
-          ? item?.marketplaceListings.sort((a, b) => Number(b.id) - Number(a.id))[0]
+          ? item?.marketplaceListings?.sort((a, b) => Number(b.id) - Number(a.id))[0]
               ?.bidPriceStructureFormatted?.minimalBidPerToken
           : item?.bidPriceStructureFormatted?.minimalBidPerToken
       );
@@ -137,9 +243,9 @@ const OfferItem = ({
 
     let data = null;
     if (isToken) {
-      data = item.metadata ? item.metadata : null;
+      data = item?.metadata ? item?.metadata : null;
     } else {
-      data = item.metadata.offer ? item.metadata.offer : null;
+      data = item?.metadata?.offer ? item?.metadata?.offer : null;
     }
     setItemData(data);
   }, [item, isToken]);
@@ -236,12 +342,22 @@ const OfferItem = ({
           <div className="flex flex-col flex-1">
             <div className="mt-4 flex items-center justify-between gap-2">
               {isSelectionActive ? (
-                <span className="font-display  text-primaryBlack hover:text-primaryPurple text-base dark:text-white ">
+                <span className="font-display  text-primaryBlack hover:text-primaryPurple text-base dark:text-white flex items-center gap-1">
+                  {availableToSubmitAd && availableToSubmitAdFromOwnedTokens && (
+                    <InfoIcon text="You can submit an ad for this item">
+                      <ExclamationCircleIcon className="h-5 w-5 text-red dark:text-red" />
+                    </InfoIcon>
+                  )}{" "}
                   {name}
                 </span>
               ) : (
                 <div className="overflow-hidden text-ellipsis whitespace-nowrap ">
-                  <span className="font-display  text-primaryBlack hover:text-primaryPurple text-base dark:text-white ">
+                  <span className="font-display  text-primaryBlack hover:text-primaryPurple text-base dark:text-white flex items-center gap-1">
+                    {availableToSubmitAd && availableToSubmitAdFromOwnedTokens && (
+                      <InfoIcon text="You can submit an ad for this item">
+                        <ExclamationCircleIcon className="h-5 w-5 text-red dark:text-red" />
+                      </InfoIcon>
+                    )}{" "}
                     {name}
                   </span>
                 </div>
@@ -249,8 +365,9 @@ const OfferItem = ({
 
               {currencyToken &&
               price &&
-              item?.marketplaceListings?.sort((a, b) => Number(b.id) - Number(a.id))[0]?.status ===
-                "CREATED" ? (
+              (item?.marketplaceListings?.sort((a, b) => Number(b.id) - Number(a.id))[0]?.status ===
+                "CREATED" ||
+                itemStatut === "TOKENMINTABLE") ? (
                 <div className="dark:border-jacarta-600 border-jacarta-100 flex items-center whitespace-nowrap rounded-md border py-1 px-2">
                   <span className="text-green text-sm font-medium tracking-tight">
                     {price} {currencyToken}
@@ -276,8 +393,9 @@ const OfferItem = ({
                     !isListing &&
                     itemStatut !== "TOKENMINTABLE" &&
                     itemStatut !== "DIRECT") ||
-                  item?.marketplaceListings?.sort((a, b) => Number(b.id) - Number(a.id))[0]
-                    ?.status !== "CREATED" ? (
+                  (item?.marketplaceListings?.sort((a, b) => Number(b.id) - Number(a.id))[0]
+                    ?.status !== "CREATED" &&
+                    itemStatut !== "TOKENMINTABLE") ? (
                   <div className="flex  w-full gap-2 items-center ">
                     <span className="text-jacarta-100">Sold</span>
                     <svg

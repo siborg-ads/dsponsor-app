@@ -55,19 +55,32 @@ export const fetchAllOffersByUserAddress = async (userAddress, chainId) => {
             setInAllowList # to check is allowList (above) is true, define if is in allowlist
             # current ad data proposals, per adParameter
             currentProposals {
+              adOffer {
+                id
+              }
               adParameter {
                 id
                 base
+                variants
               }
               acceptedProposal {
+                id
+                status
                 data
+                creationTimestamp
               }
               pendingProposal {
+                id
+                status
                 data
+                creationTimestamp
               }
               rejectedProposal {
+                id
+                status
                 data
                 rejectReason
+                creationTimestamp
               }
             }
 

@@ -17,7 +17,7 @@ const AddProposalRefusedModal = ({
 
   useEffect(() => {
     for (const item of selectedItems) {
-      if (item.reason.length < 3) {
+      if (item?.reason?.length < 3) {
         setAllCommentsOk(false);
       } else {
         setAllCommentsOk(true);
@@ -28,9 +28,9 @@ const AddProposalRefusedModal = ({
     const itemsMap = new Map();
 
     const uniqueItems = selectedItems.filter((item) => {
-      const alreadyExists = itemsMap.has(item.tokenId);
+      const alreadyExists = itemsMap.has(item?.tokenId);
       if (!alreadyExists) {
-        itemsMap.set(item.tokenId, true);
+        itemsMap.set(item?.tokenId, true);
         return true;
       }
       return false;
@@ -62,7 +62,7 @@ const AddProposalRefusedModal = ({
           </div>
           <div className="modal-body max-h-[400px] overflow-auto p-6 flex gap-4 flex-col items-center ">
             {filteredItems.map((item) => {
-              const { tokenId } = item;
+              const tokenId = item?.tokenId;
               return !successFullRefuseModal ? (
                 <div className="mb-6 w-full ">
                   <div className="flex justify-between">

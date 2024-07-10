@@ -1,89 +1,97 @@
 import React, { useState, useEffect } from "react";
-import { getAddress } from "ethers/lib/utils";
 import { DateRangePicker } from "@nextui-org/date-picker";
 import Link from "next/link";
 import { useChainContext } from "../../contexts/hooks/useChainContext";
-import { activated_features } from "../../data/activated_features";
+import { fetchAllMarketplaceBidsByBidder } from "../../providers/methods/fetchAllMarketplaceBids";
+import formatAndRound from "../../utils/formatAndRound";
 
-const Transactions = ({ manageAddress }) => {
-  const [lastActivities, setLastActivities] = useState(null);
+const Bids = ({ manageAddress }) => {
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [filteredLastActivities, setFilteredLastActivities] = useState([]);
-  const [mount, setMount] = useState(false);
+  const [marketplaceBids, setMarketplaceBids] = useState([]);
 
   const { currentChainObject } = useChainContext();
   const chainExplorer = currentChainObject?.explorerBaseUrl;
   const chainId = currentChainObject?.chainId;
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const data = await fetch(
-        `https://relayer.dsponsor.com/api/${chainId}/activity?userAddress=${manageAddress}`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json"
-          }
-        }
-      )
-        .then((res) => res.json())
-        .then((data) => {
-          return data;
-        })
-        .catch((err) => console.error(err));
+  const formatBidTransactions = (bids) => {
+    let tempBids = [];
 
-      console.log(data);
+    bids.forEach((bid) => {
+      let tempBid = {};
 
-      let lastActivities = activated_features.canFilterTransactionsWithWETH
-        ? data?.lastActivities.filter(
-            (activity) => activity.symbol === "WETH" && activity.points > 0
-          )
-        : data?.lastActivities.filter((activity) => activity.points > 0);
+      if (bid?.refundProfit > 0) {
+        tempBid.type = "outbid";
+      } else {
+        tempBid.type = "bid";
+      }
 
-      setLastActivities(lastActivities);
-      setMount(true);
-    };
+      tempBid.date = new Date(bid?.creationTimestamp * 1000);
+      tempBid.transactionHash = bid?.creationTxHash;
+      tempBid.refundAmount = bid?.refundProfit;
+      tempBid.refundDate = new Date(bid?.lastUpdateTimestamp * 1000);
 
-    if (manageAddress && chainId && !mount) {
-      fetchData();
-    }
-  }, [manageAddress, chainId, mount]);
+      tempBids.push(tempBid);
+    });
+
+    return tempBids;
+  };
 
   useEffect(() => {
     if (startDate && endDate) {
-      const filteredActivities = lastActivities.filter((activity) => {
-        const activityDate = new Date(activity.date);
+      let filteredActivities = marketplaceBids.filter((activity) => {
+        const activityDate = new Date(activity?.creationTimestamp * 1000);
         return (
           activityDate.getTime() >= startDate.getTime() &&
           activityDate.getTime() <= endDate.getTime()
         );
       });
 
+      // use the function to format
+      filteredActivities = formatBidTransactions(filteredActivities);
+      filteredActivities = filteredActivities.sort((a, b) => b.date - a.date).filter(Boolean);
+
       setFilteredLastActivities(filteredActivities);
     } else {
-      setFilteredLastActivities(lastActivities);
+      const formattedMarketplaceBids = formatBidTransactions(marketplaceBids);
+      const sortedMarketplaceBids = formattedMarketplaceBids
+        .sort((a, b) => b.date - a.date)
+        .filter(Boolean);
+      setFilteredLastActivities(sortedMarketplaceBids);
     }
-  }, [startDate, endDate, lastActivities]);
+  }, [startDate, endDate, marketplaceBids]);
+
+  useEffect(() => {
+    const fetchMarketplaceBids = async () => {
+      const data = await fetchAllMarketplaceBidsByBidder(chainId, manageAddress);
+      setMarketplaceBids(data?.marketplaceBids);
+    };
+
+    if (chainId && manageAddress) {
+      fetchMarketplaceBids();
+    }
+  }, [chainId, manageAddress]);
 
   const toDisplayType = (type) => {
     switch (type) {
-      case "buy":
-        return "Bought";
-      case "auction":
-        return "Auction Closed";
-      case "mint":
-        return "Minted";
+      case "bid":
+        return "Bidded";
+      case "outbid":
+        return "Outbidded";
       default:
-        return "Unknown";
+        return "Bidded";
     }
   };
+
+  console.log(filteredLastActivities);
+  console.log(marketplaceBids);
 
   return (
     <>
       <div className="flex flex-col justify-center gap-4">
         <div className="flex w-full items-center justify-between">
-          <span className="text-white text-lg font-bold">Transactions</span>
+          <span className="text-white text-lg font-bold">Bids</span>
           <div>
             <DateRangePicker
               size="sm"
@@ -110,9 +118,7 @@ const Transactions = ({ manageAddress }) => {
         </div>
 
         <p className="text-jacarta-100 text-sm">
-          Each transaction where a sale or auction closes rewards the seller, buyer, and referrer
-          based on the amount paid. Here are the transactions for each role that reward this
-          profile.
+          Each transaction that represents a bid or outbid on a listing is displayed here.
         </p>
 
         <div className="overflow-x-auto">
@@ -129,13 +135,10 @@ const Transactions = ({ manageAddress }) => {
                   Transaction Hash
                 </th>
                 <th className="py-3 px-4 font-medium text-jacarta-100 dark:text-jacarta-100">
-                  Buyer Boxes
+                  Refund Date
                 </th>
                 <th className="py-3 px-4 font-medium text-jacarta-100 dark:text-jacarta-100">
-                  Seller Boxes
-                </th>
-                <th className="py-3 px-4 font-medium text-jacarta-100 dark:text-jacarta-100">
-                  Referrer Boxes
+                  Refund Profit
                 </th>
               </tr>
             </thead>
@@ -162,25 +165,17 @@ const Transactions = ({ manageAddress }) => {
                       </Link>
                     </td>
                     <td className="py-4 px-4 text-jacarta-100 dark:text-jacarta-100">
-                      {activity?.spender &&
-                      manageAddress &&
-                      getAddress(activity?.spender) === getAddress(manageAddress)
-                        ? activity?.points
-                        : 0}
+                      {activity?.refundDate &&
+                      new Date(activity?.refundDate).getTime() !==
+                        new Date(activity?.date).getTime()
+                        ? new Date(activity?.refundDate).toLocaleString()
+                        : "-"}
                     </td>
                     <td className="py-4 px-4 text-jacarta-100 dark:text-jacarta-100">
-                      {activity?.enabler &&
-                      manageAddress &&
-                      getAddress(activity?.enabler) === getAddress(manageAddress)
-                        ? activity?.points
-                        : 0}
-                    </td>
-                    <td className="py-4 px-4 text-jacarta-100 dark:text-jacarta-100">
-                      {activity?.refAddr &&
-                      manageAddress &&
-                      getAddress(activity?.refAddr) === getAddress(manageAddress)
-                        ? activity?.points
-                        : 0}
+                      {activity?.refundAmount && activity?.refundAmount > 0
+                        ? formatAndRound(parseFloat(activity?.refundAmount) * 1e-18)
+                        : "-"}{" "}
+                      {/* TODO: to change decimals */}
                     </td>
                   </tr>
                 );
@@ -193,4 +188,4 @@ const Transactions = ({ manageAddress }) => {
   );
 };
 
-export default Transactions;
+export default Bids;

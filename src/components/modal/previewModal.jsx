@@ -1,7 +1,7 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Web3Button } from "@thirdweb-dev/react";
+import { shortenAddress, Web3Button } from "@thirdweb-dev/react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Spinner } from "@nextui-org/spinner";
@@ -41,11 +41,13 @@ const PreviewModal = ({
   buttonTitle,
   modalTitle,
   successFullUploadModal,
+  address,
   adSubmission,
   isLoadingButton,
   multipleAdsSubmission
 }) => {
   const [isHovered, setIsHovered] = React.useState(false);
+  const [imageRatios, setImageRatios] = React.useState([]);
 
   const { currentChainObject } = useChainContext();
   const formatDate = (date) => {
@@ -59,26 +61,55 @@ const PreviewModal = ({
       hour12: true
     });
   };
-  const imageRatioDisplay = (id) => {
-    const ratios = imageUrlVariants[id].split(":");
-    const stepWidth = 250;
-    let width = Number(ratios[0]);
-    let height = Number(ratios[1]);
-    const ratioArray = [];
-    if (ratios.length !== 2) {
-      ratioArray.push(stepWidth);
-      ratioArray.push(stepWidth);
-    }
-    if (width / height > 1) {
-      ratioArray.push(stepWidth);
-      ratioArray.push(stepWidth * (height / width));
-    } else {
-      ratioArray.push(stepWidth * (width / height));
-      ratioArray.push(stepWidth);
-    }
 
-    return ratioArray;
-  };
+  const imageRatioDisplay = React.useCallback(
+    (id) => {
+      if (!imageUrlVariants[id]) return [];
+
+      const ratios = imageUrlVariants[id].split(":");
+      const stepWidth = 250;
+      let width = Number(ratios[0]);
+      let height = Number(ratios[1]);
+      const ratioArray = [];
+      if (ratios.length !== 2) {
+        ratioArray.push(stepWidth);
+        ratioArray.push(stepWidth);
+      }
+      if (width / height > 1) {
+        ratioArray.push(stepWidth);
+        ratioArray.push(stepWidth * (height / width));
+      } else {
+        ratioArray.push(stepWidth * (width / height));
+        ratioArray.push(stepWidth);
+      }
+
+      return ratioArray;
+    },
+    [imageUrlVariants]
+  );
+
+  useEffect(() => {
+    if (imageUrlVariants.length > 0) {
+      let imageRatios = [];
+
+      imageUrlVariants.forEach((image, index) => {
+        if (index < previewImage.length) {
+          const preSplit = image.split("-");
+
+          const imageRatio =
+            preSplit.length === 2 ? preSplit[1].split(":") : preSplit[0].split(":");
+
+          if (imageRatio.length === 2) {
+            imageRatios.push(imageRatio);
+          } else {
+            imageRatios.push([imageRatio[0], imageRatio[0]]);
+          }
+        }
+      });
+
+      setImageRatios(imageRatios);
+    }
+  }, [imageRatioDisplay, imageUrlVariants, previewImage]);
 
   if (adSubmission && !successFullUpload) {
     return (
@@ -118,16 +149,24 @@ const PreviewModal = ({
 
               <div className="flex flex-col gap-2 w-full">
                 <div className="flex items-center gap-2">
-                  <span className="block dark:text-jacarta-100">Image 5:1</span>
+                  <span className="block dark:text-jacarta-100">
+                    Image ({imageRatios[0] ? `${imageRatios[0][0]}:${imageRatios[0][1]}` : "N/A"})
+                  </span>
                 </div>
                 <div className="flex flex-col justify-center items-center gap-2">
                   <Image
                     src={previewImage[0]}
-                    width={800}
-                    height={160}
+                    width={1600}
+                    height={380}
                     className="w-full h-auto"
                     alt="Preview image"
-                    style={{ objectFit: "cover", objectPosition: "center", aspectRatio: "5/1" }}
+                    style={{
+                      objectFit: "contain",
+                      objectPosition: "center",
+                      aspectRatio:
+                        `${imageRatios[0] ? imageRatios[0][0] : 1}/${imageRatios[0] ? imageRatios[0][1] : 1}` ??
+                        "1/1"
+                    }}
                   />
                 </div>
               </div>
@@ -165,7 +204,7 @@ const PreviewModal = ({
           <div className="modal-header">
             <div className="flex items-center justify-between w-full space-x-4">
               <h5 className="modal-title" id="placeBidLabel">
-                Preview your ad submission
+                Preview your multiple tokens ad submission
               </h5>
               <button
                 type="button"
@@ -194,37 +233,35 @@ const PreviewModal = ({
                 </span>
               </div>
 
-              <div className="flex flex-col gap-2 w-full">
-                <div className="flex items-center gap-2">
-                  <span className="block dark:text-jacarta-100">Image 1:1</span>
+              {previewImage.map((image, index) => (
+                <div className="flex flex-col gap-2 w-full" key={index}>
+                  <div className="flex items-center gap-2">
+                    <span className="block dark:text-jacarta-100">
+                      Image {index + 1} - (
+                      {imageRatios[index]
+                        ? `${imageRatios[index][0]}:${imageRatios[index][1]}`
+                        : "N/A"}
+                      )
+                    </span>
+                  </div>
+                  <div className="flex flex-col justify-center items-center gap-2">
+                    <Image
+                      src={image}
+                      width={1600}
+                      height={380}
+                      className="w-full h-auto bg-jacarta-200"
+                      alt="Preview image"
+                      style={{
+                        objectFit: "contain",
+                        objectPosition: "center",
+                        aspectRatio:
+                          `${imageRatios[index] ? imageRatios[index][0] : 1}/${imageRatios[index] ? imageRatios[index][1] : 1}` ??
+                          "1/1"
+                      }}
+                    />
+                  </div>
                 </div>
-                <div className="flex flex-col justify-center items-center gap-2">
-                  <Image
-                    src={previewImage[0]}
-                    width={400}
-                    height={400}
-                    className="w-full h-auto aspect-square overflow-hidden"
-                    alt="Preview image"
-                    style={{ objectFit: "cover", objectPosition: "center" }}
-                  />
-                </div>
-              </div>
-
-              <div className="flex flex-col gap-2 w-full">
-                <div className="flex items-center gap-2">
-                  <span className="block dark:text-jacarta-100">Image 5:1</span>
-                </div>
-                <div className="flex flex-col justify-center items-center gap-2">
-                  <Image
-                    src={previewImage[1]}
-                    width={800}
-                    height={160}
-                    className="w-full h-auto"
-                    alt="Preview image"
-                    style={{ objectFit: "cover", objectPosition: "center", aspectRatio: "5/1" }}
-                  />
-                </div>
-              </div>
+              ))}
             </div>
           </div>
 
@@ -463,6 +500,17 @@ const PreviewModal = ({
                   ) : (
                     ""
                   )}
+                  {address ? (
+                    <p className="font-display  mb-2 block text-jacarta-100 text-sm">
+                      Address :{" "}
+                      <span className="dark:text-white text-base ml-2">
+                        {" "}
+                        {shortenAddress(address)}{" "}
+                      </span>
+                    </p>
+                  ) : (
+                    ""
+                  )}
                   {protocolFees ? (
                     <p className="font-display  mb-2 block text-jacarta-100 text-sm">
                       Protocol fees :{" "}
@@ -548,15 +596,17 @@ const PreviewModal = ({
                 {!successFullUpload ? (
                   approvalForAllToken ? (
                     <Web3Button
-                      contractAddress={currentChainObject?.smartContracts?.DSPONSORADMIN?.address}
+                      contractAddress={
+                        currentChainObject?.smartContracts?.DSPONSORADMIN?.address ?? "no address"
+                      }
                       action={() => {
-                        toast.promise(handleSubmit(true), {
+                        toast.promise(handleSubmit(address), {
                           pending: "Waiting for confirmation 🕒",
                           success: "Transaction confirmed 👌",
                           error: "Transaction rejected 🤯"
                         });
                       }}
-                      className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate ? "!btn-disabled !cursor-not-allowed !text-black" : "!bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer"} `}
+                      className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate || isLoadingButton ? "!btn-disabled !cursor-not-allowed !text-black" : "!bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer"} `}
                       isDisabled={!validate || isLoadingButton}
                     >
                       {isLoadingButton ? <Spinner size="sm" color="default" /> : buttonTitle}
@@ -566,7 +616,9 @@ const PreviewModal = ({
                     <>
                       <div className="flex flex-col items-center gap-2">
                         <Web3Button
-                          contractAddress={currentChainObject?.smartContracts?.DSPONSORMP?.address}
+                          contractAddress={
+                            currentChainObject?.smartContracts?.DSPONSORMP?.address ?? "no address"
+                          }
                           action={() => {
                             toast.promise(handleApprove, {
                               pending: "Waiting for confirmation 🕒",
@@ -574,7 +626,7 @@ const PreviewModal = ({
                               error: "Approval rejected 🤯"
                             });
                           }}
-                          className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate ? "!btn-disabled !cursor-not-allowed !text-black opacity-30" : "!bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer"} `}
+                          className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate || isLoadingButton ? "!btn-disabled !cursor-not-allowed !text-black opacity-30" : "!bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer"} `}
                           isDisabled={!validate || isLoadingButton}
                         >
                           {isLoadingButton ? (

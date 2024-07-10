@@ -8,25 +8,20 @@ import "react-toastify/dist/ReactToastify.css";
 
 import { useEffect, useState } from "react";
 import { Web3Button } from "@thirdweb-dev/react";
-import AddProposalRefusedModal from "../modal/adProposalRefusedModal";
 import config from "../../config/config";
 
 const Review_carousel = ({
   chainId,
   setSelectedItems,
   selectedItems,
-  handleSubmit,
+  handleItemSubmit,
   pendingProposalData,
-  successFullRefuseModal,
-  setSuccessFullRefuseModal,
+  comments,
   isToken,
   isOwner,
-  setRefusedValidatedAdModal,
-  refusedValidatedAdModal
+  setRefusedValidatedAdModal
 }) => {
   const [validate, setValidate] = useState({});
-  const [comments, setComments] = useState({});
-  const [isApprouvedAd, setIsApprouvedAd] = useState(false);
   const [tokenId, setTokenId] = useState(null);
   const [isFirstSelection, setIsFirstSelection] = useState(true);
   const [isSelectedItem, setIsSelectedItem] = useState({});
@@ -66,40 +61,6 @@ const Review_carousel = ({
     }));
   };
 
-  const handleCommentChange = (tokenId, value) => {
-    setComments((currentComments) => ({
-      ...currentComments,
-      [tokenId]: value
-    }));
-    setSelectedItems((currentItems) => {
-      return currentItems.map((item) => {
-        if (item.tokenId === tokenId) {
-          return { ...item, reason: value };
-        }
-        return item;
-      });
-    });
-  };
-
-  const handleItemSubmit = async (approuved = false) => {
-    let submissionArgs = [];
-    setIsApprouvedAd(approuved);
-    for (const item of selectedItems) {
-      let argObject = {
-        ...item,
-        ...(approuved && { reason: "" }),
-        validated: approuved
-      };
-      submissionArgs.push(argObject);
-    }
-
-    try {
-      await handleSubmit(submissionArgs);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
   const openRefuseModal = () => {
     setRefusedValidatedAdModal(true);
   };
@@ -111,23 +72,27 @@ const Review_carousel = ({
     return str.slice(0, 3) + "..." + str.slice(-3);
   };
 
-  const closeRefuseModal = () => {
-    setRefusedValidatedAdModal(null);
-    if (successFullRefuseModal) {
-      setSelectedItems([]);
-      setSuccessFullRefuseModal(false);
-    }
-  };
-
   const handleSelection = (item) => {
     if (!isOwner) return;
+
     setIsFirstSelection(false);
+
     setIsSelectedItem((prevState) => ({
       ...prevState,
       [item.tokenId]: !prevState[item.tokenId]
     }));
 
     setSelectedItems((previousItems) => {
+      if (previousItems.length === 0) {
+        return item.adParametersKeys.map((key, idx) => ({
+          offerId: item.offerId,
+          tokenId: item.tokenId,
+          proposalId: item.proposalIds[idx],
+          adParameter: key,
+          reason: comments?.[item.tokenId] ?? ""
+        }));
+      }
+
       const isAlreadySelected = previousItems.some((i) => i.tokenId === item.tokenId);
 
       if (isAlreadySelected) {
@@ -138,8 +103,9 @@ const Review_carousel = ({
           tokenId: item.tokenId,
           proposalId: item.proposalIds[idx],
           adParameter: key,
-          reason: comments[item.tokenId] || ""
+          reason: comments?.[item.tokenId] ?? ""
         }));
+
         return [...previousItems, ...newItems];
       }
     });
@@ -152,18 +118,6 @@ const Review_carousel = ({
     return imageKey ? adParams[imageKey] : "/";
   };
 
-  const successFullRefusedAdModalObject = {
-    title: "Refused",
-    body: "The ad has been refused successfully ✅",
-    button: "Close"
-  };
-
-  const successFullValidatedAdModalObject = {
-    title: "Validated",
-    body: "The ad has been validated successfully 🎉",
-    button: "Close"
-  };
-
   if (pendingProposalData.length === 0) {
     return <div className="flex justify-center">No pending ads...</div>;
   }
@@ -172,15 +126,18 @@ const Review_carousel = ({
     <div>
       {!isToken && (
         <div>
-          <div className="dark:bg-secondaryBlack dark:border-jacarta-600 border-jacarta-100 rounded-2lg border bg-white p-6 mb-4">
-            <div className=" sm:flex sm:flex-wrap">
-              <span className="dark:text-jacarta-100 text-jacarta-100 text-sm">
-                Select an advertisement below to manage its status. If you approve an ad, it will be
-                displayed on your media platform. The owner of your ad space retains the ability to
-                submit an advertisement even if its status is Pending, Approved, or Denied.{" "}
-              </span>
+          {isOwner && (
+            <div className="dark:bg-secondaryBlack dark:border-jacarta-600 border-jacarta-100 rounded-2lg border bg-white p-6 mb-4">
+              <div className=" sm:flex sm:flex-wrap">
+                <span className="dark:text-jacarta-100 text-jacarta-100 text-sm">
+                  Select an advertisement below to manage its status. If you approve an ad, it will
+                  be displayed on your media platform. The owner of your ad space retains the
+                  ability to submit an advertisement even if its status is Pending, Approved, or
+                  Denied.{" "}
+                </span>
+              </div>
             </div>
-          </div>
+          )}
           <div
             className={`fixed dark:border-jacarta-500 border  bottom-0 blury-background left-0 right-0 px-4 py-3  ${isFirstSelection ? "hidden" : selectedItems?.length === 0 ? "animated-modalSelectedItemDown" : "animated-modalSelectedItemUp"}`}
           >
@@ -241,39 +198,55 @@ const Review_carousel = ({
             >
               <div className="dark:bg-secondaryBlack hover:-translate-y-1 duration-500 cursor-pointer dark:border-jacarta-700 border-jacarta-100 rounded-2xl block border bg-white p-[1.1875rem] transition-shadow hover:shadow-lg text-jacarta-100">
                 <figure className="flex justify-center">
-                  <button onClick={() => openModal(tokenId)}>
-                    {getImageUrl(adParametersList) && (
+                  {getImageUrl(adParametersList) && (
+                    <div className="flex flex-col gap-2">
                       <Image
                         src={getImageUrl(adParametersList) ?? ""}
                         alt="logo"
-                        height={500}
-                        width={500}
+                        height={600}
+                        width={600}
                         style={{ objectFit: "contain" }}
-                        className="rounded-[0.625rem] w-auto h-[150px] object-contain"
+                        className="rounded-[0.625rem] w-full h-auto object-contain"
                         loading="lazy"
+                        onClick={(event) => {
+                          openModal(tokenId);
+
+                          // prevent the parent onClick event from firing
+                          event.stopPropagation(); // it won't select the item
+                        }}
                       />
-                    )}
-                  </button>
+                      <div className="flex items-center justify-between">
+                        <button
+                          onClick={() => openModal(tokenId)}
+                          className="text-left text-xs hover:cursor-pointer hover:underline"
+                        >
+                          Preview Image
+                        </button>
+                        <div className="dark:border-primaryPink dark:border-opacity-10 ms-14 border-jacarta-100 flex items-center whitespace-nowrap rounded-md border py-1 px-2">
+                          <span className="text-green text-sm font-medium tracking-tight">
+                            # {tokenData ?? formatTokenId(tokenId)}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </figure>
 
                 <div className="mt-4 flex items-center justify-between ">
                   <Link
                     href={adParametersList.linkURL ?? ""}
                     target="_blank"
-                    className="font-display  text-jacarta-900 hover:text-primaryPurple text-base dark:text-white  overflow-hidden text-ellipsis whitespace-nowrap "
+                    className="font-display text-jacarta-900 hover:text-primaryPurple text-sm dark:text-white  overflow-hidden text-ellipsis whitespace-nowrap "
                   >
                     <span>{adParametersList?.linkURL}</span>
                   </Link>
-
-                  <div className="dark:border-primaryPink dark:border-opacity-10 ms-14 border-jacarta-100 flex items-center whitespace-nowrap rounded-md border py-1 px-2">
-                    <span className="text-green text-sm font-medium tracking-tight">
-                      # {tokenData ?? formatTokenId(tokenId)}
-                    </span>
-                  </div>
                 </div>
                 <div className="mt-2 text-xs flex justify-between">
-                  <span className="text-primaryPurple text-sm font-bold">
-                    <span className="mr-1">🔍</span> Pending
+                  <span
+                    className={`${!isSelectedItem[tokenId] || isToken ? "text-primaryPurple" : "text-green"} text-sm font-bold`}
+                  >
+                    <span>{isSelectedItem[tokenId] && !isToken && "🔍 "}</span>
+                    Pending
                   </span>
                 </div>
               </div>
@@ -284,20 +257,28 @@ const Review_carousel = ({
 
       {modalStates[tokenId] && (
         <div className="modal fade show block">
-          <div className="modal-dialog !my-0 flex h-screen max-w-4xl items-center justify-center">
-            <Image
-              src={
-                getImageUrl(
-                  pendingProposalData.find((item) => item.tokenId === tokenId).adParametersList
-                ) ?? ""
-              }
-              alt="logo"
-              height={500}
-              width={500}
-              style={{ objectFit: "contain" }}
-              className="rounded-2lg min-w-[75px]"
-              loading="lazy"
-            />
+          <div className="modal-dialog !my-0 flex h-screen backdrop-blur-lg w-full p-12 items-center justify-center">
+            {/* we need to show the image in a dotted grid with the image aspect ratio */}
+            <div
+              className="w-full border dotted border-jacarta-100 bg-white dark:bg-jacarta-200 bg-opacity-20 backdrop-blur-xl dark:bg-opacity-20 dark:border-jacarta-100 overflow-hidden"
+              style={{
+                aspectRatio: `${pendingProposalData?.find((item) => item.tokenId === tokenId)?.adParametersList?.cssAspectRatio}`
+              }}
+            >
+              <Image
+                src={
+                  getImageUrl(
+                    pendingProposalData?.find((item) => item.tokenId === tokenId)?.adParametersList
+                  ) ?? ""
+                }
+                alt="logo"
+                height={2000}
+                width={2000}
+                style={{ objectFit: "contain" }}
+                className="w-full h-full"
+                loading="lazy"
+              />
+            </div>
           </div>
           <button type="button" className="btn-close absolute top-6 right-6" onClick={closeModal}>
             <svg
@@ -311,22 +292,6 @@ const Review_carousel = ({
               <path d="M12 10.586l4.95-4.95 1.414 1.414-4.95 4.95 4.95 4.95-1.414 1.414-4.95-4.95-4.95 4.95-1.414-1.414 4.95-4.95-4.95-4.95L7.05 5.636z" />
             </svg>
           </button>
-        </div>
-      )}
-
-      {refusedValidatedAdModal && (
-        <div className="modal fade show bloc">
-          <AddProposalRefusedModal
-            refusedValidatedAdModal={refusedValidatedAdModal}
-            selectedItems={selectedItems}
-            handleCommentChange={handleCommentChange}
-            handleItemSubmit={handleItemSubmit}
-            closeRefuseModal={closeRefuseModal}
-            successFullRefuseModal={successFullRefuseModal}
-            successFullModalObject={
-              isApprouvedAd ? successFullValidatedAdModalObject : successFullRefusedAdModalObject
-            }
-          />
         </div>
       )}
     </div>

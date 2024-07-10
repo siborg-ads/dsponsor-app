@@ -11,7 +11,8 @@ import { BigNumber, ethers } from "ethers";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
+import { fetchOffer } from "../../providers/methods/fetchOffer";
 import "tippy.js/dist/tippy.css";
 import Meta from "../../components/Meta.jsx";
 import PreviewModal from "../../components/modal/previewModal.jsx";
@@ -21,6 +22,9 @@ import Step3Mint from "../../components/sliderForm/PageMint/Step_3_Mint.jsx";
 import SliderForm from "../../components/sliderForm/sliderForm.jsx";
 import styles from "../../styles/createPage/style.module.scss";
 import Timer from "../../components/item/Timer.jsx";
+import { fetchAllOffers } from "../../providers/methods/fetchAllOffers";
+import ItemLastestSales from "../../components/tables/ItemLastestSales.jsx";
+import { fetchMintingInfoFromTokenId } from "../../providers/methods/fetchMintingInfoFromTokenId.js";
 
 import { getCookie } from "cookies-next";
 import { ItemsTabs } from "../../components/component.js";
@@ -106,6 +110,112 @@ const TokenPageContainer = () => {
   const [insufficentBalance, setInsufficentBalance] = useState(false);
   const [canPayWithNativeToken, setCanPayWithNativeToken] = useState(false);
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [itemProposals, setItemProposals] = useState(null);
+  const [mediaShouldValidateAnAd, setMediaShouldValidateAnAd] = useState(false);
+  const [
+    sponsorHasAtLeastOneRejectedProposalAndNoPending,
+    setSponsorHasAtLeastOneRejectedProposalAndNoPending
+  ] = useState(false);
+  const [offers, setOffers] = useState(null);
+  const [isMedia, setIsMedia] = useState(false);
+  const [sales, setSales] = useState([]);
+
+  let description = "description not found";
+  let id = "1";
+  let image = "/images/gradient_creative.jpg";
+  let name = "Unnamed Ad Space";
+
+  if (offerData?.metadata?.offer) {
+    const embeddedTokenMetaData = offerData?.metadata?.offer?.token_metadata;
+    if (tokenMetaData && Object.keys(tokenMetaData).length > 0) {
+      description = tokenMetaData.description;
+      id = tokenMetaData.id;
+      image = tokenMetaData.image;
+      name = tokenMetaData.name;
+    } else if (embeddedTokenMetaData && Object.keys(embeddedTokenMetaData).length > 0) {
+      description = embeddedTokenMetaData?.description;
+      id = embeddedTokenMetaData?.id;
+      image = embeddedTokenMetaData?.image;
+      name = embeddedTokenMetaData?.name;
+    } else {
+      description = offerData?.metadata?.offer?.description;
+      id = offerData?.metadata?.offer?.id;
+      image = offerData?.metadata?.offer?.image;
+      name = offerData?.metadata?.offer?.name;
+    }
+  }
+
+  useEffect(() => {
+    const fetchOffers = async () => {
+      const offers = await fetchAllOffers(chainId);
+      setOffers(offers);
+    };
+
+    fetchOffers();
+  }, [chainId]);
+
+  useEffect(() => {
+    if (offers) {
+      // we want to get all the proposals for all the item (accept, reject, pending, all)
+      // for that we filter the offers to match the offer with the current tokenId
+      const itemsOffers = offers
+        ?.map((offer) =>
+          offer?.nftContract?.tokens?.filter((token) => Number(token?.tokenId) === Number(tokenId))
+        )
+        .flat()
+        .filter(Boolean);
+
+      // we extract the only element from the array
+      const tokenOffers = itemsOffers[0];
+
+      // then we get the proposals for the current item
+      // we get the accepted, pending, rejected and all proposals
+      // token offers has a "all proposals" key that contains all the proposals
+      // we filter the proposals to get the accepted, pending and rejected proposals
+      // for that we can use the status key of the proposal "CURRENT_ACCEPTED", "CURRENT_PENDING", "CURRENT_REJECTED"
+      const allProposals = tokenOffers?.allProposals;
+      const acceptedProposals = allProposals?.filter(
+        (proposal) => proposal?.status === "CURRENT_ACCEPTED"
+      );
+      const pendingProposals = allProposals?.filter(
+        (proposal) => proposal?.status === "CURRENT_PENDING"
+      );
+      const rejectedProposals = allProposals?.filter(
+        (proposal) => proposal?.status === "CURRENT_REJECTED"
+      );
+
+      const itemProposals = {
+        name: name ?? "",
+        pendingProposals,
+        rejectedProposals,
+        acceptedProposals,
+        allProposals
+      };
+
+      setItemProposals(itemProposals);
+    }
+  }, [name, offers, tokenId]);
+
+  useEffect(() => {
+    // now we want to check one thing from the sponsor side and one thing from the media side
+    // we want to check if the sponsor has at least one rejected proposal and no pending proposal
+    // we want to check if the media should validate an ad or not (i.e. if the media has at least one pending proposal)
+
+    // we check if the sponsor has only rejected proposals
+    const sponsorHasAtLeastOneRejectedProposal = itemProposals?.rejectedProposals?.length > 0;
+    const sponsorHasNoPendingProposal = itemProposals?.pendingProposals?.length === 0;
+    const sponsorHasNoAcceptedProposal = itemProposals?.acceptedProposals?.length === 0;
+
+    setSponsorHasAtLeastOneRejectedProposalAndNoPending(
+      sponsorHasAtLeastOneRejectedProposal &&
+        sponsorHasNoPendingProposal &&
+        sponsorHasNoAcceptedProposal
+    );
+
+    // now we check if the media should validate an ad
+    const mediaShouldValidateAnAd = itemProposals?.pendingProposals?.length > 0;
+    setMediaShouldValidateAnAd(mediaShouldValidateAnAd);
+  }, [itemProposals]);
 
   const [offerDO, setOfferDO] = useState({
     offerId: null
@@ -285,6 +395,118 @@ const TokenPageContainer = () => {
 
     setBids(bids);
   }, [marketplaceListings]);
+
+  const fetchSales = useCallback(async (tokenId, chainId) => {
+    const response = await fetchMintingInfoFromTokenId(Number(tokenId), Number(chainId));
+    return response;
+  }, []);
+
+  useEffect(() => {
+    let sales = [];
+
+    if (marketplaceListings.length > 0) {
+      marketplaceListings.forEach((listing) => {
+        if (listing?.bids) {
+          const sortedBids = listing.bids.sort(
+            (a, b) => new Date(b.creationTimestamp * 1000) - new Date(a.creationTimestamp * 1000)
+          );
+          const winnerBid = sortedBids[0];
+
+          const auction = listing?.listingType === "Auction" && listing?.status === "COMPLETED";
+          const direct = listing?.listingType === "Direct" && listing?.status === "COMPLETED";
+          const mint =
+            !listing?.item?.mint &&
+            !listing?.listingType === "Direct" &&
+            !listing?.listingType === "Auction";
+
+          let saleInfo;
+
+          if (auction) {
+            saleInfo = {
+              address: winnerBid.bidder,
+              amount: winnerBid.totalBidAmount / Math.pow(10, listing.currencyDecimals),
+              date: winnerBid.creationTimestamp,
+              currency: {
+                contract: listing.currency,
+                currencySymbol: listing.currencySymbol,
+                currencyDecimals: listing.currencyDecimals
+              },
+              listing: {
+                id: listing.id,
+                listingType: listing.listingType
+              }
+            };
+          }
+
+          if (direct) {
+            saleInfo = {
+              address: undefined, // not available
+              amount: listing.buyoutPricePerToken / Math.pow(10, listing.currencyDecimals),
+              date: undefined, // not available
+              currency: {
+                contract: listing.currency,
+                currencySymbol: listing.currencySymbol,
+                currencyDecimals: listing.currencyDecimals
+              },
+              listing: {
+                id: listing.id,
+                listingType: listing.listingType
+              }
+            };
+          }
+
+          if (mint) {
+            fetchSales(listing.tokenId, listing.chainId)
+              .then((response) => {
+                console.log("response", response);
+
+                // response has the structure { tokens: [{ id, mint: { currency, amount } }] }
+                const tokenData = response.tokens.find((token) => token.id === listing.tokenId);
+
+                if (tokenData && tokenData.mint) {
+                  const { currency, amount } = tokenData.mint;
+
+                  saleInfo = {
+                    address: undefined, // minter address
+                    amount: amount / Math.pow(10, listing.currencyDecimals),
+                    date: undefined, // not available
+                    currency: currency,
+                    listing: {
+                      id: listing.id,
+                      listingType: listing.listingType
+                    }
+                  };
+                } else {
+                  console.error("Token data or mint information not found in the response.");
+                }
+              })
+              .catch((error) => {
+                console.error("Error fetching sales data:", error);
+              });
+          }
+
+          if (saleInfo) {
+            sales.push(saleInfo);
+          }
+        }
+      });
+    }
+
+    // Group sales by listing id
+    const groupedSales = sales.reduce((acc, sale) => {
+      const listingIndex = acc.findIndex((listing) => listing[0].listing.id === sale.listing.id);
+      if (listingIndex === -1) {
+        acc.push([sale]);
+      } else {
+        acc[listingIndex].push(sale);
+      }
+      return acc;
+    }, []);
+
+    console.log("sales", groupedSales);
+
+    setSales(groupedSales);
+  }, [fetchSales, marketplaceListings]);
 
   useEffect(() => {
     if (!offerData) return;
@@ -570,6 +792,22 @@ const TokenPageContainer = () => {
   }, [offerId, tokenId, successFullUpload, offerData]);
 
   useEffect(() => {
+    const fetchingOffer = async () => {
+      const offer = await fetchOffer(offerId, chainId);
+
+      if (offer) {
+        if (offer?.admins?.includes(address?.toLowerCase())) {
+          setIsMedia(true);
+        } else {
+          setIsMedia(false);
+        }
+      }
+    };
+
+    fetchingOffer();
+  }, [address, chainId, offerData, offerId]);
+
+  useEffect(() => {
     if (offerData?.nftContract?.royalty.bps)
       setRoyalties(offerData?.nftContract?.royalty.bps / 100);
   }, [offerData]);
@@ -789,6 +1027,12 @@ const TokenPageContainer = () => {
 
       await submitAd({ args: functionWithPossibleArgs });
       setSuccessFullUpload(true);
+
+      // reset form
+      setFiles([]);
+      setPreviewImages([]);
+      setLink("");
+      setCurrentSlide(0);
     } catch (error) {
       console.error("Erreur de soumission du token:", error);
       setSuccessFullUpload(false);
@@ -975,31 +1219,6 @@ const TokenPageContainer = () => {
 
   if (!offerData) {
     return null;
-  }
-
-  let description = "description not found";
-  let id = "1";
-  let image = "/images/gradient_creative.jpg";
-  let name = "Unnamed Ad Space";
-
-  if (offerData?.metadata?.offer) {
-    const embeddedTokenMetaData = offerData?.metadata?.offer?.token_metadata;
-    if (tokenMetaData && Object.keys(tokenMetaData).length > 0) {
-      description = tokenMetaData.description;
-      id = tokenMetaData.id;
-      image = tokenMetaData.image;
-      name = tokenMetaData.name;
-    } else if (embeddedTokenMetaData && Object.keys(embeddedTokenMetaData).length > 0) {
-      description = embeddedTokenMetaData?.description;
-      id = embeddedTokenMetaData?.id;
-      image = embeddedTokenMetaData?.image;
-      name = embeddedTokenMetaData?.name;
-    } else {
-      description = offerData?.metadata?.offer?.description;
-      id = offerData?.metadata?.offer?.id;
-      image = offerData?.metadata?.offer?.image;
-      name = offerData?.metadata?.offer?.name;
-    }
   }
 
   return (
@@ -1248,6 +1467,13 @@ const TokenPageContainer = () => {
         </div>
       </section>
 
+      {sales && sales.length > 0 && (
+        <div className="container mb-12">
+          <Divider className="my-4" />
+          <ItemLastestSales sales={sales} />
+        </div>
+      )}
+
       {bids &&
         bids.filter((listing) =>
           listing.map((bid) => {
@@ -1288,6 +1514,12 @@ const TokenPageContainer = () => {
             successFullUploadModal={successFullUploadModal}
             isLister={isLister}
             setSelectedItems={setSelectedItems}
+            sponsorHasAtLeastOneRejectedProposalAndNoPending={
+              sponsorHasAtLeastOneRejectedProposalAndNoPending
+            }
+            mediaShouldValidateAnAd={mediaShouldValidateAnAd}
+            isMedia={isMedia}
+            isSponsor={isOwner}
           />
         )}
       {/* <ItemsTabs /> */}
@@ -1320,10 +1552,17 @@ const TokenPageContainer = () => {
                     styles={styles}
                     adParameters={adParameters}
                     setImageUrlVariants={setImageUrlVariants}
+                    currentSlide={currentSlide}
                   />
                 )}
                 {currentSlide === 2 && (
-                  <Step2Mint stepsRef={stepsRef} styles={styles} setLink={setLink} link={link} />
+                  <Step2Mint
+                    stepsRef={stepsRef}
+                    styles={styles}
+                    setLink={setLink}
+                    link={link}
+                    currentSlide={currentSlide}
+                  />
                 )}
                 {currentSlide === 1 && (
                   <>
@@ -1337,6 +1576,7 @@ const TokenPageContainer = () => {
                         file={files[index]}
                         previewImage={previewImages[index]}
                         handleLogoUpload={(file) => handleLogoUpload(file, index)}
+                        currentSlide={currentSlide}
                       />
                     ))}
                   </>

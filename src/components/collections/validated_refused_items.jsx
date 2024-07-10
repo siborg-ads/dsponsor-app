@@ -79,19 +79,19 @@ const Validated_refused_items = ({ statut, proposalData, isToken }) => {
               return (
                 <div
                   key={tokenId}
-                  className="dark:bg-secondaryBlack  gap-5 p-8 dark:border-jacarta-700 transition-shadow hover:shadow-lg border-jacarta-100 rounded-2.5xl relative flex"
+                  className="dark:bg-secondaryBlack  gap-5 p-4 dark:border-jacarta-700 transition-shadow hover:shadow-lg border-jacarta-100 rounded-2.5xl relative flex"
                 >
-                  <div className=" relative flex items-center gap-5 flex-col sm:flex-row ">
-                    <figure className="self-start">
-                      <button className="w-full" onClick={() => openModal(tokenId)}>
+                  <div className=" relative flex items-center gap-5 flex-col sm:flex-row w-full">
+                    <figure className="self-start w-48 h-auto">
+                      <button className="w-full h-full" onClick={() => openModal(tokenId)}>
                         {getImageUrl(adParametersList) && (
                           <Image
                             src={getImageUrl(adParametersList) ?? ""}
                             alt={item.title}
-                            height={75}
-                            width={75}
+                            height={300}
+                            width={300}
                             objectFit="contain"
-                            className="rounded-2lg min-w-[75px]"
+                            className="rounded-2lg w-full h-full"
                             loading="lazy"
                           />
                         )}
@@ -101,16 +101,29 @@ const Validated_refused_items = ({ statut, proposalData, isToken }) => {
                       <div
                         className={modalStates[tokenId] ? "modal fade show block" : "modal fade"}
                       >
-                        <div className="modal-dialog !my-0 flex h-full max-w-4xl items-center justify-center relative">
-                          <Image
-                            src={getImageUrl(adParametersList) ?? ""}
-                            alt={item.title}
-                            height={300}
-                            width={300}
-                            objectFit="contain"
-                            className="rounded-2lg min-w-[75px]"
-                            loading="lazy"
-                          />
+                        <div className="modal-dialog !my-0 flex h-screen backdrop-blur-lg w-full p-12 items-center justify-center">
+                          {/* we need to show the image in a dotted grid with the image aspect ratio */}
+                          <div
+                            className="relative w-full border dotted border-jacarta-100 bg-white dark:bg-jacarta-200 bg-opacity-20 backdrop-blur-xl dark:bg-opacity-20 dark:border-jacarta-100 overflow-hidden"
+                            style={{
+                              aspectRatio: `${proposalData?.find((item) => item.tokenId === tokenId)?.adParametersList?.cssAspectRatio}`
+                            }}
+                          >
+                            <Image
+                              src={
+                                getImageUrl(
+                                  proposalData?.find((item) => item.tokenId === tokenId)
+                                    ?.adParametersList
+                                ) ?? ""
+                              }
+                              alt="logo"
+                              height={1000}
+                              width={1000}
+                              style={{ objectFit: "contain" }}
+                              className="w-full h-full"
+                              loading="lazy"
+                            />
+                          </div>
                         </div>
 
                         <button
@@ -139,23 +152,29 @@ const Validated_refused_items = ({ statut, proposalData, isToken }) => {
                       {/* End Modal */}
                     </figure>
 
-                    <div>
-                      <h3 className="font-display text-jacarta-900 mb-1 text-base font-semibold dark:text-white">
-                        Item :{" "}
-                        <span className="text-green"> {tokenData ?? formatTokenId(tokenId)} </span>{" "}
-                      </h3>
+                    <div className="flex flex-col gap-4 w-full">
+                      <div className="flex flex-col w-full">
+                        <h3 className=" text-jacarta-900 text-sm dark:text-jacarta-100">Item</h3>
+                        <span className="text-green font-medium">
+                          {tokenData ?? formatTokenId(tokenId)}
+                        </span>
+                      </div>
 
-                      <div className="flex flex-col">
-                        <button className="flex min-w-[20px] text-white max-w-[20rem]  select-none overflow-hidden text-ellipsis whitespace-nowrap">
+                      <div className="flex flex-col w-full">
+                        <h3 className=" text-jacarta-900 text-sm dark:text-jacarta-100">Link</h3>
+                        <button className="flex min-w-[20px] text-primaryPurple hover:underline max-w-[20rem]  select-none overflow-hidden text-ellipsis whitespace-nowrap">
                           <Link href={adParametersList.linkURL ?? ""} target="_blank">
                             {adParametersList?.linkURL}
                           </Link>
                         </button>
                       </div>
                       {reason && (
-                        <span className="text-jacarta-100 dark:text-jacarta-100">
-                          Reason : {reason}
-                        </span>
+                        <div className="flex flex-col w-full">
+                          <h3 className=" text-jacarta-900 text-sm dark:text-jacarta-100">
+                            Reason
+                          </h3>
+                          <span className="text-white">{reason}</span>
+                        </div>
                       )}
                     </div>
                   </div>
@@ -165,7 +184,7 @@ const Validated_refused_items = ({ statut, proposalData, isToken }) => {
                       height={24}
                       src={`/images/${statutItem}.svg`}
                       alt="icon"
-                      className="min-w-[25px]"
+                      className="w-4 h-4"
                     />
                   </div>
                 </div>
