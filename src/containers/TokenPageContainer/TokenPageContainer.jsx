@@ -1418,41 +1418,42 @@ const TokenPageContainer = () => {
                 (firstSelectedListing?.listingType === "Direct" &&
                   firstSelectedListing?.status === "CREATED" &&
                   firstSelectedListing?.startTime < now &&
-                  firstSelectedListing?.endTime > now)) && (
-                <div className="dark:bg-secondaryBlack dark:border-jacarta-600 mb-2 border-jacarta-100 rounded-2lg border flex flex-col gap-4 bg-white p-8">
-                  <div className="sm:flex sm:flex-wrap flex-col gap-8">
-                    {firstSelectedListing?.listingType === "Direct" && (
-                      <div className="flex items-center justify-between gap-4 w-full">
-                        <span className="js-countdown-ends-label text-base text-jacarta-100 dark:text-jacarta-100">
-                          Direct listing ends in:
-                        </span>
-                        <Timer endTime={marketplaceListings[0].endTime} />
-                      </div>
-                    )}
+                  firstSelectedListing?.endTime > now)) &&
+                successFullBuyModal && (
+                  <div className="dark:bg-secondaryBlack dark:border-jacarta-600 mb-2 border-jacarta-100 rounded-2lg border flex flex-col gap-4 bg-white p-8">
+                    <div className="sm:flex sm:flex-wrap flex-col gap-8">
+                      {firstSelectedListing?.listingType === "Direct" && (
+                        <div className="flex items-center justify-between gap-4 w-full">
+                          <span className="js-countdown-ends-label text-base text-jacarta-100 dark:text-jacarta-100">
+                            Direct listing ends in:
+                          </span>
+                          <Timer endTime={marketplaceListings[0].endTime} />
+                        </div>
+                      )}
 
-                    <span className="dark:text-jacarta-100 text-jacarta-100 text-sm">
-                      Buying the ad space give you the exclusive right to submit an ad. The media
-                      still has the power to validate or reject ad assets. You re free to change the
-                      ad at anytime. And free to resell on the open market your ad space.{" "}
-                    </span>
+                      <span className="dark:text-jacarta-100 text-jacarta-100 text-sm">
+                        Buying the ad space give you the exclusive right to submit an ad. The media
+                        still has the power to validate or reject ad assets. You re free to change
+                        the ad at anytime. And free to resell on the open market your ad space.{" "}
+                      </span>
+                    </div>
+                    <div className="w-full flex justify-center">
+                      <Web3Button
+                        contractAddress={
+                          marketplaceListings.length > 0
+                            ? config[chainId]?.smartContracts?.DSPONSORMP?.address
+                            : config[chainId]?.smartContracts?.DSPONSORADMIN?.address
+                        }
+                        action={() => {
+                          handleBuyModal();
+                        }}
+                        className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all  !bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer `}
+                      >
+                        Buy
+                      </Web3Button>
+                    </div>
                   </div>
-                  <div className="w-full flex justify-center">
-                    <Web3Button
-                      contractAddress={
-                        marketplaceListings.length > 0
-                          ? config[chainId]?.smartContracts?.DSPONSORMP?.address
-                          : config[chainId]?.smartContracts?.DSPONSORADMIN?.address
-                      }
-                      action={() => {
-                        handleBuyModal();
-                      }}
-                      className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all  !bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer `}
-                    >
-                      Buy
-                    </Web3Button>
-                  </div>
-                </div>
-              )}
+                )}
 
               {firstSelectedListing?.status === "CREATED" &&
                 firstSelectedListing?.listingType === "Auction" &&
