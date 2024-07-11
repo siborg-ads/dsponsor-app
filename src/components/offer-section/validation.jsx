@@ -23,7 +23,8 @@ const Validation = ({
   selectedItems,
   sponsorHasAtLeastOneRejectedProposalAndNoPending,
   mediaShouldValidateAnAd,
-  isMedia
+  isMedia,
+  itemTokenId
 }) => {
   const [pendingProposalData, setPendingProposalData] = useState([]);
   const [validatedProposalData, setValidatedProposalData] = useState([]);
@@ -248,6 +249,7 @@ const Validation = ({
                 isOwner={isOwner}
                 setSuccessFullRefuseModal={setSuccessFullRefuseModal}
                 handleItemSubmit={handleItemSubmit}
+                itemTokenId={itemTokenId}
               />
             </div>
           </TabPanel>

@@ -19,7 +19,8 @@ const Review_carousel = ({
   comments,
   isToken,
   isOwner,
-  setRefusedValidatedAdModal
+  setRefusedValidatedAdModal,
+  itemTokenId
 }) => {
   const [validate, setValidate] = useState({});
   const [tokenId, setTokenId] = useState(null);
@@ -27,6 +28,25 @@ const Review_carousel = ({
   const [isSelectedItem, setIsSelectedItem] = useState({});
   const [modalStates, setModalStates] = useState({});
   const [copied, setCopied] = useState(false);
+  const [detectedRatio, setDetectedRatio] = useState("");
+  const [detectedRatioIsGood, setDetectedRatioIsGood] = useState(false);
+
+  useEffect(() => {
+    console.log("detectedRatio", detectedRatio);
+    if (detectedRatio) {
+      // check if image ratio is good or not
+      const expectedRatio = pendingProposalData?.find(
+        (item) => Number(item.tokenId) === Number(itemTokenId)
+      )?.adParametersList?.aspectRatio;
+      const detectedRatioFloat = parseFloat(detectedRatio);
+
+      if (detectedRatioFloat === expectedRatio) {
+        setDetectedRatioIsGood(true);
+      } else {
+        setDetectedRatioIsGood(false);
+      }
+    }
+  }, [detectedRatio, pendingProposalData, itemTokenId]);
 
   useEffect(() => {
     const initialValidateStates = {};
@@ -197,9 +217,9 @@ const Review_carousel = ({
               onClick={() => handleSelection(item)}
             >
               <div className="dark:bg-secondaryBlack hover:-translate-y-1 duration-500 cursor-pointer dark:border-jacarta-700 border-jacarta-100 rounded-2xl block border bg-white p-[1.1875rem] transition-shadow hover:shadow-lg text-jacarta-100">
-                <figure className="flex justify-center">
+                <figure className="flex justify-center w-full">
                   {getImageUrl(adParametersList) && (
-                    <div className="flex flex-col gap-2">
+                    <div className="flex flex-col gap-2 w-full">
                       <Image
                         src={getImageUrl(adParametersList) ?? ""}
                         alt="logo"
@@ -208,6 +228,15 @@ const Review_carousel = ({
                         style={{ objectFit: "contain" }}
                         className="rounded-[0.625rem] w-full h-auto object-contain"
                         loading="lazy"
+                        onLoadingComplete={({ naturalWidth, naturalHeight }) => {
+                          // we want ratio in the format "width:height" but the minimal fraction as possible
+                          // for that we find the greatest common divisor
+                          const gcd = (a, b) => (b ? gcd(b, a % b) : a);
+                          const ratio = `${naturalWidth / gcd(naturalWidth, naturalHeight)}:${
+                            naturalHeight / gcd(naturalWidth, naturalHeight)
+                          }`;
+                          setDetectedRatio(ratio);
+                        }}
                         onClick={(event) => {
                           openModal(tokenId);
 
@@ -218,36 +247,54 @@ const Review_carousel = ({
                       <div className="flex items-center justify-between">
                         <button
                           onClick={() => openModal(tokenId)}
-                          className="text-left text-xs hover:cursor-pointer hover:underline"
+                          className="text-left text-xs flex items-center hover:cursor-pointer hover:underline"
                         >
                           Preview Image 🔎
                         </button>
-                        <div className="dark:border-primaryPink dark:border-opacity-10 ms-14 border-jacarta-100 flex items-center whitespace-nowrap rounded-md border py-1 px-2">
+                        <div className="dark:border-primaryPink dark:border-opacity-10  border-jacarta-100 flex items-center whitespace-nowrap rounded-md border py-1 px-2">
                           <span className="text-green text-sm font-medium tracking-tight">
                             # {tokenData ?? formatTokenId(tokenId)}
                           </span>
                         </div>
                       </div>
+                      <div className="flex flex-col gap-2 border-t border-white border-opacity-10 py-2">
+                        <span className="text-xs text-jacarta-100 dark:text-jacarta-100">
+                          Expected Ratio:{" "}
+                          <span className="text-green">{adParametersList?.aspectRatio}</span>
+                        </span>
+                        {getImageUrl(adParametersList) && (
+                          <span className="text-xs text-jacarta-100 dark:text-jacarta-100">
+                            Detected Ratio:{" "}
+                            <span className={`${detectedRatioIsGood ? "text-green" : "text-red"}`}>
+                              {detectedRatio}
+                            </span>
+                          </span>
+                        )}
+                      </div>
                     </div>
                   )}
                 </figure>
 
-                <div className="mt-4 flex items-center justify-between ">
-                  <Link
-                    href={adParametersList.linkURL ?? ""}
-                    target="_blank"
-                    className="font-display text-jacarta-900 hover:text-primaryPurple text-sm dark:text-white  overflow-hidden text-ellipsis whitespace-nowrap "
-                  >
-                    <span>{adParametersList?.linkURL}</span>
-                  </Link>
-                </div>
-                <div className="mt-2 text-xs flex justify-between">
-                  <span
-                    className={`${!isSelectedItem[tokenId] || isToken ? "text-primaryPurple" : "text-green"} text-sm font-bold`}
-                  >
-                    <span>{isSelectedItem[tokenId] && !isToken && "✅ "}</span>
-                    Pending
-                  </span>
+                <div className="flex flex-col gap-2 border-t border-white border-opacity-10">
+                  {adParametersList && (
+                    <div className="flex items-center justify-between ">
+                      <Link
+                        href={adParametersList.linkURL ?? ""}
+                        target="_blank"
+                        className="font-display text-jacarta-900 hover:text-primaryPink text-sm dark:text-white  overflow-hidden text-ellipsis whitespace-nowrap "
+                      >
+                        <span>{adParametersList?.linkURL}</span>
+                      </Link>
+                    </div>
+                  )}
+                  <div className="text-xs flex justify-between">
+                    <span
+                      className={`${!isSelectedItem[tokenId] || isToken ? "text-primaryPink" : "text-green"} text-sm font-bold`}
+                    >
+                      <span>{isSelectedItem[tokenId] && !isToken && "✅ "}</span>
+                      Pending
+                    </span>
+                  </div>
                 </div>
               </div>
             </article>
@@ -264,7 +311,7 @@ const Review_carousel = ({
             }}
           >
             <div className="relative flex items-center justify-center max-w-full max-h-full w-3/4 h-3/4 p-6">
-              <div className="relative flex justify-center items-center max-w-full max-h-full border-2 border-dotted border-jacarta-100 bg-white dark:bg-jacarta-200 bg-opacity-20 backdrop-blur-xl dark:bg-opacity-20 dark:border-jacarta-100 overflow-hidden">
+              <div className="relative flex justify-center items-center h-full max-w-full max-h-full border-2 border-dotted border-jacarta-100 bg-white dark:bg-jacarta-200 bg-opacity-20 backdrop-blur-xl dark:bg-opacity-20 dark:border-jacarta-100 overflow-hidden">
                 <Image
                   src={
                     getImageUrl(

@@ -1522,6 +1522,7 @@ const TokenPageContainer = () => {
             mediaShouldValidateAnAd={mediaShouldValidateAnAd}
             isMedia={isMedia}
             isSponsor={isOwner}
+            itemTokenId={tokenId}
           />
         )}
       {/* <ItemsTabs /> */}
