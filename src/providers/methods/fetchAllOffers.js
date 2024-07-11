@@ -94,6 +94,7 @@ export const fetchAllOffers = async (chainId) => {
   `;
 
   const response = await executeQuery(path.href, GET_DATA);
+
   const chainConfig = config[chainId];
 
   const resultMappedData = response?.adOffers
