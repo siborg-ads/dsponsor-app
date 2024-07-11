@@ -158,17 +158,15 @@ const TokenPageContainer = () => {
 
   useEffect(() => {
     if (offers) {
-      // we want to get all the proposals for all the item (accept, reject, pending, all)
-      // for that we filter the offers to match the offer with the current tokenId
-      const itemsOffers = offers
-        ?.map((offer) =>
-          offer?.nftContract?.tokens?.filter((token) => Number(token?.tokenId) === Number(tokenId))
-        )
-        .flat()
-        .filter(Boolean);
+      // we want to get all the proposals for the current item (accept, reject, pending, all)
+      // for that we filter the offers to match the offer with the current offer that contains the current item
+      const itemOffer = offers?.find((offer) => offer?.id === offerId);
 
-      // we extract the only element from the array
-      const tokenOffers = itemsOffers[0];
+      // itemOffers is an item that contains nftContract which contains tokens that contains the tokenId
+      // we need to get the token item from the tokens array where the tokenId matches the current item tokenId
+      const tokenOffers = itemOffer?.nftContract?.tokens?.find(
+        (token) => token?.tokenId === tokenId
+      );
 
       // then we get the proposals for the current item
       // we get the accepted, pending, rejected and all proposals
@@ -196,9 +194,10 @@ const TokenPageContainer = () => {
 
       setItemProposals(itemProposals);
     }
-  }, [name, offers, tokenId]);
+  }, [name, offerId, offers, tokenId]);
 
   useEffect(() => {
+    if (!itemProposals) return;
     // now we want to check one thing from the sponsor side and one thing from the media side
     // we want to check if the sponsor has at least one rejected proposal and no pending proposal
     // we want to check if the media should validate an ad or not (i.e. if the media has at least one pending proposal)
@@ -734,17 +733,18 @@ const TokenPageContainer = () => {
 
   useEffect(() => {
     if (!isUserOwner || !marketplaceListings || !address) return;
+
     if (
       firstSelectedListing?.listingType === "Auction" &&
       firstSelectedListing?.status === "CREATED" &&
-      address?.toLowerCase() === firstSelectedListing?.lister
+      address?.toLowerCase() === firstSelectedListing?.lister?.toLowerCase()
     ) {
       setIsOwner(true);
       setIsTokenInAuction(true);
     }
 
     if (isUserOwner) {
-      if (isUserOwner === address) {
+      if (isUserOwner?.toLowerCase() === address?.toLowerCase()) {
         setIsOwner(true);
       }
     }

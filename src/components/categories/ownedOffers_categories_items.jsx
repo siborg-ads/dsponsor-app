@@ -8,8 +8,9 @@ import { updateTrendingCategoryItemData } from "../../redux/counterSlice";
 import ConditionalDisplayedComponent from "../../utils/ConditionalDisplayedComponent";
 import OfferItem from "../cards/offerItem";
 import MainButton from "../buttons/mainButton";
+import { ExclamationCircleIcon } from "@heroicons/react/24/solid";
 
-const OwnedOffers_categories_items = ({ data, isPendinAdsOnOffer, isOwner }) => {
+const OwnedOffers_categories_items = ({ data, isPendinAdsOnOffer, isOwner, offers }) => {
   const [itemdata] = useState(trendingCategoryData);
   const dispatch = useDispatch();
   const { currentChainObject } = useChainContext();
@@ -29,9 +30,9 @@ const OwnedOffers_categories_items = ({ data, isPendinAdsOnOffer, isOwner }) => 
   return (
     <>
       {isPendinAdsOnOffer && isOwner && (
-        <div className="dark:bg-secondaryBlack dark:text-jacarta-100 rounded-2lg bg-white p-3 flex gap-4 justify-center items-center mb-6">
-          <span className="bg-red rounded-2xl dark:text-white  px-2">!</span>
-          <span> You have 1 or more ads proposals to check on your offer </span>
+        <div className="dark:bg-secondaryBlack dark:text-jacarta-100 rounded-2lg bg-white p-3 flex gap-2 justify-center items-center mb-6">
+          <ExclamationCircleIcon className="h-6 w-6 text-red" />
+          <span>You have 1 or more ads proposals to check on your offer </span>
         </div>
       )}
 
@@ -39,6 +40,8 @@ const OwnedOffers_categories_items = ({ data, isPendinAdsOnOffer, isOwner }) => 
       {data.length > 0 ? (
         <div className="grid grid-cols-1 gap-[1.875rem] md:grid-cols-2 lg:grid-cols-4">
           {data?.map((item, index) => {
+            const offer = offers?.find((offer) => offer?.id === item?.id);
+
             return (
               <OfferItem
                 item={item}
@@ -46,6 +49,8 @@ const OwnedOffers_categories_items = ({ data, isPendinAdsOnOffer, isOwner }) => 
                 key={index}
                 url={`/${item?.chainConfig?.chainId}/offer/${item.id}`}
                 isOwner={isOwner}
+                offer={offer}
+                createdOffersProposals={true}
               />
             );
           })}
