@@ -155,7 +155,7 @@ const Validated_refused_items = ({ statut, proposalData, isToken }) => {
 
                       <div className="flex flex-col w-full">
                         <h3 className=" text-jacarta-900 text-sm dark:text-jacarta-100">Link</h3>
-                        <button className="flex min-w-[20px] text-green hover:text-opacity-80 hover:underline max-w-[20rem]  select-none overflow-hidden text-ellipsis whitespace-nowrap">
+                        <button className="flex min-w-[20px] text-primaryPurple hover:underline max-w-[20rem]  select-none overflow-hidden text-ellipsis whitespace-nowrap">
                           <Link href={adParametersList.linkURL ?? ""} target="_blank">
                             {adParametersList?.linkURL}
                           </Link>
