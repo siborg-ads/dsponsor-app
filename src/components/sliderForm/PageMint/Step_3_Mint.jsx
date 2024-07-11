@@ -13,7 +13,8 @@ const Step_3_Mint = ({
   handleLogoUpload,
   previewImage,
   currentStep,
-  currentSlide
+  currentSlide,
+  numSteps
 }) => {
   const fileTypes = ["JPG", "PNG", "WEBP"];
   const modalHelper = {
@@ -44,7 +45,9 @@ const Step_3_Mint = ({
   return (
     <div ref={(el) => (stepsRef.current[currentStep] = el)} className={styles.form__step}>
       <div className="pr-6 pl-2" ref={containerElement}>
-        <h3 className="mb-12 text-jacarta-200">Step {currentSlide + 1} : Ad Image {id}</h3>
+        <h3 className="mb-12 text-jacarta-200">
+          Step {currentSlide + 1}/{numSteps} : Ad Image {id}
+        </h3>
         {/* <!-- File Upload --> */}
         <div className="mb-6 items-center flex flex-col">
           <div className="flex gap-3 justify-center items-center mb-2">

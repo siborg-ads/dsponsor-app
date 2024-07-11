@@ -1625,6 +1625,7 @@ const TokenPageContainer = () => {
                     adParameters={adParameters}
                     setImageUrlVariants={setImageUrlVariants}
                     currentSlide={currentSlide}
+                    numSteps={numSteps}
                   />
                 )}
                 {currentSlide === 2 && (
@@ -1634,6 +1635,7 @@ const TokenPageContainer = () => {
                     setLink={setLink}
                     link={link}
                     currentSlide={currentSlide}
+                    numSteps={numSteps}
                   />
                 )}
                 {currentSlide === 1 && (
@@ -1649,6 +1651,7 @@ const TokenPageContainer = () => {
                         previewImage={previewImages[index]}
                         handleLogoUpload={(file) => handleLogoUpload(file, index)}
                         currentSlide={currentSlide}
+                        numSteps={numSteps}
                       />
                     ))}
                   </>

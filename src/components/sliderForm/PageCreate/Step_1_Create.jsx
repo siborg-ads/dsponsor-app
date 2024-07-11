@@ -175,7 +175,7 @@ const Step_1_Create = ({
             </div>
 
             <div className="flex flex-col w-full">
-              <h3 className="mb-2 text-jacarta-100 font-semibold">OFFER TYPE & AVAILABILITY</h3>
+              <h3 className="mb-2 text-jacarta-100 font-semibold">AD DESCRIPTION & AVAILABILITY</h3>
               <p className="dark:text-white">
                 Choose the type of ad space suitable for your media and the number of spaces
                 available for purchase.
@@ -186,13 +186,6 @@ const Step_1_Create = ({
             <div className="flex flex-col gap-8">
               <div className="">
                 <div className="">
-                  <label
-                    htmlFor="item-description"
-                    className="font-display text-jacarta-900 mb-2 block dark:text-white "
-                  >
-                    Type of ad spaces for this offer
-                    <span className="text-red">*</span>
-                  </label>
                   <p className="dark:text-jacarta-100 text-jacarta-100 text-2xs mb-3">
                     Select the appropriate type.
                   </p>
