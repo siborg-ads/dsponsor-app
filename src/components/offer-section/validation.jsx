@@ -83,10 +83,22 @@ const Validation = ({
         groupedAds[token.tokenId].adParametersList[adParamBase] = element[statusKey].data;
 
         if (adParamBase.startsWith("imageURL") && element.adParameter.variants.length > 0) {
-          groupedAds[token.tokenId].adParametersList[`aspectRatio`] =
-            element.adParameter.variants[0];
-          groupedAds[token.tokenId].adParametersList[`cssAspectRatio`] =
-            element.adParameter.variants[0].replace(":", "/");
+          // adParamBase can be imageURL-1:1 or imageURL-0-1:1 for example
+          // in the first case we want aspectRatio to be "1:1" and cssAspectRatio to be "1/1"
+          // in the second case we want aspectRatio to be "1:1" and cssAspectRatio to be "1/1" too
+          if (adParamBase.includes("-0")) {
+            const split = adParamBase.split("-");
+            const aspectRatio = split[2];
+            const cssAspectRatio = aspectRatio?.replace(":", "/");
+            groupedAds[token.tokenId].adParametersList[`aspectRatio`] = aspectRatio;
+            groupedAds[token.tokenId].adParametersList[`cssAspectRatio`] = cssAspectRatio;
+          } else {
+            const split = adParamBase.split("-");
+            const aspectRatio = split[1];
+            const cssAspectRatio = aspectRatio?.replace(":", "/");
+            groupedAds[token.tokenId].adParametersList[`aspectRatio`] = aspectRatio;
+            groupedAds[token.tokenId].adParametersList[`cssAspectRatio`] = cssAspectRatio;
+          }
         }
       }
     }

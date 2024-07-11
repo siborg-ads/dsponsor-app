@@ -27,7 +27,7 @@ const ItemLastestSales = ({ sales }) => {
             <tr className="bg-jacarta-50 dark:bg-primaryPurple rounded-2lg text-base">
               <th className="py-3 px-4 font-medium text-jacarta-100 dark:text-jacarta-100">Type</th>
               <th className="py-3 px-4 font-medium text-jacarta-100 dark:text-jacarta-100">
-                Winner
+                Owner
               </th>
               <th className="py-3 px-4 font-medium text-jacarta-100 dark:text-jacarta-100">
                 Amount
@@ -56,7 +56,7 @@ const ItemLastestSales = ({ sales }) => {
                         </Link>
                       </td>
                       <td className="py-4 px-4 text-jacarta-100 dark:text-jacarta-100">
-                        {renderPriceToHumanString(sale.amount, sale.currency.currencySymbol)}
+                        {renderPriceToHumanString(sale?.amount, sale.currency?.currencySymbol)}
                       </td>
                       <td className="py-4 px-4 text-jacarta-100 dark:text-jacarta-100">
                         {renderDateToHumanString(new Date(Math.max(0, parseInt(sale.date) * 1000)))}
