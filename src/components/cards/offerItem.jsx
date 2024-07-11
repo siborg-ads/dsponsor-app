@@ -6,9 +6,12 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "tippy.js/dist/tippy.css";
 import TimerCard from "./TimerCard";
-import { shortenAddress, useAddress, useChainId } from "@thirdweb-dev/react";
+import { shortenAddress, useAddress } from "@thirdweb-dev/react";
 import { getAddress, formatUnits } from "ethers/lib/utils";
 import { fetchAllOffers } from "../../providers/methods/fetchAllOffers";
+import { ExclamationCircleIcon } from "@heroicons/react/24/solid";
+import InfoIcon from "../informations/infoIcon";
+import { useChainContext } from "../../contexts/hooks/useChainContext";
 
 const OfferItem = ({
   item,
@@ -33,8 +36,9 @@ const OfferItem = ({
   const [itemProposals, setItemProposals] = useState(null);
   const [availableToSubmitAd, setAvailableToSubmitAd] = useState(false);
 
+  const currentChainObject = useChainContext();
   const address = useAddress();
-  const chainId = useChainId();
+  const chainId = currentChainObject?.chainId;
 
   useEffect(() => {
     const fetchOffers = async () => {
@@ -338,13 +342,23 @@ const OfferItem = ({
           <div className="flex flex-col flex-1">
             <div className="mt-4 flex items-center justify-between gap-2">
               {isSelectionActive ? (
-                <span className="font-display  text-primaryBlack hover:text-primaryPurple text-base dark:text-white ">
-                  {availableToSubmitAd && availableToSubmitAdFromOwnedTokens && "❗️"} {name}
+                <span className="font-display  text-primaryBlack hover:text-primaryPurple text-base dark:text-white flex items-center gap-1">
+                  {availableToSubmitAd && availableToSubmitAdFromOwnedTokens && (
+                    <InfoIcon text="You can submit an ad for this item">
+                      <ExclamationCircleIcon className="h-5 w-5 text-red dark:text-red" />
+                    </InfoIcon>
+                  )}{" "}
+                  {name}
                 </span>
               ) : (
                 <div className="overflow-hidden text-ellipsis whitespace-nowrap ">
-                  <span className="font-display  text-primaryBlack hover:text-primaryPurple text-base dark:text-white ">
-                    {availableToSubmitAd && availableToSubmitAdFromOwnedTokens && "❗️"} {name}
+                  <span className="font-display  text-primaryBlack hover:text-primaryPurple text-base dark:text-white flex items-center gap-1">
+                    {availableToSubmitAd && availableToSubmitAdFromOwnedTokens && (
+                      <InfoIcon text="You can submit an ad for this item">
+                        <ExclamationCircleIcon className="h-5 w-5 text-red dark:text-red" />
+                      </InfoIcon>
+                    )}{" "}
+                    {name}
                   </span>
                 </div>
               )}

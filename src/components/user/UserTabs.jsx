@@ -6,6 +6,7 @@ import OwnedOffersCategoriesItems from "../categories/ownedOffers_categories_ite
 import OwnedAdProposalsCategoriesItems from "../categories/ownedAdProposals_categories_item";
 import AuctionsCategories from "../categories/Auctions_categories";
 import TokenAuctionBids from "../categories/tokenAuctionBids";
+import Bids from "./bidsActivity";
 
 const UserTabs = ({
   mappedownedAdProposals,
@@ -31,13 +32,18 @@ const UserTabs = ({
       text: "Activity",
       icon: "activity"
     },
-    { id: 2, text: "Owned tokens", icon: "owned" },
-    { id: 3, text: "Auction listed tokens", icon: "activity" },
-    { id: 4, text: "Token Auction Bids ", icon: "activity" },
+    {
+      id: 2,
+      text: "Bids",
+      icon: "activity"
+    },
+    { id: 3, text: "Owned tokens", icon: "owned" },
+    { id: 4, text: "Auction listed tokens", icon: "activity" },
+    { id: 5, text: "Token Auction Bids ", icon: "activity" },
     ...(activated_features.canCreateOffer
       ? [
           {
-            id: 5,
+            id: 6,
             text: "Created Offers",
             icon: "owned"
           }
@@ -70,6 +76,9 @@ const UserTabs = ({
         </TabList>
         <TabPanel>
           <Transactions manageAddress={manageAddress} />
+        </TabPanel>
+        <TabPanel>
+          <Bids manageAddress={manageAddress} />
         </TabPanel>
         <TabPanel>
           <OwnedAdProposalsCategoriesItems data={mappedownedAdProposals} isOwner={isOwner} />

@@ -47,7 +47,7 @@ const Validated_refused_items = ({ statut, proposalData, isToken }) => {
     return imageKey ? adParams[imageKey] : "/";
   };
 
-  if (proposalData.length === 0) {
+  if (proposalData?.length === 0) {
     return (
       <div className="flex justify-center">
         {statut ? "No validated ads..." : "No refused ads..."}
@@ -79,83 +79,95 @@ const Validated_refused_items = ({ statut, proposalData, isToken }) => {
               return (
                 <div
                   key={tokenId}
-                  className="dark:bg-secondaryBlack  gap-5 p-8 dark:border-jacarta-700 transition-shadow hover:shadow-lg border-jacarta-100 rounded-2.5xl relative flex"
+                  className="dark:bg-secondaryBlack  gap-5 p-4 dark:border-jacarta-700 transition-shadow hover:shadow-lg border-jacarta-100 rounded-2.5xl relative flex"
                 >
-                  <div className=" relative flex items-center gap-5 flex-col sm:flex-row ">
-                    <figure className="self-start">
-                      <button className="w-full" onClick={() => openModal(tokenId)}>
+                  <div className=" relative flex items-center gap-5 flex-col sm:flex-row w-full">
+                    <figure className="self-start w-48 h-auto">
+                      <button className="w-full h-full" onClick={() => openModal(tokenId)}>
                         {getImageUrl(adParametersList) && (
-                          <Image
-                            src={getImageUrl(adParametersList) ?? ""}
-                            alt={item.title}
-                            height={75}
-                            width={75}
-                            objectFit="contain"
-                            className="rounded-2lg min-w-[75px]"
-                            loading="lazy"
-                          />
-                        )}
-                      </button>
-
-                      {/* Modal */}
-                      <div
-                        className={modalStates[tokenId] ? "modal fade show block" : "modal fade"}
-                      >
-                        <div className="modal-dialog !my-0 flex h-full max-w-4xl items-center justify-center relative">
                           <Image
                             src={getImageUrl(adParametersList) ?? ""}
                             alt={item.title}
                             height={300}
                             width={300}
                             objectFit="contain"
-                            className="rounded-2lg min-w-[75px]"
+                            className="rounded-2lg w-full h-full"
                             loading="lazy"
                           />
-                        </div>
+                        )}
+                      </button>
 
-                        <button
-                          type="button"
-                          className="btn-close absolute top-6 right-6"
-                          onClick={() => closeModal(tokenId)}
-                        >
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 24 24"
-                            width="24"
-                            height="24"
-                            className="h-6 w-6 fill-white"
+                      {/* Modal */}
+                      {modalStates[tokenId] && (
+                        <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-xl h-screen w-full max-h-screen max-w-full">
+                          <div
+                            className="flex justify-center items-center max-w-full max-h-full"
+                            style={{
+                              aspectRatio: `${proposalData?.find((item) => item.tokenId === tokenId)?.adParametersList?.cssAspectRatio}`
+                            }}
                           >
-                            <path fill="none" d="M0 0h24v24H0z" />
-                            <path d="M12 10.586l4.95-4.95 1.414 1.414-4.95 4.95 4.95 4.95-1.414 1.414-4.95-4.95-4.95 4.95-1.414-1.414 4.95-4.95-4.95-4.95L7.05 5.636z" />
-                          </svg>
-                        </button>
-                        <Link
-                          href={getImageUrl(adParametersList) ?? ""}
-                          className="absolute bottom-6 right-6 btn btn-primary flex items-center justify-center p-2"
-                        >
-                          {/* SVG icon for download */}
-                        </Link>
-                      </div>
+                            <div className="relative flex items-center justify-center max-w-full max-h-full w-3/4 h-3/4 p-6">
+                              <div className="relative flex justify-center items-center max-w-full max-h-full border-2 border-dotted border-jacarta-100 bg-white dark:bg-jacarta-200 bg-opacity-20 backdrop-blur-xl dark:bg-opacity-20 dark:border-jacarta-100 overflow-hidden">
+                                <Image
+                                  src={
+                                    getImageUrl(
+                                      proposalData?.find((item) => item.tokenId === tokenId)
+                                        ?.adParametersList
+                                    ) ?? ""
+                                  }
+                                  alt="logo"
+                                  height={2000}
+                                  width={2000}
+                                  className="max-w-full max-h-full object-contain"
+                                  loading="lazy"
+                                />
+                              </div>
+                              <button
+                                type="button"
+                                className="absolute top-0 right-0 -p-10"
+                                onClick={() => closeModal(tokenId)}
+                              >
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  viewBox="0 0 24 24"
+                                  width="24"
+                                  height="24"
+                                  className="h-6 w-6 fill-white"
+                                >
+                                  <path fill="none" d="M0 0h24v24H0z" />
+                                  <path d="M12 10.586l4.95-4.95 1.414 1.414-4.95 4.95 4.95 4.95-1.414 1.414-4.95-4.95-4.95 4.95-1.414-1.414 4.95-4.95-4.95-4.95L7.05 5.636z" />
+                                </svg>
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      )}
                       {/* End Modal */}
                     </figure>
 
-                    <div>
-                      <h3 className="font-display text-jacarta-900 mb-1 text-base font-semibold dark:text-white">
-                        Item :{" "}
-                        <span className="text-green"> {tokenData ?? formatTokenId(tokenId)} </span>{" "}
-                      </h3>
+                    <div className="flex flex-col gap-4 w-full">
+                      <div className="flex flex-col w-full">
+                        <h3 className=" text-jacarta-900 text-sm dark:text-jacarta-100">Item</h3>
+                        <span className="text-green font-medium">
+                          {tokenData ?? formatTokenId(tokenId)}
+                        </span>
+                      </div>
 
-                      <div className="flex flex-col">
-                        <button className="flex min-w-[20px] text-white max-w-[20rem]  select-none overflow-hidden text-ellipsis whitespace-nowrap">
+                      <div className="flex flex-col w-full">
+                        <h3 className=" text-jacarta-900 text-sm dark:text-jacarta-100">Link</h3>
+                        <button className="flex min-w-[20px] text-primaryPurple hover:underline max-w-[20rem]  select-none overflow-hidden text-ellipsis whitespace-nowrap">
                           <Link href={adParametersList.linkURL ?? ""} target="_blank">
                             {adParametersList?.linkURL}
                           </Link>
                         </button>
                       </div>
                       {reason && (
-                        <span className="text-jacarta-100 dark:text-jacarta-100">
-                          Reason : {reason}
-                        </span>
+                        <div className="flex flex-col w-full">
+                          <h3 className=" text-jacarta-900 text-sm dark:text-jacarta-100">
+                            Reason
+                          </h3>
+                          <span className="text-white">{reason}</span>
+                        </div>
                       )}
                     </div>
                   </div>
@@ -165,7 +177,7 @@ const Validated_refused_items = ({ statut, proposalData, isToken }) => {
                       height={24}
                       src={`/images/${statutItem}.svg`}
                       alt="icon"
-                      className="min-w-[25px]"
+                      className="w-4 h-4"
                     />
                   </div>
                 </div>

@@ -4,6 +4,8 @@ import { Divider } from "@nextui-org/react";
 import ValidatedRefusedItems from "../collections/validated_refused_items";
 import ReviewCarousel from "../carousel/review_carousel";
 import AddProposalRefusedModal from "../modal/adProposalRefusedModal";
+import { ExclamationCircleIcon } from "@heroicons/react/24/solid";
+import InfoIcon from "../informations/infoIcon";
 
 const Validation = ({
   chainId,
@@ -21,8 +23,7 @@ const Validation = ({
   selectedItems,
   sponsorHasAtLeastOneRejectedProposalAndNoPending,
   mediaShouldValidateAnAd,
-  isMedia,
-  isSponsor
+  isMedia
 }) => {
   const [pendingProposalData, setPendingProposalData] = useState([]);
   const [validatedProposalData, setValidatedProposalData] = useState([]);
@@ -51,6 +52,7 @@ const Validation = ({
   ];
   useEffect(() => {
     if (!offer) return;
+
     const groupedPendingAds = {};
     const groupedValidatedAds = {};
     const groupedRefusedAds = {};
@@ -79,6 +81,25 @@ const Validation = ({
         }
 
         groupedAds[token.tokenId].adParametersList[adParamBase] = element[statusKey].data;
+
+        if (adParamBase.startsWith("imageURL") && element.adParameter.variants.length > 0) {
+          // adParamBase can be imageURL-1:1 or imageURL-0-1:1 for example
+          // in the first case we want aspectRatio to be "1:1" and cssAspectRatio to be "1/1"
+          // in the second case we want aspectRatio to be "1:1" and cssAspectRatio to be "1/1" too
+          if (adParamBase.includes("-0")) {
+            const split = adParamBase.split("-");
+            const aspectRatio = split[2];
+            const cssAspectRatio = aspectRatio?.replace(":", "/");
+            groupedAds[token.tokenId].adParametersList[`aspectRatio`] = aspectRatio;
+            groupedAds[token.tokenId].adParametersList[`cssAspectRatio`] = cssAspectRatio;
+          } else {
+            const split = adParamBase.split("-");
+            const aspectRatio = split[1];
+            const cssAspectRatio = aspectRatio?.replace(":", "/");
+            groupedAds[token.tokenId].adParametersList[`aspectRatio`] = aspectRatio;
+            groupedAds[token.tokenId].adParametersList[`cssAspectRatio`] = cssAspectRatio;
+          }
+        }
       }
     }
 
@@ -98,7 +119,6 @@ const Validation = ({
 
     setValidatedProposalData(formattedValidatedAds);
     setRefusedProposalData(formattedRefusedAds);
-
     setPendingProposalData(formattedPendingAds);
   }, [offer, offerId, successFullUploadModal]);
 
@@ -172,21 +192,27 @@ const Validation = ({
                 <button
                   className={
                     itemActive === id
-                      ? "nav-link hover:text-jacarta-900 text-jacarta-100 relative flex items-center whitespace-nowrap py-3 px-6 dark:hover:text-white active"
-                      : "nav-link hover:text-jacarta-900 text-jacarta-100 relative flex items-center whitespace-nowrap py-3 px-6 dark:hover:text-white"
+                      ? "nav-link hover:text-jacarta-900 text-jacarta-100 relative flex items-center gap-1 whitespace-nowrap py-3 px-6 dark:hover:text-white active"
+                      : "nav-link hover:text-jacarta-900 text-jacarta-100 relative flex items-center gap-1 whitespace-nowrap py-3 px-6 dark:hover:text-white"
                   }
                 >
-                  {sponsorHasAtLeastOneRejectedProposalAndNoPending &&
-                    text === "Refused" &&
-                    isSponsor &&
-                    "❗️"}
-                  {mediaShouldValidateAnAd && text === "Pending" && isMedia && "❗️"}
+                  {sponsorHasAtLeastOneRejectedProposalAndNoPending && text === "Refused" && (
+                    <InfoIcon text="You have at least one refused proposal and no pending proposal.">
+                      <ExclamationCircleIcon className="h-5 w-5 text-red dark:text-red" />
+                    </InfoIcon>
+                  )}
+                  {mediaShouldValidateAnAd && text === "Pending" && isMedia && (
+                    <InfoIcon text="You have at least one ad to validate or to refuse.">
+                      <ExclamationCircleIcon className="h-5 w-5 text-red dark:text-red" />
+                    </InfoIcon>
+                  )}
                   <svg className="icon mr-1 h-5 w-5 fill-current">
                     <use xlinkHref={`/icons.svg#icon-${icon}`}></use>
                   </svg>
                   <span className="font-display text-base font-medium">
-                    <div className="flex gap-2 items-center">
+                    <div className="flex items-center">
                       <span>
+                        {text} (
                         {text === "Pending"
                           ? pendingProposalData?.length
                           : text === "Validated"
@@ -194,9 +220,8 @@ const Validation = ({
                             : text === "Refused"
                               ? refusedProposalData?.length
                               : 0}
+                        )
                       </span>
-                      <span>-</span>
-                      <span>{text}</span>
                     </div>
                   </span>
                 </button>
