@@ -6,13 +6,12 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "tippy.js/dist/tippy.css";
 import TimerCard from "./TimerCard";
-import { shortenAddress, useAddress, useChainId } from "@thirdweb-dev/react";
+import { shortenAddress, useAddress } from "@thirdweb-dev/react";
 import { getAddress, formatUnits } from "ethers/lib/utils";
 import { fetchAllOffers } from "../../providers/methods/fetchAllOffers";
 import { ExclamationCircleIcon } from "@heroicons/react/24/solid";
-import * as Popover from "@radix-ui/react-popover";
-import * as Tooltip from "@radix-ui/react-tooltip";
 import InfoIcon from "../informations/infoIcon";
+import { useChainContext } from "../../contexts/hooks/useChainContext";
 
 const OfferItem = ({
   item,
@@ -24,7 +23,9 @@ const OfferItem = ({
   isListing = false,
   listingType,
   disableLink,
-  availableToSubmitAdFromOwnedTokens
+  availableToSubmitAdFromOwnedTokens,
+  createdOffersProposals,
+  offer
 }) => {
   const [price, setPrice] = useState(null);
   const [currencyToken, setCurrencyToken] = useState(null);
@@ -36,9 +37,11 @@ const OfferItem = ({
   const [offers, setOffers] = useState(null);
   const [itemProposals, setItemProposals] = useState(null);
   const [availableToSubmitAd, setAvailableToSubmitAd] = useState(false);
+  const [isPendingAdsOnOffer, setIsPendingAdsOnOffer] = useState(false);
 
+  const { currentChainObject } = useChainContext();
   const address = useAddress();
-  const chainId = useChainId();
+  const chainId = currentChainObject?.chainId;
 
   useEffect(() => {
     const fetchOffers = async () => {
@@ -52,20 +55,14 @@ const OfferItem = ({
   useEffect(() => {
     if (offers) {
       // we want to get all the proposals for the current item (accept, reject, pending, all)
-      // for that we filter the offers to extract the token that match the current item
-      const itemOffers = offers
-        ?.map((offer) =>
-          offer?.nftContract?.tokens?.filter(
-            (token) => Number(token?.tokenId) === Number(item?.tokenId)
-          )
-        )
-        .flat()
-        .filter(Boolean);
+      // for that we filter the offers to match the offer with the current offer that contains the current item
+      const itemOffer = offers?.find((offer) => offer?.id === item?.offerId);
 
-      // we extract the unique token that match the current item
-      // itemOffers is an array of one item
-      // so we get the first item
-      const tokenOffers = itemOffers[0];
+      // itemOffers is an item that contains nftContract which contains tokens that contains the tokenId
+      // we need to get the token item from the tokens array where the tokenId matches the current item tokenId
+      const tokenOffers = itemOffer?.nftContract?.tokens?.find(
+        (token) => token?.tokenId === item?.tokenId
+      );
 
       // then we get the proposals for the current item
       // we get the accepted, pending, rejected and all proposals
@@ -110,23 +107,23 @@ const OfferItem = ({
       }
 
       const lastAcceptedProposal = acceptedProposals?.sort(
-        (a, b) => Number(b?.creationTimestamp) - Number(a?.creationTimestamp)
+        (a, b) => Number(b?.lastUpdateTimestamp) - Number(a?.lastUpdateTimestamp)
       )[0];
       const lastPendingProposal = pendingProposals?.sort(
-        (a, b) => Number(b?.creationTimestamp) - Number(a?.creationTimestamp)
+        (a, b) => Number(b?.lastUpdateTimestamp) - Number(a?.ladtUpdateTimestamp)
       )[0];
       const lastRejectedProposal = rejectedProposals?.sort(
-        (a, b) => Number(b?.creationTimestamp) - Number(a?.creationTimestamp)
+        (a, b) => Number(b?.lastUpdateTimestamp) - Number(a?.lastUpdateTimestamp)
       )[0];
 
       if (
         lastRejectedProposal &&
         lastAcceptedProposal &&
-        Number(lastRejectedProposal?.creationTimestamp) >
-          Number(lastAcceptedProposal?.creationTimestamp) &&
+        Number(lastRejectedProposal?.lastUpdateTimestamp) >
+          Number(lastAcceptedProposal?.lastUpdateTimestamp) &&
         lastPendingProposal &&
-        Number(lastRejectedProposal?.creationTimestamp) >
-          Number(lastPendingProposal?.creationTimestamp)
+        Number(lastRejectedProposal?.lastUpdateTimestamp) >
+          Number(lastPendingProposal?.lastUpdateTimestamp)
       ) {
         setAvailableToSubmitAd(true);
         return;
@@ -181,6 +178,20 @@ const OfferItem = ({
       setIsLastBidder(true);
     }
   }, [address, lastBidder]);
+
+  useEffect(() => {
+    if (offer) {
+      const pendingProposals = offer?.allProposals?.filter(
+        (proposal) => proposal?.status === "CURRENT_PENDING"
+      );
+
+      if (pendingProposals?.length > 0) {
+        setIsPendingAdsOnOffer(true);
+      } else {
+        setIsPendingAdsOnOffer(false);
+      }
+    }
+  }, [offer]);
 
   function formatDate(dateIsoString) {
     if (!dateIsoString) return "date not found";
@@ -347,6 +358,11 @@ const OfferItem = ({
                     <InfoIcon text="You can submit an ad for this item">
                       <ExclamationCircleIcon className="h-5 w-5 text-red dark:text-red" />
                     </InfoIcon>
+                  )}
+                  {createdOffersProposals && isPendingAdsOnOffer && (
+                    <InfoIcon text="You have 1 or more ads proposals to check on your offer">
+                      <ExclamationCircleIcon className="h-5 w-5 text-red dark:text-red" />
+                    </InfoIcon>
                   )}{" "}
                   {name}
                 </span>
@@ -355,6 +371,11 @@ const OfferItem = ({
                   <span className="font-display  text-primaryBlack hover:text-primaryPurple text-base dark:text-white flex items-center gap-1">
                     {availableToSubmitAd && availableToSubmitAdFromOwnedTokens && (
                       <InfoIcon text="You can submit an ad for this item">
+                        <ExclamationCircleIcon className="h-5 w-5 text-red dark:text-red" />
+                      </InfoIcon>
+                    )}
+                    {createdOffersProposals && isPendingAdsOnOffer && (
+                      <InfoIcon text="You have 1 or more ads proposals to check on your offer">
                         <ExclamationCircleIcon className="h-5 w-5 text-red dark:text-red" />
                       </InfoIcon>
                     )}{" "}
