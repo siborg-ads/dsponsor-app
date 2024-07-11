@@ -265,7 +265,7 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
               </div>
               {isSelectionActive && (
                 <div className="dark:bg-secondaryBlack dark:text-jacarta-100 rounded-2lg bg-white p-3 flex gap-4 justify-center items-center mb-6">
-                  <span>Select tokens to submit and ads</span>
+                  <span>Select tokens to submit an ad on</span>
                 </div>
               )}
             </div>
@@ -377,6 +377,7 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
                 adParameters={adParameters}
                 setImageUrlVariants={setImageUrlVariants}
                 currentSlide={currentSlide}
+                numSteps={numSteps}
               />
             )}
 
@@ -395,6 +396,7 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
                       previewImage={previewImages[index]}
                       handleLogoUpload={(file) => handleLogoUpload(file, index, step)}
                       currentSlide={currentSlide}
+                      numSteps={numSteps}
                     />
                   )}
                 </>
@@ -408,6 +410,7 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
                 setLink={setLink}
                 link={link}
                 currentSlide={currentSlide}
+                numSteps={numSteps}
               />
             )}
           </SliderForm>
