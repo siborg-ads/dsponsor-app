@@ -107,7 +107,7 @@ const Validated_refused_items = ({ statut, proposalData, isToken }) => {
                             }}
                           >
                             <div className="relative flex items-center justify-center max-w-full max-h-full w-3/4 h-3/4 p-6">
-                              <div className="relative flex justify-center items-center max-w-full max-h-full border-2 border-dotted border-jacarta-100 bg-white dark:bg-jacarta-200 bg-opacity-20 backdrop-blur-xl dark:bg-opacity-20 dark:border-jacarta-100 overflow-hidden">
+                              <div className="relative flex justify-center items-center h-full max-w-full max-h-full border-2 border-dotted border-jacarta-100 bg-white dark:bg-jacarta-200 bg-opacity-20 backdrop-blur-xl dark:bg-opacity-20 dark:border-jacarta-100 overflow-hidden">
                                 <Image
                                   src={
                                     getImageUrl(

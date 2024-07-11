@@ -26,13 +26,19 @@ const Step_3_Mint = ({
   const [heightRatioImage, setHeightRatioImage] = useState(null);
   useEffect(() => {
     const stepWidth = 250;
-    const ratios = id.split(":");
+    let tempId = id;
+    if (id.includes("0-")) {
+      tempId = id.slice(2);
+    }
+    const ratios = tempId.split(":");
     let width = Number(ratios[0]);
     let height = Number(ratios[1]);
+
     if (ratios.length !== 2) {
       width = 1;
       height = 1;
     }
+
     if (width / height > 1) {
       setWidthRatioImage(stepWidth);
       setHeightRatioImage(stepWidth * (height / width));
