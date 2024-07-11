@@ -335,7 +335,7 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
             <span className="flex items-center justify-center gap-6">
               <span className="mr-4">
                 Ad Spaces selected :{" "}
-                <span className="text-primaryPurple text-md ml-1">
+                <span className="text-green text-md ml-1">
                   {Object.values(isSelectedItem).filter((value) => value === true).length}
                 </span>{" "}
               </span>
