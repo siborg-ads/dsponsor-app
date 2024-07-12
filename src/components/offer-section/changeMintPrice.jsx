@@ -19,6 +19,7 @@ const ChangeMintPrice = ({ offer }) => {
   const [tokensContractAddress, setTokensContractAddress] = useState(["0x"]);
   const [selectedToken, setSelectedToken] = useState(null);
   const [currencyDecimals, setCurrencyDecimals] = useState(null);
+  const [indexSelectedToken, setIndexSelectedToken] = useState(null);
 
   const { currentChainObject } = useChainContext();
   const chainId = currentChainObject?.chainId;
@@ -128,18 +129,22 @@ const ChangeMintPrice = ({ offer }) => {
                 <div
                   key={index}
                   onClick={() => {
-                    if (selectedToken === index) {
+                    if (indexSelectedToken === index) {
                       setSelectedToken(null);
                     } else {
+                      setIndexSelectedToken(index);
                       setSelectedToken(token?.tokenId);
                     }
                   }}
-                  className={`flex flex-col cursor-pointer border-2 items-center gap-2 bg-secondaryBlack p-4 rounded-lg ${selectedToken === index ? "border-primaryPurple" : "border-transparent"}`}
+                  className={`flex flex-col cursor-pointer border-2 items-center gap-2 bg-secondaryBlack p-4 rounded-lg ${indexSelectedToken === index ? "border-primaryPurple" : "border-transparent"}`}
                 >
                   <p className="text-white text-sm font-semibold">Token #{token?.tokenId}</p>
 
                   <p className="text-white text-sm font-semibold">
-                    {formatUnits(BigNumber.from(token?.mint?.amount ?? "0"), currencyDecimals)}{" "}
+                    {formatUnits(
+                      BigNumber.from(token?.nftContract?.prices[0]?.amount ?? "0"),
+                      currencyDecimals
+                    )}{" "}
                     {currencySymbol}
                   </p>
                 </div>

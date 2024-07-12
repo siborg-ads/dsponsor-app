@@ -63,6 +63,9 @@ export const fetchOffer = async (offerId, chainId) => {
             }
             nftContract {
               id
+              prices {
+                amount
+              }
             }
             setInAllowList # to check is allowList (above) is true, define if is in allowlist
             # current ad data proposals, per adParameter
