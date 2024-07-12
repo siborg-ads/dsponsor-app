@@ -7,6 +7,7 @@ import { toast } from "react-toastify";
 import { parseUnits, formatUnits } from "ethers/lib/utils";
 import * as Switch from "@radix-ui/react-switch";
 import { BigNumber } from "ethers";
+import { activated_features } from "../../data/activated_features";
 
 const ChangeMintPrice = ({ offer }) => {
   const [amount, setAmount] = useState(undefined);
@@ -115,43 +116,45 @@ const ChangeMintPrice = ({ offer }) => {
         Change Mint Price
       </h2>
       <div className="flex flex-col gap-4 justify-center">
-        <div className="mb-4">
-          <label className="block text-gray-700 text-sm font-semibold">Offer tokens</label>
-          <span className="text-jacarta-200 text-xs font-semibold">
-            When selecting a token, the mint price will be changed for that token however the new
-            mint price will be the same for all tokens.
-          </span>
-          <div className="flex items-center flex-wrap gap-4 mt-4">
-            {tokens?.map((token, index) => {
-              if (token?.mint !== null) return null;
+        {activated_features?.canChangeTokenMintPrice && (
+          <div className="mb-4">
+            <label className="block text-gray-700 text-sm font-semibold">Offer tokens</label>
+            <span className="text-jacarta-200 text-xs font-semibold">
+              When selecting a token, the mint price will be changed for that token however the new
+              mint price will be the same for all tokens.
+            </span>
+            <div className="flex items-center flex-wrap gap-4 mt-4">
+              {tokens?.map((token, index) => {
+                if (token?.mint !== null) return null;
 
-              return (
-                <div
-                  key={index}
-                  onClick={() => {
-                    if (indexSelectedToken === index) {
-                      setSelectedToken(null);
-                    } else {
-                      setIndexSelectedToken(index);
-                      setSelectedToken(token?.tokenId);
-                    }
-                  }}
-                  className={`flex flex-col cursor-pointer border-2 items-center gap-2 bg-secondaryBlack p-4 rounded-lg ${indexSelectedToken === index ? "border-primaryPurple" : "border-transparent"}`}
-                >
-                  <p className="text-white text-sm font-semibold">Token #{token?.tokenId}</p>
+                return (
+                  <div
+                    key={index}
+                    onClick={() => {
+                      if (indexSelectedToken === index) {
+                        setSelectedToken(null);
+                      } else {
+                        setIndexSelectedToken(index);
+                        setSelectedToken(token?.tokenId);
+                      }
+                    }}
+                    className={`flex flex-col cursor-pointer border-2 items-center gap-2 bg-secondaryBlack p-4 rounded-lg ${indexSelectedToken === index ? "border-primaryPurple" : "border-transparent"}`}
+                  >
+                    <p className="text-white text-sm font-semibold">Token #{token?.tokenId}</p>
 
-                  <p className="text-white text-sm font-semibold">
-                    {formatUnits(
-                      BigNumber.from(token?.nftContract?.prices[0]?.amount ?? "0"),
-                      currencyDecimals
-                    )}{" "}
-                    {currencySymbol}
-                  </p>
-                </div>
-              );
-            })}
+                    <p className="text-white text-sm font-semibold">
+                      {formatUnits(
+                        BigNumber.from(token?.nftContract?.prices[0]?.amount ?? "0"),
+                        currencyDecimals
+                      )}{" "}
+                      {currencySymbol}
+                    </p>
+                  </div>
+                );
+              })}
+            </div>
           </div>
-        </div>
+        )}
 
         <div className="mb-4">
           <label className="block text-gray-700 text-sm font-semibold mb-2">
