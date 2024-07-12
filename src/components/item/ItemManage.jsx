@@ -19,6 +19,7 @@ const ItemManage = ({
   const [listingModal, setListingModal] = useState(false);
   const [isLoadingButton, setIsLoadingButton] = useState(false);
   const [isLastBidder, setIsLastBidder] = useState(false);
+
   const { currentChainObject } = useChainContext();
   const { mutateAsync: cancelDirectListing } = useContractWrite(
     dsponsorMpContract,
@@ -174,20 +175,22 @@ const ItemManage = ({
         conditions?.isListerOrOwnerAndStartDateNotPassed)
     ) {
       return (
-        <Web3Button
-          contractAddress={currentChainObject?.smartContracts?.DSPONSORMP?.address}
-          action={() =>
-            toast.promise(handleSubmitCancel, {
-              pending: "Waiting for confirmation 🕒",
-              success: "Close auction confirmed 👌",
-              error: "Close auction rejected 🤯"
-            })
-          }
-          className="!rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all !bg-red !cursor-pointer"
-          isDisabled={isLoadingButton}
-        >
-          {isLoadingButton ? <Spinner size="sm" color="default" /> : "Cancel auction"}
-        </Web3Button>
+        <div className="grid grid-cols-1 gap-4">
+          <Web3Button
+            contractAddress={currentChainObject?.smartContracts?.DSPONSORMP?.address}
+            action={() =>
+              toast.promise(handleSubmitCancel, {
+                pending: "Waiting for confirmation 🕒",
+                success: "Close auction confirmed 👌",
+                error: "Close auction rejected 🤯"
+              })
+            }
+            className="!rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all !bg-red !cursor-pointer"
+            isDisabled={isLoadingButton}
+          >
+            {isLoadingButton ? <Spinner size="sm" color="default" /> : "Cancel auction"}
+          </Web3Button>
+        </div>
       );
     }
     return null;

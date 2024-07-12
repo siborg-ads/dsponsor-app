@@ -32,7 +32,7 @@ const devEthereumSepolia = {
       symbol: "WETH"
     },
     UNISWAP_QUOTER: {
-      address: "0xEd1f6473345F45b75F8179591dd5bA1888cf2FB3",
+      address: "0xEd1f6473345F45b75F8179591dd5bA1888cf2FB3"
     },
     DSPONSORADMIN: {
       address: "0x10E0447dDB66f1d33E6b10dB5099FBa231ceCE5C",
