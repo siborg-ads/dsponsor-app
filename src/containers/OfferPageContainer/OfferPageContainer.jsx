@@ -23,7 +23,6 @@ import { ItemsTabs } from "../../components/component";
 import config from "../../config/config";
 import { useSwitchChainContext } from "../../contexts/hooks/useSwitchChainContext";
 import { activated_features } from "../../data/activated_features";
-import UpdateOffer from "../../components/offer-section/updateOffer";
 
 const OfferPageContainer = () => {
   const router = useRouter();
@@ -193,6 +192,8 @@ const OfferPageContainer = () => {
     if (offerId && chainId) {
       const fetchAdsOffers = async () => {
         const offer = await fetchOffer(offerId, chainId);
+
+        console.log("offer", offer);
 
         setOfferData(offer);
         if (userAddress && offer?.admins?.includes(userAddress.toLowerCase())) {
@@ -430,9 +431,6 @@ const OfferPageContainer = () => {
           chainId={chainId}
         />
       </div>
-
-      {isOwner && <UpdateOffer offer={offerData} />}
-
       {!offerData.nftContract.allowList && (
         <div className="container flex flex-col justify-center mb-6">
           <Divider className="my-4" />

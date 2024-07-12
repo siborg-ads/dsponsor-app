@@ -23,8 +23,6 @@
     "@nextui-org/badge": "^2.0.25",
     "@nextui-org/react": "^2.3.5",
     "@nextui-org/spinner": "^2.0.26",
-    "@radix-ui/react-label": "^2.1.0",
-    "@radix-ui/react-switch": "^1.1.0",
     "@reduxjs/toolkit": "^2.2.5",
     "@thirdweb-dev/auth": "^4.1.54",
     "@thirdweb-dev/react": "^4.4.31",
