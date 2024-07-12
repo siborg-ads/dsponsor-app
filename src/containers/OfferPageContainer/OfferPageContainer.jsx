@@ -506,6 +506,7 @@ const OfferPageContainer = () => {
           mediaShouldValidateAnAd={mediaShouldValidateAnAd}
           isMedia={isMedia}
           isSponsor={isOwner}
+          itemTokenId={offerData?.nftContract?.id}
         />
       )}
 

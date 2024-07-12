@@ -33,6 +33,7 @@ const Validation = ({
   const [comments, setComments] = useState({});
   const [isApprouvedAd, setIsApprouvedAd] = useState(false);
   const [pendingProposalLength, setPendingProposalLength] = useState(0);
+  const [aspectRatio, setAspectRatio] = useState(null);
 
   const tabItem = [
     {
@@ -85,7 +86,6 @@ const Validation = ({
         groupedAds[token.tokenId].adParametersList[adParamBase] = element[statusKey].data;
 
         if (adParamBase.startsWith("imageURL") && element.adParameter.variants.length > 0) {
-          console.log("adParamBase", adParamBase);
           // adParamBase can be imageURL-1:1 or imageURL-0-1:1 for example
           // in the first case we want aspectRatio to be "1:1" and cssAspectRatio to be "1/1"
           // in the second case we want aspectRatio to be "1:1" and cssAspectRatio to be "1/1" too
@@ -95,12 +95,14 @@ const Validation = ({
             const cssAspectRatio = aspectRatio?.replace(":", "/");
             groupedAds[token.tokenId].adParametersList[`aspectRatio`] = aspectRatio;
             groupedAds[token.tokenId].adParametersList[`cssAspectRatio`] = cssAspectRatio;
+            setAspectRatio(aspectRatio);
           } else {
             const split = adParamBase.split("-");
             const aspectRatio = split[1];
             const cssAspectRatio = aspectRatio?.replace(":", "/");
             groupedAds[token.tokenId].adParametersList[`aspectRatio`] = aspectRatio;
             groupedAds[token.tokenId].adParametersList[`cssAspectRatio`] = cssAspectRatio;
+            setAspectRatio(aspectRatio);
           }
         }
       }
@@ -257,7 +259,7 @@ const Validation = ({
                 isOwner={isOwner}
                 setSuccessFullRefuseModal={setSuccessFullRefuseModal}
                 handleItemSubmit={handleItemSubmit}
-                itemTokenId={itemTokenId}
+                aspectRatio={aspectRatio}
               />
             </div>
           </TabPanel>
