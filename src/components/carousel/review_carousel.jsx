@@ -20,7 +20,8 @@ const Review_carousel = ({
   isToken,
   isOwner,
   setRefusedValidatedAdModal,
-  aspectRatio: expectedRatio
+  aspectRatio: expectedRatio,
+  setSponsorHasAtLeastOneRejectedProposalAndNoPending
 }) => {
   const [validate, setValidate] = useState({});
   const [tokenId, setTokenId] = useState(null);
