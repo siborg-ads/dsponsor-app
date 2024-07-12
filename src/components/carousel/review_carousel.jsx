@@ -20,8 +20,7 @@ const Review_carousel = ({
   isToken,
   isOwner,
   setRefusedValidatedAdModal,
-  itemTokenId,
-  setSponsorHasAtLeastOneRejectedProposalAndNoPending
+  aspectRatio: expectedRatio
 }) => {
   const [validate, setValidate] = useState({});
   const [tokenId, setTokenId] = useState(null);
@@ -29,25 +28,40 @@ const Review_carousel = ({
   const [isSelectedItem, setIsSelectedItem] = useState({});
   const [modalStates, setModalStates] = useState({});
   const [copied, setCopied] = useState(false);
-  const [detectedRatio, setDetectedRatio] = useState("");
-  const [detectedRatioIsGood, setDetectedRatioIsGood] = useState(false);
+  const [detectedRatios, setDetectedRatios] = useState([]);
+  const [detectedRatiosAreGood, setDetectedRatiosAreGood] = useState([]);
 
   useEffect(() => {
-    console.log("detectedRatio", detectedRatio);
-    if (detectedRatio) {
-      // check if image ratio is good or not
-      const expectedRatio = pendingProposalData?.find(
-        (item) => Number(item.tokenId) === Number(itemTokenId)
-      )?.adParametersList?.aspectRatio;
-      const detectedRatioFloat = parseFloat(detectedRatio);
+    if (detectedRatios) {
+      let detectedRatiosAreGood = [];
 
-      if (detectedRatioFloat === expectedRatio) {
-        setDetectedRatioIsGood(true);
-      } else {
-        setDetectedRatioIsGood(false);
-      }
+      // check if image ratio is good or not for each item
+      detectedRatios.map((detectedRatio) => {
+        if (!detectedRatio) {
+          return false;
+        }
+
+        if (!expectedRatio) {
+          return false;
+        }
+
+        const realDetectedRatio = detectedRatio.split(":");
+        const realWidth = Number(realDetectedRatio[0]);
+        const realHeight = Number(realDetectedRatio[1]);
+        const realDetectedRatioValue = realWidth / realHeight;
+
+        const realExpectedRatio = expectedRatio.split(":");
+        const realExpectedWidth = Number(realExpectedRatio[0]);
+        const realExpectedHeight = Number(realExpectedRatio[1]);
+        const realExpectedRatioValue = realExpectedWidth / realExpectedHeight;
+
+        const detectedRatioIsGood = realDetectedRatioValue === realExpectedRatioValue;
+        detectedRatiosAreGood.push(detectedRatioIsGood);
+      });
+
+      setDetectedRatiosAreGood(detectedRatiosAreGood);
     }
-  }, [detectedRatio, pendingProposalData, itemTokenId]);
+  }, [detectedRatiosAreGood, detectedRatios, expectedRatio]);
 
   useEffect(() => {
     const initialValidateStates = {};
@@ -214,7 +228,7 @@ const Review_carousel = ({
       )}
 
       <div className="grid grid-cols-1 gap-[1.875rem] md:grid-cols-2 lg:grid-cols-4">
-        {pendingProposalData.map((item) => {
+        {pendingProposalData.map((item, itemIndex) => {
           const { adParametersList, tokenId, tokenData } = item;
 
           return (
@@ -242,7 +256,13 @@ const Review_carousel = ({
                           const ratio = `${naturalWidth / gcd(naturalWidth, naturalHeight)}:${
                             naturalHeight / gcd(naturalWidth, naturalHeight)
                           }`;
-                          setDetectedRatio(ratio);
+
+                          // put ratio at the itemIndex position of the detectedRatios array
+                          setDetectedRatios((prev) => {
+                            const newDetectedRatios = [...prev];
+                            newDetectedRatios[itemIndex] = ratio;
+                            return newDetectedRatios;
+                          });
                         }}
                         onClick={(event) => {
                           openModal(tokenId);
@@ -272,8 +292,10 @@ const Review_carousel = ({
                         {getImageUrl(adParametersList) && (
                           <span className="text-xs text-jacarta-100 dark:text-jacarta-100">
                             Detected Ratio:{" "}
-                            <span className={`${detectedRatioIsGood ? "text-green" : "text-red"}`}>
-                              {detectedRatio}
+                            <span
+                              className={`${detectedRatiosAreGood[itemIndex] ? "text-green" : "text-red"}`}
+                            >
+                              {detectedRatios[itemIndex] ?? "N/A"}
                             </span>
                           </span>
                         )}
@@ -282,7 +304,7 @@ const Review_carousel = ({
                   )}
                 </figure>
 
-                <div className="flex flex-col gap-2 border-t border-white border-opacity-10">
+                <div className="flex flex-col gap-2 border-t pt-2 border-white border-opacity-10">
                   {adParametersList && (
                     <div className="flex items-center justify-between ">
                       <Link
