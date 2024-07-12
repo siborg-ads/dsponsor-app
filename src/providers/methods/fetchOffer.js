@@ -45,13 +45,24 @@ export const fetchOffer = async (offerId, chainId) => {
             enabled
           }
 
-          # to replace by $tokenId
+          owner {
+            newOwner
+          }
+
+         
+
           tokens(first: 1000) {
             tokenId
             mint {
               transactionHash # if = null => not minted yet, so it's available
               to # address who receives the token
               tokenData # data linked to token id, search ticker for SiBorg ad offer for example
+              currency
+              id
+              amount
+            }
+            nftContract {
+              id
             }
             setInAllowList # to check is allowList (above) is true, define if is in allowlist
             # current ad data proposals, per adParameter

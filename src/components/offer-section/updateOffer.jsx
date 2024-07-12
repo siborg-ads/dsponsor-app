@@ -255,7 +255,7 @@ const UpdateOffer = ({ offer }) => {
               <div key={index} className="flex items-center gap-2 mb-2">
                 <input
                   type="text"
-                  className="bg-secondaryBlack rounded-lg p-2 text-white w-full"
+                  className="bg-secondaryBlack rounded-lg p-2 text-white w-1/2"
                   value={admin}
                   placeholder={admin}
                   onChange={(e) => handleAdminChange(index, e.target.value)}
@@ -286,7 +286,7 @@ const UpdateOffer = ({ offer }) => {
               <div key={index} className="flex items-center gap-2 mb-2">
                 <input
                   type="text"
-                  className="bg-secondaryBlack rounded-lg p-2 text-white w-full"
+                  className="bg-secondaryBlack rounded-lg p-2 text-white w-1/2"
                   value={validator}
                   placeholder={validator}
                   onChange={(e) => handleValidatorChange(index, e.target.value)}
@@ -320,7 +320,7 @@ const UpdateOffer = ({ offer }) => {
               <div className="flex items-center gap-2">
                 <input
                   type="text"
-                  className="bg-secondaryBlack rounded-lg p-2 text-white w-full"
+                  className="bg-secondaryBlack rounded-lg p-2 text-white"
                   value={imageRatio}
                   placeholder={imageRatio}
                   onChange={(e) => handleImageRatioChange(e.target.value)}

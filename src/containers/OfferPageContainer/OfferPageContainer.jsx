@@ -24,6 +24,7 @@ import config from "../../config/config";
 import { useSwitchChainContext } from "../../contexts/hooks/useSwitchChainContext";
 import { activated_features } from "../../data/activated_features";
 import UpdateOffer from "../../components/offer-section/updateOffer";
+import ChangeMintPrice from "../../components/offer-section/changeMintPrice";
 
 const OfferPageContainer = () => {
   const router = useRouter();
@@ -58,6 +59,7 @@ const OfferPageContainer = () => {
   const { data: decimalsContract } = useContractRead(tokenContract, "decimals");
   const NATIVECurrency = config[chainId]?.smartContracts?.NATIVE;
   const { setSelectedChain } = useSwitchChainContext();
+  const [canChangeMintPrice, setCanChangeMintPrice] = useState(false);
 
   const { data: bps } = useContractRead(DsponsorAdminContract, "feeBps");
   const maxBps = 10000;
@@ -197,6 +199,15 @@ const OfferPageContainer = () => {
         setOfferData(offer);
         if (userAddress && offer?.admins?.includes(userAddress.toLowerCase())) {
           setIsOwner(true);
+        }
+
+        console.log("offer", offer?.nftContract?.owner?.newOwner?.toLowerCase());
+
+        if (
+          userAddress &&
+          userAddress?.toLowerCase() === offer?.nftContract?.owner?.newOwner?.toLowerCase()
+        ) {
+          setCanChangeMintPrice(true);
         }
       };
       setSelectedChain(config[chainId]?.network);
@@ -430,6 +441,8 @@ const OfferPageContainer = () => {
           chainId={chainId}
         />
       </div>
+
+      {isOwner && <ChangeMintPrice offer={offerData} currency={currency} />}
 
       {isOwner && <UpdateOffer offer={offerData} />}
 
