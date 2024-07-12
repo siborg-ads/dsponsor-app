@@ -22,6 +22,7 @@ const Validation = ({
   setSelectedItems,
   selectedItems,
   sponsorHasAtLeastOneRejectedProposalAndNoPending,
+  setSponsorHasAtLeastOneRejectedProposalAndNoPending,
   mediaShouldValidateAnAd,
   isMedia,
   itemTokenId
@@ -85,7 +86,6 @@ const Validation = ({
         groupedAds[token.tokenId].adParametersList[adParamBase] = element[statusKey].data;
 
         if (adParamBase.startsWith("imageURL") && element.adParameter.variants.length > 0) {
-          console.log("adParamBase", adParamBase);
           // adParamBase can be imageURL-1:1 or imageURL-0-1:1 for example
           // in the first case we want aspectRatio to be "1:1" and cssAspectRatio to be "1/1"
           // in the second case we want aspectRatio to be "1:1" and cssAspectRatio to be "1/1" too
@@ -258,6 +258,9 @@ const Validation = ({
                 setSuccessFullRefuseModal={setSuccessFullRefuseModal}
                 handleItemSubmit={handleItemSubmit}
                 itemTokenId={itemTokenId}
+                setSponsorHasAtLeastOneRejectedProposalAndNoPending={
+                  setSponsorHasAtLeastOneRejectedProposalAndNoPending
+                }
               />
             </div>
           </TabPanel>

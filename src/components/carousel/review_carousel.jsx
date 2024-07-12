@@ -20,7 +20,8 @@ const Review_carousel = ({
   isToken,
   isOwner,
   setRefusedValidatedAdModal,
-  itemTokenId
+  itemTokenId,
+  setSponsorHasAtLeastOneRejectedProposalAndNoPending
 }) => {
   const [validate, setValidate] = useState({});
   const [tokenId, setTokenId] = useState(null);
@@ -196,7 +197,13 @@ const Review_carousel = ({
 
               <Web3Button
                 contractAddress={config[chainId]?.smartContracts?.DSPONSORADMIN?.address}
-                action={() => openRefuseModal()}
+                action={() => {
+                  openRefuseModal();
+
+                  if (pendingProposalData?.length === 1) {
+                    setSponsorHasAtLeastOneRejectedProposalAndNoPending(true);
+                  }
+                }}
                 className={` !rounded-full !min-w-[100px] !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate[tokenId] ? "!btn-disabled !cursor-not-allowed" : "!bg-red !cursor-pointer"} `}
               >
                 Reject
