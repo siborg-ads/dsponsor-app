@@ -22,6 +22,7 @@ const Validation = ({
   setSelectedItems,
   selectedItems,
   sponsorHasAtLeastOneRejectedProposalAndNoPending,
+  setSponsorHasAtLeastOneRejectedProposalAndNoPending,
   mediaShouldValidateAnAd,
   isMedia,
   itemTokenId
@@ -260,6 +261,9 @@ const Validation = ({
                 setSuccessFullRefuseModal={setSuccessFullRefuseModal}
                 handleItemSubmit={handleItemSubmit}
                 aspectRatio={aspectRatio}
+                setSponsorHasAtLeastOneRejectedProposalAndNoPending={
+                  setSponsorHasAtLeastOneRejectedProposalAndNoPending
+                }
               />
             </div>
           </TabPanel>
