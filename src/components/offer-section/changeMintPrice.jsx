@@ -99,7 +99,7 @@ const ChangeMintPrice = ({ offer }) => {
 
     try {
       await mutateTokenAsync({
-        args: [tokensContractAddress[selectedToken], currency, !disableMint, formattedAmountBN]
+        args: [selectedToken, currency, !disableMint, formattedAmountBN]
       });
     } catch (error) {
       console.error(error);
