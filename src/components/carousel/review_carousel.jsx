@@ -285,22 +285,25 @@ const Review_carousel = ({
                           </span>
                         </div>
                       </div>
-                      <div className="flex flex-col gap-2 border-t border-white border-opacity-10 py-2">
-                        <span className="text-xs text-jacarta-100 dark:text-jacarta-100">
-                          Expected Ratio:{" "}
-                          <span className="text-green">{adParametersList?.aspectRatio}</span>
-                        </span>
-                        {getImageUrl(adParametersList) && (
+                      {expectedRatio && (
+                        <div className="flex flex-col gap-2 border-t border-white border-opacity-10 py-2">
                           <span className="text-xs text-jacarta-100 dark:text-jacarta-100">
-                            Detected Ratio:{" "}
-                            <span
-                              className={`${detectedRatiosAreGood[itemIndex] ? "text-green" : "text-red"}`}
-                            >
-                              {detectedRatios[itemIndex] ?? "N/A"}
-                            </span>
+                            Expected Ratio:{" "}
+                            <span className="text-green">{adParametersList?.aspectRatio}</span>
                           </span>
-                        )}
-                      </div>
+
+                          {getImageUrl(adParametersList) && (
+                            <span className="text-xs text-jacarta-100 dark:text-jacarta-100">
+                              Detected Ratio:{" "}
+                              <span
+                                className={`${detectedRatiosAreGood[itemIndex] ? "text-green" : "text-red"}`}
+                              >
+                                {detectedRatios[itemIndex] ?? "N/A"}
+                              </span>
+                            </span>
+                          )}
+                        </div>
+                      )}
                     </div>
                   )}
                 </figure>
