@@ -33,17 +33,13 @@ const Review_carousel = ({
   const [detectedRatiosAreGood, setDetectedRatiosAreGood] = useState([]);
 
   useEffect(() => {
-    if (detectedRatios) {
-      let detectedRatiosAreGood = [];
+    if (detectedRatios.length) {
+      let newDetectedRatiosAreGood = [];
 
-      // check if image ratio is good or not for each item
-      detectedRatios.map((detectedRatio) => {
-        if (!detectedRatio) {
-          return false;
-        }
-
-        if (!expectedRatio) {
-          return false;
+      detectedRatios.forEach((detectedRatio) => {
+        if (!detectedRatio || !expectedRatio) {
+          newDetectedRatiosAreGood.push(false);
+          return;
         }
 
         const realDetectedRatio = detectedRatio.split(":");
@@ -57,12 +53,12 @@ const Review_carousel = ({
         const realExpectedRatioValue = realExpectedWidth / realExpectedHeight;
 
         const detectedRatioIsGood = realDetectedRatioValue === realExpectedRatioValue;
-        detectedRatiosAreGood.push(detectedRatioIsGood);
+        newDetectedRatiosAreGood.push(detectedRatioIsGood);
       });
 
-      setDetectedRatiosAreGood(detectedRatiosAreGood);
+      setDetectedRatiosAreGood(newDetectedRatiosAreGood);
     }
-  }, [detectedRatiosAreGood, detectedRatios, expectedRatio]);
+  }, [detectedRatios, expectedRatio]);
 
   useEffect(() => {
     const initialValidateStates = {};

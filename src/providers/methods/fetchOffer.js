@@ -15,7 +15,10 @@ export const fetchOffer = async (offerId, chainId) => {
         # DESCRIPTION = offerMetadata.offer.token_metadata.description || offerMetadata.offer.description || "(Invalid description)"
         # IMAGE = offerMetadata.offer.token_metadata.image || offerMetadata.offer.image || defaultImage (ex: d>sponsor logo)
         metadataURL
-
+        validators
+        disable
+        id
+        name
         initialCreator # from which address the offer has been created
         admins # list of admins
         creationTimestamp # data (unix time)
