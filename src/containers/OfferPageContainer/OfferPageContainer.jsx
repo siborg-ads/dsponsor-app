@@ -154,6 +154,7 @@ const OfferPageContainer = () => {
   }, [name, offers, offerId]);
 
   useEffect(() => {
+    if (!itemProposals) return;
     // now we want to check one thing from the sponsor side and one thing from the media side
     // we want to check if the sponsor has at least one rejected proposal and no pending proposal
     // we want to check if the media should validate an ad or not (i.e. if the media has at least one pending proposal)
@@ -161,12 +162,25 @@ const OfferPageContainer = () => {
     // we check if the sponsor has only rejected proposals
     const sponsorHasAtLeastOneRejectedProposal = itemProposals?.rejectedProposals?.length > 0;
     const sponsorHasNoPendingProposal = itemProposals?.pendingProposals?.length === 0;
-    const sponsorHasNoValidatedProposal = itemProposals?.acceptedProposals?.length === 0;
+    const lastAcceptedProposalTimestamp =
+      parseFloat(
+        itemProposals?.acceptedProposals?.sort(
+          (a, b) => b?.creationTimestamp - a?.creationTimestamp
+        )[0]?.lastUpdateTimestamp
+      ) * 1000;
+    const lastRefusedProposalTimestamp =
+      parseFloat(
+        itemProposals?.rejectedProposals?.sort(
+          (a, b) => b?.creationTimestamp - a?.creationTimestamp
+        )[0]?.lastUpdateTimestamp
+      ) * 1000;
+    const sponsorHasNoMoreRecentValidatedProposal =
+      new Date(lastAcceptedProposalTimestamp) <= new Date(lastRefusedProposalTimestamp);
 
     setSponsorHasAtLeastOneRejectedProposalAndNoPending(
       sponsorHasAtLeastOneRejectedProposal &&
         sponsorHasNoPendingProposal &&
-        sponsorHasNoValidatedProposal
+        sponsorHasNoMoreRecentValidatedProposal
     );
 
     // now we check if the media should validate an ad
@@ -502,6 +516,9 @@ const OfferPageContainer = () => {
           refusedValidatedAdModal={refusedValidatedAdModal}
           sponsorHasAtLeastOneRejectedProposalAndNoPending={
             sponsorHasAtLeastOneRejectedProposalAndNoPending
+          }
+          setSponsorHasAtLeastOneRejectedProposalAndNoPending={
+            setSponsorHasAtLeastOneRejectedProposalAndNoPending
           }
           mediaShouldValidateAnAd={mediaShouldValidateAnAd}
           isMedia={isMedia}
