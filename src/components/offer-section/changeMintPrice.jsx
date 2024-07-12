@@ -131,7 +131,7 @@ const ChangeMintPrice = ({ offer }) => {
                     if (selectedToken === index) {
                       setSelectedToken(null);
                     } else {
-                      setSelectedToken(index);
+                      setSelectedToken(token?.tokenId);
                     }
                   }}
                   className={`flex flex-col cursor-pointer border-2 items-center gap-2 bg-secondaryBlack p-4 rounded-lg ${selectedToken === index ? "border-primaryPurple" : "border-transparent"}`}
