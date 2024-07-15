@@ -7,10 +7,10 @@ import { ethers } from "ethers";
 import Image from "next/image";
 import { useContract, useContractWrite, useContractRead, useAddress } from "@thirdweb-dev/react";
 import Tippy from "@tippyjs/react";
-import handleCopy from "../../utils/handleCopy";
 
 import OfferSkeleton from "../../components/skeleton/offerSkeleton";
 import { fetchAllOffers } from "../../providers/methods/fetchAllOffers";
+import Integration from "../../components/offer-section/integration";
 
 import { fetchOffer } from "../../providers/methods/fetchOffer";
 
@@ -543,74 +543,8 @@ const OfferPageContainer = () => {
       )}
 
       {isOwner && activated_features.canSeeIntegrationDetails && (
-        <div className="container">
-          <Divider className="my-4" />
-          <h2 className="text-jacarta-900 font-bold font-display mb-6 text-center text-3xl dark:text-white ">
-            Display{" "}
-          </h2>
-          <div className="dark:bg-secondaryBlack dark:border-jacarta-600 border-jacarta-100 rounded-2lg border bg-white p-8 mb-4">
-            <span className="dark:text-jacarta-100 text-jacarta-100 text-sm ">
-              You can integrate this offer on your website by using the following iframe code.
-              Simply copy and paste the code into your website to display the offer.{" "}
-            </span>
-            <br />
-
-            <div className="flex gap-4 w-full md:w-auto items-start mt-2 ">
-              <pre
-                style={{
-                  backgroundColor: "#010101",
-                  borderRadius: "5px",
-                  fontFamily: "'Courier New', monospace",
-                  padding: "10px",
-                  overflowX: "auto"
-                }}
-              >
-                <code>
-                  {" "}
-                  {`<iframe src="https://relayer.dsponsor.com/${chainId}/integrations/${offerId}/ClickableLogosGrid/iFrame" height="315" width="1000px" className={'h-screen w-full'} />`}
-                </code>
-              </pre>
-              <Tippy hideOnClick={false} content={copied ? <span>copied</span> : <span>copy</span>}>
-                <div className=" cursor-pointer">
-                  <button
-                    onClick={() =>
-                      handleCopy(
-                        `<iframe
-                      src="https://relayer.dsponsor.com/${chainId}/integrations/${offerId}/ClickableLogosGrid/iFrame"
-                      height="315"
-                      width="1000px"
-                      className={"h-screen w-full"}
-                    />`,
-                        setCopied
-                      )
-                    }
-                  >
-                    <Image
-                      src="/images/copy.svg"
-                      alt="icon"
-                      width={20}
-                      height={20}
-                      className="mt-2 min-w-[20px] "
-                    />
-                  </button>
-                </div>
-              </Tippy>
-            </div>
-          </div>
-          <iframe
-            title="offer"
-            loading="lazy"
-            src={`https://relayer.dsponsor.com/${chainId}/integrations/${offerId}/ClickableLogosGrid/iFrame`}
-            height="315"
-            width="1000px"
-            className={"h-screen w-full"}
-          />
-        </div>
+        <Integration chainId={chainId} offerId={offerId} setCopied={setCopied} copied={copied} />
       )}
-      {/* <ItemsTabs /> */}
-      {/* <div className="container mb-12">
-        <ItemsTabs />
-      </div> */}
     </>
   );
 };
