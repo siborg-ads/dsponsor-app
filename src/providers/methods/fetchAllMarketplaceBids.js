@@ -57,8 +57,13 @@ export const fetchAllMarketplaceBidsByBidder = async (chainId, address) => {
               creationTxHash
               listing {
                 token {
+                  tokenId
+                  mint {
+                    tokenData
+                  }
                   nftContract {
                     adOffers(first: 1, orderBy: creationTimestamp, orderDirection: desc) {
+                      id
                       name
                     }
                   }

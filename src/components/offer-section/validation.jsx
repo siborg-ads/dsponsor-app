@@ -22,8 +22,10 @@ const Validation = ({
   setSelectedItems,
   selectedItems,
   sponsorHasAtLeastOneRejectedProposalAndNoPending,
+  setSponsorHasAtLeastOneRejectedProposalAndNoPending,
   mediaShouldValidateAnAd,
-  isMedia
+  isMedia,
+  itemTokenId
 }) => {
   const [pendingProposalData, setPendingProposalData] = useState([]);
   const [validatedProposalData, setValidatedProposalData] = useState([]);
@@ -31,6 +33,8 @@ const Validation = ({
   const [itemActive, setItemActive] = useState(1);
   const [comments, setComments] = useState({});
   const [isApprouvedAd, setIsApprouvedAd] = useState(false);
+  const [pendingProposalLength, setPendingProposalLength] = useState(0);
+  const [aspectRatio, setAspectRatio] = useState(null);
 
   const tabItem = [
     {
@@ -92,12 +96,14 @@ const Validation = ({
             const cssAspectRatio = aspectRatio?.replace(":", "/");
             groupedAds[token.tokenId].adParametersList[`aspectRatio`] = aspectRatio;
             groupedAds[token.tokenId].adParametersList[`cssAspectRatio`] = cssAspectRatio;
+            setAspectRatio(aspectRatio);
           } else {
             const split = adParamBase.split("-");
             const aspectRatio = split[1];
             const cssAspectRatio = aspectRatio?.replace(":", "/");
             groupedAds[token.tokenId].adParametersList[`aspectRatio`] = aspectRatio;
             groupedAds[token.tokenId].adParametersList[`cssAspectRatio`] = cssAspectRatio;
+            setAspectRatio(aspectRatio);
           }
         }
       }
@@ -120,6 +126,7 @@ const Validation = ({
     setValidatedProposalData(formattedValidatedAds);
     setRefusedProposalData(formattedRefusedAds);
     setPendingProposalData(formattedPendingAds);
+    setPendingProposalLength(formattedPendingAds.length);
   }, [offer, offerId, successFullUploadModal]);
 
   const handleItemSubmit = async (approuved = false) => {
@@ -137,6 +144,7 @@ const Validation = ({
 
     try {
       await handleSubmit(submissionArgs);
+      setPendingProposalLength((prev) => prev - submissionArgs.length);
     } catch (error) {
       console.error(error);
     }
@@ -196,16 +204,21 @@ const Validation = ({
                       : "nav-link hover:text-jacarta-900 text-jacarta-100 relative flex items-center gap-1 whitespace-nowrap py-3 px-6 dark:hover:text-white"
                   }
                 >
-                  {sponsorHasAtLeastOneRejectedProposalAndNoPending && text === "Refused" && (
-                    <InfoIcon text="You have at least one refused proposal and no pending proposal.">
-                      <ExclamationCircleIcon className="h-5 w-5 text-red dark:text-red" />
-                    </InfoIcon>
-                  )}
-                  {mediaShouldValidateAnAd && text === "Pending" && isMedia && (
-                    <InfoIcon text="You have at least one ad to validate or to refuse.">
-                      <ExclamationCircleIcon className="h-5 w-5 text-red dark:text-red" />
-                    </InfoIcon>
-                  )}
+                  {sponsorHasAtLeastOneRejectedProposalAndNoPending &&
+                    isOwner &&
+                    text === "Refused" && (
+                      <InfoIcon text="You ad as been refused and you have no pending ad. Try to submit a new one.">
+                        <ExclamationCircleIcon className="h-5 w-5 text-red dark:text-red" />
+                      </InfoIcon>
+                    )}
+                  {mediaShouldValidateAnAd &&
+                    text === "Pending" &&
+                    isMedia &&
+                    pendingProposalLength !== 0 && (
+                      <InfoIcon text="You have at least one ad to validate or to refuse.">
+                        <ExclamationCircleIcon className="h-5 w-5 text-red dark:text-red" />
+                      </InfoIcon>
+                    )}
                   <svg className="icon mr-1 h-5 w-5 fill-current">
                     <use xlinkHref={`/icons.svg#icon-${icon}`}></use>
                   </svg>
@@ -247,6 +260,10 @@ const Validation = ({
                 isOwner={isOwner}
                 setSuccessFullRefuseModal={setSuccessFullRefuseModal}
                 handleItemSubmit={handleItemSubmit}
+                aspectRatio={aspectRatio}
+                setSponsorHasAtLeastOneRejectedProposalAndNoPending={
+                  setSponsorHasAtLeastOneRejectedProposalAndNoPending
+                }
               />
             </div>
           </TabPanel>

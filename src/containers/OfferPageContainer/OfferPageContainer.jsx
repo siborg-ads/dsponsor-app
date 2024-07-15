@@ -23,6 +23,8 @@ import { ItemsTabs } from "../../components/component";
 import config from "../../config/config";
 import { useSwitchChainContext } from "../../contexts/hooks/useSwitchChainContext";
 import { activated_features } from "../../data/activated_features";
+import UpdateOffer from "../../components/offer-section/updateOffer";
+import ChangeMintPrice from "../../components/offer-section/changeMintPrice";
 
 const OfferPageContainer = () => {
   const router = useRouter();
@@ -57,6 +59,7 @@ const OfferPageContainer = () => {
   const { data: decimalsContract } = useContractRead(tokenContract, "decimals");
   const NATIVECurrency = config[chainId]?.smartContracts?.NATIVE;
   const { setSelectedChain } = useSwitchChainContext();
+  const [canChangeMintPrice, setCanChangeMintPrice] = useState(false);
 
   const { data: bps } = useContractRead(DsponsorAdminContract, "feeBps");
   const maxBps = 10000;
@@ -154,6 +157,7 @@ const OfferPageContainer = () => {
   }, [name, offers, offerId]);
 
   useEffect(() => {
+    if (!itemProposals) return;
     // now we want to check one thing from the sponsor side and one thing from the media side
     // we want to check if the sponsor has at least one rejected proposal and no pending proposal
     // we want to check if the media should validate an ad or not (i.e. if the media has at least one pending proposal)
@@ -161,12 +165,25 @@ const OfferPageContainer = () => {
     // we check if the sponsor has only rejected proposals
     const sponsorHasAtLeastOneRejectedProposal = itemProposals?.rejectedProposals?.length > 0;
     const sponsorHasNoPendingProposal = itemProposals?.pendingProposals?.length === 0;
-    const sponsorHasNoValidatedProposal = itemProposals?.acceptedProposals?.length === 0;
+    const lastAcceptedProposalTimestamp =
+      parseFloat(
+        itemProposals?.acceptedProposals?.sort(
+          (a, b) => b?.creationTimestamp - a?.creationTimestamp
+        )[0]?.lastUpdateTimestamp
+      ) * 1000;
+    const lastRefusedProposalTimestamp =
+      parseFloat(
+        itemProposals?.rejectedProposals?.sort(
+          (a, b) => b?.creationTimestamp - a?.creationTimestamp
+        )[0]?.lastUpdateTimestamp
+      ) * 1000;
+    const sponsorHasNoMoreRecentValidatedProposal =
+      new Date(lastAcceptedProposalTimestamp) <= new Date(lastRefusedProposalTimestamp);
 
     setSponsorHasAtLeastOneRejectedProposalAndNoPending(
       sponsorHasAtLeastOneRejectedProposal &&
         sponsorHasNoPendingProposal &&
-        sponsorHasNoValidatedProposal
+        sponsorHasNoMoreRecentValidatedProposal
     );
 
     // now we check if the media should validate an ad
@@ -179,11 +196,18 @@ const OfferPageContainer = () => {
       const fetchAdsOffers = async () => {
         const offer = await fetchOffer(offerId, chainId);
 
-        console.log("offer", offer);
-
         setOfferData(offer);
         if (userAddress && offer?.admins?.includes(userAddress.toLowerCase())) {
           setIsOwner(true);
+        }
+
+        console.log("offer", offer?.nftContract?.owner?.newOwner?.toLowerCase());
+
+        if (
+          userAddress &&
+          userAddress?.toLowerCase() === offer?.nftContract?.owner?.newOwner?.toLowerCase()
+        ) {
+          setCanChangeMintPrice(true);
         }
       };
       setSelectedChain(config[chainId]?.network);
@@ -417,6 +441,11 @@ const OfferPageContainer = () => {
           chainId={chainId}
         />
       </div>
+
+      {isOwner && <ChangeMintPrice offer={offerData} currency={currency} />}
+
+      {isOwner && <UpdateOffer offer={offerData} />}
+
       {!offerData.nftContract.allowList && (
         <div className="container flex flex-col justify-center mb-6">
           <Divider className="my-4" />
@@ -503,9 +532,13 @@ const OfferPageContainer = () => {
           sponsorHasAtLeastOneRejectedProposalAndNoPending={
             sponsorHasAtLeastOneRejectedProposalAndNoPending
           }
+          setSponsorHasAtLeastOneRejectedProposalAndNoPending={
+            setSponsorHasAtLeastOneRejectedProposalAndNoPending
+          }
           mediaShouldValidateAnAd={mediaShouldValidateAnAd}
           isMedia={isMedia}
           isSponsor={isOwner}
+          itemTokenId={offerData?.nftContract?.id}
         />
       )}
 

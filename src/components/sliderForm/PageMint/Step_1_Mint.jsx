@@ -1,6 +1,13 @@
 import React, { useState, useEffect } from "react";
 
-const Step_1_Mint = ({ stepsRef, styles, adParameters, setImageUrlVariants, currentSlide }) => {
+const Step_1_Mint = ({
+  stepsRef,
+  styles,
+  adParameters,
+  setImageUrlVariants,
+  currentSlide,
+  numSteps
+}) => {
   const [selectedItems, setSelectedItems] = useState([]);
   useEffect(() => {
     if (!adParameters) return;
@@ -15,15 +22,11 @@ const Step_1_Mint = ({ stepsRef, styles, adParameters, setImageUrlVariants, curr
   return (
     <div ref={(el) => (stepsRef.current[0] = el)} className={styles.form__step}>
       <div className="pr-6 pl-2">
-        <h3 className="mb-12 !text-jacarta-100">Step {currentSlide + 1} : Offer Type</h3>
+        <h3 className="mb-12 !text-jacarta-100">
+          Step {currentSlide + 1}/{numSteps} : Ad Description
+        </h3>
         <div className="mb-6 flex flex-col gap-4">
           <div className="flex flex-col">
-            <label
-              htmlFor="adIntegrationSelect"
-              className="font-display text-jacarta-900 mb-2 block dark:text-white"
-            >
-              Type of ad spaces for this offer:
-            </label>
             <div className="flex flex-col gap-4">
               To display your ad you need to provide the following parameters:
               {/* <DisplayImageIds ids={selectedItems} /> */}

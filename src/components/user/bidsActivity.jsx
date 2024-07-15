@@ -35,13 +35,21 @@ const Bids = ({ manageAddress }) => {
         //const contract = await sdk.getContract(bid?.currency)
         //const tokenMetadata = await contract.erc20.getCurrencyMetadata();
 
+        const tokenId = bid?.listing?.token?.tokenId;
+        const offerId = bid?.listing?.token?.nftContract?.adOffers[0]?.id;
+
         tempBid.date = new Date(bid?.creationTimestamp * 1000);
         tempBid.transactionHash = bid?.creationTxHash;
         tempBid.refundAmount = Number(bid?.refundProfit);
         tempBid.refundDate = new Date(bid?.lastUpdateTimestamp * 1000);
         tempBid.refundBid = Number(bid?.refundAmount) - Number(bid?.refundProfit);
         tempBid.currencyAddress = bid?.currency;
-        tempBid.tokenName = bid?.listing?.token?.nftContract?.adOffers[0]?.name;
+        tempBid.tokenName =
+          bid?.listing?.token?.nftContract?.adOffers[0]?.name +
+          (bid?.listing?.token?.mint?.tokenData ? " #" + bid?.listing?.token?.mint?.tokenData : "");
+
+        // link of a token is made like this: /:chainId/offer/:offerId/:tokenId
+        tempBid.tokenLink = `/${chainId}/offer/${offerId}/${tokenId}`;
         //tempBid.currencyDecimals = tokenMetadata?.decimals;
         //tempBid.currencySymbol = tokenMetadata?.symbol;
         //tempBid.currencyName = tokenMetadata?.name;
@@ -64,7 +72,7 @@ const Bids = ({ manageAddress }) => {
 
       return tempBids;
     },
-    [currentChainObject]
+    [chainId, currentChainObject?.smartContracts]
   );
 
   useEffect(() => {
@@ -182,7 +190,12 @@ const Bids = ({ manageAddress }) => {
                       {toDisplayType(activity?.type)}
                     </td>
                     <td className="py-4 px-4 text-jacarta-100 dark:text-jacarta-100">
-                      {activity?.tokenName}
+                      <Link
+                        href={activity?.tokenLink}
+                        className="text-primaryPurple hover:text-opacity-80"
+                      >
+                        {activity?.tokenName}
+                      </Link>
                     </td>
                     <td className="py-4 px-4 text-jacarta-100 dark:text-jacarta-100">
                       {new Date(activity?.date).toLocaleString()}

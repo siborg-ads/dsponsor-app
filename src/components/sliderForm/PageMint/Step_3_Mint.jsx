@@ -13,7 +13,8 @@ const Step_3_Mint = ({
   handleLogoUpload,
   previewImage,
   currentStep,
-  currentSlide
+  currentSlide,
+  numSteps
 }) => {
   const fileTypes = ["JPG", "PNG", "WEBP"];
   const modalHelper = {
@@ -25,13 +26,19 @@ const Step_3_Mint = ({
   const [heightRatioImage, setHeightRatioImage] = useState(null);
   useEffect(() => {
     const stepWidth = 250;
-    const ratios = id.split(":");
+    let tempId = id;
+    if (id.includes("0-")) {
+      tempId = id.slice(2);
+    }
+    const ratios = tempId.split(":");
     let width = Number(ratios[0]);
     let height = Number(ratios[1]);
+
     if (ratios.length !== 2) {
       width = 1;
       height = 1;
     }
+
     if (width / height > 1) {
       setWidthRatioImage(stepWidth);
       setHeightRatioImage(stepWidth * (height / width));
@@ -44,7 +51,9 @@ const Step_3_Mint = ({
   return (
     <div ref={(el) => (stepsRef.current[currentStep] = el)} className={styles.form__step}>
       <div className="pr-6 pl-2" ref={containerElement}>
-        <h3 className="mb-12 text-jacarta-200">Step {currentSlide + 1} : Ad Image {id}</h3>
+        <h3 className="mb-12 text-jacarta-200">
+          Step {currentSlide + 1}/{numSteps} : Ad Image {id}
+        </h3>
         {/* <!-- File Upload --> */}
         <div className="mb-6 items-center flex flex-col">
           <div className="flex gap-3 justify-center items-center mb-2">

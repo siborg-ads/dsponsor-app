@@ -41,8 +41,6 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
     currentChainObject?.smartContracts?.DSPONSORADMIN?.abi
   );
   const [isLoadingButton, setIsLoadingButton] = useState(false);
-  const [isSponsor, setIsSponsor] = useState(false);
-  const [isMedia, setIsMedia] = useState(false);
 
   const { mutateAsync: uploadToIPFS } = useStorageUpload();
   const { mutateAsync: submitAd } = useContractWrite(DsponsorAdminContract, "submitAdProposals");
@@ -265,7 +263,7 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
               </div>
               {isSelectionActive && (
                 <div className="dark:bg-secondaryBlack dark:text-jacarta-100 rounded-2lg bg-white p-3 flex gap-4 justify-center items-center mb-6">
-                  <span>Select tokens to submit and ads</span>
+                  <span>Select tokens to submit an ad on</span>
                 </div>
               )}
             </div>
@@ -335,7 +333,7 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
             <span className="flex items-center justify-center gap-6">
               <span className="mr-4">
                 Ad Spaces selected :{" "}
-                <span className="text-primaryPurple text-md ml-1">
+                <span className="text-green text-md ml-1">
                   {Object.values(isSelectedItem).filter((value) => value === true).length}
                 </span>{" "}
               </span>
@@ -377,6 +375,7 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
                 adParameters={adParameters}
                 setImageUrlVariants={setImageUrlVariants}
                 currentSlide={currentSlide}
+                numSteps={numSteps}
               />
             )}
 
@@ -395,6 +394,7 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
                       previewImage={previewImages[index]}
                       handleLogoUpload={(file) => handleLogoUpload(file, index, step)}
                       currentSlide={currentSlide}
+                      numSteps={numSteps}
                     />
                   )}
                 </>
@@ -408,6 +408,7 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
                 setLink={setLink}
                 link={link}
                 currentSlide={currentSlide}
+                numSteps={numSteps}
               />
             )}
           </SliderForm>

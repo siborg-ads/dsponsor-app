@@ -158,17 +158,15 @@ const TokenPageContainer = () => {
 
   useEffect(() => {
     if (offers) {
-      // we want to get all the proposals for all the item (accept, reject, pending, all)
-      // for that we filter the offers to match the offer with the current tokenId
-      const itemsOffers = offers
-        ?.map((offer) =>
-          offer?.nftContract?.tokens?.filter((token) => Number(token?.tokenId) === Number(tokenId))
-        )
-        .flat()
-        .filter(Boolean);
+      // we want to get all the proposals for the current item (accept, reject, pending, all)
+      // for that we filter the offers to match the offer with the current offer that contains the current item
+      const itemOffer = offers?.find((offer) => offer?.id === offerId);
 
-      // we extract the only element from the array
-      const tokenOffers = itemsOffers[0];
+      // itemOffers is an item that contains nftContract which contains tokens that contains the tokenId
+      // we need to get the token item from the tokens array where the tokenId matches the current item tokenId
+      const tokenOffers = itemOffer?.nftContract?.tokens?.find(
+        (token) => token?.tokenId === tokenId
+      );
 
       // then we get the proposals for the current item
       // we get the accepted, pending, rejected and all proposals
@@ -196,9 +194,10 @@ const TokenPageContainer = () => {
 
       setItemProposals(itemProposals);
     }
-  }, [name, offers, tokenId]);
+  }, [name, offerId, offers, tokenId]);
 
   useEffect(() => {
+    if (!itemProposals) return;
     // now we want to check one thing from the sponsor side and one thing from the media side
     // we want to check if the sponsor has at least one rejected proposal and no pending proposal
     // we want to check if the media should validate an ad or not (i.e. if the media has at least one pending proposal)
@@ -206,12 +205,25 @@ const TokenPageContainer = () => {
     // we check if the sponsor has only rejected proposals
     const sponsorHasAtLeastOneRejectedProposal = itemProposals?.rejectedProposals?.length > 0;
     const sponsorHasNoPendingProposal = itemProposals?.pendingProposals?.length === 0;
-    const sponsorHasNoAcceptedProposal = itemProposals?.acceptedProposals?.length === 0;
+    const lastAcceptedProposalTimestamp =
+      parseFloat(
+        itemProposals?.acceptedProposals?.sort(
+          (a, b) => b?.creationTimestamp - a?.creationTimestamp
+        )[0]?.lastUpdateTimestamp
+      ) * 1000;
+    const lastRefusedProposalTimestamp =
+      parseFloat(
+        itemProposals?.rejectedProposals?.sort(
+          (a, b) => b?.creationTimestamp - a?.creationTimestamp
+        )[0]?.lastUpdateTimestamp
+      ) * 1000;
+    const sponsorHasNoMoreRecentValidatedProposal =
+      new Date(lastAcceptedProposalTimestamp) <= new Date(lastRefusedProposalTimestamp);
 
     setSponsorHasAtLeastOneRejectedProposalAndNoPending(
       sponsorHasAtLeastOneRejectedProposal &&
         sponsorHasNoPendingProposal &&
-        sponsorHasNoAcceptedProposal
+        sponsorHasNoMoreRecentValidatedProposal
     );
 
     // now we check if the media should validate an ad
@@ -734,17 +746,18 @@ const TokenPageContainer = () => {
 
   useEffect(() => {
     if (!isUserOwner || !marketplaceListings || !address) return;
+
     if (
       firstSelectedListing?.listingType === "Auction" &&
       firstSelectedListing?.status === "CREATED" &&
-      address?.toLowerCase() === firstSelectedListing?.lister
+      address?.toLowerCase() === firstSelectedListing?.lister?.toLowerCase()
     ) {
       setIsOwner(true);
       setIsTokenInAuction(true);
     }
 
     if (isUserOwner) {
-      if (isUserOwner === address) {
+      if (isUserOwner?.toLowerCase() === address?.toLowerCase()) {
         setIsOwner(true);
       }
     }
@@ -1592,6 +1605,7 @@ const TokenPageContainer = () => {
             mediaShouldValidateAnAd={mediaShouldValidateAnAd}
             isMedia={isMedia}
             isSponsor={isOwner}
+            itemTokenId={tokenId}
           />
         )}
       {/* <ItemsTabs /> */}
@@ -1625,6 +1639,7 @@ const TokenPageContainer = () => {
                     adParameters={adParameters}
                     setImageUrlVariants={setImageUrlVariants}
                     currentSlide={currentSlide}
+                    numSteps={numSteps}
                   />
                 )}
                 {currentSlide === 2 && (
@@ -1634,6 +1649,7 @@ const TokenPageContainer = () => {
                     setLink={setLink}
                     link={link}
                     currentSlide={currentSlide}
+                    numSteps={numSteps}
                   />
                 )}
                 {currentSlide === 1 && (
@@ -1649,6 +1665,7 @@ const TokenPageContainer = () => {
                         previewImage={previewImages[index]}
                         handleLogoUpload={(file) => handleLogoUpload(file, index)}
                         currentSlide={currentSlide}
+                        numSteps={numSteps}
                       />
                     ))}
                   </>
