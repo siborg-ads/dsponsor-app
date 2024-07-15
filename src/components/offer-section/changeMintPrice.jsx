@@ -31,7 +31,7 @@ const ChangeMintPrice = ({ offer }) => {
 
   useEffect(() => {
     if (offer) {
-      setCurrency(offer?.nftContract?.tokens[0]?.mint?.currency);
+      setCurrency(offer?.nftContract?.prices[0]?.currency);
       setTokens(offer?.nftContract?.tokens);
       setNftContractAddress(offer?.nftContract?.id);
 
@@ -184,6 +184,12 @@ const ChangeMintPrice = ({ offer }) => {
         {selectedToken !== null ? (
           <Web3Button
             action={() => {
+              if (!nftContractAddress) return;
+
+              if (!formattedAmountBN || !currency || !amount) {
+                return;
+              }
+
               toast
                 .promise(handleChangeTokenMintPrice, {
                   pending: "Waiting for confirmation 🕒",
@@ -194,14 +200,25 @@ const ChangeMintPrice = ({ offer }) => {
                   console.error(error);
                 });
             }}
+            isDisabled={!amount || !currency || !formattedAmountBN || !nftContractAddress}
             contractAddress={nftContractAddress}
-            className="!mt-4 !bg-primaryPurple !hover:bg-opacity-80 !px-4 !py-2 !text-white !font-semibold !rounded-full mb-4"
+            className={`!mt-4 !hover:bg-opacity-80 !px-4 !py-2 !text-white !font-semibold !rounded-full !mb-4 ${
+              !amount || !currency || !formattedAmountBN || !nftContractAddress
+                ? "!opacity-50 !cursor-not-allowed !bg-jacarta-100"
+                : "!bg-primaryPurple"
+            }`}
           >
             Change Token Mint Price
           </Web3Button>
         ) : (
           <Web3Button
             action={() => {
+              if (!nftContractAddress) return;
+
+              if (!formattedAmountBN || !currency || !amount) {
+                return;
+              }
+
               toast
                 .promise(handleChangeMintPrice, {
                   pending: "Waiting for confirmation 🕒",
@@ -212,8 +229,13 @@ const ChangeMintPrice = ({ offer }) => {
                   console.error(error);
                 });
             }}
+            isDisabled={!nftContractAddress}
             contractAddress={nftContractAddress}
-            className="!mt-4 !bg-primaryPurple !hover:bg-opacity-80 !px-4 !py-2 !text-white !font-semibold !rounded-full mb-4"
+            className={`!mt-4 !hover:bg-opacity-80 !px-4 !py-2 !text-white !font-semibold !rounded-full !mb-4 ${
+              !amount || !currency || !formattedAmountBN || !nftContractAddress
+                ? "!opacity-50 !cursor-not-allowed !bg-jacarta-100"
+                : "!bg-primaryPurple"
+            }`}
           >
             Change Mint Price
           </Web3Button>
