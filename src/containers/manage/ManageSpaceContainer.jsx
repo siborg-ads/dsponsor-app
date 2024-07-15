@@ -14,6 +14,7 @@ import { fetchAllTokenAuctionBidsByUser } from "../../providers/methods/fetchAll
 import { useChainContext } from "../../contexts/hooks/useChainContext";
 import config from "../../config/config";
 import { getAddress } from "ethers/lib/utils";
+import { fetchUserCreatedOffers } from "../../providers/methods/fetchUserCreatedOffers";
 
 const ManageSpaceContainer = () => {
   const router = useRouter();
@@ -25,11 +26,12 @@ const ManageSpaceContainer = () => {
   const [copied, setCopied] = useState(false);
   const [isOwner, setIsOwner] = useState(false);
   const { currentChainObject } = useChainContext();
-  const [isPendingAdsOnOffer] = useState(false);
+  const [isPendingAdsOnOffer, setIsPendingAdsOnOffer] = useState(false);
   const [initialWallet, setInitialWallet] = useState(null);
   const [mount, setMount] = useState(false);
   const [userData, setUserData] = useState(null);
   const [isUserConnected, setIsUserConnected] = useState(false);
+  const [createdOffers, setCreatedOffers] = useState(null);
 
   const userAddress = router.query.manage;
   const chainId = currentChainObject?.chainId;
@@ -42,6 +44,35 @@ const ManageSpaceContainer = () => {
       setIsUserConnected(false);
     }
   }, [address, userAddress]);
+
+  useEffect(() => {
+    const fetchCreatedOffers = async () => {
+      const data = await fetchUserCreatedOffers(address, chainId);
+      setCreatedOffers(data?.adOffers);
+    };
+
+    if (address && chainId) {
+      fetchCreatedOffers();
+    }
+  }, [address, chainId]);
+
+  useEffect(() => {
+    if (createdOffers) {
+      // we need to check the number of pending offers on the user's offer
+      // but if there is already an accepted offer, we don't count it
+      const pendingOffers = createdOffers.filter(
+        (offer) =>
+          offer?.allProposals?.filter((proposal) => proposal?.status === "CURRENT_PENDING").length >
+          0
+      );
+
+      if (pendingOffers.length > 0) {
+        setIsPendingAdsOnOffer(true);
+      } else {
+        setIsPendingAdsOnOffer(false);
+      }
+    }
+  }, [createdOffers]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -161,7 +192,8 @@ const ManageSpaceContainer = () => {
         await fetchAuctionBidsTokens();
       };
 
-      if (address === userAddress) setIsOwner(true);
+      if (address && userAddress && getAddress(address) === getAddress(userAddress))
+        setIsOwner(true);
       fetchAllManageData();
     }
   }, [userAddress, router, address, chainId, chainConfig]);
@@ -238,6 +270,7 @@ const ManageSpaceContainer = () => {
               isPendingAdsOnOffer={isPendingAdsOnOffer}
               isOwner={isOwner}
               manageAddress={userAddress}
+              offers={createdOffers}
             />
           </div>
         </div>

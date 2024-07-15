@@ -1,4 +1,4 @@
-const Step_2_Mint = ({ stepsRef, styles, setLink, link, currentSlide }) => {
+const Step_2_Mint = ({ stepsRef, styles, setLink, link, currentSlide, numSteps }) => {
   const handleChange = (e) => {
     let value = e.target.value;
     setLink(value);
@@ -6,7 +6,9 @@ const Step_2_Mint = ({ stepsRef, styles, setLink, link, currentSlide }) => {
   return (
     <div ref={(el) => (stepsRef.current[1] = el)} className={styles.form__step}>
       <div className="pr-6 pl-2">
-        <h3 className="mb-12 text-jacarta-200">Step {currentSlide + 1} : Ad URL</h3>
+        <h3 className="mb-12 text-jacarta-200">
+          Step {currentSlide + 1}/{numSteps} : Ad URL
+        </h3>
         {/* <!-- Link --> */}
         <div className="mb-6">
           <label

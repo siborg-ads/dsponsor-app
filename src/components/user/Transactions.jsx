@@ -9,7 +9,7 @@ const Transactions = ({ manageAddress }) => {
   const [lastActivities, setLastActivities] = useState(null);
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
-  const [filteredLastActivities, setFilteredLastActivities] = useState(null);
+  const [filteredLastActivities, setFilteredLastActivities] = useState([]);
   const [mount, setMount] = useState(false);
 
   const { currentChainObject } = useChainContext();
@@ -32,6 +32,8 @@ const Transactions = ({ manageAddress }) => {
           return data;
         })
         .catch((err) => console.error(err));
+
+      console.log(data);
 
       let lastActivities = activated_features.canFilterTransactionsWithWETH
         ? data?.lastActivities.filter(
@@ -153,24 +155,30 @@ const Transactions = ({ manageAddress }) => {
                         href={`${chainExplorer}/tx/${activity?.transactionHash}`}
                       >
                         <span className="text-primaryPurple hover:text-opacity-80">
-                          {activity?.transactionHash.slice(0, 6) +
+                          {activity?.transactionHash?.slice(0, 6) +
                             "..." +
-                            activity?.transactionHash.slice(-4)}
+                            activity?.transactionHash?.slice(-4)}
                         </span>
                       </Link>
                     </td>
                     <td className="py-4 px-4 text-jacarta-100 dark:text-jacarta-100">
-                      {getAddress(activity?.spender) === getAddress(manageAddress)
+                      {activity?.spender &&
+                      manageAddress &&
+                      getAddress(activity?.spender) === getAddress(manageAddress)
                         ? activity?.points
                         : 0}
                     </td>
                     <td className="py-4 px-4 text-jacarta-100 dark:text-jacarta-100">
-                      {getAddress(activity?.enabler) === getAddress(manageAddress)
+                      {activity?.enabler &&
+                      manageAddress &&
+                      getAddress(activity?.enabler) === getAddress(manageAddress)
                         ? activity?.points
                         : 0}
                     </td>
                     <td className="py-4 px-4 text-jacarta-100 dark:text-jacarta-100">
-                      {getAddress(activity?.refAddr) === getAddress(manageAddress)
+                      {activity?.refAddr &&
+                      manageAddress &&
+                      getAddress(activity?.refAddr) === getAddress(manageAddress)
                         ? activity?.points
                         : 0}
                     </td>

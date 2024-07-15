@@ -1,7 +1,7 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { shortenAddress, useAddress, Web3Button } from "@thirdweb-dev/react";
+import { shortenAddress, Web3Button } from "@thirdweb-dev/react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Spinner } from "@nextui-org/spinner";
@@ -47,6 +47,7 @@ const PreviewModal = ({
   multipleAdsSubmission
 }) => {
   const [isHovered, setIsHovered] = React.useState(false);
+  const [imageRatios, setImageRatios] = React.useState([]);
 
   const { currentChainObject } = useChainContext();
   const formatDate = (date) => {
@@ -60,26 +61,55 @@ const PreviewModal = ({
       hour12: true
     });
   };
-  const imageRatioDisplay = (id) => {
-    const ratios = imageUrlVariants[id].split(":");
-    const stepWidth = 250;
-    let width = Number(ratios[0]);
-    let height = Number(ratios[1]);
-    const ratioArray = [];
-    if (ratios.length !== 2) {
-      ratioArray.push(stepWidth);
-      ratioArray.push(stepWidth);
-    }
-    if (width / height > 1) {
-      ratioArray.push(stepWidth);
-      ratioArray.push(stepWidth * (height / width));
-    } else {
-      ratioArray.push(stepWidth * (width / height));
-      ratioArray.push(stepWidth);
-    }
 
-    return ratioArray;
-  };
+  const imageRatioDisplay = React.useCallback(
+    (id) => {
+      if (!imageUrlVariants[id]) return [];
+
+      const ratios = imageUrlVariants[id].split(":");
+      const stepWidth = 250;
+      let width = Number(ratios[0]);
+      let height = Number(ratios[1]);
+      const ratioArray = [];
+      if (ratios.length !== 2) {
+        ratioArray.push(stepWidth);
+        ratioArray.push(stepWidth);
+      }
+      if (width / height > 1) {
+        ratioArray.push(stepWidth);
+        ratioArray.push(stepWidth * (height / width));
+      } else {
+        ratioArray.push(stepWidth * (width / height));
+        ratioArray.push(stepWidth);
+      }
+
+      return ratioArray;
+    },
+    [imageUrlVariants]
+  );
+
+  useEffect(() => {
+    if (imageUrlVariants.length > 0) {
+      let imageRatios = [];
+
+      imageUrlVariants.forEach((image, index) => {
+        if (index < previewImage.length) {
+          const preSplit = image.split("-");
+
+          const imageRatio =
+            preSplit.length === 2 ? preSplit[1].split(":") : preSplit[0].split(":");
+
+          if (imageRatio.length === 2) {
+            imageRatios.push(imageRatio);
+          } else {
+            imageRatios.push([imageRatio[0], imageRatio[0]]);
+          }
+        }
+      });
+
+      setImageRatios(imageRatios);
+    }
+  }, [imageRatioDisplay, imageUrlVariants, previewImage]);
 
   if (adSubmission && !successFullUpload) {
     return (
@@ -119,16 +149,24 @@ const PreviewModal = ({
 
               <div className="flex flex-col gap-2 w-full">
                 <div className="flex items-center gap-2">
-                  <span className="block dark:text-jacarta-100">Image 5:1</span>
+                  <span className="block dark:text-jacarta-100">
+                    Image ({imageRatios[0] ? `${imageRatios[0][0]}:${imageRatios[0][1]}` : "N/A"})
+                  </span>
                 </div>
                 <div className="flex flex-col justify-center items-center gap-2">
                   <Image
                     src={previewImage[0]}
-                    width={800}
-                    height={160}
+                    width={1600}
+                    height={380}
                     className="w-full h-auto"
                     alt="Preview image"
-                    style={{ objectFit: "cover", objectPosition: "center", aspectRatio: "5/1" }}
+                    style={{
+                      objectFit: "contain",
+                      objectPosition: "center",
+                      aspectRatio:
+                        `${imageRatios[0] ? imageRatios[0][0] : 1}/${imageRatios[0] ? imageRatios[0][1] : 1}` ??
+                        "1/1"
+                    }}
                   />
                 </div>
               </div>
@@ -195,39 +233,35 @@ const PreviewModal = ({
                 </span>
               </div>
 
-              <div className="flex flex-col gap-2 w-full">
-                <div className="flex items-center gap-2">
-                  <span className="block dark:text-jacarta-100">Image 1:1</span>
-                </div>
-                <div className="flex flex-col justify-center items-center gap-2">
-                  <Image
-                    src={previewImage[0]}
-                    width={400}
-                    height={400}
-                    className="w-full h-auto aspect-square overflow-hidden"
-                    alt="Preview image"
-                    style={{ objectFit: "cover", objectPosition: "center" }}
-                  />
-                </div>
-              </div>
-
-              {previewImage[1] && (
-                <div className="flex flex-col gap-2 w-full">
+              {previewImage.map((image, index) => (
+                <div className="flex flex-col gap-2 w-full" key={index}>
                   <div className="flex items-center gap-2">
-                    <span className="block dark:text-jacarta-100">Image 5:1</span>
+                    <span className="block dark:text-jacarta-100">
+                      Image {index + 1} - (
+                      {imageRatios[index]
+                        ? `${imageRatios[index][0]}:${imageRatios[index][1]}`
+                        : "N/A"}
+                      )
+                    </span>
                   </div>
                   <div className="flex flex-col justify-center items-center gap-2">
                     <Image
-                      src={previewImage[1]}
-                      width={800}
-                      height={160}
-                      className="w-full h-auto"
+                      src={image}
+                      width={1600}
+                      height={380}
+                      className="w-full h-auto bg-jacarta-200"
                       alt="Preview image"
-                      style={{ objectFit: "cover", objectPosition: "center", aspectRatio: "5/1" }}
+                      style={{
+                        objectFit: "contain",
+                        objectPosition: "center",
+                        aspectRatio:
+                          `${imageRatios[index] ? imageRatios[index][0] : 1}/${imageRatios[index] ? imageRatios[index][1] : 1}` ??
+                          "1/1"
+                      }}
                     />
                   </div>
                 </div>
-              )}
+              ))}
             </div>
           </div>
 

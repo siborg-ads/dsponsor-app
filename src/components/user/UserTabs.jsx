@@ -6,6 +6,9 @@ import OwnedOffersCategoriesItems from "../categories/ownedOffers_categories_ite
 import OwnedAdProposalsCategoriesItems from "../categories/ownedAdProposals_categories_item";
 import AuctionsCategories from "../categories/Auctions_categories";
 import TokenAuctionBids from "../categories/tokenAuctionBids";
+import Bids from "./bidsActivity";
+import { ExclamationCircleIcon } from "@heroicons/react/24/solid";
+import InfoIcon from "../informations/infoIcon";
 
 const UserTabs = ({
   mappedownedAdProposals,
@@ -14,7 +17,8 @@ const UserTabs = ({
   listedAuctionToken,
   tokenAuctionBids,
   isPendingAdsOnOffer,
-  manageAddress
+  manageAddress,
+  offers
 }) => {
   const [copied, setCopied] = useState(false);
   const [itemActive, setItemActive] = useState(1);
@@ -31,13 +35,18 @@ const UserTabs = ({
       text: "Activity",
       icon: "activity"
     },
-    { id: 2, text: "Owned tokens", icon: "owned" },
-    { id: 3, text: "Auction listed tokens", icon: "activity" },
-    { id: 4, text: "Token Auction Bids ", icon: "activity" },
+    {
+      id: 2,
+      text: "Bids",
+      icon: "activity"
+    },
+    { id: 3, text: "Owned tokens", icon: "owned" },
+    { id: 4, text: "Auction listed tokens", icon: "activity" },
+    { id: 5, text: "Token Auction Bids ", icon: "activity" },
     ...(activated_features.canCreateOffer
       ? [
           {
-            id: 5,
+            id: 6,
             text: "Created Offers",
             icon: "owned"
           }
@@ -55,10 +64,15 @@ const UserTabs = ({
                 <button
                   className={
                     itemActive === id
-                      ? "nav-link hover:text-jacarta-900 text-jacarta-100 relative flex items-center whitespace-nowrap py-3 px-6 dark:hover:text-white active"
-                      : "nav-link hover:text-jacarta-900 text-jacarta-100 relative flex items-center whitespace-nowrap py-3 px-6 dark:hover:text-white"
+                      ? "nav-link hover:text-jacarta-900 text-jacarta-100 relative flex items-center whitespace-nowrap py-3 px-4 dark:hover:text-white active"
+                      : "nav-link hover:text-jacarta-900 text-jacarta-100 relative flex items-center whitespace-nowrap py-3 px-4 dark:hover:text-white"
                   }
                 >
+                  {isPendingAdsOnOffer && isOwner && text === "Created Offers" && (
+                    <InfoIcon text="You have 1 or more ads proposals to check on your offer">
+                      <ExclamationCircleIcon className="h-5 w-5 text-red mr-2" />
+                    </InfoIcon>
+                  )}
                   <svg className="icon mr-1 h-5 w-5 fill-current">
                     <use xlinkHref={`/icons.svg#icon-${icon}`}></use>
                   </svg>
@@ -70,6 +84,9 @@ const UserTabs = ({
         </TabList>
         <TabPanel>
           <Transactions manageAddress={manageAddress} />
+        </TabPanel>
+        <TabPanel>
+          <Bids manageAddress={manageAddress} />
         </TabPanel>
         <TabPanel>
           <OwnedAdProposalsCategoriesItems data={mappedownedAdProposals} isOwner={isOwner} />
@@ -85,6 +102,7 @@ const UserTabs = ({
             data={createdData}
             isPendinAdsOnOffer={isPendingAdsOnOffer}
             isOwner={isOwner}
+            offers={offers}
           />
         </TabPanel>
       </Tabs>

@@ -8,6 +8,10 @@ import "tippy.js/dist/tippy.css";
 import TimerCard from "./TimerCard";
 import { shortenAddress, useAddress } from "@thirdweb-dev/react";
 import { getAddress, formatUnits } from "ethers/lib/utils";
+import { fetchAllOffers } from "../../providers/methods/fetchAllOffers";
+import { ExclamationCircleIcon } from "@heroicons/react/24/solid";
+import InfoIcon from "../informations/infoIcon";
+import { useChainContext } from "../../contexts/hooks/useChainContext";
 
 const OfferItem = ({
   item,
@@ -18,7 +22,10 @@ const OfferItem = ({
   isAuction = false,
   isListing = false,
   listingType,
-  disableLink
+  disableLink,
+  availableToSubmitAdFromOwnedTokens,
+  createdOffersProposals,
+  offer
 }) => {
   const [price, setPrice] = useState(null);
   const [currencyToken, setCurrencyToken] = useState(null);
@@ -27,8 +34,104 @@ const OfferItem = ({
   const [lastSalePrice, setLastSalePrice] = useState(null);
   const [lastBidder, setLastBidder] = useState(null);
   const [isLastBidder, setIsLastBidder] = useState(false);
+  const [offers, setOffers] = useState(null);
+  const [itemProposals, setItemProposals] = useState(null);
+  const [availableToSubmitAd, setAvailableToSubmitAd] = useState(false);
+  const [isPendingAdsOnOffer, setIsPendingAdsOnOffer] = useState(false);
 
+  const { currentChainObject } = useChainContext();
   const address = useAddress();
+  const chainId = currentChainObject?.chainId;
+
+  useEffect(() => {
+    const fetchOffers = async () => {
+      const offers = await fetchAllOffers(chainId);
+      setOffers(offers);
+    };
+
+    fetchOffers();
+  }, [chainId, item]);
+
+  useEffect(() => {
+    if (offers) {
+      // we want to get all the proposals for the current item (accept, reject, pending, all)
+      // for that we filter the offers to match the offer with the current offer that contains the current item
+      const itemOffer = offers?.find((offer) => offer?.id === item?.offerId);
+
+      // itemOffers is an item that contains nftContract which contains tokens that contains the tokenId
+      // we need to get the token item from the tokens array where the tokenId matches the current item tokenId
+      const tokenOffers = itemOffer?.nftContract?.tokens?.find(
+        (token) => token?.tokenId === item?.tokenId
+      );
+
+      // then we get the proposals for the current item
+      // we get the accepted, pending, rejected and all proposals
+      // token offers has a "all proposals" key that contains all the proposals
+      // we filter the proposals to get the accepted, pending and rejected proposals
+      // for that we can use the status key of the proposal "CURRENT_ACCEPTED", "CURRENT_PENDING", "CURRENT_REJECTED"
+      const allProposals = tokenOffers?.allProposals;
+      const acceptedProposals = allProposals?.filter(
+        (proposal) => proposal?.status === "CURRENT_ACCEPTED"
+      );
+      const pendingProposals = allProposals?.filter(
+        (proposal) => proposal?.status === "CURRENT_PENDING"
+      );
+      const rejectedProposals = allProposals?.filter(
+        (proposal) => proposal?.status === "CURRENT_REJECTED"
+      );
+
+      const itemProposals = {
+        name: item?.metadata?.name,
+        pendingProposals,
+        rejectedProposals,
+        acceptedProposals,
+        allProposals
+      };
+
+      setItemProposals(itemProposals);
+    }
+  }, [offers, item]);
+
+  useEffect(() => {
+    // the sponsor can submit an ads if one of the following conditions is met:
+    // - the item has no pending proposals AND no accepted proposals
+    // - there is one rejected proposal more recent than the last accepted proposal and the last pending proposal
+    // each proposal has a creationTimestamp and a lastUpdateTimestamp
+
+    if (itemProposals) {
+      const { pendingProposals, rejectedProposals, acceptedProposals } = itemProposals;
+
+      if (pendingProposals?.length === 0 && acceptedProposals?.length === 0) {
+        setAvailableToSubmitAd(true);
+        return;
+      }
+
+      const lastAcceptedProposal = acceptedProposals?.sort(
+        (a, b) => Number(b?.lastUpdateTimestamp) - Number(a?.lastUpdateTimestamp)
+      )[0];
+      const lastPendingProposal = pendingProposals?.sort(
+        (a, b) => Number(b?.lastUpdateTimestamp) - Number(a?.ladtUpdateTimestamp)
+      )[0];
+      const lastRejectedProposal = rejectedProposals?.sort(
+        (a, b) => Number(b?.lastUpdateTimestamp) - Number(a?.lastUpdateTimestamp)
+      )[0];
+
+      if (
+        lastRejectedProposal &&
+        lastAcceptedProposal &&
+        Number(lastRejectedProposal?.lastUpdateTimestamp) >
+          Number(lastAcceptedProposal?.lastUpdateTimestamp) &&
+        lastPendingProposal &&
+        Number(lastRejectedProposal?.lastUpdateTimestamp) >
+          Number(lastPendingProposal?.lastUpdateTimestamp)
+      ) {
+        setAvailableToSubmitAd(true);
+        return;
+      }
+
+      setAvailableToSubmitAd(false);
+    }
+  }, [itemProposals]);
 
   useEffect(() => {
     if (item && item?.marketplaceListings?.length > 0) {
@@ -75,6 +178,20 @@ const OfferItem = ({
       setIsLastBidder(true);
     }
   }, [address, lastBidder]);
+
+  useEffect(() => {
+    if (offer) {
+      const pendingProposals = offer?.allProposals?.filter(
+        (proposal) => proposal?.status === "CURRENT_PENDING"
+      );
+
+      if (pendingProposals?.length > 0) {
+        setIsPendingAdsOnOffer(true);
+      } else {
+        setIsPendingAdsOnOffer(false);
+      }
+    }
+  }, [offer]);
 
   function formatDate(dateIsoString) {
     if (!dateIsoString) return "date not found";
@@ -236,12 +353,32 @@ const OfferItem = ({
           <div className="flex flex-col flex-1">
             <div className="mt-4 flex items-center justify-between gap-2">
               {isSelectionActive ? (
-                <span className="font-display  text-primaryBlack hover:text-primaryPurple text-base dark:text-white ">
+                <span className="font-display  text-primaryBlack hover:text-primaryPurple text-base dark:text-white flex items-center gap-1">
+                  {availableToSubmitAd && availableToSubmitAdFromOwnedTokens && (
+                    <InfoIcon text="You can submit an ad for this item">
+                      <ExclamationCircleIcon className="h-5 w-5 text-red dark:text-red" />
+                    </InfoIcon>
+                  )}
+                  {createdOffersProposals && isPendingAdsOnOffer && (
+                    <InfoIcon text="You have 1 or more ads proposals to check on your offer">
+                      <ExclamationCircleIcon className="h-5 w-5 text-red dark:text-red" />
+                    </InfoIcon>
+                  )}{" "}
                   {name}
                 </span>
               ) : (
                 <div className="overflow-hidden text-ellipsis whitespace-nowrap ">
-                  <span className="font-display  text-primaryBlack hover:text-primaryPurple text-base dark:text-white ">
+                  <span className="font-display  text-primaryBlack hover:text-primaryPurple text-base dark:text-white flex items-center gap-1">
+                    {availableToSubmitAd && availableToSubmitAdFromOwnedTokens && (
+                      <InfoIcon text="You can submit an ad for this item">
+                        <ExclamationCircleIcon className="h-5 w-5 text-red dark:text-red" />
+                      </InfoIcon>
+                    )}
+                    {createdOffersProposals && isPendingAdsOnOffer && (
+                      <InfoIcon text="You have 1 or more ads proposals to check on your offer">
+                        <ExclamationCircleIcon className="h-5 w-5 text-red dark:text-red" />
+                      </InfoIcon>
+                    )}{" "}
                     {name}
                   </span>
                 </div>
@@ -249,8 +386,9 @@ const OfferItem = ({
 
               {currencyToken &&
               price &&
-              item?.marketplaceListings?.sort((a, b) => Number(b.id) - Number(a.id))[0]?.status ===
-                "CREATED" ? (
+              (item?.marketplaceListings?.sort((a, b) => Number(b.id) - Number(a.id))[0]?.status ===
+                "CREATED" ||
+                itemStatut === "TOKENMINTABLE") ? (
                 <div className="dark:border-jacarta-600 border-jacarta-100 flex items-center whitespace-nowrap rounded-md border py-1 px-2">
                   <span className="text-green text-sm font-medium tracking-tight">
                     {price} {currencyToken}
@@ -276,8 +414,9 @@ const OfferItem = ({
                     !isListing &&
                     itemStatut !== "TOKENMINTABLE" &&
                     itemStatut !== "DIRECT") ||
-                  item?.marketplaceListings?.sort((a, b) => Number(b.id) - Number(a.id))[0]
-                    ?.status !== "CREATED" ? (
+                  (item?.marketplaceListings?.sort((a, b) => Number(b.id) - Number(a.id))[0]
+                    ?.status !== "CREATED" &&
+                    itemStatut !== "TOKENMINTABLE") ? (
                   <div className="flex  w-full gap-2 items-center ">
                     <span className="text-jacarta-100">Sold</span>
                     <svg

@@ -1,15 +1,8 @@
 import React, { useEffect, useState, useRef } from "react";
-import { useRouter } from "next/router";
 import Meta from "../../components/Meta";
 import Image from "next/image";
 import "react-datepicker/dist/react-datepicker.css";
-import {
-  useAddress,
-  useChainId,
-  useContract,
-  useContractWrite,
-  useStorageUpload
-} from "@thirdweb-dev/react";
+import { useAddress, useContract, useContractWrite, useStorageUpload } from "@thirdweb-dev/react";
 
 import styles from "../../styles/createPage/style.module.scss";
 import PreviewModal from "../../components/modal/previewModal";
@@ -21,6 +14,7 @@ import config from "../../config/config";
 
 import SliderForm from "../../components/sliderForm/sliderForm";
 import { useSwitchChainContext } from "../../contexts/hooks/useSwitchChainContext";
+import { useChainContext } from "../../contexts/hooks/useChainContext";
 
 const CreateOfferContainer = () => {
   const [files, setFiles] = useState([]);
