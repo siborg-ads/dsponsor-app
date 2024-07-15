@@ -543,7 +543,13 @@ const OfferPageContainer = () => {
       )}
 
       {isOwner && activated_features.canSeeIntegrationDetails && (
-        <Integration chainId={chainId} offerId={offerId} setCopied={setCopied} copied={copied} />
+        <Integration
+          chainId={chainId}
+          offerId={offerId}
+          setCopied={setCopied}
+          copied={copied}
+          offerTokens={offerData?.nftContract?.tokens}
+        />
       )}
     </>
   );

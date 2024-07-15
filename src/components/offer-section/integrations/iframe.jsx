@@ -9,7 +9,7 @@ import handleCopy from "../../../utils/handleCopy";
 import Tippy from "@tippyjs/react";
 import { ChromePicker } from "react-color";
 
-const IframeIntegration = ({ chainId, offerId }) => {
+const IframeIntegration = ({ chainId, offerId, offerTokens }) => {
   const [copied, setCopied] = useState(false);
   const [iframeSrc, setIframeSrc] = useState("");
   const [customHeight, setCustomHeight] = useState(
@@ -72,12 +72,49 @@ const IframeIntegration = ({ chainId, offerId }) => {
       ? JSON.parse(localStorage.getItem("iframeSettings")).displayType
       : "ClickableLogosGrid"
   );
+  const [availableForSaleTokens, setAvailableForSaleTokens] = useState([]);
+
+  useEffect(() => {
+    let availableForSaleTokens = [];
+    offerTokens.forEach((token) => {
+      // it cans be in sale if the auction is in status CREATED and not finished
+      // it cans also be in sale if a direct listing is in status CREATED and not finished
+      // finally it cans be in sale if it's not minted and mint is enabled
+      // let's check those 3 cases
+      const tokenListing = token?.marketplaceListings?.sort((a, b) => b.id - a.id)[0];
+
+      // auction
+      const auctionCondition =
+        tokenListing?.listingType === "Auction" &&
+        tokenListing?.status === "CREATED" &&
+        new Date(tokenListing?.endTime * 1000) > new Date() &&
+        new Date(tokenListing?.startTime * 1000) < new Date();
+
+      // direct listing
+      const directListingCondition =
+        tokenListing?.listingType === "Direct" &&
+        tokenListing?.status === "CREATED" &&
+        new Date(tokenListing?.endTime * 1000) > new Date() &&
+        new Date(tokenListing?.startTime * 1000) < new Date();
+
+      // mint
+      const mintCondition = token?.mint === null;
+
+      const saleCondition = auctionCondition || directListingCondition || mintCondition;
+
+      if (saleCondition) {
+        availableForSaleTokens.push(token);
+      }
+    }, []);
+
+    setAvailableForSaleTokens(availableForSaleTokens);
+  }, [offerTokens]);
 
   useEffect(() => {
     const params = new URLSearchParams();
 
     if (bgColor) params.append("bgColor", color);
-    if (changeRatio) params.append("ratio", decodeURIComponent(ratio));
+    if (changeRatio) params.append("ratio", ratio);
     if (customAdPreview) {
       if (displayType === "ClickableLogosGrid") params.append("previewTokenId", tokenId);
       if (displayType === "DynamicBanner") params.append("tokenIds", tokenIds.join(","));
@@ -343,28 +380,38 @@ const IframeIntegration = ({ chainId, offerId }) => {
         {customAdPreview && (
           <div className="flex flex-col gap-4">
             {displayType === "ClickableLogosGrid" ? (
-              <input
-                type="text"
+              <select
+                placeholder="Token Id"
                 value={tokenId}
                 onChange={(e) => setTokenId(e.target.value)}
-                placeholder="Token ID"
-                className="p-2 rounded-md bg-secondaryBlack text-jacarta-100"
-              />
-            ) : (
-              <select
-                multiple
-                value={tokenIds}
-                onChange={(e) =>
-                  setTokenIds(Array.from(e.target.selectedOptions, (option) => option.value))
-                }
                 className="p-2 rounded-md bg-secondaryBlack text-jacarta-100"
               >
-                {tokenIds.map((token) => (
-                  <option key={token} value={token}>
-                    {token}
+                {availableForSaleTokens.map((token) => (
+                  <option key={token?.tokenId} value={token?.tokenId}>
+                    {token?.tokenId}
                   </option>
                 ))}
               </select>
+            ) : (
+              <div className="flex flex-wrap items-center gap-4">
+                {availableForSaleTokens.map((token) => (
+                  <label key={token?.tokenId} className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      checked={tokenIds.includes(token?.tokenId)}
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          setTokenIds([...tokenIds, token?.tokenId]);
+                        } else {
+                          setTokenIds(tokenIds.filter((id) => id !== token?.tokenId));
+                        }
+                      }}
+                      className={`p-2 cursor-pointer rounded-md ${tokenIds.includes(token?.tokenId) ? "bg-primaryPurple text-primaryPurple" : "bg-secondaryBlack text-jacarta-100"}`}
+                    />
+                    <span className="text-white">{token?.tokenId}</span>
+                  </label>
+                ))}
+              </div>
             )}
             <input
               type="text"

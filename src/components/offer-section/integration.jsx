@@ -5,7 +5,7 @@ import * as Tabs from "@radix-ui/react-tabs";
 import IframeIntegration from "./integrations/iframe";
 import HtmlIntegration from "./integrations/html";
 
-const Integration = ({ chainId, offerId }) => {
+const Integration = ({ chainId, offerId, offerTokens }) => {
   return (
     <div className="container flex flex-col gap-4">
       <Divider className="my-4" />
@@ -38,7 +38,7 @@ const Integration = ({ chainId, offerId }) => {
 
         <div className="flex w-full mt-4">
           <Tabs.Content value="iframe">
-            <IframeIntegration chainId={chainId} offerId={offerId} />
+            <IframeIntegration chainId={chainId} offerId={offerId} offerTokens={offerTokens} />
           </Tabs.Content>
           <Tabs.Content value="html">
             <HtmlIntegration chainId={chainId} offerId={offerId} />
