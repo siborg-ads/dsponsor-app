@@ -121,6 +121,7 @@ const TokenPageContainer = () => {
   const [offers, setOffers] = useState(null);
   const [isMedia, setIsMedia] = useState(false);
   const [sales, setSales] = useState([]);
+  const [minted, setMinted] = useState(false);
 
   let description = "description not found";
   let id = "1";
@@ -1059,6 +1060,7 @@ const TokenPageContainer = () => {
         });
         setSuccessFullUpload(true);
         setIsOwner(true);
+        setMinted(true);
       } else {
         await directBuy(argsWithPossibleOverrides).catch((error) => {
           console.error("Error while buying:", error);
@@ -1427,7 +1429,7 @@ const TokenPageContainer = () => {
               </div>
 
               <p className="dark:text-jacarta-100 mb-10">{description}</p>
-              {(tokenStatut === "MINTABLE" ||
+              {((tokenStatut === "MINTABLE" && !minted) ||
                 (firstSelectedListing?.listingType === "Direct" &&
                   firstSelectedListing?.status === "CREATED" &&
                   firstSelectedListing?.startTime < now &&
