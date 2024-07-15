@@ -148,7 +148,7 @@ const Step_3_Create = ({
                 Legal <span className="text-sm text-jacarta-100">(optionnal)</span>{" "}
               </label>
               <p className="dark:text-jacarta-100 text-jacarta-100 text-2xs mb-3">
-                Provide the terms of use for the ad spaces you are offering. This helps to clearly
+                Provide the terms of use for the ad space you are offering. This helps to clearly
                 define what is expected of the advertisements displayed in the sold spaces and the
                 rules that must be adhered to. <br /> Import a pdf or a link
               </p>

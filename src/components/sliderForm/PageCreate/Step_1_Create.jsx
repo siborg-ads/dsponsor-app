@@ -1,6 +1,7 @@
 import { useState } from "react";
 
 import ModalHelper from "../../Helper/modalHelper";
+import { Modal } from "@nextui-org/react";
 
 const Step_1_Create = ({
   setDisplayedParameter,
@@ -20,18 +21,22 @@ const Step_1_Create = ({
   const [customImageRatio, setCustomImageRatio] = useState({});
   const AdIntegrationData = [
     {
-      integrationName: "Clickable Logos Grid",
-      imageExemple: "/images/offer_exemple_0.png",
+      integrationName: "Image Ad Space",
+      imagesExemple: ["/images/offer_exemple_0.png", "/images/offer_exemple_1.png"],
+      titleImages: ["Clickable logos Grid", "Dynamic Banner"],
       bodyDescription:
-        "This integration allows you to display a grid of clickable logos. Each logo can redirect to a different URL. You can choose the number of logos to display and the image ratio for each logo."
-    },
-    {
-      integrationName: "Dynamic Banner",
-      imageExemple: "/images/offer_exemple_1.png",
-      bodyDescription:
-        "This integration lets you display a randomly selected ad from those submitted by sponsors (ad space token owners), with a new ad randomly selected at each request. You can choose the banner's image ratio. The banner displays an ad image and redirects to a URL provided by the selected sponsor."
+        "Available ad integrations: You are free to integrate ads as you like. You will find instructions on the offer page to guide you easily. Here are examples of what you can propose"
     }
+ 
   ];
+  const imageRatioHelper = {
+    title: "Image ratio",
+    body: "Specify the ratio of the image you expect from the sponsor. For example, if you want to integrate a grid of logos (square images), the expected ratio is 1:1. If you want to display 1000x200px banners, the expected ratio is 5:1."
+  }
+  const adSpacesHelper = {
+    title: "Number of ad spaces",
+    body: "Specify the number of items you want to sell. For example, if you want to integrate a grid of 10 logos, the number of spaces is 10. If you want to display a dynamic ad, randomly chosen from 10 possibilities, the number of spaces is 10."
+  };
   const predefinedRatios = ["1:1", "16:9", "4:3"];
 
   const handleNumberChange = (e) => {
@@ -63,16 +68,16 @@ const Step_1_Create = ({
     switch (value) {
       case 0:
         paramsToAdd = [
-          `imageURL-${value}${initialRatio ? `-${initialRatio}` : ""}`,
-          `linkURL-${value}`
+          `imageURL${initialRatio ? `-${initialRatio}` : ""}`,
+          `linkURL`
         ];
         setDisplayedParameter((prev) => [...prev, "ClickableLogosGrid"]);
 
         break;
       case 1:
         paramsToAdd = [
-          `imageURL-${value}${initialRatio ? `-${initialRatio}` : ""}`,
-          `linkURL-${value}`
+          `imageURL${initialRatio ? `-${initialRatio}` : ""}`,
+          `linkURL`
         ];
         setDisplayedParameter((prev) => [...prev, "DynamicBanner"]);
         break;
@@ -120,8 +125,8 @@ const Step_1_Create = ({
   const updateParameterWithRatio = (index, ratio) => {
     setSelectedParameter((prev) => {
       return prev.map((param) => {
-        if (param.startsWith(`imageURL-${index}`) && !param.includes("linkURL")) {
-          return `imageURL-${index}-${ratio}`;
+        if (param.startsWith(`imageURL`) && !param.includes("linkURL")) {
+          return `imageURL-${ratio}`;
         }
         return param;
       });
@@ -192,7 +197,7 @@ const Step_1_Create = ({
                     htmlFor="item-description"
                     className="font-display text-jacarta-900 mb-2 block dark:text-white text-center "
                   >
-                    Type of ad spaces for this offer
+                    Type of ad space for this offer
                     <span className="text-red">*</span>
                   </label>
                   <p className="dark:text-jacarta-100 text-jacarta-100 text-2xs mb-3 text-center">
@@ -235,17 +240,21 @@ const Step_1_Create = ({
                                 dark={false}
                                 title={integration.integrationName}
                                 body={integration.bodyDescription}
-                                image={integration.imageExemple ?? ""}
+                                images={integration.imagesExemple ?? ""}
+                                titleImages={integration.titleImages ?? ""}
                               />
                             </div>
                             {selectedIntegration.includes(index) && (
                               <div className="flex flex-col items-center mt-4">
-                                <label
-                                  htmlFor={`imageRatioSelect-${index}`}
-                                  className="font-display text-sm mb-2 block text-white"
-                                >
-                                  Select Image Ratio <span className="text-red">*</span>
-                                </label>
+                                <div className="flex gap-2 items-center mb-2 ">
+                                  <label
+                                    htmlFor={`imageRatioSelect-${index}`}
+                                    className="font-display text-sm  block text-white"
+                                  >
+                                    Select Image Ratio <span className="text-red">*</span>
+                                  </label>
+                                  <ModalHelper {...imageRatioHelper} size="small" />
+                                </div>
                                 <select
                                   id={`imageRatioSelect-${index}`}
                                   onClick={(e) => e.stopPropagation()}
@@ -306,14 +315,17 @@ const Step_1_Create = ({
                   htmlFor="item-description"
                   className="font-display text-jacarta-900 mb-2 block dark:text-white"
                 >
-                  Number of ad spaces for this offer <span className="text-red">*</span>
+                  Number of ads to display for this offer <span className="text-red">*</span>
                 </label>
                 <p className="dark:text-jacarta-100 text-jacarta-100 text-2xs mb-3">
-                  Warning: d&gt;sponsor works with a fixed supply of ad spaces. You won&apos;t be
-                  able to modify this value. Max : 25
+                  Warning: DSponsor works with a fixed quantity of ads per location. You won&apos;t
+                  be able to modify this value. Max : 25
                 </p>
                 <div className="flex gap-4 justify-center items-center w-full text-jacarta-900 dark:text-white">
-                  <label htmlFor="numberSelect">Select a number:</label>
+                  <div className="flex gap-2 items-center justify-center">
+                    <label htmlFor="numberSelect">Select a number</label>
+                    <ModalHelper {...adSpacesHelper} />
+                  </div>
                   <select
                     id="numberSelect"
                     value={selectedNumber}

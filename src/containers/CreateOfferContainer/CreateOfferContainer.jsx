@@ -14,7 +14,7 @@ import config from "../../config/config";
 
 import SliderForm from "../../components/sliderForm/sliderForm";
 import { useSwitchChainContext } from "../../contexts/hooks/useSwitchChainContext";
-import { useChainContext } from "../../contexts/hooks/useChainContext";
+import { useRouter } from "next/router";
 
 const CreateOfferContainer = () => {
   const [files, setFiles] = useState([]);
@@ -39,8 +39,8 @@ const CreateOfferContainer = () => {
   const [validate, setValidate] = useState(true);
   const [showPreviewModal, setShowPreviewModal] = useState(false);
   const [successFullUpload, setSuccessFullUpload] = useState(false);
-  const [selectedIntegration, setSelectedIntegration] = useState([]);
-  const [selectedParameter, setSelectedParameter] = useState([]);
+  const [selectedIntegration, setSelectedIntegration] = useState([0]);
+  const [selectedParameter, setSelectedParameter] = useState(["imageURL-1:1", "linkURL"]);
   const [displayedParameter, setDisplayedParameter] = useState([]);
   const [selectedTypeParameter] = useState(0);
   const { contract: DsponsorAdminContract } = useContract(
@@ -52,7 +52,7 @@ const CreateOfferContainer = () => {
     "createDSponsorNFTAndOffer"
   );
   const WETHCurrency = config[chainId]?.smartContracts?.WETH;
-  const [imageRatios, setImageRatios] = useState([]);
+  const [imageRatios, setImageRatios] = useState(["1:1"]);
   const [tokenDecimals, setTokenDecimals] = useState(0);
   const [symbolContract, setSymbolContract] = useState(null);
   const [tokenContract, setTokenContract] = useState(WETHCurrency?.address);
@@ -213,6 +213,7 @@ console.log(selectedIntegration, selectedParameter);
 
   const handlePreviewModal = () => {
     setShowPreviewModal(!showPreviewModal);
+    setSuccessFullUpload(false);
   };
 
   const handleSubmit = async (userMinterAddress) => {
@@ -319,7 +320,7 @@ console.log(selectedIntegration, selectedParameter);
 
       console.log("preparedArgs", preparedArgs);
 
-      // await createDSponsorNFTAndOffer({ args: preparedArgs });
+        await createDSponsorNFTAndOffer({ args: preparedArgs });
 
       setSuccessFullUpload(true);
 
@@ -335,6 +336,8 @@ console.log(selectedIntegration, selectedParameter);
       setSelectedUnitPrice(1);
       setSelectedCurrency("WETH");
       setCustomContract(null);
+      setSelectedParameter([]); 
+      setSelectedIntegration([]);
       setSelectedRoyalties(10);
       setTokenContract(WETHCurrency?.address);
       setCustomTokenContract(null);

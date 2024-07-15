@@ -835,7 +835,7 @@ const TokenPageContainer = () => {
       });
     const numSteps = 2;
     const totalNumSteps = numSteps + imageURLSteps.length;
-
+    console.log(uniqueIdsArray, "uniqueIdsArray");
     setImageURLSteps(imageURLSteps);
     setNumSteps(totalNumSteps);
   }, [offerData]);

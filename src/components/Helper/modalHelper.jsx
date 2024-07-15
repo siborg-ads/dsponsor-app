@@ -9,7 +9,7 @@ import {
   useDisclosure
 } from "@nextui-org/react";
 import Image from "next/image";
-const ModalHelper = ({ title, body, image, dark, size = "default" }) => {
+const ModalHelper = ({ title, body, images, titleImages, dark, size = "default" }) => {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
   const displaySize = {
@@ -21,6 +21,8 @@ const ModalHelper = ({ title, body, image, dark, size = "default" }) => {
 
   return (
     <>
+    
+
       <Button onPress={onOpen} className="bg-transparent !min-w-[20px] !p-0 !h-auto">
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -57,17 +59,21 @@ const ModalHelper = ({ title, body, image, dark, size = "default" }) => {
               <ModalHeader className="flex flex-col gap-1">{title}</ModalHeader>
               <ModalBody>
                 <p>{body}</p>
-                {image && (
-                  <div className="flex justify-center">
-                    <Image
-                      src={image ?? ""}
-                      alt="image"
-                      width={150}
-                      height={150}
-                      className=" object-contain"
-                    />
-                  </div>
-                )}
+                <div className="flex justify-around flex-wrap">
+                  {images?.length > 0 &&
+                    images?.map((image, index) => (
+                      <div className="flex flex-col items-center justify-center gap-3 " key={index} >
+                        <p>{titleImages[index]}</p>
+                        <Image
+                          src={image ?? ""}
+                          alt="image"
+                          width={150}
+                          height={150}
+                          className=" object-contain"
+                        />
+                      </div>
+                    ))}
+                </div>
               </ModalBody>
               <ModalFooter>
                 <Button color="primary" onPress={onClose}>
@@ -78,6 +84,7 @@ const ModalHelper = ({ title, body, image, dark, size = "default" }) => {
           )}
         </ModalContent>
       </Modal>
+  
     </>
   );
 };

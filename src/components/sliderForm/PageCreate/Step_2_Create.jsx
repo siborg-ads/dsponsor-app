@@ -16,7 +16,7 @@ const Step_2_Create = ({ stepsRef, styles, setName,name, description, setDescrip
               </p>
             </div>
             {/* <!-- Name --> */}
-            <div className="">
+            <div className="w-full">
               <label
                 htmlFor="item-name"
                 className="font-display text-jacarta-900 mb-2 block dark:text-white text-center"
@@ -43,7 +43,7 @@ const Step_2_Create = ({ stepsRef, styles, setName,name, description, setDescrip
               </label>
               <p className="dark:text-jacarta-100 text-jacarta-100 text-2xs mb-3  text-center">
                 The description should briefly introduce your media, specify the location of the ad
-                spaces, and describe the type of content expected.
+                space, and describe the type of content expected.
               </p>
               <textarea
                 id="item-description"
