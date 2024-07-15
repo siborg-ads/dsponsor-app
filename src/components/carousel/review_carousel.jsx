@@ -281,22 +281,25 @@ const Review_carousel = ({
                           </span>
                         </div>
                       </div>
-                      <div className="flex flex-col gap-2 border-t border-white border-opacity-10 py-2">
-                        <span className="text-xs text-jacarta-100 dark:text-jacarta-100">
-                          Expected Ratio:{" "}
-                          <span className="text-green">{adParametersList?.aspectRatio}</span>
-                        </span>
-                        {getImageUrl(adParametersList) && (
+                      {expectedRatio && (
+                        <div className="flex flex-col gap-2 border-t border-white border-opacity-10 py-2">
                           <span className="text-xs text-jacarta-100 dark:text-jacarta-100">
-                            Detected Ratio:{" "}
-                            <span
-                              className={`${detectedRatiosAreGood[itemIndex] ? "text-green" : "text-red"}`}
-                            >
-                              {detectedRatios[itemIndex] ?? "N/A"}
-                            </span>
+                            Expected Ratio:{" "}
+                            <span className="text-green">{adParametersList?.aspectRatio}</span>
                           </span>
-                        )}
-                      </div>
+
+                          {getImageUrl(adParametersList) && (
+                            <span className="text-xs text-jacarta-100 dark:text-jacarta-100">
+                              Detected Ratio:{" "}
+                              <span
+                                className={`${detectedRatiosAreGood[itemIndex] ? "text-green" : "text-red"}`}
+                              >
+                                {detectedRatios[itemIndex] ?? "N/A"}
+                              </span>
+                            </span>
+                          )}
+                        </div>
+                      )}
                     </div>
                   )}
                 </figure>
@@ -336,7 +339,7 @@ const Review_carousel = ({
               aspectRatio: `${pendingProposalData?.find((item) => item.tokenId === tokenId)?.adParametersList?.cssAspectRatio}`
             }}
           >
-            <div className="relative flex items-center justify-center max-w-full max-h-full w-3/4 h-3/4 p-6">
+            <div className="relative flex items-center justify-center max-w-full max-h-full w-3/4 h-3/4">
               <div className="relative flex justify-center items-center h-full max-w-full max-h-full border-2 border-dotted border-jacarta-100 bg-white dark:bg-jacarta-200 bg-opacity-20 backdrop-blur-xl dark:bg-opacity-20 dark:border-jacarta-100 overflow-hidden">
                 <Image
                   src={
@@ -346,9 +349,9 @@ const Review_carousel = ({
                     ) ?? ""
                   }
                   alt="logo"
-                  height={2000}
-                  width={2000}
-                  className="max-w-full max-h-full object-contain"
+                  height={1000}
+                  width={1000}
+                  className="max-w-full max-h-full h-full object-contain object-center"
                   loading="lazy"
                 />
               </div>
