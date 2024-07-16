@@ -27,12 +27,11 @@ const Step_1_Create = ({
       bodyDescription:
         "Available ad integrations: You are free to integrate ads as you like. You will find instructions on the offer page to guide you easily. Here are examples of what you can propose"
     }
- 
   ];
   const imageRatioHelper = {
     title: "Image ratio",
     body: "Specify the ratio of the image you expect from the sponsor. For example, if you want to integrate a grid of logos (square images), the expected ratio is 1:1. If you want to display 1000x200px banners, the expected ratio is 5:1."
-  }
+  };
   const adSpacesHelper = {
     title: "Number of ad spaces",
     body: "Specify the number of items you want to sell. For example, if you want to integrate a grid of 10 logos, the number of spaces is 10. If you want to display a dynamic ad, randomly chosen from 10 possibilities, the number of spaces is 10."
@@ -44,21 +43,24 @@ const Step_1_Create = ({
   };
 
   const handleIntegrationChange = (e) => {
-    const { value, checked } = e.target;
-    const intValue = parseInt(value);
-    setSelectedIntegration([]);
-    setDisplayedParameter([]);
-    setSelectedParameter([]);
-    if (checked) {
-      setSelectedIntegration([intValue]);
-      setImageRatios((prev) => ({
-        ...prev,
-        [intValue]: prev[intValue] || "1:1"
-      }));
-      handleAddParameter(intValue);
-    } else {
-      setSelectedIntegration((prev) => prev.filter((item) => item !== intValue));
-      handleRemoveParameter(intValue);
+    if (!e.target.closest(".modal-helper")) {
+      console.log("ici", e.target);
+      const { value, checked } = e.target;
+      const intValue = parseInt(value);
+      setSelectedIntegration([]);
+      setDisplayedParameter([]);
+      setSelectedParameter([]);
+      if (checked) {
+        setSelectedIntegration([intValue]);
+        setImageRatios((prev) => ({
+          ...prev,
+          [intValue]: prev[intValue] || "1:1"
+        }));
+        handleAddParameter(intValue);
+      } else {
+        setSelectedIntegration((prev) => prev.filter((item) => item !== intValue));
+        handleRemoveParameter(intValue);
+      }
     }
   };
 
@@ -67,18 +69,12 @@ const Step_1_Create = ({
     let paramsToAdd = [];
     switch (value) {
       case 0:
-        paramsToAdd = [
-          `imageURL${initialRatio ? `-${initialRatio}` : ""}`,
-          `linkURL`
-        ];
+        paramsToAdd = [`imageURL${initialRatio ? `-${initialRatio}` : ""}`, `linkURL`];
         setDisplayedParameter((prev) => [...prev, "ClickableLogosGrid"]);
 
         break;
       case 1:
-        paramsToAdd = [
-          `imageURL${initialRatio ? `-${initialRatio}` : ""}`,
-          `linkURL`
-        ];
+        paramsToAdd = [`imageURL${initialRatio ? `-${initialRatio}` : ""}`, `linkURL`];
         setDisplayedParameter((prev) => [...prev, "DynamicBanner"]);
         break;
       default:
@@ -209,8 +205,11 @@ const Step_1_Create = ({
                         <div key={index} className="relative ">
                           <div
                             className={`card relative  ${selectedIntegration.includes(index) ? "bg-primaryPurple-dark" : " hover:ring-primaryPurple/30 border-primaryPurple border-2"}`}
-                            onClick={() => {
-                              document.getElementById(`checkbox-${index}`).click();
+                            onClick={(e) => {
+                              
+                              if (e.target === e.currentTarget) {
+                                document.getElementById(`checkbox-${index}`).click();
+                              }
                             }}
                           >
                             {selectedIntegration.includes(index) && (
@@ -230,7 +229,8 @@ const Step_1_Create = ({
                               <label
                                 htmlFor={`checkbox-${index}`}
                                 className={`card-label ${selectedIntegration.includes(index) ? "text-white" : "text-white"}`}
-                                onClick={() => {
+                                onClick={(e) => {
+                                  e.stopPropagation();
                                   document.getElementById(`checkbox-${index}`).click();
                                 }}
                               >

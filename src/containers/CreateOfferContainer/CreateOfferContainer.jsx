@@ -64,7 +64,7 @@ const CreateOfferContainer = () => {
   const { setSelectedChain } = useSwitchChainContext();
 
   const address = useAddress();
-
+console.log(selectedIntegration, selectedParameter);
   useEffect(() => {
     if (!address) return;
     setMinterAddress(address);
@@ -336,8 +336,8 @@ console.log(selectedIntegration, selectedParameter);
       setSelectedUnitPrice(1);
       setSelectedCurrency("WETH");
       setCustomContract(null);
-      setSelectedParameter([]); 
-      setSelectedIntegration([]);
+      setSelectedParameter(["imageURL-1:1", "linkURL"]); 
+      setSelectedIntegration([0]);
       setSelectedRoyalties(10);
       setTokenContract(WETHCurrency?.address);
       setCustomTokenContract(null);

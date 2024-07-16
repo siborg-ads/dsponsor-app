@@ -52,11 +52,11 @@ const ModalHelper = ({ title, body, images, titleImages, dark, size = "default" 
           </text>
         </svg>
       </Button>
-      <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+      <Modal isOpen={isOpen} onOpenChange={onOpenChange} className="modal-helper">
         <ModalContent>
           {(onClose) => (
             <>
-              <ModalHeader className="flex flex-col gap-1">{title}</ModalHeader>
+              <ModalHeader className="flex flex-col gap-1 ">{title}</ModalHeader>
               <ModalBody>
                 <p>{body}</p>
                 <div className="flex justify-around flex-wrap">
