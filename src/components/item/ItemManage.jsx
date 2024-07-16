@@ -70,7 +70,7 @@ const ItemManage = ({
         </span>
       );
     }
-    if (conditions?.mintDisabled) {
+    if (conditions?.mintDisabled && conditions?.isTokenMintable) {
       return (
         <span className="dark:text-jacarta-100 text-jacarta-100 text-sm">
           The minting is disabled for this token.
