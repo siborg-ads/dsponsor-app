@@ -25,7 +25,7 @@ const Step_2_Mint = ({ stepsRef, styles, setLink, link, currentSlide, numSteps }
           <input
             type="url"
             id="item-external-link"
-            className="dark:bg-secondaryBlack border-jacarta-100 hover:ring-primaryPurple/10 focus:ring-primaryPurple dark:border-jacarta-600 dark:placeholder:text-jacarta-100 w-full rounded-lg py-3 px-3 hover:ring-2 dark:text-white"
+            className="dark:bg-secondaryBlack text-white border-jacarta-100 hover:ring-white focus:ring-white dark:border-jacarta-200 dark:placeholder:text-jacarta-100 w-full rounded-lg py-3 px-3 dark:text-white"
             placeholder="https://yoursite.com"
             onChange={handleChange}
             value={link}
