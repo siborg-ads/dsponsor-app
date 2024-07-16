@@ -23,8 +23,10 @@ const Bids = ({ manageAddress }) => {
       bids.forEach(async (bid) => {
         let tempBid = {};
 
-        if (bid?.refundProfit > 0) {
+        if (bid?.refundProfit > 0 && bid?.status !== "COMPLETED") {
           tempBid.type = "outbid";
+        } else if (bid?.status === "COMPLETED") {
+          tempBid.type = "completed";
         } else {
           tempBid.type = "bid";
         }
@@ -44,6 +46,7 @@ const Bids = ({ manageAddress }) => {
         tempBid.refundDate = new Date(bid?.lastUpdateTimestamp * 1000);
         tempBid.refundBid = Number(bid?.refundAmount) - Number(bid?.refundProfit);
         tempBid.currencyAddress = bid?.currency;
+        tempBid.bidAmount = Number(bid?.paidBidAmount);
         tempBid.tokenName =
           bid?.listing?.token?.nftContract?.adOffers[0]?.name +
           (bid?.listing?.token?.mint?.tokenData ? " #" + bid?.listing?.token?.mint?.tokenData : "");
@@ -113,11 +116,13 @@ const Bids = ({ manageAddress }) => {
   const toDisplayType = (type) => {
     switch (type) {
       case "bid":
-        return "Bidded";
+        return "Ongoing Bid";
       case "outbid":
         return "Outbidded";
+      case "completed":
+        return "Auction Won";
       default:
-        return "Bidded";
+        return "Unknown";
     }
   };
 
@@ -160,16 +165,16 @@ const Bids = ({ manageAddress }) => {
             <thead className="text-white text-left bg-primaryPurple rounded-2lg">
               <tr className="bg-jacarta-50 dark:bg-primaryPurple rounded-2lg text-base">
                 <th className="py-3 px-4 font-medium text-jacarta-100 dark:text-jacarta-100">
-                  Operation
+                  Status
                 </th>
                 <th className="py-3 px-4 font-medium text-jacarta-100 dark:text-jacarta-100">
                   Token
                 </th>
                 <th className="py-3 px-4 font-medium text-jacarta-100 dark:text-jacarta-100">
-                  Date
+                  Bid Date
                 </th>
                 <th className="py-3 px-4 font-medium text-jacarta-100 dark:text-jacarta-100">
-                  Transaction Hash
+                  Bid Amount
                 </th>
                 <th className="py-3 px-4 font-medium text-jacarta-100 dark:text-jacarta-100">
                   Refund Date
@@ -201,19 +206,14 @@ const Bids = ({ manageAddress }) => {
                       {new Date(activity?.date).toLocaleString()}
                     </td>
                     <td className="py-4 px-4 text-jacarta-100 dark:text-jacarta-100">
-                      <Link
-                        target="_blank"
-                        href={`${chainExplorer}/tx/${activity?.transactionHash}`}
-                      >
-                        <span className="text-primaryPurple hover:text-opacity-80">
-                          {activity?.transactionHash?.slice(0, 6) +
-                            "..." +
-                            activity?.transactionHash?.slice(-4)}
-                        </span>
-                      </Link>
+                      {formatAndRound(
+                        activity?.bidAmount * Math.pow(10, -Number(activity?.currency?.decimals))
+                      )}{" "}
+                      {activity?.currency?.symbol}
                     </td>
                     <td className="py-4 px-4 text-jacarta-100 dark:text-jacarta-100">
                       {activity?.refundDate &&
+                      activity?.refundBid > 0 &&
                       new Date(activity?.refundDate).getTime() !==
                         new Date(activity?.date).getTime()
                         ? new Date(activity?.refundDate).toLocaleString()
