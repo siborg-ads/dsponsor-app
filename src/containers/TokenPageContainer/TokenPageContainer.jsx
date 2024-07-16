@@ -1511,44 +1511,45 @@ const TokenPageContainer = () => {
                 conditions={shouldRenderManageTokenComponent().conditionsObject}
               />
 
-              {firstSelectedListing?.listingType === "Auction" &&
+              {((firstSelectedListing?.listingType === "Auction" &&
                 firstSelectedListing.startTime < now &&
                 firstSelectedListing.endTime > now &&
-                firstSelectedListing?.status === "CREATED" && (
-                  <ItemBids
-                    setAmountToApprove={setAmountToApprove}
-                    bidsAmount={bidsAmount}
-                    setBidsAmount={setBidsAmount}
-                    chainId={chainId}
-                    checkUserBalance={checkUserBalance}
-                    price={price}
-                    allowanceTrue={allowanceTrue}
-                    checkAllowance={checkAllowance}
-                    handleApprove={handleApprove}
-                    dsponsorMpContract={dsponsorMpContract}
-                    marketplaceListings={marketplaceListings}
-                    currencySymbol={currency}
-                    tokenBalance={tokenBalance}
-                    currencyTokenDecimals={currencyDecimals}
-                    setSuccessFullBid={setSuccessFullBid}
-                    successFullBid={successFullBid}
-                    address={address}
-                    isLoadingButton={isLoadingButton}
-                    setIsLoadingButton={setIsLoadingButton}
-                    token={tokenDO}
-                    user={{
-                      address: address,
-                      isOwner: isOwner,
-                      isLister: isLister,
-                      isUserOwner: isUserOwner
-                    }}
-                    offer={offerDO}
-                    referrer={{
-                      address: referralAddress
-                    }}
-                    currencyContract={tokenCurrencyAddress}
-                  />
-                )}
+                firstSelectedListing?.status === "CREATED") ||
+                successFullBid) && (
+                <ItemBids
+                  setAmountToApprove={setAmountToApprove}
+                  bidsAmount={bidsAmount}
+                  setBidsAmount={setBidsAmount}
+                  chainId={chainId}
+                  checkUserBalance={checkUserBalance}
+                  price={price}
+                  allowanceTrue={allowanceTrue}
+                  checkAllowance={checkAllowance}
+                  handleApprove={handleApprove}
+                  dsponsorMpContract={dsponsorMpContract}
+                  marketplaceListings={marketplaceListings}
+                  currencySymbol={currency}
+                  tokenBalance={tokenBalance}
+                  currencyTokenDecimals={currencyDecimals}
+                  setSuccessFullBid={setSuccessFullBid}
+                  successFullBid={successFullBid}
+                  address={address}
+                  isLoadingButton={isLoadingButton}
+                  setIsLoadingButton={setIsLoadingButton}
+                  token={tokenDO}
+                  user={{
+                    address: address,
+                    isOwner: isOwner,
+                    isLister: isLister,
+                    isUserOwner: isUserOwner
+                  }}
+                  offer={offerDO}
+                  referrer={{
+                    address: referralAddress
+                  }}
+                  currencyContract={tokenCurrencyAddress}
+                />
+              )}
             </div>
           </div>
         </div>
