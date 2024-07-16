@@ -42,7 +42,8 @@ const BidsModal = ({
   token,
   user,
   offer,
-  referrer
+  referrer,
+  showBidsModal
 }) => {
   const [initialIntPrice, setInitialIntPrice] = useState(null);
   const [isPriceGood, setIsPriceGood] = useState(true);
@@ -187,7 +188,8 @@ const BidsModal = ({
       marketplaceListings &&
       marketplaceListings[0] &&
       parsedBidsAmount &&
-      parsedBidsAmount.gt(BigNumber.from(0))
+      parsedBidsAmount.gt(BigNumber.from(0)) &&
+      !successFullBid
     ) {
       console.log("parsedBidsAmount", parsedBidsAmount.toString());
       const minimalBuyoutPerToken =
@@ -202,10 +204,8 @@ const BidsModal = ({
       } else {
         setBuyoutPriceReached(false);
       }
-    } else {
-      setBuyoutPriceReached(false);
     }
-  }, [marketplaceListings, currencyTokenDecimals, parsedBidsAmount]);
+  }, [marketplaceListings, currencyTokenDecimals, parsedBidsAmount, successFullBid]);
 
   useEffect(() => {
     if (
@@ -274,8 +274,6 @@ const BidsModal = ({
   }, [marketplaceListings]);
 
   useEffect(() => {
-    console.log("mount", mount);
-
     const minimalBidPerToken = marketplaceListings[0]?.bidPriceStructure?.minimalBidPerToken;
     if (minimalBidPerToken && !mount) {
       const minimalBid = ethers.utils.formatUnits(minimalBidPerToken, currencyTokenDecimals);
@@ -450,8 +448,18 @@ const BidsModal = ({
       setDisplayedPrice(null);
     };
 
-    resetRewardsAndAmount();
-  }, []);
+    if (!showBidsModal) {
+      resetRewardsAndAmount();
+    }
+  }, [
+    setBidsAmount,
+    setParsedBidsAmount,
+    setRefundedPrice,
+    setAmountToApprove,
+    setDisplayedPrice,
+    successFullBid,
+    showBidsModal
+  ]);
 
   return (
     <div>
