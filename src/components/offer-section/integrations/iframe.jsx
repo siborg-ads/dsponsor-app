@@ -223,11 +223,9 @@ const IframeIntegration = ({ chainId, offerId, offerTokens }) => {
           <button
             className="z-10"
             onClick={() => {
-              handleCopy(`<iframe
-                    sandbox="allow-same-origin allow-scripts allow-popups allow-top-navigation-by-user-activation"
-                    src="${iframeSrc}"
-                    style="width:100%; ${customHeight ? `height:${height};` : "height:100%;"} overflow:hidden; border: none;"
-                  />`);
+              handleCopy(
+                `<iframe sandbox="allow-same-origin allow-scripts allow-popups allow-top-navigation-by-user-activation" src="${iframeSrc}" style="width: 100%; ${customHeight ? `height: ${height};` : "height: 100%;"} overflow: hidden; border: none;"></iframe>`
+              );
 
               setCopied(true);
 
@@ -242,13 +240,7 @@ const IframeIntegration = ({ chainId, offerId, offerTokens }) => {
           </button>
         </div>
         <code className="text-sm">
-          {`
-            <iframe
-              sandbox="allow-same-origin allow-scripts allow-popups allow-top-navigation-by-user-activation"
-              src="${iframeSrc}"
-              style="width:100%; ${customHeight ? `height:${height};` : "height:100%;"} overflow:hidden; border: none;"
-            />
-            `}
+          {`<iframe sandbox="allow-same-origin allow-scripts allow-popups allow-top-navigation-by-user-activation" src="${iframeSrc}" style="width:100%; ${customHeight ? `height:${height};` : "height:100%;"} overflow:hidden; border: none;"></iframe>`}
         </code>
       </div>
 
@@ -412,7 +404,7 @@ const IframeIntegration = ({ chainId, offerId, offerTokens }) => {
         src={iframeSrc}
         height={customHeight ? height : "100%"}
         width="100%"
-        className={"h-screen w-full"}
+        className="w-full"
       />
     </div>
   );
