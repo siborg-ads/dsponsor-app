@@ -70,6 +70,13 @@ const ItemManage = ({
         </span>
       );
     }
+    if (conditions?.mintDisabled) {
+      return (
+        <span className="dark:text-jacarta-100 text-jacarta-100 text-sm">
+          The minting is disabled for this token.
+        </span>
+      );
+    }
     if ((!conditions?.isCreated || marketplaceListings?.length <= 0) && conditions?.isOwner) {
       return (
         <span className="dark:text-jacarta-100 text-jacarta-100 text-sm">
@@ -195,27 +202,23 @@ const ItemManage = ({
 
   return (
     <>
-      {renderConditionsMessage() && renderActionButton() && (
-        <>
-          <div className="dark:bg-secondaryBlack mb-2 rounded-2lg flex flex-col gap-4 bg-white p-8">
-            <div className="sm:flex sm:flex-wrap">{renderConditionsMessage()}</div>
-            {renderActionButton()}
-          </div>
-          {listingModal && (
-            <div className="modal fade show block">
-              <ItemManageModal
-                setSuccessFullListing={setSuccessFullListing}
-                successFullListing={successFullListing}
-                royalties={royalties}
-                dsponsorNFTContract={dsponsorNFTContract}
-                dsponsorMpContract={dsponsorMpContract}
-                handleListingModal={handleListingModal}
-                offerData={offerData}
-                marketplaceListings={marketplaceListings}
-              />
-            </div>
-          )}
-        </>
+      <div className="dark:bg-secondaryBlack mb-2 rounded-2lg flex flex-col gap-4 bg-white p-8">
+        <div className="sm:flex sm:flex-wrap">{renderConditionsMessage()}</div>
+        {renderActionButton()}
+      </div>
+      {listingModal && (
+        <div className="modal fade show block">
+          <ItemManageModal
+            setSuccessFullListing={setSuccessFullListing}
+            successFullListing={successFullListing}
+            royalties={royalties}
+            dsponsorNFTContract={dsponsorNFTContract}
+            dsponsorMpContract={dsponsorMpContract}
+            handleListingModal={handleListingModal}
+            offerData={offerData}
+            marketplaceListings={marketplaceListings}
+          />
+        </div>
       )}
     </>
   );
