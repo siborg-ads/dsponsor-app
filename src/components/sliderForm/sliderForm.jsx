@@ -26,7 +26,7 @@ const SliderForm = ({ handlePreviewModal, numSteps, children, currentSlide, setC
             {children}
             {/*End Steps */}
           </div>
-          <div className="absolute bottom-0 flex items-center w-full justify-between">
+          <div className="absolute bottom-0 flex items-center w-full justify-between gap-2">
             <button
               type="button"
               onClick={handlePrevClick}

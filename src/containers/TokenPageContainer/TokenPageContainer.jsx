@@ -123,6 +123,7 @@ const TokenPageContainer = () => {
   const [sales, setSales] = useState([]);
   const [minted, setMinted] = useState(false);
   const [conditions, setConditions] = useState({});
+  const [offerManagementActiveTab, setOfferManagementActiveTab] = useState("updateOffer");
 
   let description = "description not found";
   let id = "1";
@@ -837,7 +838,7 @@ const TokenPageContainer = () => {
       });
     const numSteps = 2;
     const totalNumSteps = numSteps + imageURLSteps.length;
-
+    console.log(uniqueIdsArray, "uniqueIdsArray");
     setImageURLSteps(imageURLSteps);
     setNumSteps(totalNumSteps);
   }, [offerData]);
@@ -1449,7 +1450,9 @@ const TokenPageContainer = () => {
               </div>
 
               <p className="dark:text-jacarta-100 mb-10">{description}</p>
-              {((tokenStatut === "MINTABLE" && !minted && !conditions?.conditionsObject?.mintDisabled) ||
+              {((tokenStatut === "MINTABLE" &&
+                !minted &&
+                !conditions?.conditionsObject?.mintDisabled) ||
                 (firstSelectedListing?.listingType === "Direct" &&
                   firstSelectedListing?.status === "CREATED" &&
                   firstSelectedListing?.startTime < now &&

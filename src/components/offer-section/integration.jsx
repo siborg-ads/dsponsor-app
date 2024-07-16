@@ -1,5 +1,4 @@
 import React from "react";
-import { Divider } from "@nextui-org/react";
 import "tippy.js/dist/tippy.css";
 import * as Tabs from "@radix-ui/react-tabs";
 import IframeIntegration from "./integrations/iframe";

@@ -76,14 +76,29 @@ const HtmlIntegration = ({ chainId, offerId, offerTokens }) => {
       if (!numberOfRows || numberOfRows === 0) return "";
 
       let tableHTML = `<table width="100%" border="0" cellspacing="0" cellpadding="0" style="table-layout: fixed; background-color: ${bgColor ? `#${color}` : "transparent"};">`;
+
       for (
         let rowIndex = 0;
         rowIndex < Math.ceil(offerTokens?.length / numberOfColumns);
         rowIndex++
       ) {
         tableHTML += `<tr>`;
+
+        const isLastRow = rowIndex === numberOfRows - 1;
+        let numEmptyCells = numberOfColumns - (offerTokens.length % numberOfColumns);
+        if (numEmptyCells === numberOfColumns) numEmptyCells = 0;
+
+        let emptyCellsAdded = 0;
+        if (isLastRow && numEmptyCells % 2 === 0) {
+          emptyCellsAdded = numEmptyCells / 2;
+          for (let i = 0; i < emptyCellsAdded; i++) {
+            tableHTML += `<td width="${100 / numberOfColumns}%" style="text-align: center; padding: 10px;"></td>`;
+          }
+        }
+
         for (let colIndex = 0; colIndex < numberOfColumns; colIndex++) {
-          const index = rowIndex * numberOfColumns + colIndex;
+          const index = rowIndex * numberOfColumns + colIndex - emptyCellsAdded;
+
           if (index < offerTokens?.length) {
             tableHTML += `<td width="${100 / numberOfColumns}%" style="text-align: center; padding: 10px;">
             <a href="https://relayer.dsponsor.com/${chainId}/integrations/${offerId}/${offerTokens[index]?.tokenId}/link" target="_blank" rel="noopener noreferrer">
@@ -96,13 +111,14 @@ const HtmlIntegration = ({ chainId, offerId, offerTokens }) => {
         }
         tableHTML += `</tr>`;
       }
+
       tableHTML += `</table>`;
       return tableHTML;
     };
 
     const htmlSrc = generateTableHTML();
     setHtmlSrc(htmlSrc);
-  }, [chainId, offerId, offerTokens, numberOfColumns, bgColor]);
+  }, [chainId, offerId, offerTokens, numberOfColumns, bgColor, numberOfRows, color]);
 
   return (
     <div className="flex flex-col gap-4">
@@ -201,7 +217,15 @@ const HtmlIntegration = ({ chainId, offerId, offerTokens }) => {
             <input
               type="checkbox"
               checked={columns}
-              onChange={(e) => setColumns(e.target.checked)}
+              onChange={(e) => {
+                if (!e.target.checked) {
+                  setColumns(false);
+                  setNumberOfColumns(initialColumns(offerTokens?.length));
+                } else {
+                  setColumns(true);
+                  setNumberOfColumns(offerTokens?.length);
+                }
+              }}
               className={`p-2 rounded-md ${columns ? "bg-primaryPurple text-primaryPurple" : "bg-secondaryBlack text-jacarta-100"}`}
             />
             <span className="text-white">Number of columns</span>

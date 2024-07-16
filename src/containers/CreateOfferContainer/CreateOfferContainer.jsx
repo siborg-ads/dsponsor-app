@@ -14,19 +14,18 @@ import config from "../../config/config";
 
 import SliderForm from "../../components/sliderForm/sliderForm";
 import { useSwitchChainContext } from "../../contexts/hooks/useSwitchChainContext";
-import { useChainContext } from "../../contexts/hooks/useChainContext";
+import { useRouter } from "next/router";
 
 const CreateOfferContainer = () => {
   const [files, setFiles] = useState([]);
   const { mutateAsync: upload } = useStorageUpload();
   const [currentSlide, setCurrentSlide] = useState(0);
 
-  const currentChainObject = useChainContext();
-
-  const chainId = currentChainObject?.chainId;
+  const router = useRouter();
+  const chainId = router.query?.chainName;
   const [link, setLink] = useState(null);
   const [errors, setErrors] = useState({});
-  const [description, setDescription] = useState(false);
+  const [description, setDescription] = useState("");
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(
     new Date(new Date().setFullYear(new Date().getFullYear() + 1))
@@ -40,8 +39,8 @@ const CreateOfferContainer = () => {
   const [validate, setValidate] = useState(true);
   const [showPreviewModal, setShowPreviewModal] = useState(false);
   const [successFullUpload, setSuccessFullUpload] = useState(false);
-  const [selectedIntegration, setSelectedIntegration] = useState([]);
-  const [selectedParameter, setSelectedParameter] = useState([]);
+  const [selectedIntegration, setSelectedIntegration] = useState([0]);
+  const [selectedParameter, setSelectedParameter] = useState(["imageURL-1:1", "linkURL"]);
   const [displayedParameter, setDisplayedParameter] = useState([]);
   const [selectedTypeParameter] = useState(0);
   const { contract: DsponsorAdminContract } = useContract(
@@ -53,7 +52,7 @@ const CreateOfferContainer = () => {
     "createDSponsorNFTAndOffer"
   );
   const WETHCurrency = config[chainId]?.smartContracts?.WETH;
-  const [imageRatios, setImageRatios] = useState([]);
+  const [imageRatios, setImageRatios] = useState(["1:1"]);
   const [tokenDecimals, setTokenDecimals] = useState(0);
   const [symbolContract, setSymbolContract] = useState(null);
   const [tokenContract, setTokenContract] = useState(WETHCurrency?.address);
@@ -76,7 +75,7 @@ const CreateOfferContainer = () => {
     setTokenContract(WETHCurrency?.address);
   }, [tokenContract, WETHCurrency]);
 
-  const [name, setName] = useState(false);
+  const [name, setName] = useState("");
   const stepsRef = useRef([]);
   const { ethers } = require("ethers");
 
@@ -214,6 +213,7 @@ const CreateOfferContainer = () => {
 
   const handlePreviewModal = () => {
     setShowPreviewModal(!showPreviewModal);
+    setSuccessFullUpload(false);
   };
 
   const handleSubmit = async (userMinterAddress) => {
@@ -318,9 +318,9 @@ const CreateOfferContainer = () => {
       ];
       const preparedArgs = [Object.values(JSON.parse(args[0])), Object.values(JSON.parse(args[1]))];
 
-      console.log("tokenContract", tokenContract);
+  
 
-      await createDSponsorNFTAndOffer({ args: preparedArgs });
+        await createDSponsorNFTAndOffer({ args: preparedArgs });
 
       setSuccessFullUpload(true);
 
@@ -336,6 +336,8 @@ const CreateOfferContainer = () => {
       setSelectedUnitPrice(1);
       setSelectedCurrency("WETH");
       setCustomContract(null);
+      setSelectedParameter(["imageURL-1:1", "linkURL"]); 
+      setSelectedIntegration([0]);
       setSelectedRoyalties(10);
       setTokenContract(WETHCurrency?.address);
       setCustomTokenContract(null);
@@ -425,7 +427,9 @@ const CreateOfferContainer = () => {
             stepsRef={stepsRef}
             styles={styles}
             setName={setName}
+            name={name}
             setDescription={setDescription}
+            description={description}
             numSteps={numSteps}
             currentSlide={currentSlide}
           />
