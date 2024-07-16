@@ -64,7 +64,7 @@ const CreateOfferContainer = () => {
   const { setSelectedChain } = useSwitchChainContext();
 
   const address = useAddress();
-console.log(selectedIntegration, selectedParameter);
+
   useEffect(() => {
     if (!address) return;
     setMinterAddress(address);
@@ -188,7 +188,7 @@ console.log(selectedIntegration, selectedParameter);
         "Royalties are missing or invalid. They should be between 0.01% and 100%.";
       isValid = false;
     }
-console.log(selectedIntegration, selectedParameter);
+
     setValidate(isValid);
     setErrors(newErrors);
   }, [
@@ -318,7 +318,7 @@ console.log(selectedIntegration, selectedParameter);
       ];
       const preparedArgs = [Object.values(JSON.parse(args[0])), Object.values(JSON.parse(args[1]))];
 
-      console.log("preparedArgs", preparedArgs);
+  
 
         await createDSponsorNFTAndOffer({ args: preparedArgs });
 

@@ -44,7 +44,6 @@ const Step_1_Create = ({
 
   const handleIntegrationChange = (e) => {
     if (!e.target.closest(".modal-helper")) {
-      console.log("ici", e.target);
       const { value, checked } = e.target;
       const intValue = parseInt(value);
       setSelectedIntegration([]);
