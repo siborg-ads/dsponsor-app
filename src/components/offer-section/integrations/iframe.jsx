@@ -72,43 +72,6 @@ const IframeIntegration = ({ chainId, offerId, offerTokens }) => {
       ? JSON.parse(localStorage.getItem("iframeSettings")).displayType
       : "ClickableLogosGrid"
   );
-  const [availableForSaleTokens, setAvailableForSaleTokens] = useState([]);
-
-  useEffect(() => {
-    let availableForSaleTokens = [];
-    offerTokens.forEach((token) => {
-      // it cans be in sale if the auction is in status CREATED and not finished
-      // it cans also be in sale if a direct listing is in status CREATED and not finished
-      // finally it cans be in sale if it's not minted and mint is enabled
-      // let's check those 3 cases
-      const tokenListing = token?.marketplaceListings?.sort((a, b) => b.id - a.id)[0];
-
-      // auction
-      const auctionCondition =
-        tokenListing?.listingType === "Auction" &&
-        tokenListing?.status === "CREATED" &&
-        new Date(tokenListing?.endTime * 1000) > new Date() &&
-        new Date(tokenListing?.startTime * 1000) < new Date();
-
-      // direct listing
-      const directListingCondition =
-        tokenListing?.listingType === "Direct" &&
-        tokenListing?.status === "CREATED" &&
-        new Date(tokenListing?.endTime * 1000) > new Date() &&
-        new Date(tokenListing?.startTime * 1000) < new Date();
-
-      // mint
-      const mintCondition = token?.mint === null;
-
-      const saleCondition = auctionCondition || directListingCondition || mintCondition;
-
-      if (saleCondition) {
-        availableForSaleTokens.push(token);
-      }
-    }, []);
-
-    setAvailableForSaleTokens(availableForSaleTokens);
-  }, [offerTokens]);
 
   useEffect(() => {
     const params = new URLSearchParams();
@@ -293,142 +256,150 @@ const IframeIntegration = ({ chainId, offerId, offerTokens }) => {
 
       <span className="text-white text-lg font-semibold">Customize</span>
 
-      <div className="flex flex-col gap-4">
-        <label className="flex items-center gap-2">
-          <input
-            type="checkbox"
-            checked={customHeight}
-            onChange={(e) => setCustomHeight(e.target.checked)}
-            className={`p-2 rounded-md ${customHeight ? "bg-primaryPurple text-primaryPurple" : "bg-secondaryBlack text-jacarta-100"}`}
-          />
-          <span className="text-white">Custom height</span>
-          <InfoIcon text="Some integrations do not support automatic height adjustment. In such cases, we recommend setting a predefined height (which you can change at any time) to match the designated space on your page.">
-            <InformationCircleIcon className="w-5 h-5 text-white hover:text-jacarta-100 cursor-help" />
-          </InfoIcon>
-        </label>
-        {customHeight && (
-          <input
-            type="number"
-            value={parseInt(height)}
-            onChange={(e) => setHeight(`${e.target.value}px`)}
-            placeholder="Height in px (ex: 400)"
-            className="p-2 rounded-md bg-secondaryBlack text-jacarta-100"
-          />
-        )}
+      <div className="flex flex-wrap items-start gap-8">
+        <div className="flex flex-col gap-4">
+          <label className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              checked={customHeight}
+              onChange={(e) => setCustomHeight(e.target.checked)}
+              className={`p-2 rounded-md ${customHeight ? "bg-primaryPurple text-primaryPurple" : "bg-secondaryBlack text-jacarta-100"}`}
+            />
+            <span className="text-white">Custom height</span>
+            <InfoIcon text="Some integrations do not support automatic height adjustment. In such cases, we recommend setting a predefined height (which you can change at any time) to match the designated space on your page.">
+              <InformationCircleIcon className="w-5 h-5 text-white hover:text-jacarta-100 cursor-help" />
+            </InfoIcon>
+          </label>
+          {customHeight && (
+            <input
+              type="number"
+              value={parseInt(height)}
+              onChange={(e) => setHeight(`${e.target.value}px`)}
+              placeholder="Height in px (ex: 400)"
+              className="p-2 rounded-md bg-secondaryBlack text-jacarta-100"
+            />
+          )}
+        </div>
 
-        <label className="flex items-center gap-2">
-          <input
-            type="checkbox"
-            checked={bgColor}
-            onChange={(e) => setBgColor(e.target.checked)}
-            className={`p-2 rounded-md ${bgColor ? "bg-primaryPurple text-primaryPurple" : "bg-secondaryBlack text-jacarta-100"}`}
-          />
-          <span className="text-white">Background color</span>
-          <InfoIcon text="By default, the background color of the space is #0d102d. You can select a different color to match your content.">
-            <InformationCircleIcon className="w-5 h-5 text-white hover:text-jacarta-100 cursor-help" />
-          </InfoIcon>
-        </label>
-        {bgColor && (
-          <ChromePicker
-            color={color}
-            onChangeComplete={(color) => setColor(color.hex.replace("#", ""))}
-          />
-        )}
+        <div className="flex flex-col gap-4">
+          <label className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              checked={bgColor}
+              onChange={(e) => setBgColor(e.target.checked)}
+              className={`p-2 rounded-md ${bgColor ? "bg-primaryPurple text-primaryPurple" : "bg-secondaryBlack text-jacarta-100"}`}
+            />
+            <span className="text-white">Background color</span>
+            <InfoIcon text="By default, the background color of the space is #0d102d. You can select a different color to match your content.">
+              <InformationCircleIcon className="w-5 h-5 text-white hover:text-jacarta-100 cursor-help" />
+            </InfoIcon>
+          </label>
+          {bgColor && (
+            <ChromePicker
+              color={color}
+              onChangeComplete={(color) => setColor(color.hex.replace("#", ""))}
+            />
+          )}
+        </div>
 
-        <label className="flex items-center gap-2">
-          <input
-            type="checkbox"
-            checked={changeRatio}
-            onChange={(e) => setChangeRatio(e.target.checked)}
-            className={`p-2 rounded-md ${changeRatio ? "bg-primaryPurple text-primaryPurple" : "bg-secondaryBlack text-jacarta-100"}`}
-          />
-          <span className="text-white">Change ratio</span>
-          <InfoIcon text="The ratio defined in your offer will apply by default to each ad space. You can choose a different display ratio for the ad spaces if desired; this will not affect the original ad image ratio.">
-            <InformationCircleIcon className="w-5 h-5 text-white hover:text-jacarta-100 cursor-help" />
-          </InfoIcon>
-        </label>
-        {changeRatio && (
-          <input
-            type="text"
-            value={ratio}
-            onChange={(e) => {
-              setRatio(e.target.value);
-            }}
-            placeholder="Ratio (ex: 16:9)"
-            className="p-2 rounded-md bg-secondaryBlack text-jacarta-100"
-          />
-        )}
+        <div className="flex flex-col gap-4">
+          <label className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              checked={changeRatio}
+              onChange={(e) => setChangeRatio(e.target.checked)}
+              className={`p-2 rounded-md ${changeRatio ? "bg-primaryPurple text-primaryPurple" : "bg-secondaryBlack text-jacarta-100"}`}
+            />
+            <span className="text-white">Change ratio</span>
+            <InfoIcon text="The ratio defined in your offer will apply by default to each ad space. You can choose a different display ratio for the ad spaces if desired; this will not affect the original ad image ratio.">
+              <InformationCircleIcon className="w-5 h-5 text-white hover:text-jacarta-100 cursor-help" />
+            </InfoIcon>
+          </label>
+          {changeRatio && (
+            <input
+              type="text"
+              value={ratio}
+              onChange={(e) => {
+                setRatio(e.target.value);
+              }}
+              placeholder="Ratio (ex: 16:9)"
+              className="p-2 rounded-md bg-secondaryBlack text-jacarta-100"
+            />
+          )}
+        </div>
 
-        <label className="flex items-center gap-2">
-          <input
-            type="checkbox"
-            checked={customAdPreview}
-            onChange={(e) => setCustomAdPreview(e.target.checked)}
-            className={`p-2 rounded-md ${customAdPreview ? "bg-primaryPurple text-primaryPurple" : "bg-secondaryBlack text-jacarta-100"}`}
-          />
-          <span className="text-white">Custom ad preview</span>
-          <InfoIcon
-            text={
-              displayType === "ClickableLogosGrid"
-                ? "You can choose to display a custom preview for any of the desired ad spaces. In this case, specify the token it should apply to, the URL of the preview image, and the link to the target page."
-                : "You can choose the token ids you want to display (by default all from the offer can be displayed). You can choose to display a custom image instead of the images from the tokens, in this case, specify the URL of the preview image, and the link to the target page."
-            }
-          >
-            <InformationCircleIcon className="w-5 h-5 text-white hover:text-jacarta-100 cursor-help" />
-          </InfoIcon>
-        </label>
-        {customAdPreview && (
-          <div className="flex flex-col gap-4">
-            {displayType === "ClickableLogosGrid" ? (
-              <select
-                placeholder="Token Id"
-                value={tokenId}
-                onChange={(e) => setTokenId(e.target.value)}
+        <div className="flex flex-col gap-4">
+          <label className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              checked={customAdPreview}
+              onChange={(e) => setCustomAdPreview(e.target.checked)}
+              className={`p-2 rounded-md ${customAdPreview ? "bg-primaryPurple text-primaryPurple" : "bg-secondaryBlack text-jacarta-100"}`}
+            />
+            <span className="text-white">Custom ad preview</span>
+            <InfoIcon
+              text={
+                displayType === "ClickableLogosGrid"
+                  ? "You can choose to display a custom preview for any of the desired ad spaces. In this case, specify the token it should apply to, the URL of the preview image, and the link to the target page."
+                  : "You can choose the token ids you want to display (by default all from the offer can be displayed). You can choose to display a custom image instead of the images from the tokens, in this case, specify the URL of the preview image, and the link to the target page."
+              }
+            >
+              <InformationCircleIcon className="w-5 h-5 text-white hover:text-jacarta-100 cursor-help" />
+            </InfoIcon>
+          </label>
+          {customAdPreview && (
+            <div className="flex flex-col gap-4">
+              {displayType === "ClickableLogosGrid" ? (
+                <select
+                  placeholder="Token Id"
+                  value={tokenId}
+                  onChange={(e) => setTokenId(e.target.value)}
+                  className="p-2 rounded-md bg-secondaryBlack text-jacarta-100"
+                >
+                  {offerTokens.map((token) => (
+                    <option key={token?.tokenId} value={token?.tokenId}>
+                      {token?.tokenId}
+                    </option>
+                  ))}
+                </select>
+              ) : (
+                <div className="flex flex-wrap items-center gap-4">
+                  {offerTokens?.map((token) => (
+                    <label key={token?.tokenId} className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        checked={tokenIds.includes(token?.tokenId)}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setTokenIds([...tokenIds, token?.tokenId]);
+                          } else {
+                            setTokenIds(tokenIds.filter((id) => id !== token?.tokenId));
+                          }
+                        }}
+                        className={`p-2 cursor-pointer rounded-md ${tokenIds.includes(token?.tokenId) ? "bg-primaryPurple text-primaryPurple" : "bg-secondaryBlack text-jacarta-100"}`}
+                      />
+                      <span className="text-white">{token?.tokenId}</span>
+                    </label>
+                  ))}
+                </div>
+              )}
+              <input
+                type="text"
+                value={previewImage}
+                onChange={(e) => setPreviewImage(e.target.value)}
+                placeholder="Preview Image URL"
                 className="p-2 rounded-md bg-secondaryBlack text-jacarta-100"
-              >
-                {availableForSaleTokens.map((token) => (
-                  <option key={token?.tokenId} value={token?.tokenId}>
-                    {token?.tokenId}
-                  </option>
-                ))}
-              </select>
-            ) : (
-              <div className="flex flex-wrap items-center gap-4">
-                {availableForSaleTokens.map((token) => (
-                  <label key={token?.tokenId} className="flex items-center gap-2">
-                    <input
-                      type="checkbox"
-                      checked={tokenIds.includes(token?.tokenId)}
-                      onChange={(e) => {
-                        if (e.target.checked) {
-                          setTokenIds([...tokenIds, token?.tokenId]);
-                        } else {
-                          setTokenIds(tokenIds.filter((id) => id !== token?.tokenId));
-                        }
-                      }}
-                      className={`p-2 cursor-pointer rounded-md ${tokenIds.includes(token?.tokenId) ? "bg-primaryPurple text-primaryPurple" : "bg-secondaryBlack text-jacarta-100"}`}
-                    />
-                    <span className="text-white">{token?.tokenId}</span>
-                  </label>
-                ))}
-              </div>
-            )}
-            <input
-              type="text"
-              value={previewImage}
-              onChange={(e) => setPreviewImage(e.target.value)}
-              placeholder="Preview Image URL"
-              className="p-2 rounded-md bg-secondaryBlack text-jacarta-100"
-            />
-            <input
-              type="text"
-              value={previewLink}
-              onChange={(e) => setPreviewLink(e.target.value)}
-              placeholder="Preview Link URL"
-              className="p-2 rounded-md bg-secondaryBlack text-jacarta-100"
-            />
-          </div>
-        )}
+              />
+              <input
+                type="text"
+                value={previewLink}
+                onChange={(e) => setPreviewLink(e.target.value)}
+                placeholder="Preview Link URL"
+                className="p-2 rounded-md bg-secondaryBlack text-jacarta-100"
+              />
+            </div>
+          )}
+        </div>
       </div>
 
       <Divider className="my-4" />

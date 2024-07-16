@@ -7,12 +7,7 @@ import HtmlIntegration from "./integrations/html";
 
 const Integration = ({ chainId, offerId, offerTokens }) => {
   return (
-    <div className="container flex flex-col gap-4">
-      <Divider className="my-4" />
-      <h2 className="text-jacarta-900 font-bold font-display text-center text-3xl dark:text-white ">
-        Integration
-      </h2>
-
+    <div className="flex flex-col gap-4">
       <div className="bg-secondaryBlack p-4 rounded-md">
         <span className="dark:text-jacarta-100 text-jacarta-100">
           Here are instructions to give you examples of how you can integrate ads from your
@@ -41,7 +36,7 @@ const Integration = ({ chainId, offerId, offerTokens }) => {
             <IframeIntegration chainId={chainId} offerId={offerId} offerTokens={offerTokens} />
           </Tabs.Content>
           <Tabs.Content value="html">
-            <HtmlIntegration chainId={chainId} offerId={offerId} />
+            <HtmlIntegration chainId={chainId} offerId={offerId} offerTokens={offerTokens} />
           </Tabs.Content>
         </div>
       </Tabs.Root>
