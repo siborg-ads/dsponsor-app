@@ -6,6 +6,7 @@ export const fetchAllTokenByOfferForAuser = async (ownerAddress, chainId) => {
     `https://relayer.dsponsor.com/api/${chainId}/account/${ownerAddress}/tokens`,
     options
   );
+
   const data = await response.json();
 
   const resultMappedData = data?.map((item) => {

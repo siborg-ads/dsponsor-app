@@ -53,6 +53,13 @@ export const fetchOffer = async (offerId, chainId) => {
 
           tokens(first: 1000) {
             tokenId
+            marketplaceListings {
+              listingType
+              status
+              startTime
+              endTime
+              id
+            }
             mint {
               transactionHash # if = null => not minted yet, so it's available
               to # address who receives the token
