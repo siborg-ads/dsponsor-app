@@ -30,5 +30,7 @@ export const activated_features = {
   // Whether to filter transactions in activity with WETH only
   canFilterTransactionsWithWETH: true,
   // Whether to be able to change mint price for a specific token
-  canChangeTokenMintPrice: false
+  canChangeTokenMintPrice: false,
+  // Wether we can change validators for an offer
+  canChangeValidators: false
 };

@@ -6,6 +6,7 @@ import { Web3Button, useContract, useContractWrite } from "@thirdweb-dev/react";
 import config from "../../config/config";
 import { useChainContext } from "../../contexts/hooks/useChainContext";
 import { toast } from "react-toastify";
+import { activated_features } from "../../data/activated_features";
 
 const UpdateOffer = ({ offer }) => {
   const [offerId, setOfferId] = useState(null);
@@ -222,65 +223,61 @@ const UpdateOffer = ({ offer }) => {
   };
 
   return (
-    <div className="container">
-      <Divider className="my-4" />
-      <h2 className="text-jacarta-900 font-semibold font-display mb-6 text-center text-3xl dark:text-white ">
-        Update Offer
-      </h2>
-      <div className="flex flex-col gap-4 justify-center">
-        <div className="mb-4">
-          <label className="block text-gray-700 text-sm font-semibold mb-2">Offer name</label>
-          <input
-            type="text"
-            className="bg-secondaryBlack rounded-lg w-full p-2 text-white"
-            value={name}
-            placeholder={name ?? ""}
-            onChange={(e) => setName(e.target.value)}
-          />
-        </div>
+    <div className="flex flex-col gap-4 justify-center w-full">
+      <div className="mb-4">
+        <label className="block text-gray-700 text-sm font-semibold mb-2">Offer name</label>
+        <input
+          type="text"
+          className="bg-secondaryBlack rounded-lg w-full p-2 text-white"
+          value={name}
+          placeholder={name ?? ""}
+          onChange={(e) => setName(e.target.value)}
+        />
+      </div>
 
-        <div className="mb-4">
-          <label className="block text-gray-700 text-sm font-semibold mb-2">Metadata URL</label>
-          <input
-            type="text"
-            className="bg-secondaryBlack rounded-lg w-full p-2 text-white"
-            value={metadataURL}
-            placeholder={metadataURL ?? ""}
-            onChange={(e) => setMetadataURL(e.target.value)}
-          />
-        </div>
+      <div className="mb-4">
+        <label className="block text-gray-700 text-sm font-semibold mb-2">Metadata URL</label>
+        <input
+          type="text"
+          className="bg-secondaryBlack rounded-lg w-full p-2 text-white"
+          value={metadataURL}
+          placeholder={metadataURL ?? ""}
+          onChange={(e) => setMetadataURL(e.target.value)}
+        />
+      </div>
 
-        <div className="mb-4">
-          <label className="block text-gray-700 text-sm font-semibold mb-2">Admins</label>
+      <div className="mb-4">
+        <label className="block text-gray-700 text-sm font-semibold mb-2">Admins</label>
 
-          {admins &&
-            admins.map((admin, index) => (
-              <div key={index} className="flex items-center gap-2 mb-2">
-                <input
-                  type="text"
-                  className="bg-secondaryBlack rounded-lg p-2 text-white w-1/2"
-                  value={admin}
-                  placeholder={admin}
-                  onChange={(e) => handleAdminChange(index, e.target.value)}
-                />
-                <button
-                  type="button"
-                  className="bg-red text-white rounded-lg px-4 py-2"
-                  onClick={() => handleRemoveAdmin(index)}
-                >
-                  Remove
-                </button>
-              </div>
-            ))}
-          <button
-            type="button"
-            className="bg-green text-white rounded-lg px-4 py-2"
-            onClick={handleAddAdmin}
-          >
-            Add Admin
-          </button>
-        </div>
+        {admins &&
+          admins.map((admin, index) => (
+            <div key={index} className="flex items-center gap-2 mb-2">
+              <input
+                type="text"
+                className="bg-secondaryBlack rounded-lg p-2 text-white w-1/2"
+                value={admin}
+                placeholder={admin}
+                onChange={(e) => handleAdminChange(index, e.target.value)}
+              />
+              <button
+                type="button"
+                className="bg-red text-white rounded-lg px-4 py-2"
+                onClick={() => handleRemoveAdmin(index)}
+              >
+                Remove
+              </button>
+            </div>
+          ))}
+        <button
+          type="button"
+          className="bg-green text-white rounded-lg px-4 py-2"
+          onClick={handleAddAdmin}
+        >
+          Add Admin
+        </button>
+      </div>
 
+      {activated_features.canChangeValidators && (
         <div className="mb-4">
           <label className="block text-gray-700 text-sm font-semibold mb-2">Validators</label>
 
@@ -311,61 +308,61 @@ const UpdateOffer = ({ offer }) => {
             Add Validator
           </button>
         </div>
+      )}
 
-        <div className="mb-4">
-          <label className="block text-gray-700 text-sm font-semibold mb-4">Ad Parameters</label>
+      <div className="mb-4">
+        <label className="block text-gray-700 text-sm font-semibold mb-4">Ad Parameters</label>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="flex flex-col gap-2 mb-4">
-              <label className="block text-gray-700 text-xs">
-                Image aspect ratio (width:height)
-              </label>
-              <div className="flex items-center gap-2">
-                <input
-                  type="text"
-                  className="bg-secondaryBlack rounded-lg p-2 text-white"
-                  value={imageRatio}
-                  placeholder={imageRatio}
-                  onChange={(e) => handleImageRatioChange(e.target.value)}
-                />
-              </div>
-              <span className="text-jacarta-300 text-xs">
-                Leave empty or put 0 if you don&apos;t want to specify an aspect ratio.
-              </span>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="flex flex-col gap-2 mb-4">
+            <label className="block text-gray-700 text-xs">Image aspect ratio (width:height)</label>
+            <div className="flex items-center gap-2">
+              <input
+                type="text"
+                className="bg-secondaryBlack rounded-lg p-2 text-white"
+                value={imageRatio}
+                placeholder={imageRatio}
+                onChange={(e) => handleImageRatioChange(e.target.value)}
+              />
             </div>
+            <span className="text-jacarta-300 text-xs">
+              Leave empty or put 0 if you don&apos;t want to specify an aspect ratio.
+            </span>
           </div>
         </div>
-
-        <div className="mb-4 flex items-center gap-2">
-          <Switch.Root
-            checked={disabled}
-            onCheckedChange={setDisabled}
-            id="disable"
-            className="w-[42px] h-[25px] rounded-full relative data-[state=checked]:bg-primaryPurple border border-white border-opacity-10 outline-none cursor-default"
-          >
-            <Switch.Thumb className="block w-[19px] h-[19px] bg-white rounded-full transition-transform duration-100 translate-x-0.5 will-change-transform data-[state=checked]:translate-x-[19px]" />
-          </Switch.Root>
-          <label className="block text-white text-sm font-semibold">Disable the offer</label>
-        </div>
-
-        <Web3Button
-          action={() => {
-            toast
-              .promise(handleUpdateOffer, {
-                pending: "Waiting for confirmation 🕒",
-                success: disabledLocked ? "The offer has been disabled 🎉" : "The offer has been updated 🎉",
-                error: "Transaction rejected 🤯"
-              })
-              .catch((error) => {
-                console.error(error);
-              });
-          }}
-          contractAddress={config[chainId]?.smartContracts?.DSPONSORADMIN?.address}
-          className="!mt-4 !bg-primaryPurple !hover:bg-opacity-80 !px-4 !py-2 !text-white !font-semibold !rounded-full mb-4"
-        >
-          Update Offer
-        </Web3Button>
       </div>
+
+      <div className="mb-4 flex items-center gap-2">
+        <Switch.Root
+          checked={disabled}
+          onCheckedChange={setDisabled}
+          id="disable"
+          className="w-[42px] h-[25px] rounded-full relative data-[state=checked]:bg-primaryPurple border border-white border-opacity-10 outline-none cursor-default"
+        >
+          <Switch.Thumb className="block w-[19px] h-[19px] bg-white rounded-full transition-transform duration-100 translate-x-0.5 will-change-transform data-[state=checked]:translate-x-[19px]" />
+        </Switch.Root>
+        <label className="block text-white text-sm font-semibold">Disable the offer</label>
+      </div>
+
+      <Web3Button
+        action={() => {
+          toast
+            .promise(handleUpdateOffer, {
+              pending: "Waiting for confirmation 🕒",
+              success: disabledLocked
+                ? "The offer has been disabled 🎉"
+                : "The offer has been updated 🎉",
+              error: "Transaction rejected 🤯"
+            })
+            .catch((error) => {
+              console.error(error);
+            });
+        }}
+        contractAddress={config[chainId]?.smartContracts?.DSPONSORADMIN?.address}
+        className="!mt-4 !bg-primaryPurple !w-fit !hover:bg-opacity-80 !px-4 !py-2 !text-white !font-semibold !rounded-full mb-4"
+      >
+        Update Offer
+      </Web3Button>
     </div>
   );
 };

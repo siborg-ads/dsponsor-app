@@ -7,10 +7,10 @@ import { ethers } from "ethers";
 import Image from "next/image";
 import { useContract, useContractWrite, useContractRead, useAddress } from "@thirdweb-dev/react";
 import Tippy from "@tippyjs/react";
-import handleCopy from "../../utils/handleCopy";
 
 import OfferSkeleton from "../../components/skeleton/offerSkeleton";
 import { fetchAllOffers } from "../../providers/methods/fetchAllOffers";
+import Integration from "../../components/offer-section/integration";
 
 import { fetchOffer } from "../../providers/methods/fetchOffer";
 
@@ -25,6 +25,8 @@ import { useSwitchChainContext } from "../../contexts/hooks/useSwitchChainContex
 import { activated_features } from "../../data/activated_features";
 import UpdateOffer from "../../components/offer-section/updateOffer";
 import ChangeMintPrice from "../../components/offer-section/changeMintPrice";
+import { Tabs } from "react-tabs";
+import * as RadixTabs from "@radix-ui/react-tabs";
 
 const OfferPageContainer = () => {
   const router = useRouter();
@@ -442,10 +444,6 @@ const OfferPageContainer = () => {
         />
       </div>
 
-      {isOwner && <ChangeMintPrice offer={offerData} currency={currency} />}
-
-      {isOwner && <UpdateOffer offer={offerData} />}
-
       {!offerData.nftContract.allowList && (
         <div className="container flex flex-col justify-center mb-6">
           <Divider className="my-4" />
@@ -542,75 +540,55 @@ const OfferPageContainer = () => {
         />
       )}
 
-      {isOwner && activated_features.canSeeIntegrationDetails && (
+      {isOwner && (
         <div className="container">
           <Divider className="my-4" />
-          <h2 className="text-jacarta-900 font-bold font-display mb-6 text-center text-3xl dark:text-white ">
-            Display{" "}
+          <h2 className="text-jacarta-900 font-semibold font-display mb-6 text-center text-3xl dark:text-white ">
+            Offer Management{" "}
           </h2>
-          <div className="dark:bg-secondaryBlack dark:border-jacarta-600 border-jacarta-100 rounded-2lg border bg-white p-8 mb-4">
-            <span className="dark:text-jacarta-100 text-jacarta-100 text-sm ">
-              You can integrate this offer on your website by using the following iframe code.
-              Simply copy and paste the code into your website to display the offer.{" "}
-            </span>
-            <br />
 
-            <div className="flex gap-4 w-full md:w-auto items-start mt-2 ">
-              <pre
-                style={{
-                  backgroundColor: "#010101",
-                  borderRadius: "5px",
-                  fontFamily: "'Courier New', monospace",
-                  padding: "10px",
-                  overflowX: "auto"
-                }}
+          <RadixTabs.Root defaultValue="updateOffer">
+            <RadixTabs.List className="flex items-center gap-4">
+              <RadixTabs.Trigger
+                value="updateOffer"
+                className="cursor-pointer data-[state=active]:bg-primaryPurple border border-primaryPurple rounded-md p-2"
               >
-                <code>
-                  {" "}
-                  {`<iframe src="https://relayer.dsponsor.com/${chainId}/integrations/${offerId}/ClickableLogosGrid/iFrame" height="315" width="1000px" className={'h-screen w-full'} />`}
-                </code>
-              </pre>
-              <Tippy hideOnClick={false} content={copied ? <span>copied</span> : <span>copy</span>}>
-                <div className=" cursor-pointer">
-                  <button
-                    onClick={() =>
-                      handleCopy(
-                        `<iframe
-                      src="https://relayer.dsponsor.com/${chainId}/integrations/${offerId}/ClickableLogosGrid/iFrame"
-                      height="315"
-                      width="1000px"
-                      className={"h-screen w-full"}
-                    />`,
-                        setCopied
-                      )
-                    }
-                  >
-                    <Image
-                      src="/images/copy.svg"
-                      alt="icon"
-                      width={20}
-                      height={20}
-                      className="mt-2 min-w-[20px] "
-                    />
-                  </button>
-                </div>
-              </Tippy>
+                Update Offer
+              </RadixTabs.Trigger>
+              <RadixTabs.Trigger
+                value="changeMintPrice"
+                className="cursor-pointer data-[state=active]:bg-primaryPurple border border-primaryPurple rounded-md p-2"
+              >
+                Change Mint Price
+              </RadixTabs.Trigger>
+              <RadixTabs.Trigger
+                value="integration"
+                className="cursor-pointer data-[state=active]:bg-primaryPurple border border-primaryPurple rounded-md p-2"
+              >
+                Integration
+              </RadixTabs.Trigger>
+            </RadixTabs.List>
+
+            <div className="flex w-full mt-12">
+              <RadixTabs.Content value="updateOffer" className="w-full">
+                <UpdateOffer offer={offerData} />
+              </RadixTabs.Content>
+              <RadixTabs.Content value="changeMintPrice" className="w-full">
+                <ChangeMintPrice offer={offerData} currency={currency} />
+              </RadixTabs.Content>
+              <RadixTabs.Content value="integration" className="w-full">
+                <Integration
+                  chainId={chainId}
+                  offerId={offerId}
+                  setCopied={setCopied}
+                  copied={copied}
+                  offerTokens={offerData?.nftContract?.tokens}
+                />
+              </RadixTabs.Content>
             </div>
-          </div>
-          <iframe
-            title="offer"
-            loading="lazy"
-            src={`https://relayer.dsponsor.com/${chainId}/integrations/${offerId}/ClickableLogosGrid/iFrame`}
-            height="315"
-            width="1000px"
-            className={"h-screen w-full"}
-          />
+          </RadixTabs.Root>
         </div>
       )}
-      {/* <ItemsTabs /> */}
-      {/* <div className="container mb-12">
-        <ItemsTabs />
-      </div> */}
     </>
   );
 };
