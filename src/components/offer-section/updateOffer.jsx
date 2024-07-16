@@ -18,6 +18,7 @@ const UpdateOffer = ({ offer }) => {
   const [imageRatio, setImageRatio] = useState(null);
   const [initialImageRatio, setInitialImageRatio] = useState(null);
   const [name, setName] = useState("");
+  const [disabledLocked, setDisabledLocked] = useState(false);
 
   const { currentChainObject } = useChainContext();
   const chainId = currentChainObject?.chainId;
@@ -182,6 +183,8 @@ const UpdateOffer = ({ offer }) => {
       updatedAdParametersForRemoveOptions.push("imageURL-" + initialImageRatio);
     }
 
+    setDisabledLocked(disabled);
+
     const updatedOfferParams = {
       offerId: parseFloat(offerId),
       disable: disabled,
@@ -232,7 +235,7 @@ const UpdateOffer = ({ offer }) => {
             className="bg-secondaryBlack rounded-lg w-full p-2 text-white"
             value={name}
             placeholder={name ?? ""}
-            onChange={(e) => setMetadataURL(e.target.value)}
+            onChange={(e) => setName(e.target.value)}
           />
         </div>
 
@@ -350,7 +353,7 @@ const UpdateOffer = ({ offer }) => {
             toast
               .promise(handleUpdateOffer, {
                 pending: "Waiting for confirmation 🕒",
-                success: "Transaction confirmed 👌",
+                success: disabledLocked ? "The offer has been disabled 🎉" : "The offer has been updated 🎉",
                 error: "Transaction rejected 🤯"
               })
               .catch((error) => {
