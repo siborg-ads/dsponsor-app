@@ -5,6 +5,8 @@ import { useChainContext } from "../../contexts/hooks/useChainContext";
 import { fetchAllMarketplaceBidsByBidder } from "../../providers/methods/fetchAllMarketplaceBids";
 import formatAndRound from "../../utils/formatAndRound";
 import { ThirdwebSDK } from "@thirdweb-dev/sdk";
+import { BigNumber } from "ethers";
+import { formatUnits } from "ethers/lib/utils";
 
 const Bids = ({ manageAddress }) => {
   const [startDate, setStartDate] = useState(null);
@@ -18,13 +20,17 @@ const Bids = ({ manageAddress }) => {
 
   const formatBidTransactions = useCallback(
     (bids) => {
+      if (!bids) return [];
+
       let tempBids = [];
 
       bids.forEach(async (bid) => {
         let tempBid = {};
 
-        if (bid?.refundProfit > 0) {
+        if (bid?.refundProfit > 0 && bid?.status !== "COMPLETED") {
           tempBid.type = "outbid";
+        } else if (bid?.status === "COMPLETED") {
+          tempBid.type = "completed";
         } else {
           tempBid.type = "bid";
         }
@@ -40,10 +46,13 @@ const Bids = ({ manageAddress }) => {
 
         tempBid.date = new Date(bid?.creationTimestamp * 1000);
         tempBid.transactionHash = bid?.creationTxHash;
-        tempBid.refundAmount = Number(bid?.refundProfit);
+        tempBid.refundAmount = BigNumber.from(bid?.refundProfit);
         tempBid.refundDate = new Date(bid?.lastUpdateTimestamp * 1000);
-        tempBid.refundBid = Number(bid?.refundAmount) - Number(bid?.refundProfit);
+        tempBid.refundBid = BigNumber.from(bid?.refundAmount).sub(
+          BigNumber.from(bid?.refundProfit)
+        );
         tempBid.currencyAddress = bid?.currency;
+        tempBid.bidAmount = BigNumber.from(bid?.paidBidAmount);
         tempBid.tokenName =
           bid?.listing?.token?.nftContract?.adOffers[0]?.name +
           (bid?.listing?.token?.mint?.tokenData ? " #" + bid?.listing?.token?.mint?.tokenData : "");
@@ -113,11 +122,13 @@ const Bids = ({ manageAddress }) => {
   const toDisplayType = (type) => {
     switch (type) {
       case "bid":
-        return "Bidded";
+        return "Ongoing Bid";
       case "outbid":
         return "Outbidded";
+      case "completed":
+        return "Auction Won";
       default:
-        return "Bidded";
+        return "Unknown";
     }
   };
 
@@ -160,16 +171,16 @@ const Bids = ({ manageAddress }) => {
             <thead className="text-white text-left bg-primaryPurple rounded-2lg">
               <tr className="bg-jacarta-50 dark:bg-primaryPurple rounded-2lg text-base">
                 <th className="py-3 px-4 font-medium text-jacarta-100 dark:text-jacarta-100">
-                  Operation
+                  Status
                 </th>
                 <th className="py-3 px-4 font-medium text-jacarta-100 dark:text-jacarta-100">
                   Token
                 </th>
                 <th className="py-3 px-4 font-medium text-jacarta-100 dark:text-jacarta-100">
-                  Date
+                  Bid Date
                 </th>
                 <th className="py-3 px-4 font-medium text-jacarta-100 dark:text-jacarta-100">
-                  Transaction Hash
+                  Bid Amount
                 </th>
                 <th className="py-3 px-4 font-medium text-jacarta-100 dark:text-jacarta-100">
                   Refund Date
@@ -201,19 +212,14 @@ const Bids = ({ manageAddress }) => {
                       {new Date(activity?.date).toLocaleString()}
                     </td>
                     <td className="py-4 px-4 text-jacarta-100 dark:text-jacarta-100">
-                      <Link
-                        target="_blank"
-                        href={`${chainExplorer}/tx/${activity?.transactionHash}`}
-                      >
-                        <span className="text-primaryPurple hover:text-opacity-80">
-                          {activity?.transactionHash?.slice(0, 6) +
-                            "..." +
-                            activity?.transactionHash?.slice(-4)}
-                        </span>
-                      </Link>
+                      {formatAndRound(
+                        formatUnits(activity?.bidAmount, activity?.currency?.decimals)
+                      )}{" "}
+                      {activity?.currency?.symbol}
                     </td>
                     <td className="py-4 px-4 text-jacarta-100 dark:text-jacarta-100">
                       {activity?.refundDate &&
+                      activity?.refundBid > 0 &&
                       new Date(activity?.refundDate).getTime() !==
                         new Date(activity?.date).getTime()
                         ? new Date(activity?.refundDate).toLocaleString()
@@ -222,19 +228,16 @@ const Bids = ({ manageAddress }) => {
                     <td className="py-4 px-4 text-jacarta-100 dark:text-jacarta-100">
                       {activity?.refundBid && activity?.refundBid > 0
                         ? `${formatAndRound(
-                            parseFloat(activity?.refundBid) *
-                              Math.pow(10, -Number(activity?.currency?.decimals))
+                            formatUnits(activity?.refundBid, activity?.currency?.decimals)
                           )} ${activity?.currency?.symbol}`
                         : "-"}{" "}
                     </td>
                     <td className="py-4 px-4 text-jacarta-100 dark:text-jacarta-100">
                       {activity?.refundAmount && activity?.refundAmount > 0
                         ? `${formatAndRound(
-                            parseFloat(activity?.refundAmount) *
-                              Math.pow(10, -Number(activity?.currency?.decimals))
+                            formatUnits(activity?.refundAmount, activity?.currency?.decimals)
                           )} ${activity?.currency?.symbol}`
                         : "-"}{" "}
-                      {/* TODO: to change decimals */}
                     </td>
                   </tr>
                 );
