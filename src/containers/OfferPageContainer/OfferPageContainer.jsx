@@ -25,8 +25,7 @@ import { useSwitchChainContext } from "../../contexts/hooks/useSwitchChainContex
 import { activated_features } from "../../data/activated_features";
 import UpdateOffer from "../../components/offer-section/updateOffer";
 import ChangeMintPrice from "../../components/offer-section/changeMintPrice";
-import { Tabs } from "react-tabs";
-import * as RadixTabs from "@radix-ui/react-tabs";
+import { Tabs, Tab, TabList, TabPanel } from "react-tabs";
 
 const OfferPageContainer = () => {
   const router = useRouter();
@@ -62,6 +61,7 @@ const OfferPageContainer = () => {
   const NATIVECurrency = config[chainId]?.smartContracts?.NATIVE;
   const { setSelectedChain } = useSwitchChainContext();
   const [canChangeMintPrice, setCanChangeMintPrice] = useState(false);
+  const [offerManagementActiveTab, setOfferManagementActiveTab] = useState("updateOffer");
 
   const { data: bps } = useContractRead(DsponsorAdminContract, "feeBps");
   const maxBps = 10000;
@@ -547,46 +547,66 @@ const OfferPageContainer = () => {
             Offer Management{" "}
           </h2>
 
-          <RadixTabs.Root defaultValue="updateOffer">
-            <RadixTabs.List className="flex items-center gap-4">
-              <RadixTabs.Trigger
-                value="updateOffer"
-                className="cursor-pointer data-[state=active]:bg-primaryPurple border border-primaryPurple rounded-md p-2"
+          <Tabs className="tabs">
+            <TabList className="nav nav-tabs hide-scrollbar mb-12 flex items-center justify-start overflow-x-auto overflow-y-hidden border-b border-jacarta-100 pb-px dark:border-jacarta-600 md:justify-center">
+              <Tab
+                className="nav-item"
+                key={id}
+                onClick={() => setOfferManagementActiveTab("updateOffer")}
               >
-                Update Offer
-              </RadixTabs.Trigger>
-              <RadixTabs.Trigger
-                value="changeMintPrice"
-                className="cursor-pointer data-[state=active]:bg-primaryPurple border border-primaryPurple rounded-md p-2"
+                <button
+                  className={
+                    offerManagementActiveTab === "updateOffer"
+                      ? "nav-link hover:text-jacarta-900 text-jacarta-100 relative flex items-center whitespace-nowrap py-3 px-4 dark:hover:text-white active"
+                      : "nav-link hover:text-jacarta-900 text-jacarta-100 relative flex items-center whitespace-nowrap py-3 px-4 dark:hover:text-white"
+                  }
+                >
+                  Update Offer
+                </button>
+              </Tab>
+              <Tab
+                className="nav-item"
+                onClick={() => setOfferManagementActiveTab("changeMintPrice")}
               >
-                Change Mint Price
-              </RadixTabs.Trigger>
-              <RadixTabs.Trigger
-                value="integration"
-                className="cursor-pointer data-[state=active]:bg-primaryPurple border border-primaryPurple rounded-md p-2"
-              >
-                Integration
-              </RadixTabs.Trigger>
-            </RadixTabs.List>
+                <button
+                  className={
+                    offerManagementActiveTab === "changeMintPrice"
+                      ? "nav-link hover:text-jacarta-900 text-jacarta-100 relative flex items-center whitespace-nowrap py-3 px-4 dark:hover:text-white active"
+                      : "nav-link hover:text-jacarta-900 text-jacarta-100 relative flex items-center whitespace-nowrap py-3 px-4 dark:hover:text-white"
+                  }
+                >
+                  Change Mint Price
+                </button>
+              </Tab>
+              <Tab className="nav-item" onClick={() => setOfferManagementActiveTab("integration")}>
+                <button
+                  className={
+                    offerManagementActiveTab === "integration"
+                      ? "nav-link hover:text-jacarta-900 text-jacarta-100 relative flex items-center whitespace-nowrap py-3 px-4 dark:hover:text-white active"
+                      : "nav-link hover:text-jacarta-900 text-jacarta-100 relative flex items-center whitespace-nowrap py-3 px-4 dark:hover:text-white"
+                  }
+                >
+                  Integration
+                </button>
+              </Tab>
+            </TabList>
 
-            <div className="flex w-full mt-12">
-              <RadixTabs.Content value="updateOffer" className="w-full">
-                <UpdateOffer offer={offerData} />
-              </RadixTabs.Content>
-              <RadixTabs.Content value="changeMintPrice" className="w-full">
-                <ChangeMintPrice offer={offerData} currency={currency} />
-              </RadixTabs.Content>
-              <RadixTabs.Content value="integration" className="w-full">
-                <Integration
-                  chainId={chainId}
-                  offerId={offerId}
-                  setCopied={setCopied}
-                  copied={copied}
-                  offerTokens={offerData?.nftContract?.tokens}
-                />
-              </RadixTabs.Content>
-            </div>
-          </RadixTabs.Root>
+            <TabPanel>
+              <UpdateOffer offer={offerData} />
+            </TabPanel>
+            <TabPanel>
+              <ChangeMintPrice offer={offerData} currency={currency} />
+            </TabPanel>
+            <TabPanel>
+              <Integration
+                chainId={chainId}
+                offerId={offerId}
+                setCopied={setCopied}
+                copied={copied}
+                offerTokens={offerData?.nftContract?.tokens}
+              />
+            </TabPanel>
+          </Tabs>
         </div>
       )}
     </>
