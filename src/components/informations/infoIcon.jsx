@@ -16,7 +16,7 @@ const InfoIcon = ({ text, children }) => {
           </Popover.Trigger>
           <Popover.Anchor />
           <Popover.Portal>
-            <Popover.Content className="bg-primaryBlack p-2 rounded-md text-sm shadow-lg border border-jacarta-100 border-opacity-10">
+            <Popover.Content className="bg-secondaryBlack max-w-lg p-2 rounded-md text-sm shadow-lg border border-jacarta-100 border-opacity-10">
               <p>{text}</p>
             </Popover.Content>
           </Popover.Portal>
@@ -30,7 +30,7 @@ const InfoIcon = ({ text, children }) => {
               <span>{children}</span>
             </Tooltip.Trigger>
             <Tooltip.Portal>
-              <Tooltip.Content className="bg-primaryBlack p-2 text-sm rounded-md shadow-lg border border-jacarta-100 border-opacity-10">
+              <Tooltip.Content className="bg-secondaryBlack max-w-lg p-2 text-sm rounded-md shadow-lg border border-jacarta-100 border-opacity-10">
                 <p>{text}</p>
               </Tooltip.Content>
             </Tooltip.Portal>

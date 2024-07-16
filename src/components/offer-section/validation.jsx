@@ -22,8 +22,10 @@ const Validation = ({
   setSelectedItems,
   selectedItems,
   sponsorHasAtLeastOneRejectedProposalAndNoPending,
+  setSponsorHasAtLeastOneRejectedProposalAndNoPending,
   mediaShouldValidateAnAd,
-  isMedia
+  isMedia,
+  itemTokenId
 }) => {
   const [pendingProposalData, setPendingProposalData] = useState([]);
   const [validatedProposalData, setValidatedProposalData] = useState([]);
@@ -32,6 +34,7 @@ const Validation = ({
   const [comments, setComments] = useState({});
   const [isApprouvedAd, setIsApprouvedAd] = useState(false);
   const [pendingProposalLength, setPendingProposalLength] = useState(0);
+  const [aspectRatio, setAspectRatio] = useState(null);
 
   const tabItem = [
     {
@@ -93,12 +96,14 @@ const Validation = ({
             const cssAspectRatio = aspectRatio?.replace(":", "/");
             groupedAds[token.tokenId].adParametersList[`aspectRatio`] = aspectRatio;
             groupedAds[token.tokenId].adParametersList[`cssAspectRatio`] = cssAspectRatio;
+            setAspectRatio(aspectRatio);
           } else {
             const split = adParamBase.split("-");
             const aspectRatio = split[1];
             const cssAspectRatio = aspectRatio?.replace(":", "/");
             groupedAds[token.tokenId].adParametersList[`aspectRatio`] = aspectRatio;
             groupedAds[token.tokenId].adParametersList[`cssAspectRatio`] = cssAspectRatio;
+            setAspectRatio(aspectRatio);
           }
         }
       }
@@ -255,6 +260,10 @@ const Validation = ({
                 isOwner={isOwner}
                 setSuccessFullRefuseModal={setSuccessFullRefuseModal}
                 handleItemSubmit={handleItemSubmit}
+                aspectRatio={aspectRatio}
+                setSponsorHasAtLeastOneRejectedProposalAndNoPending={
+                  setSponsorHasAtLeastOneRejectedProposalAndNoPending
+                }
               />
             </div>
           </TabPanel>

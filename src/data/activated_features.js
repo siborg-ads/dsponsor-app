@@ -28,5 +28,9 @@ export const activated_features = {
   // Whether to see home in the mobile menu
   canSeeHomeInMobileMenu: false,
   // Whether to filter transactions in activity with WETH only
-  canFilterTransactionsWithWETH: true
+  canFilterTransactionsWithWETH: true,
+  // Whether to be able to change mint price for a specific token
+  canChangeTokenMintPrice: false,
+  // Wether we can change validators for an offer
+  canChangeValidators: false
 };

@@ -19,7 +19,9 @@ const Review_carousel = ({
   comments,
   isToken,
   isOwner,
-  setRefusedValidatedAdModal
+  setRefusedValidatedAdModal,
+  aspectRatio: expectedRatio,
+  setSponsorHasAtLeastOneRejectedProposalAndNoPending
 }) => {
   const [validate, setValidate] = useState({});
   const [tokenId, setTokenId] = useState(null);
@@ -27,6 +29,36 @@ const Review_carousel = ({
   const [isSelectedItem, setIsSelectedItem] = useState({});
   const [modalStates, setModalStates] = useState({});
   const [copied, setCopied] = useState(false);
+  const [detectedRatios, setDetectedRatios] = useState([]);
+  const [detectedRatiosAreGood, setDetectedRatiosAreGood] = useState([]);
+
+  useEffect(() => {
+    if (detectedRatios.length) {
+      let newDetectedRatiosAreGood = [];
+
+      detectedRatios.forEach((detectedRatio) => {
+        if (!detectedRatio || !expectedRatio) {
+          newDetectedRatiosAreGood.push(false);
+          return;
+        }
+
+        const realDetectedRatio = detectedRatio.split(":");
+        const realWidth = Number(realDetectedRatio[0]);
+        const realHeight = Number(realDetectedRatio[1]);
+        const realDetectedRatioValue = realWidth / realHeight;
+
+        const realExpectedRatio = expectedRatio.split(":");
+        const realExpectedWidth = Number(realExpectedRatio[0]);
+        const realExpectedHeight = Number(realExpectedRatio[1]);
+        const realExpectedRatioValue = realExpectedWidth / realExpectedHeight;
+
+        const detectedRatioIsGood = realDetectedRatioValue === realExpectedRatioValue;
+        newDetectedRatiosAreGood.push(detectedRatioIsGood);
+      });
+
+      setDetectedRatiosAreGood(newDetectedRatiosAreGood);
+    }
+  }, [detectedRatios, expectedRatio]);
 
   useEffect(() => {
     const initialValidateStates = {};
@@ -152,7 +184,7 @@ const Review_carousel = ({
                 <input
                   type="checkbox"
                   name="check"
-                  className="checked:bg-primaryPurple checked:focus:bg-primaryPurple checked:hover:bg-primaryPurple after:bg-jacarta-400 bg-jacarta-100 relative h-4 w-7 cursor-pointer appearance-none rounded-lg border-none shadow-none after:absolute after:top-0.5 after:left-0.5 after:h-3 after:w-3 after:rounded-full after:transition-all checked:bg-none checked:after:left-3.5 checked:after:bg-white focus:ring-transparent focus:ring-offset-0"
+                  className="checked:bg-green checked:focus:bg-green checked:hover:bg-green after:bg-jacarta-400 bg-jacarta-100 relative h-4 w-7 cursor-pointer appearance-none rounded-lg border-none shadow-none after:absolute after:top-0.5 after:left-0.5 after:h-3 after:w-3 after:rounded-full after:transition-all checked:bg-none checked:after:left-3.5 checked:after:bg-white focus:ring-transparent focus:ring-offset-0"
                   onChange={() => handleInput(tokenId)}
                   checked={validate[tokenId] || false}
                 />
@@ -176,7 +208,13 @@ const Review_carousel = ({
 
               <Web3Button
                 contractAddress={config[chainId]?.smartContracts?.DSPONSORADMIN?.address}
-                action={() => openRefuseModal()}
+                action={() => {
+                  openRefuseModal();
+
+                  if (pendingProposalData?.length === 1) {
+                    setSponsorHasAtLeastOneRejectedProposalAndNoPending(true);
+                  }
+                }}
                 className={` !rounded-full !min-w-[100px] !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate[tokenId] ? "!btn-disabled !cursor-not-allowed" : "!bg-red !cursor-pointer"} `}
               >
                 Reject
@@ -187,7 +225,7 @@ const Review_carousel = ({
       )}
 
       <div className="grid grid-cols-1 gap-[1.875rem] md:grid-cols-2 lg:grid-cols-4">
-        {pendingProposalData.map((item) => {
+        {pendingProposalData.map((item, itemIndex) => {
           const { adParametersList, tokenId, tokenData } = item;
 
           return (
@@ -197,9 +235,9 @@ const Review_carousel = ({
               onClick={() => handleSelection(item)}
             >
               <div className="dark:bg-secondaryBlack hover:-translate-y-1 duration-500 cursor-pointer dark:border-jacarta-700 border-jacarta-100 rounded-2xl block border bg-white p-[1.1875rem] transition-shadow hover:shadow-lg text-jacarta-100">
-                <figure className="flex justify-center">
+                <figure className="flex justify-center w-full">
                   {getImageUrl(adParametersList) && (
-                    <div className="flex flex-col gap-2">
+                    <div className="flex flex-col gap-2 w-full">
                       <Image
                         src={getImageUrl(adParametersList) ?? ""}
                         alt="logo"
@@ -208,6 +246,21 @@ const Review_carousel = ({
                         style={{ objectFit: "contain" }}
                         className="rounded-[0.625rem] w-full h-auto object-contain"
                         loading="lazy"
+                        onLoadingComplete={({ naturalWidth, naturalHeight }) => {
+                          // we want ratio in the format "width:height" but the minimal fraction as possible
+                          // for that we find the greatest common divisor
+                          const gcd = (a, b) => (b ? gcd(b, a % b) : a);
+                          const ratio = `${naturalWidth / gcd(naturalWidth, naturalHeight)}:${
+                            naturalHeight / gcd(naturalWidth, naturalHeight)
+                          }`;
+
+                          // put ratio at the itemIndex position of the detectedRatios array
+                          setDetectedRatios((prev) => {
+                            const newDetectedRatios = [...prev];
+                            newDetectedRatios[itemIndex] = ratio;
+                            return newDetectedRatios;
+                          });
+                        }}
                         onClick={(event) => {
                           openModal(tokenId);
 
@@ -218,36 +271,59 @@ const Review_carousel = ({
                       <div className="flex items-center justify-between">
                         <button
                           onClick={() => openModal(tokenId)}
-                          className="text-left text-xs hover:cursor-pointer hover:underline"
+                          className="text-left text-xs flex items-center hover:cursor-pointer hover:underline"
                         >
                           Preview Image 🔎
                         </button>
-                        <div className="dark:border-primaryPink dark:border-opacity-10 ms-14 border-jacarta-100 flex items-center whitespace-nowrap rounded-md border py-1 px-2">
+                        <div className="dark:border-primaryPink dark:border-opacity-10  border-jacarta-100 flex items-center whitespace-nowrap rounded-md border py-1 px-2">
                           <span className="text-green text-sm font-medium tracking-tight">
                             # {tokenData ?? formatTokenId(tokenId)}
                           </span>
                         </div>
                       </div>
+                      {expectedRatio && (
+                        <div className="flex flex-col gap-2 border-t border-white border-opacity-10 py-2">
+                          <span className="text-xs text-jacarta-100 dark:text-jacarta-100">
+                            Expected Ratio:{" "}
+                            <span className="text-green">{adParametersList?.aspectRatio}</span>
+                          </span>
+
+                          {getImageUrl(adParametersList) && (
+                            <span className="text-xs text-jacarta-100 dark:text-jacarta-100">
+                              Detected Ratio:{" "}
+                              <span
+                                className={`${detectedRatiosAreGood[itemIndex] ? "text-green" : "text-red"}`}
+                              >
+                                {detectedRatios[itemIndex] ?? "N/A"}
+                              </span>
+                            </span>
+                          )}
+                        </div>
+                      )}
                     </div>
                   )}
                 </figure>
 
-                <div className="mt-4 flex items-center justify-between ">
-                  <Link
-                    href={adParametersList.linkURL ?? ""}
-                    target="_blank"
-                    className="font-display text-jacarta-900 hover:text-primaryPurple text-sm dark:text-white  overflow-hidden text-ellipsis whitespace-nowrap "
-                  >
-                    <span>{adParametersList?.linkURL}</span>
-                  </Link>
-                </div>
-                <div className="mt-2 text-xs flex justify-between">
-                  <span
-                    className={`${!isSelectedItem[tokenId] || isToken ? "text-primaryPurple" : "text-green"} text-sm font-bold`}
-                  >
-                    <span>{isSelectedItem[tokenId] && !isToken && "✅ "}</span>
-                    Pending
-                  </span>
+                <div className="flex flex-col gap-2 border-t pt-2 border-white border-opacity-10">
+                  {adParametersList && (
+                    <div className="flex items-center justify-between ">
+                      <Link
+                        href={adParametersList.linkURL ?? ""}
+                        target="_blank"
+                        className="font-display text-jacarta-900 hover:text-primaryPink text-sm dark:text-white  overflow-hidden text-ellipsis whitespace-nowrap "
+                      >
+                        <span>{adParametersList?.linkURL}</span>
+                      </Link>
+                    </div>
+                  )}
+                  <div className="text-xs flex justify-between">
+                    <span
+                      className={`${!isSelectedItem[tokenId] || isToken ? "text-primaryPink" : "text-green"} text-sm font-bold`}
+                    >
+                      <span>{isSelectedItem[tokenId] && !isToken && "✅ "}</span>
+                      Pending
+                    </span>
+                  </div>
                 </div>
               </div>
             </article>
@@ -263,8 +339,8 @@ const Review_carousel = ({
               aspectRatio: `${pendingProposalData?.find((item) => item.tokenId === tokenId)?.adParametersList?.cssAspectRatio}`
             }}
           >
-            <div className="relative flex items-center justify-center max-w-full max-h-full w-3/4 h-3/4 p-6">
-              <div className="relative flex justify-center items-center max-w-full max-h-full border-2 border-dotted border-jacarta-100 bg-white dark:bg-jacarta-200 bg-opacity-20 backdrop-blur-xl dark:bg-opacity-20 dark:border-jacarta-100 overflow-hidden">
+            <div className="relative flex items-center justify-center max-w-full max-h-full w-3/4 h-3/4">
+              <div className="relative flex justify-center items-center h-full max-w-full max-h-full border-2 border-dotted border-jacarta-100 bg-white dark:bg-jacarta-200 bg-opacity-20 backdrop-blur-xl dark:bg-opacity-20 dark:border-jacarta-100 overflow-hidden">
                 <Image
                   src={
                     getImageUrl(
@@ -273,9 +349,9 @@ const Review_carousel = ({
                     ) ?? ""
                   }
                   alt="logo"
-                  height={2000}
-                  width={2000}
-                  className="max-w-full max-h-full object-contain"
+                  height={1000}
+                  width={1000}
+                  className="max-w-full max-h-full h-full object-contain object-center"
                   loading="lazy"
                 />
               </div>

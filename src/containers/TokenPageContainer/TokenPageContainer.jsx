@@ -121,6 +121,7 @@ const TokenPageContainer = () => {
   const [offers, setOffers] = useState(null);
   const [isMedia, setIsMedia] = useState(false);
   const [sales, setSales] = useState([]);
+  const [minted, setMinted] = useState(false);
 
   let description = "description not found";
   let id = "1";
@@ -205,12 +206,25 @@ const TokenPageContainer = () => {
     // we check if the sponsor has only rejected proposals
     const sponsorHasAtLeastOneRejectedProposal = itemProposals?.rejectedProposals?.length > 0;
     const sponsorHasNoPendingProposal = itemProposals?.pendingProposals?.length === 0;
-    const sponsorHasNoAcceptedProposal = itemProposals?.acceptedProposals?.length === 0;
+    const lastAcceptedProposalTimestamp =
+      parseFloat(
+        itemProposals?.acceptedProposals?.sort(
+          (a, b) => b?.creationTimestamp - a?.creationTimestamp
+        )[0]?.lastUpdateTimestamp
+      ) * 1000;
+    const lastRefusedProposalTimestamp =
+      parseFloat(
+        itemProposals?.rejectedProposals?.sort(
+          (a, b) => b?.creationTimestamp - a?.creationTimestamp
+        )[0]?.lastUpdateTimestamp
+      ) * 1000;
+    const sponsorHasNoMoreRecentValidatedProposal =
+      new Date(lastAcceptedProposalTimestamp) <= new Date(lastRefusedProposalTimestamp);
 
     setSponsorHasAtLeastOneRejectedProposalAndNoPending(
       sponsorHasAtLeastOneRejectedProposal &&
         sponsorHasNoPendingProposal &&
-        sponsorHasNoAcceptedProposal
+        sponsorHasNoMoreRecentValidatedProposal
     );
 
     // now we check if the media should validate an ad
@@ -1046,6 +1060,7 @@ const TokenPageContainer = () => {
         });
         setSuccessFullUpload(true);
         setIsOwner(true);
+        setMinted(true);
       } else {
         await directBuy(argsWithPossibleOverrides).catch((error) => {
           console.error("Error while buying:", error);
@@ -1414,7 +1429,7 @@ const TokenPageContainer = () => {
               </div>
 
               <p className="dark:text-jacarta-100 mb-10">{description}</p>
-              {(tokenStatut === "MINTABLE" ||
+              {((tokenStatut === "MINTABLE" && !minted) ||
                 (firstSelectedListing?.listingType === "Direct" &&
                   firstSelectedListing?.status === "CREATED" &&
                   firstSelectedListing?.startTime < now &&
@@ -1592,6 +1607,7 @@ const TokenPageContainer = () => {
             mediaShouldValidateAnAd={mediaShouldValidateAnAd}
             isMedia={isMedia}
             isSponsor={isOwner}
+            itemTokenId={tokenId}
           />
         )}
       {/* <ItemsTabs /> */}

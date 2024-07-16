@@ -106,8 +106,8 @@ const Validated_refused_items = ({ statut, proposalData, isToken }) => {
                               aspectRatio: `${proposalData?.find((item) => item.tokenId === tokenId)?.adParametersList?.cssAspectRatio}`
                             }}
                           >
-                            <div className="relative flex items-center justify-center max-w-full max-h-full w-3/4 h-3/4 p-6">
-                              <div className="relative flex justify-center items-center max-w-full max-h-full border-2 border-dotted border-jacarta-100 bg-white dark:bg-jacarta-200 bg-opacity-20 backdrop-blur-xl dark:bg-opacity-20 dark:border-jacarta-100 overflow-hidden">
+                            <div className="relative flex items-center justify-center max-w-full max-h-full w-3/4 h-3/4">
+                              <div className="relative flex justify-center items-center h-full max-w-full max-h-full border-2 border-dotted border-jacarta-100 bg-white dark:bg-jacarta-200 bg-opacity-20 backdrop-blur-xl dark:bg-opacity-20 dark:border-jacarta-100 overflow-hidden">
                                 <Image
                                   src={
                                     getImageUrl(
@@ -116,9 +116,9 @@ const Validated_refused_items = ({ statut, proposalData, isToken }) => {
                                     ) ?? ""
                                   }
                                   alt="logo"
-                                  height={2000}
-                                  width={2000}
-                                  className="max-w-full max-h-full object-contain"
+                                  height={1000}
+                                  width={1000}
+                                  className="max-w-full max-h-full h-full object-contain object-center"
                                   loading="lazy"
                                 />
                               </div>
@@ -155,7 +155,7 @@ const Validated_refused_items = ({ statut, proposalData, isToken }) => {
 
                       <div className="flex flex-col w-full">
                         <h3 className=" text-jacarta-900 text-sm dark:text-jacarta-100">Link</h3>
-                        <button className="flex min-w-[20px] text-primaryPurple hover:underline max-w-[20rem]  select-none overflow-hidden text-ellipsis whitespace-nowrap">
+                        <button className="flex min-w-[20px] text-green hover:text-opacity-80 hover:underline max-w-[20rem]  select-none overflow-hidden text-ellipsis whitespace-nowrap">
                           <Link href={adParametersList.linkURL ?? ""} target="_blank">
                             {adParametersList?.linkURL}
                           </Link>
