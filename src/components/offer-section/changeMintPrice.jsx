@@ -11,6 +11,7 @@ import { activated_features } from "../../data/activated_features";
 
 const ChangeMintPrice = ({ offer }) => {
   const [amount, setAmount] = useState(undefined);
+  const [initialAmount, setInitialAmount] = useState(undefined);
   const [currency, setCurrency] = useState(null);
   const [currencySymbol, setCurrencySymbol] = useState(null);
   const [formattedAmountBN, setFormattedAmountBN] = useState(undefined);
@@ -22,6 +23,7 @@ const ChangeMintPrice = ({ offer }) => {
   const [currencyDecimals, setCurrencyDecimals] = useState(null);
   const [indexSelectedToken, setIndexSelectedToken] = useState(null);
   const [disabledLocked, setDisabledLocked] = useState(false);
+  const [initialDisabled, setInitialDisabled] = useState(false);
 
   const { currentChainObject } = useChainContext();
   const chainId = currentChainObject?.chainId;
@@ -32,7 +34,15 @@ const ChangeMintPrice = ({ offer }) => {
 
   useEffect(() => {
     if (offer) {
-      setCurrency(offer?.nftContract?.prices[0]?.currency);
+      // fallback to WETH from config if no currency is found
+      let currency =
+        offer?.nftContract?.prices[0]?.currency ?? config[chainId]?.smartContracts?.WETH?.address;
+      if (initialDisabled) {
+        setCurrency(config[chainId]?.smartContracts?.WETH?.address);
+      } else {
+        setCurrency(currency);
+      }
+
       setTokens(offer?.nftContract?.tokens);
       setNftContractAddress(offer?.nftContract?.id);
 
@@ -41,8 +51,36 @@ const ChangeMintPrice = ({ offer }) => {
         tokensContractAddress.push(token?.tokenId);
       });
       setTokensContractAddress(tokensContractAddress);
+
+      if (offer?.nftContract?.prices[0]?.enabled === true) {
+        setDisableMint(false);
+        setInitialDisabled(false);
+      } else {
+        setDisableMint(true);
+        setInitialDisabled(true);
+      }
+
+      if (offer?.nftContract?.prices[0]?.amount) {
+        setAmount(
+          formatUnits(
+            BigNumber.from(offer?.nftContract?.prices[0]?.amount),
+            offer?.nftContract?.prices[0]?.currencyDecimals
+          )
+        );
+        setInitialAmount(
+          formatUnits(
+            BigNumber.from(offer?.nftContract?.prices[0]?.amount),
+            offer?.nftContract?.prices[0]?.currencyDecimals
+          )
+        );
+      } else {
+        setAmount(undefined);
+        setInitialAmount(undefined);
+      }
     }
-  }, [offer]);
+  }, [chainId, initialDisabled, offer]);
+
+  console.log("offer", offer);
 
   useEffect(() => {
     if (currency) {
@@ -52,10 +90,10 @@ const ChangeMintPrice = ({ offer }) => {
           contract?.address?.toLowerCase() ===
           offer?.nftContract?.tokens[0]?.mint?.currency?.toLowerCase()
       );
-      setCurrencySymbol(currency?.symbol);
+      setCurrencySymbol(currency?.symbol ?? offer?.nftContract?.prices[0]?.currencySymbol);
       setCurrencyDecimals(currency?.decimals);
     }
-  }, [chainId, currency, offer?.nftContract?.tokens]);
+  }, [chainId, currency, offer?.nftContract?.prices, offer?.nftContract?.tokens]);
 
   const handleAmount = (value) => {
     if (!value) {
@@ -86,12 +124,31 @@ const ChangeMintPrice = ({ offer }) => {
     setFormattedAmountBN(formattedValue);
   };
 
+  useEffect(() => {
+    if (disableMint) {
+      setAmount(0);
+    } else {
+      setAmount(initialAmount);
+    }
+  }, [disableMint, initialAmount]);
+
   const handleChangeMintPrice = async () => {
     setDisabledLocked(disableMint);
 
+    let finalFormattedAmountBN = formattedAmountBN;
+
+    if (disableMint) {
+      finalFormattedAmountBN = BigNumber.from("0");
+    }
+
+    if (!finalFormattedAmountBN) {
+      toast("Please enter a valid amount", { type: "error" });
+      throw new Error("Please enter a valid amount");
+    }
+
     try {
       await mutateAsync({
-        args: [currency, !disableMint, formattedAmountBN]
+        args: [currency, !disableMint, finalFormattedAmountBN]
       });
     } catch (error) {
       console.error(error);
@@ -116,6 +173,28 @@ const ChangeMintPrice = ({ offer }) => {
 
   return (
     <div className="flex flex-col gap-4 justify-center">
+      {initialDisabled && (
+        <p className="text-red text-sm">The minting feature is currently disabled for this offer</p>
+      )}
+
+      {!initialDisabled && (
+        <p className="text-green text-sm">
+          The minting feature is currently enabled for this offer
+        </p>
+      )}
+
+      <div className="mb-4 flex items-center gap-2">
+        <Switch.Root
+          checked={disableMint}
+          onCheckedChange={setDisableMint}
+          id="disable"
+          className="w-[42px] h-[25px] rounded-full relative data-[state=checked]:bg-primaryPurple border border-white border-opacity-10 outline-none cursor-default"
+        >
+          <Switch.Thumb className="block w-[19px] h-[19px] bg-white rounded-full transition-transform duration-100 translate-x-0.5 will-change-transform data-[state=checked]:translate-x-[19px]" />
+        </Switch.Root>
+        <label className="block text-white text-sm font-semibold">Disable mint</label>
+      </div>
+
       {activated_features?.canChangeTokenMintPrice && (
         <div className="mb-4">
           <label className="block text-gray-700 text-sm font-semibold">Offer tokens</label>
@@ -131,6 +210,8 @@ const ChangeMintPrice = ({ offer }) => {
                 <div
                   key={index}
                   onClick={() => {
+                    if (disableMint) return;
+
                     if (indexSelectedToken === index) {
                       setSelectedToken(null);
                     } else {
@@ -138,7 +219,7 @@ const ChangeMintPrice = ({ offer }) => {
                       setSelectedToken(token?.tokenId);
                     }
                   }}
-                  className={`flex flex-col cursor-pointer border-2 items-center gap-2 bg-secondaryBlack p-4 rounded-lg ${indexSelectedToken === index ? "border-primaryPurple" : "border-transparent"}`}
+                  className={`flex flex-col cursor-pointer border-2 items-center gap-2 bg-secondaryBlack p-4 rounded-lg ${indexSelectedToken === index ? "border-primaryPurple" : disableMint ? "border-jacarta-100 border-opacity-20" : "border-transparent"}`}
                 >
                   <p className="text-white text-sm font-semibold">Token #{token?.tokenId}</p>
 
@@ -157,28 +238,29 @@ const ChangeMintPrice = ({ offer }) => {
       )}
 
       <div className="mb-4">
-        <label className="block text-gray-700 text-sm font-semibold mb-2">
-          Mint price {currencySymbol && `(${currencySymbol})`}
-        </label>
-        <input
-          type="text"
-          className="bg-secondaryBlack rounded-lg p-2 text-white"
-          value={amount ?? ""}
-          placeholder={amount ?? "Enter the amount"}
-          onChange={(e) => handleAmount(e.target.value)}
-        />
-      </div>
+        <label className="block text-gray-700 text-sm font-semibold mb-2">Mint price</label>
+        <div className="relative max-w-xs w-full flex items-center">
+          <input
+            type="text"
+            className={`bg-secondaryBlack w-full rounded-lg p-2 text-white ${disableMint ? "opacity-50 cursor-not-allowed" : ""}`}
+            disabled={disableMint}
+            value={amount ?? ""}
+            placeholder={amount ?? "Enter the amount"}
+            onChange={(e) => handleAmount(e.target.value)}
+          />
+          <div className="absolute right-2 top-1/2 transform -translate-y-1/2 text-white text-sm font-semibold">
+            {currencySymbol ?? "WETH"}
+          </div>
+        </div>
 
-      <div className="mb-4 flex items-center gap-2">
-        <Switch.Root
-          checked={disableMint}
-          onCheckedChange={setDisableMint}
-          id="disable"
-          className="w-[42px] h-[25px] rounded-full relative data-[state=checked]:bg-primaryPurple border border-white border-opacity-10 outline-none cursor-default"
-        >
-          <Switch.Thumb className="block w-[19px] h-[19px] bg-white rounded-full transition-transform duration-100 translate-x-0.5 will-change-transform data-[state=checked]:translate-x-[19px]" />
-        </Switch.Root>
-        <label className="block text-white text-sm font-semibold">Disable mint</label>
+        {!initialDisabled && (
+          <button
+            onClick={() => setAmount(initialAmount)}
+            className="flex items-center gap-2 mt-2 text-sm cursor-pointer text-primaryPurple hover:text-opacity-80"
+          >
+            Set to current mint price
+          </button>
+        )}
       </div>
 
       {selectedToken !== null ? (
@@ -215,11 +297,7 @@ const ChangeMintPrice = ({ offer }) => {
       ) : (
         <Web3Button
           action={() => {
-            if (!nftContractAddress) return;
-
-            if (!formattedAmountBN || !currency || !amount) {
-              return;
-            }
+            if (!nftContractAddress || !currency) return;
 
             toast
               .promise(handleChangeMintPrice, {
@@ -233,10 +311,10 @@ const ChangeMintPrice = ({ offer }) => {
                 console.error(error);
               });
           }}
-          isDisabled={!nftContractAddress || !amount || !currency || !formattedAmountBN}
+          isDisabled={!nftContractAddress || !currency}
           contractAddress={nftContractAddress}
           className={`!hover:bg-opacity-80 !px-4 !w-fit !flex !py-2 !text-white !font-semibold !rounded-full !mb-4 ${
-            !amount || !currency || !formattedAmountBN || !nftContractAddress
+            !currency || !nftContractAddress
               ? "!opacity-50 !cursor-not-allowed !bg-jacarta-100"
               : "!bg-primaryPurple"
           }`}
