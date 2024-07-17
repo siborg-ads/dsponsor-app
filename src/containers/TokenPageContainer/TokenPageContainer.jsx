@@ -1417,7 +1417,8 @@ const TokenPageContainer = () => {
                 {currency &&
                   tokenStatut !== "MINTED" &&
                   (firstSelectedListing?.status === "CREATED" ||
-                    marketplaceListings?.length <= 0) && (
+                    marketplaceListings?.length <= 0) &&
+                  !conditions?.conditionsObject?.mintDisabled && (
                     <div className="flex items-center">
                       <span className="text-green text-sm font-medium tracking-tight mr-2">
                         {finalPrice} {currency}
