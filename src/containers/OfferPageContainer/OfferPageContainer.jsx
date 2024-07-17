@@ -61,7 +61,7 @@ const OfferPageContainer = () => {
   const NATIVECurrency = config[chainId]?.smartContracts?.NATIVE;
   const { setSelectedChain } = useSwitchChainContext();
   const [canChangeMintPrice, setCanChangeMintPrice] = useState(false);
-  const [offerManagementActiveTab, setOfferManagementActiveTab] = useState("updateOffer");
+  const [offerManagementActiveTab, setOfferManagementActiveTab] = useState("integration");
 
   const { data: bps } = useContractRead(DsponsorAdminContract, "feeBps");
   const maxBps = 10000;
@@ -549,6 +549,17 @@ const OfferPageContainer = () => {
 
           <Tabs className="tabs">
             <TabList className="nav nav-tabs hide-scrollbar mb-12 flex items-center justify-start overflow-x-auto overflow-y-hidden border-b border-jacarta-100 pb-px dark:border-jacarta-600 md:justify-center">
+              <Tab className="nav-item" onClick={() => setOfferManagementActiveTab("integration")}>
+                <button
+                  className={
+                    offerManagementActiveTab === "integration"
+                      ? "nav-link hover:text-jacarta-900 text-jacarta-100 relative flex items-center whitespace-nowrap py-3 px-4 dark:hover:text-white active"
+                      : "nav-link hover:text-jacarta-900 text-jacarta-100 relative flex items-center whitespace-nowrap py-3 px-4 dark:hover:text-white"
+                  }
+                >
+                  Integration
+                </button>
+              </Tab>
               <Tab
                 className="nav-item"
                 key={id}
@@ -578,25 +589,8 @@ const OfferPageContainer = () => {
                   Change Mint Price
                 </button>
               </Tab>
-              <Tab className="nav-item" onClick={() => setOfferManagementActiveTab("integration")}>
-                <button
-                  className={
-                    offerManagementActiveTab === "integration"
-                      ? "nav-link hover:text-jacarta-900 text-jacarta-100 relative flex items-center whitespace-nowrap py-3 px-4 dark:hover:text-white active"
-                      : "nav-link hover:text-jacarta-900 text-jacarta-100 relative flex items-center whitespace-nowrap py-3 px-4 dark:hover:text-white"
-                  }
-                >
-                  Integration
-                </button>
-              </Tab>
             </TabList>
 
-            <TabPanel>
-              <UpdateOffer offer={offerData} />
-            </TabPanel>
-            <TabPanel>
-              <ChangeMintPrice offer={offerData} currency={currency} />
-            </TabPanel>
             <TabPanel>
               <Integration
                 chainId={chainId}
@@ -605,6 +599,12 @@ const OfferPageContainer = () => {
                 copied={copied}
                 offerTokens={offerData?.nftContract?.tokens}
               />
+            </TabPanel>
+            <TabPanel>
+              <UpdateOffer offer={offerData} />
+            </TabPanel>
+            <TabPanel>
+              <ChangeMintPrice offer={offerData} currency={currency} />
             </TabPanel>
           </Tabs>
         </div>
