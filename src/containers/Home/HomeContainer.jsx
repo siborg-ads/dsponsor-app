@@ -46,7 +46,7 @@ const HomeContainer = () => {
 
     const auctions = auctionsTemp.map((token) => {
       const name = token.metadata.name;
-      const category = token.metadata.categories[0];
+      const category = token.metadata.categories ? token.metadata.categories[0] : "";
       const chain = token.chainConfig.network;
       const price = token.marketplaceListings.sort((a, b) => Number(b.id) - Number(a.id))[0]
         ?.buyPriceStructure?.buyoutPricePerToken;

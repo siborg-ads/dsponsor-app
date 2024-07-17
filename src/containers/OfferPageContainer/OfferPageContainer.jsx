@@ -293,7 +293,32 @@ const OfferPageContainer = () => {
   }
   const modalHelper = {
     title: "Protocol Fees",
-    body: `The protocol fees (4%) are used to maintain the platform and the services provided. The fees are calculated based on the price of the ad space and are automatically deducted from the total amount paid by the buyer.`
+    body: (
+      <>
+        <div className="flex flex-col gap-4">
+          <ul className="flex flex-col gap-2 list-disc" style={{ listStyleType: "disc" }}>
+            <li>
+              <span className="text-white">Amount sent to the creator: {100 - bps / 100}%</span>
+            </li>
+            <li>
+              <span className="text-white">Protocol fees: {bps / 100}%</span>
+            </li>
+          </ul>
+
+          <span>
+            The protocol fees (4%) are used to maintain the platform and the services provided. The
+            fees are calculated based on the price of the ad space and are automatically deducted
+            from the total amount paid by the buyer.
+          </span>
+
+          <ul className="flex flex-col gap-2 list-disc" style={{ listStyleType: "disc" }}>
+            <li>
+              <span className="text-white">Total: {100}%</span>
+            </li>
+          </ul>
+        </div>
+      </>
+    )
   };
 
   return (
