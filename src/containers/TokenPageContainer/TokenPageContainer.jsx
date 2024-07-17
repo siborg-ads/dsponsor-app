@@ -1238,6 +1238,8 @@ const TokenPageContainer = () => {
       const auctionHasNotStarted = startTimePassed && isAuction && !hasBids;
       const isAllowedToMint = isTokenMintable && isOwner;
       const mintDisabled = !offerData?.nftContract?.prices[0]?.enabled;
+      const isMinted =
+        offerData?.nftContract?.tokens?.find((token) => token?.tokenId === tokenId)?.mint !== null;
 
       const finalCondition =
         (isActive && isOwner && ((isAuction && !hasBids) || isDirect)) ||
@@ -1249,7 +1251,8 @@ const TokenPageContainer = () => {
         ((!isCreated || marketplaceListings?.length <= 0) && isOwner) ||
         (isDirect && (isLister || isOwner) && isCreated) ||
         isListerOrOwnerAndEndDateFinishedOrNoBids ||
-        isListerOrOwnerAndStartDateNotPassed;
+        isListerOrOwnerAndStartDateNotPassed ||
+        (!isMinted && mintDisabled);
 
       const conditionsObject = {
         isAuction: isAuction,
@@ -1270,7 +1273,8 @@ const TokenPageContainer = () => {
         auctionHasNotStarted: auctionHasNotStarted,
         isOwner: isOwner,
         isLister: isLister,
-        mintDisabled: mintDisabled
+        mintDisabled: mintDisabled,
+        isMinted: isMinted
       };
 
       return { condition: finalCondition, conditionsObject: conditionsObject };
@@ -1289,7 +1293,8 @@ const TokenPageContainer = () => {
     firstSelectedListing?.endTime,
     firstSelectedListing?.status,
     firstSelectedListing?.bids?.length,
-    now
+    now,
+    tokenId
   ]);
 
   const successFullUploadModal = {

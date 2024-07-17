@@ -70,10 +70,10 @@ const ItemManage = ({
         </span>
       );
     }
-    if (conditions?.mintDisabled && conditions?.isTokenMintable) {
+    if (conditions?.mintDisabled && !conditions?.isMinted) {
       return (
         <span className="dark:text-jacarta-100 text-jacarta-100 text-sm">
-          The minting is disabled for this token.
+          This token is not available for purchase.
         </span>
       );
     }
@@ -202,10 +202,13 @@ const ItemManage = ({
 
   return (
     <>
-      <div className="dark:bg-secondaryBlack mb-2 rounded-2lg flex flex-col gap-4 bg-white p-8">
-        <div className="sm:flex sm:flex-wrap">{renderConditionsMessage()}</div>
-        {renderActionButton()}
-      </div>
+      {renderConditionsMessage() && (
+        <div className="dark:bg-secondaryBlack mb-2 rounded-2lg flex flex-col gap-4 bg-white p-8">
+          <div className="sm:flex sm:flex-wrap">{renderConditionsMessage()}</div>
+          {renderActionButton()}
+        </div>
+      )}
+
       {listingModal && (
         <div className="modal fade show block">
           <ItemManageModal
