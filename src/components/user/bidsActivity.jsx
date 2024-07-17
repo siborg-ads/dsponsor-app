@@ -183,9 +183,6 @@ const Bids = ({ manageAddress }) => {
                   Bid Amount
                 </th>
                 <th className="py-3 px-4 font-medium text-jacarta-100 dark:text-jacarta-100">
-                  Refund Date
-                </th>
-                <th className="py-3 px-4 font-medium text-jacarta-100 dark:text-jacarta-100">
                   Refund Bid
                 </th>
                 <th className="py-3 px-4 font-medium text-jacarta-100 dark:text-jacarta-100">
@@ -216,14 +213,6 @@ const Bids = ({ manageAddress }) => {
                         formatUnits(activity?.bidAmount, activity?.currency?.decimals)
                       )}{" "}
                       {activity?.currency?.symbol}
-                    </td>
-                    <td className="py-4 px-4 text-jacarta-100 dark:text-jacarta-100">
-                      {activity?.refundDate &&
-                      activity?.refundBid > 0 &&
-                      new Date(activity?.refundDate).getTime() !==
-                        new Date(activity?.date).getTime()
-                        ? new Date(activity?.refundDate).toLocaleString()
-                        : "-"}
                     </td>
                     <td className="py-4 px-4 text-jacarta-100 dark:text-jacarta-100">
                       {activity?.refundBid && activity?.refundBid > 0

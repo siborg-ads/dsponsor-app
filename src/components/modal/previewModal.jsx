@@ -153,7 +153,7 @@ const PreviewModal = ({
                     Image ({imageRatios[0] ? `${imageRatios[0][0]}:${imageRatios[0][1]}` : "N/A"})
                   </span>
                 </div>
-                <div className="flex flex-col justify-center items-center gap-2">
+                <div className="flex flex-col justify-center items-center gap-2 border border-dashed bg-jacarta-100 bg-opacity-10">
                   <Image
                     src={previewImage[0]}
                     width={1600}
