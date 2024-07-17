@@ -68,6 +68,8 @@ const OfferPageContainer = () => {
 
   let tokenCurrencyAddress = offerData?.nftContract?.prices[0]?.currency;
 
+  
+
   const {
     description = "description not found",
     id = "1",
