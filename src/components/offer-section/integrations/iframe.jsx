@@ -398,14 +398,16 @@ const IframeIntegration = ({ chainId, offerId, offerTokens }) => {
 
       <span className="text-white text-lg font-semibold">Preview</span>
 
-      <iframe
-        title="offer"
-        loading="lazy"
-        src={iframeSrc}
-        height={customHeight ? height : "100%"}
-        width="100%"
-        className="w-full"
-      />
+      <div className="h-[500px]">
+        <iframe
+          title="offer"
+          loading="lazy"
+          src={iframeSrc}
+          height={customHeight ? height : "100%"}
+          width="100%"
+          className="w-full"
+        />
+      </div>
     </div>
   );
 };
