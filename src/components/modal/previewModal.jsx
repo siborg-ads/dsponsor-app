@@ -654,8 +654,8 @@ const PreviewModal = ({
                           </PopoverButton>
                           <PopoverPanel className="p-4 bg-primaryBlack text-white rounded-lg">
                             <p className="text-sm">
-                              You need to approve the marketplace contract to spend your{" "}
-                              {selectedCurrency} on this transaction.
+                              You need to approve the marketplace contract to spend your NFT on this
+                              transaction.
                             </p>
                           </PopoverPanel>
                         </Popover>
