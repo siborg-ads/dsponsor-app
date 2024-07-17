@@ -75,18 +75,20 @@ const HtmlIntegration = ({ chainId, offerId, offerTokens }) => {
       if (!numberOfColumns || numberOfColumns === 0) return "";
       if (!numberOfRows || numberOfRows === 0) return "";
 
+      const sortedOfferTokens = [...offerTokens]?.sort((a, b) => a.tokenId - b.tokenId);
+
       let tableHTML = `<table width="100%" border="0" cellspacing="0" cellpadding="0" style="table-layout: fixed; background-color: ${bgColor ? `#${color}` : "transparent"};">`;
 
       for (
         let rowIndex = 0;
-        rowIndex < Math.ceil(offerTokens?.length / numberOfColumns);
+        rowIndex < Math.ceil(sortedOfferTokens?.length / numberOfColumns);
         rowIndex++
       ) {
         tableHTML += `<tr>`;
 
         const totalRows = Math.ceil(offerTokens?.length / numberOfColumns);
         const isLastRow = rowIndex === numberOfRows - 1;
-        let realElementsInLastRow = offerTokens.length % numberOfColumns;
+        let realElementsInLastRow = sortedOfferTokens.length % numberOfColumns;
         realElementsInLastRow =
           realElementsInLastRow === 0 ? numberOfColumns : realElementsInLastRow;
         const totalEmptyCells = numberOfColumns - realElementsInLastRow;
@@ -106,10 +108,10 @@ const HtmlIntegration = ({ chainId, offerId, offerTokens }) => {
         ) {
           const index = rowIndex * numberOfColumns + colIndex;
 
-          if (index < offerTokens?.length) {
+          if (index < sortedOfferTokens?.length) {
             tableHTML += `<td width="${100 / numberOfColumns}%" style="text-align: center; padding: 10px;">
-            <a href="https://relayer.dsponsor.com/${chainId}/integrations/${offerId}/${offerTokens[index]?.tokenId}/link" target="_blank" rel="noopener noreferrer">
-              <img src="https://relayer.dsponsor.com/${chainId}/integrations/${offerId}/${offerTokens[index]?.tokenId}/image" style="max-width: 100%; height: auto; display: block;" alt="No Ad" />
+            <a href="https://relayer.dsponsor.com/${chainId}/integrations/${offerId}/${sortedOfferTokens[index]?.tokenId}/link" target="_blank" rel="noopener noreferrer">
+              <img src="https://relayer.dsponsor.com/${chainId}/integrations/${offerId}/${sortedOfferTokens[index]?.tokenId}/image" style="max-width: 100%; height: auto; display: block;" alt="No Ad" />
             </a>
           </td>`;
           }
@@ -304,75 +306,77 @@ const HtmlIntegration = ({ chainId, offerId, offerTokens }) => {
           {offerTokens &&
             numberOfColumns > 0 &&
             numberOfRows > 0 &&
-            Array.from({ length: Math.ceil(offerTokens?.length / numberOfColumns) }).map(
-              (_, rowIndex) => {
-                const totalRows = Math.ceil(offerTokens?.length / numberOfColumns);
-                const isLastRow = rowIndex === totalRows - 1;
-                let realElementsInLastRow = offerTokens.length % numberOfColumns;
-                realElementsInLastRow =
-                  realElementsInLastRow === 0 ? numberOfColumns : realElementsInLastRow; // Handle full last row
-                const totalEmptyCells = numberOfColumns - realElementsInLastRow;
-                const emptyCellsBefore = Math.floor(totalEmptyCells / 2);
-                const emptyCellsAfter = Math.ceil(totalEmptyCells / 2);
+            Array.from({
+              length: Math.ceil(
+                offerTokens?.sort((a, b) => a?.tokenId - b?.tokenId)?.length / numberOfColumns
+              )
+            }).map((_, rowIndex) => {
+              const totalRows = Math.ceil(
+                offerTokens?.sort((a, b) => a?.tokenId - b?.tokenId)?.length / numberOfColumns
+              );
+              const isLastRow = rowIndex === totalRows - 1;
+              let realElementsInLastRow =
+                offerTokens?.sort((a, b) => a?.tokenId - b?.tokenId)?.length % numberOfColumns;
+              realElementsInLastRow =
+                realElementsInLastRow === 0 ? numberOfColumns : realElementsInLastRow; // Handle full last row
+              const totalEmptyCells = numberOfColumns - realElementsInLastRow;
+              const emptyCellsBefore = Math.floor(totalEmptyCells / 2);
+              const emptyCellsAfter = Math.ceil(totalEmptyCells / 2);
 
-                return (
-                  <tr key={rowIndex}>
-                    {isLastRow &&
-                      Array.from({ length: emptyCellsBefore }).map((_, index) => (
+              return (
+                <tr key={rowIndex}>
+                  {isLastRow &&
+                    Array.from({ length: emptyCellsBefore }).map((_, index) => (
+                      <td
+                        key={`empty-before-${index}`}
+                        width={`${100 / numberOfColumns}%`}
+                        style={{ textAlign: "center", padding: "10px" }}
+                      />
+                    ))}
+                  {Array.from({ length: numberOfColumns }).map((_, colIndex) => {
+                    const index = rowIndex * numberOfColumns + colIndex;
+                    if (index < offerTokens?.sort((a, b) => a?.tokenId - b?.tokenId)?.length) {
+                      return (
                         <td
-                          key={`empty-before-${index}`}
+                          key={colIndex}
                           width={`${100 / numberOfColumns}%`}
                           style={{ textAlign: "center", padding: "10px" }}
-                        />
-                      ))}
-                    {Array.from({ length: numberOfColumns }).map((_, colIndex) => {
-                      const index = rowIndex * numberOfColumns + colIndex;
-                      if (index < offerTokens?.length) {
-                        return (
-                          <td
-                            key={colIndex}
-                            width={`${100 / numberOfColumns}%`}
-                            style={{ textAlign: "center", padding: "10px" }}
+                        >
+                          <a
+                            href={`https://relayer.dsponsor.com/${chainId}/integrations/${offerId}/${offerTokens?.sort((a, b) => a?.tokenId - b?.tokenId)[index]?.tokenId}/link`}
+                            target="_blank"
+                            rel="noopener noreferrer"
                           >
-                            <a
-                              href={`https://relayer.dsponsor.com/${chainId}/integrations/${offerId}/${offerTokens[index]?.tokenId}/link`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                            >
-                              <img
-                                src={`https://relayer.dsponsor.com/${chainId}/integrations/${offerId}/${offerTokens[index]?.tokenId}/image`}
-                                style={{ maxWidth: "100%", height: "auto", display: "block" }}
-                                alt="No Ad"
-                              />
-                            </a>
-                          </td>
-                        );
-                      } else if (
-                        isLastRow &&
-                        colIndex >= realElementsInLastRow + emptyCellsBefore
-                      ) {
-                        return (
-                          <td
-                            key={`empty-after-${colIndex}`}
-                            width={`${100 / numberOfColumns}%`}
-                            style={{ textAlign: "center", padding: "10px" }}
-                          />
-                        );
-                      }
-                      return null;
-                    })}
-                    {isLastRow &&
-                      Array.from({ length: emptyCellsAfter }).map((_, index) => (
+                            <img
+                              src={`https://relayer.dsponsor.com/${chainId}/integrations/${offerId}/${offerTokens?.sort((a, b) => a?.tokenId - b?.tokenId)[index]?.tokenId}/image`}
+                              style={{ maxWidth: "100%", height: "auto", display: "block" }}
+                              alt="No Ad"
+                            />
+                          </a>
+                        </td>
+                      );
+                    } else if (isLastRow && colIndex >= realElementsInLastRow + emptyCellsBefore) {
+                      return (
                         <td
-                          key={`empty-after-${index}`}
+                          key={`empty-after-${colIndex}`}
                           width={`${100 / numberOfColumns}%`}
                           style={{ textAlign: "center", padding: "10px" }}
                         />
-                      ))}
-                  </tr>
-                );
-              }
-            )}
+                      );
+                    }
+                    return null;
+                  })}
+                  {isLastRow &&
+                    Array.from({ length: emptyCellsAfter }).map((_, index) => (
+                      <td
+                        key={`empty-after-${index}`}
+                        width={`${100 / numberOfColumns}%`}
+                        style={{ textAlign: "center", padding: "10px" }}
+                      />
+                    ))}
+                </tr>
+              );
+            })}
         </tbody>
       </table>
     </div>
