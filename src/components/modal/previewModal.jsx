@@ -153,7 +153,7 @@ const PreviewModal = ({
                     Image ({imageRatios[0] ? `${imageRatios[0][0]}:${imageRatios[0][1]}` : "N/A"})
                   </span>
                 </div>
-                <div className="flex flex-col justify-center items-center gap-2">
+                <div className="flex flex-col justify-center items-center gap-2 border border-dashed bg-jacarta-100 bg-opacity-10">
                   <Image
                     src={previewImage[0]}
                     width={1600}
@@ -321,18 +321,22 @@ const PreviewModal = ({
                         Name : <span className="dark:text-white text-base ml-2"> {name} </span>
                       </span>
                     ) : !name ? (
-                      <span className="dark:text-jacarta-100 text-jacarta-100 font-display">
+                      <span className="dark:text-jacarta-100 text-jacarta-100 font-display text-sm">
                         Name : <span className="text-red text-base ml-2">{errors.nameError}</span>
                       </span>
                     ) : (
                       ""
                     )}
                   </p>
-                  <p className="font-display mb-2 block dark:text-white">
+                  <p className="font-display mb-2 block text-sm dark:text-white">
                     {description.length > 0 ? (
-                      <span className="dark:text-jacarta-100 text-jacarta-100 text-sm">
+                      <span className="dark:text-jacarta-100 text-jacarta-100 text-sm flex  items-center">
                         Description :{" "}
-                        <span className="dark:text-white text-base ml-2"> {description} </span>
+                        <textarea
+                          readOnly
+                          value={description}
+                          className="dark:text-white text-base ml-2 bg-transparent resize-none border-none p-0 "
+                        ></textarea>
                       </span>
                     ) : !description ? (
                       <span className="dark:text-jacarta-100 text-jacarta-100 font-display">
@@ -346,7 +350,7 @@ const PreviewModal = ({
 
                   {link?.length ? (
                     <div className="font-display  mb-2  text-jacarta-100 text-sm flex justify-between ">
-                      <span className="mr-2 ">Link : </span>{" "}
+                      <span className="mr-2 text-sm">Link : </span>{" "}
                       {!errors?.linkError ? (
                         <span className="dark:text-white text-base ml-2"> {link} </span>
                       ) : (
@@ -355,7 +359,7 @@ const PreviewModal = ({
                     </div>
                   ) : !link ? (
                     <div className="dark:text-jacarta-100 text-jacarta-100 font-display flex gap-2">
-                      <span> Link :</span>
+                      <span className="text-sm"> Link :</span>
                       <span className="text-red text-base ml-2">{errors.linkError}</span>
                     </div>
                   ) : (
