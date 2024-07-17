@@ -159,6 +159,7 @@ const ItemBids = ({
             marketplaceListings={marketplaceListings}
             currencySymbol={currencySymbol}
             address={address}
+            showBidsModal={showBidsModal}
             token={token}
             user={user}
             offer={offer}

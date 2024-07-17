@@ -51,6 +51,8 @@ export const fetchAllMarketplaceBidsByBidder = async (chainId, address) => {
               refundBonus
               refundAmount
               refundProfit
+              paidBidAmount
+              status
               currency
               creationTimestamp
               lastUpdateTimestamp

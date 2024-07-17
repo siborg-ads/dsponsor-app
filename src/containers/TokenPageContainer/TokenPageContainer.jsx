@@ -122,6 +122,8 @@ const TokenPageContainer = () => {
   const [isMedia, setIsMedia] = useState(false);
   const [sales, setSales] = useState([]);
   const [minted, setMinted] = useState(false);
+  const [conditions, setConditions] = useState({});
+  const [offerManagementActiveTab, setOfferManagementActiveTab] = useState("updateOffer");
 
   let description = "description not found";
   let id = "1";
@@ -836,7 +838,7 @@ const TokenPageContainer = () => {
       });
     const numSteps = 2;
     const totalNumSteps = numSteps + imageURLSteps.length;
-
+    console.log(uniqueIdsArray, "uniqueIdsArray");
     setImageURLSteps(imageURLSteps);
     setNumSteps(totalNumSteps);
   }, [offerData]);
@@ -1215,61 +1217,85 @@ const TokenPageContainer = () => {
     };
   }, [imageModal]);
 
-  function shouldRenderManageTokenComponent() {
-    const isAuction = firstSelectedListing?.listingType === "Auction";
-    const isDirect = firstSelectedListing?.listingType === "Direct";
-    const startTimePassed = firstSelectedListing?.startTime < now;
-    const endTimeNotPassed = firstSelectedListing?.endTime > now;
-    const isActive = startTimePassed && endTimeNotPassed;
-    const isCreated = firstSelectedListing?.status === "CREATED";
-    const isFinished = firstSelectedListing?.status === "COMPLETED";
-    const isCancelled = firstSelectedListing?.status === "CANCELLED";
-    const hasBids = firstSelectedListing?.bids?.length > 0;
-    const isTokenMintable = tokenStatut === "MINTABLE";
-    const isTokenSiborg = tokenStatut === "SIBORG";
-    const isTokenStatusSpecial = isTokenMintable || isTokenSiborg;
-    const isAuctionWithBids = isAuction && hasBids;
-    const isListerOrOwnerAndEndDateFinishedOrNoBids =
-      (isLister || isOwner) && (!endTimeNotPassed || !hasBids);
-    const isListerOrOwnerAndStartDateNotPassed = (isLister || isOwner) && !startTimePassed;
-    const auctionHasNotStarted = startTimePassed && isAuction && !hasBids;
-    const isAllowedToMint = isTokenMintable && isOwner;
+  useEffect(() => {
+    function shouldRenderManageTokenComponent() {
+      const isAuction = firstSelectedListing?.listingType === "Auction";
+      const isDirect = firstSelectedListing?.listingType === "Direct";
+      const startTimePassed = firstSelectedListing?.startTime < now;
+      const endTimeNotPassed = firstSelectedListing?.endTime > now;
+      const isActive = startTimePassed && endTimeNotPassed;
+      const isCreated = firstSelectedListing?.status === "CREATED";
+      const isFinished = firstSelectedListing?.status === "COMPLETED";
+      const isCancelled = firstSelectedListing?.status === "CANCELLED";
+      const hasBids = firstSelectedListing?.bids?.length > 0;
+      const isTokenMintable = tokenStatut === "MINTABLE";
+      const isTokenSiborg = tokenStatut === "SIBORG";
+      const isTokenStatusSpecial = isTokenMintable || isTokenSiborg;
+      const isAuctionWithBids = isAuction && hasBids;
+      const isListerOrOwnerAndEndDateFinishedOrNoBids =
+        (isLister || isOwner) && (!endTimeNotPassed || !hasBids);
+      const isListerOrOwnerAndStartDateNotPassed = (isLister || isOwner) && !startTimePassed;
+      const auctionHasNotStarted = startTimePassed && isAuction && !hasBids;
+      const isAllowedToMint = isTokenMintable && isOwner;
+      const mintDisabled = !offerData?.nftContract?.prices[0]?.enabled;
+      const isMinted =
+        offerData?.nftContract?.tokens?.find((token) => token?.tokenId === tokenId)?.mint !== null;
 
-    const finalCondition =
-      (isActive && isOwner && ((isAuction && !hasBids) || isDirect)) ||
-      isAllowedToMint ||
-      !endTimeNotPassed ||
-      (isFinished && isOwner) ||
-      (!endTimeNotPassed && isCreated && isAuction) ||
-      (!startTimePassed && isAuction && isCreated) ||
-      ((!isCreated || marketplaceListings?.length <= 0) && isOwner) ||
-      (isDirect && (isLister || isOwner) && isCreated) ||
-      isListerOrOwnerAndEndDateFinishedOrNoBids ||
-      isListerOrOwnerAndStartDateNotPassed;
+      const finalCondition =
+        (isActive && isOwner && ((isAuction && !hasBids) || isDirect)) ||
+        isAllowedToMint ||
+        !endTimeNotPassed ||
+        (isFinished && isOwner) ||
+        (!endTimeNotPassed && isCreated && isAuction) ||
+        (!startTimePassed && isAuction && isCreated) ||
+        ((!isCreated || marketplaceListings?.length <= 0) && isOwner) ||
+        (isDirect && (isLister || isOwner) && isCreated) ||
+        isListerOrOwnerAndEndDateFinishedOrNoBids ||
+        isListerOrOwnerAndStartDateNotPassed ||
+        (!isMinted && mintDisabled);
 
-    const conditionsObject = {
-      isAuction: isAuction,
-      isDirect: isDirect,
-      startTimePassed: startTimePassed,
-      endTimeNotPassed: endTimeNotPassed,
-      isActive: isActive,
-      isCreated: isCreated,
-      isFinished: isFinished,
-      isCancelled: isCancelled,
-      hasBids: hasBids,
-      isTokenMintable: isTokenMintable,
-      isTokenSiborg: isTokenSiborg,
-      isTokenStatusSpecial: isTokenStatusSpecial,
-      isAuctionWithBids: isAuctionWithBids,
-      isListerOrOwnerAndEndDateFinishedOrNoBids: isListerOrOwnerAndEndDateFinishedOrNoBids,
-      isListerOrOwnerAndStartDateNotPassed: isListerOrOwnerAndStartDateNotPassed,
-      auctionHasNotStarted: auctionHasNotStarted,
-      isOwner: isOwner,
-      isLister: isLister
-    };
+      const conditionsObject = {
+        isAuction: isAuction,
+        isDirect: isDirect,
+        startTimePassed: startTimePassed,
+        endTimeNotPassed: endTimeNotPassed,
+        isActive: isActive,
+        isCreated: isCreated,
+        isFinished: isFinished,
+        isCancelled: isCancelled,
+        hasBids: hasBids,
+        isTokenMintable: isTokenMintable,
+        isTokenSiborg: isTokenSiborg,
+        isTokenStatusSpecial: isTokenStatusSpecial,
+        isAuctionWithBids: isAuctionWithBids,
+        isListerOrOwnerAndEndDateFinishedOrNoBids: isListerOrOwnerAndEndDateFinishedOrNoBids,
+        isListerOrOwnerAndStartDateNotPassed: isListerOrOwnerAndStartDateNotPassed,
+        auctionHasNotStarted: auctionHasNotStarted,
+        isOwner: isOwner,
+        isLister: isLister,
+        mintDisabled: mintDisabled,
+        isMinted: isMinted
+      };
 
-    return { condition: finalCondition, conditionsObject: conditionsObject };
-  }
+      return { condition: finalCondition, conditionsObject: conditionsObject };
+    }
+
+    const conditions = shouldRenderManageTokenComponent();
+    setConditions(conditions);
+  }, [
+    marketplaceListings,
+    isOwner,
+    isLister,
+    tokenStatut,
+    offerData,
+    firstSelectedListing?.listingType,
+    firstSelectedListing?.startTime,
+    firstSelectedListing?.endTime,
+    firstSelectedListing?.status,
+    firstSelectedListing?.bids?.length,
+    now,
+    tokenId
+  ]);
 
   const successFullUploadModal = {
     title: "Submit ad",
@@ -1391,7 +1417,8 @@ const TokenPageContainer = () => {
                 {currency &&
                   tokenStatut !== "MINTED" &&
                   (firstSelectedListing?.status === "CREATED" ||
-                    marketplaceListings?.length <= 0) && (
+                    marketplaceListings?.length <= 0) &&
+                  !conditions?.conditionsObject?.mintDisabled && (
                     <div className="flex items-center">
                       <span className="text-green text-sm font-medium tracking-tight mr-2">
                         {finalPrice} {currency}
@@ -1429,7 +1456,9 @@ const TokenPageContainer = () => {
               </div>
 
               <p className="dark:text-jacarta-100 mb-10">{description}</p>
-              {((tokenStatut === "MINTABLE" && !minted) ||
+              {((tokenStatut === "MINTABLE" &&
+                !minted &&
+                !conditions?.conditionsObject?.mintDisabled) ||
                 (firstSelectedListing?.listingType === "Direct" &&
                   firstSelectedListing?.status === "CREATED" &&
                   firstSelectedListing?.startTime < now &&
@@ -1508,47 +1537,48 @@ const TokenPageContainer = () => {
                 marketplaceListings={marketplaceListings}
                 royalties={royalties}
                 dsponsorMpContract={dsponsorMpContract}
-                conditions={shouldRenderManageTokenComponent().conditionsObject}
+                conditions={conditions?.conditionsObject}
               />
 
-              {firstSelectedListing?.listingType === "Auction" &&
+              {((firstSelectedListing?.listingType === "Auction" &&
                 firstSelectedListing.startTime < now &&
                 firstSelectedListing.endTime > now &&
-                firstSelectedListing?.status === "CREATED" && (
-                  <ItemBids
-                    setAmountToApprove={setAmountToApprove}
-                    bidsAmount={bidsAmount}
-                    setBidsAmount={setBidsAmount}
-                    chainId={chainId}
-                    checkUserBalance={checkUserBalance}
-                    price={price}
-                    allowanceTrue={allowanceTrue}
-                    checkAllowance={checkAllowance}
-                    handleApprove={handleApprove}
-                    dsponsorMpContract={dsponsorMpContract}
-                    marketplaceListings={marketplaceListings}
-                    currencySymbol={currency}
-                    tokenBalance={tokenBalance}
-                    currencyTokenDecimals={currencyDecimals}
-                    setSuccessFullBid={setSuccessFullBid}
-                    successFullBid={successFullBid}
-                    address={address}
-                    isLoadingButton={isLoadingButton}
-                    setIsLoadingButton={setIsLoadingButton}
-                    token={tokenDO}
-                    user={{
-                      address: address,
-                      isOwner: isOwner,
-                      isLister: isLister,
-                      isUserOwner: isUserOwner
-                    }}
-                    offer={offerDO}
-                    referrer={{
-                      address: referralAddress
-                    }}
-                    currencyContract={tokenCurrencyAddress}
-                  />
-                )}
+                firstSelectedListing?.status === "CREATED") ||
+                successFullBid) && (
+                <ItemBids
+                  setAmountToApprove={setAmountToApprove}
+                  bidsAmount={bidsAmount}
+                  setBidsAmount={setBidsAmount}
+                  chainId={chainId}
+                  checkUserBalance={checkUserBalance}
+                  price={price}
+                  allowanceTrue={allowanceTrue}
+                  checkAllowance={checkAllowance}
+                  handleApprove={handleApprove}
+                  dsponsorMpContract={dsponsorMpContract}
+                  marketplaceListings={marketplaceListings}
+                  currencySymbol={currency}
+                  tokenBalance={tokenBalance}
+                  currencyTokenDecimals={currencyDecimals}
+                  setSuccessFullBid={setSuccessFullBid}
+                  successFullBid={successFullBid}
+                  address={address}
+                  isLoadingButton={isLoadingButton}
+                  setIsLoadingButton={setIsLoadingButton}
+                  token={tokenDO}
+                  user={{
+                    address: address,
+                    isOwner: isOwner,
+                    isLister: isLister,
+                    isUserOwner: isUserOwner
+                  }}
+                  offer={offerDO}
+                  referrer={{
+                    address: referralAddress
+                  }}
+                  currencyContract={tokenCurrencyAddress}
+                />
+              )}
             </div>
           </div>
         </div>

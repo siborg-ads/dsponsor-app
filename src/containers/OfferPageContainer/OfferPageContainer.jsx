@@ -7,10 +7,10 @@ import { ethers } from "ethers";
 import Image from "next/image";
 import { useContract, useContractWrite, useContractRead, useAddress } from "@thirdweb-dev/react";
 import Tippy from "@tippyjs/react";
-import handleCopy from "../../utils/handleCopy";
 
 import OfferSkeleton from "../../components/skeleton/offerSkeleton";
 import { fetchAllOffers } from "../../providers/methods/fetchAllOffers";
+import Integration from "../../components/offer-section/integration";
 
 import { fetchOffer } from "../../providers/methods/fetchOffer";
 
@@ -25,6 +25,7 @@ import { useSwitchChainContext } from "../../contexts/hooks/useSwitchChainContex
 import { activated_features } from "../../data/activated_features";
 import UpdateOffer from "../../components/offer-section/updateOffer";
 import ChangeMintPrice from "../../components/offer-section/changeMintPrice";
+import { Tabs, Tab, TabList, TabPanel } from "react-tabs";
 
 const OfferPageContainer = () => {
   const router = useRouter();
@@ -60,6 +61,7 @@ const OfferPageContainer = () => {
   const NATIVECurrency = config[chainId]?.smartContracts?.NATIVE;
   const { setSelectedChain } = useSwitchChainContext();
   const [canChangeMintPrice, setCanChangeMintPrice] = useState(false);
+  const [offerManagementActiveTab, setOfferManagementActiveTab] = useState("integration");
 
   const { data: bps } = useContractRead(DsponsorAdminContract, "feeBps");
   const maxBps = 10000;
@@ -442,10 +444,6 @@ const OfferPageContainer = () => {
         />
       </div>
 
-      {isOwner && <ChangeMintPrice offer={offerData} currency={currency} />}
-
-      {isOwner && <UpdateOffer offer={offerData} />}
-
       {!offerData.nftContract.allowList && (
         <div className="container flex flex-col justify-center mb-6">
           <Divider className="my-4" />
@@ -542,75 +540,75 @@ const OfferPageContainer = () => {
         />
       )}
 
-      {isOwner && activated_features.canSeeIntegrationDetails && (
+      {isOwner && (
         <div className="container">
           <Divider className="my-4" />
-          <h2 className="text-jacarta-900 font-bold font-display mb-6 text-center text-3xl dark:text-white ">
-            Display{" "}
+          <h2 className="text-jacarta-900 font-semibold font-display mb-6 text-center text-3xl dark:text-white ">
+            Offer Management{" "}
           </h2>
-          <div className="dark:bg-secondaryBlack dark:border-jacarta-600 border-jacarta-100 rounded-2lg border bg-white p-8 mb-4">
-            <span className="dark:text-jacarta-100 text-jacarta-100 text-sm ">
-              You can integrate this offer on your website by using the following iframe code.
-              Simply copy and paste the code into your website to display the offer.{" "}
-            </span>
-            <br />
 
-            <div className="flex gap-4 w-full md:w-auto items-start mt-2 ">
-              <pre
-                style={{
-                  backgroundColor: "#010101",
-                  borderRadius: "5px",
-                  fontFamily: "'Courier New', monospace",
-                  padding: "10px",
-                  overflowX: "auto"
-                }}
+          <Tabs className="tabs">
+            <TabList className="nav nav-tabs hide-scrollbar mb-12 flex items-center justify-start overflow-x-auto overflow-y-hidden border-b border-jacarta-100 pb-px dark:border-jacarta-600 md:justify-center">
+              <Tab className="nav-item" onClick={() => setOfferManagementActiveTab("integration")}>
+                <button
+                  className={
+                    offerManagementActiveTab === "integration"
+                      ? "nav-link hover:text-jacarta-900 text-jacarta-100 relative flex items-center whitespace-nowrap py-3 px-4 dark:hover:text-white active"
+                      : "nav-link hover:text-jacarta-900 text-jacarta-100 relative flex items-center whitespace-nowrap py-3 px-4 dark:hover:text-white"
+                  }
+                >
+                  Integration
+                </button>
+              </Tab>
+              <Tab
+                className="nav-item"
+                key={id}
+                onClick={() => setOfferManagementActiveTab("updateOffer")}
               >
-                <code>
-                  {" "}
-                  {`<iframe src="https://relayer.dsponsor.com/${chainId}/integrations/${offerId}/ClickableLogosGrid/iFrame" height="315" width="1000px" className={'h-screen w-full'} />`}
-                </code>
-              </pre>
-              <Tippy hideOnClick={false} content={copied ? <span>copied</span> : <span>copy</span>}>
-                <div className=" cursor-pointer">
-                  <button
-                    onClick={() =>
-                      handleCopy(
-                        `<iframe
-                      src="https://relayer.dsponsor.com/${chainId}/integrations/${offerId}/ClickableLogosGrid/iFrame"
-                      height="315"
-                      width="1000px"
-                      className={"h-screen w-full"}
-                    />`,
-                        setCopied
-                      )
-                    }
-                  >
-                    <Image
-                      src="/images/copy.svg"
-                      alt="icon"
-                      width={20}
-                      height={20}
-                      className="mt-2 min-w-[20px] "
-                    />
-                  </button>
-                </div>
-              </Tippy>
-            </div>
-          </div>
-          <iframe
-            title="offer"
-            loading="lazy"
-            src={`https://relayer.dsponsor.com/${chainId}/integrations/${offerId}/ClickableLogosGrid/iFrame`}
-            height="315"
-            width="1000px"
-            className={"h-screen w-full"}
-          />
+                <button
+                  className={
+                    offerManagementActiveTab === "updateOffer"
+                      ? "nav-link hover:text-jacarta-900 text-jacarta-100 relative flex items-center whitespace-nowrap py-3 px-4 dark:hover:text-white active"
+                      : "nav-link hover:text-jacarta-900 text-jacarta-100 relative flex items-center whitespace-nowrap py-3 px-4 dark:hover:text-white"
+                  }
+                >
+                  Update Offer
+                </button>
+              </Tab>
+              <Tab
+                className="nav-item"
+                onClick={() => setOfferManagementActiveTab("changeMintPrice")}
+              >
+                <button
+                  className={
+                    offerManagementActiveTab === "changeMintPrice"
+                      ? "nav-link hover:text-jacarta-900 text-jacarta-100 relative flex items-center whitespace-nowrap py-3 px-4 dark:hover:text-white active"
+                      : "nav-link hover:text-jacarta-900 text-jacarta-100 relative flex items-center whitespace-nowrap py-3 px-4 dark:hover:text-white"
+                  }
+                >
+                  Change Mint Price
+                </button>
+              </Tab>
+            </TabList>
+
+            <TabPanel>
+              <Integration
+                chainId={chainId}
+                offerId={offerId}
+                setCopied={setCopied}
+                copied={copied}
+                offerTokens={offerData?.nftContract?.tokens}
+              />
+            </TabPanel>
+            <TabPanel>
+              <UpdateOffer offer={offerData} />
+            </TabPanel>
+            <TabPanel>
+              <ChangeMintPrice offer={offerData} currency={currency} />
+            </TabPanel>
+          </Tabs>
         </div>
       )}
-      {/* <ItemsTabs /> */}
-      {/* <div className="container mb-12">
-        <ItemsTabs />
-      </div> */}
     </>
   );
 };
