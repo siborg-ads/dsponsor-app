@@ -84,20 +84,27 @@ const HtmlIntegration = ({ chainId, offerId, offerTokens }) => {
       ) {
         tableHTML += `<tr>`;
 
+        const totalRows = Math.ceil(offerTokens?.length / numberOfColumns);
         const isLastRow = rowIndex === numberOfRows - 1;
-        let numEmptyCells = numberOfColumns - (offerTokens.length % numberOfColumns);
-        if (numEmptyCells === numberOfColumns) numEmptyCells = 0;
+        let realElementsInLastRow = offerTokens.length % numberOfColumns;
+        realElementsInLastRow =
+          realElementsInLastRow === 0 ? numberOfColumns : realElementsInLastRow;
+        const totalEmptyCells = numberOfColumns - realElementsInLastRow;
+        const emptyCellsBefore = Math.floor(totalEmptyCells / 2);
+        const emptyCellsAfter = Math.ceil(totalEmptyCells / 2);
 
-        let emptyCellsAdded = 0;
-        if (isLastRow && numEmptyCells % 2 === 0) {
-          emptyCellsAdded = numEmptyCells / 2;
-          for (let i = 0; i < emptyCellsAdded; i++) {
+        if (isLastRow) {
+          for (let i = 0; i < emptyCellsBefore; i++) {
             tableHTML += `<td width="${100 / numberOfColumns}%" style="text-align: center; padding: 10px;"></td>`;
           }
         }
 
-        for (let colIndex = 0; colIndex < numberOfColumns; colIndex++) {
-          const index = rowIndex * numberOfColumns + colIndex - emptyCellsAdded;
+        for (
+          let colIndex = 0;
+          colIndex < (isLastRow ? realElementsInLastRow : numberOfColumns);
+          colIndex++
+        ) {
+          const index = rowIndex * numberOfColumns + colIndex;
 
           if (index < offerTokens?.length) {
             tableHTML += `<td width="${100 / numberOfColumns}%" style="text-align: center; padding: 10px;">
@@ -105,10 +112,15 @@ const HtmlIntegration = ({ chainId, offerId, offerTokens }) => {
               <img src="https://relayer.dsponsor.com/${chainId}/integrations/${offerId}/${offerTokens[index]?.tokenId}/image" style="max-width: 100%; height: auto; display: block;" alt="No Ad" />
             </a>
           </td>`;
-          } else {
+          }
+        }
+
+        if (isLastRow) {
+          for (let i = 0; i < emptyCellsAfter; i++) {
             tableHTML += `<td width="${100 / numberOfColumns}%" style="text-align: center; padding: 10px;"></td>`;
           }
         }
+
         tableHTML += `</tr>`;
       }
 
@@ -293,42 +305,73 @@ const HtmlIntegration = ({ chainId, offerId, offerTokens }) => {
             numberOfColumns > 0 &&
             numberOfRows > 0 &&
             Array.from({ length: Math.ceil(offerTokens?.length / numberOfColumns) }).map(
-              (_, rowIndex) => (
-                <tr key={rowIndex}>
-                  {Array.from({ length: numberOfColumns }).map((_, colIndex) => {
-                    const index = rowIndex * numberOfColumns + colIndex;
-                    if (index < offerTokens?.length) {
-                      return (
+              (_, rowIndex) => {
+                const totalRows = Math.ceil(offerTokens?.length / numberOfColumns);
+                const isLastRow = rowIndex === totalRows - 1;
+                let realElementsInLastRow = offerTokens.length % numberOfColumns;
+                realElementsInLastRow =
+                  realElementsInLastRow === 0 ? numberOfColumns : realElementsInLastRow; // Handle full last row
+                const totalEmptyCells = numberOfColumns - realElementsInLastRow;
+                const emptyCellsBefore = Math.floor(totalEmptyCells / 2);
+                const emptyCellsAfter = Math.ceil(totalEmptyCells / 2);
+
+                return (
+                  <tr key={rowIndex}>
+                    {isLastRow &&
+                      Array.from({ length: emptyCellsBefore }).map((_, index) => (
                         <td
-                          key={colIndex}
-                          width={`${100 / numberOfColumns}%`}
-                          style={{ textAlign: "center", padding: "10px" }}
-                        >
-                          <a
-                            href={`https://relayer.dsponsor.com/${chainId}/integrations/${offerId}/${offerTokens[index]?.tokenId}/link`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            <img
-                              src={`https://relayer.dsponsor.com/${chainId}/integrations/${offerId}/${offerTokens[index]?.tokenId}/image`}
-                              style={{ maxWidth: "100%", height: "auto", display: "block" }}
-                              alt="No Ad"
-                            />
-                          </a>
-                        </td>
-                      );
-                    } else {
-                      return (
-                        <td
-                          key={colIndex}
+                          key={`empty-before-${index}`}
                           width={`${100 / numberOfColumns}%`}
                           style={{ textAlign: "center", padding: "10px" }}
                         />
-                      );
-                    }
-                  })}
-                </tr>
-              )
+                      ))}
+                    {Array.from({ length: numberOfColumns }).map((_, colIndex) => {
+                      const index = rowIndex * numberOfColumns + colIndex;
+                      if (index < offerTokens?.length) {
+                        return (
+                          <td
+                            key={colIndex}
+                            width={`${100 / numberOfColumns}%`}
+                            style={{ textAlign: "center", padding: "10px" }}
+                          >
+                            <a
+                              href={`https://relayer.dsponsor.com/${chainId}/integrations/${offerId}/${offerTokens[index]?.tokenId}/link`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              <img
+                                src={`https://relayer.dsponsor.com/${chainId}/integrations/${offerId}/${offerTokens[index]?.tokenId}/image`}
+                                style={{ maxWidth: "100%", height: "auto", display: "block" }}
+                                alt="No Ad"
+                              />
+                            </a>
+                          </td>
+                        );
+                      } else if (
+                        isLastRow &&
+                        colIndex >= realElementsInLastRow + emptyCellsBefore
+                      ) {
+                        return (
+                          <td
+                            key={`empty-after-${colIndex}`}
+                            width={`${100 / numberOfColumns}%`}
+                            style={{ textAlign: "center", padding: "10px" }}
+                          />
+                        );
+                      }
+                      return null;
+                    })}
+                    {isLastRow &&
+                      Array.from({ length: emptyCellsAfter }).map((_, index) => (
+                        <td
+                          key={`empty-after-${index}`}
+                          width={`${100 / numberOfColumns}%`}
+                          style={{ textAlign: "center", padding: "10px" }}
+                        />
+                      ))}
+                  </tr>
+                );
+              }
             )}
         </tbody>
       </table>
