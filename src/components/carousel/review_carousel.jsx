@@ -332,7 +332,14 @@ const Review_carousel = ({
       </div>
 
       {modalStates[tokenId] && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-xl h-screen w-full max-h-screen max-w-full">
+        <div
+          onClick={(e) => {
+            if (e.target === e.currentTarget) {
+              closeModal(tokenId);
+            }
+          }}
+          className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-xl h-screen w-full max-h-screen max-w-full"
+        >
           <div
             className="flex justify-center items-center max-w-full max-h-full"
             style={{

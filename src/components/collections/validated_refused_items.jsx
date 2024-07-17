@@ -99,12 +99,20 @@ const Validated_refused_items = ({ statut, proposalData, isToken }) => {
 
                       {/* Modal */}
                       {modalStates[tokenId] && (
-                        <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-xl h-screen w-full max-h-screen max-w-full">
+                        <div
+                          className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-xl h-screen w-full max-h-screen max-w-full"
+                          onClick={(e) => {
+                            if (e.target === e.currentTarget) {
+                              closeModal(tokenId);
+                            }
+                          }}
+                        >
                           <div
                             className="flex justify-center items-center max-w-full max-h-full"
                             style={{
                               aspectRatio: `${proposalData?.find((item) => item.tokenId === tokenId)?.adParametersList?.cssAspectRatio}`
                             }}
+                            onClick={(e) => e.stopPropagation()} // Prevent click through to the backdrop
                           >
                             <div className="relative flex items-center justify-center max-w-full max-h-full w-3/4 h-3/4">
                               <div className="relative flex justify-center items-center h-full max-w-full max-h-full border-2 border-dotted border-jacarta-100 bg-white dark:bg-jacarta-200 bg-opacity-20 backdrop-blur-xl dark:bg-opacity-20 dark:border-jacarta-100 overflow-hidden">
