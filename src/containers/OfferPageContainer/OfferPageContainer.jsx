@@ -295,27 +295,59 @@ const OfferPageContainer = () => {
     title: "Protocol Fees",
     body: (
       <>
-        <div className="flex flex-col gap-4">
-          <ul className="flex flex-col gap-2 list-disc" style={{ listStyleType: "disc" }}>
-            <li>
-              <span className="text-white">Amount sent to the creator: {100 - bps / 100}%</span>
-            </li>
-            <li>
-              <span className="text-white">Protocol fees: {bps / 100}%</span>
-            </li>
-          </ul>
-
-          <span>
+        <div className="flex flex-col gap-8">
+          <span className="text-jacarta-100 text-sm">
             The protocol fees (4%) are used to maintain the platform and the services provided. The
             fees are calculated based on the price of the ad space and are automatically deducted
             from the total amount paid by the buyer.
           </span>
 
-          <ul className="flex flex-col gap-2 list-disc" style={{ listStyleType: "disc" }}>
-            <li>
-              <span className="text-white">Total: {100}%</span>
-            </li>
-          </ul>
+          <div className="flex flex-col gap-2">
+            <span className="text-white font-semibold">Mint scenario</span>
+            <ul className="flex flex-col gap-2 list-disc text-sm" style={{ listStyleType: "disc" }}>
+              <li>
+                <span className="text-white">
+                  Amount sent to the creator: {price * 0.96} {currency?.symbol}
+                </span>
+              </li>
+              <li>
+                <span className="text-white">
+                  Protocol fees: {price * 0.04} {currency?.symbol}
+                </span>
+              </li>
+              <li>
+                <span className="text-white">
+                  Total: {price} {currency?.symbol}
+                </span>
+              </li>
+            </ul>
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <span className="text-white font-semibold">Secondary Market scenario</span>
+            <ul className="flex flex-col gap-2 list-disc text-sm" style={{ listStyleType: "disc" }}>
+              <li>
+                <span className="text-white">
+                  Amount sent to the lister: {price - price * 0.1 - price * 0.04} {currency?.symbol}
+                </span>
+              </li>
+              <li>
+                <span className="text-white">
+                  Royalties sent to the creator: {price * 0.1} {currency?.symbol}
+                </span>
+              </li>
+              <li>
+                <span className="text-white">
+                  Protocol fees: {price * 0.04} {currency?.symbol}
+                </span>
+              </li>
+              <li>
+                <span className="text-white">
+                  Total: {price} {currency?.symbol}
+                </span>
+              </li>
+            </ul>
+          </div>
         </div>
       </>
     )
