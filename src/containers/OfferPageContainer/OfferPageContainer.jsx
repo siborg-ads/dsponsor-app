@@ -11,6 +11,7 @@ import Tippy from "@tippyjs/react";
 import OfferSkeleton from "../../components/skeleton/offerSkeleton";
 import { fetchAllOffers } from "../../providers/methods/fetchAllOffers";
 import Integration from "../../components/offer-section/integration";
+import { ThirdwebStorage } from "@thirdweb-dev/storage";
 
 import { fetchOffer } from "../../providers/methods/fetchOffer";
 
@@ -62,6 +63,7 @@ const OfferPageContainer = () => {
   const { setSelectedChain } = useSwitchChainContext();
   const [canChangeMintPrice, setCanChangeMintPrice] = useState(false);
   const [offerManagementActiveTab, setOfferManagementActiveTab] = useState("integration");
+  const [imageUrl, setImageUrl] = useState(null);
 
   const { data: bps } = useContractRead(DsponsorAdminContract, "feeBps");
   const maxBps = 10000;
@@ -194,6 +196,25 @@ const OfferPageContainer = () => {
   }, [itemProposals]);
 
   useEffect(() => {
+    const fetchImage = async (image) => {
+      // get url image instead of ipfs:// starting url
+      if (image && image.startsWith("ipfs://")) {
+        const storage = new ThirdwebStorage({ clientId: "6f375d41f2a33f1f08f6042a65d49ec9" });
+        const ipfsUrl = await storage.resolveScheme(image);
+        setImageUrl(ipfsUrl);
+      } else {
+        setImageUrl(image);
+      }
+    };
+
+    if (image) {
+      fetchImage(image);
+    } else {
+      setImageUrl(null);
+    }
+  }, [image]);
+
+  useEffect(() => {
     if (offerId && chainId) {
       const fetchAdsOffers = async () => {
         const offer = await fetchOffer(offerId, chainId);
@@ -253,6 +274,8 @@ const OfferPageContainer = () => {
     }
   }, [offerData]);
 
+  console.log("offerData", offerData);
+
   const handleSubmit = async (submissionArgs) => {
     try {
       await mutateAsync({
@@ -295,27 +318,59 @@ const OfferPageContainer = () => {
     title: "Protocol Fees",
     body: (
       <>
-        <div className="flex flex-col gap-4">
-          <ul className="flex flex-col gap-2 list-disc" style={{ listStyleType: "disc" }}>
-            <li>
-              <span className="text-white">Amount sent to the creator: {100 - bps / 100}%</span>
-            </li>
-            <li>
-              <span className="text-white">Protocol fees: {bps / 100}%</span>
-            </li>
-          </ul>
-
-          <span>
+        <div className="flex flex-col gap-8">
+          <span className="text-jacarta-100 text-sm">
             The protocol fees (4%) are used to maintain the platform and the services provided. The
             fees are calculated based on the price of the ad space and are automatically deducted
             from the total amount paid by the buyer.
           </span>
 
-          <ul className="flex flex-col gap-2 list-disc" style={{ listStyleType: "disc" }}>
-            <li>
-              <span className="text-white">Total: {100}%</span>
-            </li>
-          </ul>
+          <div className="flex flex-col gap-2">
+            <span className="text-white font-semibold">Mint scenario</span>
+            <ul className="flex flex-col gap-2 list-disc text-sm" style={{ listStyleType: "disc" }}>
+              <li>
+                <span className="text-white">
+                  Amount sent to the creator: {price * 0.96} {currency?.symbol}
+                </span>
+              </li>
+              <li>
+                <span className="text-white">
+                  Protocol fees: {price * 0.04} {currency?.symbol}
+                </span>
+              </li>
+              <li>
+                <span className="text-white">
+                  Total: {price} {currency?.symbol}
+                </span>
+              </li>
+            </ul>
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <span className="text-white font-semibold">Secondary Market scenario</span>
+            <ul className="flex flex-col gap-2 list-disc text-sm" style={{ listStyleType: "disc" }}>
+              <li>
+                <span className="text-white">
+                  Amount sent to the lister: {price - price * 0.1 - price * 0.04} {currency?.symbol}
+                </span>
+              </li>
+              <li>
+                <span className="text-white">
+                  Royalties sent to the creator: {price * 0.1} {currency?.symbol}
+                </span>
+              </li>
+              <li>
+                <span className="text-white">
+                  Protocol fees: {price * 0.04} {currency?.symbol}
+                </span>
+              </li>
+              <li>
+                <span className="text-white">
+                  Total: {price} {currency?.symbol}
+                </span>
+              </li>
+            </ul>
+          </div>
         </div>
       </>
     )
@@ -352,11 +407,9 @@ const OfferPageContainer = () => {
                 onClick={() => setImageModal(true)}
                 style={{ height: "450px" }}
               >
-                {image && (
-                  <Image
-                    width={585}
-                    height={726}
-                    src={image ?? ""}
+                {imageUrl && (
+                  <img
+                    src={imageUrl ?? ""}
                     alt="image"
                     className="rounded-2xl cursor-pointer h-full object-contain w-full"
                   />
@@ -377,10 +430,8 @@ const OfferPageContainer = () => {
                   <div className="modal-dialog !my-0 flex items-center justify-center">
                     <div className="modal fade show block">
                       <div className="modal-dialog !my-0 flex items-center justify-center">
-                        <Image
-                          width={582}
-                          height={722}
-                          src={image ?? ""}
+                        <img
+                          src={imageUrl ?? ""}
                           alt="image"
                           className="h-full object-cover w-full rounded-2xl"
                         />
@@ -513,9 +564,9 @@ const OfferPageContainer = () => {
                   )}
                   <figure className="mt-2">
                     <Link href={urlFromChild ?? "#"}>
-                      {image && (
+                      {imageUrl && (
                         <Image
-                          src={image ?? ""}
+                          src={imageUrl ?? ""}
                           alt="logo"
                           height={230}
                           width={230}
