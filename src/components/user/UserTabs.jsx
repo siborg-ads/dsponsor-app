@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import { activated_features } from "../../data/activated_features";
 import Transactions from "./Transactions";
@@ -23,7 +23,6 @@ const UserTabs = ({
   offers
 }) => {
   const [copied, setCopied] = useState(false);
-  const [itemActive, setItemActive] = useState(1);
   const router = useRouter();
   const { pathname, query, asPath } = router;
 
@@ -49,7 +48,7 @@ const UserTabs = ({
       },
       { id: 3, text: "Owned tokens", icon: "owned", section: "owned" },
       { id: 4, text: "Auction listed tokens", icon: "activity", section: "auction" },
-      { id: 5, text: "Token Auction Bids ", icon: "activity", section: "tokenAuctionBids" },
+      { id: 5, text: "Token Auction Bids", icon: "activity", section: "tokenAuctionBids" },
       ...(activated_features.canCreateOffer
         ? [
             {
@@ -64,29 +63,45 @@ const UserTabs = ({
     []
   );
 
+  const getTabIndexFromHash = useCallback(
+    (hash) => {
+      const activeTab = tabItem.find((tab) => tab.section === hash);
+      return activeTab ? tabItem.indexOf(activeTab) : 0; // default to first tab
+    },
+    [tabItem]
+  );
+
+  const handleSelect = (index) => {
+    const selectedTab = tabItem[index];
+    router.replace(
+      `${pathname.replace("/[manage]", "")}/${query.manage}#${selectedTab.section}`,
+      undefined,
+      { scroll: false }
+    );
+  };
+
   useEffect(() => {
     const hash = asPath.split("#")[1];
-    const activeTab = tabItem.find((tab) => tab.section === hash);
-    if (activeTab) {
-      setItemActive(activeTab.id);
-    } else {
-      setItemActive(1); // first tab by default
-    }
-  }, [asPath, tabItem]);
+    handleSelect(getTabIndexFromHash(hash));
+  }, [asPath, getTabIndexFromHash]);
 
   return (
-    <Tabs className="tabs">
+    <Tabs
+      className="tabs"
+      onSelect={handleSelect}
+      selectedIndex={getTabIndexFromHash(asPath.split("#")[1])}
+    >
       <TabList className="nav nav-tabs hide-scrollbar mb-12 flex items-center justify-start overflow-x-auto overflow-y-hidden border-b border-jacarta-100 pb-px dark:border-jacarta-600 md:justify-center">
         {tabItem.map(({ id, text, icon, section }) => {
           return (
-            <Tab className="nav-item" key={id} onClick={() => setItemActive(id)}>
+            <Tab className="nav-item" key={id}>
               <Link
                 href={`${pathname.replace("/[manage]", "")}/${query.manage}#${section}`}
                 scroll={false}
               >
                 <button
                   className={
-                    itemActive === id
+                    getTabIndexFromHash(asPath.split("#")[1]) === id - 1
                       ? "nav-link hover:text-jacarta-900 text-jacarta-100 relative flex items-center whitespace-nowrap py-3 px-4 dark:hover:text-white active"
                       : "nav-link hover:text-jacarta-900 text-jacarta-100 relative flex items-center whitespace-nowrap py-3 px-4 dark:hover:text-white"
                   }
