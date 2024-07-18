@@ -24,6 +24,7 @@ const ChangeMintPrice = ({ offer }) => {
   const [indexSelectedToken, setIndexSelectedToken] = useState(null);
   const [disabledLocked, setDisabledLocked] = useState(false);
   const [initialDisabled, setInitialDisabled] = useState(false);
+  const [disabled, setDisabled] = useState(false);
 
   const { currentChainObject } = useChainContext();
   const chainId = currentChainObject?.chainId;
@@ -55,9 +56,11 @@ const ChangeMintPrice = ({ offer }) => {
       if (offer?.nftContract?.prices[0]?.enabled === true) {
         setDisableMint(false);
         setInitialDisabled(false);
+        setDisabled(false);
       } else {
         setDisableMint(true);
         setInitialDisabled(true);
+        setDisabled(true);
       }
 
       if (offer?.nftContract?.prices[0]?.amount) {
@@ -150,6 +153,8 @@ const ChangeMintPrice = ({ offer }) => {
       await mutateAsync({
         args: [currency, !disableMint, finalFormattedAmountBN]
       });
+
+      setDisabled(disableMint);
     } catch (error) {
       console.error(error);
       throw new Error(error);
@@ -173,11 +178,11 @@ const ChangeMintPrice = ({ offer }) => {
 
   return (
     <div className="flex flex-col gap-4 justify-center">
-      {initialDisabled && (
+      {disabled && (
         <p className="text-red text-sm">The minting feature is currently disabled for this offer</p>
       )}
 
-      {!initialDisabled && (
+      {!disabled && (
         <p className="text-green text-sm">
           The minting feature is currently enabled for this offer
         </p>
