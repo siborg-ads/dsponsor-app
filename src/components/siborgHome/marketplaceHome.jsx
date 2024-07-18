@@ -27,7 +27,7 @@ const MarketplaceHome = ({ auctions, setAllTokens, allTokens, isAuctionsLoading 
 
     console.log("tempAuctions", tempAuctions);
 
-    // keep enabled minted tokens and tokens already minted
+    // keep enabled minted tokens and tokens already minted (updated)
     tempAuctions = tempAuctions.filter(
       (auction) => auction?.item?.nftContract?.prices[0]?.enabled || auction?.item?.mint !== null
     );
