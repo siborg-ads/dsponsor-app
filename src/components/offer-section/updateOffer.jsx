@@ -1,6 +1,5 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Divider } from "@nextui-org/react";
-import { useState } from "react";
 import * as Switch from "@radix-ui/react-switch";
 import { Web3Button, useContract, useContractWrite } from "@thirdweb-dev/react";
 import config from "../../config/config";
@@ -56,20 +55,25 @@ const UpdateOffer = ({ offer }) => {
     }
   };
 
-  const uploadNewMetadatas = async () => {
+  const uploadNewMetadatas = async (originalMetadatas) => {
     const storage = new ThirdwebStorage({ clientId: "6f375d41f2a33f1f08f6042a65d49ec9" });
 
-    let finalMetadatas = metadatas;
+    let finalMetadatas = { ...originalMetadatas };
 
     // check if image has changed, if so, upload the new image
-    let imageUri;
+    let newImageUrl;
     if (files.length > 0) {
       try {
-        imageUri = await storage.upload(files[0]);
+        const imageUri = await storage.upload(files[0]);
+        newImageUrl = await storage.resolveScheme(imageUri);
       } catch (error) {
         console.error(error);
         throw new Error("Error uploading the image");
       }
+    }
+
+    if (!newImageUrl) {
+      throw new Error("Error uploading the image");
     }
 
     // update the metadata object with the new image url
@@ -77,7 +81,7 @@ const UpdateOffer = ({ offer }) => {
       ...finalMetadatas,
       offer: {
         ...finalMetadatas?.offer,
-        image: imageUri ?? imageUrl
+        image: newImageUrl
       }
     };
 
@@ -125,7 +129,8 @@ const UpdateOffer = ({ offer }) => {
 
     try {
       const jsonUri = await storage.upload(finalMetadatas);
-      return jsonUri;
+      const jsonUrl = await storage.resolveScheme(jsonUri);
+      return jsonUrl;
     } catch (error) {
       console.error(error);
       throw new Error(error);
@@ -232,6 +237,24 @@ const UpdateOffer = ({ offer }) => {
           ).toISOString()
         }
       });
+    } else {
+      setMetadatas({
+        creator: {
+          name: "",
+          description: "",
+          image: "",
+          external_link: "",
+          categories: []
+        },
+        offer: {
+          name,
+          description,
+          external_link: externalLink,
+          valid_from: new Date(validDateFrom).toISOString(),
+          valid_to: new Date(validDateTo).toISOString(),
+          token_metadata: {}
+        }
+      });
     }
   }, [description, externalLink, initialMetadatas, name, validDateFrom, validDateTo]);
 
@@ -319,7 +342,7 @@ const UpdateOffer = ({ offer }) => {
     }
   };
 
-  const handleUpdateOffer = async () => {
+  const handleUpdateOffer = async (originalMetadatas) => {
     // remove empty strings from admins and validators
     const updatedAdmins = admins?.filter((admin) => !!admin) ?? [];
     const updatedValidators = validators?.filter((validator) => !!validator) ?? [];
@@ -361,7 +384,7 @@ const UpdateOffer = ({ offer }) => {
 
     let newMetadataUrl = null;
     try {
-      newMetadataUrl = await uploadNewMetadatas();
+      newMetadataUrl = await uploadNewMetadatas(originalMetadatas);
     } catch (error) {
       console.error(error);
       toast(error.message, { type: "error" });
@@ -636,7 +659,7 @@ const UpdateOffer = ({ offer }) => {
       <Web3Button
         action={() => {
           toast
-            .promise(handleUpdateOffer, {
+            .promise(handleUpdateOffer(metadatas), {
               pending: "Waiting for confirmation 🕒",
               success: disabledLocked
                 ? "The offer has been disabled 🎉"
