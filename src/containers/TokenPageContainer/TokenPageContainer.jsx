@@ -7,6 +7,7 @@ import {
   useContractWrite,
   useStorageUpload
 } from "@thirdweb-dev/react";
+import { ThirdwebStorage } from "@thirdweb-dev/storage";
 import { BigNumber, ethers } from "ethers";
 import Image from "next/image";
 import Link from "next/link";
@@ -127,6 +128,7 @@ const TokenPageContainer = () => {
   const [offerManagementActiveTab, setOfferManagementActiveTab] = useState("updateOffer");
   const [notFormattedPrice, setNotFormattedPrice] = useState(null);
   const [currencySymbol, setCurrencySymbol] = useState(null);
+  const [imageUrl, setImageUrl] = useState(null);
 
   let description = "description not found";
   let id = "1";
@@ -152,6 +154,25 @@ const TokenPageContainer = () => {
       name = offerData?.metadata?.offer?.name;
     }
   }
+
+  useEffect(() => {
+    const fetchImage = async (image) => {
+      // get url image instead of ipfs:// starting url
+      if (image && image.startsWith("ipfs://")) {
+        const storage = new ThirdwebStorage({ clientId: "6f375d41f2a33f1f08f6042a65d49ec9" });
+        const ipfsUrl = await storage.resolveScheme(image);
+        setImageUrl(ipfsUrl);
+      } else {
+        setImageUrl(image);
+      }
+    };
+
+    if (image) {
+      fetchImage(image);
+    } else {
+      setImageUrl(null);
+    }
+  }, [image]);
 
   useEffect(() => {
     const fetchOffers = async () => {
@@ -1474,7 +1495,7 @@ const TokenPageContainer = () => {
                 <Image
                   width={585}
                   height={726}
-                  src={image ?? "/images/gradient_creative.jpg"}
+                  src={imageUrl ?? "/images/gradient_creative.jpg"}
                   alt="image"
                   className="rounded-2xl cursor-pointer h-full object-contain w-full shadow-lg"
                 />
@@ -1486,7 +1507,7 @@ const TokenPageContainer = () => {
                   <Image
                     width={582}
                     height={722}
-                    src={image ?? "/images/gradient_creative.jpg"}
+                    src={imageUrl ?? "/images/gradient_creative.jpg"}
                     alt="image"
                     className="h-full object-cover w-full rounded-2xl"
                   />
@@ -1871,7 +1892,7 @@ const TokenPageContainer = () => {
             handleBuySubmitWithNative={handleBuySubmit}
             name={name}
             marketplaceListings={marketplaceListings}
-            image={image ?? ""}
+            image={imageUrl ?? ""}
             selectedCurrency={currency}
             royalties={royalties}
             tokenId={tokenId}

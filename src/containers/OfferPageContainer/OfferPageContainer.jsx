@@ -11,6 +11,7 @@ import Tippy from "@tippyjs/react";
 import OfferSkeleton from "../../components/skeleton/offerSkeleton";
 import { fetchAllOffers } from "../../providers/methods/fetchAllOffers";
 import Integration from "../../components/offer-section/integration";
+import { ThirdwebStorage } from "@thirdweb-dev/storage";
 
 import { fetchOffer } from "../../providers/methods/fetchOffer";
 
@@ -62,6 +63,7 @@ const OfferPageContainer = () => {
   const { setSelectedChain } = useSwitchChainContext();
   const [canChangeMintPrice, setCanChangeMintPrice] = useState(false);
   const [offerManagementActiveTab, setOfferManagementActiveTab] = useState("integration");
+  const [imageUrl, setImageUrl] = useState(null);
 
   const { data: bps } = useContractRead(DsponsorAdminContract, "feeBps");
   const maxBps = 10000;
@@ -194,6 +196,25 @@ const OfferPageContainer = () => {
   }, [itemProposals]);
 
   useEffect(() => {
+    const fetchImage = async (image) => {
+      // get url image instead of ipfs:// starting url
+      if (image && image.startsWith("ipfs://")) {
+        const storage = new ThirdwebStorage({ clientId: "6f375d41f2a33f1f08f6042a65d49ec9" });
+        const ipfsUrl = await storage.resolveScheme(image);
+        setImageUrl(ipfsUrl);
+      } else {
+        setImageUrl(image);
+      }
+    };
+
+    if (image) {
+      fetchImage(image);
+    } else {
+      setImageUrl(null);
+    }
+  }, [image]);
+
+  useEffect(() => {
     if (offerId && chainId) {
       const fetchAdsOffers = async () => {
         const offer = await fetchOffer(offerId, chainId);
@@ -252,6 +273,8 @@ const OfferPageContainer = () => {
       setRoyalties(0);
     }
   }, [offerData]);
+
+  console.log("offerData", offerData);
 
   const handleSubmit = async (submissionArgs) => {
     try {
@@ -384,11 +407,9 @@ const OfferPageContainer = () => {
                 onClick={() => setImageModal(true)}
                 style={{ height: "450px" }}
               >
-                {image && (
-                  <Image
-                    width={585}
-                    height={726}
-                    src={image ?? ""}
+                {imageUrl && (
+                  <img
+                    src={imageUrl ?? ""}
                     alt="image"
                     className="rounded-2xl cursor-pointer h-full object-contain w-full"
                   />
@@ -409,10 +430,8 @@ const OfferPageContainer = () => {
                   <div className="modal-dialog !my-0 flex items-center justify-center">
                     <div className="modal fade show block">
                       <div className="modal-dialog !my-0 flex items-center justify-center">
-                        <Image
-                          width={582}
-                          height={722}
-                          src={image ?? ""}
+                        <img
+                          src={imageUrl ?? ""}
                           alt="image"
                           className="h-full object-cover w-full rounded-2xl"
                         />
@@ -545,9 +564,9 @@ const OfferPageContainer = () => {
                   )}
                   <figure className="mt-2">
                     <Link href={urlFromChild ?? "#"}>
-                      {image && (
+                      {imageUrl && (
                         <Image
-                          src={image ?? ""}
+                          src={imageUrl ?? ""}
                           alt="logo"
                           height={230}
                           width={230}
