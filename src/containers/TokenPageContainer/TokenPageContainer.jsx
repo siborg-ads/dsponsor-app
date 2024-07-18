@@ -7,6 +7,7 @@ import {
   useContractWrite,
   useStorageUpload
 } from "@thirdweb-dev/react";
+import { ThirdwebStorage } from "@thirdweb-dev/storage";
 import { BigNumber, ethers } from "ethers";
 import Image from "next/image";
 import Link from "next/link";
@@ -19,6 +20,7 @@ import PreviewModal from "../../components/modal/previewModal.jsx";
 import Step1Mint from "../../components/sliderForm/PageMint/Step_1_Mint.jsx";
 import Step2Mint from "../../components/sliderForm/PageMint/Step_2_Mint.jsx";
 import Step3Mint from "../../components/sliderForm/PageMint/Step_3_Mint.jsx";
+import ModalHelper from "../../components/Helper/modalHelper";
 import SliderForm from "../../components/sliderForm/sliderForm.jsx";
 import styles from "../../styles/createPage/style.module.scss";
 import Timer from "../../components/item/Timer.jsx";
@@ -125,6 +127,9 @@ const TokenPageContainer = () => {
   const [minted, setMinted] = useState(false);
   const [conditions, setConditions] = useState({});
   const [offerManagementActiveTab, setOfferManagementActiveTab] = useState("updateOffer");
+  const [notFormattedPrice, setNotFormattedPrice] = useState(null);
+  const [currencySymbol, setCurrencySymbol] = useState(null);
+  const [imageUrl, setImageUrl] = useState(null);
 
   let description = "description not found";
   let id = "1";
@@ -150,6 +155,25 @@ const TokenPageContainer = () => {
       name = offerData?.metadata?.offer?.name;
     }
   }
+
+  useEffect(() => {
+    const fetchImage = async (image) => {
+      // get url image instead of ipfs:// starting url
+      if (image && image.startsWith("ipfs://")) {
+        const storage = new ThirdwebStorage({ clientId: "6f375d41f2a33f1f08f6042a65d49ec9" });
+        const ipfsUrl = await storage.resolveScheme(image);
+        setImageUrl(ipfsUrl);
+      } else {
+        setImageUrl(image);
+      }
+    };
+
+    if (image) {
+      fetchImage(image);
+    } else {
+      setImageUrl(null);
+    }
+  }, [image]);
 
   useEffect(() => {
     const fetchOffers = async () => {
@@ -631,6 +655,7 @@ const TokenPageContainer = () => {
       setTokenCurrencyAddress(offerData?.nftContract?.prices[0]?.currency);
       // setTokenBigIntPrice(offerData?.nftContract?.prices[0]?.amount);
       setPrice(offerData?.nftContract?.prices[0]?.mintPriceStructureFormatted.creatorAmount);
+      setNotFormattedPrice(offerData?.nftContract?.prices[0]?.mintPriceStructure.totalAmount);
       setFeesAmount(
         offerData?.nftContract?.prices[0]?.mintPriceStructureFormatted.protocolFeeAmount
       );
@@ -652,6 +677,9 @@ const TokenPageContainer = () => {
         setPrice(
           offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.buyPriceStructureFormatted
             .listerBuyAmount
+        );
+        setNotFormattedPrice(
+          offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.buyPriceStructure.totalAmount
         );
         setFeesAmount(
           offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.buyPriceStructureFormatted
@@ -684,6 +712,9 @@ const TokenPageContainer = () => {
         setPrice(
           offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.bidPriceStructureFormatted
             .minimalBidPerToken
+        );
+        setNotFormattedPrice(
+          offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.bidPriceStructure?.totalAmount
         );
         setFeesAmount(
           offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.bidPriceStructureFormatted
@@ -839,7 +870,7 @@ const TokenPageContainer = () => {
       });
     const numSteps = 2;
     const totalNumSteps = numSteps + imageURLSteps.length;
-    console.log(uniqueIdsArray, "uniqueIdsArray");
+
     setImageURLSteps(imageURLSteps);
     setNumSteps(totalNumSteps);
   }, [offerData]);
@@ -1322,6 +1353,104 @@ const TokenPageContainer = () => {
     desc: "Explore the future of media monetization. SiBorg Ads decentralized platform offers tokenized advertising spaces for dynamic and sustainable media funding."
   };
 
+  const modalHelper = {
+    title: "Protocol Fees",
+    body: (
+      <>
+        <div className="flex flex-col gap-8">
+          <span className="text-jacarta-100 text-sm">
+            The protocol fees (4%) are used to maintain the platform and the services provided. The
+            fees are calculated based on the price of the ad space and are automatically deducted
+            from the total amount paid by the buyer.
+          </span>
+
+          {offerData?.nftContract?.tokens?.find(
+            (token) => Number(token?.tokenId) === Number(tokenId)
+          )?.mint === null &&
+            notFormattedPrice && (
+              <div className="flex flex-col gap-2">
+                <ul
+                  className="flex flex-col gap-2 list-disc text-sm"
+                  style={{ listStyleType: "disc" }}
+                >
+                  <li>
+                    <span className="text-white">
+                      Amount sent to the creator:{" "}
+                      {Number(formatUnits(BigNumber.from(notFormattedPrice), currencyDecimals)) *
+                        0.96}{" "}
+                      {currency}
+                    </span>
+                  </li>
+                  <li>
+                    <span className="text-white">
+                      Protocol fees:{" "}
+                      {Number(formatUnits(BigNumber.from(notFormattedPrice), currencyDecimals)) *
+                        0.04}{" "}
+                      {currency}
+                    </span>
+                  </li>
+                  <li>
+                    <span className="text-white">
+                      Total:{" "}
+                      {Number(formatUnits(BigNumber.from(notFormattedPrice), currencyDecimals))}{" "}
+                      {currency}
+                    </span>
+                  </li>
+                </ul>
+              </div>
+            )}
+
+          {offerData?.nftContract?.tokens?.find(
+            (token) => Number(token?.tokenId) === Number(tokenId)
+          )?.mint !== null &&
+            notFormattedPrice && (
+              <div className="flex flex-col gap-2">
+                <ul
+                  className="flex flex-col gap-2 list-disc text-sm"
+                  style={{ listStyleType: "disc" }}
+                >
+                  <li>
+                    <span className="text-white">
+                      Amount sent to the lister:{" "}
+                      {Number(formatUnits(BigNumber.from(notFormattedPrice), currencyDecimals)) -
+                        Number(formatUnits(BigNumber.from(notFormattedPrice), currencyDecimals)) *
+                          0.1 -
+                        Number(formatUnits(BigNumber.from(notFormattedPrice), currencyDecimals)) *
+                          0.04}{" "}
+                      {currency}
+                    </span>
+                  </li>
+                  <li>
+                    <span className="text-white">
+                      Royalties sent to the creator:{" "}
+                      {Number(formatUnits(BigNumber.from(notFormattedPrice), currencyDecimals)) *
+                        0.1}{" "}
+                      {currency}
+                    </span>
+                  </li>
+                  <li>
+                    <span className="text-white">
+                      Protocol fees:{" "}
+                      {Number(formatUnits(BigNumber.from(notFormattedPrice), currencyDecimals)) *
+                        0.04}{" "}
+                      {currency}
+                    </span>
+                  </li>
+                  <li>
+                    <span className="text-white">
+                      Total:{" "}
+                      {Number(formatUnits(BigNumber.from(notFormattedPrice), currencyDecimals))}{" "}
+                      {currency}
+                    </span>
+                  </li>
+                </ul>
+              </div>
+            )}
+        </div>
+      </>
+    )
+  };
+
   if (!offerData || offerData.length === 0) {
     return (
       <div>
@@ -1357,34 +1486,34 @@ const TokenPageContainer = () => {
           <div className="container">
             {/* <!-- Item --> */}
 
-            <div className="md:flex md:flex-wrap" key={id}>
-              {/* <!-- Image --> */}
-              <figure className="mb-8 md:mb-0 md:w-2/5 md:flex-shrink-0 md:flex-grow-0 md:basis-auto lg:w-1/2 w-full flex justify-center relative">
-                <button
-                  className=" w-full"
-                  onClick={() => setImageModal(true)}
-                  style={{ height: "450px" }}
-                >
-                  <Image
-                    width={585}
-                    height={726}
-                    src={image ?? "/images/gradient_creative.jpg"}
-                    alt="image"
-                    className="rounded-2xl cursor-pointer h-full object-contain w-full shadow-lg"
-                  />
-                </button>
+          <div className="md:flex md:flex-wrap" key={id}>
+            {/* <!-- Image --> */}
+            <figure className="mb-8 md:mb-0 md:w-2/5 md:flex-shrink-0 md:flex-grow-0 md:basis-auto lg:w-1/2 w-full flex justify-center relative">
+              <button
+                className=" w-full"
+                onClick={() => setImageModal(true)}
+                style={{ height: "450px" }}
+              >
+                <Image
+                  width={585}
+                  height={726}
+                  src={imageUrl ?? "/images/gradient_creative.jpg"}
+                  alt="image"
+                  className="rounded-2xl cursor-pointer h-full object-contain w-full shadow-lg"
+                />
+              </button>
 
-                {/* <!-- Modal --> */}
-                <div className={imageModal ? "modal fade show block" : "modal fade"}>
-                  <div className="modal-dialog !my-0 flex h-full max-w-4xl items-center justify-center">
-                    <Image
-                      width={582}
-                      height={722}
-                      src={image ?? "/images/gradient_creative.jpg"}
-                      alt="image"
-                      className="h-full object-cover w-full rounded-2xl"
-                    />
-                  </div>
+              {/* <!-- Modal --> */}
+              <div className={imageModal ? "modal fade show block" : "modal fade"}>
+                <div className="modal-dialog !my-0 flex h-full max-w-4xl items-center justify-center">
+                  <Image
+                    width={582}
+                    height={722}
+                    src={imageUrl ?? "/images/gradient_creative.jpg"}
+                    alt="image"
+                    className="h-full object-cover w-full rounded-2xl"
+                  />
+                </div>
 
                   <button
                     type="button"
@@ -1415,49 +1544,48 @@ const TokenPageContainer = () => {
                   </h2>
                 </Link>
 
-                <div className="mb-8 flex items-center gap-4 whitespace-nowrap flex-wrap">
-                  {currency &&
-                    tokenStatut !== "MINTED" &&
-                    (firstSelectedListing?.status === "CREATED" ||
-                      marketplaceListings?.length <= 0) &&
-                    !conditions?.conditionsObject?.mintDisabled && (
-                      <div className="flex items-center">
-                        <span className="text-green text-sm font-medium tracking-tight mr-2">
-                          {finalPrice} {currency}
-                        </span>
-                      </div>
-                    )}
-                  <span className="dark:text-jacarta-100 text-jacarta-100 text-sm">
-                    Space #{" "}
-                    <strong className="dark:text-white">
-                      {tokenData ?? formatTokenId(tokenId)}
-                    </strong>{" "}
-                  </span>
-                  <span className="text-jacarta-100 block text-sm ">
-                    Creator <strong className="dark:text-white">{royalties}% royalties</strong>
-                  </span>
-                  {offerData?.nftContract?.tokens[0]?.metadata?.valid_from && (
-                    <span className="text-jacarta-100 text-sm flex flex-wrap gap-1">
-                      Ownership period:{" "}
-                      <strong className="dark:text-white">
-                        {offerData?.nftContract?.tokens[0]?.metadata?.valid_from &&
-                          (() => {
-                            const date = new Date(
-                              offerData?.nftContract?.tokens[0]?.metadata?.valid_from
-                            );
-                            return `${date.getDate().toString().padStart(2, "0")}/${(date.getMonth() + 1).toString().padStart(2, "0")}/${date.getFullYear()} at ${date.getHours().toString().padStart(2, "0")}:${date.getMinutes().toString().padStart(2, "0")}:${date.getSeconds().toString().padStart(2, "0")}`;
-                          })()}
-                      </strong>{" "}
-                      to{" "}
-                      <strong className="dark:text-white">
-                        {offerData?.nftContract?.tokens[0]?.metadata?.valid_to &&
-                          new Date(
-                            offerData?.nftContract?.tokens[0]?.metadata?.valid_to
-                          ).toLocaleString()}
-                      </strong>
-                    </span>
+              <div className="mb-8 flex items-center gap-4 whitespace-nowrap flex-wrap">
+                {currency &&
+                  tokenStatut !== "MINTED" &&
+                  (firstSelectedListing?.status === "CREATED" ||
+                    marketplaceListings?.length <= 0) &&
+                  !conditions?.conditionsObject?.mintDisabled && (
+                    <div className="flex items-center">
+                      <span className="text-green text-sm font-medium tracking-tight mr-2">
+                        {finalPrice} {currency}
+                      </span>
+                      <ModalHelper {...modalHelper} size="small" />
+                    </div>
                   )}
-                </div>
+                <span className="dark:text-jacarta-100 text-jacarta-100 text-sm">
+                  Space #{" "}
+                  <strong className="dark:text-white">{tokenData ?? formatTokenId(tokenId)}</strong>{" "}
+                </span>
+                <span className="text-jacarta-100 block text-sm ">
+                  Creator <strong className="dark:text-white">{royalties}% royalties</strong>
+                </span>
+                {offerData?.nftContract?.tokens[0]?.metadata?.valid_from && (
+                  <span className="text-jacarta-100 text-sm flex flex-wrap gap-1">
+                    Ownership period:{" "}
+                    <strong className="dark:text-white">
+                      {offerData?.nftContract?.tokens[0]?.metadata?.valid_from &&
+                        (() => {
+                          const date = new Date(
+                            offerData?.nftContract?.tokens[0]?.metadata?.valid_from
+                          );
+                          return `${date.getDate().toString().padStart(2, "0")}/${(date.getMonth() + 1).toString().padStart(2, "0")}/${date.getFullYear()} at ${date.getHours().toString().padStart(2, "0")}:${date.getMinutes().toString().padStart(2, "0")}:${date.getSeconds().toString().padStart(2, "0")}`;
+                        })()}
+                    </strong>{" "}
+                    to{" "}
+                    <strong className="dark:text-white">
+                      {offerData?.nftContract?.tokens[0]?.metadata?.valid_to &&
+                        new Date(
+                          offerData?.nftContract?.tokens[0]?.metadata?.valid_to
+                        ).toLocaleString()}
+                    </strong>
+                  </span>
+                )}
+              </div>
 
                 <p className="dark:text-jacarta-100 mb-10">{description}</p>
                 {((tokenStatut === "MINTABLE" &&

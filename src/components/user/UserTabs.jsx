@@ -27,37 +27,23 @@ const UserTabs = ({
   const { pathname, query, asPath } = router;
 
   useEffect(() => {
-    setTimeout(() => {
-      setCopied(false);
-    }, 2000);
+    if (copied) {
+      const timer = setTimeout(() => {
+        setCopied(false);
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
   }, [copied]);
 
   const tabItem = useMemo(
     () => [
-      {
-        id: 1,
-        text: "Activity",
-        icon: "activity",
-        section: "activity"
-      },
-      {
-        id: 2,
-        text: "Bids",
-        icon: "activity",
-        section: "bids"
-      },
+      { id: 1, text: "Activity", icon: "activity", section: "activity" },
+      { id: 2, text: "Bids", icon: "activity", section: "bids" },
       { id: 3, text: "Owned tokens", icon: "owned", section: "owned" },
       { id: 4, text: "Auction listed tokens", icon: "activity", section: "auction" },
       { id: 5, text: "Token Auction Bids", icon: "activity", section: "tokenAuctionBids" },
       ...(activated_features.canCreateOffer
-        ? [
-            {
-              id: 6,
-              text: "Created Offers",
-              icon: "owned",
-              section: "createdOffers"
-            }
-          ]
+        ? [{ id: 6, text: "Created Offers", icon: "owned", section: "createdOffers" }]
         : [])
     ],
     []
@@ -66,24 +52,32 @@ const UserTabs = ({
   const getTabIndexFromHash = useCallback(
     (hash) => {
       const activeTab = tabItem.find((tab) => tab.section === hash);
-      return activeTab ? tabItem.indexOf(activeTab) : 0; // default to first tab
+      return activeTab ? tabItem.indexOf(activeTab) : 0;
     },
     [tabItem]
   );
 
-  const handleSelect = (index) => {
-    const selectedTab = tabItem[index];
-    router.replace(
-      `${pathname.replace("/[manage]", "")}/${query.manage}#${selectedTab.section}`,
-      undefined,
-      { scroll: false }
-    );
-  };
+  const handleSelect = useCallback(
+    (index) => {
+      if (!query.manage) return;
+
+      const selectedTab = tabItem[index];
+      router.replace(
+        `${pathname.replace("/[manage]", "")}/${query.manage}#${selectedTab.section}`,
+        undefined,
+        { scroll: false }
+      );
+    },
+    [pathname, query.manage, router, tabItem]
+  );
 
   useEffect(() => {
     const hash = asPath.split("#")[1];
-    handleSelect(getTabIndexFromHash(hash));
-  }, [asPath, getTabIndexFromHash]);
+    if (hash) {
+      const index = getTabIndexFromHash(hash);
+      handleSelect(index);
+    }
+  }, [asPath, getTabIndexFromHash, handleSelect]);
 
   return (
     <Tabs
@@ -92,34 +86,32 @@ const UserTabs = ({
       selectedIndex={getTabIndexFromHash(asPath.split("#")[1])}
     >
       <TabList className="nav nav-tabs hide-scrollbar mb-12 flex items-center justify-start overflow-x-auto overflow-y-hidden border-b border-jacarta-100 pb-px dark:border-jacarta-600 md:justify-center">
-        {tabItem.map(({ id, text, icon, section }) => {
-          return (
-            <Tab className="nav-item" key={id}>
-              <Link
-                href={`${pathname.replace("/[manage]", "")}/${query.manage}#${section}`}
-                scroll={false}
+        {tabItem.map(({ id, text, icon, section }) => (
+          <Tab className="nav-item" key={id}>
+            <Link
+              href={`${pathname.replace("/[manage]", "")}/${query.manage}#${section}`}
+              scroll={false}
+            >
+              <button
+                className={
+                  getTabIndexFromHash(asPath.split("#")[1]) === id - 1
+                    ? "nav-link hover:text-jacarta-900 text-jacarta-100 relative flex items-center whitespace-nowrap py-3 px-4 dark:hover:text-white active"
+                    : "nav-link hover:text-jacarta-900 text-jacarta-100 relative flex items-center whitespace-nowrap py-3 px-4 dark:hover:text-white"
+                }
               >
-                <button
-                  className={
-                    getTabIndexFromHash(asPath.split("#")[1]) === id - 1
-                      ? "nav-link hover:text-jacarta-900 text-jacarta-100 relative flex items-center whitespace-nowrap py-3 px-4 dark:hover:text-white active"
-                      : "nav-link hover:text-jacarta-900 text-jacarta-100 relative flex items-center whitespace-nowrap py-3 px-4 dark:hover:text-white"
-                  }
-                >
-                  {isPendingAdsOnOffer && isOwner && text === "Created Offers" && (
-                    <InfoIcon text="You have 1 or more ads proposals to check on your offer">
-                      <ExclamationCircleIcon className="h-5 w-5 text-red mr-2" />
-                    </InfoIcon>
-                  )}
-                  <svg className="icon mr-1 h-5 w-5 fill-current">
-                    <use xlinkHref={`/icons.svg#icon-${icon}`}></use>
-                  </svg>
-                  <span className="font-display text-base font-medium">{text}</span>
-                </button>
-              </Link>
-            </Tab>
-          );
-        })}
+                {isPendingAdsOnOffer && isOwner && text === "Created Offers" && (
+                  <InfoIcon text="You have 1 or more ads proposals to check on your offer">
+                    <ExclamationCircleIcon className="h-5 w-5 text-red mr-2" />
+                  </InfoIcon>
+                )}
+                <svg className="icon mr-1 h-5 w-5 fill-current">
+                  <use xlinkHref={`/icons.svg#icon-${icon}`}></use>
+                </svg>
+                <span className="font-display text-base font-medium">{text}</span>
+              </button>
+            </Link>
+          </Tab>
+        ))}
       </TabList>
       <TabPanel>
         <Transactions manageAddress={manageAddress} />
@@ -139,7 +131,7 @@ const UserTabs = ({
       <TabPanel>
         <OwnedOffersCategoriesItems
           data={createdData}
-          isPendinAdsOnOffer={isPendingAdsOnOffer}
+          isPendingAdsOnOffer={isPendingAdsOnOffer}
           isOwner={isOwner}
           offers={offers}
         />
