@@ -4,7 +4,6 @@ import Link from "next/link";
 import { useChainContext } from "../../contexts/hooks/useChainContext";
 import { fetchAllMarketplaceBidsByBidder } from "../../providers/methods/fetchAllMarketplaceBids";
 import formatAndRound from "../../utils/formatAndRound";
-import { ThirdwebSDK } from "@thirdweb-dev/sdk";
 import { BigNumber } from "ethers";
 import { formatUnits } from "ethers/lib/utils";
 
@@ -15,7 +14,6 @@ const Bids = ({ manageAddress }) => {
   const [marketplaceBids, setMarketplaceBids] = useState([]);
 
   const { currentChainObject } = useChainContext();
-  const chainExplorer = currentChainObject?.explorerBaseUrl;
   const chainId = currentChainObject?.chainId;
 
   const formatBidTransactions = useCallback(

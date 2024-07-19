@@ -33,8 +33,6 @@ const Transactions = ({ manageAddress }) => {
         })
         .catch((err) => console.error(err));
 
-      console.log(data);
-
       let lastActivities = activated_features.canFilterTransactionsWithWETH
         ? data?.lastActivities.filter(
             (activity) => activity.symbol === "WETH" && activity.points > 0

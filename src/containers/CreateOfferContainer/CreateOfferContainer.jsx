@@ -56,7 +56,7 @@ const CreateOfferContainer = () => {
   const [tokenDecimals, setTokenDecimals] = useState(0);
   const [symbolContract, setSymbolContract] = useState(null);
   const [tokenContract, setTokenContract] = useState(WETHCurrency?.address);
-  const [customTokenContract, setCustomTokenContract] = useState(null);
+  const [, setCustomTokenContract] = useState(null);
   const [terms, setTerms] = useState([]);
   const [previewTerms, setPreviewTerms] = useState([]);
   const [isLoadingButton, setIsLoadingButton] = useState(false);
@@ -318,9 +318,7 @@ const CreateOfferContainer = () => {
       ];
       const preparedArgs = [Object.values(JSON.parse(args[0])), Object.values(JSON.parse(args[1]))];
 
-  
-
-        await createDSponsorNFTAndOffer({ args: preparedArgs });
+      await createDSponsorNFTAndOffer({ args: preparedArgs });
 
       setSuccessFullUpload(true);
 
@@ -336,7 +334,7 @@ const CreateOfferContainer = () => {
       setSelectedUnitPrice(1);
       setSelectedCurrency("WETH");
       setCustomContract(null);
-      setSelectedParameter(["imageURL-1:1", "linkURL"]); 
+      setSelectedParameter(["imageURL-1:1", "linkURL"]);
       setSelectedIntegration([0]);
       setSelectedRoyalties(10);
       setTokenContract(WETHCurrency?.address);

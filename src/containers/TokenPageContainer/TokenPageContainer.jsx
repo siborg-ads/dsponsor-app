@@ -126,9 +126,7 @@ const TokenPageContainer = () => {
   const [sales, setSales] = useState([]);
   const [minted, setMinted] = useState(false);
   const [conditions, setConditions] = useState({});
-  const [offerManagementActiveTab, setOfferManagementActiveTab] = useState("updateOffer");
   const [notFormattedPrice, setNotFormattedPrice] = useState(null);
-  const [currencySymbol, setCurrencySymbol] = useState(null);
   const [imageUrl, setImageUrl] = useState(null);
 
   let description = "description not found";
@@ -1486,34 +1484,34 @@ const TokenPageContainer = () => {
           <div className="container">
             {/* <!-- Item --> */}
 
-          <div className="md:flex md:flex-wrap" key={id}>
-            {/* <!-- Image --> */}
-            <figure className="mb-8 md:mb-0 md:w-2/5 md:flex-shrink-0 md:flex-grow-0 md:basis-auto lg:w-1/2 w-full flex justify-center relative">
-              <button
-                className=" w-full"
-                onClick={() => setImageModal(true)}
-                style={{ height: "450px" }}
-              >
-                <Image
-                  width={585}
-                  height={726}
-                  src={imageUrl ?? "/images/gradient_creative.jpg"}
-                  alt="image"
-                  className="rounded-2xl cursor-pointer h-full object-contain w-full shadow-lg"
-                />
-              </button>
-
-              {/* <!-- Modal --> */}
-              <div className={imageModal ? "modal fade show block" : "modal fade"}>
-                <div className="modal-dialog !my-0 flex h-full max-w-4xl items-center justify-center">
+            <div className="md:flex md:flex-wrap" key={id}>
+              {/* <!-- Image --> */}
+              <figure className="mb-8 md:mb-0 md:w-2/5 md:flex-shrink-0 md:flex-grow-0 md:basis-auto lg:w-1/2 w-full flex justify-center relative">
+                <button
+                  className=" w-full"
+                  onClick={() => setImageModal(true)}
+                  style={{ height: "450px" }}
+                >
                   <Image
-                    width={582}
-                    height={722}
+                    width={585}
+                    height={726}
                     src={imageUrl ?? "/images/gradient_creative.jpg"}
                     alt="image"
-                    className="h-full object-cover w-full rounded-2xl"
+                    className="rounded-2xl cursor-pointer h-full object-contain w-full shadow-lg"
                   />
-                </div>
+                </button>
+
+                {/* <!-- Modal --> */}
+                <div className={imageModal ? "modal fade show block" : "modal fade"}>
+                  <div className="modal-dialog !my-0 flex h-full max-w-4xl items-center justify-center">
+                    <Image
+                      width={582}
+                      height={722}
+                      src={imageUrl ?? "/images/gradient_creative.jpg"}
+                      alt="image"
+                      className="h-full object-cover w-full rounded-2xl"
+                    />
+                  </div>
 
                   <button
                     type="button"
@@ -1544,48 +1542,50 @@ const TokenPageContainer = () => {
                   </h2>
                 </Link>
 
-              <div className="mb-8 flex items-center gap-4 whitespace-nowrap flex-wrap">
-                {currency &&
-                  tokenStatut !== "MINTED" &&
-                  (firstSelectedListing?.status === "CREATED" ||
-                    marketplaceListings?.length <= 0) &&
-                  !conditions?.conditionsObject?.mintDisabled && (
-                    <div className="flex items-center">
-                      <span className="text-green text-sm font-medium tracking-tight mr-2">
-                        {finalPrice} {currency}
-                      </span>
-                      <ModalHelper {...modalHelper} size="small" />
-                    </div>
-                  )}
-                <span className="dark:text-jacarta-100 text-jacarta-100 text-sm">
-                  Space #{" "}
-                  <strong className="dark:text-white">{tokenData ?? formatTokenId(tokenId)}</strong>{" "}
-                </span>
-                <span className="text-jacarta-100 block text-sm ">
-                  Creator <strong className="dark:text-white">{royalties}% royalties</strong>
-                </span>
-                {offerData?.nftContract?.tokens[0]?.metadata?.valid_from && (
-                  <span className="text-jacarta-100 text-sm flex flex-wrap gap-1">
-                    Ownership period:{" "}
+                <div className="mb-8 flex items-center gap-4 whitespace-nowrap flex-wrap">
+                  {currency &&
+                    tokenStatut !== "MINTED" &&
+                    (firstSelectedListing?.status === "CREATED" ||
+                      marketplaceListings?.length <= 0) &&
+                    !conditions?.conditionsObject?.mintDisabled && (
+                      <div className="flex items-center">
+                        <span className="text-green text-sm font-medium tracking-tight mr-2">
+                          {finalPrice} {currency}
+                        </span>
+                        <ModalHelper {...modalHelper} size="small" />
+                      </div>
+                    )}
+                  <span className="dark:text-jacarta-100 text-jacarta-100 text-sm">
+                    Space #{" "}
                     <strong className="dark:text-white">
-                      {offerData?.nftContract?.tokens[0]?.metadata?.valid_from &&
-                        (() => {
-                          const date = new Date(
-                            offerData?.nftContract?.tokens[0]?.metadata?.valid_from
-                          );
-                          return `${date.getDate().toString().padStart(2, "0")}/${(date.getMonth() + 1).toString().padStart(2, "0")}/${date.getFullYear()} at ${date.getHours().toString().padStart(2, "0")}:${date.getMinutes().toString().padStart(2, "0")}:${date.getSeconds().toString().padStart(2, "0")}`;
-                        })()}
+                      {tokenData ?? formatTokenId(tokenId)}
                     </strong>{" "}
-                    to{" "}
-                    <strong className="dark:text-white">
-                      {offerData?.nftContract?.tokens[0]?.metadata?.valid_to &&
-                        new Date(
-                          offerData?.nftContract?.tokens[0]?.metadata?.valid_to
-                        ).toLocaleString()}
-                    </strong>
                   </span>
-                )}
-              </div>
+                  <span className="text-jacarta-100 block text-sm ">
+                    Creator <strong className="dark:text-white">{royalties}% royalties</strong>
+                  </span>
+                  {offerData?.nftContract?.tokens[0]?.metadata?.valid_from && (
+                    <span className="text-jacarta-100 text-sm flex flex-wrap gap-1">
+                      Ownership period:{" "}
+                      <strong className="dark:text-white">
+                        {offerData?.nftContract?.tokens[0]?.metadata?.valid_from &&
+                          (() => {
+                            const date = new Date(
+                              offerData?.nftContract?.tokens[0]?.metadata?.valid_from
+                            );
+                            return `${date.getDate().toString().padStart(2, "0")}/${(date.getMonth() + 1).toString().padStart(2, "0")}/${date.getFullYear()} at ${date.getHours().toString().padStart(2, "0")}:${date.getMinutes().toString().padStart(2, "0")}:${date.getSeconds().toString().padStart(2, "0")}`;
+                          })()}
+                      </strong>{" "}
+                      to{" "}
+                      <strong className="dark:text-white">
+                        {offerData?.nftContract?.tokens[0]?.metadata?.valid_to &&
+                          new Date(
+                            offerData?.nftContract?.tokens[0]?.metadata?.valid_to
+                          ).toLocaleString()}
+                      </strong>
+                    </span>
+                  )}
+                </div>
 
                 <p className="dark:text-jacarta-100 mb-10">{description}</p>
                 {((tokenStatut === "MINTABLE" &&
