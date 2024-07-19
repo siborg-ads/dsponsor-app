@@ -141,6 +141,13 @@ html {
     z-index: 12;
   }
 
+  .AccordionChevron {
+    transition: transform 300ms;
+  }
+  .AccordionTrigger[data-state='open'] > .AccordionChevron {
+    transform: rotate(180deg);
+  }
+
   /* DM Sans Bold Italic */
   @font-face {
     font-family: "DM Sans";
