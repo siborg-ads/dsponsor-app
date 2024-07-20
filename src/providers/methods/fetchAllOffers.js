@@ -53,6 +53,31 @@ export const fetchAllOffers = async (chainId) => {
               startTime
               endTime
               id
+              bids {
+                id
+                listing
+                bidder
+                quantity
+                newPricePerToken
+                totalBidAmount
+                paidBidAmount
+                refundBonus
+                refundAmount
+                refundProfit
+                currency
+                status
+                creationTxHash
+                revenueTransaction
+                creationTimestamp
+                lastUpdateTimestamp
+                feeMethodology
+                amountSentToProtocol
+                protocolRecipient
+                amountSentToSeller
+                sellerRecipient
+                amountSentToCreator
+                creatorRecipient
+              }
             }
             setInAllowList # to check is allowList (above) is true, define if is in allowlist
             # current ad data proposals, per adParameter
