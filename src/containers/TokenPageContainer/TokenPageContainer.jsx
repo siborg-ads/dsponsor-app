@@ -13,7 +13,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { useEffect, useRef, useState, useCallback } from "react";
-import { fetchOffer } from "../../providers/methods/fetchOffer";
 import "tippy.js/dist/tippy.css";
 import Meta from "../../components/Meta.jsx";
 import PreviewModal from "../../components/modal/previewModal.jsx";
@@ -26,7 +25,6 @@ import styles from "../../styles/createPage/style.module.scss";
 import Timer from "../../components/item/Timer.jsx";
 import { fetchAllOffers } from "../../providers/methods/fetchAllOffers";
 import ItemLastestSales from "../../components/tables/ItemLastestSales.jsx";
-import { fetchMintingInfoFromTokenId } from "../../providers/methods/fetchMintingInfoFromTokenId.js";
 
 import { getCookie } from "cookies-next";
 import { ItemsTabs } from "../../components/component.js";
@@ -42,8 +40,6 @@ import Validation from "../../components/offer-section/validation.jsx";
 import ItemBids from "../../components/item/ItemBids.jsx";
 import ItemManage from "../../components/item/ItemManage.jsx";
 import { useSwitchChainContext } from "../../contexts/hooks/useSwitchChainContext.js";
-import { fetchOfferToken } from "../../providers/methods/fetchOfferToken.js";
-// import { fetchAllTokenListedByListingId } from "../../providers/methods/fetchAllTokenListedByListingId.js";
 import config from "../../config/config.js";
 import stringToUint256 from "../../utils/stringToUnit256.js";
 import { formatUnits, getAddress, parseUnits } from "ethers/lib/utils";
@@ -179,10 +175,26 @@ const TokenPageContainer = () => {
     const fetchOffers = async () => {
       const offers = await fetchAllOffers(chainId);
       setOffers(offers);
+
+      // check if we have the values
+      if (!offerId) return;
+      if (!offers) return;
+
+      // set offer data for the current offer
+      const currentOffer = offers?.find((offer) => Number(offer?.id) === Number(offerId));
+      setOfferData(currentOffer);
+
+      // set if the user is the media or not
+      if (currentOffer && address) {
+        const isMedia = currentOffer?.admins?.includes(address.toLowerCase());
+        setIsMedia(isMedia);
+      } else {
+        setIsMedia(false);
+      }
     };
 
     fetchOffers();
-  }, [chainId]);
+  }, [address, chainId, offerId]);
 
   useEffect(() => {
     if (offers) {
@@ -350,36 +362,21 @@ const TokenPageContainer = () => {
   }, [finalPriceNotFormatted, chainId, tokenCurrencyAddress, currencyDecimals]);
 
   useEffect(() => {
-    if (offerId && tokenId && chainId) {
-      const fetchAdsOffers = async () => {
-        const offer = await fetchOfferToken(offerId, tokenId, chainId);
-
-        const combinedData = {
-          ...offer
-        };
-
-        setOfferData(combinedData);
-      };
+    if (chainId) {
       setSelectedChain(config[chainId]?.network);
-      fetchAdsOffers();
     }
+  }, [chainId, setSelectedChain]);
 
+  useEffect(() => {
     setTokenIdString(tokenId?.toString());
-  }, [
-    offerId,
-    tokenId,
-    successFullUpload,
-    successFullBid,
-    successFullListing,
-    address,
-    chainId,
-    setSelectedChain
-  ]);
+  }, [tokenId]);
 
   useEffect(() => {
     if (successFullBid) {
       const fetchUpdatedData = async () => {
-        const offer = await fetchOfferToken(offerId, tokenId, chainId);
+        const offers = await fetchAllOffers(chainId);
+
+        const offer = offers?.find((offer) => Number(offer?.id) === Number(offerId));
         const combinedData = { ...offer };
 
         setOfferData(combinedData);
@@ -438,11 +435,6 @@ const TokenPageContainer = () => {
     setBids(bids);
   }, [marketplaceListings]);
 
-  const fetchSales = useCallback(async (tokenId, chainId) => {
-    const response = await fetchMintingInfoFromTokenId(tokenId, Number(chainId));
-    return response;
-  }, []);
-
   useEffect(() => {
     const fetchSalesData = async () => {
       let sales = [];
@@ -481,14 +473,24 @@ const TokenPageContainer = () => {
 
           if (direct) {
             try {
-              const response = await fetchSales(
-                listing?.token?.nftContract?.id + "-" + listing?.token?.tokenId,
-                Number(chainId)
-              );
+              // get token info from offers
+              const response = offers
+                ?.find((offer) => Number(offer?.id) === Number(offerId))
+                ?.nftContract?.tokens?.find((token) => Number(token?.id) === Number(tokenId));
+
+              console.log("response", response);
+
+              //const response = await fetchSales(
+              //  listing?.token?.nftContract?.id + "-" + listing?.token?.tokenId,
+              //  Number(chainId)
+              //);
+
               const tokenData = response.tokens.find(
                 (token) =>
                   token.id === listing?.token?.nftContract?.id + "-" + listing?.token?.tokenId
               );
+
+              console.log("tokenData", tokenData);
 
               if (tokenData) {
                 // need to match listing id and direct buys listing id
@@ -545,12 +547,9 @@ const TokenPageContainer = () => {
       let saleMintInfo;
 
       try {
-        const response = await fetchSales(
-          offerData?.nftContract?.id + "-" + offerData?.nftContract?.tokens[0]?.tokenId,
-          Number(chainId)
-        );
-
-        const tokenData = response?.tokens[0]; // it is already filtered by tokenId so we can take the first element
+        const tokenData = offers
+          ?.find((offer) => Number(offer?.id) === Number(offerId))
+          ?.nftContract?.tokens?.find((token) => Number(token?.tokenId) === Number(tokenId));
 
         const smartContracts = currentChainObject?.smartContracts;
         const targetAddress = tokenData?.mint?.currency;
@@ -608,13 +607,13 @@ const TokenPageContainer = () => {
 
     fetchSalesData();
   }, [
-    fetchSales,
     marketplaceListings,
     chainId,
     currency,
     currentChainObject,
     offerData?.nftContract?.id,
-    offerData?.nftContract?.tokens
+    offerData?.nftContract?.tokens,
+    tokenId
   ]);
 
   useEffect(() => {
@@ -909,22 +908,6 @@ const TokenPageContainer = () => {
 
     fetchStatusOffers();
   }, [offerId, tokenId, successFullUpload, offerData]);
-
-  useEffect(() => {
-    const fetchingOffer = async () => {
-      const offer = await fetchOffer(offerId, chainId);
-
-      if (offer) {
-        if (offer?.admins?.includes(address?.toLowerCase())) {
-          setIsMedia(true);
-        } else {
-          setIsMedia(false);
-        }
-      }
-    };
-
-    fetchingOffer();
-  }, [address, chainId, offerData, offerId]);
 
   useEffect(() => {
     if (offerData?.nftContract?.royalty.bps)
@@ -1486,34 +1469,34 @@ const TokenPageContainer = () => {
           <div className="container">
             {/* <!-- Item --> */}
 
-          <div className="md:flex md:flex-wrap" key={id}>
-            {/* <!-- Image --> */}
-            <figure className="mb-8 md:mb-0 md:w-2/5 md:flex-shrink-0 md:flex-grow-0 md:basis-auto lg:w-1/2 w-full flex justify-center relative">
-              <button
-                className=" w-full"
-                onClick={() => setImageModal(true)}
-                style={{ height: "450px" }}
-              >
-                <Image
-                  width={585}
-                  height={726}
-                  src={imageUrl ?? "/images/gradient_creative.jpg"}
-                  alt="image"
-                  className="rounded-2xl cursor-pointer h-full object-contain w-full shadow-lg"
-                />
-              </button>
-
-              {/* <!-- Modal --> */}
-              <div className={imageModal ? "modal fade show block" : "modal fade"}>
-                <div className="modal-dialog !my-0 flex h-full max-w-4xl items-center justify-center">
+            <div className="md:flex md:flex-wrap" key={id}>
+              {/* <!-- Image --> */}
+              <figure className="mb-8 md:mb-0 md:w-2/5 md:flex-shrink-0 md:flex-grow-0 md:basis-auto lg:w-1/2 w-full flex justify-center relative">
+                <button
+                  className=" w-full"
+                  onClick={() => setImageModal(true)}
+                  style={{ height: "450px" }}
+                >
                   <Image
-                    width={582}
-                    height={722}
+                    width={585}
+                    height={726}
                     src={imageUrl ?? "/images/gradient_creative.jpg"}
                     alt="image"
-                    className="h-full object-cover w-full rounded-2xl"
+                    className="rounded-2xl cursor-pointer h-full object-contain w-full shadow-lg"
                   />
-                </div>
+                </button>
+
+                {/* <!-- Modal --> */}
+                <div className={imageModal ? "modal fade show block" : "modal fade"}>
+                  <div className="modal-dialog !my-0 flex h-full max-w-4xl items-center justify-center">
+                    <Image
+                      width={582}
+                      height={722}
+                      src={imageUrl ?? "/images/gradient_creative.jpg"}
+                      alt="image"
+                      className="h-full object-cover w-full rounded-2xl"
+                    />
+                  </div>
 
                   <button
                     type="button"
@@ -1544,48 +1527,50 @@ const TokenPageContainer = () => {
                   </h2>
                 </Link>
 
-              <div className="mb-8 flex items-center gap-4 whitespace-nowrap flex-wrap">
-                {currency &&
-                  tokenStatut !== "MINTED" &&
-                  (firstSelectedListing?.status === "CREATED" ||
-                    marketplaceListings?.length <= 0) &&
-                  !conditions?.conditionsObject?.mintDisabled && (
-                    <div className="flex items-center">
-                      <span className="text-green text-sm font-medium tracking-tight mr-2">
-                        {finalPrice} {currency}
-                      </span>
-                      <ModalHelper {...modalHelper} size="small" />
-                    </div>
-                  )}
-                <span className="dark:text-jacarta-100 text-jacarta-100 text-sm">
-                  Space #{" "}
-                  <strong className="dark:text-white">{tokenData ?? formatTokenId(tokenId)}</strong>{" "}
-                </span>
-                <span className="text-jacarta-100 block text-sm ">
-                  Creator <strong className="dark:text-white">{royalties}% royalties</strong>
-                </span>
-                {offerData?.nftContract?.tokens[0]?.metadata?.valid_from && (
-                  <span className="text-jacarta-100 text-sm flex flex-wrap gap-1">
-                    Ownership period:{" "}
+                <div className="mb-8 flex items-center gap-4 whitespace-nowrap flex-wrap">
+                  {currency &&
+                    tokenStatut !== "MINTED" &&
+                    (firstSelectedListing?.status === "CREATED" ||
+                      marketplaceListings?.length <= 0) &&
+                    !conditions?.conditionsObject?.mintDisabled && (
+                      <div className="flex items-center">
+                        <span className="text-green text-sm font-medium tracking-tight mr-2">
+                          {finalPrice} {currency}
+                        </span>
+                        <ModalHelper {...modalHelper} size="small" />
+                      </div>
+                    )}
+                  <span className="dark:text-jacarta-100 text-jacarta-100 text-sm">
+                    Space #{" "}
                     <strong className="dark:text-white">
-                      {offerData?.nftContract?.tokens[0]?.metadata?.valid_from &&
-                        (() => {
-                          const date = new Date(
-                            offerData?.nftContract?.tokens[0]?.metadata?.valid_from
-                          );
-                          return `${date.getDate().toString().padStart(2, "0")}/${(date.getMonth() + 1).toString().padStart(2, "0")}/${date.getFullYear()} at ${date.getHours().toString().padStart(2, "0")}:${date.getMinutes().toString().padStart(2, "0")}:${date.getSeconds().toString().padStart(2, "0")}`;
-                        })()}
+                      {tokenData ?? formatTokenId(tokenId)}
                     </strong>{" "}
-                    to{" "}
-                    <strong className="dark:text-white">
-                      {offerData?.nftContract?.tokens[0]?.metadata?.valid_to &&
-                        new Date(
-                          offerData?.nftContract?.tokens[0]?.metadata?.valid_to
-                        ).toLocaleString()}
-                    </strong>
                   </span>
-                )}
-              </div>
+                  <span className="text-jacarta-100 block text-sm ">
+                    Creator <strong className="dark:text-white">{royalties}% royalties</strong>
+                  </span>
+                  {offerData?.nftContract?.tokens[0]?.metadata?.valid_from && (
+                    <span className="text-jacarta-100 text-sm flex flex-wrap gap-1">
+                      Ownership period:{" "}
+                      <strong className="dark:text-white">
+                        {offerData?.nftContract?.tokens[0]?.metadata?.valid_from &&
+                          (() => {
+                            const date = new Date(
+                              offerData?.nftContract?.tokens[0]?.metadata?.valid_from
+                            );
+                            return `${date.getDate().toString().padStart(2, "0")}/${(date.getMonth() + 1).toString().padStart(2, "0")}/${date.getFullYear()} at ${date.getHours().toString().padStart(2, "0")}:${date.getMinutes().toString().padStart(2, "0")}:${date.getSeconds().toString().padStart(2, "0")}`;
+                          })()}
+                      </strong>{" "}
+                      to{" "}
+                      <strong className="dark:text-white">
+                        {offerData?.nftContract?.tokens[0]?.metadata?.valid_to &&
+                          new Date(
+                            offerData?.nftContract?.tokens[0]?.metadata?.valid_to
+                          ).toLocaleString()}
+                      </strong>
+                    </span>
+                  )}
+                </div>
 
                 <p className="dark:text-jacarta-100 mb-10">{description}</p>
                 {((tokenStatut === "MINTABLE" &&
