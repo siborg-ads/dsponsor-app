@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { Divider } from "@nextui-org/react";
 import { Web3Button, useContract, useContractWrite } from "@thirdweb-dev/react";
 import config from "../../config/config";
 import { useChainContext } from "../../contexts/hooks/useChainContext";
@@ -18,7 +17,7 @@ const ChangeMintPrice = ({ offer }) => {
   const [disableMint, setDisableMint] = useState(false);
   const [tokens, setTokens] = useState(null);
   const [nftContractAddress, setNftContractAddress] = useState(null);
-  const [tokensContractAddress, setTokensContractAddress] = useState(["0x"]);
+  const [, setTokensContractAddress] = useState(["0x"]);
   const [selectedToken, setSelectedToken] = useState(null);
   const [currencyDecimals, setCurrencyDecimals] = useState(null);
   const [indexSelectedToken, setIndexSelectedToken] = useState(null);
@@ -82,8 +81,6 @@ const ChangeMintPrice = ({ offer }) => {
       }
     }
   }, [chainId, initialDisabled, offer]);
-
-  console.log("offer", offer);
 
   useEffect(() => {
     if (currency) {

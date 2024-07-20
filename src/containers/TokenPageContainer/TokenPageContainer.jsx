@@ -123,9 +123,7 @@ const TokenPageContainer = () => {
   const [sales, setSales] = useState([]);
   const [minted, setMinted] = useState(false);
   const [conditions, setConditions] = useState({});
-  const [offerManagementActiveTab, setOfferManagementActiveTab] = useState("updateOffer");
   const [notFormattedPrice, setNotFormattedPrice] = useState(null);
-  const [currencySymbol, setCurrencySymbol] = useState(null);
   const [imageUrl, setImageUrl] = useState(null);
 
   let description = "description not found";

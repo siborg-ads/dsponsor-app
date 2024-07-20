@@ -1,7 +1,6 @@
 import { useState } from "react";
 
 import ModalHelper from "../../Helper/modalHelper";
-import { Modal } from "@nextui-org/react";
 
 const Step_1_Create = ({
   setDisplayedParameter,

@@ -13,12 +13,10 @@ import { fetchAllOffers } from "../../providers/methods/fetchAllOffers";
 import Integration from "../../components/offer-section/integration";
 import { ThirdwebStorage } from "@thirdweb-dev/storage";
 import * as Accordion from "@radix-ui/react-accordion";
-import { ChevronDownIcon } from "@heroicons/react/24/solid";
 
 import { fetchOffer } from "../../providers/methods/fetchOffer";
 
 import Form from "../../components/collections-wide/sidebar/collections/Form";
-import { Divider } from "@nextui-org/react";
 import "tippy.js/dist/tippy.css";
 import Validation from "../../components/offer-section/validation";
 import ModalHelper from "../../components/Helper/modalHelper";
@@ -64,7 +62,7 @@ const OfferPageContainer = () => {
   const { data: decimalsContract } = useContractRead(tokenContract, "decimals");
   const NATIVECurrency = config[chainId]?.smartContracts?.NATIVE;
   const { setSelectedChain } = useSwitchChainContext();
-  const [canChangeMintPrice, setCanChangeMintPrice] = useState(false);
+  const [, setCanChangeMintPrice] = useState(false);
   const [offerManagementActiveTab, setOfferManagementActiveTab] = useState("integration");
   const [imageUrl, setImageUrl] = useState(null);
 
@@ -200,8 +198,13 @@ const OfferPageContainer = () => {
 
   useEffect(() => {
     const fetchImage = async (image) => {
+      if (!image) {
+        setImageUrl(null);
+        return;
+      }
+
       // get url image instead of ipfs:// starting url
-      if (image && image.startsWith("ipfs://")) {
+      if (typeof image === "string" && image.startsWith("ipfs://")) {
         const storage = new ThirdwebStorage({ clientId: "6f375d41f2a33f1f08f6042a65d49ec9" });
         const ipfsUrl = await storage.resolveScheme(image);
         setImageUrl(ipfsUrl);
@@ -226,8 +229,6 @@ const OfferPageContainer = () => {
         if (userAddress && offer?.admins?.includes(userAddress.toLowerCase())) {
           setIsOwner(true);
         }
-
-        console.log("offer", offer?.nftContract?.owner?.newOwner?.toLowerCase());
 
         if (
           userAddress &&
@@ -276,8 +277,6 @@ const OfferPageContainer = () => {
       setRoyalties(0);
     }
   }, [offerData]);
-
-  console.log("offerData", offerData);
 
   const handleSubmit = async (submissionArgs) => {
     try {
