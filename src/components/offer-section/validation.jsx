@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { Tab, TabList, TabPanel, Tabs } from "react-tabs";
-import { Divider } from "@nextui-org/react";
 import ValidatedRefusedItems from "../collections/validated_refused_items";
 import ReviewCarousel from "../carousel/review_carousel";
 import AddProposalRefusedModal from "../modal/adProposalRefusedModal";
@@ -24,8 +23,7 @@ const Validation = ({
   sponsorHasAtLeastOneRejectedProposalAndNoPending,
   setSponsorHasAtLeastOneRejectedProposalAndNoPending,
   mediaShouldValidateAnAd,
-  isMedia,
-  itemTokenId
+  isMedia
 }) => {
   const [pendingProposalData, setPendingProposalData] = useState([]);
   const [validatedProposalData, setValidatedProposalData] = useState([]);

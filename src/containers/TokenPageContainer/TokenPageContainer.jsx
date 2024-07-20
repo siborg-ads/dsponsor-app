@@ -50,6 +50,8 @@ import ItemLastBids from "../../components/tables/ItemLastBids";
 import { activated_features } from "../../data/activated_features.js";
 import { useChainContext } from "../../contexts/hooks/useChainContext.js";
 import * as Accordion from "@radix-ui/react-accordion";
+import { ChevronDownIcon, ExclamationCircleIcon } from "@heroicons/react/24/solid";
+import InfoIcon from "../../components/informations/infoIcon.jsx";
 
 const TokenPageContainer = () => {
   const router = useRouter();
@@ -123,10 +125,9 @@ const TokenPageContainer = () => {
   const [sales, setSales] = useState([]);
   const [minted, setMinted] = useState(false);
   const [conditions, setConditions] = useState({});
-  const [offerManagementActiveTab, setOfferManagementActiveTab] = useState("updateOffer");
   const [notFormattedPrice, setNotFormattedPrice] = useState(null);
-  const [currencySymbol, setCurrencySymbol] = useState(null);
   const [imageUrl, setImageUrl] = useState(null);
+  const [accordionActiveTab, setAccordionActiveTab] = useState("details");
 
   let description = "description not found";
   let id = "1";
@@ -1464,7 +1465,12 @@ const TokenPageContainer = () => {
 
   return (
     <>
-      <Accordion.Root type="single" collapsible>
+      <Accordion.Root
+        type="single"
+        collapsible
+        value={accordionActiveTab}
+        onValueChange={setAccordionActiveTab}
+      >
         <Meta {...metadata} />
         {/*  <!-- Item --> */}
         <section className="relative lg:mt-24 lg:pt-12  mt-24 pt-12 pb-8">
@@ -1737,10 +1743,15 @@ const TokenPageContainer = () => {
         <Accordion.Item value="details">
           <div className="container">
             <Accordion.Header className="w-full">
-              <Accordion.Trigger className="data-[state=open]:bg-primaryPurple w-full flex items-center justify-center gap-4 mb-6 border border-primaryPurple hover:bg-primaryPurple cursor-pointer p-2 rounded-lg">
+              <Accordion.Trigger
+                className={`${accordionActiveTab === "details" && "bg-primaryPurple"} w-full flex items-center justify-center gap-4 mb-6 border border-primaryPurple hover:bg-primaryPurple cursor-pointer p-2 rounded-lg`}
+              >
                 <h2 className="text-jacarta-900 font-bold font-display text-center text-3xl dark:text-white ">
                   Details
                 </h2>
+                <ChevronDownIcon
+                  className={`w-6 h-6 duration-300 ${accordionActiveTab === "details" && "transform rotate-180"}`}
+                />
               </Accordion.Trigger>
             </Accordion.Header>
 
@@ -1760,38 +1771,55 @@ const TokenPageContainer = () => {
         </Accordion.Item>
 
         <Accordion.Item value="validation">
-          {offerData.nftContract?.tokens[0]?.mint &&
-            isValidId &&
-            activated_features.canSeeSubmittedAds && (
-              <>
-                <Accordion.Header className="w-full">
-                  <Accordion.Trigger className="data-[state=open]:bg-primaryPurple w-full flex items-center justify-center gap-4 mb-6 border border-primaryPurple hover:bg-primaryPurple cursor-pointer p-2 rounded-lg">
-                    <h2 className="text-jacarta-900 font-bold font-display text-center text-3xl dark:text-white ">
-                      Validation
-                    </h2>
-                  </Accordion.Trigger>
-                </Accordion.Header>
+          <div className="container">
+            {offerData.nftContract?.tokens[0]?.mint &&
+              isValidId &&
+              activated_features.canSeeSubmittedAds && (
+                <>
+                  <Accordion.Header className="w-full">
+                    <Accordion.Trigger
+                      className={`${accordionActiveTab === "validation" && "bg-primaryPurple"} w-full flex items-center justify-center gap-4 mb-6 border border-primaryPurple hover:bg-primaryPurple cursor-pointer p-2 rounded-lg`}
+                    >
+                      {isOwner && sponsorHasAtLeastOneRejectedProposalAndNoPending && (
+                        <InfoIcon text="You have at least one rejected proposal and no pending proposal.">
+                          <ExclamationCircleIcon className="w-6 h-6 text-red" />
+                        </InfoIcon>
+                      )}
+                      {isMedia && mediaShouldValidateAnAd && (
+                        <InfoIcon text="You have at least one ad to validate or to refuse.">
+                          <ExclamationCircleIcon className="w-6 h-6 text-red" />
+                        </InfoIcon>
+                      )}
+                      <h2 className="text-jacarta-900 font-bold font-display text-center text-3xl dark:text-white ">
+                        Validation
+                      </h2>
+                      <ChevronDownIcon
+                        className={`w-6 h-6 duration-300 ${accordionActiveTab === "validation" && "transform rotate-180"}`}
+                      />
+                    </Accordion.Trigger>
+                  </Accordion.Header>
 
-                <Accordion.Content>
-                  <Validation
-                    offer={offerData}
-                    offerId={offerId}
-                    isOwner={isOwner}
-                    isToken={true}
-                    successFullUploadModal={successFullUploadModal}
-                    isLister={isLister}
-                    setSelectedItems={setSelectedItems}
-                    sponsorHasAtLeastOneRejectedProposalAndNoPending={
-                      sponsorHasAtLeastOneRejectedProposalAndNoPending
-                    }
-                    mediaShouldValidateAnAd={mediaShouldValidateAnAd}
-                    isMedia={isMedia}
-                    isSponsor={isOwner}
-                    itemTokenId={tokenId}
-                  />
-                </Accordion.Content>
-              </>
-            )}
+                  <Accordion.Content>
+                    <Validation
+                      offer={offerData}
+                      offerId={offerId}
+                      isOwner={isOwner}
+                      isToken={true}
+                      successFullUploadModal={successFullUploadModal}
+                      isLister={isLister}
+                      setSelectedItems={setSelectedItems}
+                      sponsorHasAtLeastOneRejectedProposalAndNoPending={
+                        sponsorHasAtLeastOneRejectedProposalAndNoPending
+                      }
+                      mediaShouldValidateAnAd={mediaShouldValidateAnAd}
+                      isMedia={isMedia}
+                      isSponsor={isOwner}
+                      itemTokenId={tokenId}
+                    />
+                  </Accordion.Content>
+                </>
+              )}
+          </div>
         </Accordion.Item>
 
         {/* <ItemsTabs /> */}
@@ -1800,10 +1828,15 @@ const TokenPageContainer = () => {
             {isOwner && activated_features.canSeeSubmittedAds && isValidId ? (
               <div className="container">
                 <Accordion.Header className="w-full">
-                  <Accordion.Trigger className="data-[state=open]:bg-primaryPurple w-full flex items-center justify-center gap-4 mb-6 border border-primaryPurple hover:bg-primaryPurple cursor-pointer p-2 rounded-lg">
+                  <Accordion.Trigger
+                    className={`${accordionActiveTab === "adSubmission" && "bg-primaryPurple"} w-full flex items-center justify-center gap-4 mb-6 border border-primaryPurple hover:bg-primaryPurple cursor-pointer p-2 rounded-lg`}
+                  >
                     <h2 className="text-jacarta-900 font-bold font-display text-center text-3xl dark:text-white ">
                       Ad Submission
                     </h2>
+                    <ChevronDownIcon
+                      className={`w-6 h-6 duration-300 ${accordionActiveTab === "adSubmission" && "transform rotate-180"}`}
+                    />
                   </Accordion.Trigger>
                 </Accordion.Header>
 

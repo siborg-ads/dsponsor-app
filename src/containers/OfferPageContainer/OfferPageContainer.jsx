@@ -14,11 +14,12 @@ import Integration from "../../components/offer-section/integration";
 import { ThirdwebStorage } from "@thirdweb-dev/storage";
 import * as Accordion from "@radix-ui/react-accordion";
 import { ChevronDownIcon } from "@heroicons/react/24/solid";
+import ExclamationCircleIcon from "@heroicons/react/24/solid";
+import InfoIcon from "../../components/informations/infoIcon";
 
 import { fetchOffer } from "../../providers/methods/fetchOffer";
 
 import Form from "../../components/collections-wide/sidebar/collections/Form";
-import { Divider } from "@nextui-org/react";
 import "tippy.js/dist/tippy.css";
 import Validation from "../../components/offer-section/validation";
 import ModalHelper from "../../components/Helper/modalHelper";
@@ -64,9 +65,10 @@ const OfferPageContainer = () => {
   const { data: decimalsContract } = useContractRead(tokenContract, "decimals");
   const NATIVECurrency = config[chainId]?.smartContracts?.NATIVE;
   const { setSelectedChain } = useSwitchChainContext();
-  const [canChangeMintPrice, setCanChangeMintPrice] = useState(false);
+  const [, setCanChangeMintPrice] = useState(false);
   const [offerManagementActiveTab, setOfferManagementActiveTab] = useState("integration");
   const [imageUrl, setImageUrl] = useState(null);
+  const [accordionActiveTab, setAccordionActiveTab] = useState("details");
 
   const { data: bps } = useContractRead(DsponsorAdminContract, "feeBps");
   const maxBps = 10000;
@@ -200,8 +202,13 @@ const OfferPageContainer = () => {
 
   useEffect(() => {
     const fetchImage = async (image) => {
+      if (!image) {
+        setImageUrl(null);
+        return;
+      }
+
       // get url image instead of ipfs:// starting url
-      if (image && image.startsWith("ipfs://")) {
+      if (typeof image === "string" && image.startsWith("ipfs://")) {
         const storage = new ThirdwebStorage({ clientId: "6f375d41f2a33f1f08f6042a65d49ec9" });
         const ipfsUrl = await storage.resolveScheme(image);
         setImageUrl(ipfsUrl);
@@ -226,8 +233,6 @@ const OfferPageContainer = () => {
         if (userAddress && offer?.admins?.includes(userAddress.toLowerCase())) {
           setIsOwner(true);
         }
-
-        console.log("offer", offer?.nftContract?.owner?.newOwner?.toLowerCase());
 
         if (
           userAddress &&
@@ -276,8 +281,6 @@ const OfferPageContainer = () => {
       setRoyalties(0);
     }
   }, [offerData]);
-
-  console.log("offerData", offerData);
 
   const handleSubmit = async (submissionArgs) => {
     try {
@@ -383,7 +386,12 @@ const OfferPageContainer = () => {
 
   return (
     <>
-      <Accordion.Root type="single" collapsible>
+      <Accordion.Root
+        type="single"
+        collapsible
+        value={accordionActiveTab}
+        onValueChange={setAccordionActiveTab}
+      >
         <Meta {...metadata} />
         {/*  <!-- Item --> */}
         <section className="relative lg:mt-24 lg:pt-12  mt-24 pt-12 pb-8">
@@ -533,10 +541,15 @@ const OfferPageContainer = () => {
         <Accordion.Item value="details">
           <div className="container">
             <Accordion.Header className="w-full">
-              <Accordion.Trigger className="data-[state=open]:bg-primaryPurple w-full flex items-center justify-center gap-4 mb-6 border border-primaryPurple hover:bg-primaryPurple cursor-pointer p-2 rounded-lg">
+              <Accordion.Trigger
+                className={`${accordionActiveTab === "details" && "bg-primaryPurple"} w-full flex items-center justify-center gap-4 mb-6 border border-primaryPurple hover:bg-primaryPurple cursor-pointer p-2 rounded-lg`}
+              >
                 <h2 className="text-jacarta-900 font-bold font-display text-center text-3xl dark:text-white ">
                   Details
                 </h2>
+                <ChevronDownIcon
+                  className={`w-6 h-6 duration-300 ${accordionActiveTab === "details" && "transform rotate-180"}`}
+                />
               </Accordion.Trigger>
             </Accordion.Header>
 
@@ -557,10 +570,15 @@ const OfferPageContainer = () => {
           {!offerData.nftContract.allowList && (
             <div className="container flex flex-col justify-center mb-6">
               <Accordion.Header className="w-full">
-                <Accordion.Trigger className="data-[state=open]:bg-primaryPurple w-full flex items-center justify-center gap-4 mb-6 border border-primaryPurple hover:bg-primaryPurple cursor-pointer p-2 rounded-lg">
+                <Accordion.Trigger
+                  className={`${accordionActiveTab === "search" && "bg-primaryPurple"} w-full flex items-center justify-center gap-4 mb-6 border border-primaryPurple hover:bg-primaryPurple cursor-pointer p-2 rounded-lg`}
+                >
                   <h2 className="text-jacarta-900 font-bold font-display text-center text-3xl dark:text-white ">
                     Search
                   </h2>
+                  <ChevronDownIcon
+                    className={`w-6 h-6 duration-300 ${accordionActiveTab === "search" && "transform rotate-180"}`}
+                  />
                 </Accordion.Trigger>
               </Accordion.Header>
 
@@ -636,10 +654,25 @@ const OfferPageContainer = () => {
             {activated_features.canSeeSubmittedAds && (
               <>
                 <Accordion.Header className="w-full">
-                  <Accordion.Trigger className="data-[state=open]:bg-primaryPurple w-full flex items-center justify-center gap-4 mb-6 border border-primaryPurple hover:bg-primaryPurple cursor-pointer p-2 rounded-lg">
+                  <Accordion.Trigger
+                    className={`${accordionActiveTab === "validation" && "bg-primaryPurple"} w-full flex items-center justify-center gap-4 mb-6 border border-primaryPurple hover:bg-primaryPurple cursor-pointer p-2 rounded-lg`}
+                  >
+                    {isOwner && sponsorHasAtLeastOneRejectedProposalAndNoPending && (
+                      <InfoIcon text="You have at least one rejected proposal and no pending proposal.">
+                        <ExclamationCircleIcon className="w-6 h-6 text-red" />
+                      </InfoIcon>
+                    )}
+                    {isMedia && mediaShouldValidateAnAd && (
+                      <InfoIcon text="You have at least one ad to validate or to refuse.">
+                        <ExclamationCircleIcon className="w-6 h-6 text-red" />
+                      </InfoIcon>
+                    )}
                     <h2 className="text-jacarta-900 font-bold font-display text-center text-3xl dark:text-white ">
                       Validation
                     </h2>
+                    <ChevronDownIcon
+                      className={`w-6 h-6 duration-300 ${accordionActiveTab === "validation" && "transform rotate-180"}`}
+                    />
                   </Accordion.Trigger>
                 </Accordion.Header>
                 <Accordion.Content>
@@ -676,10 +709,15 @@ const OfferPageContainer = () => {
           {isOwner && (
             <div className="container">
               <Accordion.Header className="w-full">
-                <Accordion.Trigger className="data-[state=open]:bg-primaryPurple w-full flex items-center justify-center gap-4 mb-6 border border-primaryPurple hover:bg-primaryPurple cursor-pointer p-2 rounded-lg">
+                <Accordion.Trigger
+                  className={`${accordionActiveTab === "offerManagement" && "bg-primaryPurple"} w-full flex items-center justify-center gap-4 mb-6 border border-primaryPurple hover:bg-primaryPurple cursor-pointer p-2 rounded-lg`}
+                >
                   <h2 className="text-jacarta-900 font-bold font-display text-center text-3xl dark:text-white ">
                     Offer Management
                   </h2>
+                  <ChevronDownIcon
+                    className={`w-6 h-6 duration-300 ${accordionActiveTab === "offerManagement" && "transform rotate-180"}`}
+                  />
                 </Accordion.Trigger>
               </Accordion.Header>
 

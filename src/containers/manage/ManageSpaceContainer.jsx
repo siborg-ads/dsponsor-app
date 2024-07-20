@@ -28,7 +28,7 @@ const ManageSpaceContainer = () => {
   const { currentChainObject } = useChainContext();
   const [isPendingAdsOnOffer, setIsPendingAdsOnOffer] = useState(false);
   const [initialWallet, setInitialWallet] = useState(null);
-  const [mount, setMount] = useState(false);
+  const [, setMount] = useState(false);
   const [userData, setUserData] = useState(null);
   const [isUserConnected, setIsUserConnected] = useState(false);
   const [createdOffers, setCreatedOffers] = useState(null);
