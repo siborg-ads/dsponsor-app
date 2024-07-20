@@ -32,5 +32,7 @@ export const activated_features = {
   // Whether to be able to change mint price for a specific token
   canChangeTokenMintPrice: false,
   // Wether we can change validators for an offer
-  canChangeValidators: false
+  canChangeValidators: false,
+  // Wether to show info bulle on the offer page showing the price of the token
+  canSeeModalHelperOnOfferPage: false
 };

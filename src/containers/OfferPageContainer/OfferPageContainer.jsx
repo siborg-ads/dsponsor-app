@@ -486,13 +486,17 @@ const OfferPageContainer = () => {
                 </h2>
 
                 <div className="mb-8 flex items-center flex-wrap gap-2 space-x-4 whitespace-nowrap">
-                  {currency?.symbol && (
-                    <div className="flex items-center">
-                      <span className="text-green text-sm font-medium tracking-tight mr-2">
-                        {price} {currency?.symbol}
-                      </span>
-                      <ModalHelper {...modalHelper} size="small" />
-                    </div>
+                  {activated_features.canSeeModalHelperOnOfferPage && (
+                    <>
+                      {currency?.symbol && (
+                        <div className="flex items-center">
+                          <span className="text-green text-sm font-medium tracking-tight mr-2">
+                            {price} {currency?.symbol}
+                          </span>
+                          <ModalHelper {...modalHelper} size="small" />
+                        </div>
+                      )}
+                    </>
                   )}
 
                   {offerData.nftContract.allowList && (
