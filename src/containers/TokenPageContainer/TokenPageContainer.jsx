@@ -14,7 +14,6 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { useEffect, useRef, useState, useCallback } from "react";
 import formatAndRoundPrice from "../../utils/formatAndRound.js";
-import { fetchOffer } from "../../providers/methods/fetchOffer";
 import "tippy.js/dist/tippy.css";
 import Meta from "../../components/Meta.jsx";
 import PreviewModal from "../../components/modal/previewModal.jsx";
@@ -27,7 +26,6 @@ import styles from "../../styles/createPage/style.module.scss";
 import Timer from "../../components/item/Timer.jsx";
 import { fetchAllOffers } from "../../providers/methods/fetchAllOffers";
 import ItemLastestSales from "../../components/tables/ItemLastestSales.jsx";
-import { fetchMintingInfoFromTokenId } from "../../providers/methods/fetchMintingInfoFromTokenId.js";
 
 import { getCookie } from "cookies-next";
 import { ItemsTabs } from "../../components/component.js";
@@ -43,8 +41,6 @@ import Validation from "../../components/offer-section/validation.jsx";
 import ItemBids from "../../components/item/ItemBids.jsx";
 import ItemManage from "../../components/item/ItemManage.jsx";
 import { useSwitchChainContext } from "../../contexts/hooks/useSwitchChainContext.js";
-import { fetchOfferToken } from "../../providers/methods/fetchOfferToken.js";
-// import { fetchAllTokenListedByListingId } from "../../providers/methods/fetchAllTokenListedByListingId.js";
 import config from "../../config/config.js";
 import stringToUint256 from "../../utils/stringToUnit256.js";
 import { formatUnits, getAddress, parseUnits } from "ethers/lib/utils";
@@ -180,10 +176,26 @@ const TokenPageContainer = () => {
     const fetchOffers = async () => {
       const offers = await fetchAllOffers(chainId);
       setOffers(offers);
+
+      // check if we have the values
+      if (!offerId) return;
+      if (!offers) return;
+
+      // set offer data for the current offer
+      const currentOffer = offers?.find((offer) => Number(offer?.id) === Number(offerId));
+      setOfferData(currentOffer);
+
+      // set if the user is the media or not
+      if (currentOffer && address) {
+        const isMedia = currentOffer?.admins?.includes(address.toLowerCase());
+        setIsMedia(isMedia);
+      } else {
+        setIsMedia(false);
+      }
     };
 
     fetchOffers();
-  }, [chainId]);
+  }, [address, chainId, offerId]);
 
   useEffect(() => {
     if (offers) {
@@ -351,36 +363,21 @@ const TokenPageContainer = () => {
   }, [finalPriceNotFormatted, chainId, tokenCurrencyAddress, currencyDecimals]);
 
   useEffect(() => {
-    if (offerId && tokenId && chainId) {
-      const fetchAdsOffers = async () => {
-        const offer = await fetchOfferToken(offerId, tokenId, chainId);
-
-        const combinedData = {
-          ...offer
-        };
-
-        setOfferData(combinedData);
-      };
+    if (chainId) {
       setSelectedChain(config[chainId]?.network);
-      fetchAdsOffers();
     }
+  }, [chainId, setSelectedChain]);
 
+  useEffect(() => {
     setTokenIdString(tokenId?.toString());
-  }, [
-    offerId,
-    tokenId,
-    successFullUpload,
-    successFullBid,
-    successFullListing,
-    address,
-    chainId,
-    setSelectedChain
-  ]);
+  }, [tokenId]);
 
   useEffect(() => {
     if (successFullBid) {
       const fetchUpdatedData = async () => {
-        const offer = await fetchOfferToken(offerId, tokenId, chainId);
+        const offers = await fetchAllOffers(chainId);
+
+        const offer = offers?.find((offer) => Number(offer?.id) === Number(offerId));
         const combinedData = { ...offer };
 
         setOfferData(combinedData);
@@ -439,11 +436,6 @@ const TokenPageContainer = () => {
     setBids(bids);
   }, [marketplaceListings]);
 
-  const fetchSales = useCallback(async (tokenId, chainId) => {
-    const response = await fetchMintingInfoFromTokenId(tokenId, Number(chainId));
-    return response;
-  }, []);
-
   useEffect(() => {
     const fetchSalesData = async () => {
       let sales = [];
@@ -482,14 +474,24 @@ const TokenPageContainer = () => {
 
           if (direct) {
             try {
-              const response = await fetchSales(
-                listing?.token?.nftContract?.id + "-" + listing?.token?.tokenId,
-                Number(chainId)
-              );
+              // get token info from offers
+              const response = offers
+                ?.find((offer) => Number(offer?.id) === Number(offerId))
+                ?.nftContract?.tokens?.find((token) => Number(token?.id) === Number(tokenId));
+
+              console.log("response", response);
+
+              //const response = await fetchSales(
+              //  listing?.token?.nftContract?.id + "-" + listing?.token?.tokenId,
+              //  Number(chainId)
+              //);
+
               const tokenData = response.tokens.find(
                 (token) =>
                   token.id === listing?.token?.nftContract?.id + "-" + listing?.token?.tokenId
               );
+
+              console.log("tokenData", tokenData);
 
               if (tokenData) {
                 // need to match listing id and direct buys listing id
@@ -546,12 +548,9 @@ const TokenPageContainer = () => {
       let saleMintInfo;
 
       try {
-        const response = await fetchSales(
-          offerData?.nftContract?.id + "-" + offerData?.nftContract?.tokens[0]?.tokenId,
-          Number(chainId)
-        );
-
-        const tokenData = response?.tokens[0]; // it is already filtered by tokenId so we can take the first element
+        const tokenData = offers
+          ?.find((offer) => Number(offer?.id) === Number(offerId))
+          ?.nftContract?.tokens?.find((token) => Number(token?.tokenId) === Number(tokenId));
 
         const smartContracts = currentChainObject?.smartContracts;
         const targetAddress = tokenData?.mint?.currency;
@@ -609,13 +608,13 @@ const TokenPageContainer = () => {
 
     fetchSalesData();
   }, [
-    fetchSales,
     marketplaceListings,
     chainId,
     currency,
     currentChainObject,
     offerData?.nftContract?.id,
-    offerData?.nftContract?.tokens
+    offerData?.nftContract?.tokens,
+    tokenId
   ]);
 
   useEffect(() => {
@@ -910,22 +909,6 @@ const TokenPageContainer = () => {
 
     fetchStatusOffers();
   }, [offerId, tokenId, successFullUpload, offerData]);
-
-  useEffect(() => {
-    const fetchingOffer = async () => {
-      const offer = await fetchOffer(offerId, chainId);
-
-      if (offer) {
-        if (offer?.admins?.includes(address?.toLowerCase())) {
-          setIsMedia(true);
-        } else {
-          setIsMedia(false);
-        }
-      }
-    };
-
-    fetchingOffer();
-  }, [address, chainId, offerData, offerId]);
 
   useEffect(() => {
     if (offerData?.nftContract?.royalty.bps)

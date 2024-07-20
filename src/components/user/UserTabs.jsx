@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback } from "react";
+import React, { useState, useEffect, useMemo, useRef } from "react";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import { activated_features } from "../../data/activated_features";
 import Transactions from "./Transactions";
@@ -11,6 +11,7 @@ import { ExclamationCircleIcon } from "@heroicons/react/24/solid";
 import InfoIcon from "../informations/infoIcon";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import debounce from "lodash/debounce";
 
 const UserTabs = ({
   mappedownedAdProposals,
@@ -24,7 +25,8 @@ const UserTabs = ({
 }) => {
   const [copied, setCopied] = useState(false);
   const router = useRouter();
-  const { pathname, query, asPath } = router;
+  const { asPath } = router;
+  const isMounted = useRef(true);
 
   useEffect(() => {
     if (copied) {
@@ -49,52 +51,49 @@ const UserTabs = ({
     []
   );
 
-  const getTabIndexFromHash = useCallback(
-    (hash) => {
-      const activeTab = tabItem.find((tab) => tab.section === hash);
-      return activeTab ? tabItem.indexOf(activeTab) : 0;
-    },
-    [tabItem]
-  );
-
-  const handleSelect = useCallback(
-    (index) => {
-      if (!query.manage) return;
-
-      const selectedTab = tabItem[index];
-      router.replace(
-        `${pathname.replace("/[manage]", "")}/${query.manage}#${selectedTab.section}`,
-        undefined,
-        { scroll: false }
-      );
-    },
-    [pathname, query.manage, router, tabItem]
-  );
-
   useEffect(() => {
+    return () => {
+      isMounted.current = false;
+    };
+  }, []);
+
+  const currentTabIndex = useMemo(() => {
     const hash = asPath.split("#")[1];
-    if (hash) {
-      const index = getTabIndexFromHash(hash);
-      handleSelect(index);
+    const index = tabItem.findIndex((tab) => tab.section === hash);
+    return index !== -1 ? index : 0;
+  }, [asPath, tabItem]);
+
+  const handleSelect = debounce(async (index) => {
+    const selectedTab = tabItem[index];
+    const currentHash = asPath.split("#")[1] || "";
+
+    if (selectedTab.section !== currentHash) {
+      try {
+        if (!window.isNavigating) {
+          window.isNavigating = true;
+          await router.push(`#${selectedTab.section}`, undefined, { shallow: true });
+          if (isMounted.current) {
+            window.isNavigating = false;
+          }
+        }
+      } catch (error) {
+        if (isMounted.current) {
+          window.isNavigating = false;
+        }
+        console.error("Navigation error:", error);
+      }
     }
-  }, [asPath, getTabIndexFromHash, handleSelect]);
+  }, 300);
 
   return (
-    <Tabs
-      className="tabs"
-      onSelect={handleSelect}
-      selectedIndex={getTabIndexFromHash(asPath.split("#")[1])}
-    >
+    <Tabs className="tabs" onSelect={handleSelect} selectedIndex={currentTabIndex}>
       <TabList className="nav nav-tabs hide-scrollbar mb-12 flex items-center justify-start overflow-x-auto overflow-y-hidden border-b border-jacarta-100 pb-px dark:border-jacarta-600 md:justify-center">
         {tabItem.map(({ id, text, icon, section }) => (
           <Tab className="nav-item" key={id}>
-            <Link
-              href={`${pathname.replace("/[manage]", "")}/${query.manage}#${section}`}
-              scroll={false}
-            >
+            <Link href={`#${section}`} scroll={false}>
               <button
                 className={
-                  getTabIndexFromHash(asPath.split("#")[1]) === id - 1
+                  currentTabIndex === id - 1
                     ? "nav-link hover:text-jacarta-900 text-jacarta-100 relative flex items-center whitespace-nowrap py-3 px-4 dark:hover:text-white active"
                     : "nav-link hover:text-jacarta-900 text-jacarta-100 relative flex items-center whitespace-nowrap py-3 px-4 dark:hover:text-white"
                 }
