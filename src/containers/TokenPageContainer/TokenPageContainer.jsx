@@ -13,6 +13,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { useEffect, useRef, useState, useCallback } from "react";
+import formatAndRoundPrice from "../../utils/formatAndRound.js";
 import "tippy.js/dist/tippy.css";
 import Meta from "../../components/Meta.jsx";
 import PreviewModal from "../../components/modal/previewModal.jsx";
@@ -1359,23 +1360,30 @@ const TokenPageContainer = () => {
                   <li>
                     <span className="text-white">
                       Amount sent to the creator:{" "}
-                      {Number(formatUnits(BigNumber.from(notFormattedPrice), currencyDecimals)) *
-                        0.96}{" "}
+                      {formatAndRoundPrice(
+                        Number(formatUnits(BigNumber.from(notFormattedPrice), currencyDecimals))
+                      )}{" "}
                       {currency}
                     </span>
                   </li>
                   <li>
                     <span className="text-white">
                       Protocol fees:{" "}
-                      {Number(formatUnits(BigNumber.from(notFormattedPrice), currencyDecimals)) *
-                        0.04}{" "}
+                      {formatAndRoundPrice(
+                        Number(formatUnits(BigNumber.from(notFormattedPrice), currencyDecimals)) *
+                          0.04
+                      )}{" "}
                       {currency}
                     </span>
                   </li>
                   <li>
                     <span className="text-white">
                       Total:{" "}
-                      {Number(formatUnits(BigNumber.from(notFormattedPrice), currencyDecimals))}{" "}
+                      {formatAndRoundPrice(
+                        Number(formatUnits(BigNumber.from(notFormattedPrice), currencyDecimals)) +
+                          Number(formatUnits(BigNumber.from(notFormattedPrice), currencyDecimals)) *
+                            0.04
+                      )}{" "}
                       {currency}
                     </span>
                   </li>
@@ -1395,34 +1403,42 @@ const TokenPageContainer = () => {
                   <li>
                     <span className="text-white">
                       Amount sent to the lister:{" "}
-                      {Number(formatUnits(BigNumber.from(notFormattedPrice), currencyDecimals)) -
-                        Number(formatUnits(BigNumber.from(notFormattedPrice), currencyDecimals)) *
-                          0.1 -
-                        Number(formatUnits(BigNumber.from(notFormattedPrice), currencyDecimals)) *
-                          0.04}{" "}
+                      {formatAndRoundPrice(
+                        Number(formatUnits(BigNumber.from(notFormattedPrice), currencyDecimals)) -
+                          Number(formatUnits(BigNumber.from(notFormattedPrice), currencyDecimals)) *
+                            0.1 -
+                          Number(formatUnits(BigNumber.from(notFormattedPrice), currencyDecimals)) *
+                            0.04
+                      )}{" "}
                       {currency}
                     </span>
                   </li>
                   <li>
                     <span className="text-white">
                       Royalties sent to the creator:{" "}
-                      {Number(formatUnits(BigNumber.from(notFormattedPrice), currencyDecimals)) *
-                        0.1}{" "}
+                      {formatAndRoundPrice(
+                        Number(formatUnits(BigNumber.from(notFormattedPrice), currencyDecimals)) *
+                          0.1
+                      )}{" "}
                       {currency}
                     </span>
                   </li>
                   <li>
                     <span className="text-white">
                       Protocol fees:{" "}
-                      {Number(formatUnits(BigNumber.from(notFormattedPrice), currencyDecimals)) *
-                        0.04}{" "}
+                      {formatAndRoundPrice(
+                        Number(formatUnits(BigNumber.from(notFormattedPrice), currencyDecimals)) *
+                          0.04
+                      )}{" "}
                       {currency}
                     </span>
                   </li>
                   <li>
                     <span className="text-white">
                       Total:{" "}
-                      {Number(formatUnits(BigNumber.from(notFormattedPrice), currencyDecimals))}{" "}
+                      {formatAndRoundPrice(
+                        Number(formatUnits(BigNumber.from(notFormattedPrice), currencyDecimals))
+                      )}{" "}
                       {currency}
                     </span>
                   </li>

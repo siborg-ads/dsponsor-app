@@ -29,6 +29,7 @@ import { activated_features } from "../../data/activated_features";
 import UpdateOffer from "../../components/offer-section/updateOffer";
 import ChangeMintPrice from "../../components/offer-section/changeMintPrice";
 import { Tabs, Tab, TabList, TabPanel } from "react-tabs";
+import formatAndRoundPrice from "../../utils/formatAndRound";
 
 const OfferPageContainer = () => {
   const router = useRouter();
@@ -328,47 +329,49 @@ const OfferPageContainer = () => {
           </span>
 
           <div className="flex flex-col gap-2">
-            <span className="text-white font-semibold">Mint scenario</span>
+            <span className="text-white font-semibold">Initial Sale Scenario</span>
             <ul className="flex flex-col gap-2 list-disc text-sm" style={{ listStyleType: "disc" }}>
               <li>
                 <span className="text-white">
-                  Amount sent to the creator: {price * 0.96} {currency?.symbol}
+                  Amount sent to the creator: {formatAndRoundPrice(price)} {currency?.symbol}
                 </span>
               </li>
               <li>
                 <span className="text-white">
-                  Protocol fees: {price * 0.04} {currency?.symbol}
+                  Protocol fees: {formatAndRoundPrice(price * 0.04)} {currency?.symbol}
                 </span>
               </li>
               <li>
                 <span className="text-white">
-                  Total: {price} {currency?.symbol}
+                  Total: {formatAndRoundPrice(price + price * 0.04)} {currency?.symbol}
                 </span>
               </li>
             </ul>
           </div>
 
           <div className="flex flex-col gap-2">
-            <span className="text-white font-semibold">Secondary Market scenario</span>
+            <span className="text-white font-semibold">Secondary Market Scenario</span>
             <ul className="flex flex-col gap-2 list-disc text-sm" style={{ listStyleType: "disc" }}>
               <li>
                 <span className="text-white">
-                  Amount sent to the lister: {price - price * 0.1 - price * 0.04} {currency?.symbol}
+                  Amount sent to the lister:{" "}
+                  {formatAndRoundPrice(price - price * 0.1 - price * 0.04)} {currency?.symbol}
                 </span>
               </li>
               <li>
                 <span className="text-white">
-                  Royalties sent to the creator: {price * 0.1} {currency?.symbol}
+                  Royalties sent to the creator: {formatAndRoundPrice(price * 0.1)}{" "}
+                  {currency?.symbol}
                 </span>
               </li>
               <li>
                 <span className="text-white">
-                  Protocol fees: {price * 0.04} {currency?.symbol}
+                  Protocol fees: {formatAndRoundPrice(price * 0.04)} {currency?.symbol}
                 </span>
               </li>
               <li>
                 <span className="text-white">
-                  Total: {price} {currency?.symbol}
+                  Total: {formatAndRoundPrice(price)} {currency?.symbol}
                 </span>
               </li>
             </ul>
@@ -402,43 +405,43 @@ const OfferPageContainer = () => {
           <div className="container">
             {/* <!-- Item --> */}
 
-          <div className="md:flex md:flex-wrap" key={id}>
-            {/* <!-- Image --> */}
-            <figure className="mb-8 md:w-2/5 md:flex-shrink-0 md:flex-grow-0 md:basis-auto lg:w-1/2 w-full flex justify-center">
-              <button
-                className="w-full"
-                onClick={() => setImageModal(true)}
-                style={{ height: "450px" }}
-              >
-                {imageUrl && (
-                  <img
-                    src={imageUrl ?? ""}
-                    alt="image"
-                    className="rounded-2xl cursor-pointer h-full object-contain w-full"
-                  />
-                )}
-              </button>
-
-              {/* <!-- Modal Backdrop --> */}
-              {imageModal && (
-                <div
-                  className="fixed inset-0 bg-black bg-opacity-50 z-50"
-                  onClick={(e) => {
-                    if (e.target === e.currentTarget) {
-                      setImageModal(false);
-                    }
-                  }}
+            <div className="md:flex md:flex-wrap" key={id}>
+              {/* <!-- Image --> */}
+              <figure className="mb-8 md:w-2/5 md:flex-shrink-0 md:flex-grow-0 md:basis-auto lg:w-1/2 w-full flex justify-center">
+                <button
+                  className="w-full"
+                  onClick={() => setImageModal(true)}
+                  style={{ height: "450px" }}
                 >
-                  {/* <!-- Modal --> */}
-                  <div className="modal-dialog !my-0 flex items-center justify-center">
-                    <div className="modal fade show block">
-                      <div className="modal-dialog !my-0 flex items-center justify-center">
-                        <img
-                          src={imageUrl ?? ""}
-                          alt="image"
-                          className="h-full object-cover w-full rounded-2xl"
-                        />
-                      </div>
+                  {imageUrl && (
+                    <img
+                      src={imageUrl ?? ""}
+                      alt="image"
+                      className="rounded-2xl cursor-pointer h-full object-contain w-full"
+                    />
+                  )}
+                </button>
+
+                {/* <!-- Modal Backdrop --> */}
+                {imageModal && (
+                  <div
+                    className="fixed inset-0 bg-black bg-opacity-50 z-50"
+                    onClick={(e) => {
+                      if (e.target === e.currentTarget) {
+                        setImageModal(false);
+                      }
+                    }}
+                  >
+                    {/* <!-- Modal --> */}
+                    <div className="modal-dialog !my-0 flex items-center justify-center">
+                      <div className="modal fade show block">
+                        <div className="modal-dialog !my-0 flex items-center justify-center">
+                          <img
+                            src={imageUrl ?? ""}
+                            alt="image"
+                            className="h-full object-cover w-full rounded-2xl"
+                          />
+                        </div>
 
                         <button
                           type="button"
