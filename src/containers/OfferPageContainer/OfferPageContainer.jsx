@@ -20,7 +20,6 @@ import InfoIcon from "../../components/informations/infoIcon";
 import { fetchOffer } from "../../providers/methods/fetchOffer";
 
 import Form from "../../components/collections-wide/sidebar/collections/Form";
-import { Divider } from "@nextui-org/react";
 import "tippy.js/dist/tippy.css";
 import Validation from "../../components/offer-section/validation";
 import ModalHelper from "../../components/Helper/modalHelper";
@@ -31,6 +30,7 @@ import { activated_features } from "../../data/activated_features";
 import UpdateOffer from "../../components/offer-section/updateOffer";
 import ChangeMintPrice from "../../components/offer-section/changeMintPrice";
 import { Tabs, Tab, TabList, TabPanel } from "react-tabs";
+import formatAndRoundPrice from "../../utils/formatAndRound";
 
 const OfferPageContainer = () => {
   const router = useRouter();
@@ -65,7 +65,7 @@ const OfferPageContainer = () => {
   const { data: decimalsContract } = useContractRead(tokenContract, "decimals");
   const NATIVECurrency = config[chainId]?.smartContracts?.NATIVE;
   const { setSelectedChain } = useSwitchChainContext();
-  const [canChangeMintPrice, setCanChangeMintPrice] = useState(false);
+  const [, setCanChangeMintPrice] = useState(false);
   const [offerManagementActiveTab, setOfferManagementActiveTab] = useState("integration");
   const [imageUrl, setImageUrl] = useState(null);
   const [accordionActiveTab, setAccordionActiveTab] = useState("details");
@@ -202,8 +202,13 @@ const OfferPageContainer = () => {
 
   useEffect(() => {
     const fetchImage = async (image) => {
+      if (!image) {
+        setImageUrl(null);
+        return;
+      }
+
       // get url image instead of ipfs:// starting url
-      if (image && image.startsWith("ipfs://")) {
+      if (typeof image === "string" && image.startsWith("ipfs://")) {
         const storage = new ThirdwebStorage({ clientId: "6f375d41f2a33f1f08f6042a65d49ec9" });
         const ipfsUrl = await storage.resolveScheme(image);
         setImageUrl(ipfsUrl);
@@ -228,8 +233,6 @@ const OfferPageContainer = () => {
         if (userAddress && offer?.admins?.includes(userAddress.toLowerCase())) {
           setIsOwner(true);
         }
-
-        console.log("offer", offer?.nftContract?.owner?.newOwner?.toLowerCase());
 
         if (
           userAddress &&
@@ -278,8 +281,6 @@ const OfferPageContainer = () => {
       setRoyalties(0);
     }
   }, [offerData]);
-
-  console.log("offerData", offerData);
 
   const handleSubmit = async (submissionArgs) => {
     try {
@@ -331,47 +332,49 @@ const OfferPageContainer = () => {
           </span>
 
           <div className="flex flex-col gap-2">
-            <span className="text-white font-semibold">Mint scenario</span>
+            <span className="text-white font-semibold">Initial Sale Scenario</span>
             <ul className="flex flex-col gap-2 list-disc text-sm" style={{ listStyleType: "disc" }}>
               <li>
                 <span className="text-white">
-                  Amount sent to the creator: {price * 0.96} {currency?.symbol}
+                  Amount sent to the creator: {formatAndRoundPrice(price)} {currency?.symbol}
                 </span>
               </li>
               <li>
                 <span className="text-white">
-                  Protocol fees: {price * 0.04} {currency?.symbol}
+                  Protocol fees: {formatAndRoundPrice(price * 0.04)} {currency?.symbol}
                 </span>
               </li>
               <li>
                 <span className="text-white">
-                  Total: {price} {currency?.symbol}
+                  Total: {formatAndRoundPrice(price + price * 0.04)} {currency?.symbol}
                 </span>
               </li>
             </ul>
           </div>
 
           <div className="flex flex-col gap-2">
-            <span className="text-white font-semibold">Secondary Market scenario</span>
+            <span className="text-white font-semibold">Secondary Market Scenario</span>
             <ul className="flex flex-col gap-2 list-disc text-sm" style={{ listStyleType: "disc" }}>
               <li>
                 <span className="text-white">
-                  Amount sent to the lister: {price - price * 0.1 - price * 0.04} {currency?.symbol}
+                  Amount sent to the lister:{" "}
+                  {formatAndRoundPrice(price - price * 0.1 - price * 0.04)} {currency?.symbol}
                 </span>
               </li>
               <li>
                 <span className="text-white">
-                  Royalties sent to the creator: {price * 0.1} {currency?.symbol}
+                  Royalties sent to the creator: {formatAndRoundPrice(price * 0.1)}{" "}
+                  {currency?.symbol}
                 </span>
               </li>
               <li>
                 <span className="text-white">
-                  Protocol fees: {price * 0.04} {currency?.symbol}
+                  Protocol fees: {formatAndRoundPrice(price * 0.04)} {currency?.symbol}
                 </span>
               </li>
               <li>
                 <span className="text-white">
-                  Total: {price} {currency?.symbol}
+                  Total: {formatAndRoundPrice(price)} {currency?.symbol}
                 </span>
               </li>
             </ul>

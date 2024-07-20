@@ -118,7 +118,6 @@ export default function MintWithCrossmintButton(props = {}) {
         }}
         {...buttonProps}
         onEvent={(event) => {
-          console.log("Event", event);
           switch (event.type) {
             case "payment:process.succeeded":
               actions?.success?.(event);
@@ -127,7 +126,6 @@ export default function MintWithCrossmintButton(props = {}) {
               actions?.error?.(event);
               break;
             default:
-              console.log(event);
               break;
           }
         }}

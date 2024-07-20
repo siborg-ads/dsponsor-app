@@ -8,10 +8,8 @@ import "tippy.js/dist/tippy.css";
 import TimerCard from "./TimerCard";
 import { shortenAddress, useAddress } from "@thirdweb-dev/react";
 import { getAddress, formatUnits } from "ethers/lib/utils";
-import { fetchAllOffers } from "../../providers/methods/fetchAllOffers";
 import { ExclamationCircleIcon } from "@heroicons/react/24/solid";
 import InfoIcon from "../informations/infoIcon";
-import { useChainContext } from "../../contexts/hooks/useChainContext";
 import { ThirdwebStorage } from "@thirdweb-dev/storage";
 
 const OfferItem = ({
@@ -26,7 +24,8 @@ const OfferItem = ({
   disableLink,
   availableToSubmitAdFromOwnedTokens,
   createdOffersProposals,
-  offer
+  offer,
+  offers
 }) => {
   const [price, setPrice] = useState(null);
   const [currencyToken, setCurrencyToken] = useState(null);
@@ -35,24 +34,12 @@ const OfferItem = ({
   const [lastSalePrice, setLastSalePrice] = useState(null);
   const [lastBidder, setLastBidder] = useState(null);
   const [isLastBidder, setIsLastBidder] = useState(false);
-  const [offers, setOffers] = useState(null);
   const [itemProposals, setItemProposals] = useState(null);
   const [availableToSubmitAd, setAvailableToSubmitAd] = useState(false);
   const [isPendingAdsOnOffer, setIsPendingAdsOnOffer] = useState(false);
   const [imageUrl, setImageUrl] = useState(null);
 
-  const { currentChainObject } = useChainContext();
   const address = useAddress();
-  const chainId = currentChainObject?.chainId;
-
-  useEffect(() => {
-    const fetchOffers = async () => {
-      const offers = await fetchAllOffers(chainId);
-      setOffers(offers);
-    };
-
-    fetchOffers();
-  }, [chainId, item]);
 
   useEffect(() => {
     if (offers) {

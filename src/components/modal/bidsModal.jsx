@@ -6,7 +6,7 @@ import { toast } from "react-toastify";
 import Link from "next/link";
 import config from "../../config/config";
 import { computeBidAmounts } from "../../utils/computeBidAmounts";
-import { formatUnits, parseUnits } from "ethers/lib/utils";
+import { formatUnits } from "ethers/lib/utils";
 import formatAndRoundPrice from "../../utils/formatAndRound";
 import { fetchTokenPrice } from "../../utils/fetchTokenPrice";
 import { getCookie } from "cookies-next";
@@ -191,7 +191,6 @@ const BidsModal = ({
       parsedBidsAmount.gt(BigNumber.from(0)) &&
       !successFullBid
     ) {
-      console.log("parsedBidsAmount", parsedBidsAmount.toString());
       const minimalBuyoutPerToken =
         marketplaceListings[0]?.bidPriceStructure?.minimalBuyoutPerToken;
       const buyoutPrice = marketplaceListings[0]?.buyoutPricePerToken;
