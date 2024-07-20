@@ -84,6 +84,7 @@ const Transactions = ({ manageAddress }) => {
           <span className="text-white text-lg font-bold">Transactions</span>
           <div>
             <DateRangePicker
+              aria-label="Select date range"
               size="sm"
               onChange={(value) => {
                 const startDateObject = value?.start;

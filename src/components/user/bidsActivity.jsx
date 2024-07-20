@@ -137,6 +137,7 @@ const Bids = ({ manageAddress }) => {
           <span className="text-white text-lg font-bold">Bids</span>
           <div>
             <DateRangePicker
+              aria-label="Select date range"
               size="sm"
               onChange={(value) => {
                 const startDateObject = value?.start;
