@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { Tab, TabList, TabPanel, Tabs } from "react-tabs";
-import { Divider } from "@nextui-org/react";
 import ValidatedRefusedItems from "../collections/validated_refused_items";
 import ReviewCarousel from "../carousel/review_carousel";
 import AddProposalRefusedModal from "../modal/adProposalRefusedModal";
@@ -24,8 +23,7 @@ const Validation = ({
   sponsorHasAtLeastOneRejectedProposalAndNoPending,
   setSponsorHasAtLeastOneRejectedProposalAndNoPending,
   mediaShouldValidateAnAd,
-  isMedia,
-  itemTokenId
+  isMedia
 }) => {
   const [pendingProposalData, setPendingProposalData] = useState([]);
   const [validatedProposalData, setValidatedProposalData] = useState([]);
@@ -186,11 +184,7 @@ const Validation = ({
   };
 
   return (
-    <div className="container">
-      <Divider className="my-4" />
-      <h2 className="text-jacarta-900 font-bold font-display mb-6 text-center text-3xl dark:text-white ">
-        Submitted Ads{" "}
-      </h2>
+    <>
       {/* <!-- Tabs Nav --> */}
       <Tabs className="tabs">
         <TabList className="nav nav-tabs scrollbar-custom mb-12 flex items-center justify-start overflow-x-auto overflow-y-hidden border-b border-jacarta-100 pb-px dark:border-jacarta-600 md:justify-center">
@@ -304,7 +298,7 @@ const Validation = ({
           />
         </div>
       )}
-    </div>
+    </>
   );
 };
 

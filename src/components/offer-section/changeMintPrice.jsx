@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { Divider } from "@nextui-org/react";
 import { Web3Button, useContract, useContractWrite } from "@thirdweb-dev/react";
 import config from "../../config/config";
 import { useChainContext } from "../../contexts/hooks/useChainContext";
@@ -18,12 +17,13 @@ const ChangeMintPrice = ({ offer }) => {
   const [disableMint, setDisableMint] = useState(false);
   const [tokens, setTokens] = useState(null);
   const [nftContractAddress, setNftContractAddress] = useState(null);
-  const [tokensContractAddress, setTokensContractAddress] = useState(["0x"]);
+  const [, setTokensContractAddress] = useState(["0x"]);
   const [selectedToken, setSelectedToken] = useState(null);
   const [currencyDecimals, setCurrencyDecimals] = useState(null);
   const [indexSelectedToken, setIndexSelectedToken] = useState(null);
   const [disabledLocked, setDisabledLocked] = useState(false);
   const [initialDisabled, setInitialDisabled] = useState(false);
+  const [disabled, setDisabled] = useState(false);
 
   const { currentChainObject } = useChainContext();
   const chainId = currentChainObject?.chainId;
@@ -55,9 +55,11 @@ const ChangeMintPrice = ({ offer }) => {
       if (offer?.nftContract?.prices[0]?.enabled === true) {
         setDisableMint(false);
         setInitialDisabled(false);
+        setDisabled(false);
       } else {
         setDisableMint(true);
         setInitialDisabled(true);
+        setDisabled(true);
       }
 
       if (offer?.nftContract?.prices[0]?.amount) {
@@ -79,8 +81,6 @@ const ChangeMintPrice = ({ offer }) => {
       }
     }
   }, [chainId, initialDisabled, offer]);
-
-  console.log("offer", offer);
 
   useEffect(() => {
     if (currency) {
@@ -150,6 +150,8 @@ const ChangeMintPrice = ({ offer }) => {
       await mutateAsync({
         args: [currency, !disableMint, finalFormattedAmountBN]
       });
+
+      setDisabled(disableMint);
     } catch (error) {
       console.error(error);
       throw new Error(error);
@@ -173,11 +175,11 @@ const ChangeMintPrice = ({ offer }) => {
 
   return (
     <div className="flex flex-col gap-4 justify-center">
-      {initialDisabled && (
+      {disabled && (
         <p className="text-red text-sm">The minting feature is currently disabled for this offer</p>
       )}
 
-      {!initialDisabled && (
+      {!disabled && (
         <p className="text-green text-sm">
           The minting feature is currently enabled for this offer
         </p>
