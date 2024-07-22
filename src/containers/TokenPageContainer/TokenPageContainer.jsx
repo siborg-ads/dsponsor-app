@@ -12,7 +12,7 @@ import { BigNumber, ethers } from "ethers";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import React, { useEffect, useRef, useState, useCallback } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import formatAndRoundPrice from "../../utils/formatAndRound.js";
 import "tippy.js/dist/tippy.css";
 import Meta from "../../components/Meta.jsx";
@@ -191,14 +191,6 @@ const TokenPageContainer = () => {
         // set offer data for the current offer
         const currentOffer = offers?.find((offer) => Number(offer?.id) === Number(offerId));
         setOfferData(currentOffer);
-
-        // set if the user is the media or not
-        if (currentOffer && address) {
-          const isMedia = currentOffer?.admins?.includes(address.toLowerCase());
-          setIsMedia(isMedia);
-        } else {
-          setIsMedia(false);
-        }
       } catch (error) {
         console.error("Error fetching offers:", error);
       } finally {
@@ -206,10 +198,24 @@ const TokenPageContainer = () => {
       }
     };
 
-    if (chainId && offerId && address) {
+    if (chainId && offerId) {
       fetchOffers();
     }
   }, [address, chainId, offerId]);
+
+  useEffect(() => {
+    if (offerData && address) {
+      // set if the user is the media or not
+      if (offerData && address) {
+        const isMedia = offerData?.admins?.includes(address.toLowerCase());
+        setIsMedia(isMedia);
+      } else {
+        setIsMedia(false);
+      }
+    } else {
+      setIsMedia(false);
+    }
+  }, [address, offerData]);
 
   useEffect(() => {
     if (offers) {
@@ -407,10 +413,12 @@ const TokenPageContainer = () => {
   useEffect(() => {
     if (offerData?.nftContract?.tokens.length > 0) {
       setMarketplaceListings(
-        offerData?.nftContract?.tokens[0]?.marketplaceListings.sort((a, b) => b.id - a.id)
+        offerData?.nftContract?.tokens
+          ?.find((token) => Number(token?.tokenId) === Number(tokenId))
+          ?.marketplaceListings.sort((a, b) => b.id - a.id)
       );
     }
-  }, [offerData]);
+  }, [offerData, tokenId]);
 
   useEffect(() => {
     let bids = [];
@@ -496,8 +504,6 @@ const TokenPageContainer = () => {
                 ?.find((offer) => Number(offer?.id) === Number(offerId))
                 ?.nftContract?.tokens?.find((token) => Number(token?.id) === Number(tokenId));
 
-              console.log("response", response);
-
               //const response = await fetchSales(
               //  listing?.token?.nftContract?.id + "-" + listing?.token?.tokenId,
               //  Number(chainId)
@@ -507,8 +513,6 @@ const TokenPageContainer = () => {
                 (token) =>
                   token.id === listing?.token?.nftContract?.id + "-" + listing?.token?.tokenId
               );
-
-              console.log("tokenData", tokenData);
 
               if (tokenData) {
                 // need to match listing id and direct buys listing id
@@ -629,9 +633,10 @@ const TokenPageContainer = () => {
     chainId,
     currency,
     currentChainObject,
-    offerData?.nftContract?.id,
-    offerData?.nftContract?.tokens,
-    tokenId
+    offerData,
+    tokenId,
+    offers,
+    offerId
   ]);
 
   useEffect(() => {
@@ -642,28 +647,41 @@ const TokenPageContainer = () => {
     setTokenDO({
       currency:
         offerData?.nftContract?.prices[0]?.currency ??
-        offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.currency,
+        offerData?.nftContract?.tokens
+          ?.find((token) => Number(token?.tokenId) === Number(tokenId))
+          ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.currency,
       tokenId: tokenId,
       tokenData: null,
 
       fee: offerData?.nftContract?.prices[0]?.protocolFeeAmount,
       price:
         offerData?.nftContract?.prices[0]?.amount ??
-        offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.pricePerToken,
+        offerData?.nftContract?.tokens
+          ?.find((token) => Number(token?.tokenId) === Number(tokenId))
+          ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.pricePerToken,
       protocolFeeBPS: offerData?.nftContract?.prices[0]?.protocolFeeBps,
       royaltiesBPS: offerData?.nftContract?.royalty.bps,
 
-      isListed: offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.status === "CREATED",
-      listingId: offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.id,
-      minimalBidBps: offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.minimalBidBps,
-      buyoutPricePerToken:
-        offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.buyoutPricePerToken
+      isListed:
+        offerData?.nftContract?.tokens
+          ?.find((token) => Number(token?.tokenId) === Number(tokenId))
+          ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.status === "CREATED",
+      listingId: offerData?.nftContract?.tokens
+        ?.find((token) => Number(token?.tokenId) === Number(tokenId))
+        ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.id,
+      minimalBidBps: offerData?.nftContract?.tokens
+        ?.find((token) => Number(token?.tokenId) === Number(tokenId))
+        ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.minimalBidBps,
+      buyoutPricePerToken: offerData?.nftContract?.tokens
+        ?.find((token) => Number(token?.tokenId) === Number(tokenId))
+        ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.buyoutPricePerToken
     });
 
     if (
       !isOwner &&
       !offerNotFormated &&
-      (offerData?.nftContract?.tokens[0]?.mint === null ||
+      (offerData?.nftContract?.tokens?.find((token) => Number(token?.tokenId) === Number(tokenId))
+        ?.mint === null ||
         offerData?.nftContract?.tokens?.length <= 0) &&
       isAllowedToMint !== null &&
       offerData?.nftContract?.prices[0]?.currency
@@ -685,92 +703,157 @@ const TokenPageContainer = () => {
       setCurrency(offerData?.nftContract?.prices[0]?.currencySymbol);
       return;
     }
-    if (offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.status === "CREATED") {
-      if (offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.listingType === "Direct") {
+
+    if (
+      offerData?.nftContract?.tokens
+        ?.find((token) => Number(token?.tokenId) === Number(tokenId))
+        ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.status === "CREATED"
+    ) {
+      if (
+        offerData?.nftContract?.tokens
+          ?.find((token) => Number(token?.tokenId) === Number(tokenId))
+          ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.listingType === "Direct"
+      ) {
         setTokenBigIntPrice(
-          offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.buyoutPricePerToken
+          offerData?.nftContract?.tokens
+            ?.find((token) => Number(token?.tokenId) === Number(tokenId))
+            ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.buyoutPricePerToken
         );
         setTokenStatut("DIRECT");
         setPrice(
-          offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.buyPriceStructureFormatted
+          offerData?.nftContract?.tokens
+            ?.find((token) => Number(token?.tokenId) === Number(tokenId))
+            ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.buyPriceStructureFormatted
             .listerBuyAmount
         );
         setNotFormattedPrice(
-          offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.buyPriceStructure.totalAmount
+          offerData?.nftContract?.tokens
+            ?.find((token) => Number(token?.tokenId) === Number(tokenId))
+            ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.buyPriceStructure.totalAmount
         );
         setFeesAmount(
-          offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.buyPriceStructureFormatted
+          offerData?.nftContract?.tokens
+            ?.find((token) => Number(token?.tokenId) === Number(tokenId))
+            ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.buyPriceStructureFormatted
             .protocolFeeBuyAmount
         );
         setRoyaltiesFeesAmount(
-          offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.buyPriceStructureFormatted
+          offerData?.nftContract?.tokens
+            ?.find((token) => Number(token?.tokenId) === Number(tokenId))
+            ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.buyPriceStructureFormatted
             .royaltiesBuyAmount
         );
         setFinalPrice(
-          offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.buyPriceStructureFormatted
+          offerData?.nftContract?.tokens
+            ?.find((token) => Number(token?.tokenId) === Number(tokenId))
+            ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.buyPriceStructureFormatted
             .buyoutPricePerToken
         );
         setFinalPriceNotFormatted(
-          offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.buyPriceStructure
+          offerData?.nftContract?.tokens
+            ?.find((token) => Number(token?.tokenId) === Number(tokenId))
+            ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.buyPriceStructure
             .buyoutPricePerToken
         );
         setAmountToApprove(
           BigInt(
-            offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.buyPriceStructure
+            offerData?.nftContract?.tokens
+              ?.find((token) => Number(token?.tokenId) === Number(tokenId))
+              ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.buyPriceStructure
               .buyoutPricePerToken
           )
         );
       }
-      if (offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.listingType === "Auction") {
+      if (
+        offerData?.nftContract?.tokens
+          ?.find((token) => Number(token?.tokenId) === Number(tokenId))
+          ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.listingType === "Auction"
+      ) {
         setTokenBigIntPrice(
-          offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.bids[0]?.totalBidAmount
+          offerData?.nftContract?.tokens
+            ?.find((token) => Number(token?.tokenId) === Number(tokenId))
+            ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.bids[0]?.totalBidAmount
         );
 
         setPrice(
-          offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.bidPriceStructureFormatted
+          offerData?.nftContract?.tokens
+            ?.find((token) => Number(token?.tokenId) === Number(tokenId))
+            ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.bidPriceStructureFormatted
             .minimalBidPerToken
         );
         setNotFormattedPrice(
-          offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.bidPriceStructure?.totalAmount
+          offerData?.nftContract?.tokens
+            ?.find((token) => Number(token?.tokenId) === Number(tokenId))
+            ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.bidPriceStructure?.totalAmount
         );
         setFeesAmount(
-          offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.bidPriceStructureFormatted
+          offerData?.nftContract?.tokens
+            ?.find((token) => Number(token?.tokenId) === Number(tokenId))
+            ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.bidPriceStructureFormatted
             .protocolFeeAmount
         );
         setRoyaltiesFeesAmount(
-          offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.bidPriceStructureFormatted
+          offerData?.nftContract?.tokens
+            ?.find((token) => Number(token?.tokenId) === Number(tokenId))
+            ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.bidPriceStructureFormatted
             .royaltyAmount
         );
         setFinalPrice(
-          offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.bidPriceStructureFormatted
+          offerData?.nftContract?.tokens
+            ?.find((token) => Number(token?.tokenId) === Number(tokenId))
+            ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.bidPriceStructureFormatted
             .minimalBidPerToken
         );
         setFinalPriceNotFormatted(
-          offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.bidPriceStructure
+          offerData?.nftContract?.tokens
+            ?.find((token) => Number(token?.tokenId) === Number(tokenId))
+            ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.bidPriceStructure
             .minimalBidPerToken
         );
 
         setAmountToApprove(
           BigInt(
-            offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.bidPriceStructure
+            offerData?.nftContract?.tokens
+              ?.find((token) => Number(token?.tokenId) === Number(tokenId))
+              ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.bidPriceStructure
               .minimalBidPerToken
           )
         );
-        if (offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.bids.length <= 0) {
+        if (
+          offerData?.nftContract?.tokens
+            ?.find((token) => Number(token?.tokenId) === Number(tokenId))
+            ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.bids.length <= 0
+        ) {
           setTokenBigIntPrice(
-            offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.reservePricePerToken
+            offerData?.nftContract?.tokens
+              ?.find((token) => Number(token?.tokenId) === Number(tokenId))
+              ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.reservePricePerToken
           );
         }
         setTokenStatut("AUCTION");
       }
       setCurrencyDecimals(
-        offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.currencyDecimals
+        offerData?.nftContract?.tokens
+          ?.find((token) => Number(token?.tokenId) === Number(tokenId))
+          ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.currencyDecimals
       );
-      setTokenCurrencyAddress(offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.currency);
-      setCurrency(offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.currencySymbol);
+      setTokenCurrencyAddress(
+        offerData?.nftContract?.tokens
+          ?.find((token) => Number(token?.tokenId) === Number(tokenId))
+          ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.currency
+      );
+      setCurrency(
+        offerData?.nftContract?.tokens
+          ?.find((token) => Number(token?.tokenId) === Number(tokenId))
+          ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.currencySymbol
+      );
       return;
     }
-    if (offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.status === "COMPLETED") {
+    if (
+      offerData?.nftContract?.tokens
+        ?.find((token) => Number(token?.tokenId) === Number(tokenId))
+        ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.status === "COMPLETED"
+    ) {
       setTokenStatut("COMPLETED");
       setTokenCurrencyAddress(offerData?.nftContract?.prices[0]?.currency);
       setCurrency(offerData?.nftContract?.prices[0]?.currencySymbol);
@@ -778,8 +861,11 @@ const TokenPageContainer = () => {
       return;
     }
     if (
-      offerData?.nftContract?.tokens[0]?.mint !== null &&
-      offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.length === 0
+      offerData?.nftContract?.tokens?.find((token) => Number(token?.tokenId) === Number(tokenId))
+        ?.mint !== null &&
+      offerData?.nftContract?.tokens
+        ?.find((token) => Number(token?.tokenId) === Number(tokenId))
+        ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.length === 0
     ) {
       setTokenStatut("MINTED");
       setTokenCurrencyAddress(offerData?.nftContract?.prices[0]?.currency);
@@ -822,8 +908,14 @@ const TokenPageContainer = () => {
       let tokenData = url.searchParams.get("tokenData");
       setTokenData(tokenData);
 
-      if (offerData?.nftContract?.tokens?.[0]?.mint?.tokenData?.length) {
-        tokenData = offerData.nftContract.tokens[0].mint.tokenData;
+      if (
+        offerData?.nftContract?.tokens?.find((token) => Number(token?.tokenId) === Number(tokenId))
+          ?.mint?.tokenData?.length &&
+        tokenId
+      ) {
+        tokenData = offerData.nftContract.tokens?.find(
+          (token) => Number(token?.tokenId) === Number(tokenId)
+        ).mint.tokenData;
         setTokenData(tokenData);
       }
 
@@ -916,7 +1008,9 @@ const TokenPageContainer = () => {
   useEffect(() => {
     const fetchStatusOffers = async () => {
       if (!offerData) return;
-      const tokenData = offerData?.nftContract?.tokens[0];
+      const tokenData = offerData?.nftContract?.tokens?.find(
+        (token) => Number(token?.tokenId) === Number(tokenId)
+      );
       if (tokenData?.mint === null || offerData.nftContract?.tokens.length === 0) {
         setAdStatut(0);
       } else {
@@ -1214,7 +1308,7 @@ const TokenPageContainer = () => {
   };
 
   useEffect(() => {
-    setFirstSelectedListing(marketplaceListings[0]);
+    setFirstSelectedListing(marketplaceListings?.sort((a, b) => b.id - a.id)[0]);
   }, [marketplaceListings]);
 
   useEffect(() => {
@@ -1587,23 +1681,33 @@ const TokenPageContainer = () => {
                   <span className="text-jacarta-100 block text-sm ">
                     Creator <strong className="dark:text-white">{royalties}% royalties</strong>
                   </span>
-                  {offerData?.nftContract?.tokens[0]?.metadata?.valid_from && (
+                  {offerData?.nftContract?.tokens?.find(
+                    (token) => Number(token?.tokenId) === Number(tokenId)
+                  )?.metadata?.valid_from && (
                     <span className="text-jacarta-100 text-sm flex flex-wrap gap-1">
                       Ownership period:{" "}
                       <strong className="dark:text-white">
-                        {offerData?.nftContract?.tokens[0]?.metadata?.valid_from &&
+                        {offerData?.nftContract?.tokens?.find(
+                          (token) => Number(token?.tokenId) === Number(tokenId)
+                        )?.metadata?.valid_from &&
                           (() => {
                             const date = new Date(
-                              offerData?.nftContract?.tokens[0]?.metadata?.valid_from
+                              offerData?.nftContract?.tokens?.find(
+                                (token) => Number(token?.tokenId) === Number(tokenId)
+                              )?.metadata?.valid_from
                             );
                             return `${date.getDate().toString().padStart(2, "0")}/${(date.getMonth() + 1).toString().padStart(2, "0")}/${date.getFullYear()} at ${date.getHours().toString().padStart(2, "0")}:${date.getMinutes().toString().padStart(2, "0")}:${date.getSeconds().toString().padStart(2, "0")}`;
                           })()}
                       </strong>{" "}
                       to{" "}
                       <strong className="dark:text-white">
-                        {offerData?.nftContract?.tokens[0]?.metadata?.valid_to &&
+                        {offerData?.nftContract?.tokens?.find(
+                          (token) => Number(token?.tokenId) === Number(tokenId)
+                        )?.metadata?.valid_to &&
                           new Date(
-                            offerData?.nftContract?.tokens[0]?.metadata?.valid_to
+                            offerData?.nftContract?.tokens?.find(
+                              (token) => Number(token?.tokenId) === Number(tokenId)
+                            )?.metadata?.valid_to
                           ).toLocaleString()}
                       </strong>
                     </span>
@@ -1626,7 +1730,11 @@ const TokenPageContainer = () => {
                             <span className="js-countdown-ends-label text-base text-jacarta-100 dark:text-jacarta-100">
                               Direct listing ends in:
                             </span>
-                            <Timer endTime={marketplaceListings[0].endTime} />
+                            <Timer
+                              endTime={
+                                marketplaceListings?.sort((a, b) => b?.id - a?.id)[0].endTime
+                              }
+                            />
                           </div>
                         )}
 
@@ -1664,7 +1772,11 @@ const TokenPageContainer = () => {
                           <span className="js-countdown-ends-label text-base text-jacarta-100 dark:text-jacarta-100">
                             Auction will start in:
                           </span>
-                          <Timer endTime={marketplaceListings[0].startTime} />
+                          <Timer
+                            endTime={
+                              marketplaceListings?.sort((a, b) => b?.id - a?.id)[0].startTime
+                            }
+                          />
                         </div>
                       </div>
                     </div>
@@ -1679,7 +1791,11 @@ const TokenPageContainer = () => {
                           <span className="js-countdown-ends-label text-base text-jacarta-100 dark:text-jacarta-100">
                             Direct listing will start in:
                           </span>
-                          <Timer endTime={marketplaceListings[0].startTime} />
+                          <Timer
+                            endTime={
+                              marketplaceListings?.sort((a, b) => b?.id - a?.id)[0].startTime
+                            }
+                          />
                         </div>
                       </div>
                     </div>
@@ -1694,6 +1810,7 @@ const TokenPageContainer = () => {
                   royalties={royalties}
                   dsponsorMpContract={dsponsorMpContract}
                   conditions={conditions?.conditionsObject}
+                  tokenId={tokenId}
                 />
 
                 {((firstSelectedListing?.listingType === "Auction" &&
@@ -1792,7 +1909,9 @@ const TokenPageContainer = () => {
 
         <Accordion.Item value="validation">
           <div className="container">
-            {offerData.nftContract?.tokens[0]?.mint &&
+            {offerData.nftContract?.tokens?.find(
+              (token) => Number(token?.tokenId) === Number(tokenId)
+            )?.mint &&
               isValidId &&
               activated_features.canSeeSubmittedAds && (
                 <>

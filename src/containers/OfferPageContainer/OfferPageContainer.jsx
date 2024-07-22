@@ -235,10 +235,12 @@ const OfferPageContainer = () => {
     // get url image instead of ipfs:// starting url
     if (typeof image === "string" && image.startsWith("ipfs://")) {
       const storage = new ThirdwebStorage({ clientId: "6f375d41f2a33f1f08f6042a65d49ec9" });
-      const ipfsUrl = await storage.resolveScheme(image).catch((error) => {
+      try {
+        const ipfsUrl = await storage.resolveScheme(image);
+        setImageUrl(ipfsUrl);
+      } catch (error) {
         console.error("Error fetching image:", error);
-      });
-      setImageUrl(ipfsUrl);
+      }
     } else {
       setImageUrl(image);
     }

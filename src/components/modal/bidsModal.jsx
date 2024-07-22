@@ -15,8 +15,8 @@ import Tippy from "@tippyjs/react";
 import { ClipboardIcon, InformationCircleIcon } from "@heroicons/react/20/solid";
 import handleCopy from "../../utils/handleCopy";
 import "tippy.js/dist/tippy.css";
-import { Popover, PopoverTrigger, PopoverContent } from "@nextui-org/react";
 import { BigNumber } from "ethers";
+import InfoIcon from "../informations/infoIcon";
 
 const BidsModal = ({
   setAmountToApprove,
@@ -65,7 +65,7 @@ const BidsModal = ({
   const [copied, setCopied] = useState(false);
   const [displayedPrice, setDisplayedPrice] = useState(null);
   const [parsedBidsAmount, setParsedBidsAmount] = useState(null);
-  const [isHovered, setIsHovered] = useState(false);
+  const [buyoutPrice, setBuyoutPrice] = useState(null);
 
   const chainConfig = config[chainId];
   const chainWETH = chainConfig?.smartContracts.WETH.address.toLowerCase();
@@ -175,7 +175,7 @@ const BidsModal = ({
       marketplaceListings[0] &&
       marketplaceListings[0]?.currency &&
       parsedBidsAmount &&
-      parsedBidsAmount.gt(BigNumber.from(0)) &&
+      BigNumber.from(parsedBidsAmount).gt(BigNumber.from(0)) &&
       chainId
     ) {
       fetchData();
@@ -189,15 +189,16 @@ const BidsModal = ({
       marketplaceListings &&
       marketplaceListings[0] &&
       parsedBidsAmount &&
-      parsedBidsAmount.gt(BigNumber.from(0)) &&
+      BigNumber.from(parsedBidsAmount).gt(BigNumber.from(0)) &&
       !successFullBid
     ) {
-      const minimalBuyoutPerToken =
-        marketplaceListings[0]?.bidPriceStructure?.minimalBuyoutPerToken;
-      const buyoutPrice = marketplaceListings[0]?.buyoutPricePerToken;
+      const minimalBuyoutPerToken = BigNumber.from(
+        marketplaceListings[0]?.bidPriceStructure?.minimalBuyoutPerToken
+      );
+      const buyoutPrice = BigNumber.from(marketplaceListings[0]?.buyoutPricePerToken);
 
-      const isMinimalBuyout = parsedBidsAmount.gte(minimalBuyoutPerToken);
-      const isBuyout = parsedBidsAmount.gte(buyoutPrice);
+      const isMinimalBuyout = BigNumber.from(parsedBidsAmount).gte(minimalBuyoutPerToken);
+      const isBuyout = BigNumber.from(parsedBidsAmount).gte(buyoutPrice);
 
       if (isBuyout && isMinimalBuyout) {
         setBuyoutPriceReached(true);
@@ -206,6 +207,12 @@ const BidsModal = ({
       }
     }
   }, [marketplaceListings, currencyTokenDecimals, parsedBidsAmount, successFullBid]);
+
+  useEffect(() => {
+    if (marketplaceListings && marketplaceListings[0]) {
+      setBuyoutPrice(marketplaceListings[0]?.bidPriceStructure?.minimalBuyoutPerToken);
+    }
+  }, [marketplaceListings]);
 
   useEffect(() => {
     if (
@@ -512,7 +519,7 @@ const BidsModal = ({
                       maxLength={currencyTokenDecimals}
                     />
                     <span className="text-white font-semibold absolute right-0 px-4">
-                      {currencySymbol.substring(0, 6)}
+                      {currencySymbol?.substring(0, 6)}
                     </span>
                   </div>
 
@@ -524,21 +531,45 @@ const BidsModal = ({
                 </div>
 
                 <div className="flex flex-col justify-center text-left md:flex-row items-center md:justify-between mb-8 mt-2 gap-2 md:gap-4">
-                  {bidsAmount < initialIntPrice && (
-                    <button
-                      className="text-sm text-left md:text-base whitespace-nowrap  text-primaryPurple hover:text-opacity-80"
-                      onClick={() => {
-                        setBidsAmount(initialIntPrice);
+                  {(initialIntPrice || (buyoutPriceReached && buyoutPrice)) && (
+                    <div className="flex flex-col gap-1">
+                      {bidsAmount < initialIntPrice && (
+                        <button
+                          className="text-sm text-left md:text-base whitespace-nowrap  text-green hover:text-opacity-80"
+                          onClick={() => {
+                            setBidsAmount(initialIntPrice);
 
-                        const parsedInitialIntPrice = ethers.utils.parseUnits(
-                          initialIntPrice,
-                          currencyTokenDecimals
-                        );
-                        setParsedBidsAmount(parsedInitialIntPrice);
-                      }}
-                    >
-                      Use minimal bid
-                    </button>
+                            const parsedInitialIntPrice = ethers.utils.parseUnits(
+                              initialIntPrice,
+                              currencyTokenDecimals
+                            );
+                            setParsedBidsAmount(parsedInitialIntPrice);
+                          }}
+                        >
+                          Set minimal bid amount {initialIntPrice} {currencySymbol}
+                        </button>
+                      )}
+
+                      {!buyoutPriceReached && (
+                        <button
+                          className="text-sm text-left md:text-base whitespace-nowrap  text-green hover:text-opacity-80"
+                          onClick={() => {
+                            const formattedBuyoutPrice = ethers.utils.formatUnits(
+                              buyoutPrice,
+                              currencyTokenDecimals
+                            );
+                            setBidsAmount(formattedBuyoutPrice);
+
+                            const parsedBuyoutPrice = BigNumber.from(buyoutPrice);
+                            setParsedBidsAmount(parsedBuyoutPrice);
+                          }}
+                        >
+                          Set buyout price{" "}
+                          {ethers.utils.formatUnits(buyoutPrice, currencyTokenDecimals)}{" "}
+                          {currencySymbol}
+                        </button>
+                      )}
+                    </div>
                   )}
 
                   <span
@@ -852,24 +883,15 @@ const BidsModal = ({
                         </>
                       )}
                     </div>
-                    <Popover placement="bottom" isOpen={isHovered}>
-                      <PopoverTrigger
-                        className="cursor-help"
-                        onMouseEnter={() => setIsHovered(true)}
-                        onMouseLeave={() => setIsHovered(false)}
-                      >
-                        <span className="text-xs text-center text-jacarta-100 inline-flex items-center gap-1">
-                          <InformationCircleIcon className="w-4 h-4 text-jacarta-100" />
-                          Why do I have to approve ?
-                        </span>
-                      </PopoverTrigger>
-                      <PopoverContent className="p-4 bg-primaryBlack text-white rounded-lg">
-                        <p className="text-sm">
-                          You need to approve the marketplace contract to spend your{" "}
-                          {currencySymbol} on this transaction.
-                        </p>
-                      </PopoverContent>
-                    </Popover>
+                    <InfoIcon
+                      text={`You need to approve the marketplace contract to spend your{" "}
+                          ${currencySymbol} on this transaction.`}
+                    >
+                      <span className="text-xs text-center text-jacarta-100 inline-flex items-center gap-1">
+                        <InformationCircleIcon className="w-4 h-4 text-jacarta-100" />
+                        Why do I have to approve ?
+                      </span>
+                    </InfoIcon>
                   </div>
                 </>
 
