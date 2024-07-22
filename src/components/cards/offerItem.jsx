@@ -25,7 +25,8 @@ const OfferItem = ({
   availableToSubmitAdFromOwnedTokens,
   createdOffersProposals,
   offer,
-  offers
+  offers,
+  isDisabled
 }) => {
   const [price, setPrice] = useState(null);
   const [currencyToken, setCurrencyToken] = useState(null);
@@ -390,6 +391,12 @@ const OfferItem = ({
                     {name}
                   </span>
                 </div>
+              )}
+
+              {isDisabled && (
+                <span className="text-red text-xs min-w-[100px] text-end font-medium tracking-tight">
+                  ❌ Disabled
+                </span>
               )}
 
               {currencyToken &&

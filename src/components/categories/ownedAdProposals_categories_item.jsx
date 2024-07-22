@@ -226,6 +226,8 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
     hrefButton: null
   };
 
+  console.log("data", data);
+
   if (!data) {
     return (
       <div className="flex w-full justify-center">
@@ -282,6 +284,11 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
                       isToken={true}
                       listingType={item?.marketplaceListings[0]?.listingType}
                       isListing={false}
+                      isDisabled={
+                        item?.disable ||
+                        (!item?.nftContract?.prices[0]?.enabled && item?.mint === null) ||
+                        new Date(item?.metadata?.offer?.valid_to) < new Date()
+                      }
                       isSelectionActive={isSelectionActive}
                       disableLink={isSelectionActive}
                       url={
@@ -299,6 +306,11 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
                     isToken={true}
                     listingType={item?.marketplaceListings[0]?.listingType}
                     isListing={false}
+                    isDisabled={
+                      item?.disable ||
+                      (!item?.nftContract?.prices[0]?.enabled && item?.mint === null) ||
+                      new Date(item?.metadata?.offer?.valid_to) < new Date()
+                    }
                     isSelectionActive={isSelectionActive}
                     canSubmitAdFromProfileOwnedTokens={true}
                     url={
