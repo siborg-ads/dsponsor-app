@@ -39,7 +39,7 @@ const MarketplaceContainer = () => {
         setListedAuctionToken(listingArray);
       };
 
-      fetchAdsOffers();
+      if (chainId) fetchAdsOffers();
     }
   }, [router, address, chainId]);
 

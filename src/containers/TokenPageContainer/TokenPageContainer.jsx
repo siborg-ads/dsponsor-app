@@ -195,7 +195,9 @@ const TokenPageContainer = () => {
       }
     };
 
-    fetchOffers();
+    if (chainId) {
+      fetchOffers();
+    }
   }, [address, chainId, offerId]);
 
   useEffect(() => {
@@ -358,7 +360,7 @@ const TokenPageContainer = () => {
       setBuyTokenEtherPrice(tokenEtherPriceDecimals);
     };
 
-    if (finalPriceNotFormatted && finalPriceNotFormatted > 0 && chainId) {
+    if (finalPriceNotFormatted && finalPriceNotFormatted > 0 && chainId && tokenCurrencyAddress) {
       fetchBuyEtherPrice();
     }
   }, [finalPriceNotFormatted, chainId, tokenCurrencyAddress, currencyDecimals]);
@@ -384,7 +386,10 @@ const TokenPageContainer = () => {
         setOfferData(combinedData);
         setBidsAmount("");
       };
-      fetchUpdatedData();
+
+      if (chainId) {
+        fetchUpdatedData();
+      }
     }
   }, [successFullBid, offerId, tokenId, chainId]);
 
@@ -1550,14 +1555,18 @@ const TokenPageContainer = () => {
                 </Link>
 
                 <div className="mb-8 flex items-center gap-4 whitespace-nowrap flex-wrap">
-                  {currency && finalPrice && !conditions?.conditionsObject?.mintDisabled && (
-                    <div className="flex items-center">
-                      <span className="text-green text-sm font-medium tracking-tight mr-2">
-                        {finalPrice} {currency}
-                      </span>
-                      <ModalHelper {...modalHelper} size="small" />
-                    </div>
-                  )}
+                  {currency &&
+                    tokenStatut !== "MINTED" &&
+                    (firstSelectedListing?.status === "CREATED" ||
+                      marketplaceListings?.length <= 0) &&
+                    !conditions?.conditionsObject?.mintDisabled && (
+                      <div className="flex items-center">
+                        <span className="text-green text-sm font-medium tracking-tight mr-2">
+                          {finalPrice} {currency}
+                        </span>
+                        <ModalHelper {...modalHelper} size="small" />
+                      </div>
+                    )}
                   <span className="dark:text-jacarta-100 text-jacarta-100 text-sm">
                     Space #{" "}
                     <strong className="dark:text-white">

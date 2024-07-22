@@ -30,7 +30,7 @@ const SiBorgApp = () => {
         });
     };
 
-    fetchCode();
+    if (address) fetchCode();
   }, [address]);
 
   return (

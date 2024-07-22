@@ -119,7 +119,7 @@ const BidsModal = ({
       setDisplayedPrice(tokenEtherPrice?.amountUSDCFormatted);
     };
 
-    if (!!bidsAmount && parseFloat(bidsAmount) > 0 && chainId) {
+    if (!!bidsAmount && parseFloat(bidsAmount) > 0 && chainId && currencyContract) {
       fetchEtherPrice();
     }
   }, [bidsAmount, chainId, currencyContract, currencyTokenDecimals]);
@@ -173,6 +173,7 @@ const BidsModal = ({
     if (
       marketplaceListings &&
       marketplaceListings[0] &&
+      marketplaceListings[0]?.currency &&
       parsedBidsAmount &&
       parsedBidsAmount.gt(BigNumber.from(0)) &&
       chainId

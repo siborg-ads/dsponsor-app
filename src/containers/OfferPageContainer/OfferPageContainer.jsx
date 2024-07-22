@@ -97,7 +97,9 @@ const OfferPageContainer = () => {
       setOffers(offers);
     };
 
-    fetchOffers();
+    if (chainId) {
+      fetchOffers();
+    }
   }, [chainId]);
 
   useEffect(() => {
@@ -113,7 +115,9 @@ const OfferPageContainer = () => {
       }
     };
 
-    fetchingOffer();
+    if (offerId && chainId) {
+      fetchingOffer();
+    }
   }, [address, chainId, offerData, offerId]);
 
   useEffect(() => {
@@ -242,7 +246,10 @@ const OfferPageContainer = () => {
         }
       };
       setSelectedChain(config[chainId]?.network);
-      fetchAdsOffers();
+
+      if (chainId && offerId) {
+        fetchAdsOffers();
+      }
     }
   }, [offerId, successFullRefuseModal, userAddress, chainId, setSelectedChain]);
 

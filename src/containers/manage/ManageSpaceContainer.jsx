@@ -186,10 +186,12 @@ const ManageSpaceContainer = () => {
       };
 
       const fetchAllManageData = async () => {
-        await fetchOwnedAdProposals();
-        await fetchCreatedData();
-        await fetchListedTokens();
-        await fetchAuctionBidsTokens();
+        if (chainId && userAddress) {
+          await fetchOwnedAdProposals();
+          await fetchCreatedData();
+          await fetchListedTokens();
+          await fetchAuctionBidsTokens();
+        }
       };
 
       if (address && userAddress && getAddress(address) === getAddress(userAddress))
