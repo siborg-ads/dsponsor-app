@@ -4,7 +4,7 @@ import Image from "next/image";
 import { Web3Button, useBalance } from "@thirdweb-dev/react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { Divider, Popover, PopoverContent, PopoverTrigger, Spinner } from "@nextui-org/react";
+import { Divider, Spinner } from "@nextui-org/react";
 import { useChainContext } from "../../contexts/hooks/useChainContext";
 import { activated_features } from "../../data/activated_features";
 import MintWithCrossmintButton from "../buttons/MintWithCrossmintButton/MintWithCrossmintButton";
@@ -50,7 +50,6 @@ const BuyModal = ({
 }) => {
   const [validate, setValidate] = useState(false);
   const [notEnoughFunds, setNotEnoughFunds] = useState(false);
-  const [isHovered, setIsHovered] = useState(false);
 
   const { currentChainObject } = useChainContext();
   const modalRef = useRef();

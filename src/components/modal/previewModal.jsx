@@ -46,7 +46,6 @@ const PreviewModal = ({
   isLoadingButton,
   multipleAdsSubmission
 }) => {
-  const [isHovered, setIsHovered] = React.useState(false);
   const [imageRatios, setImageRatios] = React.useState([]);
 
   const { currentChainObject } = useChainContext();

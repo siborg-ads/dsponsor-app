@@ -5,7 +5,7 @@ export const fetchAllOffers = async (chainId) => {
   const path = new URL(`https://relayer.dsponsor.com/api/${chainId}/graph`);
 
   const GET_DATA = `
-    query OffersManagedByUser {
+    query {
       adOffers(
         first: 1000
       ) {
@@ -53,6 +53,24 @@ export const fetchAllOffers = async (chainId) => {
               startTime
               endTime
               id
+              reservePricePerToken
+              buyoutPricePerToken
+              token {
+                tokenId
+                nftContract {
+                  id
+                  royalty {
+                    bps
+                  }
+                  adOffers {
+                    id
+                    metadataURL
+                  }
+                }
+                mint {
+                  tokenData
+                }
+              }
               bids {
                 id
                 listing
@@ -79,8 +97,19 @@ export const fetchAllOffers = async (chainId) => {
                 creatorRecipient
               }
             }
-            setInAllowList # to check is allowList (above) is true, define if is in allowlist
-            # current ad data proposals, per adParameter
+            marketplaceOffers {
+              id
+              offeror
+              expirationTimestamp
+              currency
+              totalPrice
+              status
+              creationTimestamp
+              tokenType
+              transferType
+              rentalExpirationTimestamp
+            }
+            setInAllowList
             currentProposals {
               adOffer {
                 id

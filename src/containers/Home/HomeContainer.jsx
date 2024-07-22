@@ -7,7 +7,6 @@ import Description from "../../components/siborgHome/description";
 import { fetchAllListedTokenWithoutFilter } from "../../providers/methods/fetchAllListedTokenWithoutFilter";
 import { formatUnits } from "ethers/lib/utils";
 import formatAndRound from "../../utils/formatAndRound";
-import config from "../../config/config";
 import Meta from "../../components/Meta";
 import { useChainContext } from "../../contexts/hooks/useChainContext";
 
