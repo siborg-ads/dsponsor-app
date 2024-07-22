@@ -31,6 +31,7 @@ import UpdateOffer from "../../components/offer-section/updateOffer";
 import ChangeMintPrice from "../../components/offer-section/changeMintPrice";
 import { Tabs, Tab, TabList, TabPanel } from "react-tabs";
 import formatAndRoundPrice from "../../utils/formatAndRound";
+import { BadgePercentIcon, BlocksIcon, RefreshCwIcon } from "lucide-react";
 import Disable from "../../components/disable/disable";
 
 const OfferPageContainer = () => {
@@ -561,6 +562,7 @@ const OfferPageContainer = () => {
               </div>
 
               <p className="dark:text-jacarta-100 mb-10">{description}</p>
+              <p className="dark:text-jacarta-100 mb-10">{description}</p>
 
               {(offerData?.disable ||
                 new Date(offerData?.metadata?.offer?.valid_to) < new Date() ||
@@ -776,10 +778,13 @@ const OfferPageContainer = () => {
                     <button
                       className={
                         offerManagementActiveTab === "integration"
-                          ? "nav-link hover:text-jacarta-900 text-jacarta-100 relative flex items-center whitespace-nowrap py-3 px-4 dark:hover:text-white active"
-                          : "nav-link hover:text-jacarta-900 text-jacarta-100 relative flex items-center whitespace-nowrap py-3 px-4 dark:hover:text-white"
+                          ? "nav-link hover:text-jacarta-900 text-jacarta-100 relative flex items-center whitespace-nowrap py-3 px-4 dark:hover:text-white active font-semibold"
+                          : "nav-link hover:text-jacarta-900 text-jacarta-100 relative flex items-center whitespace-nowrap py-3 px-4 dark:hover:text-white font-semibold"
                       }
                     >
+                      <span className="mr-2">
+                        <BlocksIcon className="w-4 h-4" />
+                      </span>
                       Integration
                     </button>
                   </Tab>
@@ -791,10 +796,13 @@ const OfferPageContainer = () => {
                     <button
                       className={
                         offerManagementActiveTab === "updateOffer"
-                          ? "nav-link hover:text-jacarta-900 text-jacarta-100 relative flex items-center whitespace-nowrap py-3 px-4 dark:hover:text-white active"
-                          : "nav-link hover:text-jacarta-900 text-jacarta-100 relative flex items-center whitespace-nowrap py-3 px-4 dark:hover:text-white"
+                          ? "nav-link hover:text-jacarta-900 text-jacarta-100 relative flex items-center whitespace-nowrap py-3 px-4 dark:hover:text-white active font-semibold"
+                          : "nav-link hover:text-jacarta-900 text-jacarta-100 relative flex items-center whitespace-nowrap py-3 px-4 dark:hover:text-white font-semibold"
                       }
                     >
+                      <span className="mr-2">
+                        <RefreshCwIcon className="w-4 h-4" />
+                      </span>
                       Update Offer
                     </button>
                   </Tab>
@@ -805,11 +813,14 @@ const OfferPageContainer = () => {
                     <button
                       className={
                         offerManagementActiveTab === "changeMintPrice"
-                          ? "nav-link hover:text-jacarta-900 text-jacarta-100 relative flex items-center whitespace-nowrap py-3 px-4 dark:hover:text-white active"
-                          : "nav-link hover:text-jacarta-900 text-jacarta-100 relative flex items-center whitespace-nowrap py-3 px-4 dark:hover:text-white"
+                          ? "nav-link hover:text-jacarta-900 text-jacarta-100 relative flex items-center whitespace-nowrap py-3 px-4 dark:hover:text-white active font-semibold"
+                          : "nav-link hover:text-jacarta-900 text-jacarta-100 relative flex items-center whitespace-nowrap py-3 px-4 dark:hover:text-white font-semibold"
                       }
                     >
-                      Change Mint Price
+                      <span className="mr-2">
+                        <BadgePercentIcon className="w-4 h-4" />
+                      </span>
+                      Change Initial Price
                     </button>
                   </Tab>
                 </TabList>

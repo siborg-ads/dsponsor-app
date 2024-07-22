@@ -12,6 +12,15 @@ import InfoIcon from "../informations/infoIcon";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import debounce from "lodash/debounce";
+import {
+  ActivityIcon,
+  CoinsIcon,
+  GavelIcon,
+  LoaderIcon,
+  MegaphoneIcon,
+  SectionIcon,
+  TrophyIcon
+} from "lucide-react";
 
 const UserTabs = ({
   mappedownedAdProposals,
@@ -39,13 +48,30 @@ const UserTabs = ({
 
   const tabItem = useMemo(
     () => [
-      { id: 1, text: "Activity", icon: "activity", section: "activity" },
-      { id: 2, text: "Bids", icon: "activity", section: "bids" },
-      { id: 3, text: "Owned tokens", icon: "owned", section: "owned" },
-      { id: 4, text: "Auction listed tokens", icon: "activity", section: "auction" },
-      { id: 5, text: "Token Auction Bids", icon: "activity", section: "tokenAuctionBids" },
+      { id: 1, text: "Activity", section: "activity", icon: <ActivityIcon className="h-4 w-4" /> },
+      { id: 2, text: "Bids", section: "bids", icon: <GavelIcon className="h-4 w-4" /> },
+      { id: 3, text: "Owned tokens", section: "owned", icon: <CoinsIcon className="h-4 w-4" /> },
+      {
+        id: 4,
+        text: "Auction listed tokens",
+        section: "auction",
+        icon: <TrophyIcon className="h-4 w-4" />
+      },
+      {
+        id: 5,
+        text: "Token Auction Bids",
+        section: "tokenAuctionBids",
+        icon: <LoaderIcon className="h-4 w-4" />
+      },
       ...(activated_features.canCreateOffer
-        ? [{ id: 6, text: "Created Offers", icon: "owned", section: "createdOffers" }]
+        ? [
+            {
+              id: 6,
+              text: "Created Offers",
+              section: "createdOffers",
+              icon: <MegaphoneIcon className="h-4 w-4" />
+            }
+          ]
         : [])
     ],
     []
@@ -103,10 +129,8 @@ const UserTabs = ({
                     <ExclamationCircleIcon className="h-5 w-5 text-red mr-2" />
                   </InfoIcon>
                 )}
-                <svg className="icon mr-1 h-5 w-5 fill-current">
-                  <use xlinkHref={`/icons.svg#icon-${icon}`}></use>
-                </svg>
-                <span className="font-display text-base font-medium">{text}</span>
+                {icon}
+                <span className="font-display text-base font-medium ml-2">{text}</span>
               </button>
             </Link>
           </Tab>
