@@ -91,10 +91,21 @@ const OfferPageContainer = () => {
   const [offers, setOffers] = useState(null);
   const [isMedia, setIsMedia] = useState(false);
 
+  const fetchAllOffersRef = React.useRef(false);
+
   useEffect(() => {
     const fetchOffers = async () => {
-      const offers = await fetchAllOffers(chainId);
-      setOffers(offers);
+      if (fetchAllOffersRef.current) return;
+      fetchAllOffersRef.current = true;
+
+      try {
+        const offers = await fetchAllOffers(chainId);
+        setOffers(offers);
+      } catch (error) {
+        console.error("Error fetching offers:", error);
+      } finally {
+        fetchAllOffersRef.current = false;
+      }
     };
 
     if (chainId) {
@@ -102,23 +113,34 @@ const OfferPageContainer = () => {
     }
   }, [chainId]);
 
+  const fetchOfferRef = React.useRef(false);
+
   useEffect(() => {
     const fetchingOffer = async () => {
-      const offer = await fetchOffer(offerId, chainId);
+      if (fetchOfferRef.current) return;
+      fetchOfferRef.current = true;
 
-      if (offer) {
-        if (offer?.admins?.includes(address?.toLowerCase())) {
-          setIsMedia(true);
-        } else {
-          setIsMedia(false);
+      try {
+        const offer = await fetchOffer(offerId, chainId);
+
+        if (offer) {
+          if (offer?.admins?.includes(address?.toLowerCase())) {
+            setIsMedia(true);
+          } else {
+            setIsMedia(false);
+          }
         }
+      } catch (error) {
+        console.error("Error fetching offer:", error);
+      } finally {
+        fetchOfferRef.current = false;
       }
     };
 
-    if (offerId && chainId) {
+    if (offerId && chainId && address) {
       fetchingOffer();
     }
-  }, [address, chainId, offerData, offerId]);
+  }, [address, chainId, offerId]);
 
   useEffect(() => {
     if (offers) {
@@ -204,23 +226,25 @@ const OfferPageContainer = () => {
     setMediaShouldValidateAnAd(mediaShouldValidateAnAd);
   }, [itemProposals]);
 
+  const fetchImage = async (image) => {
+    if (!image) {
+      setImageUrl(null);
+      return;
+    }
+
+    // get url image instead of ipfs:// starting url
+    if (typeof image === "string" && image.startsWith("ipfs://")) {
+      const storage = new ThirdwebStorage({ clientId: "6f375d41f2a33f1f08f6042a65d49ec9" });
+      const ipfsUrl = await storage.resolveScheme(image).catch((error) => {
+        console.error("Error fetching image:", error);
+      });
+      setImageUrl(ipfsUrl);
+    } else {
+      setImageUrl(image);
+    }
+  };
+
   useEffect(() => {
-    const fetchImage = async (image) => {
-      if (!image) {
-        setImageUrl(null);
-        return;
-      }
-
-      // get url image instead of ipfs:// starting url
-      if (typeof image === "string" && image.startsWith("ipfs://")) {
-        const storage = new ThirdwebStorage({ clientId: "6f375d41f2a33f1f08f6042a65d49ec9" });
-        const ipfsUrl = await storage.resolveScheme(image);
-        setImageUrl(ipfsUrl);
-      } else {
-        setImageUrl(image);
-      }
-    };
-
     if (image) {
       fetchImage(image);
     } else {
@@ -228,21 +252,32 @@ const OfferPageContainer = () => {
     }
   }, [image]);
 
+  const fetchOfferSecondRef = React.useRef(false);
+
   useEffect(() => {
     if (offerId && chainId) {
       const fetchAdsOffers = async () => {
-        const offer = await fetchOffer(offerId, chainId);
+        if (fetchOfferSecondRef.current) return;
+        fetchOfferSecondRef.current = true;
 
-        setOfferData(offer);
-        if (userAddress && offer?.admins?.includes(userAddress.toLowerCase())) {
-          setIsOwner(true);
-        }
+        try {
+          const offer = await fetchOffer(offerId, chainId);
 
-        if (
-          userAddress &&
-          userAddress?.toLowerCase() === offer?.nftContract?.owner?.newOwner?.toLowerCase()
-        ) {
-          setCanChangeMintPrice(true);
+          setOfferData(offer);
+          if (userAddress && offer?.admins?.includes(userAddress.toLowerCase())) {
+            setIsOwner(true);
+          }
+
+          if (
+            userAddress &&
+            userAddress?.toLowerCase() === offer?.nftContract?.owner?.newOwner?.toLowerCase()
+          ) {
+            setCanChangeMintPrice(true);
+          }
+        } catch (error) {
+          console.error("Error fetching offer:", error);
+        } finally {
+          fetchOfferSecondRef.current = false;
         }
       };
       setSelectedChain(config[chainId]?.network);
@@ -330,64 +365,61 @@ const OfferPageContainer = () => {
   const modalHelper = {
     title: "Protocol Fees",
     body: (
-      <>
-        <div className="flex flex-col gap-8">
-          <span className="text-jacarta-100 text-sm">
-            The protocol fees (4%) are used to maintain the platform and the services provided. The
-            fees are calculated based on the price of the ad space and are automatically deducted
-            from the total amount paid by the buyer.
-          </span>
+      <div className="flex flex-col gap-8">
+        <span className="text-jacarta-100 text-sm">
+          The protocol fees (4%) are used to maintain the platform and the services provided. The
+          fees are calculated based on the price of the ad space and are automatically deducted from
+          the total amount paid by the buyer.
+        </span>
 
-          <div className="flex flex-col gap-2">
-            <span className="text-white font-semibold">Initial Sale Scenario</span>
-            <ul className="flex flex-col gap-2 list-disc text-sm" style={{ listStyleType: "disc" }}>
-              <li>
-                <span className="text-white">
-                  Amount sent to the creator: {formatAndRoundPrice(price)} {currency?.symbol}
-                </span>
-              </li>
-              <li>
-                <span className="text-white">
-                  Protocol fees: {formatAndRoundPrice(price * 0.04)} {currency?.symbol}
-                </span>
-              </li>
-              <li>
-                <span className="text-white">
-                  Total: {formatAndRoundPrice(price + price * 0.04)} {currency?.symbol}
-                </span>
-              </li>
-            </ul>
-          </div>
-
-          <div className="flex flex-col gap-2">
-            <span className="text-white font-semibold">Secondary Market Scenario</span>
-            <ul className="flex flex-col gap-2 list-disc text-sm" style={{ listStyleType: "disc" }}>
-              <li>
-                <span className="text-white">
-                  Amount sent to the lister:{" "}
-                  {formatAndRoundPrice(price - price * 0.1 - price * 0.04)} {currency?.symbol}
-                </span>
-              </li>
-              <li>
-                <span className="text-white">
-                  Royalties sent to the creator: {formatAndRoundPrice(price * 0.1)}{" "}
-                  {currency?.symbol}
-                </span>
-              </li>
-              <li>
-                <span className="text-white">
-                  Protocol fees: {formatAndRoundPrice(price * 0.04)} {currency?.symbol}
-                </span>
-              </li>
-              <li>
-                <span className="text-white">
-                  Total: {formatAndRoundPrice(price)} {currency?.symbol}
-                </span>
-              </li>
-            </ul>
-          </div>
+        <div className="flex flex-col gap-2">
+          <span className="text-white font-semibold">Initial Sale Scenario</span>
+          <ul className="flex flex-col gap-2 list-disc text-sm" style={{ listStyleType: "disc" }}>
+            <li>
+              <span className="text-white">
+                Amount sent to the creator: {formatAndRoundPrice(price)} {currency?.symbol}
+              </span>
+            </li>
+            <li>
+              <span className="text-white">
+                Protocol fees: {formatAndRoundPrice(price * 0.04)} {currency?.symbol}
+              </span>
+            </li>
+            <li>
+              <span className="text-white">
+                Total: {formatAndRoundPrice(price + price * 0.04)} {currency?.symbol}
+              </span>
+            </li>
+          </ul>
         </div>
-      </>
+
+        <div className="flex flex-col gap-2">
+          <span className="text-white font-semibold">Secondary Market Scenario</span>
+          <ul className="flex flex-col gap-2 list-disc text-sm" style={{ listStyleType: "disc" }}>
+            <li>
+              <span className="text-white">
+                Amount sent to the lister: {formatAndRoundPrice(price - price * 0.1 - price * 0.04)}{" "}
+                {currency?.symbol}
+              </span>
+            </li>
+            <li>
+              <span className="text-white">
+                Royalties sent to the creator: {formatAndRoundPrice(price * 0.1)} {currency?.symbol}
+              </span>
+            </li>
+            <li>
+              <span className="text-white">
+                Protocol fees: {formatAndRoundPrice(price * 0.04)} {currency?.symbol}
+              </span>
+            </li>
+            <li>
+              <span className="text-white">
+                Total: {formatAndRoundPrice(price)} {currency?.symbol}
+              </span>
+            </li>
+          </ul>
+        </div>
+      </div>
     )
   };
 
@@ -432,7 +464,7 @@ const OfferPageContainer = () => {
                     <img
                       src={imageUrl ?? ""}
                       alt="image"
-                      className="rounded-2xl cursor-pointer h-full object-contain w-full"
+                      className="rounded-2xl cursor-pointer h-full object-cover w-full"
                     />
                   )}
                 </button>

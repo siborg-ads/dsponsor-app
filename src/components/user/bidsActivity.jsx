@@ -12,6 +12,7 @@ const Bids = ({ manageAddress }) => {
   const [endDate, setEndDate] = useState(null);
   const [filteredLastActivities, setFilteredLastActivities] = useState([]);
   const [marketplaceBids, setMarketplaceBids] = useState([]);
+  const [fetchedBids, setFetchedBids] = useState(false);
 
   const { currentChainObject } = useChainContext();
   const chainId = currentChainObject?.chainId;
@@ -106,16 +107,30 @@ const Bids = ({ manageAddress }) => {
     }
   }, [startDate, endDate, marketplaceBids, formatBidTransactions]);
 
+  const requestInitiatedRef = React.useRef(false);
+
   useEffect(() => {
     const fetchMarketplaceBids = async () => {
-      const data = await fetchAllMarketplaceBidsByBidder(chainId, manageAddress);
-      setMarketplaceBids(data?.marketplaceBids);
+      if (requestInitiatedRef.current) {
+        return;
+      }
+      requestInitiatedRef.current = true;
+
+      try {
+        const data = await fetchAllMarketplaceBidsByBidder(chainId, manageAddress);
+        setMarketplaceBids(data?.marketplaceBids);
+        setFetchedBids(true);
+      } catch (error) {
+        console.error("Error fetching marketplace bids:", error);
+      } finally {
+        requestInitiatedRef.current = false;
+      }
     };
 
-    if (chainId && manageAddress) {
+    if (chainId && manageAddress && !fetchedBids) {
       fetchMarketplaceBids();
     }
-  }, [chainId, manageAddress]);
+  }, [chainId, fetchedBids, manageAddress]);
 
   const toDisplayType = (type) => {
     switch (type) {

@@ -496,8 +496,9 @@ const UpdateOffer = ({ offer }) => {
                   <Image
                     src={previewImages[0] ?? ""}
                     fill={true}
+                    objectFit="cover"
                     alt="Preview"
-                    className="object-contain h-full"
+                    className="object-cover h-full"
                   />
                 </div>
               )}
