@@ -32,6 +32,7 @@ const ManageSpaceContainer = () => {
   const [userData, setUserData] = useState(null);
   const [isUserConnected, setIsUserConnected] = useState(false);
   const [createdOffers, setCreatedOffers] = useState(null);
+  const [fetchedData, setFetchedData] = useState(false);
 
   const userAddress = router.query.manage;
   const chainId = currentChainObject?.chainId;
@@ -74,25 +75,38 @@ const ManageSpaceContainer = () => {
     }
   }, [createdOffers]);
 
+  const fetchDataRef = React.useRef(false);
+
   useEffect(() => {
     const fetchData = async () => {
-      const data = await fetch(
-        `https://relayer.dsponsor.com/api/${chainId}/activity?userAddress=${userAddress}`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json"
-          }
-        }
-      )
-        .then((res) => res.json())
-        .then((data) => {
-          return data;
-        })
-        .catch((err) => console.error(err));
+      if (fetchDataRef.current) {
+        return;
+      }
+      fetchDataRef.current = true;
 
-      setUserData(data);
-      setMount(true);
+      try {
+        const data = await fetch(
+          `https://relayer.dsponsor.com/api/${chainId}/activity?userAddress=${userAddress}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json"
+            }
+          }
+        )
+          .then((res) => res.json())
+          .then((data) => {
+            return data;
+          })
+          .catch((err) => console.error(err));
+
+        setUserData(data);
+        setMount(true);
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      } finally {
+        fetchDataRef.current = false;
+      }
     };
 
     if (userAddress && chainId) {
@@ -113,6 +127,12 @@ const ManageSpaceContainer = () => {
     }
   }, [address, initialWallet, router]);
 
+  const fetchOwnedAdProposalsRef = React.useRef(false);
+  const fetchCreatedDataRef = React.useRef(false);
+  const fetchListedTokensRef = React.useRef(false);
+  const fetchAuctionBidsTokensRef = React.useRef(false);
+  const fetchAllDataRef = React.useRef(false);
+
   useEffect(() => {
     if (userAddress && chainId) {
       const fetchDataByUserAddress = async (fetchFunction) => {
@@ -125,78 +145,144 @@ const ManageSpaceContainer = () => {
       };
 
       const fetchOwnedAdProposals = async () => {
-        const ownedAdProposalsArray = await fetchDataByUserAddress(fetchAllTokenByOfferForAuser);
+        if (fetchOwnedAdProposalsRef.current) {
+          return;
+        }
+        fetchOwnedAdProposalsRef.current = true;
 
-        const mappedOwnedAdProposals = ownedAdProposalsArray.flatMap((element) =>
-          element.nftContract.tokens.map((token) => ({
-            ...token,
-            ...(token.mint.tokenData ? { tokenData: token.mint.tokenData } : {}),
-            chainConfig: element.chainConfig,
-            adParameters: element.adParameters,
-            id: `${element.id}-${token.tokenId}`,
-            offerId: element.id,
-            endTime:
-              token?.marketplaceListings?.length > 0 && token?.marketplaceListings[0]?.endTime
-          }))
-        );
+        try {
+          const ownedAdProposalsArray = await fetchDataByUserAddress(fetchAllTokenByOfferForAuser);
 
-        setMappedOwnedAdProposals(mappedOwnedAdProposals);
+          const mappedOwnedAdProposals = ownedAdProposalsArray.flatMap((element) =>
+            element.nftContract.tokens.map((token) => ({
+              ...token,
+              ...(token.mint.tokenData ? { tokenData: token.mint.tokenData } : {}),
+              chainConfig: element.chainConfig,
+              adParameters: element.adParameters,
+              id: `${element.id}-${token.tokenId}`,
+              offerId: element.id,
+              endTime:
+                token?.marketplaceListings?.length > 0 && token?.marketplaceListings[0]?.endTime
+            }))
+          );
+
+          setMappedOwnedAdProposals(mappedOwnedAdProposals);
+        } catch (error) {
+          console.error("Error fetching owned ad proposals:", error);
+        } finally {
+          fetchOwnedAdProposalsRef.current = false;
+        }
       };
 
       const fetchCreatedData = async () => {
-        const offersByUserAddressArray = await fetchDataByUserAddress(fetchAllOffersByUserAddress);
-        setCreatedData(offersByUserAddressArray);
+        if (fetchCreatedDataRef.current) {
+          return;
+        }
+        fetchCreatedDataRef.current = true;
+
+        try {
+          const offersByUserAddressArray = await fetchDataByUserAddress(
+            fetchAllOffersByUserAddress
+          );
+          setCreatedData(offersByUserAddressArray);
+        } catch (error) {
+          console.error("Error fetching created data:", error);
+        } finally {
+          fetchCreatedDataRef.current = false;
+        }
       };
 
       const fetchListedTokens = async () => {
-        const listedTokenArray = await fetchDataByUserAddress(fetchAllTokenListedByUserAddress);
+        if (fetchListedTokensRef.current) {
+          return;
+        }
+        fetchListedTokensRef.current = true;
 
-        const mappedListedToken = listedTokenArray
-          .filter((element) => element?.listingType === "Auction")
-          .map((element) => ({
-            ...element,
-            ...element.token,
-            marketplaceListings: [element],
-            listingStatus: handleListingsStatusType(element.status),
-            chainConfig: element.chainConfig,
-            tokenData: element?.token.mint.tokenData,
-            startTime: element?.startTime,
-            endTime: element?.endTime,
-            offerId: element?.token?.nftContract?.adOffers[0]?.id
-          }));
+        try {
+          const listedTokenArray = await fetchDataByUserAddress(fetchAllTokenListedByUserAddress);
 
-        setListedAuctionToken(mappedListedToken);
+          const mappedListedToken = listedTokenArray
+            .filter((element) => element?.listingType === "Auction")
+            .map((element) => ({
+              ...element,
+              ...element.token,
+              marketplaceListings: [element],
+              listingStatus: handleListingsStatusType(element.status),
+              chainConfig: element.chainConfig,
+              tokenData: element?.token.mint.tokenData,
+              startTime: element?.startTime,
+              endTime: element?.endTime,
+              offerId: element?.token?.nftContract?.adOffers[0]?.id
+            }));
+
+          setListedAuctionToken(mappedListedToken);
+        } catch (error) {
+          console.error("Error fetching listed tokens:", error);
+        } finally {
+          fetchListedTokensRef.current = false;
+        }
       };
 
       const fetchAuctionBidsTokens = async () => {
-        const auctionBidsTokensArray = await fetchDataByUserAddress(fetchAllTokenAuctionBidsByUser);
-        const mappedAuctionBidsTokens = auctionBidsTokensArray.map((element) => ({
-          ...element,
-          marketplaceListings: [element.listing],
-          status: handleBidsStatusType(element.status),
-          listingStatus: handleListingsStatusType(element.listing.status),
-          metadata: element.listing.token.metadata,
-          tokenData: element.listing.token.mint.tokenData,
-          offerId: element.listing.token.nftContract.adOffers[0].id,
-          tokenId: element.listing.token.tokenId,
-          endTime: element?.listing?.endTime
-        }));
+        if (fetchAuctionBidsTokensRef.current) {
+          return;
+        }
+        fetchAuctionBidsTokensRef.current = true;
 
-        setTokenAuctionBids(mappedAuctionBidsTokens);
+        try {
+          const auctionBidsTokensArray = await fetchDataByUserAddress(
+            fetchAllTokenAuctionBidsByUser
+          );
+          const mappedAuctionBidsTokens = auctionBidsTokensArray.map((element) => ({
+            ...element,
+            marketplaceListings: [element.listing],
+            status: handleBidsStatusType(element.status),
+            listingStatus: handleListingsStatusType(element.listing.status),
+            metadata: element.listing.token.metadata,
+            tokenData: element.listing.token.mint.tokenData,
+            offerId: element.listing.token.nftContract.adOffers[0].id,
+            tokenId: element.listing.token.tokenId,
+            endTime: element?.listing?.endTime
+          }));
+
+          setTokenAuctionBids(mappedAuctionBidsTokens);
+        } catch (error) {
+          console.error("Error fetching auction bids tokens:", error);
+        } finally {
+          fetchAuctionBidsTokensRef.current = false;
+        }
       };
 
       const fetchAllManageData = async () => {
-        await fetchOwnedAdProposals();
-        await fetchCreatedData();
-        await fetchListedTokens();
-        await fetchAuctionBidsTokens();
+        if (fetchAllDataRef.current) {
+          return;
+        }
+        fetchAllDataRef.current = true;
+
+        if (chainId && userAddress) {
+          try {
+            await fetchOwnedAdProposals();
+            await fetchCreatedData();
+            await fetchListedTokens();
+            await fetchAuctionBidsTokens();
+
+            setFetchedData(true);
+          } catch (error) {
+            console.error("Error fetching manage data:", error);
+          } finally {
+            fetchAllDataRef.current = false;
+          }
+        }
       };
 
       if (address && userAddress && getAddress(address) === getAddress(userAddress))
         setIsOwner(true);
-      fetchAllManageData();
+
+      if (!fetchedData) {
+        fetchAllManageData();
+      }
     }
-  }, [userAddress, router, address, chainId, chainConfig]);
+  }, [userAddress, router, address, chainId, chainConfig, fetchedData]);
   const handleListingsStatusType = (status) => {
     switch (status) {
       case "CREATED":

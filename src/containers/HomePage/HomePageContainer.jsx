@@ -18,7 +18,6 @@ const HomePageContainer = () => {
   const chainId = currentChainObject?.chainId;
 
   useEffect(() => {
-    if (!chainId) return;
     const fetchAdsOffers = async () => {
       const lastOffersArray = [];
 
@@ -29,11 +28,11 @@ const HomePageContainer = () => {
 
       setLastOffers(lastOffersArray);
     };
-    fetchAdsOffers();
+
+    if (chainId) fetchAdsOffers();
   }, [chainId]);
 
   useEffect(() => {
-    if (!chainId) return;
     const fetchAdsListings = async () => {
       const lastListingsArray = [];
 
@@ -44,7 +43,8 @@ const HomePageContainer = () => {
 
       setLastListings(lastListingsArray);
     };
-    fetchAdsListings();
+
+    if (chainId) fetchAdsListings();
   }, [chainId]);
   const metadata = {
     title: `SiBorg Ads - The Web3 Monetization Solution`,

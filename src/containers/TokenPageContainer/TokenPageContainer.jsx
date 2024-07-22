@@ -173,29 +173,42 @@ const TokenPageContainer = () => {
     }
   }, [image]);
 
+  const fetchOffersRef = useRef(false);
+
   useEffect(() => {
     const fetchOffers = async () => {
-      const offers = await fetchAllOffers(chainId);
-      setOffers(offers);
+      if (fetchOffersRef.current) return;
+      fetchOffersRef.current = true;
 
-      // check if we have the values
-      if (!offerId) return;
-      if (!offers) return;
+      try {
+        const offers = await fetchAllOffers(chainId);
+        setOffers(offers);
 
-      // set offer data for the current offer
-      const currentOffer = offers?.find((offer) => Number(offer?.id) === Number(offerId));
-      setOfferData(currentOffer);
+        // check if we have the values
+        if (!offerId) return;
+        if (!offers) return;
 
-      // set if the user is the media or not
-      if (currentOffer && address) {
-        const isMedia = currentOffer?.admins?.includes(address.toLowerCase());
-        setIsMedia(isMedia);
-      } else {
-        setIsMedia(false);
+        // set offer data for the current offer
+        const currentOffer = offers?.find((offer) => Number(offer?.id) === Number(offerId));
+        setOfferData(currentOffer);
+
+        // set if the user is the media or not
+        if (currentOffer && address) {
+          const isMedia = currentOffer?.admins?.includes(address.toLowerCase());
+          setIsMedia(isMedia);
+        } else {
+          setIsMedia(false);
+        }
+      } catch (error) {
+        console.error("Error fetching offers:", error);
+      } finally {
+        fetchOffersRef.current = false;
       }
     };
 
-    fetchOffers();
+    if (chainId && offerId && address) {
+      fetchOffers();
+    }
   }, [address, chainId, offerId]);
 
   useEffect(() => {
@@ -358,7 +371,7 @@ const TokenPageContainer = () => {
       setBuyTokenEtherPrice(tokenEtherPriceDecimals);
     };
 
-    if (finalPriceNotFormatted && finalPriceNotFormatted > 0 && chainId) {
+    if (finalPriceNotFormatted && finalPriceNotFormatted > 0 && chainId && tokenCurrencyAddress) {
       fetchBuyEtherPrice();
     }
   }, [finalPriceNotFormatted, chainId, tokenCurrencyAddress, currencyDecimals]);
@@ -384,7 +397,10 @@ const TokenPageContainer = () => {
         setOfferData(combinedData);
         setBidsAmount("");
       };
-      fetchUpdatedData();
+
+      if (chainId) {
+        fetchUpdatedData();
+      }
     }
   }, [successFullBid, offerId, tokenId, chainId]);
 

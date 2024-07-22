@@ -50,7 +50,9 @@ const JoinSiBorgApp = ({ manageAddress }) => {
         });
     };
 
-    fetchCode();
+    if (address) {
+      fetchCode();
+    }
   }, [address]);
 
   return (
