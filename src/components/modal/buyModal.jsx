@@ -11,6 +11,7 @@ import MintWithCrossmintButton from "../buttons/MintWithCrossmintButton/MintWith
 import BuyWithCrossmintButton from "../buttons/BuyWithCrossmintButton/BuyWithCrossmintButton";
 import { parseUnits } from "ethers/lib/utils";
 import { InformationCircleIcon } from "@heroicons/react/24/solid";
+import InfoIcon from "../informations/infoIcon";
 
 const BuyModal = ({
   formatTokenId,
@@ -363,24 +364,14 @@ const BuyModal = ({
                           )}
                         </Web3Button>
                       </div>
-                      <Popover placement="bottom" isOpen={isHovered}>
-                        <PopoverTrigger
-                          className="cursor-help"
-                          onMouseEnter={() => setIsHovered(true)}
-                          onMouseLeave={() => setIsHovered(false)}
-                        >
-                          <span className="text-xs text-jacarta-100 inline-flex items-center gap-1">
-                            <InformationCircleIcon className="w-4 h-4 text-jacarta-100" />
-                            Why do I have to approve ?
-                          </span>
-                        </PopoverTrigger>
-                        <PopoverContent className="p-4 bg-primaryBlack text-white rounded-lg">
-                          <p className="text-sm">
-                            You need to approve the marketplace contract to spend your{" "}
-                            {selectedCurrency} on this transaction.
-                          </p>
-                        </PopoverContent>
-                      </Popover>
+                      <InfoIcon
+                        text={`You need to approve the marketplace contract to spend your ${selectedCurrency} on this transaction.`}
+                      >
+                        <span className="text-xs text-jacarta-100 inline-flex items-center gap-1">
+                          <InformationCircleIcon className="w-4 h-4 text-jacarta-100" />
+                          Why do I have to approve ?
+                        </span>
+                      </InfoIcon>
                     </div>
                   </>
                 ) : (

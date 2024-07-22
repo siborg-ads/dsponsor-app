@@ -17,6 +17,7 @@ import handleCopy from "../../utils/handleCopy";
 import "tippy.js/dist/tippy.css";
 import { Popover, PopoverTrigger, PopoverContent } from "@nextui-org/react";
 import { BigNumber } from "ethers";
+import InfoIcon from "../informations/infoIcon";
 
 const BidsModal = ({
   setAmountToApprove,
@@ -852,24 +853,15 @@ const BidsModal = ({
                         </>
                       )}
                     </div>
-                    <Popover placement="bottom" isOpen={isHovered}>
-                      <PopoverTrigger
-                        className="cursor-help"
-                        onMouseEnter={() => setIsHovered(true)}
-                        onMouseLeave={() => setIsHovered(false)}
-                      >
-                        <span className="text-xs text-center text-jacarta-100 inline-flex items-center gap-1">
-                          <InformationCircleIcon className="w-4 h-4 text-jacarta-100" />
-                          Why do I have to approve ?
-                        </span>
-                      </PopoverTrigger>
-                      <PopoverContent className="p-4 bg-primaryBlack text-white rounded-lg">
-                        <p className="text-sm">
-                          You need to approve the marketplace contract to spend your{" "}
-                          {currencySymbol} on this transaction.
-                        </p>
-                      </PopoverContent>
-                    </Popover>
+                    <InfoIcon
+                      text={`You need to approve the marketplace contract to spend your{" "}
+                          ${currencySymbol} on this transaction.`}
+                    >
+                      <span className="text-xs text-center text-jacarta-100 inline-flex items-center gap-1">
+                        <InformationCircleIcon className="w-4 h-4 text-jacarta-100" />
+                        Why do I have to approve ?
+                      </span>
+                    </InfoIcon>
                   </div>
                 </>
 

@@ -191,14 +191,6 @@ const TokenPageContainer = () => {
         // set offer data for the current offer
         const currentOffer = offers?.find((offer) => Number(offer?.id) === Number(offerId));
         setOfferData(currentOffer);
-
-        // set if the user is the media or not
-        if (currentOffer && address) {
-          const isMedia = currentOffer?.admins?.includes(address.toLowerCase());
-          setIsMedia(isMedia);
-        } else {
-          setIsMedia(false);
-        }
       } catch (error) {
         console.error("Error fetching offers:", error);
       } finally {
@@ -206,10 +198,24 @@ const TokenPageContainer = () => {
       }
     };
 
-    if (chainId && offerId && address) {
+    if (chainId && offerId) {
       fetchOffers();
     }
   }, [address, chainId, offerId]);
+
+  useEffect(() => {
+    if (offerData && address) {
+      // set if the user is the media or not
+      if (offerData && address) {
+        const isMedia = offerData?.admins?.includes(address.toLowerCase());
+        setIsMedia(isMedia);
+      } else {
+        setIsMedia(false);
+      }
+    } else {
+      setIsMedia(false);
+    }
+  }, [address, offerData]);
 
   useEffect(() => {
     if (offers) {
