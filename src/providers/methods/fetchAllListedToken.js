@@ -9,6 +9,7 @@ export const fetchAllListedToken = async (chainId) => {
     query getAllMarketplaceListings($currentTimestamp: Int!) {
       adOffers {
         id
+        disable
         metadataURL
         nftContract {
           royalty {
@@ -122,7 +123,7 @@ export const fetchAllListedToken = async (chainId) => {
     .map((offer) => {
       const newOffer = {
         ...offer,
-
+        disable: offer.disable,
         nftContract: {
           ...offer.nftContract,
           tokens: offer.nftContract.tokens.filter(
@@ -137,6 +138,7 @@ export const fetchAllListedToken = async (chainId) => {
     .flatMap((offer) =>
       offer.nftContract.tokens.map((token) => ({
         ...token,
+        disable: offer.disable,
         offerId: offer.id,
         tokenData: token.mint.tokenData ? token.mint.tokenData : null,
         chainConfig: chainConfig
