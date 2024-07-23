@@ -565,9 +565,9 @@ const OfferPageContainer = () => {
               <p className="dark:text-jacarta-100 mb-10">{description}</p>
               <p className="dark:text-jacarta-100 mb-10">{description}</p>
 
-              {(offerData?.disable ||
-                new Date(offerData?.metadata?.offer?.valid_to) < new Date() ||
-                !offerData?.nftContract?.prices[0]?.enabled) && <Disable isOffer={true} />}
+              {(offerData?.disable === true ||
+                new Date(offerData?.metadata?.offer?.valid_to).getTime() < Date.now() ||
+                offerData?.nftContract?.prices[0]?.enabled === false) && <Disable isOffer={true} />}
 
               {isOwner && (
                 <div className="dark:bg-secondaryBlack dark:border-jacarta-600 border-jacarta-100 rounded-2lg border bg-white p-8">
