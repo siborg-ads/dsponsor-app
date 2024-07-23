@@ -367,66 +367,6 @@ const OfferPageContainer = () => {
       </div>
     );
   }
-  const modalHelper = {
-    title: "Protocol Fees",
-    body: (
-      <div className="flex flex-col gap-8">
-        <span className="text-jacarta-100 text-sm">
-          The protocol fees (4%) are used to maintain the platform and the services provided. The
-          fees are calculated based on the price of the ad space and are automatically deducted from
-          the total amount paid by the buyer.
-        </span>
-
-        <div className="flex flex-col gap-2">
-          <span className="text-white font-semibold">Initial Sale Scenario</span>
-          <ul className="flex flex-col gap-2 list-disc text-sm" style={{ listStyleType: "disc" }}>
-            <li>
-              <span className="text-white">
-                Amount sent to the creator: {formatAndRoundPrice(price)} {currency?.symbol}
-              </span>
-            </li>
-            <li>
-              <span className="text-white">
-                Protocol fees: {formatAndRoundPrice(price * 0.04)} {currency?.symbol}
-              </span>
-            </li>
-            <li>
-              <span className="text-white">
-                Total: {formatAndRoundPrice(price + price * 0.04)} {currency?.symbol}
-              </span>
-            </li>
-          </ul>
-        </div>
-
-        <div className="flex flex-col gap-2">
-          <span className="text-white font-semibold">Secondary Market Scenario</span>
-          <ul className="flex flex-col gap-2 list-disc text-sm" style={{ listStyleType: "disc" }}>
-            <li>
-              <span className="text-white">
-                Amount sent to the lister: {formatAndRoundPrice(price - price * 0.1 - price * 0.04)}{" "}
-                {currency?.symbol}
-              </span>
-            </li>
-            <li>
-              <span className="text-white">
-                Royalties sent to the creator: {formatAndRoundPrice(price * 0.1)} {currency?.symbol}
-              </span>
-            </li>
-            <li>
-              <span className="text-white">
-                Protocol fees: {formatAndRoundPrice(price * 0.04)} {currency?.symbol}
-              </span>
-            </li>
-            <li>
-              <span className="text-white">
-                Total: {formatAndRoundPrice(price)} {currency?.symbol}
-              </span>
-            </li>
-          </ul>
-        </div>
-      </div>
-    )
-  };
 
   return (
     <Accordion.Root
@@ -537,17 +477,12 @@ const OfferPageContainer = () => {
               </h2>
 
               <div className="mb-8 flex items-center flex-wrap gap-2 space-x-4 whitespace-nowrap">
-                {activated_features.canSeeModalHelperOnOfferPage && (
-                  <>
-                    {currency?.symbol && (
-                      <div className="flex items-center">
-                        <span className="text-green text-sm font-medium tracking-tight mr-2">
-                          {price} {currency?.symbol}
-                        </span>
-                        <ModalHelper {...modalHelper} size="small" />
-                      </div>
-                    )}
-                  </>
+                {currency?.symbol && (
+                  <div className="flex items-center">
+                    <span className="text-green text-sm font-medium tracking-tight mr-2">
+                      {price} {currency?.symbol}
+                    </span>
+                  </div>
                 )}
 
                 {offerData.nftContract.allowList && (
