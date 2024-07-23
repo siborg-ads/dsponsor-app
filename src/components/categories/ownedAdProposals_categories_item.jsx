@@ -226,8 +226,6 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
     hrefButton: null
   };
 
-  console.log("data", data);
-
   if (!data) {
     return (
       <div className="flex w-full justify-center">
