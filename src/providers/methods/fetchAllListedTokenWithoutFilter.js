@@ -57,6 +57,7 @@ export const fetchAllListedTokenWithoutFilter = async (chainId, allTokens) => {
                   adOffers {
                     id
                     metadataURL # offerMetadata
+                    disable
                   }
                 }
                 mint {

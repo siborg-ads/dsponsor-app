@@ -32,6 +32,7 @@ import ChangeMintPrice from "../../components/offer-section/changeMintPrice";
 import { Tabs, Tab, TabList, TabPanel } from "react-tabs";
 import formatAndRoundPrice from "../../utils/formatAndRound";
 import { BadgePercentIcon, BlocksIcon, RefreshCwIcon } from "lucide-react";
+import Disable from "../../components/disable/disable";
 
 const OfferPageContainer = () => {
   const router = useRouter();
@@ -561,6 +562,11 @@ const OfferPageContainer = () => {
               </div>
 
               <p className="dark:text-jacarta-100 mb-10">{description}</p>
+              <p className="dark:text-jacarta-100 mb-10">{description}</p>
+
+              {(offerData?.disable ||
+                new Date(offerData?.metadata?.offer?.valid_to) < new Date() ||
+                !offerData?.nftContract?.prices[0]?.enabled) && <Disable isOffer={true} />}
 
               {isOwner && (
                 <div className="dark:bg-secondaryBlack dark:border-jacarta-600 border-jacarta-100 rounded-2lg border bg-white p-8">

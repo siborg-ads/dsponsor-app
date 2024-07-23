@@ -161,6 +161,7 @@ const ManageSpaceContainer = () => {
               adParameters: element.adParameters,
               id: `${element.id}-${token.tokenId}`,
               offerId: element.id,
+              disable: element.disable,
               endTime:
                 token?.marketplaceListings?.length > 0 && token?.marketplaceListings[0]?.endTime
             }))

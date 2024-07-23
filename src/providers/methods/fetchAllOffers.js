@@ -15,6 +15,7 @@ export const fetchAllOffers = async (chainId) => {
         # if token_metadata: token_metadata.name,
         metadataURL
         id # offerId
+        disable
         creationTimestamp # data (unix time)
         adParameters(where: { enable: true }) {
           enable
@@ -65,6 +66,7 @@ export const fetchAllOffers = async (chainId) => {
                   adOffers {
                     id
                     metadataURL
+                    disable
                   }
                 }
                 mint {

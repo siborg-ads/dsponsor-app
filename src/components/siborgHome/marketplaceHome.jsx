@@ -25,9 +25,12 @@ const MarketplaceHome = ({ auctions, setAllTokens, allTokens, isAuctionsLoading 
   const filteredAuctions = useMemo(() => {
     let tempAuctions = auctions;
 
-    // keep enabled minted tokens and tokens already minted (updated)
+    // keep enabled minted tokens and tokens already minted
     tempAuctions = tempAuctions.filter(
-      (auction) => auction?.item?.nftContract?.prices[0]?.enabled || auction?.item?.mint !== null
+      (auction) =>
+        (auction?.item?.nftContract?.prices[0]?.enabled || auction?.item?.mint !== null) &&
+        new Date(auction?.item?.metadata?.offer?.valid_to) >= new Date() &&
+        !auction?.item?.nftContract?.adOffers?.some((offer) => offer?.disable)
     );
 
     if (!allTokens) {
