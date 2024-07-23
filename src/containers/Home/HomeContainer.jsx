@@ -116,6 +116,7 @@ const HomeContainer = () => {
       const object = {
         name: name,
         category: category,
+        disable: token?.disable,
         chain: chain,
         chainId: chainId,
         price: price,
@@ -141,6 +142,7 @@ const HomeContainer = () => {
         sold: sold,
         numberOfBids: numberOfBids,
         item: {
+          disable: token?.disable,
           metadata: token.metadata,
           mint: token.mint,
           nftContract: token.nftContract,

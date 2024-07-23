@@ -41,14 +41,13 @@ const Step_1_Mint = ({
                         <ul>
                           <li>
                             {variant
-                              ? `- Format : ${variant} (exemple:
+                              ? `- Format : ${variant} (example:
                               ${(() => {
                                 const [width, height] = variant.split(":");
                                 return width && height
                                   ? `${width * 100}x${height * 100}px`
                                   : "No size";
-                              })()}
-                          )`
+                              })()})`
                               : "- Format : Any URL accepted"}
                           </li>
                         </ul>
@@ -63,7 +62,7 @@ const Step_1_Mint = ({
                     return (
                       <div key={id}>
                         <ul>
-                          <li>{variant ? `- ${variant}` : "- No variant"}</li>
+                          <li>{variant ? `- ${variant}` : "- Any URL accepted"}</li>
                         </ul>
                       </div>
                     );
