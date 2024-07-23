@@ -126,10 +126,14 @@ const TokenPageContainer = () => {
   const [sales, setSales] = useState([]);
   const [minted, setMinted] = useState(false);
   const [conditions, setConditions] = useState({});
-  const [notFormattedPrice, setNotFormattedPrice] = useState(null);
   const [imageUrl, setImageUrl] = useState(null);
   const [accordionActiveTab, setAccordionActiveTab] = useState("details");
   const [listingCreated, setListingCreated] = useState(false);
+  const [creatorAmount, setCreatorAmount] = useState(null);
+  const [protocolFeeAmount, setProtocolFeeAmount] = useState(null);
+  const [totalAmount, setTotalAmount] = useState(null);
+  const [listerAmount, setListerAmount] = useState(null);
+  const [royaltiesAmount, setRoyaltiesAmount] = useState(null);
 
   let description = "description not found";
   let id = "1";
@@ -709,7 +713,13 @@ const TokenPageContainer = () => {
       setTokenCurrencyAddress(offerData?.nftContract?.prices[0]?.currency);
       // setTokenBigIntPrice(offerData?.nftContract?.prices[0]?.amount);
       setPrice(offerData?.nftContract?.prices[0]?.mintPriceStructureFormatted.creatorAmount);
-      setNotFormattedPrice(offerData?.nftContract?.prices[0]?.mintPriceStructure.totalAmount);
+      setCreatorAmount(
+        offerData?.nftContract?.prices[0]?.mintPriceStructureFormatted.creatorAmount
+      );
+      setProtocolFeeAmount(
+        offerData?.nftContract?.prices[0]?.mintPriceStructureFormatted.protocolFeeAmount
+      );
+      setTotalAmount(offerData?.nftContract?.prices[0]?.mintPriceStructureFormatted.totalAmount);
       setFeesAmount(
         offerData?.nftContract?.prices[0]?.mintPriceStructureFormatted.protocolFeeAmount
       );
@@ -745,10 +755,29 @@ const TokenPageContainer = () => {
             ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.buyPriceStructureFormatted
             .listerBuyAmount
         );
-        setNotFormattedPrice(
+        setListerAmount(
           offerData?.nftContract?.tokens
             ?.find((token) => Number(token?.tokenId) === Number(tokenId))
-            ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.buyPriceStructure.totalAmount
+            ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.buyPriceStructureFormatted
+            .listerBuyAmount
+        );
+        setRoyaltiesAmount(
+          offerData?.nftContract?.tokens
+            ?.find((token) => Number(token?.tokenId) === Number(tokenId))
+            ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.buyPriceStructureFormatted
+            ?.royaltiesBuyAmount
+        );
+        setProtocolFeeAmount(
+          offerData?.nftContract?.tokens
+            ?.find((token) => Number(token?.tokenId) === Number(tokenId))
+            ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.buyPriceStructureFormatted
+            ?.protocolFeeBuyAmount
+        );
+        setTotalAmount(
+          offerData?.nftContract?.tokens
+            ?.find((token) => Number(token?.tokenId) === Number(tokenId))
+            ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.buyPriceStructureFormatted
+            ?.buyoutPricePerToken
         );
         setFeesAmount(
           offerData?.nftContract?.tokens
@@ -800,11 +829,6 @@ const TokenPageContainer = () => {
             ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.bidPriceStructureFormatted
             ?.minimalBidPerToken
         );
-        setNotFormattedPrice(
-          offerData?.nftContract?.tokens
-            ?.find((token) => Number(token?.tokenId) === Number(tokenId))
-            ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.bidPriceStructure?.totalAmount
-        );
         setFeesAmount(
           offerData?.nftContract?.tokens
             ?.find((token) => Number(token?.tokenId) === Number(tokenId))
@@ -829,7 +853,30 @@ const TokenPageContainer = () => {
             ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.bidPriceStructure
             ?.minimalBidPerToken
         );
-
+        setListerAmount(
+          offerData?.nftContract?.tokens
+            ?.find((token) => Number(token?.tokenId) === Number(tokenId))
+            ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.bidPriceStructureFormatted
+            ?.listerAmount
+        );
+        setRoyaltiesAmount(
+          offerData?.nftContract?.tokens
+            ?.find((token) => Number(token?.tokenId) === Number(tokenId))
+            ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.bidPriceStructureFormatted
+            ?.royaltyAmount
+        );
+        setProtocolFeeAmount(
+          offerData?.nftContract?.tokens
+            ?.find((token) => Number(token?.tokenId) === Number(tokenId))
+            ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.bidPriceStructureFormatted
+            ?.protocolFeeAmount
+        );
+        setTotalAmount(
+          offerData?.nftContract?.tokens
+            ?.find((token) => Number(token?.tokenId) === Number(tokenId))
+            ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.bidPriceStructureFormatted
+            ?.totalBidAmount
+        );
         setAmountToApprove(
           BigInt(
             offerData?.nftContract?.tokens
@@ -1480,101 +1527,62 @@ const TokenPageContainer = () => {
 
           {offerData?.nftContract?.tokens?.find(
             (token) => Number(token?.tokenId) === Number(tokenId)
-          )?.mint === null &&
-            notFormattedPrice && (
-              <div className="flex flex-col gap-2">
-                <ul
-                  className="flex flex-col gap-2 list-disc text-sm"
-                  style={{ listStyleType: "disc" }}
-                >
-                  <li>
-                    <span className="text-white">
-                      Amount sent to the creator:{" "}
-                      {formatAndRoundPrice(
-                        Number(formatUnits(BigNumber.from(notFormattedPrice), currencyDecimals))
-                      )}{" "}
-                      {currency}
-                    </span>
-                  </li>
-                  <li>
-                    <span className="text-white">
-                      Protocol fees:{" "}
-                      {formatAndRoundPrice(
-                        Number(formatUnits(BigNumber.from(notFormattedPrice), currencyDecimals)) *
-                          0.04
-                      )}{" "}
-                      {currency}
-                    </span>
-                  </li>
-                  <li>
-                    <span className="text-white">
-                      Total:{" "}
-                      {formatAndRoundPrice(
-                        Number(formatUnits(BigNumber.from(notFormattedPrice), currencyDecimals)) +
-                          Number(formatUnits(BigNumber.from(notFormattedPrice), currencyDecimals)) *
-                            0.04
-                      )}{" "}
-                      {currency}
-                    </span>
-                  </li>
-                </ul>
-              </div>
-            )}
+          )?.mint === null && (
+            <div className="flex flex-col gap-2">
+              <ul
+                className="flex flex-col gap-2 list-disc text-sm"
+                style={{ listStyleType: "disc" }}
+              >
+                <li>
+                  <span className="text-white">
+                    Amount sent to the creator: {creatorAmount} {currency}
+                  </span>
+                </li>
+                <li>
+                  <span className="text-white">
+                    Protocol fees: {protocolFeeAmount} {currency}
+                  </span>
+                </li>
+                <li>
+                  <span className="text-white">
+                    Total: {totalAmount} {currency}
+                  </span>
+                </li>
+              </ul>
+            </div>
+          )}
 
           {offerData?.nftContract?.tokens?.find(
             (token) => Number(token?.tokenId) === Number(tokenId)
-          )?.mint !== null &&
-            notFormattedPrice && (
-              <div className="flex flex-col gap-2">
-                <ul
-                  className="flex flex-col gap-2 list-disc text-sm"
-                  style={{ listStyleType: "disc" }}
-                >
-                  <li>
-                    <span className="text-white">
-                      Amount sent to the lister:{" "}
-                      {formatAndRoundPrice(
-                        Number(formatUnits(BigNumber.from(notFormattedPrice), currencyDecimals)) -
-                          Number(formatUnits(BigNumber.from(notFormattedPrice), currencyDecimals)) *
-                            0.1 -
-                          Number(formatUnits(BigNumber.from(notFormattedPrice), currencyDecimals)) *
-                            0.04
-                      )}{" "}
-                      {currency}
-                    </span>
-                  </li>
-                  <li>
-                    <span className="text-white">
-                      Royalties sent to the creator:{" "}
-                      {formatAndRoundPrice(
-                        Number(formatUnits(BigNumber.from(notFormattedPrice), currencyDecimals)) *
-                          0.1
-                      )}{" "}
-                      {currency}
-                    </span>
-                  </li>
-                  <li>
-                    <span className="text-white">
-                      Protocol fees:{" "}
-                      {formatAndRoundPrice(
-                        Number(formatUnits(BigNumber.from(notFormattedPrice), currencyDecimals)) *
-                          0.04
-                      )}{" "}
-                      {currency}
-                    </span>
-                  </li>
-                  <li>
-                    <span className="text-white">
-                      Total:{" "}
-                      {formatAndRoundPrice(
-                        Number(formatUnits(BigNumber.from(notFormattedPrice), currencyDecimals))
-                      )}{" "}
-                      {currency}
-                    </span>
-                  </li>
-                </ul>
-              </div>
-            )}
+          )?.mint !== null && (
+            <div className="flex flex-col gap-2">
+              <ul
+                className="flex flex-col gap-2 list-disc text-sm"
+                style={{ listStyleType: "disc" }}
+              >
+                <li>
+                  <span className="text-white">
+                    Amount sent to the lister: {listerAmount} {currency}
+                  </span>
+                </li>
+                <li>
+                  <span className="text-white">
+                    Royalties sent to the creator: {royaltiesAmount} {currency}
+                  </span>
+                </li>
+                <li>
+                  <span className="text-white">
+                    Protocol fees: {protocolFeeAmount} {currency}
+                  </span>
+                </li>
+                <li>
+                  <span className="text-white">
+                    Total: {totalAmount} {currency}
+                  </span>
+                </li>
+              </ul>
+            </div>
+          )}
         </div>
       </>
     )
@@ -1678,18 +1686,19 @@ const TokenPageContainer = () => {
               </Link>
 
               <div className="mb-8 flex items-center gap-4 whitespace-nowrap flex-wrap">
-                {currency &&
+                {((currency &&
                   tokenStatut !== "MINTED" &&
                   (firstSelectedListing?.status === "CREATED" ||
-                    marketplaceListings?.length <= 0) &&
-                  !conditions?.conditionsObject?.mintDisabled && (
-                    <div className="flex items-center">
-                      <span className="text-green text-sm font-medium tracking-tight mr-2">
-                        {finalPrice} {currency}
-                      </span>
-                      <ModalHelper {...modalHelper} size="small" />
-                    </div>
-                  )}
+                    marketplaceListings?.length <= 0)) ||
+                  (conditions?.conditionsObject?.mintDisabled === false &&
+                    tokenStatut === "MINTABLE")) && (
+                  <div className="flex items-center">
+                    <span className="text-green text-sm font-medium tracking-tight mr-2">
+                      {finalPrice} {currency}
+                    </span>
+                    <ModalHelper {...modalHelper} size="small" />
+                  </div>
+                )}
                 <span className="dark:text-jacarta-100 text-jacarta-100 text-sm">
                   Space #{" "}
                   <strong className="dark:text-white">{tokenData ?? formatTokenId(tokenId)}</strong>{" "}
