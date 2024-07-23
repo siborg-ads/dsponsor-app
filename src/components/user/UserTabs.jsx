@@ -18,7 +18,6 @@ import {
   GavelIcon,
   LoaderIcon,
   MegaphoneIcon,
-  SectionIcon,
   TrophyIcon
 } from "lucide-react";
 
