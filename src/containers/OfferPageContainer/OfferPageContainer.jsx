@@ -71,6 +71,7 @@ const OfferPageContainer = () => {
   const [offerManagementActiveTab, setOfferManagementActiveTab] = useState("integration");
   const [imageUrl, setImageUrl] = useState(null);
   const [accordionActiveTab, setAccordionActiveTab] = useState("details");
+  const prevImageRef = React.useRef();
 
   const { data: bps } = useContractRead(DsponsorAdminContract, "feeBps");
   const maxBps = 10000;
@@ -234,7 +235,6 @@ const OfferPageContainer = () => {
       return;
     }
 
-    // get url image instead of ipfs:// starting url
     if (typeof image === "string" && image.startsWith("ipfs://")) {
       const storage = new ThirdwebStorage({ clientId: "6f375d41f2a33f1f08f6042a65d49ec9" });
       try {
@@ -243,14 +243,15 @@ const OfferPageContainer = () => {
       } catch (error) {
         console.error("Error fetching image:", error);
       }
-    } else {
-      setImageUrl(image);
     }
   };
 
   useEffect(() => {
-    if (image) {
+    if (image && image !== prevImageRef.current) {
       fetchImage(image);
+      prevImageRef.current = image;
+    } else if (image) {
+      setImageUrl(image);
     } else {
       setImageUrl(null);
     }
@@ -564,9 +565,9 @@ const OfferPageContainer = () => {
               <p className="dark:text-jacarta-100 mb-10">{description}</p>
               <p className="dark:text-jacarta-100 mb-10">{description}</p>
 
-              {(offerData?.disable ||
-                new Date(offerData?.metadata?.offer?.valid_to) < new Date() ||
-                !offerData?.nftContract?.prices[0]?.enabled) && <Disable isOffer={true} />}
+              {(offerData?.disable === true ||
+                new Date(offerData?.metadata?.offer?.valid_to).getTime() < Date.now() ||
+                offerData?.nftContract?.prices[0]?.enabled === false) && <Disable isOffer={true} />}
 
               {isOwner && (
                 <div className="dark:bg-secondaryBlack dark:border-jacarta-600 border-jacarta-100 rounded-2lg border bg-white p-8">

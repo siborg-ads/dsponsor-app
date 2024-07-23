@@ -71,7 +71,7 @@ const OwnedOffers_categories_items = ({ data, isPendinAdsOnOffer, isOwner, offer
       </div>
 
       {/* <!-- Grid --> */}
-      {filteredData.length > 0 ? (
+      {filteredData?.length > 0 ? (
         <div className="grid grid-cols-1 gap-[1.875rem] md:grid-cols-2 lg:grid-cols-4">
           {filteredData?.map((item, index) => {
             const offer = offers?.find((offer) => offer?.id === item?.id);
