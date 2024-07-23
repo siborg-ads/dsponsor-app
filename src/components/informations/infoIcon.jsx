@@ -9,7 +9,7 @@ const InfoIcon = ({ text, children }) => {
 
   return (
     <>
-      <div className="md:hidden" onClick={handleClick}>
+      <div className="md:hidden z-20 cursor-help" onClick={handleClick}>
         <Popover.Root>
           <Popover.Trigger asChild>
             <span>{children}</span>
@@ -23,7 +23,7 @@ const InfoIcon = ({ text, children }) => {
         </Popover.Root>
       </div>
 
-      <div className="hidden md:block" onClick={handleClick}>
+      <div className="hidden md:block z-20 cursor-help" onClick={handleClick}>
         <Tooltip.Provider delayDuration={0}>
           <Tooltip.Root>
             <Tooltip.Trigger asChild>
