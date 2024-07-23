@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { Divider } from "@nextui-org/react";
 import * as Switch from "@radix-ui/react-switch";
 import { Web3Button, useContract, useContractWrite } from "@thirdweb-dev/react";
 import config from "../../config/config";
@@ -29,7 +28,7 @@ const UpdateOffer = ({ offer }) => {
   const [initialDescription, setInitialDescription] = useState("");
   const [description, setDescription] = useState("");
   const [initialImageUrl, setInitialImageUrl] = useState("");
-  const [imageUrl, setImageUrl] = useState("");
+  const [, setImageUrl] = useState("");
   const [initialExternalLink, setInitialExternalLink] = useState("");
   const [externalLink, setExternalLink] = useState("");
   const [initialValidDateFrom, setInitialValidDateFrom] = useState(null);
@@ -61,7 +60,7 @@ const UpdateOffer = ({ offer }) => {
     let finalMetadatas = { ...originalMetadatas };
 
     // check if image has changed, if so, upload the new image
-    let newImageUrl;
+    let newImageUrl = null;
     if (files.length > 0) {
       try {
         const imageUri = await storage.upload(files[0]);
@@ -72,16 +71,12 @@ const UpdateOffer = ({ offer }) => {
       }
     }
 
-    if (!newImageUrl) {
-      throw new Error("Error uploading the image");
-    }
-
-    // update the metadata object with the new image url
+    // update the metadata object with the new image url or keep the old one
     finalMetadatas = {
       ...finalMetadatas,
       offer: {
         ...finalMetadatas?.offer,
-        image: newImageUrl
+        image: newImageUrl ?? originalMetadatas?.offer?.image
       }
     };
 
@@ -430,7 +425,7 @@ const UpdateOffer = ({ offer }) => {
   return (
     <div className="flex flex-col gap-4 justify-center w-full">
       <div className="flex items-center flex-wrap gap-8">
-        <div className="mb-4">
+        <div className="mb-4 w-1/3">
           <label className="block text-gray-700 text-sm font-semibold mb-2">Offer name</label>
           <input
             type="text"
@@ -441,20 +436,7 @@ const UpdateOffer = ({ offer }) => {
           />
         </div>
 
-        <div className="mb-4">
-          <label className="block text-gray-700 text-sm font-semibold mb-2">
-            Offer Description
-          </label>
-          <input
-            type="text"
-            className="bg-secondaryBlack rounded-lg w-full p-2 text-white"
-            value={description}
-            placeholder={description ?? ""}
-            onChange={(e) => setDescription(e.target.value)}
-          />
-        </div>
-
-        <div className="mb-4">
+        <div className="mb-4 w-1/3">
           <label className="block text-gray-700 text-sm font-semibold mb-2">External Link</label>
           <input
             type="text"
@@ -464,6 +446,17 @@ const UpdateOffer = ({ offer }) => {
             onChange={(e) => setExternalLink(e.target.value)}
           />
         </div>
+      </div>
+
+      <div className="mb-4">
+        <label className="block text-gray-700 text-sm font-semibold mb-2">Offer Description</label>
+        <textarea
+          type="text"
+          className="bg-secondaryBlack rounded-lg w-full p-2 text-white"
+          value={description}
+          placeholder={description ?? ""}
+          onChange={(e) => setDescription(e.target.value)}
+        />
       </div>
 
       <div className="mb-4">
@@ -503,8 +496,9 @@ const UpdateOffer = ({ offer }) => {
                   <Image
                     src={previewImages[0] ?? ""}
                     fill={true}
+                    objectFit="cover"
                     alt="Preview"
-                    className="object-contain h-full"
+                    className="object-cover h-full"
                   />
                 </div>
               )}

@@ -14,11 +14,12 @@ import Integration from "../../components/offer-section/integration";
 import { ThirdwebStorage } from "@thirdweb-dev/storage";
 import * as Accordion from "@radix-ui/react-accordion";
 import { ChevronDownIcon } from "@heroicons/react/24/solid";
+import ExclamationCircleIcon from "@heroicons/react/24/solid";
+import InfoIcon from "../../components/informations/infoIcon";
 
 import { fetchOffer } from "../../providers/methods/fetchOffer";
 
 import Form from "../../components/collections-wide/sidebar/collections/Form";
-import { Divider } from "@nextui-org/react";
 import "tippy.js/dist/tippy.css";
 import Validation from "../../components/offer-section/validation";
 import ModalHelper from "../../components/Helper/modalHelper";
@@ -29,6 +30,9 @@ import { activated_features } from "../../data/activated_features";
 import UpdateOffer from "../../components/offer-section/updateOffer";
 import ChangeMintPrice from "../../components/offer-section/changeMintPrice";
 import { Tabs, Tab, TabList, TabPanel } from "react-tabs";
+import formatAndRoundPrice from "../../utils/formatAndRound";
+import { BadgePercentIcon, BlocksIcon, RefreshCwIcon } from "lucide-react";
+import Disable from "../../components/disable/disable";
 
 const OfferPageContainer = () => {
   const router = useRouter();
@@ -63,9 +67,10 @@ const OfferPageContainer = () => {
   const { data: decimalsContract } = useContractRead(tokenContract, "decimals");
   const NATIVECurrency = config[chainId]?.smartContracts?.NATIVE;
   const { setSelectedChain } = useSwitchChainContext();
-  const [canChangeMintPrice, setCanChangeMintPrice] = useState(false);
+  const [, setCanChangeMintPrice] = useState(false);
   const [offerManagementActiveTab, setOfferManagementActiveTab] = useState("integration");
   const [imageUrl, setImageUrl] = useState(null);
+  const [accordionActiveTab, setAccordionActiveTab] = useState("details");
 
   const { data: bps } = useContractRead(DsponsorAdminContract, "feeBps");
   const maxBps = 10000;
@@ -88,30 +93,56 @@ const OfferPageContainer = () => {
   const [offers, setOffers] = useState(null);
   const [isMedia, setIsMedia] = useState(false);
 
+  const fetchAllOffersRef = React.useRef(false);
+
   useEffect(() => {
     const fetchOffers = async () => {
-      const offers = await fetchAllOffers(chainId);
-      setOffers(offers);
-    };
+      if (fetchAllOffersRef.current) return;
+      fetchAllOffersRef.current = true;
 
-    fetchOffers();
-  }, [chainId]);
-
-  useEffect(() => {
-    const fetchingOffer = async () => {
-      const offer = await fetchOffer(offerId, chainId);
-
-      if (offer) {
-        if (offer?.admins?.includes(address?.toLowerCase())) {
-          setIsMedia(true);
-        } else {
-          setIsMedia(false);
-        }
+      try {
+        const offers = await fetchAllOffers(chainId);
+        setOffers(offers);
+      } catch (error) {
+        console.error("Error fetching offers:", error);
+      } finally {
+        fetchAllOffersRef.current = false;
       }
     };
 
-    fetchingOffer();
-  }, [address, chainId, offerData, offerId]);
+    if (chainId) {
+      fetchOffers();
+    }
+  }, [chainId]);
+
+  const fetchOfferRef = React.useRef(false);
+
+  useEffect(() => {
+    const fetchingOffer = async () => {
+      if (fetchOfferRef.current) return;
+      fetchOfferRef.current = true;
+
+      try {
+        const offer = await fetchOffer(offerId, chainId);
+
+        if (offer) {
+          if (offer?.admins?.includes(address?.toLowerCase())) {
+            setIsMedia(true);
+          } else {
+            setIsMedia(false);
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching offer:", error);
+      } finally {
+        fetchOfferRef.current = false;
+      }
+    };
+
+    if (offerId && chainId && address) {
+      fetchingOffer();
+    }
+  }, [address, chainId, offerId]);
 
   useEffect(() => {
     if (offers) {
@@ -197,18 +228,27 @@ const OfferPageContainer = () => {
     setMediaShouldValidateAnAd(mediaShouldValidateAnAd);
   }, [itemProposals]);
 
-  useEffect(() => {
-    const fetchImage = async (image) => {
-      // get url image instead of ipfs:// starting url
-      if (image && image.startsWith("ipfs://")) {
-        const storage = new ThirdwebStorage({ clientId: "6f375d41f2a33f1f08f6042a65d49ec9" });
+  const fetchImage = async (image) => {
+    if (!image) {
+      setImageUrl(null);
+      return;
+    }
+
+    // get url image instead of ipfs:// starting url
+    if (typeof image === "string" && image.startsWith("ipfs://")) {
+      const storage = new ThirdwebStorage({ clientId: "6f375d41f2a33f1f08f6042a65d49ec9" });
+      try {
         const ipfsUrl = await storage.resolveScheme(image);
         setImageUrl(ipfsUrl);
-      } else {
-        setImageUrl(image);
+      } catch (error) {
+        console.error("Error fetching image:", error);
       }
-    };
+    } else {
+      setImageUrl(image);
+    }
+  };
 
+  useEffect(() => {
     if (image) {
       fetchImage(image);
     } else {
@@ -216,27 +256,39 @@ const OfferPageContainer = () => {
     }
   }, [image]);
 
+  const fetchOfferSecondRef = React.useRef(false);
+
   useEffect(() => {
     if (offerId && chainId) {
       const fetchAdsOffers = async () => {
-        const offer = await fetchOffer(offerId, chainId);
+        if (fetchOfferSecondRef.current) return;
+        fetchOfferSecondRef.current = true;
 
-        setOfferData(offer);
-        if (userAddress && offer?.admins?.includes(userAddress.toLowerCase())) {
-          setIsOwner(true);
-        }
+        try {
+          const offer = await fetchOffer(offerId, chainId);
 
-        console.log("offer", offer?.nftContract?.owner?.newOwner?.toLowerCase());
+          setOfferData(offer);
+          if (userAddress && offer?.admins?.includes(userAddress.toLowerCase())) {
+            setIsOwner(true);
+          }
 
-        if (
-          userAddress &&
-          userAddress?.toLowerCase() === offer?.nftContract?.owner?.newOwner?.toLowerCase()
-        ) {
-          setCanChangeMintPrice(true);
+          if (
+            userAddress &&
+            userAddress?.toLowerCase() === offer?.nftContract?.owner?.newOwner?.toLowerCase()
+          ) {
+            setCanChangeMintPrice(true);
+          }
+        } catch (error) {
+          console.error("Error fetching offer:", error);
+        } finally {
+          fetchOfferSecondRef.current = false;
         }
       };
       setSelectedChain(config[chainId]?.network);
-      fetchAdsOffers();
+
+      if (chainId && offerId) {
+        fetchAdsOffers();
+      }
     }
   }, [offerId, successFullRefuseModal, userAddress, chainId, setSelectedChain]);
 
@@ -275,8 +327,6 @@ const OfferPageContainer = () => {
       setRoyalties(0);
     }
   }, [offerData]);
-
-  console.log("offerData", offerData);
 
   const handleSubmit = async (submissionArgs) => {
     try {
@@ -319,88 +369,91 @@ const OfferPageContainer = () => {
   const modalHelper = {
     title: "Protocol Fees",
     body: (
-      <>
-        <div className="flex flex-col gap-8">
-          <span className="text-jacarta-100 text-sm">
-            The protocol fees (4%) are used to maintain the platform and the services provided. The
-            fees are calculated based on the price of the ad space and are automatically deducted
-            from the total amount paid by the buyer.
-          </span>
+      <div className="flex flex-col gap-8">
+        <span className="text-jacarta-100 text-sm">
+          The protocol fees (4%) are used to maintain the platform and the services provided. The
+          fees are calculated based on the price of the ad space and are automatically deducted from
+          the total amount paid by the buyer.
+        </span>
 
-          <div className="flex flex-col gap-2">
-            <span className="text-white font-semibold">Mint scenario</span>
-            <ul className="flex flex-col gap-2 list-disc text-sm" style={{ listStyleType: "disc" }}>
-              <li>
-                <span className="text-white">
-                  Amount sent to the creator: {price * 0.96} {currency?.symbol}
-                </span>
-              </li>
-              <li>
-                <span className="text-white">
-                  Protocol fees: {price * 0.04} {currency?.symbol}
-                </span>
-              </li>
-              <li>
-                <span className="text-white">
-                  Total: {price} {currency?.symbol}
-                </span>
-              </li>
-            </ul>
-          </div>
-
-          <div className="flex flex-col gap-2">
-            <span className="text-white font-semibold">Secondary Market scenario</span>
-            <ul className="flex flex-col gap-2 list-disc text-sm" style={{ listStyleType: "disc" }}>
-              <li>
-                <span className="text-white">
-                  Amount sent to the lister: {price - price * 0.1 - price * 0.04} {currency?.symbol}
-                </span>
-              </li>
-              <li>
-                <span className="text-white">
-                  Royalties sent to the creator: {price * 0.1} {currency?.symbol}
-                </span>
-              </li>
-              <li>
-                <span className="text-white">
-                  Protocol fees: {price * 0.04} {currency?.symbol}
-                </span>
-              </li>
-              <li>
-                <span className="text-white">
-                  Total: {price} {currency?.symbol}
-                </span>
-              </li>
-            </ul>
-          </div>
+        <div className="flex flex-col gap-2">
+          <span className="text-white font-semibold">Initial Sale Scenario</span>
+          <ul className="flex flex-col gap-2 list-disc text-sm" style={{ listStyleType: "disc" }}>
+            <li>
+              <span className="text-white">
+                Amount sent to the creator: {formatAndRoundPrice(price)} {currency?.symbol}
+              </span>
+            </li>
+            <li>
+              <span className="text-white">
+                Protocol fees: {formatAndRoundPrice(price * 0.04)} {currency?.symbol}
+              </span>
+            </li>
+            <li>
+              <span className="text-white">
+                Total: {formatAndRoundPrice(price + price * 0.04)} {currency?.symbol}
+              </span>
+            </li>
+          </ul>
         </div>
-      </>
+
+        <div className="flex flex-col gap-2">
+          <span className="text-white font-semibold">Secondary Market Scenario</span>
+          <ul className="flex flex-col gap-2 list-disc text-sm" style={{ listStyleType: "disc" }}>
+            <li>
+              <span className="text-white">
+                Amount sent to the lister: {formatAndRoundPrice(price - price * 0.1 - price * 0.04)}{" "}
+                {currency?.symbol}
+              </span>
+            </li>
+            <li>
+              <span className="text-white">
+                Royalties sent to the creator: {formatAndRoundPrice(price * 0.1)} {currency?.symbol}
+              </span>
+            </li>
+            <li>
+              <span className="text-white">
+                Protocol fees: {formatAndRoundPrice(price * 0.04)} {currency?.symbol}
+              </span>
+            </li>
+            <li>
+              <span className="text-white">
+                Total: {formatAndRoundPrice(price)} {currency?.symbol}
+              </span>
+            </li>
+          </ul>
+        </div>
+      </div>
     )
   };
 
   return (
-    <>
-      <Accordion.Root type="single" collapsible>
-        <Meta {...metadata} />
-        {/*  <!-- Item --> */}
-        <section className="relative lg:mt-24 lg:pt-12  mt-24 pt-12 pb-8">
-          <div className="container flex justify-center mb-6">
-            <h1 className="text-jacarta-900 font-bold font-display mb-6 text-center text-5xl dark:text-white md:text-left lg:text-6xl xl:text-6xl">
-              Offer{" "}
-            </h1>
-          </div>
-          <picture className="pointer-events-none absolute inset-0 -z-10 dark:hidden">
-            <Image
-              width={1519}
-              height={773}
-              priority
-              src="/images/gradient_light.jpg"
-              alt="gradient"
-              className="h-full w-full object-cover"
-            />
-          </picture>
-          <div className="container">
-            {/* <!-- Item --> */}
+    <Accordion.Root
+      type="single"
+      collapsible
+      value={accordionActiveTab}
+      onValueChange={setAccordionActiveTab}
+    >
+      <Meta {...metadata} />
+      {/*  <!-- Item --> */}
+      <section className="relative lg:mt-24 lg:pt-12  mt-24 pt-12 pb-8">
+        <div className="container flex justify-center mb-6">
+          <h1 className="text-jacarta-900 font-bold font-display mb-6 text-center text-5xl dark:text-white md:text-left lg:text-6xl xl:text-6xl">
+            Offer{" "}
+          </h1>
+        </div>
+        <picture className="pointer-events-none absolute inset-0 -z-10 dark:hidden">
+          <Image
+            width={1519}
+            height={773}
+            priority
+            src="/images/gradient_light.jpg"
+            alt="gradient"
+            className="h-full w-full object-cover"
+          />
+        </picture>
+        <div className="container">
+          {/* <!-- Item --> */}
 
           <div className="md:flex md:flex-wrap" key={id}>
             {/* <!-- Image --> */}
@@ -414,7 +467,7 @@ const OfferPageContainer = () => {
                   <img
                     src={imageUrl ?? ""}
                     alt="image"
-                    className="rounded-2xl cursor-pointer h-full object-contain w-full"
+                    className="rounded-2xl cursor-pointer h-full object-cover w-full"
                   />
                 )}
               </button>
@@ -440,312 +493,359 @@ const OfferPageContainer = () => {
                         />
                       </div>
 
-                        <button
-                          type="button"
-                          className="btn-close absolute top-6 right-6"
-                          onClick={() => setImageModal(false)}
+                      <button
+                        type="button"
+                        className="btn-close absolute top-6 right-6"
+                        onClick={() => setImageModal(false)}
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 24 24"
+                          width="24"
+                          height="24"
+                          className="h-6 w-6 fill-white"
                         >
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 24 24"
-                            width="24"
-                            height="24"
-                            className="h-6 w-6 fill-white"
-                          >
-                            <path fill="none" d="M0 0h24v24H0z" />
-                            <path d="M12 10.586l4.95-4.95 1.414 1.414-4.95 4.95 4.95 4.95-1.414 1.414-4.95-4.95-4.95 4.95-1.414-1.414 4.95-4.95-4.95-4.95L7.05 5.636z" />
-                          </svg>
-                        </button>
-                      </div>
+                          <path fill="none" d="M0 0h24v24H0z" />
+                          <path d="M12 10.586l4.95-4.95 1.414 1.414-4.95 4.95 4.95 4.95-1.414 1.414-4.95-4.95-4.95 4.95-1.414-1.414 4.95-4.95-4.95-4.95L7.05 5.636z" />
+                        </svg>
+                      </button>
                     </div>
-                    {/* <!-- end modal --> */}
                   </div>
-                )}
-              </figure>
-
-              {/* <!-- Details --> */}
-              <div className="md:w-3/5 md:basis-auto md:pl-8 lg:w-1/2 lg:pl-[3.75rem]">
-                {/* <!-- Collection / Likes / Actions --> */}
-                <div className="mb-3 flex">
-                  {/* <!-- Collection --> */}
-                  <div className="flex items-center">
-                    <Link
-                      href={`/profile/${offerData?.initialCreator}`}
-                      className="text-primaryPurple mr-2 text-sm font-bold"
-                    >
-                      {offerData?.initialCreator}
-                    </Link>
-                  </div>
+                  {/* <!-- end modal --> */}
                 </div>
+              )}
+            </figure>
 
-                <h2 className="font-display text-jacarta-900 mb-4 text-3xl font-semibold dark:text-white">
-                  {name}
-                </h2>
-
-                <div className="mb-8 flex items-center flex-wrap gap-2 space-x-4 whitespace-nowrap">
-                  {currency?.symbol && (
-                    <div className="flex items-center">
-                      <span className="text-green text-sm font-medium tracking-tight mr-2">
-                        {price} {currency?.symbol}
-                      </span>
-                      <ModalHelper {...modalHelper} size="small" />
-                    </div>
-                  )}
-
-                  {offerData.nftContract.allowList && (
-                    <span className="dark:text-jacarta-100 text-jacarta-100 text-sm">
-                      {offerData.nftContract.maxSupply -
-                        offerData.nftContract.tokens.filter((item) => item.mint != null).length}
-                      /{offerData.nftContract.maxSupply} available
-                    </span>
-                  )}
-                  <span className="text-jacarta-100 block text-sm dark:text-white">
-                    Creator <strong>{royalties}% royalties</strong>
-                  </span>
+            {/* <!-- Details --> */}
+            <div className="md:w-3/5 md:basis-auto md:pl-8 lg:w-1/2 lg:pl-[3.75rem]">
+              {/* <!-- Collection / Likes / Actions --> */}
+              <div className="mb-3 flex">
+                {/* <!-- Collection --> */}
+                <div className="flex items-center">
+                  <Link
+                    href={`/profile/${offerData?.initialCreator}`}
+                    className="text-primaryPurple mr-2 text-sm font-bold"
+                  >
+                    {offerData?.initialCreator}
+                  </Link>
                 </div>
-
-                <p className="dark:text-jacarta-100 mb-10">{description}</p>
-
-                {isOwner && (
-                  <div className="dark:bg-secondaryBlack dark:border-jacarta-600 border-jacarta-100 rounded-2lg border bg-white p-8">
-                    <div className=" sm:flex sm:flex-wrap">
-                      <span className="dark:text-jacarta-100 text-jacarta-100 text-sm">
-                        This page allows you to oversee submitted ads, offering tools to either
-                        approve or reject them. Approve ads to make them live or reject those that
-                        don&apos;t meet your standards, streamlining the content that reaches your
-                        audience while maintaining quality control on your platform.{" "}
-                      </span>
-                    </div>
-                  </div>
-                )}
               </div>
-            </div>
-          </div>
-        </section>
 
-        <Accordion.Item value="details">
-          <div className="container">
-            <Accordion.Header className="w-full">
-              <Accordion.Trigger className="data-[state=open]:bg-primaryPurple w-full flex items-center justify-center gap-4 mb-6 border border-primaryPurple hover:bg-primaryPurple cursor-pointer p-2 rounded-lg">
-                <h2 className="text-jacarta-900 font-bold font-display text-center text-3xl dark:text-white ">
-                  Details
-                </h2>
-              </Accordion.Trigger>
-            </Accordion.Header>
+              <h2 className="font-display text-jacarta-900 mb-4 text-3xl font-semibold dark:text-white">
+                {name}
+              </h2>
 
-            <Accordion.Content className="mb-8">
-              <ItemsTabs
-                contractAddress={offerData?.nftContract.id}
-                offerId={offerId}
-                initialCreator={offerData?.initialCreator}
-                isToken={false}
-                offerData={offerData}
-                chainId={chainId}
-              />
-            </Accordion.Content>
-          </div>
-        </Accordion.Item>
+              <div className="mb-8 flex items-center flex-wrap gap-2 space-x-4 whitespace-nowrap">
+                {activated_features.canSeeModalHelperOnOfferPage && (
+                  <>
+                    {currency?.symbol && (
+                      <div className="flex items-center">
+                        <span className="text-green text-sm font-medium tracking-tight mr-2">
+                          {price} {currency?.symbol}
+                        </span>
+                        <ModalHelper {...modalHelper} size="small" />
+                      </div>
+                    )}
+                  </>
+                )}
 
-        <Accordion.Item value="search">
-          {!offerData.nftContract.allowList && (
-            <div className="container flex flex-col justify-center mb-6">
-              <Accordion.Header className="w-full">
-                <Accordion.Trigger className="data-[state=open]:bg-primaryPurple w-full flex items-center justify-center gap-4 mb-6 border border-primaryPurple hover:bg-primaryPurple cursor-pointer p-2 rounded-lg">
-                  <h2 className="text-jacarta-900 font-bold font-display text-center text-3xl dark:text-white ">
-                    Search
-                  </h2>
-                </Accordion.Trigger>
-              </Accordion.Header>
+                {offerData.nftContract.allowList && (
+                  <span className="dark:text-jacarta-100 text-jacarta-100 text-sm">
+                    {offerData.nftContract.maxSupply -
+                      offerData.nftContract.tokens.filter((item) => item.mint != null).length}
+                    /{offerData.nftContract.maxSupply} available
+                  </span>
+                )}
+                <span className="text-jacarta-100 block text-sm dark:text-white">
+                  Creator <strong>{royalties}% royalties</strong>
+                </span>
+              </div>
 
-              <Accordion.Content>
+              <p className="dark:text-jacarta-100 mb-10">{description}</p>
+              <p className="dark:text-jacarta-100 mb-10">{description}</p>
+
+              {(offerData?.disable ||
+                new Date(offerData?.metadata?.offer?.valid_to) < new Date() ||
+                !offerData?.nftContract?.prices[0]?.enabled) && <Disable isOffer={true} />}
+
+              {isOwner && (
                 <div className="dark:bg-secondaryBlack dark:border-jacarta-600 border-jacarta-100 rounded-2lg border bg-white p-8">
                   <div className=" sm:flex sm:flex-wrap">
                     <span className="dark:text-jacarta-100 text-jacarta-100 text-sm">
-                      You can check if a word is available for purchase by using the search bar.
-                      Simply type the word into the search bar and press enter to see if it is
-                      available. This feature allows you to quickly find out if the word you are
-                      interested in is free for acquisition.{" "}
+                      This page allows you to oversee submitted ads, offering tools to either
+                      approve or reject them. Approve ads to make them live or reject those that
+                      don&apos;t meet your standards, streamlining the content that reaches your
+                      audience while maintaining quality control on your platform.{" "}
                     </span>
                   </div>
                 </div>
-                <div className="flex justify-center mt-6">
-                  <Form offerId={offerId} onUrlChange={handleUrlChange} />
-                </div>
-                {urlFromChild && (
-                  <div className="grid grid-cols-1 gap-[1.875rem] md:grid-cols-2 lg:grid-cols-4">
-                    <article className="relative">
-                      <div className="dark:bg-secondaryBlack dark:border-jacarta-700 border-jacarta-100 rounded-2xl block border bg-white p-[1.1875rem] transition-shadow hover:shadow-lg text-jacarta-100">
-                        {isWordAlreadyTaken ? (
-                          <span className="text-red  ">This word is already taken ❌</span>
-                        ) : (
-                          <span className="text-green ">This word is available 🎉</span>
-                        )}
-                        <figure className="mt-2">
-                          <Link href={urlFromChild ?? "#"}>
-                            {imageUrl && (
-                              <Image
-                                src={imageUrl ?? ""}
-                                alt="logo"
-                                height={230}
-                                width={230}
-                                className="rounded-[0.625rem] w-full lg:h-[230px] object-contain"
-                                loading="lazy"
-                              />
-                            )}
-                          </Link>
-                        </figure>
-                        <div className="mt-4 flex items-center justify-between gap-4">
-                          <Tippy content={<span className="p-2">{name}</span>}>
-                            <Link
-                              href={urlFromChild ?? "#"}
-                              className="overflow-hidden text-ellipsis whitespace-nowrap min-w-[120px]"
-                            >
-                              <span className="font-display  text-jacarta-900 hover:text-primaryPurple text-base dark:text-white ">
-                                {name}
-                              </span>
-                            </Link>
-                          </Tippy>
-
-                          <Tippy content={<span className="p-2">{tokenData}</span>}>
-                            <div className="dark:border-jacarta-600 border-jacarta-100 max-w-[100px] overflow-hidden text-ellipsis flex items-center whitespace-nowrap rounded-md border py-1 px-2">
-                              <span className="text-green text-sm font-medium tracking-tight overflow-hidden text-ellipsis whitespace-nowrap">
-                                {" "}
-                                {tokenData}
-                              </span>
-                            </div>
-                          </Tippy>
-                        </div>
-                      </div>
-                    </article>
-                  </div>
-                )}
-              </Accordion.Content>
+              )}
             </div>
-          )}
-        </Accordion.Item>
-
-        <Accordion.Item value="validation">
-          <div className="container">
-            {activated_features.canSeeSubmittedAds && (
-              <>
-                <Accordion.Header className="w-full">
-                  <Accordion.Trigger className="data-[state=open]:bg-primaryPurple w-full flex items-center justify-center gap-4 mb-6 border border-primaryPurple hover:bg-primaryPurple cursor-pointer p-2 rounded-lg">
-                    <h2 className="text-jacarta-900 font-bold font-display text-center text-3xl dark:text-white ">
-                      Validation
-                    </h2>
-                  </Accordion.Trigger>
-                </Accordion.Header>
-                <Accordion.Content>
-                  <Validation
-                    chainId={chainId}
-                    setSuccessFullRefuseModal={setSuccessFullRefuseModal}
-                    setSelectedItems={setSelectedItems}
-                    selectedItems={selectedItems}
-                    offer={offerData}
-                    offerId={offerId}
-                    isOwner={isOwner}
-                    handleSubmit={handleSubmit}
-                    successFullRefuseModal={successFullRefuseModal}
-                    setRefusedValidatedAdModal={setRefusedValidatedAdModal}
-                    refusedValidatedAdModal={refusedValidatedAdModal}
-                    sponsorHasAtLeastOneRejectedProposalAndNoPending={
-                      sponsorHasAtLeastOneRejectedProposalAndNoPending
-                    }
-                    setSponsorHasAtLeastOneRejectedProposalAndNoPending={
-                      setSponsorHasAtLeastOneRejectedProposalAndNoPending
-                    }
-                    mediaShouldValidateAnAd={mediaShouldValidateAnAd}
-                    isMedia={isMedia}
-                    isSponsor={isOwner}
-                    itemTokenId={offerData?.nftContract?.id}
-                  />
-                </Accordion.Content>
-              </>
-            )}
           </div>
-        </Accordion.Item>
+        </div>
+      </section>
 
-        <Accordion.Item value="offerManagement">
-          {isOwner && (
-            <div className="container">
+      <Accordion.Item value="details">
+        <div className="container">
+          <Accordion.Header className="w-full">
+            <Accordion.Trigger
+              className={`${accordionActiveTab === "details" && "bg-primaryPurple"} w-full flex items-center justify-center gap-4 mb-6 border border-primaryPurple hover:bg-primaryPurple cursor-pointer p-2 rounded-lg`}
+            >
+              <h2 className="text-jacarta-900 font-bold font-display text-center text-3xl dark:text-white ">
+                Details
+              </h2>
+              <ChevronDownIcon
+                className={`w-6 h-6 duration-300 ${accordionActiveTab === "details" && "transform rotate-180"}`}
+              />
+            </Accordion.Trigger>
+          </Accordion.Header>
+
+          <Accordion.Content className="mb-8">
+            <ItemsTabs
+              contractAddress={offerData?.nftContract.id}
+              offerId={offerId}
+              initialCreator={offerData?.initialCreator}
+              isToken={false}
+              offerData={offerData}
+              chainId={chainId}
+            />
+          </Accordion.Content>
+        </div>
+      </Accordion.Item>
+
+      <Accordion.Item value="search">
+        {!offerData.nftContract.allowList && (
+          <div className="container flex flex-col justify-center mb-6">
+            <Accordion.Header className="w-full">
+              <Accordion.Trigger
+                className={`${accordionActiveTab === "search" && "bg-primaryPurple"} w-full flex items-center justify-center gap-4 mb-6 border border-primaryPurple hover:bg-primaryPurple cursor-pointer p-2 rounded-lg`}
+              >
+                <h2 className="text-jacarta-900 font-bold font-display text-center text-3xl dark:text-white ">
+                  Search
+                </h2>
+                <ChevronDownIcon
+                  className={`w-6 h-6 duration-300 ${accordionActiveTab === "search" && "transform rotate-180"}`}
+                />
+              </Accordion.Trigger>
+            </Accordion.Header>
+
+            <Accordion.Content>
+              <div className="dark:bg-secondaryBlack dark:border-jacarta-600 border-jacarta-100 rounded-2lg border bg-white p-8">
+                <div className=" sm:flex sm:flex-wrap">
+                  <span className="dark:text-jacarta-100 text-jacarta-100 text-sm">
+                    You can check if a word is available for purchase by using the search bar.
+                    Simply type the word into the search bar and press enter to see if it is
+                    available. This feature allows you to quickly find out if the word you are
+                    interested in is free for acquisition.{" "}
+                  </span>
+                </div>
+              </div>
+              <div className="flex justify-center mt-6">
+                <Form offerId={offerId} onUrlChange={handleUrlChange} />
+              </div>
+              {urlFromChild && (
+                <div className="grid grid-cols-1 gap-[1.875rem] md:grid-cols-2 lg:grid-cols-4">
+                  <article className="relative">
+                    <div className="dark:bg-secondaryBlack dark:border-jacarta-700 border-jacarta-100 rounded-2xl block border bg-white p-[1.1875rem] transition-shadow hover:shadow-lg text-jacarta-100">
+                      {isWordAlreadyTaken ? (
+                        <span className="text-red  ">This word is already taken ❌</span>
+                      ) : (
+                        <span className="text-green ">This word is available 🎉</span>
+                      )}
+                      <figure className="mt-2">
+                        <Link href={urlFromChild ?? "#"}>
+                          {imageUrl && (
+                            <Image
+                              src={imageUrl ?? ""}
+                              alt="logo"
+                              height={230}
+                              width={230}
+                              className="rounded-[0.625rem] w-full lg:h-[230px] object-contain"
+                              loading="lazy"
+                            />
+                          )}
+                        </Link>
+                      </figure>
+                      <div className="mt-4 flex items-center justify-between gap-4">
+                        <Tippy content={<span className="p-2">{name}</span>}>
+                          <Link
+                            href={urlFromChild ?? "#"}
+                            className="overflow-hidden text-ellipsis whitespace-nowrap min-w-[120px]"
+                          >
+                            <span className="font-display  text-jacarta-900 hover:text-primaryPurple text-base dark:text-white ">
+                              {name}
+                            </span>
+                          </Link>
+                        </Tippy>
+
+                        <Tippy content={<span className="p-2">{tokenData}</span>}>
+                          <div className="dark:border-jacarta-600 border-jacarta-100 max-w-[100px] overflow-hidden text-ellipsis flex items-center whitespace-nowrap rounded-md border py-1 px-2">
+                            <span className="text-green text-sm font-medium tracking-tight overflow-hidden text-ellipsis whitespace-nowrap">
+                              {" "}
+                              {tokenData}
+                            </span>
+                          </div>
+                        </Tippy>
+                      </div>
+                    </div>
+                  </article>
+                </div>
+              )}
+            </Accordion.Content>
+          </div>
+        )}
+      </Accordion.Item>
+
+      <Accordion.Item value="validation">
+        <div className="container">
+          {activated_features.canSeeSubmittedAds && (
+            <>
               <Accordion.Header className="w-full">
-                <Accordion.Trigger className="data-[state=open]:bg-primaryPurple w-full flex items-center justify-center gap-4 mb-6 border border-primaryPurple hover:bg-primaryPurple cursor-pointer p-2 rounded-lg">
+                <Accordion.Trigger
+                  className={`${accordionActiveTab === "validation" && "bg-primaryPurple"} w-full flex items-center justify-center gap-4 mb-6 border border-primaryPurple hover:bg-primaryPurple cursor-pointer p-2 rounded-lg`}
+                >
+                  {isOwner && sponsorHasAtLeastOneRejectedProposalAndNoPending && (
+                    <InfoIcon text="You have at least one rejected proposal and no pending proposal.">
+                      <ExclamationCircleIcon className="w-6 h-6 text-red" />
+                    </InfoIcon>
+                  )}
+                  {isMedia && mediaShouldValidateAnAd && (
+                    <InfoIcon text="You have at least one ad to validate or to refuse.">
+                      <ExclamationCircleIcon className="w-6 h-6 text-red" />
+                    </InfoIcon>
+                  )}
                   <h2 className="text-jacarta-900 font-bold font-display text-center text-3xl dark:text-white ">
-                    Offer Management
+                    Validation
                   </h2>
+                  <ChevronDownIcon
+                    className={`w-6 h-6 duration-300 ${accordionActiveTab === "validation" && "transform rotate-180"}`}
+                  />
                 </Accordion.Trigger>
               </Accordion.Header>
-
               <Accordion.Content>
-                <Tabs className="tabs">
-                  <TabList className="nav nav-tabs hide-scrollbar mb-12 flex items-center justify-start overflow-x-auto overflow-y-hidden border-b border-jacarta-100 pb-px dark:border-jacarta-600 md:justify-center">
-                    <Tab
-                      className="nav-item"
-                      onClick={() => setOfferManagementActiveTab("integration")}
-                    >
-                      <button
-                        className={
-                          offerManagementActiveTab === "integration"
-                            ? "nav-link hover:text-jacarta-900 text-jacarta-100 relative flex items-center whitespace-nowrap py-3 px-4 dark:hover:text-white active"
-                            : "nav-link hover:text-jacarta-900 text-jacarta-100 relative flex items-center whitespace-nowrap py-3 px-4 dark:hover:text-white"
-                        }
-                      >
-                        Integration
-                      </button>
-                    </Tab>
-                    <Tab
-                      className="nav-item"
-                      key={id}
-                      onClick={() => setOfferManagementActiveTab("updateOffer")}
-                    >
-                      <button
-                        className={
-                          offerManagementActiveTab === "updateOffer"
-                            ? "nav-link hover:text-jacarta-900 text-jacarta-100 relative flex items-center whitespace-nowrap py-3 px-4 dark:hover:text-white active"
-                            : "nav-link hover:text-jacarta-900 text-jacarta-100 relative flex items-center whitespace-nowrap py-3 px-4 dark:hover:text-white"
-                        }
-                      >
-                        Update Offer
-                      </button>
-                    </Tab>
-                    <Tab
-                      className="nav-item"
-                      onClick={() => setOfferManagementActiveTab("changeMintPrice")}
-                    >
-                      <button
-                        className={
-                          offerManagementActiveTab === "changeMintPrice"
-                            ? "nav-link hover:text-jacarta-900 text-jacarta-100 relative flex items-center whitespace-nowrap py-3 px-4 dark:hover:text-white active"
-                            : "nav-link hover:text-jacarta-900 text-jacarta-100 relative flex items-center whitespace-nowrap py-3 px-4 dark:hover:text-white"
-                        }
-                      >
-                        Change Mint Price
-                      </button>
-                    </Tab>
-                  </TabList>
-
-                  <TabPanel>
-                    <Integration
-                      chainId={chainId}
-                      offerId={offerId}
-                      setCopied={setCopied}
-                      copied={copied}
-                      offerTokens={offerData?.nftContract?.tokens}
-                    />
-                  </TabPanel>
-                  <TabPanel>
-                    <UpdateOffer offer={offerData} />
-                  </TabPanel>
-                  <TabPanel>
-                    <ChangeMintPrice offer={offerData} currency={currency} />
-                  </TabPanel>
-                </Tabs>
+                <Validation
+                  chainId={chainId}
+                  setSuccessFullRefuseModal={setSuccessFullRefuseModal}
+                  setSelectedItems={setSelectedItems}
+                  selectedItems={selectedItems}
+                  offer={offerData}
+                  offerId={offerId}
+                  isOwner={isOwner}
+                  handleSubmit={handleSubmit}
+                  successFullRefuseModal={successFullRefuseModal}
+                  setRefusedValidatedAdModal={setRefusedValidatedAdModal}
+                  refusedValidatedAdModal={refusedValidatedAdModal}
+                  sponsorHasAtLeastOneRejectedProposalAndNoPending={
+                    sponsorHasAtLeastOneRejectedProposalAndNoPending
+                  }
+                  setSponsorHasAtLeastOneRejectedProposalAndNoPending={
+                    setSponsorHasAtLeastOneRejectedProposalAndNoPending
+                  }
+                  mediaShouldValidateAnAd={mediaShouldValidateAnAd}
+                  isMedia={isMedia}
+                  isSponsor={isOwner}
+                  itemTokenId={offerData?.nftContract?.id}
+                />
               </Accordion.Content>
-            </div>
+            </>
           )}
-        </Accordion.Item>
-      </Accordion.Root>
-    </>
+        </div>
+      </Accordion.Item>
+
+      <Accordion.Item value="offerManagement">
+        {isOwner && (
+          <div className="container">
+            <Accordion.Header className="w-full">
+              <Accordion.Trigger
+                className={`${accordionActiveTab === "offerManagement" && "bg-primaryPurple"} w-full flex items-center justify-center gap-4 mb-6 border border-primaryPurple hover:bg-primaryPurple cursor-pointer p-2 rounded-lg`}
+              >
+                <h2 className="text-jacarta-900 font-bold font-display text-center text-3xl dark:text-white ">
+                  Offer Management
+                </h2>
+                <ChevronDownIcon
+                  className={`w-6 h-6 duration-300 ${accordionActiveTab === "offerManagement" && "transform rotate-180"}`}
+                />
+              </Accordion.Trigger>
+            </Accordion.Header>
+
+            <Accordion.Content>
+              <Tabs className="tabs">
+                <TabList className="nav nav-tabs hide-scrollbar mb-12 flex items-center justify-start overflow-x-auto overflow-y-hidden border-b border-jacarta-100 pb-px dark:border-jacarta-600 md:justify-center">
+                  <Tab
+                    className="nav-item"
+                    onClick={() => setOfferManagementActiveTab("integration")}
+                  >
+                    <button
+                      className={
+                        offerManagementActiveTab === "integration"
+                          ? "nav-link hover:text-jacarta-900 text-jacarta-100 relative flex items-center whitespace-nowrap py-3 px-4 dark:hover:text-white active font-semibold"
+                          : "nav-link hover:text-jacarta-900 text-jacarta-100 relative flex items-center whitespace-nowrap py-3 px-4 dark:hover:text-white font-semibold"
+                      }
+                    >
+                      <span className="mr-2">
+                        <BlocksIcon className="w-4 h-4" />
+                      </span>
+                      Integration
+                    </button>
+                  </Tab>
+                  <Tab
+                    className="nav-item"
+                    key={id}
+                    onClick={() => setOfferManagementActiveTab("updateOffer")}
+                  >
+                    <button
+                      className={
+                        offerManagementActiveTab === "updateOffer"
+                          ? "nav-link hover:text-jacarta-900 text-jacarta-100 relative flex items-center whitespace-nowrap py-3 px-4 dark:hover:text-white active font-semibold"
+                          : "nav-link hover:text-jacarta-900 text-jacarta-100 relative flex items-center whitespace-nowrap py-3 px-4 dark:hover:text-white font-semibold"
+                      }
+                    >
+                      <span className="mr-2">
+                        <RefreshCwIcon className="w-4 h-4" />
+                      </span>
+                      Update Offer
+                    </button>
+                  </Tab>
+                  <Tab
+                    className="nav-item"
+                    onClick={() => setOfferManagementActiveTab("changeMintPrice")}
+                  >
+                    <button
+                      className={
+                        offerManagementActiveTab === "changeMintPrice"
+                          ? "nav-link hover:text-jacarta-900 text-jacarta-100 relative flex items-center whitespace-nowrap py-3 px-4 dark:hover:text-white active font-semibold"
+                          : "nav-link hover:text-jacarta-900 text-jacarta-100 relative flex items-center whitespace-nowrap py-3 px-4 dark:hover:text-white font-semibold"
+                      }
+                    >
+                      <span className="mr-2">
+                        <BadgePercentIcon className="w-4 h-4" />
+                      </span>
+                      Change Initial Price
+                    </button>
+                  </Tab>
+                </TabList>
+
+                <TabPanel>
+                  <Integration
+                    chainId={chainId}
+                    offerId={offerId}
+                    setCopied={setCopied}
+                    copied={copied}
+                    offerTokens={offerData?.nftContract?.tokens}
+                  />
+                </TabPanel>
+                <TabPanel>
+                  <UpdateOffer offer={offerData} />
+                </TabPanel>
+                <TabPanel>
+                  <ChangeMintPrice offer={offerData} currency={currency} />
+                </TabPanel>
+              </Tabs>
+            </Accordion.Content>
+          </div>
+        )}
+      </Accordion.Item>
+    </Accordion.Root>
   );
 };
 

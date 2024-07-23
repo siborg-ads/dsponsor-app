@@ -134,7 +134,6 @@ export default function BuyWithCrossmintButton(props = {}) {
               actions?.error?.(event);
               break;
             default:
-              console.log(event);
               break;
           }
         }}

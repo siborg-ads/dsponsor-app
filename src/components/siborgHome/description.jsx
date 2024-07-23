@@ -3,7 +3,6 @@ import Link from "next/link";
 import Modal from "react-modal";
 import Image from "next/image";
 import { XMarkIcon } from "@heroicons/react/20/solid";
-import { ArrowRightIcon } from "@heroicons/react/24/solid";
 
 const socials = [
   {

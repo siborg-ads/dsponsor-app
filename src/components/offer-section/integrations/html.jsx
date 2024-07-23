@@ -86,7 +86,6 @@ const HtmlIntegration = ({ chainId, offerId, offerTokens }) => {
       ) {
         tableHTML += `<tr>`;
 
-        const totalRows = Math.ceil(offerTokens?.length / numberOfColumns);
         const isLastRow = rowIndex === numberOfRows - 1;
         let realElementsInLastRow = sortedOfferTokens.length % numberOfColumns;
         realElementsInLastRow =

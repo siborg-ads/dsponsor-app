@@ -4,18 +4,19 @@ import Link from "next/link";
 import { useChainContext } from "../../contexts/hooks/useChainContext";
 import { fetchAllMarketplaceBidsByBidder } from "../../providers/methods/fetchAllMarketplaceBids";
 import formatAndRound from "../../utils/formatAndRound";
-import { ThirdwebSDK } from "@thirdweb-dev/sdk";
 import { BigNumber } from "ethers";
 import { formatUnits } from "ethers/lib/utils";
+import { Loader2Icon } from "lucide-react";
 
 const Bids = ({ manageAddress }) => {
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [filteredLastActivities, setFilteredLastActivities] = useState([]);
   const [marketplaceBids, setMarketplaceBids] = useState([]);
+  const [fetchedBids, setFetchedBids] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const { currentChainObject } = useChainContext();
-  const chainExplorer = currentChainObject?.explorerBaseUrl;
   const chainId = currentChainObject?.chainId;
 
   const formatBidTransactions = useCallback(
@@ -108,16 +109,32 @@ const Bids = ({ manageAddress }) => {
     }
   }, [startDate, endDate, marketplaceBids, formatBidTransactions]);
 
+  const requestInitiatedRef = React.useRef(false);
+
   useEffect(() => {
     const fetchMarketplaceBids = async () => {
-      const data = await fetchAllMarketplaceBidsByBidder(chainId, manageAddress);
-      setMarketplaceBids(data?.marketplaceBids);
+      setIsLoading(true);
+      if (requestInitiatedRef.current) {
+        return;
+      }
+      requestInitiatedRef.current = true;
+
+      try {
+        const data = await fetchAllMarketplaceBidsByBidder(chainId, manageAddress);
+        setMarketplaceBids(data?.marketplaceBids);
+        setFetchedBids(true);
+      } catch (error) {
+        console.error("Error fetching marketplace bids:", error);
+      } finally {
+        requestInitiatedRef.current = false;
+        setIsLoading(false);
+      }
     };
 
-    if (chainId && manageAddress) {
+    if (chainId && manageAddress && !fetchedBids) {
       fetchMarketplaceBids();
     }
-  }, [chainId, manageAddress]);
+  }, [chainId, fetchedBids, manageAddress]);
 
   const toDisplayType = (type) => {
     switch (type) {
@@ -136,7 +153,9 @@ const Bids = ({ manageAddress }) => {
     <>
       <div className="flex flex-col justify-center gap-4">
         <div className="flex w-full items-center justify-between">
-          <span className="text-white text-lg font-bold">Bids</span>
+          <span className="text-white text-lg font-bold flex items-center gap-2">
+            Bids {isLoading && <Loader2Icon className="animate-spin w-4 h-auto" />}
+          </span>
           <div>
             <DateRangePicker
               aria-label="Select date range"

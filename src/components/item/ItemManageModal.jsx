@@ -16,7 +16,8 @@ const ItemManageModal = ({
   successFullListing,
   royalties,
   dsponsorNFTContract,
-  dsponsorMpContract
+  dsponsorMpContract,
+  tokenId
 }) => {
   const [selectedListingType, setSelectedListingType] = useState([]);
   const { currentChainObject } = useChainContext();
@@ -118,9 +119,11 @@ const ItemManageModal = ({
         const price = ethers.utils
           .parseUnits(selectedUnitPrice.toString(), tokenDecimals)
           .toString();
+        const assetContract = offerData?.nftContract?.id;
+
         const args = {
-          assetContract: offerData?.nftContract?.id,
-          tokenId: offerData?.nftContract?.tokens[0].tokenId,
+          assetContract: assetContract,
+          tokenId: tokenId,
           startTime: startTime,
           secondsUntilEndTime: secondsUntilEndTime,
           quantityToList: 1,

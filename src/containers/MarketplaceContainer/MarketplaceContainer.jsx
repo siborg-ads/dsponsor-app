@@ -26,20 +26,31 @@ const MarketplaceContainer = () => {
   const { currentChainObject } = useChainContext();
   const chainId = currentChainObject?.chainId;
 
+  const fetchAllListedTokenRef = React.useRef(false);
+
   useEffect(() => {
     if (chainId) {
       const fetchAdsOffers = async () => {
-        const listingArray = [];
+        if (fetchAllListedTokenRef.current) return;
+        fetchAllListedTokenRef.current = true;
 
-        for (const [chainId] of Object.entries(config)) {
-          const listings = await fetchAllListedToken(chainId);
-          listingArray.push(...listings);
+        try {
+          const listingArray = [];
+
+          for (const [chainId] of Object.entries(config)) {
+            const listings = await fetchAllListedToken(chainId);
+            listingArray.push(...listings);
+          }
+
+          setListedAuctionToken(listingArray);
+        } catch (error) {
+          console.error("Error fetching marketplace listings:", error);
+        } finally {
+          fetchAllListedTokenRef.current = false;
         }
-
-        setListedAuctionToken(listingArray);
       };
 
-      fetchAdsOffers();
+      if (chainId) fetchAdsOffers();
     }
   }, [router, address, chainId]);
 

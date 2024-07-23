@@ -1,14 +1,14 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import MainAuctions from "../../components/siborgHome/mainAuctions";
 import MarketplaceHome from "../../components/siborgHome/marketplaceHome";
 import Description from "../../components/siborgHome/description";
 import { fetchAllListedTokenWithoutFilter } from "../../providers/methods/fetchAllListedTokenWithoutFilter";
 import { formatUnits } from "ethers/lib/utils";
 import formatAndRound from "../../utils/formatAndRound";
-import config from "../../config/config";
 import Meta from "../../components/Meta";
+import { useChainContext } from "../../contexts/hooks/useChainContext";
 
 const HomeContainer = () => {
   const [chainIdFilter, setChainIdFilter] = useState(null);
@@ -18,28 +18,31 @@ const HomeContainer = () => {
   const [isAuctionsLoading, setIsAuctionsLoading] = useState(true);
   const [auctionsFetched, setAuctionsFetched] = useState(false);
 
-  useEffect(() => {
-    if (auctionsFetched) return;
+  const { currentChainObject } = useChainContext();
+  const chainId = currentChainObject?.chainId;
 
-    const fetchData = async () => {
+  const dataFetchedRef = useRef(false);
+
+  useEffect(() => {
+    const fetchData = async (chainId, allTokens) => {
+      if (dataFetchedRef.current) return;
+
       setIsAuctionsLoading(true);
-      const allListedTokenWithoutFilterArray = [];
-      if (config !== null && config !== undefined) {
-        for (const [chainId] of Object.entries(config)) {
-          const data = await fetchAllListedTokenWithoutFilter(chainId, allTokens);
-          allListedTokenWithoutFilterArray.push(...data);
-        }
-        setAuctionsTemp(allListedTokenWithoutFilterArray);
-      } else {
-        setAuctionsTemp([]);
-      }
+
+      let allListedTokenWithoutFilterArray = [];
+      const data = await fetchAllListedTokenWithoutFilter(chainId, allTokens);
+      allListedTokenWithoutFilterArray.push(...data);
+
+      setAuctionsTemp(allListedTokenWithoutFilterArray);
 
       setAuctionsFetched(true);
       setIsAuctionsLoading(false);
     };
 
-    fetchData();
-  }, [allTokens, auctionsFetched]);
+    if (chainId && !auctionsFetched && allTokens) {
+      fetchData(chainId, allTokens);
+    }
+  }, [allTokens, auctionsFetched, chainId]);
 
   useEffect(() => {
     if (auctionsTemp.length === 0) return;

@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { Tab, TabList, TabPanel, Tabs } from "react-tabs";
-import { Divider } from "@nextui-org/react";
 import ValidatedRefusedItems from "../collections/validated_refused_items";
 import ReviewCarousel from "../carousel/review_carousel";
 import AddProposalRefusedModal from "../modal/adProposalRefusedModal";
 import { ExclamationCircleIcon } from "@heroicons/react/24/solid";
 import InfoIcon from "../informations/infoIcon";
+import { CheckIcon, ClockIcon, XIcon } from "lucide-react";
 
 const Validation = ({
   chainId,
@@ -24,8 +24,7 @@ const Validation = ({
   sponsorHasAtLeastOneRejectedProposalAndNoPending,
   setSponsorHasAtLeastOneRejectedProposalAndNoPending,
   mediaShouldValidateAnAd,
-  isMedia,
-  itemTokenId
+  isMedia
 }) => {
   const [pendingProposalData, setPendingProposalData] = useState([]);
   const [validatedProposalData, setValidatedProposalData] = useState([]);
@@ -40,18 +39,18 @@ const Validation = ({
     {
       id: 1,
       text: "Pending",
-      icon: "owned"
+      icon: <ClockIcon className="w-4 h-4" />
     },
     {
       id: 2,
       text: "Validated",
-      icon: "owned"
+      icon: <CheckIcon className="w-4 h-4" />
     },
 
     {
       id: 3,
       text: "Refused",
-      icon: "activity"
+      icon: <XIcon className="w-4 h-4" />
     }
   ];
   useEffect(() => {
@@ -215,10 +214,8 @@ const Validation = ({
                         <ExclamationCircleIcon className="h-5 w-5 text-red dark:text-red" />
                       </InfoIcon>
                     )}
-                  <svg className="icon mr-1 h-5 w-5 fill-current">
-                    <use xlinkHref={`/icons.svg#icon-${icon}`}></use>
-                  </svg>
-                  <span className="font-display text-base font-medium">
+                  {icon}
+                  <span className="font-display text-base font-medium ml-2">
                     <div className="flex items-center">
                       <span>
                         {text} (
