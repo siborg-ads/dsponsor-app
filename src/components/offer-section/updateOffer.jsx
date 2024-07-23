@@ -338,6 +338,28 @@ const UpdateOffer = ({ offer }) => {
   };
 
   const handleUpdateOffer = async (originalMetadatas) => {
+    // check image ratio
+    // ratio should be "0" or "x:x" specific format with x being a number
+    if (imageRatio !== "" && imageRatio !== "0") {
+      const [width, height] = imageRatio.split(":");
+      const length = imageRatio.split(":").length;
+
+      if (length > 2) {
+        toast("Image ratio is not correct, it should be 0 or width:height", { type: "error" });
+        return;
+      }
+
+      if (isNaN(width) || isNaN(height)) {
+        toast("Image ratio is not correct, it should be 0 or width:height", { type: "error" });
+        return;
+      }
+
+      if (width === "" || height === "") {
+        toast("Image ratio is not correct, it should be 0 or width:height", { type: "error" });
+        return;
+      }
+    }
+
     // remove empty strings from admins and validators
     const updatedAdmins = admins?.filter((admin) => !!admin) ?? [];
     const updatedValidators = validators?.filter((validator) => !!validator) ?? [];
