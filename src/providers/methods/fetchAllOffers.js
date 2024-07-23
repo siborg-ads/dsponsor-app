@@ -16,6 +16,7 @@ export const fetchAllOffers = async (chainId) => {
         metadataURL
         id # offerId
         disable
+        initialCreator
         creationTimestamp # data (unix time)
         adParameters(where: { enable: true }) {
           enable
