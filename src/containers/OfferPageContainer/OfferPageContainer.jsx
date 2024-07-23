@@ -14,7 +14,7 @@ import Integration from "../../components/offer-section/integration";
 import { ThirdwebStorage } from "@thirdweb-dev/storage";
 import * as Accordion from "@radix-ui/react-accordion";
 import { ChevronDownIcon } from "@heroicons/react/24/solid";
-import ExclamationCircleIcon from "@heroicons/react/24/solid";
+import { ExclamationCircleIcon } from "@heroicons/react/24/solid";
 import InfoIcon from "../../components/informations/infoIcon";
 
 import { fetchOffer } from "../../providers/methods/fetchOffer";
@@ -71,7 +71,6 @@ const OfferPageContainer = () => {
   const [offerManagementActiveTab, setOfferManagementActiveTab] = useState("integration");
   const [imageUrl, setImageUrl] = useState(null);
   const [accordionActiveTab, setAccordionActiveTab] = useState("details");
-  const prevImageRef = React.useRef();
 
   const { data: bps } = useContractRead(DsponsorAdminContract, "feeBps");
   const maxBps = 10000;
@@ -81,9 +80,16 @@ const OfferPageContainer = () => {
   const {
     description = "description not found",
     id = "1",
-    image = ["/images/gradient_creative.jpg"],
     name = "DefaultName"
   } = offerData?.metadata?.offer ? offerData.metadata.offer : {};
+
+  useEffect(() => {
+    if (offerData?.metadata?.offer?.image) {
+      setImageUrl(offerData.metadata.offer.image);
+    } else {
+      setImageUrl("/images/gradient_creative.jpg");
+    }
+  }, [offerData]);
 
   const [itemProposals, setItemProposals] = useState(null);
   const [mediaShouldValidateAnAd, setMediaShouldValidateAnAd] = useState(false);
@@ -116,34 +122,15 @@ const OfferPageContainer = () => {
     }
   }, [chainId]);
 
-  const fetchOfferRef = React.useRef(false);
-
   useEffect(() => {
-    const fetchingOffer = async () => {
-      if (fetchOfferRef.current) return;
-      fetchOfferRef.current = true;
-
-      try {
-        const offer = await fetchOffer(offerId, chainId);
-
-        if (offer) {
-          if (offer?.admins?.includes(address?.toLowerCase())) {
-            setIsMedia(true);
-          } else {
-            setIsMedia(false);
-          }
-        }
-      } catch (error) {
-        console.error("Error fetching offer:", error);
-      } finally {
-        fetchOfferRef.current = false;
+    if (offerData && address) {
+      if (offerData?.admins?.includes(address?.toLowerCase())) {
+        setIsMedia(true);
+      } else {
+        setIsMedia(false);
       }
-    };
-
-    if (offerId && chainId && address) {
-      fetchingOffer();
     }
-  }, [address, chainId, offerId]);
+  }, [address, offerData]);
 
   useEffect(() => {
     if (offers) {
@@ -229,33 +216,21 @@ const OfferPageContainer = () => {
     setMediaShouldValidateAnAd(mediaShouldValidateAnAd);
   }, [itemProposals]);
 
-  const fetchImage = async (image) => {
-    if (!image) {
-      setImageUrl(null);
-      return;
-    }
-
-    if (typeof image === "string" && image.startsWith("ipfs://")) {
+  useEffect(() => {
+    const fetchImage = async (imageUrlLocal) => {
       const storage = new ThirdwebStorage({ clientId: "6f375d41f2a33f1f08f6042a65d49ec9" });
       try {
-        const ipfsUrl = await storage.resolveScheme(image);
+        const ipfsUrl = await storage.resolveScheme(imageUrlLocal);
         setImageUrl(ipfsUrl);
       } catch (error) {
         console.error("Error fetching image:", error);
       }
-    }
-  };
+    };
 
-  useEffect(() => {
-    if (image && image !== prevImageRef.current) {
-      fetchImage(image);
-      prevImageRef.current = image;
-    } else if (image) {
-      setImageUrl(image);
-    } else {
-      setImageUrl(null);
+    if (imageUrl && typeof imageUrl === "string" && imageUrl.startsWith("ipfs://")) {
+      fetchImage(imageUrl);
     }
-  }, [image]);
+  }, [imageUrl]);
 
   const fetchOfferSecondRef = React.useRef(false);
 
@@ -307,6 +282,14 @@ const OfferPageContainer = () => {
       } else {
         currencyTokenObject.symbol = symbolContract;
         currencyTokenObject.decimals = decimalsContract;
+      }
+
+      if (!bps || !maxBps) {
+        return;
+      }
+
+      if (!offerData?.nftContract?.prices[0]?.amount) {
+        return;
       }
 
       const bigIntPrice =
@@ -448,7 +431,7 @@ const OfferPageContainer = () => {
             width={1519}
             height={773}
             priority
-            src="/images/gradient_light.jpg"
+            src={imageUrl ?? "/images/gradient_creative.jpg"}
             alt="gradient"
             className="h-full w-full object-cover"
           />
@@ -466,7 +449,7 @@ const OfferPageContainer = () => {
               >
                 {imageUrl && (
                   <img
-                    src={imageUrl ?? ""}
+                    src={imageUrl ?? "/images/gradient_creative.jpg"}
                     alt="image"
                     className="rounded-2xl cursor-pointer h-full object-cover w-full"
                   />
@@ -488,7 +471,7 @@ const OfferPageContainer = () => {
                     <div className="modal fade show block">
                       <div className="modal-dialog !my-0 flex items-center justify-center">
                         <img
-                          src={imageUrl ?? ""}
+                          src={imageUrl ?? "/images/gradient_creative.jpg"}
                           alt="image"
                           className="h-full object-cover w-full rounded-2xl"
                         />
@@ -562,7 +545,6 @@ const OfferPageContainer = () => {
                 </span>
               </div>
 
-              <p className="dark:text-jacarta-100 mb-10">{description}</p>
               <p className="dark:text-jacarta-100 mb-10">{description}</p>
 
               {(offerData?.disable === true ||
