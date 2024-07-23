@@ -780,7 +780,7 @@ const TokenPageContainer = () => {
           offerData?.nftContract?.tokens
             ?.find((token) => Number(token?.tokenId) === Number(tokenId))
             ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.bidPriceStructureFormatted
-            .minimalBidPerToken
+            ?.minimalBidPerToken
         );
         setNotFormattedPrice(
           offerData?.nftContract?.tokens
@@ -791,25 +791,25 @@ const TokenPageContainer = () => {
           offerData?.nftContract?.tokens
             ?.find((token) => Number(token?.tokenId) === Number(tokenId))
             ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.bidPriceStructureFormatted
-            .protocolFeeAmount
+            ?.protocolFeeAmount
         );
         setRoyaltiesFeesAmount(
           offerData?.nftContract?.tokens
             ?.find((token) => Number(token?.tokenId) === Number(tokenId))
             ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.bidPriceStructureFormatted
-            .royaltyAmount
+            ?.royaltyAmount
         );
         setFinalPrice(
           offerData?.nftContract?.tokens
             ?.find((token) => Number(token?.tokenId) === Number(tokenId))
             ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.bidPriceStructureFormatted
-            .minimalBidPerToken
+            ?.minimalBidPerToken
         );
         setFinalPriceNotFormatted(
           offerData?.nftContract?.tokens
             ?.find((token) => Number(token?.tokenId) === Number(tokenId))
             ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.bidPriceStructure
-            .minimalBidPerToken
+            ?.minimalBidPerToken
         );
 
         setAmountToApprove(
@@ -817,13 +817,13 @@ const TokenPageContainer = () => {
             offerData?.nftContract?.tokens
               ?.find((token) => Number(token?.tokenId) === Number(tokenId))
               ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.bidPriceStructure
-              .minimalBidPerToken
+              ?.minimalBidPerToken ?? 0
           )
         );
         if (
           offerData?.nftContract?.tokens
             ?.find((token) => Number(token?.tokenId) === Number(tokenId))
-            ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.bids.length <= 0
+            ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.bids?.length <= 0
         ) {
           setTokenBigIntPrice(
             offerData?.nftContract?.tokens
@@ -1716,9 +1716,11 @@ const TokenPageContainer = () => {
 
               <p className="dark:text-jacarta-100 mb-10">{description}</p>
 
-              {(offerData?.disable ||
-                new Date(offerData?.metadata?.offer?.valid_to) < new Date() ||
-                !offerData?.nftContract?.prices[0]?.enabled) && <Disable isOffer={false} />}
+              {(offerData?.disable === true ||
+                new Date(offerData?.metadata?.offer?.valid_to).getTime() < Date.now() ||
+                offerData?.nftContract?.prices[0]?.enabled === false) && (
+                <Disable isOffer={false} />
+              )}
 
               {((tokenStatut === "MINTABLE" &&
                 !minted &&
