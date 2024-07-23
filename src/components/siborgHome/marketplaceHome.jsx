@@ -10,8 +10,8 @@ const onAuctionCondition = (auction, mint) => {
     (auction?.status === "CREATED" &&
       (auction?.listingType === "Auction" || auction?.listingType === "Direct") &&
       Number(auction?.quantity) > 0 &&
-      new Date(Number(auction?.startTime) * 1000).getTime() < Date.now() &&
-      new Date(Number(auction?.endTime) * 1000).getTime() > Date.now()) ||
+      new Date(Number(auction?.startTime) * 1000) < new Date() &&
+      new Date(Number(auction?.endTime) * 1000) > new Date()) ||
     (mint && auction?.item?.mint === null)
   );
 };
@@ -110,11 +110,13 @@ const MarketplaceHome = ({ auctions, setAllTokens, allTokens, isAuctionsLoading 
           break;
         }
         case "Ending soon": {
-          tempAuctions.sort((a, b) => a.endTime - b.endTime);
+          let liveAuctions = tempAuctions?.filter(
+            (auction) => onAuctionCondition(auction, true) && auction?.endTime
+          );
+          liveAuctions = liveAuctions?.sort((a, b) => a.endTime - b.endTime);
 
-          const liveAuctions = tempAuctions.filter((auction) => onAuctionCondition(auction, true));
-          const otherAuctions = tempAuctions.filter(
-            (auction) => !onAuctionCondition(auction, true)
+          const otherAuctions = tempAuctions?.filter(
+            (auction) => !onAuctionCondition(auction, true) || !auction?.endTime
           );
 
           tempAuctions = [...liveAuctions, ...otherAuctions];

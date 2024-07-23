@@ -1473,7 +1473,8 @@ const TokenPageContainer = () => {
                     <span className="text-white">
                       Amount sent to the creator:{" "}
                       {formatAndRoundPrice(
-                        Number(formatUnits(BigNumber.from(notFormattedPrice), currencyDecimals))
+                        Number(formatUnits(BigNumber.from(notFormattedPrice), currencyDecimals)) /
+                          1.04
                       )}{" "}
                       {currency}
                     </span>
@@ -1482,8 +1483,8 @@ const TokenPageContainer = () => {
                     <span className="text-white">
                       Protocol fees:{" "}
                       {formatAndRoundPrice(
-                        Number(formatUnits(BigNumber.from(notFormattedPrice), currencyDecimals)) *
-                          0.04
+                        Number(formatUnits(BigNumber.from(notFormattedPrice), currencyDecimals)) /
+                          26
                       )}{" "}
                       {currency}
                     </span>
@@ -1492,9 +1493,7 @@ const TokenPageContainer = () => {
                     <span className="text-white">
                       Total:{" "}
                       {formatAndRoundPrice(
-                        Number(formatUnits(BigNumber.from(notFormattedPrice), currencyDecimals)) +
-                          Number(formatUnits(BigNumber.from(notFormattedPrice), currencyDecimals)) *
-                            0.04
+                        Number(formatUnits(BigNumber.from(notFormattedPrice), currencyDecimals))
                       )}{" "}
                       {currency}
                     </span>
