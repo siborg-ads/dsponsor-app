@@ -39,7 +39,18 @@ const Step_1_Mint = ({
                     return (
                       <div key={id}>
                         <ul>
-                          <li>{variant ? `- Format : ${variant}` : "- Format : No variant"}</li>
+                          <li>
+                            {variant
+                              ? `- Format : ${variant} (exemple:
+                              ${(() => {
+                                const [width, height] = variant.split(":");
+                                return width && height
+                                  ? `${width * 100}x${height * 100}px`
+                                  : "No size";
+                              })()}
+                          )`
+                              : "- Format : Any URL accepted"}
+                          </li>
                         </ul>
                       </div>
                     );

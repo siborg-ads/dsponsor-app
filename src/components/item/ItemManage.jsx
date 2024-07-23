@@ -14,7 +14,8 @@ const ItemManage = ({
   royalties,
   dsponsorNFTContract,
   dsponsorMpContract,
-  conditions
+  conditions,
+  tokenId
 }) => {
   const [listingModal, setListingModal] = useState(false);
   const [isLoadingButton, setIsLoadingButton] = useState(false);
@@ -30,7 +31,9 @@ const ItemManage = ({
 
   useEffect(() => {
     if (marketplaceListings?.length > 0) {
-      const lastBidder = marketplaceListings[0]?.bids[0]?.bidder;
+      const lastBidder = marketplaceListings
+        ?.sort((a, b) => b?.id - a?.id)
+        ?.bids?.sort((a, b) => b?.split("-")[1]?.id - a?.split("-")[1]?.id)[0]?.bidder;
       if (lastBidder && address && getAddress(lastBidder) === getAddress(address)) {
         setIsLastBidder(true);
       } else {
@@ -46,7 +49,7 @@ const ItemManage = ({
   const handleSubmitCancel = async () => {
     try {
       setIsLoadingButton(true);
-      const { listingType, id } = marketplaceListings[0];
+      const { listingType, id } = marketplaceListings.sort((a, b) => b?.id - a?.id)[0];
       if (listingType === "Auction") {
         await closeAuctionListing({ args: [id] });
       } else if (listingType === "Direct") {
@@ -220,6 +223,7 @@ const ItemManage = ({
             handleListingModal={handleListingModal}
             offerData={offerData}
             marketplaceListings={marketplaceListings}
+            tokenId={tokenId}
           />
         </div>
       )}

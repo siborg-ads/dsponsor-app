@@ -7,8 +7,8 @@ import "react-toastify/dist/ReactToastify.css";
 import { Spinner } from "@nextui-org/spinner";
 import ModalHelper from "../Helper/modalHelper";
 import { useChainContext } from "../../contexts/hooks/useChainContext";
-import { Popover, PopoverButton, PopoverPanel } from "@headlessui/react";
 import { InformationCircleIcon } from "@heroicons/react/20/solid";
+import InfoIcon from "../informations/infoIcon";
 
 const PreviewModal = ({
   approvalForAllToken = true,
@@ -46,7 +46,6 @@ const PreviewModal = ({
   isLoadingButton,
   multipleAdsSubmission
 }) => {
-  const [isHovered, setIsHovered] = React.useState(false);
   const [imageRatios, setImageRatios] = React.useState([]);
 
   const { currentChainObject } = useChainContext();
@@ -617,50 +616,39 @@ const PreviewModal = ({
                     </Web3Button>
                   ) : (
                     // approve for listing
-                    <>
-                      <div className="flex flex-col items-center gap-2">
-                        <Web3Button
-                          contractAddress={
-                            currentChainObject?.smartContracts?.DSPONSORMP?.address ?? "no address"
-                          }
-                          action={() => {
-                            toast.promise(handleApprove, {
-                              pending: "Waiting for confirmation 🕒",
-                              success: "Approval confirmed 👌",
-                              error: "Approval rejected 🤯"
-                            });
-                          }}
-                          className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate || isLoadingButton ? "!btn-disabled !cursor-not-allowed !text-black opacity-30" : "!bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer"} `}
-                          isDisabled={!validate || isLoadingButton}
-                        >
-                          {isLoadingButton ? (
-                            <Spinner size="sm" color="default" />
-                          ) : !isListing ? (
-                            "Approve 🔓"
-                          ) : (
-                            "Authorize Marketplace 🔓"
-                          )}
-                        </Web3Button>
-                        <Popover placement="bottom" isOpen={isHovered}>
-                          <PopoverButton
-                            className="cursor-help"
-                            onMouseEnter={() => setIsHovered(true)}
-                            onMouseLeave={() => setIsHovered(false)}
-                          >
-                            <span className="text-xs text-jacarta-100 inline-flex items-center gap-1">
-                              <InformationCircleIcon className="w-4 h-4 text-jacarta-100" />
-                              Why do I have to approve ?
-                            </span>
-                          </PopoverButton>
-                          <PopoverPanel className="p-4 bg-primaryBlack text-white rounded-lg">
-                            <p className="text-sm">
-                              You need to approve the marketplace contract to spend your NFT on this
-                              transaction.
-                            </p>
-                          </PopoverPanel>
-                        </Popover>
-                      </div>
-                    </>
+                    <div className="flex flex-col items-center gap-2">
+                      <Web3Button
+                        contractAddress={
+                          currentChainObject?.smartContracts?.DSPONSORMP?.address ?? "no address"
+                        }
+                        action={() => {
+                          toast.promise(handleApprove, {
+                            pending: "Waiting for confirmation 🕒",
+                            success: "Approval confirmed 👌",
+                            error: "Approval rejected 🤯"
+                          });
+                        }}
+                        className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate || isLoadingButton ? "!btn-disabled !cursor-not-allowed !text-black opacity-30" : "!bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer"} `}
+                        isDisabled={!validate || isLoadingButton}
+                      >
+                        {isLoadingButton ? (
+                          <Spinner size="sm" color="default" />
+                        ) : !isListing ? (
+                          "Approve 🔓"
+                        ) : (
+                          "Authorize Marketplace 🔓"
+                        )}
+                      </Web3Button>
+                      <InfoIcon
+                        text={`You need to approve the marketplace contract to spend your NFT on this
+                              transaction.`}
+                      >
+                        <span className="text-xs text-jacarta-100 inline-flex items-center gap-1">
+                          <InformationCircleIcon className="w-4 h-4 text-jacarta-100" />
+                          Why do I have to approve ?
+                        </span>
+                      </InfoIcon>
+                    </div>
                   )
                 ) : successFullUploadModal.hrefButton !== null ? (
                   <Link href={successFullUploadModal.hrefButton ?? "#"}>

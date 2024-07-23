@@ -22,6 +22,7 @@ export const fetchAllOffersByUserAddress = async (userAddress, chainId) => {
         # offer.name, offer.image, offer.description
         # if token_metadata: token_metadata.name,
         metadataURL
+        disable
         id # offerId
         creationTimestamp # data (unix time)
         adParameters(where: { enable: true }) {
@@ -40,6 +41,7 @@ export const fetchAllOffersByUserAddress = async (userAddress, chainId) => {
             amount # wei, mind decimals() function to transform in human readable value !
             enabled
           }
+
           tokens(
             # you can paginate with this type or filtering
             # where: { and: [{ tokenId_lte: "200" }, { tokenId_lte: "100" }]
