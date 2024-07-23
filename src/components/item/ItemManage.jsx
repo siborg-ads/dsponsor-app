@@ -15,7 +15,8 @@ const ItemManage = ({
   dsponsorNFTContract,
   dsponsorMpContract,
   conditions,
-  tokenId
+  tokenId,
+  setListingCreated
 }) => {
   const [listingModal, setListingModal] = useState(false);
   const [isLoadingButton, setIsLoadingButton] = useState(false);

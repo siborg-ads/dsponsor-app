@@ -25,11 +25,6 @@ const MarketplaceHome = ({ auctions, setAllTokens, allTokens, isAuctionsLoading 
   const filteredAuctions = useMemo(() => {
     let tempAuctions = auctions;
 
-    console.log(
-      "tempAuctions",
-      tempAuctions?.filter((auction) => auction?.name === "Nyan Cat")
-    );
-
     // keep enabled minted tokens and tokens already minted (updated)
     tempAuctions = tempAuctions.filter(
       (auction) =>

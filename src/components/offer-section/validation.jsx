@@ -24,7 +24,9 @@ const Validation = ({
   sponsorHasAtLeastOneRejectedProposalAndNoPending,
   setSponsorHasAtLeastOneRejectedProposalAndNoPending,
   mediaShouldValidateAnAd,
-  isMedia
+  isMedia,
+  isTokenView,
+  itemTokenId
 }) => {
   const [pendingProposalData, setPendingProposalData] = useState([]);
   const [validatedProposalData, setValidatedProposalData] = useState([]);
@@ -118,15 +120,27 @@ const Validation = ({
       }
     }
 
-    const formattedPendingAds = Object.values(groupedPendingAds);
-    const formattedValidatedAds = Object.values(groupedValidatedAds);
-    const formattedRefusedAds = Object.values(groupedRefusedAds);
+    let formattedPendingAds = Object.values(groupedPendingAds);
+    let formattedValidatedAds = Object.values(groupedValidatedAds);
+    let formattedRefusedAds = Object.values(groupedRefusedAds);
+
+    if (isTokenView) {
+      formattedPendingAds = formattedPendingAds.filter(
+        (ad) => Number(ad?.tokenId) === Number(itemTokenId)
+      );
+      formattedValidatedAds = formattedValidatedAds.filter(
+        (ad) => Number(ad?.tokenId) === Number(itemTokenId)
+      );
+      formattedRefusedAds = formattedRefusedAds.filter(
+        (ad) => Number(ad?.tokenId) === Number(itemTokenId)
+      );
+    }
 
     setValidatedProposalData(formattedValidatedAds);
     setRefusedProposalData(formattedRefusedAds);
     setPendingProposalData(formattedPendingAds);
     setPendingProposalLength(formattedPendingAds.length);
-  }, [offer, offerId, successFullUploadModal]);
+  }, [isTokenView, offer, offerId, successFullUploadModal, itemTokenId]);
 
   const handleItemSubmit = async (approuved = false) => {
     let submissionArgs = [];
