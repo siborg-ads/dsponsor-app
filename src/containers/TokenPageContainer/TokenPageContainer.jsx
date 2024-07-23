@@ -128,6 +128,7 @@ const TokenPageContainer = () => {
   const [conditions, setConditions] = useState({});
   const [imageUrl, setImageUrl] = useState(null);
   const [accordionActiveTab, setAccordionActiveTab] = useState("details");
+  const [listingCreated, setListingCreated] = useState(false);
   const [creatorAmount, setCreatorAmount] = useState(null);
   const [protocolFeeAmount, setProtocolFeeAmount] = useState(null);
   const [totalAmount, setTotalAmount] = useState(null);
@@ -409,11 +410,28 @@ const TokenPageContainer = () => {
         setBidsAmount("");
       };
 
-      if (chainId) {
+      if (chainId && offerId) {
         fetchUpdatedData();
       }
     }
   }, [successFullBid, offerId, tokenId, chainId]);
+
+  useEffect(() => {
+    if (listingCreated) {
+      const fetchUpdatedData = async () => {
+        const offers = await fetchAllOffers(chainId);
+
+        const offer = offers?.find((offer) => Number(offer?.id) === Number(offerId));
+        const combinedData = { ...offer };
+
+        setOfferData(combinedData);
+      };
+
+      if (chainId && offerId) {
+        fetchUpdatedData();
+      }
+    }
+  }, [listingCreated, offerId, tokenId, chainId]);
 
   useEffect(() => {
     if (offerData?.nftContract?.tokens.length > 0) {
@@ -1818,6 +1836,7 @@ const TokenPageContainer = () => {
                 dsponsorMpContract={dsponsorMpContract}
                 conditions={conditions?.conditionsObject}
                 tokenId={tokenId}
+                setListingCreated={setListingCreated}
               />
 
               {((firstSelectedListing?.listingType === "Auction" &&
@@ -1961,6 +1980,7 @@ const TokenPageContainer = () => {
                     isMedia={isMedia}
                     isSponsor={isOwner}
                     itemTokenId={tokenId}
+                    isTokenView={true}
                   />
                 </Accordion.Content>
               </>

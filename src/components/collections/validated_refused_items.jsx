@@ -87,7 +87,7 @@ const Validated_refused_items = ({ statut, proposalData, isToken }) => {
                         {getImageUrl(adParametersList) && (
                           <Image
                             src={getImageUrl(adParametersList) ?? ""}
-                            alt={item.title}
+                            alt={item?.title ?? "image title"}
                             height={300}
                             width={300}
                             objectFit="contain"
