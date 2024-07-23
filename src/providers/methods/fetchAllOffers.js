@@ -53,9 +53,12 @@ export const fetchAllOffers = async (chainId) => {
               status
               startTime
               endTime
+              lister
               id
               reservePricePerToken
               buyoutPricePerToken
+              currency
+              quantity
               token {
                 tokenId
                 nftContract {
