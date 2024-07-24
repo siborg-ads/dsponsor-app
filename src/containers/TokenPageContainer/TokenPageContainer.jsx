@@ -1758,13 +1758,17 @@ const TokenPageContainer = () => {
 
               {(offerData?.disable === true ||
                 new Date(offerData?.metadata?.offer?.valid_to).getTime() < Date.now() ||
-                offerData?.nftContract?.prices[0]?.enabled === false) && (
-                <Disable isOffer={false} />
-              )}
+                (offerData?.nftContract?.prices[0]?.enabled === false &&
+                  offerData?.nftContract?.tokens?.find(
+                    (token) => Number(token?.tokenId) === Number(tokenId)
+                  )?.mint === null)) && <Disable isOffer={false} />}
 
               {(offerData?.disable === false ||
                 new Date(offerData?.metadata?.offer?.valid_to).getTime() >= Date.now() ||
-                offerData?.nftContract?.prices[0]?.enabled === true) && (
+                offerData?.nftContract?.prices[0]?.enabled === true ||
+                offerData?.nftContract?.tokens?.find(
+                  (token) => Number(token?.tokenId) === Number(tokenId)
+                )?.mint !== null) && (
                 <>
                   {((tokenStatut === "MINTABLE" &&
                     !minted &&
