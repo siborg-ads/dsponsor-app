@@ -132,6 +132,7 @@ const TokenPageContainer = () => {
   const [creatorAmount, setCreatorAmount] = useState(null);
   const [protocolFeeAmount, setProtocolFeeAmount] = useState(null);
   const [totalAmount, setTotalAmount] = useState(null);
+  const [totalPrice, setTotalPrice] = useState(null);
   const [listerAmount, setListerAmount] = useState(null);
   const [royaltiesAmount, setRoyaltiesAmount] = useState(null);
 
@@ -703,22 +704,27 @@ const TokenPageContainer = () => {
       setTokenStatut("MINTABLE");
       setTokenCurrencyAddress(offerData?.nftContract?.prices[0]?.currency);
       // setTokenBigIntPrice(offerData?.nftContract?.prices[0]?.amount);
-      setPrice(offerData?.nftContract?.prices[0]?.mintPriceStructureFormatted.creatorAmount);
+      setPrice(offerData?.nftContract?.prices[0]?.mintPriceStructureFormatted?.creatorAmount);
       setCreatorAmount(
-        offerData?.nftContract?.prices[0]?.mintPriceStructureFormatted.creatorAmount
+        offerData?.nftContract?.prices[0]?.mintPriceStructureFormatted?.creatorAmount
       );
       setProtocolFeeAmount(
-        offerData?.nftContract?.prices[0]?.mintPriceStructureFormatted.protocolFeeAmount
+        offerData?.nftContract?.prices[0]?.mintPriceStructureFormatted?.protocolFeeAmount
       );
-      setTotalAmount(offerData?.nftContract?.prices[0]?.mintPriceStructureFormatted.totalAmount);
+      setTotalAmount(offerData?.nftContract?.prices[0]?.mintPriceStructureFormatted?.totalAmount);
+
+      const totalPrice = offerData?.nftContract?.prices[0]?.mintPriceStructure?.totalAmount;
+      const totalPriceFormatted = parseFloat(formatUnits(totalPrice, currencyDecimals));
+
+      setTotalPrice(totalPriceFormatted);
       setFeesAmount(
-        offerData?.nftContract?.prices[0]?.mintPriceStructureFormatted.protocolFeeAmount
+        offerData?.nftContract?.prices[0]?.mintPriceStructureFormatted?.protocolFeeAmount
       );
-      setFinalPrice(offerData?.nftContract?.prices[0]?.mintPriceStructureFormatted.totalAmount);
-      setFinalPriceNotFormatted(offerData?.nftContract?.prices[0]?.mintPriceStructure.totalAmount);
+      setFinalPrice(offerData?.nftContract?.prices[0]?.mintPriceStructureFormatted?.totalAmount);
+      setFinalPriceNotFormatted(offerData?.nftContract?.prices[0]?.mintPriceStructure?.totalAmount);
       setAmountToApprove(
-        offerData?.nftContract?.prices[0]?.mintPriceStructure.totalAmount &&
-          BigInt(offerData?.nftContract?.prices[0]?.mintPriceStructure.totalAmount)
+        offerData?.nftContract?.prices[0]?.mintPriceStructure?.totalAmount &&
+          BigInt(offerData?.nftContract?.prices[0]?.mintPriceStructure?.totalAmount)
       );
       setCurrency(offerData?.nftContract?.prices[0]?.currencySymbol);
       return;
@@ -770,11 +776,18 @@ const TokenPageContainer = () => {
             ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.buyPriceStructureFormatted
             ?.buyoutPricePerToken
         );
+        const totalPrice = offerData?.nftContract?.tokens
+          ?.find((token) => Number(token?.tokenId) === Number(tokenId))
+          ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]
+          ?.buyPriceStructure?.buyoutPricePerToken;
+        const totalPriceFormatted = parseFloat(formatUnits(totalPrice, currencyDecimals));
+
+        setTotalPrice(totalPriceFormatted);
         setFeesAmount(
           offerData?.nftContract?.tokens
             ?.find((token) => Number(token?.tokenId) === Number(tokenId))
             ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.buyPriceStructureFormatted
-            .protocolFeeBuyAmount
+            ?.protocolFeeBuyAmount
         );
         setRoyaltiesFeesAmount(
           offerData?.nftContract?.tokens
@@ -868,6 +881,15 @@ const TokenPageContainer = () => {
             ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.bidPriceStructureFormatted
             ?.totalBidAmount
         );
+
+        const totalPrice = offerData?.nftContract?.tokens
+          ?.find((token) => Number(token?.tokenId) === Number(tokenId))
+          ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]
+          ?.bidPriceStructure?.totalBidAmount;
+        const totalPriceFormatted = parseFloat(formatUnits(totalPrice, currencyDecimals));
+
+        setTotalPrice(totalPriceFormatted);
+
         setAmountToApprove(
           BigInt(
             offerData?.nftContract?.tokens
@@ -1685,7 +1707,9 @@ const TokenPageContainer = () => {
                     tokenStatut === "MINTABLE")) && (
                   <div className="flex items-center">
                     <span className="text-green text-sm font-medium tracking-tight mr-2">
-                      {finalPrice} {currency}
+                      {totalPrice && parseFloat(totalPrice) > 0
+                        ? `${finalPrice ?? 0} ${currency}`
+                        : "Free"}
                     </span>
                     <ModalHelper {...modalHelper} size="small" />
                   </div>
@@ -2141,6 +2165,7 @@ const TokenPageContainer = () => {
             setCanPayWithNativeToken={setCanPayWithNativeToken}
             token={tokenDO}
             buyTokenEtherPrice={buyTokenEtherPrice}
+            totalPrice={totalPrice}
             user={{
               address: address,
               isOwner: isOwner,
