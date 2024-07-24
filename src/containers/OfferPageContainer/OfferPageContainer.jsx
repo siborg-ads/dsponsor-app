@@ -39,7 +39,6 @@ const OfferPageContainer = () => {
 
   const offerId = router.query?.offerId;
   const chainId = router.query?.chainName;
-  const userAddress = useAddress();
   const [refusedValidatedAdModal, setRefusedValidatedAdModal] = useState(null);
   const [copied, setCopied] = useState(false);
   const [offerData, setOfferData] = useState([]);
@@ -244,16 +243,6 @@ const OfferPageContainer = () => {
           const offer = await fetchOffer(offerId, chainId);
 
           setOfferData(offer);
-          if (userAddress && offer?.admins?.includes(userAddress.toLowerCase())) {
-            setIsOwner(true);
-          }
-
-          if (
-            userAddress &&
-            userAddress?.toLowerCase() === offer?.nftContract?.owner?.newOwner?.toLowerCase()
-          ) {
-            setCanChangeMintPrice(true);
-          }
         } catch (error) {
           console.error("Error fetching offer:", error);
         } finally {
@@ -266,7 +255,20 @@ const OfferPageContainer = () => {
         fetchAdsOffers();
       }
     }
-  }, [offerId, successFullRefuseModal, userAddress, chainId, setSelectedChain]);
+  }, [offerId, successFullRefuseModal, chainId, setSelectedChain]);
+
+  useEffect(() => {
+    if (address && offerData?.admins?.includes(address.toLowerCase())) {
+      setIsOwner(true);
+    }
+
+    if (
+      address &&
+      address?.toLowerCase() === offerData?.nftContract?.owner?.newOwner?.toLowerCase()
+    ) {
+      setCanChangeMintPrice(true);
+    }
+  }, [address, offerData]);
 
   useEffect(() => {
     if (!offerData) return;
@@ -367,13 +369,12 @@ const OfferPageContainer = () => {
           </h1>
         </div>
         <picture className="pointer-events-none absolute inset-0 -z-10 dark:hidden">
-          <Image
-            width={1519}
-            height={773}
-            priority
+          <img
+            width={750}
+            height={750}
             src={imageUrl ?? "/images/gradient_creative.jpg"}
             alt="gradient"
-            className="h-full w-full object-cover"
+            className="h-full w-full object-cover aspect-square"
           />
         </picture>
         <div className="container">
@@ -382,16 +383,12 @@ const OfferPageContainer = () => {
           <div className="md:flex md:flex-wrap" key={id}>
             {/* <!-- Image --> */}
             <figure className="mb-8 md:w-2/5 md:flex-shrink-0 md:flex-grow-0 md:basis-auto lg:w-1/2 w-full flex justify-center">
-              <button
-                className="w-full"
-                onClick={() => setImageModal(true)}
-                style={{ height: "450px" }}
-              >
+              <button className="w-full" onClick={() => setImageModal(true)}>
                 {imageUrl && (
                   <img
                     src={imageUrl ?? "/images/gradient_creative.jpg"}
                     alt="image"
-                    className="rounded-2xl cursor-pointer h-full object-cover w-full"
+                    className="rounded-2xl cursor-pointer h-full object-cover w-full aspect-square"
                   />
                 )}
               </button>
@@ -413,7 +410,7 @@ const OfferPageContainer = () => {
                         <img
                           src={imageUrl ?? "/images/gradient_creative.jpg"}
                           alt="image"
-                          className="h-full object-cover w-full rounded-2xl"
+                          className="h-full object-cover w-full rounded-2xl aspect-square"
                         />
                       </div>
 
