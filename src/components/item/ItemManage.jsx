@@ -225,6 +225,7 @@ const ItemManage = ({
             offerData={offerData}
             marketplaceListings={marketplaceListings}
             tokenId={tokenId}
+            setListingCreated={setListingCreated}
           />
         </div>
       )}
