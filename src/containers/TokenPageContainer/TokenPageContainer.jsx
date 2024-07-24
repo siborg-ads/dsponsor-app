@@ -497,53 +497,44 @@ const TokenPageContainer = () => {
           if (auction) {
             let winnerBid;
             if (listing?.bids) {
-              const sortedBids = listing.bids.sort(
+              const sortedBids = listing?.bids?.sort(
                 (a, b) =>
-                  new Date(b.creationTimestamp * 1000) - new Date(a.creationTimestamp * 1000)
+                  new Date(b?.creationTimestamp * 1000) - new Date(a?.creationTimestamp * 1000)
               );
               winnerBid = sortedBids[0];
             }
 
             saleInfo = {
-              address: winnerBid.bidder,
-              amount: Number(winnerBid.paidBidAmount) / Math.pow(10, listing.currencyDecimals),
-              date: winnerBid.creationTimestamp,
+              address: winnerBid?.bidder,
+              amount: Number(winnerBid?.paidBidAmount) / Math.pow(10, listing?.currencyDecimals),
+              date: winnerBid?.creationTimestamp,
               currency: {
-                contract: listing.currency,
-                currencySymbol: listing.currencySymbol,
-                currencyDecimals: listing.currencyDecimals
+                contract: listing?.currency,
+                currencySymbol: listing?.currencySymbol,
+                currencyDecimals: listing?.currencyDecimals
               },
               listing: {
-                id: listing.id,
-                listingType: listing.listingType
+                id: listing?.id,
+                listingType: listing?.listingType
               }
             };
           }
 
           if (direct) {
             try {
-              // get token info from offers
-              const response = offers
-                ?.find((offer) => Number(offer?.id) === Number(offerId))
-                ?.nftContract?.tokens?.find((token) => Number(token?.id) === Number(tokenId));
+              if (!offerData || !tokenId) return;
 
-              //const response = await fetchSales(
-              //  listing?.token?.nftContract?.id + "-" + listing?.token?.tokenId,
-              //  Number(chainId)
-              //);
-
-              const tokenData = response.tokens.find(
-                (token) =>
-                  token.id === listing?.token?.nftContract?.id + "-" + listing?.token?.tokenId
+              const tokenData = offerData?.nftContract?.tokens?.find(
+                (token) => Number(token?.tokenId) === Number(tokenId)
               );
 
               if (tokenData) {
                 // need to match listing id and direct buys listing id
-                const tempTokenData = tokenData?.marketplaceListings?.find((marketplaceListing) =>
-                  marketplaceListing?.directBuys.find((buy) => buy?.listing?.id === listing?.id)
+                const listingTokenData = tokenData?.marketplaceListings?.find(
+                  (marketplaceListing) => Number(listing?.id) === Number(marketplaceListing?.id)
                 );
 
-                const directBuy = tempTokenData?.directBuys[0]; // only one direct buy per listing so we can take the first one
+                const directBuy = listingTokenData?.directBuys[0]; // only one direct buy per listing so we can take the first one
 
                 const smartContracts = currentChainObject?.smartContracts;
                 const targetAddress = listing?.currency;
@@ -562,9 +553,9 @@ const TokenPageContainer = () => {
                 }
 
                 saleInfo = {
-                  address: directBuy.buyer,
-                  amount: Number(directBuy.totalPricePaid) / Math.pow(10, tempCurrency?.decimals),
-                  date: directBuy.revenueTransaction?.blockTimestamp,
+                  address: directBuy?.buyer,
+                  amount: Number(directBuy?.totalPricePaid) / Math.pow(10, tempCurrency?.decimals),
+                  date: directBuy?.revenueTransaction?.blockTimestamp,
                   currency: {
                     contract: listing?.currency,
                     currencySymbol: tempCurrency?.symbol,
@@ -592,9 +583,9 @@ const TokenPageContainer = () => {
       let saleMintInfo;
 
       try {
-        const tokenData = offers
-          ?.find((offer) => Number(offer?.id) === Number(offerId))
-          ?.nftContract?.tokens?.find((token) => Number(token?.tokenId) === Number(tokenId));
+        const tokenData = offerData?.nftContract?.tokens?.find(
+          (token) => Number(token?.tokenId) === Number(tokenId)
+        );
 
         const smartContracts = currentChainObject?.smartContracts;
         const targetAddress = tokenData?.mint?.currency;
