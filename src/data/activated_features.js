@@ -12,7 +12,7 @@ export const activated_features = {
   // by default, first item used
   canHaveMultipleCurrencies: !!isDevelopment,
   // Whether to show the "Submitted Ads" in offer details
-  canSeeSubmittedAds: !!isDevelopment,
+  canSeeSubmittedAds: true,
   // Whether to show the Integration tab in offer details
   canSeeIntegrationDetails: true,
   // Whether to show the "Create Offer" button in the footer
