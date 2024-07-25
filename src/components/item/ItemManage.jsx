@@ -145,7 +145,6 @@ const ItemManage = ({
       (!conditions?.endTimeNotPassed &&
         conditions?.isCreated &&
         conditions?.isAuction &&
-        !conditions?.isLister &&
         conditions?.hasBids) ||
       (conditions?.isLister && !conditions?.hasBids)
     ) {
