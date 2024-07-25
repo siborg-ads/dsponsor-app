@@ -616,9 +616,9 @@ const PreviewModal = ({
                         {isLoadingButton ? (
                           <Spinner size="sm" color="default" />
                         ) : !isListing ? (
-                          "Approve 🔓"
+                          "Approve 🔓 (1/2)"
                         ) : (
-                          "Authorize Marketplace 🔓"
+                          "Authorize Marketplace 🔓 (1/2)"
                         )}
                       </Web3Button>
 
