@@ -60,8 +60,29 @@ export const fetchAllOffers = async (chainId) => {
               buyoutPricePerToken
               currency
               quantity
+              directBuys {
+                id
+                listing {
+                  id
+                  listingType
+                }
+                buyer
+                quantityBought
+                totalPricePaid
+                revenueTransaction {
+                  blockTimestamp
+                }
+                feeMethodology
+                amountSentToProtocol
+                protocolRecipient
+                amountSentToSeller
+                sellerRecipient
+                amountSentToCreator
+                creatorRecipient
+              }
               token {
                 tokenId
+                id
                 nftContract {
                   id
                   royalty {

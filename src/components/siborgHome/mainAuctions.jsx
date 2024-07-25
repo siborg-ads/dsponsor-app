@@ -67,6 +67,7 @@ const MainAuctions = ({ auctions, isAuctionsLoading }) => {
                       ? `/${auction?.chainId}/offer/${auction?.offerId}/${auction?.tokenId}`
                       : `/${auction?.chainId}/offer/${auction.item.nftContract?.adOffers[0]?.id}/${auction.tokenId}?tokenData=${auction.item.mint?.tokenData}`
                   }
+                  currencyDecimals={auction?.currencyDecimals}
                 />
               ))}
             </>

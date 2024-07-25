@@ -20,8 +20,8 @@ export const fetchAllTokenListedByUserAddress = async (lister, chainId) => {
           nftContract {
             id # = assetContract
             royalty {
-            bps
-          }
+              bps
+            }
             adOffers {
               id
               metadataURL # offerMetadata

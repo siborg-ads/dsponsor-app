@@ -132,6 +132,7 @@ const TokenPageContainer = () => {
   const [creatorAmount, setCreatorAmount] = useState(null);
   const [protocolFeeAmount, setProtocolFeeAmount] = useState(null);
   const [totalAmount, setTotalAmount] = useState(null);
+  const [totalPrice, setTotalPrice] = useState(null);
   const [listerAmount, setListerAmount] = useState(null);
   const [royaltiesAmount, setRoyaltiesAmount] = useState(null);
 
@@ -497,53 +498,44 @@ const TokenPageContainer = () => {
           if (auction) {
             let winnerBid;
             if (listing?.bids) {
-              const sortedBids = listing.bids.sort(
+              const sortedBids = listing?.bids?.sort(
                 (a, b) =>
-                  new Date(b.creationTimestamp * 1000) - new Date(a.creationTimestamp * 1000)
+                  new Date(b?.creationTimestamp * 1000) - new Date(a?.creationTimestamp * 1000)
               );
               winnerBid = sortedBids[0];
             }
 
             saleInfo = {
-              address: winnerBid.bidder,
-              amount: Number(winnerBid.paidBidAmount) / Math.pow(10, listing.currencyDecimals),
-              date: winnerBid.creationTimestamp,
+              address: winnerBid?.bidder,
+              amount: Number(winnerBid?.paidBidAmount) / Math.pow(10, listing?.currencyDecimals),
+              date: winnerBid?.creationTimestamp,
               currency: {
-                contract: listing.currency,
-                currencySymbol: listing.currencySymbol,
-                currencyDecimals: listing.currencyDecimals
+                contract: listing?.currency,
+                currencySymbol: listing?.currencySymbol,
+                currencyDecimals: listing?.currencyDecimals
               },
               listing: {
-                id: listing.id,
-                listingType: listing.listingType
+                id: listing?.id,
+                listingType: listing?.listingType
               }
             };
           }
 
           if (direct) {
             try {
-              // get token info from offers
-              const response = offers
-                ?.find((offer) => Number(offer?.id) === Number(offerId))
-                ?.nftContract?.tokens?.find((token) => Number(token?.id) === Number(tokenId));
+              if (!offerData || !tokenId) return;
 
-              //const response = await fetchSales(
-              //  listing?.token?.nftContract?.id + "-" + listing?.token?.tokenId,
-              //  Number(chainId)
-              //);
-
-              const tokenData = response.tokens.find(
-                (token) =>
-                  token.id === listing?.token?.nftContract?.id + "-" + listing?.token?.tokenId
+              const tokenData = offerData?.nftContract?.tokens?.find(
+                (token) => Number(token?.tokenId) === Number(tokenId)
               );
 
               if (tokenData) {
                 // need to match listing id and direct buys listing id
-                const tempTokenData = tokenData?.marketplaceListings?.find((marketplaceListing) =>
-                  marketplaceListing?.directBuys.find((buy) => buy?.listing?.id === listing?.id)
+                const listingTokenData = tokenData?.marketplaceListings?.find(
+                  (marketplaceListing) => Number(listing?.id) === Number(marketplaceListing?.id)
                 );
 
-                const directBuy = tempTokenData?.directBuys[0]; // only one direct buy per listing so we can take the first one
+                const directBuy = listingTokenData?.directBuys[0]; // only one direct buy per listing so we can take the first one
 
                 const smartContracts = currentChainObject?.smartContracts;
                 const targetAddress = listing?.currency;
@@ -562,9 +554,9 @@ const TokenPageContainer = () => {
                 }
 
                 saleInfo = {
-                  address: directBuy.buyer,
-                  amount: Number(directBuy.totalPricePaid) / Math.pow(10, tempCurrency?.decimals),
-                  date: directBuy.revenueTransaction?.blockTimestamp,
+                  address: directBuy?.buyer,
+                  amount: Number(directBuy?.totalPricePaid) / Math.pow(10, tempCurrency?.decimals),
+                  date: directBuy?.revenueTransaction?.blockTimestamp,
                   currency: {
                     contract: listing?.currency,
                     currencySymbol: tempCurrency?.symbol,
@@ -592,9 +584,9 @@ const TokenPageContainer = () => {
       let saleMintInfo;
 
       try {
-        const tokenData = offers
-          ?.find((offer) => Number(offer?.id) === Number(offerId))
-          ?.nftContract?.tokens?.find((token) => Number(token?.tokenId) === Number(tokenId));
+        const tokenData = offerData?.nftContract?.tokens?.find(
+          (token) => Number(token?.tokenId) === Number(tokenId)
+        );
 
         const smartContracts = currentChainObject?.smartContracts;
         const targetAddress = tokenData?.mint?.currency;
@@ -712,22 +704,27 @@ const TokenPageContainer = () => {
       setTokenStatut("MINTABLE");
       setTokenCurrencyAddress(offerData?.nftContract?.prices[0]?.currency);
       // setTokenBigIntPrice(offerData?.nftContract?.prices[0]?.amount);
-      setPrice(offerData?.nftContract?.prices[0]?.mintPriceStructureFormatted.creatorAmount);
+      setPrice(offerData?.nftContract?.prices[0]?.mintPriceStructureFormatted?.creatorAmount);
       setCreatorAmount(
-        offerData?.nftContract?.prices[0]?.mintPriceStructureFormatted.creatorAmount
+        offerData?.nftContract?.prices[0]?.mintPriceStructureFormatted?.creatorAmount
       );
       setProtocolFeeAmount(
-        offerData?.nftContract?.prices[0]?.mintPriceStructureFormatted.protocolFeeAmount
+        offerData?.nftContract?.prices[0]?.mintPriceStructureFormatted?.protocolFeeAmount
       );
-      setTotalAmount(offerData?.nftContract?.prices[0]?.mintPriceStructureFormatted.totalAmount);
+      setTotalAmount(offerData?.nftContract?.prices[0]?.mintPriceStructureFormatted?.totalAmount);
+
+      const totalPrice = offerData?.nftContract?.prices[0]?.mintPriceStructure?.totalAmount;
+      const totalPriceFormatted = parseFloat(formatUnits(totalPrice, currencyDecimals));
+
+      setTotalPrice(totalPriceFormatted);
       setFeesAmount(
-        offerData?.nftContract?.prices[0]?.mintPriceStructureFormatted.protocolFeeAmount
+        offerData?.nftContract?.prices[0]?.mintPriceStructureFormatted?.protocolFeeAmount
       );
-      setFinalPrice(offerData?.nftContract?.prices[0]?.mintPriceStructureFormatted.totalAmount);
-      setFinalPriceNotFormatted(offerData?.nftContract?.prices[0]?.mintPriceStructure.totalAmount);
+      setFinalPrice(offerData?.nftContract?.prices[0]?.mintPriceStructureFormatted?.totalAmount);
+      setFinalPriceNotFormatted(offerData?.nftContract?.prices[0]?.mintPriceStructure?.totalAmount);
       setAmountToApprove(
-        offerData?.nftContract?.prices[0]?.mintPriceStructure.totalAmount &&
-          BigInt(offerData?.nftContract?.prices[0]?.mintPriceStructure.totalAmount)
+        offerData?.nftContract?.prices[0]?.mintPriceStructure?.totalAmount &&
+          BigInt(offerData?.nftContract?.prices[0]?.mintPriceStructure?.totalAmount)
       );
       setCurrency(offerData?.nftContract?.prices[0]?.currencySymbol);
       return;
@@ -779,11 +776,18 @@ const TokenPageContainer = () => {
             ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.buyPriceStructureFormatted
             ?.buyoutPricePerToken
         );
+        const totalPrice = offerData?.nftContract?.tokens
+          ?.find((token) => Number(token?.tokenId) === Number(tokenId))
+          ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]
+          ?.buyPriceStructure?.buyoutPricePerToken;
+        const totalPriceFormatted = parseFloat(formatUnits(totalPrice, currencyDecimals));
+
+        setTotalPrice(totalPriceFormatted);
         setFeesAmount(
           offerData?.nftContract?.tokens
             ?.find((token) => Number(token?.tokenId) === Number(tokenId))
             ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.buyPriceStructureFormatted
-            .protocolFeeBuyAmount
+            ?.protocolFeeBuyAmount
         );
         setRoyaltiesFeesAmount(
           offerData?.nftContract?.tokens
@@ -877,6 +881,15 @@ const TokenPageContainer = () => {
             ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.bidPriceStructureFormatted
             ?.totalBidAmount
         );
+
+        const totalPrice = offerData?.nftContract?.tokens
+          ?.find((token) => Number(token?.tokenId) === Number(tokenId))
+          ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]
+          ?.bidPriceStructure?.totalBidAmount;
+        const totalPriceFormatted = parseFloat(formatUnits(totalPrice, currencyDecimals));
+
+        setTotalPrice(totalPriceFormatted);
+
         setAmountToApprove(
           BigInt(
             offerData?.nftContract?.tokens
@@ -1694,7 +1707,9 @@ const TokenPageContainer = () => {
                     tokenStatut === "MINTABLE")) && (
                   <div className="flex items-center">
                     <span className="text-green text-sm font-medium tracking-tight mr-2">
-                      {finalPrice} {currency}
+                      {totalPrice && parseFloat(totalPrice) > 0
+                        ? `${finalPrice ?? 0} ${currency}`
+                        : "Free"}
                     </span>
                     <ModalHelper {...modalHelper} size="small" />
                   </div>
@@ -1743,140 +1758,157 @@ const TokenPageContainer = () => {
 
               {(offerData?.disable === true ||
                 new Date(offerData?.metadata?.offer?.valid_to).getTime() < Date.now() ||
-                offerData?.nftContract?.prices[0]?.enabled === false) && (
-                <Disable isOffer={false} />
-              )}
+                (offerData?.nftContract?.prices[0]?.enabled === false &&
+                  offerData?.nftContract?.tokens?.find(
+                    (token) => Number(token?.tokenId) === Number(tokenId)
+                  )?.mint === null)) && <Disable isOffer={false} />}
 
-              {((tokenStatut === "MINTABLE" &&
-                !minted &&
-                !conditions?.conditionsObject?.mintDisabled) ||
-                (firstSelectedListing?.listingType === "Direct" &&
-                  firstSelectedListing?.status === "CREATED" &&
-                  firstSelectedListing?.startTime < now &&
-                  firstSelectedListing?.endTime > now)) &&
-                successFullBuyModal && (
-                  <div className="dark:bg-secondaryBlack dark:border-jacarta-600 mb-2 border-jacarta-100 rounded-2lg border flex flex-col gap-4 bg-white p-8">
-                    <div className="sm:flex sm:flex-wrap flex-col gap-8">
-                      {firstSelectedListing?.listingType === "Direct" && (
-                        <div className="flex items-center justify-between gap-4 w-full">
-                          <span className="js-countdown-ends-label text-base text-jacarta-100 dark:text-jacarta-100">
-                            Direct listing ends in:
+              {(offerData?.disable === false ||
+                new Date(offerData?.metadata?.offer?.valid_to).getTime() >= Date.now() ||
+                offerData?.nftContract?.prices[0]?.enabled === true ||
+                offerData?.nftContract?.tokens?.find(
+                  (token) => Number(token?.tokenId) === Number(tokenId)
+                )?.mint !== null) && (
+                <>
+                  {((tokenStatut === "MINTABLE" &&
+                    !minted &&
+                    !conditions?.conditionsObject?.mintDisabled) ||
+                    (firstSelectedListing?.listingType === "Direct" &&
+                      firstSelectedListing?.status === "CREATED" &&
+                      firstSelectedListing?.startTime < now &&
+                      firstSelectedListing?.endTime > now)) &&
+                    successFullBuyModal && (
+                      <div className="dark:bg-secondaryBlack dark:border-jacarta-600 mb-2 border-jacarta-100 rounded-2lg border flex flex-col gap-4 bg-white p-8">
+                        <div className="sm:flex sm:flex-wrap flex-col gap-8">
+                          {firstSelectedListing?.listingType === "Direct" && (
+                            <div className="flex items-center justify-between gap-4 w-full">
+                              <span className="js-countdown-ends-label text-base text-jacarta-100 dark:text-jacarta-100">
+                                Direct listing ends in:
+                              </span>
+                              <Timer
+                                endTime={
+                                  marketplaceListings?.sort((a, b) => b?.id - a?.id)[0].endTime
+                                }
+                              />
+                            </div>
+                          )}
+
+                          <span className="dark:text-jacarta-100 text-jacarta-100 text-sm">
+                            Buying the ad space give you the exclusive right to submit an ad. The
+                            media still has the power to validate or reject ad assets. You re free
+                            to change the ad at anytime. And free to resell on the open market your
+                            ad space.{" "}
                           </span>
-                          <Timer
-                            endTime={marketplaceListings?.sort((a, b) => b?.id - a?.id)[0].endTime}
-                          />
                         </div>
-                      )}
-
-                      <span className="dark:text-jacarta-100 text-jacarta-100 text-sm">
-                        Buying the ad space give you the exclusive right to submit an ad. The media
-                        still has the power to validate or reject ad assets. You re free to change
-                        the ad at anytime. And free to resell on the open market your ad space.{" "}
-                      </span>
-                    </div>
-                    <div className="w-full flex justify-center">
-                      <Web3Button
-                        contractAddress={
-                          marketplaceListings.length > 0
-                            ? config[chainId]?.smartContracts?.DSPONSORMP?.address
-                            : config[chainId]?.smartContracts?.DSPONSORADMIN?.address
-                        }
-                        action={() => {
-                          handleBuyModal();
-                        }}
-                        className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all  !bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer `}
-                      >
-                        Buy
-                      </Web3Button>
-                    </div>
-                  </div>
-                )}
-
-              {firstSelectedListing?.status === "CREATED" &&
-                firstSelectedListing?.listingType === "Auction" &&
-                firstSelectedListing?.startTime >= now && (
-                  <div className="dark:bg-secondaryBlack dark:border-jacarta-600 mb-2 border-jacarta-100 rounded-2lg border flex flex-col gap-4 bg-white p-8">
-                    <div className="sm:flex sm:flex-wrap flex-col gap-8">
-                      <div className="flex items-center justify-between gap-4 w-full">
-                        <span className="js-countdown-ends-label text-base text-jacarta-100 dark:text-jacarta-100">
-                          Auction will start in:
-                        </span>
-                        <Timer
-                          endTime={marketplaceListings?.sort((a, b) => b?.id - a?.id)[0].startTime}
-                        />
+                        <div className="w-full flex justify-center">
+                          <Web3Button
+                            contractAddress={
+                              marketplaceListings.length > 0
+                                ? config[chainId]?.smartContracts?.DSPONSORMP?.address
+                                : config[chainId]?.smartContracts?.DSPONSORADMIN?.address
+                            }
+                            action={() => {
+                              handleBuyModal();
+                            }}
+                            className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all  !bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer `}
+                          >
+                            Buy
+                          </Web3Button>
+                        </div>
                       </div>
-                    </div>
-                  </div>
-                )}
+                    )}
 
-              {firstSelectedListing?.status === "CREATED" &&
-                firstSelectedListing?.listingType === "Direct" &&
-                firstSelectedListing?.startTime >= now && (
-                  <div className="dark:bg-secondaryBlack dark:border-jacarta-600 mb-2 border-jacarta-100 rounded-2lg border flex flex-col gap-4 bg-white p-8">
-                    <div className="sm:flex sm:flex-wrap flex-col gap-8">
-                      <div className="flex items-center justify-between gap-4 w-full">
-                        <span className="js-countdown-ends-label text-base text-jacarta-100 dark:text-jacarta-100">
-                          Direct listing will start in:
-                        </span>
-                        <Timer
-                          endTime={marketplaceListings?.sort((a, b) => b?.id - a?.id)[0].startTime}
-                        />
+                  {firstSelectedListing?.status === "CREATED" &&
+                    firstSelectedListing?.listingType === "Auction" &&
+                    firstSelectedListing?.startTime >= now && (
+                      <div className="dark:bg-secondaryBlack dark:border-jacarta-600 mb-2 border-jacarta-100 rounded-2lg border flex flex-col gap-4 bg-white p-8">
+                        <div className="sm:flex sm:flex-wrap flex-col gap-8">
+                          <div className="flex items-center justify-between gap-4 w-full">
+                            <span className="js-countdown-ends-label text-base text-jacarta-100 dark:text-jacarta-100">
+                              Auction will start in:
+                            </span>
+                            <Timer
+                              endTime={
+                                marketplaceListings?.sort((a, b) => b?.id - a?.id)[0].startTime
+                              }
+                            />
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                  </div>
-                )}
+                    )}
 
-              <ItemManage
-                successFullListing={successFullListing}
-                setSuccessFullListing={setSuccessFullListing}
-                dsponsorNFTContract={DsponsorNFTContract}
-                offerData={offerData}
-                marketplaceListings={marketplaceListings}
-                royalties={royalties}
-                dsponsorMpContract={dsponsorMpContract}
-                conditions={conditions?.conditionsObject}
-                tokenId={tokenId}
-                setListingCreated={setListingCreated}
-              />
+                  {firstSelectedListing?.status === "CREATED" &&
+                    firstSelectedListing?.listingType === "Direct" &&
+                    firstSelectedListing?.startTime >= now && (
+                      <div className="dark:bg-secondaryBlack dark:border-jacarta-600 mb-2 border-jacarta-100 rounded-2lg border flex flex-col gap-4 bg-white p-8">
+                        <div className="sm:flex sm:flex-wrap flex-col gap-8">
+                          <div className="flex items-center justify-between gap-4 w-full">
+                            <span className="js-countdown-ends-label text-base text-jacarta-100 dark:text-jacarta-100">
+                              Direct listing will start in:
+                            </span>
+                            <Timer
+                              endTime={
+                                marketplaceListings?.sort((a, b) => b?.id - a?.id)[0].startTime
+                              }
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    )}
 
-              {((firstSelectedListing?.listingType === "Auction" &&
-                firstSelectedListing.startTime < now &&
-                firstSelectedListing.endTime > now &&
-                firstSelectedListing?.status === "CREATED") ||
-                successFullBid) && (
-                <ItemBids
-                  setAmountToApprove={setAmountToApprove}
-                  bidsAmount={bidsAmount}
-                  setBidsAmount={setBidsAmount}
-                  chainId={chainId}
-                  checkUserBalance={checkUserBalance}
-                  price={price}
-                  allowanceTrue={allowanceTrue}
-                  checkAllowance={checkAllowance}
-                  handleApprove={handleApprove}
-                  dsponsorMpContract={dsponsorMpContract}
-                  marketplaceListings={marketplaceListings}
-                  currencySymbol={currency}
-                  tokenBalance={tokenBalance}
-                  currencyTokenDecimals={currencyDecimals}
-                  setSuccessFullBid={setSuccessFullBid}
-                  successFullBid={successFullBid}
-                  address={address}
-                  isLoadingButton={isLoadingButton}
-                  setIsLoadingButton={setIsLoadingButton}
-                  token={tokenDO}
-                  user={{
-                    address: address,
-                    isOwner: isOwner,
-                    isLister: isLister,
-                    isUserOwner: isUserOwner
-                  }}
-                  offer={offerDO}
-                  referrer={{
-                    address: referralAddress
-                  }}
-                  currencyContract={tokenCurrencyAddress}
-                />
+                  <ItemManage
+                    successFullListing={successFullListing}
+                    setSuccessFullListing={setSuccessFullListing}
+                    dsponsorNFTContract={DsponsorNFTContract}
+                    offerData={offerData}
+                    marketplaceListings={marketplaceListings}
+                    royalties={royalties}
+                    dsponsorMpContract={dsponsorMpContract}
+                    conditions={conditions?.conditionsObject}
+                    tokenId={tokenId}
+                    setListingCreated={setListingCreated}
+                  />
+
+                  {((firstSelectedListing?.listingType === "Auction" &&
+                    firstSelectedListing.startTime < now &&
+                    firstSelectedListing.endTime > now &&
+                    firstSelectedListing?.status === "CREATED") ||
+                    successFullBid) && (
+                    <ItemBids
+                      setAmountToApprove={setAmountToApprove}
+                      bidsAmount={bidsAmount}
+                      setBidsAmount={setBidsAmount}
+                      chainId={chainId}
+                      checkUserBalance={checkUserBalance}
+                      price={price}
+                      allowanceTrue={allowanceTrue}
+                      checkAllowance={checkAllowance}
+                      handleApprove={handleApprove}
+                      dsponsorMpContract={dsponsorMpContract}
+                      marketplaceListings={marketplaceListings}
+                      currencySymbol={currency}
+                      tokenBalance={tokenBalance}
+                      currencyTokenDecimals={currencyDecimals}
+                      setSuccessFullBid={setSuccessFullBid}
+                      successFullBid={successFullBid}
+                      address={address}
+                      isLoadingButton={isLoadingButton}
+                      setIsLoadingButton={setIsLoadingButton}
+                      token={tokenDO}
+                      user={{
+                        address: address,
+                        isOwner: isOwner,
+                        isLister: isLister,
+                        isUserOwner: isUserOwner
+                      }}
+                      offer={offerDO}
+                      referrer={{
+                        address: referralAddress
+                      }}
+                      currencyContract={tokenCurrencyAddress}
+                    />
+                  )}
+                </>
               )}
             </div>
           </div>
@@ -2137,6 +2169,7 @@ const TokenPageContainer = () => {
             setCanPayWithNativeToken={setCanPayWithNativeToken}
             token={tokenDO}
             buyTokenEtherPrice={buyTokenEtherPrice}
+            totalPrice={totalPrice}
             user={{
               address: address,
               isOwner: isOwner,

@@ -5,10 +5,10 @@ import ItemCardSkeleton from "../skeleton/ItemCardSkeleton";
 import OfferItem from "../cards/offerItem";
 import { Popover, PopoverTrigger, PopoverContent } from "@nextui-org/popover";
 
-const onAuctionCondition = (auction, mint) => {
+const onAuctionCondition = (auction, mint, direct) => {
   return (
     (auction?.status === "CREATED" &&
-      (auction?.listingType === "Auction" || auction?.listingType === "Direct") &&
+      (auction?.listingType === "Auction" || (auction?.listingType === "Direct" && direct)) &&
       Number(auction?.quantity) > 0 &&
       new Date(Number(auction?.startTime) * 1000) < new Date() &&
       new Date(Number(auction?.endTime) * 1000) > new Date()) ||
@@ -53,7 +53,7 @@ const MarketplaceHome = ({ auctions, setAllTokens, allTokens, isAuctionsLoading 
         (auction) => auction?.listingType === "Auction" || auction?.listingType === "Direct"
       );
     } else if (filterOption === "On auction") {
-      tempAuctions = tempAuctions.filter((auction) => onAuctionCondition(auction, false));
+      tempAuctions = tempAuctions.filter((auction) => onAuctionCondition(auction, false, false));
     } else if (filterOption === "Sold") {
       tempAuctions = tempAuctions.filter((auction) => auction?.sold);
     }
@@ -63,7 +63,9 @@ const MarketplaceHome = ({ auctions, setAllTokens, allTokens, isAuctionsLoading 
 
       switch (sortOption) {
         case "Price: low to high": {
-          let liveAuctions = tempAuctions.filter((auction) => onAuctionCondition(auction, true));
+          let liveAuctions = tempAuctions.filter((auction) =>
+            onAuctionCondition(auction, true, true)
+          );
           liveAuctions = liveAuctions.sort(
             (a, b) =>
               (a.listingType === "Auction"
@@ -79,7 +81,7 @@ const MarketplaceHome = ({ auctions, setAllTokens, allTokens, isAuctionsLoading 
           );
 
           const otherAuctions = tempAuctions.filter(
-            (auction) => !onAuctionCondition(auction, true)
+            (auction) => !onAuctionCondition(auction, true, true)
           );
 
           tempAuctions = [...liveAuctions, ...otherAuctions];
@@ -87,7 +89,9 @@ const MarketplaceHome = ({ auctions, setAllTokens, allTokens, isAuctionsLoading 
           break;
         }
         case "Price: high to low": {
-          let liveAuctions = tempAuctions.filter((auction) => onAuctionCondition(auction, true));
+          let liveAuctions = tempAuctions.filter((auction) =>
+            onAuctionCondition(auction, true, true)
+          );
           liveAuctions = liveAuctions
             .sort(
               (a, b) =>
@@ -104,19 +108,21 @@ const MarketplaceHome = ({ auctions, setAllTokens, allTokens, isAuctionsLoading 
             )
             .reverse();
 
-          let otherAuctions = tempAuctions.filter((auction) => !onAuctionCondition(auction, true));
+          let otherAuctions = tempAuctions.filter(
+            (auction) => !onAuctionCondition(auction, true, true)
+          );
 
           tempAuctions = [...liveAuctions, ...otherAuctions];
           break;
         }
         case "Ending soon": {
           let liveAuctions = tempAuctions?.filter(
-            (auction) => onAuctionCondition(auction, true) && auction?.endTime
+            (auction) => onAuctionCondition(auction, true, true) && auction?.endTime
           );
           liveAuctions = liveAuctions?.sort((a, b) => a.endTime - b.endTime);
 
           const otherAuctions = tempAuctions?.filter(
-            (auction) => !onAuctionCondition(auction, true) || !auction?.endTime
+            (auction) => !onAuctionCondition(auction, true, true) || !auction?.endTime
           );
 
           tempAuctions = [...liveAuctions, ...otherAuctions];
@@ -296,6 +302,9 @@ const MarketplaceHome = ({ auctions, setAllTokens, allTokens, isAuctionsLoading 
                       ? `/${auction?.chainId}/offer/${auction?.offerId}/${auction?.tokenId}`
                       : `/${auction?.chainId}/offer/${auction.item?.nftContract?.adOffers[0]?.id}/${auction?.tokenId}?tokenData=${auction.item?.mint?.tokenData}`
                   }
+                  currencyDecimals={auction?.currencyDecimals}
+                  tokenId={auction?.tokenId}
+                  offer={auction}
                 />
               ))}
             </>
