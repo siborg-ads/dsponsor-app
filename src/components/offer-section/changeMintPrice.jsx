@@ -8,6 +8,12 @@ import * as Switch from "@radix-ui/react-switch";
 import { BigNumber } from "ethers";
 import { activated_features } from "../../data/activated_features";
 
+const isDisabledMessage = (disableMint) => {
+  return disableMint
+    ? `The minting feature has been disabled for this offer ❌`
+    : `The minting feature has been enabled for this offer ✅`;
+};
+
 const ChangeMintPrice = ({ offer }) => {
   const [amount, setAmount] = useState(undefined);
   const [initialAmount, setInitialAmount] = useState(undefined);
@@ -275,7 +281,7 @@ const ChangeMintPrice = ({ offer }) => {
               .promise(handleChangeTokenMintPrice, {
                 pending: "Waiting for confirmation 🕒",
                 success: disableMint
-                  ? `The tokens mint has been ${disableMint ? "disabled ❌" : "enabled ✅"}`
+                  ? isDisabledMessage(disableMint)
                   : "The token mint price has been updated 🎉",
                 error: "Transaction rejected 🤯"
               })
@@ -304,7 +310,7 @@ const ChangeMintPrice = ({ offer }) => {
               .promise(handleChangeMintPrice, {
                 pending: "Waiting for confirmation 🕒",
                 success: disableMint
-                  ? `The tokens mint has been ${disableMint ? "disabled ❌" : "enabled ✅"}`
+                  ? isDisabledMessage(disableMint)
                   : "The mint price has been updated for this offer 🎉",
                 error: "Transaction rejected 🤯"
               })
