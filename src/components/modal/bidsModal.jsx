@@ -821,8 +821,10 @@ const BidsModal = ({
                               action={() => {
                                 toast.promise(handleSubmit, {
                                   pending: "Waiting for confirmation 🕒",
-                                  success: "Bid confirmed 👌",
-                                  error: "Bid rejected 🤯"
+                                  success: buyoutPriceReached
+                                    ? "Buy confirmed 👌"
+                                    : "Bid confirmed 👌",
+                                  error: buyoutPriceReached ? "Buy rejected 🤯" : "Bid rejected 🤯"
                                 });
                               }}
                               className={`!rounded-full !w-full !py-3 !px-8 !text-center !font-semibold !text-black !transition-all ${
@@ -855,8 +857,10 @@ const BidsModal = ({
                             action={() => {
                               toast.promise(handleSubmitWithNative, {
                                 pending: "Waiting for confirmation 🕒",
-                                success: "Bid confirmed 👌",
-                                error: "Bid rejected 🤯"
+                                success: buyoutPriceReached
+                                  ? "Buy confirmed 👌"
+                                  : "Bid confirmed 👌",
+                                error: buyoutPriceReached ? "Buy rejected 🤯" : "Bid rejected 🤯"
                               });
                             }}
                             className={`!rounded-full !py-3 !px-8 !text-center !font-semibold !text-black !transition-all ${

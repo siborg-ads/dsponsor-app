@@ -348,8 +348,8 @@ const BuyModal = ({
                           action={() => {
                             toast.promise(handleSubmit, {
                               pending: "Waiting for confirmation 🕒",
-                              success: "Bid confirmed 👌",
-                              error: "Bid rejected 🤯"
+                              success: "Buy confirmed 👌",
+                              error: "Buy rejected 🤯"
                             });
                           }}
                           className={`!rounded-full !py-3 !px-8 !w-full !text-center !font-semibold !text-black !transition-all ${
