@@ -21,7 +21,7 @@ const ChangeMintPrice = ({ offer }) => {
   const [selectedToken, setSelectedToken] = useState(null);
   const [currencyDecimals, setCurrencyDecimals] = useState(null);
   const [indexSelectedToken, setIndexSelectedToken] = useState(null);
-  const [disabledLocked, setDisabledLocked] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [initialDisabled, setInitialDisabled] = useState(false);
   const [disabled, setDisabled] = useState(false);
 
@@ -133,8 +133,6 @@ const ChangeMintPrice = ({ offer }) => {
   }, [disableMint, initialAmount]);
 
   const handleChangeMintPrice = async () => {
-    setDisabledLocked(disableMint);
-
     let finalFormattedAmountBN = formattedAmountBN;
 
     if (disableMint) {
@@ -160,8 +158,6 @@ const ChangeMintPrice = ({ offer }) => {
 
   const handleChangeTokenMintPrice = async () => {
     if (selectedToken === null) return;
-
-    setDisabledLocked(disableMint);
 
     try {
       await mutateTokenAsync({
@@ -190,6 +186,7 @@ const ChangeMintPrice = ({ offer }) => {
           checked={disableMint}
           onCheckedChange={setDisableMint}
           id="disable"
+          disabled={isLoading}
           className="w-[42px] h-[25px] rounded-full relative data-[state=checked]:bg-primaryPurple border border-white border-opacity-10 outline-none cursor-default"
         >
           <Switch.Thumb className="block w-[19px] h-[19px] bg-white rounded-full transition-transform duration-100 translate-x-0.5 will-change-transform data-[state=checked]:translate-x-[19px]" />
@@ -277,8 +274,8 @@ const ChangeMintPrice = ({ offer }) => {
             toast
               .promise(handleChangeTokenMintPrice, {
                 pending: "Waiting for confirmation 🕒",
-                success: disabledLocked
-                  ? "The token mint has been disabled ❌"
+                success: disableMint
+                  ? `The tokens mint has been ${disableMint ? "disabled ❌" : "enabled ✅"}`
                   : "The token mint price has been updated 🎉",
                 error: "Transaction rejected 🤯"
               })
@@ -301,17 +298,21 @@ const ChangeMintPrice = ({ offer }) => {
           action={() => {
             if (!nftContractAddress || !currency) return;
 
+            setIsLoading(true);
+
             toast
               .promise(handleChangeMintPrice, {
                 pending: "Waiting for confirmation 🕒",
-                success: disabledLocked
-                  ? "The tokens mint has been disabled ❌"
+                success: disableMint
+                  ? `The tokens mint has been ${disableMint ? "disabled ❌" : "enabled ✅"}`
                   : "The mint price has been updated for this offer 🎉",
                 error: "Transaction rejected 🤯"
               })
               .catch((error) => {
                 console.error(error);
               });
+
+            setIsLoading(false);
           }}
           isDisabled={!nftContractAddress || !currency}
           contractAddress={nftContractAddress}
