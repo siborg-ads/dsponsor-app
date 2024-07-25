@@ -226,8 +226,6 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
     hrefButton: null
   };
 
-  console.log("data", data);
-
   if (!data) {
     return (
       <div className="flex w-full justify-center">
@@ -273,6 +271,17 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
           {!showSliderForm && (
             <div className={`grid w-full grid-cols-1 gap-[1.875rem] md:grid-cols-2 lg:grid-cols-4`}>
               {data?.map((item, index) => {
+                console.log("item", item);
+
+                let currencyDecimals = 0;
+                if (item?.prices?.length > 0) {
+                  currencyDecimals = item?.prices[0]?.currencyDecimals;
+                } else {
+                  currencyDecimals = item?.marketplaceListings?.sort(
+                    (a, b) => Number(b?.id) - Number(a?.id)
+                  )[0]?.currencyDecimals;
+                }
+
                 return isSelectionActive ? (
                   <div
                     onClick={() => handleSelection(item)}
@@ -297,6 +306,7 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
                           : `/${item?.chainConfig?.chainId}/offer/${item.offerId}/${item.tokenId}?tokenData=${item.tokenData}`
                       }
                       availableToSubmitAdFromOwnedTokens={true}
+                      currencyDecimals={currencyDecimals}
                     />
                   </div>
                 ) : (
@@ -319,6 +329,7 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
                         : `/${item?.chainConfig?.chainId}/offer/${item.offerId}/${item.tokenId}?tokenData=${item.tokenData}`
                     }
                     availableToSubmitAdFromOwnedTokens={true}
+                    currencyDecimals={currencyDecimals}
                   />
                 );
               })}

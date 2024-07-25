@@ -149,6 +149,7 @@ const MarketplaceContainer = () => {
                           listingType={item?.marketplaceListings[0]?.listingType}
                           isListing={item?.marketplaceListings[0]?.listingType}
                           isAuction={item?.marketplaceListings[0]?.listingType === "Auction"}
+                          currencyDecimals={item?.currencyDecimals}
                         />
                       );
                     })}

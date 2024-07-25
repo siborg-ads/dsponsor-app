@@ -14,7 +14,7 @@ import Integration from "../../components/offer-section/integration";
 import { ThirdwebStorage } from "@thirdweb-dev/storage";
 import * as Accordion from "@radix-ui/react-accordion";
 import { ChevronDownIcon } from "@heroicons/react/24/solid";
-import ExclamationCircleIcon from "@heroicons/react/24/solid";
+import { ExclamationCircleIcon } from "@heroicons/react/24/solid";
 import InfoIcon from "../../components/informations/infoIcon";
 
 import { fetchOffer } from "../../providers/methods/fetchOffer";
@@ -39,7 +39,6 @@ const OfferPageContainer = () => {
 
   const offerId = router.query?.offerId;
   const chainId = router.query?.chainName;
-  const userAddress = useAddress();
   const [refusedValidatedAdModal, setRefusedValidatedAdModal] = useState(null);
   const [copied, setCopied] = useState(false);
   const [offerData, setOfferData] = useState([]);
@@ -80,9 +79,16 @@ const OfferPageContainer = () => {
   const {
     description = "description not found",
     id = "1",
-    image = ["/images/gradient_creative.jpg"],
     name = "DefaultName"
   } = offerData?.metadata?.offer ? offerData.metadata.offer : {};
+
+  useEffect(() => {
+    if (offerData?.metadata?.offer?.image) {
+      setImageUrl(offerData.metadata.offer.image);
+    } else {
+      setImageUrl("/images/gradient_creative.jpg");
+    }
+  }, [offerData]);
 
   const [itemProposals, setItemProposals] = useState(null);
   const [mediaShouldValidateAnAd, setMediaShouldValidateAnAd] = useState(false);
@@ -115,34 +121,15 @@ const OfferPageContainer = () => {
     }
   }, [chainId]);
 
-  const fetchOfferRef = React.useRef(false);
-
   useEffect(() => {
-    const fetchingOffer = async () => {
-      if (fetchOfferRef.current) return;
-      fetchOfferRef.current = true;
-
-      try {
-        const offer = await fetchOffer(offerId, chainId);
-
-        if (offer) {
-          if (offer?.admins?.includes(address?.toLowerCase())) {
-            setIsMedia(true);
-          } else {
-            setIsMedia(false);
-          }
-        }
-      } catch (error) {
-        console.error("Error fetching offer:", error);
-      } finally {
-        fetchOfferRef.current = false;
+    if (offerData && address) {
+      if (offerData?.admins?.includes(address?.toLowerCase())) {
+        setIsMedia(true);
+      } else {
+        setIsMedia(false);
       }
-    };
-
-    if (offerId && chainId && address) {
-      fetchingOffer();
     }
-  }, [address, chainId, offerId]);
+  }, [address, offerData]);
 
   useEffect(() => {
     if (offers) {
@@ -228,33 +215,21 @@ const OfferPageContainer = () => {
     setMediaShouldValidateAnAd(mediaShouldValidateAnAd);
   }, [itemProposals]);
 
-  const fetchImage = async (image) => {
-    if (!image) {
-      setImageUrl(null);
-      return;
-    }
-
-    // get url image instead of ipfs:// starting url
-    if (typeof image === "string" && image.startsWith("ipfs://")) {
+  useEffect(() => {
+    const fetchImage = async (imageUrlLocal) => {
       const storage = new ThirdwebStorage({ clientId: "6f375d41f2a33f1f08f6042a65d49ec9" });
       try {
-        const ipfsUrl = await storage.resolveScheme(image);
+        const ipfsUrl = await storage.resolveScheme(imageUrlLocal);
         setImageUrl(ipfsUrl);
       } catch (error) {
         console.error("Error fetching image:", error);
       }
-    } else {
-      setImageUrl(image);
-    }
-  };
+    };
 
-  useEffect(() => {
-    if (image) {
-      fetchImage(image);
-    } else {
-      setImageUrl(null);
+    if (imageUrl && typeof imageUrl === "string" && imageUrl.startsWith("ipfs://")) {
+      fetchImage(imageUrl);
     }
-  }, [image]);
+  }, [imageUrl]);
 
   const fetchOfferSecondRef = React.useRef(false);
 
@@ -268,16 +243,6 @@ const OfferPageContainer = () => {
           const offer = await fetchOffer(offerId, chainId);
 
           setOfferData(offer);
-          if (userAddress && offer?.admins?.includes(userAddress.toLowerCase())) {
-            setIsOwner(true);
-          }
-
-          if (
-            userAddress &&
-            userAddress?.toLowerCase() === offer?.nftContract?.owner?.newOwner?.toLowerCase()
-          ) {
-            setCanChangeMintPrice(true);
-          }
         } catch (error) {
           console.error("Error fetching offer:", error);
         } finally {
@@ -290,7 +255,20 @@ const OfferPageContainer = () => {
         fetchAdsOffers();
       }
     }
-  }, [offerId, successFullRefuseModal, userAddress, chainId, setSelectedChain]);
+  }, [offerId, successFullRefuseModal, chainId, setSelectedChain]);
+
+  useEffect(() => {
+    if (address && offerData?.admins?.includes(address.toLowerCase())) {
+      setIsOwner(true);
+    }
+
+    if (
+      address &&
+      address?.toLowerCase() === offerData?.nftContract?.owner?.newOwner?.toLowerCase()
+    ) {
+      setCanChangeMintPrice(true);
+    }
+  }, [address, offerData]);
 
   useEffect(() => {
     if (!offerData) return;
@@ -306,6 +284,14 @@ const OfferPageContainer = () => {
       } else {
         currencyTokenObject.symbol = symbolContract;
         currencyTokenObject.decimals = decimalsContract;
+      }
+
+      if (!bps || !maxBps) {
+        return;
+      }
+
+      if (!offerData?.nftContract?.prices[0]?.amount) {
+        return;
       }
 
       const bigIntPrice =
@@ -366,66 +352,6 @@ const OfferPageContainer = () => {
       </div>
     );
   }
-  const modalHelper = {
-    title: "Protocol Fees",
-    body: (
-      <div className="flex flex-col gap-8">
-        <span className="text-jacarta-100 text-sm">
-          The protocol fees (4%) are used to maintain the platform and the services provided. The
-          fees are calculated based on the price of the ad space and are automatically deducted from
-          the total amount paid by the buyer.
-        </span>
-
-        <div className="flex flex-col gap-2">
-          <span className="text-white font-semibold">Initial Sale Scenario</span>
-          <ul className="flex flex-col gap-2 list-disc text-sm" style={{ listStyleType: "disc" }}>
-            <li>
-              <span className="text-white">
-                Amount sent to the creator: {formatAndRoundPrice(price)} {currency?.symbol}
-              </span>
-            </li>
-            <li>
-              <span className="text-white">
-                Protocol fees: {formatAndRoundPrice(price * 0.04)} {currency?.symbol}
-              </span>
-            </li>
-            <li>
-              <span className="text-white">
-                Total: {formatAndRoundPrice(price + price * 0.04)} {currency?.symbol}
-              </span>
-            </li>
-          </ul>
-        </div>
-
-        <div className="flex flex-col gap-2">
-          <span className="text-white font-semibold">Secondary Market Scenario</span>
-          <ul className="flex flex-col gap-2 list-disc text-sm" style={{ listStyleType: "disc" }}>
-            <li>
-              <span className="text-white">
-                Amount sent to the lister: {formatAndRoundPrice(price - price * 0.1 - price * 0.04)}{" "}
-                {currency?.symbol}
-              </span>
-            </li>
-            <li>
-              <span className="text-white">
-                Royalties sent to the creator: {formatAndRoundPrice(price * 0.1)} {currency?.symbol}
-              </span>
-            </li>
-            <li>
-              <span className="text-white">
-                Protocol fees: {formatAndRoundPrice(price * 0.04)} {currency?.symbol}
-              </span>
-            </li>
-            <li>
-              <span className="text-white">
-                Total: {formatAndRoundPrice(price)} {currency?.symbol}
-              </span>
-            </li>
-          </ul>
-        </div>
-      </div>
-    )
-  };
 
   return (
     <Accordion.Root
@@ -443,13 +369,12 @@ const OfferPageContainer = () => {
           </h1>
         </div>
         <picture className="pointer-events-none absolute inset-0 -z-10 dark:hidden">
-          <Image
-            width={1519}
-            height={773}
-            priority
-            src="/images/gradient_light.jpg"
+          <img
+            width={750}
+            height={750}
+            src={imageUrl ?? "/images/gradient_creative.jpg"}
             alt="gradient"
-            className="h-full w-full object-cover"
+            className="h-full w-full object-cover aspect-square"
           />
         </picture>
         <div className="container">
@@ -458,16 +383,12 @@ const OfferPageContainer = () => {
           <div className="md:flex md:flex-wrap" key={id}>
             {/* <!-- Image --> */}
             <figure className="mb-8 md:w-2/5 md:flex-shrink-0 md:flex-grow-0 md:basis-auto lg:w-1/2 w-full flex justify-center">
-              <button
-                className="w-full"
-                onClick={() => setImageModal(true)}
-                style={{ height: "450px" }}
-              >
+              <button className="w-full" onClick={() => setImageModal(true)}>
                 {imageUrl && (
                   <img
-                    src={imageUrl ?? ""}
+                    src={imageUrl ?? "/images/gradient_creative.jpg"}
                     alt="image"
-                    className="rounded-2xl cursor-pointer h-full object-cover w-full"
+                    className="rounded-2xl cursor-pointer h-full object-cover w-full aspect-square"
                   />
                 )}
               </button>
@@ -487,9 +408,9 @@ const OfferPageContainer = () => {
                     <div className="modal fade show block">
                       <div className="modal-dialog !my-0 flex items-center justify-center">
                         <img
-                          src={imageUrl ?? ""}
+                          src={imageUrl ?? "/images/gradient_creative.jpg"}
                           alt="image"
-                          className="h-full object-cover w-full rounded-2xl"
+                          className="h-full object-cover w-full rounded-2xl aspect-square"
                         />
                       </div>
 
@@ -536,17 +457,12 @@ const OfferPageContainer = () => {
               </h2>
 
               <div className="mb-8 flex items-center flex-wrap gap-2 space-x-4 whitespace-nowrap">
-                {activated_features.canSeeModalHelperOnOfferPage && (
-                  <>
-                    {currency?.symbol && (
-                      <div className="flex items-center">
-                        <span className="text-green text-sm font-medium tracking-tight mr-2">
-                          {price} {currency?.symbol}
-                        </span>
-                        <ModalHelper {...modalHelper} size="small" />
-                      </div>
-                    )}
-                  </>
+                {currency?.symbol && (
+                  <div className="flex items-center">
+                    <span className="text-green text-sm font-medium tracking-tight mr-2">
+                      {price} {currency?.symbol}
+                    </span>
+                  </div>
                 )}
 
                 {offerData.nftContract.allowList && (
@@ -562,11 +478,10 @@ const OfferPageContainer = () => {
               </div>
 
               <p className="dark:text-jacarta-100 mb-10">{description}</p>
-              <p className="dark:text-jacarta-100 mb-10">{description}</p>
 
-              {(offerData?.disable ||
-                new Date(offerData?.metadata?.offer?.valid_to) < new Date() ||
-                !offerData?.nftContract?.prices[0]?.enabled) && <Disable isOffer={true} />}
+              {(offerData?.disable === true ||
+                new Date(offerData?.metadata?.offer?.valid_to).getTime() < Date.now() ||
+                offerData?.nftContract?.prices[0]?.enabled === false) && <Disable isOffer={true} />}
 
               {isOwner && (
                 <div className="dark:bg-secondaryBlack dark:border-jacarta-600 border-jacarta-100 rounded-2lg border bg-white p-8">

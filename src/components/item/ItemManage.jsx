@@ -15,7 +15,8 @@ const ItemManage = ({
   dsponsorNFTContract,
   dsponsorMpContract,
   conditions,
-  tokenId
+  tokenId,
+  setListingCreated
 }) => {
   const [listingModal, setListingModal] = useState(false);
   const [isLoadingButton, setIsLoadingButton] = useState(false);
@@ -70,13 +71,6 @@ const ItemManage = ({
       return (
         <span className="dark:text-jacarta-100 text-jacarta-100 text-sm">
           Auction has ended, you can complete the auction by clicking the button below.
-        </span>
-      );
-    }
-    if (conditions?.mintDisabled && !conditions?.isMinted) {
-      return (
-        <span className="dark:text-jacarta-100 text-jacarta-100 text-sm">
-          This token is not available for purchase.
         </span>
       );
     }
@@ -224,6 +218,7 @@ const ItemManage = ({
             offerData={offerData}
             marketplaceListings={marketplaceListings}
             tokenId={tokenId}
+            setListingCreated={setListingCreated}
           />
         </div>
       )}

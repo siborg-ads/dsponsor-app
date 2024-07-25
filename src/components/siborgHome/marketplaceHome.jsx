@@ -10,8 +10,8 @@ const onAuctionCondition = (auction, mint) => {
     (auction?.status === "CREATED" &&
       (auction?.listingType === "Auction" || auction?.listingType === "Direct") &&
       Number(auction?.quantity) > 0 &&
-      new Date(Number(auction?.startTime) * 1000).getTime() < Date.now() &&
-      new Date(Number(auction?.endTime) * 1000).getTime() > Date.now()) ||
+      new Date(Number(auction?.startTime) * 1000) < new Date() &&
+      new Date(Number(auction?.endTime) * 1000) > new Date()) ||
     (mint && auction?.item?.mint === null)
   );
 };
@@ -25,12 +25,12 @@ const MarketplaceHome = ({ auctions, setAllTokens, allTokens, isAuctionsLoading 
   const filteredAuctions = useMemo(() => {
     let tempAuctions = auctions;
 
-    // keep enabled minted tokens and tokens already minted
+    // keep enabled minted tokens and tokens already minted (updated)
     tempAuctions = tempAuctions.filter(
       (auction) =>
-        (auction?.item?.nftContract?.prices[0]?.enabled || auction?.item?.mint === null) &&
-        new Date(auction?.item?.metadata?.valid_to) >= new Date() &&
-        !auction?.item?.nftContract?.adOffers?.some((offer) => offer?.disable)
+        (auction?.item?.nftContract?.prices[0]?.enabled === true || auction?.item?.mint !== null) &&
+        new Date(auction?.item?.metadata?.valid_to).getTime() >= Date.now() &&
+        auction?.item?.disable === false
     );
 
     if (!allTokens) {
@@ -110,11 +110,13 @@ const MarketplaceHome = ({ auctions, setAllTokens, allTokens, isAuctionsLoading 
           break;
         }
         case "Ending soon": {
-          tempAuctions.sort((a, b) => a.endTime - b.endTime);
+          let liveAuctions = tempAuctions?.filter(
+            (auction) => onAuctionCondition(auction, true) && auction?.endTime
+          );
+          liveAuctions = liveAuctions?.sort((a, b) => a.endTime - b.endTime);
 
-          const liveAuctions = tempAuctions.filter((auction) => onAuctionCondition(auction, true));
-          const otherAuctions = tempAuctions.filter(
-            (auction) => !onAuctionCondition(auction, true)
+          const otherAuctions = tempAuctions?.filter(
+            (auction) => !onAuctionCondition(auction, true) || !auction?.endTime
           );
 
           tempAuctions = [...liveAuctions, ...otherAuctions];
@@ -294,6 +296,9 @@ const MarketplaceHome = ({ auctions, setAllTokens, allTokens, isAuctionsLoading 
                       ? `/${auction?.chainId}/offer/${auction?.offerId}/${auction?.tokenId}`
                       : `/${auction?.chainId}/offer/${auction.item?.nftContract?.adOffers[0]?.id}/${auction?.tokenId}?tokenData=${auction.item?.mint?.tokenData}`
                   }
+                  currencyDecimals={auction?.currencyDecimals}
+                  tokenId={auction?.tokenId}
+                  offer={auction}
                 />
               ))}
             </>

@@ -46,7 +46,8 @@ const BuyModal = ({
   setInsufficentBalance,
   setCanPayWithNativeToken,
   nativeTokenBalance,
-  buyTokenEtherPrice
+  buyTokenEtherPrice,
+  totalPrice
 }) => {
   const [validate, setValidate] = useState(false);
   const [notEnoughFunds, setNotEnoughFunds] = useState(false);
@@ -302,38 +303,42 @@ const BuyModal = ({
                   <>
                     <div className="flex flex-col items-center md:gap-2 gap-6">
                       {/* Approve Button */}
-                      <div className="grid grid-cols-1 mx-auto md:grid-cols-2 gap-6 w-full">
-                        <Web3Button
-                          contractAddress={
-                            currentChainObject?.smartContracts?.DSPONSORADMIN?.address
-                          }
-                          action={() => {
-                            toast.promise(handleApprove, {
-                              pending: "Waiting for confirmation 🕒",
-                              success: "Approval confirmed 👌",
-                              error: "Approval rejected 🤯"
-                            });
-                          }}
-                          className={`!rounded-full !py-3 !px-8 !w-full !text-center !font-semibold !text-black !transition-all ${
-                            !validate || !finalPriceNotFormatted || !allowanceTrue
-                              ? "!btn-disabled !cursor-not-allowed !text-black !opacity-30"
-                              : "!text-white !bg-primaryPurple !cursor-pointer"
-                          }`}
-                          isDisabled={
-                            !validate ||
-                            isLoadingButton ||
-                            !finalPriceNotFormatted ||
-                            !allowanceTrue
-                          }
-                        >
-                          {isLoadingButton ? (
-                            <Spinner size="sm" color="default" />
-                          ) : notEnoughFunds ? (
-                            <span className="text-black">Not enough funds</span>
-                          ) : (
-                            "Approve 🔓 (1/2)"
-                          )}
-                        </Web3Button>
+                      <div
+                        className={`grid grid-cols-1 mx-auto ${parseFloat(totalPrice) > 0 && "md:grid-cols-2"} gap-6 w-full`}
+                      >
+                        {totalPrice && parseFloat(totalPrice) > 0 && (
+                          <Web3Button
+                            contractAddress={
+                              currentChainObject?.smartContracts?.DSPONSORADMIN?.address
+                            }
+                            action={() => {
+                              toast.promise(handleApprove, {
+                                pending: "Waiting for confirmation 🕒",
+                                success: "Approval confirmed 👌",
+                                error: "Approval rejected 🤯"
+                              });
+                            }}
+                            className={`!rounded-full !py-3 !px-8 !w-full !text-center !font-semibold !text-black !transition-all ${
+                              !validate || !finalPriceNotFormatted || !allowanceTrue
+                                ? "!btn-disabled !cursor-not-allowed !text-black !opacity-30"
+                                : "!text-white !bg-primaryPurple !cursor-pointer"
+                            }`}
+                            isDisabled={
+                              !validate ||
+                              isLoadingButton ||
+                              !finalPriceNotFormatted ||
+                              !allowanceTrue
+                            }
+                          >
+                            {isLoadingButton ? (
+                              <Spinner size="sm" color="default" />
+                            ) : notEnoughFunds ? (
+                              <span className="text-black">Not enough funds</span>
+                            ) : (
+                              "Approve 🔓 (1/2)"
+                            )}
+                          </Web3Button>
+                        )}
 
                         {/* Place Bid Button */}
                         <Web3Button
@@ -363,14 +368,17 @@ const BuyModal = ({
                           )}
                         </Web3Button>
                       </div>
-                      <InfoIcon
-                        text={`You need to approve the marketplace contract to spend your ${selectedCurrency} on this transaction.`}
-                      >
-                        <span className="text-xs text-jacarta-100 inline-flex items-center gap-1">
-                          <InformationCircleIcon className="w-4 h-4 text-jacarta-100" />
-                          Why do I have to approve ?
-                        </span>
-                      </InfoIcon>
+
+                      {totalPrice && parseFloat(totalPrice) > 0 && (
+                        <InfoIcon
+                          text={`You need to approve the marketplace contract to spend your ${selectedCurrency} on this transaction.`}
+                        >
+                          <span className="text-xs text-jacarta-100 inline-flex items-center gap-1">
+                            <InformationCircleIcon className="w-4 h-4 text-jacarta-100" />
+                            Why do I have to approve ?
+                          </span>
+                        </InfoIcon>
+                      )}
                     </div>
                   </>
                 ) : (

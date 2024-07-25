@@ -71,10 +71,19 @@ const OwnedOffers_categories_items = ({ data, isPendinAdsOnOffer, isOwner, offer
       </div>
 
       {/* <!-- Grid --> */}
-      {filteredData.length > 0 ? (
+      {filteredData?.length > 0 ? (
         <div className="grid grid-cols-1 gap-[1.875rem] md:grid-cols-2 lg:grid-cols-4">
           {filteredData?.map((item, index) => {
             const offer = offers?.find((offer) => offer?.id === item?.id);
+
+            let currencyDecimals = 0;
+            if (item?.prices?.length > 0) {
+              currencyDecimals = item?.prices[0]?.currencyDecimals;
+            } else {
+              currencyDecimals = item?.marketplaceListings?.sort(
+                (a, b) => Number(b?.id) - Number(a?.id)
+              )[0]?.currencyDecimals;
+            }
 
             return (
               <OfferItem
@@ -90,6 +99,7 @@ const OwnedOffers_categories_items = ({ data, isPendinAdsOnOffer, isOwner, offer
                 isOwner={isOwner}
                 offer={offer}
                 createdOffersProposals={true}
+                currencyDecimals={currencyDecimals}
               />
             );
           })}
