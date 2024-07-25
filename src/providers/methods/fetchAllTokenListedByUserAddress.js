@@ -20,11 +20,21 @@ export const fetchAllTokenListedByUserAddress = async (lister, chainId) => {
           nftContract {
             id # = assetContract
             royalty {
-            bps
-          }
+              bps
+            }
             adOffers {
               id
               metadataURL # offerMetadata
+            }
+              marketplaceListings {
+              id
+              currency
+              reservePricePerToken
+              buyoutPricePerToken
+              quantity
+              bids {
+                totalBidAmount
+              }
             }
             prices {
               currency # ERC20 smart contract

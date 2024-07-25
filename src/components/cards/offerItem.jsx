@@ -11,6 +11,7 @@ import { getAddress, formatUnits } from "ethers/lib/utils";
 import { ExclamationCircleIcon } from "@heroicons/react/24/solid";
 import InfoIcon from "../informations/infoIcon";
 import { ThirdwebStorage } from "@thirdweb-dev/storage";
+import { BigNumber } from "ethers";
 
 const OfferItem = ({
   item,
@@ -26,9 +27,12 @@ const OfferItem = ({
   createdOffersProposals,
   offer,
   offers,
-  isDisabled
+  isDisabled,
+  currencyDecimals,
+  tokenId
 }) => {
   const [price, setPrice] = useState(null);
+  const [totalPrice, setTotalPrice] = useState(null);
   const [currencyToken, setCurrencyToken] = useState(null);
   const [itemData, setItemData] = useState({});
   const [itemStatut, setItemStatut] = useState(null);
@@ -195,12 +199,29 @@ const OfferItem = ({
     if (!isToken && !isListing && !isAuction) {
       setItemStatut("OFFER");
       setPrice(item?.nftContract.prices[0]?.mintPriceStructureFormatted?.totalAmount);
+      const totalPrice = item?.nftContract.prices[0]?.mintPriceStructure?.totalAmount;
+      if (currencyDecimals && totalPrice) {
+        const formattedTotalPrice = formatUnits(
+          BigNumber.from(totalPrice),
+          Number(currencyDecimals)
+        );
+        setTotalPrice(formattedTotalPrice);
+      }
       setCurrencyToken(item?.nftContract?.prices[0]?.currencySymbol);
       return;
     }
-    if (isToken && item?.marketplaceListings?.length <= 0 && item.mint === null) {
+
+    if (isToken && item?.marketplaceListings?.length <= 0 && item?.mint === null) {
       setItemStatut("TOKENMINTABLE");
       setPrice(item?.nftContract?.prices[0]?.mintPriceStructureFormatted?.totalAmount);
+      const totalPrice = item?.nftContract?.prices[0]?.mintPriceStructure?.totalAmount;
+      if (currencyDecimals && totalPrice) {
+        const formattedTotalPrice = formatUnits(
+          BigNumber.from(totalPrice),
+          Number(currencyDecimals)
+        );
+        setTotalPrice(formattedTotalPrice);
+      }
       setCurrencyToken(item?.nftContract?.prices[0]?.currencySymbol);
       return;
     }
@@ -217,6 +238,17 @@ const OfferItem = ({
               ?.bidPriceStructureFormatted?.minimalBidPerToken
           : item?.bidPriceStructureFormatted?.minimalBidPerToken
       );
+      const totalPrice = item?.marketplaceListings?.sort((a, b) => Number(b.id) - Number(a.id))[0]
+        ? item?.marketplaceListings?.sort((a, b) => Number(b.id) - Number(a.id))[0]
+            ?.bidPriceStructure?.minimalBidPerToken
+        : item?.bidPriceStructure?.minimalBidPerToken;
+      if (currencyDecimals && totalPrice) {
+        const formattedTotalPrice = formatUnits(
+          BigNumber.from(totalPrice),
+          Number(currencyDecimals)
+        );
+        setTotalPrice(formattedTotalPrice);
+      }
       setCurrencyToken(
         item?.marketplaceListings?.sort((a, b) => Number(b.id) - Number(a.id))[0]
           ? item?.marketplaceListings?.sort((a, b) => Number(b.id) - Number(a.id))[0]
@@ -232,12 +264,32 @@ const OfferItem = ({
         item?.marketplaceListings?.sort((a, b) => Number(b.id) - Number(a.id))[0]
           ?.buyPriceStructureFormatted?.buyoutPricePerToken
       );
+      const totalPrice = item?.marketplaceListings?.sort((a, b) => Number(b.id) - Number(a.id))[0]
+        ?.buyPriceStructure?.buyoutPricePerToken;
+      if (currencyDecimals && totalPrice) {
+        const formattedTotalPrice = formatUnits(
+          BigNumber.from(totalPrice),
+          Number(currencyDecimals)
+        );
+        setTotalPrice(formattedTotalPrice);
+      }
       setCurrencyToken(
         item?.marketplaceListings?.sort((a, b) => Number(b.id) - Number(a.id))[0]?.currencySymbol
       );
       setItemStatut("DIRECT");
     }
-  }, [item, isToken, isListing, isAuction, listingType]);
+  }, [
+    item,
+    isToken,
+    isListing,
+    isAuction,
+    listingType,
+    currencyDecimals,
+    itemData,
+    tokenId,
+    totalPrice,
+    offer
+  ]);
 
   useEffect(() => {
     if (!item) return;
@@ -392,11 +444,11 @@ const OfferItem = ({
               </div>
             )}
 
-              {isDisabled && (
-                <span className="text-red text-xs min-w-[100px] text-end font-medium tracking-tight">
-                  ❌ Disabled
-                </span>
-              )}
+            {isDisabled && (
+              <span className="text-red text-xs min-w-[100px] text-end font-medium tracking-tight">
+                ❌ Disabled
+              </span>
+            )}
 
             {currencyToken &&
             price &&
@@ -405,7 +457,9 @@ const OfferItem = ({
               itemStatut === "TOKENMINTABLE") ? (
               <div className="dark:border-jacarta-600 border-jacarta-100 flex items-center whitespace-nowrap rounded-md border py-1 px-2">
                 <span className="text-green text-sm font-medium tracking-tight">
-                  {price} {currencyToken}
+                  {totalPrice && parseFloat(totalPrice) > 0
+                    ? `${price ?? 0} ${currencyToken}`
+                    : "Free"}
                 </span>
               </div>
             ) : (

@@ -58,14 +58,19 @@ const HomeContainer = () => {
       const tokenId = token.tokenId;
       const tokenData = token.tokenData;
       const live =
-        token.marketplaceListings.sort((a, b) => Number(b.id) - Number(a.id))[0]?.status ===
+        token.marketplaceListings?.sort((a, b) => Number(b.id) - Number(a.id))[0]?.status ===
           "CREATED" &&
-        token.marketplaceListings.sort((a, b) => Number(b.id) - Number(a.id))[0].quantity > 0;
+        token.marketplaceListings?.sort((a, b) => Number(b.id) - Number(a.id))[0].quantity > 0;
       const image = token.metadata.image;
-      const currencyDecimals = Number(
-        token.marketplaceListings.sort((a, b) => Number(b.id) - Number(a.id))[0]
-          ?.currencyDecimals ?? 0
-      );
+      const listingType = token.marketplaceListings.sort((a, b) => Number(b.id) - Number(a.id))[0]
+        ?.listingType;
+      const currencyDecimals =
+        listingType === "Auction" || listingType === "Direct"
+          ? Number(
+              token?.marketplaceListings?.sort((a, b) => Number(b.id) - Number(a.id))[0]
+                ?.currencyDecimals
+            )
+          : Number(token?.nftContract?.prices[0]?.currencyDecimals);
       const currencySymbol = token?.marketplaceListings.sort(
         (a, b) => Number(b.id) - Number(a.id)
       )[0]?.currencySymbol;
@@ -92,8 +97,6 @@ const HomeContainer = () => {
       const auctionPrice = token.marketplaceListings.sort((a, b) => Number(b.id) - Number(a.id))[0]
         ?.bidPriceStructure?.minimalBidPerToken;
       const mintPrice = token?.nftContract?.prices[0]?.amount;
-      const listingType = token.marketplaceListings.sort((a, b) => Number(b.id) - Number(a.id))[0]
-        ?.listingType;
       const startTime = token?.marketplaceListings.sort((a, b) => Number(b.id) - Number(a.id))[0]
         ?.startTime;
       const endTime = token?.marketplaceListings.sort((a, b) => Number(b.id) - Number(a.id))[0]
@@ -152,7 +155,8 @@ const HomeContainer = () => {
           tokenId: tokenId,
           tokenData: tokenData,
           startTime: startTime,
-          endTime: endTime
+          endTime: endTime,
+          currencyDecimals: currencyDecimals
         }
       };
 
