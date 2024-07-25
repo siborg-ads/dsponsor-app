@@ -291,7 +291,7 @@ const PreviewModal = ({
   return (
     <div>
       <div className="modal-dialog max-h-[75vh] max-w-2xl">
-        <div className="modal-content !bg-secondaryBlack">
+        <div className="modal-content !bg-secondaryBlack md:min-w-[550px]">
           <div className="modal-header">
             <h5 className="modal-title mr-8" id="placeBidLabel">
               {!successFullUpload ? modalTitle : successFullUploadModal.title}
@@ -310,9 +310,9 @@ const PreviewModal = ({
             </button>
           </div>
 
-          <div className="modal-body p-6 flex gap-4 items-center justify-center">
+          <div className="modal-body p-6 flex gap-4 items-center">
             {!successFullUpload ? (
-              <div className="flex flex-wrap gap-8 md:flex-row flex-col">
+              <div className="flex text-left flex-wrap gap-8 md:flex-row flex-col">
                 <div>
                   <p className="font-display mb-2 block dark:text-white">
                     {name.length > 0 ? (
@@ -593,12 +593,12 @@ const PreviewModal = ({
             )}
           </div>
 
-          <div className="modal-footer">
-            <div className="flex items-center justify-center space-x-4">
-              <div className="flex items-center gap-4">
+          <div className="modal-footer w-full">
+            <div className="flex items-center justify-center space-x-4 w-full">
+              <div className="flex items-center gap-4 w-full">
                 {!successFullUpload ? (
-                  <div className="flex flex-col gap-2 justify-center items-center">
-                    <div className="grid grid-cols-1 mx-auto md:grid-cols-2 gap-6">
+                  <div className="flex flex-col gap-2 justify-center items-center w-full">
+                    <div className="grid grid-cols-1 w-full mx-auto md:grid-cols-2 gap-6">
                       <Web3Button
                         contractAddress={
                           currentChainObject?.smartContracts?.DSPONSORMP?.address ?? "no address"
@@ -610,15 +610,15 @@ const PreviewModal = ({
                             error: "Approval rejected 🤯"
                           });
                         }}
-                        className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate || isLoadingButton || approvalForAllToken ? "!btn-disabled !cursor-not-allowed !text-black opacity-30" : "!bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer"} `}
+                        className={`!rounded-full !w-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate || isLoadingButton || approvalForAllToken ? "!btn-disabled !cursor-not-allowed !text-black opacity-30" : "!bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer"} `}
                         isDisabled={!validate || isLoadingButton || approvalForAllToken}
                       >
                         {isLoadingButton ? (
                           <Spinner size="sm" color="default" />
                         ) : !isListing ? (
-                          "Approve 🔓"
+                          "Approve 🔓 (1/2)"
                         ) : (
-                          "Authorize Marketplace 🔓"
+                          "Authorize 🔓 (1/2)"
                         )}
                       </Web3Button>
 
@@ -633,7 +633,7 @@ const PreviewModal = ({
                             error: "Transaction rejected 🤯"
                           });
                         }}
-                        className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate || isLoadingButton || !approvalForAllToken ? "!btn-disabled !cursor-not-allowed !text-black" : "!bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer"} `}
+                        className={`!w-full !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate || isLoadingButton || !approvalForAllToken ? "!btn-disabled !cursor-not-allowed !text-black" : "!bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer"} `}
                         isDisabled={!validate || isLoadingButton || !approvalForAllToken}
                       >
                         {isLoadingButton ? <Spinner size="sm" color="default" /> : buttonTitle}
