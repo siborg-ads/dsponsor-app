@@ -130,11 +130,13 @@ const OfferItem = ({
   useEffect(() => {
     if (item && item?.marketplaceListings?.length > 0) {
       // we look for the latest completed listing
-      const latestListing = item?.marketplaceListings
-        .sort((a, b) => Number(b.id) - Number(a.id))
-        .find((listing) => listing.status === "COMPLETED");
+      const latestListing = item?.marketplaceListings?.sort(
+        (a, b) => Number(b.id) - Number(a.id)
+      )[0];
 
-      if (latestListing) {
+      const isLatestListingFinished = latestListing?.status === "COMPLETED";
+
+      if (isLatestListingFinished) {
         // if yes we get the last sale price
         let lastSalePrice;
         if (latestListing?.listingType === "Direct") {
