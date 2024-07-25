@@ -374,7 +374,7 @@ const OfferPageContainer = () => {
             height={750}
             src={imageUrl ?? "/images/gradient_creative.jpg"}
             alt="gradient"
-            className="h-full w-full object-cover aspect-square"
+            className="h-auto w-full object-cover aspect-square"
           />
         </picture>
         <div className="container">
@@ -382,13 +382,13 @@ const OfferPageContainer = () => {
 
           <div className="md:flex md:flex-wrap" key={id}>
             {/* <!-- Image --> */}
-            <figure className="mb-8 md:w-2/5 md:flex-shrink-0 md:flex-grow-0 md:basis-auto lg:w-1/2 w-full flex justify-center">
+            <figure className="mb-8 md:w-2/5 md:flex-shrink-0 md:flex-grow-0 md:basis-auto lg:w-1/2 w-full flex justify-center items-start">
               <button className="w-full" onClick={() => setImageModal(true)}>
                 {imageUrl && (
                   <img
                     src={imageUrl ?? "/images/gradient_creative.jpg"}
                     alt="image"
-                    className="rounded-2xl cursor-pointer h-full object-cover w-full aspect-square"
+                    className="rounded-2xl cursor-pointer h-auto object-cover w-full aspect-square"
                   />
                 )}
               </button>
@@ -406,11 +406,11 @@ const OfferPageContainer = () => {
                   {/* <!-- Modal --> */}
                   <div className="modal-dialog !my-0 flex items-center justify-center">
                     <div className="modal fade show block">
-                      <div className="modal-dialog !my-0 flex items-center justify-center">
+                      <div className="modal-dialog !my-0 flex items-center justify-center items-start">
                         <img
                           src={imageUrl ?? "/images/gradient_creative.jpg"}
                           alt="image"
-                          className="h-full object-cover w-full rounded-2xl aspect-square"
+                          className="h-auto object-cover w-full rounded-2xl aspect-square"
                         />
                       </div>
 
