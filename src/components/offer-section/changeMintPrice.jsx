@@ -10,8 +10,8 @@ import { activated_features } from "../../data/activated_features";
 
 const isDisabledMessage = (disableMint) => {
   return disableMint
-    ? `The minting feature has been disabled for this offer ❌`
-    : `The minting feature has been enabled for this offer ✅`;
+    ? `The minting feature has been disabled for this offer.`
+    : `The minting feature has been enabled for this offer.`;
 };
 
 const ChangeMintPrice = ({ offer }) => {
