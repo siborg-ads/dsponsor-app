@@ -58,7 +58,7 @@
     "react-tabs": "^6.0.1",
     "react-toastify": "^10.0.5",
     "sass": "^1.71.1",
-    "sharp": "^0.32.2",
+    "sharp": "^0.33.4",
     "swiper": "^8.2.4",
     "thirdweb": "^5.2.0"
   },
