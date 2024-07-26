@@ -31,6 +31,7 @@ import ChangeMintPrice from "../../components/offer-section/changeMintPrice";
 import { Tabs, Tab, TabList, TabPanel } from "react-tabs";
 import { BadgePercentIcon, BlocksIcon, RefreshCwIcon } from "lucide-react";
 import Disable from "../../components/disable/disable";
+import OfferItem from "../../components/cards/offerItem";
 
 const OfferPageContainer = () => {
   const router = useRouter();
@@ -463,7 +464,7 @@ const OfferPageContainer = () => {
                   </div>
                 )}
 
-                {offerData.nftContract.allowList && (
+                {offerData?.nftContract?.allowList && (
                   <span className="dark:text-jacarta-100 text-jacarta-100 text-sm">
                     {offerData.nftContract.maxSupply -
                       offerData.nftContract.tokens.filter((item) => item.mint != null).length}
@@ -497,34 +498,6 @@ const OfferPageContainer = () => {
           </div>
         </div>
       </section>
-
-      <Accordion.Item value="details">
-        <div className="container">
-          <Accordion.Header className="w-full">
-            <Accordion.Trigger
-              className={`${accordionActiveTab === "details" && "bg-primaryPurple"} w-full flex items-center justify-center gap-4 mb-6 border border-primaryPurple hover:bg-primaryPurple cursor-pointer p-2 rounded-lg`}
-            >
-              <h2 className="text-jacarta-900 font-bold font-display text-center text-3xl dark:text-white ">
-                Details
-              </h2>
-              <ChevronDownIcon
-                className={`w-6 h-6 duration-300 ${accordionActiveTab === "details" && "transform rotate-180"}`}
-              />
-            </Accordion.Trigger>
-          </Accordion.Header>
-
-          <Accordion.Content className="mb-8">
-            <ItemsTabs
-              contractAddress={offerData?.nftContract.id}
-              offerId={offerId}
-              initialCreator={offerData?.initialCreator}
-              isToken={false}
-              offerData={offerData}
-              chainId={chainId}
-            />
-          </Accordion.Content>
-        </div>
-      </Accordion.Item>
 
       <Accordion.Item value="search">
         {!offerData.nftContract.allowList && (
@@ -607,6 +580,49 @@ const OfferPageContainer = () => {
             </Accordion.Content>
           </div>
         )}
+      </Accordion.Item>
+
+      <Accordion.Item value="tokens">
+        <div className="container">
+          <Accordion.Header className="w-full">
+            <Accordion.Trigger
+              className={`${accordionActiveTab === "tokens" && "bg-primaryPurple"} w-full flex items-center justify-center gap-4 mb-6 border border-primaryPurple hover:bg-primaryPurple cursor-pointer p-2 rounded-lg`}
+            >
+              <h2 className="text-jacarta-900 font-bold font-display text-center text-3xl dark:text-white ">
+                Tokens
+              </h2>
+              <ChevronDownIcon
+                className={`w-6 h-6 duration-300 ${accordionActiveTab === "tokens" && "transform rotate-180"}`}
+              />
+            </Accordion.Trigger>
+          </Accordion.Header>
+
+          <Accordion.Content>
+            <div className="dark:bg-secondaryBlack mb-6 dark:border-jacarta-600 border-jacarta-100 rounded-2lg border bg-white p-4">
+              <div className="sm:flex justify-center items-center sm:flex-wrap">
+                <span className="dark:text-jacarta-100 text-jacarta-100 text-sm text-center">
+                  This section allows you to see every tokens associated with the offer.
+                </span>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-6">
+              {offerData?.nftContract?.tokens?.map((token) => {
+                console.log("token", token);
+                return (
+                  <OfferItem
+                    key={token.id}
+                    token={token}
+                    offerData={offerData}
+                    chainId={chainId}
+                    item={token}
+                    isToken={true}
+                  />
+                );
+              })}
+            </div>
+          </Accordion.Content>
+        </div>
       </Accordion.Item>
 
       <Accordion.Item value="adValidation">
@@ -757,6 +773,34 @@ const OfferPageContainer = () => {
             </Accordion.Content>
           </div>
         )}
+      </Accordion.Item>
+
+      <Accordion.Item value="details">
+        <div className="container">
+          <Accordion.Header className="w-full">
+            <Accordion.Trigger
+              className={`${accordionActiveTab === "details" && "bg-primaryPurple"} w-full flex items-center justify-center gap-4 mb-6 border border-primaryPurple hover:bg-primaryPurple cursor-pointer p-2 rounded-lg`}
+            >
+              <h2 className="text-jacarta-900 font-bold font-display text-center text-3xl dark:text-white ">
+                Details
+              </h2>
+              <ChevronDownIcon
+                className={`w-6 h-6 duration-300 ${accordionActiveTab === "details" && "transform rotate-180"}`}
+              />
+            </Accordion.Trigger>
+          </Accordion.Header>
+
+          <Accordion.Content className="mb-8">
+            <ItemsTabs
+              contractAddress={offerData?.nftContract.id}
+              offerId={offerId}
+              initialCreator={offerData?.initialCreator}
+              isToken={false}
+              offerData={offerData}
+              chainId={chainId}
+            />
+          </Accordion.Content>
+        </div>
       </Accordion.Item>
     </Accordion.Root>
   );
