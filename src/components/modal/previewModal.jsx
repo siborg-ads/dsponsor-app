@@ -47,6 +47,8 @@ const PreviewModal = ({
   multipleAdsSubmission
 }) => {
   const [imageRatios, setImageRatios] = React.useState([]);
+  const [isLoadingApproveButton, setIsLoadingApproveButton] = React.useState(false);
+  const [isLoadingSubmitButton, setIsLoadingSubmitButton] = React.useState(false);
 
   const { currentChainObject } = useChainContext();
   const formatDate = (date) => {
@@ -178,16 +180,20 @@ const PreviewModal = ({
               <Web3Button
                 contractAddress={currentChainObject?.smartContracts?.DSPONSORADMIN?.address}
                 action={() => {
+                  setIsLoadingSubmitButton(true);
+
                   toast.promise(handleSubmit(true), {
                     pending: "Waiting for confirmation 🕒",
                     success: "Transaction confirmed 👌",
                     error: "Transaction rejected 🤯"
                   });
+
+                  setIsLoadingSubmitButton(false);
                 }}
-                className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate ? "!btn-disabled !cursor-not-allowed !text-black" : "!bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer"} `}
-                isDisabled={!validate || isLoadingButton}
+                className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate || isLoadingSubmitButton ? "!btn-disabled !cursor-not-allowed !text-black" : "!bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer"} `}
+                isDisabled={!validate || isLoadingSubmitButton}
               >
-                {isLoadingButton ? <Spinner size="sm" color="default" /> : buttonTitle}
+                {isLoadingSubmitButton ? <Spinner size="sm" color="default" /> : buttonTitle}
               </Web3Button>
             </div>
           </div>
@@ -604,16 +610,20 @@ const PreviewModal = ({
                           currentChainObject?.smartContracts?.DSPONSORMP?.address ?? "no address"
                         }
                         action={() => {
+                          setIsLoadingApproveButton(true);
+
                           toast.promise(handleApprove, {
                             pending: "Waiting for confirmation 🕒",
                             success: "Approval confirmed 👌",
                             error: "Approval rejected 🤯"
                           });
+
+                          setIsLoadingApproveButton(false);
                         }}
-                        className={`!rounded-full !w-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate || isLoadingButton || approvalForAllToken ? "!btn-disabled !cursor-not-allowed !text-black opacity-30" : "!bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer"} `}
-                        isDisabled={!validate || isLoadingButton || approvalForAllToken}
+                        className={`!rounded-full !w-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate || isLoadingApproveButton || approvalForAllToken ? "!btn-disabled !cursor-not-allowed !text-black opacity-30" : "!bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer"} `}
+                        isDisabled={!validate || isLoadingApproveButton || approvalForAllToken}
                       >
-                        {isLoadingButton ? (
+                        {isLoadingApproveButton ? (
                           <Spinner size="sm" color="default" />
                         ) : !isListing ? (
                           "Approve 🔓 (1/2)"
@@ -627,16 +637,24 @@ const PreviewModal = ({
                           currentChainObject?.smartContracts?.DSPONSORADMIN?.address ?? "no address"
                         }
                         action={() => {
+                          setIsLoadingSubmitButton(true);
+
                           toast.promise(handleSubmit(address), {
                             pending: "Waiting for confirmation 🕒",
                             success: "Transaction confirmed 👌",
                             error: "Transaction rejected 🤯"
                           });
+
+                          setIsLoadingSubmitButton(false);
                         }}
-                        className={`!w-full !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate || isLoadingButton || !approvalForAllToken ? "!btn-disabled !cursor-not-allowed !text-black" : "!bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer"} `}
-                        isDisabled={!validate || isLoadingButton || !approvalForAllToken}
+                        className={`!w-full !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate || isLoadingSubmitButton || !approvalForAllToken ? "!btn-disabled !cursor-not-allowed !text-black" : "!bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer"} `}
+                        isDisabled={!validate || isLoadingSubmitButton || !approvalForAllToken}
                       >
-                        {isLoadingButton ? <Spinner size="sm" color="default" /> : buttonTitle}
+                        {isLoadingSubmitButton ? (
+                          <Spinner size="sm" color="default" />
+                        ) : (
+                          buttonTitle
+                        )}
                       </Web3Button>
                     </div>
 
