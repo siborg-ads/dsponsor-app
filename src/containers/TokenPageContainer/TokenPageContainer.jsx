@@ -2061,35 +2061,6 @@ const TokenPageContainer = () => {
         )}
 
       {/* <!-- end item --> */}
-      <Accordion.Item value="details">
-        <div className="container">
-          <Accordion.Header className="w-full">
-            <Accordion.Trigger
-              className={`${accordionActiveTab === "details" && "bg-primaryPurple"} w-full flex items-center justify-center gap-4 mb-6 border border-primaryPurple hover:bg-primaryPurple cursor-pointer p-2 rounded-lg`}
-            >
-              <h2 className="text-jacarta-900 font-bold font-display text-center text-3xl dark:text-white ">
-                Details
-              </h2>
-              <ChevronDownIcon
-                className={`w-6 h-6 duration-300 ${accordionActiveTab === "details" && "transform rotate-180"}`}
-              />
-            </Accordion.Trigger>
-          </Accordion.Header>
-
-          <Accordion.Content className="mb-12">
-            <ItemsTabs
-              chainId={chainId}
-              contractAddress={offerData?.nftContract?.id}
-              offerId={offerId}
-              isUserOwner={isUserOwner}
-              initialCreator={offerData?.initialCreator}
-              status={firstSelectedListing?.status}
-              listerAddress={firstSelectedListing?.lister}
-              offerData={offerData}
-            />
-          </Accordion.Content>
-        </div>
-      </Accordion.Item>
 
       {/* <ItemsTabs /> */}
       <Accordion.Item value="adSubmission">
@@ -2109,7 +2080,7 @@ const TokenPageContainer = () => {
                 </Accordion.Trigger>
               </Accordion.Header>
 
-              <Accordion.Content>
+              <Accordion.Content className="mb-6">
                 {isTokenInAuction && (
                   <div className="text-center w-full">
                     <span className="dark:text-warning text-md ">
@@ -2236,6 +2207,36 @@ const TokenPageContainer = () => {
                 </Accordion.Content>
               </>
             )}
+        </div>
+      </Accordion.Item>
+
+      <Accordion.Item value="details">
+        <div className="container">
+          <Accordion.Header className="w-full">
+            <Accordion.Trigger
+              className={`${accordionActiveTab === "details" && "bg-primaryPurple"} w-full flex items-center justify-center gap-4 mb-6 border border-primaryPurple hover:bg-primaryPurple cursor-pointer p-2 rounded-lg`}
+            >
+              <h2 className="text-jacarta-900 font-bold font-display text-center text-3xl dark:text-white ">
+                Details
+              </h2>
+              <ChevronDownIcon
+                className={`w-6 h-6 duration-300 ${accordionActiveTab === "details" && "transform rotate-180"}`}
+              />
+            </Accordion.Trigger>
+          </Accordion.Header>
+
+          <Accordion.Content className="mb-12">
+            <ItemsTabs
+              chainId={chainId}
+              contractAddress={offerData?.nftContract?.id}
+              offerId={offerId}
+              isUserOwner={isUserOwner}
+              initialCreator={offerData?.initialCreator}
+              status={firstSelectedListing?.status}
+              listerAddress={firstSelectedListing?.lister}
+              offerData={offerData}
+            />
+          </Accordion.Content>
         </div>
       </Accordion.Item>
 
