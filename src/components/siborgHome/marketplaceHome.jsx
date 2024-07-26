@@ -4,6 +4,7 @@ import { ChevronDownIcon, InformationCircleIcon } from "@heroicons/react/20/soli
 import ItemCardSkeleton from "../skeleton/ItemCardSkeleton";
 import OfferItem from "../cards/offerItem";
 import { Popover, PopoverTrigger, PopoverContent } from "@nextui-org/popover";
+import Input from "../ui/input";
 
 const onAuctionCondition = (auction, mint, direct) => {
   return (
@@ -172,15 +173,14 @@ const MarketplaceHome = ({ auctions, setAllTokens, allTokens, isAuctionsLoading 
       </span>
       <div className="flex flex-col gap-20 md:gap-8">
         <div className="flex flex-col md:flex-row items-center gap-2 h-10">
-          <input
+          <Input
             type="text"
+            placeholder="Filter by category"
             name="search"
-            placeholder="Search for ad spaces"
             value={filterName}
             onChange={(e) => {
               setFilterName(e.target.value);
             }}
-            className="w-full h-full rounded-xl bg-secondaryBlack focus:border-jacarta-100 focus:border-opacity-10 focus:ring-0 border border-jacarta-100 border-opacity-10 placeholder:text-jacarta-100 text-white py-2 px-4"
           />
           <div className="grid grid-cols-2 md:flex h-full gap-2 w-full md:w-8/12">
             {}

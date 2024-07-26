@@ -8,6 +8,7 @@ import ModalHelper from "../Helper/modalHelper";
 import PreviewModal from "../modal/previewModal";
 
 import { useChainContext } from "../../contexts/hooks/useChainContext";
+import Input from "../ui/input";
 
 const ItemManageModal = ({
   handleListingModal,
@@ -380,7 +381,7 @@ const ItemManageModal = ({
                                 ✓
                               </span>
                             )}
-                            <input
+                            <Input
                               id={`checkbox-${index}`}
                               type="checkbox"
                               value={index}
@@ -487,9 +488,9 @@ const ItemManageModal = ({
                                       </label>
                                     </div>
                                     <div className="flex  flex-wrap   gap-4 items-center text-jacarta-900 dark:text-white">
-                                      <input
-                                        id="numberInput"
+                                      <Input
                                         type="number"
+                                        id="numberInput"
                                         onWheel={(e) => e.target.blur()}
                                         step="0.1"
                                         value={selectedStartingPrice}
@@ -517,9 +518,9 @@ const ItemManageModal = ({
                                   </div>
 
                                   <div className="flex  flex-col items-center text-jacarta-900 dark:text-white">
-                                    <input
-                                      id="numberInput"
+                                    <Input
                                       type="number"
+                                      id="numberInput"
                                       onWheel={(e) => e.target.blur()}
                                       step="0.1"
                                       value={selectedUnitPrice}
@@ -553,16 +554,12 @@ const ItemManageModal = ({
                                     )}
                                   </select>
                                   {selectedCurrency === "custom" && (
-                                    <input
+                                    <Input
                                       type="text"
                                       value={customContract}
                                       onChange={handleCustomContractChange}
                                       placeholder="Contract address"
-                                      className={`dark:bg-secondaryBlack  hover:ring-primaryPurple/10 ${
-                                        tokenContractAsync && customContract
-                                          ? "border-green"
-                                          : "border-red"
-                                      } focus:ring-primaryPurple  dark:placeholder:text-jacarta-100 w-full rounded-lg py-3 px-3 hover:ring-2 dark:text-white`}
+                                      className={`dark:bg-secondaryBlack  hover:ring-primaryPurple/10 ${tokenContractAsync && customContract ? "border-green" : "border-red"} focus:ring-primaryPurple  dark:placeholder:text-jacarta-100 w-full rounded-lg py-3 px-3 hover:ring-2 dark:text-white`}
                                     />
                                   )}
                                 </div>

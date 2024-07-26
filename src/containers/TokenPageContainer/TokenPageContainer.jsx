@@ -13,7 +13,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { useEffect, useRef, useState } from "react";
-import formatAndRoundPrice from "../../utils/formatAndRound.js";
 import "tippy.js/dist/tippy.css";
 import Meta from "../../components/Meta.jsx";
 import PreviewModal from "../../components/modal/previewModal.jsx";
@@ -958,7 +957,8 @@ const TokenPageContainer = () => {
     tokenId,
     successFullUpload,
     marketplaceListings,
-    offerId
+    offerId,
+    currencyDecimals
   ]);
 
   useEffect(() => {

@@ -3,6 +3,7 @@ import Image from "next/image";
 import { Switch, cn } from "@nextui-org/react";
 
 import { FileUploader } from "react-drag-drop-files";
+import Input from "../../ui/input";
 const fileTypes = ["JPG", "PNG", "WEBP"];
 const Step_3_Create = ({
   stepsRef,
@@ -65,10 +66,9 @@ const Step_3_Create = ({
                 Specifiy where advertisements will be exposed (website URL, mobile app, ...)
                 <span className="text-red">*</span>
               </label>
-              <input
+              <Input
                 type="url"
                 id="item-external-link"
-                className="dark:bg-secondaryBlack border-jacarta-100 hover:ring-primaryPurple/10 focus:ring-primaryPurple dark:border-primaryPurple dark:placeholder:text-jacarta-100 w-full rounded-lg py-3 px-3 hover:ring-2 dark:text-white"
                 placeholder="Provide an url, the name of your app, or what characterizes your platform."
                 onChange={handleChange}
                 value={link}
@@ -220,10 +220,9 @@ const Step_3_Create = ({
                   >
                     Url of your terms
                   </label>
-                  <input
+                  <Input
                     type="url"
                     id="item-external-link"
-                    className="dark:bg-secondaryBlack border-jacarta-100 hover:ring-primaryPurple/10 focus:ring-primaryPurple dark:border-primaryPurple dark:placeholder:text-jacarta-100 w-full rounded-lg py-3 px-3 hover:ring-2 dark:text-white"
                     placeholder="Url of your terms Eg.  https://yoursite.com"
                     onChange={handleChangeTerms}
                     value={terms}

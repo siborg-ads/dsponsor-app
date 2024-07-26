@@ -8,6 +8,7 @@ import { ClipboardIcon } from "@heroicons/react/24/solid";
 import handleCopy from "../../../utils/handleCopy";
 import Tippy from "@tippyjs/react";
 import { ChromePicker } from "react-color";
+import Input from "../../ui/input";
 
 const initialColumns = (numberOfTokens) => {
   if (numberOfTokens % 7 === 0) return 7;
@@ -227,7 +228,7 @@ const HtmlIntegration = ({ chainId, offerId, offerTokens }) => {
       <div className="flex flex-wrap items-start gap-8">
         <div className="flex flex-col gap-4">
           <label className="flex items-center gap-2">
-            <input
+            <Input
               type="checkbox"
               checked={columns}
               onChange={(e) => {
@@ -247,7 +248,7 @@ const HtmlIntegration = ({ chainId, offerId, offerTokens }) => {
             </InfoIcon>
           </label>
           {columns && (
-            <input
+            <Input
               type="number"
               value={parseInt(numberOfColumns)}
               onChange={(e) => {
@@ -261,7 +262,6 @@ const HtmlIntegration = ({ chainId, offerId, offerTokens }) => {
                 }
               }}
               placeholder="Number of columns"
-              className="p-2 rounded-md bg-secondaryBlack text-jacarta-100"
               min={1}
               max={Math.min(offerTokens?.length, 25)}
             />
@@ -270,7 +270,7 @@ const HtmlIntegration = ({ chainId, offerId, offerTokens }) => {
 
         <div className="flex flex-col gap-4">
           <label className="flex items-center gap-2">
-            <input
+            <Input
               type="checkbox"
               checked={bgColor}
               onChange={(e) => setBgColor(e.target.checked)}
