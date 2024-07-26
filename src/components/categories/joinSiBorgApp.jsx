@@ -6,11 +6,14 @@ import { ClipboardIcon } from "@heroicons/react/20/solid";
 import Link from "next/link";
 import { getAddress } from "ethers/lib/utils";
 import Input from "../ui/input";
+import { useChainContext } from "../../contexts/hooks/useChainContext";
 
 const JoinSiBorgApp = ({ manageAddress }) => {
   const [code, setCode] = useState(null);
   const [copied, setCopied] = useState(false);
   const [isUserConnected, setIsUserConnected] = useState(false);
+
+  const { currentChainObject } = useChainContext();
 
   const address = useAddress();
 
@@ -61,8 +64,14 @@ const JoinSiBorgApp = ({ manageAddress }) => {
       {isUserConnected && (
         <>
           <div className="mb-4 max-w-2xl text-center mx-auto">
-            Ad spaces token owners will soon be able to submit an ad to be displayed in the SiBorg
-            App. Here is your exclusive code to{" "}
+            Ad spaces token owners from the{" "}
+            <Link
+              href={`/${currentChainObject?.chainId}/offer/1`}
+              className="text-primaryPurple hover:text-opacity-80"
+            >
+              SiBorg Ads
+            </Link>{" "}
+            offer can submit an ad to be displayed on the SiBorg App. Here is your exclusive code to{" "}
             <Link
               href="https://beta.siborg.io"
               target="_blank"
