@@ -128,32 +128,43 @@ const OfferItem = ({
   }, [itemProposals]);
 
   useEffect(() => {
-    if (item && item?.marketplaceListings?.length > 0) {
-      // we look for the latest completed listing
-      const latestListing = item?.marketplaceListings?.sort(
-        (a, b) => Number(b.id) - Number(a.id)
-      )[0];
+    if (item) {
+      if (item?.marketplaceListings?.length > 0) {
+        // we look for the latest completed listing
+        const latestListing = item?.marketplaceListings?.sort(
+          (a, b) => Number(b.id) - Number(a.id)
+        )[0];
 
-      const isLatestListingFinished = latestListing?.status === "COMPLETED";
+        const isLatestListingFinished = latestListing?.status === "COMPLETED";
 
-      if (isLatestListingFinished) {
-        // if yes we get the last sale price
-        let lastSalePrice;
-        if (latestListing?.listingType === "Direct") {
-          // direct price
-          lastSalePrice = formatUnits(
-            BigInt(latestListing?.buyoutPricePerToken),
-            Number(latestListing?.currencyDecimals)
-          );
-        } else if (latestListing?.listingType === "Auction") {
-          // auction price
-          lastSalePrice = formatUnits(
-            BigInt(latestListing?.bids[0]?.paidBidAmount),
-            Number(latestListing?.currencyDecimals)
-          );
+        if (isLatestListingFinished) {
+          // if yes we get the last sale price
+          let lastSalePrice;
+          if (latestListing?.listingType === "Direct") {
+            // direct price
+            lastSalePrice = formatUnits(
+              BigInt(latestListing?.buyoutPricePerToken),
+              Number(latestListing?.currencyDecimals)
+            );
+          } else if (latestListing?.listingType === "Auction") {
+            // auction price
+            lastSalePrice = formatUnits(
+              BigInt(latestListing?.bids[0]?.paidBidAmount),
+              Number(latestListing?.currencyDecimals)
+            );
+          }
+
+          setLastSalePrice(lastSalePrice);
         }
-
-        setLastSalePrice(lastSalePrice);
+      } else {
+        // we handle the mint case
+        if (item?.mint !== null) {
+          const mintPrice = item?.mint?.totalPaid;
+          if (mintPrice) {
+            const lastSalePrice = formatUnits(BigInt(mintPrice), Number(item?.currencyDecimals));
+            setLastSalePrice(lastSalePrice);
+          }
+        }
       }
     }
   }, [item]);
@@ -562,7 +573,7 @@ const OfferItem = ({
               </span>
             </div>
           )}
-        {lastSalePrice && (
+        {lastSalePrice && Number(lastSalePrice) > 0 && (
           <div className="flex items-center mt-4 text-sm text-jacarta-100">
             Last Sale: {lastSalePrice} {currencyToken}
           </div>

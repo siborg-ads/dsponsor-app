@@ -20,6 +20,8 @@ export const fetchAllListedTokenWithoutFilter = async (chainId, allTokens) => {
             mint {
               blockTimestamp
               tokenData
+              totalPaid
+              currency
             }
             nftContract {
               id # = assetContract
