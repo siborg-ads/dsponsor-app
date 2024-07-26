@@ -17,6 +17,7 @@ import handleCopy from "../../utils/handleCopy";
 import "tippy.js/dist/tippy.css";
 import { BigNumber } from "ethers";
 import InfoIcon from "../informations/infoIcon";
+import Input from "../ui/input";
 
 const BidsModal = ({
   setAmountToApprove,
@@ -509,10 +510,10 @@ const BidsModal = ({
                 </div>
                 <div className="flex items-center gap-4">
                   <div className="flex items-center relative w-full overflow-hidden -pr-4">
-                    <input
+                    <Input
                       type="number"
                       onWheel={(e) => e.target.blur()}
-                      className={`focus:ring-primaryPurple pr-20 relative w-full flex-[3] border-transparent bg-jacarta-600 rounded-xl text-2xl py-2 font-semibold text-white focus:ring-inse`}
+                      className="focus:ring-primaryPurple pr-20 relative w-full flex-[3] border-transparent bg-jacarta-600 rounded-xl text-2xl py-2 font-semibold text-white focus:ring-inse"
                       placeholder={`${initialIntPrice} or higher`}
                       value={bidsAmount ?? ""}
                       onChange={(e) => handleBidsAmount(e)}
@@ -639,11 +640,11 @@ const BidsModal = ({
 
                 {/* <!-- Terms --> */}
                 <div className="mt-8 flex items-center space-x-2">
-                  <input
+                  <Input
                     type="checkbox"
                     id="buyNowTerms"
-                    className="checked:bg-primaryPurple dark:bg-jacarta-600 text-primaryPurple border-jacarta-200 focus:ring-primaryPurple/20 dark:border-jacarta-500 h-5 w-5 self-start rounded focus:ring-offset-0"
                     onClick={handleTermService}
+                    className="h-5 w-5 mr-3 rounded border-jacarta-200 text-primaryPurple checked:bg-primaryPurple focus:ring-primaryPurple/20 focus:ring-offset-0 dark:border-jacarta-500 dark:bg-jacarta-600"
                   />
                   <label htmlFor="buyNowTerms" className="dark:text-jacarta-200 text-sm">
                     By checking this box, I agree to {"SiBorg Ads's"}{" "}

@@ -4,6 +4,7 @@ import { useAddress } from "@thirdweb-dev/react";
 import Tippy from "@tippyjs/react";
 import { ClipboardIcon } from "@heroicons/react/20/solid";
 import "tippy.js/dist/tippy.css";
+import Input from "../../ui/input";
 
 const SiBorgApp = () => {
   const [code, setCode] = useState(null);
@@ -61,12 +62,7 @@ const SiBorgApp = () => {
         </div>
 
         <div className="relative md:w-2/5 w-full">
-          <input
-            type="text"
-            value={code ?? "Loading..."}
-            className="pr-12 h-full w-full bg-primaryBlack border hover:border-opacity-20 border-white border-opacity-10 rounded-2lg p-2 focus:border-white focus:border-opacity-20 focus:ring-transparent dark:bg-primaryBlack dark:text-white"
-            readOnly
-          />
+          <Input type="text" value={code ?? "Loading..."} readOnly />
           <Tippy content={copied ? "Copied!" : "Copy"} placement="top" trigger="click">
             <button
               onClick={() => {

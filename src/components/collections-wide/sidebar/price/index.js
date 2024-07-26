@@ -1,3 +1,4 @@
+import Input from "../../../ui/input";
 import DropdownFilter from "./DropdownFilter";
 
 const PriceFilter = () => {
@@ -7,16 +8,8 @@ const PriceFilter = () => {
       {/* End dropdown */}
 
       <div className="flex space-x-4">
-        <input
-          className="w-full rounded-lg border-jacarta-100 py-3 hover:ring-2 hover:ring-primaryPurple/10 focus:ring-primaryPurple dark:border-jacarta-600 dark:bg-secondaryBlack dark:text-white dark:placeholder:text-jacarta-100"
-          type="text"
-          placeholder="Min"
-        />
-        <input
-          className="w-full rounded-lg border-jacarta-100 py-3 hover:ring-2 hover:ring-primaryPurple/10 focus:ring-primaryPurple dark:border-jacarta-600 dark:bg-secondaryBlack dark:text-white dark:placeholder:text-jacarta-100"
-          type="text"
-          placeholder="Max"
-        />
+        <Input type="text" placeholder="Min" />
+        <Input type="text" placeholder="Max" />
       </div>
       <button
         type="submit"

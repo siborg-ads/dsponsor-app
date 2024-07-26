@@ -9,6 +9,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { useEffect, useState } from "react";
 import { Web3Button } from "@thirdweb-dev/react";
 import config from "../../config/config";
+import Input from "../ui/input";
 
 const Review_carousel = ({
   chainId,
@@ -181,12 +182,12 @@ const Review_carousel = ({
                     {Object.values(isSelectedItem).filter((value) => value === true).length}
                   </span>{" "}
                 </span>
-                <input
+                <Input
                   type="checkbox"
                   name="check"
                   className="checked:bg-green checked:focus:bg-green checked:hover:bg-green after:bg-jacarta-400 bg-jacarta-100 relative h-4 w-7 cursor-pointer appearance-none rounded-lg border-none shadow-none after:absolute after:top-0.5 after:left-0.5 after:h-3 after:w-3 after:rounded-full after:transition-all checked:bg-none checked:after:left-3.5 checked:after:bg-white focus:ring-transparent focus:ring-offset-0"
-                  onChange={() => handleInput(tokenId)}
-                  checked={validate[tokenId] || false}
+                  onChange={() => handleInput("all")}
+                  checked={validate["all"] || false}
                 />
               </span>
             </div>

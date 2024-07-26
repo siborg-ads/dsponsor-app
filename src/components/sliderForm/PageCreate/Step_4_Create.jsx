@@ -6,6 +6,7 @@ import { activated_features } from "../../../data/activated_features";
 
 import ModalHelper from "../../Helper/modalHelper";
 import config from "../../../config/config";
+import Input from "../../ui/input";
 
 const ConditionalUSDPaymentText = ({ children, condition }) => {
   return condition ? <div>{children}</div> : "";
@@ -190,7 +191,7 @@ const Step_4_Create = ({
                 </p>
               </ConditionalUSDPaymentText>
               <div className="flex  flex-wrap   gap-4 items-center text-jacarta-900 dark:text-white">
-                <input
+                <Input
                   id="numberInput"
                   type="number"
                   onWheel={(e) => e.target.blur()}
@@ -224,7 +225,7 @@ const Step_4_Create = ({
                       )}
                     </select>
                     {selectedCurrency === "custom" && (
-                      <input
+                      <Input
                         type="text"
                         value={customContract}
                         onChange={handleCustomContractChange}
@@ -259,7 +260,7 @@ const Step_4_Create = ({
                 royalty fee is too high. You can change this value pricing later.
               </p>
               <div className="flex  gap-4 items-center text-jacarta-900 dark:text-white">
-                <input
+                <Input
                   id="numberInput"
                   type="number"
                   min="0"
