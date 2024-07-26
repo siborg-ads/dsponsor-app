@@ -1,4 +1,5 @@
 import { executeQuery } from "../utils/executeQuery";
+import config from "../../config/config";
 
 export const fetchOffer = async (offerId, chainId) => {
   const path = new URL(`https://relayer.dsponsor.com/api/${chainId}/graph`);
@@ -58,7 +59,75 @@ export const fetchOffer = async (offerId, chainId) => {
               status
               startTime
               endTime
+              lister
               id
+              reservePricePerToken
+              buyoutPricePerToken
+              currency
+              quantity
+              directBuys {
+                id
+                listing {
+                  id
+                  listingType
+                }
+                buyer
+                quantityBought
+                totalPricePaid
+                revenueTransaction {
+                  blockTimestamp
+                }
+                feeMethodology
+                amountSentToProtocol
+                protocolRecipient
+                amountSentToSeller
+                sellerRecipient
+                amountSentToCreator
+                creatorRecipient
+              }
+              token {
+                tokenId
+                id
+                nftContract {
+                  id
+                  royalty {
+                    bps
+                  }
+                  adOffers {
+                    id
+                    metadataURL
+                    disable
+                  }
+                }
+                mint {
+                  tokenData
+                }
+              }
+              bids {
+                id
+                listing
+                bidder
+                quantity
+                newPricePerToken
+                totalBidAmount
+                paidBidAmount
+                refundBonus
+                refundAmount
+                refundProfit
+                currency
+                status
+                creationTxHash
+                revenueTransaction
+                creationTimestamp
+                lastUpdateTimestamp
+                feeMethodology
+                amountSentToProtocol
+                protocolRecipient
+                amountSentToSeller
+                sellerRecipient
+                amountSentToCreator
+                creatorRecipient
+              }
             }
             mint {
               transactionHash # if = null => not minted yet, so it's available
@@ -125,5 +194,34 @@ export const fetchOffer = async (offerId, chainId) => {
 
   const response = await executeQuery(path.href, GET_DATA, { offerId: offerId });
 
-  return response?.adOffers[0];
+  const chainConfig = config[chainId];
+
+  const resultMappedData = response?.adOffers?.map((offer) => {
+    const combinedData = {
+      ...offer,
+      chainConfig: chainConfig
+    };
+
+    return combinedData;
+  })[0];
+
+  // add chain config for each tokens
+  const finalTokens = resultMappedData?.nftContract?.tokens?.map((token) => {
+    const combinedData = {
+      ...token,
+      chainConfig: chainConfig
+    };
+
+    return combinedData;
+  });
+
+  const finalData = {
+    ...resultMappedData,
+    nftContract: {
+      ...resultMappedData?.nftContract,
+      tokens: finalTokens
+    }
+  };
+
+  return finalData;
 };
