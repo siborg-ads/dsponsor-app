@@ -271,8 +271,6 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
           {!showSliderForm && (
             <div className={`grid w-full grid-cols-1 gap-[1.875rem] md:grid-cols-2 lg:grid-cols-4`}>
               {data?.map((item, index) => {
-                console.log("item", item);
-
                 let currencyDecimals = 0;
                 if (item?.prices?.length > 0) {
                   currencyDecimals = item?.prices[0]?.currencyDecimals;
@@ -404,7 +402,7 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
 
             <>
               {imageURLSteps.map((step, index) => (
-                <>
+                <div key={step.uniqueId}>
                   {currentSlide === index + 1 && (
                     <Step3Mint
                       key={step.uniqueId}
@@ -420,7 +418,7 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
                       numSteps={numSteps}
                     />
                   )}
-                </>
+                </div>
               ))}
             </>
 

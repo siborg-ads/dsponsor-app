@@ -1,11 +1,13 @@
 import Network from "../../providers/utils/networks";
 import contractABI from "../../abi/dsponsorAdmin.json";
+import { Sepolia } from "@thirdweb-dev/chains";
 
 const devEthereumSepolia = {
   chainId: 11155111,
   chainName: "sepolia",
   chainNameProvider: "sepolia",
   network: Network.ETH_SEPOLIA,
+  chainObject: Sepolia,
   logoURL: "/images/ethereum-logo.png",
   explorerBaseUrl: "https://sepolia.etherscan.io",
 
@@ -32,7 +34,7 @@ const devEthereumSepolia = {
       symbol: "WETH"
     },
     UNISWAP_QUOTER: {
-      address: "0xEd1f6473345F45b75F8179591dd5bA1888cf2FB3",
+      address: "0xEd1f6473345F45b75F8179591dd5bA1888cf2FB3"
     },
     DSPONSORADMIN: {
       address: "0x10E0447dDB66f1d33E6b10dB5099FBa231ceCE5C",
