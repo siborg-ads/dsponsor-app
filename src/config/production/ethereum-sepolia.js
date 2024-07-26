@@ -1,11 +1,13 @@
 import Network from "../../providers/utils/networks";
 import contractABI from "../../abi/dsponsorAdmin.json";
+import { Sepolia } from "@thirdweb-dev/chains";
 
 const prodEthereumSepolia = {
   chainId: 11155111,
   chainName: "sepolia",
   chainNameProvider: "sepolia",
   network: Network.ETH_SEPOLIA,
+  chainObject: Sepolia,
   logoURL: "/images/ethereum-logo.png",
   explorerBaseUrl: "https://sepolia.etherscan.io",
 

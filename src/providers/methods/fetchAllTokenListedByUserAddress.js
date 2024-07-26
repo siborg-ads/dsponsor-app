@@ -26,16 +26,6 @@ export const fetchAllTokenListedByUserAddress = async (lister, chainId) => {
               id
               metadataURL # offerMetadata
             }
-              marketplaceListings {
-              id
-              currency
-              reservePricePerToken
-              buyoutPricePerToken
-              quantity
-              bids {
-                totalBidAmount
-              }
-            }
             prices {
               currency # ERC20 smart contract
               amount # wei, mind decimals() function to transform in human readable value !
