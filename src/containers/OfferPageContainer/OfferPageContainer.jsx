@@ -609,13 +609,13 @@ const OfferPageContainer = () => {
         )}
       </Accordion.Item>
 
-      <Accordion.Item value="validation">
+      <Accordion.Item value="adValidation">
         <div className="container">
           {activated_features.canSeeSubmittedAds && (
             <>
               <Accordion.Header className="w-full">
                 <Accordion.Trigger
-                  className={`${accordionActiveTab === "validation" && "bg-primaryPurple"} w-full flex items-center justify-center gap-4 mb-6 border border-primaryPurple hover:bg-primaryPurple cursor-pointer p-2 rounded-lg`}
+                  className={`${accordionActiveTab === "adValidation" && "bg-primaryPurple"} w-full flex items-center justify-center gap-4 mb-6 border border-primaryPurple hover:bg-primaryPurple cursor-pointer p-2 rounded-lg`}
                 >
                   {isOwner && sponsorHasAtLeastOneRejectedProposalAndNoPending && (
                     <InfoIcon text="You have at least one rejected proposal and no pending proposal.">
@@ -628,10 +628,10 @@ const OfferPageContainer = () => {
                     </InfoIcon>
                   )}
                   <h2 className="text-jacarta-900 font-bold font-display text-center text-3xl dark:text-white ">
-                    Validation
+                    Ad Validation
                   </h2>
                   <ChevronDownIcon
-                    className={`w-6 h-6 duration-300 ${accordionActiveTab === "validation" && "transform rotate-180"}`}
+                    className={`w-6 h-6 duration-300 ${accordionActiveTab === "adValidation" && "transform rotate-180"}`}
                   />
                 </Accordion.Trigger>
               </Accordion.Header>
