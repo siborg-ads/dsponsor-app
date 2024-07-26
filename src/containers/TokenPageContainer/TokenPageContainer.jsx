@@ -140,6 +140,7 @@ const TokenPageContainer = () => {
   const [royaltiesAmount, setRoyaltiesAmount] = useState(null);
   const [airdropAddress, setAirdropAddress] = useState(undefined);
   const [nftContractAddress, setNftContractAddress] = useState(null);
+  const [showEntireDescription, setShowEntireDescription] = useState(false);
 
   let description = "description not found";
   let id = "1";
@@ -1699,18 +1700,14 @@ const TokenPageContainer = () => {
 
           <div className="md:flex md:flex-wrap" key={id}>
             {/* <!-- Image --> */}
-            <figure className="mb-8 md:mb-0 md:w-2/5 md:flex-shrink-0 md:flex-grow-0 md:basis-auto lg:w-1/2 w-full flex justify-center relative">
-              <button
-                className=" w-full"
-                onClick={() => setImageModal(true)}
-                style={{ height: "450px" }}
-              >
+            <figure className="mb-8 md:mb-0 md:w-2/5 md:flex-shrink-0 md:flex-grow-0 items-start md:basis-auto lg:w-1/2 w-full flex justify-center relative">
+              <button className="w-full md:sticky md:top-0 md:right-0" onClick={() => setImageModal(true)}>
                 <Image
                   width={585}
                   height={726}
                   src={imageUrl ?? "/images/gradient_creative.jpg"}
                   alt="image"
-                  className="rounded-2xl cursor-pointer h-full object-contain w-full shadow-lg"
+                  className="rounded-2xl cursor-pointer h-auto object-contain w-full shadow-lg"
                 />
               </button>
 
@@ -1811,7 +1808,29 @@ const TokenPageContainer = () => {
                 )}
               </div>
 
-              <p className="dark:text-jacarta-100 mb-10">{description}</p>
+              {showEntireDescription ? (
+                <p className="dark:text-jacarta-100 mb-10">
+                  {description}{" "}
+                  <button
+                    onClick={() => setShowEntireDescription(false)}
+                    className="text-primaryPurple"
+                  >
+                    Show less
+                  </button>
+                </p>
+              ) : (
+                <div>
+                  <p className="dark:text-jacarta-100 mb-10">
+                    {description?.length > 1000 ? description?.slice(0, 1000) + "..." : description}{" "}
+                    <button
+                      onClick={() => setShowEntireDescription(true)}
+                      className="text-primaryPurple"
+                    >
+                      Show more
+                    </button>
+                  </p>
+                </div>
+              )}
 
               {(offerData?.disable === true ||
                 new Date(offerData?.metadata?.offer?.valid_to).getTime() < Date.now() ||
