@@ -1625,6 +1625,11 @@ const TokenPageContainer = () => {
     let stringToUnit = 0;
     if (tokenData) {
       stringToUnit = stringToUint256(tokenData);
+
+      if (BigInt(stringToUnit) !== BigInt(tokenId)) {
+        console.error("Token ID and token data do not match");
+        throw new Error("Token ID and token data do not match");
+      }
     }
 
     if (!airdropAddress) {
