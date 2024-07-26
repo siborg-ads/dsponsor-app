@@ -1,10 +1,12 @@
 import Network from "../../providers/utils/networks";
+import { Base } from "@thirdweb-dev/chains";
 
 const devBaseSepolia = {
   chainId: 84532,
   chainName: "base-sepolia",
   chainNameProvider: "base-sepolia-testnet",
   network: Network.BASE_SEPOLIA,
+  chainObject: Base,
   logoURL: "/images/base-logo.png",
   explorerBaseURL: "https://sepolia.basescan.org",
   relayerURL: process.env.DEV ? process.env.DEV : "https://relayer.dsponsor.com",
