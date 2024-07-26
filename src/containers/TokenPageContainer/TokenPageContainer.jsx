@@ -1345,6 +1345,10 @@ const TokenPageContainer = () => {
   };
 
   const checkUserBalance = (tokenAddressBalance, priceToken, decimals) => {
+    if (Number(priceToken) === 0) {
+      return true;
+    }
+
     try {
       if (!tokenAddressBalance || !priceToken) {
         throw new Error("Invalid balance or price token");
