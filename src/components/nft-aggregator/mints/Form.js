@@ -1,10 +1,12 @@
+import Input from "../../ui/input";
+
 const Form = () => {
   return (
     <form action="search" className="relative w-full lg:w-5/6">
-      <input
+      <Input
         type="search"
-        className="h-10 w-full rounded-lg border border-jacarta-100 py-2 px-4 pl-10 text-jacarta-900 placeholder-jacarta-500 focus:ring-primaryPurple dark:border-transparent dark:bg-white/[.15] dark:text-white dark:placeholder-white"
         placeholder="Search"
+        className="h-10 w-full rounded-lg border border-jacarta-100 py-2 px-4 pl-10 text-jacarta-900 placeholder-jacarta-500 focus:ring-primaryPurple dark:border-transparent dark:bg-white/[.15] dark:text-white dark:placeholder-white"
       />
       <span className="absolute left-0 top-0 flex h-full w-12 items-center justify-center rounded-2xl">
         <svg

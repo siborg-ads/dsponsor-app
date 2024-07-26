@@ -1,4 +1,16 @@
-const Step_2_Create = ({ stepsRef, styles, setName,name, description, setDescription, numSteps, currentSlide }) => {
+import Input from "../../ui/input";
+import TextArea from "../../ui/textarea";
+
+const Step_2_Create = ({
+  stepsRef,
+  styles,
+  setName,
+  name,
+  description,
+  setDescription,
+  numSteps,
+  currentSlide
+}) => {
   return (
     <>
       {currentSlide === 1 && (
@@ -23,10 +35,9 @@ const Step_2_Create = ({ stepsRef, styles, setName,name, description, setDescrip
               >
                 Title<span className="text-red">*</span>
               </label>
-              <input
+              <Input
                 type="text"
                 id="item-name"
-                className="dark:bg-secondaryBlack border-jacarta-100 hover:ring-primaryPurple/10 focus:ring-primaryPurple dark:border-primaryPurple dark:placeholder:text-jacarta-100 w-full rounded-lg py-3 px-3 hover:ring-2 dark:text-white"
                 placeholder="Provide a title for your offer."
                 value={name}
                 onChange={(e) => setName(e.target.value)}
@@ -45,16 +56,15 @@ const Step_2_Create = ({ stepsRef, styles, setName,name, description, setDescrip
                 The description should briefly introduce your media, specify the location of the ad
                 space, and describe the type of content expected.
               </p>
-              <textarea
+              <TextArea
                 id="item-description"
-                className="dark:bg-secondaryBlack border-jacarta-100 hover:ring-primaryPurple/10 focus:ring-primaryPurple dark:border-primaryPurple dark:placeholder:text-jacarta-100 w-full rounded-lg py-3 px-3 hover:ring-2 dark:text-white"
-                rows="4"
-                maxLength="250"
-                required
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
+                rows="4"
+                maxLength="250"
                 placeholder="This is a description of the offer. characters limit : 250"
-              ></textarea>
+                required
+              />
             </div>
           </div>
         </div>

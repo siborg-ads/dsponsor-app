@@ -16,6 +16,7 @@ import "tippy.js/dist/tippy.css";
 import handleCopy from "../../utils/handleCopy";
 import Tippy from "@tippyjs/react";
 import { ClipboardIcon } from "@heroicons/react/20/solid";
+import Input from "../ui/input";
 
 const User_items = ({
   createdData,
@@ -128,9 +129,9 @@ const User_items = ({
                   </button>
 
                   <div className="relative w-full h-full">
-                    <input
-                      ref={inputRef}
+                    <Input
                       disabled
+                      ref={inputRef}
                       value={`${frontURL}/?_rid=${userAddr}`}
                       className="pr-12 h-full w-full bg-secondaryBlack border hover:border-opacity-20 border-white border-opacity-10 rounded-2lg p-2 focus:border-white focus:border-opacity-20 focus:ring-transparent dark:bg-secondaryBlack dark:text-white"
                     />

@@ -1,6 +1,7 @@
 import React from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { closePropatiesModal } from "../../redux/counterSlice";
+import Input from "../ui/input";
 
 const Proparties_modal = () => {
   const { propartiesModalValue } = useSelector((state) => state.counter);
@@ -59,22 +60,14 @@ const Proparties_modal = () => {
                   <label className="font-display text-jacarta-900 mb-3 block text-base font-semibold dark:text-white">
                     Type
                   </label>
-                  <input
-                    type="text"
-                    className="dark:bg-secondaryBlack px-4 dark:border-jacarta-600 focus:ring-primaryPurple border-jacarta-100 dark:placeholder-jacarta-300 h-12 w-full border border-r-0 focus:ring-inset dark:text-white"
-                    placeholder="Character"
-                  />
+                  <Input type="text" placeholder="Character" />
                 </div>
 
                 <div className="flex-1">
                   <label className="font-display text-jacarta-900 mb-3 block text-base font-semibold dark:text-white">
                     Name
                   </label>
-                  <input
-                    type="text"
-                    className="dark:bg-secondaryBlack px-4 dark:border-jacarta-600 focus:ring-primaryPurple border-jacarta-100 dark:placeholder-jacarta-300 h-12 w-full rounded-r-lg border focus:ring-inset dark:text-white"
-                    placeholder="Male"
-                  />
+                  <Input type="text" placeholder="Male" />
                 </div>
               </div>
 

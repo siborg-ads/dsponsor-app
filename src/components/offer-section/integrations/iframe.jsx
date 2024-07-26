@@ -8,6 +8,7 @@ import { ClipboardIcon } from "@heroicons/react/24/solid";
 import handleCopy from "../../../utils/handleCopy";
 import Tippy from "@tippyjs/react";
 import { ChromePicker } from "react-color";
+import Input from "../../ui/input";
 
 const IframeIntegration = ({ chainId, offerId, offerTokens }) => {
   const [copied, setCopied] = useState(false);
@@ -251,7 +252,7 @@ const IframeIntegration = ({ chainId, offerId, offerTokens }) => {
       <div className="flex flex-wrap items-start gap-8">
         <div className="flex flex-col gap-4">
           <label className="flex items-center gap-2">
-            <input
+            <Input
               type="checkbox"
               checked={customHeight}
               onChange={(e) => setCustomHeight(e.target.checked)}
@@ -263,19 +264,18 @@ const IframeIntegration = ({ chainId, offerId, offerTokens }) => {
             </InfoIcon>
           </label>
           {customHeight && (
-            <input
+            <Input
               type="number"
               value={parseInt(height)}
               onChange={(e) => setHeight(`${e.target.value}px`)}
               placeholder="Height in px (ex: 400)"
-              className="p-2 rounded-md bg-secondaryBlack text-jacarta-100"
             />
           )}
         </div>
 
         <div className="flex flex-col gap-4">
           <label className="flex items-center gap-2">
-            <input
+            <Input
               type="checkbox"
               checked={bgColor}
               onChange={(e) => setBgColor(e.target.checked)}
@@ -296,7 +296,7 @@ const IframeIntegration = ({ chainId, offerId, offerTokens }) => {
 
         <div className="flex flex-col gap-4">
           <label className="flex items-center gap-2">
-            <input
+            <Input
               type="checkbox"
               checked={changeRatio}
               onChange={(e) => setChangeRatio(e.target.checked)}
@@ -308,21 +308,18 @@ const IframeIntegration = ({ chainId, offerId, offerTokens }) => {
             </InfoIcon>
           </label>
           {changeRatio && (
-            <input
+            <Input
               type="text"
               value={ratio}
-              onChange={(e) => {
-                setRatio(e.target.value);
-              }}
+              onChange={(e) => setRatio(e.target.value)}
               placeholder="Ratio (ex: 16:9)"
-              className="p-2 rounded-md bg-secondaryBlack text-jacarta-100"
             />
           )}
         </div>
 
         <div className="flex flex-col gap-4">
           <label className="flex items-center gap-2">
-            <input
+            <Input
               type="checkbox"
               checked={customAdPreview}
               onChange={(e) => setCustomAdPreview(e.target.checked)}
@@ -358,7 +355,7 @@ const IframeIntegration = ({ chainId, offerId, offerTokens }) => {
                 <div className="flex flex-wrap items-center gap-4">
                   {offerTokens?.map((token) => (
                     <label key={token?.tokenId} className="flex items-center gap-2">
-                      <input
+                      <Input
                         type="checkbox"
                         checked={tokenIds.includes(token?.tokenId)}
                         onChange={(e) => {
@@ -375,19 +372,17 @@ const IframeIntegration = ({ chainId, offerId, offerTokens }) => {
                   ))}
                 </div>
               )}
-              <input
+              <Input
                 type="text"
                 value={previewImage}
                 onChange={(e) => setPreviewImage(e.target.value)}
                 placeholder="Preview Image URL"
-                className="p-2 rounded-md bg-secondaryBlack text-jacarta-100"
               />
-              <input
+              <Input
                 type="text"
                 value={previewLink}
                 onChange={(e) => setPreviewLink(e.target.value)}
                 placeholder="Preview Link URL"
-                className="p-2 rounded-md bg-secondaryBlack text-jacarta-100"
               />
             </div>
           )}

@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import tippy from "tippy.js";
 
 import config from "../../config/config";
+import Input from "../ui/input";
 
 const status = [
   { id: 1, label: "Buy Now", listingType: "Direct" },
@@ -65,7 +66,7 @@ export default function Sidebar({ setFilterTypes }) {
             {Object.entries(config).map((elm, i) => (
               <li key={i}>
                 <label className="flex items-center cursor-pointer w-full">
-                  <input
+                  <Input
                     type="checkbox"
                     className="h-5 w-5 mr-2 rounded border-jacarta-200 text-primaryPurple checked:bg-primaryPurple focus:ring-primaryPurple/20 focus:ring-offset-0 dark:border-jacarta-500 dark:bg-jacarta-600"
                     onChange={(e) => handleFilterChange(elm[1].network, e.target.checked, "chain")}
@@ -121,7 +122,7 @@ export default function Sidebar({ setFilterTypes }) {
             {status.map((elm, i) => (
               <li key={i}>
                 <label className="flex items-center cursor-pointer w-full">
-                  <input
+                  <Input
                     type="checkbox"
                     id="terms"
                     className="h-5 w-5 mr-2 rounded border-jacarta-200 text-primaryPurple checked:bg-primaryPurple focus:ring-primaryPurple/20 focus:ring-offset-0 dark:border-jacarta-500 dark:bg-jacarta-600"

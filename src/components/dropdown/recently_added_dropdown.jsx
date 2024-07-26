@@ -9,6 +9,7 @@ import {
 } from "../../redux/counterSlice";
 import { useDispatch } from "react-redux";
 import Image from "next/image";
+import Input from "../ui/input";
 
 const Recently_added_dropdown = ({ data, dropdownFor }) => {
   const dispatch = useDispatch();
@@ -204,7 +205,7 @@ const Recently_added_dropdown = ({ data, dropdownFor }) => {
                     >
                       <span className="flex items-center justify-between">
                         <span>{text}</span>
-                        <input
+                        <Input
                           type="checkbox"
                           name="check"
                           className="checked:bg-primaryPurple checked:focus:bg-primaryPurple checked:hover:bg-primaryPurple after:bg-jacarta-400 bg-jacarta-100 relative h-4 w-7 cursor-pointer appearance-none rounded-lg border-none shadow-none after:absolute after:top-0.5 after:left-0.5 after:h-3 after:w-3 after:rounded-full after:transition-all checked:bg-none checked:after:left-3.5 checked:after:bg-white focus:ring-transparent focus:ring-offset-0"
@@ -577,15 +578,15 @@ const Recently_added_dropdown = ({ data, dropdownFor }) => {
 
               {/* <!-- From / To --> */}
               <div className="flex items-center space-x-3 px-5 pb-2">
-                <input
+                <Input
                   type="number"
                   onWheel={(e) => e.target.blur()}
                   placeholder="From"
                   value={currencyValFrom}
-                  onChange={(e) => handleCurrencyValFrom(e)}
+                  onChange={(e) => handleCurrencyValTo(e)}
                   className="text-jacarta-900 placeholder-jacarta-500 focus:ring-primaryPurple border-jacarta-100 w-full max-w-[7.5rem] rounded-lg border py-[0.6875rem] px-4 dark:border-transparent dark:bg-white/[.15] dark:text-white dark:placeholder-white"
                 />
-                <input
+                <Input
                   type="number"
                   onWheel={(e) => e.target.blur()}
                   placeholder="To"

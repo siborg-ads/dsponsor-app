@@ -17,6 +17,7 @@ import handleCopy from "../../utils/handleCopy";
 import "tippy.js/dist/tippy.css";
 import { BigNumber } from "ethers";
 import InfoIcon from "../informations/infoIcon";
+import Input from "../ui/input";
 
 const BidsModal = ({
   setAmountToApprove,
@@ -46,6 +47,8 @@ const BidsModal = ({
   showBidsModal
 }) => {
   const [initialIntPrice, setInitialIntPrice] = useState(null);
+  const [isLoadingApproveButton, setIsLoadingApproveButton] = useState(false);
+  const [isLoadingBuyButton, setIsLoadingBuyButton] = useState(false);
   const [isPriceGood, setIsPriceGood] = useState(true);
   const { mutateAsync: auctionBids } = useContractWrite(dsponsorMpContract, "bid");
   const [checkTerms, setCheckTerms] = useState(false);
@@ -509,10 +512,10 @@ const BidsModal = ({
                 </div>
                 <div className="flex items-center gap-4">
                   <div className="flex items-center relative w-full overflow-hidden -pr-4">
-                    <input
+                    <Input
                       type="number"
                       onWheel={(e) => e.target.blur()}
-                      className={`focus:ring-primaryPurple pr-20 relative w-full flex-[3] border-transparent bg-jacarta-600 rounded-xl text-2xl py-2 font-semibold text-white focus:ring-inse`}
+                      className="focus:ring-primaryPurple pr-20 relative w-full flex-[3] border-transparent bg-jacarta-600 rounded-xl text-2xl py-2 font-semibold text-white focus:ring-inse"
                       placeholder={`${initialIntPrice} or higher`}
                       value={bidsAmount ?? ""}
                       onChange={(e) => handleBidsAmount(e)}
@@ -639,11 +642,11 @@ const BidsModal = ({
 
                 {/* <!-- Terms --> */}
                 <div className="mt-8 flex items-center space-x-2">
-                  <input
+                  <Input
                     type="checkbox"
                     id="buyNowTerms"
-                    className="checked:bg-primaryPurple dark:bg-jacarta-600 text-primaryPurple border-jacarta-200 focus:ring-primaryPurple/20 dark:border-jacarta-500 h-5 w-5 self-start rounded focus:ring-offset-0"
                     onClick={handleTermService}
+                    className="h-5 !w-5 mr-3 rounded border-jacarta-200 !text-primaryPurple checked:bg-primaryPurple focus:ring-primaryPurple/20 focus:ring-offset-0 dark:border-jacarta-500 dark:bg-jacarta-600"
                   />
                   <label htmlFor="buyNowTerms" className="dark:text-jacarta-200 text-sm">
                     By checking this box, I agree to {"SiBorg Ads's"}{" "}
@@ -791,22 +794,34 @@ const BidsModal = ({
                             <Web3Button
                               contractAddress={config[chainId]?.smartContracts?.DSPONSORMP?.address}
                               action={() => {
+                                setIsLoadingApproveButton(true);
+
                                 toast.promise(handleApprove, {
                                   pending: "Waiting for confirmation 🕒",
                                   success: "Approval confirmed 👌",
                                   error: "Approval rejected 🤯"
                                 });
+
+                                setIsLoadingApproveButton(false);
                               }}
                               className={` !rounded-full !py-3 !px-8 !w-full !text-center !font-semibold !text-black !transition-all ${
-                                !isPriceGood || !checkTerms || !bidsAmount || !allowanceTrue
+                                !isPriceGood ||
+                                !checkTerms ||
+                                !bidsAmount ||
+                                !allowanceTrue ||
+                                isLoadingApproveButton
                                   ? "!btn-disabled !cursor-not-allowed !text-black !opacity-30"
                                   : "!text-white !bg-primaryPurple !cursor-pointer"
                               } `}
                               isDisabled={
-                                !isPriceGood || !checkTerms || !bidsAmount || !allowanceTrue
+                                !isPriceGood ||
+                                !checkTerms ||
+                                !bidsAmount ||
+                                !allowanceTrue ||
+                                isLoadingApproveButton
                               }
                             >
-                              {isLoadingButton ? (
+                              {isLoadingApproveButton ? (
                                 <Spinner size="sm" color="default" />
                               ) : notEnoughFunds ? (
                                 <span className="text-black">Not enough funds</span>
@@ -819,20 +834,28 @@ const BidsModal = ({
                             <Web3Button
                               contractAddress={config[chainId]?.smartContracts?.DSPONSORMP?.address}
                               action={() => {
+                                setIsLoadingBuyButton(true);
+
                                 toast.promise(handleSubmit, {
                                   pending: "Waiting for confirmation 🕒",
-                                  success: "Bid confirmed 👌",
-                                  error: "Bid rejected 🤯"
+                                  success: buyoutPriceReached
+                                    ? "Buy confirmed 👌"
+                                    : "Bid confirmed 👌",
+                                  error: buyoutPriceReached ? "Buy rejected 🤯" : "Bid rejected 🤯"
                                 });
+
+                                setIsLoadingBuyButton(false);
                               }}
                               className={`!rounded-full !w-full !py-3 !px-8 !text-center !font-semibold !text-black !transition-all ${
-                                !isPriceGood || !checkTerms || allowanceTrue
+                                !isPriceGood || !checkTerms || allowanceTrue || isLoadingBuyButton
                                   ? "!btn-disabled !cursor-not-allowed !text-black !opacity-30"
                                   : "!text-white !bg-primaryPurple !cursor-pointer"
                               } `}
-                              isDisabled={!isPriceGood || !checkTerms || allowanceTrue}
+                              isDisabled={
+                                !isPriceGood || !checkTerms || allowanceTrue || isLoadingBuyButton
+                              }
                             >
-                              {isLoadingButton ? (
+                              {isLoadingBuyButton ? (
                                 <Spinner size="sm" color="default" />
                               ) : buyoutPriceReached ? (
                                 notEnoughFunds ? (
@@ -853,20 +876,34 @@ const BidsModal = ({
                           <Web3Button
                             contractAddress={config[chainId]?.smartContracts?.DSPONSORMP?.address}
                             action={() => {
+                              setIsLoadingBuyButton(true);
+
                               toast.promise(handleSubmitWithNative, {
                                 pending: "Waiting for confirmation 🕒",
-                                success: "Bid confirmed 👌",
-                                error: "Bid rejected 🤯"
+                                success: buyoutPriceReached
+                                  ? "Buy confirmed 👌"
+                                  : "Bid confirmed 👌",
+                                error: buyoutPriceReached ? "Buy rejected 🤯" : "Bid rejected 🤯"
                               });
+
+                              setIsLoadingBuyButton(false);
                             }}
                             className={`!rounded-full !py-3 !px-8 !text-center !font-semibold !text-black !transition-all ${
-                              !isPriceGood || !checkTerms || !canPayWithNativeToken
+                              !isPriceGood ||
+                              !checkTerms ||
+                              !canPayWithNativeToken ||
+                              isLoadingBuyButton
                                 ? "!btn-disabled !cursor-not-allowed !text-black !opacity-30"
                                 : "!text-white !bg-primaryPurple !cursor-pointer"
                             } `}
-                            isDisabled={!isPriceGood || !checkTerms || !canPayWithNativeToken}
+                            isDisabled={
+                              !isPriceGood ||
+                              !checkTerms ||
+                              !canPayWithNativeToken ||
+                              isLoadingBuyButton
+                            }
                           >
-                            {isLoadingButton ? (
+                            {isLoadingBuyButton ? (
                               <Spinner size="sm" color="default" />
                             ) : buyoutPriceReached ? (
                               notEnoughFunds ? (

@@ -12,6 +12,7 @@ import BuyWithCrossmintButton from "../buttons/BuyWithCrossmintButton/BuyWithCro
 import { parseUnits } from "ethers/lib/utils";
 import { InformationCircleIcon } from "@heroicons/react/24/solid";
 import InfoIcon from "../informations/infoIcon";
+import Input from "../ui/input";
 
 const BuyModal = ({
   formatTokenId,
@@ -51,6 +52,8 @@ const BuyModal = ({
 }) => {
   const [validate, setValidate] = useState(false);
   const [notEnoughFunds, setNotEnoughFunds] = useState(false);
+  const [isLoadingBuyButton, setIsLoadingBuyButton] = useState(false);
+  const [isLoadingApproveButton, setIsLoadingApproveButton] = useState(false);
 
   const { currentChainObject } = useChainContext();
   const modalRef = useRef();
@@ -259,11 +262,11 @@ const BuyModal = ({
 
               {/* <!-- Terms --> */}
               <div className="mt-4 flex items-center space-x-2">
-                <input
+                <Input
                   type="checkbox"
                   id="buyNowTerms"
-                  className="checked:bg-primaryPurple dark:bg-jacarta-600 text-primaryPurple border-jacarta-200 focus:ring-primaryPurple/20 dark:border-jacarta-500 h-5 w-5 self-start rounded focus:ring-offset-0"
                   onClick={handleTermService}
+                  className="checked:bg-primaryPurple dark:bg-jacarta-600 hover:bg-jacarta-600 !text-primaryPurple border-jacarta-200 focus:ring-primaryPurple/20 dark:border-jacarta-500 h-5 !w-5 self-start rounded focus:ring-offset-0"
                 />
                 <label htmlFor="buyNowTerms" className="dark:text-jacarta-200 text-sm">
                   By checking this box, I agree to {"SiBorg Ads's"}{" "}
@@ -311,25 +314,32 @@ const BuyModal = ({
                             currentChainObject?.smartContracts?.DSPONSORADMIN?.address
                           }
                           action={() => {
+                            setIsLoadingApproveButton(true);
+
                             toast.promise(handleApprove, {
                               pending: "Waiting for confirmation 🕒",
                               success: "Approval confirmed 👌",
                               error: "Approval rejected 🤯"
                             });
+
+                            setIsLoadingApproveButton(false);
                           }}
                           className={`!rounded-full !py-3 !px-8 !w-full !text-center !font-semibold !text-black !transition-all ${
-                            !validate || !finalPriceNotFormatted || !allowanceTrue
+                            !validate ||
+                            !finalPriceNotFormatted ||
+                            !allowanceTrue ||
+                            isLoadingApproveButton
                               ? "!btn-disabled !cursor-not-allowed !text-black !opacity-30"
                               : "!text-white !bg-primaryPurple !cursor-pointer"
                           }`}
                           isDisabled={
                             !validate ||
-                            isLoadingButton ||
                             !finalPriceNotFormatted ||
-                            !allowanceTrue
+                            !allowanceTrue ||
+                            isLoadingApproveButton
                           }
                         >
-                          {isLoadingButton ? (
+                          {isLoadingApproveButton ? (
                             <Spinner size="sm" color="default" />
                           ) : notEnoughFunds ? (
                             <span className="text-black">Not enough funds</span>
@@ -343,24 +353,26 @@ const BuyModal = ({
                       <Web3Button
                         contractAddress={currentChainObject?.smartContracts?.DSPONSORADMIN?.address}
                         action={() => {
+                          setIsLoadingBuyButton(true);
+
                           toast.promise(handleSubmit, {
                             pending: "Waiting for confirmation 🕒",
-                            success: "Bid confirmed 👌",
-                            error: "Bid rejected 🤯"
+                            success: "Buy confirmed 👌",
+                            error: "Buy rejected 🤯"
                           });
+
+                          setIsLoadingBuyButton(false);
                         }}
                         className={`!rounded-full !py-3 !px-8 !w-full !text-center !font-semibold !text-black !transition-all ${
-                          !validate || (allowanceTrue && !!totalPrice && parseFloat(totalPrice) > 0)
+                          !validate || allowanceTrue || isLoadingBuyButton
                             ? "!btn-disabled !cursor-not-allowed !text-black !opacity-30"
                             : "!text-white !bg-primaryPurple !cursor-pointer"
                         }`}
                         isDisabled={
-                          !validate ||
-                          isLoadingButton ||
-                          (allowanceTrue && !!totalPrice && parseFloat(totalPrice) > 0)
+                          !validate || isLoadingButton || allowanceTrue || isLoadingBuyButton
                         }
                       >
-                        {isLoadingButton ? (
+                        {isLoadingBuyButton ? (
                           <Spinner size="sm" color="default" />
                         ) : notEnoughFunds ? (
                           <span className="text-black">Not enough funds</span>
@@ -386,20 +398,26 @@ const BuyModal = ({
                   <Web3Button
                     contractAddress={currentChainObject?.smartContracts?.DSPONSORADMIN?.address}
                     action={() => {
+                      setIsLoadingBuyButton(true);
+
                       toast.promise(handleBuySubmitWithNative, {
                         pending: "Waiting for confirmation 🕒",
                         success: "Transaction confirmed 👌",
                         error: "Transaction rejected 🤯"
                       });
+
+                      setIsLoadingBuyButton(false);
                     }}
                     className={`!rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${
-                      !validate || !canPayWithNativeToken
+                      !validate || !canPayWithNativeToken || isLoadingBuyButton
                         ? "!btn-disabled !cursor-not-allowed !text-black !opacity-30"
                         : "!text-white !bg-primaryPurple !cursor-pointer"
                     }`}
-                    isDisabled={!validate || isLoadingButton || !canPayWithNativeToken}
+                    isDisabled={
+                      !validate || isLoadingButton || !canPayWithNativeToken || isLoadingBuyButton
+                    }
                   >
-                    {isLoadingButton ? (
+                    {isLoadingBuyButton ? (
                       <Spinner size="sm" color="default" />
                     ) : notEnoughFunds ? (
                       <span className="text-black">Not enough funds</span>

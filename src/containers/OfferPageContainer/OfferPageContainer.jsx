@@ -22,7 +22,6 @@ import { fetchOffer } from "../../providers/methods/fetchOffer";
 import Form from "../../components/collections-wide/sidebar/collections/Form";
 import "tippy.js/dist/tippy.css";
 import Validation from "../../components/offer-section/validation";
-import ModalHelper from "../../components/Helper/modalHelper";
 import { ItemsTabs } from "../../components/component";
 import config from "../../config/config";
 import { useSwitchChainContext } from "../../contexts/hooks/useSwitchChainContext";
@@ -30,7 +29,6 @@ import { activated_features } from "../../data/activated_features";
 import UpdateOffer from "../../components/offer-section/updateOffer";
 import ChangeMintPrice from "../../components/offer-section/changeMintPrice";
 import { Tabs, Tab, TabList, TabPanel } from "react-tabs";
-import formatAndRoundPrice from "../../utils/formatAndRound";
 import { BadgePercentIcon, BlocksIcon, RefreshCwIcon } from "lucide-react";
 import Disable from "../../components/disable/disable";
 
@@ -374,7 +372,7 @@ const OfferPageContainer = () => {
             height={750}
             src={imageUrl ?? "/images/gradient_creative.jpg"}
             alt="gradient"
-            className="h-full w-full object-cover aspect-square"
+            className="h-auto w-full object-cover aspect-square"
           />
         </picture>
         <div className="container">
@@ -382,13 +380,13 @@ const OfferPageContainer = () => {
 
           <div className="md:flex md:flex-wrap" key={id}>
             {/* <!-- Image --> */}
-            <figure className="mb-8 md:w-2/5 md:flex-shrink-0 md:flex-grow-0 md:basis-auto lg:w-1/2 w-full flex justify-center">
+            <figure className="mb-8 md:w-2/5 md:flex-shrink-0 md:flex-grow-0 md:basis-auto lg:w-1/2 w-full flex justify-center items-start">
               <button className="w-full" onClick={() => setImageModal(true)}>
                 {imageUrl && (
                   <img
                     src={imageUrl ?? "/images/gradient_creative.jpg"}
                     alt="image"
-                    className="rounded-2xl cursor-pointer h-full object-cover w-full aspect-square"
+                    className="rounded-2xl cursor-pointer h-auto object-cover w-full aspect-square"
                   />
                 )}
               </button>
@@ -406,11 +404,11 @@ const OfferPageContainer = () => {
                   {/* <!-- Modal --> */}
                   <div className="modal-dialog !my-0 flex items-center justify-center">
                     <div className="modal fade show block">
-                      <div className="modal-dialog !my-0 flex items-center justify-center">
+                      <div className="modal-dialog !my-0 flex items-center justify-center items-start">
                         <img
                           src={imageUrl ?? "/images/gradient_creative.jpg"}
                           alt="image"
-                          className="h-full object-cover w-full rounded-2xl aspect-square"
+                          className="h-auto object-cover w-full rounded-2xl aspect-square"
                         />
                       </div>
 
@@ -611,13 +609,13 @@ const OfferPageContainer = () => {
         )}
       </Accordion.Item>
 
-      <Accordion.Item value="validation">
+      <Accordion.Item value="adValidation">
         <div className="container">
           {activated_features.canSeeSubmittedAds && (
             <>
               <Accordion.Header className="w-full">
                 <Accordion.Trigger
-                  className={`${accordionActiveTab === "validation" && "bg-primaryPurple"} w-full flex items-center justify-center gap-4 mb-6 border border-primaryPurple hover:bg-primaryPurple cursor-pointer p-2 rounded-lg`}
+                  className={`${accordionActiveTab === "adValidation" && "bg-primaryPurple"} w-full flex items-center justify-center gap-4 mb-6 border border-primaryPurple hover:bg-primaryPurple cursor-pointer p-2 rounded-lg`}
                 >
                   {isOwner && sponsorHasAtLeastOneRejectedProposalAndNoPending && (
                     <InfoIcon text="You have at least one rejected proposal and no pending proposal.">
@@ -630,10 +628,10 @@ const OfferPageContainer = () => {
                     </InfoIcon>
                   )}
                   <h2 className="text-jacarta-900 font-bold font-display text-center text-3xl dark:text-white ">
-                    Validation
+                    Ad Validation
                   </h2>
                   <ChevronDownIcon
-                    className={`w-6 h-6 duration-300 ${accordionActiveTab === "validation" && "transform rotate-180"}`}
+                    className={`w-6 h-6 duration-300 ${accordionActiveTab === "adValidation" && "transform rotate-180"}`}
                   />
                 </Accordion.Trigger>
               </Accordion.Header>
