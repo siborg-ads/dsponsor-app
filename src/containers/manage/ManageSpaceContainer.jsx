@@ -203,13 +203,13 @@ const ManageSpaceContainer = () => {
           const listedTokenArray = await fetchDataByUserAddress(fetchAllTokenListedByUserAddress);
 
           const mappedListedToken = listedTokenArray
-            .filter((element) => element?.listingType === "Auction")
-            .map((element) => ({
+            ?.filter((element) => element?.listingType === "Auction")
+            ?.map((element) => ({
               ...element,
-              ...element.token,
+              ...element?.token,
               marketplaceListings: [element],
-              listingStatus: handleListingsStatusType(element.status),
-              chainConfig: element.chainConfig,
+              listingStatus: handleListingsStatusType(element?.status),
+              chainConfig: element?.chainConfig,
               tokenData: element?.token.mint.tokenData,
               startTime: element?.startTime,
               endTime: element?.endTime,
