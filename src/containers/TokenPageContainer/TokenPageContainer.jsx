@@ -2105,7 +2105,7 @@ const TokenPageContainer = () => {
                 </Accordion.Trigger>
               </Accordion.Header>
 
-              <Accordion.Content>
+              <Accordion.Content className="mb-6">
                 {isTokenInAuction && (
                   <div className="text-center w-full">
                     <span className="dark:text-warning text-md ">

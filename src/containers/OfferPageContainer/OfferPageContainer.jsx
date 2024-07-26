@@ -528,7 +528,7 @@ const OfferPageContainer = () => {
 
       <Accordion.Item value="search">
         {!offerData.nftContract.allowList && (
-          <div className="container flex flex-col justify-center mb-6">
+          <div className="container flex flex-col justify-center">
             <Accordion.Header className="w-full">
               <Accordion.Trigger
                 className={`${accordionActiveTab === "search" && "bg-primaryPurple"} w-full flex items-center justify-center gap-4 mb-6 border border-primaryPurple hover:bg-primaryPurple cursor-pointer p-2 rounded-lg`}
@@ -543,7 +543,7 @@ const OfferPageContainer = () => {
             </Accordion.Header>
 
             <Accordion.Content>
-              <div className="dark:bg-secondaryBlack dark:border-jacarta-600 border-jacarta-100 rounded-2lg border bg-white p-8">
+              <div className="dark:bg-secondaryBlack mb-6 dark:border-jacarta-600 border-jacarta-100 rounded-2lg border bg-white p-8">
                 <div className=" sm:flex sm:flex-wrap">
                   <span className="dark:text-jacarta-100 text-jacarta-100 text-sm">
                     You can check if a word is available for purchase by using the search bar.
