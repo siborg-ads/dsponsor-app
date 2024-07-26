@@ -2087,61 +2087,6 @@ const TokenPageContainer = () => {
         </div>
       </Accordion.Item>
 
-      <Accordion.Item value="validation">
-        <div className="container">
-          {offerData.nftContract?.tokens?.find(
-            (token) => Number(token?.tokenId) === Number(tokenId)
-          )?.mint &&
-            isValidId &&
-            activated_features.canSeeSubmittedAds && (
-              <>
-                <Accordion.Header className="w-full">
-                  <Accordion.Trigger
-                    className={`${accordionActiveTab === "validation" && "bg-primaryPurple"} w-full flex items-center justify-center gap-4 mb-6 border border-primaryPurple hover:bg-primaryPurple cursor-pointer p-2 rounded-lg`}
-                  >
-                    {isOwner && sponsorHasAtLeastOneRejectedProposalAndNoPending && (
-                      <InfoIcon text="You have at least one rejected proposal and no pending proposal.">
-                        <ExclamationCircleIcon className="w-6 h-6 text-red" />
-                      </InfoIcon>
-                    )}
-                    {isMedia && mediaShouldValidateAnAd && (
-                      <InfoIcon text="You have at least one ad to validate or to refuse.">
-                        <ExclamationCircleIcon className="w-6 h-6 text-red" />
-                      </InfoIcon>
-                    )}
-                    <h2 className="text-jacarta-900 font-bold font-display text-center text-3xl dark:text-white ">
-                      Validation
-                    </h2>
-                    <ChevronDownIcon
-                      className={`w-6 h-6 duration-300 ${accordionActiveTab === "validation" && "transform rotate-180"}`}
-                    />
-                  </Accordion.Trigger>
-                </Accordion.Header>
-
-                <Accordion.Content>
-                  <Validation
-                    offer={offerData}
-                    offerId={offerId}
-                    isOwner={isOwner}
-                    isToken={true}
-                    successFullUploadModal={successFullUploadModal}
-                    isLister={isLister}
-                    setSelectedItems={setSelectedItems}
-                    sponsorHasAtLeastOneRejectedProposalAndNoPending={
-                      sponsorHasAtLeastOneRejectedProposalAndNoPending
-                    }
-                    mediaShouldValidateAnAd={mediaShouldValidateAnAd}
-                    isMedia={isMedia}
-                    isSponsor={isOwner}
-                    itemTokenId={tokenId}
-                    isTokenView={true}
-                  />
-                </Accordion.Content>
-              </>
-            )}
-        </div>
-      </Accordion.Item>
-
       {/* <ItemsTabs /> */}
       <Accordion.Item value="adSubmission">
         <div>
@@ -2232,6 +2177,61 @@ const TokenPageContainer = () => {
               </p>
             </div>
           )}
+        </div>
+      </Accordion.Item>
+
+      <Accordion.Item value="adValidation">
+        <div className="container">
+          {offerData.nftContract?.tokens?.find(
+            (token) => Number(token?.tokenId) === Number(tokenId)
+          )?.mint &&
+            isValidId &&
+            activated_features.canSeeSubmittedAds && (
+              <>
+                <Accordion.Header className="w-full">
+                  <Accordion.Trigger
+                    className={`${accordionActiveTab === "adValidation" && "bg-primaryPurple"} w-full flex items-center justify-center gap-4 mb-6 border border-primaryPurple hover:bg-primaryPurple cursor-pointer p-2 rounded-lg`}
+                  >
+                    {isOwner && sponsorHasAtLeastOneRejectedProposalAndNoPending && (
+                      <InfoIcon text="You have at least one rejected proposal and no pending proposal.">
+                        <ExclamationCircleIcon className="w-6 h-6 text-red" />
+                      </InfoIcon>
+                    )}
+                    {isMedia && mediaShouldValidateAnAd && (
+                      <InfoIcon text="You have at least one ad to validate or to refuse.">
+                        <ExclamationCircleIcon className="w-6 h-6 text-red" />
+                      </InfoIcon>
+                    )}
+                    <h2 className="text-jacarta-900 font-bold font-display text-center text-3xl dark:text-white ">
+                      Ad Validation
+                    </h2>
+                    <ChevronDownIcon
+                      className={`w-6 h-6 duration-300 ${accordionActiveTab === "adValidation" && "transform rotate-180"}`}
+                    />
+                  </Accordion.Trigger>
+                </Accordion.Header>
+
+                <Accordion.Content>
+                  <Validation
+                    offer={offerData}
+                    offerId={offerId}
+                    isOwner={isOwner}
+                    isToken={true}
+                    successFullUploadModal={successFullUploadModal}
+                    isLister={isLister}
+                    setSelectedItems={setSelectedItems}
+                    sponsorHasAtLeastOneRejectedProposalAndNoPending={
+                      sponsorHasAtLeastOneRejectedProposalAndNoPending
+                    }
+                    mediaShouldValidateAnAd={mediaShouldValidateAnAd}
+                    isMedia={isMedia}
+                    isSponsor={isOwner}
+                    itemTokenId={tokenId}
+                    isTokenView={true}
+                  />
+                </Accordion.Content>
+              </>
+            )}
         </div>
       </Accordion.Item>
 
