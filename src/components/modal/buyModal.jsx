@@ -364,20 +364,26 @@ const BuyModal = ({
                           setIsLoadingBuyButton(false);
                         }}
                         className={`!rounded-full !py-3 !px-8 !w-full !text-center !font-semibold !text-black !transition-all ${
-                          !validate || allowanceTrue || isLoadingBuyButton
+                          !validate ||
+                          (allowanceTrue && parseFloat(totalPrice) > 0) ||
+                          isLoadingBuyButton
                             ? "!btn-disabled !cursor-not-allowed !text-black !opacity-30"
                             : "!text-white !bg-primaryPurple !cursor-pointer"
                         }`}
                         isDisabled={
-                          !validate || isLoadingButton || allowanceTrue || isLoadingBuyButton
+                          !validate ||
+                          (allowanceTrue && parseFloat(totalPrice) > 0) ||
+                          isLoadingBuyButton
                         }
                       >
                         {isLoadingBuyButton ? (
                           <Spinner size="sm" color="default" />
                         ) : notEnoughFunds ? (
                           <span className="text-black">Not enough funds</span>
-                        ) : (
+                        ) : parseFloat(totalPrice) > 0 ? (
                           "Buy Now 💸 (2/2)"
+                        ) : (
+                          "Mint for free"
                         )}
                       </Web3Button>
                     </div>
