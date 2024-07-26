@@ -1707,7 +1707,7 @@ const TokenPageContainer = () => {
                     tokenStatut === "MINTABLE")) && (
                   <div className="flex items-center">
                     <span className="text-green text-sm font-medium tracking-tight mr-2">
-                      {totalPrice && parseFloat(totalPrice) > 0
+                      {!!totalPrice && parseFloat(totalPrice) > 0
                         ? `${finalPrice ?? 0} ${currency}`
                         : "Free"}
                     </span>
