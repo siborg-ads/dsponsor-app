@@ -12,6 +12,7 @@ import { BigNumber, ethers } from "ethers";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import Spinner from "@nextui-org/react";
 import React, { useEffect, useRef, useState } from "react";
 import "tippy.js/dist/tippy.css";
 import Meta from "../../components/Meta.jsx";
@@ -62,6 +63,7 @@ const TokenPageContainer = () => {
   const tokenId = router.query?.tokenId;
   const chainId = currentChainObject?.chainId;
 
+  const [isLoadingAirdropButton, setIsLoadingAirdropButton] = useState(false);
   const [tokenIdString, setTokenIdString] = useState(null);
   const [offerData, setOfferData] = useState(null);
   const address = useAddress();
@@ -1927,16 +1929,26 @@ const TokenPageContainer = () => {
                           <Web3Button
                             contractAddress={nftContractAddress}
                             action={() => {
+                              setIsLoadingAirdropButton(true);
+
                               toast.promise(handleAirdrop(airdropAddress), {
                                 loading: "Airdrop in progress... 🚀",
                                 success: "Airdrop successful 🎉",
                                 error: "Airdrop failed ❌"
                               });
+
+                              setIsLoadingAirdropButton(false);
                             }}
-                            className={`!rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all  !bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer ${(airdropAddress === "" || !airdropAddress) && "!btn-disabled !cursor-not-allowed"}`}
-                            disabled={airdropAddress === "" || !airdropAddress}
+                            className={`!rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all  !bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer ${(airdropAddress === "" || !airdropAddress || isLoadingAirdropButton) && "!btn-disabled !cursor-not-allowed !opacity-30"}`}
+                            disabled={
+                              airdropAddress === "" || !airdropAddress || isLoadingAirdropButton
+                            }
                           >
-                            Airdrop
+                            {isLoadingAirdropButton ? (
+                              <Spinner size="sm" color="default" />
+                            ) : (
+                              "Airdrop"
+                            )}
                           </Web3Button>
                         </div>
                       </div>
