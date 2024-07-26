@@ -52,6 +52,7 @@ import * as Accordion from "@radix-ui/react-accordion";
 import { ChevronDownIcon, ExclamationCircleIcon } from "@heroicons/react/24/solid";
 import InfoIcon from "../../components/informations/infoIcon.jsx";
 import Disable from "../../components/disable/disable.jsx";
+import Input from "../../components/ui/input";
 
 const TokenPageContainer = () => {
   const router = useRouter();
@@ -116,6 +117,7 @@ const TokenPageContainer = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [itemProposals, setItemProposals] = useState(null);
   const [mediaShouldValidateAnAd, setMediaShouldValidateAnAd] = useState(false);
+  const [airdropContainer, setAirdropContainer] = useState(true);
   const [
     sponsorHasAtLeastOneRejectedProposalAndNoPending,
     setSponsorHasAtLeastOneRejectedProposalAndNoPending
@@ -134,6 +136,8 @@ const TokenPageContainer = () => {
   const [totalPrice, setTotalPrice] = useState(null);
   const [listerAmount, setListerAmount] = useState(null);
   const [royaltiesAmount, setRoyaltiesAmount] = useState(null);
+  const [airdropAddress, setAirdropAddress] = useState(undefined);
+  const [nftContractAddress, setNftContractAddress] = useState(null);
 
   let description = "description not found";
   let id = "1";
@@ -982,6 +986,7 @@ const TokenPageContainer = () => {
 
   useEffect(() => {
     if (!tokenId || !offerData) return;
+
     if (tokenId.length > 6) {
       const url = new URL(window.location.href);
       let tokenData = url.searchParams.get("tokenData");
@@ -1446,6 +1451,7 @@ const TokenPageContainer = () => {
       const mintDisabled = !offerData?.nftContract?.prices[0]?.enabled;
       const isMinted =
         offerData?.nftContract?.tokens?.find((token) => token?.tokenId === tokenId)?.mint !== null;
+      const isCreator = offerData?.initialCreator?.toLowerCase() === address?.toLowerCase();
 
       const finalCondition =
         (isActive && isOwner && ((isAuction && !hasBids) || isDirect)) ||
@@ -1480,7 +1486,8 @@ const TokenPageContainer = () => {
         isOwner: isOwner,
         isLister: isLister,
         mintDisabled: mintDisabled,
-        isMinted: isMinted
+        isMinted: isMinted,
+        isCreator: isCreator
       };
 
       return { condition: finalCondition, conditionsObject: conditionsObject };
@@ -1500,7 +1507,8 @@ const TokenPageContainer = () => {
     firstSelectedListing?.status,
     firstSelectedListing?.bids?.length,
     now,
-    tokenId
+    tokenId,
+    address
   ]);
 
   const successFullUploadModal = {
@@ -1599,6 +1607,44 @@ const TokenPageContainer = () => {
         </div>
       </>
     )
+  };
+
+  useEffect(() => {
+    if (!offerData) return;
+
+    setNftContractAddress(offerData?.nftContract?.id);
+  }, [offerData]);
+
+  const { mutateAsync: airdropAsync } = useContractWrite(DsponsorNFTContract, "mint");
+
+  const handleAirdrop = async (airdropAddress) => {
+    console.log("tokenData", tokenData);
+
+    let stringToUnit = 0;
+    if (tokenData) {
+      stringToUnit = stringToUint256(tokenData);
+    }
+
+    if (!airdropAddress) {
+      console.error("Airdrop address not found");
+      throw new Error("Airdrop address not found");
+    }
+
+    if (!tokenId) {
+      console.error("Token ID not found");
+      throw new Error("Token ID not found");
+    }
+
+    try {
+      await airdropAsync({
+        args: [tokenId, airdropAddress, "0x0000000000000000000000000000000000000000", stringToUnit]
+      });
+
+      setAirdropContainer(false);
+    } catch (error) {
+      console.error("Error while airdropping:", error);
+      throw error;
+    }
   };
 
   if (!offerData || offerData.length === 0) {
@@ -1833,6 +1879,65 @@ const TokenPageContainer = () => {
                               }
                             />
                           </div>
+                        </div>
+                      </div>
+                    )}
+
+                  {conditions?.conditionsObject?.isCreator &&
+                    airdropContainer &&
+                    !conditions?.conditionsObject?.isMinted && (
+                      <div className="dark:bg-secondaryBlack mt-4 dark:border-jacarta-600 mb-2 border-jacarta-100 rounded-2lg border flex flex-col gap-4 bg-white p-8">
+                        <span className="dark:text-jacarta-100 text-jacarta-100 text-lg">
+                          Airdrop this token
+                        </span>
+
+                        <Input
+                          placeholder={"Enter the address"}
+                          onChange={(e) => setAirdropAddress(e.target.value)}
+                          value={airdropAddress}
+                          type="text"
+                          className="w-full"
+                        />
+
+                        <div className="flex items-center gap-2">
+                          <button onClick={() => setAirdropAddress(address)} className="w-fit">
+                            <span className="text-sm text-primaryPurple">Use my address</span>
+                          </button>
+
+                          <span className="text-sm text-jacarta-100">or</span>
+
+                          {navigator?.clipboard && (
+                            <button
+                              onClick={() => {
+                                // get clipboard content
+                                navigator.clipboard.readText().then((text) => {
+                                  setAirdropAddress(text);
+                                });
+                              }}
+                              className="w-fit"
+                            >
+                              <span className="text-sm text-primaryPurple">
+                                Paste from clipboard
+                              </span>
+                            </button>
+                          )}
+                        </div>
+
+                        <div className="w-full flex">
+                          <Web3Button
+                            contractAddress={nftContractAddress}
+                            action={() => {
+                              toast.promise(handleAirdrop(airdropAddress), {
+                                loading: "Airdrop in progress... 🚀",
+                                success: "Airdrop successful 🎉",
+                                error: "Airdrop failed ❌"
+                              });
+                            }}
+                            className={`!rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all  !bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer ${(airdropAddress === "" || !airdropAddress) && "!btn-disabled !cursor-not-allowed"}`}
+                            disabled={airdropAddress === "" || !airdropAddress}
+                          >
+                            Airdrop
+                          </Web3Button>
                         </div>
                       </div>
                     )}
