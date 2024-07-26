@@ -22,7 +22,6 @@ import { fetchOffer } from "../../providers/methods/fetchOffer";
 import Form from "../../components/collections-wide/sidebar/collections/Form";
 import "tippy.js/dist/tippy.css";
 import Validation from "../../components/offer-section/validation";
-import ModalHelper from "../../components/Helper/modalHelper";
 import { ItemsTabs } from "../../components/component";
 import config from "../../config/config";
 import { useSwitchChainContext } from "../../contexts/hooks/useSwitchChainContext";
@@ -30,7 +29,6 @@ import { activated_features } from "../../data/activated_features";
 import UpdateOffer from "../../components/offer-section/updateOffer";
 import ChangeMintPrice from "../../components/offer-section/changeMintPrice";
 import { Tabs, Tab, TabList, TabPanel } from "react-tabs";
-import formatAndRoundPrice from "../../utils/formatAndRound";
 import { BadgePercentIcon, BlocksIcon, RefreshCwIcon } from "lucide-react";
 import Disable from "../../components/disable/disable";
 
