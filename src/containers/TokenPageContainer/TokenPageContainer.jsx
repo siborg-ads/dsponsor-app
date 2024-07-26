@@ -452,8 +452,8 @@ const TokenPageContainer = () => {
   useEffect(() => {
     let bids = [];
 
-    if (marketplaceListings.length > 0) {
-      marketplaceListings.map((listing) => {
+    if (marketplaceListings?.length > 0) {
+      marketplaceListings?.map((listing) => {
         if (listing?.bids) {
           // bids is an array of arrays of bids + currency symbol and decimals
           // bids is [{bid1, currency, listing}, {bid2, currency, listing}] with currency = {symbol, decimals} and listing = {id, listingType}
@@ -494,7 +494,7 @@ const TokenPageContainer = () => {
     const fetchSalesData = async () => {
       let sales = [];
 
-      if (marketplaceListings.length > 0) {
+      if (marketplaceListings?.length > 0) {
         for (const listing of marketplaceListings) {
           let saleInfo;
           const auction = listing?.listingType === "Auction" && listing?.status === "COMPLETED";
