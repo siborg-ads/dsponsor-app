@@ -10,6 +10,8 @@ import { FileUploader } from "react-drag-drop-files";
 import Image from "next/image";
 import { DatePicker } from "@nextui-org/date-picker";
 import { parseDate } from "@internationalized/date";
+import Input from "../ui/input";
+import TextArea from "../ui/textarea";
 
 const fileTypes = ["JPG", "PNG", "WEBP"];
 
@@ -449,35 +451,35 @@ const UpdateOffer = ({ offer }) => {
       <div className="flex items-center flex-wrap gap-8">
         <div className="mb-4 w-1/3">
           <label className="block text-gray-700 text-sm font-semibold mb-2">Offer name</label>
-          <input
+          <Input
             type="text"
-            className="bg-secondaryBlack rounded-lg w-full p-2 text-white"
             value={name}
-            placeholder={name ?? ""}
             onChange={(e) => setName(e.target.value)}
+            placeholder={name ?? ""}
+            className="bg-secondaryBlack rounded-lg w-full p-2 text-white"
           />
         </div>
 
         <div className="mb-4 w-1/3">
           <label className="block text-gray-700 text-sm font-semibold mb-2">External Link</label>
-          <input
+          <Input
             type="text"
-            className="bg-secondaryBlack rounded-lg w-full p-2 text-white"
             value={externalLink}
-            placeholder={externalLink ?? ""}
             onChange={(e) => setExternalLink(e.target.value)}
+            placeholder={externalLink ?? ""}
+            className="bg-secondaryBlack rounded-lg w-full p-2 text-white"
           />
         </div>
       </div>
 
       <div className="mb-4">
         <label className="block text-gray-700 text-sm font-semibold mb-2">Offer Description</label>
-        <textarea
+        <TextArea
           type="text"
-          className="bg-secondaryBlack rounded-lg w-full p-2 text-white"
           value={description}
-          placeholder={description ?? ""}
           onChange={(e) => setDescription(e.target.value)}
+          placeholder={description ?? ""}
+          className="bg-secondaryBlack rounded-lg w-full p-2 text-white"
         />
       </div>
 
@@ -579,11 +581,10 @@ const UpdateOffer = ({ offer }) => {
         {admins &&
           admins.map((admin, index) => (
             <div key={index} className="flex items-center gap-4 mb-2">
-              <input
+              <Input
                 type="text"
-                className="bg-secondaryBlack rounded-lg p-2 text-white w-1/2"
-                value={admin}
                 placeholder={admin}
+                value={admin}
                 onChange={(e) => handleAdminChange(index, e.target.value)}
               />
               <button
@@ -612,11 +613,10 @@ const UpdateOffer = ({ offer }) => {
           {validators &&
             validators.map((validator, index) => (
               <div key={index} className="flex items-center gap-2 mb-2">
-                <input
+                <Input
                   type="text"
-                  className="bg-secondaryBlack rounded-lg p-2 text-white w-1/2"
-                  value={validator}
                   placeholder={validator}
+                  value={validator}
                   onChange={(e) => handleValidatorChange(index, e.target.value)}
                 />
                 <button
@@ -645,12 +645,11 @@ const UpdateOffer = ({ offer }) => {
           <div className="flex flex-col gap-2 mb-4">
             <label className="block text-gray-700 text-xs">Image aspect ratio (width:height)</label>
             <div className="flex items-center gap-2">
-              <input
+              <Input
                 type="text"
-                className="bg-secondaryBlack rounded-lg p-2 text-white"
-                value={imageRatio}
                 placeholder={imageRatio}
-                onChange={(e) => handleImageRatioChange(e.target.value)}
+                value={imageRatio}
+                onChange={handleImageRatioChange}
               />
             </div>
             <span className="text-jacarta-300 text-xs">

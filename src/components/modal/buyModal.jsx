@@ -12,6 +12,7 @@ import BuyWithCrossmintButton from "../buttons/BuyWithCrossmintButton/BuyWithCro
 import { parseUnits } from "ethers/lib/utils";
 import { InformationCircleIcon } from "@heroicons/react/24/solid";
 import InfoIcon from "../informations/infoIcon";
+import Input from "../ui/input";
 
 const BuyModal = ({
   formatTokenId,
@@ -259,11 +260,11 @@ const BuyModal = ({
 
               {/* <!-- Terms --> */}
               <div className="mt-4 flex items-center space-x-2">
-                <input
+                <Input
                   type="checkbox"
                   id="buyNowTerms"
-                  className="checked:bg-primaryPurple dark:bg-jacarta-600 text-primaryPurple border-jacarta-200 focus:ring-primaryPurple/20 dark:border-jacarta-500 h-5 w-5 self-start rounded focus:ring-offset-0"
                   onClick={handleTermService}
+                  className="checked:bg-primaryPurple dark:bg-jacarta-600 text-primaryPurple border-jacarta-200 focus:ring-primaryPurple/20 dark:border-jacarta-500 h-5 w-5 self-start rounded focus:ring-offset-0"
                 />
                 <label htmlFor="buyNowTerms" className="dark:text-jacarta-200 text-sm">
                   By checking this box, I agree to {"SiBorg Ads's"}{" "}

@@ -1,6 +1,7 @@
 import { useState } from "react";
 
 import ModalHelper from "../../Helper/modalHelper";
+import Input from "../../ui/input";
 
 const Step_1_Create = ({
   setDisplayedParameter,
@@ -204,7 +205,6 @@ const Step_1_Create = ({
                           <div
                             className={`card relative  ${selectedIntegration.includes(index) ? "bg-primaryPurple-dark" : " hover:ring-primaryPurple/30 border-primaryPurple border-2"}`}
                             onClick={(e) => {
-                              
                               if (e.target === e.currentTarget) {
                                 document.getElementById(`checkbox-${index}`).click();
                               }
@@ -215,7 +215,7 @@ const Step_1_Create = ({
                                 ✓
                               </span>
                             )}
-                            <input
+                            <Input
                               id={`checkbox-${index}`}
                               type="checkbox"
                               value={index}
@@ -273,19 +273,17 @@ const Step_1_Create = ({
                                 </select>
                                 {customRatioInputShown[index] && (
                                   <div className="relative">
-                                    <input
+                                    <Input
                                       type="text"
                                       value={
                                         customImageRatio[index] === "custom"
                                           ? ""
                                           : customImageRatio[index]
                                       }
-                                      onClick={(e) => e.stopPropagation()}
                                       onChange={(e) => handleCustomRatioInput(index, e)}
+                                      onClick={(e) => e.stopPropagation()}
                                       placeholder="e.g., 16:10"
-                                      className={`mt-2 dark:bg-secondaryBlack  hover:ring-primaryPurple/10 focus:ring-primaryPurple dark:placeholder:text-jacarta-100 w-full rounded-lg py-3 px-3 hover:ring-2 dark:text-white ${
-                                        validRatio[index] ? "border-green border-2" : "border-red"
-                                      }`}
+                                      className={`mt-2 dark:bg-secondaryBlack  hover:ring-primaryPurple/10 focus:ring-primaryPurple dark:placeholder:text-jacarta-100 w-full rounded-lg py-3 px-3 hover:ring-2 dark:text-white ${validRatio[index] ? "border-green border-2" : "border-red"}`}
                                     />
                                     {validRatio[index] && (
                                       <span className="absolute right-3 text-green font-bold top-5">

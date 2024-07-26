@@ -7,6 +7,7 @@ import { parseUnits, formatUnits } from "ethers/lib/utils";
 import * as Switch from "@radix-ui/react-switch";
 import { BigNumber } from "ethers";
 import { activated_features } from "../../data/activated_features";
+import Input from "../ui/input";
 
 const isDisabledMessage = (disableMint) => {
   return disableMint
@@ -245,7 +246,7 @@ const ChangeMintPrice = ({ offer }) => {
       <div className="mb-4">
         <label className="block text-gray-700 text-sm font-semibold mb-2">Mint price</label>
         <div className="relative max-w-xs w-full flex items-center">
-          <input
+          <Input
             type="text"
             className={`bg-secondaryBlack w-full rounded-lg p-2 text-white ${disableMint ? "opacity-50 cursor-not-allowed" : ""}`}
             disabled={disableMint}

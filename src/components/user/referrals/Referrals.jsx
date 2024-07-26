@@ -5,6 +5,7 @@ import { ClipboardIcon } from "@heroicons/react/20/solid";
 import handleCopy from "../../../utils/handleCopy";
 import Tippy from "@tippyjs/react";
 import "tippy.js/dist/tippy.css";
+import Input from "../../ui/input";
 
 const Referrals = ({ userAddr, userData }) => {
   const [isHovered, setIsHovered] = useState(false);
@@ -56,7 +57,7 @@ const Referrals = ({ userAddr, userData }) => {
           </button>
 
           <div className="relative w-full h-full">
-            <input
+            <Input
               ref={inputRef}
               disabled
               value={`${frontURL}/?_rid=${userAddr}`}

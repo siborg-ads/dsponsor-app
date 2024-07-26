@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { toUtf8Bytes, keccak256 } from "ethers/lib/utils";
 import { useChainContext } from "../../../../contexts/hooks/useChainContext";
+import Input from "../../../ui/input";
 
 const Form = ({ offerId, onUrlChange }) => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -44,13 +45,7 @@ const Form = ({ offerId, onUrlChange }) => {
           </svg>
         </span>
       </button>
-      <input
-        type="search"
-        value={searchTerm}
-        onChange={handleChange}
-        className="w-full rounded-lg border border-jacarta-100 py-[0.6875rem] px-4 pl-4 text-jacarta-900 placeholder-jacarta-500 focus:ring-primaryPurple dark:border-transparent dark:bg-white/[.15] dark:text-white dark:placeholder-white"
-        placeholder="Search"
-      />
+      <Input type="search" value={searchTerm} onChange={handleChange} placeholder="Search" />
     </form>
   );
 };
