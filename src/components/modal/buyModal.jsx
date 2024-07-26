@@ -339,36 +339,34 @@ const BuyModal = ({
                         </Web3Button>
                       )}
 
-                      {/* Place Bid Button */}
-                      <Web3Button
-                        contractAddress={currentChainObject?.smartContracts?.DSPONSORADMIN?.address}
-                        action={() => {
-                          toast.promise(handleSubmit, {
-                            pending: "Waiting for confirmation 🕒",
-                            success: "Bid confirmed 👌",
-                            error: "Bid rejected 🤯"
-                          });
-                        }}
-                        className={`!rounded-full !py-3 !px-8 !w-full !text-center !font-semibold !text-black !transition-all ${
-                          !validate || (allowanceTrue && !!totalPrice && parseFloat(totalPrice) > 0)
-                            ? "!btn-disabled !cursor-not-allowed !text-black !opacity-30"
-                            : "!text-white !bg-primaryPurple !cursor-pointer"
-                        }`}
-                        isDisabled={
-                          !validate ||
-                          isLoadingButton ||
-                          (allowanceTrue && !!totalPrice && parseFloat(totalPrice) > 0)
-                        }
-                      >
-                        {isLoadingButton ? (
-                          <Spinner size="sm" color="default" />
-                        ) : notEnoughFunds ? (
-                          <span className="text-black">Not enough funds</span>
-                        ) : (
-                          "Buy Now 💸 (2/2)"
-                        )}
-                      </Web3Button>
-                    </div>
+                        {/* Place Bid Button */}
+                        <Web3Button
+                          contractAddress={
+                            currentChainObject?.smartContracts?.DSPONSORADMIN?.address
+                          }
+                          action={() => {
+                            toast.promise(handleSubmit, {
+                              pending: "Waiting for confirmation 🕒",
+                              success: "Buy confirmed 👌",
+                              error: "Buy rejected 🤯"
+                            });
+                          }}
+                          className={`!rounded-full !py-3 !px-8 !w-full !text-center !font-semibold !text-black !transition-all ${
+                            !validate || allowanceTrue
+                              ? "!btn-disabled !cursor-not-allowed !text-black !opacity-30"
+                              : "!text-white !bg-primaryPurple !cursor-pointer"
+                          }`}
+                          isDisabled={!validate || isLoadingButton || allowanceTrue}
+                        >
+                          {isLoadingButton ? (
+                            <Spinner size="sm" color="default" />
+                          ) : notEnoughFunds ? (
+                            <span className="text-black">Not enough funds</span>
+                          ) : (
+                            "Buy Now 💸 (2/2)"
+                          )}
+                        </Web3Button>
+                      </div>
 
                     {!!totalPrice && parseFloat(totalPrice) > 0 && (
                       <InfoIcon
