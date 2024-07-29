@@ -140,6 +140,7 @@ const TokenPageContainer = () => {
   const [royaltiesAmount, setRoyaltiesAmount] = useState(null);
   const [airdropAddress, setAirdropAddress] = useState(undefined);
   const [nftContractAddress, setNftContractAddress] = useState(null);
+  const [showEntireDescription, setShowEntireDescription] = useState(false);
 
   let description = "description not found";
   let id = "1";
@@ -452,8 +453,8 @@ const TokenPageContainer = () => {
   useEffect(() => {
     let bids = [];
 
-    if (marketplaceListings.length > 0) {
-      marketplaceListings.map((listing) => {
+    if (marketplaceListings?.length > 0) {
+      marketplaceListings?.map((listing) => {
         if (listing?.bids) {
           // bids is an array of arrays of bids + currency symbol and decimals
           // bids is [{bid1, currency, listing}, {bid2, currency, listing}] with currency = {symbol, decimals} and listing = {id, listingType}
@@ -494,7 +495,7 @@ const TokenPageContainer = () => {
     const fetchSalesData = async () => {
       let sales = [];
 
-      if (marketplaceListings.length > 0) {
+      if (marketplaceListings?.length > 0) {
         for (const listing of marketplaceListings) {
           let saleInfo;
           const auction = listing?.listingType === "Auction" && listing?.status === "COMPLETED";
@@ -512,7 +513,9 @@ const TokenPageContainer = () => {
 
             saleInfo = {
               address: winnerBid?.bidder,
-              amount: Number(winnerBid?.paidBidAmount) / Math.pow(10, listing?.currencyDecimals),
+              amount: winnerBid?.paidBidAmount
+                ? formatUnits(BigInt(winnerBid?.paidBidAmount), listing?.currencyDecimals)
+                : 0,
               date: winnerBid?.creationTimestamp,
               currency: {
                 contract: listing?.currency,
@@ -560,7 +563,9 @@ const TokenPageContainer = () => {
 
                 saleInfo = {
                   address: directBuy?.buyer,
-                  amount: Number(directBuy?.totalPricePaid) / Math.pow(10, tempCurrency?.decimals),
+                  amount: directBuy?.amount
+                    ? formatUnits(BigInt(directBuy?.amount), tempCurrency?.decimals)
+                    : 0,
                   date: directBuy?.revenueTransaction?.blockTimestamp,
                   currency: {
                     contract: listing?.currency,
@@ -597,7 +602,6 @@ const TokenPageContainer = () => {
         const targetAddress = tokenData?.mint?.currency;
 
         let tempCurrency = null;
-
         if (smartContracts) {
           for (const key in smartContracts) {
             if (smartContracts[key]?.address?.toLowerCase() === targetAddress?.toLowerCase()) {
@@ -610,7 +614,9 @@ const TokenPageContainer = () => {
         if (tokenData) {
           saleMintInfo = {
             address: tokenData?.mint?.to,
-            amount: Number(tokenData?.mint?.amount) / Math.pow(10, tempCurrency?.decimals),
+            amount: tokenData?.mint?.totalPaid
+              ? formatUnits(BigInt(tokenData?.mint?.totalPaid), tempCurrency?.decimals)
+              : 0,
             date: tokenData?.mint?.revenueTransaction?.blockTimestamp,
             currency: {
               contract: tokenData?.mint?.currency,
@@ -1345,6 +1351,10 @@ const TokenPageContainer = () => {
   };
 
   const checkUserBalance = (tokenAddressBalance, priceToken, decimals) => {
+    if (Number(priceToken) === 0) {
+      return true;
+    }
+
     try {
       if (!tokenAddressBalance || !priceToken) {
         throw new Error("Invalid balance or price token");
@@ -1695,18 +1705,14 @@ const TokenPageContainer = () => {
 
           <div className="md:flex md:flex-wrap" key={id}>
             {/* <!-- Image --> */}
-            <figure className="mb-8 md:mb-0 md:w-2/5 md:flex-shrink-0 md:flex-grow-0 md:basis-auto lg:w-1/2 w-full flex justify-center relative">
-              <button
-                className=" w-full"
-                onClick={() => setImageModal(true)}
-                style={{ height: "450px" }}
-              >
+            <figure className="mb-8 md:mb-0 md:w-2/5 md:flex-shrink-0 md:flex-grow-0 items-start md:basis-auto lg:w-1/2 w-full flex justify-center relative">
+              <button className="w-full md:sticky md:top-0 md:right-0" onClick={() => setImageModal(true)}>
                 <Image
                   width={585}
                   height={726}
                   src={imageUrl ?? "/images/gradient_creative.jpg"}
                   alt="image"
-                  className="rounded-2xl cursor-pointer h-full object-contain w-full shadow-lg"
+                  className="rounded-2xl cursor-pointer h-auto object-contain w-full shadow-lg"
                 />
               </button>
 
@@ -1807,7 +1813,29 @@ const TokenPageContainer = () => {
                 )}
               </div>
 
-              <p className="dark:text-jacarta-100 mb-10">{description}</p>
+              {showEntireDescription ? (
+                <p className="dark:text-jacarta-100 mb-10">
+                  {description}{" "}
+                  <button
+                    onClick={() => setShowEntireDescription(false)}
+                    className="text-primaryPurple"
+                  >
+                    Show less
+                  </button>
+                </p>
+              ) : (
+                <div>
+                  <p className="dark:text-jacarta-100 mb-10">
+                    {description?.length > 1000 ? description?.slice(0, 1000) + "..." : description}{" "}
+                    <button
+                      onClick={() => setShowEntireDescription(true)}
+                      className="text-primaryPurple"
+                    >
+                      Show more
+                    </button>
+                  </p>
+                </div>
+              )}
 
               {(offerData?.disable === true ||
                 new Date(offerData?.metadata?.offer?.valid_to).getTime() < Date.now() ||
@@ -2057,90 +2085,6 @@ const TokenPageContainer = () => {
         )}
 
       {/* <!-- end item --> */}
-      <Accordion.Item value="details">
-        <div className="container">
-          <Accordion.Header className="w-full">
-            <Accordion.Trigger
-              className={`${accordionActiveTab === "details" && "bg-primaryPurple"} w-full flex items-center justify-center gap-4 mb-6 border border-primaryPurple hover:bg-primaryPurple cursor-pointer p-2 rounded-lg`}
-            >
-              <h2 className="text-jacarta-900 font-bold font-display text-center text-3xl dark:text-white ">
-                Details
-              </h2>
-              <ChevronDownIcon
-                className={`w-6 h-6 duration-300 ${accordionActiveTab === "details" && "transform rotate-180"}`}
-              />
-            </Accordion.Trigger>
-          </Accordion.Header>
-
-          <Accordion.Content className="mb-12">
-            <ItemsTabs
-              chainId={chainId}
-              contractAddress={offerData?.nftContract?.id}
-              offerId={offerId}
-              isUserOwner={isUserOwner}
-              initialCreator={offerData?.initialCreator}
-              status={firstSelectedListing?.status}
-              listerAddress={firstSelectedListing?.lister}
-              offerData={offerData}
-            />
-          </Accordion.Content>
-        </div>
-      </Accordion.Item>
-
-      <Accordion.Item value="validation">
-        <div className="container">
-          {offerData.nftContract?.tokens?.find(
-            (token) => Number(token?.tokenId) === Number(tokenId)
-          )?.mint &&
-            isValidId &&
-            activated_features.canSeeSubmittedAds && (
-              <>
-                <Accordion.Header className="w-full">
-                  <Accordion.Trigger
-                    className={`${accordionActiveTab === "validation" && "bg-primaryPurple"} w-full flex items-center justify-center gap-4 mb-6 border border-primaryPurple hover:bg-primaryPurple cursor-pointer p-2 rounded-lg`}
-                  >
-                    {isOwner && sponsorHasAtLeastOneRejectedProposalAndNoPending && (
-                      <InfoIcon text="You have at least one rejected proposal and no pending proposal.">
-                        <ExclamationCircleIcon className="w-6 h-6 text-red" />
-                      </InfoIcon>
-                    )}
-                    {isMedia && mediaShouldValidateAnAd && (
-                      <InfoIcon text="You have at least one ad to validate or to refuse.">
-                        <ExclamationCircleIcon className="w-6 h-6 text-red" />
-                      </InfoIcon>
-                    )}
-                    <h2 className="text-jacarta-900 font-bold font-display text-center text-3xl dark:text-white ">
-                      Validation
-                    </h2>
-                    <ChevronDownIcon
-                      className={`w-6 h-6 duration-300 ${accordionActiveTab === "validation" && "transform rotate-180"}`}
-                    />
-                  </Accordion.Trigger>
-                </Accordion.Header>
-
-                <Accordion.Content>
-                  <Validation
-                    offer={offerData}
-                    offerId={offerId}
-                    isOwner={isOwner}
-                    isToken={true}
-                    successFullUploadModal={successFullUploadModal}
-                    isLister={isLister}
-                    setSelectedItems={setSelectedItems}
-                    sponsorHasAtLeastOneRejectedProposalAndNoPending={
-                      sponsorHasAtLeastOneRejectedProposalAndNoPending
-                    }
-                    mediaShouldValidateAnAd={mediaShouldValidateAnAd}
-                    isMedia={isMedia}
-                    isSponsor={isOwner}
-                    itemTokenId={tokenId}
-                    isTokenView={true}
-                  />
-                </Accordion.Content>
-              </>
-            )}
-        </div>
-      </Accordion.Item>
 
       {/* <ItemsTabs /> */}
       <Accordion.Item value="adSubmission">
@@ -2160,7 +2104,7 @@ const TokenPageContainer = () => {
                 </Accordion.Trigger>
               </Accordion.Header>
 
-              <Accordion.Content>
+              <Accordion.Content className="mb-6">
                 {isTokenInAuction && (
                   <div className="text-center w-full">
                     <span className="dark:text-warning text-md ">
@@ -2232,6 +2176,91 @@ const TokenPageContainer = () => {
               </p>
             </div>
           )}
+        </div>
+      </Accordion.Item>
+
+      <Accordion.Item value="adValidation">
+        <div className="container">
+          {offerData.nftContract?.tokens?.find(
+            (token) => Number(token?.tokenId) === Number(tokenId)
+          )?.mint &&
+            isValidId &&
+            activated_features.canSeeSubmittedAds && (
+              <>
+                <Accordion.Header className="w-full">
+                  <Accordion.Trigger
+                    className={`${accordionActiveTab === "adValidation" && "bg-primaryPurple"} w-full flex items-center justify-center gap-4 mb-6 border border-primaryPurple hover:bg-primaryPurple cursor-pointer p-2 rounded-lg`}
+                  >
+                    {isOwner && sponsorHasAtLeastOneRejectedProposalAndNoPending && (
+                      <InfoIcon text="You have at least one rejected proposal and no pending proposal.">
+                        <ExclamationCircleIcon className="w-6 h-6 text-red" />
+                      </InfoIcon>
+                    )}
+                    {isMedia && mediaShouldValidateAnAd && (
+                      <InfoIcon text="You have at least one ad to validate or to refuse.">
+                        <ExclamationCircleIcon className="w-6 h-6 text-red" />
+                      </InfoIcon>
+                    )}
+                    <h2 className="text-jacarta-900 font-bold font-display text-center text-3xl dark:text-white ">
+                      Ad Validation
+                    </h2>
+                    <ChevronDownIcon
+                      className={`w-6 h-6 duration-300 ${accordionActiveTab === "adValidation" && "transform rotate-180"}`}
+                    />
+                  </Accordion.Trigger>
+                </Accordion.Header>
+
+                <Accordion.Content>
+                  <Validation
+                    offer={offerData}
+                    offerId={offerId}
+                    isOwner={isOwner}
+                    isToken={true}
+                    successFullUploadModal={successFullUploadModal}
+                    isLister={isLister}
+                    setSelectedItems={setSelectedItems}
+                    sponsorHasAtLeastOneRejectedProposalAndNoPending={
+                      sponsorHasAtLeastOneRejectedProposalAndNoPending
+                    }
+                    mediaShouldValidateAnAd={mediaShouldValidateAnAd}
+                    isMedia={isMedia}
+                    isSponsor={isOwner}
+                    itemTokenId={tokenId}
+                    isTokenView={true}
+                  />
+                </Accordion.Content>
+              </>
+            )}
+        </div>
+      </Accordion.Item>
+
+      <Accordion.Item value="details">
+        <div className="container">
+          <Accordion.Header className="w-full">
+            <Accordion.Trigger
+              className={`${accordionActiveTab === "details" && "bg-primaryPurple"} w-full flex items-center justify-center gap-4 mb-6 border border-primaryPurple hover:bg-primaryPurple cursor-pointer p-2 rounded-lg`}
+            >
+              <h2 className="text-jacarta-900 font-bold font-display text-center text-3xl dark:text-white ">
+                Details
+              </h2>
+              <ChevronDownIcon
+                className={`w-6 h-6 duration-300 ${accordionActiveTab === "details" && "transform rotate-180"}`}
+              />
+            </Accordion.Trigger>
+          </Accordion.Header>
+
+          <Accordion.Content className="mb-12">
+            <ItemsTabs
+              chainId={chainId}
+              contractAddress={offerData?.nftContract?.id}
+              offerId={offerId}
+              isUserOwner={isUserOwner}
+              initialCreator={offerData?.initialCreator}
+              status={firstSelectedListing?.status}
+              listerAddress={firstSelectedListing?.lister}
+              offerData={offerData}
+            />
+          </Accordion.Content>
         </div>
       </Accordion.Item>
 
