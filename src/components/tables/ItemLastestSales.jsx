@@ -18,9 +18,6 @@ const ItemLastestSales = ({ sales }) => {
 
   return (
     <div className="overflow-x-auto mt-4">
-      <h2 className="text-jacarta-900 font-bold font-display mb-6 text-center text-3xl dark:text-white ">
-        Latest Sales
-      </h2>
       <div className="w-full text-left min-w-[736px] border dark:border-primaryPink dark:border-opacity-10 dark:bg-primaryBlack dark:text-white rounded-2lg">
         <table className="w-full mx-auto text-left rounded-2lg">
           <thead className="rounded-2lg">
