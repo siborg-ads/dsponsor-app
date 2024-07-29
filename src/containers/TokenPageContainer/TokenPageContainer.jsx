@@ -2227,13 +2227,13 @@ const TokenPageContainer = () => {
           <div className="container">
             <Accordion.Header className="w-full">
               <Accordion.Trigger
-                className={`${accordionActiveTab === "details" && "bg-primaryPurple"} w-full flex items-center justify-center gap-4 mb-6 border border-primaryPurple hover:bg-primaryPurple cursor-pointer p-2 rounded-lg`}
+                className={`${accordionActiveTab === "latestSales" && "bg-primaryPurple"} w-full flex items-center justify-center gap-4 mb-6 border border-primaryPurple hover:bg-primaryPurple cursor-pointer p-2 rounded-lg`}
               >
                 <h2 className="text-jacarta-900 font-bold font-display text-center text-3xl dark:text-white ">
                   Latest Sales
                 </h2>
                 <ChevronDownIcon
-                  className={`w-6 h-6 duration-300 ${accordionActiveTab === "details" && "transform rotate-180"}`}
+                  className={`w-6 h-6 duration-300 ${accordionActiveTab === "latestSales" && "transform rotate-180"}`}
                 />
               </Accordion.Trigger>
             </Accordion.Header>
@@ -2255,13 +2255,13 @@ const TokenPageContainer = () => {
             <div className="container">
               <Accordion.Header className="w-full">
                 <Accordion.Trigger
-                  className={`${accordionActiveTab === "details" && "bg-primaryPurple"} w-full flex items-center justify-center gap-4 mb-6 border border-primaryPurple hover:bg-primaryPurple cursor-pointer p-2 rounded-lg`}
+                  className={`${accordionActiveTab === "latestBids" && "bg-primaryPurple"} w-full flex items-center justify-center gap-4 mb-6 border border-primaryPurple hover:bg-primaryPurple cursor-pointer p-2 rounded-lg`}
                 >
                   <h2 className="text-jacarta-900 font-bold font-display text-center text-3xl dark:text-white ">
                     Latest Bids
                   </h2>
                   <ChevronDownIcon
-                    className={`w-6 h-6 duration-300 ${accordionActiveTab === "details" && "transform rotate-180"}`}
+                    className={`w-6 h-6 duration-300 ${accordionActiveTab === "latestBids" && "transform rotate-180"}`}
                   />
                 </Accordion.Trigger>
               </Accordion.Header>
