@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useRef } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import { activated_features } from "../../data/activated_features";
 import Transactions from "./Transactions";
@@ -10,8 +10,6 @@ import Bids from "./bidsActivity";
 import { ExclamationCircleIcon } from "@heroicons/react/24/solid";
 import InfoIcon from "../informations/infoIcon";
 import Link from "next/link";
-import { useRouter } from "next/router";
-import debounce from "lodash/debounce";
 import {
   ActivityIcon,
   CoinsIcon,
@@ -20,6 +18,7 @@ import {
   MegaphoneIcon,
   TrophyIcon
 } from "lucide-react";
+import { useSearchParams } from "next/navigation";
 
 const UserTabs = ({
   mappedownedAdProposals,
@@ -31,10 +30,11 @@ const UserTabs = ({
   manageAddress,
   offers
 }) => {
+  const searchParams = useSearchParams();
+  const tab = searchParams.get("tab");
+
   const [copied, setCopied] = useState(false);
-  const router = useRouter();
-  const { asPath } = router;
-  const isMounted = useRef(true);
+  const [selectedTab, setSelectedTab] = useState(tab);
 
   useEffect(() => {
     if (copied) {
@@ -77,48 +77,26 @@ const UserTabs = ({
   );
 
   useEffect(() => {
-    return () => {
-      isMounted.current = false;
-    };
-  }, []);
-
-  const currentTabIndex = useMemo(() => {
-    const hash = asPath.split("#")[1];
-    const index = tabItem.findIndex((tab) => tab.section === hash);
-    return index !== -1 ? index : 0;
-  }, [asPath, tabItem]);
-
-  const handleSelect = debounce(async (index) => {
-    const selectedTab = tabItem[index];
-    const currentHash = asPath.split("#")[1] || "";
-
-    if (selectedTab.section !== currentHash) {
-      try {
-        if (!window.isNavigating) {
-          window.isNavigating = true;
-          await router.push(`#${selectedTab.section}`, undefined, { shallow: true });
-          if (isMounted.current) {
-            window.isNavigating = false;
-          }
-        }
-      } catch (error) {
-        if (isMounted.current) {
-          window.isNavigating = false;
-        }
-        console.error("Navigation error:", error);
-      }
+    if (tab) {
+      setSelectedTab(tab);
+    } else {
+      setSelectedTab("activity");
     }
-  }, 300);
+  }, [tab]);
 
   return (
-    <Tabs className="tabs" onSelect={handleSelect} selectedIndex={currentTabIndex}>
+    <Tabs
+      className="tabs"
+      selectedIndex={tabItem.findIndex((item) => item.section === selectedTab)}
+      onSelect={(index) => setSelectedTab(tabItem[index].section)}
+    >
       <TabList className="nav nav-tabs hide-scrollbar mb-12 flex items-center justify-start overflow-x-auto overflow-y-hidden border-b border-jacarta-100 pb-px dark:border-jacarta-800 md:justify-center">
         {tabItem.map(({ id, text, icon, section }) => (
           <Tab className="nav-item" key={id}>
-            <Link href={`#${section}`} scroll={false}>
+            <Link href={`/profile/${manageAddress}?tab=${section}`} scroll={false}>
               <button
                 className={
-                  currentTabIndex === id - 1
+                  selectedTab === section
                     ? "nav-link hover:text-jacarta-900 text-jacarta-100 relative flex items-center whitespace-nowrap py-3 px-4 dark:hover:text-white active"
                     : "nav-link hover:text-jacarta-900 text-jacarta-100 relative flex items-center whitespace-nowrap py-3 px-4 dark:hover:text-white"
                 }
