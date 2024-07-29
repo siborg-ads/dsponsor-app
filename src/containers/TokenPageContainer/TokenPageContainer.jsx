@@ -2072,25 +2072,6 @@ const TokenPageContainer = () => {
         </div>
       </section>
 
-      {sales && sales.length > 0 && (
-        <div className="container mb-12">
-          <Divider className="my-4" />
-          <ItemLastestSales sales={sales} />
-        </div>
-      )}
-
-      {bids &&
-        bids.filter((listing) =>
-          listing.map((bid) => {
-            bid.listing.listingType === "Auction";
-          })
-        ).length > 0 && (
-          <div className="container mb-12">
-            <Divider className="my-4" />
-            <ItemLastBids bids={bids} />
-          </div>
-        )}
-
       {/* <!-- end item --> */}
 
       {/* <ItemsTabs /> */}
@@ -2240,6 +2221,57 @@ const TokenPageContainer = () => {
             )}
         </div>
       </Accordion.Item>
+
+      {sales && sales.length > 0 && (
+        <Accordion.Item value="latestSales">
+          <div className="container">
+            <Accordion.Header className="w-full">
+              <Accordion.Trigger
+                className={`${accordionActiveTab === "details" && "bg-primaryPurple"} w-full flex items-center justify-center gap-4 mb-6 border border-primaryPurple hover:bg-primaryPurple cursor-pointer p-2 rounded-lg`}
+              >
+                <h2 className="text-jacarta-900 font-bold font-display text-center text-3xl dark:text-white ">
+                  Latest Sales
+                </h2>
+                <ChevronDownIcon
+                  className={`w-6 h-6 duration-300 ${accordionActiveTab === "details" && "transform rotate-180"}`}
+                />
+              </Accordion.Trigger>
+            </Accordion.Header>
+
+            <Accordion.Content className="mb-4">
+              <ItemLastestSales sales={sales} />
+            </Accordion.Content>
+          </div>
+        </Accordion.Item>
+      )}
+
+      {bids &&
+        bids.filter((listing) =>
+          listing.map((bid) => {
+            bid?.listing?.listingType === "Auction";
+          })
+        ).length > 0 && (
+          <Accordion.Item value="latestBids">
+            <div className="container">
+              <Accordion.Header className="w-full">
+                <Accordion.Trigger
+                  className={`${accordionActiveTab === "details" && "bg-primaryPurple"} w-full flex items-center justify-center gap-4 mb-6 border border-primaryPurple hover:bg-primaryPurple cursor-pointer p-2 rounded-lg`}
+                >
+                  <h2 className="text-jacarta-900 font-bold font-display text-center text-3xl dark:text-white ">
+                    Latest Bids
+                  </h2>
+                  <ChevronDownIcon
+                    className={`w-6 h-6 duration-300 ${accordionActiveTab === "details" && "transform rotate-180"}`}
+                  />
+                </Accordion.Trigger>
+              </Accordion.Header>
+
+              <Accordion.Content className="mb-4">
+                <ItemLastBids bids={bids} />
+              </Accordion.Content>
+            </div>
+          </Accordion.Item>
+        )}
 
       <Accordion.Item value="details">
         <div className="container">
