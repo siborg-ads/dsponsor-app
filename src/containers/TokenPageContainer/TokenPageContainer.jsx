@@ -1706,7 +1706,10 @@ const TokenPageContainer = () => {
           <div className="md:flex md:flex-wrap" key={id}>
             {/* <!-- Image --> */}
             <figure className="mb-8 md:mb-0 md:w-2/5 md:flex-shrink-0 md:flex-grow-0 items-start md:basis-auto lg:w-1/2 w-full flex justify-center relative">
-              <button className="w-full md:sticky md:top-0 md:right-0" onClick={() => setImageModal(true)}>
+              <button
+                className="w-full md:sticky md:top-0 md:right-0"
+                onClick={() => setImageModal(true)}
+              >
                 <Image
                   width={585}
                   height={726}
@@ -1816,23 +1819,27 @@ const TokenPageContainer = () => {
               {showEntireDescription ? (
                 <p className="dark:text-jacarta-100 mb-10">
                   {description}{" "}
-                  <button
-                    onClick={() => setShowEntireDescription(false)}
-                    className="text-primaryPurple"
-                  >
-                    Show less
-                  </button>
+                  {description?.length > 1000 && (
+                    <button
+                      onClick={() => setShowEntireDescription(false)}
+                      className="text-primaryPurple"
+                    >
+                      Show less
+                    </button>
+                  )}
                 </p>
               ) : (
                 <div>
                   <p className="dark:text-jacarta-100 mb-10">
                     {description?.length > 1000 ? description?.slice(0, 1000) + "..." : description}{" "}
-                    <button
-                      onClick={() => setShowEntireDescription(true)}
-                      className="text-primaryPurple"
-                    >
-                      Show more
-                    </button>
+                    {description?.length > 1000 && (
+                      <button
+                        onClick={() => setShowEntireDescription(true)}
+                        className="text-primaryPurple"
+                      >
+                        Show more
+                      </button>
+                    )}
                   </p>
                 </div>
               )}
@@ -1859,7 +1866,7 @@ const TokenPageContainer = () => {
                       firstSelectedListing?.startTime < now &&
                       firstSelectedListing?.endTime > now)) &&
                     successFullBuyModal && (
-                      <div className="dark:bg-secondaryBlack dark:border-jacarta-600 mb-2 border-jacarta-100 rounded-2lg border flex flex-col gap-4 bg-white p-8">
+                      <div className="dark:bg-secondaryBlack dark:border-jacarta-800 mb-2 border-jacarta-100 rounded-2lg border flex flex-col gap-4 bg-white p-8">
                         <div className="sm:flex sm:flex-wrap flex-col gap-8">
                           {firstSelectedListing?.listingType === "Direct" && (
                             <div className="flex items-center justify-between gap-4 w-full">
@@ -1902,7 +1909,7 @@ const TokenPageContainer = () => {
                   {firstSelectedListing?.status === "CREATED" &&
                     firstSelectedListing?.listingType === "Auction" &&
                     firstSelectedListing?.startTime >= now && (
-                      <div className="dark:bg-secondaryBlack dark:border-jacarta-600 mb-2 border-jacarta-100 rounded-2lg border flex flex-col gap-4 bg-white p-8">
+                      <div className="dark:bg-secondaryBlack dark:border-jacarta-800 mb-2 border-jacarta-100 rounded-2lg border flex flex-col gap-4 bg-white p-8">
                         <div className="sm:flex sm:flex-wrap flex-col gap-8">
                           <div className="flex items-center justify-between gap-4 w-full">
                             <span className="js-countdown-ends-label text-base text-jacarta-100 dark:text-jacarta-100">
@@ -1921,7 +1928,7 @@ const TokenPageContainer = () => {
                   {conditions?.conditionsObject?.isCreator &&
                     airdropContainer &&
                     !conditions?.conditionsObject?.isMinted && (
-                      <div className="dark:bg-secondaryBlack mt-4 dark:border-jacarta-600 mb-2 border-jacarta-100 rounded-2lg border flex flex-col gap-4 bg-white p-8">
+                      <div className="dark:bg-secondaryBlack mt-4 dark:border-jacarta-800 mb-2 border-jacarta-100 rounded-2lg border flex flex-col gap-4 bg-white p-8">
                         <span className="dark:text-jacarta-100 text-jacarta-100 text-lg">
                           Airdrop this token
                         </span>
@@ -1961,11 +1968,11 @@ const TokenPageContainer = () => {
                         <div className="w-full flex">
                           <Web3Button
                             contractAddress={nftContractAddress}
-                            action={() => {
+                            action={async () => {
                               setIsLoadingAirdropButton(true);
 
-                              toast.promise(handleAirdrop(airdropAddress), {
-                                loading: "Airdrop in progress... 🚀",
+                              await toast.promise(handleAirdrop(airdropAddress), {
+                                pending: "Airdrop in progress... 🚀",
                                 success: "Airdrop successful 🎉",
                                 error: "Airdrop failed ❌"
                               });
@@ -1990,7 +1997,7 @@ const TokenPageContainer = () => {
                   {firstSelectedListing?.status === "CREATED" &&
                     firstSelectedListing?.listingType === "Direct" &&
                     firstSelectedListing?.startTime >= now && (
-                      <div className="dark:bg-secondaryBlack dark:border-jacarta-600 mb-2 border-jacarta-100 rounded-2lg border flex flex-col gap-4 bg-white p-8">
+                      <div className="dark:bg-secondaryBlack dark:border-jacarta-800 mb-2 border-jacarta-100 rounded-2lg border flex flex-col gap-4 bg-white p-8">
                         <div className="sm:flex sm:flex-wrap flex-col gap-8">
                           <div className="flex items-center justify-between gap-4 w-full">
                             <span className="js-countdown-ends-label text-base text-jacarta-100 dark:text-jacarta-100">
@@ -2064,25 +2071,6 @@ const TokenPageContainer = () => {
           </div>
         </div>
       </section>
-
-      {sales && sales.length > 0 && (
-        <div className="container mb-12">
-          <Divider className="my-4" />
-          <ItemLastestSales sales={sales} />
-        </div>
-      )}
-
-      {bids &&
-        bids.filter((listing) =>
-          listing.map((bid) => {
-            bid.listing.listingType === "Auction";
-          })
-        ).length > 0 && (
-          <div className="container mb-12">
-            <Divider className="my-4" />
-            <ItemLastBids bids={bids} />
-          </div>
-        )}
 
       {/* <!-- end item --> */}
 
@@ -2233,6 +2221,57 @@ const TokenPageContainer = () => {
             )}
         </div>
       </Accordion.Item>
+
+      {sales && sales.length > 0 && (
+        <Accordion.Item value="latestSales">
+          <div className="container">
+            <Accordion.Header className="w-full">
+              <Accordion.Trigger
+                className={`${accordionActiveTab === "details" && "bg-primaryPurple"} w-full flex items-center justify-center gap-4 mb-6 border border-primaryPurple hover:bg-primaryPurple cursor-pointer p-2 rounded-lg`}
+              >
+                <h2 className="text-jacarta-900 font-bold font-display text-center text-3xl dark:text-white ">
+                  Latest Sales
+                </h2>
+                <ChevronDownIcon
+                  className={`w-6 h-6 duration-300 ${accordionActiveTab === "details" && "transform rotate-180"}`}
+                />
+              </Accordion.Trigger>
+            </Accordion.Header>
+
+            <Accordion.Content className="mb-4">
+              <ItemLastestSales sales={sales} />
+            </Accordion.Content>
+          </div>
+        </Accordion.Item>
+      )}
+
+      {bids &&
+        bids.filter((listing) =>
+          listing.map((bid) => {
+            bid?.listing?.listingType === "Auction";
+          })
+        ).length > 0 && (
+          <Accordion.Item value="latestBids">
+            <div className="container">
+              <Accordion.Header className="w-full">
+                <Accordion.Trigger
+                  className={`${accordionActiveTab === "details" && "bg-primaryPurple"} w-full flex items-center justify-center gap-4 mb-6 border border-primaryPurple hover:bg-primaryPurple cursor-pointer p-2 rounded-lg`}
+                >
+                  <h2 className="text-jacarta-900 font-bold font-display text-center text-3xl dark:text-white ">
+                    Latest Bids
+                  </h2>
+                  <ChevronDownIcon
+                    className={`w-6 h-6 duration-300 ${accordionActiveTab === "details" && "transform rotate-180"}`}
+                  />
+                </Accordion.Trigger>
+              </Accordion.Header>
+
+              <Accordion.Content className="mb-4">
+                <ItemLastBids bids={bids} />
+              </Accordion.Content>
+            </div>
+          </Accordion.Item>
+        )}
 
       <Accordion.Item value="details">
         <div className="container">

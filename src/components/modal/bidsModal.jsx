@@ -515,7 +515,7 @@ const BidsModal = ({
                     <Input
                       type="number"
                       onWheel={(e) => e.target.blur()}
-                      className="focus:ring-primaryPurple pr-20 relative w-full flex-[3] border-transparent bg-jacarta-600 rounded-xl text-2xl py-2 font-semibold text-white focus:ring-inse"
+                      className="pr-20 relative w-full flex-[3] rounded-xl text-2xl py-2 font-semibold text-white"
                       placeholder={`${initialIntPrice} or higher`}
                       value={bidsAmount ?? ""}
                       onChange={(e) => handleBidsAmount(e)}
@@ -526,7 +526,7 @@ const BidsModal = ({
                     </span>
                   </div>
 
-                  <div className="bg-jacarta-600 w-1/4 border border-jacarta-900 border-opacity-10 rounded-xl flex flex-1 justify-center self-stretch border-l">
+                  <div className="bg-jacarta-800 w-1/4 border border-jacarta-900 border-opacity-10 rounded-xl flex flex-1 justify-center self-stretch border-l">
                     <span className="self-center px-4 text-xl text-center text-white font-semibold">
                       ${displayedPrice ?? 0}
                     </span>
@@ -606,7 +606,7 @@ const BidsModal = ({
                       </div>
                       <div className="flex flex-col gap-2">
                         <div className="grid grid-cols-7 items-center gap-4 mx-auto w-full min-w-max">
-                          <div className="bg-jacarta-600 col-span-3 duration-400 shadow p-4 rounded-xl font-semibold text-xs md:text-base text-white text-center min-w-[125px] max-w-[125px] md:min-w-[200px] md:max-w-[200px]">
+                          <div className="bg-jacarta-800 col-span-3 duration-400 shadow p-4 rounded-xl font-semibold text-xs md:text-base text-white text-center min-w-[125px] max-w-[125px] md:min-w-[200px] md:max-w-[200px]">
                             Ad space NFT in your wallet
                           </div>
 
@@ -616,7 +616,7 @@ const BidsModal = ({
                             </span>
                           </div>
 
-                          <div className="bg-jacarta-600 col-span-3 duration-400 shadow p-4 rounded-xl font-semibold text-xs md:text-base text-white text-center min-w-[125px] max-w-[125px] md:min-w-[200px] md:max-w-[200px]">
+                          <div className="bg-jacarta-800 col-span-3 duration-400 shadow p-4 rounded-xl font-semibold text-xs md:text-base text-white text-center min-w-[125px] max-w-[125px] md:min-w-[200px] md:max-w-[200px]">
                             Your bid back +{" "}
                             {parseFloat(bidsAmount) >= parseFloat(initialIntPrice)
                               ? formatAndRoundPrice(refundedPrice)
@@ -646,7 +646,7 @@ const BidsModal = ({
                     type="checkbox"
                     id="buyNowTerms"
                     onClick={handleTermService}
-                    className="h-5 !w-5 mr-3 rounded border-jacarta-200 !text-primaryPurple checked:bg-primaryPurple focus:ring-primaryPurple/20 focus:ring-offset-0 dark:border-jacarta-500 dark:bg-jacarta-600"
+                    className="h-5 !w-5 mr-3 rounded border-jacarta-200 !text-primaryPurple checked:bg-primaryPurple focus:ring-primaryPurple/20 focus:ring-offset-0 dark:border-jacarta-500"
                   />
                   <label htmlFor="buyNowTerms" className="dark:text-jacarta-200 text-sm">
                     By checking this box, I agree to {"SiBorg Ads's"}{" "}
@@ -747,7 +747,7 @@ const BidsModal = ({
                     <div className="flex gap-4">
                       <p>Congratulations ! 🎉 </p>
                       <div
-                        className="dark:border-jacarta-600 bg-green   flex h-6 w-6 items-center justify-center rounded-full border-2 border-white"
+                        className="dark:border-jacarta-800 bg-green   flex h-6 w-6 items-center justify-center rounded-full border-2 border-white"
                         data-tippy-content="Verified Collection"
                       >
                         <svg

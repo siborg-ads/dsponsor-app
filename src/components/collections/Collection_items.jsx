@@ -30,7 +30,7 @@ const Collection_items = () => {
         <div className="container">
           {/* <!-- Tabs Nav --> */}
           <Tabs className="tabs">
-            <TabList className="nav nav-tabs dark:border-jacarta-600 border-jacarta-100 mb-12 flex items-center justify-center border-b">
+            <TabList className="nav nav-tabs dark:border-jacarta-800 border-jacarta-100 mb-12 flex items-center justify-center border-b">
               {collectionItemsTabs.map(({ id, text, icon }) => {
                 return (
                   <Tab className="nav-item" key={id} onClick={() => setItemsTabs(id)}>

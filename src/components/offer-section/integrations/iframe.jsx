@@ -8,7 +8,7 @@ import { ClipboardIcon } from "@heroicons/react/24/solid";
 import handleCopy from "../../../utils/handleCopy";
 import Tippy from "@tippyjs/react";
 import { ChromePicker } from "react-color";
-import Input from "../../ui/input";
+import Input from "../../ui/input.jsx";
 
 const IframeIntegration = ({ chainId, offerId, offerTokens }) => {
   const [copied, setCopied] = useState(false);
@@ -256,7 +256,7 @@ const IframeIntegration = ({ chainId, offerId, offerTokens }) => {
               type="checkbox"
               checked={customHeight}
               onChange={(e) => setCustomHeight(e.target.checked)}
-              className={`p-2 rounded-md ${customHeight ? "bg-primaryPurple text-primaryPurple" : "bg-secondaryBlack text-jacarta-100"}`}
+              className=" !text-primaryPurple border-jacarta-200 focus:ring-primaryPurple/20 dark:border-jacarta-500 h-5 !w-5 self-start rounded focus:ring-offset-0"
             />
             <span className="text-white">Custom height</span>
             <InfoIcon text="Some integrations do not support automatic height adjustment. In such cases, we recommend setting a predefined height (which you can change at any time) to match the designated space on your page.">
@@ -279,7 +279,7 @@ const IframeIntegration = ({ chainId, offerId, offerTokens }) => {
               type="checkbox"
               checked={bgColor}
               onChange={(e) => setBgColor(e.target.checked)}
-              className={`p-2 rounded-md ${bgColor ? "bg-primaryPurple text-primaryPurple" : "bg-secondaryBlack text-jacarta-100"}`}
+              className=" !text-primaryPurple border-jacarta-200 focus:ring-primaryPurple/20 dark:border-jacarta-500 h-5 !w-5 self-start rounded focus:ring-offset-0"
             />
             <span className="text-white">Background color</span>
             <InfoIcon text="By default, the background color of the space is #0d102d. You can select a different color to match your content.">
@@ -300,7 +300,7 @@ const IframeIntegration = ({ chainId, offerId, offerTokens }) => {
               type="checkbox"
               checked={changeRatio}
               onChange={(e) => setChangeRatio(e.target.checked)}
-              className={`p-2 rounded-md ${changeRatio ? "bg-primaryPurple text-primaryPurple" : "bg-secondaryBlack text-jacarta-100"}`}
+              className=" !text-primaryPurple border-jacarta-200 focus:ring-primaryPurple/20 dark:border-jacarta-500 h-5 !w-5 self-start rounded focus:ring-offset-0"
             />
             <span className="text-white">Change ratio</span>
             <InfoIcon text="The ratio defined in your offer will apply by default to each ad space. You can choose a different display ratio for the ad spaces if desired; this will not affect the original ad image ratio.">
@@ -323,7 +323,7 @@ const IframeIntegration = ({ chainId, offerId, offerTokens }) => {
               type="checkbox"
               checked={customAdPreview}
               onChange={(e) => setCustomAdPreview(e.target.checked)}
-              className={`p-2 rounded-md ${customAdPreview ? "bg-primaryPurple text-primaryPurple" : "bg-secondaryBlack text-jacarta-100"}`}
+              className=" !text-primaryPurple border-jacarta-200 focus:ring-primaryPurple/20 dark:border-jacarta-500 h-5 !w-5 self-start rounded focus:ring-offset-0"
             />
             <span className="text-white">Custom ad preview</span>
             <InfoIcon
@@ -365,7 +365,7 @@ const IframeIntegration = ({ chainId, offerId, offerTokens }) => {
                             setTokenIds(tokenIds.filter((id) => id !== token?.tokenId));
                           }
                         }}
-                        className={`p-2 cursor-pointer rounded-md ${tokenIds.includes(token?.tokenId) ? "bg-primaryPurple text-primaryPurple" : "bg-secondaryBlack text-jacarta-100"}`}
+                        className="!text-primaryPurple border-jacarta-200 focus:ring-primaryPurple/20 dark:border-jacarta-500 h-5 !w-5 self-start rounded focus:ring-offset-0"
                       />
                       <span className="text-white">{token?.tokenId}</span>
                     </label>

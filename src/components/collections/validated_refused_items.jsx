@@ -179,7 +179,7 @@ const Validated_refused_items = ({ statut, proposalData, isToken }) => {
                       )}
                     </div>
                   </div>
-                  <div className="dark:border-jacarta-600 border-jacarta-100 ml-auto rounded-full border p-3 self-start">
+                  <div className="dark:border-jacarta-800 border-jacarta-100 ml-auto rounded-full border p-3 self-start">
                     <Image
                       width={24}
                       height={24}
@@ -220,8 +220,8 @@ const Validated_refused_items = ({ statut, proposalData, isToken }) => {
                   <button
                     className={
                       filterVal === i
-                        ? "dark:border-jacarta-600 group bg-primaryPurple border-jacarta-100 mr-2.5 mb-2.5 inline-flex items-center rounded-xl border px-4 py-3 border-transparent text-white dark:border-transparent"
-                        : "dark:border-jacarta-600 dark:bg-secondaryBlack group dark:hover:bg-primaryPurple hover:bg-primaryPurple border-jacarta-100 mr-2.5 mb-2.5 inline-flex items-center rounded-xl border bg-white px-4 py-3 hover:border-transparent hover:text-white dark:text-white dark:hover:border-transparent"
+                        ? "dark:border-jacarta-800 group bg-primaryPurple border-jacarta-100 mr-2.5 mb-2.5 inline-flex items-center rounded-xl border px-4 py-3 border-transparent text-white dark:border-transparent"
+                        : "dark:border-jacarta-800 dark:bg-secondaryBlack group dark:hover:bg-primaryPurple hover:bg-primaryPurple border-jacarta-100 mr-2.5 mb-2.5 inline-flex items-center rounded-xl border bg-white px-4 py-3 hover:border-transparent hover:text-white dark:text-white dark:hover:border-transparent"
                     }
                     key={i}
                     onClick={() => {

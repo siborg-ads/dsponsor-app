@@ -3,9 +3,9 @@ import Form from "./Form";
 
 const Header = () => {
   return (
-    <div className="flex flex-col justify-between gap-4 rounded-t-2lg border-b border-jacarta-100 bg-jacarta-50 p-4 dark:border-jacarta-600 dark:bg-jacarta-800 md:flex-row md:items-center md:gap-6">
+    <div className="flex flex-col justify-between gap-4 rounded-t-2lg border-b border-jacarta-100 bg-jacarta-50 p-4 dark:border-jacarta-800 dark:bg-jacarta-800 md:flex-row md:items-center md:gap-6">
       <div className="hidden flex-shrink-0 items-center gap-3 md:flex">
-        <div className="flex h-10 w-10 group cursor-pointer items-center justify-center rounded-2lg dark:bg-secondaryBlack dark:border-jacarta-600 border border-jacarta-100 bg-white dark:hover:bg-primaryPurple hover:bg-primaryPurple hover:border-primaryPurple">
+        <div className="flex h-10 w-10 group cursor-pointer items-center justify-center rounded-2lg dark:bg-secondaryBlack dark:border-jacarta-800 border border-jacarta-100 bg-white dark:hover:bg-primaryPurple hover:bg-primaryPurple hover:border-primaryPurple">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
@@ -27,7 +27,7 @@ const Header = () => {
       <Form />
       <div className="flex flex-wrap justify-between gap-2">
         <div className="flex flex-shrink-0 items-center gap-3 md:hidden">
-          <div className="flex h-10 w-10 group cursor-pointer items-center justify-center rounded-2lg dark:bg-secondaryBlack dark:border-jacarta-600 border border-jacarta-100 bg-white dark:hover:bg-primaryPurple hover:bg-primaryPurple hover:border-primaryPurple">
+          <div className="flex h-10 w-10 group cursor-pointer items-center justify-center rounded-2lg dark:bg-secondaryBlack dark:border-jacarta-800 border border-jacarta-100 bg-white dark:hover:bg-primaryPurple hover:bg-primaryPurple hover:border-primaryPurple">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 24 24"

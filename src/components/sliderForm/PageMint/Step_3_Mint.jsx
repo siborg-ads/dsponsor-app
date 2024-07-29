@@ -80,7 +80,7 @@ const Step_3_Mint = ({
           )}
 
           <div
-            className={`dark:bg-secondaryBlack border-jacarta-100 group relative flex max-w-md flex-col items-center justify-center rounded-lg border-2 border-dashed bg-white  w-[${widthRatioImage}px] h-[${heightRatioImage}px] text-center ${
+            className={`bg-jacarta-800 border-jacarta-100 group relative flex max-w-md flex-col items-center justify-center rounded-lg border-2 border-dashed border-primaryPurple w-[${widthRatioImage}px] h-[${heightRatioImage}px] text-center ${
               !previewImage ? "px-2 py-8" : "py-1 px-1"
             }`}
             style={{ width: `${widthRatioImage}px`, height: `${heightRatioImage}px` }}
@@ -118,7 +118,7 @@ const Step_3_Mint = ({
                 </div>
               )}
             </div>
-            <div className="dark:bg-jacarta-600 h-full w-full bg-jacarta-50 absolute cursor-pointer rounded opacity-0 group-hover:opacity-100">
+            <div className="dark:bg-jacarta-800 h-full w-full bg-jacarta-50 absolute cursor-pointer rounded opacity-0 group-hover:opacity-100">
               <FileUploader
                 handleChange={handleLogoUpload}
                 name="file"

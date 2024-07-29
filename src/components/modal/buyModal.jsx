@@ -182,7 +182,7 @@ const BuyModal = ({
                 </span>
               </div>
 
-              <div className="dark:border-jacarta-600 border-jacarta-100 relative justify-between flex min-h-[75px] border-t border-b py-4">
+              <div className="dark:border-jacarta-800 border-jacarta-100 relative justify-between flex min-h-[75px] border-t border-b py-4">
                 <figure className="mr-5 self-start">
                   <Image
                     width={150}
@@ -246,7 +246,7 @@ const BuyModal = ({
               </div>
 
               {/* <!-- Total --> */}
-              <div className="dark:border-jacarta-600 border-jacarta-100 mb-2 flex items-center justify-between border-b py-2.5">
+              <div className="dark:border-jacarta-800 border-jacarta-100 mb-2 flex items-center justify-between border-b py-2.5">
                 <span className="font-display text-jacarta-900 hover:text-primaryPurple font-semibold dark:text-white">
                   Total
                 </span>
@@ -266,7 +266,7 @@ const BuyModal = ({
                   type="checkbox"
                   id="buyNowTerms"
                   onClick={handleTermService}
-                  className="checked:bg-primaryPurple dark:bg-jacarta-600 hover:bg-jacarta-600 !text-primaryPurple border-jacarta-200 focus:ring-primaryPurple/20 dark:border-jacarta-500 h-5 !w-5 self-start rounded focus:ring-offset-0"
+                  className="checked:bg-primaryPurple !text-primaryPurple border-jacarta-200 focus:ring-primaryPurple/20 dark:border-jacarta-500 h-5 !w-5 self-start rounded focus:ring-offset-0"
                 />
                 <label htmlFor="buyNowTerms" className="dark:text-jacarta-200 text-sm">
                   By checking this box, I agree to {"SiBorg Ads's"}{" "}

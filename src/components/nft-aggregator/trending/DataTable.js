@@ -159,7 +159,7 @@ const DataTable = () => {
               <Link
                 href="/collection/explore_collection"
                 key={item.id}
-                className="flex border-t border-jacarta-100 py-2 px-4 transition-shadow hover:shadow-lg dark:border-jacarta-600 dark:bg-primaryBlack"
+                className="flex border-t border-jacarta-100 py-2 px-4 transition-shadow hover:shadow-lg dark:border-jacarta-800 dark:bg-primaryBlack"
               >
                 <td className="flex w-6/12 items-center md:w-6/12 lg:w-4/12">
                   <figure className="relative mr-5 w-8 shrink-0 self-start lg:w-10">
@@ -173,7 +173,7 @@ const DataTable = () => {
                     />
                     {item.isVerified && (
                       <div
-                        className="absolute -right-3 top-2 flex h-6 w-6 items-center justify-center rounded-full border-2 border-white bg-green dark:border-jacarta-600"
+                        className="absolute -right-3 top-2 flex h-6 w-6 items-center justify-center rounded-full border-2 border-white bg-green dark:border-jacarta-800"
                         title="Verified Collection"
                       >
                         <svg

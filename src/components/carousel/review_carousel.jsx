@@ -9,7 +9,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { useEffect, useState } from "react";
 import { Web3Button } from "@thirdweb-dev/react";
 import config from "../../config/config";
-import Input from "../ui/input";
+import Input from "../ui/input.jsx";
 
 const Review_carousel = ({
   chainId,
@@ -160,7 +160,7 @@ const Review_carousel = ({
       {!isToken && (
         <div>
           {isOwner && (
-            <div className="dark:bg-secondaryBlack dark:border-jacarta-600 border-jacarta-100 rounded-2lg border bg-white p-6 mb-4">
+            <div className="dark:bg-secondaryBlack dark:border-jacarta-800 border-jacarta-100 rounded-2lg border bg-white p-6 mb-4">
               <div className=" sm:flex sm:flex-wrap">
                 <span className="dark:text-jacarta-100 text-jacarta-100 text-sm">
                   Select an advertisement below to manage its status. If you approve an ad, it will

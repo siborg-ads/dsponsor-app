@@ -33,7 +33,7 @@ export default function Sidebar({ setFilterTypes }) {
   };
 
   return (
-    <div className="lg:w-1/5 min-w-[150px] mb-10 js-collections-sidebar lg:h-[calc(100vh_-_232px)] lg:overflow-auto lg:sticky lg:top-32 lg:mr-10 pr-4 scrollbar-custom divide-y divide-jacarta-100 dark:divide-jacarta-600">
+    <div className="lg:w-1/5 min-w-[150px] mb-10 js-collections-sidebar lg:h-[calc(100vh_-_232px)] lg:overflow-auto lg:sticky lg:top-32 lg:mr-10 pr-4 scrollbar-custom divide-y divide-jacarta-100 dark:divide-jacarta-800">
       {/* Chains filter */}
       <div className="mt-4 pt-4">
         <h2 id="filters-chains-heading">
@@ -68,7 +68,7 @@ export default function Sidebar({ setFilterTypes }) {
                 <label className="flex items-center cursor-pointer w-full">
                   <Input
                     type="checkbox"
-                    className="h-5 w-5 mr-2 rounded border-jacarta-200 text-primaryPurple checked:bg-primaryPurple focus:ring-primaryPurple/20 focus:ring-offset-0 dark:border-jacarta-500 dark:bg-jacarta-600"
+                    className=" dark:bg-jacarta-800 hover:bg-jacarta-800 !text-primaryPurple border-jacarta-200 focus:ring-primaryPurple/20 dark:border-jacarta-500 h-5 !w-5 self-start rounded focus:ring-offset-0"
                     onChange={(e) => handleFilterChange(elm[1].network, e.target.checked, "chain")}
                   />
                   <div className="backdrop-blur-sm mr-1 w-7 h-7 rounded-[0.625rem] flex justify-center items-center">
@@ -125,7 +125,7 @@ export default function Sidebar({ setFilterTypes }) {
                   <Input
                     type="checkbox"
                     id="terms"
-                    className="h-5 w-5 mr-2 rounded border-jacarta-200 text-primaryPurple checked:bg-primaryPurple focus:ring-primaryPurple/20 focus:ring-offset-0 dark:border-jacarta-500 dark:bg-jacarta-600"
+                    className=" dark:bg-jacarta-800 hover:bg-jacarta-800 !text-primaryPurple border-jacarta-200 focus:ring-primaryPurple/20 dark:border-jacarta-500 h-5 !w-5 self-start rounded focus:ring-offset-0"
                     onChange={(e) =>
                       handleFilterChange(elm.listingType, e.target.checked, "status")
                     }
@@ -159,7 +159,7 @@ export default function Sidebar({ setFilterTypes }) {
         <div id="filters-price" className="mt-3 mb-8 space-y-4 collapse show visible" aria-labelledby="filters-price-heading">
           <div className="dropdown relative cursor-pointer">
             <div
-              className="dropdown-toggle flex items-center justify-between rounded-lg border border-jacarta-100 bg-white w-full h-12 py-3 px-4 dark:border-jacarta-600 dark:bg-secondaryBlack dark:text-white"
+              className="dropdown-toggle flex items-center justify-between rounded-lg border border-jacarta-100 bg-white w-full h-12 py-3 px-4 dark:border-jacarta-800 dark:bg-secondaryBlack dark:text-white"
               role="button"
               id="filtersPrice"
               data-bs-toggle="dropdown"
@@ -177,7 +177,7 @@ export default function Sidebar({ setFilterTypes }) {
                 <button
                   key={i}
                   onClick={() => setCurrency(elm)}
-                  className="dropdown-item flex w-full items-center justify-between rounded-xl px-5 py-2 text-left font-display text-sm text-jacarta-900 transition-colors hover:bg-jacarta-50 dark:text-white dark:hover:bg-jacarta-600"
+                  className="dropdown-item flex w-full items-center justify-between rounded-xl px-5 py-2 text-left font-display text-sm text-jacarta-900 transition-colors hover:bg-jacarta-50 dark:text-white dark:hover:bg-jacarta-800"
                 >
                   {elm}
                   {currency == elm && (
@@ -193,12 +193,12 @@ export default function Sidebar({ setFilterTypes }) {
 
           <div className="flex space-x-4">
             <input
-              className="w-full rounded-lg border-jacarta-100 py-3 hover:ring-2 hover:ring-primaryPurple/10 focus:ring-primaryPurple dark:border-jacarta-600 dark:bg-secondaryBlack dark:text-white dark:placeholder:text-jacarta-100"
+              className="w-full rounded-lg border-jacarta-100 py-3 hover:ring-2 hover:ring-primaryPurple/10 focus:ring-primaryPurple dark:border-jacarta-800 dark:bg-secondaryBlack dark:text-white dark:placeholder:text-jacarta-100"
               type="text"
               placeholder="Min"
             />
             <input
-              className="w-full rounded-lg border-jacarta-100 py-3 hover:ring-2 hover:ring-primaryPurple/10 focus:ring-primaryPurple dark:border-jacarta-600 dark:bg-secondaryBlack dark:text-white dark:placeholder:text-jacarta-100"
+              className="w-full rounded-lg border-jacarta-100 py-3 hover:ring-2 hover:ring-primaryPurple/10 focus:ring-primaryPurple dark:border-jacarta-800 dark:bg-secondaryBlack dark:text-white dark:placeholder:text-jacarta-100"
               type="text"
               placeholder="Max"
             />
@@ -235,8 +235,8 @@ export default function Sidebar({ setFilterTypes }) {
                 <button
                   className={
                     category == elm
-                      ? "group flex h-9 items-center rounded-lg border border-primaryPurple bg-primaryPurple px-4 font-display text-sm font-semibold text-white transition-colors hover:border-transparent hover:bg-primaryPurple hover:text-white dark:border-jacarta-600 dark:bg-primaryBlack dark:text-white dark:hover:border-transparent dark:hover:bg-primaryPurple dark:hover:text-white"
-                      : "group flex h-9 items-center rounded-lg border border-jacarta-100 bg-white px-4 font-display text-sm font-semibold text-jacarta-100 transition-colors hover:border-transparent hover:bg-primaryPurple hover:text-white dark:border-jacarta-600 dark:bg-primaryBlack dark:text-white dark:hover:border-transparent dark:hover:bg-primaryPurple dark:hover:text-white"
+                      ? "group flex h-9 items-center rounded-lg border border-primaryPurple bg-primaryPurple px-4 font-display text-sm font-semibold text-white transition-colors hover:border-transparent hover:bg-primaryPurple hover:text-white dark:border-jacarta-800 dark:bg-primaryBlack dark:text-white dark:hover:border-transparent dark:hover:bg-primaryPurple dark:hover:text-white"
+                      : "group flex h-9 items-center rounded-lg border border-jacarta-100 bg-white px-4 font-display text-sm font-semibold text-jacarta-100 transition-colors hover:border-transparent hover:bg-primaryPurple hover:text-white dark:border-jacarta-800 dark:bg-primaryBlack dark:text-white dark:hover:border-transparent dark:hover:bg-primaryPurple dark:hover:text-white"
                   }
                 >
                   <span>{elm}</span>
