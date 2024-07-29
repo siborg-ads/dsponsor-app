@@ -140,6 +140,7 @@ const TokenPageContainer = () => {
   const [royaltiesAmount, setRoyaltiesAmount] = useState(null);
   const [airdropAddress, setAirdropAddress] = useState(undefined);
   const [nftContractAddress, setNftContractAddress] = useState(null);
+  const [showEntireDescription, setShowEntireDescription] = useState(false);
 
   let description = "description not found";
   let id = "1";
@@ -1704,18 +1705,14 @@ const TokenPageContainer = () => {
 
           <div className="md:flex md:flex-wrap" key={id}>
             {/* <!-- Image --> */}
-            <figure className="mb-8 md:mb-0 md:w-2/5 md:flex-shrink-0 md:flex-grow-0 md:basis-auto lg:w-1/2 w-full flex justify-center relative">
-              <button
-                className=" w-full"
-                onClick={() => setImageModal(true)}
-                style={{ height: "450px" }}
-              >
+            <figure className="mb-8 md:mb-0 md:w-2/5 md:flex-shrink-0 md:flex-grow-0 items-start md:basis-auto lg:w-1/2 w-full flex justify-center relative">
+              <button className="w-full md:sticky md:top-0 md:right-0" onClick={() => setImageModal(true)}>
                 <Image
                   width={585}
                   height={726}
                   src={imageUrl ?? "/images/gradient_creative.jpg"}
                   alt="image"
-                  className="rounded-2xl cursor-pointer h-full object-contain w-full shadow-lg"
+                  className="rounded-2xl cursor-pointer h-auto object-contain w-full shadow-lg"
                 />
               </button>
 
@@ -1816,7 +1813,29 @@ const TokenPageContainer = () => {
                 )}
               </div>
 
-              <p className="dark:text-jacarta-100 mb-10">{description}</p>
+              {showEntireDescription ? (
+                <p className="dark:text-jacarta-100 mb-10">
+                  {description}{" "}
+                  <button
+                    onClick={() => setShowEntireDescription(false)}
+                    className="text-primaryPurple"
+                  >
+                    Show less
+                  </button>
+                </p>
+              ) : (
+                <div>
+                  <p className="dark:text-jacarta-100 mb-10">
+                    {description?.length > 1000 ? description?.slice(0, 1000) + "..." : description}{" "}
+                    <button
+                      onClick={() => setShowEntireDescription(true)}
+                      className="text-primaryPurple"
+                    >
+                      Show more
+                    </button>
+                  </p>
+                </div>
+              )}
 
               {(offerData?.disable === true ||
                 new Date(offerData?.metadata?.offer?.valid_to).getTime() < Date.now() ||
@@ -2066,35 +2085,6 @@ const TokenPageContainer = () => {
         )}
 
       {/* <!-- end item --> */}
-      <Accordion.Item value="details">
-        <div className="container">
-          <Accordion.Header className="w-full">
-            <Accordion.Trigger
-              className={`${accordionActiveTab === "details" && "bg-primaryPurple"} w-full flex items-center justify-center gap-4 mb-6 border border-primaryPurple hover:bg-primaryPurple cursor-pointer p-2 rounded-lg`}
-            >
-              <h2 className="text-jacarta-900 font-bold font-display text-center text-3xl dark:text-white ">
-                Details
-              </h2>
-              <ChevronDownIcon
-                className={`w-6 h-6 duration-300 ${accordionActiveTab === "details" && "transform rotate-180"}`}
-              />
-            </Accordion.Trigger>
-          </Accordion.Header>
-
-          <Accordion.Content className="mb-12">
-            <ItemsTabs
-              chainId={chainId}
-              contractAddress={offerData?.nftContract?.id}
-              offerId={offerId}
-              isUserOwner={isUserOwner}
-              initialCreator={offerData?.initialCreator}
-              status={firstSelectedListing?.status}
-              listerAddress={firstSelectedListing?.lister}
-              offerData={offerData}
-            />
-          </Accordion.Content>
-        </div>
-      </Accordion.Item>
 
       {/* <ItemsTabs /> */}
       <Accordion.Item value="adSubmission">
@@ -2114,7 +2104,7 @@ const TokenPageContainer = () => {
                 </Accordion.Trigger>
               </Accordion.Header>
 
-              <Accordion.Content>
+              <Accordion.Content className="mb-6">
                 {isTokenInAuction && (
                   <div className="text-center w-full">
                     <span className="dark:text-warning text-md ">
@@ -2241,6 +2231,36 @@ const TokenPageContainer = () => {
                 </Accordion.Content>
               </>
             )}
+        </div>
+      </Accordion.Item>
+
+      <Accordion.Item value="details">
+        <div className="container">
+          <Accordion.Header className="w-full">
+            <Accordion.Trigger
+              className={`${accordionActiveTab === "details" && "bg-primaryPurple"} w-full flex items-center justify-center gap-4 mb-6 border border-primaryPurple hover:bg-primaryPurple cursor-pointer p-2 rounded-lg`}
+            >
+              <h2 className="text-jacarta-900 font-bold font-display text-center text-3xl dark:text-white ">
+                Details
+              </h2>
+              <ChevronDownIcon
+                className={`w-6 h-6 duration-300 ${accordionActiveTab === "details" && "transform rotate-180"}`}
+              />
+            </Accordion.Trigger>
+          </Accordion.Header>
+
+          <Accordion.Content className="mb-12">
+            <ItemsTabs
+              chainId={chainId}
+              contractAddress={offerData?.nftContract?.id}
+              offerId={offerId}
+              isUserOwner={isUserOwner}
+              initialCreator={offerData?.initialCreator}
+              status={firstSelectedListing?.status}
+              listerAddress={firstSelectedListing?.lister}
+              offerData={offerData}
+            />
+          </Accordion.Content>
         </div>
       </Accordion.Item>
 

@@ -31,6 +31,7 @@ import ChangeMintPrice from "../../components/offer-section/changeMintPrice";
 import { Tabs, Tab, TabList, TabPanel } from "react-tabs";
 import { BadgePercentIcon, BlocksIcon, RefreshCwIcon } from "lucide-react";
 import Disable from "../../components/disable/disable";
+import OfferItem from "../../components/cards/offerItem";
 
 const OfferPageContainer = () => {
   const router = useRouter();
@@ -45,6 +46,7 @@ const OfferPageContainer = () => {
   const [selectedItems, setSelectedItems] = useState([]);
   const [price, setPrice] = useState(null);
   const [imageModal, setImageModal] = useState(false);
+  const [showEntireDescription, setShowEntireDescription] = useState(false);
   const [isOwner, setIsOwner] = useState(false);
   const address = useAddress();
   const { contract: DsponsorAdminContract } = useContract(
@@ -380,8 +382,11 @@ const OfferPageContainer = () => {
 
           <div className="md:flex md:flex-wrap" key={id}>
             {/* <!-- Image --> */}
-            <figure className="mb-8 md:w-2/5 md:flex-shrink-0 md:flex-grow-0 md:basis-auto lg:w-1/2 w-full flex justify-center items-start">
-              <button className="w-full" onClick={() => setImageModal(true)}>
+            <figure className="mb-8 md:w-2/5 relative md:flex-shrink-0 md:flex-grow-0 md:basis-auto lg:w-1/2 w-full flex justify-center items-start">
+              <button
+                className="w-full md:sticky md:top-0 right-0"
+                onClick={() => setImageModal(true)}
+              >
                 {imageUrl && (
                   <img
                     src={imageUrl ?? "/images/gradient_creative.jpg"}
@@ -463,7 +468,7 @@ const OfferPageContainer = () => {
                   </div>
                 )}
 
-                {offerData.nftContract.allowList && (
+                {offerData?.nftContract?.allowList && (
                   <span className="dark:text-jacarta-100 text-jacarta-100 text-sm">
                     {offerData.nftContract.maxSupply -
                       offerData.nftContract.tokens.filter((item) => item.mint != null).length}
@@ -475,7 +480,29 @@ const OfferPageContainer = () => {
                 </span>
               </div>
 
-              <p className="dark:text-jacarta-100 mb-10">{description}</p>
+              {showEntireDescription ? (
+                <p className="dark:text-jacarta-100 mb-10">
+                  {description}{" "}
+                  <button
+                    onClick={() => setShowEntireDescription(false)}
+                    className="text-primaryPurple"
+                  >
+                    Show less
+                  </button>
+                </p>
+              ) : (
+                <div>
+                  <p className="dark:text-jacarta-100 mb-10">
+                    {description?.length > 1000 ? description?.slice(0, 1000) + "..." : description}{" "}
+                    <button
+                      onClick={() => setShowEntireDescription(true)}
+                      className="text-primaryPurple"
+                    >
+                      Show more
+                    </button>
+                  </p>
+                </div>
+              )}
 
               {(offerData?.disable === true ||
                 new Date(offerData?.metadata?.offer?.valid_to).getTime() < Date.now() ||
@@ -498,37 +525,9 @@ const OfferPageContainer = () => {
         </div>
       </section>
 
-      <Accordion.Item value="details">
-        <div className="container">
-          <Accordion.Header className="w-full">
-            <Accordion.Trigger
-              className={`${accordionActiveTab === "details" && "bg-primaryPurple"} w-full flex items-center justify-center gap-4 mb-6 border border-primaryPurple hover:bg-primaryPurple cursor-pointer p-2 rounded-lg`}
-            >
-              <h2 className="text-jacarta-900 font-bold font-display text-center text-3xl dark:text-white ">
-                Details
-              </h2>
-              <ChevronDownIcon
-                className={`w-6 h-6 duration-300 ${accordionActiveTab === "details" && "transform rotate-180"}`}
-              />
-            </Accordion.Trigger>
-          </Accordion.Header>
-
-          <Accordion.Content className="mb-8">
-            <ItemsTabs
-              contractAddress={offerData?.nftContract.id}
-              offerId={offerId}
-              initialCreator={offerData?.initialCreator}
-              isToken={false}
-              offerData={offerData}
-              chainId={chainId}
-            />
-          </Accordion.Content>
-        </div>
-      </Accordion.Item>
-
       <Accordion.Item value="search">
         {!offerData.nftContract.allowList && (
-          <div className="container flex flex-col justify-center mb-6">
+          <div className="container flex flex-col justify-center">
             <Accordion.Header className="w-full">
               <Accordion.Trigger
                 className={`${accordionActiveTab === "search" && "bg-primaryPurple"} w-full flex items-center justify-center gap-4 mb-6 border border-primaryPurple hover:bg-primaryPurple cursor-pointer p-2 rounded-lg`}
@@ -543,7 +542,7 @@ const OfferPageContainer = () => {
             </Accordion.Header>
 
             <Accordion.Content>
-              <div className="dark:bg-secondaryBlack dark:border-jacarta-600 border-jacarta-100 rounded-2lg border bg-white p-8">
+              <div className="dark:bg-secondaryBlack mb-6 dark:border-jacarta-600 border-jacarta-100 rounded-2lg border bg-white p-8">
                 <div className=" sm:flex sm:flex-wrap">
                   <span className="dark:text-jacarta-100 text-jacarta-100 text-sm">
                     You can check if a word is available for purchase by using the search bar.
@@ -607,6 +606,49 @@ const OfferPageContainer = () => {
             </Accordion.Content>
           </div>
         )}
+      </Accordion.Item>
+
+      <Accordion.Item value="tokens">
+        <div className="container">
+          <Accordion.Header className="w-full">
+            <Accordion.Trigger
+              className={`${accordionActiveTab === "tokens" && "bg-primaryPurple"} w-full flex items-center justify-center gap-4 mb-6 border border-primaryPurple hover:bg-primaryPurple cursor-pointer p-2 rounded-lg`}
+            >
+              <h2 className="text-jacarta-900 font-bold font-display text-center text-3xl dark:text-white ">
+                Tokens
+              </h2>
+              <ChevronDownIcon
+                className={`w-6 h-6 duration-300 ${accordionActiveTab === "tokens" && "transform rotate-180"}`}
+              />
+            </Accordion.Trigger>
+          </Accordion.Header>
+
+          <Accordion.Content>
+            <div className="dark:bg-secondaryBlack mb-6 dark:border-jacarta-600 border-jacarta-100 rounded-2lg border bg-white p-4">
+              <div className="sm:flex justify-center items-center sm:flex-wrap">
+                <span className="dark:text-jacarta-100 text-jacarta-100 text-sm text-center">
+                  This section allows you to see every tokens associated with the offer.
+                </span>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-6">
+              {offerData?.nftContract?.tokens?.map((token) => {
+                console.log("token", token);
+                return (
+                  <OfferItem
+                    key={token.id}
+                    token={token}
+                    offerData={offerData}
+                    chainId={chainId}
+                    item={token}
+                    isToken={true}
+                  />
+                );
+              })}
+            </div>
+          </Accordion.Content>
+        </div>
       </Accordion.Item>
 
       <Accordion.Item value="adValidation">
@@ -757,6 +799,34 @@ const OfferPageContainer = () => {
             </Accordion.Content>
           </div>
         )}
+      </Accordion.Item>
+
+      <Accordion.Item value="details">
+        <div className="container">
+          <Accordion.Header className="w-full">
+            <Accordion.Trigger
+              className={`${accordionActiveTab === "details" && "bg-primaryPurple"} w-full flex items-center justify-center gap-4 mb-6 border border-primaryPurple hover:bg-primaryPurple cursor-pointer p-2 rounded-lg`}
+            >
+              <h2 className="text-jacarta-900 font-bold font-display text-center text-3xl dark:text-white ">
+                Details
+              </h2>
+              <ChevronDownIcon
+                className={`w-6 h-6 duration-300 ${accordionActiveTab === "details" && "transform rotate-180"}`}
+              />
+            </Accordion.Trigger>
+          </Accordion.Header>
+
+          <Accordion.Content className="mb-8">
+            <ItemsTabs
+              contractAddress={offerData?.nftContract.id}
+              offerId={offerId}
+              initialCreator={offerData?.initialCreator}
+              isToken={false}
+              offerData={offerData}
+              chainId={chainId}
+            />
+          </Accordion.Content>
+        </div>
       </Accordion.Item>
     </Accordion.Root>
   );
