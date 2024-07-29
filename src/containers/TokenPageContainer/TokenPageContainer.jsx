@@ -563,8 +563,8 @@ const TokenPageContainer = () => {
 
                 saleInfo = {
                   address: directBuy?.buyer,
-                  amount: directBuy?.amount
-                    ? formatUnits(BigInt(directBuy?.amount), tempCurrency?.decimals)
+                  amount: directBuy?.totalPricePaid
+                    ? formatUnits(BigInt(directBuy?.totalPricePaid), tempCurrency?.decimals)
                     : 0,
                   date: directBuy?.revenueTransaction?.blockTimestamp,
                   currency: {
