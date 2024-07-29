@@ -8,6 +8,7 @@ import { ClipboardIcon } from "@heroicons/react/24/solid";
 import handleCopy from "../../../utils/handleCopy";
 import Tippy from "@tippyjs/react";
 import { ChromePicker } from "react-color";
+import Input from "../../ui/input.jsx";
 
 const IframeIntegration = ({ chainId, offerId, offerTokens }) => {
   const [copied, setCopied] = useState(false);
@@ -251,11 +252,11 @@ const IframeIntegration = ({ chainId, offerId, offerTokens }) => {
       <div className="flex flex-wrap items-start gap-8">
         <div className="flex flex-col gap-4">
           <label className="flex items-center gap-2">
-            <input
+            <Input
               type="checkbox"
               checked={customHeight}
               onChange={(e) => setCustomHeight(e.target.checked)}
-              className={`p-2 rounded-md ${customHeight ? "bg-primaryPurple text-primaryPurple" : "bg-secondaryBlack text-jacarta-100"}`}
+              className=" !text-primaryPurple border-jacarta-200 focus:ring-primaryPurple/20 dark:border-jacarta-500 h-5 !w-5 self-start rounded focus:ring-offset-0"
             />
             <span className="text-white">Custom height</span>
             <InfoIcon text="Some integrations do not support automatic height adjustment. In such cases, we recommend setting a predefined height (which you can change at any time) to match the designated space on your page.">
@@ -263,23 +264,22 @@ const IframeIntegration = ({ chainId, offerId, offerTokens }) => {
             </InfoIcon>
           </label>
           {customHeight && (
-            <input
+            <Input
               type="number"
               value={parseInt(height)}
               onChange={(e) => setHeight(`${e.target.value}px`)}
               placeholder="Height in px (ex: 400)"
-              className="p-2 rounded-md bg-secondaryBlack text-jacarta-100"
             />
           )}
         </div>
 
         <div className="flex flex-col gap-4">
           <label className="flex items-center gap-2">
-            <input
+            <Input
               type="checkbox"
               checked={bgColor}
               onChange={(e) => setBgColor(e.target.checked)}
-              className={`p-2 rounded-md ${bgColor ? "bg-primaryPurple text-primaryPurple" : "bg-secondaryBlack text-jacarta-100"}`}
+              className=" !text-primaryPurple border-jacarta-200 focus:ring-primaryPurple/20 dark:border-jacarta-500 h-5 !w-5 self-start rounded focus:ring-offset-0"
             />
             <span className="text-white">Background color</span>
             <InfoIcon text="By default, the background color of the space is #0d102d. You can select a different color to match your content.">
@@ -296,11 +296,11 @@ const IframeIntegration = ({ chainId, offerId, offerTokens }) => {
 
         <div className="flex flex-col gap-4">
           <label className="flex items-center gap-2">
-            <input
+            <Input
               type="checkbox"
               checked={changeRatio}
               onChange={(e) => setChangeRatio(e.target.checked)}
-              className={`p-2 rounded-md ${changeRatio ? "bg-primaryPurple text-primaryPurple" : "bg-secondaryBlack text-jacarta-100"}`}
+              className=" !text-primaryPurple border-jacarta-200 focus:ring-primaryPurple/20 dark:border-jacarta-500 h-5 !w-5 self-start rounded focus:ring-offset-0"
             />
             <span className="text-white">Change ratio</span>
             <InfoIcon text="The ratio defined in your offer will apply by default to each ad space. You can choose a different display ratio for the ad spaces if desired; this will not affect the original ad image ratio.">
@@ -308,25 +308,22 @@ const IframeIntegration = ({ chainId, offerId, offerTokens }) => {
             </InfoIcon>
           </label>
           {changeRatio && (
-            <input
+            <Input
               type="text"
               value={ratio}
-              onChange={(e) => {
-                setRatio(e.target.value);
-              }}
+              onChange={(e) => setRatio(e.target.value)}
               placeholder="Ratio (ex: 16:9)"
-              className="p-2 rounded-md bg-secondaryBlack text-jacarta-100"
             />
           )}
         </div>
 
         <div className="flex flex-col gap-4">
           <label className="flex items-center gap-2">
-            <input
+            <Input
               type="checkbox"
               checked={customAdPreview}
               onChange={(e) => setCustomAdPreview(e.target.checked)}
-              className={`p-2 rounded-md ${customAdPreview ? "bg-primaryPurple text-primaryPurple" : "bg-secondaryBlack text-jacarta-100"}`}
+              className=" !text-primaryPurple border-jacarta-200 focus:ring-primaryPurple/20 dark:border-jacarta-500 h-5 !w-5 self-start rounded focus:ring-offset-0"
             />
             <span className="text-white">Custom ad preview</span>
             <InfoIcon
@@ -358,7 +355,7 @@ const IframeIntegration = ({ chainId, offerId, offerTokens }) => {
                 <div className="flex flex-wrap items-center gap-4">
                   {offerTokens?.map((token) => (
                     <label key={token?.tokenId} className="flex items-center gap-2">
-                      <input
+                      <Input
                         type="checkbox"
                         checked={tokenIds.includes(token?.tokenId)}
                         onChange={(e) => {
@@ -368,26 +365,24 @@ const IframeIntegration = ({ chainId, offerId, offerTokens }) => {
                             setTokenIds(tokenIds.filter((id) => id !== token?.tokenId));
                           }
                         }}
-                        className={`p-2 cursor-pointer rounded-md ${tokenIds.includes(token?.tokenId) ? "bg-primaryPurple text-primaryPurple" : "bg-secondaryBlack text-jacarta-100"}`}
+                        className="!text-primaryPurple border-jacarta-200 focus:ring-primaryPurple/20 dark:border-jacarta-500 h-5 !w-5 self-start rounded focus:ring-offset-0"
                       />
                       <span className="text-white">{token?.tokenId}</span>
                     </label>
                   ))}
                 </div>
               )}
-              <input
+              <Input
                 type="text"
                 value={previewImage}
                 onChange={(e) => setPreviewImage(e.target.value)}
                 placeholder="Preview Image URL"
-                className="p-2 rounded-md bg-secondaryBlack text-jacarta-100"
               />
-              <input
+              <Input
                 type="text"
                 value={previewLink}
                 onChange={(e) => setPreviewLink(e.target.value)}
                 placeholder="Preview Link URL"
-                className="p-2 rounded-md bg-secondaryBlack text-jacarta-100"
               />
             </div>
           )}

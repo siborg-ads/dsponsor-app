@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useRef } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import { activated_features } from "../../data/activated_features";
 import Transactions from "./Transactions";
@@ -10,8 +10,15 @@ import Bids from "./bidsActivity";
 import { ExclamationCircleIcon } from "@heroicons/react/24/solid";
 import InfoIcon from "../informations/infoIcon";
 import Link from "next/link";
-import { useRouter } from "next/router";
-import debounce from "lodash/debounce";
+import {
+  ActivityIcon,
+  CoinsIcon,
+  GavelIcon,
+  LoaderIcon,
+  MegaphoneIcon,
+  TrophyIcon
+} from "lucide-react";
+import { useSearchParams } from "next/navigation";
 
 const UserTabs = ({
   mappedownedAdProposals,
@@ -23,10 +30,11 @@ const UserTabs = ({
   manageAddress,
   offers
 }) => {
+  const searchParams = useSearchParams();
+  const tab = searchParams.get("tab");
+
   const [copied, setCopied] = useState(false);
-  const router = useRouter();
-  const { asPath } = router;
-  const isMounted = useRef(true);
+  const [selectedTab, setSelectedTab] = useState(tab);
 
   useEffect(() => {
     if (copied) {
@@ -39,61 +47,56 @@ const UserTabs = ({
 
   const tabItem = useMemo(
     () => [
-      { id: 1, text: "Activity", icon: "activity", section: "activity" },
-      { id: 2, text: "Bids", icon: "activity", section: "bids" },
-      { id: 3, text: "Owned tokens", icon: "owned", section: "owned" },
-      { id: 4, text: "Auction listed tokens", icon: "activity", section: "auction" },
-      { id: 5, text: "Token Auction Bids", icon: "activity", section: "tokenAuctionBids" },
+      { id: 1, text: "Activity", section: "activity", icon: <ActivityIcon className="h-4 w-4" /> },
+      { id: 2, text: "Bids", section: "bids", icon: <GavelIcon className="h-4 w-4" /> },
+      { id: 3, text: "Owned tokens", section: "owned", icon: <CoinsIcon className="h-4 w-4" /> },
+      {
+        id: 4,
+        text: "Auction listed tokens",
+        section: "auction",
+        icon: <TrophyIcon className="h-4 w-4" />
+      },
+      {
+        id: 5,
+        text: "Token Auction Bids",
+        section: "tokenAuctionBids",
+        icon: <LoaderIcon className="h-4 w-4" />
+      },
       ...(activated_features.canCreateOffer
-        ? [{ id: 6, text: "Created Offers", icon: "owned", section: "createdOffers" }]
+        ? [
+            {
+              id: 6,
+              text: "Created Offers",
+              section: "createdOffers",
+              icon: <MegaphoneIcon className="h-4 w-4" />
+            }
+          ]
         : [])
     ],
     []
   );
 
   useEffect(() => {
-    return () => {
-      isMounted.current = false;
-    };
-  }, []);
-
-  const currentTabIndex = useMemo(() => {
-    const hash = asPath.split("#")[1];
-    const index = tabItem.findIndex((tab) => tab.section === hash);
-    return index !== -1 ? index : 0;
-  }, [asPath, tabItem]);
-
-  const handleSelect = debounce(async (index) => {
-    const selectedTab = tabItem[index];
-    const currentHash = asPath.split("#")[1] || "";
-
-    if (selectedTab.section !== currentHash) {
-      try {
-        if (!window.isNavigating) {
-          window.isNavigating = true;
-          await router.push(`#${selectedTab.section}`, undefined, { shallow: true });
-          if (isMounted.current) {
-            window.isNavigating = false;
-          }
-        }
-      } catch (error) {
-        if (isMounted.current) {
-          window.isNavigating = false;
-        }
-        console.error("Navigation error:", error);
-      }
+    if (tab) {
+      setSelectedTab(tab);
+    } else {
+      setSelectedTab("activity");
     }
-  }, 300);
+  }, [tab]);
 
   return (
-    <Tabs className="tabs" onSelect={handleSelect} selectedIndex={currentTabIndex}>
-      <TabList className="nav nav-tabs hide-scrollbar mb-12 flex items-center justify-start overflow-x-auto overflow-y-hidden border-b border-jacarta-100 pb-px dark:border-jacarta-600 md:justify-center">
+    <Tabs
+      className="tabs"
+      selectedIndex={tabItem.findIndex((item) => item.section === selectedTab)}
+      onSelect={(index) => setSelectedTab(tabItem[index].section)}
+    >
+      <TabList className="nav nav-tabs hide-scrollbar mb-12 flex items-center justify-start overflow-x-auto overflow-y-hidden border-b border-jacarta-100 pb-px dark:border-jacarta-800 md:justify-center">
         {tabItem.map(({ id, text, icon, section }) => (
           <Tab className="nav-item" key={id}>
-            <Link href={`#${section}`} scroll={false}>
+            <Link href={`/profile/${manageAddress}?tab=${section}`} scroll={false}>
               <button
                 className={
-                  currentTabIndex === id - 1
+                  selectedTab === section
                     ? "nav-link hover:text-jacarta-900 text-jacarta-100 relative flex items-center whitespace-nowrap py-3 px-4 dark:hover:text-white active"
                     : "nav-link hover:text-jacarta-900 text-jacarta-100 relative flex items-center whitespace-nowrap py-3 px-4 dark:hover:text-white"
                 }
@@ -103,10 +106,8 @@ const UserTabs = ({
                     <ExclamationCircleIcon className="h-5 w-5 text-red mr-2" />
                   </InfoIcon>
                 )}
-                <svg className="icon mr-1 h-5 w-5 fill-current">
-                  <use xlinkHref={`/icons.svg#icon-${icon}`}></use>
-                </svg>
-                <span className="font-display text-base font-medium">{text}</span>
+                {icon}
+                <span className="font-display text-base font-medium ml-2">{text}</span>
               </button>
             </Link>
           </Tab>

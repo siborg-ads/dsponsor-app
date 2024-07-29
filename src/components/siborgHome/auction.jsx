@@ -5,7 +5,7 @@ const Auction = ({ auction, isHoveringCard, index }) => {
   return (
     <>
       <div className="p-2 flex flex-col h-full gap-2 border box-border hover:border-2 border-jacarta-100 shadow-lg hover:shadow-xl border-opacity-10 rounded-xl bg-jacarta-800 hover:bg-secondaryBlack hover:-translate-y-0.5 duration-200">
-        <div className="w-full h-full bg-jacarta-600 rounded-lg relative">
+        <div className="w-full h-full bg-jacarta-800 rounded-lg relative">
           <Image
             src={auction.image ?? ""}
             alt="Auction Image"
@@ -33,7 +33,7 @@ const Auction = ({ auction, isHoveringCard, index }) => {
               {auction.name ?? "name"}
             </div>
           </div>
-          <div className="bg-jacarta-600 py-2 px-4 grid grid-cols-2 gap-2 rounded-lg">
+          <div className="bg-jacarta-800 py-2 px-4 grid grid-cols-2 gap-2 rounded-lg">
             <div className="hidden md:flex flex-col gap-1">
               <span className="text-jacarta-200 text-xs">Latest Bid</span>
               <span className="text-white font-semibold text-xs md:text-sm">

@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Input from "../../../ui/input";
 
 const CollectionsItem = () => {
   const collectionItems = [
@@ -37,10 +38,10 @@ const CollectionsItem = () => {
       {collectionItems.map((item) => (
         <li key={item.id}>
           <label className="flex items-center cursor-pointer w-full">
-            <input
+            <Input
               type="checkbox"
               id="terms"
-              className="h-5 w-5 mr-3 rounded border-jacarta-200 text-primaryPurple checked:bg-primaryPurple focus:ring-primaryPurple/20 focus:ring-offset-0 dark:border-jacarta-500 dark:bg-jacarta-600"
+              className="h-5 w-5 mr-3 rounded border-jacarta-200 text-primaryPurple checked:bg-primaryPurple focus:ring-primaryPurple/20 focus:ring-offset-0 dark:border-jacarta-500 dark:bg-jacarta-800"
             />
             <figure className="relative mr-2 w-8 shrink-0 lg:mr-4 lg:w-10 flex">
               <Image
@@ -53,7 +54,7 @@ const CollectionsItem = () => {
               />
               {item.id === 1 && (
                 <div
-                  className="absolute -right-2 -bottom-1 flex h-[1.125rem] w-[1.125rem] items-center justify-center rounded-full border-2 border-white bg-green dark:border-jacarta-600"
+                  className="absolute -right-2 -bottom-1 flex h-[1.125rem] w-[1.125rem] items-center justify-center rounded-full border-2 border-white bg-green dark:border-jacarta-800"
                   title="Verified Collection"
                 >
                   <svg

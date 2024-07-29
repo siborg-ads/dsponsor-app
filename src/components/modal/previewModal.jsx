@@ -7,8 +7,8 @@ import "react-toastify/dist/ReactToastify.css";
 import { Spinner } from "@nextui-org/spinner";
 import ModalHelper from "../Helper/modalHelper";
 import { useChainContext } from "../../contexts/hooks/useChainContext";
-import { Popover, PopoverButton, PopoverPanel } from "@headlessui/react";
 import { InformationCircleIcon } from "@heroicons/react/20/solid";
+import InfoIcon from "../informations/infoIcon";
 
 const PreviewModal = ({
   approvalForAllToken = true,
@@ -46,8 +46,9 @@ const PreviewModal = ({
   isLoadingButton,
   multipleAdsSubmission
 }) => {
-  const [isHovered, setIsHovered] = React.useState(false);
   const [imageRatios, setImageRatios] = React.useState([]);
+  const [isLoadingApproveButton, setIsLoadingApproveButton] = React.useState(false);
+  const [isLoadingSubmitButton, setIsLoadingSubmitButton] = React.useState(false);
 
   const { currentChainObject } = useChainContext();
   const formatDate = (date) => {
@@ -179,16 +180,20 @@ const PreviewModal = ({
               <Web3Button
                 contractAddress={currentChainObject?.smartContracts?.DSPONSORADMIN?.address}
                 action={() => {
+                  setIsLoadingSubmitButton(true);
+
                   toast.promise(handleSubmit(true), {
                     pending: "Waiting for confirmation 🕒",
                     success: "Transaction confirmed 👌",
                     error: "Transaction rejected 🤯"
                   });
+
+                  setIsLoadingSubmitButton(false);
                 }}
-                className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate ? "!btn-disabled !cursor-not-allowed !text-black" : "!bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer"} `}
-                isDisabled={!validate || isLoadingButton}
+                className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate || isLoadingSubmitButton ? "!btn-disabled !cursor-not-allowed !text-black" : "!bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer"} `}
+                isDisabled={!validate || isLoadingSubmitButton}
               >
-                {isLoadingButton ? <Spinner size="sm" color="default" /> : buttonTitle}
+                {isLoadingSubmitButton ? <Spinner size="sm" color="default" /> : buttonTitle}
               </Web3Button>
             </div>
           </div>
@@ -292,7 +297,7 @@ const PreviewModal = ({
   return (
     <div>
       <div className="modal-dialog max-h-[75vh] max-w-2xl">
-        <div className="modal-content !bg-secondaryBlack">
+        <div className="modal-content !bg-secondaryBlack md:min-w-[550px]">
           <div className="modal-header">
             <h5 className="modal-title mr-8" id="placeBidLabel">
               {!successFullUpload ? modalTitle : successFullUploadModal.title}
@@ -311,9 +316,9 @@ const PreviewModal = ({
             </button>
           </div>
 
-          <div className="modal-body p-6 flex gap-4 items-center justify-center">
+          <div className="modal-body p-6 flex gap-4 items-center">
             {!successFullUpload ? (
-              <div className="flex flex-wrap gap-8 md:flex-row flex-col">
+              <div className="flex text-left flex-wrap gap-8 md:flex-row flex-col">
                 <div>
                   <p className="font-display mb-2 block dark:text-white">
                     {name.length > 0 ? (
@@ -546,7 +551,7 @@ const PreviewModal = ({
                         preview
                       </label>
                       <div
-                        className="dark:bg-secondaryBlack dark:border-jacarta-600 border-jacarta-100  group relative flex max-w-md flex-col items-center justify-center rounded-lg border-2 border-dashed"
+                        className="dark:bg-secondaryBlack dark:border-jacarta-800 border-jacarta-100  group relative flex max-w-md flex-col items-center justify-center rounded-lg border-2 border-dashed"
                         style={{
                           width:
                             imageUrlVariants.length > 0
@@ -574,7 +579,7 @@ const PreviewModal = ({
                 <div className="flex gap-4">
                   <p>{successFullUploadModal.body} </p>
                   <div
-                    className="dark:border-jacarta-600 bg-green   flex h-6 w-6 items-center justify-center rounded-full border-2 border-white"
+                    className="dark:border-jacarta-800 bg-green   flex h-6 w-6 items-center justify-center rounded-full border-2 border-white"
                     data-tippy-content="Verified Collection"
                   >
                     <svg
@@ -594,74 +599,75 @@ const PreviewModal = ({
             )}
           </div>
 
-          <div className="modal-footer">
-            <div className="flex items-center justify-center space-x-4">
-              <div className="flex items-center gap-4">
+          <div className="modal-footer w-full">
+            <div className="flex items-center justify-center space-x-4 w-full">
+              <div className="flex items-center gap-4 w-full">
                 {!successFullUpload ? (
-                  approvalForAllToken ? (
-                    <Web3Button
-                      contractAddress={
-                        currentChainObject?.smartContracts?.DSPONSORADMIN?.address ?? "no address"
-                      }
-                      action={() => {
-                        toast.promise(handleSubmit(address), {
-                          pending: "Waiting for confirmation 🕒",
-                          success: "Transaction confirmed 👌",
-                          error: "Transaction rejected 🤯"
-                        });
-                      }}
-                      className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate || isLoadingButton ? "!btn-disabled !cursor-not-allowed !text-black" : "!bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer"} `}
-                      isDisabled={!validate || isLoadingButton}
+                  <div className="flex flex-col gap-2 justify-center items-center w-full">
+                    <div className="grid grid-cols-1 w-full mx-auto md:grid-cols-2 gap-6">
+                      <Web3Button
+                        contractAddress={
+                          currentChainObject?.smartContracts?.DSPONSORMP?.address ?? "no address"
+                        }
+                        action={() => {
+                          setIsLoadingApproveButton(true);
+
+                          toast.promise(handleApprove, {
+                            pending: "Waiting for confirmation 🕒",
+                            success: "Approval confirmed 👌",
+                            error: "Approval rejected 🤯"
+                          });
+
+                          setIsLoadingApproveButton(false);
+                        }}
+                        className={`!rounded-full !w-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate || isLoadingApproveButton || approvalForAllToken ? "!btn-disabled !cursor-not-allowed !text-black opacity-30" : "!bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer"} `}
+                        isDisabled={!validate || isLoadingApproveButton || approvalForAllToken}
+                      >
+                        {isLoadingApproveButton ? (
+                          <Spinner size="sm" color="default" />
+                        ) : !isListing ? (
+                          "Approve 🔓 (1/2)"
+                        ) : (
+                          "Authorize 🔓 (1/2)"
+                        )}
+                      </Web3Button>
+
+                      <Web3Button
+                        contractAddress={
+                          currentChainObject?.smartContracts?.DSPONSORADMIN?.address ?? "no address"
+                        }
+                        action={() => {
+                          setIsLoadingSubmitButton(true);
+
+                          toast.promise(handleSubmit(address), {
+                            pending: "Waiting for confirmation 🕒",
+                            success: "Transaction confirmed 👌",
+                            error: "Transaction rejected 🤯"
+                          });
+
+                          setIsLoadingSubmitButton(false);
+                        }}
+                        className={`!w-full !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate || isLoadingSubmitButton || !approvalForAllToken ? "!btn-disabled !cursor-not-allowed !text-black" : "!bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer"} `}
+                        isDisabled={!validate || isLoadingSubmitButton || !approvalForAllToken}
+                      >
+                        {isLoadingSubmitButton ? (
+                          <Spinner size="sm" color="default" />
+                        ) : (
+                          buttonTitle
+                        )}
+                      </Web3Button>
+                    </div>
+
+                    <InfoIcon
+                      text={`You need to approve the marketplace contract to spend your NFT on this
+      transaction.`}
                     >
-                      {isLoadingButton ? <Spinner size="sm" color="default" /> : buttonTitle}
-                    </Web3Button>
-                  ) : (
-                    // approve for listing
-                    <>
-                      <div className="flex flex-col items-center gap-2">
-                        <Web3Button
-                          contractAddress={
-                            currentChainObject?.smartContracts?.DSPONSORMP?.address ?? "no address"
-                          }
-                          action={() => {
-                            toast.promise(handleApprove, {
-                              pending: "Waiting for confirmation 🕒",
-                              success: "Approval confirmed 👌",
-                              error: "Approval rejected 🤯"
-                            });
-                          }}
-                          className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate || isLoadingButton ? "!btn-disabled !cursor-not-allowed !text-black opacity-30" : "!bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer"} `}
-                          isDisabled={!validate || isLoadingButton}
-                        >
-                          {isLoadingButton ? (
-                            <Spinner size="sm" color="default" />
-                          ) : !isListing ? (
-                            "Approve 🔓"
-                          ) : (
-                            "Authorize Marketplace 🔓"
-                          )}
-                        </Web3Button>
-                        <Popover placement="bottom" isOpen={isHovered}>
-                          <PopoverButton
-                            className="cursor-help"
-                            onMouseEnter={() => setIsHovered(true)}
-                            onMouseLeave={() => setIsHovered(false)}
-                          >
-                            <span className="text-xs text-jacarta-100 inline-flex items-center gap-1">
-                              <InformationCircleIcon className="w-4 h-4 text-jacarta-100" />
-                              Why do I have to approve ?
-                            </span>
-                          </PopoverButton>
-                          <PopoverPanel className="p-4 bg-primaryBlack text-white rounded-lg">
-                            <p className="text-sm">
-                              You need to approve the marketplace contract to spend your NFT on this
-                              transaction.
-                            </p>
-                          </PopoverPanel>
-                        </Popover>
-                      </div>
-                    </>
-                  )
+                      <span className="text-xs text-jacarta-100 inline-flex items-center gap-1">
+                        <InformationCircleIcon className="w-4 h-4 text-jacarta-100" />
+                        Why do I have to approve ?
+                      </span>
+                    </InfoIcon>
+                  </div>
                 ) : successFullUploadModal.hrefButton !== null ? (
                   <Link href={successFullUploadModal.hrefButton ?? "#"}>
                     <button className="!rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all !bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer">

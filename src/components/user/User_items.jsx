@@ -16,6 +16,7 @@ import "tippy.js/dist/tippy.css";
 import handleCopy from "../../utils/handleCopy";
 import Tippy from "@tippyjs/react";
 import { ClipboardIcon } from "@heroicons/react/20/solid";
+import Input from "../ui/input";
 
 const User_items = ({
   createdData,
@@ -128,11 +129,11 @@ const User_items = ({
                   </button>
 
                   <div className="relative w-full h-full">
-                    <input
-                      ref={inputRef}
+                    <Input
                       disabled
+                      ref={inputRef}
                       value={`${frontURL}/?_rid=${userAddr}`}
-                      className="pr-12 h-full w-full bg-secondaryBlack border hover:border-opacity-20 border-white border-opacity-10 rounded-2lg p-2 focus:border-white focus:border-opacity-20 focus:ring-transparent dark:bg-secondaryBlack dark:text-white"
+                      className="pr-12 h-full w-full border hover:border-opacity-20 border-white border-opacity-10 rounded-2lg p-2 focus:border-white focus:border-opacity-20 focus:ring-transparent dark:bg-secondaryBlack dark:text-white"
                     />
                     <Tippy content={copied ? "Copied!" : "Copy"} placement="top" trigger="click">
                       <button
@@ -154,7 +155,7 @@ const User_items = ({
         <div className="container">
           {/* <!-- Tabs Nav --> */}
           <Tabs className="tabs">
-            <TabList className="nav nav-tabs hide-scrollbar my-12 flex items-center justify-start overflow-x-auto overflow-y-hidden border-b border-jacarta-100 pb-px dark:border-jacarta-600 md:justify-center">
+            <TabList className="nav nav-tabs hide-scrollbar my-12 flex items-center justify-start overflow-x-auto overflow-y-hidden border-b border-jacarta-100 pb-px dark:border-jacarta-800 md:justify-center">
               {tabItem.map(({ id, text, icon }) => {
                 return (
                   <Tab className="nav-item" key={id} onClick={() => setItemActive(id)}>

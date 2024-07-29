@@ -8,6 +8,7 @@ import { ClipboardIcon } from "@heroicons/react/24/solid";
 import handleCopy from "../../../utils/handleCopy";
 import Tippy from "@tippyjs/react";
 import { ChromePicker } from "react-color";
+import Input from "../../ui/input.jsx";
 
 const initialColumns = (numberOfTokens) => {
   if (numberOfTokens % 7 === 0) return 7;
@@ -43,6 +44,7 @@ const HtmlIntegration = ({ chainId, offerId, offerTokens }) => {
   );
   const [color, setColor] = useState("#0d102d");
   const [htmlSrc, setHtmlSrc] = useState("");
+  const [isExpanded, setIsExpanded] = useState(false);
 
   useEffect(() => {
     const savedSettings = localStorage.getItem("htmlSettings");
@@ -86,7 +88,6 @@ const HtmlIntegration = ({ chainId, offerId, offerTokens }) => {
       ) {
         tableHTML += `<tr>`;
 
-        const totalRows = Math.ceil(offerTokens?.length / numberOfColumns);
         const isLastRow = rowIndex === numberOfRows - 1;
         let realElementsInLastRow = sortedOfferTokens.length % numberOfColumns;
         realElementsInLastRow =
@@ -133,6 +134,12 @@ const HtmlIntegration = ({ chainId, offerId, offerTokens }) => {
     const htmlSrc = generateTableHTML();
     setHtmlSrc(htmlSrc);
   }, [chainId, offerId, offerTokens, numberOfColumns, bgColor, numberOfRows, color]);
+
+  const toggleExpansion = () => {
+    setIsExpanded(!isExpanded);
+  };
+
+  const truncatedHtmlSrc = htmlSrc.length > 250 ? htmlSrc.substring(0, 250) + "..." : htmlSrc;
 
   return (
     <div className="flex flex-col gap-4">
@@ -218,7 +225,15 @@ const HtmlIntegration = ({ chainId, offerId, offerTokens }) => {
             </Tippy>
           </button>
         </div>
-        <code className="text-sm">{htmlSrc}</code>
+
+        <code className="text-sm">
+          {isExpanded ? htmlSrc : truncatedHtmlSrc}
+          {htmlSrc?.length > 250 && (
+            <button onClick={toggleExpansion} className="text-primaryPurple mt-2 ml-2">
+              {isExpanded ? "Show Less" : "Show More"}
+            </button>
+          )}
+        </code>
       </div>
 
       <Divider className="my-4" />
@@ -228,7 +243,7 @@ const HtmlIntegration = ({ chainId, offerId, offerTokens }) => {
       <div className="flex flex-wrap items-start gap-8">
         <div className="flex flex-col gap-4">
           <label className="flex items-center gap-2">
-            <input
+            <Input
               type="checkbox"
               checked={columns}
               onChange={(e) => {
@@ -240,7 +255,7 @@ const HtmlIntegration = ({ chainId, offerId, offerTokens }) => {
                   setNumberOfColumns(offerTokens?.length);
                 }
               }}
-              className={`p-2 rounded-md ${columns ? "bg-primaryPurple text-primaryPurple" : "bg-secondaryBlack text-jacarta-100"}`}
+              className=" !text-primaryPurple border-jacarta-200 focus:ring-primaryPurple/20 dark:border-jacarta-500 h-5 !w-5 self-start rounded focus:ring-offset-0"
             />
             <span className="text-white">Number of columns</span>
             <InfoIcon text="You can set the number of columns to match the designated space on your page.">
@@ -248,7 +263,7 @@ const HtmlIntegration = ({ chainId, offerId, offerTokens }) => {
             </InfoIcon>
           </label>
           {columns && (
-            <input
+            <Input
               type="number"
               value={parseInt(numberOfColumns)}
               onChange={(e) => {
@@ -262,7 +277,6 @@ const HtmlIntegration = ({ chainId, offerId, offerTokens }) => {
                 }
               }}
               placeholder="Number of columns"
-              className="p-2 rounded-md bg-secondaryBlack text-jacarta-100"
               min={1}
               max={Math.min(offerTokens?.length, 25)}
             />
@@ -271,11 +285,11 @@ const HtmlIntegration = ({ chainId, offerId, offerTokens }) => {
 
         <div className="flex flex-col gap-4">
           <label className="flex items-center gap-2">
-            <input
+            <Input
               type="checkbox"
               checked={bgColor}
               onChange={(e) => setBgColor(e.target.checked)}
-              className={`p-2 rounded-md ${bgColor ? "bg-primaryPurple text-primaryPurple" : "bg-secondaryBlack text-jacarta-100"}`}
+              className=" !text-primaryPurple border-jacarta-200 focus:ring-primaryPurple/20 dark:border-jacarta-500 h-5 !w-5 self-start rounded focus:ring-offset-0"
             />
             <span className="text-white">Background color</span>
             <InfoIcon text="By default, the background color of the table is not defined. You can select one if desired.">

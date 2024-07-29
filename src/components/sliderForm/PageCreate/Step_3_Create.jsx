@@ -3,6 +3,7 @@ import Image from "next/image";
 import { Switch, cn } from "@nextui-org/react";
 
 import { FileUploader } from "react-drag-drop-files";
+import Input from "../../ui/input";
 const fileTypes = ["JPG", "PNG", "WEBP"];
 const Step_3_Create = ({
   stepsRef,
@@ -65,10 +66,9 @@ const Step_3_Create = ({
                 Specifiy where advertisements will be exposed (website URL, mobile app, ...)
                 <span className="text-red">*</span>
               </label>
-              <input
+              <Input
                 type="url"
                 id="item-external-link"
-                className="dark:bg-secondaryBlack border-jacarta-100 hover:ring-primaryPurple/10 focus:ring-primaryPurple dark:border-primaryPurple dark:placeholder:text-jacarta-100 w-full rounded-lg py-3 px-3 hover:ring-2 dark:text-white"
                 placeholder="Provide an url, the name of your app, or what characterizes your platform."
                 onChange={handleChange}
                 value={link}
@@ -92,13 +92,13 @@ const Step_3_Create = ({
               )}
 
               <div
-                className={`dark:bg-secondaryBlack dark:border-primaryPurple border-jacarta-100 group relative flex max-w-md flex-col items-center justify-center rounded-lg border-2 border-dashed bg-white  px-1 text-center ${
+                className={`bg-jacarta-800 dark:border-primaryPurple border-jacarta-100 group relative flex max-w-md flex-col items-center justify-center rounded-lg border-2 border-dashed px-1 text-center ${
                   previewImage.length <= 0 ? "py-20" : "p-1"
                 }`}
                 style={{ width: `300px`, height: `300px` }}
               >
                 <div
-                  className={`relative z-10 cursor-pointer  ${!previewImage ? "p-1" : "px-0 h-full w-full"}`}
+                  className={`relative flex justify-center items-center z-10 cursor-pointer  ${!previewImage ? "p-1" : "px-0 h-full w-full"}`}
                 >
                   {previewImage.length <= 0 ? (
                     <div>
@@ -182,7 +182,7 @@ const Step_3_Create = ({
 
               {isSelected ? (
                 <div
-                  className={`dark:bg-secondaryBlack dark:border-primaryPurple border-jacarta-100 group relative flex max-w-md flex-col items-center justify-center rounded-lg border-2 border-dashed bg-white  px-5 text-center py-5`}
+                  className={`bg-jacarta-800 dark:border-primaryPurple border-jacarta-100 group relative flex max-w-md flex-col items-center justify-center rounded-lg border-2 border-dashed px-5 text-center py-5`}
                 >
                   <div className={`relative z-10 cursor-pointer px-6`}>
                     <div>
@@ -220,10 +220,9 @@ const Step_3_Create = ({
                   >
                     Url of your terms
                   </label>
-                  <input
+                  <Input
                     type="url"
                     id="item-external-link"
-                    className="dark:bg-secondaryBlack border-jacarta-100 hover:ring-primaryPurple/10 focus:ring-primaryPurple dark:border-primaryPurple dark:placeholder:text-jacarta-100 w-full rounded-lg py-3 px-3 hover:ring-2 dark:text-white"
                     placeholder="Url of your terms Eg.  https://yoursite.com"
                     onChange={handleChangeTerms}
                     value={terms}

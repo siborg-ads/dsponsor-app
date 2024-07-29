@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { Divider } from "@nextui-org/react";
 import * as Switch from "@radix-ui/react-switch";
 import { Web3Button, useContract, useContractWrite } from "@thirdweb-dev/react";
 import config from "../../config/config";
@@ -11,6 +10,8 @@ import { FileUploader } from "react-drag-drop-files";
 import Image from "next/image";
 import { DatePicker } from "@nextui-org/date-picker";
 import { parseDate } from "@internationalized/date";
+import Input from "../ui/input.jsx";
+import TextArea from "../ui/textarea.jsx";
 
 const fileTypes = ["JPG", "PNG", "WEBP"];
 
@@ -29,7 +30,7 @@ const UpdateOffer = ({ offer }) => {
   const [initialDescription, setInitialDescription] = useState("");
   const [description, setDescription] = useState("");
   const [initialImageUrl, setInitialImageUrl] = useState("");
-  const [imageUrl, setImageUrl] = useState("");
+  const [, setImageUrl] = useState("");
   const [initialExternalLink, setInitialExternalLink] = useState("");
   const [externalLink, setExternalLink] = useState("");
   const [initialValidDateFrom, setInitialValidDateFrom] = useState(null);
@@ -61,7 +62,7 @@ const UpdateOffer = ({ offer }) => {
     let finalMetadatas = { ...originalMetadatas };
 
     // check if image has changed, if so, upload the new image
-    let newImageUrl;
+    let newImageUrl = null;
     if (files.length > 0) {
       try {
         const imageUri = await storage.upload(files[0]);
@@ -72,16 +73,12 @@ const UpdateOffer = ({ offer }) => {
       }
     }
 
-    if (!newImageUrl) {
-      throw new Error("Error uploading the image");
-    }
-
-    // update the metadata object with the new image url
+    // update the metadata object with the new image url or keep the old one
     finalMetadatas = {
       ...finalMetadatas,
       offer: {
         ...finalMetadatas?.offer,
-        image: newImageUrl
+        image: newImageUrl ?? originalMetadatas?.offer?.image
       }
     };
 
@@ -343,6 +340,28 @@ const UpdateOffer = ({ offer }) => {
   };
 
   const handleUpdateOffer = async (originalMetadatas) => {
+    // check image ratio
+    // ratio should be "0" or "x:x" specific format with x being a number
+    if (imageRatio !== "" && imageRatio !== "0") {
+      const [width, height] = imageRatio.split(":");
+      const length = imageRatio.split(":").length;
+
+      if (length > 2) {
+        toast("Image ratio is not correct, it should be 0 or width:height", { type: "error" });
+        return;
+      }
+
+      if (isNaN(width) || isNaN(height)) {
+        toast("Image ratio is not correct, it should be 0 or width:height", { type: "error" });
+        return;
+      }
+
+      if (width === "" || height === "") {
+        toast("Image ratio is not correct, it should be 0 or width:height", { type: "error" });
+        return;
+      }
+    }
+
     // remove empty strings from admins and validators
     const updatedAdmins = admins?.filter((admin) => !!admin) ?? [];
     const updatedValidators = validators?.filter((validator) => !!validator) ?? [];
@@ -430,40 +449,38 @@ const UpdateOffer = ({ offer }) => {
   return (
     <div className="flex flex-col gap-4 justify-center w-full">
       <div className="flex items-center flex-wrap gap-8">
-        <div className="mb-4">
+        <div className="mb-4 w-1/3">
           <label className="block text-gray-700 text-sm font-semibold mb-2">Offer name</label>
-          <input
+          <Input
             type="text"
-            className="bg-secondaryBlack rounded-lg w-full p-2 text-white"
             value={name}
-            placeholder={name ?? ""}
             onChange={(e) => setName(e.target.value)}
+            placeholder={name ?? ""}
+            className="rounded-lg w-full p-2 text-white"
           />
         </div>
 
-        <div className="mb-4">
-          <label className="block text-gray-700 text-sm font-semibold mb-2">
-            Offer Description
-          </label>
-          <input
-            type="text"
-            className="bg-secondaryBlack rounded-lg w-full p-2 text-white"
-            value={description}
-            placeholder={description ?? ""}
-            onChange={(e) => setDescription(e.target.value)}
-          />
-        </div>
-
-        <div className="mb-4">
+        <div className="mb-4 w-1/3">
           <label className="block text-gray-700 text-sm font-semibold mb-2">External Link</label>
-          <input
+          <Input
             type="text"
-            className="bg-secondaryBlack rounded-lg w-full p-2 text-white"
             value={externalLink}
-            placeholder={externalLink ?? ""}
             onChange={(e) => setExternalLink(e.target.value)}
+            placeholder={externalLink ?? ""}
+            className="rounded-lg w-full p-2 text-white"
           />
         </div>
+      </div>
+
+      <div className="mb-4">
+        <label className="block text-gray-700 text-sm font-semibold mb-2">Offer Description</label>
+        <TextArea
+          type="text"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          placeholder={description ?? ""}
+          className="bg-secondaryBlack rounded-lg w-full p-2 text-white"
+        />
       </div>
 
       <div className="mb-4">
@@ -503,8 +520,9 @@ const UpdateOffer = ({ offer }) => {
                   <Image
                     src={previewImages[0] ?? ""}
                     fill={true}
+                    objectFit="cover"
                     alt="Preview"
-                    className="object-contain h-full"
+                    className="object-cover h-full"
                   />
                 </div>
               )}
@@ -563,11 +581,10 @@ const UpdateOffer = ({ offer }) => {
         {admins &&
           admins.map((admin, index) => (
             <div key={index} className="flex items-center gap-4 mb-2">
-              <input
+              <Input
                 type="text"
-                className="bg-secondaryBlack rounded-lg p-2 text-white w-1/2"
-                value={admin}
                 placeholder={admin}
+                value={admin}
                 onChange={(e) => handleAdminChange(index, e.target.value)}
               />
               <button
@@ -596,11 +613,10 @@ const UpdateOffer = ({ offer }) => {
           {validators &&
             validators.map((validator, index) => (
               <div key={index} className="flex items-center gap-2 mb-2">
-                <input
+                <Input
                   type="text"
-                  className="bg-secondaryBlack rounded-lg p-2 text-white w-1/2"
-                  value={validator}
                   placeholder={validator}
+                  value={validator}
                   onChange={(e) => handleValidatorChange(index, e.target.value)}
                 />
                 <button
@@ -629,12 +645,11 @@ const UpdateOffer = ({ offer }) => {
           <div className="flex flex-col gap-2 mb-4">
             <label className="block text-gray-700 text-xs">Image aspect ratio (width:height)</label>
             <div className="flex items-center gap-2">
-              <input
+              <Input
                 type="text"
-                className="bg-secondaryBlack rounded-lg p-2 text-white"
-                value={imageRatio}
                 placeholder={imageRatio}
-                onChange={(e) => handleImageRatioChange(e.target.value)}
+                value={imageRatio}
+                onChange={handleImageRatioChange}
               />
             </div>
             <span className="text-jacarta-300 text-xs">

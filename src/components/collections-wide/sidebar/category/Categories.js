@@ -25,7 +25,7 @@ const Categories = () => {
               index === activeCategory
                 ? "border-primaryPurple bg-primaryPurple text-white border"
                 : `border border-jacarta-100 bg-white text-${category.color}-500`
-            } px-4 font-display text-sm font-semibold transition-colors hover:border-transparent hover:bg-primaryPurple hover:text-white dark:border-jacarta-600 dark:bg-primaryBlack dark:text-white dark:hover:border-transparent dark:hover:bg-primaryPurple dark:hover:text-white`}
+            } px-4 font-display text-sm font-semibold transition-colors hover:border-transparent hover:bg-primaryPurple hover:text-white dark:border-jacarta-800 dark:bg-primaryBlack dark:text-white dark:hover:border-transparent dark:hover:bg-primaryPurple dark:hover:text-white`}
             onClick={() => handleCategoryClick(index)}
           >
             <span>{category.name}</span>

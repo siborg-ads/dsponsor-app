@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Input from "../../../ui/input";
 
 const ChainCurrency = () => {
   const chainCurrencies = [
@@ -33,10 +34,10 @@ const ChainCurrency = () => {
       {chainCurrencies.map((currency) => (
         <li key={currency.id}>
           <label className="flex items-center cursor-pointer w-full">
-            <input
+            <Input
               type="checkbox"
               id="terms"
-              className="h-5 w-5 mr-3 rounded border-jacarta-200 text-primaryPurple checked:bg-primaryPurple focus:ring-primaryPurple/20 focus:ring-offset-0 dark:border-jacarta-500 dark:bg-jacarta-600"
+              className="h-5 w-5 mr-3 rounded border-jacarta-200 text-primaryPurple checked:bg-primaryPurple focus:ring-primaryPurple/20 focus:ring-offset-0 dark:border-jacarta-500 dark:bg-jacarta-800"
             />
             <figure className="relative mr-2 w-8 shrink-0 flex">
               <Image

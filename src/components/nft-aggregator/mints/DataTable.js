@@ -142,7 +142,7 @@ const DataTable = () => {
       {data.map((item) => (
         <tr
           key={item.id}
-          className="flex flex-wrap justify-between border-t border-jacarta-100 py-2 px-4 transition-shadow hover:shadow-lg dark:border-jacarta-600 dark:bg-primaryBlack"
+          className="flex flex-wrap justify-between border-t border-jacarta-100 py-2 px-4 transition-shadow hover:shadow-lg dark:border-jacarta-800 dark:bg-primaryBlack"
           role="row"
         >
           <td className="flex w-1/2 sm:w-[30%] lg:w-[24%]">
@@ -220,7 +220,7 @@ const DataTable = () => {
               <span className="text-sm text-jacarta-900 dark:text-white">{item.percentage}</span>
               <span>&nbsp;(614)</span>
             </div>
-            <div className="w-24 overflow-hidden rounded-lg bg-jacarta-100 dark:bg-jacarta-600">
+            <div className="w-24 overflow-hidden rounded-lg bg-jacarta-100 dark:bg-jacarta-800">
               <div
                 className="h-1.5 rounded-lg bg-primaryPurple"
                 style={{ width: item.percentage }}

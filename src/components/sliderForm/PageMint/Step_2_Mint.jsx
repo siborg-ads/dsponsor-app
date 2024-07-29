@@ -1,3 +1,5 @@
+import Input from "../../ui/input.jsx";
+
 const Step_2_Mint = ({ stepsRef, styles, setLink, link, currentSlide, numSteps }) => {
   const handleChange = (e) => {
     let value = e.target.value;
@@ -22,10 +24,9 @@ const Step_2_Mint = ({ stepsRef, styles, setLink, link, currentSlide, numSteps }
             should lead to a page that expands on the content or service represented by the image.
             Make sure the URL is correct and leads to a safe, relevant webpage.
           </p>
-          <input
+          <Input
             type="url"
             id="item-external-link"
-            className="dark:bg-secondaryBlack text-white border-jacarta-100 hover:ring-white focus:ring-white dark:border-jacarta-200 dark:placeholder:text-jacarta-100 w-full rounded-lg py-3 px-3 dark:text-white"
             placeholder="https://yoursite.com"
             onChange={handleChange}
             value={link}

@@ -39,7 +39,7 @@ const Collection_dropdown = () => {
     <>
       <div className="dropdown relative my-1 cursor-pointer">
         <button
-          className="dark:bg-secondaryBlack dropdown-toggle border-jacarta-100 dark:border-jacarta-600 inline-flex w-48 items-center justify-between rounded-lg border bg-white py-2 px-3 text-sm dark:text-white"
+          className="dark:bg-secondaryBlack dropdown-toggle border-jacarta-100 dark:border-jacarta-800 inline-flex w-48 items-center justify-between rounded-lg border bg-white py-2 px-3 text-sm dark:text-white"
           onClick={handleDropdown}
         >
           <span className="font-display">Trending</span>
@@ -66,7 +66,7 @@ const Collection_dropdown = () => {
             return (
               <button
                 key={id}
-                className="dropdown-item font-display text-jacarta-900 dark:hover:bg-jacarta-600 hover:bg-jacarta-50 flex w-full items-center justify-between rounded-xl px-5 py-2 text-left text-sm transition-colors dark:text-white"
+                className="dropdown-item font-display text-jacarta-900 dark:hover:bg-jacarta-800 hover:bg-jacarta-50 flex w-full items-center justify-between rounded-xl px-5 py-2 text-left text-sm transition-colors dark:text-white"
                 onClick={() => {
                   setDropdownItemActive(id);
                   dispatch(updateCollectionData(text));

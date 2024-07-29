@@ -39,7 +39,17 @@ const Step_1_Mint = ({
                     return (
                       <div key={id}>
                         <ul>
-                          <li>{variant ? `- Format : ${variant}` : "- Format : No variant"}</li>
+                          <li>
+                            {variant
+                              ? `- Format : ${variant} (example:
+                              ${(() => {
+                                const [width, height] = variant.split(":");
+                                return width && height
+                                  ? `${width * 100}x${height * 100}px`
+                                  : "No size";
+                              })()})`
+                              : "- Format : Any URL accepted"}
+                          </li>
                         </ul>
                       </div>
                     );
@@ -52,7 +62,7 @@ const Step_1_Mint = ({
                     return (
                       <div key={id}>
                         <ul>
-                          <li>{variant ? `- ${variant}` : "- No variant"}</li>
+                          <li>{variant ? `- ${variant}` : "- Any URL accepted"}</li>
                         </ul>
                       </div>
                     );
@@ -60,7 +70,7 @@ const Step_1_Mint = ({
               </div>
               {/* <select
                 id="adIntegrationSelect"
-                className="dark:bg-secondaryBlack min-w-[110px] border-jacarta-100 hover:ring-primaryPurple/10 focus:ring-primaryPurple dark:border-jacarta-600 dark:placeholder:text-jacarta-100 w-full rounded-lg py-3 px-5 hover:ring-2 dark:text-white"
+                className="dark:bg-secondaryBlack min-w-[110px] border-jacarta-100 hover:ring-primaryPurple/10 focus:ring-primaryPurple dark:border-jacarta-800 dark:placeholder:text-jacarta-100 w-full rounded-lg py-3 px-5 hover:ring-2 dark:text-white"
                 value={selectedIntegration}
                 onChange={handleSelectionChange}
               >

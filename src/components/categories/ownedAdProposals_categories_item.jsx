@@ -271,6 +271,15 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
           {!showSliderForm && (
             <div className={`grid w-full grid-cols-1 gap-[1.875rem] md:grid-cols-2 lg:grid-cols-4`}>
               {data?.map((item, index) => {
+                let currencyDecimals = 0;
+                if (item?.prices?.length > 0) {
+                  currencyDecimals = item?.prices[0]?.currencyDecimals;
+                } else {
+                  currencyDecimals = item?.marketplaceListings?.sort(
+                    (a, b) => Number(b?.id) - Number(a?.id)
+                  )[0]?.currencyDecimals;
+                }
+
                 return isSelectionActive ? (
                   <div
                     onClick={() => handleSelection(item)}
@@ -282,6 +291,11 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
                       isToken={true}
                       listingType={item?.marketplaceListings[0]?.listingType}
                       isListing={false}
+                      isDisabled={
+                        item?.disable ||
+                        (!item?.nftContract?.prices[0]?.enabled && item?.mint === null) ||
+                        new Date(item?.metadata?.offer?.valid_to) < new Date()
+                      }
                       isSelectionActive={isSelectionActive}
                       disableLink={isSelectionActive}
                       url={
@@ -290,6 +304,7 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
                           : `/${item?.chainConfig?.chainId}/offer/${item.offerId}/${item.tokenId}?tokenData=${item.tokenData}`
                       }
                       availableToSubmitAdFromOwnedTokens={true}
+                      currencyDecimals={currencyDecimals}
                     />
                   </div>
                 ) : (
@@ -299,6 +314,11 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
                     isToken={true}
                     listingType={item?.marketplaceListings[0]?.listingType}
                     isListing={false}
+                    isDisabled={
+                      item?.disable ||
+                      (!item?.nftContract?.prices[0]?.enabled && item?.mint === null) ||
+                      new Date(item?.metadata?.offer?.valid_to) < new Date()
+                    }
                     isSelectionActive={isSelectionActive}
                     canSubmitAdFromProfileOwnedTokens={true}
                     url={
@@ -307,6 +327,7 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
                         : `/${item?.chainConfig?.chainId}/offer/${item.offerId}/${item.tokenId}?tokenData=${item.tokenData}`
                     }
                     availableToSubmitAdFromOwnedTokens={true}
+                    currencyDecimals={currencyDecimals}
                   />
                 );
               })}
@@ -381,7 +402,7 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
 
             <>
               {imageURLSteps.map((step, index) => (
-                <>
+                <div key={step.uniqueId}>
                   {currentSlide === index + 1 && (
                     <Step3Mint
                       key={step.uniqueId}
@@ -397,7 +418,7 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
                       numSteps={numSteps}
                     />
                   )}
-                </>
+                </div>
               ))}
             </>
 

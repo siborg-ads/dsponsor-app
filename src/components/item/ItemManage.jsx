@@ -14,7 +14,9 @@ const ItemManage = ({
   royalties,
   dsponsorNFTContract,
   dsponsorMpContract,
-  conditions
+  conditions,
+  tokenId,
+  setListingCreated
 }) => {
   const [listingModal, setListingModal] = useState(false);
   const [isLoadingButton, setIsLoadingButton] = useState(false);
@@ -30,7 +32,9 @@ const ItemManage = ({
 
   useEffect(() => {
     if (marketplaceListings?.length > 0) {
-      const lastBidder = marketplaceListings[0]?.bids[0]?.bidder;
+      const lastBidder = marketplaceListings
+        ?.sort((a, b) => b?.id - a?.id)
+        ?.bids?.sort((a, b) => b?.split("-")[1]?.id - a?.split("-")[1]?.id)[0]?.bidder;
       if (lastBidder && address && getAddress(lastBidder) === getAddress(address)) {
         setIsLastBidder(true);
       } else {
@@ -46,7 +50,7 @@ const ItemManage = ({
   const handleSubmitCancel = async () => {
     try {
       setIsLoadingButton(true);
-      const { listingType, id } = marketplaceListings[0];
+      const { listingType, id } = marketplaceListings.sort((a, b) => b?.id - a?.id)[0];
       if (listingType === "Auction") {
         await closeAuctionListing({ args: [id] });
       } else if (listingType === "Direct") {
@@ -67,13 +71,6 @@ const ItemManage = ({
       return (
         <span className="dark:text-jacarta-100 text-jacarta-100 text-sm">
           Auction has ended, you can complete the auction by clicking the button below.
-        </span>
-      );
-    }
-    if (conditions?.mintDisabled && !conditions?.isMinted) {
-      return (
-        <span className="dark:text-jacarta-100 text-jacarta-100 text-sm">
-          This token is not available for purchase.
         </span>
       );
     }
@@ -148,7 +145,6 @@ const ItemManage = ({
       (!conditions?.endTimeNotPassed &&
         conditions?.isCreated &&
         conditions?.isAuction &&
-        !conditions?.isLister &&
         conditions?.hasBids) ||
       (conditions?.isLister && !conditions?.hasBids)
     ) {
@@ -220,6 +216,8 @@ const ItemManage = ({
             handleListingModal={handleListingModal}
             offerData={offerData}
             marketplaceListings={marketplaceListings}
+            tokenId={tokenId}
+            setListingCreated={setListingCreated}
           />
         </div>
       )}

@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import Input from "../../../ui/input";
 
 const FilterWise = () => {
   const filterOptions = [
@@ -23,10 +24,10 @@ const FilterWise = () => {
       {filterOptions.map((option) => (
         <li key={option.id}>
           <label className="flex items-center cursor-pointer w-full">
-            <input
+            <Input
               type="checkbox"
               id={option.id}
-              className="h-5 w-5 mr-2 rounded border-jacarta-200 text-primaryPurple checked:bg-primaryPurple focus:ring-primaryPurple/20 focus:ring-offset-0 dark:border-jacarta-500 dark:bg-jacarta-600"
+              className="h-5 w-5 mr-3 rounded border-jacarta-200 text-primaryPurple checked:bg-primaryPurple focus:ring-primaryPurple/20 focus:ring-offset-0 dark:border-jacarta-500 dark:bg-jacarta-800"
               checked={selectedFilters.includes(option.id)}
               onChange={() => handleFilterToggle(option.id)}
             />

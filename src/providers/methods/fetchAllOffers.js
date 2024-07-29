@@ -5,7 +5,7 @@ export const fetchAllOffers = async (chainId) => {
   const path = new URL(`https://relayer.dsponsor.com/api/${chainId}/graph`);
 
   const GET_DATA = `
-    query OffersManagedByUser {
+    query {
       adOffers(
         first: 1000
       ) {
@@ -15,6 +15,8 @@ export const fetchAllOffers = async (chainId) => {
         # if token_metadata: token_metadata.name,
         metadataURL
         id # offerId
+        disable
+        initialCreator
         creationTimestamp # data (unix time)
         adParameters(where: { enable: true }) {
           enable
@@ -44,18 +46,105 @@ export const fetchAllOffers = async (chainId) => {
             tokenId
             mint {
               transactionHash # if = null => not minted yet, so it's available
+              from
+              currency
               to # address who receives the token
               tokenData # data linked to token id, search ticker for SiBorg ad offer for example
+              revenueTransaction {
+                id
+                blockTimestamp
+              }
+              amount
+              totalPaid
             }
             marketplaceListings {
               listingType
               status
               startTime
               endTime
+              lister
               id
+              reservePricePerToken
+              buyoutPricePerToken
+              currency
+              quantity
+              directBuys {
+                id
+                listing {
+                  id
+                  listingType
+                }
+                buyer
+                quantityBought
+                totalPricePaid
+                revenueTransaction {
+                  blockTimestamp
+                }
+                feeMethodology
+                amountSentToProtocol
+                protocolRecipient
+                amountSentToSeller
+                sellerRecipient
+                amountSentToCreator
+                creatorRecipient
+              }
+              token {
+                tokenId
+                id
+                nftContract {
+                  id
+                  royalty {
+                    bps
+                  }
+                  adOffers {
+                    id
+                    metadataURL
+                    disable
+                  }
+                }
+                mint {
+                  tokenData
+                }
+              }
+              bids {
+                id
+                listing
+                bidder
+                quantity
+                newPricePerToken
+                totalBidAmount
+                paidBidAmount
+                refundBonus
+                refundAmount
+                refundProfit
+                currency
+                status
+                creationTxHash
+                revenueTransaction
+                creationTimestamp
+                lastUpdateTimestamp
+                feeMethodology
+                amountSentToProtocol
+                protocolRecipient
+                amountSentToSeller
+                sellerRecipient
+                amountSentToCreator
+                creatorRecipient
+              }
             }
-            setInAllowList # to check is allowList (above) is true, define if is in allowlist
-            # current ad data proposals, per adParameter
+            marketplaceOffers {
+              id
+              offeror
+              expirationTimestamp
+              currency
+              totalPrice
+              status
+              creationTimestamp
+              tokenType
+              transferType
+              rentalExpirationTimestamp
+            }
+            setInAllowList
             currentProposals {
               adOffer {
                 id

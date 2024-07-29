@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { Tab, TabList, TabPanel, Tabs } from "react-tabs";
-import { Divider } from "@nextui-org/react";
 import ValidatedRefusedItems from "../collections/validated_refused_items";
 import ReviewCarousel from "../carousel/review_carousel";
 import AddProposalRefusedModal from "../modal/adProposalRefusedModal";
 import { ExclamationCircleIcon } from "@heroicons/react/24/solid";
 import InfoIcon from "../informations/infoIcon";
+import { CheckIcon, ClockIcon, XIcon } from "lucide-react";
 
 const Validation = ({
   chainId,
@@ -25,6 +25,7 @@ const Validation = ({
   setSponsorHasAtLeastOneRejectedProposalAndNoPending,
   mediaShouldValidateAnAd,
   isMedia,
+  isTokenView,
   itemTokenId
 }) => {
   const [pendingProposalData, setPendingProposalData] = useState([]);
@@ -40,18 +41,18 @@ const Validation = ({
     {
       id: 1,
       text: "Pending",
-      icon: "owned"
+      icon: <ClockIcon className="w-4 h-4" />
     },
     {
       id: 2,
       text: "Validated",
-      icon: "owned"
+      icon: <CheckIcon className="w-4 h-4" />
     },
 
     {
       id: 3,
       text: "Refused",
-      icon: "activity"
+      icon: <XIcon className="w-4 h-4" />
     }
   ];
   useEffect(() => {
@@ -119,15 +120,27 @@ const Validation = ({
       }
     }
 
-    const formattedPendingAds = Object.values(groupedPendingAds);
-    const formattedValidatedAds = Object.values(groupedValidatedAds);
-    const formattedRefusedAds = Object.values(groupedRefusedAds);
+    let formattedPendingAds = Object.values(groupedPendingAds);
+    let formattedValidatedAds = Object.values(groupedValidatedAds);
+    let formattedRefusedAds = Object.values(groupedRefusedAds);
+
+    if (isTokenView) {
+      formattedPendingAds = formattedPendingAds.filter(
+        (ad) => Number(ad?.tokenId) === Number(itemTokenId)
+      );
+      formattedValidatedAds = formattedValidatedAds.filter(
+        (ad) => Number(ad?.tokenId) === Number(itemTokenId)
+      );
+      formattedRefusedAds = formattedRefusedAds.filter(
+        (ad) => Number(ad?.tokenId) === Number(itemTokenId)
+      );
+    }
 
     setValidatedProposalData(formattedValidatedAds);
     setRefusedProposalData(formattedRefusedAds);
     setPendingProposalData(formattedPendingAds);
     setPendingProposalLength(formattedPendingAds.length);
-  }, [offer, offerId, successFullUploadModal]);
+  }, [isTokenView, offer, offerId, successFullUploadModal, itemTokenId]);
 
   const handleItemSubmit = async (approuved = false) => {
     let submissionArgs = [];
@@ -189,7 +202,7 @@ const Validation = ({
     <>
       {/* <!-- Tabs Nav --> */}
       <Tabs className="tabs">
-        <TabList className="nav nav-tabs scrollbar-custom mb-12 flex items-center justify-start overflow-x-auto overflow-y-hidden border-b border-jacarta-100 pb-px dark:border-jacarta-600 md:justify-center">
+        <TabList className="nav nav-tabs scrollbar-custom mb-12 flex items-center justify-start overflow-x-auto overflow-y-hidden border-b border-jacarta-100 pb-px dark:border-jacarta-800 md:justify-center">
           {tabItem.map(({ id, text, icon }) => {
             return (
               <Tab className="nav-item" key={id} onClick={() => setItemActive(id)}>
@@ -215,10 +228,8 @@ const Validation = ({
                         <ExclamationCircleIcon className="h-5 w-5 text-red dark:text-red" />
                       </InfoIcon>
                     )}
-                  <svg className="icon mr-1 h-5 w-5 fill-current">
-                    <use xlinkHref={`/icons.svg#icon-${icon}`}></use>
-                  </svg>
-                  <span className="font-display text-base font-medium">
+                  {icon}
+                  <span className="font-display text-base font-medium ml-2">
                     <div className="flex items-center">
                       <span>
                         {text} (

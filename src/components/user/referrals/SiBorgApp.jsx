@@ -4,10 +4,14 @@ import { useAddress } from "@thirdweb-dev/react";
 import Tippy from "@tippyjs/react";
 import { ClipboardIcon } from "@heroicons/react/20/solid";
 import "tippy.js/dist/tippy.css";
+import Input from "../../ui/input.jsx";
+import { useChainContext } from "../../../contexts/hooks/useChainContext";
 
 const SiBorgApp = () => {
   const [code, setCode] = useState(null);
   const [copied, setCopied] = useState(false);
+
+  const { currentChainObject } = useChainContext();
 
   const address = useAddress();
 
@@ -30,7 +34,7 @@ const SiBorgApp = () => {
         });
     };
 
-    fetchCode();
+    if (address) fetchCode();
   }, [address]);
 
   return (
@@ -43,8 +47,14 @@ const SiBorgApp = () => {
 
         <div className="text-jacarta-100 text-sm md:text-base w-3/4">
           <span>
-            Ad spaces token owners will soon be able to submit an ad to be displayed on the SiBorg
-            App.
+            Ad spaces token owners from the{" "}
+            <Link
+              href={`/${currentChainObject?.chainId}/offer/1`}
+              className="text-primaryPurple hover:text-opacity-80"
+            >
+              SiBorg Ads
+            </Link>{" "}
+            offer can submit an ad to be displayed on the SiBorg App.
           </span>
           <br />
           <span>
@@ -61,12 +71,7 @@ const SiBorgApp = () => {
         </div>
 
         <div className="relative md:w-2/5 w-full">
-          <input
-            type="text"
-            value={code ?? "Loading..."}
-            className="pr-12 h-full w-full bg-primaryBlack border hover:border-opacity-20 border-white border-opacity-10 rounded-2lg p-2 focus:border-white focus:border-opacity-20 focus:ring-transparent dark:bg-primaryBlack dark:text-white"
-            readOnly
-          />
+          <Input type="text" value={code ?? "Loading..."} readOnly />
           <Tippy content={copied ? "Copied!" : "Copy"} placement="top" trigger="click">
             <button
               onClick={() => {

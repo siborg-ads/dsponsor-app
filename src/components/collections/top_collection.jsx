@@ -100,7 +100,7 @@ const Top_collection = () => {
                       }}
                       className="block dropdown-text"
                     >
-                      <span className="dropdown-item font-normal text-base dark:hover:bg-jacarta-600 hover:bg-jacarta-50 block rounded-xl px-5 py-2 transition-colors">
+                      <span className="dropdown-item font-normal text-base dark:hover:bg-jacarta-800 hover:bg-jacarta-50 block rounded-xl px-5 py-2 transition-colors">
                         {text}
                       </span>
                     </button>
@@ -129,12 +129,12 @@ const Top_collection = () => {
                         height={48}
                         width={48}
                       />
-                      <div className="dark:border-jacarta-600 bg-secondaryBlack absolute -left-3 top-1/2 flex h-6 w-6 -translate-y-2/4 items-center justify-center rounded-full border-2 border-white text-xs text-white">
+                      <div className="dark:border-jacarta-800 bg-secondaryBlack absolute -left-3 top-1/2 flex h-6 w-6 -translate-y-2/4 items-center justify-center rounded-full border-2 border-white text-xs text-white">
                         {id}
                       </div>
                       {icon && (
                         <div
-                          className="dark:border-jacarta-600 bg-green absolute -left-3 top-[60%] flex h-6 w-6 items-center justify-center rounded-full border-2 border-white"
+                          className="dark:border-jacarta-800 bg-green absolute -left-3 top-[60%] flex h-6 w-6 items-center justify-center rounded-full border-2 border-white"
                           data-tippy-content="Verified Collection"
                         >
                           <svg

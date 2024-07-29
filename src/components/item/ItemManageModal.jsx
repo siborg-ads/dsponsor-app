@@ -8,6 +8,7 @@ import ModalHelper from "../Helper/modalHelper";
 import PreviewModal from "../modal/previewModal";
 
 import { useChainContext } from "../../contexts/hooks/useChainContext";
+import Input from "../ui/input";
 
 const ItemManageModal = ({
   handleListingModal,
@@ -16,7 +17,9 @@ const ItemManageModal = ({
   successFullListing,
   royalties,
   dsponsorNFTContract,
-  dsponsorMpContract
+  dsponsorMpContract,
+  tokenId,
+  setListingCreated
 }) => {
   const [selectedListingType, setSelectedListingType] = useState([]);
   const { currentChainObject } = useChainContext();
@@ -118,9 +121,11 @@ const ItemManageModal = ({
         const price = ethers.utils
           .parseUnits(selectedUnitPrice.toString(), tokenDecimals)
           .toString();
+        const assetContract = offerData?.nftContract?.id;
+
         const args = {
-          assetContract: offerData?.nftContract?.id,
-          tokenId: offerData?.nftContract?.tokens[0].tokenId,
+          assetContract: assetContract,
+          tokenId: tokenId,
           startTime: startTime,
           secondsUntilEndTime: secondsUntilEndTime,
           quantityToList: 1,
@@ -133,6 +138,7 @@ const ItemManageModal = ({
         };
         await createListing({ args: [args] });
         setSuccessFullListing(true);
+        setListingCreated(true);
       } catch (error) {
         setIsLoadingButton(false);
         console.error(error);
@@ -375,7 +381,7 @@ const ItemManageModal = ({
                                 ✓
                               </span>
                             )}
-                            <input
+                            <Input
                               id={`checkbox-${index}`}
                               type="checkbox"
                               value={index}
@@ -434,7 +440,7 @@ const ItemManageModal = ({
                                       showYearDropdown
                                       showTimeSelect
                                       dateFormat="MMMM d, yyyy h:mm aa"
-                                      className="z-50 dark:bg-secondaryBlack border-jacarta-100 hover:ring-primaryPurple/10 focus:ring-primaryPurple dark:border-jacarta-600 dark:placeholder:text-jacarta-100 w-full rounded-lg py-3 px-3 hover:ring-2 dark:text-white"
+                                      className="z-50 dark:bg-secondaryBlack border-jacarta-100 hover:ring-primaryPurple/10 focus:ring-primaryPurple dark:border-jacarta-800 dark:placeholder:text-jacarta-100 w-full rounded-lg py-3 px-3 hover:ring-2 dark:text-white"
                                       style={{ width: "357px" }}
                                     />
                                     <div className="flex gap-2 justify-center items-center">
@@ -460,7 +466,7 @@ const ItemManageModal = ({
                                       showYearDropdown
                                       showTimeSelect
                                       dateFormat="MMMM d, yyyy h:mm aa"
-                                      className="z-50 dark:bg-secondaryBlack border-jacarta-100 hover:ring-primaryPurple/10 focus:ring-primaryPurple dark:border-jacarta-600 dark:placeholder:text-jacarta-100 w-full rounded-lg py-3 px-3 hover:ring-2 dark:text-white"
+                                      className="z-50 dark:bg-secondaryBlack border-jacarta-100 hover:ring-primaryPurple/10 focus:ring-primaryPurple dark:border-jacarta-800 dark:placeholder:text-jacarta-100 w-full rounded-lg py-3 px-3 hover:ring-2 dark:text-white"
                                     />
                                     <div className="flex gap-2 justify-center items-center">
                                       <span className="text-jacarta-900 dark:text-white">
@@ -482,15 +488,15 @@ const ItemManageModal = ({
                                       </label>
                                     </div>
                                     <div className="flex  flex-wrap   gap-4 items-center text-jacarta-900 dark:text-white">
-                                      <input
-                                        id="numberInput"
+                                      <Input
                                         type="number"
+                                        id="numberInput"
                                         onWheel={(e) => e.target.blur()}
                                         step="0.1"
                                         value={selectedStartingPrice}
                                         onChange={handleStartingPriceChange}
                                         placeholder="Unit selling price"
-                                        className="dark:bg-secondaryBlack flex-grow border-jacarta-100 hover:ring-primaryPurple/10 focus:ring-primaryPurple dark:border-jacarta-600 dark:placeholder:text-jacarta-100  rounded-lg py-3 px-3 hover:ring-2 dark:text-white"
+                                        className="flex-grow border-jacarta-100 hover:ring-primaryPurple/10 focus:ring-primaryPurple dark:border-jacarta-800 dark:placeholder:text-jacarta-100  rounded-lg py-3 px-3 hover:ring-2 dark:text-white"
                                       />
                                     </div>
                                     <p className="dark:text-jacarta-100 text-jacarta-100 text-2xs ">
@@ -512,15 +518,15 @@ const ItemManageModal = ({
                                   </div>
 
                                   <div className="flex  flex-col items-center text-jacarta-900 dark:text-white">
-                                    <input
-                                      id="numberInput"
+                                    <Input
                                       type="number"
+                                      id="numberInput"
                                       onWheel={(e) => e.target.blur()}
                                       step="0.1"
                                       value={selectedUnitPrice}
                                       onChange={handleUnitPriceChange}
                                       placeholder="Direct selling price"
-                                      className="dark:bg-secondaryBlack flex-grow border-jacarta-100 hover:ring-primaryPurple/10 focus:ring-primaryPurple dark:border-jacarta-600 dark:placeholder:text-jacarta-100  rounded-lg py-3 px-3 hover:ring-2 dark:text-white"
+                                      className="flex-grow border-jacarta-100 hover:ring-primaryPurple/10 focus:ring-primaryPurple dark:border-jacarta-800 dark:placeholder:text-jacarta-100  rounded-lg py-3 px-3 hover:ring-2 dark:text-white"
                                     />
                                     <p className="dark:text-jacarta-100 text-jacarta-100 text-2xs ">
                                       You will receive :{" "}
@@ -534,7 +540,7 @@ const ItemManageModal = ({
                                     id="currency"
                                     value={selectedCurrency}
                                     onChange={handleCurrencyChange}
-                                    className="dark:bg-secondaryBlack min-w-[110px] border-jacarta-100 hover:ring-primaryPurple/10 focus:ring-primaryPurple dark:border-jacarta-600 dark:placeholder:text-jacarta-100 w-full rounded-lg py-3 px-5 hover:ring-2 dark:text-white"
+                                    className="dark:bg-secondaryBlack min-w-[110px] border-jacarta-100 hover:ring-primaryPurple/10 focus:ring-primaryPurple dark:border-jacarta-800 dark:placeholder:text-jacarta-100 w-full rounded-lg py-3 px-5 hover:ring-2 dark:text-white"
                                   >
                                     <option value="WETH">WETH</option>
                                     {activated_features.canAcceptUSDC && (
@@ -548,16 +554,12 @@ const ItemManageModal = ({
                                     )}
                                   </select>
                                   {selectedCurrency === "custom" && (
-                                    <input
+                                    <Input
                                       type="text"
                                       value={customContract}
                                       onChange={handleCustomContractChange}
                                       placeholder="Contract address"
-                                      className={`dark:bg-secondaryBlack  hover:ring-primaryPurple/10 ${
-                                        tokenContractAsync && customContract
-                                          ? "border-green"
-                                          : "border-red"
-                                      } focus:ring-primaryPurple  dark:placeholder:text-jacarta-100 w-full rounded-lg py-3 px-3 hover:ring-2 dark:text-white`}
+                                      className={`hover:ring-primaryPurple/10 ${tokenContractAsync && customContract ? "border-green" : "border-red"} focus:ring-primaryPurple  dark:placeholder:text-jacarta-100 w-full rounded-lg py-3 px-3 hover:ring-2 dark:text-white`}
                                     />
                                   )}
                                 </div>
@@ -602,7 +604,7 @@ const ItemManageModal = ({
                   symbolContract={symbolContract}
                   errors={errors}
                   successFullUpload={successFullListing}
-                  buttonTitle="Create listing"
+                  buttonTitle="Create listing 🎉 (2/2)"
                   modalTitle="Listing preview"
                   successFullUploadModal={successFullListingModal}
                   isLoadingButton={isLoadingButton}
