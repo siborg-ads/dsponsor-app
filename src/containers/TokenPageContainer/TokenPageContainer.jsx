@@ -24,7 +24,7 @@ import ModalHelper from "../../components/Helper/modalHelper";
 import SliderForm from "../../components/sliderForm/sliderForm.jsx";
 import styles from "../../styles/createPage/style.module.scss";
 import Timer from "../../components/item/Timer.jsx";
-import { fetchAllOffers } from "../../providers/methods/fetchAllOffers";
+import { fetchTokenPageContainer } from "../../providers/methods/fetchTokenPageContainer";
 import ItemLastestSales from "../../components/tables/ItemLastestSales.jsx";
 
 import { getCookie } from "cookies-next";
@@ -194,7 +194,8 @@ const TokenPageContainer = () => {
       fetchOffersRef.current = true;
 
       try {
-        const offers = await fetchAllOffers(chainId);
+        const offers = await fetchTokenPageContainer(chainId, offerId, tokenId);
+        console.log("offer", offers);
         setOffers(offers);
 
         // check if we have the values
@@ -406,10 +407,8 @@ const TokenPageContainer = () => {
   }, [tokenId]);
 
   useEffect(() => {
-    if (successFullBid) {
-      const fetchUpdatedData = async () => {
-        const offers = await fetchAllOffers(chainId);
-
+    if (successFullBid && offers) {
+      const fetchUpdatedData = () => {
         const offer = offers?.find((offer) => Number(offer?.id) === Number(offerId));
         const combinedData = { ...offer };
 
@@ -421,13 +420,11 @@ const TokenPageContainer = () => {
         fetchUpdatedData();
       }
     }
-  }, [successFullBid, offerId, tokenId, chainId]);
+  }, [successFullBid, offerId, tokenId, chainId, offers]);
 
   useEffect(() => {
-    if (listingCreated) {
-      const fetchUpdatedData = async () => {
-        const offers = await fetchAllOffers(chainId);
-
+    if (listingCreated && offers) {
+      const fetchUpdatedData = () => {
         const offer = offers?.find((offer) => Number(offer?.id) === Number(offerId));
         const combinedData = { ...offer };
 
@@ -438,7 +435,7 @@ const TokenPageContainer = () => {
         fetchUpdatedData();
       }
     }
-  }, [listingCreated, offerId, tokenId, chainId]);
+  }, [listingCreated, offerId, tokenId, chainId, offers]);
 
   useEffect(() => {
     if (offerData?.nftContract?.tokens.length > 0) {
