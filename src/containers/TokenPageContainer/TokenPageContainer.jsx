@@ -130,7 +130,7 @@ const TokenPageContainer = () => {
   const [minted, setMinted] = useState(false);
   const [conditions, setConditions] = useState({});
   const [imageUrl, setImageUrl] = useState(null);
-  const [accordionActiveTab, setAccordionActiveTab] = useState("details");
+  const [accordionActiveTab, setAccordionActiveTab] = useState(null);
   const [listingCreated, setListingCreated] = useState(false);
   const [creatorAmount, setCreatorAmount] = useState(null);
   const [protocolFeeAmount, setProtocolFeeAmount] = useState(null);
