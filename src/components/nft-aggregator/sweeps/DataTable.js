@@ -154,7 +154,7 @@ const DataTable = () => {
       {data.map((item) => (
         <div
           key={item.id}
-          className="flex justify-between border-t border-jacarta-100 py-2 px-4 transition-shadow hover:shadow-lg dark:border-jacarta-600 dark:bg-primaryBlack"
+          className="flex justify-between border-t border-jacarta-100 py-2 px-4 transition-shadow hover:shadow-lg dark:border-jacarta-800 dark:bg-primaryBlack"
           role="row"
         >
           <div className="hidden w-[14%] items-center -space-x-2 lg:flex">

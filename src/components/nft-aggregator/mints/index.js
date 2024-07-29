@@ -8,9 +8,9 @@ const MintsContent = () => {
   return (
     <div
       role="table"
-      className="rounded-2lg border border-jacarta-100 bg-white text-sm dark:border-jacarta-600 dark:bg-secondaryBlack dark:text-white"
+      className="rounded-2lg border border-jacarta-100 bg-white text-sm dark:border-jacarta-800 dark:bg-secondaryBlack dark:text-white"
     >
-      <div className="flex flex-col gap-4 rounded-t-2lg border-b border-jacarta-100 bg-jacarta-50 p-4 dark:border-jacarta-600 dark:bg-jacarta-800 sm:gap-6 lg:flex-row lg:items-center">
+      <div className="flex flex-col gap-4 rounded-t-2lg border-b border-jacarta-100 bg-jacarta-50 p-4 dark:border-jacarta-800 dark:bg-jacarta-800 sm:gap-6 lg:flex-row lg:items-center">
         <div className="flex flex-1 flex-col justify-between gap-4 md:flex-row md:items-center md:gap-10">
           <div className="hidden flex-shrink-0 flex-col space-y-1 md:flex">
             <div className="flex flex-shrink-0 items-center space-x-1">

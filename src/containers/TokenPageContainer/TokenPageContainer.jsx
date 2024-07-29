@@ -1701,7 +1701,10 @@ const TokenPageContainer = () => {
           <div className="md:flex md:flex-wrap" key={id}>
             {/* <!-- Image --> */}
             <figure className="mb-8 md:mb-0 md:w-2/5 md:flex-shrink-0 md:flex-grow-0 items-start md:basis-auto lg:w-1/2 w-full flex justify-center relative">
-              <button className="w-full md:sticky md:top-0 md:right-0" onClick={() => setImageModal(true)}>
+              <button
+                className="w-full md:sticky md:top-0 md:right-0"
+                onClick={() => setImageModal(true)}
+              >
                 <Image
                   width={585}
                   height={726}
@@ -1811,23 +1814,27 @@ const TokenPageContainer = () => {
               {showEntireDescription ? (
                 <p className="dark:text-jacarta-100 mb-10">
                   {description}{" "}
-                  <button
-                    onClick={() => setShowEntireDescription(false)}
-                    className="text-primaryPurple"
-                  >
-                    Show less
-                  </button>
+                  {description?.length > 1000 && (
+                    <button
+                      onClick={() => setShowEntireDescription(false)}
+                      className="text-primaryPurple"
+                    >
+                      Show less
+                    </button>
+                  )}
                 </p>
               ) : (
                 <div>
                   <p className="dark:text-jacarta-100 mb-10">
                     {description?.length > 1000 ? description?.slice(0, 1000) + "..." : description}{" "}
-                    <button
-                      onClick={() => setShowEntireDescription(true)}
-                      className="text-primaryPurple"
-                    >
-                      Show more
-                    </button>
+                    {description?.length > 1000 && (
+                      <button
+                        onClick={() => setShowEntireDescription(true)}
+                        className="text-primaryPurple"
+                      >
+                        Show more
+                      </button>
+                    )}
                   </p>
                 </div>
               )}
@@ -1854,7 +1861,7 @@ const TokenPageContainer = () => {
                       firstSelectedListing?.startTime < now &&
                       firstSelectedListing?.endTime > now)) &&
                     successFullBuyModal && (
-                      <div className="dark:bg-secondaryBlack dark:border-jacarta-600 mb-2 border-jacarta-100 rounded-2lg border flex flex-col gap-4 bg-white p-8">
+                      <div className="dark:bg-secondaryBlack dark:border-jacarta-800 mb-2 border-jacarta-100 rounded-2lg border flex flex-col gap-4 bg-white p-8">
                         <div className="sm:flex sm:flex-wrap flex-col gap-8">
                           {firstSelectedListing?.listingType === "Direct" && (
                             <div className="flex items-center justify-between gap-4 w-full">
@@ -1897,7 +1904,7 @@ const TokenPageContainer = () => {
                   {firstSelectedListing?.status === "CREATED" &&
                     firstSelectedListing?.listingType === "Auction" &&
                     firstSelectedListing?.startTime >= now && (
-                      <div className="dark:bg-secondaryBlack dark:border-jacarta-600 mb-2 border-jacarta-100 rounded-2lg border flex flex-col gap-4 bg-white p-8">
+                      <div className="dark:bg-secondaryBlack dark:border-jacarta-800 mb-2 border-jacarta-100 rounded-2lg border flex flex-col gap-4 bg-white p-8">
                         <div className="sm:flex sm:flex-wrap flex-col gap-8">
                           <div className="flex items-center justify-between gap-4 w-full">
                             <span className="js-countdown-ends-label text-base text-jacarta-100 dark:text-jacarta-100">
@@ -1916,7 +1923,7 @@ const TokenPageContainer = () => {
                   {conditions?.conditionsObject?.isCreator &&
                     airdropContainer &&
                     !conditions?.conditionsObject?.isMinted && (
-                      <div className="dark:bg-secondaryBlack mt-4 dark:border-jacarta-600 mb-2 border-jacarta-100 rounded-2lg border flex flex-col gap-4 bg-white p-8">
+                      <div className="dark:bg-secondaryBlack mt-4 dark:border-jacarta-800 mb-2 border-jacarta-100 rounded-2lg border flex flex-col gap-4 bg-white p-8">
                         <span className="dark:text-jacarta-100 text-jacarta-100 text-lg">
                           Airdrop this token
                         </span>
@@ -1985,7 +1992,7 @@ const TokenPageContainer = () => {
                   {firstSelectedListing?.status === "CREATED" &&
                     firstSelectedListing?.listingType === "Direct" &&
                     firstSelectedListing?.startTime >= now && (
-                      <div className="dark:bg-secondaryBlack dark:border-jacarta-600 mb-2 border-jacarta-100 rounded-2lg border flex flex-col gap-4 bg-white p-8">
+                      <div className="dark:bg-secondaryBlack dark:border-jacarta-800 mb-2 border-jacarta-100 rounded-2lg border flex flex-col gap-4 bg-white p-8">
                         <div className="sm:flex sm:flex-wrap flex-col gap-8">
                           <div className="flex items-center justify-between gap-4 w-full">
                             <span className="js-countdown-ends-label text-base text-jacarta-100 dark:text-jacarta-100">

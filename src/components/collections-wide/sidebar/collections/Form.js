@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { toUtf8Bytes, keccak256 } from "ethers/lib/utils";
 import { useChainContext } from "../../../../contexts/hooks/useChainContext";
-import Input from "../../../ui/input";
+import Input from "../../../ui/input.jsx";
 
 const Form = ({ offerId, onUrlChange }) => {
   const [searchTerm, setSearchTerm] = useState("");

@@ -31,13 +31,13 @@ const Wallet = () => {
                   <Link
                     href="#"
                     key={id}
-                    className="dark:bg-secondaryBlack dark:border-jacarta-600 border-jacarta-100 rounded-2.5xl mb-8 border bg-white p-8 text-center transition-shadow hover:shadow-lg"
+                    className="dark:bg-secondaryBlack dark:border-jacarta-800 border-jacarta-100 rounded-2.5xl mb-8 border bg-white p-8 text-center transition-shadow hover:shadow-lg"
                   >
                     <Image
                       width={86}
                       height={86}
                       src={image ?? ""}
-                      className="dark:border-jacarta-600 dark:bg-secondaryBlack border-jacarta-100 mx-auto mb-7 -mt-[3.5rem] h-[5.5rem] w-[5.5rem] rounded-full border bg-white"
+                      className="dark:border-jacarta-800 dark:bg-secondaryBlack border-jacarta-100 mx-auto mb-7 -mt-[3.5rem] h-[5.5rem] w-[5.5rem] rounded-full border bg-white"
                       alt="wallet"
                     />
                     <h3 className="font-display text-jacarta-900 text-md mb-3 dark:text-white">

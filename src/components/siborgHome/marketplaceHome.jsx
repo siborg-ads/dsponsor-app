@@ -4,7 +4,7 @@ import { ChevronDownIcon, InformationCircleIcon } from "@heroicons/react/20/soli
 import ItemCardSkeleton from "../skeleton/ItemCardSkeleton";
 import OfferItem from "../cards/offerItem";
 import { Popover, PopoverTrigger, PopoverContent } from "@nextui-org/popover";
-import Input from "../ui/input";
+import Input from "../ui/input.jsx";
 
 const onAuctionCondition = (auction, mint, direct) => {
   return (
