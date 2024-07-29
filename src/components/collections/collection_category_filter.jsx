@@ -192,7 +192,7 @@ const Collection_category_filter = () => {
           {/* <!-- Properties --> */}
           <div className="my-1 mr-2.5">
             <button
-              className="group dropdown-toggle dark:border-jacarta-600 dark:bg-secondaryBlack group dark:hover:bg-primaryPurple hover:bg-primaryPurple border-jacarta-100 font-display text-jacarta-900 flex h-9 items-center rounded-lg border bg-white px-4 text-sm font-semibold transition-colors hover:border-transparent hover:text-white dark:text-white"
+              className="group dropdown-toggle dark:border-jacarta-800 dark:bg-secondaryBlack group dark:hover:bg-primaryPurple hover:bg-primaryPurple border-jacarta-100 font-display text-jacarta-900 flex h-9 items-center rounded-lg border bg-white px-4 text-sm font-semibold transition-colors hover:border-transparent hover:text-white dark:text-white"
               onClick={() => setPropertiesModal(true)}
             >
               <svg
@@ -240,7 +240,7 @@ const Collection_category_filter = () => {
                   {/* <!-- Body --> */}
                   <div className="modal-body">
                     <div className="accordion" id="accordionProps">
-                      <div className="accordion-item dark:border-jacarta-600 border-jacarta-100 border-b">
+                      <div className="accordion-item dark:border-jacarta-800 border-jacarta-100 border-b">
                         <Accordion>
                           {propertiesText.map((item) => {
                             const { parentId, titleText, properties } = item;
@@ -272,7 +272,7 @@ const Collection_category_filter = () => {
                                       return (
                                         <div className="accordion-body px-2 pb-4" key={id}>
                                           <div className="flex flex-col">
-                                            <button className="dark:hover:bg-jacarta-600 dark:text-jacarta-200 hover:bg-jacarta-50 flex items-center justify-between rounded-xl px-4 py-2">
+                                            <button className="dark:hover:bg-jacarta-800 dark:text-jacarta-200 hover:bg-jacarta-50 flex items-center justify-between rounded-xl px-4 py-2">
                                               <span>{color}</span>
                                               <span>{point}</span>
                                             </button>
@@ -320,7 +320,7 @@ const Collection_category_filter = () => {
                 <li>
                   <Link
                     href="#"
-                    className="dropdown-item font-display dark:hover:bg-jacarta-600 hover:bg-jacarta-50 flex w-full items-center justify-between rounded-xl px-5 py-2 text-left text-sm transition-colors dark:text-white"
+                    className="dropdown-item font-display dark:hover:bg-jacarta-800 hover:bg-jacarta-50 flex w-full items-center justify-between rounded-xl px-5 py-2 text-left text-sm transition-colors dark:text-white"
                   >
                     <span className="text-jacarta-900 dark:text-white">All</span>
                     <svg
@@ -338,7 +338,7 @@ const Collection_category_filter = () => {
                 <li>
                   <Link
                     href="#"
-                    className="dropdown-item font-display dark:hover:bg-jacarta-600 hover:bg-jacarta-50 flex w-full items-center rounded-xl px-5 py-2 text-left text-sm transition-colors dark:text-white"
+                    className="dropdown-item font-display dark:hover:bg-jacarta-800 hover:bg-jacarta-50 flex w-full items-center rounded-xl px-5 py-2 text-left text-sm transition-colors dark:text-white"
                   >
                     Art
                   </Link>
@@ -346,7 +346,7 @@ const Collection_category_filter = () => {
                 <li>
                   <Link
                     href="#"
-                    className="dropdown-item font-display dark:hover:bg-jacarta-600 hover:bg-jacarta-50 flex w-full items-center rounded-xl px-5 py-2 text-left text-sm transition-colors dark:text-white"
+                    className="dropdown-item font-display dark:hover:bg-jacarta-800 hover:bg-jacarta-50 flex w-full items-center rounded-xl px-5 py-2 text-left text-sm transition-colors dark:text-white"
                   >
                     Collectibles
                   </Link>
@@ -354,7 +354,7 @@ const Collection_category_filter = () => {
                 <li>
                   <Link
                     href="#"
-                    className="dropdown-item font-display dark:hover:bg-jacarta-600 hover:bg-jacarta-50 flex w-full items-center rounded-xl px-5 py-2 text-left text-sm transition-colors dark:text-white"
+                    className="dropdown-item font-display dark:hover:bg-jacarta-800 hover:bg-jacarta-50 flex w-full items-center rounded-xl px-5 py-2 text-left text-sm transition-colors dark:text-white"
                   >
                     Domain
                   </Link>
@@ -362,7 +362,7 @@ const Collection_category_filter = () => {
                 <li>
                   <Link
                     href="#"
-                    className="dropdown-item font-display dark:hover:bg-jacarta-600 hover:bg-jacarta-50 flex w-full items-center rounded-xl px-5 py-2 text-left text-sm transition-colors dark:text-white"
+                    className="dropdown-item font-display dark:hover:bg-jacarta-800 hover:bg-jacarta-50 flex w-full items-center rounded-xl px-5 py-2 text-left text-sm transition-colors dark:text-white"
                   >
                     Music
                   </Link>
@@ -370,7 +370,7 @@ const Collection_category_filter = () => {
                 <li>
                   <Link
                     href="#"
-                    className="dropdown-item font-display dark:hover:bg-jacarta-600 hover:bg-jacarta-50 flex w-full items-center rounded-xl px-5 py-2 text-left text-sm transition-colors dark:text-white"
+                    className="dropdown-item font-display dark:hover:bg-jacarta-800 hover:bg-jacarta-50 flex w-full items-center rounded-xl px-5 py-2 text-left text-sm transition-colors dark:text-white"
                   >
                     Photography
                   </Link>
@@ -378,7 +378,7 @@ const Collection_category_filter = () => {
                 <li>
                   <Link
                     href="#"
-                    className="dropdown-item font-display dark:hover:bg-jacarta-600 hover:bg-jacarta-50 flex w-full items-center rounded-xl px-5 py-2 text-left text-sm transition-colors dark:text-white"
+                    className="dropdown-item font-display dark:hover:bg-jacarta-800 hover:bg-jacarta-50 flex w-full items-center rounded-xl px-5 py-2 text-left text-sm transition-colors dark:text-white"
                   >
                     Virtual World
                   </Link>

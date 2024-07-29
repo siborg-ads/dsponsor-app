@@ -6,7 +6,7 @@ import "tippy.js/dist/tippy.css"; // optional
 const Social_dropdown = () => {
   return (
     <>
-      <div className="dark:border-jacarta-600 dark:hover:bg-jacarta-600 border-jacarta-100 dropdown hover:bg-jacarta-100 dark:bg-secondaryBlack rounded-xl border bg-white">
+      <div className="dark:border-jacarta-800 dark:hover:bg-jacarta-800 border-jacarta-100 dropdown hover:bg-jacarta-100 dark:bg-secondaryBlack rounded-xl border bg-white">
         <Tippy
           animation="fade"
           arrow={false}
@@ -18,7 +18,7 @@ const Social_dropdown = () => {
             <div className="dark:bg-jacarta-800 text-jacarta-900 z-10 min-w-[200px] whitespace-nowrap rounded-xl bg-white py-4 px-2 text-left shadow-xl show">
               <Link
                 href="#"
-                className="dark:hover:bg-jacarta-600 font-display hover:bg-jacarta-50 flex w-full items-center rounded-xl px-5 py-2 text-left text-sm transition-colors dark:text-white"
+                className="dark:hover:bg-jacarta-800 font-display hover:bg-jacarta-50 flex w-full items-center rounded-xl px-5 py-2 text-left text-sm transition-colors dark:text-white"
               >
                 <svg
                   aria-hidden="true"
@@ -36,7 +36,7 @@ const Social_dropdown = () => {
               </Link>
               <Link
                 href="#"
-                className="dark:hover:bg-jacarta-600 font-display hover:bg-jacarta-50 flex w-full items-center rounded-xl px-5 py-2 text-left text-sm transition-colors dark:text-white"
+                className="dark:hover:bg-jacarta-800 font-display hover:bg-jacarta-50 flex w-full items-center rounded-xl px-5 py-2 text-left text-sm transition-colors dark:text-white"
               >
                 <svg
                   aria-hidden="true"
@@ -54,7 +54,7 @@ const Social_dropdown = () => {
               </Link>
               <Link
                 href="#"
-                className="dark:hover:bg-jacarta-600 font-display hover:bg-jacarta-50 flex w-full items-center rounded-xl px-5 py-2 text-left text-sm transition-colors dark:text-white"
+                className="dark:hover:bg-jacarta-800 font-display hover:bg-jacarta-50 flex w-full items-center rounded-xl px-5 py-2 text-left text-sm transition-colors dark:text-white"
               >
                 <svg
                   aria-hidden="true"
@@ -72,7 +72,7 @@ const Social_dropdown = () => {
               </Link>
               <Link
                 href="#"
-                className="dark:hover:bg-jacarta-600 font-display hover:bg-jacarta-50 flex w-full items-center rounded-xl px-5 py-2 text-left text-sm transition-colors dark:text-white"
+                className="dark:hover:bg-jacarta-800 font-display hover:bg-jacarta-50 flex w-full items-center rounded-xl px-5 py-2 text-left text-sm transition-colors dark:text-white"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -88,7 +88,7 @@ const Social_dropdown = () => {
               </Link>
               <Link
                 href="#"
-                className="dark:hover:bg-jacarta-600 font-display hover:bg-jacarta-50 flex w-full items-center rounded-xl px-5 py-2 text-left text-sm transition-colors dark:text-white"
+                className="dark:hover:bg-jacarta-800 font-display hover:bg-jacarta-50 flex w-full items-center rounded-xl px-5 py-2 text-left text-sm transition-colors dark:text-white"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"

@@ -22,7 +22,7 @@ const FilterRightMenu = () => {
           className={`flex h-10 w-full cursor-pointer items-center whitespace-nowrap border ${
             activeMenu === menuItem.id
               ? "border-transparent bg-primaryPurple text-white"
-              : "border-jacarta-100 bg-white dark:border-jacarta-600 dark:bg-secondaryBlack"
+              : "border-jacarta-100 bg-white dark:border-jacarta-800 dark:bg-secondaryBlack"
           } p-3 ${menuItem.id === "all-time" ? "first:rounded-l-lg" : ""} ${
             menuItem.id === "24h" ? "last:rounded-r-lg" : ""
           } hover:border-transparent hover:bg-primaryPurple hover:text-white sm:px-4 sm:py-2`}

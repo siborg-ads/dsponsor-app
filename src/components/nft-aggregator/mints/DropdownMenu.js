@@ -21,7 +21,7 @@ const DropdownMenu = () => {
   return (
     <div className="dropdown cursor-pointer">
       <div
-        className="dropdown-toggle inline-flex h-10 w-[220px] items-center justify-between rounded-lg border border-jacarta-100 bg-white py-2 px-3 text-sm dark:border-jacarta-600 dark:bg-secondaryBlack dark:text-white lg:w-[8rem]"
+        className="dropdown-toggle inline-flex h-10 w-[220px] items-center justify-between rounded-lg border border-jacarta-100 bg-white py-2 px-3 text-sm dark:border-jacarta-800 dark:bg-secondaryBlack dark:text-white lg:w-[8rem]"
         role="button"
         data-bs-toggle="dropdown"
         aria-expanded="false"
@@ -48,8 +48,8 @@ const DropdownMenu = () => {
         {filterOptions.map((option, index) => (
           <button
             key={index}
-            className={`dropdown-item flex w-full items-center justify-between rounded-xl px-5 py-2 text-left font-display text-sm transition-colors hover:bg-jacarta-50 dark:text-white dark:hover:bg-jacarta-600 ${
-              selectedFilter === option.label ? "bg-jacarta-50 dark:bg-jacarta-600" : ""
+            className={`dropdown-item flex w-full items-center justify-between rounded-xl px-5 py-2 text-left font-display text-sm transition-colors hover:bg-jacarta-50 dark:text-white dark:hover:bg-jacarta-800 ${
+              selectedFilter === option.label ? "bg-jacarta-50 dark:bg-jacarta-800" : ""
             }`}
             onClick={() => handleFilterClick(option.label)}
           >

@@ -551,7 +551,7 @@ const PreviewModal = ({
                         preview
                       </label>
                       <div
-                        className="dark:bg-secondaryBlack dark:border-jacarta-600 border-jacarta-100  group relative flex max-w-md flex-col items-center justify-center rounded-lg border-2 border-dashed"
+                        className="dark:bg-secondaryBlack dark:border-jacarta-800 border-jacarta-100  group relative flex max-w-md flex-col items-center justify-center rounded-lg border-2 border-dashed"
                         style={{
                           width:
                             imageUrlVariants.length > 0
@@ -579,7 +579,7 @@ const PreviewModal = ({
                 <div className="flex gap-4">
                   <p>{successFullUploadModal.body} </p>
                   <div
-                    className="dark:border-jacarta-600 bg-green   flex h-6 w-6 items-center justify-center rounded-full border-2 border-white"
+                    className="dark:border-jacarta-800 bg-green   flex h-6 w-6 items-center justify-center rounded-full border-2 border-white"
                     data-tippy-content="Verified Collection"
                   >
                     <svg

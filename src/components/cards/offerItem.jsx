@@ -393,7 +393,7 @@ const OfferItem = ({
             style={{
               transitionDuration: "500ms"
             }}
-            className="bg-jacarta-300 text-jacarta-900 box-border hover:border-2 dark:hover:border-2 hover:-m-1 duration-400 dark:hover:bg-jacarta-800 dark:border-jacarta-100 dark:border-opacity-10 border-opacity-10 border border-jacarta-900 hover:bg-jacarta-600 dark:text-jacarta-100 rounded-md p-2"
+            className="bg-jacarta-300 text-jacarta-900 box-border hover:border-2 dark:hover:border-2 hover:-m-1 duration-400 dark:hover:bg-jacarta-800 dark:border-jacarta-100 dark:border-opacity-10 border-opacity-10 border border-jacarta-900 hover:bg-jacarta-800 dark:text-jacarta-100 rounded-md p-2"
           >
             <div
               style={{ background: "rgba(54, 58, 93, 0.7)", backdropFilter: "blur(20px)" }}
@@ -412,11 +412,11 @@ const OfferItem = ({
             <Tippy
               content={`token  # ${item?.tokenData ? item?.tokenData : item?.mint?.tokenData ? item?.mint?.tokenData : item?.tokenId}`}
               placement="top"
-              className="bg-jacarta-300 text-jacarta-900 box-border hover:border-2 dark:hover:border-2 hover:-m-1 duration-400 dark:hover:bg-jacarta-800 dark:border-jacarta-100 dark:border-opacity-10 border-opacity-10 border border-jacarta-900 hover:bg-jacarta-600 dark:text-jacarta-100 rounded-md p-2"
+              className="bg-jacarta-300 text-jacarta-900 box-border hover:border-2 dark:hover:border-2 hover:-m-1 duration-400 dark:hover:bg-jacarta-800 dark:border-jacarta-100 dark:border-opacity-10 border-opacity-10 border border-jacarta-900 hover:bg-jacarta-800 dark:text-jacarta-100 rounded-md p-2"
             >
               <div
                 style={{ background: "rgba(54, 58, 93, 0.7)", backdropFilter: "blur(20px)" }}
-                className="absolute backdrop-blur-1 -bottom-1 -right-2 dark:border-jacarta-600 border-jacarta-100 flex items-center whitespace-nowrap rounded-md border py-1 px-2"
+                className="absolute backdrop-blur-1 -bottom-1 -right-2 dark:border-jacarta-800 border-jacarta-100 flex items-center whitespace-nowrap rounded-md border py-1 px-2"
               >
                 <span className="text-primaryPink text-sm font-medium tracking-tight">
                   #{" "}
@@ -475,7 +475,7 @@ const OfferItem = ({
             (item?.marketplaceListings?.sort((a, b) => Number(b.id) - Number(a.id))[0]?.status ===
               "CREATED" ||
               itemStatut === "TOKENMINTABLE") ? (
-              <div className="dark:border-jacarta-600 border-jacarta-100 flex items-center whitespace-nowrap rounded-md border py-1 px-2">
+              <div className="dark:border-jacarta-800 border-jacarta-100 flex items-center whitespace-nowrap rounded-md border py-1 px-2">
                 <span className="text-green text-sm font-medium tracking-tight">
                   {!!totalPrice && parseFloat(totalPrice) > 0
                     ? `${price ?? 0} ${currencyToken}`
@@ -563,7 +563,7 @@ const OfferItem = ({
             {item?.endTime &&
               item?.marketplaceListings?.sort((a, b) => Number(b.id) - Number(a.id))[0]?.status ===
                 "CREATED" && (
-                <div className="dark:border-jacarta-600 flex items-center whitespace-nowrap rounded-md border p-1">
+                <div className="dark:border-jacarta-800 flex items-center whitespace-nowrap rounded-md border p-1">
                   <TimerCard endTime={item.endTime} />
                 </div>
               )}

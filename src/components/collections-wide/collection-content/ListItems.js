@@ -93,7 +93,7 @@ const ListItems = () => {
     <>
       {tableData.map((row) => (
         <Link href="/user/avatar_6" key={row.id} className="flex transition-shadow hover:shadow-lg">
-          <tr className="flex md:w-2/5 w-1/4 items-center border-t border-jacarta-100 py-4 px-4 dark:border-jacarta-600">
+          <tr className="flex md:w-2/5 w-1/4 items-center border-t border-jacarta-100 py-4 px-4 dark:border-jacarta-800">
             <span className="mr-3 lg:mr-5">{row.id}</span>
             <figure className="relative mr-2 w-8 shrink-0 self-start lg:mr-5 lg:w-12">
               <Image
@@ -106,7 +106,7 @@ const ListItems = () => {
               />
               {row.isVerified && (
                 <div
-                  className="absolute -right-2 -bottom-1 flex h-[1.125rem] w-[1.125rem] items-center justify-center rounded-full border-2 border-white bg-green dark:border-jacarta-600"
+                  className="absolute -right-2 -bottom-1 flex h-[1.125rem] w-[1.125rem] items-center justify-center rounded-full border-2 border-white bg-green dark:border-jacarta-800"
                   title="Verified Collection"
                 >
                   <svg
@@ -126,7 +126,7 @@ const ListItems = () => {
               {row.name}
             </span>
           </tr>
-          <tr className="flex justify-end items-center md:w-[12%] w-[15%] whitespace-nowrap border-t border-jacarta-100 py-4 px-4 dark:border-jacarta-600">
+          <tr className="flex justify-end items-center md:w-[12%] w-[15%] whitespace-nowrap border-t border-jacarta-100 py-4 px-4 dark:border-jacarta-800">
             <span className="-ml-1" title="ETH">
               <Image
                 width={14}
@@ -138,7 +138,7 @@ const ListItems = () => {
             </span>
             <span className="text-sm font-medium tracking-tight">{row.ethValue}</span>
           </tr>
-          <tr className="flex justify-end md:w-[12%] w-[15%] items-center border-t border-jacarta-100 py-4 px-4 dark:border-jacarta-600">
+          <tr className="flex justify-end md:w-[12%] w-[15%] items-center border-t border-jacarta-100 py-4 px-4 dark:border-jacarta-800">
             <span className="-ml-1" title="ETH">
               <Image
                 width={14}
@@ -150,13 +150,13 @@ const ListItems = () => {
             </span>
             <span className="text-sm font-medium tracking-tight">{row.ethVolume}</span>
           </tr>
-          <tr className="flex justify-end md:w-[12%] w-[15%] items-center border-t border-jacarta-100 py-4 px-4 dark:border-jacarta-600">
+          <tr className="flex justify-end md:w-[12%] w-[15%] items-center border-t border-jacarta-100 py-4 px-4 dark:border-jacarta-800">
             <span className={row.isIncrease ? "text-green" : "text-red"}>{row.ethChange}</span>
           </tr>
-          <tr className="flex justify-end md:w-[12%] w-[15%] items-center border-t border-jacarta-100 py-4 px-4 dark:border-jacarta-600">
+          <tr className="flex justify-end md:w-[12%] w-[15%] items-center border-t border-jacarta-100 py-4 px-4 dark:border-jacarta-800">
             {row.views}
           </tr>
-          <tr className="flex justify-end md:w-[12%] w-[15%] items-center border-t border-jacarta-100 py-4 px-4 dark:border-jacarta-600">
+          <tr className="flex justify-end md:w-[12%] w-[15%] items-center border-t border-jacarta-100 py-4 px-4 dark:border-jacarta-800">
             {row.likes}
           </tr>
         </Link>

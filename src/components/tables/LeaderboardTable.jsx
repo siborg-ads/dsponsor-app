@@ -233,7 +233,7 @@ const LeaderboardTable = ({ activity }) => {
                     className="cursor-pointer"
                   >
                     {activeBlockchain == option ? (
-                      <div className="dropdown-item flex w-full items-center justify-between rounded-xl px-5 py-2 text-left font-display text-sm transition-colors hover:bg-jacarta-50 dark:text-white dark:hover:bg-jacarta-600">
+                      <div className="dropdown-item flex w-full items-center justify-between rounded-xl px-5 py-2 text-left font-display text-sm transition-colors hover:bg-jacarta-50 dark:text-white dark:hover:bg-jacarta-800">
                         <div className="flex gap-2">
                           <span className="text-jacarta-900 dark:text-white">
                             {config[option]?.network}
@@ -257,7 +257,7 @@ const LeaderboardTable = ({ activity }) => {
                         </svg>
                       </div>
                     ) : (
-                      <div className="dropdown-item flex gap-2 w-full items-center rounded-xl px-5 py-2 text-left font-display text-sm transition-colors hover:bg-jacarta-50 dark:text-white dark:hover:bg-jacarta-600">
+                      <div className="dropdown-item flex gap-2 w-full items-center rounded-xl px-5 py-2 text-left font-display text-sm transition-colors hover:bg-jacarta-50 dark:text-white dark:hover:bg-jacarta-800">
                         {config[option]?.network}
                         <Image
                           src={config[option].logoURL ?? ""}
@@ -278,7 +278,7 @@ const LeaderboardTable = ({ activity }) => {
       <div className="hide-scrollbar overflow-x-auto">
         {/* <!-- Tabs Nav --> */}
         <Tabs className="tabs hide-scrollbar">
-          <TabList className="nav nav-tabs hide-scrollbar mb-6 flex items-center justify-start  overflow-y-hidden border-b border-jacarta-100 pb-px dark:border-jacarta-600 md:justify-center">
+          <TabList className="nav nav-tabs hide-scrollbar mb-6 flex items-center justify-start  overflow-y-hidden border-b border-jacarta-100 pb-px dark:border-jacarta-800 md:justify-center">
             {tabItem.map(({ id, text, icon }) => {
               return (
                 <Tab className="nav-item " key={id} onClick={() => setItemActive(id)}>

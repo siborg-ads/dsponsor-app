@@ -10,8 +10,8 @@ import { FileUploader } from "react-drag-drop-files";
 import Image from "next/image";
 import { DatePicker } from "@nextui-org/date-picker";
 import { parseDate } from "@internationalized/date";
-import Input from "../ui/input";
-import TextArea from "../ui/textarea";
+import Input from "../ui/input.jsx";
+import TextArea from "../ui/textarea.jsx";
 
 const fileTypes = ["JPG", "PNG", "WEBP"];
 
@@ -456,7 +456,7 @@ const UpdateOffer = ({ offer }) => {
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder={name ?? ""}
-            className="bg-secondaryBlack rounded-lg w-full p-2 text-white"
+            className="rounded-lg w-full p-2 text-white"
           />
         </div>
 
@@ -467,7 +467,7 @@ const UpdateOffer = ({ offer }) => {
             value={externalLink}
             onChange={(e) => setExternalLink(e.target.value)}
             placeholder={externalLink ?? ""}
-            className="bg-secondaryBlack rounded-lg w-full p-2 text-white"
+            className="rounded-lg w-full p-2 text-white"
           />
         </div>
       </div>

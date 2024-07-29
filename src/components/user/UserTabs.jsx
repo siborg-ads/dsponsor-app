@@ -112,7 +112,7 @@ const UserTabs = ({
 
   return (
     <Tabs className="tabs" onSelect={handleSelect} selectedIndex={currentTabIndex}>
-      <TabList className="nav nav-tabs hide-scrollbar mb-12 flex items-center justify-start overflow-x-auto overflow-y-hidden border-b border-jacarta-100 pb-px dark:border-jacarta-600 md:justify-center">
+      <TabList className="nav nav-tabs hide-scrollbar mb-12 flex items-center justify-start overflow-x-auto overflow-y-hidden border-b border-jacarta-100 pb-px dark:border-jacarta-800 md:justify-center">
         {tabItem.map(({ id, text, icon, section }) => (
           <Tab className="nav-item" key={id}>
             <Link href={`#${section}`} scroll={false}>

@@ -43,7 +43,7 @@ const Proparties_modal = () => {
               </p>
 
               <div className="relative my-3 flex items-center">
-                <button className="dark:bg-secondaryBlack dark:border-jacarta-600 hover:bg-jacarta-100 border-jacarta-100 bg-jacarta-50 flex h-12 w-12 shrink-0 items-center justify-center self-end rounded-l-lg border border-r-0">
+                <button className="dark:bg-secondaryBlack dark:border-jacarta-800 hover:bg-jacarta-100 border-jacarta-100 bg-jacarta-50 flex h-12 w-12 shrink-0 items-center justify-center self-end rounded-l-lg border border-r-0">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 24 24"

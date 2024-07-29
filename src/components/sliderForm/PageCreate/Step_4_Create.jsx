@@ -144,7 +144,7 @@ const Step_4_Create = ({
                     showMonthDropdown
                     popperPlacement="bottom-end"
                     showYearDropdown
-                    className="dark:bg-secondaryBlack border-jacarta-100 hover:ring-primaryPurple/10 focus:ring-primaryPurple dark:border-primaryPurple dark:placeholder:text-jacarta-100 w-full rounded-lg py-3 px-3 hover:ring-2 dark:text-white"
+                    className="bg-jacarta-800 border-jacarta-100 hover:ring-primaryPurple/10 focus:ring-primaryPurple dark:border-primaryPurple dark:placeholder:text-jacarta-100 w-full rounded-lg py-3 px-3 hover:ring-2 dark:text-white"
                   />
                   <div className="flex gap-2 justify-center items-center">
                     <span className="text-jacarta-900 dark:text-white">Start date</span>
@@ -163,7 +163,7 @@ const Step_4_Create = ({
                     showMonthDropdown
                     popperPlacement="bottom-end"
                     showYearDropdown
-                    className="dark:bg-secondaryBlack border-jacarta-100 hover:ring-primaryPurple/10 focus:ring-primaryPurple dark:border-primaryPurple dark:placeholder:text-jacarta-100 w-full rounded-lg py-3 px-3 hover:ring-2 dark:text-white"
+                    className="bg-jacarta-800 border-jacarta-100 hover:ring-primaryPurple/10 focus:ring-primaryPurple dark:border-primaryPurple dark:placeholder:text-jacarta-100 w-full rounded-lg py-3 px-3 hover:ring-2 dark:text-white"
                   />
                   <div className="flex gap-2 justify-center items-center">
                     <span className="text-jacarta-900 dark:text-white">End date</span>
@@ -199,7 +199,7 @@ const Step_4_Create = ({
                   value={selectedUnitPrice}
                   onChange={handleUnitPriceChange}
                   placeholder="Unit selling price"
-                  className="dark:bg-secondaryBlack flex-grow border-jacarta-100 hover:ring-primaryPurple/10 focus:ring-primaryPurple dark:border-primaryPurple dark:placeholder:text-jacarta-100  rounded-lg py-3 px-3 hover:ring-2 dark:text-white"
+                  className="flex-grow border-jacarta-100 hover:ring-primaryPurple/10 focus:ring-primaryPurple dark:border-primaryPurple dark:placeholder:text-jacarta-100  rounded-lg py-3 px-3 hover:ring-2 dark:text-white"
                 />
 
                 <ConditionalCurrencySelector
@@ -210,7 +210,7 @@ const Step_4_Create = ({
                       id="currency"
                       value={selectedCurrency}
                       onChange={handleCurrencyChange}
-                      className="dark:bg-secondaryBlack min-w-[110px] border-jacarta-100 hover:ring-primaryPurple/10 focus:ring-primaryPurple dark:border-primaryPurple dark:placeholder:text-jacarta-100 w-full rounded-lg py-3 px-5 hover:ring-2 dark:text-white"
+                      className="bg-jacarta-800 min-w-[110px] border-jacarta-100 hover:ring-primaryPurple/10 focus:ring-primaryPurple dark:border-primaryPurple dark:placeholder:text-jacarta-100 w-full rounded-lg py-3 px-5 hover:ring-2 dark:text-white"
                     >
                       <option value="WETH">WETH</option>
                       {activated_features.canAcceptUSDC && <option value="USDC">USDC</option>}
@@ -271,7 +271,7 @@ const Step_4_Create = ({
                   value={selectedRoyalties}
                   onChange={handleRoyaltiesChange}
                   placeholder="Royalties"
-                  className="dark:bg-secondaryBlack border-jacarta-100 hover:ring-primaryPurple/10 focus:ring-primaryPurple dark:border-primaryPurple dark:placeholder:text-jacarta-100  rounded-lg py-3 px-15 hover:ring-2 dark:text-white"
+                  className="border-jacarta-100 hover:ring-primaryPurple/10 focus:ring-primaryPurple dark:border-primaryPurple dark:placeholder:text-jacarta-100  rounded-lg py-3 px-15 hover:ring-2 dark:text-white"
                 />
                 <span>%</span>
               </div>

@@ -1,4 +1,4 @@
-import Input from "../../ui/input";
+import Input from "../../ui/input.jsx";
 
 const Step_2_Mint = ({ stepsRef, styles, setLink, link, currentSlide, numSteps }) => {
   const handleChange = (e) => {

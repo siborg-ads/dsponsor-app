@@ -8,9 +8,9 @@ const Activity_tab = () => {
       {/* <!-- Activity --> */}
       <div className="tab-pane fade" id="activity" role="tabpanel" aria-labelledby="activity-tab">
         {/* <!-- Filter --> */}
-        <div className="dark:bg-secondaryBlack dark:border-jacarta-600 border-jacarta-100 bg-light-base border border-b-0 px-4 pt-5 pb-2.5">
+        <div className="dark:bg-secondaryBlack dark:border-jacarta-800 border-jacarta-100 bg-light-base border border-b-0 px-4 pt-5 pb-2.5">
           <div className="flex flex-wrap">
-            <button className="dark:border-jacarta-600 dark:bg-secondaryBlack group dark:hover:bg-primaryPurple hover:bg-primaryPurple border-jacarta-100 mr-2.5 mb-2.5 inline-flex items-center rounded-xl border bg-white px-4 py-3 hover:border-transparent hover:text-white dark:text-white dark:hover:border-transparent">
+            <button className="dark:border-jacarta-800 dark:bg-secondaryBlack group dark:hover:bg-primaryPurple hover:bg-primaryPurple border-jacarta-100 mr-2.5 mb-2.5 inline-flex items-center rounded-xl border bg-white px-4 py-3 hover:border-transparent hover:text-white dark:text-white dark:hover:border-transparent">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 24 24"
@@ -36,7 +36,7 @@ const Activity_tab = () => {
               </svg>
               <span className="text-2xs font-medium text-white">Bids</span>
             </button>
-            <button className="dark:border-jacarta-600 dark:bg-secondaryBlack group dark:hover:bg-primaryPurple hover:bg-primaryPurple border-jacarta-100 mr-2.5 mb-2.5 inline-flex items-center rounded-xl border bg-white px-4 py-3 hover:border-transparent hover:text-white dark:text-white dark:hover:border-transparent">
+            <button className="dark:border-jacarta-800 dark:bg-secondaryBlack group dark:hover:bg-primaryPurple hover:bg-primaryPurple border-jacarta-100 mr-2.5 mb-2.5 inline-flex items-center rounded-xl border bg-white px-4 py-3 hover:border-transparent hover:text-white dark:text-white dark:hover:border-transparent">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 24 24"
@@ -49,7 +49,7 @@ const Activity_tab = () => {
               </svg>
               <span className="text-2xs font-medium">Transfers</span>
             </button>
-            <button className="dark:border-jacarta-600 dark:bg-secondaryBlack group dark:hover:bg-primaryPurple hover:bg-primaryPurple border-jacarta-100 mr-2.5 mb-2.5 inline-flex items-center rounded-xl border bg-white px-4 py-3 hover:border-transparent hover:text-white dark:text-white dark:hover:border-transparent">
+            <button className="dark:border-jacarta-800 dark:bg-secondaryBlack group dark:hover:bg-primaryPurple hover:bg-primaryPurple border-jacarta-100 mr-2.5 mb-2.5 inline-flex items-center rounded-xl border bg-white px-4 py-3 hover:border-transparent hover:text-white dark:text-white dark:hover:border-transparent">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 24 24"
@@ -65,8 +65,8 @@ const Activity_tab = () => {
           </div>
         </div>
 
-        <table className="scrollbar-custom dark:bg-secondaryBlack dark:border-jacarta-600 border-jacarta-100 max-h-72 w-full overflow-y-auto rounded-lg rounded-tl-none border bg-white text-sm dark:text-white">
-          <div className="dark:bg-jacarta-600 bg-light-base sticky top-0 flex" role="row">
+        <table className="scrollbar-custom dark:bg-secondaryBlack dark:border-jacarta-800 border-jacarta-100 max-h-72 w-full overflow-y-auto rounded-lg rounded-tl-none border bg-white text-sm dark:text-white">
+          <div className="dark:bg-jacarta-800 bg-light-base sticky top-0 flex" role="row">
             <th className="w-[17%] py-2 px-4">
               <span className="text-jacarta-900 dark:text-jacarta-100 w-full overflow-hidden text-ellipsis">
                 Event
@@ -97,7 +97,7 @@ const Activity_tab = () => {
             const { id, price, from, to, text, date } = item;
             return (
               <tr className="flex" key={id}>
-                <td className="dark:border-jacarta-600 border-jacarta-100 flex w-[17%] items-center border-t py-4 px-4">
+                <td className="dark:border-jacarta-800 border-jacarta-100 flex w-[17%] items-center border-t py-4 px-4">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 24 24"
@@ -110,7 +110,7 @@ const Activity_tab = () => {
                   </svg>
                   {text}
                 </td>
-                <td className="dark:border-jacarta-600 border-jacarta-100 flex w-[17%] items-center whitespace-nowrap border-t py-4 px-4">
+                <td className="dark:border-jacarta-800 border-jacarta-100 flex w-[17%] items-center whitespace-nowrap border-t py-4 px-4">
                   <span className="-ml-1" data-tippy-content="ETH">
                     <svg className="icon mr-1 h-4 w-4">
                       <use xlinkHref="icons.svg#icon-ETH"></use>
@@ -118,17 +118,17 @@ const Activity_tab = () => {
                   </span>
                   <span className="text-green text-sm font-medium tracking-tight">{price} ETH</span>
                 </td>
-                <td className="dark:border-jacarta-600 border-jacarta-100 flex w-[22%] items-center border-t py-4 px-4">
+                <td className="dark:border-jacarta-800 border-jacarta-100 flex w-[22%] items-center border-t py-4 px-4">
                   <Link href="#" className="text-primaryPurple">
                     {from}
                   </Link>
                 </td>
-                <td className="dark:border-jacarta-600 border-jacarta-100 flex w-[22%] items-center border-t py-4 px-4">
+                <td className="dark:border-jacarta-800 border-jacarta-100 flex w-[22%] items-center border-t py-4 px-4">
                   <Link href="#" className="text-primaryPurple">
                     {to}
                   </Link>
                 </td>
-                <td className="dark:border-jacarta-600 border-jacarta-100 flex w-[22%] items-center border-t py-4 px-4">
+                <td className="dark:border-jacarta-800 border-jacarta-100 flex w-[22%] items-center border-t py-4 px-4">
                   <Link
                     href="#"
                     className="text-primaryPurple flex flex-wrap items-center"

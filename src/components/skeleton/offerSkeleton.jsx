@@ -36,7 +36,7 @@ const OfferSkeleton = () => {
                   <div className="h-3 w-3/5 rounded-lg bg-default-200"></div>
                 </Skeleton>
                 <span
-                  className="dark:border-jacarta-600 bg-green inline-flex h-6 w-6 items-center justify-center rounded-full border-2 border-white"
+                  className="dark:border-jacarta-800 bg-green inline-flex h-6 w-6 items-center justify-center rounded-full border-2 border-white"
                   data-tippy-content="Verified Collection"
                 >
                   <Tippy content={<span>Verified Collection</span>}>
@@ -74,7 +74,7 @@ const OfferSkeleton = () => {
               <div className="h-12 w-5/5 rounded-lg bg-default-200"></div>
             </Skeleton>
 
-            <div className="dark:bg-secondaryBlack dark:border-jacarta-600 border-jacarta-100 rounded-2lg border flex flex-col gap-4 bg-white p-8">
+            <div className="dark:bg-secondaryBlack dark:border-jacarta-800 border-jacarta-100 rounded-2lg border flex flex-col gap-4 bg-white p-8">
               <div className=" sm:flex sm:flex-wrap">
                 <Skeleton className="rounded-lg w-full">
                   <div className="h-24 rounded-lg bg-default-300"></div>
