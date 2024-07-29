@@ -172,7 +172,7 @@ const Review_carousel = ({
             </div>
           )}
           <div
-            className={`fixed dark:border-jacarta-500 border  bottom-0 blury-background left-0 right-0 px-4 py-3  ${isFirstSelection ? "hidden" : selectedItems?.length === 0 ? "animated-modalSelectedItemDown" : "animated-modalSelectedItemUp"}`}
+            className={`fixed dark:border-jacarta-500 border z-[100] bottom-0 blury-background left-0 right-0 px-4 py-3  ${isFirstSelection ? "hidden" : selectedItems?.length === 0 ? "animated-modalSelectedItemDown" : "animated-modalSelectedItemUp"}`}
           >
             <div className="dropdown-item mb-4 font-display   block w-full rounded-xl  text-left text-sm transition-colors dark:text-white">
               <span className="flex items-center justify-center gap-6">
@@ -185,7 +185,7 @@ const Review_carousel = ({
                 <Input
                   type="checkbox"
                   name="check"
-                  className="checked:bg-green checked:focus:bg-green checked:hover:bg-green after:bg-jacarta-400 bg-jacarta-100 relative h-4 w-7 cursor-pointer appearance-none rounded-lg border-none shadow-none after:absolute after:top-0.5 after:left-0.5 after:h-3 after:w-3 after:rounded-full after:transition-all checked:bg-none checked:after:left-3.5 checked:after:bg-white focus:ring-transparent focus:ring-offset-0"
+                  className=" !text-green border-jacarta-200 focus:ring-green/20 dark:border-jacarta-500 h-5 !w-5 self-start rounded focus:ring-offset-0"
                   onChange={() => handleInput("all")}
                   checked={validate["all"] || false}
                 />
@@ -202,7 +202,8 @@ const Review_carousel = ({
                     error: "Transaction rejected 🤯"
                   })
                 }
-                className={` !rounded-full !min-w-[100px] !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate[tokenId] ? "!btn-disabled !cursor-not-allowed" : "!bg-green !cursor-pointer"} `}
+                isDisabled={!validate["all"]}
+                className={` !rounded-full !min-w-[100px] !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate["all"] ? "!btn-disabled !cursor-not-allowed" : "!bg-green !cursor-pointer"} `}
               >
                 Validate
               </Web3Button>
@@ -216,7 +217,8 @@ const Review_carousel = ({
                     setSponsorHasAtLeastOneRejectedProposalAndNoPending(true);
                   }
                 }}
-                className={` !rounded-full !min-w-[100px] !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate[tokenId] ? "!btn-disabled !cursor-not-allowed" : "!bg-red !cursor-pointer"} `}
+                isDisabled={!validate["all"]}
+                className={` !rounded-full !min-w-[100px] !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate["all"] ? "!btn-disabled !cursor-not-allowed" : "!bg-red !cursor-pointer"} `}
               >
                 Reject
               </Web3Button>
