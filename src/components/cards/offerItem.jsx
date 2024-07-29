@@ -133,10 +133,12 @@ const OfferItem = ({
 
       if (item?.marketplaceListings?.length > 0) {
         // we look for the latest completed listing
-        const latestListing = item?.marketplaceListings?.sort(
+        const latestListings = item?.marketplaceListings?.sort(
           (a, b) => Number(b.id) - Number(a.id)
-        )[0];
+        );
 
+        // now we iterate through each listing and send the first one that is finished, else we return null
+        const latestListing = latestListings?.find((listing) => listing?.status === "COMPLETED");
         const isLatestListingFinished = latestListing?.status === "COMPLETED";
 
         if (isLatestListingFinished) {
