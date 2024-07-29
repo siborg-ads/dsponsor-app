@@ -534,6 +534,8 @@ const TokenPageContainer = () => {
                 (token) => Number(token?.tokenId) === Number(tokenId)
               );
 
+              console.log("tokenData", tokenData);
+
               if (tokenData) {
                 // need to match listing id and direct buys listing id
                 const listingTokenData = tokenData?.marketplaceListings?.find(
@@ -1716,17 +1718,17 @@ const TokenPageContainer = () => {
                 />
               </button>
 
-              {/* <!-- Modal --> */}
-              <div className={imageModal ? "modal fade show block" : "modal fade"}>
-                <div className="modal-dialog !my-0 flex h-full max-w-4xl items-center justify-center">
-                  <Image
-                    width={582}
-                    height={722}
-                    src={imageUrl ?? "/images/gradient_creative.jpg"}
-                    alt="image"
-                    className="h-full object-cover w-full rounded-2xl"
-                  />
-                </div>
+                {/* <!-- Modal --> */}
+                <div className={imageModal ? "modal fade show block" : "modal fade"}>
+                  <div className="modal-dialog !my-0 flex h-full max-w-4xl items-center justify-center">
+                    <Image
+                      width={582}
+                      height={722}
+                      src={imageUrl ?? "/images/gradient_creative.jpg"}
+                      alt="image"
+                      className="h-full object-cover w-full rounded-2xl"
+                    />
+                  </div>
 
                 <button
                   type="button"
