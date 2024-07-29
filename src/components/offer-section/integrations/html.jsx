@@ -44,6 +44,7 @@ const HtmlIntegration = ({ chainId, offerId, offerTokens }) => {
   );
   const [color, setColor] = useState("#0d102d");
   const [htmlSrc, setHtmlSrc] = useState("");
+  const [isExpanded, setIsExpanded] = useState(false);
 
   useEffect(() => {
     const savedSettings = localStorage.getItem("htmlSettings");
@@ -134,6 +135,12 @@ const HtmlIntegration = ({ chainId, offerId, offerTokens }) => {
     setHtmlSrc(htmlSrc);
   }, [chainId, offerId, offerTokens, numberOfColumns, bgColor, numberOfRows, color]);
 
+  const toggleExpansion = () => {
+    setIsExpanded(!isExpanded);
+  };
+
+  const truncatedHtmlSrc = htmlSrc.length > 250 ? htmlSrc.substring(0, 250) + "..." : htmlSrc;
+
   return (
     <div className="flex flex-col gap-4">
       <div>
@@ -218,7 +225,15 @@ const HtmlIntegration = ({ chainId, offerId, offerTokens }) => {
             </Tippy>
           </button>
         </div>
-        <code className="text-sm">{htmlSrc}</code>
+
+        <code className="text-sm">
+          {isExpanded ? htmlSrc : truncatedHtmlSrc}
+          {htmlSrc?.length > 250 && (
+            <button onClick={toggleExpansion} className="text-primaryPurple mt-2 ml-2">
+              {isExpanded ? "Show Less" : "Show More"}
+            </button>
+          )}
+        </code>
       </div>
 
       <Divider className="my-4" />
