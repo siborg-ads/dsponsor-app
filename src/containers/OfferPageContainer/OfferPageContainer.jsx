@@ -46,6 +46,7 @@ const OfferPageContainer = () => {
   const [selectedItems, setSelectedItems] = useState([]);
   const [price, setPrice] = useState(null);
   const [imageModal, setImageModal] = useState(false);
+  const [showEntireDescription, setShowEntireDescription] = useState(false);
   const [isOwner, setIsOwner] = useState(false);
   const address = useAddress();
   const { contract: DsponsorAdminContract } = useContract(
@@ -381,8 +382,11 @@ const OfferPageContainer = () => {
 
           <div className="md:flex md:flex-wrap" key={id}>
             {/* <!-- Image --> */}
-            <figure className="mb-8 md:w-2/5 md:flex-shrink-0 md:flex-grow-0 md:basis-auto lg:w-1/2 w-full flex justify-center items-start">
-              <button className="w-full" onClick={() => setImageModal(true)}>
+            <figure className="mb-8 md:w-2/5 relative md:flex-shrink-0 md:flex-grow-0 md:basis-auto lg:w-1/2 w-full flex justify-center items-start">
+              <button
+                className="w-full md:sticky md:top-0 right-0"
+                onClick={() => setImageModal(true)}
+              >
                 {imageUrl && (
                   <img
                     src={imageUrl ?? "/images/gradient_creative.jpg"}
@@ -476,14 +480,40 @@ const OfferPageContainer = () => {
                 </span>
               </div>
 
-              <p className="dark:text-jacarta-100 mb-10">{description}</p>
+              {showEntireDescription ? (
+                <p className="dark:text-jacarta-100 mb-10">
+                  {description}{" "}
+                  {description?.length > 1000 && (
+                    <button
+                      onClick={() => setShowEntireDescription(false)}
+                      className="text-primaryPurple"
+                    >
+                      Show less
+                    </button>
+                  )}
+                </p>
+              ) : (
+                <div>
+                  <p className="dark:text-jacarta-100 mb-10">
+                    {description?.length > 1000 ? description?.slice(0, 1000) + "..." : description}{" "}
+                    {description?.length > 1000 && (
+                      <button
+                        onClick={() => setShowEntireDescription(true)}
+                        className="text-primaryPurple"
+                      >
+                        Show more
+                      </button>
+                    )}
+                  </p>
+                </div>
+              )}
 
               {(offerData?.disable === true ||
                 new Date(offerData?.metadata?.offer?.valid_to).getTime() < Date.now() ||
                 offerData?.nftContract?.prices[0]?.enabled === false) && <Disable isOffer={true} />}
 
               {isOwner && (
-                <div className="dark:bg-secondaryBlack dark:border-jacarta-600 border-jacarta-100 rounded-2lg border bg-white p-8">
+                <div className="dark:bg-secondaryBlack dark:border-jacarta-800 border-jacarta-100 rounded-2lg border bg-white p-8">
                   <div className=" sm:flex sm:flex-wrap">
                     <span className="dark:text-jacarta-100 text-jacarta-100 text-sm">
                       This page allows you to oversee submitted ads, offering tools to either
@@ -516,7 +546,7 @@ const OfferPageContainer = () => {
             </Accordion.Header>
 
             <Accordion.Content>
-              <div className="dark:bg-secondaryBlack mb-6 dark:border-jacarta-600 border-jacarta-100 rounded-2lg border bg-white p-8">
+              <div className="dark:bg-secondaryBlack mb-6 dark:border-jacarta-800 border-jacarta-100 rounded-2lg border bg-white p-8">
                 <div className=" sm:flex sm:flex-wrap">
                   <span className="dark:text-jacarta-100 text-jacarta-100 text-sm">
                     You can check if a word is available for purchase by using the search bar.
@@ -565,7 +595,7 @@ const OfferPageContainer = () => {
                         </Tippy>
 
                         <Tippy content={<span className="p-2">{tokenData}</span>}>
-                          <div className="dark:border-jacarta-600 border-jacarta-100 max-w-[100px] overflow-hidden text-ellipsis flex items-center whitespace-nowrap rounded-md border py-1 px-2">
+                          <div className="dark:border-jacarta-800 border-jacarta-100 max-w-[100px] overflow-hidden text-ellipsis flex items-center whitespace-nowrap rounded-md border py-1 px-2">
                             <span className="text-green text-sm font-medium tracking-tight overflow-hidden text-ellipsis whitespace-nowrap">
                               {" "}
                               {tokenData}
@@ -598,7 +628,7 @@ const OfferPageContainer = () => {
           </Accordion.Header>
 
           <Accordion.Content>
-            <div className="dark:bg-secondaryBlack mb-6 dark:border-jacarta-600 border-jacarta-100 rounded-2lg border bg-white p-4">
+            <div className="dark:bg-secondaryBlack mb-6 dark:border-jacarta-800 border-jacarta-100 rounded-2lg border bg-white p-4">
               <div className="sm:flex justify-center items-center sm:flex-wrap">
                 <span className="dark:text-jacarta-100 text-jacarta-100 text-sm text-center">
                   This section allows you to see every tokens associated with the offer.
@@ -699,7 +729,7 @@ const OfferPageContainer = () => {
 
             <Accordion.Content>
               <Tabs className="tabs">
-                <TabList className="nav nav-tabs hide-scrollbar mb-12 flex items-center justify-start overflow-x-auto overflow-y-hidden border-b border-jacarta-100 pb-px dark:border-jacarta-600 md:justify-center">
+                <TabList className="nav nav-tabs hide-scrollbar mb-12 flex items-center justify-start overflow-x-auto overflow-y-hidden border-b border-jacarta-100 pb-px dark:border-jacarta-800 md:justify-center">
                   <Tab
                     className="nav-item"
                     onClick={() => setOfferManagementActiveTab("integration")}

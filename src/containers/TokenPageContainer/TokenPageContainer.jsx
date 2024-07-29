@@ -140,6 +140,7 @@ const TokenPageContainer = () => {
   const [royaltiesAmount, setRoyaltiesAmount] = useState(null);
   const [airdropAddress, setAirdropAddress] = useState(undefined);
   const [nftContractAddress, setNftContractAddress] = useState(null);
+  const [showEntireDescription, setShowEntireDescription] = useState(false);
 
   let description = "description not found";
   let id = "1";
@@ -512,7 +513,9 @@ const TokenPageContainer = () => {
 
             saleInfo = {
               address: winnerBid?.bidder,
-              amount: Number(winnerBid?.paidBidAmount) / Math.pow(10, listing?.currencyDecimals),
+              amount: winnerBid?.paidBidAmount
+                ? formatUnits(BigInt(winnerBid?.paidBidAmount), listing?.currencyDecimals)
+                : 0,
               date: winnerBid?.creationTimestamp,
               currency: {
                 contract: listing?.currency,
@@ -560,7 +563,9 @@ const TokenPageContainer = () => {
 
                 saleInfo = {
                   address: directBuy?.buyer,
-                  amount: Number(directBuy?.totalPricePaid) / Math.pow(10, tempCurrency?.decimals),
+                  amount: directBuy?.amount
+                    ? formatUnits(BigInt(directBuy?.amount), tempCurrency?.decimals)
+                    : 0,
                   date: directBuy?.revenueTransaction?.blockTimestamp,
                   currency: {
                     contract: listing?.currency,
@@ -597,7 +602,6 @@ const TokenPageContainer = () => {
         const targetAddress = tokenData?.mint?.currency;
 
         let tempCurrency = null;
-
         if (smartContracts) {
           for (const key in smartContracts) {
             if (smartContracts[key]?.address?.toLowerCase() === targetAddress?.toLowerCase()) {
@@ -610,7 +614,9 @@ const TokenPageContainer = () => {
         if (tokenData) {
           saleMintInfo = {
             address: tokenData?.mint?.to,
-            amount: Number(tokenData?.mint?.amount) / Math.pow(10, tempCurrency?.decimals),
+            amount: tokenData?.mint?.totalPaid
+              ? formatUnits(BigInt(tokenData?.mint?.totalPaid), tempCurrency?.decimals)
+              : 0,
             date: tokenData?.mint?.revenueTransaction?.blockTimestamp,
             currency: {
               contract: tokenData?.mint?.currency,
@@ -1699,18 +1705,17 @@ const TokenPageContainer = () => {
 
           <div className="md:flex md:flex-wrap" key={id}>
             {/* <!-- Image --> */}
-            <figure className="mb-8 md:mb-0 md:w-2/5 md:flex-shrink-0 md:flex-grow-0 md:basis-auto lg:w-1/2 w-full flex justify-center relative">
+            <figure className="mb-8 md:mb-0 md:w-2/5 md:flex-shrink-0 md:flex-grow-0 items-start md:basis-auto lg:w-1/2 w-full flex justify-center relative">
               <button
-                className=" w-full"
+                className="w-full md:sticky md:top-0 md:right-0"
                 onClick={() => setImageModal(true)}
-                style={{ height: "450px" }}
               >
                 <Image
                   width={585}
                   height={726}
                   src={imageUrl ?? "/images/gradient_creative.jpg"}
                   alt="image"
-                  className="rounded-2xl cursor-pointer h-full object-contain w-full shadow-lg"
+                  className="rounded-2xl cursor-pointer h-auto object-contain w-full shadow-lg"
                 />
               </button>
 
@@ -1811,7 +1816,33 @@ const TokenPageContainer = () => {
                 )}
               </div>
 
-              <p className="dark:text-jacarta-100 mb-10">{description}</p>
+              {showEntireDescription ? (
+                <p className="dark:text-jacarta-100 mb-10">
+                  {description}{" "}
+                  {description?.length > 1000 && (
+                    <button
+                      onClick={() => setShowEntireDescription(false)}
+                      className="text-primaryPurple"
+                    >
+                      Show less
+                    </button>
+                  )}
+                </p>
+              ) : (
+                <div>
+                  <p className="dark:text-jacarta-100 mb-10">
+                    {description?.length > 1000 ? description?.slice(0, 1000) + "..." : description}{" "}
+                    {description?.length > 1000 && (
+                      <button
+                        onClick={() => setShowEntireDescription(true)}
+                        className="text-primaryPurple"
+                      >
+                        Show more
+                      </button>
+                    )}
+                  </p>
+                </div>
+              )}
 
               {(offerData?.disable === true ||
                 new Date(offerData?.metadata?.offer?.valid_to).getTime() < Date.now() ||
@@ -1835,7 +1866,7 @@ const TokenPageContainer = () => {
                       firstSelectedListing?.startTime < now &&
                       firstSelectedListing?.endTime > now)) &&
                     successFullBuyModal && (
-                      <div className="dark:bg-secondaryBlack dark:border-jacarta-600 mb-2 border-jacarta-100 rounded-2lg border flex flex-col gap-4 bg-white p-8">
+                      <div className="dark:bg-secondaryBlack dark:border-jacarta-800 mb-2 border-jacarta-100 rounded-2lg border flex flex-col gap-4 bg-white p-8">
                         <div className="sm:flex sm:flex-wrap flex-col gap-8">
                           {firstSelectedListing?.listingType === "Direct" && (
                             <div className="flex items-center justify-between gap-4 w-full">
@@ -1878,7 +1909,7 @@ const TokenPageContainer = () => {
                   {firstSelectedListing?.status === "CREATED" &&
                     firstSelectedListing?.listingType === "Auction" &&
                     firstSelectedListing?.startTime >= now && (
-                      <div className="dark:bg-secondaryBlack dark:border-jacarta-600 mb-2 border-jacarta-100 rounded-2lg border flex flex-col gap-4 bg-white p-8">
+                      <div className="dark:bg-secondaryBlack dark:border-jacarta-800 mb-2 border-jacarta-100 rounded-2lg border flex flex-col gap-4 bg-white p-8">
                         <div className="sm:flex sm:flex-wrap flex-col gap-8">
                           <div className="flex items-center justify-between gap-4 w-full">
                             <span className="js-countdown-ends-label text-base text-jacarta-100 dark:text-jacarta-100">
@@ -1897,7 +1928,7 @@ const TokenPageContainer = () => {
                   {conditions?.conditionsObject?.isCreator &&
                     airdropContainer &&
                     !conditions?.conditionsObject?.isMinted && (
-                      <div className="dark:bg-secondaryBlack mt-4 dark:border-jacarta-600 mb-2 border-jacarta-100 rounded-2lg border flex flex-col gap-4 bg-white p-8">
+                      <div className="dark:bg-secondaryBlack mt-4 dark:border-jacarta-800 mb-2 border-jacarta-100 rounded-2lg border flex flex-col gap-4 bg-white p-8">
                         <span className="dark:text-jacarta-100 text-jacarta-100 text-lg">
                           Airdrop this token
                         </span>
@@ -1966,7 +1997,7 @@ const TokenPageContainer = () => {
                   {firstSelectedListing?.status === "CREATED" &&
                     firstSelectedListing?.listingType === "Direct" &&
                     firstSelectedListing?.startTime >= now && (
-                      <div className="dark:bg-secondaryBlack dark:border-jacarta-600 mb-2 border-jacarta-100 rounded-2lg border flex flex-col gap-4 bg-white p-8">
+                      <div className="dark:bg-secondaryBlack dark:border-jacarta-800 mb-2 border-jacarta-100 rounded-2lg border flex flex-col gap-4 bg-white p-8">
                         <div className="sm:flex sm:flex-wrap flex-col gap-8">
                           <div className="flex items-center justify-between gap-4 w-full">
                             <span className="js-countdown-ends-label text-base text-jacarta-100 dark:text-jacarta-100">

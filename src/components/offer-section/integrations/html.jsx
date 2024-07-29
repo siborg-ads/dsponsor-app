@@ -8,7 +8,7 @@ import { ClipboardIcon } from "@heroicons/react/24/solid";
 import handleCopy from "../../../utils/handleCopy";
 import Tippy from "@tippyjs/react";
 import { ChromePicker } from "react-color";
-import Input from "../../ui/input";
+import Input from "../../ui/input.jsx";
 
 const initialColumns = (numberOfTokens) => {
   if (numberOfTokens % 7 === 0) return 7;
@@ -240,7 +240,7 @@ const HtmlIntegration = ({ chainId, offerId, offerTokens }) => {
                   setNumberOfColumns(offerTokens?.length);
                 }
               }}
-              className={`p-2 rounded-md ${columns ? "bg-primaryPurple text-primaryPurple" : "bg-secondaryBlack text-jacarta-100"}`}
+              className=" !text-primaryPurple border-jacarta-200 focus:ring-primaryPurple/20 dark:border-jacarta-500 h-5 !w-5 self-start rounded focus:ring-offset-0"
             />
             <span className="text-white">Number of columns</span>
             <InfoIcon text="You can set the number of columns to match the designated space on your page.">
@@ -274,7 +274,7 @@ const HtmlIntegration = ({ chainId, offerId, offerTokens }) => {
               type="checkbox"
               checked={bgColor}
               onChange={(e) => setBgColor(e.target.checked)}
-              className={`p-2 rounded-md ${bgColor ? "bg-primaryPurple text-primaryPurple" : "bg-secondaryBlack text-jacarta-100"}`}
+              className=" !text-primaryPurple border-jacarta-200 focus:ring-primaryPurple/20 dark:border-jacarta-500 h-5 !w-5 self-start rounded focus:ring-offset-0"
             />
             <span className="text-white">Background color</span>
             <InfoIcon text="By default, the background color of the table is not defined. You can select one if desired.">

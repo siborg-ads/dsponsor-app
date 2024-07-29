@@ -56,12 +56,12 @@ const Collection_category = ({ bgWhite = false }) => {
                                 alt={title}
                                 className="rounded-2lg h-12 w-12"
                               />
-                              <div className="dark:border-jacarta-600 bg-secondaryBlack absolute -left-3 top-1/2 flex h-6 w-6 -translate-y-2/4 items-center justify-center rounded-full border-2 border-white text-xs text-white">
+                              <div className="dark:border-jacarta-800 bg-secondaryBlack absolute -left-3 top-1/2 flex h-6 w-6 -translate-y-2/4 items-center justify-center rounded-full border-2 border-white text-xs text-white">
                                 {id}
                               </div>
                               {icon && (
                                 <div
-                                  className="dark:border-jacarta-600 bg-green absolute -left-3 top-[60%] flex h-6 w-6 items-center justify-center rounded-full border-2 border-white"
+                                  className="dark:border-jacarta-800 bg-green absolute -left-3 top-[60%] flex h-6 w-6 items-center justify-center rounded-full border-2 border-white"
                                   data-tippy-content="Verified Collection"
                                 >
                                   <svg

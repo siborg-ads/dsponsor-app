@@ -16,7 +16,7 @@ const DropdownFilter = () => {
   return (
     <div className="dropdown relative cursor-pointer">
       <div
-        className="dropdown-toggle flex items-center justify-between rounded-lg border border-jacarta-100 bg-white w-full h-12 py-3 px-4 dark:border-jacarta-600 dark:bg-secondaryBlack dark:text-white"
+        className="dropdown-toggle flex items-center justify-between rounded-lg border border-jacarta-100 bg-white w-full h-12 py-3 px-4 dark:border-jacarta-800 dark:bg-secondaryBlack dark:text-white"
         role="button"
         id="filtersPrice"
         data-bs-toggle="dropdown"
@@ -43,8 +43,8 @@ const DropdownFilter = () => {
             key={currency.id}
             className={`dropdown-item flex w-full items-center justify-between rounded-xl px-5 py-2 text-left font-display text-sm transition-colors ${
               selectedCurrency === currency
-                ? "bg-jacarta-50 dark:bg-jacarta-600"
-                : "hover:bg-jacarta-50 dark:hover:bg-jacarta-600"
+                ? "bg-jacarta-50 dark:bg-jacarta-800"
+                : "hover:bg-jacarta-50 dark:hover:bg-jacarta-800"
             }`}
             onClick={() => handleCurrencySelect(currency)}
           >

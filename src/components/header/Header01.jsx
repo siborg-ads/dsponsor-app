@@ -332,7 +332,7 @@ export default function Header01() {
 
         <div className="mt-10 w-full lg:hidden">
           <ConnectWallet theme={"dark"} modalSize={"wide"} />
-          <hr className="dark:bg-jacarta-600 bg-jacarta-100 my-5 h-px border-0" />
+          <hr className="dark:bg-jacarta-800 bg-jacarta-100 my-5 h-px border-0" />
           <div className="flex items-center justify-center space-x-5">
             <Link href="#" className="group">
               <svg

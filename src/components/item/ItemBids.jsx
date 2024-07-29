@@ -99,7 +99,7 @@ const ItemBids = ({
             </div>
 
             <div className="flex col-span-1 items-center justify-center">
-              <div className="w-[1px] h-full rounded-lg sm:bg-jacarta-100 dark:bg-jacarta-600" />
+              <div className="w-[1px] h-full rounded-lg sm:bg-jacarta-100 dark:bg-jacarta-800" />
             </div>
 
             {/* Countdown */}

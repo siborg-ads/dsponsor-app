@@ -5,7 +5,7 @@ import { ClipboardIcon } from "@heroicons/react/20/solid";
 import handleCopy from "../../../utils/handleCopy";
 import Tippy from "@tippyjs/react";
 import "tippy.js/dist/tippy.css";
-import Input from "../../ui/input";
+import Input from "../../ui/input.jsx";
 
 const Referrals = ({ userAddr, userData }) => {
   const [isHovered, setIsHovered] = useState(false);
@@ -61,7 +61,7 @@ const Referrals = ({ userAddr, userData }) => {
               ref={inputRef}
               disabled
               value={`${frontURL}/?_rid=${userAddr}`}
-              className="pr-12 h-full w-full bg-primaryBlack border border-primaryPurple rounded-2lg p-2 focus:border-primaryPurple focus:ring-transparent dark:bg-primaryBlack dark:text-white"
+              className="pr-12 h-full w-full border border-primaryPurple rounded-2lg p-2 focus:border-primaryPurple focus:ring-transparent dark:bg-primaryBlack dark:text-white"
             />
             <Tippy content={copied ? "Copied!" : "Copy"} placement="top" trigger="click">
               <button

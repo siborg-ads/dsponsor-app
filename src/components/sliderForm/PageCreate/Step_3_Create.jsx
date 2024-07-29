@@ -92,13 +92,13 @@ const Step_3_Create = ({
               )}
 
               <div
-                className={`dark:bg-secondaryBlack dark:border-primaryPurple border-jacarta-100 group relative flex max-w-md flex-col items-center justify-center rounded-lg border-2 border-dashed bg-white  px-1 text-center ${
+                className={`bg-jacarta-800 dark:border-primaryPurple border-jacarta-100 group relative flex max-w-md flex-col items-center justify-center rounded-lg border-2 border-dashed px-1 text-center ${
                   previewImage.length <= 0 ? "py-20" : "p-1"
                 }`}
                 style={{ width: `300px`, height: `300px` }}
               >
                 <div
-                  className={`relative z-10 cursor-pointer  ${!previewImage ? "p-1" : "px-0 h-full w-full"}`}
+                  className={`relative flex justify-center items-center z-10 cursor-pointer  ${!previewImage ? "p-1" : "px-0 h-full w-full"}`}
                 >
                   {previewImage.length <= 0 ? (
                     <div>
@@ -182,7 +182,7 @@ const Step_3_Create = ({
 
               {isSelected ? (
                 <div
-                  className={`dark:bg-secondaryBlack dark:border-primaryPurple border-jacarta-100 group relative flex max-w-md flex-col items-center justify-center rounded-lg border-2 border-dashed bg-white  px-5 text-center py-5`}
+                  className={`bg-jacarta-800 dark:border-primaryPurple border-jacarta-100 group relative flex max-w-md flex-col items-center justify-center rounded-lg border-2 border-dashed px-5 text-center py-5`}
                 >
                   <div className={`relative z-10 cursor-pointer px-6`}>
                     <div>

@@ -4,7 +4,7 @@ const FilterSortHeader = () => {
   return (
     <div className="flex flex-wrap justify-between">
       <div className="flex space-x-2 mb-2">
-        <button className="js-collections-toggle-filters flex h-10 group flex-shrink-0 items-center justify-center space-x-1 rounded-lg border border-jacarta-100 bg-white py-1.5 px-4 font-display text-sm font-semibold text-jacarta-100 hover:bg-primaryPurple hover:border-primaryPurple dark:hover:bg-primaryPurple dark:border-jacarta-600 dark:bg-secondaryBlack">
+        <button className="js-collections-toggle-filters flex h-10 group flex-shrink-0 items-center justify-center space-x-1 rounded-lg border border-jacarta-100 bg-white py-1.5 px-4 font-display text-sm font-semibold text-jacarta-100 hover:bg-primaryPurple hover:border-primaryPurple dark:hover:bg-primaryPurple dark:border-jacarta-800 dark:bg-secondaryBlack">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
@@ -17,7 +17,7 @@ const FilterSortHeader = () => {
           </svg>
           <span className="mt-0.5 dark:text-white group-hover:text-white">Filters</span>
         </button>
-        <button className="lex h-10 group flex-shrink-0 items-center justify-center space-x-1 rounded-lg border border-jacarta-100 bg-white py-1.5 px-4 font-medium text-2xs hover:bg-primaryPurple hover:border-primaryPurple dark:hover:bg-primaryPurple dark:border-jacarta-600 dark:bg-secondaryBlack">
+        <button className="lex h-10 group flex-shrink-0 items-center justify-center space-x-1 rounded-lg border border-jacarta-100 bg-white py-1.5 px-4 font-medium text-2xs hover:bg-primaryPurple hover:border-primaryPurple dark:hover:bg-primaryPurple dark:border-jacarta-800 dark:bg-secondaryBlack">
           <span className="mt-0.5 dark:text-white group-hover:text-white">Clear All</span>
         </button>
       </div>
@@ -25,7 +25,7 @@ const FilterSortHeader = () => {
 
       <div className="flex flex-wrap items-center space-x-3">
         <ul
-          className="nav nav-tabs flex items-center justify-center border border-jacarta-100 dark:border-jacarta-600 rounded-lg overflow-hidden"
+          className="nav nav-tabs flex items-center justify-center border border-jacarta-100 dark:border-jacarta-800 rounded-lg overflow-hidden"
           role="tablist"
         >
           <li className="nav-item" role="presentation">

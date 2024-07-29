@@ -193,7 +193,7 @@ html {
   }
 
   .scrollbar-custom::-webkit-scrollbar-thumb {
-    @apply rounded-lg bg-jacarta-300 dark:bg-jacarta-600;
+    @apply rounded-lg bg-jacarta-300 dark:bg-jacarta-800;
   }
 
   /* Dropdowns */
@@ -4606,7 +4606,7 @@ html {
     display: none;
   }
 
-  .dark .dark\:divide-jacarta-600 > :not([hidden]) ~ :not([hidden]) {
+  .dark .dark\:divide-jacarta-800 > :not([hidden]) ~ :not([hidden]) {
     --tw-divide-opacity: 1;
     border-color: rgba(54, 58, 93, var(--tw-divide-opacity));
   }
@@ -4615,7 +4615,7 @@ html {
     border-color: transparent;
   }
 
-  .dark .dark\:border-jacarta-600 {
+  .dark .dark\:border-jacarta-800 {
     --tw-border-opacity: 1;
     border-color: rgba(54, 58, 93, var(--tw-border-opacity));
   }
@@ -4644,7 +4644,7 @@ html {
     background-color: rgba(16, 20, 54, var(--tw-bg-opacity));
   }
 
-  .dark .dark\:bg-jacarta-600 {
+  .dark .dark\:bg-jacarta-800 {
     --tw-bg-opacity: 1;
     background-color: rgba(54, 58, 93, var(--tw-bg-opacity));
   }
@@ -4674,7 +4674,7 @@ html {
     fill: #7d7f96;
   }
 
-  .dark .dark\:fill-jacarta-600 {
+  .dark .dark\:fill-jacarta-800 {
     fill: #363a5d;
   }
 
@@ -4747,7 +4747,7 @@ html {
     background-color: rgba(131, 88, 255, var(--tw-bg-opacity));
   }
 
-  .dark .dark\:hover\:bg-jacarta-600:hover {
+  .dark .dark\:hover\:bg-jacarta-800:hover {
     --tw-bg-opacity: 1;
     background-color: rgba(54, 58, 93, var(--tw-bg-opacity));
   }
