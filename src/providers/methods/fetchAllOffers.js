@@ -46,8 +46,16 @@ export const fetchAllOffers = async (chainId) => {
             tokenId
             mint {
               transactionHash # if = null => not minted yet, so it's available
+              from
+              currency
               to # address who receives the token
               tokenData # data linked to token id, search ticker for SiBorg ad offer for example
+              revenueTransaction {
+                id
+                blockTimestamp
+              }
+              amount
+              totalPaid
             }
             marketplaceListings {
               listingType
