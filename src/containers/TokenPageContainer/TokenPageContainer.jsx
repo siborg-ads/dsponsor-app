@@ -513,7 +513,9 @@ const TokenPageContainer = () => {
 
             saleInfo = {
               address: winnerBid?.bidder,
-              amount: Number(winnerBid?.paidBidAmount) / Math.pow(10, listing?.currencyDecimals),
+              amount: winnerBid?.paidBidAmount
+                ? formatUnits(BigInt(winnerBid?.paidBidAmount), listing?.currencyDecimals)
+                : 0,
               date: winnerBid?.creationTimestamp,
               currency: {
                 contract: listing?.currency,
@@ -561,7 +563,9 @@ const TokenPageContainer = () => {
 
                 saleInfo = {
                   address: directBuy?.buyer,
-                  amount: Number(directBuy?.totalPricePaid) / Math.pow(10, tempCurrency?.decimals),
+                  amount: directBuy?.amount
+                    ? formatUnits(BigInt(directBuy?.amount), tempCurrency?.decimals)
+                    : 0,
                   date: directBuy?.revenueTransaction?.blockTimestamp,
                   currency: {
                     contract: listing?.currency,
@@ -598,7 +602,6 @@ const TokenPageContainer = () => {
         const targetAddress = tokenData?.mint?.currency;
 
         let tempCurrency = null;
-
         if (smartContracts) {
           for (const key in smartContracts) {
             if (smartContracts[key]?.address?.toLowerCase() === targetAddress?.toLowerCase()) {
@@ -611,7 +614,9 @@ const TokenPageContainer = () => {
         if (tokenData) {
           saleMintInfo = {
             address: tokenData?.mint?.to,
-            amount: Number(tokenData?.mint?.amount) / Math.pow(10, tempCurrency?.decimals),
+            amount: tokenData?.mint?.totalPaid
+              ? formatUnits(BigInt(tokenData?.mint?.totalPaid), tempCurrency?.decimals)
+              : 0,
             date: tokenData?.mint?.revenueTransaction?.blockTimestamp,
             currency: {
               contract: tokenData?.mint?.currency,
