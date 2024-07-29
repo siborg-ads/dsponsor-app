@@ -1968,11 +1968,11 @@ const TokenPageContainer = () => {
                         <div className="w-full flex">
                           <Web3Button
                             contractAddress={nftContractAddress}
-                            action={() => {
+                            action={async () => {
                               setIsLoadingAirdropButton(true);
 
-                              toast.promise(handleAirdrop(airdropAddress), {
-                                loading: "Airdrop in progress... 🚀",
+                              await toast.promise(handleAirdrop(airdropAddress), {
+                                pending: "Airdrop in progress... 🚀",
                                 success: "Airdrop successful 🎉",
                                 error: "Airdrop failed ❌"
                               });
