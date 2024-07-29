@@ -129,6 +129,8 @@ const OfferItem = ({
 
   useEffect(() => {
     if (item) {
+      let lastSalePrice;
+
       if (item?.marketplaceListings?.length > 0) {
         // we look for the latest completed listing
         const latestListing = item?.marketplaceListings?.sort(
@@ -139,7 +141,6 @@ const OfferItem = ({
 
         if (isLatestListingFinished) {
           // if yes we get the last sale price
-          let lastSalePrice;
           if (latestListing?.listingType === "Direct") {
             // direct price
             lastSalePrice = formatUnits(
@@ -153,18 +154,19 @@ const OfferItem = ({
               Number(latestListing?.currencyDecimals)
             );
           }
+        }
+      }
 
-          setLastSalePrice(lastSalePrice);
-        }
-      } else {
+      if (!lastSalePrice && item?.mint !== null) {
         // we handle the mint case
-        if (item?.mint !== null) {
-          const mintPrice = item?.mint?.totalPaid;
-          if (mintPrice) {
-            const lastSalePrice = formatUnits(BigInt(mintPrice), Number(item?.currencyDecimals));
-            setLastSalePrice(lastSalePrice);
-          }
+        const mintPrice = item?.mint?.totalPaid;
+        if (mintPrice) {
+          lastSalePrice = formatUnits(BigInt(mintPrice), Number(item?.currencyDecimals));
         }
+      }
+
+      if (lastSalePrice) {
+        setLastSalePrice(lastSalePrice);
       }
     }
   }, [item]);
