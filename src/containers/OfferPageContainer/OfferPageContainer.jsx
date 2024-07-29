@@ -59,7 +59,7 @@ const OfferPageContainer = () => {
   const [tokenData, setTokenData] = useState("");
   const [isWordAlreadyTaken, setIsWordAlreadyTaken] = useState(false);
   const { contract: tokenContract } = useContract(
-    offerData?.nftContract?.prices[0]?.currency,
+    offerData?.nftContract?.prices?.[0]?.currency,
     "token"
   );
   const { data: symbolContract } = useContractRead(tokenContract, "symbol");
@@ -634,7 +634,6 @@ const OfferPageContainer = () => {
 
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-6">
               {offerData?.nftContract?.tokens?.map((token) => {
-                console.log("token", token);
                 return (
                   <OfferItem
                     key={token.id}
@@ -643,6 +642,7 @@ const OfferPageContainer = () => {
                     chainId={chainId}
                     item={token}
                     isToken={true}
+                    url={`/${chainId}/offer/${offerId}/${token?.tokenId}`}
                   />
                 );
               })}

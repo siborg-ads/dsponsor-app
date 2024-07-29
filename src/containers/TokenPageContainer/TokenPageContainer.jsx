@@ -1706,7 +1706,10 @@ const TokenPageContainer = () => {
           <div className="md:flex md:flex-wrap" key={id}>
             {/* <!-- Image --> */}
             <figure className="mb-8 md:mb-0 md:w-2/5 md:flex-shrink-0 md:flex-grow-0 items-start md:basis-auto lg:w-1/2 w-full flex justify-center relative">
-              <button className="w-full md:sticky md:top-0 md:right-0" onClick={() => setImageModal(true)}>
+              <button
+                className="w-full md:sticky md:top-0 md:right-0"
+                onClick={() => setImageModal(true)}
+              >
                 <Image
                   width={585}
                   height={726}
@@ -1961,11 +1964,11 @@ const TokenPageContainer = () => {
                         <div className="w-full flex">
                           <Web3Button
                             contractAddress={nftContractAddress}
-                            action={() => {
+                            action={async () => {
                               setIsLoadingAirdropButton(true);
 
-                              toast.promise(handleAirdrop(airdropAddress), {
-                                loading: "Airdrop in progress... 🚀",
+                              await toast.promise(handleAirdrop(airdropAddress), {
+                                pending: "Airdrop in progress... 🚀",
                                 success: "Airdrop successful 🎉",
                                 error: "Airdrop failed ❌"
                               });
