@@ -64,6 +64,7 @@ const Step_2_Create = ({
                 maxLength="250"
                 placeholder="This is a description of the offer. characters limit : 250"
                 required
+                className="placeholder:text-jacarta-300"
               />
             </div>
           </div>

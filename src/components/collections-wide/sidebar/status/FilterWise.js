@@ -27,7 +27,7 @@ const FilterWise = () => {
             <Input
               type="checkbox"
               id={option.id}
-              className="h-5 w-5 mr-3 rounded border-jacarta-200 text-primaryPurple checked:bg-primaryPurple focus:ring-primaryPurple/20 focus:ring-offset-0 dark:border-jacarta-500 dark:bg-jacarta-600"
+              className="h-5 w-5 mr-3 rounded border-jacarta-200 text-primaryPurple checked:bg-primaryPurple focus:ring-primaryPurple/20 focus:ring-offset-0 dark:border-jacarta-500 dark:bg-jacarta-800"
               checked={selectedFilters.includes(option.id)}
               onChange={() => handleFilterToggle(option.id)}
             />

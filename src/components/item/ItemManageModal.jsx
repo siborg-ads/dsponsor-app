@@ -440,7 +440,7 @@ const ItemManageModal = ({
                                       showYearDropdown
                                       showTimeSelect
                                       dateFormat="MMMM d, yyyy h:mm aa"
-                                      className="z-50 dark:bg-secondaryBlack border-jacarta-100 hover:ring-primaryPurple/10 focus:ring-primaryPurple dark:border-jacarta-600 dark:placeholder:text-jacarta-100 w-full rounded-lg py-3 px-3 hover:ring-2 dark:text-white"
+                                      className="z-50 dark:bg-secondaryBlack border-jacarta-100 hover:ring-primaryPurple/10 focus:ring-primaryPurple dark:border-jacarta-800 dark:placeholder:text-jacarta-100 w-full rounded-lg py-3 px-3 hover:ring-2 dark:text-white"
                                       style={{ width: "357px" }}
                                     />
                                     <div className="flex gap-2 justify-center items-center">
@@ -466,7 +466,7 @@ const ItemManageModal = ({
                                       showYearDropdown
                                       showTimeSelect
                                       dateFormat="MMMM d, yyyy h:mm aa"
-                                      className="z-50 dark:bg-secondaryBlack border-jacarta-100 hover:ring-primaryPurple/10 focus:ring-primaryPurple dark:border-jacarta-600 dark:placeholder:text-jacarta-100 w-full rounded-lg py-3 px-3 hover:ring-2 dark:text-white"
+                                      className="z-50 dark:bg-secondaryBlack border-jacarta-100 hover:ring-primaryPurple/10 focus:ring-primaryPurple dark:border-jacarta-800 dark:placeholder:text-jacarta-100 w-full rounded-lg py-3 px-3 hover:ring-2 dark:text-white"
                                     />
                                     <div className="flex gap-2 justify-center items-center">
                                       <span className="text-jacarta-900 dark:text-white">
@@ -496,7 +496,7 @@ const ItemManageModal = ({
                                         value={selectedStartingPrice}
                                         onChange={handleStartingPriceChange}
                                         placeholder="Unit selling price"
-                                        className="dark:bg-secondaryBlack flex-grow border-jacarta-100 hover:ring-primaryPurple/10 focus:ring-primaryPurple dark:border-jacarta-600 dark:placeholder:text-jacarta-100  rounded-lg py-3 px-3 hover:ring-2 dark:text-white"
+                                        className="flex-grow border-jacarta-100 hover:ring-primaryPurple/10 focus:ring-primaryPurple dark:border-jacarta-800 dark:placeholder:text-jacarta-100  rounded-lg py-3 px-3 hover:ring-2 dark:text-white"
                                       />
                                     </div>
                                     <p className="dark:text-jacarta-100 text-jacarta-100 text-2xs ">
@@ -526,7 +526,7 @@ const ItemManageModal = ({
                                       value={selectedUnitPrice}
                                       onChange={handleUnitPriceChange}
                                       placeholder="Direct selling price"
-                                      className="dark:bg-secondaryBlack flex-grow border-jacarta-100 hover:ring-primaryPurple/10 focus:ring-primaryPurple dark:border-jacarta-600 dark:placeholder:text-jacarta-100  rounded-lg py-3 px-3 hover:ring-2 dark:text-white"
+                                      className="flex-grow border-jacarta-100 hover:ring-primaryPurple/10 focus:ring-primaryPurple dark:border-jacarta-800 dark:placeholder:text-jacarta-100  rounded-lg py-3 px-3 hover:ring-2 dark:text-white"
                                     />
                                     <p className="dark:text-jacarta-100 text-jacarta-100 text-2xs ">
                                       You will receive :{" "}
@@ -540,7 +540,7 @@ const ItemManageModal = ({
                                     id="currency"
                                     value={selectedCurrency}
                                     onChange={handleCurrencyChange}
-                                    className="dark:bg-secondaryBlack min-w-[110px] border-jacarta-100 hover:ring-primaryPurple/10 focus:ring-primaryPurple dark:border-jacarta-600 dark:placeholder:text-jacarta-100 w-full rounded-lg py-3 px-5 hover:ring-2 dark:text-white"
+                                    className="dark:bg-secondaryBlack min-w-[110px] border-jacarta-100 hover:ring-primaryPurple/10 focus:ring-primaryPurple dark:border-jacarta-800 dark:placeholder:text-jacarta-100 w-full rounded-lg py-3 px-5 hover:ring-2 dark:text-white"
                                   >
                                     <option value="WETH">WETH</option>
                                     {activated_features.canAcceptUSDC && (
@@ -559,7 +559,7 @@ const ItemManageModal = ({
                                       value={customContract}
                                       onChange={handleCustomContractChange}
                                       placeholder="Contract address"
-                                      className={`dark:bg-secondaryBlack  hover:ring-primaryPurple/10 ${tokenContractAsync && customContract ? "border-green" : "border-red"} focus:ring-primaryPurple  dark:placeholder:text-jacarta-100 w-full rounded-lg py-3 px-3 hover:ring-2 dark:text-white`}
+                                      className={`hover:ring-primaryPurple/10 ${tokenContractAsync && customContract ? "border-green" : "border-red"} focus:ring-primaryPurple  dark:placeholder:text-jacarta-100 w-full rounded-lg py-3 px-3 hover:ring-2 dark:text-white`}
                                     />
                                   )}
                                 </div>

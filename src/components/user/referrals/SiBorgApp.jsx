@@ -4,7 +4,7 @@ import { useAddress } from "@thirdweb-dev/react";
 import Tippy from "@tippyjs/react";
 import { ClipboardIcon } from "@heroicons/react/20/solid";
 import "tippy.js/dist/tippy.css";
-import Input from "../../ui/input";
+import Input from "../../ui/input.jsx";
 import { useChainContext } from "../../../contexts/hooks/useChainContext";
 
 const SiBorgApp = () => {

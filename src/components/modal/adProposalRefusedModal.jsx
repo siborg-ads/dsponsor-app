@@ -81,7 +81,7 @@ const AddProposalRefusedModal = ({
                   </div>
                   <textarea
                     id={tokenId}
-                    className="dark:bg-secondaryBlack  border-jacarta-100 hover:ring-primaryPurple/10 focus:ring-primaryPurple dark:border-jacarta-600 dark:placeholder:text-jacarta-100 w-full rounded-lg py-3 px-3 hover:ring-2 dark:text-white"
+                    className="dark:bg-secondaryBlack  border-jacarta-100 hover:ring-primaryPurple/10 focus:ring-primaryPurple dark:border-jacarta-800 dark:placeholder:text-jacarta-100 w-full rounded-lg py-3 px-3 hover:ring-2 dark:text-white"
                     rows="4"
                     required
                     onChange={(e) => handleCommentChange(tokenId, e.target.value)}

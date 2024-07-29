@@ -136,7 +136,7 @@ const GridItems = () => {
               {item.title}
               {item.verified && (
                 <div
-                  className="flex h-[1.125rem] w-[1.125rem] ml-1 mb-px items-center justify-center rounded-full border-2 border-white bg-green dark:border-jacarta-600"
+                  className="flex h-[1.125rem] w-[1.125rem] ml-1 mb-px items-center justify-center rounded-full border-2 border-white bg-green dark:border-jacarta-800"
                   title="Verified Collection"
                 >
                   <svg

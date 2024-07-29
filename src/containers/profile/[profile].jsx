@@ -119,7 +119,7 @@ const Edit_user = () => {
                   </label>
                   <textarea
                     id="profile-bio"
-                    className="dark:bg-secondaryBlack border-jacarta-100 hover:ring-primaryPurple/10 focus:ring-primaryPurple dark:border-jacarta-600 dark:placeholder:text-jacarta-100 w-full rounded-lg py-3 hover:ring-2 dark:text-white px-3"
+                    className="dark:bg-secondaryBlack border-jacarta-100 hover:ring-primaryPurple/10 focus:ring-primaryPurple dark:border-jacarta-800 dark:placeholder:text-jacarta-100 w-full rounded-lg py-3 hover:ring-2 dark:text-white px-3"
                     required
                     placeholder="Tell the world your story!"
                   ></textarea>
@@ -184,7 +184,7 @@ const Edit_user = () => {
                   </label>
 
                   <UserId
-                    classes="dark:bg-secondaryBlack border-jacarta-100 hover:bg-jacarta-50 dark:border-jacarta-600 dark:text-jacarta-100 flex w-full select-none items-center rounded-lg border bg-white py-3 px-4"
+                    classes="dark:bg-secondaryBlack border-jacarta-100 hover:bg-jacarta-50 dark:border-jacarta-800 dark:text-jacarta-100 flex w-full select-none items-center rounded-lg border bg-white py-3 px-4"
                     userId="0x7a9fe22691c811ea339401bbb2leb"
                   />
                 </div>
@@ -199,7 +199,7 @@ const Edit_user = () => {
                     <Image
                       src={preview ?? "/images/user/user_avatar.gif"}
                       alt="collection avatar"
-                      className="dark:border-jacarta-600 rounded-xl border-[5px] border-white"
+                      className="dark:border-jacarta-800 rounded-xl border-[5px] border-white"
                       height={140}
                       width={140}
                     />

@@ -8,7 +8,7 @@ const Price_history = ({ classes }) => {
         <div className={classes}>
           {/* <!-- Period / Stats --> */}
           <div className="mb-10 flex flex-wrap items-center">
-            <select className="dark:bg-secondaryBlack dark:border-jacarta-600 border-jacarta-100 mr-8 min-w-[12rem] rounded-lg py-3.5 text-sm dark:text-white">
+            <select className="dark:bg-secondaryBlack dark:border-jacarta-800 border-jacarta-100 mr-8 min-w-[12rem] rounded-lg py-3.5 text-sm dark:text-white">
               <option defaultValue="7-days">Last 7 Days</option>
               <option defaultValue="14-days">Last 14 Days</option>
               <option defaultValue="30-days">Last 30 Days</option>

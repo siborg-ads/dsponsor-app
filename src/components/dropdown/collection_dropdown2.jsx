@@ -29,7 +29,7 @@ const Collection_dropdown2 = ({ data, collection }) => {
       ></div>
       {collection ? (
         <div
-          className="dark:bg-secondaryBlack dropdown-toggle border-jacarta-100 dark:border-jacarta-600 dark:text-jacarta-100 flex items-center justify-between rounded-lg border bg-white py-3 px-3 show z-50 relative"
+          className="dark:bg-secondaryBlack dropdown-toggle border-jacarta-100 dark:border-jacarta-800 dark:text-jacarta-100 flex items-center justify-between rounded-lg border bg-white py-3 px-3 show z-50 relative"
           onClick={() => handleDropdown()}
         >
           <span className="">Select collection</span>
@@ -46,7 +46,7 @@ const Collection_dropdown2 = ({ data, collection }) => {
         </div>
       ) : (
         <div
-          className="dark:bg-secondaryBlack dropdown-toggle border-jacarta-100 dark:border-jacarta-600 flex items-center justify-between rounded-lg border bg-white py-3.5 px-3 text-base dark:text-white"
+          className="dark:bg-secondaryBlack dropdown-toggle border-jacarta-100 dark:border-jacarta-800 flex items-center justify-between rounded-lg border bg-white py-3.5 px-3 text-base dark:text-white"
           onClick={() => handleDropdown()}
         >
           <span className="flex items-center">
@@ -86,7 +86,7 @@ const Collection_dropdown2 = ({ data, collection }) => {
               <li key={id}>
                 <button
                   href="#"
-                  className="dropdown-item font-display dark:hover:bg-jacarta-600 hover:bg-jacarta-50 flex w-full items-center justify-between rounded-xl px-5 py-2 text-left text-sm transition-colors dark:text-white"
+                  className="dropdown-item font-display dark:hover:bg-jacarta-800 hover:bg-jacarta-50 flex w-full items-center justify-between rounded-xl px-5 py-2 text-left text-sm transition-colors dark:text-white"
                   onClick={() => setActiveItem(id)}
                 >
                   <span className="flex items-center space-x-3">
