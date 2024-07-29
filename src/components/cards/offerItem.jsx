@@ -130,11 +130,13 @@ const OfferItem = ({
   useEffect(() => {
     if (item && item?.marketplaceListings?.length > 0) {
       // we look for the latest completed listing
-      const latestListing = item?.marketplaceListings
-        .sort((a, b) => Number(b.id) - Number(a.id))
-        .find((listing) => listing.status === "COMPLETED");
+      const latestListing = item?.marketplaceListings?.sort(
+        (a, b) => Number(b.id) - Number(a.id)
+      )[0];
 
-      if (latestListing) {
+      const isLatestListingFinished = latestListing?.status === "COMPLETED";
+
+      if (isLatestListingFinished) {
         // if yes we get the last sale price
         let lastSalePrice;
         if (latestListing?.listingType === "Direct") {
@@ -395,7 +397,7 @@ const OfferItem = ({
           </Tippy>
           {isToken && (
             <Tippy
-              content={`token  # ${item.tokenData ? item.tokenData : item.tokenId}`}
+              content={`token  # ${item?.tokenData ? item?.tokenData : item?.mint?.tokenData ? item?.mint?.tokenData : item?.tokenId}`}
               placement="top"
               className="bg-jacarta-300 text-jacarta-900 box-border hover:border-2 dark:hover:border-2 hover:-m-1 duration-400 dark:hover:bg-jacarta-800 dark:border-jacarta-100 dark:border-opacity-10 border-opacity-10 border border-jacarta-900 hover:bg-jacarta-600 dark:text-jacarta-100 rounded-md p-2"
             >
@@ -404,7 +406,12 @@ const OfferItem = ({
                 className="absolute backdrop-blur-1 -bottom-1 -right-2 dark:border-jacarta-600 border-jacarta-100 flex items-center whitespace-nowrap rounded-md border py-1 px-2"
               >
                 <span className="text-primaryPink text-sm font-medium tracking-tight">
-                  # {item.tokenData ? item.tokenData : item.tokenId}
+                  #{" "}
+                  {item?.tokenData
+                    ? item?.tokenData
+                    : item.mint?.tokenData
+                      ? item.mint?.tokenData
+                      : item.tokenId}
                 </span>
               </div>
             </Tippy>
@@ -457,7 +464,7 @@ const OfferItem = ({
               itemStatut === "TOKENMINTABLE") ? (
               <div className="dark:border-jacarta-600 border-jacarta-100 flex items-center whitespace-nowrap rounded-md border py-1 px-2">
                 <span className="text-green text-sm font-medium tracking-tight">
-                  {totalPrice && parseFloat(totalPrice) > 0
+                  {!!totalPrice && parseFloat(totalPrice) > 0
                     ? `${price ?? 0} ${currencyToken}`
                     : "Free"}
                 </span>

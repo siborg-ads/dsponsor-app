@@ -52,6 +52,8 @@ const BuyModal = ({
 }) => {
   const [validate, setValidate] = useState(false);
   const [notEnoughFunds, setNotEnoughFunds] = useState(false);
+  const [isLoadingBuyButton, setIsLoadingBuyButton] = useState(false);
+  const [isLoadingApproveButton, setIsLoadingApproveButton] = useState(false);
 
   const { currentChainObject } = useChainContext();
   const modalRef = useRef();
@@ -264,7 +266,7 @@ const BuyModal = ({
                   type="checkbox"
                   id="buyNowTerms"
                   onClick={handleTermService}
-                  className="checked:bg-primaryPurple dark:bg-jacarta-600 text-primaryPurple border-jacarta-200 focus:ring-primaryPurple/20 dark:border-jacarta-500 h-5 w-5 self-start rounded focus:ring-offset-0"
+                  className="checked:bg-primaryPurple dark:bg-jacarta-600 hover:bg-jacarta-600 !text-primaryPurple border-jacarta-200 focus:ring-primaryPurple/20 dark:border-jacarta-500 h-5 !w-5 self-start rounded focus:ring-offset-0"
                 />
                 <label htmlFor="buyNowTerms" className="dark:text-jacarta-200 text-sm">
                   By checking this box, I agree to {"SiBorg Ads's"}{" "}
@@ -301,106 +303,127 @@ const BuyModal = ({
             <div className="modal-footer p-6">
               <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
                 {!insufficentBalance ? (
-                  <>
-                    <div className="flex flex-col items-center md:gap-2 gap-6">
-                      {/* Approve Button */}
-                      <div
-                        className={`grid grid-cols-1 mx-auto ${parseFloat(totalPrice) > 0 && "md:grid-cols-2"} gap-6 w-full`}
-                      >
-                        {totalPrice && parseFloat(totalPrice) > 0 && (
-                          <Web3Button
-                            contractAddress={
-                              currentChainObject?.smartContracts?.DSPONSORADMIN?.address
-                            }
-                            action={() => {
-                              toast.promise(handleApprove, {
-                                pending: "Waiting for confirmation 🕒",
-                                success: "Approval confirmed 👌",
-                                error: "Approval rejected 🤯"
-                              });
-                            }}
-                            className={`!rounded-full !py-3 !px-8 !w-full !text-center !font-semibold !text-black !transition-all ${
-                              !validate || !finalPriceNotFormatted || !allowanceTrue
-                                ? "!btn-disabled !cursor-not-allowed !text-black !opacity-30"
-                                : "!text-white !bg-primaryPurple !cursor-pointer"
-                            }`}
-                            isDisabled={
-                              !validate ||
-                              isLoadingButton ||
-                              !finalPriceNotFormatted ||
-                              !allowanceTrue
-                            }
-                          >
-                            {isLoadingButton ? (
-                              <Spinner size="sm" color="default" />
-                            ) : notEnoughFunds ? (
-                              <span className="text-black">Not enough funds</span>
-                            ) : (
-                              "Approve 🔓 (1/2)"
-                            )}
-                          </Web3Button>
-                        )}
-
-                        {/* Place Bid Button */}
+                  <div className="flex flex-col items-center md:gap-2 gap-6">
+                    {/* Approve Button */}
+                    <div
+                      className={`grid grid-cols-1 mx-auto ${parseFloat(totalPrice) > 0 && "md:grid-cols-2"} gap-6 w-full`}
+                    >
+                      {!!totalPrice && parseFloat(totalPrice) > 0 && (
                         <Web3Button
                           contractAddress={
                             currentChainObject?.smartContracts?.DSPONSORADMIN?.address
                           }
                           action={() => {
-                            toast.promise(handleSubmit, {
+                            setIsLoadingApproveButton(true);
+
+                            toast.promise(handleApprove, {
                               pending: "Waiting for confirmation 🕒",
-                              success: "Bid confirmed 👌",
-                              error: "Bid rejected 🤯"
+                              success: "Approval confirmed 👌",
+                              error: "Approval rejected 🤯"
                             });
+
+                            setIsLoadingApproveButton(false);
                           }}
                           className={`!rounded-full !py-3 !px-8 !w-full !text-center !font-semibold !text-black !transition-all ${
-                            !validate || allowanceTrue
+                            !validate ||
+                            !finalPriceNotFormatted ||
+                            !allowanceTrue ||
+                            isLoadingApproveButton
                               ? "!btn-disabled !cursor-not-allowed !text-black !opacity-30"
                               : "!text-white !bg-primaryPurple !cursor-pointer"
                           }`}
-                          isDisabled={!validate || isLoadingButton || allowanceTrue}
+                          isDisabled={
+                            !validate ||
+                            !finalPriceNotFormatted ||
+                            !allowanceTrue ||
+                            isLoadingApproveButton
+                          }
                         >
-                          {isLoadingButton ? (
+                          {isLoadingApproveButton ? (
                             <Spinner size="sm" color="default" />
                           ) : notEnoughFunds ? (
                             <span className="text-black">Not enough funds</span>
                           ) : (
-                            "Buy Now 💸 (2/2)"
+                            "Approve 🔓 (1/2)"
                           )}
                         </Web3Button>
-                      </div>
-
-                      {totalPrice && parseFloat(totalPrice) > 0 && (
-                        <InfoIcon
-                          text={`You need to approve the marketplace contract to spend your ${selectedCurrency} on this transaction.`}
-                        >
-                          <span className="text-xs text-jacarta-100 inline-flex items-center gap-1">
-                            <InformationCircleIcon className="w-4 h-4 text-jacarta-100" />
-                            Why do I have to approve ?
-                          </span>
-                        </InfoIcon>
                       )}
+
+                      {/* Place Bid Button */}
+                      <Web3Button
+                        contractAddress={currentChainObject?.smartContracts?.DSPONSORADMIN?.address}
+                        action={() => {
+                          setIsLoadingBuyButton(true);
+
+                          toast.promise(handleSubmit, {
+                            pending: "Waiting for confirmation 🕒",
+                            success: "Buy confirmed 👌",
+                            error: "Buy rejected 🤯"
+                          });
+
+                          setIsLoadingBuyButton(false);
+                        }}
+                        className={`!rounded-full !py-3 !px-8 !w-full !text-center !font-semibold !text-black !transition-all ${
+                          !validate ||
+                          (allowanceTrue && parseFloat(totalPrice) > 0) ||
+                          isLoadingBuyButton
+                            ? "!btn-disabled !cursor-not-allowed !text-black !opacity-30"
+                            : "!text-white !bg-primaryPurple !cursor-pointer"
+                        }`}
+                        isDisabled={
+                          !validate ||
+                          (allowanceTrue && parseFloat(totalPrice) > 0) ||
+                          isLoadingBuyButton
+                        }
+                      >
+                        {isLoadingBuyButton ? (
+                          <Spinner size="sm" color="default" />
+                        ) : notEnoughFunds ? (
+                          <span className="text-black">Not enough funds</span>
+                        ) : parseFloat(totalPrice) > 0 ? (
+                          "Buy Now 💸 (2/2)"
+                        ) : (
+                          "Mint for free"
+                        )}
+                      </Web3Button>
                     </div>
-                  </>
+
+                    {!!totalPrice && parseFloat(totalPrice) > 0 && (
+                      <InfoIcon
+                        text={`You need to approve the marketplace contract to spend your ${selectedCurrency} on this transaction.`}
+                      >
+                        <span className="text-xs text-jacarta-100 inline-flex items-center gap-1">
+                          <InformationCircleIcon className="w-4 h-4 text-jacarta-100" />
+                          Why do I have to approve ?
+                        </span>
+                      </InfoIcon>
+                    )}
+                  </div>
                 ) : (
                   // If insufficient balance, show this button
                   <Web3Button
                     contractAddress={currentChainObject?.smartContracts?.DSPONSORADMIN?.address}
                     action={() => {
+                      setIsLoadingBuyButton(true);
+
                       toast.promise(handleBuySubmitWithNative, {
                         pending: "Waiting for confirmation 🕒",
                         success: "Transaction confirmed 👌",
                         error: "Transaction rejected 🤯"
                       });
+
+                      setIsLoadingBuyButton(false);
                     }}
                     className={`!rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${
-                      !validate || !canPayWithNativeToken
+                      !validate || !canPayWithNativeToken || isLoadingBuyButton
                         ? "!btn-disabled !cursor-not-allowed !text-black !opacity-30"
                         : "!text-white !bg-primaryPurple !cursor-pointer"
                     }`}
-                    isDisabled={!validate || isLoadingButton || !canPayWithNativeToken}
+                    isDisabled={
+                      !validate || isLoadingButton || !canPayWithNativeToken || isLoadingBuyButton
+                    }
                   >
-                    {isLoadingButton ? (
+                    {isLoadingBuyButton ? (
                       <Spinner size="sm" color="default" />
                     ) : notEnoughFunds ? (
                       <span className="text-black">Not enough funds</span>

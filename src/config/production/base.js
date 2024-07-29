@@ -1,10 +1,12 @@
 import Network from "../../providers/utils/networks";
 import contractABI from "../../abi/dsponsorAdmin.json";
+import { Base } from "@thirdweb-dev/chains";
 
 const prodBase = {
   chainId: 8453,
   chainName: "base",
   chainNameProvider: "base",
+  chainObject: Base,
   network: Network.BASE_MAINNET,
   logoURL: "/images/base-logo.png",
   explorerBaseUrl: "https://basescan.org",

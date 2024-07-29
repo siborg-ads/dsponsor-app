@@ -46,10 +46,23 @@ const ManageSpaceContainer = () => {
     }
   }, [address, userAddress]);
 
+  const fetchUserCreatedOffersRef = React.useRef(false);
+
   useEffect(() => {
     const fetchCreatedOffers = async () => {
-      const data = await fetchUserCreatedOffers(address, chainId);
-      setCreatedOffers(data?.adOffers);
+      if (fetchUserCreatedOffersRef.current) {
+        return;
+      }
+      fetchUserCreatedOffersRef.current = true;
+
+      try {
+        const data = await fetchUserCreatedOffers(address, chainId);
+        setCreatedOffers(data?.adOffers);
+      } catch (error) {
+        console.error("Error fetching created offers:", error);
+      } finally {
+        fetchUserCreatedOffersRef.current = false;
+      }
     };
 
     if (address && chainId) {
@@ -203,13 +216,13 @@ const ManageSpaceContainer = () => {
           const listedTokenArray = await fetchDataByUserAddress(fetchAllTokenListedByUserAddress);
 
           const mappedListedToken = listedTokenArray
-            .filter((element) => element?.listingType === "Auction")
-            .map((element) => ({
+            ?.filter((element) => element?.listingType === "Auction")
+            ?.map((element) => ({
               ...element,
-              ...element.token,
+              ...element?.token,
               marketplaceListings: [element],
-              listingStatus: handleListingsStatusType(element.status),
-              chainConfig: element.chainConfig,
+              listingStatus: handleListingsStatusType(element?.status),
+              chainConfig: element?.chainConfig,
               tokenData: element?.token.mint.tokenData,
               startTime: element?.startTime,
               endTime: element?.endTime,
@@ -234,7 +247,7 @@ const ManageSpaceContainer = () => {
           const auctionBidsTokensArray = await fetchDataByUserAddress(
             fetchAllTokenAuctionBidsByUser
           );
-          const mappedAuctionBidsTokens = auctionBidsTokensArray.map((element) => ({
+          const mappedAuctionBidsTokens = auctionBidsTokensArray?.map((element) => ({
             ...element,
             marketplaceListings: [element.listing],
             status: handleBidsStatusType(element.status),
