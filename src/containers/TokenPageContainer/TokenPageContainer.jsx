@@ -975,10 +975,10 @@ const TokenPageContainer = () => {
     if (!isUserOwner || !marketplaceListings || !address) return;
 
     if (
-      firstSelectedListing?.listingType === "Auction" &&
       firstSelectedListing?.status === "CREATED" &&
       address?.toLowerCase() === firstSelectedListing?.lister?.toLowerCase()
     ) {
+      console.log("here");
       setIsOwner(true);
       setIsTokenInAuction(true);
     }
@@ -2201,7 +2201,7 @@ const TokenPageContainer = () => {
                     offer={offerData}
                     offerId={offerId}
                     isOwner={isOwner}
-                    isToken={true}
+                    isToken={false}
                     successFullUploadModal={successFullUploadModal}
                     isLister={isLister}
                     setSelectedItems={setSelectedItems}
