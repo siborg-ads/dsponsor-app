@@ -322,7 +322,7 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
                     isSelectionActive={isSelectionActive}
                     canSubmitAdFromProfileOwnedTokens={true}
                     url={
-                      !item.tokenData
+                      !item?.tokenData
                         ? `/${item?.chainConfig?.chainId}/offer/${item.offerId}/${item.tokenId}`
                         : `/${item?.chainConfig?.chainId}/offer/${item.offerId}/${item.tokenId}?tokenData=${item.tokenData}`
                     }

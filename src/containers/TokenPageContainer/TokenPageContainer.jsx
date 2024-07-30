@@ -24,7 +24,7 @@ import ModalHelper from "../../components/Helper/modalHelper";
 import SliderForm from "../../components/sliderForm/sliderForm.jsx";
 import styles from "../../styles/createPage/style.module.scss";
 import Timer from "../../components/item/Timer.jsx";
-import { fetchAllOffers } from "../../providers/methods/fetchAllOffers";
+import { fetchTokenPageContainer } from "../../providers/methods/fetchTokenPageContainer";
 import ItemLastestSales from "../../components/tables/ItemLastestSales.jsx";
 
 import { getCookie } from "cookies-next";
@@ -130,7 +130,7 @@ const TokenPageContainer = () => {
   const [minted, setMinted] = useState(false);
   const [conditions, setConditions] = useState({});
   const [imageUrl, setImageUrl] = useState(null);
-  const [accordionActiveTab, setAccordionActiveTab] = useState("details");
+  const [accordionActiveTab, setAccordionActiveTab] = useState(null);
   const [listingCreated, setListingCreated] = useState(false);
   const [creatorAmount, setCreatorAmount] = useState(null);
   const [protocolFeeAmount, setProtocolFeeAmount] = useState(null);
@@ -194,7 +194,8 @@ const TokenPageContainer = () => {
       fetchOffersRef.current = true;
 
       try {
-        const offers = await fetchAllOffers(chainId);
+        const offers = await fetchTokenPageContainer(chainId, offerId, tokenId);
+        console.log("offer", offers);
         setOffers(offers);
 
         // check if we have the values
@@ -406,10 +407,8 @@ const TokenPageContainer = () => {
   }, [tokenId]);
 
   useEffect(() => {
-    if (successFullBid) {
-      const fetchUpdatedData = async () => {
-        const offers = await fetchAllOffers(chainId);
-
+    if (successFullBid && offers) {
+      const fetchUpdatedData = () => {
         const offer = offers?.find((offer) => Number(offer?.id) === Number(offerId));
         const combinedData = { ...offer };
 
@@ -421,13 +420,11 @@ const TokenPageContainer = () => {
         fetchUpdatedData();
       }
     }
-  }, [successFullBid, offerId, tokenId, chainId]);
+  }, [successFullBid, offerId, tokenId, chainId, offers]);
 
   useEffect(() => {
-    if (listingCreated) {
-      const fetchUpdatedData = async () => {
-        const offers = await fetchAllOffers(chainId);
-
+    if (listingCreated && offers) {
+      const fetchUpdatedData = () => {
         const offer = offers?.find((offer) => Number(offer?.id) === Number(offerId));
         const combinedData = { ...offer };
 
@@ -438,7 +435,7 @@ const TokenPageContainer = () => {
         fetchUpdatedData();
       }
     }
-  }, [listingCreated, offerId, tokenId, chainId]);
+  }, [listingCreated, offerId, tokenId, chainId, offers]);
 
   useEffect(() => {
     if (offerData?.nftContract?.tokens.length > 0) {
@@ -537,6 +534,8 @@ const TokenPageContainer = () => {
                 (token) => Number(token?.tokenId) === Number(tokenId)
               );
 
+              console.log("tokenData", tokenData);
+
               if (tokenData) {
                 // need to match listing id and direct buys listing id
                 const listingTokenData = tokenData?.marketplaceListings?.find(
@@ -563,8 +562,8 @@ const TokenPageContainer = () => {
 
                 saleInfo = {
                   address: directBuy?.buyer,
-                  amount: directBuy?.amount
-                    ? formatUnits(BigInt(directBuy?.amount), tempCurrency?.decimals)
+                  amount: directBuy?.totalPricePaid
+                    ? formatUnits(BigInt(directBuy?.totalPricePaid), tempCurrency?.decimals)
                     : 0,
                   date: directBuy?.revenueTransaction?.blockTimestamp,
                   currency: {
@@ -1719,17 +1718,17 @@ const TokenPageContainer = () => {
                 />
               </button>
 
-              {/* <!-- Modal --> */}
-              <div className={imageModal ? "modal fade show block" : "modal fade"}>
-                <div className="modal-dialog !my-0 flex h-full max-w-4xl items-center justify-center">
-                  <Image
-                    width={582}
-                    height={722}
-                    src={imageUrl ?? "/images/gradient_creative.jpg"}
-                    alt="image"
-                    className="h-full object-cover w-full rounded-2xl"
-                  />
-                </div>
+                {/* <!-- Modal --> */}
+                <div className={imageModal ? "modal fade show block" : "modal fade"}>
+                  <div className="modal-dialog !my-0 flex h-full max-w-4xl items-center justify-center">
+                    <Image
+                      width={582}
+                      height={722}
+                      src={imageUrl ?? "/images/gradient_creative.jpg"}
+                      alt="image"
+                      className="h-full object-cover w-full rounded-2xl"
+                    />
+                  </div>
 
                 <button
                   type="button"
@@ -2227,13 +2226,13 @@ const TokenPageContainer = () => {
           <div className="container">
             <Accordion.Header className="w-full">
               <Accordion.Trigger
-                className={`${accordionActiveTab === "details" && "bg-primaryPurple"} w-full flex items-center justify-center gap-4 mb-6 border border-primaryPurple hover:bg-primaryPurple cursor-pointer p-2 rounded-lg`}
+                className={`${accordionActiveTab === "latestSales" && "bg-primaryPurple"} w-full flex items-center justify-center gap-4 mb-6 border border-primaryPurple hover:bg-primaryPurple cursor-pointer p-2 rounded-lg`}
               >
                 <h2 className="text-jacarta-900 font-bold font-display text-center text-3xl dark:text-white ">
                   Latest Sales
                 </h2>
                 <ChevronDownIcon
-                  className={`w-6 h-6 duration-300 ${accordionActiveTab === "details" && "transform rotate-180"}`}
+                  className={`w-6 h-6 duration-300 ${accordionActiveTab === "latestSales" && "transform rotate-180"}`}
                 />
               </Accordion.Trigger>
             </Accordion.Header>
@@ -2255,13 +2254,13 @@ const TokenPageContainer = () => {
             <div className="container">
               <Accordion.Header className="w-full">
                 <Accordion.Trigger
-                  className={`${accordionActiveTab === "details" && "bg-primaryPurple"} w-full flex items-center justify-center gap-4 mb-6 border border-primaryPurple hover:bg-primaryPurple cursor-pointer p-2 rounded-lg`}
+                  className={`${accordionActiveTab === "latestBids" && "bg-primaryPurple"} w-full flex items-center justify-center gap-4 mb-6 border border-primaryPurple hover:bg-primaryPurple cursor-pointer p-2 rounded-lg`}
                 >
                   <h2 className="text-jacarta-900 font-bold font-display text-center text-3xl dark:text-white ">
                     Latest Bids
                   </h2>
                   <ChevronDownIcon
-                    className={`w-6 h-6 duration-300 ${accordionActiveTab === "details" && "transform rotate-180"}`}
+                    className={`w-6 h-6 duration-300 ${accordionActiveTab === "latestBids" && "transform rotate-180"}`}
                   />
                 </Accordion.Trigger>
               </Accordion.Header>

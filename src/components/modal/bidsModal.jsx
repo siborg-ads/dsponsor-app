@@ -921,8 +921,7 @@ const BidsModal = ({
                       )}
                     </div>
                     <InfoIcon
-                      text={`You need to approve the marketplace contract to spend your{" "}
-                          ${currencySymbol} on this transaction.`}
+                      text={`You need to approve the marketplace contract to spend your ${currencySymbol} on this transaction.`}
                     >
                       <span className="text-xs text-center text-jacarta-100 inline-flex items-center gap-1">
                         <InformationCircleIcon className="w-4 h-4 text-jacarta-100" />

@@ -9,16 +9,13 @@ import { useContract, useContractWrite, useContractRead, useAddress } from "@thi
 import Tippy from "@tippyjs/react";
 
 import OfferSkeleton from "../../components/skeleton/offerSkeleton";
-import { fetchAllOffers } from "../../providers/methods/fetchAllOffers";
+import { fetchOfferPageContainer } from "../../providers/methods/fetchOfferPageContainer";
 import Integration from "../../components/offer-section/integration";
 import { ThirdwebStorage } from "@thirdweb-dev/storage";
 import * as Accordion from "@radix-ui/react-accordion";
 import { ChevronDownIcon } from "@heroicons/react/24/solid";
 import { ExclamationCircleIcon } from "@heroicons/react/24/solid";
 import InfoIcon from "../../components/informations/infoIcon";
-
-import { fetchOffer } from "../../providers/methods/fetchOffer";
-
 import Form from "../../components/collections-wide/sidebar/collections/Form";
 import "tippy.js/dist/tippy.css";
 import Validation from "../../components/offer-section/validation";
@@ -107,8 +104,11 @@ const OfferPageContainer = () => {
       fetchAllOffersRef.current = true;
 
       try {
-        const offers = await fetchAllOffers(chainId);
+        const offers = await fetchOfferPageContainer(chainId, offerId);
         setOffers(offers);
+
+        const offerData = offers?.filter((offer) => offer?.id === offerId)[0];
+        setOfferData(offerData);
       } catch (error) {
         console.error("Error fetching offers:", error);
       } finally {
@@ -119,7 +119,7 @@ const OfferPageContainer = () => {
     if (chainId) {
       fetchOffers();
     }
-  }, [chainId]);
+  }, [chainId, offerId]);
 
   useEffect(() => {
     if (offerData && address) {
@@ -231,31 +231,11 @@ const OfferPageContainer = () => {
     }
   }, [imageUrl]);
 
-  const fetchOfferSecondRef = React.useRef(false);
-
   useEffect(() => {
-    if (offerId && chainId) {
-      const fetchAdsOffers = async () => {
-        if (fetchOfferSecondRef.current) return;
-        fetchOfferSecondRef.current = true;
-
-        try {
-          const offer = await fetchOffer(offerId, chainId);
-
-          setOfferData(offer);
-        } catch (error) {
-          console.error("Error fetching offer:", error);
-        } finally {
-          fetchOfferSecondRef.current = false;
-        }
-      };
+    if (chainId) {
       setSelectedChain(config[chainId]?.network);
-
-      if (chainId && offerId) {
-        fetchAdsOffers();
-      }
     }
-  }, [offerId, successFullRefuseModal, chainId, setSelectedChain]);
+  }, [chainId, setSelectedChain]);
 
   useEffect(() => {
     if (address && offerData?.admins?.includes(address.toLowerCase())) {
@@ -545,7 +525,7 @@ const OfferPageContainer = () => {
               </Accordion.Trigger>
             </Accordion.Header>
 
-            <Accordion.Content>
+            <Accordion.Content className="mb-4">
               <div className="dark:bg-secondaryBlack mb-6 dark:border-jacarta-800 border-jacarta-100 rounded-2lg border bg-white p-8">
                 <div className=" sm:flex sm:flex-wrap">
                   <span className="dark:text-jacarta-100 text-jacarta-100 text-sm">

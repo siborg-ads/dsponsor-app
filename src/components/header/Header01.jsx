@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import { ConnectWallet, useAddress } from "@thirdweb-dev/react";
 import { useChainContext } from "../../contexts/hooks/useChainContext";
 import { activated_features } from "../../data/activated_features";
+import { useSearchParams } from "next/navigation";
 
 const ConditionalCreateLi = ({ children, condition }) => {
   return condition ? children : null;
@@ -15,6 +16,8 @@ const ConditionalCreateLi = ({ children, condition }) => {
 
 export default function Header01() {
   const [toggle, setToggle] = useState(false);
+  const searchParams = useSearchParams();
+  const tab = searchParams.get("tab");
   const address = useAddress();
   // const { selectedChain, setSelectedChain } = useContext(SwitchChainProvider);
 
@@ -116,11 +119,14 @@ export default function Header01() {
 
                 {address && (
                   <li className="group">
-                    <Link href={`/profile/${address}`}>
+                    <Link href={`/profile/${address}${tab ? `?tab=${tab}` : ""}`}>
                       <button className="text-jacarta-900 font-display hover:text-primaryPurple focus:text-primaryPurple dark:hover:text-primaryPurple dark:focus:text-primaryPurple flex items-center justify-between py-3.5 text-base dark:text-white lg:px-5">
                         <span
                           className={
-                            isChildrenPageActive(route.asPath, `/profile/${address}`)
+                            isChildrenPageActive(
+                              route.asPath,
+                              `/profile/${address}${tab ? `?tab=${tab}` : ""}`
+                            )
                               ? "text-primaryPurple dark:text-primaryPurple"
                               : ""
                           }

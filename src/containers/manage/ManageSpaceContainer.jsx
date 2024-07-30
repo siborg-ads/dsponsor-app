@@ -7,14 +7,11 @@ import ProfileOverview from "../../components/user/ProfileOverview";
 import ProfileReferrals from "../../components/user/ProfileReferrals";
 import UserTabs from "../../components/user/UserTabs";
 import { useAddress } from "@thirdweb-dev/react";
-import { fetchAllTokenByOfferForAuser } from "../../providers/methods/fetchAllTokenByOfferForAuser";
 import { fetchAllOffersByUserAddress } from "../../providers/methods/fetchAllOffersByUserAddress";
-import { fetchAllTokenListedByUserAddress } from "../../providers/methods/fetchAllTokenListedByUserAddress";
-import { fetchAllTokenAuctionBidsByUser } from "../../providers/methods/fetchAllTokenAuctionBidsByUser";
+import { fetchAllTokenByOfferForAuser } from "../../providers/methods/fetchAllTokenByOfferForAuser";
 import { useChainContext } from "../../contexts/hooks/useChainContext";
 import config from "../../config/config";
 import { getAddress } from "ethers/lib/utils";
-import { fetchUserCreatedOffers } from "../../providers/methods/fetchUserCreatedOffers";
 
 const ManageSpaceContainer = () => {
   const router = useRouter();
@@ -45,30 +42,6 @@ const ManageSpaceContainer = () => {
       setIsUserConnected(false);
     }
   }, [address, userAddress]);
-
-  const fetchUserCreatedOffersRef = React.useRef(false);
-
-  useEffect(() => {
-    const fetchCreatedOffers = async () => {
-      if (fetchUserCreatedOffersRef.current) {
-        return;
-      }
-      fetchUserCreatedOffersRef.current = true;
-
-      try {
-        const data = await fetchUserCreatedOffers(address, chainId);
-        setCreatedOffers(data?.adOffers);
-      } catch (error) {
-        console.error("Error fetching created offers:", error);
-      } finally {
-        fetchUserCreatedOffersRef.current = false;
-      }
-    };
-
-    if (address && chainId) {
-      fetchCreatedOffers();
-    }
-  }, [address, chainId]);
 
   useEffect(() => {
     if (createdOffers) {
@@ -140,10 +113,8 @@ const ManageSpaceContainer = () => {
     }
   }, [address, initialWallet, router]);
 
-  const fetchOwnedAdProposalsRef = React.useRef(false);
   const fetchCreatedDataRef = React.useRef(false);
-  const fetchListedTokensRef = React.useRef(false);
-  const fetchAuctionBidsTokensRef = React.useRef(false);
+  const fetchOwnedAdProposalsRef = React.useRef(false);
   const fetchAllDataRef = React.useRef(false);
 
   useEffect(() => {
@@ -155,6 +126,107 @@ const ManageSpaceContainer = () => {
           dataArray?.push(...data);
         }
         return dataArray;
+      };
+
+      const fetchCreatedData = async () => {
+        if (fetchCreatedDataRef.current) {
+          return;
+        }
+        fetchCreatedDataRef.current = true;
+
+        try {
+          const offersByUserAddressArray = await fetchDataByUserAddress(
+            fetchAllOffersByUserAddress
+          );
+
+          setCreatedOffers(offersByUserAddressArray);
+          setCreatedData(offersByUserAddressArray);
+
+          let allLatestListings;
+          const userManagedOffers = offersByUserAddressArray?.filter((element) =>
+            element?.admins?.includes(userAddress?.toLowerCase())
+          );
+          userManagedOffers?.forEach((element) => {
+            element?.nftContract?.tokens?.forEach((token) => {
+              const lastListing = token?.marketplaceListings?.sort(
+                (a, b) => Number(b?.id) - Number(a?.id)
+              )[0];
+
+              const filterCondition =
+                lastListing?.status === "CREATED" && lastListing?.quantity > 0;
+
+              if (lastListing && filterCondition) {
+                const listingWithChainConfig = {
+                  ...lastListing,
+                  chainConfig: element.chainConfig
+                };
+
+                allLatestListings = allLatestListings
+                  ? [...allLatestListings, listingWithChainConfig]
+                  : [listingWithChainConfig];
+              }
+            });
+          });
+
+          const mappedListedToken = allLatestListings
+            ?.filter((element) => element?.listingType === "Auction")
+            ?.map((element) => ({
+              ...element,
+              ...element?.token,
+              marketplaceListings: [element],
+              listingStatus: handleListingsStatusType(element?.status),
+              chainConfig: element?.chainConfig,
+              tokenData: element?.token.mint.tokenData,
+              startTime: element?.startTime,
+              endTime: element?.endTime,
+              offerId: element?.token?.nftContract?.adOffers[0]?.id
+            }));
+
+          setListedAuctionToken(mappedListedToken);
+
+          // get all tokens with a bid from the user
+          let auctionBidsTokensArray;
+          offersByUserAddressArray?.forEach((element) => {
+            element?.nftContract?.tokens?.forEach((tokenElement) => {
+              if (tokenElement?.marketplaceListings?.length > 0) {
+                const listings = tokenElement?.marketplaceListings?.sort(
+                  (a, b) => Number(b.id) - Number(a.id)
+                );
+                const lastLiveAuctionListing = listings?.find(
+                  (listing) => listing?.status === "CREATED" && listing?.listingType === "Auction"
+                );
+
+                const isUserBidder = lastLiveAuctionListing?.bids?.some(
+                  (bid) => bid?.bidder === userAddress?.toLowerCase()
+                );
+
+                if (isUserBidder) {
+                  const token = {
+                    ...element,
+                    marketplaceListings: [tokenElement?.lastLiveAuction],
+                    status: handleBidsStatusType(tokenElement?.status),
+                    listingStatus: handleListingsStatusType(tokenElement?.lastLiveAuction?.status),
+                    metadata: lastLiveAuctionListing?.token?.metadata,
+                    tokenData: lastLiveAuctionListing?.token?.mint?.tokenData,
+                    offerId: lastLiveAuctionListing?.token?.nftContract?.adOffers[0]?.id,
+                    tokenId: lastLiveAuctionListing?.token?.tokenId,
+                    endTime: lastLiveAuctionListing?.endTime
+                  };
+
+                  auctionBidsTokensArray = auctionBidsTokensArray
+                    ? [...auctionBidsTokensArray, token]
+                    : [token];
+                }
+              }
+            });
+          });
+
+          setTokenAuctionBids(auctionBidsTokensArray);
+        } catch (error) {
+          console.error("Error fetching created data:", error);
+        } finally {
+          fetchCreatedDataRef.current = false;
+        }
       };
 
       const fetchOwnedAdProposals = async () => {
@@ -188,85 +260,6 @@ const ManageSpaceContainer = () => {
         }
       };
 
-      const fetchCreatedData = async () => {
-        if (fetchCreatedDataRef.current) {
-          return;
-        }
-        fetchCreatedDataRef.current = true;
-
-        try {
-          const offersByUserAddressArray = await fetchDataByUserAddress(
-            fetchAllOffersByUserAddress
-          );
-          setCreatedData(offersByUserAddressArray);
-        } catch (error) {
-          console.error("Error fetching created data:", error);
-        } finally {
-          fetchCreatedDataRef.current = false;
-        }
-      };
-
-      const fetchListedTokens = async () => {
-        if (fetchListedTokensRef.current) {
-          return;
-        }
-        fetchListedTokensRef.current = true;
-
-        try {
-          const listedTokenArray = await fetchDataByUserAddress(fetchAllTokenListedByUserAddress);
-
-          const mappedListedToken = listedTokenArray
-            ?.filter((element) => element?.listingType === "Auction")
-            ?.map((element) => ({
-              ...element,
-              ...element?.token,
-              marketplaceListings: [element],
-              listingStatus: handleListingsStatusType(element?.status),
-              chainConfig: element?.chainConfig,
-              tokenData: element?.token.mint.tokenData,
-              startTime: element?.startTime,
-              endTime: element?.endTime,
-              offerId: element?.token?.nftContract?.adOffers[0]?.id
-            }));
-
-          setListedAuctionToken(mappedListedToken);
-        } catch (error) {
-          console.error("Error fetching listed tokens:", error);
-        } finally {
-          fetchListedTokensRef.current = false;
-        }
-      };
-
-      const fetchAuctionBidsTokens = async () => {
-        if (fetchAuctionBidsTokensRef.current) {
-          return;
-        }
-        fetchAuctionBidsTokensRef.current = true;
-
-        try {
-          const auctionBidsTokensArray = await fetchDataByUserAddress(
-            fetchAllTokenAuctionBidsByUser
-          );
-          const mappedAuctionBidsTokens = auctionBidsTokensArray?.map((element) => ({
-            ...element,
-            marketplaceListings: [element.listing],
-            status: handleBidsStatusType(element.status),
-            listingStatus: handleListingsStatusType(element.listing.status),
-            metadata: element.listing.token.metadata,
-            tokenData: element.listing.token.mint.tokenData,
-            offerId: element.listing.token.nftContract.adOffers[0].id,
-            tokenId: element.listing.token.tokenId,
-            endTime: element?.listing?.endTime
-          }));
-
-          setTokenAuctionBids(mappedAuctionBidsTokens);
-        } catch (error) {
-          console.error("Error fetching auction bids tokens:", error);
-        } finally {
-          fetchAuctionBidsTokensRef.current = false;
-        }
-      };
-
       const fetchAllManageData = async () => {
         if (fetchAllDataRef.current) {
           return;
@@ -275,10 +268,8 @@ const ManageSpaceContainer = () => {
 
         if (chainId && userAddress) {
           try {
-            await fetchOwnedAdProposals();
             await fetchCreatedData();
-            await fetchListedTokens();
-            await fetchAuctionBidsTokens();
+            await fetchOwnedAdProposals();
 
             setFetchedData(true);
           } catch (error) {
@@ -296,7 +287,8 @@ const ManageSpaceContainer = () => {
         fetchAllManageData();
       }
     }
-  }, [userAddress, router, address, chainId, chainConfig, fetchedData]);
+  }, [userAddress, address, chainId, chainConfig, fetchedData]);
+
   const handleListingsStatusType = (status) => {
     switch (status) {
       case "CREATED":

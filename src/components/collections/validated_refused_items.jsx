@@ -64,7 +64,7 @@ const Validated_refused_items = ({ statut, proposalData, isToken }) => {
           <div className="dark:bg-secondaryBlack rounded-2lg bg-white p-6 mb-4">
             <div className=" sm:flex sm:flex-wrap">
               <span className="dark:text-jacarta-100 text-jacarta-100 text-sm">
-                🎉 Congratulations ! This ad is displayed on the offer creator&apos;s interfaces!
+                This ad is displayed on the offer creator&apos;s interfaces!
               </span>
             </div>
           </div>
