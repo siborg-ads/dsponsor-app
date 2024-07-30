@@ -136,14 +136,6 @@ const Recently_added_dropdown = ({ data, dropdownFor }) => {
       setCurrencyValTo(value);
     }
   };
-  const handleCurrencyValFrom = (e) => {
-    const value = e.target.value;
-    if (value < 0) {
-      setCurrencyValFrom(0);
-    } else {
-      setCurrencyValFrom(value);
-    }
-  };
 
   if (dropdownFor === "recently_added") {
     return (
