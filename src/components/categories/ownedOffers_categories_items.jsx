@@ -10,7 +10,7 @@ import OfferItem from "../cards/offerItem";
 import MainButton from "../buttons/mainButton";
 import { ExclamationCircleIcon } from "@heroicons/react/24/solid";
 
-const OwnedOffers_categories_items = ({ data, isPendinAdsOnOffer, isOwner, offers }) => {
+const OwnedOffers_categories_items = ({ data, isPendinAdsOnOffer, isOwner, offers, isLoading }) => {
   const [itemdata] = useState(trendingCategoryData);
   const dispatch = useDispatch();
   const { currentChainObject } = useChainContext();
@@ -38,7 +38,7 @@ const OwnedOffers_categories_items = ({ data, isPendinAdsOnOffer, isOwner, offer
     }
   }, [filter, data]);
 
-  if (!data) {
+  if (isLoading) {
     return (
       <div className="flex w-full justify-center">
         <Image src="/images/loading-bullet.svg" alt="icon" width={60} height={60} />

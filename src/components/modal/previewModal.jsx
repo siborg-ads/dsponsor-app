@@ -179,10 +179,10 @@ const PreviewModal = ({
             <div className="flex items-center justify-center space-x-4">
               <Web3Button
                 contractAddress={currentChainObject?.smartContracts?.DSPONSORADMIN?.address}
-                action={() => {
+                action={async () => {
                   setIsLoadingSubmitButton(true);
 
-                  toast.promise(handleSubmit(true), {
+                  await toast.promise(handleSubmit(true), {
                     pending: "Waiting for confirmation 🕒",
                     success: "Transaction confirmed 👌",
                     error: "Transaction rejected 🤯"
@@ -275,8 +275,8 @@ const PreviewModal = ({
             <div className="flex items-center justify-center space-x-4">
               <Web3Button
                 contractAddress={currentChainObject?.smartContracts?.DSPONSORADMIN?.address}
-                action={() => {
-                  toast.promise(handleSubmit(true), {
+                action={async () => {
+                  await toast.promise(handleSubmit(true), {
                     pending: "Waiting for confirmation 🕒",
                     success: "Transaction confirmed 👌",
                     error: "Transaction rejected 🤯"
@@ -609,10 +609,10 @@ const PreviewModal = ({
                         contractAddress={
                           currentChainObject?.smartContracts?.DSPONSORMP?.address ?? "no address"
                         }
-                        action={() => {
+                        action={async () => {
                           setIsLoadingApproveButton(true);
 
-                          toast.promise(handleApprove, {
+                          await toast.promise(handleApprove, {
                             pending: "Waiting for confirmation 🕒",
                             success: "Approval confirmed 👌",
                             error: "Approval rejected 🤯"
@@ -636,10 +636,10 @@ const PreviewModal = ({
                         contractAddress={
                           currentChainObject?.smartContracts?.DSPONSORADMIN?.address ?? "no address"
                         }
-                        action={() => {
+                        action={async () => {
                           setIsLoadingSubmitButton(true);
 
-                          toast.promise(handleSubmit(address), {
+                          await toast.promise(handleSubmit(address), {
                             pending: "Waiting for confirmation 🕒",
                             success: "Transaction confirmed 👌",
                             error: "Transaction rejected 🤯"

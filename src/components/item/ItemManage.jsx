@@ -127,8 +127,8 @@ const ItemManage = ({
       return (
         <Web3Button
           contractAddress={currentChainObject?.smartContracts?.DSPONSORMP?.address}
-          action={() =>
-            toast.promise(handleSubmitCancel, {
+          action={async () =>
+            await toast.promise(handleSubmitCancel, {
               pending: "Waiting for confirmation 🕒",
               success: "Cancel listing confirmed 👌",
               error: "Cancel listing rejected 🤯"
@@ -151,8 +151,8 @@ const ItemManage = ({
       return (
         <Web3Button
           contractAddress={currentChainObject?.smartContracts?.DSPONSORMP?.address}
-          action={() =>
-            toast.promise(handleSubmitCancel, {
+          action={async () =>
+            await toast.promise(handleSubmitCancel, {
               pending: "Waiting for confirmation 🕒",
               success: "Close auction confirmed 👌",
               error: "Close auction rejected 🤯"
@@ -179,8 +179,8 @@ const ItemManage = ({
       return (
         <Web3Button
           contractAddress={currentChainObject?.smartContracts?.DSPONSORMP?.address}
-          action={() =>
-            toast.promise(handleSubmitCancel, {
+          action={async () =>
+            await toast.promise(handleSubmitCancel, {
               pending: "Waiting for confirmation 🕒",
               success: "Close auction confirmed 👌",
               error: "Close auction rejected 🤯"

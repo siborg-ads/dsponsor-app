@@ -3,55 +3,15 @@ import { getAddress } from "ethers/lib/utils";
 import { DateRangePicker } from "@nextui-org/date-picker";
 import Link from "next/link";
 import { useChainContext } from "../../contexts/hooks/useChainContext";
-import { activated_features } from "../../data/activated_features";
 import { Loader2Icon } from "lucide-react";
 
-const Transactions = ({ manageAddress }) => {
-  const [lastActivities, setLastActivities] = useState(null);
+const Transactions = ({ manageAddress, lastActivities, isLoading }) => {
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [filteredLastActivities, setFilteredLastActivities] = useState([]);
-  const [mount, setMount] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
 
   const { currentChainObject } = useChainContext();
   const chainExplorer = currentChainObject?.explorerBaseUrl;
-  const chainId = currentChainObject?.chainId;
-
-  useEffect(() => {
-    const fetchData = async () => {
-      setIsLoading(true);
-      const data = await fetch(
-        `https://relayer.dsponsor.com/api/${chainId}/activity?userAddress=${manageAddress}`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json"
-          }
-        }
-      )
-        .then((res) => res.json())
-        .then((data) => {
-          return data;
-        })
-        .catch((err) => console.error(err))
-        .finally(() => setIsLoading(false));
-
-      let lastActivities = activated_features.canFilterTransactionsWithWETH
-        ? data?.lastActivities.filter(
-            (activity) => activity.symbol === "WETH" && activity.points > 0
-          )
-        : data?.lastActivities.filter((activity) => activity.points > 0);
-
-      setLastActivities(lastActivities);
-      setMount(true);
-      setIsLoading(false);
-    };
-
-    if (manageAddress && chainId && !mount) {
-      fetchData();
-    }
-  }, [manageAddress, chainId, mount]);
 
   useEffect(() => {
     if (startDate && endDate) {
