@@ -1460,8 +1460,10 @@ const TokenPageContainer = () => {
       const auctionHasNotStarted = startTimePassed && isAuction && !hasBids;
       const isAllowedToMint = isTokenMintable && isOwner;
       const mintDisabled = !offerData?.nftContract?.prices[0]?.enabled;
-      const isMinted =
-        offerData?.nftContract?.tokens?.find((token) => token?.tokenId === tokenId)?.mint !== null;
+      const isMinted = Boolean(
+        offerData?.nftContract?.tokens?.find((token) => Number(token?.tokenId) === Number(tokenId))
+          ?.mint
+      );
       const isCreator = offerData?.initialCreator?.toLowerCase() === address?.toLowerCase();
 
       const finalCondition =
@@ -1629,8 +1631,6 @@ const TokenPageContainer = () => {
   const { mutateAsync: airdropAsync } = useContractWrite(DsponsorNFTContract, "mint");
 
   const handleAirdrop = async (airdropAddress) => {
-    console.log("tokenData", tokenData);
-
     let stringToUnit = 0;
     if (tokenData) {
       stringToUnit = stringToUint256(tokenData);
@@ -1718,17 +1718,17 @@ const TokenPageContainer = () => {
                 />
               </button>
 
-                {/* <!-- Modal --> */}
-                <div className={imageModal ? "modal fade show block" : "modal fade"}>
-                  <div className="modal-dialog !my-0 flex h-full max-w-4xl items-center justify-center">
-                    <Image
-                      width={582}
-                      height={722}
-                      src={imageUrl ?? "/images/gradient_creative.jpg"}
-                      alt="image"
-                      className="h-full object-cover w-full rounded-2xl"
-                    />
-                  </div>
+              {/* <!-- Modal --> */}
+              <div className={imageModal ? "modal fade show block" : "modal fade"}>
+                <div className="modal-dialog !my-0 flex h-full max-w-4xl items-center justify-center">
+                  <Image
+                    width={582}
+                    height={722}
+                    src={imageUrl ?? "/images/gradient_creative.jpg"}
+                    alt="image"
+                    className="h-full object-cover w-full rounded-2xl"
+                  />
+                </div>
 
                 <button
                   type="button"
