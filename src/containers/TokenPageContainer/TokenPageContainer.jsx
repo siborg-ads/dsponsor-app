@@ -1459,8 +1459,10 @@ const TokenPageContainer = () => {
       const auctionHasNotStarted = startTimePassed && isAuction && !hasBids;
       const isAllowedToMint = isTokenMintable && isOwner;
       const mintDisabled = !offerData?.nftContract?.prices[0]?.enabled;
-      const isMinted =
-        offerData?.nftContract?.tokens?.find((token) => token?.tokenId === tokenId)?.mint !== null;
+      const isMinted = Boolean(
+        offerData?.nftContract?.tokens?.find((token) => Number(token?.tokenId) === Number(tokenId))
+          ?.mint
+      );
       const isCreator = offerData?.initialCreator?.toLowerCase() === address?.toLowerCase();
 
       const finalCondition =
@@ -1628,8 +1630,6 @@ const TokenPageContainer = () => {
   const { mutateAsync: airdropAsync } = useContractWrite(DsponsorNFTContract, "mint");
 
   const handleAirdrop = async (airdropAddress) => {
-    console.log("tokenData", tokenData);
-
     let stringToUnit = 0;
     if (tokenData) {
       stringToUnit = stringToUint256(tokenData);

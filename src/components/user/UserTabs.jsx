@@ -28,7 +28,13 @@ const UserTabs = ({
   tokenAuctionBids,
   isPendingAdsOnOffer,
   manageAddress,
-  offers
+  offers,
+  lastActivities,
+  isLoadingTransactions,
+  isLoadingBids,
+  marketplaceBids,
+  isLoading,
+  isLoadingOwnedTokens
 }) => {
   const searchParams = useSearchParams();
   const tab = searchParams.get("tab");
@@ -114,19 +120,27 @@ const UserTabs = ({
         ))}
       </TabList>
       <TabPanel>
-        <Transactions manageAddress={manageAddress} />
+        <Transactions
+          manageAddress={manageAddress}
+          isLoading={isLoadingTransactions}
+          lastActivities={lastActivities}
+        />
       </TabPanel>
       <TabPanel>
-        <Bids manageAddress={manageAddress} />
+        <Bids marketplaceBids={marketplaceBids} isLoading={isLoadingBids} />
       </TabPanel>
       <TabPanel>
-        <OwnedAdProposalsCategoriesItems data={mappedownedAdProposals} isOwner={isOwner} />
+        <OwnedAdProposalsCategoriesItems
+          data={mappedownedAdProposals}
+          isOwner={isOwner}
+          isLoading={isLoadingOwnedTokens}
+        />
       </TabPanel>
       <TabPanel>
-        <AuctionsCategories data={listedAuctionToken} isOwner={isOwner} />
+        <AuctionsCategories data={listedAuctionToken} isOwner={isOwner} isLoading={isLoading} />
       </TabPanel>
       <TabPanel>
-        <TokenAuctionBids data={tokenAuctionBids} isOwner={isOwner} />
+        <TokenAuctionBids data={tokenAuctionBids} isOwner={isOwner} isLoading={isLoading} />
       </TabPanel>
       <TabPanel>
         <OwnedOffersCategoriesItems
@@ -134,6 +148,7 @@ const UserTabs = ({
           isPendingAdsOnOffer={isPendingAdsOnOffer}
           isOwner={isOwner}
           offers={offers}
+          isLoading={isLoading}
         />
       </TabPanel>
     </Tabs>

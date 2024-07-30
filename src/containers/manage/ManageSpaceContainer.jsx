@@ -12,6 +12,7 @@ import { fetchAllTokenByOfferForAuser } from "../../providers/methods/fetchAllTo
 import { useChainContext } from "../../contexts/hooks/useChainContext";
 import config from "../../config/config";
 import { getAddress } from "ethers/lib/utils";
+import { activated_features } from "../../data/activated_features";
 
 const ManageSpaceContainer = () => {
   const router = useRouter();
@@ -29,7 +30,11 @@ const ManageSpaceContainer = () => {
   const [userData, setUserData] = useState(null);
   const [isUserConnected, setIsUserConnected] = useState(false);
   const [createdOffers, setCreatedOffers] = useState(null);
-  const [fetchedData, setFetchedData] = useState(false);
+  const [isLoadingTransactions, setIsLoadingTransactions] = useState(false);
+  const [lastActivities, setLastActivities] = useState(null);
+  const [isLoadingBids, setIsLoadingBids] = useState(false);
+  const [marketplaceBids, setMarketplaceBids] = useState(false);
+  const [isLoadingOwnedTokens, setIsLoadingOwnedTokens] = useState(false);
 
   const userAddress = router.query.manage;
   const chainId = currentChainObject?.chainId;
@@ -70,6 +75,8 @@ const ManageSpaceContainer = () => {
       }
       fetchDataRef.current = true;
 
+      setIsLoadingTransactions(true);
+
       try {
         const data = await fetch(
           `https://relayer.dsponsor.com/api/${chainId}/activity?userAddress=${userAddress}`,
@@ -86,11 +93,20 @@ const ManageSpaceContainer = () => {
           })
           .catch((err) => console.error(err));
 
+        let lastActivities = activated_features?.canFilterTransactionsWithWETH
+          ? data?.lastActivities.filter(
+              (activity) => activity.symbol === "WETH" && activity.points > 0
+            )
+          : data?.lastActivities.filter((activity) => activity.points > 0);
+
+        setLastActivities(lastActivities);
+
         setUserData(data);
         setMount(true);
       } catch (error) {
         console.error("Error fetching user data:", error);
       } finally {
+        setIsLoadingTransactions(false);
         fetchDataRef.current = false;
       }
     };
@@ -135,12 +151,35 @@ const ManageSpaceContainer = () => {
         fetchCreatedDataRef.current = true;
 
         try {
+          setIsLoadingBids(true);
           const offersByUserAddressArray = await fetchDataByUserAddress(
             fetchAllOffersByUserAddress
           );
 
-          setCreatedOffers(offersByUserAddressArray);
-          setCreatedData(offersByUserAddressArray);
+          let allUserBids;
+          offersByUserAddressArray?.forEach((offer) => {
+            offer?.nftContract?.tokens?.forEach((token) =>
+              token?.marketplaceListings?.forEach((listing) =>
+                listing?.bids?.forEach((bid) => {
+                  if (bid?.bidder?.toLowerCase() === userAddress?.toLowerCase()) {
+                    allUserBids = allUserBids ? [...allUserBids, bid] : [bid];
+                  }
+                })
+              )
+            );
+          });
+
+          setMarketplaceBids(allUserBids);
+          setIsLoadingBids(false);
+
+          const createdOffers = offersByUserAddressArray?.filter(
+            (offer) =>
+              offer?.admins?.includes(userAddress?.toLowerCase()) ||
+              offer?.initialCreator?.toLowerCase() === userAddress?.toLowerCase()
+          );
+
+          setCreatedOffers(createdOffers);
+          setCreatedData(createdOffers);
 
           let allLatestListings;
           const userManagedOffers = offersByUserAddressArray?.filter((element) =>
@@ -235,6 +274,8 @@ const ManageSpaceContainer = () => {
         }
         fetchOwnedAdProposalsRef.current = true;
 
+        setIsLoadingOwnedTokens(true);
+
         try {
           const ownedAdProposalsArray = await fetchDataByUserAddress(fetchAllTokenByOfferForAuser);
 
@@ -256,6 +297,7 @@ const ManageSpaceContainer = () => {
         } catch (error) {
           console.error("Error fetching owned ad proposals:", error);
         } finally {
+          setIsLoadingOwnedTokens(false);
           fetchOwnedAdProposalsRef.current = false;
         }
       };
@@ -270,8 +312,6 @@ const ManageSpaceContainer = () => {
           try {
             await fetchCreatedData();
             await fetchOwnedAdProposals();
-
-            setFetchedData(true);
           } catch (error) {
             console.error("Error fetching manage data:", error);
           } finally {
@@ -283,11 +323,9 @@ const ManageSpaceContainer = () => {
       if (address && userAddress && getAddress(address) === getAddress(userAddress))
         setIsOwner(true);
 
-      if (!fetchedData) {
-        fetchAllManageData();
-      }
+      fetchAllManageData();
     }
-  }, [userAddress, address, chainId, chainConfig, fetchedData]);
+  }, [userAddress, address, chainId, chainConfig]);
 
   const handleListingsStatusType = (status) => {
     switch (status) {
@@ -363,6 +401,11 @@ const ManageSpaceContainer = () => {
               isOwner={isOwner}
               manageAddress={userAddress}
               offers={createdOffers}
+              isLoadingTransactions={isLoadingTransactions}
+              lastActivities={lastActivities}
+              isLoadingBids={isLoadingBids}
+              marketplaceBids={marketplaceBids}
+              isLoadingOwnedTokens={isLoadingOwnedTokens}
             />
           </div>
         </div>

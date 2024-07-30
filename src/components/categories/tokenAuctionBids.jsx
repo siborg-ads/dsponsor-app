@@ -3,8 +3,8 @@ import Image from "next/image";
 import "tippy.js/themes/light.css";
 import OfferItem from "../cards/offerItem";
 
-const TokenAuctionBids = ({ data, isOwner }) => {
-  if (!data) {
+const TokenAuctionBids = ({ data, isOwner, isLoading }) => {
+  if (isLoading) {
     return (
       <div className="flex w-full justify-center">
         <Image src="/images/loading-bullet.svg" alt="icon" width={60} height={60} />
@@ -17,7 +17,7 @@ const TokenAuctionBids = ({ data, isOwner }) => {
       <div className="dark:bg-secondaryBlack dark:text-jacarta-100 rounded-2lg bg-white p-3 flex gap-4 justify-center items-center mb-6">
         <span> This section lists all tokens with a placed bid.</span>
       </div>
-      {data.length > 0 ? (
+      {data?.length > 0 ? (
         <div className="grid grid-cols-1 gap-[1.875rem] md:grid-cols-2 lg:grid-cols-4">
           {data?.map((item, index) => {
             return (

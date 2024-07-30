@@ -793,10 +793,10 @@ const BidsModal = ({
                           <>
                             <Web3Button
                               contractAddress={config[chainId]?.smartContracts?.DSPONSORMP?.address}
-                              action={() => {
+                              action={async () => {
                                 setIsLoadingApproveButton(true);
 
-                                toast.promise(handleApprove, {
+                                await toast.promise(handleApprove, {
                                   pending: "Waiting for confirmation 🕒",
                                   success: "Approval confirmed 👌",
                                   error: "Approval rejected 🤯"
@@ -833,10 +833,10 @@ const BidsModal = ({
                             {/* Added next button */}
                             <Web3Button
                               contractAddress={config[chainId]?.smartContracts?.DSPONSORMP?.address}
-                              action={() => {
+                              action={async () => {
                                 setIsLoadingBuyButton(true);
 
-                                toast.promise(handleSubmit, {
+                                await toast.promise(handleSubmit, {
                                   pending: "Waiting for confirmation 🕒",
                                   success: buyoutPriceReached
                                     ? "Buy confirmed 👌"
@@ -875,10 +875,10 @@ const BidsModal = ({
                         <>
                           <Web3Button
                             contractAddress={config[chainId]?.smartContracts?.DSPONSORMP?.address}
-                            action={() => {
+                            action={async () => {
                               setIsLoadingBuyButton(true);
 
-                              toast.promise(handleSubmitWithNative, {
+                              await toast.promise(handleSubmitWithNative, {
                                 pending: "Waiting for confirmation 🕒",
                                 success: buyoutPriceReached
                                   ? "Buy confirmed 👌"

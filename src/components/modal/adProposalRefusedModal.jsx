@@ -101,8 +101,8 @@ const AddProposalRefusedModal = ({
                 {!successFullRefuseModal ? (
                   <Web3Button
                     contractAddress={currentChainObject?.smartContracts?.DSPONSORADMIN?.address}
-                    action={() =>
-                      toast.promise(handleItemSubmit(false), {
+                    action={async () =>
+                      await toast.promise(handleItemSubmit(false), {
                         pending: "Waiting for confirmation 🕒",
                         success: "Transaction confirmed 👌",
                         error: "Transaction rejected 🤯"

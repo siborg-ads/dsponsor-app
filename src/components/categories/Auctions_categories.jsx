@@ -5,8 +5,8 @@ import "tippy.js/themes/light.css";
 
 import OfferItem from "../cards/offerItem";
 
-const Auctions_categories = ({ data, isOwner }) => {
-  if (!data) {
+const Auctions_categories = ({ data, isOwner, isLoading }) => {
+  if (isLoading) {
     return (
       <div className="flex w-full justify-center">
         <Image src="/images/loading-bullet.svg" alt="icon" width={60} height={60} />
@@ -24,7 +24,7 @@ const Auctions_categories = ({ data, isOwner }) => {
           <br />
         </span>
       </div>
-      {data.length > 0 ? (
+      {data?.length > 0 ? (
         <div className="grid grid-cols-1 gap-[1.875rem] md:grid-cols-2 lg:grid-cols-4">
           {data?.map((item, index) => {
             let currencyDecimals = 0;
