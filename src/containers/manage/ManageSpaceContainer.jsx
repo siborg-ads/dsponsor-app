@@ -176,17 +176,16 @@ const ManageSpaceContainer = () => {
           setCreatedData(createdOffers);
 
           let allLatestListings;
-          const userManagedOffers = offersByUserAddressArray?.filter((element) =>
-            element?.admins?.includes(userAddress?.toLowerCase())
-          );
-          userManagedOffers?.forEach((element) => {
+          offersByUserAddressArray?.forEach((element) => {
             element?.nftContract?.tokens?.forEach((token) => {
               const lastListing = token?.marketplaceListings?.sort(
                 (a, b) => Number(b?.id) - Number(a?.id)
               )[0];
 
               const filterCondition =
-                lastListing?.status === "CREATED" && lastListing?.quantity > 0;
+                lastListing?.status === "CREATED" &&
+                lastListing?.quantity > 0 &&
+                lastListing?.lister?.toLowerCase() === userAddress?.toLowerCase();
 
               if (lastListing && filterCondition) {
                 const listingWithChainConfig = {
