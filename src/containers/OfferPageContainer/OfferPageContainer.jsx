@@ -623,10 +623,22 @@ const OfferPageContainer = () => {
             </div>
 
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-6">
-              {offerData?.nftContract?.tokens?.map((token, index) => {
+              {offerData?.nftContract?.tokens?.map((token) => {
+                const currencyDecimals =
+                  token?.marketplaceListings?.sort((a, b) => Number(b.id) - Number(a.id))[0]
+                    ?.listingType === "Auction" ||
+                  token?.marketplaceListings?.sort((a, b) => Number(b.id) - Number(a.id))[0]
+                    ?.listingType === "Direct"
+                    ? Number(
+                        token?.marketplaceListings?.sort((a, b) => Number(b.id) - Number(a.id))[0]
+                          ?.currencyDecimals
+                      )
+                    : Number(token?.nftContract?.prices[0]?.currencyDecimals);
+
                 const finalToken = {
                   ...token,
-                  chainConfig: offerData?.chainConfig
+                  chainConfig: offerData?.chainConfig,
+                  currencyDecimals
                 };
 
                 return (
