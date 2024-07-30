@@ -58,6 +58,13 @@ export const fetchOfferPageContainer = async (chainId, offerId) => {
               amount
               totalPaid
             }
+            nftContract {
+              id
+              prices {
+                currency
+                amount
+              }
+            }
             marketplaceListings {
               listingType
               status
