@@ -2094,7 +2094,7 @@ const TokenPageContainer = () => {
                 {isTokenInAuction && (
                   <div className="text-center w-full">
                     <span className="dark:text-warning text-md ">
-                      ⚠️ You cannot submit an ad while your token is in auction
+                      ⚠️ You cannot submit an ad while your token is in auction or direct listing.
                     </span>
                   </div>
                 )}
