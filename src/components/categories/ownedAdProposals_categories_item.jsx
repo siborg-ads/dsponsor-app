@@ -1,6 +1,6 @@
 import { useContract, useContractWrite, useStorageUpload } from "@thirdweb-dev/react";
 import Image from "next/image";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import styles from "../../styles/createPage/style.module.scss";
 import OfferItem from "../cards/offerItem";
 import Step1Mint from "../sliderForm/PageMint/Step_1_Mint";
@@ -31,6 +31,7 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
   const [showSliderForm, setShowSliderForm] = useState(false);
   const [adParameters, setAdParameters] = useState([]);
   const [imageURLSteps, setImageURLSteps] = useState([]);
+  const [currentSlide, setCurrentSlide] = useState(0);
 
   const [imageUrlVariants, setImageUrlVariants] = useState([]);
   const stepsRef = useRef([]);
@@ -49,7 +50,7 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
       setSuccessFullUpload(false);
       handleSelectionTokens();
     }
-    validateInputs();
+
     setShowPreviewModal(!showPreviewModal);
   };
 
@@ -84,7 +85,7 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
     }
   };
 
-  const validateInputs = () => {
+  useEffect(() => {
     let isValid = true;
     let newErrors = {};
 
@@ -97,10 +98,10 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
       newErrors.linkError = "The link is missing or invalid.";
       isValid = false;
     }
+
     setValidate(isValid);
     setErrors(newErrors);
-    return isValid;
-  };
+  }, [files, imageURLSteps.length, link]);
 
   const isValidURL = (url) => {
     try {
@@ -150,7 +151,7 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
     setNumSteps(totalNumSteps);
   };
   const handleSubmit = async () => {
-    if (!validateInputs()) {
+    if (!validate) {
       return;
     }
 
@@ -262,7 +263,7 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
               </div>
               {isSelectionActive && (
                 <div className="dark:bg-secondaryBlack dark:text-jacarta-100 rounded-2lg bg-white p-3 flex gap-4 justify-center items-center mb-6">
-                  <span>Select tokens to submit and ads</span>
+                  <span>Select tokens to submit an ad on</span>
                 </div>
               )}
             </div>
@@ -270,6 +271,15 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
           {!showSliderForm && (
             <div className={`grid w-full grid-cols-1 gap-[1.875rem] md:grid-cols-2 lg:grid-cols-4`}>
               {data?.map((item, index) => {
+                let currencyDecimals = 0;
+                if (item?.prices?.length > 0) {
+                  currencyDecimals = item?.prices[0]?.currencyDecimals;
+                } else {
+                  currencyDecimals = item?.marketplaceListings?.sort(
+                    (a, b) => Number(b?.id) - Number(a?.id)
+                  )[0]?.currencyDecimals;
+                }
+
                 return isSelectionActive ? (
                   <div
                     onClick={() => handleSelection(item)}
@@ -281,12 +291,20 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
                       isToken={true}
                       listingType={item?.marketplaceListings[0]?.listingType}
                       isListing={false}
+                      isDisabled={
+                        item?.disable ||
+                        (!item?.nftContract?.prices[0]?.enabled && item?.mint === null) ||
+                        new Date(item?.metadata?.offer?.valid_to) < new Date()
+                      }
                       isSelectionActive={isSelectionActive}
+                      disableLink={isSelectionActive}
                       url={
                         !item.tokenData
                           ? `/${item?.chainConfig?.chainId}/offer/${item.offerId}/${item.tokenId}`
                           : `/${item?.chainConfig?.chainId}/offer/${item.offerId}/${item.tokenId}?tokenData=${item.tokenData}`
                       }
+                      availableToSubmitAdFromOwnedTokens={true}
+                      currencyDecimals={currencyDecimals}
                     />
                   </div>
                 ) : (
@@ -296,12 +314,20 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
                     isToken={true}
                     listingType={item?.marketplaceListings[0]?.listingType}
                     isListing={false}
+                    isDisabled={
+                      item?.disable ||
+                      (!item?.nftContract?.prices[0]?.enabled && item?.mint === null) ||
+                      new Date(item?.metadata?.offer?.valid_to) < new Date()
+                    }
                     isSelectionActive={isSelectionActive}
+                    canSubmitAdFromProfileOwnedTokens={true}
                     url={
-                      !item.tokenData
+                      !item?.tokenData
                         ? `/${item?.chainConfig?.chainId}/offer/${item.offerId}/${item.tokenId}`
                         : `/${item?.chainConfig?.chainId}/offer/${item.offerId}/${item.tokenId}?tokenData=${item.tokenData}`
                     }
+                    availableToSubmitAdFromOwnedTokens={true}
+                    currencyDecimals={currencyDecimals}
                   />
                 );
               })}
@@ -328,7 +354,7 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
             <span className="flex items-center justify-center gap-6">
               <span className="mr-4">
                 Ad Spaces selected :{" "}
-                <span className="text-primaryPurple text-md ml-1">
+                <span className="text-green text-md ml-1">
                   {Object.values(isSelectedItem).filter((value) => value === true).length}
                 </span>{" "}
               </span>
@@ -360,27 +386,52 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
             handlePreviewModal={handlePreviewModal}
             stepsRef={stepsRef}
             numSteps={numSteps}
+            currentSlide={currentSlide}
+            setCurrentSlide={setCurrentSlide}
           >
-            <Step1Mint
-              stepsRef={stepsRef}
-              styles={styles}
-              adParameters={adParameters}
-              setImageUrlVariants={setImageUrlVariants}
-            />
-            <Step2Mint stepsRef={stepsRef} styles={styles} setLink={setLink} link={link} />
-            {imageURLSteps.map((step, index) => (
-              <Step3Mint
-                key={step.uniqueId}
+            {currentSlide === 0 && (
+              <Step1Mint
                 stepsRef={stepsRef}
-                currentStep={index + 2}
-                offerIds={step.offerIds}
-                id={step.uniqueId}
                 styles={styles}
-                file={files[index]}
-                previewImage={previewImages[index]}
-                handleLogoUpload={(file) => handleLogoUpload(file, index, step)}
+                adParameters={adParameters}
+                setImageUrlVariants={setImageUrlVariants}
+                currentSlide={currentSlide}
+                numSteps={numSteps}
               />
-            ))}
+            )}
+
+            <>
+              {imageURLSteps.map((step, index) => (
+                <div key={step.uniqueId}>
+                  {currentSlide === index + 1 && (
+                    <Step3Mint
+                      key={step.uniqueId}
+                      stepsRef={stepsRef}
+                      currentStep={index + 2}
+                      offerIds={step.offerIds}
+                      id={step.uniqueId}
+                      styles={styles}
+                      file={files[index]}
+                      previewImage={previewImages[index]}
+                      handleLogoUpload={(file) => handleLogoUpload(file, index, step)}
+                      currentSlide={currentSlide}
+                      numSteps={numSteps}
+                    />
+                  )}
+                </div>
+              ))}
+            </>
+
+            {currentSlide === imageURLSteps.length + 1 && (
+              <Step2Mint
+                stepsRef={stepsRef}
+                styles={styles}
+                setLink={setLink}
+                link={link}
+                currentSlide={currentSlide}
+                numSteps={numSteps}
+              />
+            )}
           </SliderForm>
         </div>
       )}
@@ -402,6 +453,7 @@ const OwnedAdProposals_categories_items = ({ data, isOwner }) => {
             modalTitle="Ad Space Preview"
             successFullUploadModal={successFullUploadModal}
             isLoadingButton={isLoadingButton}
+            multipleAdsSubmission={true}
           />
         </div>
       )}

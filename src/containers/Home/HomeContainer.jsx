@@ -1,14 +1,14 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import MainAuctions from "../../components/siborgHome/mainAuctions";
 import MarketplaceHome from "../../components/siborgHome/marketplaceHome";
 import Description from "../../components/siborgHome/description";
 import { fetchAllListedTokenWithoutFilter } from "../../providers/methods/fetchAllListedTokenWithoutFilter";
 import { formatUnits } from "ethers/lib/utils";
 import formatAndRound from "../../utils/formatAndRound";
-import config from "../../config/config";
 import Meta from "../../components/Meta";
+import { useChainContext } from "../../contexts/hooks/useChainContext";
 
 const HomeContainer = () => {
   const [chainIdFilter, setChainIdFilter] = useState(null);
@@ -18,35 +18,38 @@ const HomeContainer = () => {
   const [isAuctionsLoading, setIsAuctionsLoading] = useState(true);
   const [auctionsFetched, setAuctionsFetched] = useState(false);
 
-  useEffect(() => {
-    if (auctionsFetched) return;
+  const { currentChainObject } = useChainContext();
+  const chainId = currentChainObject?.chainId;
 
-    const fetchData = async () => {
+  const dataFetchedRef = useRef(false);
+
+  useEffect(() => {
+    const fetchData = async (chainId, allTokens) => {
+      if (dataFetchedRef.current) return;
+
       setIsAuctionsLoading(true);
-      const allListedTokenWithoutFilterArray = [];
-      if (config !== null && config !== undefined) {
-        for (const [chainId] of Object.entries(config)) {
-          const data = await fetchAllListedTokenWithoutFilter(chainId, allTokens);
-          allListedTokenWithoutFilterArray.push(...data);
-        }
-        setAuctionsTemp(allListedTokenWithoutFilterArray);
-      } else {
-        setAuctionsTemp([]);
-      }
+
+      let allListedTokenWithoutFilterArray = [];
+      const data = await fetchAllListedTokenWithoutFilter(chainId, allTokens);
+      allListedTokenWithoutFilterArray.push(...data);
+
+      setAuctionsTemp(allListedTokenWithoutFilterArray);
 
       setAuctionsFetched(true);
       setIsAuctionsLoading(false);
     };
 
-    fetchData();
-  }, [allTokens, auctionsFetched]);
+    if (chainId && !auctionsFetched && allTokens) {
+      fetchData(chainId, allTokens);
+    }
+  }, [allTokens, auctionsFetched, chainId]);
 
   useEffect(() => {
     if (auctionsTemp.length === 0) return;
 
     const auctions = auctionsTemp.map((token) => {
       const name = token.metadata.name;
-      const category = token.metadata.categories[0];
+      const category = token.metadata.categories ? token.metadata.categories[0] : "";
       const chain = token.chainConfig.network;
       const price = token.marketplaceListings.sort((a, b) => Number(b.id) - Number(a.id))[0]
         ?.buyPriceStructure?.buyoutPricePerToken;
@@ -55,24 +58,31 @@ const HomeContainer = () => {
       const tokenId = token.tokenId;
       const tokenData = token.tokenData;
       const live =
-        token.marketplaceListings.sort((a, b) => Number(b.id) - Number(a.id))[0]?.status ===
+        token.marketplaceListings?.sort((a, b) => Number(b.id) - Number(a.id))[0]?.status ===
           "CREATED" &&
-        token.marketplaceListings.sort((a, b) => Number(b.id) - Number(a.id))[0].quantity > 0;
+        token.marketplaceListings?.sort((a, b) => Number(b.id) - Number(a.id))[0].quantity > 0;
       const image = token.metadata.image;
-      const currencyDecimals = Number(
-        token.marketplaceListings.sort((a, b) => Number(b.id) - Number(a.id))[0]
-          ?.currencyDecimals ?? 0
-      );
+      const listingType = token.marketplaceListings.sort((a, b) => Number(b.id) - Number(a.id))[0]
+        ?.listingType;
+      const currencyDecimals =
+        listingType === "Auction" || listingType === "Direct"
+          ? Number(
+              token?.marketplaceListings?.sort((a, b) => Number(b.id) - Number(a.id))[0]
+                ?.currencyDecimals
+            )
+          : Number(token?.nftContract?.prices[0]?.currencyDecimals);
       const currencySymbol = token?.marketplaceListings.sort(
         (a, b) => Number(b.id) - Number(a.id)
       )[0]?.currencySymbol;
-      const latestBid = Number(
-        formatUnits(
-          token?.marketplaceListings.sort((a, b) => Number(b.id) - Number(a.id))[0]
-            ?.bidPriceStructure?.previousBidAmount ?? 0,
-          currencyDecimals
-        )
-      );
+      const latestBid = currencyDecimals
+        ? Number(
+            formatUnits(
+              token?.marketplaceListings?.sort((a, b) => Number(b.id) - Number(a.id))[0]
+                ?.bidPriceStructure?.previousBidAmount ?? 0,
+              currencyDecimals
+            )
+          )
+        : 0;
       const priceUSD = Number(
         formatAndRound(
           Number(
@@ -89,8 +99,6 @@ const HomeContainer = () => {
       const auctionPrice = token.marketplaceListings.sort((a, b) => Number(b.id) - Number(a.id))[0]
         ?.bidPriceStructure?.minimalBidPerToken;
       const mintPrice = token?.nftContract?.prices[0]?.amount;
-      const listingType = token.marketplaceListings.sort((a, b) => Number(b.id) - Number(a.id))[0]
-        ?.listingType;
       const startTime = token?.marketplaceListings.sort((a, b) => Number(b.id) - Number(a.id))[0]
         ?.startTime;
       const endTime = token?.marketplaceListings.sort((a, b) => Number(b.id) - Number(a.id))[0]
@@ -113,6 +121,7 @@ const HomeContainer = () => {
       const object = {
         name: name,
         category: category,
+        disable: token?.disable,
         chain: chain,
         chainId: chainId,
         price: price,
@@ -138,6 +147,7 @@ const HomeContainer = () => {
         sold: sold,
         numberOfBids: numberOfBids,
         item: {
+          disable: token?.disable,
           metadata: token.metadata,
           mint: token.mint,
           nftContract: token.nftContract,
@@ -147,7 +157,8 @@ const HomeContainer = () => {
           tokenId: tokenId,
           tokenData: tokenData,
           startTime: startTime,
-          endTime: endTime
+          endTime: endTime,
+          currencyDecimals: currencyDecimals
         }
       };
 

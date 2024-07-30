@@ -1,10 +1,12 @@
 import Network from "../../providers/utils/networks";
 import contractABI from "../../abi/dsponsorAdmin.json";
+import { Base } from "@thirdweb-dev/chains";
 
 const prodBase = {
   chainId: 8453,
   chainName: "base",
   chainNameProvider: "base",
+  chainObject: Base,
   network: Network.BASE_MAINNET,
   logoURL: "/images/base-logo.png",
   explorerBaseUrl: "https://basescan.org",
@@ -17,13 +19,19 @@ const prodBase = {
       symbol: "ETH"
     },
     WNATIVE: {
-      address: "0x4200000000000000000000000000000000000006"
+      address: "0x4200000000000000000000000000000000000006",
+      decimals: 18,
+      symbol: "WETH"
     },
     USDC: {
-      address: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913"
+      address: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+      decimals: 6,
+      symbol: "USDC"
     },
     WETH: {
-      address: "0x4200000000000000000000000000000000000006"
+      address: "0x4200000000000000000000000000000000000006",
+      decimals: 18,
+      symbol: "WETH"
     },
     UNISWAP_QUOTER: {
       address: "0x3d4e44Eb1374240CE5F1B871ab261CD16335B76a"

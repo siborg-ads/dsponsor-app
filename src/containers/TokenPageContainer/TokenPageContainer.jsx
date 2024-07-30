@@ -7,10 +7,12 @@ import {
   useContractWrite,
   useStorageUpload
 } from "@thirdweb-dev/react";
+import { ThirdwebStorage } from "@thirdweb-dev/storage";
 import { BigNumber, ethers } from "ethers";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import { Spinner } from "@nextui-org/react";
 import React, { useEffect, useRef, useState } from "react";
 import "tippy.js/dist/tippy.css";
 import Meta from "../../components/Meta.jsx";
@@ -18,9 +20,12 @@ import PreviewModal from "../../components/modal/previewModal.jsx";
 import Step1Mint from "../../components/sliderForm/PageMint/Step_1_Mint.jsx";
 import Step2Mint from "../../components/sliderForm/PageMint/Step_2_Mint.jsx";
 import Step3Mint from "../../components/sliderForm/PageMint/Step_3_Mint.jsx";
+import ModalHelper from "../../components/Helper/modalHelper";
 import SliderForm from "../../components/sliderForm/sliderForm.jsx";
 import styles from "../../styles/createPage/style.module.scss";
 import Timer from "../../components/item/Timer.jsx";
+import { fetchTokenPageContainer } from "../../providers/methods/fetchTokenPageContainer";
+import ItemLastestSales from "../../components/tables/ItemLastestSales.jsx";
 
 import { getCookie } from "cookies-next";
 import { ItemsTabs } from "../../components/component.js";
@@ -30,14 +35,11 @@ import BuyModal from "../../components/modal/buyModal.jsx";
 import { toast } from "react-toastify";
 import OfferSkeleton from "../../components/skeleton/offerSkeleton.jsx";
 
-import { Divider } from "@nextui-org/react";
 import Validation from "../../components/offer-section/validation.jsx";
 
 import ItemBids from "../../components/item/ItemBids.jsx";
 import ItemManage from "../../components/item/ItemManage.jsx";
 import { useSwitchChainContext } from "../../contexts/hooks/useSwitchChainContext.js";
-import { fetchOfferToken } from "../../providers/methods/fetchOfferToken.js";
-// import { fetchAllTokenListedByListingId } from "../../providers/methods/fetchAllTokenListedByListingId.js";
 import config from "../../config/config.js";
 import stringToUint256 from "../../utils/stringToUnit256.js";
 import { formatUnits, getAddress, parseUnits } from "ethers/lib/utils";
@@ -45,14 +47,22 @@ import { formatUnits, getAddress, parseUnits } from "ethers/lib/utils";
 import "react-toastify/dist/ReactToastify.css";
 import ItemLastBids from "../../components/tables/ItemLastBids";
 import { activated_features } from "../../data/activated_features.js";
+import { useChainContext } from "../../contexts/hooks/useChainContext.js";
+import * as Accordion from "@radix-ui/react-accordion";
+import { ChevronDownIcon, ExclamationCircleIcon } from "@heroicons/react/24/solid";
+import InfoIcon from "../../components/informations/infoIcon.jsx";
+import Disable from "../../components/disable/disable.jsx";
+import Input from "../../components/ui/input";
 
 const TokenPageContainer = () => {
   const router = useRouter();
 
+  const { currentChainObject } = useChainContext();
   const offerId = router.query?.offerId;
   const tokenId = router.query?.tokenId;
-  const chainId = router.query?.chainName;
+  const chainId = currentChainObject?.chainId;
 
+  const [isLoadingAirdropButton, setIsLoadingAirdropButton] = useState(false);
   const [tokenIdString, setTokenIdString] = useState(null);
   const [offerData, setOfferData] = useState(null);
   const address = useAddress();
@@ -105,6 +115,195 @@ const TokenPageContainer = () => {
   const [bids, setBids] = useState([]);
   const [insufficentBalance, setInsufficentBalance] = useState(false);
   const [canPayWithNativeToken, setCanPayWithNativeToken] = useState(false);
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [itemProposals, setItemProposals] = useState(null);
+  const [mediaShouldValidateAnAd, setMediaShouldValidateAnAd] = useState(false);
+  const [airdropContainer, setAirdropContainer] = useState(true);
+  const [
+    sponsorHasAtLeastOneRejectedProposalAndNoPending,
+    setSponsorHasAtLeastOneRejectedProposalAndNoPending
+  ] = useState(false);
+  const [offers, setOffers] = useState(null);
+  const [isMedia, setIsMedia] = useState(false);
+  const [sales, setSales] = useState([]);
+  const [minted, setMinted] = useState(false);
+  const [conditions, setConditions] = useState({});
+  const [imageUrl, setImageUrl] = useState(null);
+  const [accordionActiveTab, setAccordionActiveTab] = useState(null);
+  const [listingCreated, setListingCreated] = useState(false);
+  const [creatorAmount, setCreatorAmount] = useState(null);
+  const [protocolFeeAmount, setProtocolFeeAmount] = useState(null);
+  const [totalAmount, setTotalAmount] = useState(null);
+  const [totalPrice, setTotalPrice] = useState(null);
+  const [listerAmount, setListerAmount] = useState(null);
+  const [royaltiesAmount, setRoyaltiesAmount] = useState(null);
+  const [airdropAddress, setAirdropAddress] = useState(undefined);
+  const [nftContractAddress, setNftContractAddress] = useState(null);
+  const [showEntireDescription, setShowEntireDescription] = useState(false);
+
+  let description = "description not found";
+  let id = "1";
+  let image = "/images/gradient_creative.jpg";
+  let name = "Unnamed Ad Space";
+
+  if (offerData?.metadata?.offer) {
+    const embeddedTokenMetaData = offerData?.metadata?.offer?.token_metadata;
+    if (tokenMetaData && Object.keys(tokenMetaData).length > 0) {
+      description = tokenMetaData.description;
+      id = tokenMetaData.id;
+      image = tokenMetaData.image;
+      name = tokenMetaData.name;
+    } else if (embeddedTokenMetaData && Object.keys(embeddedTokenMetaData).length > 0) {
+      description = embeddedTokenMetaData?.description;
+      id = embeddedTokenMetaData?.id;
+      image = embeddedTokenMetaData?.image;
+      name = embeddedTokenMetaData?.name;
+    } else {
+      description = offerData?.metadata?.offer?.description;
+      id = offerData?.metadata?.offer?.id;
+      image = offerData?.metadata?.offer?.image;
+      name = offerData?.metadata?.offer?.name;
+    }
+  }
+
+  useEffect(() => {
+    const fetchImage = async (image) => {
+      // get url image instead of ipfs:// starting url
+      if (image && image.startsWith("ipfs://")) {
+        const storage = new ThirdwebStorage({ clientId: "6f375d41f2a33f1f08f6042a65d49ec9" });
+        const ipfsUrl = await storage.resolveScheme(image);
+        setImageUrl(ipfsUrl);
+      } else {
+        setImageUrl(image);
+      }
+    };
+
+    if (image) {
+      fetchImage(image);
+    } else {
+      setImageUrl(null);
+    }
+  }, [image]);
+
+  const fetchOffersRef = useRef(false);
+
+  useEffect(() => {
+    const fetchOffers = async () => {
+      if (fetchOffersRef.current) return;
+      fetchOffersRef.current = true;
+
+      try {
+        const offers = await fetchTokenPageContainer(chainId, offerId, tokenId);
+        console.log("offer", offers);
+        setOffers(offers);
+
+        // check if we have the values
+        if (!offerId) return;
+        if (!offers) return;
+
+        // set offer data for the current offer
+        const currentOffer = offers?.find((offer) => Number(offer?.id) === Number(offerId));
+        setOfferData(currentOffer);
+      } catch (error) {
+        console.error("Error fetching offers:", error);
+      } finally {
+        fetchOffersRef.current = false;
+      }
+    };
+
+    if (chainId && offerId) {
+      fetchOffers();
+    }
+  }, [address, chainId, offerId, tokenId]);
+
+  useEffect(() => {
+    if (offerData && address) {
+      // set if the user is the media or not
+      if (offerData && address) {
+        const isMedia = offerData?.admins?.includes(address.toLowerCase());
+        setIsMedia(isMedia);
+      } else {
+        setIsMedia(false);
+      }
+    } else {
+      setIsMedia(false);
+    }
+  }, [address, offerData]);
+
+  useEffect(() => {
+    if (offers) {
+      // we want to get all the proposals for the current item (accept, reject, pending, all)
+      // for that we filter the offers to match the offer with the current offer that contains the current item
+      const itemOffer = offers?.find((offer) => offer?.id === offerId);
+
+      // itemOffers is an item that contains nftContract which contains tokens that contains the tokenId
+      // we need to get the token item from the tokens array where the tokenId matches the current item tokenId
+      const tokenOffers = itemOffer?.nftContract?.tokens?.find(
+        (token) => token?.tokenId === tokenId
+      );
+
+      // then we get the proposals for the current item
+      // we get the accepted, pending, rejected and all proposals
+      // token offers has a "all proposals" key that contains all the proposals
+      // we filter the proposals to get the accepted, pending and rejected proposals
+      // for that we can use the status key of the proposal "CURRENT_ACCEPTED", "CURRENT_PENDING", "CURRENT_REJECTED"
+      const allProposals = tokenOffers?.allProposals;
+      const acceptedProposals = allProposals?.filter(
+        (proposal) => proposal?.status === "CURRENT_ACCEPTED"
+      );
+      const pendingProposals = allProposals?.filter(
+        (proposal) => proposal?.status === "CURRENT_PENDING"
+      );
+      const rejectedProposals = allProposals?.filter(
+        (proposal) => proposal?.status === "CURRENT_REJECTED"
+      );
+
+      const itemProposals = {
+        name: name ?? "",
+        pendingProposals,
+        rejectedProposals,
+        acceptedProposals,
+        allProposals
+      };
+
+      setItemProposals(itemProposals);
+    }
+  }, [name, offerId, offers, tokenId]);
+
+  useEffect(() => {
+    if (!itemProposals) return;
+    // now we want to check one thing from the sponsor side and one thing from the media side
+    // we want to check if the sponsor has at least one rejected proposal and no pending proposal
+    // we want to check if the media should validate an ad or not (i.e. if the media has at least one pending proposal)
+
+    // we check if the sponsor has only rejected proposals
+    const sponsorHasAtLeastOneRejectedProposal = itemProposals?.rejectedProposals?.length > 0;
+    const sponsorHasNoPendingProposal = itemProposals?.pendingProposals?.length === 0;
+    const lastAcceptedProposalTimestamp =
+      parseFloat(
+        itemProposals?.acceptedProposals?.sort(
+          (a, b) => b?.creationTimestamp - a?.creationTimestamp
+        )[0]?.lastUpdateTimestamp
+      ) * 1000;
+    const lastRefusedProposalTimestamp =
+      parseFloat(
+        itemProposals?.rejectedProposals?.sort(
+          (a, b) => b?.creationTimestamp - a?.creationTimestamp
+        )[0]?.lastUpdateTimestamp
+      ) * 1000;
+    const sponsorHasNoMoreRecentValidatedProposal =
+      new Date(lastAcceptedProposalTimestamp) <= new Date(lastRefusedProposalTimestamp);
+
+    setSponsorHasAtLeastOneRejectedProposalAndNoPending(
+      sponsorHasAtLeastOneRejectedProposal &&
+        sponsorHasNoPendingProposal &&
+        sponsorHasNoMoreRecentValidatedProposal
+    );
+
+    // now we check if the media should validate an ad
+    const mediaShouldValidateAnAd = itemProposals?.pendingProposals?.length > 0;
+    setMediaShouldValidateAnAd(mediaShouldValidateAnAd);
+  }, [itemProposals]);
 
   const [offerDO, setOfferDO] = useState({
     offerId: null
@@ -191,64 +390,67 @@ const TokenPageContainer = () => {
       setBuyTokenEtherPrice(tokenEtherPriceDecimals);
     };
 
-    if (finalPriceNotFormatted && finalPriceNotFormatted > 0 && chainId) {
+    if (finalPriceNotFormatted && finalPriceNotFormatted > 0 && chainId && tokenCurrencyAddress) {
       fetchBuyEtherPrice();
     }
   }, [finalPriceNotFormatted, chainId, tokenCurrencyAddress, currencyDecimals]);
 
   useEffect(() => {
-    if (offerId && tokenId && chainId) {
-      const fetchAdsOffers = async () => {
-        const offer = await fetchOfferToken(offerId, tokenId, chainId);
-
-        const combinedData = {
-          ...offer
-        };
-
-        setOfferData(combinedData);
-      };
+    if (chainId) {
       setSelectedChain(config[chainId]?.network);
-      fetchAdsOffers();
     }
-
-    setTokenIdString(tokenId?.toString());
-  }, [
-    offerId,
-    tokenId,
-    successFullUpload,
-    successFullBid,
-    successFullListing,
-    address,
-    chainId,
-    setSelectedChain
-  ]);
+  }, [chainId, setSelectedChain]);
 
   useEffect(() => {
-    if (successFullBid) {
-      const fetchUpdatedData = async () => {
-        const offer = await fetchOfferToken(offerId, tokenId, chainId);
+    setTokenIdString(tokenId?.toString());
+  }, [tokenId]);
+
+  useEffect(() => {
+    if (successFullBid && offers) {
+      const fetchUpdatedData = () => {
+        const offer = offers?.find((offer) => Number(offer?.id) === Number(offerId));
         const combinedData = { ...offer };
 
         setOfferData(combinedData);
         setBidsAmount("");
       };
-      fetchUpdatedData();
+
+      if (chainId && offerId) {
+        fetchUpdatedData();
+      }
     }
-  }, [successFullBid, offerId, tokenId, chainId]);
+  }, [successFullBid, offerId, tokenId, chainId, offers]);
+
+  useEffect(() => {
+    if (listingCreated && offers) {
+      const fetchUpdatedData = () => {
+        const offer = offers?.find((offer) => Number(offer?.id) === Number(offerId));
+        const combinedData = { ...offer };
+
+        setOfferData(combinedData);
+      };
+
+      if (chainId && offerId) {
+        fetchUpdatedData();
+      }
+    }
+  }, [listingCreated, offerId, tokenId, chainId, offers]);
 
   useEffect(() => {
     if (offerData?.nftContract?.tokens.length > 0) {
       setMarketplaceListings(
-        offerData?.nftContract?.tokens[0]?.marketplaceListings.sort((a, b) => b.id - a.id)
+        offerData?.nftContract?.tokens
+          ?.find((token) => Number(token?.tokenId) === Number(tokenId))
+          ?.marketplaceListings.sort((a, b) => b.id - a.id)
       );
     }
-  }, [offerData]);
+  }, [offerData, tokenId]);
 
   useEffect(() => {
     let bids = [];
 
-    if (marketplaceListings.length > 0) {
-      marketplaceListings.map((listing) => {
+    if (marketplaceListings?.length > 0) {
+      marketplaceListings?.map((listing) => {
         if (listing?.bids) {
           // bids is an array of arrays of bids + currency symbol and decimals
           // bids is [{bid1, currency, listing}, {bid2, currency, listing}] with currency = {symbol, decimals} and listing = {id, listingType}
@@ -286,6 +488,182 @@ const TokenPageContainer = () => {
   }, [marketplaceListings]);
 
   useEffect(() => {
+    const fetchSalesData = async () => {
+      let sales = [];
+
+      if (marketplaceListings?.length > 0) {
+        for (const listing of marketplaceListings) {
+          let saleInfo;
+          const auction = listing?.listingType === "Auction" && listing?.status === "COMPLETED";
+          const direct = listing?.listingType === "Direct" && listing?.status === "COMPLETED";
+
+          if (auction) {
+            let winnerBid;
+            if (listing?.bids) {
+              const sortedBids = listing?.bids?.sort(
+                (a, b) =>
+                  new Date(b?.creationTimestamp * 1000) - new Date(a?.creationTimestamp * 1000)
+              );
+              winnerBid = sortedBids[0];
+            }
+
+            saleInfo = {
+              address: winnerBid?.bidder,
+              amount: winnerBid?.paidBidAmount
+                ? formatUnits(BigInt(winnerBid?.paidBidAmount), listing?.currencyDecimals)
+                : 0,
+              date: winnerBid?.creationTimestamp,
+              currency: {
+                contract: listing?.currency,
+                currencySymbol: listing?.currencySymbol,
+                currencyDecimals: listing?.currencyDecimals
+              },
+              listing: {
+                id: listing?.id,
+                listingType: listing?.listingType
+              }
+            };
+          }
+
+          if (direct) {
+            try {
+              if (!offerData || !tokenId) return;
+
+              const tokenData = offerData?.nftContract?.tokens?.find(
+                (token) => Number(token?.tokenId) === Number(tokenId)
+              );
+
+              console.log("tokenData", tokenData);
+
+              if (tokenData) {
+                // need to match listing id and direct buys listing id
+                const listingTokenData = tokenData?.marketplaceListings?.find(
+                  (marketplaceListing) => Number(listing?.id) === Number(marketplaceListing?.id)
+                );
+
+                const directBuy = listingTokenData?.directBuys[0]; // only one direct buy per listing so we can take the first one
+
+                const smartContracts = currentChainObject?.smartContracts;
+                const targetAddress = listing?.currency;
+
+                let tempCurrency = null;
+
+                if (smartContracts) {
+                  for (const key in smartContracts) {
+                    if (
+                      smartContracts[key]?.address?.toLowerCase() === targetAddress?.toLowerCase()
+                    ) {
+                      tempCurrency = smartContracts[key];
+                      break;
+                    }
+                  }
+                }
+
+                saleInfo = {
+                  address: directBuy?.buyer,
+                  amount: directBuy?.totalPricePaid
+                    ? formatUnits(BigInt(directBuy?.totalPricePaid), tempCurrency?.decimals)
+                    : 0,
+                  date: directBuy?.revenueTransaction?.blockTimestamp,
+                  currency: {
+                    contract: listing?.currency,
+                    currencySymbol: tempCurrency?.symbol,
+                    currencyDecimals: tempCurrency?.decimals
+                  },
+                  listing: {
+                    id: directBuy?.listing?.id,
+                    listingType: directBuy?.listing?.listingType
+                  }
+                };
+              } else {
+                console.error("Token data or mint information not found in the response.");
+              }
+            } catch (error) {
+              console.error("Error fetching sales data:", error);
+            }
+          }
+
+          if (saleInfo) {
+            sales.push(saleInfo);
+          }
+        }
+      }
+
+      let saleMintInfo;
+
+      try {
+        const tokenData = offerData?.nftContract?.tokens?.find(
+          (token) => Number(token?.tokenId) === Number(tokenId)
+        );
+
+        const smartContracts = currentChainObject?.smartContracts;
+        const targetAddress = tokenData?.mint?.currency;
+
+        let tempCurrency = null;
+        if (smartContracts) {
+          for (const key in smartContracts) {
+            if (smartContracts[key]?.address?.toLowerCase() === targetAddress?.toLowerCase()) {
+              tempCurrency = smartContracts[key];
+              break;
+            }
+          }
+        }
+
+        if (tokenData) {
+          saleMintInfo = {
+            address: tokenData?.mint?.to,
+            amount: tokenData?.mint?.totalPaid
+              ? formatUnits(BigInt(tokenData?.mint?.totalPaid), tempCurrency?.decimals)
+              : 0,
+            date: tokenData?.mint?.revenueTransaction?.blockTimestamp,
+            currency: {
+              contract: tokenData?.mint?.currency,
+              currencySymbol: tempCurrency?.symbol,
+              currencyDecimals: tempCurrency?.decimals
+            },
+            listing: {
+              id: 1,
+              listingType: "Mint"
+            }
+          };
+        }
+      } catch (error) {
+        console.error("Error fetching sales data:", error);
+      }
+
+      if (saleMintInfo && saleMintInfo?.amount > 0) {
+        sales.push(saleMintInfo);
+      }
+
+      // Group sales by listing id
+      const groupedSales = sales.reduce((acc, sale) => {
+        const listingIndex = acc.findIndex(
+          (listing) => listing[0]?.listing?.id === sale?.listing?.id
+        );
+        if (listingIndex === -1) {
+          acc.push([sale]);
+        } else {
+          acc[listingIndex].push(sale);
+        }
+        return acc;
+      }, []);
+
+      setSales(groupedSales);
+    };
+
+    fetchSalesData();
+  }, [
+    marketplaceListings,
+    chainId,
+    currency,
+    currentChainObject,
+    offerData,
+    tokenId,
+    offers,
+    offerId
+  ]);
+
+  useEffect(() => {
     if (!offerData) return;
     setOfferDO({
       offerId: offerId
@@ -293,28 +671,41 @@ const TokenPageContainer = () => {
     setTokenDO({
       currency:
         offerData?.nftContract?.prices[0]?.currency ??
-        offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.currency,
+        offerData?.nftContract?.tokens
+          ?.find((token) => Number(token?.tokenId) === Number(tokenId))
+          ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.currency,
       tokenId: tokenId,
       tokenData: null,
 
       fee: offerData?.nftContract?.prices[0]?.protocolFeeAmount,
       price:
         offerData?.nftContract?.prices[0]?.amount ??
-        offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.pricePerToken,
+        offerData?.nftContract?.tokens
+          ?.find((token) => Number(token?.tokenId) === Number(tokenId))
+          ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.pricePerToken,
       protocolFeeBPS: offerData?.nftContract?.prices[0]?.protocolFeeBps,
       royaltiesBPS: offerData?.nftContract?.royalty.bps,
 
-      isListed: offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.status === "CREATED",
-      listingId: offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.id,
-      minimalBidBps: offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.minimalBidBps,
-      buyoutPricePerToken:
-        offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.buyoutPricePerToken
+      isListed:
+        offerData?.nftContract?.tokens
+          ?.find((token) => Number(token?.tokenId) === Number(tokenId))
+          ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.status === "CREATED",
+      listingId: offerData?.nftContract?.tokens
+        ?.find((token) => Number(token?.tokenId) === Number(tokenId))
+        ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.id,
+      minimalBidBps: offerData?.nftContract?.tokens
+        ?.find((token) => Number(token?.tokenId) === Number(tokenId))
+        ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.minimalBidBps,
+      buyoutPricePerToken: offerData?.nftContract?.tokens
+        ?.find((token) => Number(token?.tokenId) === Number(tokenId))
+        ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.buyoutPricePerToken
     });
 
     if (
       !isOwner &&
       !offerNotFormated &&
-      (offerData?.nftContract?.tokens[0]?.mint === null ||
+      (offerData?.nftContract?.tokens?.find((token) => Number(token?.tokenId) === Number(tokenId))
+        ?.mint === null ||
         offerData?.nftContract?.tokens?.length <= 0) &&
       isAllowedToMint !== null &&
       offerData?.nftContract?.prices[0]?.currency
@@ -322,99 +713,235 @@ const TokenPageContainer = () => {
       setTokenStatut("MINTABLE");
       setTokenCurrencyAddress(offerData?.nftContract?.prices[0]?.currency);
       // setTokenBigIntPrice(offerData?.nftContract?.prices[0]?.amount);
-      setPrice(offerData?.nftContract?.prices[0]?.mintPriceStructureFormatted.creatorAmount);
-      setFeesAmount(
-        offerData?.nftContract?.prices[0]?.mintPriceStructureFormatted.protocolFeeAmount
+      setPrice(offerData?.nftContract?.prices[0]?.mintPriceStructureFormatted?.creatorAmount);
+      setCreatorAmount(
+        offerData?.nftContract?.prices[0]?.mintPriceStructureFormatted?.creatorAmount
       );
-      setFinalPrice(offerData?.nftContract?.prices[0]?.mintPriceStructureFormatted.totalAmount);
-      setFinalPriceNotFormatted(offerData?.nftContract?.prices[0]?.mintPriceStructure.totalAmount);
+      setProtocolFeeAmount(
+        offerData?.nftContract?.prices[0]?.mintPriceStructureFormatted?.protocolFeeAmount
+      );
+      setTotalAmount(offerData?.nftContract?.prices[0]?.mintPriceStructureFormatted?.totalAmount);
+
+      const totalPrice = offerData?.nftContract?.prices[0]?.mintPriceStructure?.totalAmount;
+      const totalPriceFormatted = parseFloat(formatUnits(totalPrice, currencyDecimals));
+
+      setTotalPrice(totalPriceFormatted);
+      setFeesAmount(
+        offerData?.nftContract?.prices[0]?.mintPriceStructureFormatted?.protocolFeeAmount
+      );
+      setFinalPrice(offerData?.nftContract?.prices[0]?.mintPriceStructureFormatted?.totalAmount);
+      setFinalPriceNotFormatted(offerData?.nftContract?.prices[0]?.mintPriceStructure?.totalAmount);
       setAmountToApprove(
-        offerData?.nftContract?.prices[0]?.mintPriceStructure.totalAmount &&
-          BigInt(offerData?.nftContract?.prices[0]?.mintPriceStructure.totalAmount)
+        offerData?.nftContract?.prices[0]?.mintPriceStructure?.totalAmount &&
+          BigInt(offerData?.nftContract?.prices[0]?.mintPriceStructure?.totalAmount)
       );
       setCurrency(offerData?.nftContract?.prices[0]?.currencySymbol);
       return;
     }
-    if (offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.status === "CREATED") {
-      if (offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.listingType === "Direct") {
+
+    if (
+      offerData?.nftContract?.tokens
+        ?.find((token) => Number(token?.tokenId) === Number(tokenId))
+        ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.status === "CREATED"
+    ) {
+      if (
+        offerData?.nftContract?.tokens
+          ?.find((token) => Number(token?.tokenId) === Number(tokenId))
+          ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.listingType === "Direct"
+      ) {
         setTokenBigIntPrice(
-          offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.buyoutPricePerToken
+          offerData?.nftContract?.tokens
+            ?.find((token) => Number(token?.tokenId) === Number(tokenId))
+            ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.buyoutPricePerToken
         );
         setTokenStatut("DIRECT");
         setPrice(
-          offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.buyPriceStructureFormatted
+          offerData?.nftContract?.tokens
+            ?.find((token) => Number(token?.tokenId) === Number(tokenId))
+            ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.buyPriceStructureFormatted
             .listerBuyAmount
         );
+        setListerAmount(
+          offerData?.nftContract?.tokens
+            ?.find((token) => Number(token?.tokenId) === Number(tokenId))
+            ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.buyPriceStructureFormatted
+            .listerBuyAmount
+        );
+        setRoyaltiesAmount(
+          offerData?.nftContract?.tokens
+            ?.find((token) => Number(token?.tokenId) === Number(tokenId))
+            ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.buyPriceStructureFormatted
+            ?.royaltiesBuyAmount
+        );
+        setProtocolFeeAmount(
+          offerData?.nftContract?.tokens
+            ?.find((token) => Number(token?.tokenId) === Number(tokenId))
+            ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.buyPriceStructureFormatted
+            ?.protocolFeeBuyAmount
+        );
+        setTotalAmount(
+          offerData?.nftContract?.tokens
+            ?.find((token) => Number(token?.tokenId) === Number(tokenId))
+            ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.buyPriceStructureFormatted
+            ?.buyoutPricePerToken
+        );
+        const totalPrice = offerData?.nftContract?.tokens
+          ?.find((token) => Number(token?.tokenId) === Number(tokenId))
+          ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]
+          ?.buyPriceStructure?.buyoutPricePerToken;
+        const totalPriceFormatted = parseFloat(formatUnits(totalPrice, currencyDecimals));
+
+        setTotalPrice(totalPriceFormatted);
         setFeesAmount(
-          offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.buyPriceStructureFormatted
-            .protocolFeeBuyAmount
+          offerData?.nftContract?.tokens
+            ?.find((token) => Number(token?.tokenId) === Number(tokenId))
+            ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.buyPriceStructureFormatted
+            ?.protocolFeeBuyAmount
         );
         setRoyaltiesFeesAmount(
-          offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.buyPriceStructureFormatted
+          offerData?.nftContract?.tokens
+            ?.find((token) => Number(token?.tokenId) === Number(tokenId))
+            ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.buyPriceStructureFormatted
             .royaltiesBuyAmount
         );
         setFinalPrice(
-          offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.buyPriceStructureFormatted
+          offerData?.nftContract?.tokens
+            ?.find((token) => Number(token?.tokenId) === Number(tokenId))
+            ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.buyPriceStructureFormatted
             .buyoutPricePerToken
         );
         setFinalPriceNotFormatted(
-          offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.buyPriceStructure
+          offerData?.nftContract?.tokens
+            ?.find((token) => Number(token?.tokenId) === Number(tokenId))
+            ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.buyPriceStructure
             .buyoutPricePerToken
         );
         setAmountToApprove(
           BigInt(
-            offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.buyPriceStructure
+            offerData?.nftContract?.tokens
+              ?.find((token) => Number(token?.tokenId) === Number(tokenId))
+              ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.buyPriceStructure
               .buyoutPricePerToken
           )
         );
       }
-      if (offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.listingType === "Auction") {
+      if (
+        offerData?.nftContract?.tokens
+          ?.find((token) => Number(token?.tokenId) === Number(tokenId))
+          ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.listingType === "Auction"
+      ) {
         setTokenBigIntPrice(
-          offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.bids[0]?.totalBidAmount
+          offerData?.nftContract?.tokens
+            ?.find((token) => Number(token?.tokenId) === Number(tokenId))
+            ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.bids[0]?.totalBidAmount
         );
 
         setPrice(
-          offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.bidPriceStructureFormatted
-            .minimalBidPerToken
+          offerData?.nftContract?.tokens
+            ?.find((token) => Number(token?.tokenId) === Number(tokenId))
+            ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.bidPriceStructureFormatted
+            ?.minimalBidPerToken
         );
         setFeesAmount(
-          offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.bidPriceStructureFormatted
-            .protocolFeeAmount
+          offerData?.nftContract?.tokens
+            ?.find((token) => Number(token?.tokenId) === Number(tokenId))
+            ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.bidPriceStructureFormatted
+            ?.protocolFeeAmount
         );
         setRoyaltiesFeesAmount(
-          offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.bidPriceStructureFormatted
-            .royaltyAmount
+          offerData?.nftContract?.tokens
+            ?.find((token) => Number(token?.tokenId) === Number(tokenId))
+            ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.bidPriceStructureFormatted
+            ?.royaltyAmount
         );
         setFinalPrice(
-          offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.bidPriceStructureFormatted
-            .minimalBidPerToken
+          offerData?.nftContract?.tokens
+            ?.find((token) => Number(token?.tokenId) === Number(tokenId))
+            ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.bidPriceStructureFormatted
+            ?.minimalBidPerToken
         );
         setFinalPriceNotFormatted(
-          offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.bidPriceStructure
-            .minimalBidPerToken
+          offerData?.nftContract?.tokens
+            ?.find((token) => Number(token?.tokenId) === Number(tokenId))
+            ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.bidPriceStructure
+            ?.minimalBidPerToken
         );
+        setListerAmount(
+          offerData?.nftContract?.tokens
+            ?.find((token) => Number(token?.tokenId) === Number(tokenId))
+            ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.bidPriceStructureFormatted
+            ?.listerAmount
+        );
+        setRoyaltiesAmount(
+          offerData?.nftContract?.tokens
+            ?.find((token) => Number(token?.tokenId) === Number(tokenId))
+            ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.bidPriceStructureFormatted
+            ?.royaltyAmount
+        );
+        setProtocolFeeAmount(
+          offerData?.nftContract?.tokens
+            ?.find((token) => Number(token?.tokenId) === Number(tokenId))
+            ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.bidPriceStructureFormatted
+            ?.protocolFeeAmount
+        );
+        setTotalAmount(
+          offerData?.nftContract?.tokens
+            ?.find((token) => Number(token?.tokenId) === Number(tokenId))
+            ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.bidPriceStructureFormatted
+            ?.totalBidAmount
+        );
+
+        const totalPrice = offerData?.nftContract?.tokens
+          ?.find((token) => Number(token?.tokenId) === Number(tokenId))
+          ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]
+          ?.bidPriceStructure?.totalBidAmount;
+        const totalPriceFormatted = parseFloat(formatUnits(totalPrice, currencyDecimals));
+
+        setTotalPrice(totalPriceFormatted);
 
         setAmountToApprove(
           BigInt(
-            offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.bidPriceStructure
-              .minimalBidPerToken
+            offerData?.nftContract?.tokens
+              ?.find((token) => Number(token?.tokenId) === Number(tokenId))
+              ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.bidPriceStructure
+              ?.minimalBidPerToken ?? 0
           )
         );
-        if (offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.bids.length <= 0) {
+        if (
+          offerData?.nftContract?.tokens
+            ?.find((token) => Number(token?.tokenId) === Number(tokenId))
+            ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.bids?.length <= 0
+        ) {
           setTokenBigIntPrice(
-            offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.reservePricePerToken
+            offerData?.nftContract?.tokens
+              ?.find((token) => Number(token?.tokenId) === Number(tokenId))
+              ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.reservePricePerToken
           );
         }
         setTokenStatut("AUCTION");
       }
       setCurrencyDecimals(
-        offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.currencyDecimals
+        offerData?.nftContract?.tokens
+          ?.find((token) => Number(token?.tokenId) === Number(tokenId))
+          ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.currencyDecimals
       );
-      setTokenCurrencyAddress(offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.currency);
-      setCurrency(offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.currencySymbol);
+      setTokenCurrencyAddress(
+        offerData?.nftContract?.tokens
+          ?.find((token) => Number(token?.tokenId) === Number(tokenId))
+          ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.currency
+      );
+      setCurrency(
+        offerData?.nftContract?.tokens
+          ?.find((token) => Number(token?.tokenId) === Number(tokenId))
+          ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.currencySymbol
+      );
       return;
     }
-    if (offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.status === "COMPLETED") {
+    if (
+      offerData?.nftContract?.tokens
+        ?.find((token) => Number(token?.tokenId) === Number(tokenId))
+        ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.status === "COMPLETED"
+    ) {
       setTokenStatut("COMPLETED");
       setTokenCurrencyAddress(offerData?.nftContract?.prices[0]?.currency);
       setCurrency(offerData?.nftContract?.prices[0]?.currencySymbol);
@@ -422,8 +949,11 @@ const TokenPageContainer = () => {
       return;
     }
     if (
-      offerData?.nftContract?.tokens[0]?.mint !== null &&
-      offerData?.nftContract?.tokens[0]?.marketplaceListings[0]?.length === 0
+      offerData?.nftContract?.tokens?.find((token) => Number(token?.tokenId) === Number(tokenId))
+        ?.mint !== null &&
+      offerData?.nftContract?.tokens
+        ?.find((token) => Number(token?.tokenId) === Number(tokenId))
+        ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.length === 0
     ) {
       setTokenStatut("MINTED");
       setTokenCurrencyAddress(offerData?.nftContract?.prices[0]?.currency);
@@ -437,22 +967,24 @@ const TokenPageContainer = () => {
     tokenId,
     successFullUpload,
     marketplaceListings,
-    offerId
+    offerId,
+    currencyDecimals
   ]);
 
   useEffect(() => {
     if (!isUserOwner || !marketplaceListings || !address) return;
+
     if (
-      firstSelectedListing?.listingType === "Auction" &&
       firstSelectedListing?.status === "CREATED" &&
-      address?.toLowerCase() === firstSelectedListing?.lister
+      address?.toLowerCase() === firstSelectedListing?.lister?.toLowerCase()
     ) {
+      console.log("here");
       setIsOwner(true);
       setIsTokenInAuction(true);
     }
 
     if (isUserOwner) {
-      if (isUserOwner === address) {
+      if (isUserOwner?.toLowerCase() === address?.toLowerCase()) {
         setIsOwner(true);
       }
     }
@@ -460,13 +992,20 @@ const TokenPageContainer = () => {
 
   useEffect(() => {
     if (!tokenId || !offerData) return;
+
     if (tokenId.length > 6) {
       const url = new URL(window.location.href);
       let tokenData = url.searchParams.get("tokenData");
       setTokenData(tokenData);
 
-      if (offerData?.nftContract?.tokens?.[0]?.mint?.tokenData?.length) {
-        tokenData = offerData.nftContract.tokens[0].mint.tokenData;
+      if (
+        offerData?.nftContract?.tokens?.find((token) => Number(token?.tokenId) === Number(tokenId))
+          ?.mint?.tokenData?.length &&
+        tokenId
+      ) {
+        tokenData = offerData.nftContract.tokens?.find(
+          (token) => Number(token?.tokenId) === Number(tokenId)
+        ).mint.tokenData;
         setTokenData(tokenData);
       }
 
@@ -502,7 +1041,9 @@ const TokenPageContainer = () => {
   }, [tokenId, offerData, tokenData]);
 
   useEffect(() => {
-    if (!offerData) return;
+    if (!offerData || !offerData?.adParameters) return;
+    if (offerData?.adParameters?.length === 0) return;
+
     setImageURLSteps([]);
     setNumSteps(2);
     const uniqueIds = new Set();
@@ -557,7 +1098,9 @@ const TokenPageContainer = () => {
   useEffect(() => {
     const fetchStatusOffers = async () => {
       if (!offerData) return;
-      const tokenData = offerData?.nftContract?.tokens[0];
+      const tokenData = offerData?.nftContract?.tokens?.find(
+        (token) => Number(token?.tokenId) === Number(tokenId)
+      );
       if (tokenData?.mint === null || offerData.nftContract?.tokens.length === 0) {
         setAdStatut(0);
       } else {
@@ -736,6 +1279,7 @@ const TokenPageContainer = () => {
         });
         setSuccessFullUpload(true);
         setIsOwner(true);
+        setMinted(true);
       } else {
         await directBuy(argsWithPossibleOverrides).catch((error) => {
           console.error("Error while buying:", error);
@@ -788,6 +1332,12 @@ const TokenPageContainer = () => {
 
       await submitAd({ args: functionWithPossibleArgs });
       setSuccessFullUpload(true);
+
+      // reset form
+      setFiles([]);
+      setPreviewImages([]);
+      setLink("");
+      setCurrentSlide(0);
     } catch (error) {
       console.error("Erreur de soumission du token:", error);
       setSuccessFullUpload(false);
@@ -799,6 +1349,10 @@ const TokenPageContainer = () => {
   };
 
   const checkUserBalance = (tokenAddressBalance, priceToken, decimals) => {
+    if (Number(priceToken) === 0) {
+      return true;
+    }
+
     try {
       if (!tokenAddressBalance || !priceToken) {
         throw new Error("Invalid balance or price token");
@@ -848,7 +1402,7 @@ const TokenPageContainer = () => {
   };
 
   useEffect(() => {
-    setFirstSelectedListing(marketplaceListings[0]);
+    setFirstSelectedListing(marketplaceListings?.sort((a, b) => b.id - a.id)[0]);
   }, [marketplaceListings]);
 
   useEffect(() => {
@@ -884,61 +1438,90 @@ const TokenPageContainer = () => {
     };
   }, [imageModal]);
 
-  function shouldRenderManageTokenComponent() {
-    const isAuction = firstSelectedListing?.listingType === "Auction";
-    const isDirect = firstSelectedListing?.listingType === "Direct";
-    const startTimePassed = firstSelectedListing?.startTime < now;
-    const endTimeNotPassed = firstSelectedListing?.endTime > now;
-    const isActive = startTimePassed && endTimeNotPassed;
-    const isCreated = firstSelectedListing?.status === "CREATED";
-    const isFinished = firstSelectedListing?.status === "COMPLETED";
-    const isCancelled = firstSelectedListing?.status === "CANCELLED";
-    const hasBids = firstSelectedListing?.bids?.length > 0;
-    const isTokenMintable = tokenStatut === "MINTABLE";
-    const isTokenSiborg = tokenStatut === "SIBORG";
-    const isTokenStatusSpecial = isTokenMintable || isTokenSiborg;
-    const isAuctionWithBids = isAuction && hasBids;
-    const isListerOrOwnerAndEndDateFinishedOrNoBids =
-      (isLister || isOwner) && (!endTimeNotPassed || !hasBids);
-    const isListerOrOwnerAndStartDateNotPassed = (isLister || isOwner) && !startTimePassed;
-    const auctionHasNotStarted = startTimePassed && isAuction && !hasBids;
-    const isAllowedToMint = isTokenMintable && isOwner;
+  useEffect(() => {
+    function shouldRenderManageTokenComponent() {
+      const isAuction = firstSelectedListing?.listingType === "Auction";
+      const isDirect = firstSelectedListing?.listingType === "Direct";
+      const startTimePassed = firstSelectedListing?.startTime < now;
+      const endTimeNotPassed = firstSelectedListing?.endTime > now;
+      const isActive = startTimePassed && endTimeNotPassed;
+      const isCreated = firstSelectedListing?.status === "CREATED";
+      const isFinished = firstSelectedListing?.status === "COMPLETED";
+      const isCancelled = firstSelectedListing?.status === "CANCELLED";
+      const hasBids = firstSelectedListing?.bids?.length > 0;
+      const isTokenMintable = tokenStatut === "MINTABLE";
+      const isTokenSiborg = tokenStatut === "SIBORG";
+      const isTokenStatusSpecial = isTokenMintable || isTokenSiborg;
+      const isAuctionWithBids = isAuction && hasBids;
+      const isListerOrOwnerAndEndDateFinishedOrNoBids =
+        (isLister || isOwner) && (!endTimeNotPassed || !hasBids);
+      const isListerOrOwnerAndStartDateNotPassed = (isLister || isOwner) && !startTimePassed;
+      const auctionHasNotStarted = startTimePassed && isAuction && !hasBids;
+      const isAllowedToMint = isTokenMintable && isOwner;
+      const mintDisabled = !offerData?.nftContract?.prices[0]?.enabled;
+      const isMinted = Boolean(
+        offerData?.nftContract?.tokens?.find((token) => Number(token?.tokenId) === Number(tokenId))
+          ?.mint
+      );
+      const isCreator = offerData?.initialCreator?.toLowerCase() === address?.toLowerCase();
 
-    const finalCondition =
-      (isActive && isOwner && ((isAuction && !hasBids) || isDirect)) ||
-      isAllowedToMint ||
-      !endTimeNotPassed ||
-      (isFinished && isOwner) ||
-      (!endTimeNotPassed && isCreated && isAuction) ||
-      (!startTimePassed && isAuction && isCreated) ||
-      ((!isCreated || marketplaceListings?.length <= 0) && isOwner) ||
-      (isDirect && (isLister || isOwner) && isCreated) ||
-      isListerOrOwnerAndEndDateFinishedOrNoBids ||
-      isListerOrOwnerAndStartDateNotPassed;
+      const finalCondition =
+        (isActive && isOwner && ((isAuction && !hasBids) || isDirect)) ||
+        isAllowedToMint ||
+        !endTimeNotPassed ||
+        (isFinished && isOwner) ||
+        (!endTimeNotPassed && isCreated && isAuction) ||
+        (!startTimePassed && isAuction && isCreated) ||
+        ((!isCreated || marketplaceListings?.length <= 0) && isOwner) ||
+        (isDirect && (isLister || isOwner) && isCreated) ||
+        isListerOrOwnerAndEndDateFinishedOrNoBids ||
+        isListerOrOwnerAndStartDateNotPassed ||
+        (!isMinted && mintDisabled);
 
-    const conditionsObject = {
-      isAuction: isAuction,
-      isDirect: isDirect,
-      startTimePassed: startTimePassed,
-      endTimeNotPassed: endTimeNotPassed,
-      isActive: isActive,
-      isCreated: isCreated,
-      isFinished: isFinished,
-      isCancelled: isCancelled,
-      hasBids: hasBids,
-      isTokenMintable: isTokenMintable,
-      isTokenSiborg: isTokenSiborg,
-      isTokenStatusSpecial: isTokenStatusSpecial,
-      isAuctionWithBids: isAuctionWithBids,
-      isListerOrOwnerAndEndDateFinishedOrNoBids: isListerOrOwnerAndEndDateFinishedOrNoBids,
-      isListerOrOwnerAndStartDateNotPassed: isListerOrOwnerAndStartDateNotPassed,
-      auctionHasNotStarted: auctionHasNotStarted,
-      isOwner: isOwner,
-      isLister: isLister
-    };
+      const conditionsObject = {
+        isAuction: isAuction,
+        isDirect: isDirect,
+        startTimePassed: startTimePassed,
+        endTimeNotPassed: endTimeNotPassed,
+        isActive: isActive,
+        isCreated: isCreated,
+        isFinished: isFinished,
+        isCancelled: isCancelled,
+        hasBids: hasBids,
+        isTokenMintable: isTokenMintable,
+        isTokenSiborg: isTokenSiborg,
+        isTokenStatusSpecial: isTokenStatusSpecial,
+        isAuctionWithBids: isAuctionWithBids,
+        isListerOrOwnerAndEndDateFinishedOrNoBids: isListerOrOwnerAndEndDateFinishedOrNoBids,
+        isListerOrOwnerAndStartDateNotPassed: isListerOrOwnerAndStartDateNotPassed,
+        auctionHasNotStarted: auctionHasNotStarted,
+        isOwner: isOwner,
+        isLister: isLister,
+        mintDisabled: mintDisabled,
+        isMinted: isMinted,
+        isCreator: isCreator
+      };
 
-    return { condition: finalCondition, conditionsObject: conditionsObject };
-  }
+      return { condition: finalCondition, conditionsObject: conditionsObject };
+    }
+
+    const conditions = shouldRenderManageTokenComponent();
+    setConditions(conditions);
+  }, [
+    marketplaceListings,
+    isOwner,
+    isLister,
+    tokenStatut,
+    offerData,
+    firstSelectedListing?.listingType,
+    firstSelectedListing?.startTime,
+    firstSelectedListing?.endTime,
+    firstSelectedListing?.status,
+    firstSelectedListing?.bids?.length,
+    now,
+    tokenId,
+    address
+  ]);
 
   const successFullUploadModal = {
     title: "Submit ad",
@@ -964,6 +1547,121 @@ const TokenPageContainer = () => {
     desc: "Explore the future of media monetization. SiBorg Ads decentralized platform offers tokenized advertising spaces for dynamic and sustainable media funding."
   };
 
+  const modalHelper = {
+    title: "Protocol Fees",
+    body: (
+      <>
+        <div className="flex flex-col gap-8">
+          <span className="text-jacarta-100 text-sm">
+            The protocol fees (4%) are used to maintain the platform and the services provided. The
+            fees are calculated based on the price of the ad space and are automatically deducted
+            from the total amount paid by the buyer.
+          </span>
+
+          {offerData?.nftContract?.tokens?.find(
+            (token) => Number(token?.tokenId) === Number(tokenId)
+          )?.mint === null && (
+            <div className="flex flex-col gap-2">
+              <ul
+                className="flex flex-col gap-2 list-disc text-sm"
+                style={{ listStyleType: "disc" }}
+              >
+                <li>
+                  <span className="text-white">
+                    Amount sent to the creator: {creatorAmount} {currency}
+                  </span>
+                </li>
+                <li>
+                  <span className="text-white">
+                    Protocol fees: {protocolFeeAmount} {currency}
+                  </span>
+                </li>
+                <li>
+                  <span className="text-white">
+                    Total: {totalAmount} {currency}
+                  </span>
+                </li>
+              </ul>
+            </div>
+          )}
+
+          {offerData?.nftContract?.tokens?.find(
+            (token) => Number(token?.tokenId) === Number(tokenId)
+          )?.mint !== null && (
+            <div className="flex flex-col gap-2">
+              <ul
+                className="flex flex-col gap-2 list-disc text-sm"
+                style={{ listStyleType: "disc" }}
+              >
+                <li>
+                  <span className="text-white">
+                    Amount sent to the lister: {listerAmount} {currency}
+                  </span>
+                </li>
+                <li>
+                  <span className="text-white">
+                    Royalties sent to the creator: {royaltiesAmount} {currency}
+                  </span>
+                </li>
+                <li>
+                  <span className="text-white">
+                    Protocol fees: {protocolFeeAmount} {currency}
+                  </span>
+                </li>
+                <li>
+                  <span className="text-white">
+                    Total: {totalAmount} {currency}
+                  </span>
+                </li>
+              </ul>
+            </div>
+          )}
+        </div>
+      </>
+    )
+  };
+
+  useEffect(() => {
+    if (!offerData) return;
+
+    setNftContractAddress(offerData?.nftContract?.id);
+  }, [offerData]);
+
+  const { mutateAsync: airdropAsync } = useContractWrite(DsponsorNFTContract, "mint");
+
+  const handleAirdrop = async (airdropAddress) => {
+    let stringToUnit = 0;
+    if (tokenData) {
+      stringToUnit = stringToUint256(tokenData);
+
+      if (BigInt(stringToUnit) !== BigInt(tokenId)) {
+        console.error("Token ID and token data do not match");
+        throw new Error("Token ID and token data do not match");
+      }
+    }
+
+    if (!airdropAddress) {
+      console.error("Airdrop address not found");
+      throw new Error("Airdrop address not found");
+    }
+
+    if (!tokenId) {
+      console.error("Token ID not found");
+      throw new Error("Token ID not found");
+    }
+
+    try {
+      await airdropAsync({
+        args: [tokenId, airdropAddress, "0x0000000000000000000000000000000000000000", stringToUnit]
+      });
+
+      setAirdropContainer(false);
+    } catch (error) {
+      console.error("Error while airdropping:", error);
+      throw error;
+    }
+  };
+
   if (!offerData || offerData.length === 0) {
     return (
       <div>
@@ -976,33 +1674,13 @@ const TokenPageContainer = () => {
     return null;
   }
 
-  let description = "description not found";
-  let id = "1";
-  let image = "/images/gradient_creative.jpg";
-  let name = "Unnamed Ad Space";
-
-  if (offerData?.metadata?.offer) {
-    const embeddedTokenMetaData = offerData?.metadata?.offer?.token_metadata;
-    if (tokenMetaData && Object.keys(tokenMetaData).length > 0) {
-      description = tokenMetaData.description;
-      id = tokenMetaData.id;
-      image = tokenMetaData.image;
-      name = tokenMetaData.name;
-    } else if (embeddedTokenMetaData && Object.keys(embeddedTokenMetaData).length > 0) {
-      description = embeddedTokenMetaData?.description;
-      id = embeddedTokenMetaData?.id;
-      image = embeddedTokenMetaData?.image;
-      name = embeddedTokenMetaData?.name;
-    } else {
-      description = offerData?.metadata?.offer?.description;
-      id = offerData?.metadata?.offer?.id;
-      image = offerData?.metadata?.offer?.image;
-      name = offerData?.metadata?.offer?.name;
-    }
-  }
-
   return (
-    <>
+    <Accordion.Root
+      type="single"
+      collapsible
+      value={accordionActiveTab}
+      onValueChange={setAccordionActiveTab}
+    >
       <Meta {...metadata} />
       {/*  <!-- Item --> */}
       <section className="relative lg:mt-24 lg:pt-12  mt-24 pt-12 pb-8">
@@ -1025,18 +1703,17 @@ const TokenPageContainer = () => {
 
           <div className="md:flex md:flex-wrap" key={id}>
             {/* <!-- Image --> */}
-            <figure className="mb-8 md:mb-0 md:w-2/5 md:flex-shrink-0 md:flex-grow-0 md:basis-auto lg:w-1/2 w-full flex justify-center relative">
+            <figure className="mb-8 md:mb-0 md:w-2/5 md:flex-shrink-0 md:flex-grow-0 items-start md:basis-auto lg:w-1/2 w-full flex justify-center relative">
               <button
-                className=" w-full"
+                className="w-full md:sticky md:top-0 md:right-0"
                 onClick={() => setImageModal(true)}
-                style={{ height: "450px" }}
               >
                 <Image
                   width={585}
                   height={726}
-                  src={image ?? "/images/gradient_creative.jpg"}
+                  src={imageUrl ?? "/images/gradient_creative.jpg"}
                   alt="image"
-                  className="rounded-2xl cursor-pointer h-full object-contain w-full shadow-lg"
+                  className="rounded-2xl cursor-pointer h-auto object-contain w-full shadow-lg"
                 />
               </button>
 
@@ -1046,7 +1723,7 @@ const TokenPageContainer = () => {
                   <Image
                     width={582}
                     height={722}
-                    src={image ?? "/images/gradient_creative.jpg"}
+                    src={imageUrl ?? "/images/gradient_creative.jpg"}
                     alt="image"
                     className="h-full object-cover w-full rounded-2xl"
                   />
@@ -1082,16 +1759,21 @@ const TokenPageContainer = () => {
               </Link>
 
               <div className="mb-8 flex items-center gap-4 whitespace-nowrap flex-wrap">
-                {currency &&
+                {((currency &&
                   tokenStatut !== "MINTED" &&
                   (firstSelectedListing?.status === "CREATED" ||
-                    marketplaceListings?.length <= 0) && (
-                    <div className="flex items-center">
-                      <span className="text-green text-sm font-medium tracking-tight mr-2">
-                        {finalPrice} {currency}
-                      </span>
-                    </div>
-                  )}
+                    marketplaceListings?.length <= 0)) ||
+                  (conditions?.conditionsObject?.mintDisabled === false &&
+                    tokenStatut === "MINTABLE")) && (
+                  <div className="flex items-center">
+                    <span className="text-green text-sm font-medium tracking-tight mr-2">
+                      {!!totalPrice && parseFloat(totalPrice) > 0
+                        ? `${finalPrice ?? 0} ${currency}`
+                        : "Free"}
+                    </span>
+                    <ModalHelper {...modalHelper} size="small" />
+                  </div>
+                )}
                 <span className="dark:text-jacarta-100 text-jacarta-100 text-sm">
                   Space #{" "}
                   <strong className="dark:text-white">{tokenData ?? formatTokenId(tokenId)}</strong>{" "}
@@ -1099,254 +1781,525 @@ const TokenPageContainer = () => {
                 <span className="text-jacarta-100 block text-sm ">
                   Creator <strong className="dark:text-white">{royalties}% royalties</strong>
                 </span>
-                {offerData?.nftContract?.tokens[0]?.metadata?.valid_from && (
+                {offerData?.nftContract?.tokens?.find(
+                  (token) => Number(token?.tokenId) === Number(tokenId)
+                )?.metadata?.valid_from && (
                   <span className="text-jacarta-100 text-sm flex flex-wrap gap-1">
                     Ownership period:{" "}
                     <strong className="dark:text-white">
-                      {offerData?.nftContract?.tokens[0]?.metadata?.valid_from &&
+                      {offerData?.nftContract?.tokens?.find(
+                        (token) => Number(token?.tokenId) === Number(tokenId)
+                      )?.metadata?.valid_from &&
                         (() => {
                           const date = new Date(
-                            offerData?.nftContract?.tokens[0]?.metadata?.valid_from
+                            offerData?.nftContract?.tokens?.find(
+                              (token) => Number(token?.tokenId) === Number(tokenId)
+                            )?.metadata?.valid_from
                           );
                           return `${date.getDate().toString().padStart(2, "0")}/${(date.getMonth() + 1).toString().padStart(2, "0")}/${date.getFullYear()} at ${date.getHours().toString().padStart(2, "0")}:${date.getMinutes().toString().padStart(2, "0")}:${date.getSeconds().toString().padStart(2, "0")}`;
                         })()}
                     </strong>{" "}
                     to{" "}
                     <strong className="dark:text-white">
-                      {offerData?.nftContract?.tokens[0]?.metadata?.valid_to &&
+                      {offerData?.nftContract?.tokens?.find(
+                        (token) => Number(token?.tokenId) === Number(tokenId)
+                      )?.metadata?.valid_to &&
                         new Date(
-                          offerData?.nftContract?.tokens[0]?.metadata?.valid_to
+                          offerData?.nftContract?.tokens?.find(
+                            (token) => Number(token?.tokenId) === Number(tokenId)
+                          )?.metadata?.valid_to
                         ).toLocaleString()}
                     </strong>
                   </span>
                 )}
               </div>
 
-              <p className="dark:text-jacarta-100 mb-10">{description}</p>
-              {(tokenStatut === "MINTABLE" ||
-                (firstSelectedListing?.listingType === "Direct" &&
-                  firstSelectedListing?.status === "CREATED" &&
-                  firstSelectedListing?.startTime < now &&
-                  firstSelectedListing?.endTime > now)) && (
-                <div className="dark:bg-secondaryBlack dark:border-jacarta-600 mb-2 border-jacarta-100 rounded-2lg border flex flex-col gap-4 bg-white p-8">
-                  <div className="sm:flex sm:flex-wrap flex-col gap-8">
-                    {firstSelectedListing?.listingType === "Direct" && (
-                      <div className="flex items-center justify-between gap-4 w-full">
-                        <span className="js-countdown-ends-label text-base text-jacarta-100 dark:text-jacarta-100">
-                          Direct listing ends in:
-                        </span>
-                        <Timer endTime={marketplaceListings[0].endTime} />
-                      </div>
-                    )}
-
-                    <span className="dark:text-jacarta-100 text-jacarta-100 text-sm">
-                      Buying the ad space give you the exclusive right to submit an ad. The media
-                      still has the power to validate or reject ad assets. You re free to change the
-                      ad at anytime. And free to resell on the open market your ad space.{" "}
-                    </span>
-                  </div>
-                  <div className="w-full flex justify-center">
-                    <Web3Button
-                      contractAddress={
-                        marketplaceListings.length > 0
-                          ? config[chainId]?.smartContracts?.DSPONSORMP?.address
-                          : config[chainId]?.smartContracts?.DSPONSORADMIN?.address
-                      }
-                      action={() => {
-                        handleBuyModal();
-                      }}
-                      className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all  !bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer `}
+              {showEntireDescription ? (
+                <p className="dark:text-jacarta-100 mb-10">
+                  {description}{" "}
+                  {description?.length > 1000 && (
+                    <button
+                      onClick={() => setShowEntireDescription(false)}
+                      className="text-primaryPurple"
                     >
-                      Buy
-                    </Web3Button>
-                  </div>
+                      Show less
+                    </button>
+                  )}
+                </p>
+              ) : (
+                <div>
+                  <p className="dark:text-jacarta-100 mb-10">
+                    {description?.length > 1000 ? description?.slice(0, 1000) + "..." : description}{" "}
+                    {description?.length > 1000 && (
+                      <button
+                        onClick={() => setShowEntireDescription(true)}
+                        className="text-primaryPurple"
+                      >
+                        Show more
+                      </button>
+                    )}
+                  </p>
                 </div>
               )}
 
-              {firstSelectedListing?.status === "CREATED" &&
-                firstSelectedListing?.listingType === "Auction" &&
-                firstSelectedListing?.startTime >= now && (
-                  <div className="dark:bg-secondaryBlack dark:border-jacarta-600 mb-2 border-jacarta-100 rounded-2lg border flex flex-col gap-4 bg-white p-8">
-                    <div className="sm:flex sm:flex-wrap flex-col gap-8">
-                      <div className="flex items-center justify-between gap-4 w-full">
-                        <span className="js-countdown-ends-label text-base text-jacarta-100 dark:text-jacarta-100">
-                          Auction will start in:
-                        </span>
-                        <Timer endTime={marketplaceListings[0].startTime} />
+              {(offerData?.disable === true ||
+                new Date(offerData?.metadata?.offer?.valid_to).getTime() < Date.now() ||
+                (offerData?.nftContract?.prices[0]?.enabled === false &&
+                  offerData?.nftContract?.tokens?.find(
+                    (token) => Number(token?.tokenId) === Number(tokenId)
+                  )?.mint === null)) && <Disable isOffer={false} />}
+
+              {(offerData?.disable === false ||
+                new Date(offerData?.metadata?.offer?.valid_to).getTime() >= Date.now() ||
+                offerData?.nftContract?.prices[0]?.enabled === true ||
+                offerData?.nftContract?.tokens?.find(
+                  (token) => Number(token?.tokenId) === Number(tokenId)
+                )?.mint !== null) && (
+                <>
+                  {((tokenStatut === "MINTABLE" &&
+                    !minted &&
+                    !conditions?.conditionsObject?.mintDisabled) ||
+                    (firstSelectedListing?.listingType === "Direct" &&
+                      firstSelectedListing?.status === "CREATED" &&
+                      firstSelectedListing?.startTime < now &&
+                      firstSelectedListing?.endTime > now)) &&
+                    successFullBuyModal && (
+                      <div className="dark:bg-secondaryBlack dark:border-jacarta-800 mb-2 border-jacarta-100 rounded-2lg border flex flex-col gap-4 bg-white p-8">
+                        <div className="sm:flex sm:flex-wrap flex-col gap-8">
+                          {firstSelectedListing?.listingType === "Direct" && (
+                            <div className="flex items-center justify-between gap-4 w-full">
+                              <span className="js-countdown-ends-label text-base text-jacarta-100 dark:text-jacarta-100">
+                                Direct listing ends in:
+                              </span>
+                              <Timer
+                                endTime={
+                                  marketplaceListings?.sort((a, b) => b?.id - a?.id)[0].endTime
+                                }
+                              />
+                            </div>
+                          )}
+
+                          <span className="dark:text-jacarta-100 text-jacarta-100 text-sm">
+                            Buying the ad space give you the exclusive right to submit an ad. The
+                            media still has the power to validate or reject ad assets. You re free
+                            to change the ad at anytime. And free to resell on the open market your
+                            ad space.{" "}
+                          </span>
+                        </div>
+                        <div className="w-full flex justify-center">
+                          <Web3Button
+                            contractAddress={
+                              marketplaceListings.length > 0
+                                ? config[chainId]?.smartContracts?.DSPONSORMP?.address
+                                : config[chainId]?.smartContracts?.DSPONSORADMIN?.address
+                            }
+                            action={() => {
+                              handleBuyModal();
+                            }}
+                            className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all  !bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer `}
+                          >
+                            Buy
+                          </Web3Button>
+                        </div>
                       </div>
-                    </div>
-                  </div>
-                )}
+                    )}
 
-              {firstSelectedListing?.status === "CREATED" &&
-                firstSelectedListing?.listingType === "Direct" &&
-                firstSelectedListing?.startTime >= now && (
-                  <div className="dark:bg-secondaryBlack dark:border-jacarta-600 mb-2 border-jacarta-100 rounded-2lg border flex flex-col gap-4 bg-white p-8">
-                    <div className="sm:flex sm:flex-wrap flex-col gap-8">
-                      <div className="flex items-center justify-between gap-4 w-full">
-                        <span className="js-countdown-ends-label text-base text-jacarta-100 dark:text-jacarta-100">
-                          Direct listing will start in:
-                        </span>
-                        <Timer endTime={marketplaceListings[0].startTime} />
+                  {firstSelectedListing?.status === "CREATED" &&
+                    firstSelectedListing?.listingType === "Auction" &&
+                    firstSelectedListing?.startTime >= now && (
+                      <div className="dark:bg-secondaryBlack dark:border-jacarta-800 mb-2 border-jacarta-100 rounded-2lg border flex flex-col gap-4 bg-white p-8">
+                        <div className="sm:flex sm:flex-wrap flex-col gap-8">
+                          <div className="flex items-center justify-between gap-4 w-full">
+                            <span className="js-countdown-ends-label text-base text-jacarta-100 dark:text-jacarta-100">
+                              Auction will start in:
+                            </span>
+                            <Timer
+                              endTime={
+                                marketplaceListings?.sort((a, b) => b?.id - a?.id)[0].startTime
+                              }
+                            />
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                  </div>
-                )}
+                    )}
 
-              <ItemManage
-                successFullListing={successFullListing}
-                setSuccessFullListing={setSuccessFullListing}
-                dsponsorNFTContract={DsponsorNFTContract}
-                offerData={offerData}
-                marketplaceListings={marketplaceListings}
-                royalties={royalties}
-                dsponsorMpContract={dsponsorMpContract}
-                conditions={shouldRenderManageTokenComponent().conditionsObject}
-              />
+                  {conditions?.conditionsObject?.isCreator &&
+                    airdropContainer &&
+                    !conditions?.conditionsObject?.isMinted && (
+                      <div className="dark:bg-secondaryBlack mt-4 dark:border-jacarta-800 mb-2 border-jacarta-100 rounded-2lg border flex flex-col gap-4 bg-white p-8">
+                        <span className="dark:text-jacarta-100 text-jacarta-100 text-lg">
+                          Airdrop this token
+                        </span>
 
-              {firstSelectedListing?.listingType === "Auction" &&
-                firstSelectedListing.startTime < now &&
-                firstSelectedListing.endTime > now &&
-                firstSelectedListing?.status === "CREATED" && (
-                  <ItemBids
-                    setAmountToApprove={setAmountToApprove}
-                    bidsAmount={bidsAmount}
-                    setBidsAmount={setBidsAmount}
-                    chainId={chainId}
-                    checkUserBalance={checkUserBalance}
-                    price={price}
-                    allowanceTrue={allowanceTrue}
-                    checkAllowance={checkAllowance}
-                    handleApprove={handleApprove}
-                    dsponsorMpContract={dsponsorMpContract}
+                        <Input
+                          placeholder={"Enter the address"}
+                          onChange={(e) => setAirdropAddress(e.target.value)}
+                          value={airdropAddress}
+                          type="text"
+                          className="w-full"
+                        />
+
+                        <div className="flex items-center gap-2">
+                          <button onClick={() => setAirdropAddress(address)} className="w-fit">
+                            <span className="text-sm text-primaryPurple">Use my address</span>
+                          </button>
+
+                          <span className="text-sm text-jacarta-100">or</span>
+
+                          {navigator?.clipboard && (
+                            <button
+                              onClick={() => {
+                                // get clipboard content
+                                navigator.clipboard.readText().then((text) => {
+                                  setAirdropAddress(text);
+                                });
+                              }}
+                              className="w-fit"
+                            >
+                              <span className="text-sm text-primaryPurple">
+                                Paste from clipboard
+                              </span>
+                            </button>
+                          )}
+                        </div>
+
+                        <div className="w-full flex">
+                          <Web3Button
+                            contractAddress={nftContractAddress}
+                            action={async () => {
+                              setIsLoadingAirdropButton(true);
+
+                              await toast.promise(handleAirdrop(airdropAddress), {
+                                pending: "Airdrop in progress... 🚀",
+                                success: "Airdrop successful 🎉",
+                                error: "Airdrop failed ❌"
+                              });
+
+                              setIsLoadingAirdropButton(false);
+                            }}
+                            className={`!rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all  !bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer ${(airdropAddress === "" || !airdropAddress || isLoadingAirdropButton) && "!btn-disabled !cursor-not-allowed !opacity-30"}`}
+                            disabled={
+                              airdropAddress === "" || !airdropAddress || isLoadingAirdropButton
+                            }
+                          >
+                            {isLoadingAirdropButton ? (
+                              <Spinner size="sm" color="default" />
+                            ) : (
+                              "Airdrop"
+                            )}
+                          </Web3Button>
+                        </div>
+                      </div>
+                    )}
+
+                  {firstSelectedListing?.status === "CREATED" &&
+                    firstSelectedListing?.listingType === "Direct" &&
+                    firstSelectedListing?.startTime >= now && (
+                      <div className="dark:bg-secondaryBlack dark:border-jacarta-800 mb-2 border-jacarta-100 rounded-2lg border flex flex-col gap-4 bg-white p-8">
+                        <div className="sm:flex sm:flex-wrap flex-col gap-8">
+                          <div className="flex items-center justify-between gap-4 w-full">
+                            <span className="js-countdown-ends-label text-base text-jacarta-100 dark:text-jacarta-100">
+                              Direct listing will start in:
+                            </span>
+                            <Timer
+                              endTime={
+                                marketplaceListings?.sort((a, b) => b?.id - a?.id)[0].startTime
+                              }
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                  <ItemManage
+                    successFullListing={successFullListing}
+                    setSuccessFullListing={setSuccessFullListing}
+                    dsponsorNFTContract={DsponsorNFTContract}
+                    offerData={offerData}
                     marketplaceListings={marketplaceListings}
-                    currencySymbol={currency}
-                    tokenBalance={tokenBalance}
-                    currencyTokenDecimals={currencyDecimals}
-                    setSuccessFullBid={setSuccessFullBid}
-                    successFullBid={successFullBid}
-                    address={address}
-                    isLoadingButton={isLoadingButton}
-                    setIsLoadingButton={setIsLoadingButton}
-                    token={tokenDO}
-                    user={{
-                      address: address,
-                      isOwner: isOwner,
-                      isLister: isLister,
-                      isUserOwner: isUserOwner
-                    }}
-                    offer={offerDO}
-                    referrer={{
-                      address: referralAddress
-                    }}
-                    currencyContract={tokenCurrencyAddress}
+                    royalties={royalties}
+                    dsponsorMpContract={dsponsorMpContract}
+                    conditions={conditions?.conditionsObject}
+                    tokenId={tokenId}
+                    setListingCreated={setListingCreated}
                   />
-                )}
+
+                  {((firstSelectedListing?.listingType === "Auction" &&
+                    firstSelectedListing.startTime < now &&
+                    firstSelectedListing.endTime > now &&
+                    firstSelectedListing?.status === "CREATED") ||
+                    successFullBid) && (
+                    <ItemBids
+                      setAmountToApprove={setAmountToApprove}
+                      bidsAmount={bidsAmount}
+                      setBidsAmount={setBidsAmount}
+                      chainId={chainId}
+                      checkUserBalance={checkUserBalance}
+                      price={price}
+                      allowanceTrue={allowanceTrue}
+                      checkAllowance={checkAllowance}
+                      handleApprove={handleApprove}
+                      dsponsorMpContract={dsponsorMpContract}
+                      marketplaceListings={marketplaceListings}
+                      currencySymbol={currency}
+                      tokenBalance={tokenBalance}
+                      currencyTokenDecimals={currencyDecimals}
+                      setSuccessFullBid={setSuccessFullBid}
+                      successFullBid={successFullBid}
+                      address={address}
+                      isLoadingButton={isLoadingButton}
+                      setIsLoadingButton={setIsLoadingButton}
+                      token={tokenDO}
+                      user={{
+                        address: address,
+                        isOwner: isOwner,
+                        isLister: isLister,
+                        isUserOwner: isUserOwner
+                      }}
+                      offer={offerDO}
+                      referrer={{
+                        address: referralAddress
+                      }}
+                      currencyContract={tokenCurrencyAddress}
+                    />
+                  )}
+                </>
+              )}
             </div>
           </div>
         </div>
       </section>
 
+      {/* <!-- end item --> */}
+
+      {/* <ItemsTabs /> */}
+      <Accordion.Item value="adSubmission">
+        <div>
+          {isOwner && activated_features.canSeeSubmittedAds && isValidId ? (
+            <div className="container">
+              <Accordion.Header className="w-full">
+                <Accordion.Trigger
+                  className={`${accordionActiveTab === "adSubmission" && "bg-primaryPurple"} w-full flex items-center justify-center gap-4 mb-6 border border-primaryPurple hover:bg-primaryPurple cursor-pointer p-2 rounded-lg`}
+                >
+                  <h2 className="text-jacarta-900 font-bold font-display text-center text-3xl dark:text-white ">
+                    Ad Submission
+                  </h2>
+                  <ChevronDownIcon
+                    className={`w-6 h-6 duration-300 ${accordionActiveTab === "adSubmission" && "transform rotate-180"}`}
+                  />
+                </Accordion.Trigger>
+              </Accordion.Header>
+
+              <Accordion.Content className="mb-6">
+                {isTokenInAuction && (
+                  <div className="text-center w-full">
+                    <span className="dark:text-warning text-md ">
+                      ⚠️ You cannot submit an ad while your token is in auction
+                    </span>
+                  </div>
+                )}
+                {!isTokenInAuction && (
+                  <SliderForm
+                    styles={styles}
+                    handlePreviewModal={handlePreviewModal}
+                    stepsRef={stepsRef}
+                    numSteps={numSteps}
+                    currentSlide={currentSlide}
+                    setCurrentSlide={setCurrentSlide}
+                  >
+                    {currentSlide === 0 && (
+                      <Step1Mint
+                        stepsRef={stepsRef}
+                        styles={styles}
+                        adParameters={adParameters}
+                        setImageUrlVariants={setImageUrlVariants}
+                        currentSlide={currentSlide}
+                        numSteps={numSteps}
+                      />
+                    )}
+                    {currentSlide === 2 && (
+                      <Step2Mint
+                        stepsRef={stepsRef}
+                        styles={styles}
+                        setLink={setLink}
+                        link={link}
+                        currentSlide={currentSlide}
+                        numSteps={numSteps}
+                      />
+                    )}
+                    {currentSlide === 1 && (
+                      <>
+                        {imageURLSteps.map((id, index) => (
+                          <Step3Mint
+                            key={id}
+                            stepsRef={stepsRef}
+                            currentStep={index + 2}
+                            id={id}
+                            styles={styles}
+                            file={files[index]}
+                            previewImage={previewImages[index]}
+                            handleLogoUpload={(file) => handleLogoUpload(file, index)}
+                            currentSlide={currentSlide}
+                            numSteps={numSteps}
+                          />
+                        ))}
+                      </>
+                    )}
+                  </SliderForm>
+                )}
+              </Accordion.Content>
+            </div>
+          ) : (
+            <div className="flex justify-center">
+              <p>
+                {!isValidId
+                  ? "Sorry, tokenId unavailable, please provide a tokenId valid"
+                  : offerNotFormated
+                    ? ""
+                    : offerData.nftContract?.tokens === 0
+                      ? "Sorry, tokenId unavailable, please provide a tokenId valid "
+                      : ""}
+              </p>
+            </div>
+          )}
+        </div>
+      </Accordion.Item>
+
+      <Accordion.Item value="adValidation">
+        <div className="container">
+          {offerData.nftContract?.tokens?.find(
+            (token) => Number(token?.tokenId) === Number(tokenId)
+          )?.mint &&
+            isValidId &&
+            activated_features.canSeeSubmittedAds && (
+              <>
+                <Accordion.Header className="w-full">
+                  <Accordion.Trigger
+                    className={`${accordionActiveTab === "adValidation" && "bg-primaryPurple"} w-full flex items-center justify-center gap-4 mb-6 border border-primaryPurple hover:bg-primaryPurple cursor-pointer p-2 rounded-lg`}
+                  >
+                    {isOwner && sponsorHasAtLeastOneRejectedProposalAndNoPending && (
+                      <InfoIcon text="You have at least one rejected proposal and no pending proposal.">
+                        <ExclamationCircleIcon className="w-6 h-6 text-red" />
+                      </InfoIcon>
+                    )}
+                    {isMedia && mediaShouldValidateAnAd && (
+                      <InfoIcon text="You have at least one ad to validate or to refuse.">
+                        <ExclamationCircleIcon className="w-6 h-6 text-red" />
+                      </InfoIcon>
+                    )}
+                    <h2 className="text-jacarta-900 font-bold font-display text-center text-3xl dark:text-white ">
+                      Ad Validation
+                    </h2>
+                    <ChevronDownIcon
+                      className={`w-6 h-6 duration-300 ${accordionActiveTab === "adValidation" && "transform rotate-180"}`}
+                    />
+                  </Accordion.Trigger>
+                </Accordion.Header>
+
+                <Accordion.Content>
+                  <Validation
+                    offer={offerData}
+                    offerId={offerId}
+                    isOwner={isOwner}
+                    isToken={false}
+                    successFullUploadModal={successFullUploadModal}
+                    isLister={isLister}
+                    setSelectedItems={setSelectedItems}
+                    sponsorHasAtLeastOneRejectedProposalAndNoPending={
+                      sponsorHasAtLeastOneRejectedProposalAndNoPending
+                    }
+                    mediaShouldValidateAnAd={mediaShouldValidateAnAd}
+                    isMedia={isMedia}
+                    isSponsor={isOwner}
+                    itemTokenId={tokenId}
+                    isTokenView={true}
+                  />
+                </Accordion.Content>
+              </>
+            )}
+        </div>
+      </Accordion.Item>
+
+      {sales && sales.length > 0 && (
+        <Accordion.Item value="latestSales">
+          <div className="container">
+            <Accordion.Header className="w-full">
+              <Accordion.Trigger
+                className={`${accordionActiveTab === "latestSales" && "bg-primaryPurple"} w-full flex items-center justify-center gap-4 mb-6 border border-primaryPurple hover:bg-primaryPurple cursor-pointer p-2 rounded-lg`}
+              >
+                <h2 className="text-jacarta-900 font-bold font-display text-center text-3xl dark:text-white ">
+                  Latest Sales
+                </h2>
+                <ChevronDownIcon
+                  className={`w-6 h-6 duration-300 ${accordionActiveTab === "latestSales" && "transform rotate-180"}`}
+                />
+              </Accordion.Trigger>
+            </Accordion.Header>
+
+            <Accordion.Content className="mb-4">
+              <ItemLastestSales sales={sales} />
+            </Accordion.Content>
+          </div>
+        </Accordion.Item>
+      )}
+
       {bids &&
         bids.filter((listing) =>
           listing.map((bid) => {
-            bid.listing.listingType === "Auction";
+            bid?.listing?.listingType === "Auction";
           })
         ).length > 0 && (
-          <div className="container mb-12">
-            <Divider className="my-4" />
-            <ItemLastBids bids={bids} />
-          </div>
+          <Accordion.Item value="latestBids">
+            <div className="container">
+              <Accordion.Header className="w-full">
+                <Accordion.Trigger
+                  className={`${accordionActiveTab === "latestBids" && "bg-primaryPurple"} w-full flex items-center justify-center gap-4 mb-6 border border-primaryPurple hover:bg-primaryPurple cursor-pointer p-2 rounded-lg`}
+                >
+                  <h2 className="text-jacarta-900 font-bold font-display text-center text-3xl dark:text-white ">
+                    Latest Bids
+                  </h2>
+                  <ChevronDownIcon
+                    className={`w-6 h-6 duration-300 ${accordionActiveTab === "latestBids" && "transform rotate-180"}`}
+                  />
+                </Accordion.Trigger>
+              </Accordion.Header>
+
+              <Accordion.Content className="mb-4">
+                <ItemLastBids bids={bids} />
+              </Accordion.Content>
+            </div>
+          </Accordion.Item>
         )}
 
-      {/* <!-- end item --> */}
-      <div className="container mb-12">
-        <Divider className="my-4" />
-        <h2 className="text-jacarta-900 font-bold font-display mb-6 text-center text-3xl dark:text-white ">
-          Details{" "}
-        </h2>
-        <ItemsTabs
-          chainId={chainId}
-          contractAddress={offerData?.nftContract?.id}
-          offerId={offerId}
-          isUserOwner={isUserOwner}
-          initialCreator={offerData?.initialCreator}
-          status={firstSelectedListing?.status}
-          listerAddress={firstSelectedListing?.lister}
-          offerData={offerData}
-        />
-      </div>
-      {offerData.nftContract?.tokens[0]?.mint &&
-        isValidId &&
-        activated_features.canSeeSubmittedAds && (
-          <Validation
-            offer={offerData}
-            offerId={offerId}
-            isOwner={isOwner}
-            isToken={true}
-            successFullUploadModal={successFullUploadModal}
-            isLister={isLister}
-            setSelectedItems={setSelectedItems}
-          />
-        )}
-      {/* <ItemsTabs /> */}
-      <div>
-        {isOwner && activated_features.canSeeSubmittedAds && isValidId ? (
-          <div className="container">
-            <Divider className="my-4" />
-            <h2 className="text-jacarta-900 font-bold font-display mb-6 text-center text-3xl dark:text-white ">
-              Submission{" "}
-            </h2>
-            {isTokenInAuction && (
-              <div className="text-center w-full">
-                <span className="dark:text-warning text-md ">
-                  ⚠️ You cannot submit an ad while your token is in auction
-                </span>
-              </div>
-            )}
-            {!isTokenInAuction && (
-              <SliderForm
-                styles={styles}
-                handlePreviewModal={handlePreviewModal}
-                stepsRef={stepsRef}
-                numSteps={numSteps}
-              >
-                <Step1Mint
-                  stepsRef={stepsRef}
-                  styles={styles}
-                  adParameters={adParameters}
-                  setImageUrlVariants={setImageUrlVariants}
-                />
-                <Step2Mint stepsRef={stepsRef} styles={styles} setLink={setLink} link={link} />
-                {imageURLSteps.map((id, index) => (
-                  <Step3Mint
-                    key={id}
-                    stepsRef={stepsRef}
-                    currentStep={index + 2}
-                    id={id}
-                    styles={styles}
-                    file={files[index]}
-                    previewImage={previewImages[index]}
-                    handleLogoUpload={(file) => handleLogoUpload(file, index)}
-                  />
-                ))}
-              </SliderForm>
-            )}
-          </div>
-        ) : (
-          <div className="flex justify-center">
-            <p>
-              {!isValidId
-                ? "Sorry, tokenId unavailable, please provide a tokenId valid"
-                : offerNotFormated
-                  ? ""
-                  : offerData.nftContract?.tokens === 0
-                    ? "Sorry, tokenId unavailable, please provide a tokenId valid "
-                    : ""}
-            </p>
-          </div>
-        )}
-      </div>
+      <Accordion.Item value="details">
+        <div className="container">
+          <Accordion.Header className="w-full">
+            <Accordion.Trigger
+              className={`${accordionActiveTab === "details" && "bg-primaryPurple"} w-full flex items-center justify-center gap-4 mb-6 border border-primaryPurple hover:bg-primaryPurple cursor-pointer p-2 rounded-lg`}
+            >
+              <h2 className="text-jacarta-900 font-bold font-display text-center text-3xl dark:text-white ">
+                Details
+              </h2>
+              <ChevronDownIcon
+                className={`w-6 h-6 duration-300 ${accordionActiveTab === "details" && "transform rotate-180"}`}
+              />
+            </Accordion.Trigger>
+          </Accordion.Header>
+
+          <Accordion.Content className="mb-12">
+            <ItemsTabs
+              chainId={chainId}
+              contractAddress={offerData?.nftContract?.id}
+              offerId={offerId}
+              isUserOwner={isUserOwner}
+              initialCreator={offerData?.initialCreator}
+              status={firstSelectedListing?.status}
+              listerAddress={firstSelectedListing?.lister}
+              offerData={offerData}
+            />
+          </Accordion.Content>
+        </div>
+      </Accordion.Item>
 
       {showPreviewModal && (
         <div className="modal fade show bloc">
@@ -1366,6 +2319,7 @@ const TokenPageContainer = () => {
             modalTitle="Ad Space Preview"
             successFullUploadModal={successFullUploadModal}
             isLoadingButton={isLoadingButton}
+            adSubmission={true}
           />
         </div>
       )}
@@ -1403,6 +2357,7 @@ const TokenPageContainer = () => {
             setCanPayWithNativeToken={setCanPayWithNativeToken}
             token={tokenDO}
             buyTokenEtherPrice={buyTokenEtherPrice}
+            totalPrice={totalPrice}
             user={{
               address: address,
               isOwner: isOwner,
@@ -1419,7 +2374,7 @@ const TokenPageContainer = () => {
           />
         </div>
       )}
-    </>
+    </Accordion.Root>
   );
 };
 

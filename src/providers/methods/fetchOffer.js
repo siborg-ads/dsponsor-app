@@ -1,4 +1,5 @@
 import { executeQuery } from "../utils/executeQuery";
+import config from "../../config/config";
 
 export const fetchOffer = async (offerId, chainId) => {
   const path = new URL(`https://relayer.dsponsor.com/api/${chainId}/graph`);
@@ -15,8 +16,12 @@ export const fetchOffer = async (offerId, chainId) => {
         # DESCRIPTION = offerMetadata.offer.token_metadata.description || offerMetadata.offer.description || "(Invalid description)"
         # IMAGE = offerMetadata.offer.token_metadata.image || offerMetadata.offer.image || defaultImage (ex: d>sponsor logo)
         metadataURL
-
+        validators
+        disable
+        id
+        name
         initialCreator # from which address the offer has been created
+        admins # list of admins
         creationTimestamp # data (unix time)
         adParameters(where: { enable: true }) {
           enable
@@ -41,32 +46,132 @@ export const fetchOffer = async (offerId, chainId) => {
             enabled
           }
 
-          # to replace by $tokenId
+          owner {
+            newOwner
+          }
+
+         
+
           tokens(first: 1000) {
             tokenId
+            marketplaceListings {
+              listingType
+              status
+              startTime
+              endTime
+              lister
+              id
+              reservePricePerToken
+              buyoutPricePerToken
+              currency
+              quantity
+              directBuys {
+                id
+                listing {
+                  id
+                  listingType
+                }
+                buyer
+                quantityBought
+                totalPricePaid
+                revenueTransaction {
+                  blockTimestamp
+                }
+                feeMethodology
+                amountSentToProtocol
+                protocolRecipient
+                amountSentToSeller
+                sellerRecipient
+                amountSentToCreator
+                creatorRecipient
+              }
+              token {
+                tokenId
+                id
+                nftContract {
+                  id
+                  royalty {
+                    bps
+                  }
+                  adOffers {
+                    id
+                    metadataURL
+                    disable
+                  }
+                }
+                mint {
+                  tokenData
+                }
+              }
+              bids {
+                id
+                listing
+                bidder
+                quantity
+                newPricePerToken
+                totalBidAmount
+                paidBidAmount
+                refundBonus
+                refundAmount
+                refundProfit
+                currency
+                status
+                creationTxHash
+                revenueTransaction
+                creationTimestamp
+                lastUpdateTimestamp
+                feeMethodology
+                amountSentToProtocol
+                protocolRecipient
+                amountSentToSeller
+                sellerRecipient
+                amountSentToCreator
+                creatorRecipient
+              }
+            }
             mint {
               transactionHash # if = null => not minted yet, so it's available
               to # address who receives the token
               tokenData # data linked to token id, search ticker for SiBorg ad offer for example
+              currency
+              id
+              amount
+            }
+            nftContract {
+              id
+              prices {
+                amount
+              }
             }
             setInAllowList # to check is allowList (above) is true, define if is in allowlist
             # current ad data proposals, per adParameter
             currentProposals {
+              adOffer {
+                id
+              }
               adParameter {
                 id
                 base
                 variants
               }
               acceptedProposal {
+                id
+                status
                 data
+                creationTimestamp
               }
               pendingProposal {
                 id
+                status
                 data
+                creationTimestamp
               }
               rejectedProposal {
+                id
+                status
                 data
                 rejectReason
+                creationTimestamp
               }
             }
 
@@ -89,5 +194,34 @@ export const fetchOffer = async (offerId, chainId) => {
 
   const response = await executeQuery(path.href, GET_DATA, { offerId: offerId });
 
-  return response?.adOffers[0];
+  const chainConfig = config[chainId];
+
+  const resultMappedData = response?.adOffers?.map((offer) => {
+    const combinedData = {
+      ...offer,
+      chainConfig: chainConfig
+    };
+
+    return combinedData;
+  })[0];
+
+  // add chain config for each tokens
+  const finalTokens = resultMappedData?.nftContract?.tokens?.map((token) => {
+    const combinedData = {
+      ...token,
+      chainConfig: chainConfig
+    };
+
+    return combinedData;
+  });
+
+  const finalData = {
+    ...resultMappedData,
+    nftContract: {
+      ...resultMappedData?.nftContract,
+      tokens: finalTokens
+    }
+  };
+
+  return finalData;
 };

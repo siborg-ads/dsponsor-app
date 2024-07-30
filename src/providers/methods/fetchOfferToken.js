@@ -15,6 +15,7 @@ export const fetchOfferToken = async (offerId, tokenId, chainId) => {
         # DESCRIPTION = offerMetadata.offer.token_metadata.description || offerMetadata.offer.description || "(Invalid description)"
         # IMAGE = offerMetadata.offer.token_metadata.image || offerMetadata.offer.image || defaultImage (ex: d>sponsor logo)
         metadataURL
+        name
 
         initialCreator # from which address the offer has been created
         creationTimestamp # data (unix time)
@@ -35,7 +36,7 @@ export const fetchOfferToken = async (offerId, tokenId, chainId) => {
             bps
           } # creator royalties (690 = 6.90%)
           # default mint price
-          prices(where: { enabled: true }) {
+          prices {
             currency # ERC20 smart contract
             amount # wei, mind decimals() function to transform in human readable value !
             enabled
@@ -139,6 +140,9 @@ export const fetchOfferToken = async (offerId, tokenId, chainId) => {
             setInAllowList # to check is allowList (above) is true, define if is in allowlist
             # current ad data proposals, per adParameter
             currentProposals {
+              adOffer {
+                id
+              }
               adParameter {
                 id
                 base
@@ -146,16 +150,22 @@ export const fetchOfferToken = async (offerId, tokenId, chainId) => {
               }
               acceptedProposal {
                 id
+                status
                 data
+                creationTimestamp
               }
               pendingProposal {
                 id
+                status
                 data
+                creationTimestamp
               }
               rejectedProposal {
                 id
+                status
                 data
                 rejectReason
+                creationTimestamp
               }
             }
 

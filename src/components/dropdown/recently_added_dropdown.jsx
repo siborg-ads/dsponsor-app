@@ -9,10 +9,11 @@ import {
 } from "../../redux/counterSlice";
 import { useDispatch } from "react-redux";
 import Image from "next/image";
+import Input from "../ui/input";
 
 const Recently_added_dropdown = ({ data, dropdownFor }) => {
   const dispatch = useDispatch();
-  const [currencyValFrom, setCurrencyValFrom] = useState("");
+  const [currencyValFrom] = useState("");
   const [currencyValTo, setCurrencyValTo] = useState("");
   const [sortActive, setSortActive] = useState(1);
   const [sortFilterText, setSortFilterText] = useState("");
@@ -135,14 +136,6 @@ const Recently_added_dropdown = ({ data, dropdownFor }) => {
       setCurrencyValTo(value);
     }
   };
-  const handleCurrencyValFrom = (e) => {
-    const value = e.target.value;
-    if (value < 0) {
-      setCurrencyValFrom(0);
-    } else {
-      setCurrencyValFrom(value);
-    }
-  };
 
   if (dropdownFor === "recently_added") {
     return (
@@ -169,7 +162,7 @@ const Recently_added_dropdown = ({ data, dropdownFor }) => {
                   return (
                     <button
                       key={id}
-                      className="dropdown-item font-display text-jacarta-900 dark:hover:bg-jacarta-600 hover:bg-jacarta-50 flex w-full items-center justify-between rounded-xl px-5 py-2 text-left text-sm transition-colors dark:text-white"
+                      className="dropdown-item font-display text-jacarta-900 dark:hover:bg-jacarta-800 hover:bg-jacarta-50 flex w-full items-center justify-between rounded-xl px-5 py-2 text-left text-sm transition-colors dark:text-white"
                       onClick={() => {
                         setSortActive(id);
 
@@ -200,11 +193,11 @@ const Recently_added_dropdown = ({ data, dropdownFor }) => {
                   return (
                     <div
                       key={id}
-                      className="dropdown-item font-display dark:hover:bg-jacarta-600 hover:bg-jacarta-50 block w-full rounded-xl px-5 py-2 text-left text-sm transition-colors dark:text-white"
+                      className="dropdown-item font-display dark:hover:bg-jacarta-800 hover:bg-jacarta-50 block w-full rounded-xl px-5 py-2 text-left text-sm transition-colors dark:text-white"
                     >
                       <span className="flex items-center justify-between">
                         <span>{text}</span>
-                        <input
+                        <Input
                           type="checkbox"
                           name="check"
                           className="checked:bg-primaryPurple checked:focus:bg-primaryPurple checked:hover:bg-primaryPurple after:bg-jacarta-400 bg-jacarta-100 relative h-4 w-7 cursor-pointer appearance-none rounded-lg border-none shadow-none after:absolute after:top-0.5 after:left-0.5 after:h-3 after:w-3 after:rounded-full after:transition-all checked:bg-none checked:after:left-3.5 checked:after:bg-white focus:ring-transparent focus:ring-offset-0"
@@ -217,7 +210,7 @@ const Recently_added_dropdown = ({ data, dropdownFor }) => {
               </div>
             }
           >
-            <div className="dark:bg-secondaryBlack dropdown-toggle border-jacarta-100 dark:border-jacarta-600 inline-flex w-48 items-center justify-between rounded-lg border bg-white py-2 px-3 text-sm dark:text-white">
+            <div className="dark:bg-secondaryBlack dropdown-toggle border-jacarta-100 dark:border-jacarta-800 inline-flex w-48 items-center justify-between rounded-lg border bg-white py-2 px-3 text-sm dark:text-white">
               <span className="font-display">Trending</span>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -238,7 +231,7 @@ const Recently_added_dropdown = ({ data, dropdownFor }) => {
     return (
       <div className="my-1 mr-2.5 relative">
         <button
-          className="group dropdown-toggle blockchainDropdown dark:border-jacarta-600 dark:bg-secondaryBlack group dark:hover:bg-primaryPurple hover:bg-primaryPurple border-jacarta-100 font-display text-jacarta-900 flex h-9 items-center rounded-lg border bg-white px-4 text-sm font-semibold transition-colors hover:border-transparent hover:text-white dark:text-white"
+          className="group dropdown-toggle blockchainDropdown dark:border-jacarta-800 dark:bg-secondaryBlack group dark:hover:bg-primaryPurple hover:bg-primaryPurple border-jacarta-100 font-display text-jacarta-900 flex h-9 items-center rounded-lg border bg-white px-4 text-sm font-semibold transition-colors hover:border-transparent hover:text-white dark:text-white"
           onClick={handleBlockChainDropdown}
         >
           <svg
@@ -266,7 +259,7 @@ const Recently_added_dropdown = ({ data, dropdownFor }) => {
               return (
                 <li key={id} onClick={() => setSortActive(id)}>
                   <button
-                    className="dropdown-item font-display dark:hover:bg-jacarta-600 hover:bg-jacarta-50 flex w-full items-center justify-between rounded-xl px-5 py-2 text-left text-sm transition-colors dark:text-white"
+                    className="dropdown-item font-display dark:hover:bg-jacarta-800 hover:bg-jacarta-50 flex w-full items-center justify-between rounded-xl px-5 py-2 text-left text-sm transition-colors dark:text-white"
                     onClick={() => dispatch(updateRenkingDataByBlockchain(text))}
                   >
                     <span className="text-jacarta-900 dark:text-white">{text}</span>
@@ -294,7 +287,7 @@ const Recently_added_dropdown = ({ data, dropdownFor }) => {
     return (
       <div className="my-1 mr-2.5 relative">
         <button
-          className="group dropdown-toggle category-dropdown dark:border-jacarta-600 dark:bg-secondaryBlack dark:hover:bg-primaryPurple hover:bg-primaryPurple border-jacarta-100 font-display text-jacarta-900 flex h-9 items-center rounded-lg border bg-white px-4 text-sm font-semibold transition-colors hover:border-transparent hover:text-white dark:text-white"
+          className="group dropdown-toggle category-dropdown dark:border-jacarta-800 dark:bg-secondaryBlack dark:hover:bg-primaryPurple hover:bg-primaryPurple border-jacarta-100 font-display text-jacarta-900 flex h-9 items-center rounded-lg border bg-white px-4 text-sm font-semibold transition-colors hover:border-transparent hover:text-white dark:text-white"
           onClick={handleCategoryDropdown}
         >
           <svg
@@ -321,7 +314,7 @@ const Recently_added_dropdown = ({ data, dropdownFor }) => {
             {data.map(({ id, text }) => {
               return (
                 <li key={id} onClick={() => setSortActive(id)}>
-                  <button className="dropdown-item font-display dark:hover:bg-jacarta-600 hover:bg-jacarta-50 flex w-full items-center justify-between rounded-xl px-5 py-2 text-left text-sm transition-colors dark:text-white">
+                  <button className="dropdown-item font-display dark:hover:bg-jacarta-800 hover:bg-jacarta-50 flex w-full items-center justify-between rounded-xl px-5 py-2 text-left text-sm transition-colors dark:text-white">
                     <span className="text-jacarta-900 dark:text-white">{text}</span>
                     {sortActive === id && (
                       <svg
@@ -347,7 +340,7 @@ const Recently_added_dropdown = ({ data, dropdownFor }) => {
     return (
       <div className="my-1 mr-2.5 relative">
         <button
-          className="group dropdown-toggle rankingCategoriesDropdown dark:border-jacarta-600 dark:bg-secondaryBlack dark:hover:bg-primaryPurple hover:bg-primaryPurple border-jacarta-100 font-display text-jacarta-900 flex h-9 items-center rounded-lg border bg-white px-4 text-sm font-semibold transition-colors hover:border-transparent hover:text-white dark:text-white"
+          className="group dropdown-toggle rankingCategoriesDropdown dark:border-jacarta-800 dark:bg-secondaryBlack dark:hover:bg-primaryPurple hover:bg-primaryPurple border-jacarta-100 font-display text-jacarta-900 flex h-9 items-center rounded-lg border bg-white px-4 text-sm font-semibold transition-colors hover:border-transparent hover:text-white dark:text-white"
           onClick={handleRenkingCategoriesDropdown}
         >
           <svg
@@ -375,7 +368,7 @@ const Recently_added_dropdown = ({ data, dropdownFor }) => {
               return (
                 <li key={id} onClick={() => setSortActive(id)}>
                   <button
-                    className="dropdown-item font-display dark:hover:bg-jacarta-600 hover:bg-jacarta-50 flex w-full items-center justify-between rounded-xl px-5 py-2 text-left text-sm transition-colors dark:text-white"
+                    className="dropdown-item font-display dark:hover:bg-jacarta-800 hover:bg-jacarta-50 flex w-full items-center justify-between rounded-xl px-5 py-2 text-left text-sm transition-colors dark:text-white"
                     onClick={() => dispatch(updateRenkingData(text))}
                   >
                     <span className="text-jacarta-900 dark:text-white">{text}</span>
@@ -403,7 +396,7 @@ const Recently_added_dropdown = ({ data, dropdownFor }) => {
     return (
       <div className="my-1 mr-2.5 relative">
         <button
-          className="group dropdown-toggle dropdown-sale dark:border-jacarta-600 dark:bg-secondaryBlack group dark:hover:bg-primaryPurple hover:bg-primaryPurple border-jacarta-100 font-display text-jacarta-900 flex h-9 items-center rounded-lg border bg-white px-4 text-sm font-semibold transition-colors hover:border-transparent hover:text-white dark:text-white"
+          className="group dropdown-toggle dropdown-sale dark:border-jacarta-800 dark:bg-secondaryBlack group dark:hover:bg-primaryPurple hover:bg-primaryPurple border-jacarta-100 font-display text-jacarta-900 flex h-9 items-center rounded-lg border bg-white px-4 text-sm font-semibold transition-colors hover:border-transparent hover:text-white dark:text-white"
           onClick={handleSaleDropdown}
         >
           <svg
@@ -431,7 +424,7 @@ const Recently_added_dropdown = ({ data, dropdownFor }) => {
               return (
                 <li key={id}>
                   <button
-                    className="dropdown-item font-display dark:hover:bg-jacarta-600 hover:bg-jacarta-50 flex w-full items-center justify-between rounded-xl px-5 py-2 text-left text-sm transition-colors dark:text-white"
+                    className="dropdown-item font-display dark:hover:bg-jacarta-800 hover:bg-jacarta-50 flex w-full items-center justify-between rounded-xl px-5 py-2 text-left text-sm transition-colors dark:text-white"
                     onClick={() => setSortActive(id)}
                   >
                     <span className="text-jacarta-900 dark:text-white">{text}</span>
@@ -453,7 +446,7 @@ const Recently_added_dropdown = ({ data, dropdownFor }) => {
             })}
           </ul>
 
-          <div className="dark:border-jacarta-600 border-jacarta-100 -ml-2 -mr-2 mt-4 flex items-center justify-center space-x-3 border-t px-7 pt-4">
+          <div className="dark:border-jacarta-800 border-jacarta-100 -ml-2 -mr-2 mt-4 flex items-center justify-center space-x-3 border-t px-7 pt-4">
             <button
               type="button"
               className="text-primaryPurple shadow-white-volume hover:bg-primaryPurple-dark hover:shadow-primaryPurple-volume flex-1 rounded-full bg-white py-2 px-6 text-center text-sm font-semibold transition-all hover:text-white"
@@ -520,7 +513,7 @@ const Recently_added_dropdown = ({ data, dropdownFor }) => {
               {/* <!-- Blockchain --> */}
               <div className="dropdown mb-4 cursor-pointer px-5 pt-2 relative">
                 <button
-                  className="currency-dropdown dark:bg-secondaryBlack dropdown-toggle border-jacarta-100 dark:border-jacarta-600 flex items-center justify-between rounded-lg border py-3.5 px-3 text-sm dark:text-white w-full"
+                  className="currency-dropdown dark:bg-secondaryBlack dropdown-toggle border-jacarta-100 dark:border-jacarta-800 flex items-center justify-between rounded-lg border py-3.5 px-3 text-sm dark:text-white w-full"
                   onClick={handleCurrencyDropdown}
                 >
                   <span className="font-display flex items-center">
@@ -556,7 +549,7 @@ const Recently_added_dropdown = ({ data, dropdownFor }) => {
                     return (
                       <button
                         key={id}
-                        className="dropdown-item font-display text-jacarta-900 dark:hover:bg-jacarta-600 hover:bg-jacarta-50 flex w-full items-center justify-between rounded-xl px-5 py-2 text-left text-sm transition-colors dark:text-white"
+                        className="dropdown-item font-display text-jacarta-900 dark:hover:bg-jacarta-800 hover:bg-jacarta-50 flex w-full items-center justify-between rounded-xl px-5 py-2 text-left text-sm transition-colors dark:text-white"
                         onClick={() => setCurrencyDropdown(false)}
                       >
                         <span className="flex items-center">
@@ -577,15 +570,15 @@ const Recently_added_dropdown = ({ data, dropdownFor }) => {
 
               {/* <!-- From / To --> */}
               <div className="flex items-center space-x-3 px-5 pb-2">
-                <input
+                <Input
                   type="number"
                   onWheel={(e) => e.target.blur()}
                   placeholder="From"
                   value={currencyValFrom}
-                  onChange={(e) => handleCurrencyValFrom(e)}
+                  onChange={(e) => handleCurrencyValTo(e)}
                   className="text-jacarta-900 placeholder-jacarta-500 focus:ring-primaryPurple border-jacarta-100 w-full max-w-[7.5rem] rounded-lg border py-[0.6875rem] px-4 dark:border-transparent dark:bg-white/[.15] dark:text-white dark:placeholder-white"
                 />
-                <input
+                <Input
                   type="number"
                   onWheel={(e) => e.target.blur()}
                   placeholder="To"
@@ -595,7 +588,7 @@ const Recently_added_dropdown = ({ data, dropdownFor }) => {
                 />
               </div>
 
-              <div className="dark:border-jacarta-600 border-jacarta-100 -ml-2 -mr-2 mt-4 flex items-center justify-center space-x-3 border-t px-7 pt-4">
+              <div className="dark:border-jacarta-800 border-jacarta-100 -ml-2 -mr-2 mt-4 flex items-center justify-center space-x-3 border-t px-7 pt-4">
                 <button
                   type="button"
                   className="text-primaryPurple shadow-white-volume hover:bg-primaryPurple-dark hover:shadow-primaryPurple-volume flex-1 rounded-full bg-white py-2 px-6 text-center text-sm font-semibold transition-all hover:text-white"
@@ -613,7 +606,7 @@ const Recently_added_dropdown = ({ data, dropdownFor }) => {
           }
         >
           <button
-            className="group dropdown-toggle dark:border-jacarta-600 dark:bg-secondaryBlack group dark:hover:bg-primaryPurple hover:bg-primaryPurple border-jacarta-100 font-display text-jacarta-900 flex h-9 items-center rounded-lg border bg-white px-4 text-sm font-semibold transition-colors hover:border-transparent hover:text-white dark:text-white"
+            className="group dropdown-toggle dark:border-jacarta-800 dark:bg-secondaryBlack group dark:hover:bg-primaryPurple hover:bg-primaryPurple border-jacarta-100 font-display text-jacarta-900 flex h-9 items-center rounded-lg border bg-white px-4 text-sm font-semibold transition-colors hover:border-transparent hover:text-white dark:text-white"
             id="priceRangeFilter"
             data-bs-toggle="dropdown"
             data-bs-auto-close="outside"
@@ -638,7 +631,7 @@ const Recently_added_dropdown = ({ data, dropdownFor }) => {
     return (
       <div className="dropdown relative my-1 cursor-pointer">
         <button
-          className="dark:bg-secondaryBlack itemDateDropdown dropdown-toggle border-jacarta-100 dark:border-jacarta-600 inline-flex w-48 items-center justify-between rounded-lg border bg-white py-2 px-3 text-sm dark:text-white"
+          className="dark:bg-secondaryBlack itemDateDropdown dropdown-toggle border-jacarta-100 dark:border-jacarta-800 inline-flex w-48 items-center justify-between rounded-lg border bg-white py-2 px-3 text-sm dark:text-white"
           onClick={handleItemDateDropdown}
         >
           <span className="font-display">Last 7 Days</span>
@@ -669,7 +662,7 @@ const Recently_added_dropdown = ({ data, dropdownFor }) => {
                   setSortActive(id);
                   dispatch(updateRenkingDataByPostdate(text));
                 }}
-                className="dropdown-item font-display text-jacarta-900 dark:hover:bg-jacarta-600 hover:bg-jacarta-50 flex w-full items-center justify-between rounded-xl px-5 py-2 text-left text-sm transition-colors dark:text-white"
+                className="dropdown-item font-display text-jacarta-900 dark:hover:bg-jacarta-800 hover:bg-jacarta-50 flex w-full items-center justify-between rounded-xl px-5 py-2 text-left text-sm transition-colors dark:text-white"
               >
                 {text}
                 {sortActive === id && (

@@ -132,7 +132,6 @@ export default function BidWithCrossmintButton(props = {}) {
               actions?.error?.(event);
               break;
             default:
-              console.log(event);
               break;
           }
         }}

@@ -1,14 +1,14 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Web3Button } from "@thirdweb-dev/react";
+import { shortenAddress, Web3Button } from "@thirdweb-dev/react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Spinner } from "@nextui-org/spinner";
 import ModalHelper from "../Helper/modalHelper";
 import { useChainContext } from "../../contexts/hooks/useChainContext";
-import { Popover, PopoverButton, PopoverPanel } from "@headlessui/react";
 import { InformationCircleIcon } from "@heroicons/react/20/solid";
+import InfoIcon from "../informations/infoIcon";
 
 const PreviewModal = ({
   approvalForAllToken = true,
@@ -41,10 +41,14 @@ const PreviewModal = ({
   buttonTitle,
   modalTitle,
   successFullUploadModal,
-
-  isLoadingButton
+  address,
+  adSubmission,
+  isLoadingButton,
+  multipleAdsSubmission
 }) => {
-  const [isHovered, setIsHovered] = React.useState(false);
+  const [imageRatios, setImageRatios] = React.useState([]);
+  const [isLoadingApproveButton, setIsLoadingApproveButton] = React.useState(false);
+  const [isLoadingSubmitButton, setIsLoadingSubmitButton] = React.useState(false);
 
   const { currentChainObject } = useChainContext();
   const formatDate = (date) => {
@@ -58,31 +62,242 @@ const PreviewModal = ({
       hour12: true
     });
   };
-  const imageRatioDisplay = (id) => {
-    const ratios = imageUrlVariants[id].split(":");
-    const stepWidth = 250;
-    let width = Number(ratios[0]);
-    let height = Number(ratios[1]);
-    const ratioArray = [];
-    if (ratios.length !== 2) {
-      ratioArray.push(stepWidth);
-      ratioArray.push(stepWidth);
-    }
-    if (width / height > 1) {
-      ratioArray.push(stepWidth);
-      ratioArray.push(stepWidth * (height / width));
-    } else {
-      ratioArray.push(stepWidth * (width / height));
-      ratioArray.push(stepWidth);
-    }
 
-    return ratioArray;
-  };
+  const imageRatioDisplay = React.useCallback(
+    (id) => {
+      if (!imageUrlVariants[id]) return [];
+
+      const ratios = imageUrlVariants[id].split(":");
+      const stepWidth = 250;
+      let width = Number(ratios[0]);
+      let height = Number(ratios[1]);
+      const ratioArray = [];
+      if (ratios.length !== 2) {
+        ratioArray.push(stepWidth);
+        ratioArray.push(stepWidth);
+      }
+      if (width / height > 1) {
+        ratioArray.push(stepWidth);
+        ratioArray.push(stepWidth * (height / width));
+      } else {
+        ratioArray.push(stepWidth * (width / height));
+        ratioArray.push(stepWidth);
+      }
+
+      return ratioArray;
+    },
+    [imageUrlVariants]
+  );
+
+  useEffect(() => {
+    if (imageUrlVariants.length > 0) {
+      let imageRatios = [];
+
+      imageUrlVariants.forEach((image, index) => {
+        if (index < previewImage.length) {
+          const preSplit = image.split("-");
+
+          const imageRatio =
+            preSplit.length === 2 ? preSplit[1].split(":") : preSplit[0].split(":");
+
+          if (imageRatio.length === 2) {
+            imageRatios.push(imageRatio);
+          } else {
+            imageRatios.push([imageRatio[0], imageRatio[0]]);
+          }
+        }
+      });
+
+      setImageRatios(imageRatios);
+    }
+  }, [imageRatioDisplay, imageUrlVariants, previewImage]);
+
+  if (adSubmission && !successFullUpload) {
+    return (
+      <div className="modal-dialog max-h-[75vh] max-w-2xl">
+        <div className="modal-content !bg-secondaryBlack">
+          <div className="modal-header">
+            <div className="flex items-center justify-between w-full space-x-4">
+              <h5 className="modal-title" id="placeBidLabel">
+                Preview your ad submission
+              </h5>
+              <button
+                type="button"
+                className="btn-close-preview"
+                onClick={() => handlePreviewModal()}
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  width="24"
+                  height="24"
+                  className="fill-jacarta-700 h-6 w-6 dark:fill-white"
+                >
+                  <path fill="none" d="M0 0h24v24H0z"></path>
+                  <path d="M12 10.586l4.95-4.95 1.414 1.414-4.95 4.95 4.95 4.95-1.414 1.414-4.95-4.95-4.95 4.95-1.414-1.414 4.95-4.95-4.95-4.95L7.05 5.636z"></path>
+                </svg>
+              </button>
+            </div>
+          </div>
+          <div className="modal-body p-6 flex gap-4">
+            <div className="flex flex-wrap gap-4 md:flex-row flex-col w-full">
+              <div className="flex items-center justify-between gap-2 w-full">
+                <span className="block dark:text-jacarta-100">Link </span>
+                <span className="dark:text-white font-semibold text-white">
+                  {link ?? "No link provided"}
+                </span>
+              </div>
+
+              <div className="flex flex-col gap-2 w-full">
+                <div className="flex items-center gap-2">
+                  <span className="block dark:text-jacarta-100">
+                    Image ({imageRatios[0] ? `${imageRatios[0][0]}:${imageRatios[0][1]}` : "N/A"})
+                  </span>
+                </div>
+                <div className="flex flex-col justify-center items-center gap-2 border border-dashed bg-jacarta-100 bg-opacity-10">
+                  <Image
+                    src={previewImage[0]}
+                    width={1600}
+                    height={380}
+                    className="w-full h-auto"
+                    alt="Preview image"
+                    style={{
+                      objectFit: "contain",
+                      objectPosition: "center",
+                      aspectRatio:
+                        `${imageRatios[0] ? imageRatios[0][0] : 1}/${imageRatios[0] ? imageRatios[0][1] : 1}` ??
+                        "1/1"
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* submit ad button */}
+          <div className="modal-footer">
+            <div className="flex items-center justify-center space-x-4">
+              <Web3Button
+                contractAddress={currentChainObject?.smartContracts?.DSPONSORADMIN?.address}
+                action={async () => {
+                  setIsLoadingSubmitButton(true);
+
+                  await toast.promise(handleSubmit(true), {
+                    pending: "Waiting for confirmation 🕒",
+                    success: "Transaction confirmed 👌",
+                    error: "Transaction rejected 🤯"
+                  });
+
+                  setIsLoadingSubmitButton(false);
+                }}
+                className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate || isLoadingSubmitButton ? "!btn-disabled !cursor-not-allowed !text-black" : "!bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer"} `}
+                isDisabled={!validate || isLoadingSubmitButton}
+              >
+                {isLoadingSubmitButton ? <Spinner size="sm" color="default" /> : buttonTitle}
+              </Web3Button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (multipleAdsSubmission && !successFullUpload) {
+    return (
+      <div className="modal-dialog max-h-[75vh] max-w-2xl">
+        <div className="modal-content !bg-secondaryBlack">
+          <div className="modal-header">
+            <div className="flex items-center justify-between w-full space-x-4">
+              <h5 className="modal-title" id="placeBidLabel">
+                Preview your multiple tokens ad submission
+              </h5>
+              <button
+                type="button"
+                className="btn-close-preview"
+                onClick={() => handlePreviewModal()}
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  width="24"
+                  height="24"
+                  className="fill-jacarta-700 h-6 w-6 dark:fill-white"
+                >
+                  <path fill="none" d="M0 0h24v24H0z"></path>
+                  <path d="M12 10.586l4.95-4.95 1.414 1.414-4.95 4.95 4.95 4.95-1.414 1.414-4.95-4.95-4.95 4.95-1.414-1.414 4.95-4.95-4.95-4.95L7.05 5.636z"></path>
+                </svg>
+              </button>
+            </div>
+          </div>
+          <div className="modal-body p-6 flex gap-4">
+            <div className="flex flex-wrap gap-4 md:flex-row flex-col w-full">
+              <div className="flex items-center justify-between gap-2 w-full">
+                <span className="block dark:text-jacarta-100">Link </span>
+                <span className="dark:text-white font-semibold text-white">
+                  {link ?? "No link provided"}
+                </span>
+              </div>
+
+              {previewImage.map((image, index) => (
+                <div className="flex flex-col gap-2 w-full" key={index}>
+                  <div className="flex items-center gap-2">
+                    <span className="block dark:text-jacarta-100">
+                      Image {index + 1} - (
+                      {imageRatios[index]
+                        ? `${imageRatios[index][0]}:${imageRatios[index][1]}`
+                        : "N/A"}
+                      )
+                    </span>
+                  </div>
+                  <div className="flex flex-col justify-center items-center gap-2">
+                    <Image
+                      src={image}
+                      width={1600}
+                      height={380}
+                      className="w-full h-auto bg-jacarta-200"
+                      alt="Preview image"
+                      style={{
+                        objectFit: "contain",
+                        objectPosition: "center",
+                        aspectRatio:
+                          `${imageRatios[index] ? imageRatios[index][0] : 1}/${imageRatios[index] ? imageRatios[index][1] : 1}` ??
+                          "1/1"
+                      }}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* submit ad button */}
+          <div className="modal-footer">
+            <div className="flex items-center justify-center space-x-4">
+              <Web3Button
+                contractAddress={currentChainObject?.smartContracts?.DSPONSORADMIN?.address}
+                action={async () => {
+                  await toast.promise(handleSubmit(true), {
+                    pending: "Waiting for confirmation 🕒",
+                    success: "Transaction confirmed 👌",
+                    error: "Transaction rejected 🤯"
+                  });
+                }}
+                className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate ? "!btn-disabled !cursor-not-allowed !text-black" : "!bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer"} `}
+                isDisabled={!validate || isLoadingButton}
+              >
+                {isLoadingButton ? <Spinner size="sm" color="default" /> : buttonTitle}
+              </Web3Button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div>
       <div className="modal-dialog max-h-[75vh] max-w-2xl">
-        <div className="modal-content !bg-secondaryBlack">
+        <div className="modal-content !bg-secondaryBlack md:min-w-[550px]">
           <div className="modal-header">
             <h5 className="modal-title mr-8" id="placeBidLabel">
               {!successFullUpload ? modalTitle : successFullUploadModal.title}
@@ -101,9 +316,9 @@ const PreviewModal = ({
             </button>
           </div>
 
-          <div className="modal-body p-6 flex gap-4 items-center justify-center">
+          <div className="modal-body p-6 flex gap-4 items-center">
             {!successFullUpload ? (
-              <div className="flex flex-wrap gap-8 md:flex-row flex-col">
+              <div className="flex text-left flex-wrap gap-8 md:flex-row flex-col">
                 <div>
                   <p className="font-display mb-2 block dark:text-white">
                     {name.length > 0 ? (
@@ -111,18 +326,22 @@ const PreviewModal = ({
                         Name : <span className="dark:text-white text-base ml-2"> {name} </span>
                       </span>
                     ) : !name ? (
-                      <span className="dark:text-jacarta-100 text-jacarta-100 font-display">
+                      <span className="dark:text-jacarta-100 text-jacarta-100 font-display text-sm">
                         Name : <span className="text-red text-base ml-2">{errors.nameError}</span>
                       </span>
                     ) : (
                       ""
                     )}
                   </p>
-                  <p className="font-display mb-2 block dark:text-white">
+                  <p className="font-display mb-2 block text-sm dark:text-white">
                     {description.length > 0 ? (
-                      <span className="dark:text-jacarta-100 text-jacarta-100 text-sm">
+                      <span className="dark:text-jacarta-100 text-jacarta-100 text-sm flex  items-center">
                         Description :{" "}
-                        <span className="dark:text-white text-base ml-2"> {description} </span>
+                        <textarea
+                          readOnly
+                          value={description}
+                          className="dark:text-white text-base ml-2 bg-transparent resize-none border-none p-0 "
+                        ></textarea>
                       </span>
                     ) : !description ? (
                       <span className="dark:text-jacarta-100 text-jacarta-100 font-display">
@@ -136,7 +355,7 @@ const PreviewModal = ({
 
                   {link?.length ? (
                     <div className="font-display  mb-2  text-jacarta-100 text-sm flex justify-between ">
-                      <span className="mr-2 ">Link : </span>{" "}
+                      <span className="mr-2 text-sm">Link : </span>{" "}
                       {!errors?.linkError ? (
                         <span className="dark:text-white text-base ml-2"> {link} </span>
                       ) : (
@@ -145,7 +364,7 @@ const PreviewModal = ({
                     </div>
                   ) : !link ? (
                     <div className="dark:text-jacarta-100 text-jacarta-100 font-display flex gap-2">
-                      <span> Link :</span>
+                      <span className="text-sm"> Link :</span>
                       <span className="text-red text-base ml-2">{errors.linkError}</span>
                     </div>
                   ) : (
@@ -290,6 +509,17 @@ const PreviewModal = ({
                   ) : (
                     ""
                   )}
+                  {address ? (
+                    <p className="font-display  mb-2 block text-jacarta-100 text-sm">
+                      Address :{" "}
+                      <span className="dark:text-white text-base ml-2">
+                        {" "}
+                        {shortenAddress(address)}{" "}
+                      </span>
+                    </p>
+                  ) : (
+                    ""
+                  )}
                   {protocolFees ? (
                     <p className="font-display  mb-2 block text-jacarta-100 text-sm">
                       Protocol fees :{" "}
@@ -321,7 +551,7 @@ const PreviewModal = ({
                         preview
                       </label>
                       <div
-                        className="dark:bg-secondaryBlack dark:border-jacarta-600 border-jacarta-100  group relative flex max-w-md flex-col items-center justify-center rounded-lg border-2 border-dashed"
+                        className="dark:bg-secondaryBlack dark:border-jacarta-800 border-jacarta-100  group relative flex max-w-md flex-col items-center justify-center rounded-lg border-2 border-dashed"
                         style={{
                           width:
                             imageUrlVariants.length > 0
@@ -349,7 +579,7 @@ const PreviewModal = ({
                 <div className="flex gap-4">
                   <p>{successFullUploadModal.body} </p>
                   <div
-                    className="dark:border-jacarta-600 bg-green   flex h-6 w-6 items-center justify-center rounded-full border-2 border-white"
+                    className="dark:border-jacarta-800 bg-green   flex h-6 w-6 items-center justify-center rounded-full border-2 border-white"
                     data-tippy-content="Verified Collection"
                   >
                     <svg
@@ -369,70 +599,75 @@ const PreviewModal = ({
             )}
           </div>
 
-          <div className="modal-footer">
-            <div className="flex items-center justify-center space-x-4">
-              <div className="flex items-center gap-4">
+          <div className="modal-footer w-full">
+            <div className="flex items-center justify-center space-x-4 w-full">
+              <div className="flex items-center gap-4 w-full">
                 {!successFullUpload ? (
-                  approvalForAllToken ? (
-                    <Web3Button
-                      contractAddress={currentChainObject?.smartContracts?.DSPONSORADMIN?.address}
-                      action={() => {
-                        toast.promise(handleSubmit(true), {
-                          pending: "Waiting for confirmation 🕒",
-                          success: "Transaction confirmed 👌",
-                          error: "Transaction rejected 🤯"
-                        });
-                      }}
-                      className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate ? "!btn-disabled !cursor-not-allowed !text-black" : "!bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer"} `}
-                      isDisabled={!validate || isLoadingButton}
+                  <div className="flex flex-col gap-2 justify-center items-center w-full">
+                    <div className="grid grid-cols-1 w-full mx-auto md:grid-cols-2 gap-6">
+                      <Web3Button
+                        contractAddress={
+                          currentChainObject?.smartContracts?.DSPONSORMP?.address ?? "no address"
+                        }
+                        action={async () => {
+                          setIsLoadingApproveButton(true);
+
+                          await toast.promise(handleApprove, {
+                            pending: "Waiting for confirmation 🕒",
+                            success: "Approval confirmed 👌",
+                            error: "Approval rejected 🤯"
+                          });
+
+                          setIsLoadingApproveButton(false);
+                        }}
+                        className={`!rounded-full !w-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate || isLoadingApproveButton || approvalForAllToken ? "!btn-disabled !cursor-not-allowed !text-black opacity-30" : "!bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer"} `}
+                        isDisabled={!validate || isLoadingApproveButton || approvalForAllToken}
+                      >
+                        {isLoadingApproveButton ? (
+                          <Spinner size="sm" color="default" />
+                        ) : !isListing ? (
+                          "Approve 🔓 (1/2)"
+                        ) : (
+                          "Authorize 🔓 (1/2)"
+                        )}
+                      </Web3Button>
+
+                      <Web3Button
+                        contractAddress={
+                          currentChainObject?.smartContracts?.DSPONSORADMIN?.address ?? "no address"
+                        }
+                        action={async () => {
+                          setIsLoadingSubmitButton(true);
+
+                          await toast.promise(handleSubmit(address), {
+                            pending: "Waiting for confirmation 🕒",
+                            success: "Transaction confirmed 👌",
+                            error: "Transaction rejected 🤯"
+                          });
+
+                          setIsLoadingSubmitButton(false);
+                        }}
+                        className={`!w-full !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate || isLoadingSubmitButton || !approvalForAllToken ? "!btn-disabled !cursor-not-allowed !text-black" : "!bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer"} `}
+                        isDisabled={!validate || isLoadingSubmitButton || !approvalForAllToken}
+                      >
+                        {isLoadingSubmitButton ? (
+                          <Spinner size="sm" color="default" />
+                        ) : (
+                          buttonTitle
+                        )}
+                      </Web3Button>
+                    </div>
+
+                    <InfoIcon
+                      text={`You need to approve the marketplace contract to spend your NFT on this
+      transaction.`}
                     >
-                      {isLoadingButton ? <Spinner size="sm" color="default" /> : buttonTitle}
-                    </Web3Button>
-                  ) : (
-                    // approve for listing
-                    <>
-                      <div className="flex flex-col items-center gap-2">
-                        <Web3Button
-                          contractAddress={currentChainObject?.smartContracts?.DSPONSORMP?.address}
-                          action={() => {
-                            toast.promise(handleApprove, {
-                              pending: "Waiting for confirmation 🕒",
-                              success: "Approval confirmed 👌",
-                              error: "Approval rejected 🤯"
-                            });
-                          }}
-                          className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate ? "!btn-disabled !cursor-not-allowed !text-black opacity-30" : "!bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer"} `}
-                          isDisabled={!validate || isLoadingButton}
-                        >
-                          {isLoadingButton ? (
-                            <Spinner size="sm" color="default" />
-                          ) : !isListing ? (
-                            "Approve 🔓"
-                          ) : (
-                            "Authorize Marketplace 🔓"
-                          )}
-                        </Web3Button>
-                        <Popover placement="bottom" isOpen={isHovered}>
-                          <PopoverButton
-                            className="cursor-help"
-                            onMouseEnter={() => setIsHovered(true)}
-                            onMouseLeave={() => setIsHovered(false)}
-                          >
-                            <span className="text-xs text-jacarta-100 inline-flex items-center gap-1">
-                              <InformationCircleIcon className="w-4 h-4 text-jacarta-100" />
-                              Why do I have to approve ?
-                            </span>
-                          </PopoverButton>
-                          <PopoverPanel className="p-4 bg-primaryBlack text-white rounded-lg">
-                            <p className="text-sm">
-                              You need to approve the marketplace contract to spend your{" "}
-                              {selectedCurrency} on this transaction.
-                            </p>
-                          </PopoverPanel>
-                        </Popover>
-                      </div>
-                    </>
-                  )
+                      <span className="text-xs text-jacarta-100 inline-flex items-center gap-1">
+                        <InformationCircleIcon className="w-4 h-4 text-jacarta-100" />
+                        Why do I have to approve ?
+                      </span>
+                    </InfoIcon>
+                  </div>
                 ) : successFullUploadModal.hrefButton !== null ? (
                   <Link href={successFullUploadModal.hrefButton ?? "#"}>
                     <button className="!rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all !bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer">

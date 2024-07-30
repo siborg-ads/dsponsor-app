@@ -12,7 +12,7 @@ export const activated_features = {
   // by default, first item used
   canHaveMultipleCurrencies: !!isDevelopment,
   // Whether to show the "Submitted Ads" in offer details
-  canSeeSubmittedAds: !!isDevelopment,
+  canSeeSubmittedAds: true,
   // Whether to show the Integration tab in offer details
   canSeeIntegrationDetails: true,
   // Whether to show the "Create Offer" button in the footer
@@ -28,5 +28,11 @@ export const activated_features = {
   // Whether to see home in the mobile menu
   canSeeHomeInMobileMenu: false,
   // Whether to filter transactions in activity with WETH only
-  canFilterTransactionsWithWETH: true
+  canFilterTransactionsWithWETH: true,
+  // Whether to be able to change mint price for a specific token
+  canChangeTokenMintPrice: false,
+  // Wether we can change validators for an offer
+  canChangeValidators: false,
+  // Wether to show info bulle on the offer page showing the price of the token
+  canSeeModalHelperOnOfferPage: false
 };

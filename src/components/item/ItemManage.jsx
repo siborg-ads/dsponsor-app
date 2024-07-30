@@ -14,7 +14,9 @@ const ItemManage = ({
   royalties,
   dsponsorNFTContract,
   dsponsorMpContract,
-  conditions
+  conditions,
+  tokenId,
+  setListingCreated
 }) => {
   const [listingModal, setListingModal] = useState(false);
   const [isLoadingButton, setIsLoadingButton] = useState(false);
@@ -30,7 +32,9 @@ const ItemManage = ({
 
   useEffect(() => {
     if (marketplaceListings?.length > 0) {
-      const lastBidder = marketplaceListings[0]?.bids[0]?.bidder;
+      const lastBidder = marketplaceListings
+        ?.sort((a, b) => b?.id - a?.id)
+        ?.bids?.sort((a, b) => b?.split("-")[1]?.id - a?.split("-")[1]?.id)[0]?.bidder;
       if (lastBidder && address && getAddress(lastBidder) === getAddress(address)) {
         setIsLastBidder(true);
       } else {
@@ -46,7 +50,7 @@ const ItemManage = ({
   const handleSubmitCancel = async () => {
     try {
       setIsLoadingButton(true);
-      const { listingType, id } = marketplaceListings[0];
+      const { listingType, id } = marketplaceListings.sort((a, b) => b?.id - a?.id)[0];
       if (listingType === "Auction") {
         await closeAuctionListing({ args: [id] });
       } else if (listingType === "Direct") {
@@ -123,8 +127,8 @@ const ItemManage = ({
       return (
         <Web3Button
           contractAddress={currentChainObject?.smartContracts?.DSPONSORMP?.address}
-          action={() =>
-            toast.promise(handleSubmitCancel, {
+          action={async () =>
+            await toast.promise(handleSubmitCancel, {
               pending: "Waiting for confirmation 🕒",
               success: "Cancel listing confirmed 👌",
               error: "Cancel listing rejected 🤯"
@@ -141,15 +145,14 @@ const ItemManage = ({
       (!conditions?.endTimeNotPassed &&
         conditions?.isCreated &&
         conditions?.isAuction &&
-        !conditions?.isLister &&
         conditions?.hasBids) ||
       (conditions?.isLister && !conditions?.hasBids)
     ) {
       return (
         <Web3Button
           contractAddress={currentChainObject?.smartContracts?.DSPONSORMP?.address}
-          action={() =>
-            toast.promise(handleSubmitCancel, {
+          action={async () =>
+            await toast.promise(handleSubmitCancel, {
               pending: "Waiting for confirmation 🕒",
               success: "Close auction confirmed 👌",
               error: "Close auction rejected 🤯"
@@ -176,8 +179,8 @@ const ItemManage = ({
       return (
         <Web3Button
           contractAddress={currentChainObject?.smartContracts?.DSPONSORMP?.address}
-          action={() =>
-            toast.promise(handleSubmitCancel, {
+          action={async () =>
+            await toast.promise(handleSubmitCancel, {
               pending: "Waiting for confirmation 🕒",
               success: "Close auction confirmed 👌",
               error: "Close auction rejected 🤯"
@@ -195,27 +198,28 @@ const ItemManage = ({
 
   return (
     <>
-      {renderConditionsMessage() && renderActionButton() && (
-        <>
-          <div className="dark:bg-secondaryBlack mb-2 rounded-2lg flex flex-col gap-4 bg-white p-8">
-            <div className="sm:flex sm:flex-wrap">{renderConditionsMessage()}</div>
-            {renderActionButton()}
-          </div>
-          {listingModal && (
-            <div className="modal fade show block">
-              <ItemManageModal
-                setSuccessFullListing={setSuccessFullListing}
-                successFullListing={successFullListing}
-                royalties={royalties}
-                dsponsorNFTContract={dsponsorNFTContract}
-                dsponsorMpContract={dsponsorMpContract}
-                handleListingModal={handleListingModal}
-                offerData={offerData}
-                marketplaceListings={marketplaceListings}
-              />
-            </div>
-          )}
-        </>
+      {renderConditionsMessage() && (
+        <div className="dark:bg-secondaryBlack mb-2 rounded-2lg flex flex-col gap-4 bg-white p-8">
+          <div className="sm:flex sm:flex-wrap">{renderConditionsMessage()}</div>
+          {renderActionButton()}
+        </div>
+      )}
+
+      {listingModal && (
+        <div className="modal fade show block">
+          <ItemManageModal
+            setSuccessFullListing={setSuccessFullListing}
+            successFullListing={successFullListing}
+            royalties={royalties}
+            dsponsorNFTContract={dsponsorNFTContract}
+            dsponsorMpContract={dsponsorMpContract}
+            handleListingModal={handleListingModal}
+            offerData={offerData}
+            marketplaceListings={marketplaceListings}
+            tokenId={tokenId}
+            setListingCreated={setListingCreated}
+          />
+        </div>
       )}
     </>
   );

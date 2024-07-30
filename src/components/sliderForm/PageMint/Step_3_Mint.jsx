@@ -12,7 +12,9 @@ const Step_3_Mint = ({
   file,
   handleLogoUpload,
   previewImage,
-  currentStep
+  currentStep,
+  currentSlide,
+  numSteps
 }) => {
   const fileTypes = ["JPG", "PNG", "WEBP"];
   const modalHelper = {
@@ -24,13 +26,19 @@ const Step_3_Mint = ({
   const [heightRatioImage, setHeightRatioImage] = useState(null);
   useEffect(() => {
     const stepWidth = 250;
-    const ratios = id.split(":");
+    let tempId = id;
+    if (id.includes("0-")) {
+      tempId = id.slice(2);
+    }
+    const ratios = tempId.split(":");
     let width = Number(ratios[0]);
     let height = Number(ratios[1]);
+
     if (ratios.length !== 2) {
       width = 1;
       height = 1;
     }
+
     if (width / height > 1) {
       setWidthRatioImage(stepWidth);
       setHeightRatioImage(stepWidth * (height / width));
@@ -43,7 +51,9 @@ const Step_3_Mint = ({
   return (
     <div ref={(el) => (stepsRef.current[currentStep] = el)} className={styles.form__step}>
       <div className="pr-6 pl-2" ref={containerElement}>
-        <h3 className="mb-14 text-jacarta-200">Step 3 : Ad Image {id}</h3>
+        <h3 className="mb-12 text-jacarta-200">
+          Step {currentSlide + 1}/{numSteps} : Ad Image {id}
+        </h3>
         {/* <!-- File Upload --> */}
         <div className="mb-6 items-center flex flex-col">
           <div className="flex gap-3 justify-center items-center mb-2">
@@ -70,7 +80,7 @@ const Step_3_Mint = ({
           )}
 
           <div
-            className={`dark:bg-secondaryBlack dark:border-jacarta-600 border-jacarta-100 group relative flex max-w-md flex-col items-center justify-center rounded-lg border-2 border-dashed bg-white  w-[${widthRatioImage}px] h-[${heightRatioImage}px] text-center ${
+            className={`bg-jacarta-800 border-jacarta-100 group relative flex max-w-md flex-col items-center justify-center rounded-lg border-2 border-dashed border-primaryPurple w-[${widthRatioImage}px] h-[${heightRatioImage}px] text-center ${
               !previewImage ? "px-2 py-8" : "py-1 px-1"
             }`}
             style={{ width: `${widthRatioImage}px`, height: `${heightRatioImage}px` }}
@@ -108,7 +118,7 @@ const Step_3_Mint = ({
                 </div>
               )}
             </div>
-            <div className="dark:bg-jacarta-600 bg-jacarta-50 absolute inset-4 cursor-pointer rounded opacity-0 group-hover:opacity-100 ">
+            <div className="dark:bg-jacarta-800 h-full w-full bg-jacarta-50 absolute cursor-pointer rounded opacity-0 group-hover:opacity-100">
               <FileUploader
                 handleChange={handleLogoUpload}
                 name="file"

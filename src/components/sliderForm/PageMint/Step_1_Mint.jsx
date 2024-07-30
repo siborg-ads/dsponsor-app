@@ -1,6 +1,13 @@
 import React, { useState, useEffect } from "react";
 
-const Step_1_Mint = ({ stepsRef, styles, adParameters, setImageUrlVariants }) => {
+const Step_1_Mint = ({
+  stepsRef,
+  styles,
+  adParameters,
+  setImageUrlVariants,
+  currentSlide,
+  numSteps
+}) => {
   const [selectedItems, setSelectedItems] = useState([]);
   useEffect(() => {
     if (!adParameters) return;
@@ -15,15 +22,11 @@ const Step_1_Mint = ({ stepsRef, styles, adParameters, setImageUrlVariants }) =>
   return (
     <div ref={(el) => (stepsRef.current[0] = el)} className={styles.form__step}>
       <div className="pr-6 pl-2">
-        <h3 className="mb-14 !text-jacarta-100">Step 1 : Offer Type</h3>
-        <div className="mb-6 flex flex-col justify-center items-center gap-4">
-          <div className="flex flex-col items-center">
-            <label
-              htmlFor="adIntegrationSelect"
-              className="font-display text-jacarta-900 mb-2 block dark:text-white"
-            >
-              Type of listing for this ad space:
-            </label>
+        <h3 className="mb-12 !text-jacarta-100">
+          Step {currentSlide + 1}/{numSteps} : Ad Description
+        </h3>
+        <div className="mb-6 flex flex-col gap-4">
+          <div className="flex flex-col">
             <div className="flex flex-col gap-4">
               To display your ad you need to provide the following parameters:
               {/* <DisplayImageIds ids={selectedItems} /> */}
@@ -36,7 +39,17 @@ const Step_1_Mint = ({ stepsRef, styles, adParameters, setImageUrlVariants }) =>
                     return (
                       <div key={id}>
                         <ul>
-                          <li>{variant ? `- Format : ${variant}` : "- Format : No variant"}</li>
+                          <li>
+                            {variant
+                              ? `- Format : ${variant} (example:
+                              ${(() => {
+                                const [width, height] = variant.split(":");
+                                return width && height
+                                  ? `${width * 100}x${height * 100}px`
+                                  : "No size";
+                              })()})`
+                              : "- Format : Any URL accepted"}
+                          </li>
                         </ul>
                       </div>
                     );
@@ -49,7 +62,7 @@ const Step_1_Mint = ({ stepsRef, styles, adParameters, setImageUrlVariants }) =>
                     return (
                       <div key={id}>
                         <ul>
-                          <li>{variant ? `- ${variant}` : "- No variant"}</li>
+                          <li>{variant ? `- ${variant}` : "- Any URL accepted"}</li>
                         </ul>
                       </div>
                     );
@@ -57,7 +70,7 @@ const Step_1_Mint = ({ stepsRef, styles, adParameters, setImageUrlVariants }) =>
               </div>
               {/* <select
                 id="adIntegrationSelect"
-                className="dark:bg-secondaryBlack min-w-[110px] border-jacarta-100 hover:ring-primaryPurple/10 focus:ring-primaryPurple dark:border-jacarta-600 dark:placeholder:text-jacarta-100 w-full rounded-lg py-3 px-5 hover:ring-2 dark:text-white"
+                className="dark:bg-secondaryBlack min-w-[110px] border-jacarta-100 hover:ring-primaryPurple/10 focus:ring-primaryPurple dark:border-jacarta-800 dark:placeholder:text-jacarta-100 w-full rounded-lg py-3 px-5 hover:ring-2 dark:text-white"
                 value={selectedIntegration}
                 onChange={handleSelectionChange}
               >

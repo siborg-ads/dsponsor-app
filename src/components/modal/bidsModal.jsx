@@ -6,7 +6,7 @@ import { toast } from "react-toastify";
 import Link from "next/link";
 import config from "../../config/config";
 import { computeBidAmounts } from "../../utils/computeBidAmounts";
-import { formatUnits, parseUnits } from "ethers/lib/utils";
+import { formatUnits } from "ethers/lib/utils";
 import formatAndRoundPrice from "../../utils/formatAndRound";
 import { fetchTokenPrice } from "../../utils/fetchTokenPrice";
 import { getCookie } from "cookies-next";
@@ -15,8 +15,9 @@ import Tippy from "@tippyjs/react";
 import { ClipboardIcon, InformationCircleIcon } from "@heroicons/react/20/solid";
 import handleCopy from "../../utils/handleCopy";
 import "tippy.js/dist/tippy.css";
-import { Popover, PopoverTrigger, PopoverContent } from "@nextui-org/react";
 import { BigNumber } from "ethers";
+import InfoIcon from "../informations/infoIcon";
+import Input from "../ui/input";
 
 const BidsModal = ({
   setAmountToApprove,
@@ -42,9 +43,12 @@ const BidsModal = ({
   token,
   user,
   offer,
-  referrer
+  referrer,
+  showBidsModal
 }) => {
   const [initialIntPrice, setInitialIntPrice] = useState(null);
+  const [isLoadingApproveButton, setIsLoadingApproveButton] = useState(false);
+  const [isLoadingBuyButton, setIsLoadingBuyButton] = useState(false);
   const [isPriceGood, setIsPriceGood] = useState(true);
   const { mutateAsync: auctionBids } = useContractWrite(dsponsorMpContract, "bid");
   const [checkTerms, setCheckTerms] = useState(false);
@@ -64,7 +68,7 @@ const BidsModal = ({
   const [copied, setCopied] = useState(false);
   const [displayedPrice, setDisplayedPrice] = useState(null);
   const [parsedBidsAmount, setParsedBidsAmount] = useState(null);
-  const [isHovered, setIsHovered] = useState(false);
+  const [buyoutPrice, setBuyoutPrice] = useState(null);
 
   const chainConfig = config[chainId];
   const chainWETH = chainConfig?.smartContracts.WETH.address.toLowerCase();
@@ -118,7 +122,7 @@ const BidsModal = ({
       setDisplayedPrice(tokenEtherPrice?.amountUSDCFormatted);
     };
 
-    if (!!bidsAmount && parseFloat(bidsAmount) > 0 && chainId) {
+    if (!!bidsAmount && parseFloat(bidsAmount) > 0 && chainId && currencyContract) {
       fetchEtherPrice();
     }
   }, [bidsAmount, chainId, currencyContract, currencyTokenDecimals]);
@@ -172,8 +176,9 @@ const BidsModal = ({
     if (
       marketplaceListings &&
       marketplaceListings[0] &&
+      marketplaceListings[0]?.currency &&
       parsedBidsAmount &&
-      parsedBidsAmount.gt(BigNumber.from(0)) &&
+      BigNumber.from(parsedBidsAmount).gt(BigNumber.from(0)) &&
       chainId
     ) {
       fetchData();
@@ -187,25 +192,30 @@ const BidsModal = ({
       marketplaceListings &&
       marketplaceListings[0] &&
       parsedBidsAmount &&
-      parsedBidsAmount.gt(BigNumber.from(0))
+      BigNumber.from(parsedBidsAmount).gt(BigNumber.from(0)) &&
+      !successFullBid
     ) {
-      console.log("parsedBidsAmount", parsedBidsAmount.toString());
-      const minimalBuyoutPerToken =
-        marketplaceListings[0]?.bidPriceStructure?.minimalBuyoutPerToken;
-      const buyoutPrice = marketplaceListings[0]?.buyoutPricePerToken;
+      const minimalBuyoutPerToken = BigNumber.from(
+        marketplaceListings[0]?.bidPriceStructure?.minimalBuyoutPerToken
+      );
+      const buyoutPrice = BigNumber.from(marketplaceListings[0]?.buyoutPricePerToken);
 
-      const isMinimalBuyout = parsedBidsAmount.gte(minimalBuyoutPerToken);
-      const isBuyout = parsedBidsAmount.gte(buyoutPrice);
+      const isMinimalBuyout = BigNumber.from(parsedBidsAmount).gte(minimalBuyoutPerToken);
+      const isBuyout = BigNumber.from(parsedBidsAmount).gte(buyoutPrice);
 
       if (isBuyout && isMinimalBuyout) {
         setBuyoutPriceReached(true);
       } else {
         setBuyoutPriceReached(false);
       }
-    } else {
-      setBuyoutPriceReached(false);
     }
-  }, [marketplaceListings, currencyTokenDecimals, parsedBidsAmount]);
+  }, [marketplaceListings, currencyTokenDecimals, parsedBidsAmount, successFullBid]);
+
+  useEffect(() => {
+    if (marketplaceListings && marketplaceListings[0]) {
+      setBuyoutPrice(marketplaceListings[0]?.bidPriceStructure?.minimalBuyoutPerToken);
+    }
+  }, [marketplaceListings]);
 
   useEffect(() => {
     if (
@@ -274,8 +284,6 @@ const BidsModal = ({
   }, [marketplaceListings]);
 
   useEffect(() => {
-    console.log("mount", mount);
-
     const minimalBidPerToken = marketplaceListings[0]?.bidPriceStructure?.minimalBidPerToken;
     if (minimalBidPerToken && !mount) {
       const minimalBid = ethers.utils.formatUnits(minimalBidPerToken, currencyTokenDecimals);
@@ -450,8 +458,18 @@ const BidsModal = ({
       setDisplayedPrice(null);
     };
 
-    resetRewardsAndAmount();
-  }, []);
+    if (!showBidsModal) {
+      resetRewardsAndAmount();
+    }
+  }, [
+    setBidsAmount,
+    setParsedBidsAmount,
+    setRefundedPrice,
+    setAmountToApprove,
+    setDisplayedPrice,
+    successFullBid,
+    showBidsModal
+  ]);
 
   return (
     <div>
@@ -494,21 +512,21 @@ const BidsModal = ({
                 </div>
                 <div className="flex items-center gap-4">
                   <div className="flex items-center relative w-full overflow-hidden -pr-4">
-                    <input
+                    <Input
                       type="number"
                       onWheel={(e) => e.target.blur()}
-                      className={`focus:ring-primaryPurple pr-20 relative w-full flex-[3] border-transparent bg-jacarta-600 rounded-xl text-2xl py-2 font-semibold text-white focus:ring-inse`}
+                      className="pr-20 relative w-full flex-[3] rounded-xl text-2xl py-2 font-semibold text-white"
                       placeholder={`${initialIntPrice} or higher`}
                       value={bidsAmount ?? ""}
                       onChange={(e) => handleBidsAmount(e)}
                       maxLength={currencyTokenDecimals}
                     />
                     <span className="text-white font-semibold absolute right-0 px-4">
-                      {currencySymbol.substring(0, 6)}
+                      {currencySymbol?.substring(0, 6)}
                     </span>
                   </div>
 
-                  <div className="bg-jacarta-600 w-1/4 border border-jacarta-900 border-opacity-10 rounded-xl flex flex-1 justify-center self-stretch border-l">
+                  <div className="bg-jacarta-800 w-1/4 border border-jacarta-900 border-opacity-10 rounded-xl flex flex-1 justify-center self-stretch border-l">
                     <span className="self-center px-4 text-xl text-center text-white font-semibold">
                       ${displayedPrice ?? 0}
                     </span>
@@ -516,21 +534,45 @@ const BidsModal = ({
                 </div>
 
                 <div className="flex flex-col justify-center text-left md:flex-row items-center md:justify-between mb-8 mt-2 gap-2 md:gap-4">
-                  {bidsAmount < initialIntPrice && (
-                    <button
-                      className="text-sm text-left md:text-base whitespace-nowrap  text-primaryPurple hover:text-opacity-80"
-                      onClick={() => {
-                        setBidsAmount(initialIntPrice);
+                  {(initialIntPrice || (buyoutPriceReached && buyoutPrice)) && (
+                    <div className="flex flex-col gap-1">
+                      {bidsAmount < initialIntPrice && (
+                        <button
+                          className="text-sm text-left md:text-base whitespace-nowrap  text-green hover:text-opacity-80"
+                          onClick={() => {
+                            setBidsAmount(initialIntPrice);
 
-                        const parsedInitialIntPrice = ethers.utils.parseUnits(
-                          initialIntPrice,
-                          currencyTokenDecimals
-                        );
-                        setParsedBidsAmount(parsedInitialIntPrice);
-                      }}
-                    >
-                      Use minimal bid
-                    </button>
+                            const parsedInitialIntPrice = ethers.utils.parseUnits(
+                              initialIntPrice,
+                              currencyTokenDecimals
+                            );
+                            setParsedBidsAmount(parsedInitialIntPrice);
+                          }}
+                        >
+                          Set minimal bid amount {initialIntPrice} {currencySymbol}
+                        </button>
+                      )}
+
+                      {!buyoutPriceReached && (
+                        <button
+                          className="text-sm text-left md:text-base whitespace-nowrap  text-green hover:text-opacity-80"
+                          onClick={() => {
+                            const formattedBuyoutPrice = ethers.utils.formatUnits(
+                              buyoutPrice,
+                              currencyTokenDecimals
+                            );
+                            setBidsAmount(formattedBuyoutPrice);
+
+                            const parsedBuyoutPrice = BigNumber.from(buyoutPrice);
+                            setParsedBidsAmount(parsedBuyoutPrice);
+                          }}
+                        >
+                          Set buyout price{" "}
+                          {ethers.utils.formatUnits(buyoutPrice, currencyTokenDecimals)}{" "}
+                          {currencySymbol}
+                        </button>
+                      )}
+                    </div>
                   )}
 
                   <span
@@ -564,7 +606,7 @@ const BidsModal = ({
                       </div>
                       <div className="flex flex-col gap-2">
                         <div className="grid grid-cols-7 items-center gap-4 mx-auto w-full min-w-max">
-                          <div className="bg-jacarta-600 col-span-3 duration-400 shadow p-4 rounded-xl font-semibold text-xs md:text-base text-white text-center min-w-[125px] max-w-[125px] md:min-w-[200px] md:max-w-[200px]">
+                          <div className="bg-jacarta-800 col-span-3 duration-400 shadow p-4 rounded-xl font-semibold text-xs md:text-base text-white text-center min-w-[125px] max-w-[125px] md:min-w-[200px] md:max-w-[200px]">
                             Ad space NFT in your wallet
                           </div>
 
@@ -574,7 +616,7 @@ const BidsModal = ({
                             </span>
                           </div>
 
-                          <div className="bg-jacarta-600 col-span-3 duration-400 shadow p-4 rounded-xl font-semibold text-xs md:text-base text-white text-center min-w-[125px] max-w-[125px] md:min-w-[200px] md:max-w-[200px]">
+                          <div className="bg-jacarta-800 col-span-3 duration-400 shadow p-4 rounded-xl font-semibold text-xs md:text-base text-white text-center min-w-[125px] max-w-[125px] md:min-w-[200px] md:max-w-[200px]">
                             Your bid back +{" "}
                             {parseFloat(bidsAmount) >= parseFloat(initialIntPrice)
                               ? formatAndRoundPrice(refundedPrice)
@@ -600,11 +642,11 @@ const BidsModal = ({
 
                 {/* <!-- Terms --> */}
                 <div className="mt-8 flex items-center space-x-2">
-                  <input
+                  <Input
                     type="checkbox"
                     id="buyNowTerms"
-                    className="checked:bg-primaryPurple dark:bg-jacarta-600 text-primaryPurple border-jacarta-200 focus:ring-primaryPurple/20 dark:border-jacarta-500 h-5 w-5 self-start rounded focus:ring-offset-0"
                     onClick={handleTermService}
+                    className="h-5 !w-5 mr-3 rounded border-jacarta-200 !text-primaryPurple checked:bg-primaryPurple focus:ring-primaryPurple/20 focus:ring-offset-0 dark:border-jacarta-500"
                   />
                   <label htmlFor="buyNowTerms" className="dark:text-jacarta-200 text-sm">
                     By checking this box, I agree to {"SiBorg Ads's"}{" "}
@@ -705,7 +747,7 @@ const BidsModal = ({
                     <div className="flex gap-4">
                       <p>Congratulations ! 🎉 </p>
                       <div
-                        className="dark:border-jacarta-600 bg-green   flex h-6 w-6 items-center justify-center rounded-full border-2 border-white"
+                        className="dark:border-jacarta-800 bg-green   flex h-6 w-6 items-center justify-center rounded-full border-2 border-white"
                         data-tippy-content="Verified Collection"
                       >
                         <svg
@@ -744,30 +786,42 @@ const BidsModal = ({
             {!successFullBid && (
               <div className="modal-footer flex items-center justify-center gap-4 p-6">
                 <>
-                  <div className="flex flex-col md:flex-row md:items-start items-center gap-6">
-                    {!insufficentBalance ? (
-                      <>
+                  <div className="flex flex-col gap-6 md:gap-2 w-full justify-center items-center">
+                    <div className="grid grid-cols-1 mx-auto md:grid-cols-2 gap-6 md:w-7/12">
+                      {!insufficentBalance ? (
                         <>
-                          <div className="flex flex-col items-center gap-2">
+                          <>
                             <Web3Button
                               contractAddress={config[chainId]?.smartContracts?.DSPONSORMP?.address}
-                              action={() => {
-                                toast.promise(handleApprove, {
+                              action={async () => {
+                                setIsLoadingApproveButton(true);
+
+                                await toast.promise(handleApprove, {
                                   pending: "Waiting for confirmation 🕒",
                                   success: "Approval confirmed 👌",
                                   error: "Approval rejected 🤯"
                                 });
+
+                                setIsLoadingApproveButton(false);
                               }}
-                              className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-black !transition-all ${
-                                !isPriceGood || !checkTerms || !bidsAmount || !allowanceTrue
+                              className={` !rounded-full !py-3 !px-8 !w-full !text-center !font-semibold !text-black !transition-all ${
+                                !isPriceGood ||
+                                !checkTerms ||
+                                !bidsAmount ||
+                                !allowanceTrue ||
+                                isLoadingApproveButton
                                   ? "!btn-disabled !cursor-not-allowed !text-black !opacity-30"
                                   : "!text-white !bg-primaryPurple !cursor-pointer"
                               } `}
                               isDisabled={
-                                !isPriceGood || !checkTerms || !bidsAmount || !allowanceTrue
+                                !isPriceGood ||
+                                !checkTerms ||
+                                !bidsAmount ||
+                                !allowanceTrue ||
+                                isLoadingApproveButton
                               }
                             >
-                              {isLoadingButton ? (
+                              {isLoadingApproveButton ? (
                                 <Spinner size="sm" color="default" />
                               ) : notEnoughFunds ? (
                                 <span className="text-black">Not enough funds</span>
@@ -775,92 +829,105 @@ const BidsModal = ({
                                 "Approve 🔓 (1/2)"
                               )}
                             </Web3Button>
-                            <Popover placement="bottom" isOpen={isHovered}>
-                              <PopoverTrigger
-                                className="cursor-help"
-                                onMouseEnter={() => setIsHovered(true)}
-                                onMouseLeave={() => setIsHovered(false)}
-                              >
-                                <span className="text-xs text-jacarta-100 inline-flex items-center gap-1">
-                                  <InformationCircleIcon className="w-4 h-4 text-jacarta-100" />
-                                  Why do I have to approve ?
-                                </span>
-                              </PopoverTrigger>
-                              <PopoverContent className="p-4 bg-primaryBlack text-white rounded-lg">
-                                <p className="text-sm">
-                                  You need to approve the marketplace contract to spend your{" "}
-                                  {currencySymbol} on this transaction.
-                                </p>
-                              </PopoverContent>
-                            </Popover>
-                          </div>
-                          {/* Added next button */}
+
+                            {/* Added next button */}
+                            <Web3Button
+                              contractAddress={config[chainId]?.smartContracts?.DSPONSORMP?.address}
+                              action={async () => {
+                                setIsLoadingBuyButton(true);
+
+                                await toast.promise(handleSubmit, {
+                                  pending: "Waiting for confirmation 🕒",
+                                  success: buyoutPriceReached
+                                    ? "Buy confirmed 👌"
+                                    : "Bid confirmed 👌",
+                                  error: buyoutPriceReached ? "Buy rejected 🤯" : "Bid rejected 🤯"
+                                });
+
+                                setIsLoadingBuyButton(false);
+                              }}
+                              className={`!rounded-full !w-full !py-3 !px-8 !text-center !font-semibold !text-black !transition-all ${
+                                !isPriceGood || !checkTerms || allowanceTrue || isLoadingBuyButton
+                                  ? "!btn-disabled !cursor-not-allowed !text-black !opacity-30"
+                                  : "!text-white !bg-primaryPurple !cursor-pointer"
+                              } `}
+                              isDisabled={
+                                !isPriceGood || !checkTerms || allowanceTrue || isLoadingBuyButton
+                              }
+                            >
+                              {isLoadingBuyButton ? (
+                                <Spinner size="sm" color="default" />
+                              ) : buyoutPriceReached ? (
+                                notEnoughFunds ? (
+                                  <span className="text-black">Not enough funds</span>
+                                ) : (
+                                  "Buy Now 💸 (2/2)"
+                                )
+                              ) : notEnoughFunds ? (
+                                <span className="text-black">Not enough funds</span>
+                              ) : (
+                                "Place Bid 💸 (2/2)"
+                              )}
+                            </Web3Button>
+                          </>
+                        </>
+                      ) : (
+                        <>
                           <Web3Button
                             contractAddress={config[chainId]?.smartContracts?.DSPONSORMP?.address}
-                            action={() => {
-                              toast.promise(handleSubmit, {
+                            action={async () => {
+                              setIsLoadingBuyButton(true);
+
+                              await toast.promise(handleSubmitWithNative, {
                                 pending: "Waiting for confirmation 🕒",
-                                success: "Bid confirmed 👌",
-                                error: "Bid rejected 🤯"
+                                success: buyoutPriceReached
+                                  ? "Buy confirmed 👌"
+                                  : "Bid confirmed 👌",
+                                error: buyoutPriceReached ? "Buy rejected 🤯" : "Bid rejected 🤯"
                               });
+
+                              setIsLoadingBuyButton(false);
                             }}
                             className={`!rounded-full !py-3 !px-8 !text-center !font-semibold !text-black !transition-all ${
-                              !isPriceGood || !checkTerms || allowanceTrue
+                              !isPriceGood ||
+                              !checkTerms ||
+                              !canPayWithNativeToken ||
+                              isLoadingBuyButton
                                 ? "!btn-disabled !cursor-not-allowed !text-black !opacity-30"
                                 : "!text-white !bg-primaryPurple !cursor-pointer"
                             } `}
-                            isDisabled={!isPriceGood || !checkTerms || allowanceTrue}
+                            isDisabled={
+                              !isPriceGood ||
+                              !checkTerms ||
+                              !canPayWithNativeToken ||
+                              isLoadingBuyButton
+                            }
                           >
-                            {isLoadingButton ? (
+                            {isLoadingBuyButton ? (
                               <Spinner size="sm" color="default" />
                             ) : buyoutPriceReached ? (
                               notEnoughFunds ? (
                                 <span className="text-black">Not enough funds</span>
                               ) : (
-                                "Buy Now 💸 (2/2)"
+                                "Buy Now with ETH 💸"
                               )
                             ) : notEnoughFunds ? (
                               <span className="text-black">Not enough funds</span>
                             ) : (
-                              "Place Bid 💸 (2/2)"
+                              "Place Bid with ETH 💸"
                             )}
                           </Web3Button>
                         </>
-                      </>
-                    ) : (
-                      <>
-                        <Web3Button
-                          contractAddress={config[chainId]?.smartContracts?.DSPONSORMP?.address}
-                          action={() => {
-                            toast.promise(handleSubmitWithNative, {
-                              pending: "Waiting for confirmation 🕒",
-                              success: "Bid confirmed 👌",
-                              error: "Bid rejected 🤯"
-                            });
-                          }}
-                          className={`!rounded-full !py-3 !px-8 !text-center !font-semibold !text-black !transition-all ${
-                            !isPriceGood || !checkTerms || !canPayWithNativeToken
-                              ? "!btn-disabled !cursor-not-allowed !text-black !opacity-30"
-                              : "!text-white !bg-primaryPurple !cursor-pointer"
-                          } `}
-                          isDisabled={!isPriceGood || !checkTerms || !canPayWithNativeToken}
-                        >
-                          {isLoadingButton ? (
-                            <Spinner size="sm" color="default" />
-                          ) : buyoutPriceReached ? (
-                            notEnoughFunds ? (
-                              <span className="text-black">Not enough funds</span>
-                            ) : (
-                              "Buy Now with ETH 💸"
-                            )
-                          ) : notEnoughFunds ? (
-                            <span className="text-black">Not enough funds</span>
-                          ) : (
-                            "Place Bid with ETH 💸"
-                          )}
-                        </Web3Button>
-                      </>
-                    )}
+                      )}
+                    </div>
+                    <InfoIcon
+                      text={`You need to approve the marketplace contract to spend your ${currencySymbol} on this transaction.`}
+                    >
+                      <span className="text-xs text-center text-jacarta-100 inline-flex items-center gap-1">
+                        <InformationCircleIcon className="w-4 h-4 text-jacarta-100" />
+                        Why do I have to approve ?
+                      </span>
+                    </InfoIcon>
                   </div>
                 </>
 

@@ -1,10 +1,12 @@
 import Network from "../../providers/utils/networks";
+import { Base } from "@thirdweb-dev/chains";
 
 const devBaseSepolia = {
   chainId: 84532,
   chainName: "base-sepolia",
   chainNameProvider: "base-sepolia-testnet",
   network: Network.BASE_SEPOLIA,
+  chainObject: Base,
   logoURL: "/images/base-logo.png",
   explorerBaseURL: "https://sepolia.basescan.org",
   relayerURL: process.env.DEV ? process.env.DEV : "https://relayer.dsponsor.com",
@@ -28,15 +30,18 @@ const devBaseSepolia = {
     },
     WNATIVE: {
       address: "0x4200000000000000000000000000000000000006",
-      decimals: 18
+      decimals: 18,
+      symbol: "WETH"
     },
     USDC: {
       address: "0x036CbD53842c5426634e7929541eC2318f3dCF7e",
-      decimals: 6
+      decimals: 6,
+      symbol: "USDC"
     },
     WETH: {
       address: "0x4200000000000000000000000000000000000006",
-      decimals: 18
+      decimals: 18,
+      symbol: "WETH"
     },
     UNISWAP_QUOTER: {
       address: "0xb27308f9F90D607463bb33eA1BeBb41C27CE5AB6" // "0xC5290058841028F1614F3A6F0F5816cAd0df5E27"

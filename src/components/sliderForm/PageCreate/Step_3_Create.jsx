@@ -3,6 +3,7 @@ import Image from "next/image";
 import { Switch, cn } from "@nextui-org/react";
 
 import { FileUploader } from "react-drag-drop-files";
+import Input from "../../ui/input";
 const fileTypes = ["JPG", "PNG", "WEBP"];
 const Step_3_Create = ({
   stepsRef,
@@ -42,18 +43,22 @@ const Step_3_Create = ({
     <>
       {currentSlide === 2 && (
         <div ref={(el) => (stepsRef.current[2] = el)} className={styles.form__step}>
-          <div className="pr-6 pl-2 relative">
+          <div className="pr-6 pl-2 relative flex flex-col items-center gap-8 ">
             <div className="absolute top-0 right-0">
               {currentSlide + 1}/{numSteps}
             </div>
-            <h3 className="mb-2 text-jacarta-100">URL & Image</h3>
-            <p className="text-center pt-2  mb-14 dark:text-white">
-              {" "}
-              Provide the landing page URL, an image and the terms that represent the offer.
-            </p>
+            <div className="flex flex-col w-full items-center border-b-1 border-primaryPurple shadow-2xl pb-2 ">
+              <h3 className="mb-2 text-jacarta-100 bg-primaryPurple rounded-md px-4 py-2">
+                URL & Image
+              </h3>
+              <p className="text-center pt-2 dark:text-white">
+                {" "}
+                Provide the landing page URL, an image and the terms that represent the offer.
+              </p>
+            </div>
 
             {/* <!-- External Link --> */}
-            <div className="mb-6">
+            <div className="">
               <label
                 htmlFor="item-external-link"
                 className="font-display text-jacarta-900 mb-2 block dark:text-white"
@@ -61,17 +66,16 @@ const Step_3_Create = ({
                 Specifiy where advertisements will be exposed (website URL, mobile app, ...)
                 <span className="text-red">*</span>
               </label>
-              <input
+              <Input
                 type="url"
                 id="item-external-link"
-                className="dark:bg-secondaryBlack border-jacarta-100 hover:ring-primaryPurple/10 focus:ring-primaryPurple dark:border-jacarta-600 dark:placeholder:text-jacarta-100 w-full rounded-lg py-3 px-3 hover:ring-2 dark:text-white"
                 placeholder="Provide an url, the name of your app, or what characterizes your platform."
                 onChange={handleChange}
                 value={link}
               />
             </div>
 
-            <div className="mb-6 flex items-center justify-center flex-col">
+            <div className=" flex items-center justify-center flex-col">
               <label className="font-display text-jacarta-900 mb-2 block dark:text-white">
                 Illustration
                 <span className="text-red">*</span>
@@ -88,13 +92,13 @@ const Step_3_Create = ({
               )}
 
               <div
-                className={`dark:bg-secondaryBlack dark:border-jacarta-600 border-jacarta-100 group relative flex max-w-md flex-col items-center justify-center rounded-lg border-2 border-dashed bg-white  px-1 text-center ${
+                className={`bg-jacarta-800 dark:border-primaryPurple border-jacarta-100 group relative flex max-w-md flex-col items-center justify-center rounded-lg border-2 border-dashed px-1 text-center ${
                   previewImage.length <= 0 ? "py-20" : "p-1"
                 }`}
                 style={{ width: `300px`, height: `300px` }}
               >
                 <div
-                  className={`relative z-10 cursor-pointer  ${!previewImage ? "p-1" : "px-0 h-full w-full"}`}
+                  className={`relative flex justify-center items-center z-10 cursor-pointer  ${!previewImage ? "p-1" : "px-0 h-full w-full"}`}
                 >
                   {previewImage.length <= 0 ? (
                     <div>
@@ -126,7 +130,7 @@ const Step_3_Create = ({
                     </div>
                   )}
                 </div>
-                <div className="dark:bg-jacarta-600 bg-jacarta-50 absolute inset-4 cursor-pointer rounded opacity-0 group-hover:opacity-100 ">
+                <div className="dark:bg-primaryPurple bg-jacarta-50 absolute inset-4 cursor-pointer rounded opacity-0 group-hover:opacity-100 ">
                   <FileUploader
                     handleChange={handleLogoUpload}
                     name="file"
@@ -144,7 +148,7 @@ const Step_3_Create = ({
                 Legal <span className="text-sm text-jacarta-100">(optionnal)</span>{" "}
               </label>
               <p className="dark:text-jacarta-100 text-jacarta-100 text-2xs mb-3">
-                Provide the terms of use for the ad spaces you are offering. This helps to clearly
+                Provide the terms of use for the ad space you are offering. This helps to clearly
                 define what is expected of the advertisements displayed in the sold spaces and the
                 rules that must be adhered to. <br /> Import a pdf or a link
               </p>
@@ -178,7 +182,7 @@ const Step_3_Create = ({
 
               {isSelected ? (
                 <div
-                  className={`dark:bg-secondaryBlack dark:border-jacarta-600 border-jacarta-100 group relative flex max-w-md flex-col items-center justify-center rounded-lg border-2 border-dashed bg-white  px-5 text-center py-5`}
+                  className={`bg-jacarta-800 dark:border-primaryPurple border-jacarta-100 group relative flex max-w-md flex-col items-center justify-center rounded-lg border-2 border-dashed px-5 text-center py-5`}
                 >
                   <div className={`relative z-10 cursor-pointer px-6`}>
                     <div>
@@ -197,7 +201,7 @@ const Step_3_Create = ({
                       </p>
                     </div>
                   </div>
-                  <div className="dark:bg-jacarta-600 bg-jacarta-50 absolute inset-4 cursor-pointer rounded opacity-0 group-hover:opacity-100 ">
+                  <div className="dark:bg-primaryPurple bg-jacarta-50 absolute inset-4 cursor-pointer rounded opacity-0 group-hover:opacity-100 ">
                     <FileUploader
                       handleChange={handleTermsUpload}
                       name="file"
@@ -216,10 +220,9 @@ const Step_3_Create = ({
                   >
                     Url of your terms
                   </label>
-                  <input
+                  <Input
                     type="url"
                     id="item-external-link"
-                    className="dark:bg-secondaryBlack border-jacarta-100 hover:ring-primaryPurple/10 focus:ring-primaryPurple dark:border-jacarta-600 dark:placeholder:text-jacarta-100 w-full rounded-lg py-3 px-3 hover:ring-2 dark:text-white"
                     placeholder="Url of your terms Eg.  https://yoursite.com"
                     onChange={handleChangeTerms}
                     value={terms}

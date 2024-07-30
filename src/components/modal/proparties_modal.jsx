@@ -1,6 +1,7 @@
 import React from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { closePropatiesModal } from "../../redux/counterSlice";
+import Input from "../ui/input";
 
 const Proparties_modal = () => {
   const { propartiesModalValue } = useSelector((state) => state.counter);
@@ -42,7 +43,7 @@ const Proparties_modal = () => {
               </p>
 
               <div className="relative my-3 flex items-center">
-                <button className="dark:bg-secondaryBlack dark:border-jacarta-600 hover:bg-jacarta-100 border-jacarta-100 bg-jacarta-50 flex h-12 w-12 shrink-0 items-center justify-center self-end rounded-l-lg border border-r-0">
+                <button className="dark:bg-secondaryBlack dark:border-jacarta-800 hover:bg-jacarta-100 border-jacarta-100 bg-jacarta-50 flex h-12 w-12 shrink-0 items-center justify-center self-end rounded-l-lg border border-r-0">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 24 24"
@@ -59,22 +60,14 @@ const Proparties_modal = () => {
                   <label className="font-display text-jacarta-900 mb-3 block text-base font-semibold dark:text-white">
                     Type
                   </label>
-                  <input
-                    type="text"
-                    className="dark:bg-secondaryBlack px-4 dark:border-jacarta-600 focus:ring-primaryPurple border-jacarta-100 dark:placeholder-jacarta-300 h-12 w-full border border-r-0 focus:ring-inset dark:text-white"
-                    placeholder="Character"
-                  />
+                  <Input type="text" placeholder="Character" />
                 </div>
 
                 <div className="flex-1">
                   <label className="font-display text-jacarta-900 mb-3 block text-base font-semibold dark:text-white">
                     Name
                   </label>
-                  <input
-                    type="text"
-                    className="dark:bg-secondaryBlack px-4 dark:border-jacarta-600 focus:ring-primaryPurple border-jacarta-100 dark:placeholder-jacarta-300 h-12 w-full rounded-r-lg border focus:ring-inset dark:text-white"
-                    placeholder="Male"
-                  />
+                  <Input type="text" placeholder="Male" />
                 </div>
               </div>
 

@@ -26,20 +26,31 @@ const MarketplaceContainer = () => {
   const { currentChainObject } = useChainContext();
   const chainId = currentChainObject?.chainId;
 
+  const fetchAllListedTokenRef = React.useRef(false);
+
   useEffect(() => {
     if (chainId) {
       const fetchAdsOffers = async () => {
-        const listingArray = [];
+        if (fetchAllListedTokenRef.current) return;
+        fetchAllListedTokenRef.current = true;
 
-        for (const [chainId] of Object.entries(config)) {
-          const listings = await fetchAllListedToken(chainId);
-          listingArray.push(...listings);
+        try {
+          const listingArray = [];
+
+          for (const [chainId] of Object.entries(config)) {
+            const listings = await fetchAllListedToken(chainId);
+            listingArray.push(...listings);
+          }
+
+          setListedAuctionToken(listingArray);
+        } catch (error) {
+          console.error("Error fetching marketplace listings:", error);
+        } finally {
+          fetchAllListedTokenRef.current = false;
         }
-
-        setListedAuctionToken(listingArray);
       };
 
-      fetchAdsOffers();
+      if (chainId) fetchAdsOffers();
     }
   }, [router, address, chainId]);
 
@@ -87,7 +98,7 @@ const MarketplaceContainer = () => {
           {/* Filters / Sorting */}
           {/* <div className="flex flex-wrap justify-between">
           <div className="flex space-x-2 mb-2">
-            <button className="js-collections-toggle-filters flex h-10 group flex-shrink-0 items-center justify-center space-x-1 rounded-lg border border-jacarta-100 bg-white py-1.5 px-4 font-display text-sm font-semibold text-jacarta-100 hover:bg-primaryPurple hover:border-primaryPurple dark:hover:bg-primaryPurple dark:border-jacarta-600 dark:bg-secondaryBlack">
+            <button className="js-collections-toggle-filters flex h-10 group flex-shrink-0 items-center justify-center space-x-1 rounded-lg border border-jacarta-100 bg-white py-1.5 px-4 font-display text-sm font-semibold text-jacarta-100 hover:bg-primaryPurple hover:border-primaryPurple dark:hover:bg-primaryPurple dark:border-jacarta-800 dark:bg-secondaryBlack">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" className="h-4 w-4 fill-jacarta-700 dark:fill-white group-hover:fill-white">
                 <path fill="none" d="M0 0H24V24H0z"></path>
                 <path d="M21 4v2h-1l-5 7.5V22H9v-8.5L4 6H3V4h18zM6.404 6L11 12.894V20h2v-7.106L17.596 6H6.404z"></path>
@@ -95,7 +106,7 @@ const MarketplaceContainer = () => {
               <span className="mt-0.5 dark:text-white group-hover:text-white">Filters</span>
             </button>
 
-            <button className="lex h-10 group flex-shrink-0 items-center justify-center space-x-1 rounded-lg border border-jacarta-100 bg-white py-1.5 px-4 font-medium text-2xs hover:bg-primaryPurple hover:border-primaryPurple dark:hover:bg-primaryPurple dark:border-jacarta-600 dark:bg-secondaryBlack">
+            <button className="lex h-10 group flex-shrink-0 items-center justify-center space-x-1 rounded-lg border border-jacarta-100 bg-white py-1.5 px-4 font-medium text-2xs hover:bg-primaryPurple hover:border-primaryPurple dark:hover:bg-primaryPurple dark:border-jacarta-800 dark:bg-secondaryBlack">
               <span className="mt-0.5 dark:text-white group-hover:text-white">Clear All</span>
             </button>
           </div>
@@ -138,6 +149,7 @@ const MarketplaceContainer = () => {
                           listingType={item?.marketplaceListings[0]?.listingType}
                           isListing={item?.marketplaceListings[0]?.listingType}
                           isAuction={item?.marketplaceListings[0]?.listingType === "Auction"}
+                          currencyDecimals={item?.currencyDecimals}
                         />
                       );
                     })}
