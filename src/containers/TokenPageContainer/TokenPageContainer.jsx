@@ -976,11 +976,13 @@ const TokenPageContainer = () => {
 
     if (
       firstSelectedListing?.status === "CREATED" &&
-      address?.toLowerCase() === firstSelectedListing?.lister?.toLowerCase()
+      firstSelectedListing?.listingType !== "Direct"
     ) {
-      console.log("here");
-      setIsOwner(true);
       setIsTokenInAuction(true);
+    }
+
+    if (address?.toLowerCase() === firstSelectedListing?.lister?.toLowerCase()) {
+      setIsOwner(true);
     }
 
     if (isUserOwner) {
@@ -2094,7 +2096,7 @@ const TokenPageContainer = () => {
                 {isTokenInAuction && (
                   <div className="text-center w-full">
                     <span className="dark:text-warning text-md ">
-                      ⚠️ You cannot submit an ad while your token is in auction or direct listing.
+                      ⚠️ You cannot submit an ad while your token is in auction.
                     </span>
                   </div>
                 )}
