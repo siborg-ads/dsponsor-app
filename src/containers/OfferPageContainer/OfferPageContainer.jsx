@@ -107,8 +107,14 @@ const OfferPageContainer = () => {
         const offers = await fetchOfferPageContainer(chainId, offerId);
         setOffers(offers);
 
-        const offerData = offers?.filter((offer) => offer?.id === offerId)[0];
-        setOfferData(offerData);
+        const offerData = offers?.filter((offer) => Number(offer?.id) === Number(offerId))[0];
+        const offerDataFinal = {
+          ...offerData,
+          chainConfig: offers?.filter((offer) => Number(offer?.id) === Number(offerId))[0]
+            ?.chainConfig
+        };
+
+        setOfferData(offerDataFinal);
       } catch (error) {
         console.error("Error fetching offers:", error);
       } finally {
@@ -618,15 +624,20 @@ const OfferPageContainer = () => {
 
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-6">
               {offerData?.nftContract?.tokens?.map((token) => {
+                const finalToken = {
+                  ...token,
+                  chainConfig: offerData?.chainConfig
+                };
+
                 return (
                   <OfferItem
-                    key={token.id}
-                    token={token}
+                    key={finalToken?.id}
+                    token={finalToken}
                     offerData={offerData}
                     chainId={chainId}
-                    item={token}
+                    item={finalToken}
                     isToken={true}
-                    url={`/${chainId}/offer/${offerId}/${token?.tokenId}`}
+                    url={`/${chainId}/offer/${offerId}/${finalToken?.tokenId}`}
                   />
                 );
               })}

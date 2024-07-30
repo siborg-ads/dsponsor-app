@@ -35,7 +35,6 @@ import BuyModal from "../../components/modal/buyModal.jsx";
 import { toast } from "react-toastify";
 import OfferSkeleton from "../../components/skeleton/offerSkeleton.jsx";
 
-import { Divider } from "@nextui-org/react";
 import Validation from "../../components/offer-section/validation.jsx";
 
 import ItemBids from "../../components/item/ItemBids.jsx";
@@ -215,7 +214,7 @@ const TokenPageContainer = () => {
     if (chainId && offerId) {
       fetchOffers();
     }
-  }, [address, chainId, offerId]);
+  }, [address, chainId, offerId, tokenId]);
 
   useEffect(() => {
     if (offerData && address) {
