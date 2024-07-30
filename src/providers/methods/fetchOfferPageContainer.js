@@ -17,6 +17,7 @@ export const fetchOfferPageContainer = async (chainId, offerId) => {
         metadataURL
         id # offerId
         disable
+        admins
         initialCreator
         creationTimestamp # data (unix time)
         adParameters(where: { enable: true }) {

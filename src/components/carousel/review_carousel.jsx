@@ -10,6 +10,7 @@ import { useEffect, useState } from "react";
 import { Web3Button } from "@thirdweb-dev/react";
 import config from "../../config/config";
 import Input from "../ui/input.jsx";
+import { Spinner } from "@nextui-org/spinner";
 
 const Review_carousel = ({
   chainId,
@@ -22,7 +23,8 @@ const Review_carousel = ({
   isOwner,
   setRefusedValidatedAdModal,
   aspectRatio: expectedRatio,
-  setSponsorHasAtLeastOneRejectedProposalAndNoPending
+  setSponsorHasAtLeastOneRejectedProposalAndNoPending,
+  isRejecting
 }) => {
   const [validate, setValidate] = useState({});
   const [tokenId, setTokenId] = useState(null);
@@ -32,6 +34,7 @@ const Review_carousel = ({
   const [copied, setCopied] = useState(false);
   const [detectedRatios, setDetectedRatios] = useState([]);
   const [detectedRatiosAreGood, setDetectedRatiosAreGood] = useState([]);
+  const [isValidating, setIsValidating] = useState(false);
 
   useEffect(() => {
     if (detectedRatios.length) {
@@ -195,17 +198,19 @@ const Review_carousel = ({
             <div className="flex justify-center  gap-4 flex-wrap">
               <Web3Button
                 contractAddress={config[chainId]?.smartContracts?.DSPONSORADMIN?.address}
-                action={async () =>
+                action={async () => {
+                  setIsValidating(true);
                   await toast.promise(handleItemSubmit(true), {
                     pending: "Waiting for confirmation 🕒",
                     success: "Transaction confirmed 👌",
                     error: "Transaction rejected 🤯"
-                  })
-                }
-                isDisabled={!validate["all"]}
-                className={` !rounded-full !min-w-[100px] !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate["all"] ? "!btn-disabled !cursor-not-allowed" : "!bg-green !cursor-pointer"} `}
+                  });
+                  setIsValidating(false);
+                }}
+                isDisabled={!validate["all"] || isValidating || isRejecting}
+                className={` !rounded-full !min-w-[100px] !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate["all"] || isValidating || isRejecting ? "!btn-disabled !cursor-not-allowed !opacity-30" : "!bg-green !cursor-pointer"} `}
               >
-                Validate
+                {isValidating ? <Spinner size="sm" color="default" /> : "Validate"}
               </Web3Button>
 
               <Web3Button
@@ -217,10 +222,10 @@ const Review_carousel = ({
                     setSponsorHasAtLeastOneRejectedProposalAndNoPending(true);
                   }
                 }}
-                isDisabled={!validate["all"]}
-                className={` !rounded-full !min-w-[100px] !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate["all"] ? "!btn-disabled !cursor-not-allowed" : "!bg-red !cursor-pointer"} `}
+                isDisabled={!validate["all"] || isRejecting || isValidating}
+                className={` !rounded-full !min-w-[100px] !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate["all"] || isRejecting || isValidating ? "!btn-disabled !cursor-not-allowed !opacity-30" : "!bg-red !cursor-pointer"} `}
               >
-                Reject
+                {isRejecting ? <Spinner size="sm" color="default" /> : "Reject"}
               </Web3Button>
             </div>
           </div>
@@ -228,7 +233,7 @@ const Review_carousel = ({
       )}
 
       <div className="grid grid-cols-1 gap-[1.875rem] md:grid-cols-2 lg:grid-cols-4">
-        {pendingProposalData.map((item, itemIndex) => {
+        {pendingProposalData?.map((item, itemIndex) => {
           const { adParametersList, tokenId, tokenData } = item;
 
           return (

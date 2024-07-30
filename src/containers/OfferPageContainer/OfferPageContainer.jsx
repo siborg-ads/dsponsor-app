@@ -623,7 +623,7 @@ const OfferPageContainer = () => {
             </div>
 
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-6">
-              {offerData?.nftContract?.tokens?.map((token) => {
+              {offerData?.nftContract?.tokens?.map((token, index) => {
                 const finalToken = {
                   ...token,
                   chainConfig: offerData?.chainConfig
@@ -631,7 +631,7 @@ const OfferPageContainer = () => {
 
                 return (
                   <OfferItem
-                    key={finalToken?.id}
+                    key={index}
                     token={finalToken}
                     offerData={offerData}
                     chainId={chainId}

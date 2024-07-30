@@ -35,6 +35,7 @@ const ManageSpaceContainer = () => {
   const [isLoadingBids, setIsLoadingBids] = useState(false);
   const [marketplaceBids, setMarketplaceBids] = useState(false);
   const [isLoadingOwnedTokens, setIsLoadingOwnedTokens] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const userAddress = router.query.manage;
   const chainId = currentChainObject?.chainId;
@@ -66,56 +67,6 @@ const ManageSpaceContainer = () => {
     }
   }, [createdOffers]);
 
-  const fetchDataRef = React.useRef(false);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      if (fetchDataRef.current) {
-        return;
-      }
-      fetchDataRef.current = true;
-
-      setIsLoadingTransactions(true);
-
-      try {
-        const data = await fetch(
-          `https://relayer.dsponsor.com/api/${chainId}/activity?userAddress=${userAddress}`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json"
-            }
-          }
-        )
-          .then((res) => res.json())
-          .then((data) => {
-            return data;
-          })
-          .catch((err) => console.error(err));
-
-        let lastActivities = activated_features?.canFilterTransactionsWithWETH
-          ? data?.lastActivities.filter(
-              (activity) => activity.symbol === "WETH" && activity.points > 0
-            )
-          : data?.lastActivities.filter((activity) => activity.points > 0);
-
-        setLastActivities(lastActivities);
-
-        setUserData(data);
-        setMount(true);
-      } catch (error) {
-        console.error("Error fetching user data:", error);
-      } finally {
-        setIsLoadingTransactions(false);
-        fetchDataRef.current = false;
-      }
-    };
-
-    if (userAddress && chainId) {
-      fetchData();
-    }
-  }, [userAddress, chainId]);
-
   useEffect(() => {
     if (address && !initialWallet) {
       setInitialWallet(address);
@@ -129,6 +80,7 @@ const ManageSpaceContainer = () => {
     }
   }, [address, initialWallet, router]);
 
+  const fetchDataRef = React.useRef(false);
   const fetchCreatedDataRef = React.useRef(false);
   const fetchOwnedAdProposalsRef = React.useRef(false);
   const fetchAllDataRef = React.useRef(false);
@@ -142,6 +94,48 @@ const ManageSpaceContainer = () => {
           dataArray?.push(...data);
         }
         return dataArray;
+      };
+
+      const fetchProfileData = async () => {
+        if (fetchDataRef.current) {
+          return;
+        }
+        fetchDataRef.current = true;
+
+        setIsLoadingTransactions(true);
+
+        try {
+          const data = await fetch(
+            `https://relayer.dsponsor.com/api/${chainId}/activity?userAddress=${userAddress}`,
+            {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json"
+              }
+            }
+          )
+            .then((res) => res.json())
+            .then((data) => {
+              return data;
+            })
+            .catch((err) => console.error(err));
+
+          let lastActivities = activated_features?.canFilterTransactionsWithWETH
+            ? data?.lastActivities.filter(
+                (activity) => activity.symbol === "WETH" && activity.points > 0
+              )
+            : data?.lastActivities.filter((activity) => activity.points > 0);
+
+          setLastActivities(lastActivities);
+
+          setUserData(data);
+          setMount(true);
+        } catch (error) {
+          console.error("Error fetching user data:", error);
+        } finally {
+          setIsLoadingTransactions(false);
+          fetchDataRef.current = false;
+        }
       };
 
       const fetchCreatedData = async () => {
@@ -308,14 +302,18 @@ const ManageSpaceContainer = () => {
         }
         fetchAllDataRef.current = true;
 
+        setIsLoading(true);
+
         if (chainId && userAddress) {
           try {
+            await fetchProfileData();
             await fetchCreatedData();
             await fetchOwnedAdProposals();
           } catch (error) {
             console.error("Error fetching manage data:", error);
           } finally {
             fetchAllDataRef.current = false;
+            setIsLoading(false);
           }
         }
       };
@@ -382,7 +380,11 @@ const ManageSpaceContainer = () => {
 
         <div className="max-w-5xl mx-auto mt-12">
           <div className="flex flex-col gap-16 mx-4">
-            <ProfileOverview userData={userData} ownedTokens={mappedOwnedAdProposals} />
+            <ProfileOverview
+              userData={userData}
+              ownedTokens={mappedOwnedAdProposals}
+              isLoading={isLoading}
+            />
 
             {isUserConnected && (
               <ProfileReferrals
