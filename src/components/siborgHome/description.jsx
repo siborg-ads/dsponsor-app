@@ -98,11 +98,10 @@ const steps = [
     description: (
       <span>
         <span className="font-semibold text-white">Submit an ad proposal</span> that will be
-        displayed in the SiBorg App.
+        displayed in the SiBorg App once approved.
       </span>
     ),
-    image: "/images/home/siborg-preview.png",
-    comingSoon: true
+    image: "/images/home/siborg-preview.png"
   }
 ];
 
@@ -188,7 +187,7 @@ const Description = ({ description }) => {
                     {step.image && (
                       <button onClick={() => openModal(step.image)} className="text-left">
                         <span className="underline text-white hover:text-jacarta-100 text-left text-xs cursor-pointer">
-                          See example
+                          See example with &apos;Bitcoin&apos; search keyword
                         </span>
                       </button>
                     )}
