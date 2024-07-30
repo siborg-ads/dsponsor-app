@@ -35,7 +35,6 @@ import BuyModal from "../../components/modal/buyModal.jsx";
 import { toast } from "react-toastify";
 import OfferSkeleton from "../../components/skeleton/offerSkeleton.jsx";
 
-import { Divider } from "@nextui-org/react";
 import Validation from "../../components/offer-section/validation.jsx";
 
 import ItemBids from "../../components/item/ItemBids.jsx";
@@ -215,7 +214,7 @@ const TokenPageContainer = () => {
     if (chainId && offerId) {
       fetchOffers();
     }
-  }, [address, chainId, offerId]);
+  }, [address, chainId, offerId, tokenId]);
 
   useEffect(() => {
     if (offerData && address) {
@@ -1718,17 +1717,17 @@ const TokenPageContainer = () => {
                 />
               </button>
 
-                {/* <!-- Modal --> */}
-                <div className={imageModal ? "modal fade show block" : "modal fade"}>
-                  <div className="modal-dialog !my-0 flex h-full max-w-4xl items-center justify-center">
-                    <Image
-                      width={582}
-                      height={722}
-                      src={imageUrl ?? "/images/gradient_creative.jpg"}
-                      alt="image"
-                      className="h-full object-cover w-full rounded-2xl"
-                    />
-                  </div>
+              {/* <!-- Modal --> */}
+              <div className={imageModal ? "modal fade show block" : "modal fade"}>
+                <div className="modal-dialog !my-0 flex h-full max-w-4xl items-center justify-center">
+                  <Image
+                    width={582}
+                    height={722}
+                    src={imageUrl ?? "/images/gradient_creative.jpg"}
+                    alt="image"
+                    className="h-full object-cover w-full rounded-2xl"
+                  />
+                </div>
 
                 <button
                   type="button"
