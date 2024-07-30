@@ -34,6 +34,7 @@ const ManageSpaceContainer = () => {
   const [lastActivities, setLastActivities] = useState(null);
   const [isLoadingBids, setIsLoadingBids] = useState(false);
   const [marketplaceBids, setMarketplaceBids] = useState(false);
+  const [isLoadingOwnedTokens, setIsLoadingOwnedTokens] = useState(false);
 
   const userAddress = router.query.manage;
   const chainId = currentChainObject?.chainId;
@@ -273,6 +274,8 @@ const ManageSpaceContainer = () => {
         }
         fetchOwnedAdProposalsRef.current = true;
 
+        setIsLoadingOwnedTokens(true);
+
         try {
           const ownedAdProposalsArray = await fetchDataByUserAddress(fetchAllTokenByOfferForAuser);
 
@@ -294,6 +297,7 @@ const ManageSpaceContainer = () => {
         } catch (error) {
           console.error("Error fetching owned ad proposals:", error);
         } finally {
+          setIsLoadingOwnedTokens(false);
           fetchOwnedAdProposalsRef.current = false;
         }
       };
@@ -401,6 +405,7 @@ const ManageSpaceContainer = () => {
               lastActivities={lastActivities}
               isLoadingBids={isLoadingBids}
               marketplaceBids={marketplaceBids}
+              isLoadingOwnedTokens={isLoadingOwnedTokens}
             />
           </div>
         </div>
