@@ -36,6 +36,7 @@ const Validation = ({
   const [isApprouvedAd, setIsApprouvedAd] = useState(false);
   const [pendingProposalLength, setPendingProposalLength] = useState(0);
   const [aspectRatio, setAspectRatio] = useState(null);
+  const [isRejecting, setIsRejecting] = useState(false);
 
   const tabItem = [
     {
@@ -271,6 +272,7 @@ const Validation = ({
                 setSponsorHasAtLeastOneRejectedProposalAndNoPending={
                   setSponsorHasAtLeastOneRejectedProposalAndNoPending
                 }
+                isRejecting={isRejecting}
               />
             </div>
           </TabPanel>
@@ -308,6 +310,8 @@ const Validation = ({
             }
             comments={comments}
             setIsApprouvedAd={setIsApprouvedAd}
+            setIsRejecting={setIsRejecting}
+            isRejecting={isRejecting}
           />
         </div>
       )}

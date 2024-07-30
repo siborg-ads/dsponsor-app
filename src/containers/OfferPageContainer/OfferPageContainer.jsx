@@ -643,7 +643,7 @@ const OfferPageContainer = () => {
 
                 return (
                   <OfferItem
-                    key={finalToken?.id}
+                    key={index}
                     token={finalToken}
                     offerData={offerData}
                     chainId={chainId}

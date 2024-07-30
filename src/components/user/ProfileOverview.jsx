@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import OverviewCard from "./OverviewCard";
 import { ArrowPathIcon } from "@heroicons/react/20/solid";
 
-const ProfileOverview = ({ userData, ownedTokens }) => {
+const ProfileOverview = ({ userData, ownedTokens, isLoading }) => {
   const [ranking, setRanking] = useState(null);
 
   useEffect(() => {
@@ -45,7 +45,8 @@ const ProfileOverview = ({ userData, ownedTokens }) => {
         <div className="flex justify-between items-end">
           <h2 className="text-white font-semibold text-xl md:text-2xl">Overview</h2>
           <span className="text-jacarta-100 text-xs md:text-sm inline-flex items-center gap-1">
-            <ArrowPathIcon className="w-4 h-4 text-white animate-spin" /> Updated every 15 minutes
+            {isLoading && <ArrowPathIcon className="w-4 h-4 text-white animate-spin" />} Updated
+            every 15 minutes
           </span>
         </div>
 
