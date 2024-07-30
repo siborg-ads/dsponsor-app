@@ -74,13 +74,15 @@ const HomeContainer = () => {
       const currencySymbol = token?.marketplaceListings.sort(
         (a, b) => Number(b.id) - Number(a.id)
       )[0]?.currencySymbol;
-      const latestBid = Number(
-        formatUnits(
-          token?.marketplaceListings.sort((a, b) => Number(b.id) - Number(a.id))[0]
-            ?.bidPriceStructure?.previousBidAmount ?? 0,
-          currencyDecimals
-        )
-      );
+      const latestBid = currencyDecimals
+        ? Number(
+            formatUnits(
+              token?.marketplaceListings?.sort((a, b) => Number(b.id) - Number(a.id))[0]
+                ?.bidPriceStructure?.previousBidAmount ?? 0,
+              currencyDecimals
+            )
+          )
+        : 0;
       const priceUSD = Number(
         formatAndRound(
           Number(

@@ -13,7 +13,7 @@ import Input from "../ui/input";
 
 const Recently_added_dropdown = ({ data, dropdownFor }) => {
   const dispatch = useDispatch();
-  const [currencyValFrom, setCurrencyValFrom] = useState("");
+  const [currencyValFrom] = useState("");
   const [currencyValTo, setCurrencyValTo] = useState("");
   const [sortActive, setSortActive] = useState(1);
   const [sortFilterText, setSortFilterText] = useState("");

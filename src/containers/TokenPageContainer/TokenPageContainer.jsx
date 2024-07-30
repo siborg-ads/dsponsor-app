@@ -12,7 +12,7 @@ import { BigNumber, ethers } from "ethers";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import Spinner from "@nextui-org/react";
+import { Spinner } from "@nextui-org/react";
 import React, { useEffect, useRef, useState } from "react";
 import "tippy.js/dist/tippy.css";
 import Meta from "../../components/Meta.jsx";

@@ -36,6 +36,7 @@ export const fetchAllOffers = async (chainId) => {
             currency # ERC20 smart contract
             amount # wei, mind decimals() function to transform in human readable value !
             enabled
+            currencyDecimals
           }
           tokens(
             # you can paginate with this type or filtering
@@ -67,6 +68,7 @@ export const fetchAllOffers = async (chainId) => {
               reservePricePerToken
               buyoutPricePerToken
               currency
+              currencyDecimals
               quantity
               directBuys {
                 id
