@@ -313,10 +313,10 @@ const BuyModal = ({
                           contractAddress={
                             currentChainObject?.smartContracts?.DSPONSORADMIN?.address
                           }
-                          action={() => {
+                          action={async () => {
                             setIsLoadingApproveButton(true);
 
-                            toast.promise(handleApprove, {
+                            await toast.promise(handleApprove, {
                               pending: "Waiting for confirmation 🕒",
                               success: "Approval confirmed 👌",
                               error: "Approval rejected 🤯"
@@ -352,10 +352,10 @@ const BuyModal = ({
                       {/* Place Bid Button */}
                       <Web3Button
                         contractAddress={currentChainObject?.smartContracts?.DSPONSORADMIN?.address}
-                        action={() => {
+                        action={async () => {
                           setIsLoadingBuyButton(true);
 
-                          toast.promise(handleSubmit, {
+                          await toast.promise(handleSubmit, {
                             pending: "Waiting for confirmation 🕒",
                             success: "Buy confirmed 👌",
                             error: "Buy rejected 🤯"
@@ -403,10 +403,10 @@ const BuyModal = ({
                   // If insufficient balance, show this button
                   <Web3Button
                     contractAddress={currentChainObject?.smartContracts?.DSPONSORADMIN?.address}
-                    action={() => {
+                    action={async () => {
                       setIsLoadingBuyButton(true);
 
-                      toast.promise(handleBuySubmitWithNative, {
+                      await toast.promise(handleBuySubmitWithNative, {
                         pending: "Waiting for confirmation 🕒",
                         success: "Transaction confirmed 👌",
                         error: "Transaction rejected 🤯"

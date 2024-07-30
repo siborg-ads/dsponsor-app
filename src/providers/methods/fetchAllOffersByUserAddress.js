@@ -99,17 +99,33 @@ export const fetchAllOffersByUserAddress = async (userAddress, chainId) => {
               #    price = bids[0].totalBidAmount || reservePricePerToken
               reservePricePerToken
               buyoutPricePerToken
-              bids(orderBy: totalBidAmount, orderDirection: desc, first: 1) {
-                creationTimestamp
+              bids(orderBy: totalBidAmount, orderDirection: desc, first: 1000) {
+                  id
                   bidder
-                  totalBidAmount
-                  status
-                  newPricePerToken
-                  totalBidAmount
-                  paidBidAmount
+                  quantity
                   refundBonus
                   refundAmount
                   refundProfit
+                  paidBidAmount
+                  status
+                  currency
+                  creationTimestamp
+                  lastUpdateTimestamp
+                  creationTxHash
+                  listing {
+                    token {
+                      tokenId
+                      mint {
+                        tokenData
+                      }
+                      nftContract {
+                        adOffers(first: 1, orderBy: creationTimestamp, orderDirection: desc) {
+                          id
+                          name
+                        }
+                      }
+                    }
+                  }
               }
 
               lister

@@ -195,8 +195,8 @@ const Review_carousel = ({
             <div className="flex justify-center  gap-4 flex-wrap">
               <Web3Button
                 contractAddress={config[chainId]?.smartContracts?.DSPONSORADMIN?.address}
-                action={() =>
-                  toast.promise(handleItemSubmit(true), {
+                action={async () =>
+                  await toast.promise(handleItemSubmit(true), {
                     pending: "Waiting for confirmation 🕒",
                     success: "Transaction confirmed 👌",
                     error: "Transaction rejected 🤯"

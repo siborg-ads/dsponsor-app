@@ -28,7 +28,11 @@ const UserTabs = ({
   tokenAuctionBids,
   isPendingAdsOnOffer,
   manageAddress,
-  offers
+  offers,
+  lastActivities,
+  isLoadingTransactions,
+  isLoadingBids,
+  marketplaceBids
 }) => {
   const searchParams = useSearchParams();
   const tab = searchParams.get("tab");
@@ -114,10 +118,14 @@ const UserTabs = ({
         ))}
       </TabList>
       <TabPanel>
-        <Transactions manageAddress={manageAddress} />
+        <Transactions
+          manageAddress={manageAddress}
+          isLoading={isLoadingTransactions}
+          lastActivities={lastActivities}
+        />
       </TabPanel>
       <TabPanel>
-        <Bids manageAddress={manageAddress} />
+        <Bids marketplaceBids={marketplaceBids} isLoading={isLoadingBids} />
       </TabPanel>
       <TabPanel>
         <OwnedAdProposalsCategoriesItems data={mappedownedAdProposals} isOwner={isOwner} />

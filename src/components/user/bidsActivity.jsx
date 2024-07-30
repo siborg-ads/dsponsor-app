@@ -2,19 +2,15 @@ import React, { useState, useEffect, useCallback } from "react";
 import { DateRangePicker } from "@nextui-org/date-picker";
 import Link from "next/link";
 import { useChainContext } from "../../contexts/hooks/useChainContext";
-import { fetchAllMarketplaceBidsByBidder } from "../../providers/methods/fetchAllMarketplaceBids";
 import formatAndRound from "../../utils/formatAndRound";
 import { BigNumber } from "ethers";
 import { formatUnits } from "ethers/lib/utils";
 import { Loader2Icon } from "lucide-react";
 
-const Bids = ({ manageAddress }) => {
+const Bids = ({ marketplaceBids, isLoading }) => {
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [filteredLastActivities, setFilteredLastActivities] = useState([]);
-  const [marketplaceBids, setMarketplaceBids] = useState([]);
-  const [fetchedBids, setFetchedBids] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
 
   const { currentChainObject } = useChainContext();
   const chainId = currentChainObject?.chainId;
@@ -108,33 +104,6 @@ const Bids = ({ manageAddress }) => {
       setFilteredLastActivities(sortedMarketplaceBids);
     }
   }, [startDate, endDate, marketplaceBids, formatBidTransactions]);
-
-  const requestInitiatedRef = React.useRef(false);
-
-  useEffect(() => {
-    const fetchMarketplaceBids = async () => {
-      setIsLoading(true);
-      if (requestInitiatedRef.current) {
-        return;
-      }
-      requestInitiatedRef.current = true;
-
-      try {
-        const data = await fetchAllMarketplaceBidsByBidder(chainId, manageAddress);
-        setMarketplaceBids(data?.marketplaceBids);
-        setFetchedBids(true);
-      } catch (error) {
-        console.error("Error fetching marketplace bids:", error);
-      } finally {
-        requestInitiatedRef.current = false;
-        setIsLoading(false);
-      }
-    };
-
-    if (chainId && manageAddress && !fetchedBids) {
-      fetchMarketplaceBids();
-    }
-  }, [chainId, fetchedBids, manageAddress]);
 
   const toDisplayType = (type) => {
     switch (type) {
