@@ -146,6 +146,7 @@ const Validation = ({
   const handleItemSubmit = async (approuved = false) => {
     let submissionArgs = [];
     setIsApprouvedAd(approuved);
+
     for (const item of selectedItems) {
       let argObject = {
         ...item,
@@ -161,6 +162,7 @@ const Validation = ({
       setPendingProposalLength((prev) => prev - submissionArgs.length);
     } catch (error) {
       console.error(error);
+      throw error;
     }
   };
 

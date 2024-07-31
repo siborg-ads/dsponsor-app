@@ -78,6 +78,8 @@ const TokenPageContainer = () => {
   const [royalties, setRoyalties] = useState(null);
   const [errors, setErrors] = useState({});
   const [marketplaceListings, setMarketplaceListings] = useState([]);
+  const [refusedValidatedAdModal, setRefusedValidatedAdModal] = useState(null);
+  const [successFullRefuseModal, setSuccessFullRefuseModal] = useState(false);
   const [finalPrice, setFinalPrice] = useState(null);
   const [finalPriceNotFormatted, setFinalPriceNotFormatted] = useState(null);
   const [successFullUpload, setSuccessFullUpload] = useState(false);
@@ -112,7 +114,7 @@ const TokenPageContainer = () => {
   const [bidsAmount, setBidsAmount] = useState("");
   const [currencyDecimals, setCurrencyDecimals] = useState(null);
   const [isLister, setIsLister] = useState(false);
-  const [, setSelectedItems] = useState([]);
+  const [selectedItems, setSelectedItems] = useState([]);
   const [bids, setBids] = useState([]);
   const [insufficentBalance, setInsufficentBalance] = useState(false);
   const [canPayWithNativeToken, setCanPayWithNativeToken] = useState(false);
@@ -1442,6 +1444,25 @@ const TokenPageContainer = () => {
     }
   }, [marketplaceListings, address, firstSelectedListing]);
 
+  const { mutateAsync: validationAsync } = useContractWrite(
+    DsponsorAdminContract,
+    "reviewAdProposals"
+  );
+
+  const handleValidationSubmit = async (submissionArgs) => {
+    try {
+      await validationAsync({
+        args: [submissionArgs]
+      });
+      setRefusedValidatedAdModal(true);
+      setSuccessFullRefuseModal(true);
+    } catch (error) {
+      console.error("Erreur de validation du token:", error);
+      setSuccessFullRefuseModal(false);
+      throw error;
+    }
+  };
+
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (event.target.closest(".modal-content") === null) {
@@ -2242,6 +2263,10 @@ const TokenPageContainer = () => {
                     isOwner={isOfferOwner}
                     isToken={false}
                     successFullUploadModal={successFullUploadModal}
+                    successFullRefuseModal={successFullRefuseModal}
+                    setRefusedValidatedAdModal={setRefusedValidatedAdModal}
+                    refusedValidatedAdModal={refusedValidatedAdModal}
+                    setSuccessFullRefuseModal={setSuccessFullRefuseModal}
                     isLister={isLister}
                     setSelectedItems={setSelectedItems}
                     sponsorHasAtLeastOneRejectedProposalAndNoPending={
@@ -2252,6 +2277,8 @@ const TokenPageContainer = () => {
                     isSponsor={isOwner}
                     itemTokenId={tokenId}
                     isTokenView={true}
+                    handleSubmit={handleValidationSubmit}
+                    selectedItems={selectedItems}
                   />
                 </Accordion.Content>
               </>
