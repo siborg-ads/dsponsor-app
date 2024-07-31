@@ -191,7 +191,7 @@ const Validation = ({
     }));
     setSelectedItems((currentItems) => {
       return currentItems.map((item) => {
-        if (item.tokenId === tokenId) {
+        if (!!item?.tokenId && tokenId && BigInt(item?.tokenId) === BigInt(tokenId)) {
           return { ...item, reason: value };
         }
         return item;

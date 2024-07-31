@@ -55,7 +55,8 @@ const OfferItem = ({
       // itemOffers is an item that contains nftContract which contains tokens that contains the tokenId
       // we need to get the token item from the tokens array where the tokenId matches the current item tokenId
       const tokenOffers = itemOffer?.nftContract?.tokens?.find(
-        (token) => token?.tokenId === item?.tokenId
+        (token) =>
+          !!token?.tokenId && !!item?.tokenId && BigInt(token?.tokenId) === BigInt(item?.tokenId)
       );
 
       // then we get the proposals for the current item
