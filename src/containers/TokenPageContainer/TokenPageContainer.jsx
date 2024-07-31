@@ -53,6 +53,7 @@ import { ChevronDownIcon, ExclamationCircleIcon } from "@heroicons/react/24/soli
 import InfoIcon from "../../components/informations/infoIcon.jsx";
 import Disable from "../../components/disable/disable.jsx";
 import Input from "../../components/ui/input";
+import { useSearchParams } from "next/navigation.js";
 
 const TokenPageContainer = () => {
   const router = useRouter();
@@ -140,6 +141,8 @@ const TokenPageContainer = () => {
   const [airdropAddress, setAirdropAddress] = useState(undefined);
   const [nftContractAddress, setNftContractAddress] = useState(null);
   const [showEntireDescription, setShowEntireDescription] = useState(false);
+
+  const searchParams = useSearchParams();
 
   let description = "description not found";
   let id = "1";
@@ -997,9 +1000,8 @@ const TokenPageContainer = () => {
   useEffect(() => {
     if (!tokenId || !offerData) return;
 
-    if (tokenId.length > 6) {
-      const url = new URL(window.location.href);
-      let tokenData = url.searchParams.get("tokenData");
+    if (tokenId?.length > 6) {
+      let tokenData = searchParams.get("tokenData");
       setTokenData(tokenData);
 
       if (
@@ -1628,12 +1630,13 @@ const TokenPageContainer = () => {
 
   const { mutateAsync: airdropAsync } = useContractWrite(DsponsorNFTContract, "mint");
 
-  const handleAirdrop = async (airdropAddress) => {
-    let stringToUnit = 0;
+  const handleAirdrop = async (airdropAddress, tokenData) => {
+    let stringToUnit = BigInt(0);
+
     if (tokenData) {
       stringToUnit = stringToUint256(tokenData);
 
-      if (BigInt(stringToUnit) !== BigInt(tokenId)) {
+      if (tokenId && stringToUnit !== BigInt(tokenId)) {
         console.error("Token ID and token data do not match");
         throw new Error("Token ID and token data do not match");
       }
@@ -1651,7 +1654,12 @@ const TokenPageContainer = () => {
 
     try {
       await airdropAsync({
-        args: [tokenId, airdropAddress, "0x0000000000000000000000000000000000000000", stringToUnit]
+        args: [
+          tokenId,
+          airdropAddress,
+          "0x0000000000000000000000000000000000000000",
+          stringToUnit?.toString()
+        ]
       });
 
       setAirdropContainer(false);
@@ -1979,7 +1987,7 @@ const TokenPageContainer = () => {
                             action={async () => {
                               setIsLoadingAirdropButton(true);
 
-                              await toast.promise(handleAirdrop(airdropAddress), {
+                              await toast.promise(handleAirdrop(airdropAddress, tokenData), {
                                 pending: "Airdrop in progress... 🚀",
                                 success: "Airdrop successful 🎉",
                                 error: "Airdrop failed ❌"

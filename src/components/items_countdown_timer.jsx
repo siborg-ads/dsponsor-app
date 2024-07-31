@@ -6,9 +6,9 @@ const Completionist = () => {
       <span
         className="js-countdown-timer text-black shrink-0 whitespace-nowrap"
         data-countdown="2022-05-14T10:45:30"
-        data-expired="This auction has ended"
+        data-expired="Ended listing"
       >
-        This auction has ended
+        Ended listing
       </span>
     </div>
   );
@@ -19,38 +19,36 @@ const renderer = ({ days, hours, minutes, seconds, completed }) => {
     return <Completionist />;
   } else {
     return (
-      <>
-        <div
-          className="js-countdown-single-timer mt-3 flex space-x-4"
-          data-countdown="2022-09-07T19:40:30"
-          data-expired="This auction has ended"
-        >
-          <span className="countdown-days text-jacarta-900 dark:text-white">
-            <span className="js-countdown-days-number text-lg font-medium lg:text-[1.5rem]">
-              {days}
-            </span>
-            <span className="block text-xs font-medium tracking-tight">Days</span>
+      <div
+        className="js-countdown-single-timer mt-3 flex space-x-4"
+        data-countdown="2022-09-07T19:40:30"
+        data-expired="Ended listing"
+      >
+        <span className="countdown-days text-jacarta-900 dark:text-white">
+          <span className="js-countdown-days-number text-lg font-medium lg:text-[1.5rem]">
+            {days}
           </span>
-          <span className="countdown-hours text-jacarta-900 dark:text-white">
-            <span className="js-countdown-hours-number text-lg font-medium lg:text-[1.5rem]">
-              {hours}
-            </span>
-            <span className="block text-xs font-medium tracking-tight">Hrs</span>
+          <span className="block text-xs font-medium tracking-tight">Days</span>
+        </span>
+        <span className="countdown-hours text-jacarta-900 dark:text-white">
+          <span className="js-countdown-hours-number text-lg font-medium lg:text-[1.5rem]">
+            {hours}
           </span>
-          <span className="countdown-minutes text-jacarta-900 dark:text-white">
-            <span className="js-countdown-minutes-number text-lg font-medium lg:text-[1.5rem]">
-              {minutes}
-            </span>
-            <span className="block text-xs font-medium tracking-tight">Min</span>
+          <span className="block text-xs font-medium tracking-tight">Hrs</span>
+        </span>
+        <span className="countdown-minutes text-jacarta-900 dark:text-white">
+          <span className="js-countdown-minutes-number text-lg font-medium lg:text-[1.5rem]">
+            {minutes}
           </span>
-          <span className="countdown-seconds text-jacarta-900 dark:text-white">
-            <span className="js-countdown-seconds-number text-lg font-medium lg:text-[1.5rem]">
-              {seconds}
-            </span>
-            <span className="block text-xs font-medium tracking-tight">Sec</span>
+          <span className="block text-xs font-medium tracking-tight">Min</span>
+        </span>
+        <span className="countdown-seconds text-jacarta-900 dark:text-white">
+          <span className="js-countdown-seconds-number text-lg font-medium lg:text-[1.5rem]">
+            {seconds}
           </span>
-        </div>
-      </>
+          <span className="block text-xs font-medium tracking-tight">Sec</span>
+        </span>
+      </div>
     );
   }
 };

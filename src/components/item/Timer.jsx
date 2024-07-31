@@ -5,7 +5,7 @@ import Countdown from "react-countdown";
 
 const Completionist = () => (
   <div className="absolute bottom-4 left-1/2 flex -translate-x-1/2 text-black dark:text-black items-center justify-center space-x-1 rounded-full bg-white py-2.5 px-6 text-2xs font-medium">
-    <span>This auction has ended</span>
+    <span>Ended listing</span>
   </div>
 );
 
@@ -20,7 +20,7 @@ const renderer = ({ days, hours, minutes, seconds, completed }) => {
       <div
         className="js-countdown-single-timer mt-3 flex space-x-4"
         data-countdown="2023-09-07T19:40:30"
-        data-expired="This auction has ended"
+        data-expired="Ended listing"
       >
         <span className="countdown-days text-jacarta-900 dark:text-white">
           <span className="js-countdown-days-number text-lg font-medium lg:text-[1.5rem]">
