@@ -984,14 +984,15 @@ const TokenPageContainer = () => {
       setIsTokenInAuction(true);
     }
 
-    if (address?.toLowerCase() === firstSelectedListing?.lister?.toLowerCase()) {
+    if (
+      address?.toLowerCase() === firstSelectedListing?.lister?.toLowerCase() &&
+      firstSelectedListing?.status === "CREATED"
+    ) {
       setIsOwner(true);
     }
 
-    if (isUserOwner) {
-      if (isUserOwner?.toLowerCase() === address?.toLowerCase()) {
-        setIsOwner(true);
-      }
+    if (isUserOwner?.toLowerCase() === address?.toLowerCase()) {
+      setIsOwner(true);
     }
   }, [isUserOwner, address, marketplaceListings, firstSelectedListing]);
 
