@@ -954,11 +954,12 @@ const BidsModal = ({
                             toast.error(`Buying failed: ${error.message}`);
                           }
                         }}
-                        isDisabled={!checkTerms}
+                        isDisabled={!checkTerms || isLoadingButton}
                         isLoading={isLoadingButton}
                         isLoadingRender={() => <Spinner size="sm" color="default" />}
-                        // isActiveRender={`Buy NOW ${finalPrice} ${selectedCurrency} with card `}
-                        // isDisabled={!validate || isLoadingButton}
+                        //isActiveRender={`Buy NOW ${price} ${selectedCurrency} with card `}
+                        successCallbackURl={window.location.href}
+                        failureCallbackURL={window.location.href}
                       />
                     </div>
                   </>

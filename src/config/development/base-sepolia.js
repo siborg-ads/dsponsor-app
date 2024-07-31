@@ -50,7 +50,20 @@ const devBaseSepolia = {
 
   features: {
     crossmint: {
-      enabled: false
+      enabled: true,
+      config: {
+        projectId: process.env.NEXT_PUBLIC_PROJECT_ID,
+
+        bidCollectionId: "e22acedd-c541-40b7-b194-89c494fe0a9e",
+        buyCollectionId: "a092b1ee-b2c0-42b7-aede-e4f67aab9e91",
+        mintCollectionId: "9d83e973-d852-4b9d-80a8-0da10c8ae451",
+
+        environment: "staging",
+
+        currency: "EUR",
+        locale: "en-EN",
+        paymentMethod: "fiat"
+      }
     }
   }
 };

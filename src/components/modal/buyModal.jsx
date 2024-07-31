@@ -472,6 +472,8 @@ const BuyModal = ({
                         isLoadingRender={() => <Spinner size="sm" color="default" />}
                         isActiveRender={`Buy NOW ${finalPrice} ${selectedCurrency} with card `}
                         isDisabled={!validate || isLoadingButton}
+                        successCallbackURl={window.location.href}
+                        failureCallbackURL={window.location.href}
                       />
                     ) : (
                       <BuyWithCrossmintButton
@@ -492,6 +494,8 @@ const BuyModal = ({
                         isLoadingRender={() => <Spinner size="sm" color="default" />}
                         isActiveRender={`Buy NOW ${finalPrice} ${selectedCurrency} with card `}
                         isDisabled={!validate || isLoadingButton}
+                        successCallbackURl={window.location.href}
+                        failureCallbackURL={window.location.href}
                       />
                     )}
                   </div>

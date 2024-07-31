@@ -54,6 +54,7 @@ import InfoIcon from "../../components/informations/infoIcon.jsx";
 import Disable from "../../components/disable/disable.jsx";
 import Input from "../../components/ui/input";
 import { useSearchParams } from "next/navigation.js";
+import TransactionFailedModal from "../../components/modal/failModal.jsx";
 
 const TokenPageContainer = () => {
   const router = useRouter();
@@ -141,8 +142,34 @@ const TokenPageContainer = () => {
   const [airdropAddress, setAirdropAddress] = useState(undefined);
   const [nftContractAddress, setNftContractAddress] = useState(null);
   const [showEntireDescription, setShowEntireDescription] = useState(false);
+  const [failedCrossmintTransaction, setFailedCrossmintTransaction] = useState(false);
 
   const searchParams = useSearchParams();
+  const payload = searchParams.get("p");
+  const mintCollectionId = process.env.NEXT_PUBLIC_MINT_COLLECTION_ID;
+  const buyCollectionId = process.env.NEXT_PUBLIC_BUY_COLLECTION_ID;
+  const bidCollectionId = process.env.NEXT_PUBLIC_BID_COLLECTION_ID;
+
+  useEffect(() => {
+    // TODO get token data from callback url
+    if (payload) {
+      if (payload?.status === "success") {
+        const collectionId = payload?.collectionId;
+
+        if (collectionId === mintCollectionId) {
+          setSuccessFullUpload(true);
+          setIsOwner(true);
+          setMinted(true);
+        } else if (collectionId === buyCollectionId) {
+          setSuccessFullUpload(true);
+        } else if (collectionId === bidCollectionId) {
+          setSuccessFullBid(true);
+        }
+      } else if (payload?.status === "failure") {
+        setFailedCrossmintTransaction(true);
+      }
+    }
+  }, [bidCollectionId, buyCollectionId, mintCollectionId, payload]);
 
   let description = "description not found";
   let id = "1";
@@ -2392,6 +2419,9 @@ const TokenPageContainer = () => {
             nativeTokenBalance={nativeTokenBalance}
           />
         </div>
+      )}
+      {failedCrossmintTransaction && (
+        <TransactionFailedModal setCrossmintTransactionFailed={setFailedCrossmintTransaction} />
       )}
     </Accordion.Root>
   );
