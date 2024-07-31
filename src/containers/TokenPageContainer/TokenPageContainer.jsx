@@ -242,7 +242,7 @@ const TokenPageContainer = () => {
       // itemOffers is an item that contains nftContract which contains tokens that contains the tokenId
       // we need to get the token item from the tokens array where the tokenId matches the current item tokenId
       const tokenOffers = itemOffer?.nftContract?.tokens?.find(
-        (token) => token?.tokenId === tokenId
+        (token) => !!token?.tokenId && tokenId && BigInt(token?.tokenId) === BigInt(tokenId)
       );
 
       // then we get the proposals for the current item
@@ -440,10 +440,10 @@ const TokenPageContainer = () => {
   }, [listingCreated, offerId, tokenId, chainId, offers]);
 
   useEffect(() => {
-    if (offerData?.nftContract?.tokens.length > 0) {
+    if (offerData?.nftContract?.tokens.length > 0 && tokenId) {
       setMarketplaceListings(
         offerData?.nftContract?.tokens
-          ?.find((token) => Number(token?.tokenId) === Number(tokenId))
+          ?.find((token) => !!token?.tokenId && BigInt(token?.tokenId) === BigInt(tokenId))
           ?.marketplaceListings.sort((a, b) => b.id - a.id)
       );
     }
@@ -533,10 +533,8 @@ const TokenPageContainer = () => {
               if (!offerData || !tokenId) return;
 
               const tokenData = offerData?.nftContract?.tokens?.find(
-                (token) => Number(token?.tokenId) === Number(tokenId)
+                (token) => !!token?.tokenId && BigInt(token?.tokenId) === BigInt(tokenId)
               );
-
-              console.log("tokenData", tokenData);
 
               if (tokenData) {
                 // need to match listing id and direct buys listing id
@@ -595,8 +593,10 @@ const TokenPageContainer = () => {
       let saleMintInfo;
 
       try {
+        if (!tokenId) return;
+
         const tokenData = offerData?.nftContract?.tokens?.find(
-          (token) => Number(token?.tokenId) === Number(tokenId)
+          (token) => !!token?.tokenId && BigInt(token?.tokenId) === BigInt(tokenId)
         );
 
         const smartContracts = currentChainObject?.smartContracts;
@@ -667,7 +667,7 @@ const TokenPageContainer = () => {
   ]);
 
   useEffect(() => {
-    if (!offerData) return;
+    if (!offerData || !tokenId) return;
     setOfferDO({
       offerId: offerId
     });
@@ -675,7 +675,7 @@ const TokenPageContainer = () => {
       currency:
         offerData?.nftContract?.prices[0]?.currency ??
         offerData?.nftContract?.tokens
-          ?.find((token) => Number(token?.tokenId) === Number(tokenId))
+          ?.find((token) => !!token?.tokenId && BigInt(token?.tokenId) === BigInt(tokenId))
           ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.currency,
       tokenId: tokenId,
       tokenData: null,
@@ -684,31 +684,32 @@ const TokenPageContainer = () => {
       price:
         offerData?.nftContract?.prices[0]?.amount ??
         offerData?.nftContract?.tokens
-          ?.find((token) => Number(token?.tokenId) === Number(tokenId))
+          ?.find((token) => !!token?.tokenId && BigInt(token?.tokenId) === BigInt(tokenId))
           ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.pricePerToken,
       protocolFeeBPS: offerData?.nftContract?.prices[0]?.protocolFeeBps,
       royaltiesBPS: offerData?.nftContract?.royalty.bps,
 
       isListed:
         offerData?.nftContract?.tokens
-          ?.find((token) => Number(token?.tokenId) === Number(tokenId))
+          ?.find((token) => !!token?.tokenId && BigInt(token?.tokenId) === BigInt(tokenId))
           ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.status === "CREATED",
       listingId: offerData?.nftContract?.tokens
-        ?.find((token) => Number(token?.tokenId) === Number(tokenId))
+        ?.find((token) => !!token?.tokenId && BigInt(token?.tokenId) === BigInt(tokenId))
         ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.id,
       minimalBidBps: offerData?.nftContract?.tokens
-        ?.find((token) => Number(token?.tokenId) === Number(tokenId))
+        ?.find((token) => !!token?.tokenId && BigInt(token?.tokenId) === BigInt(tokenId))
         ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.minimalBidBps,
       buyoutPricePerToken: offerData?.nftContract?.tokens
-        ?.find((token) => Number(token?.tokenId) === Number(tokenId))
+        ?.find((token) => !!token?.tokenId && BigInt(token?.tokenId) === BigInt(tokenId))
         ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.buyoutPricePerToken
     });
 
     if (
       !isOwner &&
       !offerNotFormated &&
-      (offerData?.nftContract?.tokens?.find((token) => Number(token?.tokenId) === Number(tokenId))
-        ?.mint === null ||
+      (offerData?.nftContract?.tokens?.find(
+        (token) => !!token?.tokenId && BigInt(token?.tokenId) === BigInt(tokenId)
+      )?.mint === null ||
         offerData?.nftContract?.tokens?.length <= 0) &&
       isAllowedToMint !== null &&
       offerData?.nftContract?.prices[0]?.currency
@@ -744,52 +745,52 @@ const TokenPageContainer = () => {
 
     if (
       offerData?.nftContract?.tokens
-        ?.find((token) => Number(token?.tokenId) === Number(tokenId))
+        ?.find((token) => !!token?.tokenId && BigInt(token?.tokenId) === BigInt(tokenId))
         ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.status === "CREATED"
     ) {
       if (
         offerData?.nftContract?.tokens
-          ?.find((token) => Number(token?.tokenId) === Number(tokenId))
+          ?.find((token) => !!token?.tokenId && BigInt(token?.tokenId) === BigInt(tokenId))
           ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.listingType === "Direct"
       ) {
         setTokenBigIntPrice(
           offerData?.nftContract?.tokens
-            ?.find((token) => Number(token?.tokenId) === Number(tokenId))
+            ?.find((token) => !!token?.tokenId && BigInt(token?.tokenId) === BigInt(tokenId))
             ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.buyoutPricePerToken
         );
         setTokenStatut("DIRECT");
         setPrice(
           offerData?.nftContract?.tokens
-            ?.find((token) => Number(token?.tokenId) === Number(tokenId))
+            ?.find((token) => !!token?.tokenId && BigInt(token?.tokenId) === BigInt(tokenId))
             ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.buyPriceStructureFormatted
             .listerBuyAmount
         );
         setListerAmount(
           offerData?.nftContract?.tokens
-            ?.find((token) => Number(token?.tokenId) === Number(tokenId))
+            ?.find((token) => !!token?.tokenId && BigInt(token?.tokenId) === BigInt(tokenId))
             ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.buyPriceStructureFormatted
             .listerBuyAmount
         );
         setRoyaltiesAmount(
           offerData?.nftContract?.tokens
-            ?.find((token) => Number(token?.tokenId) === Number(tokenId))
+            ?.find((token) => !!token?.tokenId && BigInt(token?.tokenId) === BigInt(tokenId))
             ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.buyPriceStructureFormatted
             ?.royaltiesBuyAmount
         );
         setProtocolFeeAmount(
           offerData?.nftContract?.tokens
-            ?.find((token) => Number(token?.tokenId) === Number(tokenId))
+            ?.find((token) => !!token?.tokenId && BigInt(token?.tokenId) === BigInt(tokenId))
             ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.buyPriceStructureFormatted
             ?.protocolFeeBuyAmount
         );
         setTotalAmount(
           offerData?.nftContract?.tokens
-            ?.find((token) => Number(token?.tokenId) === Number(tokenId))
+            ?.find((token) => !!token?.tokenId && BigInt(token?.tokenId) === BigInt(tokenId))
             ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.buyPriceStructureFormatted
             ?.buyoutPricePerToken
         );
         const totalPrice = offerData?.nftContract?.tokens
-          ?.find((token) => Number(token?.tokenId) === Number(tokenId))
+          ?.find((token) => !!token?.tokenId && BigInt(token?.tokenId) === BigInt(tokenId))
           ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]
           ?.buyPriceStructure?.buyoutPricePerToken;
         const totalPriceFormatted = parseFloat(formatUnits(totalPrice, currencyDecimals));
@@ -797,32 +798,32 @@ const TokenPageContainer = () => {
         setTotalPrice(totalPriceFormatted);
         setFeesAmount(
           offerData?.nftContract?.tokens
-            ?.find((token) => Number(token?.tokenId) === Number(tokenId))
+            ?.find((token) => !!token?.tokenId && BigInt(token?.tokenId) === BigInt(tokenId))
             ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.buyPriceStructureFormatted
             ?.protocolFeeBuyAmount
         );
         setRoyaltiesFeesAmount(
           offerData?.nftContract?.tokens
-            ?.find((token) => Number(token?.tokenId) === Number(tokenId))
+            ?.find((token) => !!token?.tokenId && BigInt(token?.tokenId) === BigInt(tokenId))
             ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.buyPriceStructureFormatted
             .royaltiesBuyAmount
         );
         setFinalPrice(
           offerData?.nftContract?.tokens
-            ?.find((token) => Number(token?.tokenId) === Number(tokenId))
+            ?.find((token) => !!token?.tokenId && BigInt(token?.tokenId) === BigInt(tokenId))
             ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.buyPriceStructureFormatted
             .buyoutPricePerToken
         );
         setFinalPriceNotFormatted(
           offerData?.nftContract?.tokens
-            ?.find((token) => Number(token?.tokenId) === Number(tokenId))
+            ?.find((token) => !!token?.tokenId && BigInt(token?.tokenId) === BigInt(tokenId))
             ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.buyPriceStructure
             .buyoutPricePerToken
         );
         setAmountToApprove(
           BigInt(
             offerData?.nftContract?.tokens
-              ?.find((token) => Number(token?.tokenId) === Number(tokenId))
+              ?.find((token) => !!token?.tokenId && BigInt(token?.tokenId) === BigInt(tokenId))
               ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.buyPriceStructure
               .buyoutPricePerToken
           )
@@ -830,72 +831,72 @@ const TokenPageContainer = () => {
       }
       if (
         offerData?.nftContract?.tokens
-          ?.find((token) => Number(token?.tokenId) === Number(tokenId))
+          ?.find((token) => !!token?.tokenId && BigInt(token?.tokenId) === BigInt(tokenId))
           ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.listingType === "Auction"
       ) {
         setTokenBigIntPrice(
           offerData?.nftContract?.tokens
-            ?.find((token) => Number(token?.tokenId) === Number(tokenId))
+            ?.find((token) => !!token?.tokenId && BigInt(token?.tokenId) === BigInt(tokenId))
             ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.bids[0]?.totalBidAmount
         );
 
         setPrice(
           offerData?.nftContract?.tokens
-            ?.find((token) => Number(token?.tokenId) === Number(tokenId))
+            ?.find((token) => !!token?.tokenId && BigInt(token?.tokenId) === BigInt(tokenId))
             ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.bidPriceStructureFormatted
             ?.minimalBidPerToken
         );
         setFeesAmount(
           offerData?.nftContract?.tokens
-            ?.find((token) => Number(token?.tokenId) === Number(tokenId))
+            ?.find((token) => !!token?.tokenId && BigInt(token?.tokenId) === BigInt(tokenId))
             ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.bidPriceStructureFormatted
             ?.protocolFeeAmount
         );
         setRoyaltiesFeesAmount(
           offerData?.nftContract?.tokens
-            ?.find((token) => Number(token?.tokenId) === Number(tokenId))
+            ?.find((token) => !!token?.tokenId && BigInt(token?.tokenId) === BigInt(tokenId))
             ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.bidPriceStructureFormatted
             ?.royaltyAmount
         );
         setFinalPrice(
           offerData?.nftContract?.tokens
-            ?.find((token) => Number(token?.tokenId) === Number(tokenId))
+            ?.find((token) => !!token?.tokenId && BigInt(token?.tokenId) === BigInt(tokenId))
             ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.bidPriceStructureFormatted
             ?.minimalBidPerToken
         );
         setFinalPriceNotFormatted(
           offerData?.nftContract?.tokens
-            ?.find((token) => Number(token?.tokenId) === Number(tokenId))
+            ?.find((token) => !!token?.tokenId && BigInt(token?.tokenId) === BigInt(tokenId))
             ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.bidPriceStructure
             ?.minimalBidPerToken
         );
         setListerAmount(
           offerData?.nftContract?.tokens
-            ?.find((token) => Number(token?.tokenId) === Number(tokenId))
+            ?.find((token) => !!token?.tokenId && BigInt(token?.tokenId) === BigInt(tokenId))
             ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.bidPriceStructureFormatted
             ?.listerAmount
         );
         setRoyaltiesAmount(
           offerData?.nftContract?.tokens
-            ?.find((token) => Number(token?.tokenId) === Number(tokenId))
+            ?.find((token) => !!token?.tokenId && BigInt(token?.tokenId) === BigInt(tokenId))
             ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.bidPriceStructureFormatted
             ?.royaltyAmount
         );
         setProtocolFeeAmount(
           offerData?.nftContract?.tokens
-            ?.find((token) => Number(token?.tokenId) === Number(tokenId))
+            ?.find((token) => !!token?.tokenId && BigInt(token?.tokenId) === BigInt(tokenId))
             ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.bidPriceStructureFormatted
             ?.protocolFeeAmount
         );
         setTotalAmount(
           offerData?.nftContract?.tokens
-            ?.find((token) => Number(token?.tokenId) === Number(tokenId))
+            ?.find((token) => !!token?.tokenId && BigInt(token?.tokenId) === BigInt(tokenId))
             ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.bidPriceStructureFormatted
             ?.totalBidAmount
         );
 
         const totalPrice = offerData?.nftContract?.tokens
-          ?.find((token) => Number(token?.tokenId) === Number(tokenId))
+          ?.find((token) => !!token?.tokenId && BigInt(token?.tokenId) === BigInt(tokenId))
           ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]
           ?.bidPriceStructure?.totalBidAmount;
         const totalPriceFormatted = parseFloat(formatUnits(totalPrice, currencyDecimals));
@@ -905,19 +906,19 @@ const TokenPageContainer = () => {
         setAmountToApprove(
           BigInt(
             offerData?.nftContract?.tokens
-              ?.find((token) => Number(token?.tokenId) === Number(tokenId))
+              ?.find((token) => !!token?.tokenId && BigInt(token?.tokenId) === BigInt(tokenId))
               ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.bidPriceStructure
               ?.minimalBidPerToken ?? 0
           )
         );
         if (
           offerData?.nftContract?.tokens
-            ?.find((token) => Number(token?.tokenId) === Number(tokenId))
+            ?.find((token) => !!token?.tokenId && BigInt(token?.tokenId) === BigInt(tokenId))
             ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.bids?.length <= 0
         ) {
           setTokenBigIntPrice(
             offerData?.nftContract?.tokens
-              ?.find((token) => Number(token?.tokenId) === Number(tokenId))
+              ?.find((token) => !!token?.tokenId && BigInt(token?.tokenId) === BigInt(tokenId))
               ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.reservePricePerToken
           );
         }
@@ -925,24 +926,24 @@ const TokenPageContainer = () => {
       }
       setCurrencyDecimals(
         offerData?.nftContract?.tokens
-          ?.find((token) => Number(token?.tokenId) === Number(tokenId))
+          ?.find((token) => !!token?.tokenId && BigInt(token?.tokenId) === BigInt(tokenId))
           ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.currencyDecimals
       );
       setTokenCurrencyAddress(
         offerData?.nftContract?.tokens
-          ?.find((token) => Number(token?.tokenId) === Number(tokenId))
+          ?.find((token) => !!token?.tokenId && BigInt(token?.tokenId) === BigInt(tokenId))
           ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.currency
       );
       setCurrency(
         offerData?.nftContract?.tokens
-          ?.find((token) => Number(token?.tokenId) === Number(tokenId))
+          ?.find((token) => !!token?.tokenId && BigInt(token?.tokenId) === BigInt(tokenId))
           ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.currencySymbol
       );
       return;
     }
     if (
       offerData?.nftContract?.tokens
-        ?.find((token) => Number(token?.tokenId) === Number(tokenId))
+        ?.find((token) => !!token?.tokenId && BigInt(token?.tokenId) === BigInt(tokenId))
         ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.status === "COMPLETED"
     ) {
       setTokenStatut("COMPLETED");
@@ -952,10 +953,11 @@ const TokenPageContainer = () => {
       return;
     }
     if (
-      offerData?.nftContract?.tokens?.find((token) => Number(token?.tokenId) === Number(tokenId))
-        ?.mint !== null &&
+      offerData?.nftContract?.tokens?.find(
+        (token) => !!token?.tokenId && BigInt(token?.tokenId) === BigInt(tokenId)
+      )?.mint !== null &&
       offerData?.nftContract?.tokens
-        ?.find((token) => Number(token?.tokenId) === Number(tokenId))
+        ?.find((token) => !!token?.tokenId && BigInt(token?.tokenId) === BigInt(tokenId))
         ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.length === 0
     ) {
       setTokenStatut("MINTED");
@@ -984,14 +986,15 @@ const TokenPageContainer = () => {
       setIsTokenInAuction(true);
     }
 
-    if (address?.toLowerCase() === firstSelectedListing?.lister?.toLowerCase()) {
+    if (
+      address?.toLowerCase() === firstSelectedListing?.lister?.toLowerCase() &&
+      firstSelectedListing?.status === "CREATED"
+    ) {
       setIsOwner(true);
     }
 
-    if (isUserOwner) {
-      if (isUserOwner?.toLowerCase() === address?.toLowerCase()) {
-        setIsOwner(true);
-      }
+    if (isUserOwner?.toLowerCase() === address?.toLowerCase()) {
+      setIsOwner(true);
     }
   }, [isUserOwner, address, marketplaceListings, firstSelectedListing]);
 
@@ -1003,12 +1006,12 @@ const TokenPageContainer = () => {
       setTokenData(tokenData);
 
       if (
-        offerData?.nftContract?.tokens?.find((token) => Number(token?.tokenId) === Number(tokenId))
-          ?.mint?.tokenData?.length &&
-        tokenId
+        offerData?.nftContract?.tokens?.find(
+          (token) => !!token?.tokenId && BigInt(token?.tokenId) === BigInt(tokenId)
+        )?.mint?.tokenData?.length
       ) {
         tokenData = offerData.nftContract.tokens?.find(
-          (token) => Number(token?.tokenId) === Number(tokenId)
+          (token) => !!token?.tokenId && BigInt(token?.tokenId) === BigInt(tokenId)
         ).mint.tokenData;
         setTokenData(tokenData);
       }
@@ -1101,9 +1104,9 @@ const TokenPageContainer = () => {
 
   useEffect(() => {
     const fetchStatusOffers = async () => {
-      if (!offerData) return;
+      if (!offerData || !tokenId) return;
       const tokenData = offerData?.nftContract?.tokens?.find(
-        (token) => Number(token?.tokenId) === Number(tokenId)
+        (token) => !!token?.tokenId && BigInt(token?.tokenId) === BigInt(tokenId)
       );
       if (tokenData?.mint === null || offerData.nftContract?.tokens.length === 0) {
         setAdStatut(0);
@@ -1444,6 +1447,8 @@ const TokenPageContainer = () => {
 
   useEffect(() => {
     function shouldRenderManageTokenComponent() {
+      if (!tokenId) return;
+
       const isAuction = firstSelectedListing?.listingType === "Auction";
       const isDirect = firstSelectedListing?.listingType === "Direct";
       const startTimePassed = firstSelectedListing?.startTime < now;
@@ -1464,8 +1469,9 @@ const TokenPageContainer = () => {
       const isAllowedToMint = isTokenMintable && isOwner;
       const mintDisabled = !offerData?.nftContract?.prices[0]?.enabled;
       const isMinted = Boolean(
-        offerData?.nftContract?.tokens?.find((token) => Number(token?.tokenId) === Number(tokenId))
-          ?.mint
+        offerData?.nftContract?.tokens?.find(
+          (token) => !!token?.tokenId && BigInt(token?.tokenId) === BigInt(tokenId)
+        )?.mint
       );
       const isCreator = offerData?.initialCreator?.toLowerCase() === address?.toLowerCase();
 
@@ -1561,8 +1567,9 @@ const TokenPageContainer = () => {
           the total amount paid by the buyer.
         </span>
 
-        {offerData?.nftContract?.tokens?.find((token) => Number(token?.tokenId) === Number(tokenId))
-          ?.mint === null && (
+        {offerData?.nftContract?.tokens?.find(
+          (token) => !!token?.tokenId && tokenId && BigInt(token?.tokenId) === BigInt(tokenId)
+        )?.mint === null && (
           <div className="flex flex-col gap-2">
             <ul className="flex flex-col gap-2 list-disc text-sm" style={{ listStyleType: "disc" }}>
               <li>
@@ -1584,8 +1591,9 @@ const TokenPageContainer = () => {
           </div>
         )}
 
-        {offerData?.nftContract?.tokens?.find((token) => Number(token?.tokenId) === Number(tokenId))
-          ?.mint !== null && (
+        {offerData?.nftContract?.tokens?.find(
+          (token) => !!token?.tokenId && tokenId && BigInt(token?.tokenId) === BigInt(tokenId)
+        )?.mint !== null && (
           <div className="flex flex-col gap-2">
             <ul className="flex flex-col gap-2 list-disc text-sm" style={{ listStyleType: "disc" }}>
               <li>
@@ -1782,18 +1790,23 @@ const TokenPageContainer = () => {
                   Creator <strong className="dark:text-white">{royalties}% royalties</strong>
                 </span>
                 {offerData?.nftContract?.tokens?.find(
-                  (token) => Number(token?.tokenId) === Number(tokenId)
+                  (token) =>
+                    !!token?.tokenId && tokenId && BigInt(token?.tokenId) === BigInt(tokenId)
                 )?.metadata?.valid_from && (
                   <span className="text-jacarta-100 text-sm flex flex-wrap gap-1">
                     Ownership period:{" "}
                     <strong className="dark:text-white">
                       {offerData?.nftContract?.tokens?.find(
-                        (token) => Number(token?.tokenId) === Number(tokenId)
+                        (token) =>
+                          !!token?.tokenId && tokenId && BigInt(token?.tokenId) === BigInt(tokenId)
                       )?.metadata?.valid_from &&
                         (() => {
                           const date = new Date(
                             offerData?.nftContract?.tokens?.find(
-                              (token) => Number(token?.tokenId) === Number(tokenId)
+                              (token) =>
+                                !!token?.tokenId &&
+                                tokenId &&
+                                BigInt(token?.tokenId) === BigInt(tokenId)
                             )?.metadata?.valid_from
                           );
                           return `${date.getDate().toString().padStart(2, "0")}/${(date.getMonth() + 1).toString().padStart(2, "0")}/${date.getFullYear()} at ${date.getHours().toString().padStart(2, "0")}:${date.getMinutes().toString().padStart(2, "0")}:${date.getSeconds().toString().padStart(2, "0")}`;
@@ -1802,11 +1815,15 @@ const TokenPageContainer = () => {
                     to{" "}
                     <strong className="dark:text-white">
                       {offerData?.nftContract?.tokens?.find(
-                        (token) => Number(token?.tokenId) === Number(tokenId)
+                        (token) =>
+                          !!token?.tokenId && tokenId && BigInt(token?.tokenId) === BigInt(tokenId)
                       )?.metadata?.valid_to &&
                         new Date(
                           offerData?.nftContract?.tokens?.find(
-                            (token) => Number(token?.tokenId) === Number(tokenId)
+                            (token) =>
+                              !!token?.tokenId &&
+                              tokenId &&
+                              BigInt(token?.tokenId) === BigInt(tokenId)
                           )?.metadata?.valid_to
                         ).toLocaleString()}
                     </strong>
@@ -1846,14 +1863,16 @@ const TokenPageContainer = () => {
                 new Date(offerData?.metadata?.offer?.valid_to).getTime() < Date.now() ||
                 (offerData?.nftContract?.prices[0]?.enabled === false &&
                   offerData?.nftContract?.tokens?.find(
-                    (token) => Number(token?.tokenId) === Number(tokenId)
+                    (token) =>
+                      !!token?.tokenId && tokenId && BigInt(token?.tokenId) === BigInt(tokenId)
                   )?.mint === null)) && <Disable isOffer={false} />}
 
               {(offerData?.disable === false ||
                 new Date(offerData?.metadata?.offer?.valid_to).getTime() >= Date.now() ||
                 offerData?.nftContract?.prices[0]?.enabled === true ||
                 offerData?.nftContract?.tokens?.find(
-                  (token) => Number(token?.tokenId) === Number(tokenId)
+                  (token) =>
+                    !!token?.tokenId && tokenId && BigInt(token?.tokenId) === BigInt(tokenId)
                 )?.mint !== null) && (
                 <>
                   {((tokenStatut === "MINTABLE" &&
@@ -2168,7 +2187,7 @@ const TokenPageContainer = () => {
       <Accordion.Item value="adValidation">
         <div className="container">
           {offerData.nftContract?.tokens?.find(
-            (token) => Number(token?.tokenId) === Number(tokenId)
+            (token) => !!token?.tokenId && tokenId && BigInt(token?.tokenId) === BigInt(tokenId)
           )?.mint &&
             isValidId &&
             activated_features.canSeeSubmittedAds && (
