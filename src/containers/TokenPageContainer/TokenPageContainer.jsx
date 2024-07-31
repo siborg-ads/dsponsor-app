@@ -1916,7 +1916,7 @@ const TokenPageContainer = () => {
                               handleBuyModal();
                             }}
                             isDisabled={!isValidId}
-                            className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all  !bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer `}
+                            className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all  !bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer ${!isValidId && "!btn-disabled !bg-opacity-30"} `}
                           >
                             Buy
                           </Web3Button>
@@ -1997,8 +1997,8 @@ const TokenPageContainer = () => {
 
                               setIsLoadingAirdropButton(false);
                             }}
-                            className={`!rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all  !bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer ${(airdropAddress === "" || !airdropAddress || isLoadingAirdropButton) && "!btn-disabled !cursor-not-allowed !opacity-30"}`}
-                            disabled={
+                            className={`!rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all  !bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer ${(airdropAddress === "" || !airdropAddress || isLoadingAirdropButton || !isValidId) && "!btn-disabled !cursor-not-allowed !opacity-30"}`}
+                            isDisabled={
                               airdropAddress === "" ||
                               !airdropAddress ||
                               isLoadingAirdropButton ||
