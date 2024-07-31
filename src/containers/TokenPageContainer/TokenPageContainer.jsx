@@ -1651,7 +1651,7 @@ const TokenPageContainer = () => {
           tokenId,
           airdropAddress,
           "0x0000000000000000000000000000000000000000",
-          stringToUnit?.toString()
+          tokenData ?? ""
         ]
       });
 
