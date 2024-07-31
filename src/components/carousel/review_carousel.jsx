@@ -154,7 +154,7 @@ const Review_carousel = ({
     return imageKey ? adParams[imageKey] : "/";
   };
 
-  if (pendingProposalData.length === 0) {
+  if (pendingProposalData?.length === 0) {
     return <div className="flex justify-center">No pending ads...</div>;
   }
 

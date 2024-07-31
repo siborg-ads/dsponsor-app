@@ -120,6 +120,7 @@ const TokenPageContainer = () => {
   const [itemProposals, setItemProposals] = useState(null);
   const [mediaShouldValidateAnAd, setMediaShouldValidateAnAd] = useState(false);
   const [airdropContainer, setAirdropContainer] = useState(true);
+  const [isOfferOwner, setIsOfferOwner] = useState(false);
   const [
     sponsorHasAtLeastOneRejectedProposalAndNoPending,
     setSponsorHasAtLeastOneRejectedProposalAndNoPending
@@ -990,13 +991,27 @@ const TokenPageContainer = () => {
       address?.toLowerCase() === firstSelectedListing?.lister?.toLowerCase() &&
       firstSelectedListing?.status === "CREATED"
     ) {
-      setIsOwner(true);
+      setIsLister(true);
+    }
+
+    if (
+      offerData?.admins?.includes(address?.toLowerCase()) ||
+      offerData?.initialCreator?.toLowerCase() === address?.toLowerCase()
+    ) {
+      setIsOfferOwner(true);
     }
 
     if (isUserOwner?.toLowerCase() === address?.toLowerCase()) {
       setIsOwner(true);
     }
-  }, [isUserOwner, address, marketplaceListings, firstSelectedListing]);
+  }, [
+    isUserOwner,
+    address,
+    marketplaceListings,
+    firstSelectedListing,
+    offerData?.admins,
+    offerData
+  ]);
 
   useEffect(() => {
     if (!tokenId || !offerData) return;
@@ -2224,7 +2239,7 @@ const TokenPageContainer = () => {
                   <Validation
                     offer={offerData}
                     offerId={offerId}
-                    isOwner={isOwner}
+                    isOwner={isOfferOwner}
                     isToken={false}
                     successFullUploadModal={successFullUploadModal}
                     isLister={isLister}
