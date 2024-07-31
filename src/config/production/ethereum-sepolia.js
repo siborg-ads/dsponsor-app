@@ -40,7 +40,7 @@ const prodEthereumSepolia = {
   },
   features: {
     crossmint: {
-      enabled: false
+      enabled: false // TODO update crossmint
     }
   }
 };

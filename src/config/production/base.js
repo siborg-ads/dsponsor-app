@@ -46,7 +46,7 @@ const prodBase = {
   },
   features: {
     crossmint: {
-      enabled: false
+      enabled: false // TODO update crossmint
     }
   }
 };
