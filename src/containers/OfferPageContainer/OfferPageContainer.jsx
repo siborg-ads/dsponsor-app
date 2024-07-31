@@ -444,14 +444,6 @@ const OfferPageContainer = () => {
               </h2>
 
               <div className="mb-8 flex items-center flex-wrap gap-2 space-x-4 whitespace-nowrap">
-                {currency?.symbol && (
-                  <div className="flex items-center">
-                    <span className="text-green text-sm font-medium tracking-tight mr-2">
-                      {price} {currency?.symbol}
-                    </span>
-                  </div>
-                )}
-
                 {offerData?.nftContract?.allowList && (
                   <span className="dark:text-jacarta-100 text-jacarta-100 text-sm">
                     {offerData.nftContract.maxSupply -
@@ -648,6 +640,7 @@ const OfferPageContainer = () => {
                     item={finalToken}
                     isToken={true}
                     url={`/${chainId}/offer/${offerId}/${finalToken?.tokenId}`}
+                    currencyDecimals={currencyDecimals}
                   />
                 );
               })}
