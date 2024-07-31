@@ -31,7 +31,7 @@ export default function OfferPage() {
 
   return (
     <div className="">
-      <div className="dark:bg-jacarta-800 relative pb-16">
+      <div className="relative pb-16">
         <OfferPageContainer />
       </div>
     </div>

@@ -39,7 +39,7 @@ export default function TokenPage() {
 
   return (
     <div className="">
-      <div className="dark:bg-jacarta-800 relative pb-16 ">
+      <div className="relative pb-16 ">
         <TokenPageContainer />
       </div>
     </div>

@@ -50,9 +50,9 @@ module.exports = {
         600: "#363A5D",
         700: "#131740",
         800: "#101436",
-        900: "#0D102D"
+        900: "#09061B"
       },
-      primaryBlack: "#0D102D",
+      primaryBlack: "#09061B",
 
       primaryPink: "#B472CA",
       secondaryBlack: "#35333E",
