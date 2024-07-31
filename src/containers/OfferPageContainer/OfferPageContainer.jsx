@@ -244,15 +244,13 @@ const OfferPageContainer = () => {
   }, [chainId, setSelectedChain]);
 
   useEffect(() => {
-    if (address && offerData?.admins?.includes(address.toLowerCase())) {
-      setIsOwner(true);
-    }
-
     if (
       address &&
-      address?.toLowerCase() === offerData?.nftContract?.owner?.newOwner?.toLowerCase()
+      (address?.toLowerCase() === offerData?.nftContract?.owner?.newOwner?.toLowerCase() ||
+        offerData?.admins?.includes(address.toLowerCase()))
     ) {
       setCanChangeMintPrice(true);
+      setIsOwner(true);
     }
   }, [address, offerData]);
 
