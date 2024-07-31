@@ -1045,7 +1045,7 @@ const TokenPageContainer = () => {
       }
       setTokenMetaData(tokenMetaData);
     }
-  }, [tokenId, offerData, tokenData]);
+  }, [tokenId, offerData, tokenData, searchParams]);
 
   useEffect(() => {
     if (!offerData || !offerData?.adParameters) return;
@@ -1915,6 +1915,7 @@ const TokenPageContainer = () => {
                             action={() => {
                               handleBuyModal();
                             }}
+                            isDisabled={!isValidId}
                             className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all  !bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer `}
                           >
                             Buy
@@ -1998,7 +1999,10 @@ const TokenPageContainer = () => {
                             }}
                             className={`!rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all  !bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer ${(airdropAddress === "" || !airdropAddress || isLoadingAirdropButton) && "!btn-disabled !cursor-not-allowed !opacity-30"}`}
                             disabled={
-                              airdropAddress === "" || !airdropAddress || isLoadingAirdropButton
+                              airdropAddress === "" ||
+                              !airdropAddress ||
+                              isLoadingAirdropButton ||
+                              !isValidId
                             }
                           >
                             {isLoadingAirdropButton ? (
@@ -2069,6 +2073,7 @@ const TokenPageContainer = () => {
                       isLoadingButton={isLoadingButton}
                       setIsLoadingButton={setIsLoadingButton}
                       token={tokenDO}
+                      isValidId={isValidId}
                       user={{
                         address: address,
                         isOwner: isOwner,

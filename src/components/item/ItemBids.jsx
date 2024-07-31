@@ -32,7 +32,8 @@ const ItemBids = ({
   token,
   user,
   offer,
-  referrer
+  referrer,
+  isValidId
 }) => {
   const [showBidsModal, setShowBidsModal] = useState(false);
   const [minimalBidPerToken, setMinimalBidPerToken] = useState(null);
@@ -117,6 +118,7 @@ const ItemBids = ({
               action={() => {
                 toggleBidsModal();
               }}
+              isDisabled={isValidId}
               className={` !rounded-full !py-3 w-full !px-8 !text-center !font-semibold !text-white !transition-all !bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer `}
             >
               Place Bid
