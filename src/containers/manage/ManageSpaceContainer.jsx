@@ -228,15 +228,15 @@ const ManageSpaceContainer = () => {
                   (listing) => listing?.status === "CREATED" && listing?.listingType === "Auction"
                 );
 
-                const isUserBidder = lastLiveAuctionListing?.bids?.some(
+                const lastUserBid = lastLiveAuctionListing?.bids?.find(
                   (bid) => bid?.bidder === userAddress?.toLowerCase()
                 );
 
-                if (isUserBidder) {
+                if (lastUserBid) {
                   const token = {
                     ...element,
                     marketplaceListings: [tokenElement?.lastLiveAuction],
-                    status: handleBidsStatusType(tokenElement?.status),
+                    status: handleBidsStatusType(lastUserBid?.status),
                     listingStatus: handleListingsStatusType(tokenElement?.lastLiveAuction?.status),
                     metadata: lastLiveAuctionListing?.token?.metadata,
                     tokenData: lastLiveAuctionListing?.token?.mint?.tokenData,
