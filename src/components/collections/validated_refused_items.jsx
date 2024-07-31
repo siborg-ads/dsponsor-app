@@ -20,20 +20,17 @@ const Validated_refused_items = ({ statut, proposalData, isToken }) => {
   }
 
   const [filterData, setFilterData] = useState(
-    collection_activity_item_data.map((item) => {
-      const { category } = item;
-      return category;
-    })
+    collection_activity_item_data.map((item) => item.category).filter(onlyUnique)
   );
 
   useEffect(() => {
-    setFilterData(filterData.filter(onlyUnique));
     if (statut) {
       setStatutItem("check");
     } else {
       setStatutItem("refused");
     }
   }, [filterData, statut]);
+
   function formatTokenId(str) {
     if (str.length <= 6) {
       return str;

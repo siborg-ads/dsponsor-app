@@ -264,7 +264,7 @@ const Validation = ({
                 pendingProposalData={pendingProposalData}
                 handleSubmit={handleSubmit}
                 successFullRefuseModal={successFullRefuseModal}
-                isToken={isToken}
+                isToken={false}
                 isOwner={isOwner}
                 setSuccessFullRefuseModal={setSuccessFullRefuseModal}
                 handleItemSubmit={handleItemSubmit}
@@ -284,7 +284,7 @@ const Validation = ({
             <ValidatedRefusedItems
               statut={true}
               proposalData={validatedProposalData}
-              isToken={isToken}
+              isToken={false}
             />
           </div>
         </TabPanel>
