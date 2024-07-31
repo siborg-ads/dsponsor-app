@@ -351,7 +351,7 @@ const Review_carousel = ({
           <div
             className="flex justify-center items-center max-w-full max-h-full"
             style={{
-              aspectRatio: `${pendingProposalData?.find((item) => item.tokenId === tokenId)?.adParametersList?.cssAspectRatio}`
+              aspectRatio: `${pendingProposalData?.find((item) => !!item?.tokenId && tokenId && BigInt(item?.tokenId) === BigInt(tokenId))?.adParametersList?.cssAspectRatio}`
             }}
           >
             <div className="relative flex items-center justify-center max-w-full max-h-full w-3/4 h-3/4">
@@ -359,8 +359,10 @@ const Review_carousel = ({
                 <Image
                   src={
                     getImageUrl(
-                      pendingProposalData?.find((item) => item.tokenId === tokenId)
-                        ?.adParametersList
+                      pendingProposalData?.find(
+                        (item) =>
+                          !!item?.tokenId && tokenId && BigInt(item?.tokenId) === BigInt(tokenId)
+                      )?.adParametersList
                     ) ?? ""
                   }
                   alt="logo"

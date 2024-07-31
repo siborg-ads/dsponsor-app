@@ -110,7 +110,7 @@ const Validated_refused_items = ({ statut, proposalData, isToken }) => {
                           <div
                             className="flex justify-center items-center max-w-full max-h-full"
                             style={{
-                              aspectRatio: `${proposalData?.find((item) => item.tokenId === tokenId)?.adParametersList?.cssAspectRatio}`
+                              aspectRatio: `${proposalData?.find((item) => !!item?.tokenId && tokenId && BigInt(item?.tokenId) === BigInt(tokenId))?.adParametersList?.cssAspectRatio}`
                             }}
                             onClick={(e) => e.stopPropagation()} // Prevent click through to the backdrop
                           >
@@ -119,8 +119,12 @@ const Validated_refused_items = ({ statut, proposalData, isToken }) => {
                                 <Image
                                   src={
                                     getImageUrl(
-                                      proposalData?.find((item) => item.tokenId === tokenId)
-                                        ?.adParametersList
+                                      proposalData?.find(
+                                        (item) =>
+                                          !!item?.tokenId &&
+                                          tokenId &&
+                                          BigInt(item?.tokenId) === BigInt(tokenId)
+                                      )?.adParametersList
                                     ) ?? ""
                                   }
                                   alt="logo"
