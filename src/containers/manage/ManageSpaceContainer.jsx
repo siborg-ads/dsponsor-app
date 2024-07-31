@@ -366,6 +366,7 @@ const ManageSpaceContainer = () => {
 
       <div className=" " key="5">
         {/* <!-- Banner --> */}
+        {/* 
         <div className="relative " style={{ height: "8rem" }}>
           <Image
             width={1519}
@@ -375,9 +376,10 @@ const ManageSpaceContainer = () => {
             className="w-full h-full object-cover"
           />
         </div>
+        */}
         {/* <!-- end banner --> */}
 
-        <div className="max-w-5xl mx-auto mt-12">
+        <div className="max-w-5xl mx-auto" style={{ marginTop: "10rem" }}>
           <div className="flex flex-col gap-16 mx-4">
             <ProfileOverview
               userData={userData}

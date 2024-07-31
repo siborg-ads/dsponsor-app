@@ -3,7 +3,7 @@ import CreateOfferContainer from "../../../containers/CreateOfferContainer/Creat
 export default function CreateOfferPage() {
   return (
     <div className="">
-      <div className="dark:bg-jacarta-800 relative ">
+      <div className="relative ">
         <CreateOfferContainer />
       </div>
     </div>
