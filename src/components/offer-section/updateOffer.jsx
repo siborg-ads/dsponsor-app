@@ -155,6 +155,7 @@ const UpdateOffer = ({ offer }) => {
           setInitialMetadatas(initialMetadatas);
 
           // set initialMetadatas
+          setName(initialMetadatas?.offer?.name);
           setDescription(initialMetadatas?.offer?.description);
           setExternalLink(initialMetadatas?.offer?.external_link);
           setImageUrl(initialMetadatas?.offer?.image);
