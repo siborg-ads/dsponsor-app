@@ -376,7 +376,11 @@ const TokenPageContainer = () => {
   useEffect(() => {
     const fetchBuyEtherPrice = async () => {
       const finalPriceDecimals = BigNumber.from(finalPriceNotFormatted.toString());
-      const parsedBidsAmount = ethers.utils.parseUnits(bidsAmount, Number(currencyDecimals));
+      let parsedBidsAmount;
+
+      if (currencyDecimals && bidsAmount) {
+        parsedBidsAmount = ethers.utils.parseUnits(bidsAmount, Number(currencyDecimals));
+      }
 
       const amount =
         !!finalPriceNotFormatted && finalPriceNotFormatted > 0
@@ -413,7 +417,7 @@ const TokenPageContainer = () => {
 
     if (
       ((!!finalPriceNotFormatted && finalPriceNotFormatted > 0) ||
-        (!!bidsAmount && parseFloat(bidsAmount) > 0)) &&
+        (!!bidsAmount && parseFloat(bidsAmount) > 0 && !!currencyDecimals)) &&
       chainId &&
       tokenCurrencyAddress
     ) {
