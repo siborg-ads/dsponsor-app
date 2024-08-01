@@ -375,6 +375,18 @@ const TokenPageContainer = () => {
   // referralAddress is the address of the ?_rid= parameter in the URL
   const referralAddress = getCookie("_rid") || "";
 
+  const [debouncedBidsAmount, setDebouncedBidsAmount] = useState(bidsAmount);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedBidsAmount(bidsAmount);
+    }, 500);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [bidsAmount]);
+
   useEffect(() => {
     const fetchBuyEtherPrice = async () => {
       try {
@@ -403,10 +415,10 @@ const TokenPageContainer = () => {
       }
     };
 
-    if (chainId && tokenCurrencyAddress && currencyDecimals) {
+    if (chainId && tokenCurrencyAddress && currencyDecimals && debouncedBidsAmount) {
       fetchBuyEtherPrice();
     }
-  }, [chainId, currencyDecimals, tokenCurrencyAddress]);
+  }, [chainId, currencyDecimals, tokenCurrencyAddress, debouncedBidsAmount]);
 
   useEffect(() => {
     if (tokenEtherPriceRelayer) {
