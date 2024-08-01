@@ -8,7 +8,6 @@ import config from "../../config/config";
 import { computeBidAmounts } from "../../utils/computeBidAmounts";
 import { formatUnits } from "ethers/lib/utils";
 import formatAndRoundPrice from "../../utils/formatAndRound";
-import { fetchTokenPrice } from "../../utils/fetchTokenPrice";
 import { getCookie } from "cookies-next";
 import BidWithCrossmintButton from "../buttons/BidWithCrossmintButton/BidWithCrossmintButton";
 import Tippy from "@tippyjs/react";
@@ -127,31 +126,6 @@ const BidsModal = ({
       setNotEnoughFunds(false);
     }
   }, [insufficentBalance, canPayWithNativeToken]);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      await fetchTokenPrice(
-        marketplaceListings[0]?.currency,
-        Number(chainId),
-        parsedBidsAmount
-      ).then((price) => {
-        setTokenPrice(price);
-      });
-    };
-
-    if (
-      marketplaceListings &&
-      marketplaceListings[0] &&
-      marketplaceListings[0]?.currency &&
-      parsedBidsAmount &&
-      BigNumber.from(parsedBidsAmount).gt(BigNumber.from(0)) &&
-      chainId
-    ) {
-      fetchData();
-    } else {
-      setTokenPrice(0);
-    }
-  }, [parsedBidsAmount, chainId, marketplaceListings, currencyTokenDecimals]);
 
   useEffect(() => {
     if (
