@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import OverviewCard from "./OverviewCard";
 import { ArrowPathIcon } from "@heroicons/react/20/solid";
+import { shortenAddress } from "@thirdweb-dev/react";
 
-const ProfileOverview = ({ userData, ownedTokens, isLoading }) => {
+const ProfileOverview = ({ userData, ownedTokens, isLoading, manageAddress }) => {
   const [ranking, setRanking] = useState(null);
 
   useEffect(() => {
@@ -40,23 +41,29 @@ const ProfileOverview = ({ userData, ownedTokens, isLoading }) => {
   ];
 
   return (
-    <>
-      <div className="flex flex-col gap-4">
-        <div className="flex justify-between items-end">
+    <div className="flex flex-col gap-4">
+      <div className="flex justify-between items-end">
+        <div className="flex items-end gap-4">
           <h2 className="text-white font-semibold text-xl md:text-2xl">Overview</h2>
-          <span className="text-jacarta-100 text-xs md:text-sm inline-flex items-center gap-1">
-            {isLoading && <ArrowPathIcon className="w-4 h-4 text-white animate-spin" />} Updated
-            every 15 minutes
+          <span className="md:block text-jacarta-100 text-xs md:text-sm inline-flex items-center gap-1">
+            {manageAddress}
+          </span>
+          <span className="md:hidden text-jacarta-100 text-xs md:text-sm inline-flex items-center gap-1">
+            {shortenAddress(manageAddress)}
           </span>
         </div>
-
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
-          {overviewCards.map((card, index) => {
-            return <OverviewCard key={index} card={card} />;
-          })}
-        </div>
+        <span className="text-jacarta-100 text-xs md:text-sm inline-flex items-center gap-1">
+          {isLoading && <ArrowPathIcon className="w-4 h-4 text-white animate-spin" />} Updated every
+          15 minutes
+        </span>
       </div>
-    </>
+
+      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
+        {overviewCards.map((card, index) => {
+          return <OverviewCard key={index} card={card} />;
+        })}
+      </div>
+    </div>
   );
 };
 
