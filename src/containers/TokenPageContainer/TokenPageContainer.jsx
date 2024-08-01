@@ -55,6 +55,7 @@ import Disable from "../../components/disable/disable.jsx";
 import Input from "../../components/ui/input";
 import { useSearchParams } from "next/navigation.js";
 import { addLineBreaks } from "../../utils/addLineBreaks.js";
+import formatAndRoundPrice from "../../utils/formatAndRound.js";
 
 const TokenPageContainer = () => {
   const router = useRouter();
@@ -76,6 +77,7 @@ const TokenPageContainer = () => {
   const [link, setLink] = useState("");
   const [amountToApprove, setAmountToApprove] = useState(null);
   const [buyTokenEtherPrice, setBuyTokenEtherPrice] = useState(null);
+  const [tokenEtherPriceRelayer, setTokenEtherPriceRelayer] = useState(null);
   const [royalties, setRoyalties] = useState(null);
   const [errors, setErrors] = useState({});
   const [marketplaceListings, setMarketplaceListings] = useState([]);
@@ -375,55 +377,67 @@ const TokenPageContainer = () => {
 
   useEffect(() => {
     const fetchBuyEtherPrice = async () => {
-      const finalPriceDecimals = BigNumber.from(finalPriceNotFormatted.toString());
-      let parsedBidsAmount;
-
-      if (currencyDecimals && bidsAmount) {
-        parsedBidsAmount = ethers.utils.parseUnits(bidsAmount, Number(currencyDecimals));
-      }
-
-      const amount =
-        !!finalPriceNotFormatted && finalPriceNotFormatted > 0
-          ? finalPriceDecimals
-          : parsedBidsAmount;
-
-      const tokenEtherPrice = await fetch(
-        `https://relayer.dsponsor.com/api/${chainId}/prices?token=${tokenCurrencyAddress}&amount=${amount}&slippage=0.3`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json"
-          }
+      try {
+        let amount = 0;
+        if (currencyDecimals) {
+          amount = ethers.utils.parseUnits("1", Number(currencyDecimals));
         }
-      )
-        .then((res) => res.json())
-        .then((data) => {
-          return data;
-        })
-        .catch((error) => {
-          return error;
-        });
 
-      const tokenEtherPriceDecimals = formatUnits(tokenEtherPrice?.amountInEthWithSlippage, 18);
+        const tokenEtherPrice = await fetch(
+          `https://relayer.dsponsor.com/api/${chainId}/prices?token=${tokenCurrencyAddress}&amount=${amount?.toString()}&slippage=0.3`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json"
+            }
+          }
+        )
+          .then((res) => res.json())
+          .then((data) => {
+            console.log(data);
+            return data;
+          });
+
+        setTokenEtherPriceRelayer(tokenEtherPrice);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    if (chainId && tokenCurrencyAddress && currencyDecimals) {
+      fetchBuyEtherPrice();
+    }
+  }, [chainId, currencyDecimals, tokenCurrencyAddress]);
+
+  useEffect(() => {
+    console.log(tokenEtherPriceRelayer);
+    if (tokenEtherPriceRelayer) {
+      const tokenEtherPriceDecimals = formatUnits(
+        tokenEtherPriceRelayer?.amountInEthWithSlippage,
+        18
+      );
       const amountInEthWithSlippageBN = ethers.BigNumber.from(
-        tokenEtherPrice?.amountInEthWithSlippage
+        tokenEtherPriceRelayer?.amountInEthWithSlippage
       );
 
       setBuyTokenEtherPrice(tokenEtherPriceDecimals);
       setAmountInEthWithSlippage(amountInEthWithSlippageBN);
       setTokenEtherPrice(ethers.utils.formatUnits(amountInEthWithSlippageBN, 18));
-      setDisplayedPrice(tokenEtherPrice?.amountUSDCFormatted);
-    };
-
-    if (
-      ((!!finalPriceNotFormatted && finalPriceNotFormatted > 0) ||
-        (!!bidsAmount && parseFloat(bidsAmount) > 0 && !!currencyDecimals)) &&
-      chainId &&
-      tokenCurrencyAddress
-    ) {
-      fetchBuyEtherPrice();
     }
-  }, [finalPriceNotFormatted, chainId, tokenCurrencyAddress, currencyDecimals, bidsAmount]);
+
+    if (bidsAmount && currencyDecimals) {
+      const amountUSDC = parseUnits(tokenEtherPriceRelayer?.amountUSDC, 12);
+      const parsedBidsAmount = parseUnits(bidsAmount, Number(currencyDecimals));
+
+      console.log(amountUSDC?.toString());
+      console.log(parsedBidsAmount?.toString());
+
+      const priceToDisplayBN = parsedBidsAmount.mul(amountUSDC);
+      const priceToDisplay = formatUnits(priceToDisplayBN, Number(currencyDecimals * 2));
+
+      setDisplayedPrice(formatAndRoundPrice(priceToDisplay));
+    }
+  }, [bidsAmount, currencyDecimals, tokenEtherPriceRelayer]);
 
   useEffect(() => {
     if (chainId) {
