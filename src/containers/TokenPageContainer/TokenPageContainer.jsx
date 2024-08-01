@@ -200,7 +200,6 @@ const TokenPageContainer = () => {
 
       try {
         const offers = await fetchTokenPageContainer(chainId, offerId, tokenId);
-        console.log("offer", offers);
         setOffers(offers);
 
         // check if we have the values

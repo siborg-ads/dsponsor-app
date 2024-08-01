@@ -61,8 +61,8 @@ const Step_2_Create = ({
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 rows="4"
-                maxLength="250"
-                placeholder="This is a description of the offer. characters limit : 250"
+                maxLength="2000"
+                placeholder="This is a description of the offer. characters limit : 2000"
                 required
                 className="placeholder:text-jacarta-300"
               />
