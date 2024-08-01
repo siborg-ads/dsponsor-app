@@ -33,7 +33,11 @@ const ItemBids = ({
   user,
   offer,
   referrer,
-  isValidId
+  isValidId,
+  tokenEtherPrice,
+  amountInEthWithSlippage,
+  displayedPrice,
+  setDisplayedPrice
 }) => {
   const [showBidsModal, setShowBidsModal] = useState(false);
   const [minimalBidPerToken, setMinimalBidPerToken] = useState(null);
@@ -167,6 +171,10 @@ const ItemBids = ({
             offer={offer}
             referrer={referrer}
             currencyContract={currencyContract}
+            tokenEtherPrice={tokenEtherPrice}
+            amountInEthWithSlippage={amountInEthWithSlippage}
+            displayedPrice={displayedPrice}
+            setDisplayedPrice={setDisplayedPrice}
           />
         </div>
       )}

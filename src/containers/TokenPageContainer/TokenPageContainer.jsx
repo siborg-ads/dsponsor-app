@@ -122,6 +122,9 @@ const TokenPageContainer = () => {
   const [itemProposals, setItemProposals] = useState(null);
   const [mediaShouldValidateAnAd, setMediaShouldValidateAnAd] = useState(false);
   const [airdropContainer, setAirdropContainer] = useState(true);
+  const [tokenEtherPrice, setTokenEtherPrice] = useState(null);
+  const [amountInEthWithSlippage, setAmountInEthWithSlippage] = useState(null);
+  const [displayedPrice, setDisplayedPrice] = useState(null);
   const [isOfferOwner, setIsOfferOwner] = useState(false);
   const [
     sponsorHasAtLeastOneRejectedProposalAndNoPending,
@@ -372,9 +375,19 @@ const TokenPageContainer = () => {
   useEffect(() => {
     const fetchBuyEtherPrice = async () => {
       const finalPriceDecimals = BigNumber.from(finalPriceNotFormatted.toString());
+      let parsedBidsAmount;
+
+      if (currencyDecimals && bidsAmount) {
+        parsedBidsAmount = ethers.utils.parseUnits(bidsAmount, Number(currencyDecimals));
+      }
+
+      const amount =
+        !!finalPriceNotFormatted && finalPriceNotFormatted > 0
+          ? finalPriceDecimals
+          : parsedBidsAmount;
 
       const tokenEtherPrice = await fetch(
-        `https://relayer.dsponsor.com/api/${chainId}/prices?token=${tokenCurrencyAddress}&amount=${finalPriceDecimals}&slippage=0.3`,
+        `https://relayer.dsponsor.com/api/${chainId}/prices?token=${tokenCurrencyAddress}&amount=${amount}&slippage=0.3`,
         {
           method: "GET",
           headers: {
@@ -391,14 +404,25 @@ const TokenPageContainer = () => {
         });
 
       const tokenEtherPriceDecimals = formatUnits(tokenEtherPrice?.amountInEthWithSlippage, 18);
+      const amountInEthWithSlippageBN = ethers.BigNumber.from(
+        tokenEtherPrice?.amountInEthWithSlippage
+      );
 
       setBuyTokenEtherPrice(tokenEtherPriceDecimals);
+      setAmountInEthWithSlippage(amountInEthWithSlippageBN);
+      setTokenEtherPrice(ethers.utils.formatUnits(amountInEthWithSlippageBN, 18));
+      setDisplayedPrice(tokenEtherPrice?.amountUSDCFormatted);
     };
 
-    if (finalPriceNotFormatted && finalPriceNotFormatted > 0 && chainId && tokenCurrencyAddress) {
+    if (
+      ((!!finalPriceNotFormatted && finalPriceNotFormatted > 0) ||
+        (!!bidsAmount && parseFloat(bidsAmount) > 0 && !!currencyDecimals)) &&
+      chainId &&
+      tokenCurrencyAddress
+    ) {
       fetchBuyEtherPrice();
     }
-  }, [finalPriceNotFormatted, chainId, tokenCurrencyAddress, currencyDecimals]);
+  }, [finalPriceNotFormatted, chainId, tokenCurrencyAddress, currencyDecimals, bidsAmount]);
 
   useEffect(() => {
     if (chainId) {
@@ -2120,6 +2144,10 @@ const TokenPageContainer = () => {
                         address: referralAddress
                       }}
                       currencyContract={tokenCurrencyAddress}
+                      tokenEtherPrice={tokenEtherPrice}
+                      amountInEthWithSlippage={amountInEthWithSlippage}
+                      displayedPrice={displayedPrice}
+                      setDisplayedPrice={setDisplayedPrice}
                     />
                   )}
                 </>
