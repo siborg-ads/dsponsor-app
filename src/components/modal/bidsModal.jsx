@@ -44,7 +44,11 @@ const BidsModal = ({
   user,
   offer,
   referrer,
-  showBidsModal
+  showBidsModal,
+  tokenEtherPrice,
+  amountInEthWithSlippage,
+  displayedPrice,
+  setDisplayedPrice
 }) => {
   const [initialIntPrice, setInitialIntPrice] = useState(null);
   const [isLoadingApproveButton, setIsLoadingApproveButton] = useState(false);
@@ -61,12 +65,9 @@ const BidsModal = ({
   const [protocolFeeAmount, setProtocolFeeAmount] = useState(0);
   const [mount, setMount] = useState(false);
   const [insufficentBalance, setInsufficentBalance] = useState(false);
-  const [tokenEtherPrice, setTokenEtherPrice] = useState(null);
-  const [amountInEthWithSlippage, setAmountInEthWithSlippage] = useState(null);
   const [canPayWithNativeToken, setCanPayWithNativeToken] = useState(false);
   const [notEnoughFunds, setNotEnoughFunds] = useState(false);
   const [copied, setCopied] = useState(false);
-  const [displayedPrice, setDisplayedPrice] = useState(null);
   const [parsedBidsAmount, setParsedBidsAmount] = useState(null);
   const [buyoutPrice, setBuyoutPrice] = useState(null);
 
@@ -91,41 +92,6 @@ const BidsModal = ({
 
   const { data: nativeTokenBalance } = useBalance();
   const { data: currencyBalance } = useBalance(currencyContract);
-
-  useEffect(() => {
-    const fetchEtherPrice = async () => {
-      const parsedBidsAmount = ethers.utils.parseUnits(bidsAmount, Number(currencyTokenDecimals));
-
-      const tokenEtherPrice = await fetch(
-        `https://relayer.dsponsor.com/api/${chainId}/prices?token=${currencyContract}&amount=${parsedBidsAmount}&slippage=0.3`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json"
-          }
-        }
-      )
-        .then((res) => res.json())
-        .then((data) => {
-          return data;
-        })
-        .catch((error) => {
-          return error;
-        });
-
-      const amountInEthWithSlippageBN = ethers.BigNumber.from(
-        tokenEtherPrice?.amountInEthWithSlippage
-      );
-
-      setAmountInEthWithSlippage(amountInEthWithSlippageBN);
-      setTokenEtherPrice(ethers.utils.formatUnits(amountInEthWithSlippageBN, 18));
-      setDisplayedPrice(tokenEtherPrice?.amountUSDCFormatted);
-    };
-
-    if (!!bidsAmount && parseFloat(bidsAmount) > 0 && chainId && currencyContract) {
-      fetchEtherPrice();
-    }
-  }, [bidsAmount, chainId, currencyContract, currencyTokenDecimals]);
 
   useEffect(() => {
     if (!amountInEthWithSlippage || amountInEthWithSlippage.lte(BigNumber.from(0))) return;
