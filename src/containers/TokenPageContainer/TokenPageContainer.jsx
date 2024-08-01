@@ -54,6 +54,7 @@ import InfoIcon from "../../components/informations/infoIcon.jsx";
 import Disable from "../../components/disable/disable.jsx";
 import Input from "../../components/ui/input";
 import { useSearchParams } from "next/navigation.js";
+import { addLineBreaks } from "../../utils/addLineBreaks.js";
 
 const TokenPageContainer = () => {
   const router = useRouter();
@@ -1892,7 +1893,7 @@ const TokenPageContainer = () => {
 
               {showEntireDescription ? (
                 <p className="dark:text-jacarta-100 mb-10">
-                  {description}{" "}
+                  {addLineBreaks(description)}{" "}
                   {description?.length > 1000 && (
                     <button
                       onClick={() => setShowEntireDescription(false)}
@@ -1905,7 +1906,9 @@ const TokenPageContainer = () => {
               ) : (
                 <div>
                   <p className="dark:text-jacarta-100 mb-10">
-                    {description?.length > 1000 ? description?.slice(0, 1000) + "..." : description}{" "}
+                    {description?.length > 1000
+                      ? addLineBreaks(description?.slice(0, 1000) + "...")
+                      : addLineBreaks(description)}{" "}
                     {description?.length > 1000 && (
                       <button
                         onClick={() => setShowEntireDescription(true)}
