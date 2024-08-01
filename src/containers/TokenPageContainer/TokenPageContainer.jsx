@@ -394,7 +394,6 @@ const TokenPageContainer = () => {
         )
           .then((res) => res.json())
           .then((data) => {
-            console.log(data);
             return data;
           });
 
@@ -410,7 +409,6 @@ const TokenPageContainer = () => {
   }, [chainId, currencyDecimals, tokenCurrencyAddress]);
 
   useEffect(() => {
-    console.log(tokenEtherPriceRelayer);
     if (tokenEtherPriceRelayer) {
       const tokenEtherPriceDecimals = formatUnits(
         tokenEtherPriceRelayer?.amountInEthWithSlippage,
@@ -428,9 +426,6 @@ const TokenPageContainer = () => {
     if (bidsAmount && currencyDecimals) {
       const amountUSDC = parseUnits(tokenEtherPriceRelayer?.amountUSDC, 12);
       const parsedBidsAmount = parseUnits(bidsAmount, Number(currencyDecimals));
-
-      console.log(amountUSDC?.toString());
-      console.log(parsedBidsAmount?.toString());
 
       const priceToDisplayBN = parsedBidsAmount.mul(amountUSDC);
       const priceToDisplay = formatUnits(priceToDisplayBN, Number(currencyDecimals * 2));
