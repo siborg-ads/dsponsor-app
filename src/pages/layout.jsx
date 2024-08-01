@@ -4,7 +4,7 @@ import Providers from "../providers/providers";
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body className="bg-jacarta-800 h-full relative">
+      <body className="bg-primaryBlack h-full relative">
         <Providers>{children}</Providers>
       </body>
     </html>

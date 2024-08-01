@@ -176,17 +176,16 @@ const ManageSpaceContainer = () => {
           setCreatedData(createdOffers);
 
           let allLatestListings;
-          const userManagedOffers = offersByUserAddressArray?.filter((element) =>
-            element?.admins?.includes(userAddress?.toLowerCase())
-          );
-          userManagedOffers?.forEach((element) => {
+          offersByUserAddressArray?.forEach((element) => {
             element?.nftContract?.tokens?.forEach((token) => {
               const lastListing = token?.marketplaceListings?.sort(
                 (a, b) => Number(b?.id) - Number(a?.id)
               )[0];
 
               const filterCondition =
-                lastListing?.status === "CREATED" && lastListing?.quantity > 0;
+                lastListing?.status === "CREATED" &&
+                lastListing?.quantity > 0 &&
+                lastListing?.lister?.toLowerCase() === userAddress?.toLowerCase();
 
               if (lastListing && filterCondition) {
                 const listingWithChainConfig = {
@@ -229,15 +228,15 @@ const ManageSpaceContainer = () => {
                   (listing) => listing?.status === "CREATED" && listing?.listingType === "Auction"
                 );
 
-                const isUserBidder = lastLiveAuctionListing?.bids?.some(
+                const lastUserBid = lastLiveAuctionListing?.bids?.find(
                   (bid) => bid?.bidder === userAddress?.toLowerCase()
                 );
 
-                if (isUserBidder) {
+                if (lastUserBid) {
                   const token = {
                     ...element,
                     marketplaceListings: [tokenElement?.lastLiveAuction],
-                    status: handleBidsStatusType(tokenElement?.status),
+                    status: handleBidsStatusType(lastUserBid?.status),
                     listingStatus: handleListingsStatusType(tokenElement?.lastLiveAuction?.status),
                     metadata: lastLiveAuctionListing?.token?.metadata,
                     tokenData: lastLiveAuctionListing?.token?.mint?.tokenData,
@@ -367,6 +366,7 @@ const ManageSpaceContainer = () => {
 
       <div className=" " key="5">
         {/* <!-- Banner --> */}
+        {/* 
         <div className="relative " style={{ height: "8rem" }}>
           <Image
             width={1519}
@@ -376,9 +376,10 @@ const ManageSpaceContainer = () => {
             className="w-full h-full object-cover"
           />
         </div>
+        */}
         {/* <!-- end banner --> */}
 
-        <div className="max-w-5xl mx-auto mt-12">
+        <div className="max-w-5xl mx-auto" style={{ marginTop: "10rem" }}>
           <div className="flex flex-col gap-16 mx-4">
             <ProfileOverview
               userData={userData}

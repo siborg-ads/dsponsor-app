@@ -55,7 +55,8 @@ const OfferItem = ({
       // itemOffers is an item that contains nftContract which contains tokens that contains the tokenId
       // we need to get the token item from the tokens array where the tokenId matches the current item tokenId
       const tokenOffers = itemOffer?.nftContract?.tokens?.find(
-        (token) => token?.tokenId === item?.tokenId
+        (token) =>
+          !!token?.tokenId && !!item?.tokenId && BigInt(token?.tokenId) === BigInt(item?.tokenId)
       );
 
       // then we get the proposals for the current item
@@ -215,7 +216,7 @@ const OfferItem = ({
 
     if (!isToken && !isListing && !isAuction) {
       setItemStatut("OFFER");
-      setPrice(item?.nftContract.prices[0]?.mintPriceStructureFormatted?.totalAmount);
+      setPrice(item?.nftContract.prices?.[0]?.mintPriceStructureFormatted?.totalAmount);
       const totalPrice = item?.nftContract.prices[0]?.mintPriceStructure?.totalAmount;
       if (currencyDecimals && totalPrice) {
         const formattedTotalPrice = formatUnits(
@@ -232,6 +233,7 @@ const OfferItem = ({
       setItemStatut("TOKENMINTABLE");
       setPrice(item?.nftContract?.prices[0]?.mintPriceStructureFormatted?.totalAmount);
       const totalPrice = item?.nftContract?.prices[0]?.mintPriceStructure?.totalAmount;
+
       if (currencyDecimals && totalPrice) {
         const formattedTotalPrice = formatUnits(
           BigNumber.from(totalPrice),

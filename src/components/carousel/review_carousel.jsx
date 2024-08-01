@@ -5,15 +5,14 @@ import "tippy.js/dist/tippy.css";
 import Link from "next/link";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
+import { useChainContext } from "../../contexts/hooks/useChainContext.js";
 import { useEffect, useState } from "react";
 import { Web3Button } from "@thirdweb-dev/react";
-import config from "../../config/config";
+import config from "../../config/config.js";
 import Input from "../ui/input.jsx";
 import { Spinner } from "@nextui-org/spinner";
 
 const Review_carousel = ({
-  chainId,
   setSelectedItems,
   selectedItems,
   handleItemSubmit,
@@ -35,6 +34,9 @@ const Review_carousel = ({
   const [detectedRatios, setDetectedRatios] = useState([]);
   const [detectedRatiosAreGood, setDetectedRatiosAreGood] = useState([]);
   const [isValidating, setIsValidating] = useState(false);
+
+  const { currentChainObject } = useChainContext();
+  const chainId = currentChainObject?.chainId;
 
   useEffect(() => {
     if (detectedRatios.length) {
@@ -154,7 +156,7 @@ const Review_carousel = ({
     return imageKey ? adParams[imageKey] : "/";
   };
 
-  if (pendingProposalData.length === 0) {
+  if (pendingProposalData?.length === 0) {
     return <div className="flex justify-center">No pending ads...</div>;
   }
 
@@ -197,7 +199,7 @@ const Review_carousel = ({
 
             <div className="flex justify-center  gap-4 flex-wrap">
               <Web3Button
-                contractAddress={config[chainId]?.smartContracts?.DSPONSORADMIN?.address}
+                contractAddress={config[Number(chainId)]?.smartContracts?.DSPONSORADMIN?.address}
                 action={async () => {
                   setIsValidating(true);
                   await toast.promise(handleItemSubmit(true), {
@@ -351,7 +353,7 @@ const Review_carousel = ({
           <div
             className="flex justify-center items-center max-w-full max-h-full"
             style={{
-              aspectRatio: `${pendingProposalData?.find((item) => item.tokenId === tokenId)?.adParametersList?.cssAspectRatio}`
+              aspectRatio: `${pendingProposalData?.find((item) => !!item?.tokenId && tokenId && BigInt(item?.tokenId) === BigInt(tokenId))?.adParametersList?.cssAspectRatio}`
             }}
           >
             <div className="relative flex items-center justify-center max-w-full max-h-full w-3/4 h-3/4">
@@ -359,8 +361,10 @@ const Review_carousel = ({
                 <Image
                   src={
                     getImageUrl(
-                      pendingProposalData?.find((item) => item.tokenId === tokenId)
-                        ?.adParametersList
+                      pendingProposalData?.find(
+                        (item) =>
+                          !!item?.tokenId && tokenId && BigInt(item?.tokenId) === BigInt(tokenId)
+                      )?.adParametersList
                     ) ?? ""
                   }
                   alt="logo"

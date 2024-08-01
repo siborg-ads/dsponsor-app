@@ -98,11 +98,10 @@ const steps = [
     description: (
       <span>
         <span className="font-semibold text-white">Submit an ad proposal</span> that will be
-        displayed in the SiBorg App.
+        displayed in the SiBorg App once approved.
       </span>
     ),
-    image: "/images/home/siborg-preview.png",
-    comingSoon: true
+    image: "/images/home/siborg-preview.png"
   }
 ];
 
@@ -169,13 +168,6 @@ const Description = ({ description }) => {
                     className="flex flex-col justify-between gap-4 p-6 bg-primaryBlack rounded-lg relative"
                     key={index}
                   >
-                    {step.comingSoon && (
-                      <div className="absolute -top-2 md:-top-4 -right-4 md:-right-8">
-                        <div className="rainbow-background shadow rotate-12 flex justify-center items-center rounded-full py-2 px-3">
-                          <span className="text-white text-xs font-semibold">Coming Soon</span>
-                        </div>
-                      </div>
-                    )}
                     <div className="gap-4 flex flex-col">
                       <span className="text-white text-center font-semibold">
                         {index + 1}. {step.title}
@@ -195,7 +187,7 @@ const Description = ({ description }) => {
                     {step.image && (
                       <button onClick={() => openModal(step.image)} className="text-left">
                         <span className="underline text-white hover:text-jacarta-100 text-left text-xs cursor-pointer">
-                          See example
+                          See example with &apos;Bitcoin&apos; search keyword
                         </span>
                       </button>
                     )}
