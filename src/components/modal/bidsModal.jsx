@@ -97,12 +97,15 @@ const BidsModal = ({
 
     if (!parsedBidsAmount || parsedBidsAmount.lte(BigNumber.from(0))) return;
 
+    console.log(amountInEthWithSlippage?.toString());
+
     const hasInsufficientBalance =
       currencyBalance &&
       (currencyBalance?.value.lt(amountInEthWithSlippage) ||
         parsedBidsAmount?.gt(currencyBalance?.value));
 
     setInsufficentBalance(hasInsufficientBalance);
+    console.log(currencyBalance?.value?.toString());
 
     if (nativeTokenBalance && nativeTokenBalance?.value.lt(amountInEthWithSlippage)) {
       setCanPayWithNativeToken(false);
@@ -120,6 +123,8 @@ const BidsModal = ({
   ]);
 
   useEffect(() => {
+    console.log(insufficentBalance);
+    console.log(!canPayWithNativeToken);
     if (insufficentBalance && !canPayWithNativeToken) {
       setNotEnoughFunds(true);
     } else {
