@@ -385,6 +385,7 @@ const ManageSpaceContainer = () => {
               userData={userData}
               ownedTokens={mappedOwnedAdProposals}
               isLoading={isLoading}
+              manageAddress={userAddress}
             />
 
             {isUserConnected && (
