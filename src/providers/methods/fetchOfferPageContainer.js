@@ -31,6 +31,7 @@ export const fetchOfferPageContainer = async (chainId, offerId) => {
 
         nftContract {
           id # DSponsorNFT smart contract address
+          allowList
           royalty {
             bps
           }
