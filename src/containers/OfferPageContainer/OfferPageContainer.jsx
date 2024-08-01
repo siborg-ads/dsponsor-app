@@ -29,6 +29,7 @@ import { Tabs, Tab, TabList, TabPanel } from "react-tabs";
 import { BadgePercentIcon, BlocksIcon, RefreshCwIcon } from "lucide-react";
 import Disable from "../../components/disable/disable";
 import OfferItem from "../../components/cards/offerItem";
+import { addLineBreaks } from "../../utils/addLineBreaks";
 
 const OfferPageContainer = () => {
   const router = useRouter();
@@ -458,7 +459,7 @@ const OfferPageContainer = () => {
 
               {showEntireDescription ? (
                 <p className="dark:text-jacarta-100 mb-10">
-                  {description}{" "}
+                  {addLineBreaks(description)}{" "}
                   {description?.length > 1000 && (
                     <button
                       onClick={() => setShowEntireDescription(false)}
@@ -471,7 +472,9 @@ const OfferPageContainer = () => {
               ) : (
                 <div>
                   <p className="dark:text-jacarta-100 mb-10">
-                    {description?.length > 1000 ? description?.slice(0, 1000) + "..." : description}{" "}
+                    {description?.length > 1000
+                      ? addLineBreaks(description?.slice(0, 1000) + "...")
+                      : addLineBreaks(description)}{" "}
                     {description?.length > 1000 && (
                       <button
                         onClick={() => setShowEntireDescription(true)}
