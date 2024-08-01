@@ -391,8 +391,8 @@ const TokenPageContainer = () => {
     const fetchBuyEtherPrice = async () => {
       try {
         let amount = 0;
-        if (currencyDecimals) {
-          amount = ethers.utils.parseUnits("1", Number(currencyDecimals));
+        if (currencyDecimals && debouncedBidsAmount) {
+          amount = ethers.utils.parseUnits(debouncedBidsAmount, Number(currencyDecimals));
         }
 
         const tokenEtherPrice = await fetch(
@@ -435,14 +435,14 @@ const TokenPageContainer = () => {
       setTokenEtherPrice(ethers.utils.formatUnits(amountInEthWithSlippageBN, 18));
     }
 
-    if (bidsAmount && currencyDecimals) {
-      const amountUSDC = parseUnits(tokenEtherPriceRelayer?.amountUSDC, 12);
-      const parsedBidsAmount = parseUnits(bidsAmount, Number(currencyDecimals));
-
-      const priceToDisplayBN = parsedBidsAmount.mul(amountUSDC);
-      const priceToDisplay = formatUnits(priceToDisplayBN, Number(currencyDecimals * 2));
+    if (bidsAmount && currencyDecimals && tokenEtherPriceRelayer) {
+      const amountUSDC = tokenEtherPriceRelayer?.amountUSDC;
+      console.log(amountUSDC);
+      const priceToDisplay = formatUnits(amountUSDC, 6);
 
       setDisplayedPrice(formatAndRoundPrice(priceToDisplay));
+    } else {
+      setDisplayedPrice(0);
     }
   }, [bidsAmount, currencyDecimals, tokenEtherPriceRelayer]);
 
