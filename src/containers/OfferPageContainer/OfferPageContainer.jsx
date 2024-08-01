@@ -724,7 +724,7 @@ const OfferPageContainer = () => {
               </Accordion.Trigger>
             </Accordion.Header>
 
-            <Accordion.Content>
+            <Accordion.Content className="mb-8">
               <Tabs className="tabs">
                 <TabList className="nav nav-tabs hide-scrollbar mb-12 flex items-center justify-start overflow-x-auto overflow-y-hidden border-b border-jacarta-100 pb-px dark:border-jacarta-800 md:justify-center">
                   <Tab
