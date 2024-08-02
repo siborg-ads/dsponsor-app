@@ -69,6 +69,7 @@ const TokenPageContainer = () => {
   const [isLoadingAirdropButton, setIsLoadingAirdropButton] = useState(false);
   const [tokenIdString, setTokenIdString] = useState(null);
   const [offerData, setOfferData] = useState(null);
+  const [showBidsModal, setShowBidsModal] = useState(false);
   const address = useAddress();
   const [isOwner, setIsOwner] = useState(false);
   const [firstSelectedListing, setFirstSelectedListing] = useState({});
@@ -170,12 +171,15 @@ const TokenPageContainer = () => {
         const collectionId = parsedPayload[0]?.collectionId;
 
         if (collectionId === mintCollectionId) {
+          setBuyModal(true);
           setSuccessFullUpload(true);
           setIsOwner(true);
           setMinted(true);
         } else if (collectionId === buyCollectionId) {
+          setBuyModal(true);
           setSuccessFullUpload(true);
         } else if (collectionId === bidCollectionId) {
+          setShowBidsModal(true);
           setSuccessFullBid(true);
         }
       } else if (parsedPayload[0]?.status === "failure") {
@@ -2204,6 +2208,8 @@ const TokenPageContainer = () => {
                       amountInEthWithSlippage={amountInEthWithSlippage}
                       displayedPrice={displayedPrice}
                       setDisplayedPrice={setDisplayedPrice}
+                      showBidsModal={showBidsModal}
+                      setShowBidsModal={setShowBidsModal}
                     />
                   )}
                 </>
