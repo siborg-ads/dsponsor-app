@@ -67,7 +67,7 @@ const OfferPageContainer = () => {
   const [, setCanChangeMintPrice] = useState(false);
   const [offerManagementActiveTab, setOfferManagementActiveTab] = useState("integration");
   const [imageUrl, setImageUrl] = useState(null);
-  const [accordionActiveTab, setAccordionActiveTab] = useState("details");
+  const [accordionActiveTab, setAccordionActiveTab] = useState([]);
 
   const { data: bps } = useContractRead(DsponsorAdminContract, "feeBps");
   const maxBps = 10000;
@@ -339,12 +339,7 @@ const OfferPageContainer = () => {
   }
 
   return (
-    <Accordion.Root
-      type="single"
-      collapsible
-      value={accordionActiveTab}
-      onValueChange={setAccordionActiveTab}
-    >
+    <Accordion.Root type="multiple" value={accordionActiveTab} onValueChange={setAccordionActiveTab}>
       <Meta {...metadata} />
       {/*  <!-- Item --> */}
       <section className="relative lg:mt-24 lg:pt-12  mt-24 pt-12 pb-8">
