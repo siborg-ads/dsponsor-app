@@ -146,6 +146,7 @@ const Validation = ({
   const handleItemSubmit = async (approuved = false) => {
     let submissionArgs = [];
     setIsApprouvedAd(approuved);
+
     for (const item of selectedItems) {
       let argObject = {
         ...item,
@@ -161,6 +162,7 @@ const Validation = ({
       setPendingProposalLength((prev) => prev - submissionArgs.length);
     } catch (error) {
       console.error(error);
+      throw error;
     }
   };
 
@@ -264,7 +266,7 @@ const Validation = ({
                 pendingProposalData={pendingProposalData}
                 handleSubmit={handleSubmit}
                 successFullRefuseModal={successFullRefuseModal}
-                isToken={isToken}
+                isToken={false}
                 isOwner={isOwner}
                 setSuccessFullRefuseModal={setSuccessFullRefuseModal}
                 handleItemSubmit={handleItemSubmit}
@@ -284,7 +286,7 @@ const Validation = ({
             <ValidatedRefusedItems
               statut={true}
               proposalData={validatedProposalData}
-              isToken={isToken}
+              isToken={false}
             />
           </div>
         </TabPanel>

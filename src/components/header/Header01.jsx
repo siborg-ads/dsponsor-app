@@ -65,10 +65,22 @@ export default function Header01() {
 
           <div className="js-mobile-menu dark:bg-jacarta-800 invisible fixed inset-0 z-10 ml-auto items-center bg-white opacity-0 lg:visible lg:relative lg:inset-auto lg:flex lg:bg-transparent lg:opacity-100 dark:lg:bg-transparent">
             <nav className="navbar w-full">
-              <ul className="flex flex-col lg:flex-row">
-                {/* buy */}
-
-                {/* create */}
+              <ul className="flex flex-col lg:flex-row items-center">
+                <li className="group">
+                  <Link href={`/`}>
+                    <button className="text-jacarta-900 font-display hover:text-primaryPurple focus:text-primaryPurple dark:hover:text-primaryPurple dark:focus:text-primaryPurple flex items-center justify-between py-3.5 text-base dark:text-white lg:px-5">
+                      <span
+                        className={
+                          isChildrenPageActive(route.asPath, `/`)
+                            ? "text-primaryPurple dark:text-primaryPurple"
+                            : ""
+                        }
+                      >
+                        Marketplace
+                      </span>
+                    </button>
+                  </Link>
+                </li>
                 <ConditionalCreateLi condition={activated_features.canCreateOffer}>
                   <li className="group">
                     <Link href={chainId ? `/${chainId}/offer/create` : "#"}>
@@ -86,21 +98,6 @@ export default function Header01() {
                     </Link>
                   </li>
                 </ConditionalCreateLi>
-                <li className="group">
-                  <Link href={`/`}>
-                    <button className="text-jacarta-900 font-display hover:text-primaryPurple focus:text-primaryPurple dark:hover:text-primaryPurple dark:focus:text-primaryPurple flex items-center justify-between py-3.5 text-base dark:text-white lg:px-5">
-                      <span
-                        className={
-                          isChildrenPageActive(route.asPath, `/`)
-                            ? "text-primaryPurple dark:text-primaryPurple"
-                            : ""
-                        }
-                      >
-                        Marketplace
-                      </span>
-                    </button>
-                  </Link>
-                </li>
                 <li className="group">
                   <Link href={`/leaderboard`}>
                     <button className="text-jacarta-900 font-display hover:text-primaryPurple focus:text-primaryPurple dark:hover:text-primaryPurple dark:focus:text-primaryPurple flex items-center justify-between py-3.5 text-base dark:text-white lg:px-5">
@@ -147,7 +144,7 @@ export default function Header01() {
                     </SelectItem>
                   </Select>
                 </li> */}
-                <li className="group">
+                <li className="group ml-4">
                   <ConnectWallet theme={"dark"} modalSize={"wide"} />
                 </li>
               </ul>

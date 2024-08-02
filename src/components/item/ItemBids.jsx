@@ -32,7 +32,12 @@ const ItemBids = ({
   token,
   user,
   offer,
-  referrer
+  referrer,
+  isValidId,
+  tokenEtherPrice,
+  amountInEthWithSlippage,
+  displayedPrice,
+  setDisplayedPrice
 }) => {
   const [showBidsModal, setShowBidsModal] = useState(false);
   const [minimalBidPerToken, setMinimalBidPerToken] = useState(null);
@@ -117,7 +122,8 @@ const ItemBids = ({
               action={() => {
                 toggleBidsModal();
               }}
-              className={` !rounded-full !py-3 w-full !px-8 !text-center !font-semibold !text-white !transition-all !bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer `}
+              isDisabled={!isValidId}
+              className={`${!isValidId && "!btn-disabled !bg-opacity-30"} !rounded-full !py-3 w-full !px-8 !text-center !font-semibold !text-white !transition-all !bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer `}
             >
               Place Bid
             </Web3Button>
@@ -165,6 +171,10 @@ const ItemBids = ({
             offer={offer}
             referrer={referrer}
             currencyContract={currencyContract}
+            tokenEtherPrice={tokenEtherPrice}
+            amountInEthWithSlippage={amountInEthWithSlippage}
+            displayedPrice={displayedPrice}
+            setDisplayedPrice={setDisplayedPrice}
           />
         </div>
       )}

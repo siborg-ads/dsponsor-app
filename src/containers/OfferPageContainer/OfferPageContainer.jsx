@@ -29,6 +29,7 @@ import { Tabs, Tab, TabList, TabPanel } from "react-tabs";
 import { BadgePercentIcon, BlocksIcon, RefreshCwIcon } from "lucide-react";
 import Disable from "../../components/disable/disable";
 import OfferItem from "../../components/cards/offerItem";
+import { addLineBreaks } from "../../utils/addLineBreaks";
 
 const OfferPageContainer = () => {
   const router = useRouter();
@@ -444,14 +445,6 @@ const OfferPageContainer = () => {
               </h2>
 
               <div className="mb-8 flex items-center flex-wrap gap-2 space-x-4 whitespace-nowrap">
-                {currency?.symbol && (
-                  <div className="flex items-center">
-                    <span className="text-green text-sm font-medium tracking-tight mr-2">
-                      {price} {currency?.symbol}
-                    </span>
-                  </div>
-                )}
-
                 {offerData?.nftContract?.allowList && (
                   <span className="dark:text-jacarta-100 text-jacarta-100 text-sm">
                     {offerData.nftContract.maxSupply -
@@ -466,7 +459,7 @@ const OfferPageContainer = () => {
 
               {showEntireDescription ? (
                 <p className="dark:text-jacarta-100 mb-10">
-                  {description}{" "}
+                  {addLineBreaks(description)}{" "}
                   {description?.length > 1000 && (
                     <button
                       onClick={() => setShowEntireDescription(false)}
@@ -479,7 +472,9 @@ const OfferPageContainer = () => {
               ) : (
                 <div>
                   <p className="dark:text-jacarta-100 mb-10">
-                    {description?.length > 1000 ? description?.slice(0, 1000) + "..." : description}{" "}
+                    {description?.length > 1000
+                      ? addLineBreaks(description?.slice(0, 1000) + "...")
+                      : addLineBreaks(description)}{" "}
                     {description?.length > 1000 && (
                       <button
                         onClick={() => setShowEntireDescription(true)}
@@ -648,6 +643,7 @@ const OfferPageContainer = () => {
                     item={finalToken}
                     isToken={true}
                     url={`/${chainId}/offer/${offerId}/${finalToken?.tokenId}`}
+                    currencyDecimals={currencyDecimals}
                   />
                 );
               })}
@@ -728,7 +724,7 @@ const OfferPageContainer = () => {
               </Accordion.Trigger>
             </Accordion.Header>
 
-            <Accordion.Content>
+            <Accordion.Content className="mb-8">
               <Tabs className="tabs">
                 <TabList className="nav nav-tabs hide-scrollbar mb-12 flex items-center justify-start overflow-x-auto overflow-y-hidden border-b border-jacarta-100 pb-px dark:border-jacarta-800 md:justify-center">
                   <Tab

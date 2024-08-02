@@ -54,6 +54,8 @@ import InfoIcon from "../../components/informations/infoIcon.jsx";
 import Disable from "../../components/disable/disable.jsx";
 import Input from "../../components/ui/input";
 import { useSearchParams } from "next/navigation.js";
+import { addLineBreaks } from "../../utils/addLineBreaks.js";
+import formatAndRoundPrice from "../../utils/formatAndRound.js";
 import TransactionFailedModal from "../../components/modal/failModal.jsx";
 
 const TokenPageContainer = () => {
@@ -76,9 +78,12 @@ const TokenPageContainer = () => {
   const [link, setLink] = useState("");
   const [amountToApprove, setAmountToApprove] = useState(null);
   const [buyTokenEtherPrice, setBuyTokenEtherPrice] = useState(null);
+  const [tokenEtherPriceRelayer, setTokenEtherPriceRelayer] = useState(null);
   const [royalties, setRoyalties] = useState(null);
   const [errors, setErrors] = useState({});
   const [marketplaceListings, setMarketplaceListings] = useState([]);
+  const [refusedValidatedAdModal, setRefusedValidatedAdModal] = useState(null);
+  const [successFullRefuseModal, setSuccessFullRefuseModal] = useState(false);
   const [finalPrice, setFinalPrice] = useState(null);
   const [finalPriceNotFormatted, setFinalPriceNotFormatted] = useState(null);
   const [successFullUpload, setSuccessFullUpload] = useState(false);
@@ -113,7 +118,7 @@ const TokenPageContainer = () => {
   const [bidsAmount, setBidsAmount] = useState("");
   const [currencyDecimals, setCurrencyDecimals] = useState(null);
   const [isLister, setIsLister] = useState(false);
-  const [, setSelectedItems] = useState([]);
+  const [selectedItems, setSelectedItems] = useState([]);
   const [bids, setBids] = useState([]);
   const [insufficentBalance, setInsufficentBalance] = useState(false);
   const [canPayWithNativeToken, setCanPayWithNativeToken] = useState(false);
@@ -121,6 +126,10 @@ const TokenPageContainer = () => {
   const [itemProposals, setItemProposals] = useState(null);
   const [mediaShouldValidateAnAd, setMediaShouldValidateAnAd] = useState(false);
   const [airdropContainer, setAirdropContainer] = useState(true);
+  const [tokenEtherPrice, setTokenEtherPrice] = useState(null);
+  const [amountInEthWithSlippage, setAmountInEthWithSlippage] = useState(null);
+  const [displayedPrice, setDisplayedPrice] = useState(null);
+  const [isOfferOwner, setIsOfferOwner] = useState(false);
   const [
     sponsorHasAtLeastOneRejectedProposalAndNoPending,
     setSponsorHasAtLeastOneRejectedProposalAndNoPending
@@ -224,7 +233,6 @@ const TokenPageContainer = () => {
 
       try {
         const offers = await fetchTokenPageContainer(chainId, offerId, tokenId);
-        console.log("offer", offers);
         setOffers(offers);
 
         // check if we have the values
@@ -394,36 +402,76 @@ const TokenPageContainer = () => {
   // referralAddress is the address of the ?_rid= parameter in the URL
   const referralAddress = getCookie("_rid") || "";
 
+  const [debouncedBidsAmount, setDebouncedBidsAmount] = useState(bidsAmount);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedBidsAmount(bidsAmount);
+    }, 500);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [bidsAmount]);
+
   useEffect(() => {
     const fetchBuyEtherPrice = async () => {
-      const finalPriceDecimals = BigNumber.from(finalPriceNotFormatted.toString());
-
-      const tokenEtherPrice = await fetch(
-        `https://relayer.dsponsor.com/api/${chainId}/prices?token=${tokenCurrencyAddress}&amount=${finalPriceDecimals}&slippage=0.3`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json"
-          }
+      try {
+        let amount = 0;
+        if (currencyDecimals && debouncedBidsAmount) {
+          amount = ethers.utils.parseUnits(debouncedBidsAmount, Number(currencyDecimals));
         }
-      )
-        .then((res) => res.json())
-        .then((data) => {
-          return data;
-        })
-        .catch((error) => {
-          return error;
-        });
 
-      const tokenEtherPriceDecimals = formatUnits(tokenEtherPrice?.amountInEthWithSlippage, 18);
+        const tokenEtherPrice = await fetch(
+          `https://relayer.dsponsor.com/api/${chainId}/prices?token=${tokenCurrencyAddress}&amount=${amount?.toString()}&slippage=0.3`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json"
+            }
+          }
+        )
+          .then((res) => res.json())
+          .then((data) => {
+            return data;
+          });
 
-      setBuyTokenEtherPrice(tokenEtherPriceDecimals);
+        setTokenEtherPriceRelayer(tokenEtherPrice);
+      } catch (error) {
+        console.error(error);
+      }
     };
 
-    if (finalPriceNotFormatted && finalPriceNotFormatted > 0 && chainId && tokenCurrencyAddress) {
+    if (chainId && tokenCurrencyAddress && currencyDecimals && debouncedBidsAmount) {
       fetchBuyEtherPrice();
     }
-  }, [finalPriceNotFormatted, chainId, tokenCurrencyAddress, currencyDecimals]);
+  }, [chainId, currencyDecimals, tokenCurrencyAddress, debouncedBidsAmount]);
+
+  useEffect(() => {
+    if (tokenEtherPriceRelayer) {
+      const tokenEtherPriceDecimals = formatUnits(
+        tokenEtherPriceRelayer?.amountInEthWithSlippage,
+        18
+      );
+      const amountInEthWithSlippageBN = ethers.BigNumber.from(
+        tokenEtherPriceRelayer?.amountInEthWithSlippage
+      );
+
+      setBuyTokenEtherPrice(tokenEtherPriceDecimals);
+      setAmountInEthWithSlippage(amountInEthWithSlippageBN);
+      setTokenEtherPrice(ethers.utils.formatUnits(amountInEthWithSlippageBN, 18));
+    }
+
+    if (bidsAmount && currencyDecimals && tokenEtherPriceRelayer) {
+      const amountUSDC = tokenEtherPriceRelayer?.amountUSDC;
+      console.log(amountUSDC);
+      const priceToDisplay = formatUnits(amountUSDC, 6);
+
+      setDisplayedPrice(formatAndRoundPrice(priceToDisplay));
+    } else {
+      setDisplayedPrice(0);
+    }
+  }, [bidsAmount, currencyDecimals, tokenEtherPriceRelayer]);
 
   useEffect(() => {
     if (chainId) {
@@ -1017,13 +1065,27 @@ const TokenPageContainer = () => {
       address?.toLowerCase() === firstSelectedListing?.lister?.toLowerCase() &&
       firstSelectedListing?.status === "CREATED"
     ) {
-      setIsOwner(true);
+      setIsLister(true);
+    }
+
+    if (
+      offerData?.admins?.includes(address?.toLowerCase()) ||
+      offerData?.initialCreator?.toLowerCase() === address?.toLowerCase()
+    ) {
+      setIsOfferOwner(true);
     }
 
     if (isUserOwner?.toLowerCase() === address?.toLowerCase()) {
       setIsOwner(true);
     }
-  }, [isUserOwner, address, marketplaceListings, firstSelectedListing]);
+  }, [
+    isUserOwner,
+    address,
+    marketplaceListings,
+    firstSelectedListing,
+    offerData?.admins,
+    offerData
+  ]);
 
   useEffect(() => {
     if (!tokenId || !offerData) return;
@@ -1072,7 +1134,7 @@ const TokenPageContainer = () => {
       }
       setTokenMetaData(tokenMetaData);
     }
-  }, [tokenId, offerData, tokenData]);
+  }, [tokenId, offerData, tokenData, searchParams]);
 
   useEffect(() => {
     if (!offerData || !offerData?.adParameters) return;
@@ -1453,6 +1515,25 @@ const TokenPageContainer = () => {
       setIsLister(false);
     }
   }, [marketplaceListings, address, firstSelectedListing]);
+
+  const { mutateAsync: validationAsync } = useContractWrite(
+    DsponsorAdminContract,
+    "reviewAdProposals"
+  );
+
+  const handleValidationSubmit = async (submissionArgs) => {
+    try {
+      await validationAsync({
+        args: [submissionArgs]
+      });
+      setRefusedValidatedAdModal(true);
+      setSuccessFullRefuseModal(true);
+    } catch (error) {
+      console.error("Erreur de validation du token:", error);
+      setSuccessFullRefuseModal(false);
+      throw error;
+    }
+  };
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -1860,7 +1941,7 @@ const TokenPageContainer = () => {
 
               {showEntireDescription ? (
                 <p className="dark:text-jacarta-100 mb-10">
-                  {description}{" "}
+                  {addLineBreaks(description)}{" "}
                   {description?.length > 1000 && (
                     <button
                       onClick={() => setShowEntireDescription(false)}
@@ -1873,7 +1954,9 @@ const TokenPageContainer = () => {
               ) : (
                 <div>
                   <p className="dark:text-jacarta-100 mb-10">
-                    {description?.length > 1000 ? description?.slice(0, 1000) + "..." : description}{" "}
+                    {description?.length > 1000
+                      ? addLineBreaks(description?.slice(0, 1000) + "...")
+                      : addLineBreaks(description)}{" "}
                     {description?.length > 1000 && (
                       <button
                         onClick={() => setShowEntireDescription(true)}
@@ -1942,7 +2025,8 @@ const TokenPageContainer = () => {
                             action={() => {
                               handleBuyModal();
                             }}
-                            className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all  !bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer `}
+                            isDisabled={!isValidId}
+                            className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all  !bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer ${!isValidId && "!btn-disabled !bg-opacity-30"} `}
                           >
                             Buy
                           </Web3Button>
@@ -2023,9 +2107,12 @@ const TokenPageContainer = () => {
 
                               setIsLoadingAirdropButton(false);
                             }}
-                            className={`!rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all  !bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer ${(airdropAddress === "" || !airdropAddress || isLoadingAirdropButton) && "!btn-disabled !cursor-not-allowed !opacity-30"}`}
-                            disabled={
-                              airdropAddress === "" || !airdropAddress || isLoadingAirdropButton
+                            className={`!rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all  !bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer ${(airdropAddress === "" || !airdropAddress || isLoadingAirdropButton || !isValidId) && "!btn-disabled !cursor-not-allowed !opacity-30"}`}
+                            isDisabled={
+                              airdropAddress === "" ||
+                              !airdropAddress ||
+                              isLoadingAirdropButton ||
+                              !isValidId
                             }
                           >
                             {isLoadingAirdropButton ? (
@@ -2096,6 +2183,7 @@ const TokenPageContainer = () => {
                       isLoadingButton={isLoadingButton}
                       setIsLoadingButton={setIsLoadingButton}
                       token={tokenDO}
+                      isValidId={isValidId}
                       user={{
                         address: address,
                         isOwner: isOwner,
@@ -2107,6 +2195,10 @@ const TokenPageContainer = () => {
                         address: referralAddress
                       }}
                       currencyContract={tokenCurrencyAddress}
+                      tokenEtherPrice={tokenEtherPrice}
+                      amountInEthWithSlippage={amountInEthWithSlippage}
+                      displayedPrice={displayedPrice}
+                      setDisplayedPrice={setDisplayedPrice}
                     />
                   )}
                 </>
@@ -2246,9 +2338,13 @@ const TokenPageContainer = () => {
                   <Validation
                     offer={offerData}
                     offerId={offerId}
-                    isOwner={isOwner}
+                    isOwner={isOfferOwner}
                     isToken={false}
                     successFullUploadModal={successFullUploadModal}
+                    successFullRefuseModal={successFullRefuseModal}
+                    setRefusedValidatedAdModal={setRefusedValidatedAdModal}
+                    refusedValidatedAdModal={refusedValidatedAdModal}
+                    setSuccessFullRefuseModal={setSuccessFullRefuseModal}
                     isLister={isLister}
                     setSelectedItems={setSelectedItems}
                     sponsorHasAtLeastOneRejectedProposalAndNoPending={
@@ -2259,6 +2355,8 @@ const TokenPageContainer = () => {
                     isSponsor={isOwner}
                     itemTokenId={tokenId}
                     isTokenView={true}
+                    handleSubmit={handleValidationSubmit}
+                    selectedItems={selectedItems}
                   />
                 </Accordion.Content>
               </>

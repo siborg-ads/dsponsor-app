@@ -216,7 +216,7 @@ const OfferItem = ({
 
     if (!isToken && !isListing && !isAuction) {
       setItemStatut("OFFER");
-      setPrice(item?.nftContract.prices[0]?.mintPriceStructureFormatted?.totalAmount);
+      setPrice(item?.nftContract.prices?.[0]?.mintPriceStructureFormatted?.totalAmount);
       const totalPrice = item?.nftContract.prices[0]?.mintPriceStructure?.totalAmount;
       if (currencyDecimals && totalPrice) {
         const formattedTotalPrice = formatUnits(
@@ -233,6 +233,7 @@ const OfferItem = ({
       setItemStatut("TOKENMINTABLE");
       setPrice(item?.nftContract?.prices[0]?.mintPriceStructureFormatted?.totalAmount);
       const totalPrice = item?.nftContract?.prices[0]?.mintPriceStructure?.totalAmount;
+
       if (currencyDecimals && totalPrice) {
         const formattedTotalPrice = formatUnits(
           BigNumber.from(totalPrice),

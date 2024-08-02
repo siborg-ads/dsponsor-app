@@ -414,7 +414,7 @@ const BuyModal = ({
 
                       setIsLoadingBuyButton(false);
                     }}
-                    className={`!rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${
+                    className={`!rounded-full !col-span-2 !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${
                       !validate || !canPayWithNativeToken || isLoadingBuyButton
                         ? "!btn-disabled !cursor-not-allowed !text-black !opacity-30"
                         : "!text-white !bg-primaryPurple !cursor-pointer"
