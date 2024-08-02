@@ -154,7 +154,7 @@ const TokenPageContainer = () => {
   const [failedCrossmintTransaction, setFailedCrossmintTransaction] = useState(false);
 
   const searchParams = useSearchParams();
-  const payload = searchParams.get("p");
+  const encodedPayload = searchParams.get("p");
   const chainConfig = config[chainId];
 
   const mintCollectionId = chainConfig?.features.crossmint.config?.mintCollectionId;
@@ -162,11 +162,14 @@ const TokenPageContainer = () => {
   const bidCollectionId = chainConfig?.features.crossmint.config?.bidCollectionId;
 
   useEffect(() => {
-    if (payload) {
-      const parsedPayload = JSON.parse(payload);
+    if (encodedPayload) {
+      const decodedPayload = decodeURIComponent(encodedPayload);
+      const parsedPayload = JSON.parse(decodedPayload);
+
+      console.log(parsedPayload);
 
       if (parsedPayload?.status === "success") {
-        const collectionId = payload?.collectionId;
+        const collectionId = parsedPayload?.collectionId;
 
         if (collectionId === mintCollectionId) {
           setSuccessFullUpload(true);
@@ -177,11 +180,11 @@ const TokenPageContainer = () => {
         } else if (collectionId === bidCollectionId) {
           setSuccessFullBid(true);
         }
-      } else if (payload?.status === "failure") {
+      } else if (parsedPayload?.status === "failure") {
         setFailedCrossmintTransaction(true);
       }
     }
-  }, [bidCollectionId, buyCollectionId, mintCollectionId, payload]);
+  }, [bidCollectionId, buyCollectionId, mintCollectionId, encodedPayload]);
 
   let description = "description not found";
   let id = "1";
