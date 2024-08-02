@@ -89,7 +89,7 @@ const HtmlIntegration = ({ chainId, offerId, offerTokens }) => {
   useEffect(() => {
     const generateTableHTML = () => {
       if (displayType === "DynamicBanner") {
-        return `<img src="https://relayer.dsponsor.com/${chainId}/integrations/${offerId}/DynamicBanner/image${ratio && ratioValue !== "" && `?ratio=${ratioValue}`}" style="max-width: 100%; height: auto; display: block;" alt="No Ad" />`;
+        return `<img src="https://relayer.dsponsor.com/${chainId}/integrations/${offerId}/DynamicBanner/image${ratio && ratioValue !== "" ? `?ratio=${ratioValue}` : ""}" style="max-width: 100%; height: auto; display: block;" alt="No Ad" />`;
       }
 
       if (!offerTokens || offerTokens.length === 0) return "";
@@ -255,13 +255,11 @@ const HtmlIntegration = ({ chainId, offerId, offerTokens }) => {
         </code>
       </div>
 
-      <Divider className="my-4" />
-
-      <span className="text-white text-lg font-semibold">Customize</span>
-
-      <div className="flex flex-wrap items-start gap-8">
-        {displayType === "ClickableLogoGrid" ? (
-          <>
+      {displayType === "ClickableLogoGrid" && (
+        <>
+          <Divider className="my-4" />
+          <span className="text-white text-lg font-semibold">Customize</span>
+          <div className="flex flex-wrap items-start gap-8">
             <div className="flex flex-col gap-4">
               <label className="flex items-center gap-2">
                 <Input
@@ -324,42 +322,9 @@ const HtmlIntegration = ({ chainId, offerId, offerTokens }) => {
                 />
               )}
             </div>
-          </>
-        ) : (
-          <div className="flex flex-col gap-4">
-            <label className="flex items-center gap-2">
-              <Input
-                type="checkbox"
-                checked={ratio}
-                onChange={(e) => {
-                  setRatioValue("1:1");
-
-                  if (!e.target.checked) {
-                    setRatio(false);
-                  } else {
-                    setRatio(true);
-                  }
-                }}
-                className=" !text-primaryPurple border-jacarta-200 focus:ring-primaryPurple/20 dark:border-jacarta-500 h-5 !w-5 self-start rounded focus:ring-offset-0"
-              />
-              <span className="text-white">Ratio</span>
-              <InfoIcon text="You can set the appropriate ratio to display the image.">
-                <InformationCircleIcon className="w-5 h-5 text-white hover:text-jacarta-100 cursor-help" />
-              </InfoIcon>
-            </label>
-            {ratio && (
-              <Input
-                type="text"
-                value={ratioValue}
-                onChange={(e) => {
-                  setRatioValue(e.target.value);
-                }}
-                placeholder="Ratio"
-              />
-            )}
           </div>
-        )}
-      </div>
+        </>
+      )}
 
       <Divider className="my-4" />
 
