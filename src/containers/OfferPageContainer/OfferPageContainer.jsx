@@ -442,9 +442,9 @@ const OfferPageContainer = () => {
               <div className="mb-8 flex items-center flex-wrap gap-2 space-x-4 whitespace-nowrap">
                 {offerData?.nftContract?.allowList && (
                   <span className="dark:text-jacarta-100 text-jacarta-100 text-sm">
-                    {offerData.nftContract.maxSupply -
-                      offerData.nftContract.tokens.filter((item) => item.mint != null).length}
-                    /{offerData.nftContract.maxSupply} available
+                    {offerData?.nftContract?.maxSupply -
+                      offerData?.nftContract?.tokens?.filter((item) => item.mint != null)?.length}
+                    /{offerData?.nftContract?.maxSupply} available
                   </span>
                 )}
                 <span className="text-jacarta-100 block text-sm dark:text-white">
@@ -504,7 +504,7 @@ const OfferPageContainer = () => {
       </section>
 
       <Accordion.Item value="search">
-        {!offerData.nftContract.allowList && (
+        {!offerData?.nftContract?.allowList && (
           <div className="container flex flex-col justify-center">
             <Accordion.Header className="w-full">
               <Accordion.Trigger
@@ -814,7 +814,7 @@ const OfferPageContainer = () => {
 
           <Accordion.Content className="mb-8">
             <ItemsTabs
-              contractAddress={offerData?.nftContract.id}
+              contractAddress={offerData?.nftContract?.id}
               offerId={offerId}
               initialCreator={offerData?.initialCreator}
               isToken={false}

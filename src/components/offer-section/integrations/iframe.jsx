@@ -317,6 +317,7 @@ const IframeIntegration = ({ chainId, offerId, offerTokens }) => {
           )}
         </div>
 
+        {/* 
         <div className="flex flex-col gap-4">
           <label className="flex items-center gap-2">
             <Input
@@ -386,7 +387,7 @@ const IframeIntegration = ({ chainId, offerId, offerTokens }) => {
               />
             </div>
           )}
-        </div>
+        </div>*/}
       </div>
 
       <Divider className="my-4" />
