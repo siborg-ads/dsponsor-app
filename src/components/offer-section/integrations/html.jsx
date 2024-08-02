@@ -45,6 +45,7 @@ const HtmlIntegration = ({ chainId, offerId, offerTokens }) => {
   const [color, setColor] = useState("#0d102d");
   const [htmlSrc, setHtmlSrc] = useState("");
   const [isExpanded, setIsExpanded] = useState(false);
+  const [displayType, setDisplayType] = useState("clickableLogoGrid");
 
   useEffect(() => {
     const savedSettings = localStorage.getItem("htmlSettings");
@@ -73,6 +74,10 @@ const HtmlIntegration = ({ chainId, offerId, offerTokens }) => {
 
   useEffect(() => {
     const generateTableHTML = () => {
+      if (displayType === "DynamicBanner") {
+        return `<img src="https://relayer.dsponsor.com/${chainId}/integrations/${offerId}/DynamicBanner/image" style="max-width: 100%; height: auto; display: block;" alt="No Ad" />`;
+      }
+
       if (!offerTokens || offerTokens.length === 0) return "";
       if (!numberOfColumns || numberOfColumns === 0) return "";
       if (!numberOfRows || numberOfRows === 0) return "";
@@ -133,7 +138,7 @@ const HtmlIntegration = ({ chainId, offerId, offerTokens }) => {
 
     const htmlSrc = generateTableHTML();
     setHtmlSrc(htmlSrc);
-  }, [chainId, offerId, offerTokens, numberOfColumns, bgColor, numberOfRows, color]);
+  }, [chainId, offerId, offerTokens, numberOfColumns, bgColor, numberOfRows, color, displayType]);
 
   const toggleExpansion = () => {
     setIsExpanded(!isExpanded);
@@ -165,8 +170,8 @@ const HtmlIntegration = ({ chainId, offerId, offerTokens }) => {
 
         <RadioGroup.Root
           className="flex items-center gap-8"
-          defaultValue="clickableLogoGrid"
-          defaultChecked="clickableLogoGrid"
+          value={displayType}
+          onValueChange={(value) => setDisplayType(value)}
         >
           <div className="flex items-center gap-2">
             <RadioGroup.Item
@@ -195,7 +200,7 @@ const HtmlIntegration = ({ chainId, offerId, offerTokens }) => {
             <label className="text-white leading-none pl-1" htmlFor="r2">
               Dynamic Banner
             </label>
-            <InfoIcon text="This integration lets you display a randomly selected ad from those submitted by sponsors, with a new ad randomly selected at each request. The ad redirects to a URL.">
+            <InfoIcon text="This integration lets you display a randomly selected ad from those submitted by sponsors, with a new ad randomly selected at each request. The ad does not redirect to a URL.">
               <InformationCircleIcon className="w-5 h-5 text-white hover:text-jacarta-100 cursor-help" />
             </InfoIcon>
           </div>

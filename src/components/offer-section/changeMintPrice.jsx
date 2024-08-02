@@ -292,7 +292,7 @@ const ChangeMintPrice = ({ offer }) => {
           }}
           isDisabled={!amount || !currency || !formattedAmountBN || !nftContractAddress}
           contractAddress={nftContractAddress}
-          className={`!mt-4 !hover:bg-opacity-80 !px-4 !flex !py-2 !w-fit !text-white !font-semibold !rounded-full !mb-4 ${
+          className={`!mt-4 !hover:bg-opacity-80 !px-4 !flex !py-2 !w-fit !text-white !font-semibold !rounded-full ${
             !amount || !currency || !formattedAmountBN || !nftContractAddress
               ? "!opacity-50 !cursor-not-allowed !bg-jacarta-100"
               : "!bg-primaryPurple"
@@ -323,7 +323,7 @@ const ChangeMintPrice = ({ offer }) => {
           }}
           isDisabled={!nftContractAddress || !currency}
           contractAddress={nftContractAddress}
-          className={`!hover:bg-opacity-80 !px-4 !w-fit !flex !py-2 !text-white !font-semibold !rounded-full !mb-4 ${
+          className={`!hover:bg-opacity-80 !px-4 !w-fit !flex !py-2 !text-white !font-semibold !rounded-full ${
             !currency || !nftContractAddress
               ? "!opacity-50 !cursor-not-allowed !bg-jacarta-100"
               : "!bg-primaryPurple"
