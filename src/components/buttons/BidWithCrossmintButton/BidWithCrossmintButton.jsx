@@ -66,8 +66,6 @@ export default function BidWithCrossmintButton(props = {}) {
     );
   }
 
-  console.log("props", props);
-
   const buttonProps = {
     projectId: props.config?.projectId,
     collectionId: props.config?.bidCollectionId,

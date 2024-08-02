@@ -892,7 +892,7 @@ const BidsModal = ({
                           amountInEthWithSlippage ?? "0",
                           Number(currencyTokenDecimals)
                         )}
-                        isDisabled={!checkTerms || isLoadingButton}
+                        isDisabled={!checkTerms || isLoadingButton || !isPriceGood}
                         isLoading={isLoadingButton}
                         isLoadingRender={() => <Spinner size="sm" color="default" />}
                         successCallbackURl={window.location.href.replace(

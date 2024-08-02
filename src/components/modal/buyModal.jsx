@@ -13,6 +13,7 @@ import { parseUnits } from "ethers/lib/utils";
 import { InformationCircleIcon } from "@heroicons/react/24/solid";
 import InfoIcon from "../informations/infoIcon";
 import Input from "../ui/input";
+import config from "../../config/config";
 
 const BuyModal = ({
   formatTokenId,
@@ -56,9 +57,13 @@ const BuyModal = ({
   const [isLoadingApproveButton, setIsLoadingApproveButton] = useState(false);
 
   const { currentChainObject } = useChainContext();
+  const chainId = currentChainObject?.chainId;
+
   const modalRef = useRef();
 
   const { data: currencyBalance } = useBalance(currencyContract);
+
+  const chainConfig = config[chainId];
 
   useEffect(() => {
     if (!buyTokenEtherPrice || buyTokenEtherPrice <= 0) return;
@@ -445,7 +450,7 @@ const BuyModal = ({
 
               {/* Crossmint buttons section */}
               {canPayWithCrossmint && !successFullUpload && (
-                <>
+                <div className="mt-2">
                   <div className="flex items-center justify-center w-full">
                     <div className="flex-grow border-t border-gray-300"></div>
                     <span className="mx-4 text-gray-500">or</span>
@@ -469,9 +474,10 @@ const BuyModal = ({
                           }
                         }}
                         isLoading={isLoadingButton}
+                        config={chainConfig?.features.crossmint.config}
                         isLoadingRender={() => <Spinner size="sm" color="default" />}
                         isActiveRender={`Buy NOW ${finalPrice} ${selectedCurrency} with card `}
-                        isDisabled={!validate || isLoadingButton}
+                        isDisabled={!validate || isLoadingButton || !finalPrice}
                         successCallbackURl={window.location.href.replace(
                           "http://localhost:3000",
                           "https://0002-2a01-cb08-871a-4d00-1899-dd0-cddc-78d1.ngrok-free.app"
@@ -499,6 +505,7 @@ const BuyModal = ({
                         isLoading={isLoadingButton}
                         isLoadingRender={() => <Spinner size="sm" color="default" />}
                         isActiveRender={`Buy NOW ${finalPrice} ${selectedCurrency} with card `}
+                        config={chainConfig?.features.crossmint.config}
                         isDisabled={!validate || isLoadingButton}
                         successCallbackURl={window.location.href.replace(
                           "http://localhost:3000",
@@ -511,7 +518,7 @@ const BuyModal = ({
                       />
                     )}
                   </div>
-                </>
+                </div>
               )}
             </div>
           )}

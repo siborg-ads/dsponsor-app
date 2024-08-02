@@ -464,7 +464,7 @@ const TokenPageContainer = () => {
 
     if (bidsAmount && currencyDecimals && tokenEtherPriceRelayer) {
       const amountUSDC = tokenEtherPriceRelayer?.amountUSDC;
-      console.log(amountUSDC);
+
       const priceToDisplay = formatUnits(amountUSDC, 6);
 
       setDisplayedPrice(formatAndRoundPrice(priceToDisplay));
@@ -746,7 +746,7 @@ const TokenPageContainer = () => {
     setOfferDO({
       offerId: offerId
     });
-    console.log(offerData);
+
     setTokenDO({
       currency:
         offerData?.nftContract?.prices[0]?.currency ??
