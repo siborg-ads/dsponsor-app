@@ -37,10 +37,12 @@ const ItemBids = ({
   tokenEtherPrice,
   amountInEthWithSlippage,
   displayedPrice,
-  setDisplayedPrice
+  setDisplayedPrice,
+  showBidsModal,
+  setShowBidsModal
 }) => {
-  const [showBidsModal, setShowBidsModal] = useState(false);
   const [minimalBidPerToken, setMinimalBidPerToken] = useState(null);
+  const [bids, setBids] = useState(null);
 
   useEffect(() => {
     const minimalBidPerToken = marketplaceListings[0]?.bidPriceStructure?.minimalBidPerToken;
@@ -54,7 +56,12 @@ const ItemBids = ({
     setShowBidsModal(!showBidsModal);
     setSuccessFullBid(false);
   };
-  const bids = marketplaceListings[0].bids;
+
+  useEffect(() => {
+    if (marketplaceListings) {
+      setBids(marketplaceListings?.sort((a, b) => Number(b?.id) - Number(a?.id))?.[0]?.bids);
+    }
+  }, [marketplaceListings]);
 
   return (
     <div className="rounded-2lg bg-white p-8 dark:bg-secondaryBlack">
@@ -63,27 +70,32 @@ const ItemBids = ({
           <div className="mb-8 grid grid-cols-9">
             {/* Highest bid */}
             <div className="col-span-4">
-              {bids.length > 0 && (
+              {bids?.length > 0 && (
                 <div className="block overflow-hidden text-ellipsis whitespace-nowrap">
                   <span className="text-sm text-jacarta-100 dark:text-jacarta-100">
                     Highest bid by{" "}
                   </span>
                   <Link
-                    href={`/profile/${marketplaceListings[0].bids[0].bidder}`}
+                    href={`/profile/${marketplaceListings?.sort((a, b) => Number(b?.id) - Number(a?.id))?.[0]?.bids[0]?.bidder}`}
                     className="text-sm font-bold text-primaryPurple"
                   >
                     {address &&
-                    marketplaceListings[0]?.bids[0]?.bidder &&
-                    getAddress(marketplaceListings[0]?.bids[0]?.bidder) === getAddress(address)
+                    marketplaceListings?.sort((a, b) => Number(b?.id) - Number(a?.id))?.[0]?.bids[0]
+                      ?.bidder &&
+                    getAddress(
+                      marketplaceListings?.sort((a, b) => Number(b?.id) - Number(a?.id))?.[0]
+                        ?.bids[0]?.bidder
+                    ) === getAddress(address)
                       ? "You"
-                      : marketplaceListings[0].bids[0].bidder}
+                      : marketplaceListings?.sort((a, b) => Number(b?.id) - Number(a?.id))?.[0]
+                          ?.bids[0]?.bidder}
                   </Link>
                 </div>
               )}
               <div className="mt-3 flex">
                 <div>
                   <div className="flex items-center">
-                    {bids.length <= 0 ? (
+                    {bids?.length <= 0 ? (
                       <div className="flex flex-col">
                         <p className="text-sm text-jacarta-100">Starting price: </p>
                         <span className="text-lg font-medium leading-tight tracking-tight text-green">
@@ -112,7 +124,11 @@ const ItemBids = ({
               <span className="js-countdown-ends-label text-sm text-jacarta-100 dark:text-jacarta-100">
                 Auction ends in
               </span>
-              <Timer endTime={marketplaceListings[0].endTime} />
+              <Timer
+                endTime={
+                  marketplaceListings?.sort((a, b) => Number(b?.id) - Number(a?.id))?.[0]?.endTime
+                }
+              />
             </div>
           </div>
 
@@ -133,11 +149,17 @@ const ItemBids = ({
         <div>
           <span className="text-jacarta-100 block text-xs text-center">
             Auction live from{" "}
-            {marketplaceListings[0]?.startTime &&
-              new Date(marketplaceListings[0]?.startTime * 1000).toLocaleString()}{" "}
+            {marketplaceListings?.sort((a, b) => Number(b?.id) - Number(a?.id))?.[0]?.startTime &&
+              new Date(
+                marketplaceListings?.sort((a, b) => Number(b?.id) - Number(a?.id))?.[0]?.startTime *
+                  1000
+              ).toLocaleString()}{" "}
             to{" "}
-            {marketplaceListings[0]?.endTime &&
-              new Date(marketplaceListings[0]?.endTime * 1000).toLocaleString()}
+            {marketplaceListings?.sort((a, b) => Number(b?.id) - Number(a?.id))?.[0]?.endTime &&
+              new Date(
+                marketplaceListings?.sort((a, b) => Number(b?.id) - Number(a?.id))?.[0]?.endTime *
+                  1000
+              ).toLocaleString()}
           </span>
         </div>
       </div>
