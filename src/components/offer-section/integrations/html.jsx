@@ -45,7 +45,17 @@ const HtmlIntegration = ({ chainId, offerId, offerTokens }) => {
   const [color, setColor] = useState("#0d102d");
   const [htmlSrc, setHtmlSrc] = useState("");
   const [isExpanded, setIsExpanded] = useState(false);
-  const [displayType, setDisplayType] = useState("clickableLogoGrid");
+  const [displayType, setDisplayType] = useState("ClickableLogoGrid");
+  const [ratio, setRatio] = useState(
+    localStorage.getItem("htmlSettings")
+      ? JSON.parse(localStorage.getItem("htmlSettings")).ratio
+      : false
+  );
+  const [ratioValue, setRatioValue] = useState(
+    localStorage.getItem("htmlSettings")
+      ? JSON.parse(localStorage.getItem("htmlSettings")).ratioValue
+      : "1:1"
+  );
 
   useEffect(() => {
     const savedSettings = localStorage.getItem("htmlSettings");
@@ -55,6 +65,8 @@ const HtmlIntegration = ({ chainId, offerId, offerTokens }) => {
       setNumberOfColumns(settings.numberOfColumns);
       setBgColor(settings.bgColor);
       setColor(settings.bgColor);
+      setRatio(settings.ratio);
+      setRatioValue(settings.ratioValue);
     }
   }, []);
 
@@ -63,10 +75,12 @@ const HtmlIntegration = ({ chainId, offerId, offerTokens }) => {
       columns,
       numberOfColumns,
       bgColor,
-      color
+      color,
+      ratio,
+      ratioValue
     };
     localStorage.setItem("htmlSettings", JSON.stringify(settings));
-  }, [columns, numberOfColumns, bgColor, color]);
+  }, [columns, numberOfColumns, bgColor, color, ratio, ratioValue]);
 
   useEffect(() => {
     setNumberOfRows(Math.ceil(offerTokens?.length / numberOfColumns));
@@ -75,7 +89,7 @@ const HtmlIntegration = ({ chainId, offerId, offerTokens }) => {
   useEffect(() => {
     const generateTableHTML = () => {
       if (displayType === "DynamicBanner") {
-        return `<img src="https://relayer.dsponsor.com/${chainId}/integrations/${offerId}/DynamicBanner/image" style="max-width: 100%; height: auto; display: block;" alt="No Ad" />`;
+        return `<img src="https://relayer.dsponsor.com/${chainId}/integrations/${offerId}/DynamicBanner/image${ratio && ratioValue !== "" && `?ratio=${ratioValue}`}" style="max-width: 100%; height: auto; display: block;" alt="No Ad" />`;
       }
 
       if (!offerTokens || offerTokens.length === 0) return "";
@@ -176,7 +190,7 @@ const HtmlIntegration = ({ chainId, offerId, offerTokens }) => {
           <div className="flex items-center gap-2">
             <RadioGroup.Item
               className="bg-white w-4 h-4 rounded-full hover:border-primaryPink outline-none cursor-default"
-              value="clickableLogoGrid"
+              value="ClickableLogoGrid"
               id="r1"
             >
               <RadioGroup.Indicator className="flex items-center justify-center w-full h-full relative after:content-[''] after:block after:w-[11px] after:h-[11px] after:rounded-[50%] after:bg-primaryPurple" />
@@ -246,158 +260,209 @@ const HtmlIntegration = ({ chainId, offerId, offerTokens }) => {
       <span className="text-white text-lg font-semibold">Customize</span>
 
       <div className="flex flex-wrap items-start gap-8">
-        <div className="flex flex-col gap-4">
-          <label className="flex items-center gap-2">
-            <Input
-              type="checkbox"
-              checked={columns}
-              onChange={(e) => {
-                if (!e.target.checked) {
-                  setColumns(false);
-                  setNumberOfColumns(initialColumns(offerTokens?.length));
-                } else {
-                  setColumns(true);
-                  setNumberOfColumns(offerTokens?.length);
-                }
-              }}
-              className=" !text-primaryPurple border-jacarta-200 focus:ring-primaryPurple/20 dark:border-jacarta-500 h-5 !w-5 self-start rounded focus:ring-offset-0"
-            />
-            <span className="text-white">Number of columns</span>
-            <InfoIcon text="You can set the number of columns to match the designated space on your page.">
-              <InformationCircleIcon className="w-5 h-5 text-white hover:text-jacarta-100 cursor-help" />
-            </InfoIcon>
-          </label>
-          {columns && (
-            <Input
-              type="number"
-              value={parseInt(numberOfColumns)}
-              onChange={(e) => {
-                const value = e.target.value;
-                if (value === "") {
-                  setNumberOfColumns("");
-                } else if (value > 0 && value <= Math.min(offerTokens?.length, 25)) {
-                  setNumberOfColumns(value);
-                } else {
-                  setNumberOfColumns(Math.min(offerTokens?.length, 25));
-                }
-              }}
-              placeholder="Number of columns"
-              min={1}
-              max={Math.min(offerTokens?.length, 25)}
-            />
-          )}
-        </div>
+        {displayType === "ClickableLogoGrid" ? (
+          <>
+            <div className="flex flex-col gap-4">
+              <label className="flex items-center gap-2">
+                <Input
+                  type="checkbox"
+                  checked={columns}
+                  onChange={(e) => {
+                    if (!e.target.checked) {
+                      setColumns(false);
+                      setNumberOfColumns(initialColumns(offerTokens?.length));
+                    } else {
+                      setColumns(true);
+                      setNumberOfColumns(offerTokens?.length);
+                    }
+                  }}
+                  className=" !text-primaryPurple border-jacarta-200 focus:ring-primaryPurple/20 dark:border-jacarta-500 h-5 !w-5 self-start rounded focus:ring-offset-0"
+                />
+                <span className="text-white">Number of columns</span>
+                <InfoIcon text="You can set the number of columns to match the designated space on your page.">
+                  <InformationCircleIcon className="w-5 h-5 text-white hover:text-jacarta-100 cursor-help" />
+                </InfoIcon>
+              </label>
+              {columns && (
+                <Input
+                  type="number"
+                  value={parseInt(numberOfColumns)}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    if (value === "") {
+                      setNumberOfColumns("");
+                    } else if (value > 0 && value <= Math.min(offerTokens?.length, 25)) {
+                      setNumberOfColumns(value);
+                    } else {
+                      setNumberOfColumns(Math.min(offerTokens?.length, 25));
+                    }
+                  }}
+                  placeholder="Number of columns"
+                  min={1}
+                  max={Math.min(offerTokens?.length, 25)}
+                />
+              )}
+            </div>
 
-        <div className="flex flex-col gap-4">
-          <label className="flex items-center gap-2">
-            <Input
-              type="checkbox"
-              checked={bgColor}
-              onChange={(e) => setBgColor(e.target.checked)}
-              className=" !text-primaryPurple border-jacarta-200 focus:ring-primaryPurple/20 dark:border-jacarta-500 h-5 !w-5 self-start rounded focus:ring-offset-0"
-            />
-            <span className="text-white">Background color</span>
-            <InfoIcon text="By default, the background color of the table is not defined. You can select one if desired.">
-              <InformationCircleIcon className="w-5 h-5 text-white hover:text-jacarta-100 cursor-help" />
-            </InfoIcon>
-          </label>
-          {bgColor && (
-            <ChromePicker
-              color={color}
-              onChangeComplete={(color) => setColor(color.hex.replace("#", ""))}
-            />
-          )}
-        </div>
+            <div className="flex flex-col gap-4">
+              <label className="flex items-center gap-2">
+                <Input
+                  type="checkbox"
+                  checked={bgColor}
+                  onChange={(e) => setBgColor(e.target.checked)}
+                  className=" !text-primaryPurple border-jacarta-200 focus:ring-primaryPurple/20 dark:border-jacarta-500 h-5 !w-5 self-start rounded focus:ring-offset-0"
+                />
+                <span className="text-white">Background color</span>
+                <InfoIcon text="By default, the background color of the table is not defined. You can select one if desired.">
+                  <InformationCircleIcon className="w-5 h-5 text-white hover:text-jacarta-100 cursor-help" />
+                </InfoIcon>
+              </label>
+              {bgColor && (
+                <ChromePicker
+                  color={color}
+                  onChangeComplete={(color) => setColor(color.hex.replace("#", ""))}
+                />
+              )}
+            </div>
+          </>
+        ) : (
+          <div className="flex flex-col gap-4">
+            <label className="flex items-center gap-2">
+              <Input
+                type="checkbox"
+                checked={ratio}
+                onChange={(e) => {
+                  setRatioValue("1:1");
+
+                  if (!e.target.checked) {
+                    setRatio(false);
+                  } else {
+                    setRatio(true);
+                  }
+                }}
+                className=" !text-primaryPurple border-jacarta-200 focus:ring-primaryPurple/20 dark:border-jacarta-500 h-5 !w-5 self-start rounded focus:ring-offset-0"
+              />
+              <span className="text-white">Ratio</span>
+              <InfoIcon text="You can set the appropriate ratio to display the image.">
+                <InformationCircleIcon className="w-5 h-5 text-white hover:text-jacarta-100 cursor-help" />
+              </InfoIcon>
+            </label>
+            {ratio && (
+              <Input
+                type="text"
+                value={ratioValue}
+                onChange={(e) => {
+                  setRatioValue(e.target.value);
+                }}
+                placeholder="Ratio"
+              />
+            )}
+          </div>
+        )}
       </div>
 
       <Divider className="my-4" />
 
       <span className="text-white text-lg font-semibold">Preview</span>
 
-      <table
-        width="100%"
-        border="0"
-        cellSpacing="0"
-        cellPadding="0"
-        style={{ tableLayout: "fixed", backgroundColor: bgColor ? `#${color}` : "transparent" }}
-      >
-        <tbody>
-          {offerTokens &&
-            numberOfColumns > 0 &&
-            numberOfRows > 0 &&
-            Array.from({
-              length: Math.ceil(
-                offerTokens?.sort((a, b) => a?.tokenId - b?.tokenId)?.length / numberOfColumns
-              )
-            }).map((_, rowIndex) => {
-              const totalRows = Math.ceil(
-                offerTokens?.sort((a, b) => a?.tokenId - b?.tokenId)?.length / numberOfColumns
-              );
-              const isLastRow = rowIndex === totalRows - 1;
-              let realElementsInLastRow =
-                offerTokens?.sort((a, b) => a?.tokenId - b?.tokenId)?.length % numberOfColumns;
-              realElementsInLastRow =
-                realElementsInLastRow === 0 ? numberOfColumns : realElementsInLastRow; // Handle full last row
-              const totalEmptyCells = numberOfColumns - realElementsInLastRow;
-              const emptyCellsBefore = Math.floor(totalEmptyCells / 2);
-              const emptyCellsAfter = Math.ceil(totalEmptyCells / 2);
+      {displayType === "ClickableLogoGrid" && (
+        <table
+          width="100%"
+          border="0"
+          cellSpacing="0"
+          cellPadding="0"
+          style={{ tableLayout: "fixed", backgroundColor: bgColor ? `#${color}` : "transparent" }}
+        >
+          <tbody>
+            {offerTokens &&
+              numberOfColumns > 0 &&
+              numberOfRows > 0 &&
+              Array.from({
+                length: Math.ceil(
+                  offerTokens?.sort((a, b) => a?.tokenId - b?.tokenId)?.length / numberOfColumns
+                )
+              }).map((_, rowIndex) => {
+                const totalRows = Math.ceil(
+                  offerTokens?.sort((a, b) => a?.tokenId - b?.tokenId)?.length / numberOfColumns
+                );
+                const isLastRow = rowIndex === totalRows - 1;
+                let realElementsInLastRow =
+                  offerTokens?.sort((a, b) => a?.tokenId - b?.tokenId)?.length % numberOfColumns;
+                realElementsInLastRow =
+                  realElementsInLastRow === 0 ? numberOfColumns : realElementsInLastRow; // Handle full last row
+                const totalEmptyCells = numberOfColumns - realElementsInLastRow;
+                const emptyCellsBefore = Math.floor(totalEmptyCells / 2);
+                const emptyCellsAfter = Math.ceil(totalEmptyCells / 2);
 
-              return (
-                <tr key={rowIndex}>
-                  {isLastRow &&
-                    Array.from({ length: emptyCellsBefore }).map((_, index) => (
-                      <td
-                        key={`empty-before-${index}`}
-                        width={`${100 / numberOfColumns}%`}
-                        style={{ textAlign: "center", padding: "10px" }}
-                      />
-                    ))}
-                  {Array.from({ length: numberOfColumns }).map((_, colIndex) => {
-                    const index = rowIndex * numberOfColumns + colIndex;
-                    if (index < offerTokens?.sort((a, b) => a?.tokenId - b?.tokenId)?.length) {
-                      return (
+                return (
+                  <tr key={rowIndex}>
+                    {isLastRow &&
+                      Array.from({ length: emptyCellsBefore }).map((_, index) => (
                         <td
-                          key={colIndex}
-                          width={`${100 / numberOfColumns}%`}
-                          style={{ textAlign: "center", padding: "10px" }}
-                        >
-                          <a
-                            href={`https://relayer.dsponsor.com/${chainId}/integrations/${offerId}/${offerTokens?.sort((a, b) => a?.tokenId - b?.tokenId)[index]?.tokenId}/link`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            <img
-                              src={`https://relayer.dsponsor.com/${chainId}/integrations/${offerId}/${offerTokens?.sort((a, b) => a?.tokenId - b?.tokenId)[index]?.tokenId}/image`}
-                              style={{ maxWidth: "100%", height: "auto", display: "block" }}
-                              alt="No Ad"
-                            />
-                          </a>
-                        </td>
-                      );
-                    } else if (isLastRow && colIndex >= realElementsInLastRow + emptyCellsBefore) {
-                      return (
-                        <td
-                          key={`empty-after-${colIndex}`}
+                          key={`empty-before-${index}`}
                           width={`${100 / numberOfColumns}%`}
                           style={{ textAlign: "center", padding: "10px" }}
                         />
-                      );
-                    }
-                    return null;
-                  })}
-                  {isLastRow &&
-                    Array.from({ length: emptyCellsAfter }).map((_, index) => (
-                      <td
-                        key={`empty-after-${index}`}
-                        width={`${100 / numberOfColumns}%`}
-                        style={{ textAlign: "center", padding: "10px" }}
-                      />
-                    ))}
-                </tr>
-              );
-            })}
-        </tbody>
-      </table>
+                      ))}
+                    {Array.from({ length: numberOfColumns }).map((_, colIndex) => {
+                      const index = rowIndex * numberOfColumns + colIndex;
+                      if (index < offerTokens?.sort((a, b) => a?.tokenId - b?.tokenId)?.length) {
+                        return (
+                          <td
+                            key={colIndex}
+                            width={`${100 / numberOfColumns}%`}
+                            style={{ textAlign: "center", padding: "10px" }}
+                          >
+                            <a
+                              href={`https://relayer.dsponsor.com/${chainId}/integrations/${offerId}/${offerTokens?.sort((a, b) => a?.tokenId - b?.tokenId)[index]?.tokenId}/link`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              <img
+                                src={`https://relayer.dsponsor.com/${chainId}/integrations/${offerId}/${offerTokens?.sort((a, b) => a?.tokenId - b?.tokenId)[index]?.tokenId}/image`}
+                                style={{ maxWidth: "100%", height: "auto", display: "block" }}
+                                alt="No Ad"
+                              />
+                            </a>
+                          </td>
+                        );
+                      } else if (
+                        isLastRow &&
+                        colIndex >= realElementsInLastRow + emptyCellsBefore
+                      ) {
+                        return (
+                          <td
+                            key={`empty-after-${colIndex}`}
+                            width={`${100 / numberOfColumns}%`}
+                            style={{ textAlign: "center", padding: "10px" }}
+                          />
+                        );
+                      }
+                      return null;
+                    })}
+                    {isLastRow &&
+                      Array.from({ length: emptyCellsAfter }).map((_, index) => (
+                        <td
+                          key={`empty-after-${index}`}
+                          width={`${100 / numberOfColumns}%`}
+                          style={{ textAlign: "center", padding: "10px" }}
+                        />
+                      ))}
+                  </tr>
+                );
+              })}
+          </tbody>
+        </table>
+      )}
+
+      {displayType === "DynamicBanner" && (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={`https://relayer.dsponsor.com/${encodeURIComponent(Number(chainId))}/integrations/${encodeURIComponent(Number(offerId))}/DynamicBanner/image?ratio=${encodeURIComponent(ratio && ratioValue !== "" ? ratioValue : "1:1")}`}
+          style={{ maxWidth: "100%", height: "auto", display: "block" }}
+          alt="No Ad"
+        />
+      )}
     </div>
   );
 };
