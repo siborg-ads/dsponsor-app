@@ -124,18 +124,6 @@ export default function BuyWithCrossmintButton(props = {}) {
           : props?.isActiveRender ?? `Buy NOW with ${paymentMethod} for ${totalPriceFormatted}`;
       }}
       {...buttonProps}
-      onEvent={(event) => {
-        switch (event.type) {
-          case "payment:process.succeeded":
-            actions?.success?.(event);
-            break;
-          case "payment:process.failed":
-            actions?.error?.(event);
-            break;
-          default:
-            break;
-        }
-      }}
     />
   );
 }

@@ -17,6 +17,7 @@ import "tippy.js/dist/tippy.css";
 import { BigNumber } from "ethers";
 import InfoIcon from "../informations/infoIcon";
 import Input from "../ui/input";
+import { ngrokURL } from "../../data/ngrok";
 
 const BidsModal = ({
   setAmountToApprove,
@@ -69,6 +70,7 @@ const BidsModal = ({
   const [copied, setCopied] = useState(false);
   const [parsedBidsAmount, setParsedBidsAmount] = useState(null);
   const [buyoutPrice, setBuyoutPrice] = useState(null);
+  const [tooHighPriceForCrossmint, setTooHighPriceForCrossmint] = useState(false);
 
   const chainConfig = config[chainId];
   const chainWETH = chainConfig?.smartContracts.WETH.address.toLowerCase();
@@ -331,6 +333,24 @@ const BidsModal = ({
       setIsLoadingButton(false);
     }
   };
+
+  useEffect(() => {
+    if (bidsAmount && currencyTokenDecimals && chainId && chainConfig) {
+      const parsedBidsAmount = parseUnits(bidsAmount?.toString(), Number(currencyTokenDecimals));
+      const parsedPriceLimit = parseUnits(
+        chainConfig?.features?.crossmint?.config?.priceLimit?.toString(),
+        Number(currencyTokenDecimals)
+      );
+
+      const tooHighPrice = parsedPriceLimit ? parsedBidsAmount?.gte(parsedPriceLimit) : true;
+
+      if (tooHighPrice) {
+        setTooHighPriceForCrossmint(true);
+      } else {
+        setTooHighPriceForCrossmint(false);
+      }
+    }
+  }, [bidsAmount, chainConfig, chainId, currencyTokenDecimals]);
 
   const handleSubmit = async () => {
     const hasEnoughBalance = checkUserBalance(tokenBalance, bidsAmount, currencyTokenDecimals);
@@ -868,7 +888,7 @@ const BidsModal = ({
                       <span className="mx-4 text-gray-500">or</span>
                       <div className="flex-grow border-t border-gray-300"></div>
                     </div>
-                    <div className="flex items-center justify-center space-x-4">
+                    <div className="flex flex-col gap-2">
                       <BidWithCrossmintButton
                         offer={offer}
                         token={token}
@@ -892,18 +912,27 @@ const BidsModal = ({
                           amountInEthWithSlippage ?? "0",
                           Number(currencyTokenDecimals)
                         )}
-                        isDisabled={!checkTerms || isLoadingButton || !isPriceGood}
+                        isDisabled={
+                          !checkTerms || isLoadingButton || !isPriceGood || tooHighPriceForCrossmint
+                        }
                         isLoading={isLoadingButton}
                         isLoadingRender={() => <Spinner size="sm" color="default" />}
-                        successCallbackURl={window.location.href.replace(
+                        successCallbackURL={window.location.href.replace(
                           "http://localhost:3000",
-                          "https://0002-2a01-cb08-871a-4d00-1899-dd0-cddc-78d1.ngrok-free.app"
+                          ngrokURL
                         )}
                         failureCallbackURL={window.location.href.replace(
                           "http://localhost:3000",
-                          "https://0002-2a01-cb08-871a-4d00-1899-dd0-cddc-78d1.ngrok-free.app"
+                          ngrokURL
                         )}
                       />
+
+                      {tooHighPriceForCrossmint && (
+                        <span className="text-xs text-center text-red inline-flex items-center gap-1">
+                          <InformationCircleIcon className="w-4 h-4 text-white" />
+                          The bid price is too high for Crossmint
+                        </span>
+                      )}
                     </div>
                   </>
                 )}

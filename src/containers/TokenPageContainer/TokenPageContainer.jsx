@@ -8,7 +8,7 @@ import {
   useStorageUpload
 } from "@thirdweb-dev/react";
 import { ThirdwebStorage } from "@thirdweb-dev/storage";
-import { BigNumber, ethers } from "ethers";
+import { ethers } from "ethers";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -155,14 +155,17 @@ const TokenPageContainer = () => {
 
   const searchParams = useSearchParams();
   const payload = searchParams.get("p");
-  const mintCollectionId = process.env.NEXT_PUBLIC_MINT_COLLECTION_ID;
-  const buyCollectionId = process.env.NEXT_PUBLIC_BUY_COLLECTION_ID;
-  const bidCollectionId = process.env.NEXT_PUBLIC_BID_COLLECTION_ID;
+  const chainConfig = config[chainId];
+
+  const mintCollectionId = chainConfig?.features.crossmint.config?.mintCollectionId;
+  const buyCollectionId = chainConfig?.features.crossmint.config?.buyCollectionId;
+  const bidCollectionId = chainConfig?.features.crossmint.config?.bidCollectionId;
 
   useEffect(() => {
-    // TODO get token data from callback url
     if (payload) {
-      if (payload?.status === "success") {
+      const parsedPayload = JSON.parse(payload);
+
+      if (parsedPayload?.status === "success") {
         const collectionId = payload?.collectionId;
 
         if (collectionId === mintCollectionId) {

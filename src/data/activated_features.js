@@ -36,5 +36,5 @@ export const activated_features = {
   // Wether to show info bulle on the offer page showing the price of the token
   canSeeModalHelperOnOfferPage: false,
   // Wether we're able to pay with crossmint
-  canPayWithCrossmintEnabled: true,
+  canPayWithCrossmintEnabled: !!isDevelopment
 };

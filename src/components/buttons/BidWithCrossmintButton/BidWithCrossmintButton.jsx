@@ -109,18 +109,6 @@ export default function BidWithCrossmintButton(props = {}) {
           : props?.isActiveRender ?? `Buy NOW with ${paymentMethod}`;
       }}
       {...buttonProps}
-      onEvent={(event) => {
-        switch (event.type) {
-          case "payment:process.succeeded":
-            actions?.success?.(event);
-            break;
-          case "payment:process.failed":
-            actions?.error?.(event);
-            break;
-          default:
-            break;
-        }
-      }}
     />
   );
 }

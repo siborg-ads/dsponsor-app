@@ -14,6 +14,7 @@ import { InformationCircleIcon } from "@heroicons/react/24/solid";
 import InfoIcon from "../informations/infoIcon";
 import Input from "../ui/input";
 import config from "../../config/config";
+import { ngrokURL } from "../../data/ngrok";
 
 const BuyModal = ({
   formatTokenId,
@@ -478,13 +479,13 @@ const BuyModal = ({
                         isLoadingRender={() => <Spinner size="sm" color="default" />}
                         isActiveRender={`Buy NOW ${finalPrice} ${selectedCurrency} with card `}
                         isDisabled={!validate || isLoadingButton || !finalPrice}
-                        successCallbackURl={window.location.href.replace(
+                        successCallbackURL={window.location.href.replace(
                           "http://localhost:3000",
-                          "https://0002-2a01-cb08-871a-4d00-1899-dd0-cddc-78d1.ngrok-free.app"
+                          ngrokURL
                         )}
                         failureCallbackURL={window.location.href.replace(
                           "http://localhost:3000",
-                          "https://0002-2a01-cb08-871a-4d00-1899-dd0-cddc-78d1.ngrok-free.app"
+                          ngrokURL
                         )}
                       />
                     ) : (
@@ -507,13 +508,13 @@ const BuyModal = ({
                         isActiveRender={`Buy NOW ${finalPrice} ${selectedCurrency} with card `}
                         config={chainConfig?.features.crossmint.config}
                         isDisabled={!validate || isLoadingButton}
-                        successCallbackURl={window.location.href.replace(
+                        successCallbackURL={window.location.href.replace(
                           "http://localhost:3000",
-                          "https://0002-2a01-cb08-871a-4d00-1899-dd0-cddc-78d1.ngrok-free.app"
+                          ngrokURL
                         )}
                         failureCallbackURL={window.location.href.replace(
                           "http://localhost:3000",
-                          "https://0002-2a01-cb08-871a-4d00-1899-dd0-cddc-78d1.ngrok-free.app"
+                          ngrokURL
                         )}
                       />
                     )}
