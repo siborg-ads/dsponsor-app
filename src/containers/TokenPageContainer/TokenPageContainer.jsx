@@ -166,9 +166,7 @@ const TokenPageContainer = () => {
       const decodedPayload = decodeURIComponent(encodedPayload);
       const parsedPayload = JSON.parse(decodedPayload);
 
-      console.log(parsedPayload);
-
-      if (parsedPayload?.status === "success") {
+      if (parsedPayload[0]?.status === "success") {
         const collectionId = parsedPayload?.collectionId;
 
         if (collectionId === mintCollectionId) {
@@ -180,7 +178,7 @@ const TokenPageContainer = () => {
         } else if (collectionId === bidCollectionId) {
           setSuccessFullBid(true);
         }
-      } else if (parsedPayload?.status === "failure") {
+      } else if (parsedPayload[0]?.status === "failure") {
         setFailedCrossmintTransaction(true);
       }
     }
