@@ -167,7 +167,7 @@ const TokenPageContainer = () => {
       const parsedPayload = JSON.parse(decodedPayload);
 
       if (parsedPayload[0]?.status === "success") {
-        const collectionId = parsedPayload?.collectionId;
+        const collectionId = parsedPayload[0]?.collectionId;
 
         if (collectionId === mintCollectionId) {
           setSuccessFullUpload(true);
