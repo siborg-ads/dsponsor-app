@@ -472,8 +472,14 @@ const BuyModal = ({
                         isLoadingRender={() => <Spinner size="sm" color="default" />}
                         isActiveRender={`Buy NOW ${finalPrice} ${selectedCurrency} with card `}
                         isDisabled={!validate || isLoadingButton}
-                        successCallbackURl={window.location.href}
-                        failureCallbackURL={window.location.href}
+                        successCallbackURl={window.location.href.replace(
+                          "http://localhost:3000",
+                          "https://0002-2a01-cb08-871a-4d00-1899-dd0-cddc-78d1.ngrok-free.app"
+                        )}
+                        failureCallbackURL={window.location.href.replace(
+                          "http://localhost:3000",
+                          "https://0002-2a01-cb08-871a-4d00-1899-dd0-cddc-78d1.ngrok-free.app"
+                        )}
                       />
                     ) : (
                       <BuyWithCrossmintButton
@@ -494,8 +500,14 @@ const BuyModal = ({
                         isLoadingRender={() => <Spinner size="sm" color="default" />}
                         isActiveRender={`Buy NOW ${finalPrice} ${selectedCurrency} with card `}
                         isDisabled={!validate || isLoadingButton}
-                        successCallbackURl={window.location.href}
-                        failureCallbackURL={window.location.href}
+                        successCallbackURl={window.location.href.replace(
+                          "http://localhost:3000",
+                          "https://0002-2a01-cb08-871a-4d00-1899-dd0-cddc-78d1.ngrok-free.app"
+                        )}
+                        failureCallbackURL={window.location.href.replace(
+                          "http://localhost:3000",
+                          "https://0002-2a01-cb08-871a-4d00-1899-dd0-cddc-78d1.ngrok-free.app"
+                        )}
                       />
                     )}
                   </div>

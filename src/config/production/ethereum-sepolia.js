@@ -40,7 +40,21 @@ const prodEthereumSepolia = {
   },
   features: {
     crossmint: {
-      enabled: false // TODO update crossmint
+      enabled: true,
+
+      config: {
+        projectId: "82d192a5-c754-4280-a6cb-cb3d7b0f9bd9",
+
+        bidCollectionId: "",
+        buyCollectionId: "",
+        mintCollectionId: "",
+
+        environment: "production",
+
+        currency: "EUR",
+        locale: "en-EN",
+        paymentMethod: "fiat"
+      }
     }
   }
 };
