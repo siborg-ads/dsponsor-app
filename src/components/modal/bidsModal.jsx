@@ -6,7 +6,7 @@ import { toast } from "react-toastify";
 import Link from "next/link";
 import config from "../../config/config";
 import { computeBidAmounts } from "../../utils/computeBidAmounts";
-import { formatUnits } from "ethers/lib/utils";
+import { formatUnits, parseUnits } from "ethers/lib/utils";
 import formatAndRoundPrice from "../../utils/formatAndRound";
 import { getCookie } from "cookies-next";
 import BidWithCrossmintButton from "../buttons/BidWithCrossmintButton/BidWithCrossmintButton";
@@ -17,6 +17,7 @@ import "tippy.js/dist/tippy.css";
 import { BigNumber } from "ethers";
 import InfoIcon from "../informations/infoIcon";
 import Input from "../ui/input";
+import { ngrokURL } from "../../data/ngrok";
 
 const BidsModal = ({
   setAmountToApprove,
@@ -69,6 +70,7 @@ const BidsModal = ({
   const [copied, setCopied] = useState(false);
   const [parsedBidsAmount, setParsedBidsAmount] = useState(null);
   const [buyoutPrice, setBuyoutPrice] = useState(null);
+  const [tooHighPriceForCrossmint, setTooHighPriceForCrossmint] = useState(false);
 
   const chainConfig = config[chainId];
   const chainWETH = chainConfig?.smartContracts.WETH.address.toLowerCase();
@@ -97,15 +99,12 @@ const BidsModal = ({
 
     if (!parsedBidsAmount || parsedBidsAmount.lte(BigNumber.from(0))) return;
 
-    console.log(amountInEthWithSlippage?.toString());
-
     const hasInsufficientBalance =
       currencyBalance &&
       (currencyBalance?.value.lt(amountInEthWithSlippage) ||
         parsedBidsAmount?.gt(currencyBalance?.value));
 
     setInsufficentBalance(hasInsufficientBalance);
-    console.log(currencyBalance?.value?.toString());
 
     if (nativeTokenBalance && nativeTokenBalance?.value.lt(amountInEthWithSlippage)) {
       setCanPayWithNativeToken(false);
@@ -123,8 +122,6 @@ const BidsModal = ({
   ]);
 
   useEffect(() => {
-    console.log(insufficentBalance);
-    console.log(!canPayWithNativeToken);
     if (insufficentBalance && !canPayWithNativeToken) {
       setNotEnoughFunds(true);
     } else {
@@ -158,7 +155,6 @@ const BidsModal = ({
 
   useEffect(() => {
     if (marketplaceListings && marketplaceListings[0]) {
-      console.log(marketplaceListings[0]?.bidPriceStructure);
       setBuyoutPrice(marketplaceListings[0]?.bidPriceStructure?.minimalBuyoutPerToken);
     }
   }, [marketplaceListings]);
@@ -337,6 +333,24 @@ const BidsModal = ({
       setIsLoadingButton(false);
     }
   };
+
+  useEffect(() => {
+    if (bidsAmount && currencyTokenDecimals && chainId && chainConfig) {
+      const parsedBidsAmount = parseUnits(bidsAmount?.toString(), Number(currencyTokenDecimals));
+      const parsedPriceLimit = parseUnits(
+        chainConfig?.features?.crossmint?.config?.priceLimit?.toString(),
+        Number(currencyTokenDecimals)
+      );
+
+      const tooHighPrice = parsedPriceLimit ? parsedBidsAmount?.gte(parsedPriceLimit) : true;
+
+      if (tooHighPrice) {
+        setTooHighPriceForCrossmint(true);
+      } else {
+        setTooHighPriceForCrossmint(false);
+      }
+    }
+  }, [bidsAmount, chainConfig, chainId, currencyTokenDecimals]);
 
   const handleSubmit = async () => {
     const hasEnoughBalance = checkUserBalance(tokenBalance, bidsAmount, currencyTokenDecimals);
@@ -874,7 +888,7 @@ const BidsModal = ({
                       <span className="mx-4 text-gray-500">or</span>
                       <div className="flex-grow border-t border-gray-300"></div>
                     </div>
-                    <div className="flex items-center justify-center space-x-4">
+                    <div className="flex flex-col gap-2">
                       <BidWithCrossmintButton
                         offer={offer}
                         token={token}
@@ -890,12 +904,35 @@ const BidsModal = ({
                             toast.error(`Buying failed: ${error.message}`);
                           }
                         }}
-                        isDisabled={!checkTerms}
+                        perPriceToken={parseUnits(
+                          !!bidsAmount && bidsAmount !== "" ? bidsAmount : "0",
+                          Number(currencyTokenDecimals)
+                        )}
+                        totalPriceFormatted={formatUnits(
+                          amountInEthWithSlippage ?? "0",
+                          Number(currencyTokenDecimals)
+                        )}
+                        isDisabled={
+                          !checkTerms || isLoadingButton || !isPriceGood || tooHighPriceForCrossmint
+                        }
                         isLoading={isLoadingButton}
                         isLoadingRender={() => <Spinner size="sm" color="default" />}
-                        // isActiveRender={`Buy NOW ${finalPrice} ${selectedCurrency} with card `}
-                        // isDisabled={!validate || isLoadingButton}
+                        successCallbackURL={window.location.href.replace(
+                          "http://localhost:3000",
+                          ngrokURL
+                        )}
+                        failureCallbackURL={window.location.href.replace(
+                          "http://localhost:3000",
+                          ngrokURL
+                        )}
                       />
+
+                      {tooHighPriceForCrossmint && (
+                        <span className="text-xs text-center text-red inline-flex items-center gap-1">
+                          <InformationCircleIcon className="w-4 h-4 text-white" />
+                          The bid price is too high for Crossmint
+                        </span>
+                      )}
                     </div>
                   </>
                 )}

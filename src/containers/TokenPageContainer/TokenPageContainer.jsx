@@ -8,7 +8,7 @@ import {
   useStorageUpload
 } from "@thirdweb-dev/react";
 import { ThirdwebStorage } from "@thirdweb-dev/storage";
-import { BigNumber, ethers } from "ethers";
+import { ethers } from "ethers";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -56,6 +56,7 @@ import Input from "../../components/ui/input";
 import { useSearchParams } from "next/navigation.js";
 import { addLineBreaks } from "../../utils/addLineBreaks.js";
 import formatAndRoundPrice from "../../utils/formatAndRound.js";
+import TransactionFailedModal from "../../components/modal/failModal.jsx";
 
 const TokenPageContainer = () => {
   const router = useRouter();
@@ -150,8 +151,37 @@ const TokenPageContainer = () => {
   const [airdropAddress, setAirdropAddress] = useState(undefined);
   const [nftContractAddress, setNftContractAddress] = useState(null);
   const [showEntireDescription, setShowEntireDescription] = useState(false);
+  const [failedCrossmintTransaction, setFailedCrossmintTransaction] = useState(false);
 
   const searchParams = useSearchParams();
+  const payload = searchParams.get("p");
+  const chainConfig = config[chainId];
+
+  const mintCollectionId = chainConfig?.features.crossmint.config?.mintCollectionId;
+  const buyCollectionId = chainConfig?.features.crossmint.config?.buyCollectionId;
+  const bidCollectionId = chainConfig?.features.crossmint.config?.bidCollectionId;
+
+  useEffect(() => {
+    if (payload) {
+      const parsedPayload = JSON.parse(payload);
+
+      if (parsedPayload?.status === "success") {
+        const collectionId = payload?.collectionId;
+
+        if (collectionId === mintCollectionId) {
+          setSuccessFullUpload(true);
+          setIsOwner(true);
+          setMinted(true);
+        } else if (collectionId === buyCollectionId) {
+          setSuccessFullUpload(true);
+        } else if (collectionId === bidCollectionId) {
+          setSuccessFullBid(true);
+        }
+      } else if (payload?.status === "failure") {
+        setFailedCrossmintTransaction(true);
+      }
+    }
+  }, [bidCollectionId, buyCollectionId, mintCollectionId, payload]);
 
   let description = "description not found";
   let id = "1";
@@ -437,7 +467,7 @@ const TokenPageContainer = () => {
 
     if (bidsAmount && currencyDecimals && tokenEtherPriceRelayer) {
       const amountUSDC = tokenEtherPriceRelayer?.amountUSDC;
-      console.log(amountUSDC);
+
       const priceToDisplay = formatUnits(amountUSDC, 6);
 
       setDisplayedPrice(formatAndRoundPrice(priceToDisplay));
@@ -719,6 +749,7 @@ const TokenPageContainer = () => {
     setOfferDO({
       offerId: offerId
     });
+
     setTokenDO({
       currency:
         offerData?.nftContract?.prices[0]?.currency ??
@@ -729,11 +760,12 @@ const TokenPageContainer = () => {
       tokenData: null,
 
       fee: offerData?.nftContract?.prices[0]?.protocolFeeAmount,
+
       price:
-        offerData?.nftContract?.prices[0]?.amount ??
         offerData?.nftContract?.tokens
           ?.find((token) => !!token?.tokenId && BigInt(token?.tokenId) === BigInt(tokenId))
-          ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.pricePerToken,
+          ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.pricePerToken ??
+        offerData?.nftContract?.prices[0]?.amount,
       protocolFeeBPS: offerData?.nftContract?.prices[0]?.protocolFeeBps,
       royaltiesBPS: offerData?.nftContract?.royalty.bps,
 
@@ -2489,6 +2521,9 @@ const TokenPageContainer = () => {
             nativeTokenBalance={nativeTokenBalance}
           />
         </div>
+      )}
+      {failedCrossmintTransaction && (
+        <TransactionFailedModal setCrossmintTransactionFailed={setFailedCrossmintTransaction} />
       )}
     </Accordion.Root>
   );
