@@ -32,6 +32,7 @@ export const fetchOfferPageContainer = async (chainId, offerId) => {
         nftContract {
           id # DSponsorNFT smart contract address
           allowList
+          maxSupply
           royalty {
             bps
           }
@@ -217,10 +218,6 @@ export const fetchOfferPageContainer = async (chainId, offerId) => {
         chainConfig: chainConfig,
         tokenIdAllowedToMint: tokenIdAllowedToMint
       };
-
-      if (!tokenIdAllowedToMint && element.nftContract.allowList === true) {
-        return null;
-      }
 
       return combinedData;
     })

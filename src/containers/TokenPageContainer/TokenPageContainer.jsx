@@ -140,7 +140,7 @@ const TokenPageContainer = () => {
   const [minted, setMinted] = useState(false);
   const [conditions, setConditions] = useState({});
   const [imageUrl, setImageUrl] = useState(null);
-  const [accordionActiveTab, setAccordionActiveTab] = useState(null);
+  const [accordionActiveTab, setAccordionActiveTab] = useState([]);
   const [listingCreated, setListingCreated] = useState(false);
   const [creatorAmount, setCreatorAmount] = useState(null);
   const [protocolFeeAmount, setProtocolFeeAmount] = useState(null);
@@ -1794,8 +1794,7 @@ const TokenPageContainer = () => {
 
   return (
     <Accordion.Root
-      type="single"
-      collapsible
+      type="multiple"
       value={accordionActiveTab}
       onValueChange={setAccordionActiveTab}
     >
