@@ -6,7 +6,7 @@ import { toast } from "react-toastify";
 import Link from "next/link";
 import config from "../../config/config";
 import { computeBidAmounts } from "../../utils/computeBidAmounts";
-import { formatUnits } from "ethers/lib/utils";
+import { formatUnits, parseUnits } from "ethers/lib/utils";
 import formatAndRoundPrice from "../../utils/formatAndRound";
 import { getCookie } from "cookies-next";
 import BidWithCrossmintButton from "../buttons/BidWithCrossmintButton/BidWithCrossmintButton";
@@ -97,15 +97,12 @@ const BidsModal = ({
 
     if (!parsedBidsAmount || parsedBidsAmount.lte(BigNumber.from(0))) return;
 
-    console.log(amountInEthWithSlippage?.toString());
-
     const hasInsufficientBalance =
       currencyBalance &&
       (currencyBalance?.value.lt(amountInEthWithSlippage) ||
         parsedBidsAmount?.gt(currencyBalance?.value));
 
     setInsufficentBalance(hasInsufficientBalance);
-    console.log(currencyBalance?.value?.toString());
 
     if (nativeTokenBalance && nativeTokenBalance?.value.lt(amountInEthWithSlippage)) {
       setCanPayWithNativeToken(false);
@@ -123,8 +120,6 @@ const BidsModal = ({
   ]);
 
   useEffect(() => {
-    console.log(insufficentBalance);
-    console.log(!canPayWithNativeToken);
     if (insufficentBalance && !canPayWithNativeToken) {
       setNotEnoughFunds(true);
     } else {
@@ -158,7 +153,6 @@ const BidsModal = ({
 
   useEffect(() => {
     if (marketplaceListings && marketplaceListings[0]) {
-      console.log(marketplaceListings[0]?.bidPriceStructure);
       setBuyoutPrice(marketplaceListings[0]?.bidPriceStructure?.minimalBuyoutPerToken);
     }
   }, [marketplaceListings]);
@@ -890,10 +884,17 @@ const BidsModal = ({
                             toast.error(`Buying failed: ${error.message}`);
                           }
                         }}
+                        perPriceToken={parseUnits(
+                          !!bidsAmount && bidsAmount !== "" ? bidsAmount : "0",
+                          Number(currencyTokenDecimals)
+                        )}
+                        totalPriceFormatted={formatUnits(
+                          amountInEthWithSlippage ?? "0",
+                          Number(currencyTokenDecimals)
+                        )}
                         isDisabled={!checkTerms || isLoadingButton}
                         isLoading={isLoadingButton}
                         isLoadingRender={() => <Spinner size="sm" color="default" />}
-                        //isActiveRender={`Buy NOW ${price} ${selectedCurrency} with card `}
                         successCallbackURl={window.location.href.replace(
                           "http://localhost:3000",
                           "https://0002-2a01-cb08-871a-4d00-1899-dd0-cddc-78d1.ngrok-free.app"

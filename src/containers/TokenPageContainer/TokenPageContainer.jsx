@@ -746,6 +746,7 @@ const TokenPageContainer = () => {
     setOfferDO({
       offerId: offerId
     });
+    console.log(offerData);
     setTokenDO({
       currency:
         offerData?.nftContract?.prices[0]?.currency ??
@@ -756,11 +757,12 @@ const TokenPageContainer = () => {
       tokenData: null,
 
       fee: offerData?.nftContract?.prices[0]?.protocolFeeAmount,
+
       price:
-        offerData?.nftContract?.prices[0]?.amount ??
         offerData?.nftContract?.tokens
           ?.find((token) => !!token?.tokenId && BigInt(token?.tokenId) === BigInt(tokenId))
-          ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.pricePerToken,
+          ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.pricePerToken ??
+        offerData?.nftContract?.prices[0]?.amount,
       protocolFeeBPS: offerData?.nftContract?.prices[0]?.protocolFeeBps,
       royaltiesBPS: offerData?.nftContract?.royalty.bps,
 

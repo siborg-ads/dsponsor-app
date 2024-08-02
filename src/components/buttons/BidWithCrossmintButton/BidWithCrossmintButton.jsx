@@ -1,7 +1,5 @@
 import { CrossmintPayButton } from "@crossmint/client-sdk-react-ui";
 import React from "react";
-import { BigNumber, ethers } from "ethers";
-import { formatUnits } from "ethers/lib/utils";
 
 /**
  * Bid with Crossmint Button
@@ -37,7 +35,6 @@ import { formatUnits } from "ethers/lib/utils";
 export default function BidWithCrossmintButton(props = {}) {
   const { offer, token, user, referrer, actions } = props;
 
-  const price = ethers.utils.parseUnits(props.token.buyoutPricePerToken, "wei");
   if (!token.fee) {
     console.warn("MintWithCrossmint: Token fee not found - Using default fee");
   }
@@ -69,15 +66,7 @@ export default function BidWithCrossmintButton(props = {}) {
     );
   }
 
-  const royaltyBPS = BigNumber.from(token.royaltiesBPS || 0);
-  const protocolBPS = BigNumber.from(token.protocolFeeBPS || 0);
-
-  const royalty = price.mul(royaltyBPS).div(10000);
-  const protocolFee = price.mul(protocolBPS).div(10000);
-  const totalFees = royalty.add(protocolFee);
-
-  const cumulativePrice = price.add(totalFees);
-  const totalPriceFormatted = formatUnits(cumulativePrice, "ether");
+  console.log("props", props);
 
   const buttonProps = {
     projectId: props.config?.projectId,
@@ -88,10 +77,10 @@ export default function BidWithCrossmintButton(props = {}) {
     paymentMethod: props.config?.paymentMethod,
     mintTo: user.address,
     mintConfig: {
-      totalPrice: totalPriceFormatted,
+      totalPrice: props?.totalPriceFormatted,
       quantity: 1,
       _listingId: token.listingId,
-      _pricePerToken: token.price,
+      _pricePerToken: props?.perPriceToken,
       _bidder: user.address,
       _referralAdditionalInformation: referrer.address ?? "0x"
     }
@@ -119,7 +108,7 @@ export default function BidWithCrossmintButton(props = {}) {
         }
         return connecting
           ? props?.isLoadingRender ?? "Connecting..."
-          : props?.isActiveRender ?? `Buy NOW with ${paymentMethod} for ${totalPriceFormatted}`;
+          : props?.isActiveRender ?? `Buy NOW with ${paymentMethod}`;
       }}
       {...buttonProps}
       onEvent={(event) => {
