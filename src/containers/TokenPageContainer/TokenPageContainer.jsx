@@ -1990,6 +1990,16 @@ const TokenPageContainer = () => {
                       !!token?.tokenId && tokenId && BigInt(token?.tokenId) === BigInt(tokenId)
                   )?.mint === null)) && <Disable isOffer={false} />}
 
+              {!conditions?.conditionsObject?.endTimeNotPassed &&
+                conditions?.conditionsObject?.isCreated &&
+                ((conditions?.conditionsObject?.isAuction &&
+                  !conditions?.conditionsObject?.hasBids) ||
+                  conditions?.conditionsObject?.isDirect) && (
+                  <div className="p-4 bg-red rounded-lg my-4">
+                    <p className="text-center text-white font-semibold">This listing has ended</p>
+                  </div>
+                )}
+
               {(offerData?.disable === false ||
                 new Date(offerData?.metadata?.offer?.valid_to).getTime() >= Date.now() ||
                 offerData?.nftContract?.prices[0]?.enabled === true ||
