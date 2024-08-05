@@ -15,6 +15,7 @@ import InfoIcon from "../informations/infoIcon";
 import Input from "../ui/input";
 import config from "../../config/config";
 import { ngrokURL } from "../../data/ngrok";
+import { BigNumber } from "ethers";
 
 const BuyModal = ({
   formatTokenId,
@@ -56,6 +57,7 @@ const BuyModal = ({
   const [notEnoughFunds, setNotEnoughFunds] = useState(false);
   const [isLoadingBuyButton, setIsLoadingBuyButton] = useState(false);
   const [isLoadingApproveButton, setIsLoadingApproveButton] = useState(false);
+  const [tooHighPriceForCrossmint, setTooHighPriceForCrossmint] = useState(false);
 
   const { currentChainObject } = useChainContext();
   const chainId = currentChainObject?.chainId;
@@ -134,6 +136,24 @@ const BuyModal = ({
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [handleBuyModal, modalRef]);
+
+  useEffect(() => {
+    if (finalPriceNotFormatted && currencyBalance?.decimals && chainId && chainConfig) {
+      const parsedBuyAmount = BigNumber.from(finalPriceNotFormatted);
+      const parsedPriceLimit = parseUnits(
+        chainConfig?.features?.crossmint?.config?.priceLimit?.toString(),
+        Number(currencyBalance?.decimals)
+      );
+
+      const tooHighPrice = parsedPriceLimit ? parsedBuyAmount?.gte(parsedPriceLimit) : true;
+
+      if (tooHighPrice) {
+        setTooHighPriceForCrossmint(true);
+      } else {
+        setTooHighPriceForCrossmint(false);
+      }
+    }
+  }, [finalPriceNotFormatted, chainConfig, chainId, currencyBalance?.decimals]);
 
   // Ref instead of state to avoid re-renders
   const isProcessingRef = useRef(false);
@@ -460,63 +480,85 @@ const BuyModal = ({
                   <div className="flex items-center justify-center space-x-4">
                     {/* Render appropriate button based on token.isListed */}
                     {!token.isListed ? (
-                      <MintWithCrossmintButton
-                        offer={offer}
-                        token={token}
-                        user={user}
-                        referrer={referrer}
-                        actions={{
-                          processing: onProcessingMint,
-                          success: () => {
-                            toast.success("Minting successful");
-                          },
-                          error: (error) => {
-                            toast.error(`Minting failed: ${error.message}`);
+                      <div className="flex flex-col gap-2">
+                        <MintWithCrossmintButton
+                          offer={offer}
+                          token={token}
+                          user={user}
+                          isBid={false}
+                          referrer={referrer}
+                          actions={{
+                            processing: onProcessingMint,
+                            success: () => {
+                              toast.success("Minting successful");
+                            },
+                            error: (error) => {
+                              toast.error(`Minting failed: ${error.message}`);
+                            }
+                          }}
+                          isLoading={isLoadingButton}
+                          config={chainConfig?.features.crossmint.config}
+                          isLoadingRender={() => <Spinner size="sm" color="default" />}
+                          isActiveRender={`Buy NOW ${finalPrice} ${selectedCurrency} with card `}
+                          isDisabled={
+                            !validate || isLoadingButton || !finalPrice || tooHighPriceForCrossmint
                           }
-                        }}
-                        isLoading={isLoadingButton}
-                        config={chainConfig?.features.crossmint.config}
-                        isLoadingRender={() => <Spinner size="sm" color="default" />}
-                        isActiveRender={`Buy NOW ${finalPrice} ${selectedCurrency} with card `}
-                        isDisabled={!validate || isLoadingButton || !finalPrice}
-                        successCallbackURL={window.location.href.replace(
-                          "http://localhost:3000",
-                          ngrokURL
+                          successCallbackURL={window.location.href.replace(
+                            "http://localhost:3000",
+                            ngrokURL
+                          )}
+                          failureCallbackURL={window.location.href.replace(
+                            "http://localhost:3000",
+                            ngrokURL
+                          )}
+                        />
+
+                        {tooHighPriceForCrossmint && (
+                          <span className="text-xs text-center text-red inline-flex items-center gap-1">
+                            <InformationCircleIcon className="w-4 h-4 text-white" />
+                            Amount is too high to buy with credit card.
+                          </span>
                         )}
-                        failureCallbackURL={window.location.href.replace(
-                          "http://localhost:3000",
-                          ngrokURL
-                        )}
-                      />
+                      </div>
                     ) : (
-                      <BuyWithCrossmintButton
-                        offer={offer}
-                        token={token}
-                        user={user}
-                        referrer={referrer}
-                        actions={{
-                          processing: onProcessingBuy,
-                          success: () => {
-                            toast.success("Buying successful");
-                          },
-                          error: (error) => {
-                            toast.error(`Buying failed: ${error.message}`);
-                          }
-                        }}
-                        isLoading={isLoadingButton}
-                        isLoadingRender={() => <Spinner size="sm" color="default" />}
-                        isActiveRender={`Buy NOW ${finalPrice} ${selectedCurrency} with card `}
-                        config={chainConfig?.features.crossmint.config}
-                        isDisabled={!validate || isLoadingButton}
-                        successCallbackURL={window.location.href.replace(
-                          "http://localhost:3000",
-                          ngrokURL
+                      <div className="flex flex-col gap-2">
+                        <BuyWithCrossmintButton
+                          offer={offer}
+                          token={token}
+                          user={user}
+                          isBid={false}
+                          referrer={referrer}
+                          actions={{
+                            processing: onProcessingBuy,
+                            success: () => {
+                              toast.success("Buying successful");
+                            },
+                            error: (error) => {
+                              toast.error(`Buying failed: ${error.message}`);
+                            }
+                          }}
+                          isLoading={isLoadingButton}
+                          isLoadingRender={() => <Spinner size="sm" color="default" />}
+                          isActiveRender={`Buy NOW ${finalPrice} ${selectedCurrency} with card `}
+                          config={chainConfig?.features.crossmint.config}
+                          isDisabled={!validate || isLoadingButton || tooHighPriceForCrossmint}
+                          successCallbackURL={window.location.href.replace(
+                            "http://localhost:3000",
+                            ngrokURL
+                          )}
+                          failureCallbackURL={window.location.href.replace(
+                            "http://localhost:3000",
+                            ngrokURL
+                          )}
+                        />
+
+                        {tooHighPriceForCrossmint && (
+                          <span className="text-xs text-center text-red inline-flex items-center gap-1">
+                            <InformationCircleIcon className="w-4 h-4 text-white" />
+                            Amount is too high to buy with credit card.
+                          </span>
                         )}
-                        failureCallbackURL={window.location.href.replace(
-                          "http://localhost:3000",
-                          ngrokURL
-                        )}
-                      />
+                      </div>
                     )}
                   </div>
                 </div>

@@ -893,6 +893,7 @@ const BidsModal = ({
                         offer={offer}
                         token={token}
                         user={user}
+                        isBid={!buyoutPriceReached}
                         referrer={referrer}
                         config={chainConfig?.features.crossmint.config}
                         actions={{
@@ -930,7 +931,8 @@ const BidsModal = ({
                       {tooHighPriceForCrossmint && (
                         <span className="text-xs text-center text-red inline-flex items-center gap-1">
                           <InformationCircleIcon className="w-4 h-4 text-white" />
-                          The bid price is too high for Crossmint
+                          Amount is too high to {buyoutPriceReached ? "buy" : "bid"} with credit
+                          card.
                         </span>
                       )}
                     </div>
