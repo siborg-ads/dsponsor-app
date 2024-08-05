@@ -48,7 +48,8 @@ const BidsModal = ({
   tokenEtherPrice,
   amountInEthWithSlippage,
   displayedPrice,
-  setDisplayedPrice
+  setDisplayedPrice,
+  fetchOffers
 }) => {
   const [initialIntPrice, setInitialIntPrice] = useState(null);
   const [isLoadingApproveButton, setIsLoadingApproveButton] = useState(false);
@@ -325,6 +326,7 @@ const BidsModal = ({
       });
 
       setSuccessFullBid(true);
+      await fetchOffers();
     } catch (error) {
       setIsLoadingButton(false);
       console.error(error);
@@ -373,6 +375,7 @@ const BidsModal = ({
         args: [marketplaceListings[0].id, bidsBigInt, address, referralAddress]
       });
       setSuccessFullBid(true);
+      await fetchOffers();
     } catch (error) {
       setIsLoadingButton(false);
       console.error(error);

@@ -1387,12 +1387,14 @@ const TokenPageContainer = () => {
         setSuccessFullUpload(true);
         setIsOwner(true);
         setMinted(true);
+        await fetchOffers();
       } else {
         await directBuy(argsWithPossibleOverrides).catch((error) => {
           console.error("Error while buying:", error);
           throw error;
         });
         setSuccessFullUpload(true);
+        await fetchOffers();
       }
     } catch (error) {
       console.error("Erreur de soumission du token:", error);
@@ -2190,6 +2192,7 @@ const TokenPageContainer = () => {
                     successFullBid) && (
                     <ItemBids
                       setAmountToApprove={setAmountToApprove}
+                      fetchOffers={fetchOffers}
                       bidsAmount={bidsAmount}
                       setBidsAmount={setBidsAmount}
                       chainId={chainId}

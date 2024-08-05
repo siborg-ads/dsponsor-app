@@ -51,7 +51,8 @@ const BuyModal = ({
   setCanPayWithNativeToken,
   nativeTokenBalance,
   buyTokenEtherPrice,
-  totalPrice
+  totalPrice,
+  fetchOffers
 }) => {
   const [validate, setValidate] = useState(false);
   const [notEnoughFunds, setNotEnoughFunds] = useState(false);
