@@ -39,7 +39,8 @@ const ItemBids = ({
   displayedPrice,
   setDisplayedPrice,
   showBidsModal,
-  setShowBidsModal
+  setShowBidsModal,
+  fetchOffers
 }) => {
   const [minimalBidPerToken, setMinimalBidPerToken] = useState(null);
   const [bids, setBids] = useState(null);
@@ -189,6 +190,7 @@ const ItemBids = ({
             address={address}
             showBidsModal={showBidsModal}
             token={token}
+            fetchOffers={fetchOffers}
             user={user}
             offer={offer}
             referrer={referrer}
