@@ -26,9 +26,10 @@ const Validation = ({
   mediaShouldValidateAnAd,
   isMedia,
   isTokenView,
-  itemTokenId
+  itemTokenId,
+  pendingProposalData,
+  setPendingProposalData
 }) => {
-  const [pendingProposalData, setPendingProposalData] = useState([]);
   const [validatedProposalData, setValidatedProposalData] = useState([]);
   const [refusedProposalData, setRefusedProposalData] = useState([]);
   const [itemActive, setItemActive] = useState(1);
@@ -135,13 +136,13 @@ const Validation = ({
       formattedRefusedAds = formattedRefusedAds.filter(
         (ad) => Number(ad?.tokenId) === Number(itemTokenId)
       );
-    }
 
-    setValidatedProposalData(formattedValidatedAds);
-    setRefusedProposalData(formattedRefusedAds);
-    setPendingProposalData(formattedPendingAds);
-    setPendingProposalLength(formattedPendingAds.length);
-  }, [isTokenView, offer, offerId, successFullUploadModal, itemTokenId]);
+      setValidatedProposalData(formattedValidatedAds);
+      setRefusedProposalData(formattedRefusedAds);
+      setPendingProposalData(formattedPendingAds);
+      setPendingProposalLength(formattedPendingAds.length);
+    }
+  }, [isTokenView, offer, offerId, itemTokenId, setPendingProposalData]);
 
   const handleItemSubmit = async (approuved = false) => {
     let submissionArgs = [];

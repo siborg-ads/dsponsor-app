@@ -45,6 +45,7 @@ const OfferPageContainer = () => {
   const [price, setPrice] = useState(null);
   const [imageModal, setImageModal] = useState(false);
   const [showEntireDescription, setShowEntireDescription] = useState(false);
+  const [pendingProposalData, setPendingProposalData] = useState([]);
   const [isOwner, setIsOwner] = useState(false);
   const address = useAddress();
   const { contract: DsponsorAdminContract } = useContract(
@@ -339,7 +340,11 @@ const OfferPageContainer = () => {
   }
 
   return (
-    <Accordion.Root type="multiple" value={accordionActiveTab} onValueChange={setAccordionActiveTab}>
+    <Accordion.Root
+      type="multiple"
+      value={accordionActiveTab}
+      onValueChange={setAccordionActiveTab}
+    >
       <Meta {...metadata} />
       {/*  <!-- Item --> */}
       <section className="relative lg:mt-24 lg:pt-12  mt-24 pt-12 pb-8">
@@ -696,6 +701,8 @@ const OfferPageContainer = () => {
                   isMedia={isMedia}
                   isSponsor={isOwner}
                   itemTokenId={offerData?.nftContract?.id}
+                  pendingProposalData={pendingProposalData}
+                  setPendingProposalData={setPendingProposalData}
                 />
               </Accordion.Content>
             </>

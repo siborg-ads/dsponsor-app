@@ -68,7 +68,7 @@ const Review_carousel = ({
 
   useEffect(() => {
     const initialValidateStates = {};
-    pendingProposalData.forEach((item) => {
+    pendingProposalData?.forEach((item) => {
       initialValidateStates[item.tokenId] = false;
     });
     setValidate(initialValidateStates);
