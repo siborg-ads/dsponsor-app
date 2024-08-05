@@ -19,7 +19,8 @@ const ItemManageModal = ({
   dsponsorNFTContract,
   dsponsorMpContract,
   tokenId,
-  setListingCreated
+  setListingCreated,
+  fetchOffers
 }) => {
   const [selectedListingType, setSelectedListingType] = useState([]);
   const { currentChainObject } = useChainContext();
@@ -139,6 +140,8 @@ const ItemManageModal = ({
         await createListing({ args: [args] });
         setSuccessFullListing(true);
         setListingCreated(true);
+
+        await fetchOffers();
       } catch (error) {
         setIsLoadingButton(false);
         console.error(error);
