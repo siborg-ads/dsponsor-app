@@ -757,13 +757,15 @@ const BidsModal = ({
                           action={async () => {
                             setIsLoadingApproveButton(true);
 
-                            await toast.promise(handleApprove, {
-                              pending: "Waiting for confirmation 🕒",
-                              success: "Approval confirmed 👌",
-                              error: "Approval rejected 🤯"
-                            });
-
-                            setIsLoadingApproveButton(false);
+                            await toast
+                              .promise(handleApprove, {
+                                pending: "Waiting for confirmation 🕒",
+                                success: "Approval confirmed 👌",
+                                error: "Approval rejected 🤯"
+                              })
+                              .finally(() => {
+                                setIsLoadingApproveButton(false);
+                              });
                           }}
                           className={` !rounded-full !py-3 !px-8 !w-full !text-center !font-semibold !text-black !transition-all ${
                             !isPriceGood ||
@@ -797,13 +799,17 @@ const BidsModal = ({
                           action={async () => {
                             setIsLoadingBuyButton(true);
 
-                            await toast.promise(handleSubmit, {
-                              pending: "Waiting for confirmation 🕒",
-                              success: buyoutPriceReached ? "Buy confirmed 👌" : "Bid confirmed 👌",
-                              error: buyoutPriceReached ? "Buy rejected 🤯" : "Bid rejected 🤯"
-                            });
-
-                            setIsLoadingBuyButton(false);
+                            await toast
+                              .promise(handleSubmit, {
+                                pending: "Waiting for confirmation 🕒",
+                                success: buyoutPriceReached
+                                  ? "Buy confirmed 👌"
+                                  : "Bid confirmed 👌",
+                                error: buyoutPriceReached ? "Buy rejected 🤯" : "Bid rejected 🤯"
+                              })
+                              .finally(() => {
+                                setIsLoadingBuyButton(false);
+                              });
                           }}
                           className={`!rounded-full !w-full !py-3 !px-8 !text-center !font-semibold !text-black !transition-all ${
                             !isPriceGood || !checkTerms || allowanceTrue || isLoadingBuyButton
@@ -835,13 +841,15 @@ const BidsModal = ({
                         action={async () => {
                           setIsLoadingBuyButton(true);
 
-                          await toast.promise(handleSubmitWithNative, {
-                            pending: "Waiting for confirmation 🕒",
-                            success: buyoutPriceReached ? "Buy confirmed 👌" : "Bid confirmed 👌",
-                            error: buyoutPriceReached ? "Buy rejected 🤯" : "Bid rejected 🤯"
-                          });
-
-                          setIsLoadingBuyButton(false);
+                          await toast
+                            .promise(handleSubmitWithNative, {
+                              pending: "Waiting for confirmation 🕒",
+                              success: buyoutPriceReached ? "Buy confirmed 👌" : "Bid confirmed 👌",
+                              error: buyoutPriceReached ? "Buy rejected 🤯" : "Bid rejected 🤯"
+                            })
+                            .finally(() => {
+                              setIsLoadingBuyButton(false);
+                            });
                         }}
                         className={`!rounded-full !col-span-2 !py-3 !px-8 !text-center !font-semibold !text-black !transition-all ${
                           !isPriceGood ||

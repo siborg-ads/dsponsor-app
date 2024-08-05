@@ -109,12 +109,15 @@ const AddProposalRefusedModal = ({
                   contractAddress={currentChainObject?.smartContracts?.DSPONSORADMIN?.address}
                   action={async () => {
                     setIsRejecting(true);
-                    await toast.promise(handleItemSubmit(false), {
-                      pending: "Waiting for confirmation 🕒",
-                      success: "Transaction confirmed 👌",
-                      error: "Transaction rejected 🤯"
-                    });
-                    setIsRejecting(false);
+                    await toast
+                      .promise(handleItemSubmit(false), {
+                        pending: "Waiting for confirmation 🕒",
+                        success: "Transaction confirmed 👌",
+                        error: "Transaction rejected 🤯"
+                      })
+                      .finally(() => {
+                        setIsRejecting(false);
+                      });
                   }}
                   className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!allCommentsOk || isRejecting ? "!btn-disabled !cursor-not-allowed !opacity-30" : "!bg-red !cursor-pointer"} `}
                   disabled={!allCommentsOk || isRejecting}
