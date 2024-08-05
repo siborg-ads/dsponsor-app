@@ -2178,6 +2178,7 @@ const TokenPageContainer = () => {
                     conditions={conditions?.conditionsObject}
                     tokenId={tokenId}
                     setListingCreated={setListingCreated}
+                    fetchOffers={fetchOffers}
                   />
 
                   {((firstSelectedListing?.listingType === "Auction" &&
