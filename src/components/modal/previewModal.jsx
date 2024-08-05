@@ -182,13 +182,15 @@ const PreviewModal = ({
                 action={async () => {
                   setIsLoadingSubmitButton(true);
 
-                  await toast.promise(handleSubmit(true), {
-                    pending: "Waiting for confirmation 🕒",
-                    success: "Transaction confirmed 👌",
-                    error: "Transaction rejected 🤯"
-                  });
-
-                  setIsLoadingSubmitButton(false);
+                  await toast
+                    .promise(handleSubmit(true), {
+                      pending: "Waiting for confirmation 🕒",
+                      success: "Transaction confirmed 👌",
+                      error: "Transaction rejected 🤯"
+                    })
+                    .finally(() => {
+                      setIsLoadingSubmitButton(false);
+                    });
                 }}
                 className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate || isLoadingSubmitButton ? "!btn-disabled !cursor-not-allowed !text-black" : "!bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer"} `}
                 isDisabled={!validate || isLoadingSubmitButton}
@@ -612,13 +614,15 @@ const PreviewModal = ({
                         action={async () => {
                           setIsLoadingApproveButton(true);
 
-                          await toast.promise(handleApprove, {
-                            pending: "Waiting for confirmation 🕒",
-                            success: "Approval confirmed 👌",
-                            error: "Approval rejected 🤯"
-                          });
-
-                          setIsLoadingApproveButton(false);
+                          await toast
+                            .promise(handleApprove, {
+                              pending: "Waiting for confirmation 🕒",
+                              success: "Approval confirmed 👌",
+                              error: "Approval rejected 🤯"
+                            })
+                            .finally(() => {
+                              setIsLoadingApproveButton(false);
+                            });
                         }}
                         className={`!rounded-full !w-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate || isLoadingApproveButton || approvalForAllToken ? "!btn-disabled !cursor-not-allowed !text-black opacity-30" : "!bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer"} `}
                         isDisabled={!validate || isLoadingApproveButton || approvalForAllToken}
@@ -639,13 +643,15 @@ const PreviewModal = ({
                         action={async () => {
                           setIsLoadingSubmitButton(true);
 
-                          await toast.promise(handleSubmit(address), {
-                            pending: "Waiting for confirmation 🕒",
-                            success: "Transaction confirmed 👌",
-                            error: "Transaction rejected 🤯"
-                          });
-
-                          setIsLoadingSubmitButton(false);
+                          await toast
+                            .promise(handleSubmit(address), {
+                              pending: "Waiting for confirmation 🕒",
+                              success: "Transaction confirmed 👌",
+                              error: "Transaction rejected 🤯"
+                            })
+                            .finally(() => {
+                              setIsLoadingSubmitButton(false);
+                            });
                         }}
                         className={`!w-full !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate || isLoadingSubmitButton || !approvalForAllToken ? "!btn-disabled !cursor-not-allowed !text-black" : "!bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer"} `}
                         isDisabled={!validate || isLoadingSubmitButton || !approvalForAllToken}

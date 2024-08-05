@@ -136,12 +136,12 @@ const Validation = ({
       formattedRefusedAds = formattedRefusedAds.filter(
         (ad) => Number(ad?.tokenId) === Number(itemTokenId)
       );
-
-      setValidatedProposalData(formattedValidatedAds);
-      setRefusedProposalData(formattedRefusedAds);
-      setPendingProposalData(formattedPendingAds);
-      setPendingProposalLength(formattedPendingAds.length);
     }
+
+    setPendingProposalData(formattedPendingAds);
+    setPendingProposalLength(formattedPendingAds.length);
+    setValidatedProposalData(formattedValidatedAds);
+    setRefusedProposalData(formattedRefusedAds);
   }, [isTokenView, offer, offerId, itemTokenId, setPendingProposalData]);
 
   const handleItemSubmit = async (approuved = false) => {
