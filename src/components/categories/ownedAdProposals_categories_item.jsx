@@ -14,7 +14,7 @@ import PreviewModal from "../modal/previewModal";
 import MainButton from "../buttons/mainButton";
 import { activated_features } from "../../data/activated_features";
 
-const OwnedAdProposals_categories_items = ({ data, isOwner, fetchCreatedData }) => {
+const OwnedAdProposals_categories_items = ({ data, isOwner, isLoading, fetchCreatedData }) => {
   const { currentChainObject } = useChainContext();
   const [selectedItems, setSelectedItems] = useState([]);
   const [isSelectedItem, setIsSelectedItem] = useState({});
@@ -229,7 +229,7 @@ const OwnedAdProposals_categories_items = ({ data, isOwner, fetchCreatedData }) 
     hrefButton: null
   };
 
-  if (!data) {
+  if (isLoading) {
     return (
       <div className="flex w-full justify-center">
         <Image src="/images/loading-bullet.svg" alt="icon" width={60} height={60} />
@@ -248,7 +248,7 @@ const OwnedAdProposals_categories_items = ({ data, isOwner, fetchCreatedData }) 
         </span>
       </div>
       {/* <!-- Grid --> */}
-      {data.length > 0 ? (
+      {data?.length > 0 ? (
         <div className="flex flex-col justify-center items-center ">
           {" "}
           {isOwner && activated_features.canSeeSubmittedAds && (
