@@ -16,7 +16,8 @@ const ItemManage = ({
   dsponsorMpContract,
   conditions,
   tokenId,
-  setListingCreated
+  setListingCreated,
+  fetchOffers
 }) => {
   const [listingModal, setListingModal] = useState(false);
   const [isLoadingButton, setIsLoadingButton] = useState(false);
@@ -67,7 +68,12 @@ const ItemManage = ({
   };
 
   const renderConditionsMessage = () => {
-    if (!conditions?.endTimeNotPassed && conditions?.isCreated && conditions?.isAuction) {
+    if (
+      !conditions?.endTimeNotPassed &&
+      conditions?.isCreated &&
+      conditions?.isAuction &&
+      conditions?.hasBids
+    ) {
       return (
         <span className="dark:text-jacarta-100 text-jacarta-100 text-sm">
           Auction has ended, you can complete the auction by clicking the button below.
@@ -218,6 +224,7 @@ const ItemManage = ({
             marketplaceListings={marketplaceListings}
             tokenId={tokenId}
             setListingCreated={setListingCreated}
+            fetchOffers={fetchOffers}
           />
         </div>
       )}
