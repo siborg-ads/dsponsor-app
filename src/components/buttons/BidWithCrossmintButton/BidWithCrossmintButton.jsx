@@ -84,10 +84,6 @@ export default function BidWithCrossmintButton(props = {}) {
     }
   };
 
-  if (user.email && user.email) {
-    buttonProps.emailTo = user.email;
-  }
-
   if (props?.successCallbackURL) {
     buttonProps.successCallbackURL = props.successCallbackURL;
   }
