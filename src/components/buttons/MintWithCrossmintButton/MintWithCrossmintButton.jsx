@@ -91,10 +91,6 @@ export default function MintWithCrossmintButton(props = {}) {
     }
   };
 
-  if (user.email && user.email) {
-    buttonProps.emailTo = user.email;
-  }
-
   if (props?.successCallbackURL) {
     buttonProps.successCallbackURL = props.successCallbackURL;
   }
@@ -107,13 +103,12 @@ export default function MintWithCrossmintButton(props = {}) {
     <CrossmintPayButton
       disabled={props?.isDisabled}
       className={(props?.isDisabled && "opacity-30 cursor-not-allowed") || ""}
-      getButtonText={(connecting, paymentMethod) => {
-        if (actions?.processing && connecting) {
-          actions.processing();
+      getButtonText={() => {
+        if (props?.isBid) {
+          return `Bid NOW with Credit Card`;
+        } else {
+          return `Buy NOW with Credit Card`;
         }
-        return connecting
-          ? props?.isLoadingRender ?? "Connecting..."
-          : props?.isActiveRender ?? `Buy NOW with ${paymentMethod} for ${totalPriceFormatted}`;
       }}
       {...buttonProps}
     />
