@@ -317,8 +317,9 @@ const ManageSpaceContainer = () => {
         }
       };
 
-      if (address && userAddress && getAddress(address) === getAddress(userAddress))
+      if (address && userAddress && getAddress(address) === getAddress(userAddress)) {
         setIsOwner(true);
+      }
 
       fetchAllManageData();
     }
@@ -410,6 +411,7 @@ const ManageSpaceContainer = () => {
               isLoadingBids={isLoadingBids}
               marketplaceBids={marketplaceBids}
               isLoadingOwnedTokens={isLoadingOwnedTokens}
+              isLoading={isLoading}
             />
           </div>
         </div>

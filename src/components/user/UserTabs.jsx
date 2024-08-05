@@ -33,8 +33,7 @@ const UserTabs = ({
   isLoadingTransactions,
   isLoadingBids,
   marketplaceBids,
-  isLoading,
-  isLoadingOwnedTokens
+  isLoading
 }) => {
   const searchParams = useSearchParams();
   const tab = searchParams.get("tab");
@@ -133,7 +132,7 @@ const UserTabs = ({
         <OwnedAdProposalsCategoriesItems
           data={mappedownedAdProposals}
           isOwner={isOwner}
-          isLoading={isLoadingOwnedTokens}
+          isLoading={isLoading}
         />
       </TabPanel>
       <TabPanel>
