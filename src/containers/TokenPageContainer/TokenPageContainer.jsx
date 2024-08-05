@@ -113,6 +113,7 @@ const TokenPageContainer = () => {
   const [, setTokenBigIntPrice] = useState(null);
   const [successFullBid, setSuccessFullBid] = useState(false);
   const [isTokenInAuction, setIsTokenInAuction] = useState(false);
+  const [pendingProposalData, setPendingProposalData] = useState([]);
   const [successFullListing, setSuccessFullListing] = useState(false);
   const [buyoutPriceAmount] = useState(null);
   const [royaltiesFeesAmount, setRoyaltiesFeesAmount] = useState(null);
@@ -234,33 +235,33 @@ const TokenPageContainer = () => {
 
   const fetchOffersRef = useRef(false);
 
+  const fetchOffers = React.useCallback(async () => {
+    if (fetchOffersRef.current) return;
+    fetchOffersRef.current = true;
+
+    try {
+      const offers = await fetchTokenPageContainer(chainId, offerId, tokenId);
+      setOffers(offers);
+
+      // check if we have the values
+      if (!offerId) return;
+      if (!offers) return;
+
+      // set offer data for the current offer
+      const currentOffer = offers?.find((offer) => Number(offer?.id) === Number(offerId));
+      setOfferData(currentOffer);
+    } catch (error) {
+      console.error("Error fetching offers:", error);
+    } finally {
+      fetchOffersRef.current = false;
+    }
+  }, [chainId, offerId, tokenId]);
+
   useEffect(() => {
-    const fetchOffers = async () => {
-      if (fetchOffersRef.current) return;
-      fetchOffersRef.current = true;
-
-      try {
-        const offers = await fetchTokenPageContainer(chainId, offerId, tokenId);
-        setOffers(offers);
-
-        // check if we have the values
-        if (!offerId) return;
-        if (!offers) return;
-
-        // set offer data for the current offer
-        const currentOffer = offers?.find((offer) => Number(offer?.id) === Number(offerId));
-        setOfferData(currentOffer);
-      } catch (error) {
-        console.error("Error fetching offers:", error);
-      } finally {
-        fetchOffersRef.current = false;
-      }
-    };
-
     if (chainId && offerId) {
       fetchOffers();
     }
-  }, [address, chainId, offerId, tokenId]);
+  }, [address, chainId, fetchOffers, offerId, tokenId]);
 
   useEffect(() => {
     if (offerData && address) {
@@ -1439,6 +1440,9 @@ const TokenPageContainer = () => {
       await submitAd({ args: functionWithPossibleArgs });
       setSuccessFullUpload(true);
 
+      // fetch new data
+      await fetchOffers();
+
       // reset form
       setFiles([]);
       setPreviewImages([]);
@@ -2378,6 +2382,8 @@ const TokenPageContainer = () => {
                     isTokenView={true}
                     handleSubmit={handleValidationSubmit}
                     selectedItems={selectedItems}
+                    pendingProposalData={pendingProposalData}
+                    setPendingProposalData={setPendingProposalData}
                   />
                 </Accordion.Content>
               </>
@@ -2485,6 +2491,7 @@ const TokenPageContainer = () => {
             successFullUploadModal={successFullUploadModal}
             isLoadingButton={isLoadingButton}
             adSubmission={true}
+            setPendingProposalData={setPendingProposalData}
           />
         </div>
       )}
