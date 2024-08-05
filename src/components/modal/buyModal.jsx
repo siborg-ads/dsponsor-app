@@ -342,13 +342,15 @@ const BuyModal = ({
                           action={async () => {
                             setIsLoadingApproveButton(true);
 
-                            await toast.promise(handleApprove, {
-                              pending: "Waiting for confirmation 🕒",
-                              success: "Approval confirmed 👌",
-                              error: "Approval rejected 🤯"
-                            });
-
-                            setIsLoadingApproveButton(false);
+                            await toast
+                              .promise(handleApprove, {
+                                pending: "Waiting for confirmation 🕒",
+                                success: "Approval confirmed 👌",
+                                error: "Approval rejected 🤯"
+                              })
+                              .finally(() => {
+                                setIsLoadingApproveButton(false);
+                              });
                           }}
                           className={`!rounded-full !py-3 !px-8 !w-full !text-center !font-semibold !text-black !transition-all ${
                             !validate ||
@@ -381,13 +383,15 @@ const BuyModal = ({
                         action={async () => {
                           setIsLoadingBuyButton(true);
 
-                          await toast.promise(handleSubmit, {
-                            pending: "Waiting for confirmation 🕒",
-                            success: "Buy confirmed 👌",
-                            error: "Buy rejected 🤯"
-                          });
-
-                          setIsLoadingBuyButton(false);
+                          await toast
+                            .promise(handleSubmit, {
+                              pending: "Waiting for confirmation 🕒",
+                              success: "Buy confirmed 👌",
+                              error: "Buy rejected 🤯"
+                            })
+                            .finally(() => {
+                              setIsLoadingBuyButton(false);
+                            });
                         }}
                         className={`!rounded-full !py-3 !px-8 !w-full !text-center !font-semibold !text-black !transition-all ${
                           !validate ||
@@ -432,13 +436,15 @@ const BuyModal = ({
                     action={async () => {
                       setIsLoadingBuyButton(true);
 
-                      await toast.promise(handleBuySubmitWithNative, {
-                        pending: "Waiting for confirmation 🕒",
-                        success: "Transaction confirmed 👌",
-                        error: "Transaction rejected 🤯"
-                      });
-
-                      setIsLoadingBuyButton(false);
+                      await toast
+                        .promise(handleBuySubmitWithNative, {
+                          pending: "Waiting for confirmation 🕒",
+                          success: "Transaction confirmed 👌",
+                          error: "Transaction rejected 🤯"
+                        })
+                        .finally(() => {
+                          setIsLoadingBuyButton(false);
+                        });
                     }}
                     className={`!rounded-full !col-span-2 !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${
                       !validate || !canPayWithNativeToken || isLoadingBuyButton

@@ -2122,13 +2122,15 @@ const TokenPageContainer = () => {
                             action={async () => {
                               setIsLoadingAirdropButton(true);
 
-                              await toast.promise(handleAirdrop(airdropAddress, tokenData), {
-                                pending: "Airdrop in progress... 🚀",
-                                success: "Airdrop successful 🎉",
-                                error: "Airdrop failed ❌"
-                              });
-
-                              setIsLoadingAirdropButton(false);
+                              await toast
+                                .promise(handleAirdrop(airdropAddress, tokenData), {
+                                  pending: "Airdrop in progress... 🚀",
+                                  success: "Airdrop successful 🎉",
+                                  error: "Airdrop failed ❌"
+                                })
+                                .finally(() => {
+                                  setIsLoadingAirdropButton(false);
+                                });
                             }}
                             className={`!rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all  !bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer ${(airdropAddress === "" || !airdropAddress || isLoadingAirdropButton || !isValidId) && "!btn-disabled !cursor-not-allowed !opacity-30"}`}
                             isDisabled={
