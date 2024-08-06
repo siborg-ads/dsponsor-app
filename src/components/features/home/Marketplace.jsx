@@ -193,6 +193,7 @@ const MarketplaceHome = ({ auctions, setAllTokens, allTokens, isAuctionsLoading 
                   {filterOption} <ChevronDownIcon className="w-5 h-5" />
                 </div>
               </MenuButton>
+
               <MenuItems
                 anchor="bottom start"
                 className={`rounded-xl flex flex-col gap-2 [--anchor-gap:1rem] bg-secondaryBlack p-2 border border-jacarta-100 border-opacity-10`}
@@ -206,17 +207,7 @@ const MarketplaceHome = ({ auctions, setAllTokens, allTokens, isAuctionsLoading 
                 >
                   <span>All tokens</span>
                 </MenuItem>
-                {/* 
-                  <MenuItem
-                    onClick={() => {
-                      setFilterOption("Listed tokens");
-                      setAllTokens(false);
-                    }}
-                    className="hover:bg-primaryBlack p-2 rounded-lg w-full pr-12 md:pr-24"
-                  >
-                    <span>Listed tokens</span>
-                  </MenuItem>
-                  */}
+
                 <MenuItem
                   onClick={() => {
                     setFilterOption("On auction");
@@ -226,18 +217,6 @@ const MarketplaceHome = ({ auctions, setAllTokens, allTokens, isAuctionsLoading 
                 >
                   <span>On auction</span>
                 </MenuItem>
-
-                {/*}
-                    <MenuItem
-                    onClick={() => {
-                      setFilterOption("Sold");
-                      setAllTokens(true);
-                    }}
-                    className="hover:bg-primaryBlack p-2 rounded-lg w-full pr-12 md:pr-24"
-                  >
-                    <span>Sold</span>
-                  </MenuItem>
-                  */}
               </MenuItems>
             </Menu>
 
@@ -247,6 +226,7 @@ const MarketplaceHome = ({ auctions, setAllTokens, allTokens, isAuctionsLoading 
                   {sortOption ?? "Sort by"} <ChevronDownIcon className="w-5 h-5" />
                 </div>
               </MenuButton>
+
               <MenuItems
                 anchor="bottom start"
                 className={`rounded-xl flex flex-col gap-2 [--anchor-gap:1rem] bg-secondaryBlack p-2 border border-jacarta-100 border-opacity-10`}
@@ -259,6 +239,7 @@ const MarketplaceHome = ({ auctions, setAllTokens, allTokens, isAuctionsLoading 
                 >
                   <span>Sort by name</span>
                 </MenuItem>
+
                 <MenuItem
                   onClick={() => {
                     setSortOption("Price: low to high");

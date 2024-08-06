@@ -119,36 +119,6 @@ const Cards = ({ activity }) => {
           </div>
         </div>
       </div>
-      {/*}
-      <div className="relative dark:bg-primaryPurple flex-grow flex-shrink flex-basis-[200px] overflow-hidden dark:border-jacarta-100 dark:border-opacity-10 mb-2 border-jacarta-100 rounded-2lg border flex flex-col gap-4 bg-white p-8">
-        <div className="absolute top-0 right-0 p-2">
-          <Popover placement="top" isOpen={hoveredIcon === "totalHolders"}>
-            <PopoverTrigger>
-              <InformationCircleIcon
-                className="h-5 w-5 text-white cursor-pointer"
-                onMouseEnter={() => handleMouseEnter("totalHolders")}
-                onMouseLeave={handleMouseLeave}
-              />
-            </PopoverTrigger>
-            <PopoverContent className="bg-secondaryBlack shadow border border-white border-opacity-10">
-              <div className="px-1 py-2">
-                <div className="text-small">
-                  This is the total amount of unique addresses that own ad spaces
-                </div>
-              </div>
-            </PopoverContent>
-          </Popover>
-        </div>
-       
-        <div className="flex flex-col gap-2 items-center justify-center sm:flex sm:flex-wrap">
-          <p className="dark:text-white font-medium">Total Holders</p>
-          <span className="text-jacarta-100 font-semibold text-ellipsis whitespace-nowrap overflow-hidden">
-            {activity?.nbHolders}
-          </span>
-        </div>
-        
-      </div>
-      */}
     </>
   );
 };
