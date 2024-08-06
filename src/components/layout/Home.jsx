@@ -30,7 +30,7 @@ const Home = () => {
       setIsAuctionsLoading(true);
 
       let allListedTokenWithoutFilterArray = [];
-      const data = await fetchAllListedTokenWithoutFilter(chainId, allTokens);
+      const data = await fetchHome(chainId, allTokens);
       allListedTokenWithoutFilterArray.push(...data);
 
       setAuctionsTemp(allListedTokenWithoutFilterArray);

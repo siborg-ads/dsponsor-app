@@ -1,4 +1,4 @@
-import { executeQuery } from "./helper/executeQuery";
+import { executeQuery } from "@/utils/graphql/helper/executeQuery";
 import config from "@/config/config";
 
 /**

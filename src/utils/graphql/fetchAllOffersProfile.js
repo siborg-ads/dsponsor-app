@@ -1,5 +1,5 @@
-import { executeQuery } from "../utils/executeQuery";
-import config from "../../config/config";
+import { executeQuery } from "@/utils/graphql/helper/executeQuery";
+import config from "@/config/config";
 
 /**
  * Fetches all offers profile for a given user address and chain ID.
