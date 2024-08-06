@@ -35,7 +35,7 @@ The source folder contains all the application code.
 
 - **context/**: Global context providers for shared state.
 
-- **middleware/**: Middlewares for handling requests (authentication, etc.).
+- **middleware.js**: Middlewares for handling requests (authentication, etc.).
 
 ## Development Commands
 
