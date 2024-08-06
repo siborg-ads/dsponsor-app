@@ -9,7 +9,7 @@ npm i
 ```
 
 2. Start the development server:
-  
+
 ```bash
 npm run dev
 ```
@@ -18,11 +18,11 @@ npm run dev
 
 ### Production Environment
 
- To test the application in the production environment, follow these steps:
+To test the application in the production environment, follow these steps:
 
- 1. Create an optimized production build:
+1.  Create an optimized production build:
 
- ```bash
+```bash
 npm run build
 ```
 

@@ -33,7 +33,7 @@ import React from "react";
  * @constructor
  */
 export default function BidWithCrossmintButton(props = {}) {
-  const { offer, token, user, referrer, actions } = props;
+  const { offer, token, user, referrer } = props;
 
   if (!token.fee) {
     console.warn("MintWithCrossmint: Token fee not found - Using default fee");

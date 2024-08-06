@@ -10,7 +10,7 @@ import Tippy from "@tippyjs/react";
 import { ChromePicker } from "react-color";
 import Input from "../../ui/input.jsx";
 
-const IframeIntegration = ({ chainId, offerId, offerTokens }) => {
+const IframeIntegration = ({ chainId, offerId }) => {
   const [copied, setCopied] = useState(false);
   const [iframeSrc, setIframeSrc] = useState("");
   const [customHeight, setCustomHeight] = useState(

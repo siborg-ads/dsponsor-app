@@ -152,7 +152,18 @@ const HtmlIntegration = ({ chainId, offerId, offerTokens }) => {
 
     const htmlSrc = generateTableHTML();
     setHtmlSrc(htmlSrc);
-  }, [chainId, offerId, offerTokens, numberOfColumns, bgColor, numberOfRows, color, displayType]);
+  }, [
+    chainId,
+    offerId,
+    offerTokens,
+    numberOfColumns,
+    bgColor,
+    numberOfRows,
+    color,
+    displayType,
+    ratio,
+    ratioValue
+  ]);
 
   const toggleExpansion = () => {
     setIsExpanded(!isExpanded);

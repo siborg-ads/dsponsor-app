@@ -74,11 +74,7 @@ const Step_2_Create = ({
                 required
                 className="placeholder:text-jacarta-300"
               />
-              <p
-                className={`text-2xs mt-1 ${
-                  charCount < 2000 ? "text-green" : "text-red"
-                }`}
-              >
+              <p className={`text-2xs mt-1 ${charCount < 2000 ? "text-green" : "text-red"}`}>
                 {2000 - charCount} characters remaining
               </p>
             </div>

@@ -1998,7 +1998,9 @@ const TokenPageContainer = () => {
                   !conditions?.conditionsObject?.hasBids) ||
                   conditions?.conditionsObject?.isDirect) && (
                   <div className="p-4 bg-secondaryBlack rounded-lg my-4">
-                    <p className="text-center text-white font-semibold">The current listing is ended</p>
+                    <p className="text-center text-white font-semibold">
+                      The current listing is ended
+                    </p>
                   </div>
                 )}
 

@@ -61,7 +61,6 @@ const BidsModal = ({
   const [, setEndDate] = useState(null);
   const [, setMinBid] = useState(null);
   const [, setEndDateHour] = useState(null);
-  const [, setTokenPrice] = useState(null);
   const [buyoutPriceReached, setBuyoutPriceReached] = useState(false);
   const [protocolFeeAmount, setProtocolFeeAmount] = useState(0);
   const [mount, setMount] = useState(false);

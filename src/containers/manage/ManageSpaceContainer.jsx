@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import Image from "next/image";
 import "tippy.js/dist/tippy.css"; // optional
 import Meta from "../../components/Meta";
 import ProfileOverview from "../../components/user/ProfileOverview";

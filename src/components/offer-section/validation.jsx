@@ -15,8 +15,6 @@ const Validation = ({
   handleSubmit,
   successFullRefuseModal,
   setSuccessFullRefuseModal,
-  isToken = false,
-  successFullUploadModal,
   setRefusedValidatedAdModal,
   refusedValidatedAdModal,
   setSelectedItems,

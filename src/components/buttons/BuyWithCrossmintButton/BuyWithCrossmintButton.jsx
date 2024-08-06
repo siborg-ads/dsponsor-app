@@ -34,7 +34,7 @@ import { formatUnits } from "ethers/lib/utils";
  * @constructor
  */
 export default function BuyWithCrossmintButton(props = {}) {
-  const { offer, token, user, referrer, actions } = props;
+  const { offer, token, user, referrer } = props;
 
   const price = ethers.utils.parseUnits(props.token.buyoutPricePerToken, "wei");
   if (!token.fee) {

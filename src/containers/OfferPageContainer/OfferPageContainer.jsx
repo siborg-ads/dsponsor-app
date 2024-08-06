@@ -42,7 +42,7 @@ const OfferPageContainer = () => {
   const [royalties, setRoyalties] = useState(null);
   const [currency, setCurrency] = useState(null);
   const [selectedItems, setSelectedItems] = useState([]);
-  const [price, setPrice] = useState(null);
+  const [, setPrice] = useState(null);
   const [imageModal, setImageModal] = useState(false);
   const [showEntireDescription, setShowEntireDescription] = useState(false);
   const [pendingProposalData, setPendingProposalData] = useState([]);
