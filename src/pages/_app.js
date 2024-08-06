@@ -10,7 +10,7 @@ import { useEffect, useMemo, useRef } from "react";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { NextUIProvider } from "@nextui-org/react";
-import Providers from "../providers/providers";
+import Providers from "../providers/Providers";
 import Hotjar from "@hotjar/browser";
 
 const siteId = 5037837;

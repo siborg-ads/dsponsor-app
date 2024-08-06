@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { Ethereum, Polygon, BaseSepoliaTestnet, Sepolia, Base } from "@thirdweb-dev/chains";
-
 import {
   coinbaseWallet,
   embeddedWallet,
@@ -9,10 +8,10 @@ import {
   ThirdwebProvider,
   walletConnect
 } from "@thirdweb-dev/react";
-import ChainProvider from "./ChainProvider/ChainProvider";
-import SwitchChainProvider from "./SwitchChainProvider/SwitchChainProvider";
-import { useSwitchChainContext } from "../contexts/hooks/useSwitchChainContext";
-import config from "../config/config";
+import ChainProvider from "@/providers/Chain";
+import SwitchChainProvider from "@/providers/SwitchChain";
+import { useSwitchChainContext } from "@/hooks/useSwitchChainContext";
+import config from "@/config/config";
 
 function Providers({ children }) {
   return (

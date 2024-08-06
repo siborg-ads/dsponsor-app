@@ -1,4 +1,4 @@
-import Network from "../../providers/utils/networks";
+import Network from "../../utils/networks";
 import contractABI from "../../abi/dsponsorAdmin.json";
 import { Base } from "@thirdweb-dev/chains";
 

@@ -45,7 +45,7 @@ const Input = forwardRef(
         pattern={pattern}
         readOnly={readOnly}
         className={clsx(
-          "bg-jacarta-800 hover:bg-jacarta-800 border-primaryPurple ring-0 focus:ring-0 focus:border-primaryPurple placeholder:text-jacarta-300 w-full rounded-lg py-3 px-3 text-white",
+          "bg-jacarta-800 hover:bg-jacarta-800 border border-primaryPurple ring-0 focus:ring-0 focus:border-primaryPurple placeholder:text-jacarta-300 w-full rounded-lg py-3 px-3 text-white",
           className
         )}
         required={required}
