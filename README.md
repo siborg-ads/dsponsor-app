@@ -1,49 +1,61 @@
-# DSponsor Dashboard
+# DSponsor Dashboard (WIP)
 
-## Getting Started
+## Project Structure
 
-1. Install the dependencies:
+The application is organized to be modular and maintainable. Each folder in `src/` has a specific role and is structured to facilitate scalability.
 
-```bash
-npm i
-```
+### `public/`
 
-2. Start the development server:
+Contains static files like images and fonts.
 
-```bash
-npm run dev
-```
+### `src/`
 
-3. Open [http://localhost:3000](http://localhost:3000) in your browser to see the result.
+The source folder contains all the application code.
 
-### Production Environment
+- **abi/**: Smart contracts ABIs.
 
-To test the application in the production environment, follow these steps:
+- **components/**: 
+  - `ui/`: Reusable UI components.
+  - `layout/`: Global layout components.
+  - `features/`: Components specific to certain features or pages.
+ 
+- **data/**: Static or mock data for the application.
+  
+- **hooks/**: Custom Hooks for managing state or specific effects.
 
-1.  Create an optimized production build:
+- **lib/**: Reusable code not specific to React (API calls, cookie management, etc.).
 
-```bash
-npm run build
-```
+- **pages/**: Application pages and API routes.
 
-2. Start the application using the production build:
+- **styles/**: Global style files.
 
-```bash
-npm run start
-```
+- **utils/**: Utility functions.
 
-## Configuration
+- **config/**: Configuration files (i.e. defining the chain config according to the environment).
 
-The application can bind to one of the following configuration files :
+- **context/**: Global context providers for shared state.
 
-- Development Configuration (usage with testnets like Sepolia): [`./src/config/config.dev.js`](./src/config/config.dev.js)
-- Production Configuration (usage with mainnets like Base): [`./src/config/config.prod.js`](./src/config/config.prod.js)
+- **middleware.js**: Middlewares for handling requests (authentication, etc.).
 
-**By default, the application runs in `production` mode. To switch to the development configuration, set the `NEXT_PUBLIC_CONFIG_MODE` environment variable to `dev`.**
+## Development Commands
 
-For example, if you are running the application locally, create a `.env.local` with the following content:
+We use Yarn to manage dependencies and run the application.
 
-```
-# .env.local
-NEXT_PUBLIC_CONFIG_MODE=dev
-```
+- `yarn dev`: Starts the application in development mode.
+- `yarn build`: Compiles the application for production.
+- `yarn start`: Runs the application in production mode after `build` is executed.
+
+## Naming Conventions
+
+- Use PascalCase for components.
+- Use camelCase for functions and variables.
+- JavaScript files should have the `.js` or `.jsx` extension.
+
+## Contribution
+
+To contribute to the project, please follow these guidelines:
+
+1. Fork the repository.
+2. Create a feature branch.
+3. Make your changes.
+4. Submit a pull request.
