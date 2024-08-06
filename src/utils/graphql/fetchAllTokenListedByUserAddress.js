@@ -1,6 +1,13 @@
 import { executeQuery } from "../utils/executeQuery";
 import config from "../../config/config";
 
+/**
+ * Fetches all tokens listed by a specific user address for a given blockchain chain ID.
+ *
+ * @param {string} lister - The address of the user who listed the tokens.
+ * @param {string} chainId - The ID of the blockchain chain to fetch the listings from.
+ * @returns {Promise<Array>} - A promise that resolves to an array of tokens listed by the user, with additional chain configuration.
+ */
 export const fetchAllTokenListedByUserAddress = async (lister, chainId) => {
   const path = new URL(`https://relayer.dsponsor.com/api/${chainId}/graph`);
 

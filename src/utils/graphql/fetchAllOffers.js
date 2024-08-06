@@ -1,6 +1,12 @@
 import { executeQuery } from "../utils/executeQuery";
 import config from "../../config/config";
 
+/**
+ * Fetches all advertisement offers from the marketplace for a specific blockchain chain ID.
+ *
+ * @param {string} chainId - The ID of the blockchain chain to fetch offers from.
+ * @returns {Promise<Array>} - A promise that resolves to an array of advertisement offers with their details.
+ */
 export const fetchAllOffers = async (chainId) => {
   const path = new URL(`https://relayer.dsponsor.com/api/${chainId}/graph`);
 

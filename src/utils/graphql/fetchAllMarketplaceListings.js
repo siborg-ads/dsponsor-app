@@ -1,5 +1,11 @@
 import { executeQuery } from "../utils/executeQuery";
 
+/**
+ * Fetches all tokens listed on the marketplace by their listing IDs for a specific blockchain chain ID.
+ *
+ * @param {string} chainId - The ID of the blockchain chain to fetch listings from.
+ * @returns {Promise<Object>} - A promise that resolves to an object containing all marketplace listings and their associated tokens.
+ */
 export const fetchAllTokenListedByListingId = async (chainId) => {
   const path = new URL(`https://relayer.dsponsor.com/api/${chainId}/graph`);
 

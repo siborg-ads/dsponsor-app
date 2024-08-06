@@ -7,7 +7,7 @@ import ProfileReferrals from "../../components/user/ProfileReferrals";
 import UserTabs from "../../components/user/UserTabs";
 import { useAddress } from "@thirdweb-dev/react";
 import { fetchAllOffersByUserAddress } from "../../utils/graphql/fetchAllOffersByUserAddress";
-import { fetchAllTokenByOfferForAuser } from "../../utils/graphql/fetchAllTokenByOfferForAuser";
+import { fetchAllTokenByOfferForAuser } from "../../utils/graphql/fetchAllTokenByOfferFromUser";
 import { useChainContext } from "../../contexts/hooks/useChainContext";
 import config from "../../config/config";
 import { getAddress } from "ethers/lib/utils";

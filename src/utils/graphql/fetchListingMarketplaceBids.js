@@ -1,5 +1,15 @@
 import { executeQuery } from "../utils/executeQuery";
 
+/**
+ * Fetches all marketplace listings and associated token details for a given chain ID.
+ * 
+ * Retrieves up to 1000 marketplace listings, including details about the listing, token, NFT contract,
+ * and associated bids. This function helps in fetching the data required to display token listings on the
+ * marketplace.
+ *
+ * @param {string} chainId - The ID of the blockchain chain to fetch listings from.
+ * @returns {Promise<Object>} - A promise that resolves to an object containing the marketplace listings data.
+ */
 export const fetchAllTokenListedByListingId = async (chainId) => {
   const path = new URL(`https://relayer.dsponsor.com/api/${chainId}/graph`);
 

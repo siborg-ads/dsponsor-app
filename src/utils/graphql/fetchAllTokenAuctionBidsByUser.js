@@ -1,6 +1,13 @@
 import { executeQuery } from "../utils/executeQuery";
 import config from "../../config/config";
 
+/**
+ * Fetches all token auction bids placed by a specific user address for a given blockchain chain ID.
+ *
+ * @param {string} address - The address of the user whose auction bids are to be fetched.
+ * @param {string} chainId - The ID of the blockchain chain to fetch auction bids from.
+ * @returns {Promise<Array>} - A promise that resolves to an array of the user's most recent auction bids, with their details.
+ */
 export const fetchAllTokenAuctionBidsByUser = async (address, chainId) => {
   const path = new URL(`https://relayer.dsponsor.com/api/${chainId}/graph`);
 

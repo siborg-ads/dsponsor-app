@@ -1,5 +1,25 @@
 import { executeQuery } from "../utils/executeQuery";
 
+/**
+ * Fetches detailed information about a specific token associated with an advertisement offer.
+ * 
+ * This function queries the GraphQL endpoint for the details of a token identified by `tokenId` within a specified
+ * advertisement offer (`offerId`). It retrieves comprehensive information about the offer, including metadata, the 
+ * NFT contract, the token itself, its marketplace listings, offers, and proposals. It also includes pricing and 
+ * bid details for each listing.
+ * 
+ * The returned data includes:
+ * - Metadata of the ad offer
+ * - Details about the NFT contract, including pricing and royalty information
+ * - Information about the specified token, including its marketplace listings, offers, and mint details
+ * - Historical proposals related to the ad offer and current proposals for the token
+ * 
+ * @param {string} offerId - The ID of the advertisement offer to query.
+ * @param {string} tokenId - The ID of the token to fetch details for.
+ * @param {string} chainId - The ID of the blockchain chain to query.
+ * @returns {Promise<Object>} - A promise that resolves to an object containing detailed information about the
+ *                               specified token and its associated offer.
+ */
 export const fetchOfferToken = async (offerId, tokenId, chainId) => {
   const path = new URL(`https://relayer.dsponsor.com/api/${chainId}/graph`);
   const GET_DATA = `

@@ -1,6 +1,15 @@
 import { executeQuery } from "../utils/executeQuery";
 import config from "../../config/config";
 
+/**
+ * Fetches the most recent offers from the blockchain for a given chain ID.
+ * 
+ * Retrieves the last 50 offers, ordered by creation timestamp in descending order, and includes details
+ * about the offer, associated NFT contract, and token information.
+ *
+ * @param {string} chainId - The ID of the blockchain chain to fetch offers from.
+ * @returns {Promise<Array>} - A promise that resolves to an array of recent offers, with additional chain configuration.
+ */
 export default async function fetchLastOffers(chainId) {
   const path = new URL(`https://relayer.dsponsor.com/api/${chainId}/graph`);
 

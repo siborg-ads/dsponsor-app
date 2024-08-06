@@ -1,6 +1,13 @@
 import { executeQuery } from "./helper/executeQuery";
 import config from "../../config/config";
 
+/**
+ * Fetches all listed tokens from the marketplace for a specific blockchain chain ID.
+ *
+ * @param {string} chainId - The ID of the blockchain chain to fetch tokens from.
+ * @param {boolean} allTokens - Flag to include all tokens or filter out tokens with no marketplace listings.
+ * @returns {Promise<Array>} - A promise that resolves to an array of tokens with their details.
+ */
 export const fetchAllListedTokenWithoutFilter = async (chainId, allTokens) => {
   const path = new URL(`https://relayer.dsponsor.com/api/${chainId}/graph`);
   const currentTimestamp = Math.floor(Date.now() / 1000);

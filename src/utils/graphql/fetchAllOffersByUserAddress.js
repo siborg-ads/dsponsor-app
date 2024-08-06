@@ -1,6 +1,13 @@
 import { executeQuery } from "./helper/executeQuery";
 import config from "../../config/config";
 
+/**
+ * Fetches all advertisement offers managed by a specific user address for a given blockchain chain ID.
+ *
+ * @param {string} userAddress - The address of the user whose offers are to be fetched.
+ * @param {string} chainId - The ID of the blockchain chain to fetch offers from.
+ * @returns {Promise<Array>} - A promise that resolves to an array of advertisement offers managed by the user, with their details.
+ */
 export const fetchAllOffersByUserAddress = async (userAddress, chainId) => {
   const path = new URL(`https://relayer.dsponsor.com/api/${chainId}/graph`);
 
