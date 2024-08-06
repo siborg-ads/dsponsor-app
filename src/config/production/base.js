@@ -46,7 +46,7 @@ const prodBase = {
   },
   features: {
     crossmint: {
-      enabled: true,
+      enabled: false,
 
       config: {
         projectId: "82d192a5-c754-4280-a6cb-cb3d7b0f9bd9",
