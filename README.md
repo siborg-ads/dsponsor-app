@@ -12,6 +12,8 @@ Contains static files like images and fonts.
 
 The source folder contains all the application code.
 
+- **abi/**: Smart contracts ABIs.
+
 - **components/**: 
   - `ui/`: Reusable UI components.
   - `layout/`: Global layout components.
@@ -29,7 +31,7 @@ The source folder contains all the application code.
 
 - **utils/**: Utility functions.
 
-- **config/**: Configuration files (i.e. defining the chain config according to the environment)
+- **config/**: Configuration files (i.e. defining the chain config according to the environment).
 
 - **context/**: Global context providers for shared state.
 
