@@ -8,7 +8,7 @@ import config from "@/config/config";
  * @param {boolean} allTokens - Flag to include all tokens or filter out tokens with no marketplace listings.
  * @returns {Promise<Array>} - A promise that resolves to an array of tokens with their details.
  */
-export const fetchAllListedTokenWithoutFilter = async (chainId, allTokens) => {
+export const fetchHome = async (chainId, allTokens) => {
   const path = new URL(`https://relayer.dsponsor.com/api/${chainId}/graph`);
   const currentTimestamp = Math.floor(Date.now() / 1000);
 

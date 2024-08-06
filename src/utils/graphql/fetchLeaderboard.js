@@ -8,7 +8,7 @@
  * @param {string} chainId - The ID of the blockchain chain to fetch activity data from.
  * @returns {Promise<Object>} - A promise that resolves to an object containing the marketplace activity data.
  */
-export const fetchMarketplaceActivity = async (chainId) => {
+export const fetchLeaderboard = async (chainId) => {
   const path = new URL(`https://relayer.dsponsor.com/api/${chainId}/activity`);
 
   const response = await fetch(path.href);

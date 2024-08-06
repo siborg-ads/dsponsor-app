@@ -6,7 +6,7 @@ import "tippy.js/dist/tippy.css";
 import Meta from "@/components/Meta";
 import TokenCard from "@/components/ui/cards/TokenCard";
 import { useAddress } from "@thirdweb-dev/react";
-import { fetchAllListedToken } from "@/utils/graphql/fetchAllListedToken";
+import { fetchMarketplace } from "@/utils/graphql/fetchMarketplace";
 import { useChainContext } from "@/hooks/useChainContext";
 import config from "@/config/config";
 import TokenCardSkeleton from "@/components/ui/skeletons/TokenCardSkeleton";
@@ -35,7 +35,7 @@ const Marketplace = () => {
           const listingArray = [];
 
           for (const [chainId] of Object.entries(config)) {
-            const listings = await fetchAllListedToken(chainId);
+            const listings = await fetchMarketplace(chainId);
             listingArray.push(...listings);
           }
 

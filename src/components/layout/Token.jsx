@@ -24,7 +24,7 @@ import ModalHelper from "@/components/ui/modals/Helper";
 import CarouselForm from "@/components/ui/misc/CarouselForm";
 import styles from "@/styles/style.module.scss";
 import Timer from "@/components/ui/timer/Timer";
-import { fetchTokenPageContainer } from "@/utils/graphql/fetchTokenPageContainer";
+import { fetchToken } from "@/utils/graphql/fetchToken";
 import LatestSales from "@/components/features/token/LatestSales";
 import { getCookie } from "cookies-next";
 import Details from "@/components/features/token/Details";
@@ -233,7 +233,7 @@ const Token = () => {
     fetchOffersRef.current = true;
 
     try {
-      const offers = await fetchTokenPageContainer(chainId, offerId, tokenId);
+      const offers = await fetchToken(chainId, offerId, tokenId);
       setOffers(offers);
 
       // check if we have the values

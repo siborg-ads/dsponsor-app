@@ -4,7 +4,7 @@ import React, { useEffect, useState, useRef } from "react";
 import MainAuctions from "@/components/features/home/MainAuctions";
 import MarketplaceHome from "@/components/features/home/Marketplace";
 import Description from "@/components/features/home/Description";
-import { fetchAllListedTokenWithoutFilter } from "@/utils/graphql/fetchAllListedTokenWithoutFilter";
+import { fetchHome } from "@/utils/graphql/fetchHome";
 import { formatUnits } from "ethers/lib/utils";
 import formatAndRound from "@/utils/prices/formatAndRound";
 import Meta from "@/components/Meta";

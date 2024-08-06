@@ -1,28 +1,38 @@
 import { executeQuery } from "../utils/executeQuery";
-import config from "@/config/config";
+import config from "../../config/config";
 
 /**
- * Fetches all advertisement offers from the marketplace for a specific blockchain chain ID.
+ * Fetches all offers profile for a given user address and chain ID.
  *
- * @param {string} chainId - The ID of the blockchain chain to fetch offers from.
- * @returns {Promise<Array>} - A promise that resolves to an array of advertisement offers with their details.
+ * @param {string} userAddress - The address of the user.
+ * @param {number} chainId - The ID of the blockchain chain.
+ * @returns {Promise<Array<Object>>} - A promise that resolves to an array of offer profiles.
  */
-export const fetchAllOffers = async (chainId) => {
+export const fetchAllOffersProfile = async (userAddress, chainId) => {
   const path = new URL(`https://relayer.dsponsor.com/api/${chainId}/graph`);
 
   const GET_DATA = `
-    query {
+    query OffersManagedByUser($userAddress: ID!) {
       adOffers(
         first: 1000
       ) {
-        # --> Fetch and parse https://github.com/dcast-media/dips/blob/dip-0002/antho31/dip-0002.md#example-schema-json
-        # to get creator & offer info  (you may have token_metadata info too)
-        # offer.name, offer.image, offer.description
-        # if token_metadata: token_metadata.name,
         metadataURL
-        id # offerId
         disable
+        name
+        admins
         initialCreator
+        id # offerId
+        allProposals {
+          id
+          adOffer
+          token
+          adParameter
+          status
+          data
+          rejectReason
+          creationTimestamp
+          lastUpdateTimestamp
+        }
         creationTimestamp # data (unix time)
         adParameters(where: { enable: true }) {
           enable
@@ -35,15 +45,12 @@ export const fetchAllOffers = async (chainId) => {
 
         nftContract {
           id # DSponsorNFT smart contract address
-          royalty {
-            bps
-          }
           prices {
             currency # ERC20 smart contract
             amount # wei, mind decimals() function to transform in human readable value !
             enabled
-            currencyDecimals
           }
+          owner
           tokens(
             # you can paginate with this type or filtering
             # where: { and: [{ tokenId_lte: "200" }, { tokenId_lte: "100" }]
@@ -53,106 +60,96 @@ export const fetchAllOffers = async (chainId) => {
             tokenId
             mint {
               transactionHash # if = null => not minted yet, so it's available
-              from
-              currency
               to # address who receives the token
               tokenData # data linked to token id, search ticker for SiBorg ad offer for example
-              revenueTransaction {
-                id
-                blockTimestamp
-              }
-              amount
-              totalPaid
             }
             marketplaceListings {
-              listingType
-              status
-              startTime
-              endTime
-              lister
-              id
-              reservePricePerToken
-              buyoutPricePerToken
-              currency
-              currencyDecimals
+              id # listingId
               quantity
-              directBuys {
-                id
-                listing {
-                  id
-                  listingType
-                }
-                buyer
-                quantityBought
-                totalPricePaid
-                revenueTransaction {
-                  blockTimestamp
-                }
-                feeMethodology
-                amountSentToProtocol
-                protocolRecipient
-                amountSentToSeller
-                sellerRecipient
-                amountSentToCreator
-                creatorRecipient
-              }
               token {
                 tokenId
-                id
+
                 nftContract {
-                  id
+                  id # = assetContract
                   royalty {
                     bps
                   }
+                  owner {
+                    newOwner
+                    previousOwner
+                  }
                   adOffers {
                     id
-                    metadataURL
+                    metadataURL # offerMetadata
                     disable
+                  }
+                  prices {
+                    currency # ERC20 smart contract
+                    amount # wei, mind decimals() function to transform in human readable value !
+                    enabled
                   }
                 }
                 mint {
                   tokenData
                 }
               }
-              bids {
-                id
-                listing
-                bidder
-                quantity
-                newPricePerToken
-                totalBidAmount
-                paidBidAmount
-                refundBonus
-                refundAmount
-                refundProfit
-                currency
-                status
-                creationTxHash
-                revenueTransaction
-                creationTimestamp
-                lastUpdateTimestamp
-                feeMethodology
-                amountSentToProtocol
-                protocolRecipient
-                amountSentToSeller
-                sellerRecipient
-                amountSentToCreator
-                creatorRecipient
+
+              # listingType = 0 <-> 'Direct', listingType = 1 <-> 'Auction'
+              # 'Direct' or 'Auction'
+              listingType
+
+              currency # ERC20 smart contract addr
+              # PRICE
+              # if listingType = 'Direct'
+              #    price = buyoutPricePerToken
+              # else if listingType = 'Auction'
+              #    price = bids[0].totalBidAmount || reservePricePerToken
+              reservePricePerToken
+              buyoutPricePerToken
+              bids(orderBy: totalBidAmount, orderDirection: desc, first: 1000) {
+                  id
+                  bidder
+                  quantity
+                  refundBonus
+                  refundAmount
+                  refundProfit
+                  paidBidAmount
+                  status
+                  currency
+                  creationTimestamp
+                  lastUpdateTimestamp
+                  creationTxHash
+                  listing {
+                    token {
+                      tokenId
+                      mint {
+                        tokenData
+                      }
+                      nftContract {
+                        adOffers(first: 1, orderBy: creationTimestamp, orderDirection: desc) {
+                          id
+                          name
+                        }
+                      }
+                    }
+                  }
               }
-            }
-            marketplaceOffers {
-              id
-              offeror
-              expirationTimestamp
-              currency
-              totalPrice
+
+              lister
+
+              startTime
+              endTime
+
+              # 'UNSET', 'CREATED', 'COMPLETED' or 'CANCELLED'
               status
-              creationTimestamp
+
+              # will be useful later
               tokenType
               transferType
               rentalExpirationTimestamp
             }
-            setInAllowList
+            setInAllowList # to check is allowList (above) is true, define if is in allowlist
+            # current ad data proposals, per adParameter
             currentProposals {
               adOffer {
                 id
@@ -200,8 +197,7 @@ export const fetchAllOffers = async (chainId) => {
     }
   `;
 
-  const response = await executeQuery(path.href, GET_DATA);
-
+  const response = await executeQuery(path.href, GET_DATA, { userAddress: userAddress });
   const chainConfig = config[chainId];
 
   const resultMappedData = response?.adOffers

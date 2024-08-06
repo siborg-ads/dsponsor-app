@@ -7,7 +7,7 @@ import config from "@/config/config";
  * @param {number} chainId - The ID of the blockchain chain to query.
  * @returns {Promise<Array>} - A promise that resolves to an array of mapped listed tokens.
  */
-export const fetchAllListedToken = async (chainId) => {
+export const fetchMarketplace = async (chainId) => {
   const path = new URL(`https://relayer.dsponsor.com/api/${chainId}/graph`);
   const currentTimestamp = Math.floor(Date.now() / 1000);
 

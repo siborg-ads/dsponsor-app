@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Tables from "@/components/features/leaderboard/Tables";
-import { fetchMarketplaceActivity } from "@/utils/graphql/fetchMarketplaceActivity";
+import { fetchLeaderboard } from "@/utils/graphql/fetchLeaderboard";
 import processBidsAndCalculateRewards from "@/utils/bids/processBidsAndCalculateRewards";
 import LeaderboardSkeleton from "@/components/layout/skeletons/LeaderboardSkeleton";
 import Meta from "@/components/Meta";
@@ -18,11 +18,12 @@ const Marketplace = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const promises = Object.entries(config).map(([chainId]) =>
-      fetchMarketplaceActivity(chainId).then((activity) => ({
-        ...activity,
-        chainId
-      }))
+    const promises = Object.entries(config).map(
+      async ([chainId]) =>
+        await fetchLeaderboard(chainId).then((activity) => ({
+          ...activity,
+          chainId
+        }))
     );
 
     Promise.all(promises)

@@ -21,7 +21,7 @@ import config from "@/config/config";
  * @returns {Promise<Object[]>} - A promise that resolves to an array containing detailed information about the
  *                                  advertisement offer and the specified token.
  */
-export const fetchTokenPageContainer = async (chainId, offerId, tokenId) => {
+export const fetchToken = async (chainId, offerId, tokenId) => {
   const path = new URL(`https://relayer.dsponsor.com/api/${chainId}/graph`);
 
   const GET_DATA = `

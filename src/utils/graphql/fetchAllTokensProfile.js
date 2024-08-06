@@ -7,7 +7,7 @@ import config from "@/config/config";
  * @param {string} chainId - The ID of the blockchain chain to fetch tokens from.
  * @returns {Promise<Array>} - A promise that resolves to an array of tokens owned by the user, with additional chain configuration.
  */
-export const fetchAllTokenByOfferFromUser = async (ownerAddress, chainId) => {
+export const fetchAllTokensProfile = async (ownerAddress, chainId) => {
   const options = { method: "GET", headers: { accept: "application/json" } };
   const response = await fetch(
     `https://relayer.dsponsor.com/api/${chainId}/account/${ownerAddress}/tokens`,

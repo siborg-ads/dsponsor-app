@@ -7,7 +7,7 @@ import Image from "next/image";
 import { useContract, useContractWrite, useContractRead, useAddress } from "@thirdweb-dev/react";
 import Tippy from "@tippyjs/react";
 import OfferSkeleton from "@/components/ui/skeletons/OfferSkeleton";
-import { fetchOfferPageContainer } from "@/utils/graphql/fetchOfferPageContainer";
+import { fetchOffer } from "@/utils/graphql/fetchOffer";
 import Integration from "@/components/features/offer/offerManagement/Integration";
 import { ThirdwebStorage } from "@thirdweb-dev/storage";
 import * as Accordion from "@radix-ui/react-accordion";
@@ -104,7 +104,7 @@ const Offer = () => {
       fetchAllOffersRef.current = true;
 
       try {
-        const offers = await fetchOfferPageContainer(chainId, offerId);
+        const offers = await fetchOffer(chainId, offerId);
         setOffers(offers);
 
         const offerData = offers?.filter((offer) => Number(offer?.id) === Number(offerId))[0];
