@@ -1,6 +1,6 @@
 import React from "react";
-//import Referrals from "@/[OLD]/user/referrals/Referrals";
-//import SiBorgApp from "@/[OLD]/user/referrals/SiBorgApp";
+import Referrals from "@/components/features/profile/referrals/Referrals";
+import SiBorgApp from "@/components/features/profile/referrals/SiBorgApp";
 
 const ProfileReferrals = ({ userData, userAddr, manageAddress }) => {
   return (

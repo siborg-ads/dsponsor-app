@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Tab, TabList, TabPanel, Tabs } from "react-tabs";
-//import ValidatedRefusedItems from "../collections/validated_refused_items";
+import ValidatedOrRefusedAds from "@/components/features/offer/adValidation/ValidatedOrRefusedAds";
 import PendingAds from "@/components/features/offer/adValidation/PendingAds";
 import RejectAd from "@/components/features/offer/adValidation/modals/RejectAd";
 import { ExclamationCircleIcon } from "@heroicons/react/24/solid";
@@ -282,7 +282,7 @@ const Validation = ({
         <TabPanel>
           <div className="container mb-12 relative p-0">
             {/* <!-- Filter --> */}
-            <ValidatedRefusedItems
+            <ValidatedOrRefusedAds
               statut={true}
               proposalData={validatedProposalData}
               isToken={false}
@@ -292,7 +292,7 @@ const Validation = ({
         <TabPanel>
           <div className="container mb-12 relative p-0">
             {/* <!-- Filter --> */}
-            <ValidatedRefusedItems statut={false} proposalData={refusedProposalData} />
+            <ValidatedOrRefusedAds statut={false} proposalData={refusedProposalData} />
           </div>
         </TabPanel>
       </Tabs>

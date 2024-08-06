@@ -1,9 +1,7 @@
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
 import { useChainContext } from "@/contexts/hooks/useChainContext";
 import { features } from "@/data/features";
-//import { trendingCategoryData } from "@/data/categories_data";
 //import { updateTrendingCategoryItemData } from "@/redux/counterSlice";
 import ConditionalDisplayedComponent from "@/components/ui/misc/ConditionalDisplayedComponent";
 import TokenCard from "@/components/ui/cards/TokenCard";
@@ -11,17 +9,11 @@ import MainButton from "@/components/ui/buttons/MainButton";
 import { ExclamationCircleIcon } from "@heroicons/react/24/solid";
 
 const CreatedOffers = ({ data, isPendinAdsOnOffer, isOwner, offers, isLoading }) => {
-  const [itemdata] = useState(trendingCategoryData);
-  const dispatch = useDispatch();
   const { currentChainObject } = useChainContext();
   const chainId = currentChainObject?.chainId;
   const [filteredData, setFilteredData] = useState(data);
 
   const [filter, setFilter] = useState("all");
-
-  useEffect(() => {
-    dispatch(updateTrendingCategoryItemData(itemdata.slice(0, 8)));
-  }, [itemdata, dispatch]);
 
   useEffect(() => {
     if (filter === "all") {

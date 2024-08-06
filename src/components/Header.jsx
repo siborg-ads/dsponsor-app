@@ -1,12 +1,11 @@
 import Image from "next/image";
 import Link from "next/link";
 import Logo from "@/../public/images/siborg-ads.png";
-
 import { useRouter } from "next/router";
-import { isChildrenPageActive } from "@/utils/daynamicNavigation";
+import { isChildrenPageActive } from "@/utils/navigation/dynamicNavigation";
 import { useEffect, useState } from "react";
 import { ConnectWallet, useAddress } from "@thirdweb-dev/react";
-import { useChainContext } from "@/contexts/hooks/useChainContext";
+import { useChainContext } from "@/hooks/useChainContext";
 import { features } from "@/data/features";
 import { useSearchParams } from "next/navigation";
 

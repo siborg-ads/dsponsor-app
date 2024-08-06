@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import SwitchChainContext from "../SwitchChainContext";
+import SwitchChainContext from "@/contexts/switchChain";
 
 export function useSwitchChainContext() {
   const context = useContext(SwitchChainContext);

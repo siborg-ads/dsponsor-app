@@ -5,8 +5,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { ethers } from "ethers";
 import DatePicker from "react-datepicker";
 import ModalHelper from "@/components/ui/modals/Helper";
-//import AdSubmission from "@/../[...OLD]/modal/AdSubmission";
-
+import AdSubmission from "@/components/features/token/AdSubmission";
 import { useChainContext } from "@/contexts/hooks/useChainContext";
 import Input from "@/components/ui/Input";
 

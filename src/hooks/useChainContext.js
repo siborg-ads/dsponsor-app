@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import ChainContext from "../ChainContext";
+import ChainContext from "@/contexts/chain";
 
 export function useChainContext() {
   const context = useContext(ChainContext);
