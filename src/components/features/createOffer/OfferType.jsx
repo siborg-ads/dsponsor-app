@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import ModalHelper from "@/components/modals/Helper";
+import ModalHelper from "@/components/ui/modals/Helper";
 import Input from "@/components/ui/Input";
 
 const OfferType = ({

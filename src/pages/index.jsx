@@ -1,12 +1,11 @@
 "use client";
 
-import HomeContainer from "../containers/Home/HomeContainer";
+import Home from "@/components/layout/Home";
 
 export default function DefaultPage() {
-  //return <HomePageContainer />;
   return (
     <>
-      <HomeContainer />
+      <Home />
     </>
   );
 }

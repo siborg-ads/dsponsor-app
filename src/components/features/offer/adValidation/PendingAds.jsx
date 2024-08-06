@@ -5,7 +5,7 @@ import "tippy.js/dist/tippy.css";
 import Link from "next/link";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { useChainContext } from "@/contexts/hooks/useChainContext";
+import { useChainContext } from "@/hooks/useChainContext";
 import { useEffect, useState } from "react";
 import { Web3Button } from "@thirdweb-dev/react";
 import config from "@/config/config";

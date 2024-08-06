@@ -7,7 +7,7 @@ import { ExclamationCircleIcon } from "@heroicons/react/24/solid";
 import ResponsiveTooltip from "@/components/ui/ResponsiveTooltip";
 import { CheckIcon, ClockIcon, XIcon } from "lucide-react";
 
-const Validation = ({
+const AdValidation = ({
   chainId,
   offer,
   offerId,
@@ -320,4 +320,4 @@ const Validation = ({
   );
 };
 
-export default Validation;
+export default AdValidation;

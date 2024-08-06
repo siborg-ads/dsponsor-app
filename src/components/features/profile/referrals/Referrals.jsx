@@ -2,10 +2,10 @@ import React, { useState, useEffect } from "react";
 import { InformationCircleIcon } from "@heroicons/react/20/solid";
 import { Popover, PopoverTrigger, PopoverContent } from "@nextui-org/react";
 import { ClipboardIcon } from "@heroicons/react/20/solid";
-import handleCopy from "../../../utils/handleCopy";
+import handleCopy from "@/utils/misc/handleCopy";
 import Tippy from "@tippyjs/react";
 import "tippy.js/dist/tippy.css";
-import Input from "../../ui/input.jsx";
+import Input from "@/components/ui/Input";
 
 const Referrals = ({ userAddr, userData }) => {
   const [isHovered, setIsHovered] = useState(false);

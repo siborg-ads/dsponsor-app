@@ -6,7 +6,7 @@ import { ethers } from "ethers";
 import DatePicker from "react-datepicker";
 import ModalHelper from "@/components/ui/modals/Helper";
 import AdSubmission from "@/components/features/token/AdSubmission";
-import { useChainContext } from "@/contexts/hooks/useChainContext";
+import { useChainContext } from "@/hooks/useChainContext";
 import Input from "@/components/ui/Input";
 
 const CreateListing = ({

@@ -6,9 +6,10 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Spinner } from "@nextui-org/spinner";
 import ModalHelper from "@/components/ui/modals/Helper";
-import { useChainContext } from "@/contexts/hooks/useChainContext";
+import { useChainContext } from "@/hooks/useChainContext";
 import { InformationCircleIcon } from "@heroicons/react/20/solid";
 import ResponsiveTooltip from "@/components/ui/ResponsiveTooltip";
+import TextArea from "@/components/ui/TextArea";
 
 const AdSubmission = ({
   approvalForAllToken = true,
@@ -338,12 +339,7 @@ const AdSubmission = ({
                   <p className="font-display mb-2 block text-sm dark:text-white">
                     {description.length > 0 ? (
                       <span className="dark:text-jacarta-100 text-jacarta-100 text-sm flex  items-center">
-                        Description :{" "}
-                        <textarea
-                          readOnly
-                          value={description}
-                          className="dark:text-white text-base ml-2 bg-transparent resize-none border-none p-0 "
-                        ></textarea>
+                        Description : <TextArea readOnly value={description} />
                       </span>
                     ) : !description ? (
                       <span className="dark:text-jacarta-100 text-jacarta-100 font-display">

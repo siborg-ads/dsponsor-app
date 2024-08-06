@@ -1,16 +1,16 @@
-import "../styles/globals.css";
+import "@/styles/globals.css";
 import { ThemeProvider } from "next-themes";
-import Layout from "../components/layout";
+import Layout from "@/pages/layout";
 import { Provider } from "react-redux";
-import { store } from "../redux/store";
+import { store } from "@/contexts/store";
 import { useRouter } from "next/router";
-import Meta from "../components/Meta";
-import UserContext from "../components/UserContext";
+import Meta from "@/components/Meta";
+import UserContext from "@/contexts/user";
 import { useEffect, useMemo, useRef } from "react";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { NextUIProvider } from "@nextui-org/react";
-import Providers from "../providers/Providers";
+import Providers from "@/providers/Providers";
 import Hotjar from "@hotjar/browser";
 
 const siteId = 5037837;

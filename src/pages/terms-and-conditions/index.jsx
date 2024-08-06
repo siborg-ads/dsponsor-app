@@ -1,5 +1,5 @@
-import TermsAndConditionsContainer from "@/containers/TermsAndConditions/TermsAndConditionsContainer";
+import TermsAndConditions from "@/components/layout/TermsAndConditions";
 
 export default function TermsAndConditionsPage() {
-  return <TermsAndConditionsContainer />;
+  return <TermsAndConditions />;
 }

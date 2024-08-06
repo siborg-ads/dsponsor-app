@@ -1,5 +1,5 @@
-import PrivacyPolicyContainer from "@/containers/PrivacyPolicy/PrivacyPolicyContainer";
+import PrivacyPolicy from "@/components/layout/PrivacyPolicy";
 
 export default function PrivacyPolicyPage() {
-  return <PrivacyPolicyContainer />;
+  return <PrivacyPolicy />;
 }

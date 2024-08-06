@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { collectionActivityItemData } from "@/data/collection_data";
 import Link from "next/link";
 import Image from "next/image";
 import "tippy.js/dist/tippy.css";
@@ -15,13 +14,6 @@ const ValidatedOrRefusedAds = ({ statut, proposalData, isToken }) => {
   const closeModal = (tokenId) => {
     setModalStates((prev) => ({ ...prev, [tokenId]: false }));
   };
-  function onlyUnique(value, index, self) {
-    return self.indexOf(value) === index;
-  }
-
-  const [filterData] = useState(
-    collectionActivityItemData.map((item) => item.category).filter(onlyUnique)
-  );
 
   useEffect(() => {
     if (statut) {
@@ -29,7 +21,7 @@ const ValidatedOrRefusedAds = ({ statut, proposalData, isToken }) => {
     } else {
       setStatutItem("refused");
     }
-  }, [filterData, statut]);
+  }, [proposalData, statut]);
 
   function formatTokenId(str) {
     if (str.length <= 6) {

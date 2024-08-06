@@ -5,7 +5,7 @@ import { Web3Button, useBalance } from "@thirdweb-dev/react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Divider, Spinner } from "@nextui-org/react";
-import { useChainContext } from "@/contexts/hooks/useChainContext";
+import { useChainContext } from "@/hooks/useChainContext";
 import { features } from "@/data/features";
 import MintWithCrossmintButton from "@/components/ui/buttons/MintWithCrossmintButton/MintWithCrossmintButton";
 import BuyWithCrossmintButton from "@/components/ui/buttons/BuyWithCrossmintButton/BuyWithCrossmintButton";

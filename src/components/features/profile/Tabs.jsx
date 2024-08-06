@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import { features } from "@/data/features";
-import Transactions from "@/components/features/profile/Transactions";
+import Transactions from "@/components/features/profile/tabs/Transactions";
 import CreatedOffers from "@/components/features/profile/tabs/CreatedOffers";
 import OwnedTokens from "@/components/features/profile/tabs/OwnedTokens";
 import AuctionListedTokens from "@/components/features/profile/tabs/AuctionListedTokens";

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import * as Switch from "@radix-ui/react-switch";
 import { Web3Button, useContract, useContractWrite } from "@thirdweb-dev/react";
 import config from "@/config/config";
-import { useChainContext } from "@/contexts/hooks/useChainContext";
+import { useChainContext } from "@/hooks/useChainContext";
 import { toast } from "react-toastify";
 import { features } from "@/data/features";
 import { ThirdwebStorage } from "@thirdweb-dev/storage";

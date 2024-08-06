@@ -1,19 +1,18 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { useRouter } from "next/router";
 import Image from "next/image";
-import Sidebar from "@/components/marketplace/Sidebar";
-import "tippy.js/dist/tippy.css"; // optional
-import Meta from "@/Meta";
-import TokenCard from "@/components/cards/TokenCard";
+import Sidebar from "@/components/features/marketplace/Sidebar";
+import "tippy.js/dist/tippy.css";
+import Meta from "@/components/Meta";
+import TokenCard from "@/components/ui/cards/TokenCard";
 import { useAddress } from "@thirdweb-dev/react";
 import { fetchAllListedToken } from "@/utils/graphql/fetchAllListedToken";
-import { useChainContext } from "@/contexts/hooks/useChainContext";
+import { useChainContext } from "@/hooks/useChainContext";
 import config from "@/config/config";
-import TokenCardSkeleton from "@/components/skeleton/TokenCardSkeleton";
+import TokenCardSkeleton from "@/components/ui/skeletons/TokenCardSkeleton";
 
 const Marketplace = () => {
   const router = useRouter();
-
   const address = useAddress();
 
   const [listedAuctionToken, setListedAuctionToken] = useState(null);

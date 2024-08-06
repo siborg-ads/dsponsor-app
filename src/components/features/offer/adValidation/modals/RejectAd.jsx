@@ -2,9 +2,9 @@ import React, { useEffect, useState } from "react";
 import { Web3Button } from "@thirdweb-dev/react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { useChainContext } from "@/contexts/hooks/useChainContext";
+import { useChainContext } from "@/hooks/useChainContext";
 import { Spinner } from "@nextui-org/spinner";
-import TextArea from "@/components/ui/Textarea";
+import TextArea from "@/components/ui/TextArea";
 
 const RejectAd = ({
   selectedItems,

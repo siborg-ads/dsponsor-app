@@ -1,17 +1,24 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import "tippy.js/dist/tippy.css"; // optional
-import Meta from "@/Meta";
-import ProfileOverview from "@/components/user/ProfileOverview";
-import ProfileReferrals from "@/components/user/ProfileReferrals";
-import UserTabs from "@/components/user/UserTabs";
+import Meta from "@/components/Meta";
+import Overview from "@/components/features/profile/Overview";
+import Referrals from "@/components/features/profile/Referrals";
+import Tabs from "@/components/features/profile/Tabs";
 import { useAddress } from "@thirdweb-dev/react";
 import { fetchAllOffersByUserAddress } from "@/utils/graphql/fetchAllOffersByUserAddress";
-import { fetchAllTokenByOfferForAuser } from "@/utils/graphql/fetchAllTokenByOfferFromUser";
-import { useChainContext } from "@/contexts/hooks/useChainContext";
+import { fetchAllTokenByOfferFromUser } from "@/utils/graphql/fetchAllTokenByOfferFromUser";
+import { useChainContext } from "@/hooks/useChainContext";
 import config from "@/config/config";
 import { getAddress } from "ethers/lib/utils";
 import { features } from "@/data/features";
+
+const metadata = {
+  title: "Profile || SiBorg Ads - The Web3 Monetization Solution",
+  keyword:
+    "audience engagement, web3, creator economic, NFT, creator monetization, creator economy, creator token, creator coin, creator tokenization, creator economy",
+  desc: "Profile your ad spaces on SiBorg Ads."
+};
 
 const Profile = () => {
   const router = useRouter();
@@ -36,7 +43,7 @@ const Profile = () => {
   const [isLoadingOwnedTokens, setIsLoadingOwnedTokens] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  const userAddress = router.query.manage;
+  const userAddress = router.query.address;
   const chainId = currentChainObject?.chainId;
   const chainConfig = config[chainId];
 
@@ -268,7 +275,7 @@ const Profile = () => {
     setIsLoadingOwnedTokens(true);
 
     try {
-      const ownedAdProposalsArray = await fetchDataByUserAddress(fetchAllTokenByOfferForAuser);
+      const ownedAdProposalsArray = await fetchDataByUserAddress(fetchAllTokenByOfferFromUser);
 
       const mappedOwnedAdProposals = ownedAdProposalsArray.flatMap((element) =>
         element.nftContract.tokens.map((token) => ({
@@ -344,6 +351,7 @@ const Profile = () => {
         return "Active";
     }
   };
+
   const handleBidsStatusType = (status) => {
     switch (status) {
       case "CREATED":
@@ -356,40 +364,21 @@ const Profile = () => {
         return "HIGHEST BIDDER";
     }
   };
+
   useEffect(() => {
     setTimeout(() => {
       setCopied(false);
     }, 2000);
   }, [copied]);
-  const metadata = {
-    title: "Profile || SiBorg Ads - The Web3 Monetization Solution",
-    keyword:
-      "audience engagement, web3, creator economic, NFT, creator monetization, creator economy, creator token, creator coin, creator tokenization, creator economy",
-    desc: "Profile your ad spaces on SiBorg Ads."
-  };
+
   return (
     <>
       <Meta {...metadata} />
-      {/* <!-- Profile --> */}
 
       <div className=" " key="5">
-        {/* <!-- Banner --> */}
-        {/* 
-        <div className="relative " style={{ height: "8rem" }}>
-          <Image
-            width={1519}
-            height={150}
-            src="/images/gradient_creative.jpg"
-            alt="banner"
-            className="w-full h-full object-cover"
-          />
-        </div>
-        */}
-        {/* <!-- end banner --> */}
-
         <div className="max-w-5xl mx-auto" style={{ marginTop: "10rem" }}>
           <div className="flex flex-col gap-16 mx-4">
-            <ProfileOverview
+            <Overview
               userData={userData}
               ownedTokens={mappedOwnedAdProposals}
               isLoading={isLoading}
@@ -397,14 +386,10 @@ const Profile = () => {
             />
 
             {isUserConnected && (
-              <ProfileReferrals
-                userData={userData}
-                userAddr={address}
-                manageAddress={userAddress}
-              />
+              <Referrals userData={userData} userAddr={address} manageAddress={userAddress} />
             )}
 
-            <UserTabs
+            <Tabs
               mappedownedAdProposals={mappedOwnedAdProposals}
               createdData={createdData}
               listedAuctionToken={listedAuctionToken}

@@ -327,7 +327,7 @@ const TokenCard = ({
   }, [item, isToken]);
 
   const {
-    name = "offerName",
+    name = "OfferName",
     image = "/images/gradient_creative.jpg",
     valid_from = null,
     valid_to = null

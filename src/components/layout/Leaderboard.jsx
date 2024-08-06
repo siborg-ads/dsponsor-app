@@ -1,10 +1,17 @@
 import React, { useEffect, useState } from "react";
-import LeaderboardTable from "@/components/ui/tables/LeaderboardTable";
+import Tables from "@/components/features/leaderboard/Tables";
 import { fetchMarketplaceActivity } from "@/utils/graphql/fetchMarketplaceActivity";
 import processBidsAndCalculateRewards from "@/utils/bids/processBidsAndCalculateRewards";
-import LeaderBoardSkeleton from "@/components/skeleton/leaderBoardSkeleton";
-import Meta from "@/Meta";
+import LeaderboardSkeleton from "@/components/layout/skeletons/LeaderboardSkeleton";
+import Meta from "@/components/Meta";
 import config from "@/config/config";
+
+const metadata = {
+  title: `Leaderboard || SiBorg Ads - The Web3 Monetization Solution`,
+  keyword:
+    "audience engagement, web3, creator economic, NFT, creator monetization, creator economy, creator token, creator coin, creator tokenization, creator economy",
+  desc: "Explore the future of media monetization. SiBorg Ads decentralized platform offers tokenized advertising spaces for dynamic and sustainable media funding."
+};
 
 const Marketplace = () => {
   const [activity, setActivity] = useState([]);
@@ -29,12 +36,6 @@ const Marketplace = () => {
           mergedActivitiesArray.push(mergedActivities);
         }
 
-        // const mergedActivities = activities.flatMap(activity => activity.rankings.map(ranking => ({
-        //     ...ranking,
-        //     chainId: activity.chainId
-        // })));
-
-        // const processedActivity = processBidsAndCalculateRewards(mergedActivities);
         setActivity(mergedActivitiesArray);
         setLoading(false);
       })
@@ -45,23 +46,14 @@ const Marketplace = () => {
   }, []);
 
   if (loading) {
-    return (
-      <>
-        <LeaderBoardSkeleton />
-      </>
-    );
+    return <LeaderboardSkeleton />;
   }
-  const metadata = {
-    title: `Leaderboard || SiBorg Ads - The Web3 Monetization Solution`,
-    keyword:
-      "audience engagement, web3, creator economic, NFT, creator monetization, creator economy, creator token, creator coin, creator tokenization, creator economy",
-    desc: "Explore the future of media monetization. SiBorg Ads decentralized platform offers tokenized advertising spaces for dynamic and sustainable media funding."
-  };
+
   return (
     <>
       <Meta {...metadata} />
       <section className="relative py-24">
-        <LeaderboardTable activity={activity} />
+        <Tables activity={activity} />
       </section>
     </>
   );

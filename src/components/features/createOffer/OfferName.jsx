@@ -1,5 +1,5 @@
 import Input from "@/components/ui/Input";
-import TextArea from "@/components/ui/Textarea";
+import TextArea from "@/components/ui/TextArea";
 import { useEffect, useState } from "react";
 
 const OfferName = ({

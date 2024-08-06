@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { DateRangePicker } from "@nextui-org/date-picker";
 import Link from "next/link";
-import { useChainContext } from "@/contexts/hooks/useChainContext";
-import formatAndRound from "@/utils/formatAndRound";
+import { useChainContext } from "@/hooks/useChainContext";
+import formatAndRound from "@/utils/prices/formatAndRound";
 import { BigNumber } from "ethers";
 import { formatUnits } from "ethers/lib/utils";
 import { Loader2Icon } from "lucide-react";
@@ -32,12 +32,6 @@ const Bids = ({ marketplaceBids, isLoading }) => {
           tempBid.type = "bid";
         }
 
-        //const sdk = ThirdwebSDK.fromWallet("sepolia", {
-        //  secretKey: process.env.NEXT_PUBLIC_SEPOLIA_SECRET_KEY,
-        //});
-        //const contract = await sdk.getContract(bid?.currency)
-        //const tokenMetadata = await contract.erc20.getCurrencyMetadata();
-
         const tokenId = bid?.listing?.token?.tokenId;
         const offerId = bid?.listing?.token?.nftContract?.adOffers[0]?.id;
 
@@ -53,12 +47,7 @@ const Bids = ({ marketplaceBids, isLoading }) => {
         tempBid.tokenName =
           bid?.listing?.token?.nftContract?.adOffers[0]?.name +
           (bid?.listing?.token?.mint?.tokenData ? " #" + bid?.listing?.token?.mint?.tokenData : "");
-
-        // link of a token is made like this: /:chainId/offer/:offerId/:tokenId
         tempBid.tokenLink = `/${chainId}/offer/${offerId}/${tokenId}`;
-        //tempBid.currencyDecimals = tokenMetadata?.decimals;
-        //tempBid.currencySymbol = tokenMetadata?.symbol;
-        //tempBid.currencyName = tokenMetadata?.name;
 
         let currency;
         for (const key in currentChainObject?.smartContracts) {

@@ -5,7 +5,7 @@ import activityToTopPoints from "@/utils/tables/activityToTopPoints";
 import activityToTopRewarded from "@/utils/tables/activityToTopRewarded";
 import activityToHighestTransactions from "@/utils/tables/activityToHighestTransactions";
 import config from "@/config/config";
-import { useChainContext } from "@/contexts/hooks/useChainContext";
+import { useChainContext } from "@/hooks/useChainContext";
 import Cards from "@/components/features/leaderboard/Cards";
 import formatLongAddress from "@/utils/addresses/formatLongAddress";
 import { useAddress } from "@thirdweb-dev/react";
@@ -96,24 +96,6 @@ const Tables = ({ activity }) => {
     { header: "Total Boxes", render: (item) => item.totalPoints }
   ];
 
-  /*
-  const holderColumns = [
-    { header: "Rank", render: (item) => item.rank },
-    { header: "Total Amount Spent", render: (item) => `${item.totalSpent} USDC` },
-    {
-      header: "Wallet",
-      render: (item) => (
-        <Link href={`/profile/${item.address}`}>
-          <span className="text-primaryPink hover:text-jacarta-100">{item.addressDisplay}</span>
-        </Link>
-      )
-    },
-    { header: "Owned", render: (item) => item.balance }
-    //{ header: "Chain", render: () => config[chainId].network }
-    // { header: "DPoints", render: (item) => item.dPoints }
-  ];
-  */
-
   const rewardedColumns = [
     { header: "Rank", render: (item) => item.rank },
     { header: "Total Amount Earned", render: (item) => `${item.totalReceived} USDC` },
@@ -126,8 +108,6 @@ const Tables = ({ activity }) => {
       )
     },
     { header: "# of Outbids", render: (item) => item.refunds }
-    // { header: "Chain ", render: () => config[chainId].network},
-    //{ header: "Total Boxes", render: (item) => item.dPoints }
   ];
 
   const highestTransactionsColumns = [
@@ -177,16 +157,14 @@ const Tables = ({ activity }) => {
 
   const columns = {
     topPoints: pointColumns,
-    // topHolders: holderColumns,
     topRewarded: rewardedColumns,
     topSpenders: highestTransactionsColumns
   };
 
   const tabItem = [
     { id: 1, text: "Top Boxes", icon: "activity" },
-    // { id: 2, text: "Top Holders", icon: "owned" },
-    { id: 3, text: "Top Rewarded", icon: "activity" },
-    { id: 4, text: "Top Spenders", icon: "activity" }
+    { id: 2, text: "Top Rewarded", icon: "activity" },
+    { id: 3, text: "Top Spenders", icon: "activity" }
   ];
 
   return (

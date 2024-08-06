@@ -3,7 +3,7 @@ import { Web3Button, useAddress, useContractWrite } from "@thirdweb-dev/react";
 import ItemManageModal from "@/components/features/token/modals/CreateListing";
 import { toast } from "react-toastify";
 import { Spinner } from "@nextui-org/spinner";
-import { useChainContext } from "@/contexts/hooks/useChainContext";
+import { useChainContext } from "@/hooks/useChainContext";
 import { getAddress } from "ethers/lib/utils";
 
 const Manage = ({

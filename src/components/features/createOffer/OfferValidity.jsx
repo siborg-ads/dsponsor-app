@@ -2,11 +2,11 @@ import { useEffect, useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { useContract, useContractRead } from "@thirdweb-dev/react";
-import { features } from "@/../data/features";
+import { features } from "@/data/features";
 
-import ModalHelper from "@/Helper/modalHelper";
-import config from "@/../config/config";
-import Input from "../@/components/ui/Input";
+import ModalHelper from "@/components/ui/modals/Helper";
+import config from "@/config/config";
+import Input from "@/components/ui/Input";
 
 const ConditionalUSDPaymentText = ({ children, condition }) => {
   return condition ? <div>{children}</div> : "";

@@ -163,14 +163,12 @@ const OfferImageAndURL = ({
                     thumb: cn(
                       "w-6 h-6 border-2 shadow-lg",
                       "group-data-[hover=true]:border-primary",
-                      //selected
                       "group-data-[selected=true]:ml-6",
-                      // pressed
                       "group-data-[pressed=true]:w-7",
                       "group-data-[selected]:group-data-[pressed]:ml-4"
                     )
                   }}
-                ></Switch>
+                />
                 <span className="ml-1">File</span>
               </div>
               {isSelected && terms.length > 0 ? (

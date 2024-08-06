@@ -1,14 +1,14 @@
 "use client";
 
 import React, { useEffect, useState, useRef } from "react";
-import MainAuctions from "@/components/siborgHome/mainAuctions";
-import MarketplaceHome from "@/components/siborgHome/marketplaceHome";
-import Description from "@/components/siborgHome/description";
+import MainAuctions from "@/components/features/home/MainAuctions";
+import MarketplaceHome from "@/components/features/home/Marketplace";
+import Description from "@/components/features/home/Description";
 import { fetchAllListedTokenWithoutFilter } from "@/utils/graphql/fetchAllListedTokenWithoutFilter";
 import { formatUnits } from "ethers/lib/utils";
-import formatAndRound from "@/utils/formatAndRound";
-import Meta from "@/Meta";
-import { useChainContext } from "@/contexts/hooks/useChainContext";
+import formatAndRound from "@/utils/prices/formatAndRound";
+import Meta from "@/components/Meta";
+import { useChainContext } from "@/hooks/useChainContext";
 
 const Home = () => {
   const [chainIdFilter, setChainIdFilter] = useState(null);

@@ -1,9 +1,9 @@
 import React from "react";
 import Link from "next/link";
 
-import { useChainContext } from "@/contexts/hooks/useChainContext";
+import { useChainContext } from "@/hooks/useChainContext";
 import config from "@/config/config";
-import displayOrCheckKnownAddress from "@/utils/displayOrCheckKnownAddress";
+import displayOrCheckKnownAddress from "@/utils/addresses/displayOrCheckKnownAddress";
 
 const Details = ({
   chainId,

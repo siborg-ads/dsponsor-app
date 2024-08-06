@@ -1,4 +1,4 @@
-import Input from "../@/components/ui/Input.js";
+import Input from "@/components/ui/Input";
 
 const AdURL = ({ stepsRef, styles, setLink, link, currentSlide, numSteps }) => {
   const handleChange = (e) => {

@@ -1,4 +1,4 @@
-import knownAddresses from "@/data/known-addresses.js";
+import knownAddresses from "@/data/knownAddresses";
 
 /**
  * Checks if a given address is in the known addresses list and returns a formatted string

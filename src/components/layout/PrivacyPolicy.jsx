@@ -1,6 +1,6 @@
 import Image from "next/image";
 import React from "react";
-import privacyPolicyData from "@/data/privacy-policy";
+import privacyPolicyData from "@/data/privacyPolicy";
 
 export default function PrivacyPolicy() {
   return (

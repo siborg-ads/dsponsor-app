@@ -1,32 +1,32 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";
-import Meta from "@/Meta";
+import Meta from "@/components/Meta";
 import { ethers } from "ethers";
 import Image from "next/image";
 import { useContract, useContractWrite, useContractRead, useAddress } from "@thirdweb-dev/react";
 import Tippy from "@tippyjs/react";
-import OfferSkeleton from "@/components/skeleton/offerSkeleton";
+import OfferSkeleton from "@/components/ui/skeletons/OfferSkeleton";
 import { fetchOfferPageContainer } from "@/utils/graphql/fetchOfferPageContainer";
-import Integration from "@/components/offer-section/integration";
+import Integration from "@/components/features/offer/offerManagement/Integration";
 import { ThirdwebStorage } from "@thirdweb-dev/storage";
 import * as Accordion from "@radix-ui/react-accordion";
 import { ChevronDownIcon } from "@heroicons/react/24/solid";
 import { ExclamationCircleIcon } from "@heroicons/react/24/solid";
-import ResponsiveTooltip from "@/components/informations/infoIcon";
-import Form from "@/components/collections-wide/sidebar/collections/Form";
+import ResponsiveTooltip from "@/components/ui/ResponsiveTooltip";
+import Form from "@/components/features/offer/search/SearchForm";
 import "tippy.js/dist/tippy.css";
-import Validation from "@/components/offer-section/validation";
-import { ItemsTabs } from "@/components/component";
+import AdValidation from "@/components/features/offer/AdValidation";
+import Details from "@/components/features/token/Details";
 import config from "@/config/config";
-import { useSwitchChainContext } from "@/contexts/hooks/useSwitchChainContext";
+import { useSwitchChainContext } from "@/hooks/useSwitchChainContext";
 import { features } from "@/data/features";
-import UpdateOffer from "@/components/offer-section/updateOffer";
-import ChangeMintPrice from "@/components/offer-section/changeMintPrice";
+import UpdateOffer from "@/components/features/offer/offerManagement/UpdateOffer";
+import ChangeMintPrice from "@/components/features/offer/offerManagement/ChangeMintPrice";
 import { Tabs, Tab, TabList, TabPanel } from "react-tabs";
 import { BadgePercentIcon, BlocksIcon, RefreshCwIcon } from "lucide-react";
-import Disable from "@/components/disable/disable";
-import TokenCard from "@/components/cards/offerItem";
+import Disable from "@/components/ui/misc/Disable";
+import TokenCard from "@/components/ui/cards/TokenCard";
 import { addLineBreaks } from "@/utils/misc/addLineBreaks";
 
 const Offer = () => {
@@ -677,7 +677,7 @@ const Offer = () => {
                 </Accordion.Trigger>
               </Accordion.Header>
               <Accordion.Content>
-                <Validation
+                <AdValidation
                   chainId={chainId}
                   setSuccessFullRefuseModal={setSuccessFullRefuseModal}
                   setSelectedItems={setSelectedItems}
@@ -818,7 +818,7 @@ const Offer = () => {
           </Accordion.Header>
 
           <Accordion.Content className="mb-8">
-            <ItemsTabs
+            <Details
               contractAddress={offerData?.nftContract?.id}
               offerId={offerId}
               initialCreator={offerData?.initialCreator}

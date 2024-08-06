@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from "react";
-import TokenCardSkeleton from "@/components/ui/skeleton/TokenCardSkeleton";
+import TokenCardSkeleton from "@/components/ui/skeletons/TokenCardSkeleton";
 import TokenCard from "@/components/ui/cards/TokenCard";
 import { InformationCircleIcon } from "@heroicons/react/20/solid";
 import { Popover, PopoverTrigger, PopoverContent } from "@nextui-org/popover";

@@ -7,7 +7,7 @@ import Link from "next/link";
 import config from "@/config/config";
 import { computeBidAmounts } from "@/utils/computeBidAmounts";
 import { formatUnits, parseUnits } from "ethers/lib/utils";
-import formatAndRoundPrice from "@/utils/formatAndRound";
+import formatAndRoundPrice from "@/utils/prices/formatAndRound";
 import { getCookie } from "cookies-next";
 import BidWithCrossmintButton from "@/components/ui/buttons/BidWithCrossmintButton/BidWithCrossmintButton";
 import Tippy from "@tippyjs/react";
@@ -74,11 +74,6 @@ const BidsModal = ({
 
   const chainConfig = config[chainId];
   const chainWETH = chainConfig?.smartContracts.WETH.address.toLowerCase();
-
-  // If currency is WETH, we can pay with Crossmint
-  // const canPayWithCrossmint =
-  //   marketplaceListings[0]?.currency.toLowerCase() === chainWETH &&
-  //   features.canPayWithCrossmintEnabled;
 
   let frontURL;
   if (typeof window !== "undefined") {
@@ -193,14 +188,7 @@ const BidsModal = ({
         protocolFeeBps
       );
 
-      //const newRefundBonusAmountAdded = BigInt(newRefundBonusAmount) + BigInt(newAmount);
-      // const newRefundBonusFormatted = formatUnits(newRefundBonusAmount, currencyTokenDecimals);
       const newProfitAmountFormatted = formatUnits(newProfitAmount, currencyTokenDecimals);
-
-      //const newRefundBonusAddedFormatted = formatUnits(
-      //  newRefundBonusAmountAdded,
-      //  currencyTokenDecimals
-      //);
 
       const nextReservePricePerTokenFormatted = formatUnits(
         nextReservePricePerToken,

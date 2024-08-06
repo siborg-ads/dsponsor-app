@@ -5,7 +5,7 @@ import { Divider } from "@nextui-org/react";
 import ResponsiveTooltip from "@/components/ui/ResponsiveTooltip";
 import { InformationCircleIcon } from "@heroicons/react/24/solid";
 import { ClipboardIcon } from "@heroicons/react/24/solid";
-import handleCopy from "@/utils/handleCopy";
+import handleCopy from "@/utils/misc/handleCopy";
 import Tippy from "@tippyjs/react";
 import { ChromePicker } from "react-color";
 import Input from "@/components/ui/Input";

@@ -1,6 +1,6 @@
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
-import { useChainContext } from "@/contexts/hooks/useChainContext";
+import { useChainContext } from "@/hooks/useChainContext";
 import { features } from "@/data/features";
 //import { updateTrendingCategoryItemData } from "@/redux/counterSlice";
 import ConditionalDisplayedComponent from "@/components/ui/misc/ConditionalDisplayedComponent";

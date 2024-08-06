@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { useAddress, useChainId } from "@thirdweb-dev/react";
-import ChainContext from "@/contexts/ChainContext";
+import ChainContext from "@/contexts/chain";
 import config from "../config/config";
 
 const ChainProvider = ({ children }) => {

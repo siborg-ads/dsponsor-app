@@ -1,5 +1,5 @@
-import MarketplaceLeaderboardContainer from "@/containers/marketplace/MarketplaceLeaderboard/MarketplaceLeaderboardContainer";
+import Leaderboard from "@/components/layout/Leaderboard";
 
-export default function MarketplaceLeaderboard() {
-  return <MarketplaceLeaderboardContainer />;
+export default function LeaderboardPage() {
+  return <Leaderboard />;
 }

@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import Logo from "@/../public/images/siborg-ads.png";
+import Logo from "@/../public/images/siborg-ads/siborg-ads.png";
 import { useRouter } from "next/router";
 import { isChildrenPageActive } from "@/utils/navigation/dynamicNavigation";
 import { useEffect, useState } from "react";
@@ -18,9 +18,7 @@ export default function Header() {
   const searchParams = useSearchParams();
   const tab = searchParams.get("tab");
   const address = useAddress();
-  // const { selectedChain, setSelectedChain } = useContext(SwitchChainProvider);
 
-  // window resize
   useEffect(() => {
     window.addEventListener("resize", () => {
       if (window.innerWidth >= 1024) {
@@ -32,9 +30,6 @@ export default function Header() {
 
   const chainId = currentChainObject?.chainId;
   const route = useRouter();
-  /* -------------------------------------------------------------------------- */
-  /*                            daynamic navigations                            */
-  /* -------------------------------------------------------------------------- */
 
   return (
     <>

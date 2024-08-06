@@ -1,17 +1,17 @@
 import React, { useEffect, useState, useRef } from "react";
-import Meta from "@/Meta";
+import Meta from "@/components/Meta";
 import Image from "next/image";
 import "react-datepicker/dist/react-datepicker.css";
 import { useAddress, useContract, useContractWrite, useStorageUpload } from "@thirdweb-dev/react";
-import styles from "@/styles/createPage/style.module.scss";
-import AdSubmission from "@/components/modal/AdSubmission";
-import Step1Create from "@/components/CarouselForm/PageCreate/Step_1_Create";
-import Step2Create from "@/components/CarouselForm/PageCreate/Step_2_Create";
-import Step3Create from "@/components/CarouselForm/PageCreate/Step_3_Create";
-import Step4Create from "@/components/CarouselForm/PageCreate/Step_4_Create";
+import styles from "@/styles/style.module.scss";
+import AdSubmission from "@/components/features/token/AdSubmission";
+import OfferType from "@/components/features/createOffer/OfferType";
+import OfferName from "@/components/features/createOffer/OfferName";
+import OfferImageAndURL from "@/components/features/createOffer/OfferImageAndURL";
+import OfferValidity from "@/components/features/createOffer/OfferValidity";
 import config from "@/config/config";
-import CarouselForm from "@/components/CarouselForm/CarouselForm";
-import { useSwitchChainContext } from "@/contexts/hooks/useSwitchChainContext";
+import CarouselForm from "@/components/ui/misc/CarouselForm";
+import { useSwitchChainContext } from "@/hooks/useSwitchChainContext";
 import { useRouter } from "next/router";
 
 const CreateOffer = () => {
@@ -273,13 +273,12 @@ const CreateOffer = () => {
         external_link: link,
         collaborators: [userMinterAddress]
       });
-      // upload json to IPFS
+
       const jsonMetadataURL = await upload({
         data: [jsonMetadata],
         options: { uploadWithGatewayUrl: true, uploadWithoutDirectory: true }
       });
 
-      // upload json to IPFS
       const jsonContractURIURL = await upload({
         data: [jsonContractURI],
         options: { uploadWithGatewayUrl: true, uploadWithoutDirectory: true }
@@ -403,7 +402,7 @@ const CreateOffer = () => {
           currentSlide={currentSlide}
           setCurrentSlide={setCurrentSlide}
         >
-          <Step1Create
+          <OfferType
             stepsRef={stepsRef}
             styles={styles}
             selectedTypeParameter={selectedTypeParameter}
@@ -419,7 +418,8 @@ const CreateOffer = () => {
             numSteps={numSteps}
             currentSlide={currentSlide}
           />
-          <Step2Create
+
+          <OfferName
             stepsRef={stepsRef}
             styles={styles}
             setName={setName}
@@ -430,7 +430,7 @@ const CreateOffer = () => {
             currentSlide={currentSlide}
           />
 
-          <Step3Create
+          <OfferImageAndURL
             stepsRef={stepsRef}
             styles={styles}
             setLink={setLink}
@@ -446,7 +446,7 @@ const CreateOffer = () => {
             currentSlide={currentSlide}
           />
 
-          <Step4Create
+          <OfferValidity
             chainId={chainId}
             stepsRef={stepsRef}
             styles={styles}

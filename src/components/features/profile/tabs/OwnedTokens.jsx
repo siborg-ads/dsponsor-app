@@ -1,13 +1,13 @@
 import { useContract, useContractWrite, useStorageUpload } from "@thirdweb-dev/react";
 import Image from "next/image";
 import React, { useEffect, useRef, useState } from "react";
-import styles from "@/styles/create/style.module.scss";
+import styles from "@/styles/style.module.scss";
 import TokenCard from "@/components/ui/cards/TokenCard";
 import AdBriefing from "@/components/features/token/createAd/AdBriefing";
 import AdURL from "@/components/features/token/createAd/AdURL";
 import AdImage from "@/components/features/token/createAd/AdImage";
 import CarouselForm from "@/components/ui/misc/CarouselForm";
-import { useChainContext } from "@/contexts/hooks/useChainContext";
+import { useChainContext } from "@/hooks/useChainContext";
 import AdSubmission from "@/components/features/token/AdSubmission";
 import MainButton from "@/components/ui/buttons/MainButton";
 import { features } from "@/data/features";

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import "tippy.js/dist/tippy.css";
 import { features } from "@/data/features";
 import Link from "next/link";
-import { useChainContext } from "@/contexts/hooks/useChainContext";
+import { useChainContext } from "@/hooks/useChainContext";
 import { getAddress } from "ethers/lib/utils";
 import { DateRangePicker } from "@nextui-org/date-picker";
 

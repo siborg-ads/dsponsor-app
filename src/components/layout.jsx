@@ -1,7 +1,6 @@
 "use client";
 
-import Footer from "./footer";
-//import WalletModal from "./modal/wallet_modal";
+import Footer from "@/components/Footer";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -13,7 +12,6 @@ export default function Layout({ children }) {
   return (
     <>
       <Header />
- 
 
       <>{children}</>
 

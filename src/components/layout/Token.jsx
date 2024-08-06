@@ -15,42 +15,41 @@ import { useRouter } from "next/router";
 import { Spinner } from "@nextui-org/react";
 import React, { useEffect, useRef, useState } from "react";
 import "tippy.js/dist/tippy.css";
-import Meta from "@/Meta";
-import AdSubmission from "@/components/modal/AdSubmission";
-import AdBriefing from "@/components/CarouselForm/PageMint/Step_1_Mint";
-import AdURL from "@/components/CarouselForm/PageMint/Step_2_Mint";
-import AdImage from "@/components/CarouselForm/PageMint/Step_3_Mint";
-import ModalHelper from "@/components/Helper/modalHelper";
-import CarouselForm from "@/components/CarouselForm/CarouselForm";
-import styles from "@/styles/createPage/style.module.scss";
-import Timer from "@/components/item/Timer";
+import Meta from "@/components/Meta";
+import AdSubmission from "@/components/features/token/AdSubmission";
+import AdBriefing from "@/components/features/token/createAd/AdBriefing";
+import AdURL from "@/components/features/token/createAd/AdURL";
+import AdImage from "@/components/features/token/createAd/AdImage";
+import ModalHelper from "@/components/ui/modals/Helper";
+import CarouselForm from "@/components/ui/misc/CarouselForm";
+import styles from "@/styles/style.module.scss";
+import Timer from "@/components/ui/timer/Timer";
 import { fetchTokenPageContainer } from "@/utils/graphql/fetchTokenPageContainer";
-import ItemLastestSales from "@/components/tables/ItemLastestSales";
+import LatestSales from "@/components/features/token/LatestSales";
 import { getCookie } from "cookies-next";
-import { ItemsTabs } from "@/components/component";
-import BuyModal from "@/components/features/token/modals/BuyModal.jsx";
+import Details from "@/components/features/token/Details";
+import BuyModal from "@/components/features/token/modals/BuyModal";
 import { toast } from "react-toastify";
-import OfferSkeleton from "@/components/skeleton/offerSkeleton.jsx";
-import Validation from "@/components/offer-section/validation.jsx";
-import ItemBids from "@/components/item/ItemBids.jsx";
-import ItemManage from "@/components/item/ItemManage.jsx";
-import { useSwitchChainContext } from "@/contexts/hooks/useSwitchChainContext.js";
-import config from "@/config/config.js";
+import OfferSkeleton from "@/components/ui/skeletons/OfferSkeleton";
+import AdValidation from "@/components/features/offer/AdValidation";
+import LatestBids from "@/components/features/token/LatestBids";
+import Manage from "@/components/features/token/widgets/Manage";
+import { useSwitchChainContext } from "@/hooks/useSwitchChainContext";
+import config from "@/config/config";
 import stringToUint256 from "@/utils/tokens/stringToUnit256.js";
 import { formatUnits, getAddress, parseUnits } from "ethers/lib/utils";
 import "react-toastify/dist/ReactToastify.css";
-import ItemLastBids from "@/components/tables/ItemLastBids";
-import { features } from "@/data/features.js";
-import { useChainContext } from "@/contexts/hooks/useChainContext.js";
+import { features } from "@/data/features";
+import { useChainContext } from "@/hooks/useChainContext";
 import * as Accordion from "@radix-ui/react-accordion";
 import { ChevronDownIcon, ExclamationCircleIcon } from "@heroicons/react/24/solid";
-import ResponsiveTooltip from "@/components/informations/infoIcon.jsx";
-import Disable from "@/components/disable/disable.jsx";
-import Input from "@/components/ui/Input.jsx";
-import { useSearchParams } from "next/navigation.js";
-import { addLineBreaks } from "@/utils/misc/addLineBreaks.js";
-import formatAndRoundPrice from "@/utils/formatAndRound.js";
-import TransactionFailedModal from "@/components/modal/failModal.jsx";
+import ResponsiveTooltip from "@/components/ui/ResponsiveTooltip";
+import Disable from "@/components/ui/misc/Disable";
+import Input from "@/components/ui/Input";
+import { useSearchParams } from "next/navigation";
+import { addLineBreaks } from "@/utils/misc/addLineBreaks";
+import formatAndRoundPrice from "@/utils/prices/formatAndRound";
+import CrossmintFail from "@/components/features/token/modals/CrossmintFail";
 
 const Token = () => {
   const router = useRouter();
@@ -2167,7 +2166,7 @@ const Token = () => {
                       </div>
                     )}
 
-                  <ItemManage
+                  <Manage
                     successFullListing={successFullListing}
                     setSuccessFullListing={setSuccessFullListing}
                     dsponsorNFTContract={DsponsorNFTContract}
@@ -2186,7 +2185,7 @@ const Token = () => {
                     firstSelectedListing.endTime > now &&
                     firstSelectedListing?.status === "CREATED") ||
                     successFullBid) && (
-                    <ItemBids
+                    <LatestBids
                       setAmountToApprove={setAmountToApprove}
                       fetchOffers={fetchOffers}
                       bidsAmount={bidsAmount}
@@ -2362,7 +2361,7 @@ const Token = () => {
                 </Accordion.Header>
 
                 <Accordion.Content>
-                  <Validation
+                  <AdValidation
                     offer={offerData}
                     offerId={offerId}
                     isOwner={isOfferOwner}
@@ -2410,7 +2409,7 @@ const Token = () => {
             </Accordion.Header>
 
             <Accordion.Content className="mb-4">
-              <ItemLastestSales sales={sales} />
+              <LatestSales sales={sales} />
             </Accordion.Content>
           </div>
         </Accordion.Item>
@@ -2438,7 +2437,7 @@ const Token = () => {
               </Accordion.Header>
 
               <Accordion.Content className="mb-4">
-                <ItemLastBids bids={bids} />
+                <LatestBids bids={bids} />
               </Accordion.Content>
             </div>
           </Accordion.Item>
@@ -2460,7 +2459,7 @@ const Token = () => {
           </Accordion.Header>
 
           <Accordion.Content className="mb-12">
-            <ItemsTabs
+            <Details
               chainId={chainId}
               contractAddress={offerData?.nftContract?.id}
               offerId={offerId}
@@ -2549,7 +2548,7 @@ const Token = () => {
         </div>
       )}
       {failedCrossmintTransaction && (
-        <TransactionFailedModal setCrossmintTransactionFailed={setFailedCrossmintTransaction} />
+        <CrossmintFail setCrossmintTransactionFailed={setFailedCrossmintTransaction} />
       )}
     </Accordion.Root>
   );

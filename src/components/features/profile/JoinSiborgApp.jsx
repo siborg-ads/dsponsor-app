@@ -6,7 +6,7 @@ import { ClipboardIcon } from "@heroicons/react/20/solid";
 import Link from "next/link";
 import { getAddress } from "ethers/lib/utils";
 import Input from "@/components/ui/Input";
-import { useChainContext } from "@/contexts/hooks/useChainContext";
+import { useChainContext } from "@/hooks/useChainContext";
 
 const JoinSiBorgApp = ({ manageAddress }) => {
   const [code, setCode] = useState(null);

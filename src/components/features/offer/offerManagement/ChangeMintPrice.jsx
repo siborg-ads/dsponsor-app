@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Web3Button, useContract, useContractWrite } from "@thirdweb-dev/react";
 import config from "@/config/config";
-import { useChainContext } from "@/contexts/hooks/useChainContext";
+import { useChainContext } from "@/hooks/useChainContext";
 import { toast } from "react-toastify";
 import { parseUnits, formatUnits } from "ethers/lib/utils";
 import * as Switch from "@radix-ui/react-switch";
