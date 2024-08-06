@@ -34,7 +34,7 @@ import { formatUnits } from "ethers/lib/utils";
  * @constructor
  */
 export default function BuyWithCrossmintButton(props = {}) {
-  const { offer, token, user, referrer, actions } = props;
+  const { offer, token, user, referrer } = props;
 
   const price = ethers.utils.parseUnits(props.token.buyoutPricePerToken, "wei");
   if (!token.fee) {
@@ -99,45 +99,26 @@ export default function BuyWithCrossmintButton(props = {}) {
     }
   };
 
-  if (user.email && user.email) {
-    buttonProps.emailTo = user.email;
-  }
-
   if (props?.successCallbackURL) {
     buttonProps.successCallbackURL = props.successCallbackURL;
   }
 
-  if (props?.errorCallbackURL) {
-    buttonProps.errorCallbackURL = props.errorCallbackURL;
+  if (props?.failureCallbackURL) {
+    buttonProps.failureCallbackURL = props.failureCallbackURL;
   }
 
   return (
-    <>
-      <CrossmintPayButton
-        disabled={props?.isDisabled}
-        className={(props?.isDisabled && "opacity-50 cursor-not-allowed") || ""}
-        getButtonText={(connecting, paymentMethod) => {
-          if (actions?.processing && connecting) {
-            actions.processing();
-          }
-          return connecting
-            ? props?.isLoadingRender ?? "Connecting..."
-            : props?.isActiveRender ?? `Buy NOW with ${paymentMethod} for ${totalPriceFormatted}`;
-        }}
-        {...buttonProps}
-        onEvent={(event) => {
-          switch (event.type) {
-            case "payment:process.succeeded":
-              actions?.success?.(event);
-              break;
-            case "payment:process.failed":
-              actions?.error?.(event);
-              break;
-            default:
-              break;
-          }
-        }}
-      ></CrossmintPayButton>
-    </>
+    <CrossmintPayButton
+      disabled={props?.isDisabled}
+      className={(props?.isDisabled && "opacity-30 cursor-not-allowed") || ""}
+      getButtonText={() => {
+        if (props?.isBid) {
+          return `Bid NOW with Credit Card`;
+        } else {
+          return `Buy NOW with Credit Card`;
+        }
+      }}
+      {...buttonProps}
+    />
   );
 }

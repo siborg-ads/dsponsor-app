@@ -29,6 +29,7 @@ import { Tabs, Tab, TabList, TabPanel } from "react-tabs";
 import { BadgePercentIcon, BlocksIcon, RefreshCwIcon } from "lucide-react";
 import Disable from "../../components/disable/disable";
 import OfferItem from "../../components/cards/offerItem";
+import { addLineBreaks } from "../../utils/addLineBreaks";
 
 const OfferPageContainer = () => {
   const router = useRouter();
@@ -41,9 +42,10 @@ const OfferPageContainer = () => {
   const [royalties, setRoyalties] = useState(null);
   const [currency, setCurrency] = useState(null);
   const [selectedItems, setSelectedItems] = useState([]);
-  const [price, setPrice] = useState(null);
+  const [, setPrice] = useState(null);
   const [imageModal, setImageModal] = useState(false);
   const [showEntireDescription, setShowEntireDescription] = useState(false);
+  const [pendingProposalData, setPendingProposalData] = useState([]);
   const [isOwner, setIsOwner] = useState(false);
   const address = useAddress();
   const { contract: DsponsorAdminContract } = useContract(
@@ -66,7 +68,7 @@ const OfferPageContainer = () => {
   const [, setCanChangeMintPrice] = useState(false);
   const [offerManagementActiveTab, setOfferManagementActiveTab] = useState("integration");
   const [imageUrl, setImageUrl] = useState(null);
-  const [accordionActiveTab, setAccordionActiveTab] = useState("details");
+  const [accordionActiveTab, setAccordionActiveTab] = useState([]);
 
   const { data: bps } = useContractRead(DsponsorAdminContract, "feeBps");
   const maxBps = 10000;
@@ -339,8 +341,7 @@ const OfferPageContainer = () => {
 
   return (
     <Accordion.Root
-      type="single"
-      collapsible
+      type="multiple"
       value={accordionActiveTab}
       onValueChange={setAccordionActiveTab}
     >
@@ -446,9 +447,9 @@ const OfferPageContainer = () => {
               <div className="mb-8 flex items-center flex-wrap gap-2 space-x-4 whitespace-nowrap">
                 {offerData?.nftContract?.allowList && (
                   <span className="dark:text-jacarta-100 text-jacarta-100 text-sm">
-                    {offerData.nftContract.maxSupply -
-                      offerData.nftContract.tokens.filter((item) => item.mint != null).length}
-                    /{offerData.nftContract.maxSupply} available
+                    {offerData?.nftContract?.maxSupply -
+                      offerData?.nftContract?.tokens?.filter((item) => item.mint != null)?.length}
+                    /{offerData?.nftContract?.maxSupply} available
                   </span>
                 )}
                 <span className="text-jacarta-100 block text-sm dark:text-white">
@@ -458,7 +459,7 @@ const OfferPageContainer = () => {
 
               {showEntireDescription ? (
                 <p className="dark:text-jacarta-100 mb-10">
-                  {description}{" "}
+                  {addLineBreaks(description)}{" "}
                   {description?.length > 1000 && (
                     <button
                       onClick={() => setShowEntireDescription(false)}
@@ -471,7 +472,9 @@ const OfferPageContainer = () => {
               ) : (
                 <div>
                   <p className="dark:text-jacarta-100 mb-10">
-                    {description?.length > 1000 ? description?.slice(0, 1000) + "..." : description}{" "}
+                    {description?.length > 1000
+                      ? addLineBreaks(description?.slice(0, 1000) + "...")
+                      : addLineBreaks(description)}{" "}
                     {description?.length > 1000 && (
                       <button
                         onClick={() => setShowEntireDescription(true)}
@@ -506,7 +509,7 @@ const OfferPageContainer = () => {
       </section>
 
       <Accordion.Item value="search">
-        {!offerData.nftContract.allowList && (
+        {!offerData?.nftContract?.allowList && (
           <div className="container flex flex-col justify-center">
             <Accordion.Header className="w-full">
               <Accordion.Trigger
@@ -698,6 +701,8 @@ const OfferPageContainer = () => {
                   isMedia={isMedia}
                   isSponsor={isOwner}
                   itemTokenId={offerData?.nftContract?.id}
+                  pendingProposalData={pendingProposalData}
+                  setPendingProposalData={setPendingProposalData}
                 />
               </Accordion.Content>
             </>
@@ -721,7 +726,7 @@ const OfferPageContainer = () => {
               </Accordion.Trigger>
             </Accordion.Header>
 
-            <Accordion.Content>
+            <Accordion.Content className="mb-8">
               <Tabs className="tabs">
                 <TabList className="nav nav-tabs hide-scrollbar mb-12 flex items-center justify-start overflow-x-auto overflow-y-hidden border-b border-jacarta-100 pb-px dark:border-jacarta-800 md:justify-center">
                   <Tab
@@ -816,7 +821,7 @@ const OfferPageContainer = () => {
 
           <Accordion.Content className="mb-8">
             <ItemsTabs
-              contractAddress={offerData?.nftContract.id}
+              contractAddress={offerData?.nftContract?.id}
               offerId={offerId}
               initialCreator={offerData?.initialCreator}
               isToken={false}

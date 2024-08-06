@@ -8,7 +8,7 @@ import {
   useStorageUpload
 } from "@thirdweb-dev/react";
 import { ThirdwebStorage } from "@thirdweb-dev/storage";
-import { BigNumber, ethers } from "ethers";
+import { ethers } from "ethers";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -54,6 +54,9 @@ import InfoIcon from "../../components/informations/infoIcon.jsx";
 import Disable from "../../components/disable/disable.jsx";
 import Input from "../../components/ui/input";
 import { useSearchParams } from "next/navigation.js";
+import { addLineBreaks } from "../../utils/addLineBreaks.js";
+import formatAndRoundPrice from "../../utils/formatAndRound.js";
+import TransactionFailedModal from "../../components/modal/failModal.jsx";
 
 const TokenPageContainer = () => {
   const router = useRouter();
@@ -66,6 +69,7 @@ const TokenPageContainer = () => {
   const [isLoadingAirdropButton, setIsLoadingAirdropButton] = useState(false);
   const [tokenIdString, setTokenIdString] = useState(null);
   const [offerData, setOfferData] = useState(null);
+  const [showBidsModal, setShowBidsModal] = useState(false);
   const address = useAddress();
   const [isOwner, setIsOwner] = useState(false);
   const [firstSelectedListing, setFirstSelectedListing] = useState({});
@@ -75,6 +79,7 @@ const TokenPageContainer = () => {
   const [link, setLink] = useState("");
   const [amountToApprove, setAmountToApprove] = useState(null);
   const [buyTokenEtherPrice, setBuyTokenEtherPrice] = useState(null);
+  const [tokenEtherPriceRelayer, setTokenEtherPriceRelayer] = useState(null);
   const [royalties, setRoyalties] = useState(null);
   const [errors, setErrors] = useState({});
   const [marketplaceListings, setMarketplaceListings] = useState([]);
@@ -108,6 +113,7 @@ const TokenPageContainer = () => {
   const [, setTokenBigIntPrice] = useState(null);
   const [successFullBid, setSuccessFullBid] = useState(false);
   const [isTokenInAuction, setIsTokenInAuction] = useState(false);
+  const [pendingProposalData, setPendingProposalData] = useState([]);
   const [successFullListing, setSuccessFullListing] = useState(false);
   const [buyoutPriceAmount] = useState(null);
   const [royaltiesFeesAmount, setRoyaltiesFeesAmount] = useState(null);
@@ -122,6 +128,9 @@ const TokenPageContainer = () => {
   const [itemProposals, setItemProposals] = useState(null);
   const [mediaShouldValidateAnAd, setMediaShouldValidateAnAd] = useState(false);
   const [airdropContainer, setAirdropContainer] = useState(true);
+  const [tokenEtherPrice, setTokenEtherPrice] = useState(null);
+  const [amountInEthWithSlippage, setAmountInEthWithSlippage] = useState(null);
+  const [displayedPrice, setDisplayedPrice] = useState(null);
   const [isOfferOwner, setIsOfferOwner] = useState(false);
   const [
     sponsorHasAtLeastOneRejectedProposalAndNoPending,
@@ -133,7 +142,7 @@ const TokenPageContainer = () => {
   const [minted, setMinted] = useState(false);
   const [conditions, setConditions] = useState({});
   const [imageUrl, setImageUrl] = useState(null);
-  const [accordionActiveTab, setAccordionActiveTab] = useState(null);
+  const [accordionActiveTab, setAccordionActiveTab] = useState([]);
   const [listingCreated, setListingCreated] = useState(false);
   const [creatorAmount, setCreatorAmount] = useState(null);
   const [protocolFeeAmount, setProtocolFeeAmount] = useState(null);
@@ -144,8 +153,41 @@ const TokenPageContainer = () => {
   const [airdropAddress, setAirdropAddress] = useState(undefined);
   const [nftContractAddress, setNftContractAddress] = useState(null);
   const [showEntireDescription, setShowEntireDescription] = useState(false);
+  const [failedCrossmintTransaction, setFailedCrossmintTransaction] = useState(false);
 
   const searchParams = useSearchParams();
+  const encodedPayload = searchParams.get("p");
+  const chainConfig = config[chainId];
+
+  const mintCollectionId = chainConfig?.features.crossmint.config?.mintCollectionId;
+  const buyCollectionId = chainConfig?.features.crossmint.config?.buyCollectionId;
+  const bidCollectionId = chainConfig?.features.crossmint.config?.bidCollectionId;
+
+  useEffect(() => {
+    if (encodedPayload) {
+      const decodedPayload = decodeURIComponent(encodedPayload);
+      const parsedPayload = JSON.parse(decodedPayload);
+
+      if (parsedPayload[0]?.status === "success") {
+        const collectionId = parsedPayload[0]?.collectionId;
+
+        if (collectionId === mintCollectionId) {
+          setBuyModal(true);
+          setSuccessFullUpload(true);
+          setIsOwner(true);
+          setMinted(true);
+        } else if (collectionId === buyCollectionId) {
+          setBuyModal(true);
+          setSuccessFullUpload(true);
+        } else if (collectionId === bidCollectionId) {
+          setShowBidsModal(true);
+          setSuccessFullBid(true);
+        }
+      } else if (parsedPayload[0]?.status === "failure") {
+        setFailedCrossmintTransaction(true);
+      }
+    }
+  }, [bidCollectionId, buyCollectionId, mintCollectionId, encodedPayload]);
 
   let description = "description not found";
   let id = "1";
@@ -193,34 +235,33 @@ const TokenPageContainer = () => {
 
   const fetchOffersRef = useRef(false);
 
+  const fetchOffers = React.useCallback(async () => {
+    if (fetchOffersRef.current) return;
+    fetchOffersRef.current = true;
+
+    try {
+      const offers = await fetchTokenPageContainer(chainId, offerId, tokenId);
+      setOffers(offers);
+
+      // check if we have the values
+      if (!offerId) return;
+      if (!offers) return;
+
+      // set offer data for the current offer
+      const currentOffer = offers?.find((offer) => Number(offer?.id) === Number(offerId));
+      setOfferData(currentOffer);
+    } catch (error) {
+      console.error("Error fetching offers:", error);
+    } finally {
+      fetchOffersRef.current = false;
+    }
+  }, [chainId, offerId, tokenId]);
+
   useEffect(() => {
-    const fetchOffers = async () => {
-      if (fetchOffersRef.current) return;
-      fetchOffersRef.current = true;
-
-      try {
-        const offers = await fetchTokenPageContainer(chainId, offerId, tokenId);
-        console.log("offer", offers);
-        setOffers(offers);
-
-        // check if we have the values
-        if (!offerId) return;
-        if (!offers) return;
-
-        // set offer data for the current offer
-        const currentOffer = offers?.find((offer) => Number(offer?.id) === Number(offerId));
-        setOfferData(currentOffer);
-      } catch (error) {
-        console.error("Error fetching offers:", error);
-      } finally {
-        fetchOffersRef.current = false;
-      }
-    };
-
     if (chainId && offerId) {
       fetchOffers();
     }
-  }, [address, chainId, offerId, tokenId]);
+  }, [address, chainId, fetchOffers, offerId, tokenId]);
 
   useEffect(() => {
     if (offerData && address) {
@@ -370,36 +411,76 @@ const TokenPageContainer = () => {
   // referralAddress is the address of the ?_rid= parameter in the URL
   const referralAddress = getCookie("_rid") || "";
 
+  const [debouncedBidsAmount, setDebouncedBidsAmount] = useState(bidsAmount);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedBidsAmount(bidsAmount);
+    }, 500);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [bidsAmount]);
+
   useEffect(() => {
     const fetchBuyEtherPrice = async () => {
-      const finalPriceDecimals = BigNumber.from(finalPriceNotFormatted.toString());
-
-      const tokenEtherPrice = await fetch(
-        `https://relayer.dsponsor.com/api/${chainId}/prices?token=${tokenCurrencyAddress}&amount=${finalPriceDecimals}&slippage=0.3`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json"
-          }
+      try {
+        let amount = 0;
+        if (currencyDecimals && debouncedBidsAmount) {
+          amount = ethers.utils.parseUnits(debouncedBidsAmount, Number(currencyDecimals));
         }
-      )
-        .then((res) => res.json())
-        .then((data) => {
-          return data;
-        })
-        .catch((error) => {
-          return error;
-        });
 
-      const tokenEtherPriceDecimals = formatUnits(tokenEtherPrice?.amountInEthWithSlippage, 18);
+        const tokenEtherPrice = await fetch(
+          `https://relayer.dsponsor.com/api/${chainId}/prices?token=${tokenCurrencyAddress}&amount=${amount?.toString()}&slippage=0.3`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json"
+            }
+          }
+        )
+          .then((res) => res.json())
+          .then((data) => {
+            return data;
+          });
 
-      setBuyTokenEtherPrice(tokenEtherPriceDecimals);
+        setTokenEtherPriceRelayer(tokenEtherPrice);
+      } catch (error) {
+        console.error(error);
+      }
     };
 
-    if (finalPriceNotFormatted && finalPriceNotFormatted > 0 && chainId && tokenCurrencyAddress) {
+    if (chainId && tokenCurrencyAddress && currencyDecimals && debouncedBidsAmount) {
       fetchBuyEtherPrice();
     }
-  }, [finalPriceNotFormatted, chainId, tokenCurrencyAddress, currencyDecimals]);
+  }, [chainId, currencyDecimals, tokenCurrencyAddress, debouncedBidsAmount]);
+
+  useEffect(() => {
+    if (tokenEtherPriceRelayer) {
+      const tokenEtherPriceDecimals = formatUnits(
+        tokenEtherPriceRelayer?.amountInEthWithSlippage,
+        18
+      );
+      const amountInEthWithSlippageBN = ethers.BigNumber.from(
+        tokenEtherPriceRelayer?.amountInEthWithSlippage
+      );
+
+      setBuyTokenEtherPrice(tokenEtherPriceDecimals);
+      setAmountInEthWithSlippage(amountInEthWithSlippageBN);
+      setTokenEtherPrice(ethers.utils.formatUnits(amountInEthWithSlippageBN, 18));
+    }
+
+    if (bidsAmount && currencyDecimals && tokenEtherPriceRelayer) {
+      const amountUSDC = tokenEtherPriceRelayer?.amountUSDC;
+
+      const priceToDisplay = formatUnits(amountUSDC, 6);
+
+      setDisplayedPrice(formatAndRoundPrice(priceToDisplay));
+    } else {
+      setDisplayedPrice(0);
+    }
+  }, [bidsAmount, currencyDecimals, tokenEtherPriceRelayer]);
 
   useEffect(() => {
     if (chainId) {
@@ -674,6 +755,7 @@ const TokenPageContainer = () => {
     setOfferDO({
       offerId: offerId
     });
+
     setTokenDO({
       currency:
         offerData?.nftContract?.prices[0]?.currency ??
@@ -684,11 +766,12 @@ const TokenPageContainer = () => {
       tokenData: null,
 
       fee: offerData?.nftContract?.prices[0]?.protocolFeeAmount,
+
       price:
-        offerData?.nftContract?.prices[0]?.amount ??
         offerData?.nftContract?.tokens
           ?.find((token) => !!token?.tokenId && BigInt(token?.tokenId) === BigInt(tokenId))
-          ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.pricePerToken,
+          ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.pricePerToken ??
+        offerData?.nftContract?.prices[0]?.amount,
       protocolFeeBPS: offerData?.nftContract?.prices[0]?.protocolFeeBps,
       royaltiesBPS: offerData?.nftContract?.royalty.bps,
 
@@ -1304,12 +1387,14 @@ const TokenPageContainer = () => {
         setSuccessFullUpload(true);
         setIsOwner(true);
         setMinted(true);
+        await fetchOffers();
       } else {
         await directBuy(argsWithPossibleOverrides).catch((error) => {
           console.error("Error while buying:", error);
           throw error;
         });
         setSuccessFullUpload(true);
+        await fetchOffers();
       }
     } catch (error) {
       console.error("Erreur de soumission du token:", error);
@@ -1356,6 +1441,9 @@ const TokenPageContainer = () => {
 
       await submitAd({ args: functionWithPossibleArgs });
       setSuccessFullUpload(true);
+
+      // fetch new data
+      await fetchOffers();
 
       // reset form
       setFiles([]);
@@ -1720,8 +1808,7 @@ const TokenPageContainer = () => {
 
   return (
     <Accordion.Root
-      type="single"
-      collapsible
+      type="multiple"
       value={accordionActiveTab}
       onValueChange={setAccordionActiveTab}
     >
@@ -1869,7 +1956,7 @@ const TokenPageContainer = () => {
 
               {showEntireDescription ? (
                 <p className="dark:text-jacarta-100 mb-10">
-                  {description}{" "}
+                  {addLineBreaks(description)}{" "}
                   {description?.length > 1000 && (
                     <button
                       onClick={() => setShowEntireDescription(false)}
@@ -1882,7 +1969,9 @@ const TokenPageContainer = () => {
               ) : (
                 <div>
                   <p className="dark:text-jacarta-100 mb-10">
-                    {description?.length > 1000 ? description?.slice(0, 1000) + "..." : description}{" "}
+                    {description?.length > 1000
+                      ? addLineBreaks(description?.slice(0, 1000) + "...")
+                      : addLineBreaks(description)}{" "}
                     {description?.length > 1000 && (
                       <button
                         onClick={() => setShowEntireDescription(true)}
@@ -1902,6 +1991,18 @@ const TokenPageContainer = () => {
                     (token) =>
                       !!token?.tokenId && tokenId && BigInt(token?.tokenId) === BigInt(tokenId)
                   )?.mint === null)) && <Disable isOffer={false} />}
+
+              {!conditions?.conditionsObject?.endTimeNotPassed &&
+                conditions?.conditionsObject?.isCreated &&
+                ((conditions?.conditionsObject?.isAuction &&
+                  !conditions?.conditionsObject?.hasBids) ||
+                  conditions?.conditionsObject?.isDirect) && (
+                  <div className="p-4 bg-secondaryBlack rounded-lg my-4">
+                    <p className="text-center text-white font-semibold">
+                      The current listing is ended
+                    </p>
+                  </div>
+                )}
 
               {(offerData?.disable === false ||
                 new Date(offerData?.metadata?.offer?.valid_to).getTime() >= Date.now() ||
@@ -2025,13 +2126,15 @@ const TokenPageContainer = () => {
                             action={async () => {
                               setIsLoadingAirdropButton(true);
 
-                              await toast.promise(handleAirdrop(airdropAddress, tokenData), {
-                                pending: "Airdrop in progress... 🚀",
-                                success: "Airdrop successful 🎉",
-                                error: "Airdrop failed ❌"
-                              });
-
-                              setIsLoadingAirdropButton(false);
+                              await toast
+                                .promise(handleAirdrop(airdropAddress, tokenData), {
+                                  pending: "Airdrop in progress... 🚀",
+                                  success: "Airdrop successful 🎉",
+                                  error: "Airdrop failed ❌"
+                                })
+                                .finally(() => {
+                                  setIsLoadingAirdropButton(false);
+                                });
                             }}
                             className={`!rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all  !bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer ${(airdropAddress === "" || !airdropAddress || isLoadingAirdropButton || !isValidId) && "!btn-disabled !cursor-not-allowed !opacity-30"}`}
                             isDisabled={
@@ -2081,6 +2184,7 @@ const TokenPageContainer = () => {
                     conditions={conditions?.conditionsObject}
                     tokenId={tokenId}
                     setListingCreated={setListingCreated}
+                    fetchOffers={fetchOffers}
                   />
 
                   {((firstSelectedListing?.listingType === "Auction" &&
@@ -2090,6 +2194,7 @@ const TokenPageContainer = () => {
                     successFullBid) && (
                     <ItemBids
                       setAmountToApprove={setAmountToApprove}
+                      fetchOffers={fetchOffers}
                       bidsAmount={bidsAmount}
                       setBidsAmount={setBidsAmount}
                       chainId={chainId}
@@ -2121,6 +2226,12 @@ const TokenPageContainer = () => {
                         address: referralAddress
                       }}
                       currencyContract={tokenCurrencyAddress}
+                      tokenEtherPrice={tokenEtherPrice}
+                      amountInEthWithSlippage={amountInEthWithSlippage}
+                      displayedPrice={displayedPrice}
+                      setDisplayedPrice={setDisplayedPrice}
+                      showBidsModal={showBidsModal}
+                      setShowBidsModal={setShowBidsModal}
                     />
                   )}
                 </>
@@ -2279,6 +2390,8 @@ const TokenPageContainer = () => {
                     isTokenView={true}
                     handleSubmit={handleValidationSubmit}
                     selectedItems={selectedItems}
+                    pendingProposalData={pendingProposalData}
+                    setPendingProposalData={setPendingProposalData}
                   />
                 </Accordion.Content>
               </>
@@ -2386,6 +2499,7 @@ const TokenPageContainer = () => {
             successFullUploadModal={successFullUploadModal}
             isLoadingButton={isLoadingButton}
             adSubmission={true}
+            setPendingProposalData={setPendingProposalData}
           />
         </div>
       )}
@@ -2439,6 +2553,9 @@ const TokenPageContainer = () => {
             nativeTokenBalance={nativeTokenBalance}
           />
         </div>
+      )}
+      {failedCrossmintTransaction && (
+        <TransactionFailedModal setCrossmintTransactionFailed={setFailedCrossmintTransaction} />
       )}
     </Accordion.Root>
   );

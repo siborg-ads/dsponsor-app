@@ -155,6 +155,7 @@ const UpdateOffer = ({ offer }) => {
           setInitialMetadatas(initialMetadatas);
 
           // set initialMetadatas
+          setName(initialMetadatas?.offer?.name);
           setDescription(initialMetadatas?.offer?.description);
           setExternalLink(initialMetadatas?.offer?.external_link);
           setImageUrl(initialMetadatas?.offer?.image);
@@ -479,7 +480,7 @@ const UpdateOffer = ({ offer }) => {
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           placeholder={description ?? ""}
-          className="bg-secondaryBlack rounded-lg w-full p-2 text-white"
+          className="w-full"
         />
       </div>
 

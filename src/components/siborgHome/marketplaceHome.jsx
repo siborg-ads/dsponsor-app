@@ -24,10 +24,10 @@ const MarketplaceHome = ({ auctions, setAllTokens, allTokens, isAuctionsLoading 
   const [isInformationHovered, setIsInformationHovered] = useState(false);
 
   const filteredAuctions = useMemo(() => {
-    let tempAuctions = auctions;
+    let tempAuctions = [...auctions];
 
     // keep enabled minted tokens and tokens already minted (updated)
-    tempAuctions = tempAuctions.filter(
+    tempAuctions = [...tempAuctions].filter(
       (auction) =>
         (auction?.item?.nftContract?.prices[0]?.enabled === true || auction?.item?.mint !== null) &&
         new Date(auction?.item?.metadata?.valid_to).getTime() >= Date.now() &&
@@ -35,7 +35,7 @@ const MarketplaceHome = ({ auctions, setAllTokens, allTokens, isAuctionsLoading 
     );
 
     if (!allTokens) {
-      tempAuctions = tempAuctions.filter(
+      tempAuctions = [...tempAuctions].filter(
         (auction) =>
           auction?.status === "CREATED" &&
           new Date(auction?.startTime * 1000) < Date.now() &&
@@ -44,7 +44,7 @@ const MarketplaceHome = ({ auctions, setAllTokens, allTokens, isAuctionsLoading 
     }
 
     if (filterName && filterName.length > 0 && filterName !== "") {
-      tempAuctions = tempAuctions.filter((auction) =>
+      tempAuctions = [...tempAuctions].filter((auction) =>
         auction.name?.toLowerCase().includes(filterName.toLowerCase())
       );
     }
@@ -54,9 +54,11 @@ const MarketplaceHome = ({ auctions, setAllTokens, allTokens, isAuctionsLoading 
         (auction) => auction?.listingType === "Auction" || auction?.listingType === "Direct"
       );
     } else if (filterOption === "On auction") {
-      tempAuctions = tempAuctions.filter((auction) => onAuctionCondition(auction, false, false));
+      tempAuctions = [...tempAuctions].filter((auction) =>
+        onAuctionCondition(auction, false, false)
+      );
     } else if (filterOption === "Sold") {
-      tempAuctions = tempAuctions.filter((auction) => auction?.sold);
+      tempAuctions = [...tempAuctions].filter((auction) => auction?.sold);
     }
 
     if (sortOption && sortOption.length > 0 && sortOption !== "") {
@@ -64,10 +66,10 @@ const MarketplaceHome = ({ auctions, setAllTokens, allTokens, isAuctionsLoading 
 
       switch (sortOption) {
         case "Price: low to high": {
-          let liveAuctions = tempAuctions.filter((auction) =>
+          let liveAuctions = [...tempAuctions].filter((auction) =>
             onAuctionCondition(auction, true, true)
           );
-          liveAuctions = liveAuctions.sort(
+          liveAuctions = [...liveAuctions].sort(
             (a, b) =>
               (a.listingType === "Auction"
                 ? a.auctionPrice
@@ -90,10 +92,10 @@ const MarketplaceHome = ({ auctions, setAllTokens, allTokens, isAuctionsLoading 
           break;
         }
         case "Price: high to low": {
-          let liveAuctions = tempAuctions.filter((auction) =>
+          let liveAuctions = [...tempAuctions].filter((auction) =>
             onAuctionCondition(auction, true, true)
           );
-          liveAuctions = liveAuctions
+          liveAuctions = [...liveAuctions]
             .sort(
               (a, b) =>
                 (a.listingType === "Auction"
@@ -109,7 +111,7 @@ const MarketplaceHome = ({ auctions, setAllTokens, allTokens, isAuctionsLoading 
             )
             .reverse();
 
-          let otherAuctions = tempAuctions.filter(
+          let otherAuctions = [...tempAuctions].filter(
             (auction) => !onAuctionCondition(auction, true, true)
           );
 
@@ -117,12 +119,12 @@ const MarketplaceHome = ({ auctions, setAllTokens, allTokens, isAuctionsLoading 
           break;
         }
         case "Ending soon": {
-          let liveAuctions = tempAuctions?.filter(
+          let liveAuctions = [...tempAuctions]?.filter(
             (auction) => onAuctionCondition(auction, true, true) && auction?.endTime
           );
-          liveAuctions = liveAuctions?.sort((a, b) => a.endTime - b.endTime);
+          liveAuctions = [...liveAuctions]?.sort((a, b) => a.endTime - b.endTime);
 
-          const otherAuctions = tempAuctions?.filter(
+          const otherAuctions = [...tempAuctions]?.filter(
             (auction) => !onAuctionCondition(auction, true, true) || !auction?.endTime
           );
 
@@ -130,10 +132,10 @@ const MarketplaceHome = ({ auctions, setAllTokens, allTokens, isAuctionsLoading 
           break;
         }
         case "Newest":
-          tempAuctions = tempAuctions.sort((a, b) => b.startTime - a.startTime);
+          tempAuctions = [...tempAuctions].sort((a, b) => b.startTime - a.startTime);
           break;
         case "Sort by name":
-          tempAuctions = tempAuctions.sort((a, b) => a.name.localeCompare(b.name));
+          tempAuctions = [...tempAuctions].sort((a, b) => a.name.localeCompare(b.name));
           break;
         default:
           break;
@@ -143,7 +145,7 @@ const MarketplaceHome = ({ auctions, setAllTokens, allTokens, isAuctionsLoading 
         tempAuctions = [...tempAuctions];
       }
     } else {
-      tempAuctions = tempAuctions.sort((a, b) => a.name.localeCompare(b.name)); // default sort
+      tempAuctions = [...tempAuctions].sort((a, b) => a.name.localeCompare(b.name)); // default sort
     }
 
     return tempAuctions;

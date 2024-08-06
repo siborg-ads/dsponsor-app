@@ -1,7 +1,5 @@
 import { CrossmintPayButton } from "@crossmint/client-sdk-react-ui";
 import React from "react";
-import { BigNumber, ethers } from "ethers";
-import { formatUnits } from "ethers/lib/utils";
 
 /**
  * Bid with Crossmint Button
@@ -35,9 +33,8 @@ import { formatUnits } from "ethers/lib/utils";
  * @constructor
  */
 export default function BidWithCrossmintButton(props = {}) {
-  const { offer, token, user, referrer, actions } = props;
+  const { offer, token, user, referrer } = props;
 
-  const price = ethers.utils.parseUnits(props.token.buyoutPricePerToken, "wei");
   if (!token.fee) {
     console.warn("MintWithCrossmint: Token fee not found - Using default fee");
   }
@@ -69,16 +66,6 @@ export default function BidWithCrossmintButton(props = {}) {
     );
   }
 
-  const royaltyBPS = BigNumber.from(token.royaltiesBPS || 0);
-  const protocolBPS = BigNumber.from(token.protocolFeeBPS || 0);
-
-  const royalty = price.mul(royaltyBPS).div(10000);
-  const protocolFee = price.mul(protocolBPS).div(10000);
-  const totalFees = royalty.add(protocolFee);
-
-  const cumulativePrice = price.add(totalFees);
-  const totalPriceFormatted = formatUnits(cumulativePrice, "ether");
-
   const buttonProps = {
     projectId: props.config?.projectId,
     collectionId: props.config?.bidCollectionId,
@@ -88,54 +75,35 @@ export default function BidWithCrossmintButton(props = {}) {
     paymentMethod: props.config?.paymentMethod,
     mintTo: user.address,
     mintConfig: {
-      totalPrice: totalPriceFormatted,
+      totalPrice: props?.totalPriceFormatted,
       quantity: 1,
       _listingId: token.listingId,
-      _pricePerToken: token.price,
+      _pricePerToken: props?.perPriceToken,
       _bidder: user.address,
       _referralAdditionalInformation: referrer.address ?? "0x"
     }
   };
 
-  if (user.email && user.email) {
-    buttonProps.emailTo = user.email;
-  }
-
   if (props?.successCallbackURL) {
     buttonProps.successCallbackURL = props.successCallbackURL;
   }
 
-  if (props?.errorCallbackURL) {
-    buttonProps.errorCallbackURL = props.errorCallbackURL;
+  if (props?.failureCallbackURL) {
+    buttonProps.failureCallbackURL = props.failureCallbackURL;
   }
 
   return (
-    <>
-      <CrossmintPayButton
-        disabled={props?.isDisabled === true}
-        className={(props?.isDisabled && "opacity-50 cursor-not-allowed") || ""}
-        getButtonText={(connecting, paymentMethod) => {
-          if (actions?.processing && connecting) {
-            actions.processing();
-          }
-          return connecting
-            ? props?.isLoadingRender ?? "Connecting..."
-            : props?.isActiveRender ?? `Buy NOW with ${paymentMethod} for ${totalPriceFormatted}`;
-        }}
-        {...buttonProps}
-        onEvent={(event) => {
-          switch (event.type) {
-            case "payment:process.succeeded":
-              actions?.success?.(event);
-              break;
-            case "payment:process.failed":
-              actions?.error?.(event);
-              break;
-            default:
-              break;
-          }
-        }}
-      ></CrossmintPayButton>
-    </>
+    <CrossmintPayButton
+      disabled={props?.isDisabled === true}
+      className={(props?.isDisabled && "opacity-30 cursor-not-allowed") || ""}
+      getButtonText={() => {
+        if (props?.isBid) {
+          return `Bid NOW with Credit Card`;
+        } else {
+          return `Buy NOW with Credit Card`;
+        }
+      }}
+      {...buttonProps}
+    />
   );
 }

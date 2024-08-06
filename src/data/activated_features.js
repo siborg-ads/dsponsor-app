@@ -34,5 +34,7 @@ export const activated_features = {
   // Wether we can change validators for an offer
   canChangeValidators: false,
   // Wether to show info bulle on the offer page showing the price of the token
-  canSeeModalHelperOnOfferPage: false
+  canSeeModalHelperOnOfferPage: false,
+  // Wether we're able to pay with crossmint
+  canPayWithCrossmintEnabled: !!isDevelopment
 };

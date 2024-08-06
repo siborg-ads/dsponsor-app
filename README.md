@@ -1,49 +1,61 @@
-# DSponsor Dashboard
+# DSponsor Dashboard (WIP)
 
-## Getting Started
+## Project Structure
 
-1. Install the dependencies:
+The application is organized to be modular and maintainable. Each folder in `src/` has a specific role and is structured to facilitate scalability.
 
-```bash
-npm i
-```
+### `public/`
 
-2. Start the development server:
+Contains static files like images and fonts.
+
+### `src/`
+
+The source folder contains all the application code.
+
+- **abi/**: Smart contracts ABIs.
+
+- **components/**: 
+  - `ui/`: Reusable UI components.
+  - `layout/`: Global layout components.
+  - `features/`: Components specific to certain features or pages.
+ 
+- **data/**: Static or mock data for the application.
   
-```bash
-npm run dev
-```
+- **hooks/**: Custom Hooks for managing state or specific effects.
 
-3. Open [http://localhost:3000](http://localhost:3000) in your browser to see the result.
+- **lib/**: Reusable code not specific to React (API calls, cookie management, etc.).
 
-### Production Environment
+- **pages/**: Application pages and API routes.
 
- To test the application in the production environment, follow these steps:
+- **styles/**: Global style files.
 
- 1. Create an optimized production build:
+- **utils/**: Utility functions.
 
- ```bash
-npm run build
-```
+- **config/**: Configuration files (i.e. defining the chain config according to the environment).
 
-2. Start the application using the production build:
+- **context/**: Global context providers for shared state.
 
-```bash
-npm run start
-```
+- **middleware.js**: Middlewares for handling requests (authentication, etc.).
 
-## Configuration
+## Development Commands
 
-The application can bind to one of the following configuration files :
+We use Yarn to manage dependencies and run the application.
 
-- Development Configuration (usage with testnets like Sepolia): [`./src/config/config.dev.js`](./src/config/config.dev.js)
-- Production Configuration (usage with mainnets like Base): [`./src/config/config.prod.js`](./src/config/config.prod.js)
+- `yarn dev`: Starts the application in development mode.
+- `yarn build`: Compiles the application for production.
+- `yarn start`: Runs the application in production mode after `build` is executed.
 
-**By default, the application runs in `production` mode. To switch to the development configuration, set the `NEXT_PUBLIC_CONFIG_MODE` environment variable to `dev`.**
+## Naming Conventions
 
-For example, if you are running the application locally, create a `.env.local` with the following content:
+- Use PascalCase for components.
+- Use camelCase for functions and variables.
+- JavaScript files should have the `.js` or `.jsx` extension.
 
-```
-# .env.local
-NEXT_PUBLIC_CONFIG_MODE=dev
-```
+## Contribution
+
+To contribute to the project, please follow these guidelines:
+
+1. Fork the repository.
+2. Create a feature branch.
+3. Make your changes.
+4. Submit a pull request.

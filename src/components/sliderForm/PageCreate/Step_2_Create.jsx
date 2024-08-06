@@ -1,5 +1,6 @@
 import Input from "../../ui/input";
 import TextArea from "../../ui/textarea";
+import { useEffect, useState } from "react";
 
 const Step_2_Create = ({
   stepsRef,
@@ -11,6 +12,12 @@ const Step_2_Create = ({
   numSteps,
   currentSlide
 }) => {
+  const [charCount, setCharCount] = useState(description.length);
+
+  useEffect(() => {
+    setCharCount(description.length);
+  }, [description]);
+
   return (
     <>
       {currentSlide === 1 && (
@@ -61,11 +68,15 @@ const Step_2_Create = ({
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 rows="4"
-                maxLength="250"
-                placeholder="This is a description of the offer. characters limit : 250"
+                maxLength="2000"
+                max="2000"
+                placeholder="This is a description of the offer. characters limit : 2000"
                 required
                 className="placeholder:text-jacarta-300"
               />
+              <p className={`text-2xs mt-1 ${charCount < 2000 ? "text-green" : "text-red"}`}>
+                {2000 - charCount} characters remaining
+              </p>
             </div>
           </div>
         </div>

@@ -9,15 +9,15 @@ const ChainProvider = ({ children }) => {
   const connectedAddress = useAddress();
   const [currentChainObject, setCurrentChainObject] = useState({});
 
-   useEffect(() => {
-     if (config[chainId]) {
-       setCurrentChainObject(config[chainId]);
-     } else {
-       const [firstChainId, firstChainConfig] = Object.entries(config)[0];
-       console.warn(`Unknown chainId: ${chainId} - Using default chainId: ${firstChainId}`);
-       setCurrentChainObject(firstChainConfig);
-     }
-   }, [chainId]);
+  useEffect(() => {
+    if (config[chainId]) {
+      setCurrentChainObject(config[chainId]);
+    } else {
+      const [firstChainId, firstChainConfig] = Object.entries(config)[0];
+      console.warn(`Unknown chainId: ${chainId} - Using default chainId: ${firstChainId}`);
+      setCurrentChainObject(firstChainConfig);
+    }
+  }, [chainId]);
 
   const value = {
     currentChainObject,

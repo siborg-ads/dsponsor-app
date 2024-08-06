@@ -4,6 +4,7 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useChainContext } from "../../contexts/hooks/useChainContext";
 import { Spinner } from "@nextui-org/spinner";
+import TextArea from "../ui/textarea";
 const AddProposalRefusedModal = ({
   selectedItems,
   successFullModalObject,
@@ -63,39 +64,43 @@ const AddProposalRefusedModal = ({
           </button>
         </div>
         <div className="modal-body max-h-[400px] overflow-auto p-6 flex gap-4 flex-col items-center ">
-          {filteredItems.map((item) => {
-            const tokenId = item?.tokenId;
-            return !successFullRefuseModal ? (
-              <div className="mb-6 w-full ">
-                <div className="flex justify-between">
-                  <div>
-                    <label
-                      htmlFor="item-description"
-                      className="font-display text-jacarta-900 mb-2 block dark:text-white"
-                    >
-                      Comments
-                      <span className="text-red">*</span>
-                    </label>
+          {!successFullRefuseModal ? (
+            <>
+              {filteredItems.map((item) => {
+                const tokenId = item?.tokenId;
+                return (
+                  <div key={item?.id} className="mb-6 w-full ">
+                    <div className="flex justify-between">
+                      <div>
+                        <label
+                          htmlFor="item-description"
+                          className="font-display text-jacarta-900 mb-2 block dark:text-white"
+                        >
+                          Comments
+                          <span className="text-red">*</span>
+                        </label>
+                      </div>
+                      <div className="font-display text-jacarta-900 mb-2 block dark:text-white">
+                        Space # <span className="text-primaryPurple">{tokenId}</span>
+                      </div>
+                    </div>
+                    <TextArea
+                      id={tokenId}
+                      className="w-full"
+                      rows="4"
+                      required
+                      onChange={(e) => handleCommentChange(tokenId, e.target.value)}
+                      placeholder="Provide a comment of your refuse. min characters 3"
+                    />
                   </div>
-                  <div className="font-display text-jacarta-900 mb-2 block dark:text-white">
-                    Space # <span className="text-primaryPurple">{tokenId}</span>
-                  </div>
-                </div>
-                <textarea
-                  id={tokenId}
-                  className="dark:bg-secondaryBlack  border-jacarta-100 hover:ring-primaryPurple/10 focus:ring-primaryPurple dark:border-jacarta-800 dark:placeholder:text-jacarta-100 w-full rounded-lg py-3 px-3 hover:ring-2 dark:text-white"
-                  rows="4"
-                  required
-                  onChange={(e) => handleCommentChange(tokenId, e.target.value)}
-                  placeholder="Provide a comment of your refuse. min characters 3"
-                ></textarea>
-              </div>
-            ) : (
-              <div className="flex gap-2">
-                <p>{successFullModalObject.body} </p>
-              </div>
-            );
-          })}
+                );
+              })}
+            </>
+          ) : (
+            <div className="flex gap-2">
+              <p>{successFullModalObject.body}</p>
+            </div>
+          )}
         </div>
         <div className="modal-footer">
           <div className="flex items-center justify-center space-x-4">
@@ -105,12 +110,15 @@ const AddProposalRefusedModal = ({
                   contractAddress={currentChainObject?.smartContracts?.DSPONSORADMIN?.address}
                   action={async () => {
                     setIsRejecting(true);
-                    await toast.promise(handleItemSubmit(false), {
-                      pending: "Waiting for confirmation 🕒",
-                      success: "Transaction confirmed 👌",
-                      error: "Transaction rejected 🤯"
-                    });
-                    setIsRejecting(false);
+                    await toast
+                      .promise(handleItemSubmit(false), {
+                        pending: "Waiting for confirmation 🕒",
+                        success: "Transaction confirmed 👌",
+                        error: "Transaction rejected 🤯"
+                      })
+                      .finally(() => {
+                        setIsRejecting(false);
+                      });
                   }}
                   className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!allCommentsOk || isRejecting ? "!btn-disabled !cursor-not-allowed !opacity-30" : "!bg-red !cursor-pointer"} `}
                   disabled={!allCommentsOk || isRejecting}

@@ -19,7 +19,7 @@ const Validated_refused_items = ({ statut, proposalData, isToken }) => {
     return self.indexOf(value) === index;
   }
 
-  const [filterData, setFilterData] = useState(
+  const [filterData] = useState(
     collection_activity_item_data.map((item) => item.category).filter(onlyUnique)
   );
 

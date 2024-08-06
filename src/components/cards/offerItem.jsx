@@ -170,7 +170,11 @@ const OfferItem = ({
 
       if (lastSalePrice) {
         setLastSalePrice(lastSalePrice);
+      } else {
+        setLastSalePrice(null);
       }
+    } else {
+      setLastSalePrice(null);
     }
   }, [item]);
 

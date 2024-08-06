@@ -21,8 +21,6 @@ const ModalHelper = ({ title, body, images, titleImages, dark, size = "default" 
 
   return (
     <>
-    
-
       <Button onPress={onOpen} className="bg-transparent !min-w-[20px] !p-0 !h-auto">
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -62,7 +60,7 @@ const ModalHelper = ({ title, body, images, titleImages, dark, size = "default" 
                 <div className="flex justify-around flex-wrap">
                   {images?.length > 0 &&
                     images?.map((image, index) => (
-                      <div className="flex flex-col items-center justify-center gap-3 " key={index} >
+                      <div className="flex flex-col items-center justify-center gap-3 " key={index}>
                         <p>{titleImages[index]}</p>
                         <Image
                           src={image ?? ""}
@@ -84,7 +82,6 @@ const ModalHelper = ({ title, body, images, titleImages, dark, size = "default" 
           )}
         </ModalContent>
       </Modal>
-  
     </>
   );
 };

@@ -49,6 +49,7 @@ const devEthereumSepolia = {
       enabled: true,
       config: {
         projectId: "82d192a5-c754-4280-a6cb-cb3d7b0f9bd9",
+        priceLimit: 0.000005,
 
         bidCollectionId: "e22acedd-c541-40b7-b194-89c494fe0a9e",
         buyCollectionId: "a092b1ee-b2c0-42b7-aede-e4f67aab9e91",

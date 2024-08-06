@@ -68,7 +68,7 @@ const Review_carousel = ({
 
   useEffect(() => {
     const initialValidateStates = {};
-    pendingProposalData.forEach((item) => {
+    pendingProposalData?.forEach((item) => {
       initialValidateStates[item.tokenId] = false;
     });
     setValidate(initialValidateStates);
@@ -202,12 +202,15 @@ const Review_carousel = ({
                 contractAddress={config[Number(chainId)]?.smartContracts?.DSPONSORADMIN?.address}
                 action={async () => {
                   setIsValidating(true);
-                  await toast.promise(handleItemSubmit(true), {
-                    pending: "Waiting for confirmation 🕒",
-                    success: "Transaction confirmed 👌",
-                    error: "Transaction rejected 🤯"
-                  });
-                  setIsValidating(false);
+                  await toast
+                    .promise(handleItemSubmit(true), {
+                      pending: "Waiting for confirmation 🕒",
+                      success: "Transaction confirmed 👌",
+                      error: "Transaction rejected 🤯"
+                    })
+                    .finally(() => {
+                      setIsValidating(false);
+                    });
                 }}
                 isDisabled={!validate["all"] || isValidating || isRejecting}
                 className={` !rounded-full !min-w-[100px] !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate["all"] || isValidating || isRejecting ? "!btn-disabled !cursor-not-allowed !opacity-30" : "!bg-green !cursor-pointer"} `}
