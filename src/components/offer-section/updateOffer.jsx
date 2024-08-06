@@ -480,7 +480,7 @@ const UpdateOffer = ({ offer }) => {
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           placeholder={description ?? ""}
-          className="bg-secondaryBlack rounded-lg w-full p-2 text-white"
+          className="w-full"
         />
       </div>
 

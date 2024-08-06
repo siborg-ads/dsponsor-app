@@ -4,6 +4,7 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useChainContext } from "../../contexts/hooks/useChainContext";
 import { Spinner } from "@nextui-org/spinner";
+import TextArea from "../ui/textarea";
 const AddProposalRefusedModal = ({
   selectedItems,
   successFullModalObject,
@@ -83,9 +84,9 @@ const AddProposalRefusedModal = ({
                         Space # <span className="text-primaryPurple">{tokenId}</span>
                       </div>
                     </div>
-                    <textarea
+                    <TextArea
                       id={tokenId}
-                      className="dark:bg-secondaryBlack  border-jacarta-100 hover:ring-primaryPurple/10 focus:ring-primaryPurple dark:border-jacarta-800 dark:placeholder:text-jacarta-100 w-full rounded-lg py-3 px-3 hover:ring-2 dark:text-white"
+                      className="w-full"
                       rows="4"
                       required
                       onChange={(e) => handleCommentChange(tokenId, e.target.value)}
