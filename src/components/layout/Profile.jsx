@@ -111,7 +111,7 @@ const Profile = () => {
 
     try {
       setIsLoadingBids(true);
-      const offersByUserAddressArray = await fetchDataByUserAddress(fetchAllOffersByUserAddress);
+      const offersByUserAddressArray = await fetchDataByUserAddress(fetchAllOffersProfile);
 
       let allUserBids;
       offersByUserAddressArray?.forEach((offer) => {
@@ -275,7 +275,7 @@ const Profile = () => {
     setIsLoadingOwnedTokens(true);
 
     try {
-      const ownedAdProposalsArray = await fetchDataByUserAddress(fetchAllTokenByOfferFromUser);
+      const ownedAdProposalsArray = await fetchDataByUserAddress(fetchAllTokensProfile);
 
       const mappedOwnedAdProposals = ownedAdProposalsArray.flatMap((element) =>
         element.nftContract.tokens.map((token) => ({
