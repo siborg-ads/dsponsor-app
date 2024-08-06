@@ -1,10 +1,10 @@
 import React, { useState, useMemo } from "react";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import { ChevronDownIcon, InformationCircleIcon } from "@heroicons/react/20/solid";
-import ItemCardSkeleton from "../skeleton/ItemCardSkeleton";
-import OfferItem from "../cards/offerItem";
+import ItemCardSkeleton from "../../ui/skeletons/ItemCardSkeleton.jsx";
+import OfferItem from "../cards/offerItem.jsx";
 import { Popover, PopoverTrigger, PopoverContent } from "@nextui-org/popover";
-import Input from "../ui/input.jsx";
+import Input from "../ui/input.js";
 
 const onAuctionCondition = (auction, mint, direct) => {
   return (

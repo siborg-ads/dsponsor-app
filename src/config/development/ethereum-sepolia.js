@@ -1,4 +1,4 @@
-import Network from "../../utils/networks";
+import Network from "../../utils/networks/networks";
 import contractABI from "../../abi/dsponsorAdmin.json";
 import { Sepolia } from "@thirdweb-dev/chains";
 

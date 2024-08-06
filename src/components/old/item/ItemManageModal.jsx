@@ -4,7 +4,7 @@ import { useAddress, useContract, useContractWrite, useContractRead } from "@thi
 import "react-toastify/dist/ReactToastify.css";
 import { ethers } from "ethers";
 import DatePicker from "react-datepicker";
-import ModalHelper from "../Helper/modalHelper";
+import ModalHelper from "../../ui/modals/Helper";
 import PreviewModal from "../modal/previewModal";
 
 import { useChainContext } from "../../contexts/hooks/useChainContext";

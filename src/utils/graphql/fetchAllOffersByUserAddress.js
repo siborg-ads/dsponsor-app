@@ -1,4 +1,4 @@
-import { executeQuery } from "../executeQuery";
+import { executeQuery } from "./helper/executeQuery";
 import config from "../../config/config";
 
 export const fetchAllOffersByUserAddress = async (userAddress, chainId) => {

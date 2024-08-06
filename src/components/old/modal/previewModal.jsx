@@ -5,7 +5,7 @@ import { shortenAddress, Web3Button } from "@thirdweb-dev/react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Spinner } from "@nextui-org/spinner";
-import ModalHelper from "../Helper/modalHelper";
+import ModalHelper from "../../ui/modals/Helper";
 import { useChainContext } from "../../contexts/hooks/useChainContext";
 import { InformationCircleIcon } from "@heroicons/react/20/solid";
 import InfoIcon from "../informations/infoIcon";

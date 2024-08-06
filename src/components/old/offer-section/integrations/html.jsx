@@ -2,13 +2,13 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import * as RadioGroup from "@radix-ui/react-radio-group";
 import { Divider } from "@nextui-org/react";
-import InfoIcon from "../../informations/infoIcon";
+import InfoIcon from "../../informations/infoIcon.jsx";
 import { InformationCircleIcon } from "@heroicons/react/24/solid";
 import { ClipboardIcon } from "@heroicons/react/24/solid";
 import handleCopy from "../../../utils/handleCopy";
 import Tippy from "@tippyjs/react";
 import { ChromePicker } from "react-color";
-import Input from "../../ui/input.jsx";
+import Input from "../../ui/input.js";
 
 const initialColumns = (numberOfTokens) => {
   if (numberOfTokens % 7 === 0) return 7;

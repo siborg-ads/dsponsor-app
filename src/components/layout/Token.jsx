@@ -30,7 +30,7 @@ import ItemLastestSales from "../../components/tables/ItemLastestSales.jsx";
 import { getCookie } from "cookies-next";
 import { ItemsTabs } from "../../components/component.js";
 
-import BuyModal from "../../components/modal/buyModal.jsx";
+import BuyModal from "../modal/BuyModal.jsx";
 
 import { toast } from "react-toastify";
 import OfferSkeleton from "../../components/skeleton/offerSkeleton.jsx";
@@ -41,7 +41,7 @@ import ItemBids from "../../components/item/ItemBids.jsx";
 import ItemManage from "../../components/item/ItemManage.jsx";
 import { useSwitchChainContext } from "../../contexts/hooks/useSwitchChainContext.js";
 import config from "../../config/config.js";
-import stringToUint256 from "../../utils/stringToUnit256.js";
+import stringToUint256 from "../../utils/tokens/stringToUnit256.js";
 import { formatUnits, getAddress, parseUnits } from "ethers/lib/utils";
 
 import "react-toastify/dist/ReactToastify.css";
@@ -54,7 +54,7 @@ import InfoIcon from "../../components/informations/infoIcon.jsx";
 import Disable from "../../components/disable/disable.jsx";
 import Input from "../ui/input.jsx";
 import { useSearchParams } from "next/navigation.js";
-import { addLineBreaks } from "../../utils/addLineBreaks.js";
+import { addLineBreaks } from "../../utils/misc/addLineBreaks.js";
 import formatAndRoundPrice from "../../utils/formatAndRound.js";
 import TransactionFailedModal from "../../components/modal/failModal.jsx";
 

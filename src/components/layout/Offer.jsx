@@ -29,7 +29,7 @@ import { Tabs, Tab, TabList, TabPanel } from "react-tabs";
 import { BadgePercentIcon, BlocksIcon, RefreshCwIcon } from "lucide-react";
 import Disable from "../../components/disable/disable";
 import OfferItem from "../../components/cards/offerItem";
-import { addLineBreaks } from "../../utils/addLineBreaks";
+import { addLineBreaks } from "../../utils/misc/addLineBreaks";
 
 const OfferPageContainer = () => {
   const router = useRouter();

@@ -5,7 +5,7 @@ import { ClipboardIcon } from "@heroicons/react/20/solid";
 import handleCopy from "../../../utils/handleCopy";
 import Tippy from "@tippyjs/react";
 import "tippy.js/dist/tippy.css";
-import Input from "../../ui/input.jsx";
+import Input from "../../ui/input.js";
 
 const Referrals = ({ userAddr, userData }) => {
   const [isHovered, setIsHovered] = useState(false);

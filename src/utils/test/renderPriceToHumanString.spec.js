@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import renderPriceToHumanString from "../renderPriceToHumanString";
+import renderPriceToHumanString from "../prices/renderPriceToHumanString";
 
 describe("renderPriceToHumanString", () => {
   it("should format high value prices with 2 decimal places and spaces as thousands separators", () => {
