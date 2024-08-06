@@ -1,6 +1,6 @@
 import "@/styles/globals.css";
 import { ThemeProvider } from "next-themes";
-import Layout from "@/pages/layout";
+import Layout from "@/components/Layout";
 import { Provider } from "react-redux";
 import { store } from "@/contexts/store";
 import { useRouter } from "next/router";

@@ -1,5 +1,4 @@
-import Providers from "../providers/Providers";
-// import { useState } from "react";
+import Providers from "@/providers/Providers";
 
 export default function RootLayout({ children }) {
   return (
