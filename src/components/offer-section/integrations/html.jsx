@@ -236,7 +236,7 @@ const HtmlIntegration = ({ chainId, offerId, offerTokens }) => {
         Copy and paste the following code to the desired location on your page.
       </span>
 
-      <div className="flex bg-primaryBlack border border-jacarta-500 p-4 rounded-md relative">
+      <div className="bg-jacarta-800 relative hover:bg-jacarta-800 border border-primaryPurple ring-0 focus:ring-0 focus:border-primaryPurple placeholder:text-jacarta-300 w-full rounded-lg p-3 text-white">
         <div className="absolute top-2 right-2">
           <button
             className="z-10"
