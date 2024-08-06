@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 
-const Step_1_Mint = ({
+const AdBriefing = ({
   stepsRef,
   styles,
   adParameters,
@@ -89,4 +89,4 @@ const Step_1_Mint = ({
   );
 };
 
-export default Step_1_Mint;
+export default AdBriefing;

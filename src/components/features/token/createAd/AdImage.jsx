@@ -1,11 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import "react-datepicker/dist/react-datepicker.css";
-import ModalHelper from "../../../ui/modals/Helper";
-
+import ModalHelper from "@/components/ui/modals/Helper";
 import { FileUploader } from "react-drag-drop-files";
 
-const Step_3_Mint = ({
+const AdImage = ({
   id,
   stepsRef,
   styles,
@@ -141,4 +140,4 @@ const Step_3_Mint = ({
   );
 };
 
-export default Step_3_Mint;
+export default AdImage;

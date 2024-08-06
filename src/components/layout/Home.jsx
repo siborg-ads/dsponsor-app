@@ -1,16 +1,16 @@
 "use client";
 
 import React, { useEffect, useState, useRef } from "react";
-import MainAuctions from "../../components/siborgHome/mainAuctions";
-import MarketplaceHome from "../../components/siborgHome/marketplaceHome";
-import Description from "../../components/siborgHome/description";
-import { fetchAllListedTokenWithoutFilter } from "../../utils/graphql/fetchAllListedTokenWithoutFilter";
+import MainAuctions from "@/components/siborgHome/mainAuctions";
+import MarketplaceHome from "@/components/siborgHome/marketplaceHome";
+import Description from "@/components/siborgHome/description";
+import { fetchAllListedTokenWithoutFilter } from "@/utils/graphql/fetchAllListedTokenWithoutFilter";
 import { formatUnits } from "ethers/lib/utils";
-import formatAndRound from "../../utils/formatAndRound";
-import Meta from "../Meta";
-import { useChainContext } from "../../contexts/hooks/useChainContext";
+import formatAndRound from "@/utils/formatAndRound";
+import Meta from "@/Meta";
+import { useChainContext } from "@/contexts/hooks/useChainContext";
 
-const HomeContainer = () => {
+const Home = () => {
   const [chainIdFilter, setChainIdFilter] = useState(null);
   const [auctionsTemp, setAuctionsTemp] = useState([]);
   const [auctions, setAuctions] = useState([]);
@@ -198,4 +198,4 @@ const HomeContainer = () => {
   );
 };
 
-export default HomeContainer;
+export default Home;

@@ -1,7 +1,7 @@
 import React from "react";
 import { Skeleton } from "@nextui-org/react";
 
-const LeaderBoardSkeleton = () => {
+const LeaderboardSkeleton = () => {
   return (
     <section className="relative lg:mt-12 lg:pt-12  mt-12 pt-8 pb-8 container items-center flex flex-col justify-center">
       <div className="mb-4 container  flex justify-center flex-col items-center w-full ">
@@ -38,4 +38,4 @@ const LeaderBoardSkeleton = () => {
   );
 };
 
-export default LeaderBoardSkeleton;
+export default LeaderboardSkeleton;

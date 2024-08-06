@@ -1,4 +1,4 @@
-import Network from "../../providers/utils/networks";
+import Network from "@/providers/utils/networks";
 import { Base } from "@thirdweb-dev/chains";
 
 const devBaseSepolia = {

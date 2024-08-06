@@ -1,13 +1,13 @@
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import { useChainContext } from "../../contexts/hooks/useChainContext";
-import { activated_features } from "../../data/activated_features";
-import { trendingCategoryData } from "../../data/categories_data";
-import { updateTrendingCategoryItemData } from "../../redux/counterSlice";
-import ConditionalDisplayedComponent from "../../utils/ConditionalDisplayedComponent";
-import OfferItem from "../cards/offerItem";
-import MainButton from "../buttons/mainButton";
+import { useChainContext } from "@/contexts/hooks/useChainContext";
+import { features } from "@/data/features";
+//import { trendingCategoryData } from "@/data/categories_data";
+//import { updateTrendingCategoryItemData } from "@/redux/counterSlice";
+import ConditionalDisplayedComponent from "@/components/ui/misc/ConditionalDisplayedComponent";
+import TokenCard from "@/components/ui/cards/TokenCard";
+import MainButton from "@/components/ui/buttons/MainButton";
 import { ExclamationCircleIcon } from "@heroicons/react/24/solid";
 
 const CreatedOffers = ({ data, isPendinAdsOnOffer, isOwner, offers, isLoading }) => {
@@ -86,7 +86,7 @@ const CreatedOffers = ({ data, isPendinAdsOnOffer, isOwner, offers, isLoading })
             }
 
             return (
-              <OfferItem
+              <TokenCard
                 item={item}
                 listingType={item?.marketplaceListings?.[0]?.listingType}
                 key={index}
@@ -105,7 +105,7 @@ const CreatedOffers = ({ data, isPendinAdsOnOffer, isOwner, offers, isLoading })
           })}
         </div>
       ) : (
-        <ConditionalDisplayedComponent condition={activated_features.canCreateOffer}>
+        <ConditionalDisplayedComponent condition={features.canCreateOffer}>
           <div className="w-full flex flex-col gap-4 justify-center items-center">
             <span>No offers yet...</span>
             <MainButton link={`/${chainId}/offer/create`} isPurple={true} text="Create" />

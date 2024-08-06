@@ -1,6 +1,7 @@
 import React from "react";
 import { Skeleton } from "@nextui-org/react";
 import Tippy from "@tippyjs/react";
+
 const OfferSkeleton = () => {
   return (
     <section className="relative lg:mt-24 lg:pt-12  mt-24 pt-12 pb-8 w-full">

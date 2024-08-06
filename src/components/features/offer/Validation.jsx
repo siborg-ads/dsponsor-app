@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { Tab, TabList, TabPanel, Tabs } from "react-tabs";
-import ValidatedRefusedItems from "../collections/validated_refused_items";
-import ReviewCarousel from "../carousel/review_carousel";
-import AddProposalRefusedModal from "../modal/adProposalRefusedModal";
+//import ValidatedRefusedItems from "../collections/validated_refused_items";
+import PendingAds from "@/components/features/offer/adValidation/PendingAds";
+import RejectAd from "@/components/features/offer/adValidation/modals/RejectAd";
 import { ExclamationCircleIcon } from "@heroicons/react/24/solid";
-import InfoIcon from "../informations/infoIcon";
+import ResponsiveTooltip from "@/components/ui/ResponsiveTooltip";
 import { CheckIcon, ClockIcon, XIcon } from "lucide-react";
 
 const Validation = ({
@@ -218,17 +218,17 @@ const Validation = ({
                   {sponsorHasAtLeastOneRejectedProposalAndNoPending &&
                     isOwner &&
                     text === "Refused" && (
-                      <InfoIcon text="You ad as been refused and you have no pending ad. Try to submit a new one.">
+                      <ResponsiveTooltip text="You ad as been refused and you have no pending ad. Try to submit a new one.">
                         <ExclamationCircleIcon className="h-5 w-5 text-red dark:text-red" />
-                      </InfoIcon>
+                      </ResponsiveTooltip>
                     )}
                   {mediaShouldValidateAnAd &&
                     text === "Pending" &&
                     isMedia &&
                     pendingProposalLength !== 0 && (
-                      <InfoIcon text="You have at least one ad to validate or to refuse.">
+                      <ResponsiveTooltip text="You have at least one ad to validate or to refuse.">
                         <ExclamationCircleIcon className="h-5 w-5 text-red dark:text-red" />
-                      </InfoIcon>
+                      </ResponsiveTooltip>
                     )}
                   {icon}
                   <span className="font-display text-base font-medium ml-2">
@@ -256,7 +256,7 @@ const Validation = ({
           <TabPanel>
             <div className="container mb-12 relative p-0">
               {/* <!-- Filter --> */}
-              <ReviewCarousel
+              <PendingAds
                 chainId={chainId}
                 setSelectedItems={setSelectedItems}
                 selectedItems={selectedItems}
@@ -299,7 +299,7 @@ const Validation = ({
 
       {refusedValidatedAdModal && (
         <div className="modal fade show bloc">
-          <AddProposalRefusedModal
+          <RejectAd
             refusedValidatedAdModal={refusedValidatedAdModal}
             selectedItems={selectedItems}
             handleCommentChange={handleCommentChange}

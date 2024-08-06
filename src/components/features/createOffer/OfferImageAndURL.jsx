@@ -1,11 +1,12 @@
 import { useState } from "react";
 import Image from "next/image";
 import { Switch, cn } from "@nextui-org/react";
-
 import { FileUploader } from "react-drag-drop-files";
-import Input from "../../ui/input";
+import Input from "@/components/ui/Input";
+
 const fileTypes = ["JPG", "PNG", "WEBP"];
-const Step_3_Create = ({
+
+const OfferImageAndURL = ({
   stepsRef,
   styles,
   setLink,
@@ -237,4 +238,4 @@ const Step_3_Create = ({
   );
 };
 
-export default Step_3_Create;
+export default OfferImageAndURL;

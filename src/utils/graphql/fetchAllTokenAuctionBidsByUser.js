@@ -1,5 +1,5 @@
 import { executeQuery } from "../utils/executeQuery";
-import config from "../../config/config";
+import config from "@/config/config";
 
 /**
  * Fetches all token auction bids placed by a specific user address for a given blockchain chain ID.

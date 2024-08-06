@@ -9,11 +9,11 @@ import TimerCard from "../timer/TimerCard";
 import { shortenAddress, useAddress } from "@thirdweb-dev/react";
 import { getAddress, formatUnits } from "ethers/lib/utils";
 import { ExclamationCircleIcon } from "@heroicons/react/24/solid";
-import InfoIcon from "../informations/infoIcon";
+import ResponsiveTooltip from "@/components/ui/ResponsiveTooltip";
 import { ThirdwebStorage } from "@thirdweb-dev/storage";
 import { BigNumber } from "ethers";
 
-const OfferItem = ({
+const TokenCard = ({
   item,
   url = "",
   isToken = false,
@@ -443,31 +443,31 @@ const OfferItem = ({
             {isSelectionActive ? (
               <span className="font-display  text-primaryBlack hover:text-primaryPurple text-base dark:text-white flex items-center gap-1">
                 {availableToSubmitAd && availableToSubmitAdFromOwnedTokens && (
-                  <InfoIcon text="You can submit an ad for this item">
+                  <ResponsiveTooltip text="You can submit an ad for this item">
                     <ExclamationCircleIcon className="h-5 w-5 text-red dark:text-red" />
-                  </InfoIcon>
+                  </ResponsiveTooltip>
                 )}
                 {createdOffersProposals && isPendingAdsOnOffer && (
-                  <InfoIcon text="You have 1 or more ads proposals to check on your offer">
+                  <ResponsiveTooltip text="You have 1 or more ads proposals to check on your offer">
                     <ExclamationCircleIcon className="h-5 w-5 text-red dark:text-red" />
-                  </InfoIcon>
+                  </ResponsiveTooltip>
                 )}{" "}
-                <InfoIcon text={name}>{name}</InfoIcon>
+                <ResponsiveTooltip text={name}>{name}</ResponsiveTooltip>
               </span>
             ) : (
               <div className="overflow-hidden text-ellipsis whitespace-nowrap ">
                 <span className="font-display  text-primaryBlack hover:text-primaryPurple text-base dark:text-white flex items-center gap-1">
                   {availableToSubmitAd && availableToSubmitAdFromOwnedTokens && (
-                    <InfoIcon text="You can submit an ad for this item">
+                    <ResponsiveTooltip text="You can submit an ad for this item">
                       <ExclamationCircleIcon className="h-5 w-5 text-red dark:text-red" />
-                    </InfoIcon>
+                    </ResponsiveTooltip>
                   )}
                   {createdOffersProposals && isPendingAdsOnOffer && (
-                    <InfoIcon text="You have 1 or more ads proposals to check on your offer">
+                    <ResponsiveTooltip text="You have 1 or more ads proposals to check on your offer">
                       <ExclamationCircleIcon className="h-5 w-5 text-red dark:text-red" />
-                    </InfoIcon>
+                    </ResponsiveTooltip>
                   )}{" "}
-                  <InfoIcon text={name}>{name}</InfoIcon>
+                  <ResponsiveTooltip text={name}>{name}</ResponsiveTooltip>
                 </span>
               </div>
             )}
@@ -608,4 +608,4 @@ const OfferItem = ({
   }
 };
 
-export default OfferItem;
+export default TokenCard;

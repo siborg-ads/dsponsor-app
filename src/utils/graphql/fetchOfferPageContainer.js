@@ -1,5 +1,5 @@
 import { executeQuery } from "./helper/executeQuery";
-import config from "../../config/config";
+import config from "@/config/config";
 
 /**
  * Fetches detailed information about a specific advertisement offer and its related data for a given blockchain chain.

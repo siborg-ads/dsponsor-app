@@ -1,11 +1,11 @@
 import React from "react";
 import Link from "next/link";
 
-import { useChainContext } from "../../contexts/hooks/useChainContext";
-import config from "../../config/config";
-import displayOrCheckKnownAddress from "../../utils/displayOrCheckKnownAddress";
+import { useChainContext } from "@/contexts/hooks/useChainContext";
+import config from "@/config/config";
+import displayOrCheckKnownAddress from "@/utils/displayOrCheckKnownAddress";
 
-const ItemsTabs = ({
+const Details = ({
   chainId,
   contractAddress,
   isUserOwner,
@@ -112,4 +112,4 @@ const ItemsTabs = ({
   );
 };
 
-export default ItemsTabs;
+export default Details;

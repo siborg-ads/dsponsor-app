@@ -1,6 +1,6 @@
 import React from "react";
 
-import TokenPageContainer from "../../../../containers/TokenPageContainer/TokenPageContainer";
+import TokenPageContainer from "@/@/containers/TokenPageContainer/TokenPageContainer";
 
 // export async function generateMetadata({
 //                                            params,

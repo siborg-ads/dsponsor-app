@@ -1,7 +1,7 @@
 import * as Popover from "@radix-ui/react-popover";
 import * as Tooltip from "@radix-ui/react-tooltip";
 
-const InfoIcon = ({ text, children }) => {
+const ResponsiveTooltip = ({ text, children }) => {
   const handleClick = (event) => {
     event.stopPropagation();
     event.preventDefault();
@@ -41,4 +41,4 @@ const InfoIcon = ({ text, children }) => {
   );
 };
 
-export default InfoIcon;
+export default ResponsiveTooltip;

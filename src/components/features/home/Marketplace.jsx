@@ -1,10 +1,10 @@
 import React, { useState, useMemo } from "react";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import { ChevronDownIcon, InformationCircleIcon } from "@heroicons/react/20/solid";
-import ItemCardSkeleton from "../../ui/skeletons/ItemCardSkeleton.jsx";
-import OfferItem from "../cards/offerItem.js";
+import TokenCardSkeleton from "@/components/ui/skeletons/TokenCardSkeleton.jsx";
+import TokenCard from "@/components/ui/cards/TokenCard";
 import { Popover, PopoverTrigger, PopoverContent } from "@nextui-org/popover";
-import Input from "../ui/input.js";
+import Input from "@/components/ui/Input";
 
 const onAuctionCondition = (auction, mint, direct) => {
   return (
@@ -292,7 +292,7 @@ const MarketplaceHome = ({ auctions, setAllTokens, allTokens, isAuctionsLoading 
           {!isAuctionsLoading ? (
             <>
               {filteredAuctions?.map((auction, index) => (
-                <OfferItem
+                <TokenCard
                   key={index}
                   item={auction.item}
                   isToken={true}
@@ -313,7 +313,7 @@ const MarketplaceHome = ({ auctions, setAllTokens, allTokens, isAuctionsLoading 
           ) : (
             <>
               {Array.from({ length: 12 }).map((_, index) => (
-                <ItemCardSkeleton key={index} />
+                <TokenCardSkeleton key={index} />
               ))}
             </>
           )}

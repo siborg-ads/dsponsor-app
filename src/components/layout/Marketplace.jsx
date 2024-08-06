@@ -1,19 +1,17 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { useRouter } from "next/router";
 import Image from "next/image";
-import Sidebar from "../../components/marketplace/Sidebar";
-
+import Sidebar from "@/components/marketplace/Sidebar";
 import "tippy.js/dist/tippy.css"; // optional
-import Meta from "../Meta";
-import OfferItem from "../../components/cards/offerItem";
+import Meta from "@/Meta";
+import TokenCard from "@/components/cards/TokenCard";
 import { useAddress } from "@thirdweb-dev/react";
+import { fetchAllListedToken } from "@/utils/graphql/fetchAllListedToken";
+import { useChainContext } from "@/contexts/hooks/useChainContext";
+import config from "@/config/config";
+import TokenCardSkeleton from "@/components/skeleton/TokenCardSkeleton";
 
-import { fetchAllListedToken } from "../../utils/graphql/fetchAllListedToken";
-import { useChainContext } from "../../contexts/hooks/useChainContext";
-import config from "../../config/config";
-import ItemCardSkeleton from "../../components/skeleton/ItemCardSkeleton";
-
-const MarketplaceContainer = () => {
+const Marketplace = () => {
   const router = useRouter();
 
   const address = useAddress();
@@ -136,7 +134,7 @@ const MarketplaceContainer = () => {
                   <div className="grid grid-cols-1 gap-[1.875rem] md:grid-cols-2 lg:grid-cols-4">
                     {filteredTokens?.map((item, index) => {
                       return (
-                        <OfferItem
+                        <TokenCard
                           item={item}
                           key={index}
                           url={
@@ -157,7 +155,7 @@ const MarketplaceContainer = () => {
                 ) : (
                   <div className="grid grid-cols-1 gap-[1.875rem] md:grid-cols-2 lg:grid-cols-4">
                     {[...Array(15)].map((_, index) => (
-                      <ItemCardSkeleton key={index} widthSize={230} />
+                      <TokenCardSkeleton key={index} widthSize={230} />
                     ))}
                   </div>
                 )}
@@ -170,4 +168,4 @@ const MarketplaceContainer = () => {
     </>
   );
 };
-export default MarketplaceContainer;
+export default Marketplace;

@@ -1,6 +1,6 @@
 import { getContract } from "thirdweb";
 import { sepolia } from "thirdweb/chains";
-import { client } from "../../data/services/client";
+import { client } from "@/data/services/client";
 
 export const getContractNFT = async (nftContractAddress) => {
   const contract = getContract({

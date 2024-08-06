@@ -1,5 +1,5 @@
 import { executeQuery } from "../utils/executeQuery";
-import config from "../../config/config";
+import config from "@/config/config";
 
 /**
  * Fetches all advertisement offers from the marketplace for a specific blockchain chain ID.

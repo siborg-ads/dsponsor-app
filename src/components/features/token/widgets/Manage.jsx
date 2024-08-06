@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { Web3Button, useAddress, useContractWrite } from "@thirdweb-dev/react";
-import ItemManageModal from "../modal/CreateListing";
+import ItemManageModal from "@/components/features/token/modals/CreateListing";
 import { toast } from "react-toastify";
 import { Spinner } from "@nextui-org/spinner";
-import { useChainContext } from "../../contexts/hooks/useChainContext";
+import { useChainContext } from "@/contexts/hooks/useChainContext";
 import { getAddress } from "ethers/lib/utils";
 
-const ItemManage = ({
+const Manage = ({
   successFullListing,
   setSuccessFullListing,
   offerData,
@@ -232,4 +232,4 @@ const ItemManage = ({
   );
 };
 
-export default ItemManage;
+export default Manage;

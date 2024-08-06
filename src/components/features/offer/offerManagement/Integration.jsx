@@ -1,8 +1,8 @@
 import React from "react";
 import "tippy.js/dist/tippy.css";
 import * as Tabs from "@radix-ui/react-tabs";
-import IframeIntegration from "./integrations/Iframe";
-import HtmlIntegration from "./integrations/HTML";
+import Iframe from "@/components/features/offer/offerManagement/integrations/Iframe";
+import HTML from "@/components/features/offer/offerManagement/integrations/HTML";
 
 const Integration = ({ chainId, offerId, offerTokens }) => {
   return (
@@ -32,10 +32,10 @@ const Integration = ({ chainId, offerId, offerTokens }) => {
 
         <div className="flex w-full mt-4">
           <Tabs.Content value="iframe">
-            <IframeIntegration chainId={chainId} offerId={offerId} offerTokens={offerTokens} />
+            <Iframe chainId={chainId} offerId={offerId} offerTokens={offerTokens} />
           </Tabs.Content>
           <Tabs.Content value="html">
-            <HtmlIntegration chainId={chainId} offerId={offerId} offerTokens={offerTokens} />
+            <HTML chainId={chainId} offerId={offerId} offerTokens={offerTokens} />
           </Tabs.Content>
         </div>
       </Tabs.Root>

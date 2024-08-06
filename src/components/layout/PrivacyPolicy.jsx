@@ -1,8 +1,8 @@
 import Image from "next/image";
 import React from "react";
-import privacyPolicyData from "../../data/privacy-policy";
+import privacyPolicyData from "@/data/privacy-policy";
 
-export default function PrivacyPolicyContainer() {
+export default function PrivacyPolicy() {
   return (
     <div className="pt-[5.5rem] lg:pt-24">
       <section className="relative py-16 md:py-24">

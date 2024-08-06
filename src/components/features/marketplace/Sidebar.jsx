@@ -3,9 +3,8 @@
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import tippy from "tippy.js";
-
-import config from "../../config/config";
-import Input from "../ui/input";
+import config from "@/config/config";
+import Input from "@/components/ui/Input";
 
 const status = [
   { id: 1, label: "Buy Now", listingType: "Direct" },

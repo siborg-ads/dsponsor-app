@@ -1,14 +1,14 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
-import { activated_features } from "../../data/activated_features";
-import Transactions from "./Transactions";
-import OwnedOffersCategoriesItems from "../categories/ownedOffers_categories_items";
-import OwnedAdProposalsCategoriesItems from "../categories/ownedAdProposals_categories_item";
-import AuctionsCategories from "../categories/Auctions_categories";
-import TokenAuctionBids from "../categories/tokenAuctionBids";
-import Bids from "./tabs/Bids";
+import { features } from "@/data/features";
+import Transactions from "@/components/features/profile/Transactions";
+import CreatedOffers from "@/components/features/profile/tabs/CreatedOffers";
+import OwnedTokens from "@/components/features/profile/tabs/OwnedTokens";
+import AuctionListedTokens from "@/components/features/profile/tabs/AuctionListedTokens";
+import TokenAuctionBids from "@/components/features/profile/tabs/TokenAuctionBids";
+import Bids from "@/components/features/profile/tabs/Bids";
 import { ExclamationCircleIcon } from "@heroicons/react/24/solid";
-import InfoIcon from "../informations/infoIcon";
+import ResponsiveTooltip from "@/components/ui/ResponsiveTooltip";
 import Link from "next/link";
 import {
   ActivityIcon,
@@ -68,7 +68,7 @@ const UserTabs = ({
         section: "tokenAuctionBids",
         icon: <LoaderIcon className="h-4 w-4" />
       },
-      ...(activated_features.canCreateOffer
+      ...(features.canCreateOffer
         ? [
             {
               id: 6,
@@ -108,9 +108,9 @@ const UserTabs = ({
                 }
               >
                 {isPendingAdsOnOffer && isOwner && text === "Created Offers" && (
-                  <InfoIcon text="You have 1 or more ads proposals to check on your offer">
+                  <ResponsiveTooltip text="You have 1 or more ads proposals to check on your offer">
                     <ExclamationCircleIcon className="h-5 w-5 text-red mr-2" />
-                  </InfoIcon>
+                  </ResponsiveTooltip>
                 )}
                 {icon}
                 <span className="font-display text-base font-medium ml-2">{text}</span>
@@ -130,7 +130,7 @@ const UserTabs = ({
         <Bids marketplaceBids={marketplaceBids} isLoading={isLoadingBids} />
       </TabPanel>
       <TabPanel>
-        <OwnedAdProposalsCategoriesItems
+        <OwnedTokens
           data={mappedownedAdProposals}
           isOwner={isOwner}
           isLoading={isLoading}
@@ -138,13 +138,13 @@ const UserTabs = ({
         />
       </TabPanel>
       <TabPanel>
-        <AuctionsCategories data={listedAuctionToken} isOwner={isOwner} isLoading={isLoading} />
+        <AuctionListedTokens data={listedAuctionToken} isOwner={isOwner} isLoading={isLoading} />
       </TabPanel>
       <TabPanel>
         <TokenAuctionBids data={tokenAuctionBids} isOwner={isOwner} isLoading={isLoading} />
       </TabPanel>
       <TabPanel>
-        <OwnedOffersCategoriesItems
+        <CreatedOffers
           data={createdData}
           isPendingAdsOnOffer={isPendingAdsOnOffer}
           isOwner={isOwner}

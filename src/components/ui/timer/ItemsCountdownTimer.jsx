@@ -53,8 +53,8 @@ const renderer = ({ days, hours, minutes, seconds, completed }) => {
   }
 };
 
-const items_Countdown_timer = ({ time = 500000 }) => {
+const ItemsCountdownTimer = ({ time = 500000 }) => {
   return <Countdown date={Date.now() + time} renderer={renderer}></Countdown>;
 };
 
-export default items_Countdown_timer;
+export default ItemsCountdownTimer;

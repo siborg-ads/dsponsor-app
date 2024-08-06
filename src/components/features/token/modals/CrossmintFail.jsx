@@ -1,6 +1,6 @@
 import React from "react";
 
-const TransactionFailedModal = ({ setCrossmintTransactionFailed }) => {
+const CrossmintFail = ({ setCrossmintTransactionFailed }) => {
   return (
     <div className="modal fade show flex backdrop-blur-sm backdrop-opacity-50 justify-center items-center">
       <div className="modal-dialog shadow-xl max-w-4xl z-50">
@@ -30,4 +30,4 @@ const TransactionFailedModal = ({ setCrossmintTransactionFailed }) => {
   );
 };
 
-export default TransactionFailedModal;
+export default CrossmintFail;

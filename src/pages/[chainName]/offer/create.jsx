@@ -1,4 +1,4 @@
-import CreateOfferContainer from "../../../containers/CreateOfferContainer/CreateOfferContainer";
+import CreateOfferContainer from "@/../containers/CreateOfferContainer/CreateOfferContainer";
 
 export default function CreateOfferPage() {
   return (

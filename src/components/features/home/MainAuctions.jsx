@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from "react";
-import ItemCardSkeleton from "../skeleton/ItemCardSkeleton";
-import OfferItem from "../cards/offerItem";
+import TokenCardSkeleton from "@/components/ui/skeleton/TokenCardSkeleton";
+import TokenCard from "@/components/ui/cards/TokenCard";
 import { InformationCircleIcon } from "@heroicons/react/20/solid";
 import { Popover, PopoverTrigger, PopoverContent } from "@nextui-org/popover";
 
@@ -55,7 +55,7 @@ const MainAuctions = ({ auctions, isAuctionsLoading }) => {
           {!isAuctionsLoading ? (
             <>
               {hotAuctions.map((auction, index) => (
-                <OfferItem
+                <TokenCard
                   key={index}
                   item={auction.item}
                   isToken={true}
@@ -73,10 +73,10 @@ const MainAuctions = ({ auctions, isAuctionsLoading }) => {
             </>
           ) : (
             <>
-              <ItemCardSkeleton />
-              <ItemCardSkeleton />
-              <ItemCardSkeleton />
-              <ItemCardSkeleton />
+              <TokenCardSkeleton />
+              <TokenCardSkeleton />
+              <TokenCardSkeleton />
+              <TokenCardSkeleton />
             </>
           )}
         </div>

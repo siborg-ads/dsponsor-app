@@ -1,19 +1,19 @@
 "use client";
 
 import Footer from "./footer";
-import WalletModal from "./modal/wallet_modal";
+//import WalletModal from "./modal/wallet_modal";
 import Link from "next/link";
 import { useState } from "react";
 
-import Header01 from "./header/Header01";
+import Header from "@/components/Header";
 
 export default function Layout({ children }) {
   const [isHoveringSupport, setIsHoveringSupport] = useState(false);
 
   return (
     <>
-      <Header01 />
-      <WalletModal />
+      <Header />
+ 
 
       <>{children}</>
 

@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import Timer from "../../../ui/timer/Timer";
-import BidsModal from "../modals/BidsModal";
+import Timer from "@/components/ui/timer/Timer";
+import BidsModal from "@/components/features/token/modals/BidsModal";
 import { ethers } from "ethers";
 import { getAddress } from "ethers/lib/utils";
 import { Web3Button } from "@thirdweb-dev/react";
-import config from "../../config/config";
+import config from "@/config/config";
 
-const ItemBids = ({
+const PlaceBid = ({
   setAmountToApprove,
   bidsAmount,
   setBidsAmount,
@@ -206,4 +206,4 @@ const ItemBids = ({
   );
 };
 
-export default ItemBids;
+export default PlaceBid;

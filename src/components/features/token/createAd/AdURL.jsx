@@ -1,6 +1,6 @@
-import Input from "../../ui/input.js";
+import Input from "../@/components/ui/Input.js";
 
-const Step_2_Mint = ({ stepsRef, styles, setLink, link, currentSlide, numSteps }) => {
+const AdURL = ({ stepsRef, styles, setLink, link, currentSlide, numSteps }) => {
   const handleChange = (e) => {
     let value = e.target.value;
     setLink(value);
@@ -37,4 +37,4 @@ const Step_2_Mint = ({ stepsRef, styles, setLink, link, currentSlide, numSteps }
   );
 };
 
-export default Step_2_Mint;
+export default AdURL;

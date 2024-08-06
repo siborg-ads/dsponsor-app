@@ -5,11 +5,11 @@ import "tippy.js/dist/tippy.css";
 import Link from "next/link";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { useChainContext } from "../../contexts/hooks/useChainContext.js";
+import { useChainContext } from "@/contexts/hooks/useChainContext";
 import { useEffect, useState } from "react";
 import { Web3Button } from "@thirdweb-dev/react";
-import config from "../../../../config/config.js";
-import Input from "../../../ui/input.jsx";
+import config from "@/config/config";
+import Input from "@/components/ui/Input";
 import { Spinner } from "@nextui-org/spinner";
 
 const PendingAds = ({

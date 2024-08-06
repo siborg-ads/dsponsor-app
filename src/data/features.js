@@ -7,7 +7,7 @@ const isDevelopment = env === "dev";
 
 // In development mode, we display create offer and multiple currencies (by default to allow easier dev).
 // We also later have those put in env variables to allow for easier testing
-export const activated_features = {
+export const features = {
   canCreateOffer: !!isDevelopment,
   // by default, first item used
   canHaveMultipleCurrencies: !!isDevelopment,

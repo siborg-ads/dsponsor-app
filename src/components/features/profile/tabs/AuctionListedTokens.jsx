@@ -1,9 +1,7 @@
 import React from "react";
-
 import Image from "next/image";
 import "tippy.js/themes/light.css";
-
-import OfferItem from "../cards/offerItem";
+import TokenCard from "@/components/ui/cards/TokenCard";
 
 const AuctionListedTokens = ({ data, isOwner, isLoading }) => {
   if (isLoading) {
@@ -37,7 +35,7 @@ const AuctionListedTokens = ({ data, isOwner, isLoading }) => {
             }
 
             return (
-              <OfferItem
+              <TokenCard
                 item={item}
                 listingType={"Auction"}
                 key={index}

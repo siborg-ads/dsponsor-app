@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { Web3Button, useContract, useContractWrite } from "@thirdweb-dev/react";
-import config from "../../config/config";
-import { useChainContext } from "../../contexts/hooks/useChainContext";
+import config from "@/config/config";
+import { useChainContext } from "@/contexts/hooks/useChainContext";
 import { toast } from "react-toastify";
 import { parseUnits, formatUnits } from "ethers/lib/utils";
 import * as Switch from "@radix-ui/react-switch";
 import { BigNumber } from "ethers";
-import { activated_features } from "../../data/activated_features";
-import Input from "../ui/input.jsx";
+import { features } from "@/data/features";
+import Input from "@/components/ui/Input";
 
 const isDisabledMessage = (disableMint) => {
   return disableMint
@@ -201,7 +201,7 @@ const ChangeMintPrice = ({ offer }) => {
         <label className="block text-white text-sm font-semibold">Disable mint</label>
       </div>
 
-      {activated_features?.canChangeTokenMintPrice && (
+      {features?.canChangeTokenMintPrice && (
         <div className="mb-4">
           <label className="block text-gray-700 text-sm font-semibold">Offer tokens</label>
           <span className="text-jacarta-200 text-xs font-semibold">

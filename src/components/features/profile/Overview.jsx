@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
-import OverviewCard from "./OverviewCard";
+import OverviewCard from "@/components/features/profile/OverviewCard";
 import { ArrowPathIcon } from "@heroicons/react/20/solid";
 import { shortenAddress } from "@thirdweb-dev/react";
 
-const ProfileOverview = ({ userData, ownedTokens, isLoading, manageAddress }) => {
+const Overview = ({ userData, ownedTokens, isLoading, manageAddress }) => {
   const [ranking, setRanking] = useState(null);
 
   useEffect(() => {
@@ -67,4 +67,4 @@ const ProfileOverview = ({ userData, ownedTokens, isLoading, manageAddress }) =>
   );
 };
 
-export default ProfileOverview;
+export default Overview;

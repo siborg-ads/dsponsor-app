@@ -15,50 +15,44 @@ import { useRouter } from "next/router";
 import { Spinner } from "@nextui-org/react";
 import React, { useEffect, useRef, useState } from "react";
 import "tippy.js/dist/tippy.css";
-import Meta from "../Meta.jsx";
-import PreviewModal from "../../components/modal/previewModal.jsx";
-import Step1Mint from "../../components/sliderForm/PageMint/Step_1_Mint.jsx";
-import Step2Mint from "../../components/sliderForm/PageMint/Step_2_Mint.jsx";
-import Step3Mint from "../../components/sliderForm/PageMint/Step_3_Mint.jsx";
-import ModalHelper from "../../components/Helper/modalHelper";
-import SliderForm from "../../components/sliderForm/sliderForm.jsx";
-import styles from "../../styles/createPage/style.module.scss";
-import Timer from "../../components/item/Timer.jsx";
-import { fetchTokenPageContainer } from "../../utils/graphql/fetchTokenPageContainer.js";
-import ItemLastestSales from "../../components/tables/ItemLastestSales.jsx";
-
+import Meta from "@/Meta";
+import AdSubmission from "@/components/modal/AdSubmission";
+import AdBriefing from "@/components/CarouselForm/PageMint/Step_1_Mint";
+import AdURL from "@/components/CarouselForm/PageMint/Step_2_Mint";
+import AdImage from "@/components/CarouselForm/PageMint/Step_3_Mint";
+import ModalHelper from "@/components/Helper/modalHelper";
+import CarouselForm from "@/components/CarouselForm/CarouselForm";
+import styles from "@/styles/createPage/style.module.scss";
+import Timer from "@/components/item/Timer";
+import { fetchTokenPageContainer } from "@/utils/graphql/fetchTokenPageContainer";
+import ItemLastestSales from "@/components/tables/ItemLastestSales";
 import { getCookie } from "cookies-next";
-import { ItemsTabs } from "../../components/component.js";
-
-import BuyModal from "../modal/BuyModal.jsx";
-
+import { ItemsTabs } from "@/components/component";
+import BuyModal from "@/components/features/token/modals/BuyModal.jsx";
 import { toast } from "react-toastify";
-import OfferSkeleton from "../../components/skeleton/offerSkeleton.jsx";
-
-import Validation from "../../components/offer-section/validation.jsx";
-
-import ItemBids from "../../components/item/ItemBids.jsx";
-import ItemManage from "../../components/item/ItemManage.jsx";
-import { useSwitchChainContext } from "../../contexts/hooks/useSwitchChainContext.js";
-import config from "../../config/config.js";
-import stringToUint256 from "../../utils/tokens/stringToUnit256.js";
+import OfferSkeleton from "@/components/skeleton/offerSkeleton.jsx";
+import Validation from "@/components/offer-section/validation.jsx";
+import ItemBids from "@/components/item/ItemBids.jsx";
+import ItemManage from "@/components/item/ItemManage.jsx";
+import { useSwitchChainContext } from "@/contexts/hooks/useSwitchChainContext.js";
+import config from "@/config/config.js";
+import stringToUint256 from "@/utils/tokens/stringToUnit256.js";
 import { formatUnits, getAddress, parseUnits } from "ethers/lib/utils";
-
 import "react-toastify/dist/ReactToastify.css";
-import ItemLastBids from "../../components/tables/ItemLastBids";
-import { activated_features } from "../../data/features.js";
-import { useChainContext } from "../../contexts/hooks/useChainContext.js";
+import ItemLastBids from "@/components/tables/ItemLastBids";
+import { features } from "@/data/features.js";
+import { useChainContext } from "@/contexts/hooks/useChainContext.js";
 import * as Accordion from "@radix-ui/react-accordion";
 import { ChevronDownIcon, ExclamationCircleIcon } from "@heroicons/react/24/solid";
-import InfoIcon from "../../components/informations/infoIcon.jsx";
-import Disable from "../../components/disable/disable.jsx";
-import Input from "../ui/input.jsx";
+import ResponsiveTooltip from "@/components/informations/infoIcon.jsx";
+import Disable from "@/components/disable/disable.jsx";
+import Input from "@/components/ui/Input.jsx";
 import { useSearchParams } from "next/navigation.js";
-import { addLineBreaks } from "../../utils/misc/addLineBreaks.js";
-import formatAndRoundPrice from "../../utils/formatAndRound.js";
-import TransactionFailedModal from "../../components/modal/failModal.jsx";
+import { addLineBreaks } from "@/utils/misc/addLineBreaks.js";
+import formatAndRoundPrice from "@/utils/formatAndRound.js";
+import TransactionFailedModal from "@/components/modal/failModal.jsx";
 
-const TokenPageContainer = () => {
+const Token = () => {
   const router = useRouter();
 
   const { currentChainObject } = useChainContext();
@@ -2246,7 +2240,7 @@ const TokenPageContainer = () => {
       {/* <ItemsTabs /> */}
       <Accordion.Item value="adSubmission">
         <div>
-          {isOwner && activated_features.canSeeSubmittedAds && isValidId ? (
+          {isOwner && features.canSeeSubmittedAds && isValidId ? (
             <div className="container">
               <Accordion.Header className="w-full">
                 <Accordion.Trigger
@@ -2270,7 +2264,7 @@ const TokenPageContainer = () => {
                   </div>
                 )}
                 {!isTokenInAuction && (
-                  <SliderForm
+                  <CarouselForm
                     styles={styles}
                     handlePreviewModal={handlePreviewModal}
                     stepsRef={stepsRef}
@@ -2279,7 +2273,7 @@ const TokenPageContainer = () => {
                     setCurrentSlide={setCurrentSlide}
                   >
                     {currentSlide === 0 && (
-                      <Step1Mint
+                      <AdBriefing
                         stepsRef={stepsRef}
                         styles={styles}
                         adParameters={adParameters}
@@ -2289,7 +2283,7 @@ const TokenPageContainer = () => {
                       />
                     )}
                     {currentSlide === 2 && (
-                      <Step2Mint
+                      <AdURL
                         stepsRef={stepsRef}
                         styles={styles}
                         setLink={setLink}
@@ -2301,7 +2295,7 @@ const TokenPageContainer = () => {
                     {currentSlide === 1 && (
                       <>
                         {imageURLSteps.map((id, index) => (
-                          <Step3Mint
+                          <AdImage
                             key={id}
                             stepsRef={stepsRef}
                             currentStep={index + 2}
@@ -2316,7 +2310,7 @@ const TokenPageContainer = () => {
                         ))}
                       </>
                     )}
-                  </SliderForm>
+                  </CarouselForm>
                 )}
               </Accordion.Content>
             </div>
@@ -2342,21 +2336,21 @@ const TokenPageContainer = () => {
             (token) => !!token?.tokenId && tokenId && BigInt(token?.tokenId) === BigInt(tokenId)
           )?.mint &&
             isValidId &&
-            activated_features.canSeeSubmittedAds && (
+            features.canSeeSubmittedAds && (
               <>
                 <Accordion.Header className="w-full">
                   <Accordion.Trigger
                     className={`${accordionActiveTab === "adValidation" && "bg-primaryPurple"} w-full flex items-center justify-center gap-4 mb-6 border border-primaryPurple hover:bg-primaryPurple cursor-pointer p-2 rounded-lg`}
                   >
                     {isOwner && sponsorHasAtLeastOneRejectedProposalAndNoPending && (
-                      <InfoIcon text="You have at least one rejected proposal and no pending proposal.">
+                      <ResponsiveTooltip text="You have at least one rejected proposal and no pending proposal.">
                         <ExclamationCircleIcon className="w-6 h-6 text-red" />
-                      </InfoIcon>
+                      </ResponsiveTooltip>
                     )}
                     {isMedia && mediaShouldValidateAnAd && (
-                      <InfoIcon text="You have at least one ad to validate or to refuse.">
+                      <ResponsiveTooltip text="You have at least one ad to validate or to refuse.">
                         <ExclamationCircleIcon className="w-6 h-6 text-red" />
-                      </InfoIcon>
+                      </ResponsiveTooltip>
                     )}
                     <h2 className="text-jacarta-900 font-bold font-display text-center text-3xl dark:text-white ">
                       Ad Validation
@@ -2482,7 +2476,7 @@ const TokenPageContainer = () => {
 
       {showPreviewModal && (
         <div className="modal fade show bloc">
-          <PreviewModal
+          <AdSubmission
             handlePreviewModal={handlePreviewModal}
             handleSubmit={handleSubmit}
             imageUrlVariants={imageUrlVariants}
@@ -2561,4 +2555,4 @@ const TokenPageContainer = () => {
   );
 };
 
-export default TokenPageContainer;
+export default Token;

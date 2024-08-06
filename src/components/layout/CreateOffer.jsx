@@ -1,22 +1,20 @@
 import React, { useEffect, useState, useRef } from "react";
-import Meta from "../Meta";
+import Meta from "@/Meta";
 import Image from "next/image";
 import "react-datepicker/dist/react-datepicker.css";
 import { useAddress, useContract, useContractWrite, useStorageUpload } from "@thirdweb-dev/react";
-
-import styles from "../../styles/createPage/style.module.scss";
-import PreviewModal from "../../components/modal/previewModal";
-import Step1Create from "../../components/sliderForm/PageCreate/Step_1_Create";
-import Step2Create from "../../components/sliderForm/PageCreate/Step_2_Create";
-import Step3Create from "../../components/sliderForm/PageCreate/Step_3_Create";
-import Step4Create from "../../components/sliderForm/PageCreate/Step_4_Create";
-import config from "../../config/config";
-
-import SliderForm from "../../components/sliderForm/sliderForm";
-import { useSwitchChainContext } from "../../contexts/hooks/useSwitchChainContext";
+import styles from "@/styles/createPage/style.module.scss";
+import AdSubmission from "@/components/modal/AdSubmission";
+import Step1Create from "@/components/CarouselForm/PageCreate/Step_1_Create";
+import Step2Create from "@/components/CarouselForm/PageCreate/Step_2_Create";
+import Step3Create from "@/components/CarouselForm/PageCreate/Step_3_Create";
+import Step4Create from "@/components/CarouselForm/PageCreate/Step_4_Create";
+import config from "@/config/config";
+import CarouselForm from "@/components/CarouselForm/CarouselForm";
+import { useSwitchChainContext } from "@/contexts/hooks/useSwitchChainContext";
 import { useRouter } from "next/router";
 
-const CreateOfferContainer = () => {
+const CreateOffer = () => {
   const [files, setFiles] = useState([]);
   const { mutateAsync: upload } = useStorageUpload();
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -396,7 +394,7 @@ const CreateOfferContainer = () => {
             </p>
           </div>
         </div>
-        <SliderForm
+        <CarouselForm
           styles={styles}
           handlePreviewModal={handlePreviewModal}
           stepsRef={stepsRef}
@@ -474,11 +472,11 @@ const CreateOfferContainer = () => {
             numSteps={numSteps}
             currentSlide={currentSlide}
           />
-        </SliderForm>
+        </CarouselForm>
       </section>
       {showPreviewModal && (
         <div className="modal fade show bloc">
-          <PreviewModal
+          <AdSubmission
             handlePreviewModal={handlePreviewModal}
             handleSubmit={handleSubmit}
             name={name}
@@ -515,4 +513,4 @@ const CreateOfferContainer = () => {
   );
 };
 
-export default CreateOfferContainer;
+export default CreateOffer;

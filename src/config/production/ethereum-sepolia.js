@@ -1,5 +1,5 @@
-import Network from "../../providers/utils/networks";
-import contractABI from "../../abi/dsponsorAdmin.json";
+import Network from "@/providers/utils/networks";
+import contractABI from "@/abi/dsponsorAdmin.json";
 import { Sepolia } from "@thirdweb-dev/chains";
 
 const prodEthereumSepolia = {

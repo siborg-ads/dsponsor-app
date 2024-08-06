@@ -1,11 +1,11 @@
 import Link from "next/link";
 import React, { useState } from "react";
-import renderDateToHumanString from "../../providers/utils/renderDateToHumanString";
-import renderPriceToHumanString from "../../providers/utils/renderPriceToHumanString";
-import formatLongAddress from "../../utils/formatLongAddress";
+import renderDateToHumanString from "@/utils/dates/renderDateToHumanString";
+import renderPriceToHumanString from "@/utils/prices/renderPriceToHumanString";
+import formatLongAddress from "@/utils/addresses/formatLongAddress";
 import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/20/solid";
 
-const ItemLastBids = ({ bids }) => {
+const LatestBids = ({ bids }) => {
   const [visibleListings, setVisibleListings] = useState(1);
 
   const transformStatus = (status) => {
@@ -131,4 +131,4 @@ const ItemLastBids = ({ bids }) => {
   );
 };
 
-export default ItemLastBids;
+export default LatestBids;

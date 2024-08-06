@@ -4,20 +4,20 @@ import { Web3Button, useContractWrite, useBalance, useAddress } from "@thirdweb-
 import { Spinner } from "@nextui-org/spinner";
 import { toast } from "react-toastify";
 import Link from "next/link";
-import config from "../../config/config";
-import { computeBidAmounts } from "../../utils/computeBidAmounts";
+import config from "@/config/config";
+import { computeBidAmounts } from "@/utils/computeBidAmounts";
 import { formatUnits, parseUnits } from "ethers/lib/utils";
-import formatAndRoundPrice from "../../utils/formatAndRound";
+import formatAndRoundPrice from "@/utils/formatAndRound";
 import { getCookie } from "cookies-next";
-import BidWithCrossmintButton from "../../../ui/buttons/BidWithCrossmintButton/BidWithCrossmintButton";
+import BidWithCrossmintButton from "@/components/ui/buttons/BidWithCrossmintButton/BidWithCrossmintButton";
 import Tippy from "@tippyjs/react";
 import { ClipboardIcon, InformationCircleIcon } from "@heroicons/react/20/solid";
-import handleCopy from "../../utils/handleCopy";
+import handleCopy from "@/utils/handleCopy";
 import "tippy.js/dist/tippy.css";
 import { BigNumber } from "ethers";
-import InfoIcon from "../../../ui/ResponsiveTooltip";
-import Input from "../ui/input";
-import { ngrokURL } from "../../data/ngrok";
+import ResponsiveTooltip from "@/components/ui/ResponsiveTooltip";
+import Input from "@/components/ui/Input";
+import { ngrokURL } from "@/data/ngrok";
 
 const BidsModal = ({
   setAmountToApprove,
@@ -78,7 +78,7 @@ const BidsModal = ({
   // If currency is WETH, we can pay with Crossmint
   // const canPayWithCrossmint =
   //   marketplaceListings[0]?.currency.toLowerCase() === chainWETH &&
-  //   activated_features.canPayWithCrossmintEnabled;
+  //   features.canPayWithCrossmintEnabled;
 
   let frontURL;
   if (typeof window !== "undefined") {
@@ -881,14 +881,14 @@ const BidsModal = ({
                       </Web3Button>
                     )}
                   </div>
-                  <InfoIcon
+                  <ResponsiveTooltip
                     text={`You need to approve the marketplace contract to spend your ${currencySymbol} on this transaction.`}
                   >
                     <span className="text-xs text-center text-jacarta-100 inline-flex items-center gap-1">
                       <InformationCircleIcon className="w-4 h-4 text-jacarta-100" />
                       Why do I have to approve ?
                     </span>
-                  </InfoIcon>
+                  </ResponsiveTooltip>
                 </div>
 
                 {canPayWithCrossmint && (

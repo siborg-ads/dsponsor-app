@@ -1,13 +1,13 @@
 import Image from "next/image";
 import Link from "next/link";
-import Logo from "./../../../public/images/siborg-ads.png";
+import Logo from "@/../public/images/siborg-ads.png";
 
 import { useRouter } from "next/router";
-import { isChildrenPageActive } from "../../utils/daynamicNavigation";
+import { isChildrenPageActive } from "@/utils/daynamicNavigation";
 import { useEffect, useState } from "react";
 import { ConnectWallet, useAddress } from "@thirdweb-dev/react";
-import { useChainContext } from "../../contexts/hooks/useChainContext";
-import { activated_features } from "../../data/activated_features";
+import { useChainContext } from "@/contexts/hooks/useChainContext";
+import { features } from "@/data/features";
 import { useSearchParams } from "next/navigation";
 
 const ConditionalCreateLi = ({ children, condition }) => {
@@ -81,7 +81,7 @@ export default function Header() {
                     </button>
                   </Link>
                 </li>
-                <ConditionalCreateLi condition={activated_features.canCreateOffer}>
+                <ConditionalCreateLi condition={features.canCreateOffer}>
                   <li className="group">
                     <Link href={chainId ? `/${chainId}/offer/create` : "#"}>
                       <button className="text-jacarta-900 font-display hover:text-primaryPurple focus:text-primaryPurple dark:hover:text-primaryPurple dark:focus:text-primaryPurple flex items-center justify-between py-3.5 text-base dark:text-white lg:px-5">
@@ -225,7 +225,7 @@ export default function Header() {
 
         <nav className="navbar w-full">
           <ul className="flex flex-col lg:flex-row">
-            <ConditionalCreateLi condition={activated_features.canSeeHomeInMobileMenu}>
+            <ConditionalCreateLi condition={features.canSeeHomeInMobileMenu}>
               <li className="group">
                 <Link href="/">
                   <button
@@ -247,7 +247,7 @@ export default function Header() {
             </ConditionalCreateLi>
 
             {/* create */}
-            <ConditionalCreateLi condition={activated_features.canCreateOffer}>
+            <ConditionalCreateLi condition={features.canCreateOffer}>
               <li className="group">
                 <Link href={chainId ? `/${chainId}/offer/create` : "#"}>
                   <button

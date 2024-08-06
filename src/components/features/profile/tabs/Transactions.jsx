@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { getAddress } from "ethers/lib/utils";
 import { DateRangePicker } from "@nextui-org/date-picker";
 import Link from "next/link";
-import { useChainContext } from "../../contexts/hooks/useChainContext";
+import { useChainContext } from "@/contexts/hooks/useChainContext";
 import { Loader2Icon } from "lucide-react";
 
 const Transactions = ({ manageAddress, lastActivities, isLoading }) => {

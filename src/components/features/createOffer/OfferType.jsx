@@ -1,9 +1,9 @@
 import { useState } from "react";
 
-import ModalHelper from "../../Helper/modalHelper";
-import Input from "../../ui/input";
+import ModalHelper from "@/components/modals/Helper";
+import Input from "@/components/ui/Input";
 
-const Step_1_Create = ({
+const OfferType = ({
   setDisplayedParameter,
   displayedParameter,
   selectedNumber,
@@ -342,4 +342,4 @@ const Step_1_Create = ({
   );
 };
 
-export default Step_1_Create;
+export default OfferType;

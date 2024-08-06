@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from "react";
-import SwitchChainContext from "../../contexts/SwitchChainContext";
+import SwitchChainContext from "@/contexts/SwitchChainContext";
 import config from "../config/config";
 
 const SwitchChainProvider = ({ children }) => {

@@ -1,19 +1,19 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import "tippy.js/dist/tippy.css"; // optional
-import Meta from "../Meta";
-import ProfileOverview from "../../components/user/ProfileOverview";
-import ProfileReferrals from "../../components/user/ProfileReferrals";
-import UserTabs from "../../components/user/UserTabs";
+import Meta from "@/Meta";
+import ProfileOverview from "@/components/user/ProfileOverview";
+import ProfileReferrals from "@/components/user/ProfileReferrals";
+import UserTabs from "@/components/user/UserTabs";
 import { useAddress } from "@thirdweb-dev/react";
-import { fetchAllOffersByUserAddress } from "../../utils/graphql/fetchAllOffersByUserAddress";
-import { fetchAllTokenByOfferForAuser } from "../../utils/graphql/fetchAllTokenByOfferFromUser";
-import { useChainContext } from "../../contexts/hooks/useChainContext";
-import config from "../../config/config";
+import { fetchAllOffersByUserAddress } from "@/utils/graphql/fetchAllOffersByUserAddress";
+import { fetchAllTokenByOfferForAuser } from "@/utils/graphql/fetchAllTokenByOfferFromUser";
+import { useChainContext } from "@/contexts/hooks/useChainContext";
+import config from "@/config/config";
 import { getAddress } from "ethers/lib/utils";
-import { activated_features } from "../../data/features";
+import { features } from "@/data/features";
 
-const ManageSpaceContainer = () => {
+const Profile = () => {
   const router = useRouter();
   const address = useAddress();
   const [createdData, setCreatedData] = useState(null);
@@ -241,7 +241,7 @@ const ManageSpaceContainer = () => {
         })
         .catch((err) => console.error(err));
 
-      let lastActivities = activated_features?.canFilterTransactionsWithWETH
+      let lastActivities = features?.canFilterTransactionsWithWETH
         ? data?.lastActivities.filter(
             (activity) => activity.symbol === "WETH" && activity.points > 0
           )
@@ -428,4 +428,4 @@ const ManageSpaceContainer = () => {
   );
 };
 
-export default ManageSpaceContainer;
+export default Profile;

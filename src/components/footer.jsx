@@ -1,10 +1,10 @@
 import Link from "next/link";
-import { footerMenuList as defaultFooterMenuList } from "../data/footer_data";
+import { footerMenuList as defaultFooterMenuList } from "@/data/footer";
 import Image from "next/image";
-import { useChainContext } from "../contexts/hooks/useChainContext";
+import { useChainContext } from "@/hooks/useChainContext";
 import { useAddress } from "@thirdweb-dev/react";
-import { activated_features } from "../data/activated_features";
-import Logo from "./../../public/images/siborg-ads.png";
+import { features } from "@/data/features";
+import Logo from "@/../public/images/siborg-ads/siborg-ads.png";
 
 const Footer = () => {
   const { currentChainObject } = useChainContext();
@@ -25,7 +25,7 @@ const Footer = () => {
                 href: `/profile/${address}`,
                 text: "Profile"
               },
-              ...(activated_features.canCreateOffer
+              ...(features.canCreateOffer
                 ? [
                     {
                       id: 2,

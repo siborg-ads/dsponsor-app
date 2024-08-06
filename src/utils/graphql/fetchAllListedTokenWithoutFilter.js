@@ -1,5 +1,5 @@
 import { executeQuery } from "./helper/executeQuery";
-import config from "../../config/config";
+import config from "@/config/config";
 
 /**
  * Fetches all listed tokens from the marketplace for a specific blockchain chain ID.

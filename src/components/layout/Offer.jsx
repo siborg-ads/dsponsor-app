@@ -1,37 +1,35 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";
-
-import Meta from "../Meta";
+import Meta from "@/Meta";
 import { ethers } from "ethers";
 import Image from "next/image";
 import { useContract, useContractWrite, useContractRead, useAddress } from "@thirdweb-dev/react";
 import Tippy from "@tippyjs/react";
-
-import OfferSkeleton from "../../components/skeleton/offerSkeleton";
-import { fetchOfferPageContainer } from "../../utils/graphql/fetchOfferPageContainer";
-import Integration from "../../components/offer-section/integration";
+import OfferSkeleton from "@/components/skeleton/offerSkeleton";
+import { fetchOfferPageContainer } from "@/utils/graphql/fetchOfferPageContainer";
+import Integration from "@/components/offer-section/integration";
 import { ThirdwebStorage } from "@thirdweb-dev/storage";
 import * as Accordion from "@radix-ui/react-accordion";
 import { ChevronDownIcon } from "@heroicons/react/24/solid";
 import { ExclamationCircleIcon } from "@heroicons/react/24/solid";
-import InfoIcon from "../../components/informations/infoIcon";
-import Form from "../../components/collections-wide/sidebar/collections/Form";
+import ResponsiveTooltip from "@/components/informations/infoIcon";
+import Form from "@/components/collections-wide/sidebar/collections/Form";
 import "tippy.js/dist/tippy.css";
-import Validation from "../../components/offer-section/validation";
-import { ItemsTabs } from "../../components/component";
-import config from "../../config/config";
-import { useSwitchChainContext } from "../../contexts/hooks/useSwitchChainContext";
-import { activated_features } from "../../data/features";
-import UpdateOffer from "../../components/offer-section/updateOffer";
-import ChangeMintPrice from "../../components/offer-section/changeMintPrice";
+import Validation from "@/components/offer-section/validation";
+import { ItemsTabs } from "@/components/component";
+import config from "@/config/config";
+import { useSwitchChainContext } from "@/contexts/hooks/useSwitchChainContext";
+import { features } from "@/data/features";
+import UpdateOffer from "@/components/offer-section/updateOffer";
+import ChangeMintPrice from "@/components/offer-section/changeMintPrice";
 import { Tabs, Tab, TabList, TabPanel } from "react-tabs";
 import { BadgePercentIcon, BlocksIcon, RefreshCwIcon } from "lucide-react";
-import Disable from "../../components/disable/disable";
-import OfferItem from "../../components/cards/offerItem";
-import { addLineBreaks } from "../../utils/misc/addLineBreaks";
+import Disable from "@/components/disable/disable";
+import TokenCard from "@/components/cards/offerItem";
+import { addLineBreaks } from "@/utils/misc/addLineBreaks";
 
-const OfferPageContainer = () => {
+const Offer = () => {
   const router = useRouter();
 
   const offerId = router.query?.offerId;
@@ -635,7 +633,7 @@ const OfferPageContainer = () => {
                 };
 
                 return (
-                  <OfferItem
+                  <TokenCard
                     key={index}
                     token={finalToken}
                     offerData={offerData}
@@ -654,21 +652,21 @@ const OfferPageContainer = () => {
 
       <Accordion.Item value="adValidation">
         <div className="container">
-          {activated_features.canSeeSubmittedAds && (
+          {features.canSeeSubmittedAds && (
             <>
               <Accordion.Header className="w-full">
                 <Accordion.Trigger
                   className={`${accordionActiveTab === "adValidation" && "bg-primaryPurple"} w-full flex items-center justify-center gap-4 mb-6 border border-primaryPurple hover:bg-primaryPurple cursor-pointer p-2 rounded-lg`}
                 >
                   {isOwner && sponsorHasAtLeastOneRejectedProposalAndNoPending && (
-                    <InfoIcon text="You have at least one rejected proposal and no pending proposal.">
+                    <ResponsiveTooltip text="You have at least one rejected proposal and no pending proposal.">
                       <ExclamationCircleIcon className="w-6 h-6 text-red" />
-                    </InfoIcon>
+                    </ResponsiveTooltip>
                   )}
                   {isMedia && mediaShouldValidateAnAd && (
-                    <InfoIcon text="You have at least one ad to validate or to refuse.">
+                    <ResponsiveTooltip text="You have at least one ad to validate or to refuse.">
                       <ExclamationCircleIcon className="w-6 h-6 text-red" />
-                    </InfoIcon>
+                    </ResponsiveTooltip>
                   )}
                   <h2 className="text-jacarta-900 font-bold font-display text-center text-3xl dark:text-white ">
                     Ad Validation
@@ -835,4 +833,4 @@ const OfferPageContainer = () => {
   );
 };
 
-export default OfferPageContainer;
+export default Offer;

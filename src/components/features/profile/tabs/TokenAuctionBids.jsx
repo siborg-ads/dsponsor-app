@@ -1,7 +1,7 @@
 import React from "react";
 import Image from "next/image";
 import "tippy.js/themes/light.css";
-import OfferItem from "../cards/offerItem";
+import TokenCard from "@/components/ui/cards/TokenCard";
 
 const TokenAuctionBids = ({ data, isOwner, isLoading }) => {
   if (isLoading) {
@@ -21,7 +21,7 @@ const TokenAuctionBids = ({ data, isOwner, isLoading }) => {
         <div className="grid grid-cols-1 gap-[1.875rem] md:grid-cols-2 lg:grid-cols-4">
           {data?.map((item, index) => {
             return (
-              <OfferItem
+              <TokenCard
                 item={item}
                 key={index}
                 listingType={"Auction"}

@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import "tippy.js/dist/tippy.css";
-import { activated_features } from "../../data/activated_features";
+import { features } from "@/data/features";
 import Link from "next/link";
-import { useChainContext } from "../../contexts/hooks/useChainContext";
+import { useChainContext } from "@/contexts/hooks/useChainContext";
 import { getAddress } from "ethers/lib/utils";
 import { DateRangePicker } from "@nextui-org/date-picker";
 
@@ -42,7 +42,7 @@ const Activity = ({ userAddr, chainId }) => {
         })
         .catch((err) => console.error(err));
 
-      let lastActivities = activated_features.canFilterTransactionsWithWETH
+      let lastActivities = features.canFilterTransactionsWithWETH
         ? data?.lastActivities.filter(
             (activity) => activity.symbol === "WETH" && activity.points > 0
           )

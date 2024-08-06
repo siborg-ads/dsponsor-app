@@ -1,7 +1,8 @@
-// import termsAndConditionsData from "../../data/terms-and-conditions";
+// import termsAndConditionsData from "@/data/terms-and-conditions";
 import Image from "next/image";
 import React from "react";
-export default function TermsAndConditionsContainer() {
+
+export default function TermsAndConditions() {
   return (
     <div className="pt-[5.5rem] lg:pt-24">
       <section className="relative py-16 md:py-24">

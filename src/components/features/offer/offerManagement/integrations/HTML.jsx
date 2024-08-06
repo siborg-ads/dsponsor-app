@@ -2,13 +2,13 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import * as RadioGroup from "@radix-ui/react-radio-group";
 import { Divider } from "@nextui-org/react";
-import InfoIcon from "../../../../ui/ResponsiveTooltip.jsx";
+import ResponsiveTooltip from "@/components/ui/ResponsiveTooltip";
 import { InformationCircleIcon } from "@heroicons/react/24/solid";
 import { ClipboardIcon } from "@heroicons/react/24/solid";
-import handleCopy from "../../../utils/handleCopy";
+import handleCopy from "@/utils/handleCopy";
 import Tippy from "@tippyjs/react";
 import { ChromePicker } from "react-color";
-import Input from "../../ui/input.js";
+import Input from "@/components/ui/Input";
 
 const initialColumns = (numberOfTokens) => {
   if (numberOfTokens % 7 === 0) return 7;
@@ -24,7 +24,7 @@ const initialColumns = (numberOfTokens) => {
   return 2;
 };
 
-const HtmlIntegration = ({ chainId, offerId, offerTokens }) => {
+const HTML = ({ chainId, offerId, offerTokens }) => {
   const [copied, setCopied] = React.useState(false);
   const [columns, setColumns] = useState(
     localStorage.getItem("htmlSettings")
@@ -209,9 +209,9 @@ const HtmlIntegration = ({ chainId, offerId, offerTokens }) => {
             <label className="text-white leading-none pl-1" htmlFor="r1">
               Clickable Logo Grid
             </label>
-            <InfoIcon text="This integration allows you to display a grid of clickable logos. (Example: sponsor logo grid at the bottom of the page). Each slot in the grid will display the sponsor's proposed logo redirecting to a URL. If you need to display a single static logo, you can also choose this integration.">
+            <ResponsiveTooltip text="This integration allows you to display a grid of clickable logos. (Example: sponsor logo grid at the bottom of the page). Each slot in the grid will display the sponsor's proposed logo redirecting to a URL. If you need to display a single static logo, you can also choose this integration.">
               <InformationCircleIcon className="w-5 h-5 text-white hover:text-jacarta-100 cursor-help" />
-            </InfoIcon>
+            </ResponsiveTooltip>
           </div>
 
           <div className="flex items-center gap-2">
@@ -225,9 +225,9 @@ const HtmlIntegration = ({ chainId, offerId, offerTokens }) => {
             <label className="text-white leading-none pl-1" htmlFor="r2">
               Dynamic Banner
             </label>
-            <InfoIcon text="This integration lets you display a randomly selected ad from those submitted by sponsors, with a new ad randomly selected at each request. The ad does not redirect to a URL.">
+            <ResponsiveTooltip text="This integration lets you display a randomly selected ad from those submitted by sponsors, with a new ad randomly selected at each request. The ad does not redirect to a URL.">
               <InformationCircleIcon className="w-5 h-5 text-white hover:text-jacarta-100 cursor-help" />
-            </InfoIcon>
+            </ResponsiveTooltip>
           </div>
         </RadioGroup.Root>
       </div>
@@ -288,9 +288,9 @@ const HtmlIntegration = ({ chainId, offerId, offerTokens }) => {
                   className=" !text-primaryPurple border-jacarta-200 focus:ring-primaryPurple/20 dark:border-jacarta-500 h-5 !w-5 self-start rounded focus:ring-offset-0"
                 />
                 <span className="text-white">Number of columns</span>
-                <InfoIcon text="You can set the number of columns to match the designated space on your page.">
+                <ResponsiveTooltip text="You can set the number of columns to match the designated space on your page.">
                   <InformationCircleIcon className="w-5 h-5 text-white hover:text-jacarta-100 cursor-help" />
-                </InfoIcon>
+                </ResponsiveTooltip>
               </label>
               {columns && (
                 <Input
@@ -322,9 +322,9 @@ const HtmlIntegration = ({ chainId, offerId, offerTokens }) => {
                   className=" !text-primaryPurple border-jacarta-200 focus:ring-primaryPurple/20 dark:border-jacarta-500 h-5 !w-5 self-start rounded focus:ring-offset-0"
                 />
                 <span className="text-white">Background color</span>
-                <InfoIcon text="By default, the background color of the table is not defined. You can select one if desired.">
+                <ResponsiveTooltip text="By default, the background color of the table is not defined. You can select one if desired.">
                   <InformationCircleIcon className="w-5 h-5 text-white hover:text-jacarta-100 cursor-help" />
-                </InfoIcon>
+                </ResponsiveTooltip>
               </label>
               {bgColor && (
                 <ChromePicker
@@ -443,4 +443,4 @@ const HtmlIntegration = ({ chainId, offerId, offerTokens }) => {
   );
 };
 
-export default HtmlIntegration;
+export default HTML;

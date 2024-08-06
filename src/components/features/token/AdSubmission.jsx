@@ -5,12 +5,12 @@ import { shortenAddress, Web3Button } from "@thirdweb-dev/react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Spinner } from "@nextui-org/spinner";
-import ModalHelper from "../../ui/modals/Helper";
-import { useChainContext } from "../../contexts/hooks/useChainContext";
+import ModalHelper from "@/components/ui/modals/Helper";
+import { useChainContext } from "@/contexts/hooks/useChainContext";
 import { InformationCircleIcon } from "@heroicons/react/20/solid";
-import InfoIcon from "../../ui/ResponsiveTooltip";
+import ResponsiveTooltip from "@/components/ui/ResponsiveTooltip";
 
-const PreviewModal = ({
+const AdSubmission = ({
   approvalForAllToken = true,
   handleApprove,
   isListing = false,
@@ -664,7 +664,7 @@ const PreviewModal = ({
                       </Web3Button>
                     </div>
 
-                    <InfoIcon
+                    <ResponsiveTooltip
                       text={`You need to approve the marketplace contract to spend your NFT on this
       transaction.`}
                     >
@@ -672,7 +672,7 @@ const PreviewModal = ({
                         <InformationCircleIcon className="w-4 h-4 text-jacarta-100" />
                         Why do I have to approve ?
                       </span>
-                    </InfoIcon>
+                    </ResponsiveTooltip>
                   </div>
                 ) : successFullUploadModal.hrefButton !== null ? (
                   <Link href={successFullUploadModal.hrefButton ?? "#"}>
@@ -697,4 +697,4 @@ const PreviewModal = ({
   );
 };
 
-export default PreviewModal;
+export default AdSubmission;

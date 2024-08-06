@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import Link from "next/link";
-import activityToTopPoints from "./utils/activityToTopPoints";
-import activityToTopRewarded from "./utils/activityToTopRewarded";
-import activityToHighestTransactions from "./utils/activityToHighestTransactions";
-import config from "../../config/config";
-import { useChainContext } from "../../contexts/hooks/useChainContext";
-import TopCards from "../leaderBoard/topCards";
-import formatLongAddress from "../../utils/formatLongAddress";
+import activityToTopPoints from "@/utils/tables/activityToTopPoints";
+import activityToTopRewarded from "@/utils/tables/activityToTopRewarded";
+import activityToHighestTransactions from "@/utils/tables/activityToHighestTransactions";
+import config from "@/config/config";
+import { useChainContext } from "@/contexts/hooks/useChainContext";
+import Cards from "@/components/features/leaderboard/Cards";
+import formatLongAddress from "@/utils/addresses/formatLongAddress";
 import { useAddress } from "@thirdweb-dev/react";
 import { getAddress } from "ethers/lib/utils";
 
@@ -47,7 +47,7 @@ const renderTable = (data, columns, userAddress) => {
   );
 };
 
-const LeaderboardTable = ({ activity }) => {
+const Tables = ({ activity }) => {
   const { currentChainObject } = useChainContext();
   const [activeBlockchain] = useState(currentChainObject?.chainId);
   const [itemActive, setItemActive] = useState(1);
@@ -273,7 +273,7 @@ const LeaderboardTable = ({ activity }) => {
             </div>
           </div>
         </div> */}
-        <TopCards activity={filteredActivity} />
+        <Cards activity={filteredActivity} />
       </div>
       <div className="hide-scrollbar overflow-x-auto">
         {/* <!-- Tabs Nav --> */}
@@ -342,4 +342,4 @@ const LeaderboardTable = ({ activity }) => {
   );
 };
 
-export default LeaderboardTable;
+export default Tables;

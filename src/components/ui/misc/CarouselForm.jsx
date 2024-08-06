@@ -1,6 +1,6 @@
 import React from "react";
 
-const SliderForm = ({ handlePreviewModal, numSteps, children, currentSlide, setCurrentSlide }) => {
+const CarouselForm = ({ handlePreviewModal, numSteps, children, currentSlide, setCurrentSlide }) => {
   const handleNextClick = () => {
     if (currentSlide < numSteps - 1) {
       setCurrentSlide(currentSlide + 1);
@@ -71,4 +71,4 @@ const SliderForm = ({ handlePreviewModal, numSteps, children, currentSlide, setC
   );
 };
 
-export default SliderForm;
+export default CarouselForm;

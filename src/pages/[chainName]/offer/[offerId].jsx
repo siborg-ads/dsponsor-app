@@ -1,4 +1,4 @@
-import OfferPageContainer from "../../../containers/OfferPageContainer/OfferPageContainer";
+import OfferPageContainer from "@/../containers/OfferPageContainer/OfferPageContainer";
 
 // export async function generateMetadata({
 //                                            params,

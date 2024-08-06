@@ -1,8 +1,8 @@
-import Input from "../../ui/input";
-import TextArea from "../../ui/textarea";
+import Input from "@/components/ui/Input";
+import TextArea from "@/components/ui/Textarea";
 import { useEffect, useState } from "react";
 
-const Step_2_Create = ({
+const OfferName = ({
   stepsRef,
   styles,
   setName,
@@ -85,4 +85,4 @@ const Step_2_Create = ({
   );
 };
 
-export default Step_2_Create;
+export default OfferName;

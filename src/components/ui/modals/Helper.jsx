@@ -9,6 +9,7 @@ import {
   useDisclosure
 } from "@nextui-org/react";
 import Image from "next/image";
+
 const ModalHelper = ({ title, body, images, titleImages, dark, size = "default" }) => {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 

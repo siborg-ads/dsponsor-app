@@ -1,11 +1,11 @@
 import Link from "next/link";
 import React, { useState } from "react";
-import renderDateToHumanString from "../../providers/utils/renderDateToHumanString";
-import renderPriceToHumanString from "../../providers/utils/renderPriceToHumanString";
-import formatLongAddress from "../../utils/formatLongAddress";
+import renderDateToHumanString from "@/utils/dates/renderDateToHumanString";
+import renderPriceToHumanString from "@/utils/prices/renderPriceToHumanString";
+import formatLongAddress from "@/utils/addresses/formatLongAddress";
 import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/20/solid";
 
-const ItemLastestSales = ({ sales }) => {
+const LastestSales = ({ sales }) => {
   const [visibleListings, setVisibleListings] = useState(1);
 
   const handleViewMore = () => {
@@ -92,4 +92,4 @@ const ItemLastestSales = ({ sales }) => {
   );
 };
 
-export default ItemLastestSales;
+export default LastestSales;

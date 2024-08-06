@@ -1,17 +1,17 @@
 import React, { useEffect, useState } from "react";
 import * as Switch from "@radix-ui/react-switch";
 import { Web3Button, useContract, useContractWrite } from "@thirdweb-dev/react";
-import config from "../../config/config";
-import { useChainContext } from "../../contexts/hooks/useChainContext";
+import config from "@/config/config";
+import { useChainContext } from "@/contexts/hooks/useChainContext";
 import { toast } from "react-toastify";
-import { activated_features } from "../../data/activated_features";
+import { features } from "@/data/features";
 import { ThirdwebStorage } from "@thirdweb-dev/storage";
 import { FileUploader } from "react-drag-drop-files";
 import Image from "next/image";
 import { DatePicker } from "@nextui-org/date-picker";
 import { parseDate } from "@internationalized/date";
-import Input from "../ui/input.js";
-import TextArea from "../ui/textarea.js";
+import Input from "@/components/ui/Input";
+import TextArea from "@/components/ui/TextArea";
 
 const fileTypes = ["JPG", "PNG", "WEBP"];
 
@@ -607,7 +607,7 @@ const UpdateOffer = ({ offer }) => {
         </button>
       </div>
 
-      {activated_features.canChangeValidators && (
+      {features.canChangeValidators && (
         <div className="mb-4">
           <label className="block text-gray-700 text-sm font-semibold mb-2">Validators</label>
 

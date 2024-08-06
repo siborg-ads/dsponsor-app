@@ -1,16 +1,16 @@
 import React, { useState, useEffect } from "react";
-import { activated_features } from "../../data/activated_features";
+import { features } from "@/data/features";
 import { useAddress, useContract, useContractWrite, useContractRead } from "@thirdweb-dev/react";
 import "react-toastify/dist/ReactToastify.css";
 import { ethers } from "ethers";
 import DatePicker from "react-datepicker";
-import ModalHelper from "../../../ui/modals/Helper";
-import PreviewModal from "../../../[...OLD]/modal/previewModal";
+import ModalHelper from "@/components/ui/modals/Helper";
+//import AdSubmission from "@/../[...OLD]/modal/AdSubmission";
 
-import { useChainContext } from "../../contexts/hooks/useChainContext";
-import Input from "../ui/input";
+import { useChainContext } from "@/contexts/hooks/useChainContext";
+import Input from "@/components/ui/Input";
 
-const ItemManageModal = ({
+const CreateListing = ({
   handleListingModal,
   offerData,
   setSuccessFullListing,
@@ -546,13 +546,13 @@ const ItemManageModal = ({
                                     className="dark:bg-secondaryBlack min-w-[110px] border-jacarta-100 hover:ring-primaryPurple/10 focus:ring-primaryPurple dark:border-jacarta-800 dark:placeholder:text-jacarta-100 w-full rounded-lg py-3 px-5 hover:ring-2 dark:text-white"
                                   >
                                     <option value="WETH">WETH</option>
-                                    {activated_features.canAcceptUSDC && (
+                                    {features.canAcceptUSDC && (
                                       <option value="USDC">USDC</option>
                                     )}
-                                    {activated_features.canAcceptUSDT && (
+                                    {features.canAcceptUSDT && (
                                       <option value="USDT">USDT</option>
                                     )}
-                                    {activated_features.canAcceptCustomTokens && (
+                                    {features.canAcceptCustomTokens && (
                                       <option value="custom">Custom</option>
                                     )}
                                   </select>
@@ -588,7 +588,7 @@ const ItemManageModal = ({
             </button>
             {showPreviewModal && (
               <div className="modal fade show bloc">
-                <PreviewModal
+                <AdSubmission
                   handlePreviewModal={handlePreviewModal}
                   isListing={true}
                   handleSubmit={handleSubmit}
@@ -623,4 +623,4 @@ const ItemManageModal = ({
   );
 };
 
-export default ItemManageModal;
+export default CreateListing;

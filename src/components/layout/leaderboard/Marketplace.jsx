@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
-import LeaderboardTable from "../../../components/tables/LeaderboardTable";
-import { fetchMarketplaceActivity } from "../../../utils/graphql/fetchMarketplaceActivity";
-import processBidsAndCalculateRewards from "./processBidsAndCalculateRewards";
-import LeaderBoardSkeleton from "../../../components/skeleton/leaderBoardSkeleton";
-import Meta from "../../Meta";
-import config from "../../../config/config";
+import LeaderboardTable from "@/components/ui/tables/LeaderboardTable";
+import { fetchMarketplaceActivity } from "@/utils/graphql/fetchMarketplaceActivity";
+import processBidsAndCalculateRewards from "@/utils/bids/processBidsAndCalculateRewards";
+import LeaderBoardSkeleton from "@/components/skeleton/leaderBoardSkeleton";
+import Meta from "@/Meta";
+import config from "@/config/config";
 
-const MarketplaceLeaderboardContainer = () => {
+const Marketplace = () => {
   const [activity, setActivity] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -67,4 +67,4 @@ const MarketplaceLeaderboardContainer = () => {
   );
 };
 
-export default MarketplaceLeaderboardContainer;
+export default Marketplace;

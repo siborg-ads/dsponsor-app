@@ -1,18 +1,16 @@
 import { useContract, useContractWrite, useStorageUpload } from "@thirdweb-dev/react";
 import Image from "next/image";
 import React, { useEffect, useRef, useState } from "react";
-import styles from "../../styles/createPage/style.module.scss";
-import OfferItem from "../cards/offerItem";
-import Step1Mint from "../../token/createAd/AdBriefing";
-import Step2Mint from "../../token/createAd/AdURL";
-import Step3Mint from "../../token/createAd/AdImage";
-import SliderForm from "../../../ui/misc/CarouselForm";
-
-import { useChainContext } from "../../contexts/hooks/useChainContext";
-
-import PreviewModal from "../../token/AdSubmission";
-import MainButton from "../../../ui/buttons/mainButton";
-import { activated_features } from "../../data/activated_features";
+import styles from "@/styles/create/style.module.scss";
+import TokenCard from "@/components/ui/cards/TokenCard";
+import AdBriefing from "@/components/features/token/createAd/AdBriefing";
+import AdURL from "@/components/features/token/createAd/AdURL";
+import AdImage from "@/components/features/token/createAd/AdImage";
+import CarouselForm from "@/components/ui/misc/CarouselForm";
+import { useChainContext } from "@/contexts/hooks/useChainContext";
+import AdSubmission from "@/components/features/token/AdSubmission";
+import MainButton from "@/components/ui/buttons/MainButton";
+import { features } from "@/data/features";
 
 const OwnedTokens = ({ data, isOwner, isLoading, fetchCreatedData }) => {
   const { currentChainObject } = useChainContext();
@@ -251,7 +249,7 @@ const OwnedTokens = ({ data, isOwner, isLoading, fetchCreatedData }) => {
       {data?.length > 0 ? (
         <div className="flex flex-col justify-center items-center ">
           {" "}
-          {isOwner && activated_features.canSeeSubmittedAds && (
+          {isOwner && features.canSeeSubmittedAds && (
             <div className="flex flex-col items-center justify-center">
               <div onClick={handleSelectionTokens}>
                 <MainButton
@@ -289,7 +287,7 @@ const OwnedTokens = ({ data, isOwner, isLoading, fetchCreatedData }) => {
                     key={index}
                     className={`  ${isSelectedItem[item.id] ? "border-4 border-jacarta-100 rounded-2xl " : ""} `}
                   >
-                    <OfferItem
+                    <TokenCard
                       item={item}
                       isToken={true}
                       listingType={item?.marketplaceListings[0]?.listingType}
@@ -311,7 +309,7 @@ const OwnedTokens = ({ data, isOwner, isLoading, fetchCreatedData }) => {
                     />
                   </div>
                 ) : (
-                  <OfferItem
+                  <TokenCard
                     item={item}
                     key={index}
                     isToken={true}
@@ -383,7 +381,7 @@ const OwnedTokens = ({ data, isOwner, isLoading, fetchCreatedData }) => {
       )}
       {showSliderForm && (
         <div>
-          <SliderForm
+          <CarouselForm
             styles={styles}
             files={files}
             handlePreviewModal={handlePreviewModal}
@@ -393,7 +391,7 @@ const OwnedTokens = ({ data, isOwner, isLoading, fetchCreatedData }) => {
             setCurrentSlide={setCurrentSlide}
           >
             {currentSlide === 0 && (
-              <Step1Mint
+              <AdBriefing
                 stepsRef={stepsRef}
                 styles={styles}
                 adParameters={adParameters}
@@ -407,7 +405,7 @@ const OwnedTokens = ({ data, isOwner, isLoading, fetchCreatedData }) => {
               {imageURLSteps.map((step, index) => (
                 <div key={step.uniqueId}>
                   {currentSlide === index + 1 && (
-                    <Step3Mint
+                    <AdImage
                       key={step.uniqueId}
                       stepsRef={stepsRef}
                       currentStep={index + 2}
@@ -426,7 +424,7 @@ const OwnedTokens = ({ data, isOwner, isLoading, fetchCreatedData }) => {
             </>
 
             {currentSlide === imageURLSteps.length + 1 && (
-              <Step2Mint
+              <AdURL
                 stepsRef={stepsRef}
                 styles={styles}
                 setLink={setLink}
@@ -435,12 +433,12 @@ const OwnedTokens = ({ data, isOwner, isLoading, fetchCreatedData }) => {
                 numSteps={numSteps}
               />
             )}
-          </SliderForm>
+          </CarouselForm>
         </div>
       )}
       {showPreviewModal && (
         <div className="modal fade show bloc">
-          <PreviewModal
+          <AdSubmission
             handlePreviewModal={handlePreviewModal}
             handleSubmit={handleSubmit}
             link={link}

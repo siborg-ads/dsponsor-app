@@ -1,5 +1,5 @@
-import Network from "../../utils/networks";
-import contractABI from "../../abi/dsponsorAdmin.json";
+import Network from "@/utils/networks";
+import contractABI from "@/abi/dsponsorAdmin.json";
 import { Base } from "@thirdweb-dev/chains";
 
 const prodBase = {

@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { DateRangePicker } from "@nextui-org/date-picker";
 import Link from "next/link";
-import { useChainContext } from "../../contexts/hooks/useChainContext";
-import formatAndRound from "../../utils/formatAndRound";
+import { useChainContext } from "@/contexts/hooks/useChainContext";
+import formatAndRound from "@/utils/formatAndRound";
 import { BigNumber } from "ethers";
 import { formatUnits } from "ethers/lib/utils";
 import { Loader2Icon } from "lucide-react";
