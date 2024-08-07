@@ -50,7 +50,6 @@ import { useSearchParams } from "next/navigation";
 import { addLineBreaks } from "@/utils/misc/addLineBreaks";
 import formatAndRoundPrice from "@/utils/prices/formatAndRound";
 import CrossmintFail from "@/components/features/token/modals/CrossmintFail";
-import PlaceBid from "@/components/features/token/widgets/PlaceBid";
 
 const Token = () => {
   const router = useRouter();
@@ -2186,7 +2185,7 @@ const Token = () => {
                     firstSelectedListing.endTime > now &&
                     firstSelectedListing?.status === "CREATED") ||
                     successFullBid) && (
-                    <PlaceBid
+                    <LatestBids
                       setAmountToApprove={setAmountToApprove}
                       fetchOffers={fetchOffers}
                       bidsAmount={bidsAmount}
