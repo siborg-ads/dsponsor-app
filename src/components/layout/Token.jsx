@@ -269,12 +269,12 @@ export default function Token({ offerId, tokenId }) {
       return;
     }
 
-    if (token?.mint === null && token?.nftContract?.enabled) {
+    if (token?.mint === null && token?.nftContract?.prices?.[0].enabled) {
       setTokenStatus("MINTABLE");
       return;
     }
 
-    if (token?.mint === null && !token?.nftContract?.enabled) {
+    if (token?.mint === null && !token?.nftContract?.prices?.[0].enabled) {
       setTokenStatus("MINTDISABLED");
       return;
     }
