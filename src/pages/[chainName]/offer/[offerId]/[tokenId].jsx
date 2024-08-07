@@ -1,13 +1,22 @@
-import React from "react";
+"use client";
 
-import TokenPageContainer from "@/components/layout/Token";
+import React from "react";
+import Token from "@/components/layout/Token";
+import { useRouter } from "next/router";
 
 export default function TokenPage() {
+  const router = useRouter();
+
+  let offerId;
+  let tokenId;
+  if (router?.query?.offerId && router?.query?.tokenId) {
+    offerId = Number(router?.query?.offerId);
+    tokenId = BigInt(router?.query?.tokenId);
+  }
+
   return (
-    <div className="">
-      <div className="relative pb-16 ">
-        <TokenPageContainer />
-      </div>
+    <div className="relative pb-16 ">
+      <Token offerId={offerId} tokenId={tokenId} />
     </div>
   );
 }

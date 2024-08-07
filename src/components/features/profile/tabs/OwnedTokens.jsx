@@ -8,7 +8,7 @@ import AdURL from "@/components/features/token/createAd/AdURL";
 import AdImage from "@/components/features/token/createAd/AdImage";
 import CarouselForm from "@/components/ui/misc/CarouselForm";
 import { useChainContext } from "@/hooks/useChainContext";
-import AdSubmission from "@/components/features/token/AdSubmission";
+import AdSubmission from "@/components/features/token/accordion/AdSubmission";
 import MainButton from "@/components/ui/buttons/MainButton";
 import { features } from "@/data/features";
 
