@@ -4,7 +4,7 @@ import Image from "next/image";
 import "react-datepicker/dist/react-datepicker.css";
 import { useAddress, useContract, useContractWrite, useStorageUpload } from "@thirdweb-dev/react";
 import styles from "@/styles/style.module.scss";
-import AdSubmission from "@/components/features/token/AdSubmission";
+import AdSubmission from "@/components/features/token/accordion/AdSubmission";
 import OfferType from "@/components/features/createOffer/OfferType";
 import OfferName from "@/components/features/createOffer/OfferName";
 import OfferImageAndURL from "@/components/features/createOffer/OfferImageAndURL";
