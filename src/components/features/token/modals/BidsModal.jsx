@@ -29,7 +29,7 @@ const BidsModal = ({
   setSuccessFullBid,
   dsponsorMpContract,
   toggleBidsModal,
-  marketplaceListings,
+  latestListing,
   currencySymbol,
   checkUserBalance,
   tokenBalance,
@@ -107,7 +107,7 @@ const BidsModal = ({
       setCanPayWithNativeToken(true);
     }
   }, [
-    marketplaceListings,
+    latestListing,
     chainId,
     parsedBidsAmount,
     nativeTokenBalance,
@@ -126,16 +126,15 @@ const BidsModal = ({
 
   useEffect(() => {
     if (
-      marketplaceListings &&
-      marketplaceListings[0] &&
+      latestListing &&
       parsedBidsAmount &&
       BigNumber.from(parsedBidsAmount).gt(BigNumber.from(0)) &&
       !successFullBid
     ) {
       const minimalBuyoutPerToken = BigNumber.from(
-        marketplaceListings[0]?.bidPriceStructure?.minimalBuyoutPerToken
+        latestListing?.bidPriceStructure?.minimalBuyoutPerToken
       );
-      const buyoutPrice = BigNumber.from(marketplaceListings[0]?.buyoutPricePerToken);
+      const buyoutPrice = BigNumber.from(latestListing?.buyoutPricePerToken);
 
       const isMinimalBuyout = BigNumber.from(parsedBidsAmount).gte(minimalBuyoutPerToken);
       const isBuyout = BigNumber.from(parsedBidsAmount).gte(buyoutPrice);
@@ -146,30 +145,29 @@ const BidsModal = ({
         setBuyoutPriceReached(false);
       }
     }
-  }, [marketplaceListings, currencyTokenDecimals, parsedBidsAmount, successFullBid]);
+  }, [latestListing, currencyTokenDecimals, parsedBidsAmount, successFullBid]);
 
   useEffect(() => {
-    if (marketplaceListings && marketplaceListings[0]) {
-      setBuyoutPrice(marketplaceListings[0]?.bidPriceStructure?.minimalBuyoutPerToken);
+    if (latestListing) {
+      setBuyoutPrice(latestListing?.bidPriceStructure?.minimalBuyoutPerToken);
     }
-  }, [marketplaceListings]);
+  }, [latestListing]);
 
   useEffect(() => {
     if (
-      marketplaceListings[0] &&
+      latestListing &&
       parsedBidsAmount &&
       parsedBidsAmount.gt(BigNumber.from(0)) &&
       currencyTokenDecimals
     ) {
       const newBidPerToken = parsedBidsAmount;
-      const reservePricePerToken = marketplaceListings[0]?.reservePricePerToken;
-      const buyoutPricePerToken = marketplaceListings[0]?.buyoutPricePerToken;
-      const previousPricePerToken =
-        marketplaceListings[0]?.bidPriceStructure?.previousPricePerToken;
-      const minimalAuctionBps = marketplaceListings[0]?.minimalBidBps;
-      const bonusRefundBps = marketplaceListings[0]?.previousBidAmountBps;
+      const reservePricePerToken = latestListing?.reservePricePerToken;
+      const buyoutPricePerToken = latestListing?.buyoutPricePerToken;
+      const previousPricePerToken = latestListing?.bidPriceStructure?.previousPricePerToken;
+      const minimalAuctionBps = latestListing?.minimalBidBps;
+      const bonusRefundBps = latestListing?.previousBidAmountBps;
       const royaltyBps = 0;
-      const protocolFeeBps = marketplaceListings[0]?.protocolFeeBps;
+      const protocolFeeBps = latestListing?.protocolFeeBps;
 
       const {
         // newRefundBonusAmount,
@@ -204,23 +202,23 @@ const BidsModal = ({
       setMinBid(0);
       setRefundedPrice(0);
     }
-  }, [parsedBidsAmount, marketplaceListings, currencyTokenDecimals]);
+  }, [parsedBidsAmount, latestListing, currencyTokenDecimals]);
 
   useEffect(() => {
-    const endTime = marketplaceListings[0]?.endTime;
+    const endTime = latestListing?.endTime;
     const endTimeDate = new Date(endTime * 1000); // we convert the timestamp to milliseconds
     setEndDate(endTimeDate.toLocaleDateString());
     setEndDateHour(endTimeDate.toLocaleTimeString());
-  }, [marketplaceListings]);
+  }, [latestListing]);
 
   useEffect(() => {
-    const minimalBidPerToken = marketplaceListings[0]?.bidPriceStructure?.minimalBidPerToken;
+    const minimalBidPerToken = latestListing?.bidPriceStructure?.minimalBidPerToken;
     if (minimalBidPerToken && !mount) {
       const minimalBid = ethers.utils.formatUnits(minimalBidPerToken, currencyTokenDecimals);
       setInitialIntPrice(minimalBid);
       setMount(true);
     }
-  }, [marketplaceListings, currencyTokenDecimals, mount]);
+  }, [latestListing, currencyTokenDecimals, mount]);
 
   useEffect(() => {
     if (bidsAmount && parseFloat(bidsAmount) >= parseFloat(initialIntPrice)) {
@@ -308,7 +306,7 @@ const BidsModal = ({
       const referralAddress = getCookie("_rid") || "";
 
       await auctionBids({
-        args: [marketplaceListings[0].id, parsedBidsAmount, address, referralAddress],
+        args: [latestListing?.id, parsedBidsAmount, address, referralAddress],
         overrides: { value: amountInEthWithSlippage }
       });
 
@@ -359,7 +357,7 @@ const BidsModal = ({
       const referralAddress = getCookie("_rid") || "";
 
       await auctionBids({
-        args: [marketplaceListings[0].id, bidsBigInt, address, referralAddress]
+        args: [latestListing?.id, bidsBigInt, address, referralAddress]
       });
       setSuccessFullBid(true);
       await fetchOffers();

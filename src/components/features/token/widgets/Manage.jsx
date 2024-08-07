@@ -7,17 +7,19 @@ import { useChainContext } from "@/hooks/useChainContext";
 import { getAddress } from "ethers/lib/utils";
 
 const Manage = ({
-  successFullListing,
-  setSuccessFullListing,
-  offerData,
-  marketplaceListings,
+  offer,
+  latestListing,
   royalties,
   dsponsorNFTContract,
   dsponsorMpContract,
-  conditions,
   tokenId,
+  listingCreated,
   setListingCreated,
-  fetchOffers
+  fetchOffers,
+  isTokenOwner,
+  isLister,
+  marketplaceListings,
+  tokenStatus
 }) => {
   const [listingModal, setListingModal] = useState(false);
   const [isLoadingButton, setIsLoadingButton] = useState(false);
@@ -32,17 +34,19 @@ const Manage = ({
   const address = useAddress();
 
   useEffect(() => {
-    if (marketplaceListings?.length > 0) {
-      const lastBidder = marketplaceListings
-        ?.sort((a, b) => b?.id - a?.id)
-        ?.bids?.sort((a, b) => b?.split("-")[1]?.id - a?.split("-")[1]?.id)[0]?.bidder;
+    if (latestListing) {
+      console.log(latestListing);
+      const lastBidder = latestListing?.bids?.sort(
+        (a, b) => Number(b?.toString().split("-")[1]?.id) - Number(a?.toString()?.split("-")[1]?.id)
+      )[0]?.bidder;
+
       if (lastBidder && address && getAddress(lastBidder) === getAddress(address)) {
         setIsLastBidder(true);
       } else {
         setIsLastBidder(false);
       }
     }
-  }, [marketplaceListings, address, setIsLastBidder]);
+  }, [latestListing, address, setIsLastBidder]);
 
   const handleListingModal = () => {
     setListingModal(!listingModal);
@@ -51,12 +55,14 @@ const Manage = ({
   const handleSubmitCancel = async () => {
     try {
       setIsLoadingButton(true);
-      const { listingType, id } = marketplaceListings.sort((a, b) => b?.id - a?.id)[0];
+      const { listingType, id } = latestListing;
+
       if (listingType === "Auction") {
         await closeAuctionListing({ args: [id] });
       } else if (listingType === "Direct") {
         await cancelDirectListing({ args: [id] });
       }
+
       setSuccessFullListing(true);
     } catch (e) {
       console.error(e);
@@ -67,41 +73,44 @@ const Manage = ({
     }
   };
 
+  const endTimePassed = new Date(latestListing?.endTime * 1000).getTime() < Date.now();
+  const listingHasBids = latestListing?.bids?.length > 0;
+  const isNotCreated = latestListing?.status !== "CREATED";
+  const noListings = marketplaceListings?.length <= 0;
+  const isAuction = tokenStatus === "AUCTION";
+  const isDirect = tokenStatus === "DIRECT";
+  const startDateNotPassed = new Date(latestListing?.startTime * 1000).getTime() > Date.now();
+  const isCancelled = latestListing?.status === "CANCELLED";
+
   const renderConditionsMessage = () => {
-    if (
-      !conditions?.endTimeNotPassed &&
-      conditions?.isCreated &&
-      conditions?.isAuction &&
-      conditions?.hasBids
-    ) {
+    if (endTimePassed && isAuction && listingHasBids) {
       return (
         <span className="dark:text-jacarta-100 text-jacarta-100 text-sm">
           Auction has ended, you can complete the auction by clicking the button below.
         </span>
       );
     }
-    if ((!conditions?.isCreated || marketplaceListings?.length <= 0) && conditions?.isOwner) {
+
+    if ((isNotCreated || noListings) && isTokenOwner) {
       return (
         <span className="dark:text-jacarta-100 text-jacarta-100 text-sm">
           Click the button below to sell your item in auction or direct listing.
         </span>
       );
     }
-    if (
-      conditions?.isDirect &&
-      (conditions?.isLister || conditions?.isOwner) &&
-      conditions?.isCreated
-    ) {
+
+    if (isDirect && (isLister || isTokenOwner)) {
       return (
         <span className="dark:text-jacarta-100 text-jacarta-100 text-sm">
           Click the button below to cancel the listing.
         </span>
       );
     }
+
     if (
-      conditions?.isAuction &&
-      (conditions?.isListerOrOwnerAndEndDateFinishedOrNoBids ||
-        conditions?.isListerOrOwnerAndStartDateNotPassed)
+      isAuction &&
+      (((isLister || isTokenOwner) && (endTimePassed || !listingHasBids)) ||
+        ((isLister || isTokenOwner) && startDateNotPassed))
     ) {
       return (
         <span className="dark:text-jacarta-100 text-jacarta-100 text-sm">
@@ -109,14 +118,12 @@ const Manage = ({
         </span>
       );
     }
+
     return null;
   };
 
   const renderActionButton = () => {
-    if (
-      (!conditions?.isCreated || marketplaceListings?.length <= 0) &&
-      (conditions?.isOwner || (conditions?.isLister && conditions?.isCancelled))
-    ) {
+    if ((isNotCreated || noListings) && (isTokenOwner || (isLister && isCancelled))) {
       return (
         <div className="w-full flex justify-center">
           <button
@@ -129,7 +136,8 @@ const Manage = ({
         </div>
       );
     }
-    if (conditions?.isDirect && (conditions?.isOwner || conditions?.isLister)) {
+
+    if (isDirect && (isTokenOwner || isLister)) {
       return (
         <Web3Button
           contractAddress={currentChainObject?.smartContracts?.DSPONSORMP?.address}
@@ -147,12 +155,10 @@ const Manage = ({
         </Web3Button>
       );
     }
+
     if (
-      (!conditions?.endTimeNotPassed &&
-        conditions?.isCreated &&
-        conditions?.isAuction &&
-        conditions?.hasBids) ||
-      (conditions?.isLister && !conditions?.hasBids)
+      (endTimePassed && isCreated && isAuction && listingHasBids) ||
+      (isLister && !listingHasBids)
     ) {
       return (
         <Web3Button
@@ -177,10 +183,11 @@ const Manage = ({
         </Web3Button>
       );
     }
+
     if (
-      conditions?.isAuction &&
-      (conditions?.isListerOrOwnerAndEndDateFinishedOrNoBids ||
-        conditions?.isListerOrOwnerAndStartDateNotPassed)
+      isAuction &&
+      (((isLister || isTokenOwner) && (endTimePassed || !listingHasBids)) ||
+        ((isLister || isTokenOwner) && startDateNotPassed))
     ) {
       return (
         <Web3Button
@@ -199,11 +206,12 @@ const Manage = ({
         </Web3Button>
       );
     }
+
     return null;
   };
 
   return (
-    <>
+    <React.Fragment>
       {renderConditionsMessage() && (
         <div className="dark:bg-secondaryBlack mb-2 rounded-2lg flex flex-col gap-4 bg-white p-8">
           <div className="sm:flex sm:flex-wrap">{renderConditionsMessage()}</div>
@@ -228,7 +236,7 @@ const Manage = ({
           />
         </div>
       )}
-    </>
+    </React.Fragment>
   );
 };
 
