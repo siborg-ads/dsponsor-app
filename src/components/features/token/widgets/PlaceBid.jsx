@@ -11,17 +11,17 @@ const PlaceBid = ({
   setAmountToApprove,
   bidsAmount,
   setBidsAmount,
-  bidded,
+  successFullBid,
   address,
-  setBidded,
-  dsponsorMarketplaceContract,
-  latestListing,
+  setSuccessFullBid,
+  dsponsorMpContract,
+  marketplaceListings,
   currencySymbol,
   tokenBalance,
   handleApprove,
-  tokenTotalPrice,
+  price,
   hasEnoughBalance,
-  currencyDecimals,
+  currencyTokenDecimals,
   checkUserBalance,
   allowanceTrue,
   checkAllowance,
@@ -46,23 +46,23 @@ const PlaceBid = ({
   const [bids, setBids] = useState(null);
 
   useEffect(() => {
-    const minimalBidPerToken = latestListing?.bidPriceStructure?.minimalBidPerToken;
+    const minimalBidPerToken = marketplaceListings[0]?.bidPriceStructure?.minimalBidPerToken;
     setMinimalBidPerToken(minimalBidPerToken);
-  }, [latestListing]);
+  }, [marketplaceListings]);
 
   const toggleBidsModal = async () => {
     if (minimalBidPerToken) {
       await checkAllowance(ethers.BigNumber.from(minimalBidPerToken));
     }
     setShowBidsModal(!showBidsModal);
-    setBidded(false);
+    setSuccessFullBid(false);
   };
 
   useEffect(() => {
-    if (latestListing) {
-      setBids(latestListing?.bids);
+    if (marketplaceListings) {
+      setBids(marketplaceListings?.sort((a, b) => Number(b?.id) - Number(a?.id))?.[0]?.bids);
     }
-  }, [latestListing]);
+  }, [marketplaceListings]);
 
   return (
     <div className="rounded-2lg bg-white p-8 dark:bg-secondaryBlack">
@@ -77,14 +77,19 @@ const PlaceBid = ({
                     Highest bid by{" "}
                   </span>
                   <Link
-                    href={`/profile/${latestListing?.bids[0]?.bidder}`}
+                    href={`/profile/${marketplaceListings?.sort((a, b) => Number(b?.id) - Number(a?.id))?.[0]?.bids[0]?.bidder}`}
                     className="text-sm font-bold text-primaryPurple"
                   >
                     {address &&
-                    latestListing?.bids[0]?.bidder &&
-                    getAddress(latestListing?.bids[0]?.bidder) === getAddress(address)
+                    marketplaceListings?.sort((a, b) => Number(b?.id) - Number(a?.id))?.[0]?.bids[0]
+                      ?.bidder &&
+                    getAddress(
+                      marketplaceListings?.sort((a, b) => Number(b?.id) - Number(a?.id))?.[0]
+                        ?.bids[0]?.bidder
+                    ) === getAddress(address)
                       ? "You"
-                      : latestListing?.bids[0]?.bidder}
+                      : marketplaceListings?.sort((a, b) => Number(b?.id) - Number(a?.id))?.[0]
+                          ?.bids[0]?.bidder}
                   </Link>
                 </div>
               )}
@@ -95,14 +100,14 @@ const PlaceBid = ({
                       <div className="flex flex-col">
                         <p className="text-sm text-jacarta-100">Starting price: </p>
                         <span className="text-lg font-medium leading-tight tracking-tight text-green">
-                          {tokenTotalPrice} {currencySymbol}
+                          {price} {currencySymbol}
                         </span>
                       </div>
                     ) : (
                       <div className="flex flex-col">
                         <p className="text-sm text-jacarta-100">Minimum bid amount: </p>
                         <span className="text-lg font-medium leading-tight tracking-tight text-green">
-                          {tokenTotalPrice} {currencySymbol}
+                          {price} {currencySymbol}
                         </span>
                       </div>
                     )}
@@ -120,7 +125,11 @@ const PlaceBid = ({
               <span className="js-countdown-ends-label text-sm text-jacarta-100 dark:text-jacarta-100">
                 Auction ends in
               </span>
-              <Timer endTime={latestListing?.endTime} />
+              <Timer
+                endTime={
+                  marketplaceListings?.sort((a, b) => Number(b?.id) - Number(a?.id))?.[0]?.endTime
+                }
+              />
             </div>
           </div>
 
@@ -141,8 +150,17 @@ const PlaceBid = ({
         <div>
           <span className="text-jacarta-100 block text-xs text-center">
             Auction live from{" "}
-            {latestListing?.startTime && new Date(latestListing?.startTime * 1000).toLocaleString()}{" "}
-            to {latestListing?.endTime && new Date(latestListing?.endTime * 1000).toLocaleString()}
+            {marketplaceListings?.sort((a, b) => Number(b?.id) - Number(a?.id))?.[0]?.startTime &&
+              new Date(
+                marketplaceListings?.sort((a, b) => Number(b?.id) - Number(a?.id))?.[0]?.startTime *
+                  1000
+              ).toLocaleString()}{" "}
+            to{" "}
+            {marketplaceListings?.sort((a, b) => Number(b?.id) - Number(a?.id))?.[0]?.endTime &&
+              new Date(
+                marketplaceListings?.sort((a, b) => Number(b?.id) - Number(a?.id))?.[0]?.endTime *
+                  1000
+              ).toLocaleString()}
           </span>
         </div>
       </div>
@@ -156,8 +174,8 @@ const PlaceBid = ({
             bidsAmount={bidsAmount}
             setBidsAmount={setBidsAmount}
             chainId={chainId}
-            bidded={bidded}
-            setBidded={setBidded}
+            successFullBid={successFullBid}
+            setSuccessFullBid={setSuccessFullBid}
             handleApprove={handleApprove}
             checkAllowance={checkAllowance}
             allowanceTrue={allowanceTrue}
@@ -165,9 +183,9 @@ const PlaceBid = ({
             checkUserBalance={checkUserBalance}
             dsponsorMpContract={dsponsorMpContract}
             toggleBidsModal={toggleBidsModal}
-            currencyDecimals={currencyDecimals}
+            currencyTokenDecimals={currencyTokenDecimals}
             tokenBalance={tokenBalance}
-            latestListing={latestListing}
+            marketplaceListings={marketplaceListings}
             currencySymbol={currencySymbol}
             address={address}
             showBidsModal={showBidsModal}

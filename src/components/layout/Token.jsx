@@ -5,13 +5,7 @@ import { useChainContext } from "@/hooks/useChainContext";
 import { useSearchParams } from "next/navigation";
 import * as Accordion from "@radix-ui/react-accordion";
 import Meta from "@/components/Meta";
-import {
-  useAddress,
-  useContractRead,
-  useContract,
-  useTokenDecimals,
-  useBalance
-} from "@thirdweb-dev/react";
+import { useAddress, useContractRead, useContract, useTokenDecimals } from "@thirdweb-dev/react";
 import stringToUint256 from "@/utils/tokens/stringToUnit256";
 import { ThirdwebStorage } from "@thirdweb-dev/storage";
 import TokenImage from "@/components/features/token/TokenImage";
@@ -21,7 +15,6 @@ import Disable from "@/components/ui/misc/Disable";
 import TokenEndedListing from "@/components/features/token/TokenEndedListing";
 import Listing from "@/components/features/token/widgets/Listing";
 import config from "@/config/config";
-import { getCookie } from "cookies-next";
 
 const metadata = {
   title: `Token || SiBorg Ads - The Web3 Monetization Solution`,
@@ -65,16 +58,6 @@ export default function Token({ offerId, tokenId }) {
   const [royaltiesAmount, setRoyaltiesAmount] = useState(null); // the royalties amount
   const [tokenPriceBN, setTokenPriceBN] = useState(null); // the price of the token (mint, direct or auction)
   const [tokenBuyoutPriceBN, setTokenBuyoutPriceBN] = useState(null); // buyout price in case of auction
-  const [amountToApprove, setAmountToApprove] = useState(null); // the amount to approve
-  const [bidsAmount, setBidsAmount] = useState(null); // the amount of the bids (entered by the user)
-  const [isAllowanceGood, setIsAllowanceGood] = useState(false); // whether the allowance is good
-  const [tokenEtherPriceRelayer, setTokenEtherPriceRelayer] = useState(null); // the token price in ether from the relayer
-  const [tokenTotalEtherPrice, setTokenTotalEtherPrice] = useState(null); // the token price in ether
-  const [amountInEthWithSlippage, setAmountInEthWithSlippage] = useState(null); // the amount in ether with slippage
-  const [displayedUSDCPrice, setDisplayedUSDCPrice] = useState(null); // the displayed price in USDC
-
-  const [isApproving, setIsApproving] = useState(false); // whether the user is approving
-  const [isBidding, setIsBidding] = useState(false); // whether the user is bidding
 
   const [royalties, setRoyalties] = useState(null); // the royalties
 
@@ -82,23 +65,17 @@ export default function Token({ offerId, tokenId }) {
   const [isMintDisabled, setIsMintDisabled] = useState(false); // whether the mint is disabled for the token
 
   const [listingCreated, setListingCreated] = useState(false); // true when a new listing has been created
-  const [bidded, setBidded] = useState(false); // true when the user has placed a bid
-
-  const [showBidsModal, setShowBidsModal] = useState(false); // whether the bids modal is shown
 
   const { currentChainObject } = useChainContext();
   const chainId = currentChainObject?.chainId;
 
   const searchParams = useSearchParams();
   const address = useAddress();
-  const referralAddress = getCookie("_rid") ?? "";
 
-  const { contract: dsponsorMarketplaceContract } = useContract(
+  const { contract: dsponsorMpContract } = useContract(
     config[chainId]?.smartContracts?.DSPONSORMP?.address
   );
   const { contract: dsponsorNFTContract } = useContract(offer?.nftContract?.id);
-
-  const { data: tokenBalance } = useBalance(currencyAddress);
   const { data: tokenOwner } = useContractRead(dsponsorNFTContract, "ownerOf", [
     tokenId?.toString()
   ]);
@@ -307,24 +284,48 @@ export default function Token({ offerId, tokenId }) {
 
     if (offer?.disable) {
       setTokenStatus("OFFERDISABLED");
-    } else if (token?.mint === null && token?.nftContract?.prices?.[0].enabled) {
+      return;
+    }
+
+    if (token?.mint === null && token?.nftContract?.prices?.[0].enabled) {
       setTokenStatus("MINTABLE");
-    } else if (token?.mint === null && !token?.nftContract?.prices?.[0].enabled) {
+      return;
+    }
+
+    if (token?.mint === null && !token?.nftContract?.prices?.[0].enabled) {
       setTokenStatus("MINTDISABLED");
-    } else if (token?.mint !== null && latestListing?.length === 0) {
+      return;
+    }
+
+    if (token?.mint !== null && latestListing?.length === 0) {
       setTokenStatus("MINTED");
-    } else if (latestListing?.status === "CREATED") {
+      return;
+    }
+
+    if (latestListing?.status === "CREATED") {
       if (latestListing?.listingType === "Direct") {
         setTokenStatus("DIRECT");
-      } else if (latestListing?.listingType === "Auction") {
-        setTokenStatus("AUCTION");
+        return;
       }
-    } else if (latestListing?.status === "COMPLETED") {
+
+      if (latestListing?.listingType === "Auction") {
+        setTokenStatus("AUCTION");
+        return;
+      }
+    }
+
+    if (latestListing?.status === "COMPLETED") {
       if (latestListing?.listingType === "Direct") {
         setTokenStatus("COMPLETEDDIRECT");
-      } else if (latestListing?.listingType === "Auction") {
-        setTokenStatus("COMPLETEDAUCTION");
+        return;
       }
+
+      if (latestListing?.listingType === "Auction") {
+        setTokenStatus("COMPLETEDAUCTION");
+        return;
+      }
+
+      return;
     }
   }, [latestListing, offer, token, tokenId]);
 
@@ -416,113 +417,6 @@ export default function Token({ offerId, tokenId }) {
     }
   }, [tokenStatus, offer, token, currencyDecimals, latestListing]);
 
-  const [debouncedBidsAmount, setDebouncedBidsAmount] = useState(bidsAmount);
-
-  useEffect(() => {
-    const handler = setTimeout(() => {
-      setDebouncedBidsAmount(bidsAmount);
-    }, 500);
-
-    return () => {
-      clearTimeout(handler);
-    };
-  }, [bidsAmount]);
-
-  useEffect(() => {
-    const fetchBuyEtherPrice = async () => {
-      try {
-        let amount = 0;
-        if (currencyDecimals && debouncedBidsAmount) {
-          amount = ethers.utils.parseUnits(debouncedBidsAmount, Number(currencyDecimals));
-        }
-
-        const tokenEtherPrice = await fetch(
-          `https://relayer.dsponsor.com/api/${chainId}/prices?token=${currencyAddress}&amount=${amount?.toString()}&slippage=0.3`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json"
-            }
-          }
-        )
-          .then((res) => res.json())
-          .then((data) => {
-            return data;
-          });
-
-        setTokenEtherPriceRelayer(tokenEtherPrice);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-
-    if (chainId && currencyAddress && currencyDecimals && debouncedBidsAmount) {
-      fetchBuyEtherPrice();
-    }
-  }, [chainId, currencyDecimals, currencyAddress, debouncedBidsAmount]);
-
-  useEffect(() => {
-    if (tokenEtherPriceRelayer) {
-      const tokenEtherPriceDecimals = formatUnits(
-        tokenEtherPriceRelayer?.amountInEthWithSlippage,
-        18
-      );
-      const amountInEthWithSlippageBN = ethers.BigNumber.from(
-        tokenEtherPriceRelayer?.amountInEthWithSlippage
-      );
-
-      setBuyTokenEtherPrice(tokenEtherPriceDecimals);
-      setAmountInEthWithSlippage(amountInEthWithSlippageBN);
-      setTokenEtherPrice(ethers.utils.formatUnits(amountInEthWithSlippageBN, 18));
-    }
-
-    if (bidsAmount && currencyDecimals && tokenEtherPriceRelayer) {
-      const amountUSDC = tokenEtherPriceRelayer?.amountUSDC;
-
-      const usdcPriceToDisplay = formatUnits(amountUSDC, 6);
-
-      setDisplayedUSDCPrice(formatAndRoundPrice(usdcPriceToDisplay));
-    } else {
-      setDisplayedUSDCPrice(0);
-    }
-  }, [bidsAmount, currencyDecimals, tokenEtherPriceRelayer]);
-
-  const handleApproveMarketplace = async () => {
-    try {
-      setIsApproving(true);
-
-      const amountToApproveBN = parseUnits(amountToApprove, currencyDecimals);
-
-      if (marketplaceListings?.length > 0 && tokenStatus === "DIRECT") {
-        await approve({
-          args: [config[chainId]?.smartContracts?.DSPONSORMP?.address, amountToApproveBN]
-        });
-      } else if (marketplaceListings?.length > 0 && tokenStatus === "AUCTION") {
-        const precision = bidsAmount.split(".")[1]?.length || 0;
-        const bidsAmountBN = parseUnits(
-          Number(bidsAmount).toFixed(Math.min(Number(currencyDecimals), precision)),
-          Number(currencyDecimals)
-        );
-
-        await approve({
-          args: [config[chainId]?.smartContracts?.DSPONSORMP?.address, bidsAmountBN.toString()]
-        });
-      } else {
-        await approve({
-          args: [config[chainId]?.smartContracts?.DSPONSORADMIN?.address, amountToApproveBN]
-        });
-      }
-      setAllowanceTrue(false);
-    } catch (error) {
-      setIsApproving(false);
-      console.error(error);
-      console.error("Approval failed:", error.message);
-      throw new Error("Approval failed.");
-    } finally {
-      setIsApproving(false);
-    }
-  };
-
   if (isFetching) {
     return <OfferSkeleton />;
   }
@@ -585,36 +479,9 @@ export default function Token({ offerId, tokenId }) {
                 dsponsorNFTContract={dsponsorNFTContract}
                 offer={offer}
                 royalties={royalties}
-                dsponsorMarketplaceContract={dsponsorMarketplaceContract}
+                dsponsorMpContract={dsponsorMpContract}
                 tokenId={tokenId}
-                isTokenOwner={isTokenOwner}
-                isLister={isLister}
                 fetchOffers={fetchOffers}
-                marketplaceListings={marketplaceListings}
-                setAmountToApprove={setAmountToApprove}
-                bidsAmount={bidsAmount}
-                setBidsAmount={setBidsAmount}
-                chainId={chainId}
-                handleApproveMarketplace={handleApproveMarketplace}
-                currencySymbol={currencySymbol}
-                tokenBalance={tokenBalance}
-                currencyDecimals={currencyDecimals}
-                bidded={bidded}
-                setBidded={setBidded}
-                address={address}
-                isApproving={isApproving}
-                setIsApproving={setIsApproving}
-                token={token}
-                isValidId={isValidId}
-                tokenOwner={tokenOwner}
-                referralAddress={referralAddress}
-                currencyAddress={currencyAddress}
-                tokenTotalEtherPrice={tokenTotalEtherPrice}
-                amountInEthWithSlippage={amountInEthWithSlippage}
-                displayedUSDCPrice={displayedUSDCPrice}
-                setDisplayedUSDCPrice={setDisplayedUSDCPrice}
-                showBidsModal={showBidsModal}
-                setShowBidsModal={setShowBidsModal}
               />
             </div>
           </div>

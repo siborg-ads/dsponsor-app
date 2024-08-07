@@ -8,43 +8,10 @@ export default function Listing({
   latestListing,
   tokenStatus,
   isInitialOfferCreator,
-  listingCreated,
-  setListingCreated,
   dsponsorNFTContract,
   offer,
   royalties,
-  dsponsorMarketplaceContract,
-  tokenId,
-  isTokenOwner,
-  isLister,
-  fetchOffers,
-  marketplaceListings,
-  setAmountToApprove,
-  bidsAmount,
-  setBidsAmount,
-  chainId,
-  tokenTotalPrice,
-  isAllowanceGood,
-  handleApproveMarketplace,
-  currencySymbol,
-  tokenBalance,
-  currencyDecimals,
-  bidded,
-  setBidded,
-  address,
-  isApproving,
-  setIsApproving,
-  token,
-  isValidId,
-  tokenOwner,
-  referralAddress,
-  currencyAddress,
-  tokenTotalEtherPrice,
-  amountInEthWithSlippage,
-  displayedUSDCPrice,
-  setDisplayedUSDCPrice,
-  showBidsModal,
-  setShowBidsModal
+  dsponsorMpContract
 }) {
   if (!isListingDisabled) {
     return (
@@ -62,53 +29,15 @@ export default function Listing({
           setListingCreated={setListingCreated}
           dsponsorNFTContract={dsponsorNFTContract}
           offer={offer}
-          latestListing={latestListing}
+          marketplaceListings={marketplaceListings}
           royalties={royalties}
-          dsponsorMarketplaceContract={dsponsorMarketplaceContract}
+          dsponsorMpContract={dsponsorMpContract}
+          conditions={conditions?.conditionsObject}
           tokenId={tokenId}
           fetchOffers={fetchOffers}
-          isTokenOwner={isTokenOwner}
-          isLister={isLister}
-          marketplaceListings={marketplaceListings}
-          tokenStatus={tokenStatus}
         />
 
-        <PlaceBidWidget
-          tokenStatus={tokenStatus}
-          latestListing={latestListing}
-          setAmountToApprove={setAmountToApprove}
-          fetchOffers={fetchOffers}
-          bidsAmount={bidsAmount}
-          setBidsAmount={setBidsAmount}
-          chainId={chainId}
-          tokenTotalPrice={tokenTotalPrice}
-          isAllowanceGood={isAllowanceGood}
-          handleApproveMarketplace={handleApproveMarketplace}
-          dsponsorMarketplaceContract={dsponsorMarketplaceContract}
-          marketplaceListings={marketplaceListings}
-          currencySymbol={currencySymbol}
-          tokenBalance={tokenBalance}
-          currencyDecimals={currencyDecimals}
-          bidded={bidded}
-          setBidded={setBidded}
-          address={address}
-          isApproving={isApproving}
-          setIsApproving={setIsApproving}
-          token={token}
-          isValidId={isValidId}
-          isTokenOwner={isTokenOwner}
-          isLister={isLister}
-          tokenOwner={tokenOwner}
-          offer={offer}
-          referralAddress={referralAddress}
-          currencyAddress={currencyAddress}
-          tokenTotalEtherPrice={tokenTotalEtherPrice}
-          amountInEthWithSlippage={amountInEthWithSlippage}
-          displayedUSDCPrice={displayedUSDCPrice}
-          setDisplayedUSDCPrice={setDisplayedUSDCPrice}
-          showBidsModal={showBidsModal}
-          setShowBidsModal={setShowBidsModal}
-        />
+        <PlaceBidWidget />
       </React.Fragment>
     );
   }
@@ -117,8 +46,8 @@ export default function Listing({
 function MintOrDirectListing({ latestListing, tokenStatus }) {
   const isDirect = tokenStatus === "DIRECT";
   const isMintable = tokenStatus === "MINTABLE";
-  const startTimePassed = new Date(latestListing?.startTime * 1000).getTime() < Date.now();
-  const endTimeNotPassed = new Date(latestListing?.endTime * 1000).getTime() > Date.now();
+  const startTimePassed = new Date(latestListing?.startTime).getTime() < Date.now();
+  const endTimeNotPassed = new Date(latestListing?.endTime).getTime() > Date.now();
   const isOngoing = startTimePassed && endTimeNotPassed;
 
   const condition = isMintable || (isDirect && isOngoing);
@@ -165,7 +94,7 @@ function MintOrDirectListing({ latestListing, tokenStatus }) {
 
 function AuctionListingNotStarted({ latestListing, tokenStatus }) {
   const isAuction = tokenStatus === "AUCTION";
-  const startTimeNotPassed = new Date(latestListing?.startTime * 1000).getTime() >= Date.now();
+  const startTimeNotPassed = new Date(latestListing?.startTime).getTime() >= Date.now();
 
   if (isAuction && startTimeNotPassed) {
     return (
@@ -252,7 +181,7 @@ function AirdropWidget({ isInitialOfferCreator, tokenStatus }) {
 
 function DirectListingNotStarted({ tokenStatus, latestListing }) {
   const isDirect = tokenStatus === "DIRECT";
-  const startTimeNotPassed = new Date(latestListing?.startTime * 1000).getTime() >= Date.now();
+  const startTimeNotPassed = new Date(latestListing?.startTime).getTime() >= Date.now();
 
   if (isDirect && startTimeNotPassed) {
     return (
@@ -262,7 +191,7 @@ function DirectListingNotStarted({ tokenStatus, latestListing }) {
             <span className="js-countdown-ends-label text-base text-jacarta-100 dark:text-jacarta-100">
               Direct listing will start in:
             </span>
-            <Timer endTime={latestListing?.startTime} />
+            <Timer endTime={marketplaceListings?.sort((a, b) => b?.id - a?.id)[0].startTime} />
           </div>
         </div>
       </div>
@@ -270,44 +199,9 @@ function DirectListingNotStarted({ tokenStatus, latestListing }) {
   }
 }
 
-function PlaceBidWidget({
-  tokenStatus,
-  latestListing,
-  setAmountToApprove,
-  fetchOffers,
-  bidsAmount,
-  setBidsAmount,
-  chainId,
-  tokenTotalPrice,
-  isAllowanceGood,
-  handleApproveMarketplace,
-  dsponsorMarketplaceContract,
-  marketplaceListings,
-  currencySymbol,
-  tokenBalance,
-  currencyDecimals,
-  bidded,
-  setBidded,
-  address,
-  isApproving,
-  setIsApproving,
-  token,
-  isValidId,
-  isTokenOwner,
-  isLister,
-  tokenOwner,
-  offer,
-  referralAddress,
-  currencyAddress,
-  tokenTotalEtherPrice,
-  amountInEthWithSlippage,
-  displayedUSDCPrice,
-  setDisplayedUSDCPrice,
-  showBidsModal,
-  setShowBidsModal
-}) {
-  const startTimePassed = new Date(latestListing?.startTime * 1000) < Date.now();
-  const endTimeNotPassed = new Date(latestListing?.endTime * 1000) > Date.now();
+function PlaceBidWidget({ tokenStatus, latestListing }) {
+  const startTimePassed = new Date(latestListing?.startTime).getTime() < Date.now();
+  const endTimeNotPassed = new Date(latestListing?.endTime).getTime() > Date.now();
   const isOngoing = startTimePassed && endTimeNotPassed;
   const isAuction = tokenStatus === "AUCTION";
 
@@ -321,34 +215,38 @@ function PlaceBidWidget({
         bidsAmount={bidsAmount}
         setBidsAmount={setBidsAmount}
         chainId={chainId}
-        tokenTotalPrice={tokenTotalPrice}
-        isAllowanceGood={isAllowanceGood}
-        handleApproveMarketplace={handleApproveMarketplace}
-        dsponsorMarketplaceContract={dsponsorMarketplaceContract}
+        checkUserBalance={checkUserBalance}
+        price={price}
+        allowanceTrue={allowanceTrue}
+        checkAllowance={checkAllowance}
+        handleApprove={handleApprove}
+        dsponsorMpContract={dsponsorMpContract}
         marketplaceListings={marketplaceListings}
-        currencySymbol={currencySymbol}
+        currencySymbol={currency}
         tokenBalance={tokenBalance}
-        currencyDecimals={currencyDecimals}
-        setBidded={setBidded}
-        bidded={bidded}
+        currencyTokenDecimals={currencyDecimals}
+        setSuccessFullBid={setSuccessFullBid}
+        successFullBid={successFullBid}
         address={address}
-        isApproving={isApproving}
-        setIsApproving={setIsApproving}
-        token={token}
+        isLoadingButton={isLoadingButton}
+        setIsLoadingButton={setIsLoadingButton}
+        token={tokenDO}
         isValidId={isValidId}
         user={{
           address: address,
-          isTokenOwner: isTokenOwner,
+          isOwner: isOwner,
           isLister: isLister,
-          tokenOwner: tokenOwner
+          isUserOwner: isUserOwner
         }}
-        offer={offer}
-        referrer={referralAddress}
-        currencyAddress={currencyAddress}
-        tokenTotalEtherPrice={tokenTotalEtherPrice}
+        offer={offerDO}
+        referrer={{
+          address: referralAddress
+        }}
+        currencyContract={tokenCurrencyAddress}
+        tokenEtherPrice={tokenEtherPrice}
         amountInEthWithSlippage={amountInEthWithSlippage}
-        displayedUSDCPrice={displayedUSDCPrice}
-        setDisplayedUSDCPrice={setDisplayedUSDCPrice}
+        displayedPrice={displayedPrice}
+        setDisplayedPrice={setDisplayedPrice}
         showBidsModal={showBidsModal}
         setShowBidsModal={setShowBidsModal}
       />
