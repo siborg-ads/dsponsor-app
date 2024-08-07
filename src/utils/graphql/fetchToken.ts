@@ -1,20 +1,214 @@
 import { executeQuery } from "@/utils/graphql/helper/executeQuery";
 import config from "@/config/config";
 
+type Royalty = {
+  bps: number;
+};
+
+type MarketplaceListing = {
+  listingType: string;
+  status: string;
+  startTime: number;
+  endTime: number;
+  lister: string;
+  id: string;
+  reservePricePerToken: string;
+  buyoutPricePerToken: string;
+  currency: string;
+  quantity: number;
+  directBuys: {
+    id: string;
+    listing: {
+      id: string;
+      listingType: string;
+    };
+    buyer: string;
+    quantityBought: number;
+    totalPricePaid: string;
+    revenueTransaction: {
+      blockTimestamp: number;
+    };
+    feeMethodology: string;
+    amountSentToProtocol: string;
+    protocolRecipient: string;
+    amountSentToSeller: string;
+    sellerRecipient: string;
+    amountSentToCreator: string;
+    creatorRecipient: string;
+  }[];
+  token: {
+    tokenId: string;
+    id: string;
+    nftContract: {
+      id: string;
+      royalty: Royalty;
+      adOffers: {
+        id: string;
+        metadataURL: string;
+        disable: boolean;
+      }[];
+    };
+    mint: {
+      tokenData: string;
+    };
+  };
+  bids: {
+    id: string;
+    listing: any; // Could be a reference to the listing, need more context
+    bidder: string;
+    quantity: number;
+    newPricePerToken: string;
+    totalBidAmount: string;
+    paidBidAmount: string;
+    refundBonus: string;
+    refundAmount: string;
+    refundProfit: string;
+    currency: string;
+    status: string;
+    creationTxHash: string;
+    revenueTransaction: any; // Could be further defined if needed
+    creationTimestamp: number;
+    lastUpdateTimestamp: number;
+    feeMethodology: string;
+    amountSentToProtocol: string;
+    protocolRecipient: string;
+    amountSentToSeller: string;
+    sellerRecipient: string;
+    amountSentToCreator: string;
+    creatorRecipient: string;
+  }[];
+};
+
+type MarketplaceOffer = {
+  id: string;
+  offeror: string;
+  expirationTimestamp: number;
+  currency: string;
+  totalPrice: string;
+  status: string;
+  creationTimestamp: number;
+  tokenType: string;
+  transferType: string;
+  rentalExpirationTimestamp?: number;
+};
+
+type Proposal = {
+  adOffer: {
+    id: string;
+  };
+  adParameter: {
+    id: string;
+    base: string;
+    variants: string[];
+  };
+  acceptedProposal?: {
+    id: string;
+    status: string;
+    data: string;
+    creationTimestamp: number;
+  };
+  pendingProposal?: {
+    id: string;
+    status: string;
+    data: string;
+    creationTimestamp: number;
+  };
+  rejectedProposal?: {
+    id: string;
+    status: string;
+    data: string;
+    rejectReason?: string;
+    creationTimestamp: number;
+  };
+};
+
+type ProposalHistory = {
+  adParameter: {
+    id: string;
+  };
+  status: string;
+  data: string;
+  rejectReason?: string;
+  creationTimestamp: number;
+  lastUpdateTimestamp: number;
+};
+
+type Mint = {
+  transactionHash: string | null;
+  from: string;
+  currency: string;
+  to: string;
+  tokenData: string | null;
+  revenueTransaction?: {
+    id: string;
+    blockTimestamp: number;
+  };
+  amount: string;
+  totalPaid: string;
+};
+
+type Token = {
+  tokenId: string;
+  mint: Mint | null;
+  marketplaceListings: MarketplaceListing[];
+  marketplaceOffers: MarketplaceOffer[];
+  setInAllowList: boolean;
+  currentProposals: Proposal[];
+  allProposals: ProposalHistory[];
+};
+
+type NFTContract = {
+  id: string;
+  maxSupply: number;
+  royalty: Royalty;
+  prices: {
+    currency: string;
+    amount: string;
+    enabled: boolean;
+  }[];
+  tokens: Token[];
+};
+
+type AdParameter = {
+  id: string;
+  base: string;
+  variants: string[];
+};
+
+type AdParameterEnable = {
+  enable: boolean;
+  adParameter: AdParameter;
+};
+
+type AdOffer = {
+  metadataURL: string;
+  id: string;
+  disable: boolean;
+  admins: string[];
+  initialCreator: string;
+  creationTimestamp: number;
+  adParameters: AdParameterEnable[];
+  nftContract: NFTContract;
+};
+
+type OfferAndTokenInfoResponse = {
+  adOffers: AdOffer[];
+};
+
 /**
  * Fetches detailed information about an advertisement offer and its specific token.
- * 
+ *
  * This function queries the GraphQL endpoint to retrieve comprehensive details about an advertisement offer (`offerId`)
- * and a specific token (`tokenId`) associated with that offer. It includes metadata about the offer, information about 
+ * and a specific token (`tokenId`) associated with that offer. It includes metadata about the offer, information about
  * the NFT contract, token details, marketplace listings, offers, and proposals. Additionally, it checks if the token can
  * still be minted and returns this information.
- * 
+ *
  * The returned data includes:
  * - Metadata of the advertisement offer
  * - Details about the NFT contract, including pricing and royalty information
  * - Information about the specific token, including its mint details, marketplace listings, offers, and proposals
  * - Historical proposals and current proposals for the token
- * 
+ *
  * @param {string} chainId - The ID of the blockchain chain to query.
  * @param {string} offerId - The ID of the advertisement offer to query.
  * @param {string} tokenId - The ID of the token to fetch details for.
@@ -216,13 +410,25 @@ export const fetchToken = async (chainId, offerId, tokenId) => {
     }
   `;
 
-  const response = await executeQuery(path.href, GET_DATA, { offerId, tokenId });
+  const response = (await executeQuery(path.href, GET_DATA, {
+    offerId,
+    tokenId
+  })) as OfferAndTokenInfoResponse;
 
   const chainConfig = config[chainId];
 
   const resultMappedData = response?.adOffers
     .map((element) => {
-      const sortByTokenId = element.nftContract.tokens.sort((a, b) => a.tokenId - b.tokenId);
+      const sortByTokenId = element.nftContract.tokens.sort((a, b) => {
+        if (a.tokenId < b.tokenId) {
+          return -1;
+        } else if (a.tokenId > b.tokenId) {
+          return 1;
+        } else {
+          return 0;
+        }
+      });
+
       const tokenIdAllowedToMint =
         sortByTokenId.find((token) => token.mint === null)?.tokenId || false;
 

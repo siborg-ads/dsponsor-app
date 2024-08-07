@@ -1,6 +1,68 @@
 import { executeQuery } from "@/utils/graphql/helper/executeQuery";
 import config from "@/config/config";
 
+type Royalty = {
+  bps: number;
+};
+
+type Mint = {
+  blockTimestamp: number;
+  tokenData: string | null;
+};
+
+type NFTContract = {
+  id: string;
+  royalty: Royalty;
+  adOffers: {
+    id: string;
+    metadataURL: string;
+  }[];
+};
+
+type Token = {
+  tokenId: string;
+  mint: Mint;
+  nftContract: NFTContract;
+  marketplaceListings: MarketplaceListing[];
+};
+
+type MarketplaceListing = {
+  id: string;
+  quantity: number;
+  token: Token;
+  listingType: "Direct" | "Auction";
+  currency: string;
+  reservePricePerToken: string;
+  buyoutPricePerToken: string;
+  bids: {
+    creationTimestamp: number;
+    bidder: string;
+    totalBidAmount: string;
+    status: string;
+  }[];
+  lister: string;
+  startTime: number;
+  endTime: number;
+  status: "UNSET" | "CREATED" | "COMPLETED" | "CANCELLED";
+  tokenType: string;
+  transferType: string;
+  rentalExpirationTimestamp?: number;
+};
+
+type AdOffer = {
+  id: string;
+  disable: boolean;
+  metadataURL: string;
+  nftContract: {
+    royalty: Royalty;
+    tokens: Token[];
+  };
+};
+
+type GetAllMarketplaceListingsResponse = {
+  adOffers: AdOffer[];
+};
+
 /**
  * Fetches all listed tokens.
  *
@@ -120,11 +182,18 @@ export const fetchMarketplace = async (chainId) => {
       }
     }
   `;
+
   const variables = {
     currentTimestamp
   };
-  const response = await executeQuery(path.href, GET_DATA, variables);
   const chainConfig = config[chainId];
+
+  const response = (await executeQuery(
+    path.href,
+    GET_DATA,
+    variables
+  )) as GetAllMarketplaceListingsResponse;
+
   const mappedListedToken = response.adOffers
     .map((offer) => {
       const newOffer = {

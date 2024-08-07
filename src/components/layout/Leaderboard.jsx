@@ -37,6 +37,8 @@ const Marketplace = () => {
           mergedActivitiesArray.push(mergedActivities);
         }
 
+        console.log(mergedActivitiesArray);
+
         setActivity(mergedActivitiesArray);
         setLoading(false);
       })

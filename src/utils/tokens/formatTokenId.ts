@@ -4,7 +4,7 @@
  * @param {string} str - The token ID string to format.
  * @returns {string} - The formatted token ID.
  */
-export function formatTokenId(str) {
+export function formatTokenId(str: string): string {
   if (str?.length <= 6) {
     return str;
   }

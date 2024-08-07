@@ -176,7 +176,6 @@ const AdSpaceNumberSelector = ({ selectedNumber, handleNumberChange }) => (
 
 const OfferType = ({
   setDisplayedParameter,
-  displayedParameter,
   selectedNumber,
   setSelectedNumber,
   selectedIntegration,
@@ -194,7 +193,10 @@ const OfferType = ({
   const AdIntegrationData = [
     {
       integrationName: "Image Ad Space",
-      imagesExemple: ["/images/examples/offer_exemple_0.png", "/images/examples/offer_exemple_1.png"],
+      imagesExemple: [
+        "/images/examples/offer_exemple_0.png",
+        "/images/examples/offer_exemple_1.png"
+      ],
       titleImages: ["Clickable logos Grid", "Dynamic Banner"],
       bodyDescription: "Available ad integrations: You are free to integrate ads as you like."
     }
@@ -226,7 +228,7 @@ const OfferType = ({
         handleRemoveParameter(intValue);
       }
     },
-    [setSelectedIntegration, setImageRatios]
+    [setSelectedIntegration, setImageRatios, handleAddParameter, handleRemoveParameter]
   );
 
   const handleAddParameter = useCallback(
@@ -278,7 +280,13 @@ const OfferType = ({
         }
       }
     },
-    [setImageRatios, setCustomImageRatio, setCustomRatioInputShown, setValidRatio]
+    [
+      setImageRatios,
+      setCustomImageRatio,
+      setCustomRatioInputShown,
+      setValidRatio,
+      updateParameterWithRatio
+    ]
   );
 
   const handleCustomRatioInput = useCallback(
@@ -295,7 +303,7 @@ const OfferType = ({
         setValidRatio((prev) => ({ ...prev, [index]: false }));
       }
     },
-    [setCustomImageRatio, setImageRatios, setValidRatio]
+    [setCustomImageRatio, setImageRatios, setValidRatio, updateParameterWithRatio]
   );
 
   const updateParameterWithRatio = useCallback(

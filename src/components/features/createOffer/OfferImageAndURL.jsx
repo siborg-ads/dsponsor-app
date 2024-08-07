@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback } from "react";
 import Image from "next/image";
 import { Switch, cn } from "@nextui-org/react";
 import { FileUploader } from "react-drag-drop-files";

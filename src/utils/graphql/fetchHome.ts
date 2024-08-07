@@ -118,11 +118,106 @@ export const fetchHome = async (chainId, allTokens) => {
       }
     }
   `;
+
+  type QueryType = {
+    adOffers: [
+      {
+        id: string;
+        disable: boolean;
+        metadataURL: string;
+        nftContract: {
+          royalty: {
+            bps: string;
+          };
+          tokens: [
+            {
+              tokenId: string;
+              mint: {
+                blockTimestamp: string;
+                tokenData: string;
+                totalPaid: string;
+                currency: string;
+              };
+              nftContract: {
+                id: string;
+                adOffers: [
+                  {
+                    id: string;
+                    metadataURL: string;
+                    disable: boolean;
+                  }
+                ];
+                prices: [
+                  {
+                    currency: string;
+                    amount: string;
+                    enabled: boolean;
+                  }
+                ];
+              };
+              marketplaceListings: [
+                {
+                  id: string;
+                  quantity: string;
+                  token: {
+                    tokenId: string;
+                    nftContract: {
+                      id: string;
+                      royalty: {
+                        bps: string;
+                      };
+                      adOffers: [
+                        {
+                          id: string;
+                          metadataURL: string;
+                          disable: boolean;
+                        }
+                      ];
+                    };
+                    mint: {
+                      tokenData: string;
+                    };
+                  };
+                  listingType: string;
+                  currency: string;
+                  reservePricePerToken: string;
+                  buyoutPricePerToken: string;
+                  bids: [
+                    {
+                      creationTimestamp: string;
+                      bidder: string;
+                      totalBidAmount: string;
+                      status: string;
+                      newPricePerToken: string;
+                      paidBidAmount: string;
+                      refundBonus: string;
+                      refundAmount: string;
+                      refundProfit: string;
+                    }
+                  ];
+                  lister: string;
+                  startTime: string;
+                  endTime: string;
+                  status: string;
+                  tokenType: string;
+                  transferType: string;
+                  rentalExpirationTimestamp: string;
+                }
+              ];
+            }
+          ];
+        };
+      }
+    ];
+  };
+
+  const chainConfig = config[chainId];
   const variables = {
     currentTimestamp
   };
-  const response = await executeQuery(path.href, GET_DATA, variables);
-  const chainConfig = config[chainId];
+
+  const response = (await executeQuery(path.href, GET_DATA, variables)) as QueryType;
+
   const mappedListedToken = response?.adOffers
     .map((offer) => {
       const newOffer = {
@@ -149,7 +244,10 @@ export const fetchHome = async (chainId, allTokens) => {
         chainConfig: chainConfig
       }))
     )
-    .sort((a, b) => b.marketplaceListings[0]?.startTime - a.marketplaceListings[0]?.startTime);
+    .sort(
+      (a, b) =>
+        Number(b.marketplaceListings[0]?.startTime) - Number(a.marketplaceListings[0]?.startTime)
+    );
 
   return mappedListedToken;
 };

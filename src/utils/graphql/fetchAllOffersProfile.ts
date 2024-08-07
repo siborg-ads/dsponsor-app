@@ -1,5 +1,6 @@
 import { executeQuery } from "@/utils/graphql/helper/executeQuery";
 import config from "@/config/config";
+import { Address } from "@thirdweb-dev/sdk";
 
 /**
  * Fetches all offers profile for a given user address and chain ID.
@@ -8,7 +9,7 @@ import config from "@/config/config";
  * @param {number} chainId - The ID of the blockchain chain.
  * @returns {Promise<Array<Object>>} - A promise that resolves to an array of offer profiles.
  */
-export const fetchAllOffersProfile = async (userAddress, chainId) => {
+export const fetchAllOffersProfile = async (userAddress: Address, chainId: number) => {
   const path = new URL(`https://relayer.dsponsor.com/api/${chainId}/graph`);
 
   const GET_DATA = `
@@ -197,12 +198,178 @@ export const fetchAllOffersProfile = async (userAddress, chainId) => {
     }
   `;
 
-  const response = await executeQuery(path.href, GET_DATA, { userAddress: userAddress });
+  type QueryType = {
+    adOffers: {
+      metadataURL: string;
+      disable: boolean;
+      name: string;
+      admins: Address[];
+      initialCreator: Address;
+      id: string;
+      allProposals: {
+        id: string;
+        adOffer: string;
+        token: string;
+        adParameter: string;
+        status: string;
+        data: string;
+        rejectReason: string;
+        creationTimestamp: string;
+        lastUpdateTimestamp: string;
+      }[];
+      creationTimestamp: string;
+      adParameters: {
+        enable: boolean;
+        adParameter: {
+          id: string;
+          base: string;
+          variants: string[];
+        };
+      }[];
+      nftContract: {
+        id: string;
+        prices: {
+          currency: Address;
+          amount: string;
+          enabled: boolean;
+        }[];
+        owner: Address;
+        tokens: {
+          tokenId: string;
+          mint: {
+            transactionHash: string;
+            to: Address;
+            tokenData: string;
+          };
+          marketplaceListings: {
+            id: string;
+            quantity: string;
+            token: {
+              tokenId: string;
+              nftContract: {
+                id: string;
+                royalty: {
+                  bps: string;
+                };
+                owner: {
+                  newOwner: Address;
+                  previousOwner: Address;
+                };
+                adOffers: {
+                  id: string;
+                  metadataURL: string;
+                  disable: boolean;
+                }[];
+                prices: {
+                  currency: Address;
+                  amount: string;
+                  enabled: boolean;
+                }[];
+              };
+              mint: {
+                tokenData: string;
+              };
+            };
+            listingType: string;
+            currency: Address;
+            reservePricePerToken: string;
+            buyoutPricePerToken: string;
+            bids: {
+              id: string;
+              bidder: Address;
+              quantity: string;
+              refundBonus: string;
+              refundAmount: string;
+              refundProfit: string;
+              paidBidAmount: string;
+              status: string;
+              currency: Address;
+              creationTimestamp: string;
+              lastUpdateTimestamp: string;
+              creationTxHash: string;
+              listing: {
+                token: {
+                  tokenId: string;
+                  mint: {
+                    tokenData: string;
+                  };
+                  nftContract: {
+                    adOffers: {
+                      id: string;
+                      name: string;
+                    }[];
+                  };
+                };
+              };
+            }[];
+            lister: Address;
+            startTime: string;
+            endTime: string;
+            status: string;
+            tokenType: string;
+            transferType: string;
+            rentalExpirationTimestamp: string;
+          };
+          setInAllowList: boolean;
+          currentProposals: {
+            adOffer: {
+              id: string;
+            };
+            adParameter: {
+              id: string;
+              base: string;
+              variants: string[];
+            };
+            acceptedProposal: {
+              id: string;
+              status: string;
+              data: string;
+              creationTimestamp: string;
+            };
+            pendingProposal: {
+              id: string;
+              status: string;
+              data: string;
+              creationTimestamp: string;
+            };
+            rejectedProposal: {
+              id: string;
+              status: string;
+              data: string;
+              rejectReason: string;
+              creationTimestamp: string;
+            };
+          }[];
+          allProposals: {
+            adParameter: {
+              id: string;
+            };
+            status: string;
+            data: string;
+            rejectReason: string;
+            creationTimestamp: string;
+            lastUpdateTimestamp: string;
+          }[];
+        }[];
+      };
+    }[];
+  };
+
+  const response = (await executeQuery(path.href, GET_DATA, {
+    userAddress: userAddress
+  })) as QueryType;
   const chainConfig = config[chainId];
 
   const resultMappedData = response?.adOffers
     .map((element) => {
-      const sortByTokenId = element.nftContract.tokens.sort((a, b) => a.tokenId - b.tokenId);
+      const sortByTokenId = element.nftContract.tokens.sort((a, b) => {
+        const tokenIdA = BigInt(a.tokenId);
+        const tokenIdB = BigInt(b.tokenId);
+        if (tokenIdA < tokenIdB) return -1;
+        if (tokenIdA > tokenIdB) return 1;
+        return 0;
+      });
+
       const tokenIdAllowedToMint =
         sortByTokenId.find((token) => token.mint === null)?.tokenId || false;
 
@@ -211,10 +378,6 @@ export const fetchAllOffersProfile = async (userAddress, chainId) => {
         chainConfig: chainConfig,
         tokenIdAllowedToMint: tokenIdAllowedToMint
       };
-
-      if (!tokenIdAllowedToMint && element.nftContract.allowList === true) {
-        return null;
-      }
 
       return combinedData;
     })
