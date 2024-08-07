@@ -11,6 +11,10 @@ import { ThirdwebStorage } from "@thirdweb-dev/storage";
 import TokenImage from "@/components/features/token/TokenImage";
 import TokenDetails from "@/components/features/token/TokenDetails";
 import { formatUnits } from "ethers/lib/utils";
+import Disable from "@/components/ui/misc/Disable";
+import TokenEndedListing from "@/components/features/token/TokenEndedListing";
+import Listing from "@/components/features/token/widgets/Listing";
+import config from "@/config/config";
 
 const metadata = {
   title: `Token || SiBorg Ads - The Web3 Monetization Solution`,
@@ -34,6 +38,8 @@ export default function Token({ offerId, tokenId }) {
   const [isLister, setIsLister] = useState(false); // whether the user is the lister of the token
   const [isTokenOwner, setIsTokenOwner] = useState(false); // whether the user is the owner of the token
   const [isOfferOwner, setIsOfferOwner] = useState(false); // whether the user is the owner of the offer
+  const [isInitialOfferCreator, setIsInitialOfferCreator] = useState(false); // wether the user is the initial creator of the offer
+  const [isListingDisabled, setIsListingDisabled] = useState(false); // whether the listing is disabled
 
   const [tokenMetadata, setTokenMetaData] = useState(null); // the metadata of the token
   const [tokenData, setTokenData] = useState(null); // the token data (ex: #testnet)
@@ -58,15 +64,19 @@ export default function Token({ offerId, tokenId }) {
   const [tokenStatus, setTokenStatus] = useState(null); // the status of the token (MINTABLE, MINTDISABLED, OFFERDISABLED, MINTED, DIRECT, AUCTION, COMPLETEDAUCTION, COMPLETEDDIRECT)
   const [isMintDisabled, setIsMintDisabled] = useState(false); // whether the mint is disabled for the token
 
+  const [listingCreated, setListingCreated] = useState(false); // true when a new listing has been created
+
   const { currentChainObject } = useChainContext();
   const chainId = currentChainObject?.chainId;
 
   const searchParams = useSearchParams();
-
   const address = useAddress();
 
-  const { contract: DsponsorNFTContract } = useContract(offer?.nftContract?.id);
-  const { data: tokenOwner } = useContractRead(DsponsorNFTContract, "ownerOf", [
+  const { contract: dsponsorMpContract } = useContract(
+    config[chainId]?.smartContracts?.DSPONSORMP?.address
+  );
+  const { contract: dsponsorNFTContract } = useContract(offer?.nftContract?.id);
+  const { data: tokenOwner } = useContractRead(dsponsorNFTContract, "ownerOf", [
     tokenId?.toString()
   ]);
 
@@ -259,6 +269,14 @@ export default function Token({ offerId, tokenId }) {
       const isMintDisabled = !offer?.nftContract?.prices?.[0]?.enabled;
       setIsMintDisabled(isMintDisabled);
     }
+
+    const validTo = offer?.metadata?.offer?.valid_to;
+    const disableCondition =
+      offer?.disable === true ||
+      new Date(validTo)?.getTime() < Date.now() ||
+      (offer?.nftContract?.prices?.[0]?.enabled === false && token?.mint === null);
+
+    setIsListingDisabled(disableCondition);
   }, [offer]);
 
   useEffect(() => {
@@ -445,6 +463,25 @@ export default function Token({ offerId, tokenId }) {
                 tokenStatus={tokenStatus}
                 isMintDisabled={isMintDisabled}
                 currencyDecimals={currencyDecimals}
+              />
+
+              <Disable isOffer={false} offer={offer} isDisabled={isListingDisabled} />
+
+              <TokenEndedListing latestListing={latestListing} tokenStatus={tokenStatus} />
+
+              <Listing
+                isListingDisabled={isListingDisabled}
+                latestListing={latestListing}
+                tokenStatus={tokenStatus}
+                isInitialOfferCreator={isInitialOfferCreator}
+                listingCreated={listingCreated}
+                setListingCreated={setListingCreated}
+                dsponsorNFTContract={dsponsorNFTContract}
+                offer={offer}
+                royalties={royalties}
+                dsponsorMpContract={dsponsorMpContract}
+                tokenId={tokenId}
+                fetchOffers={fetchOffers}
               />
             </div>
           </div>
