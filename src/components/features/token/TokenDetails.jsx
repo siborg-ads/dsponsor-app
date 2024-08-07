@@ -44,17 +44,17 @@ export default function TokenDetails({
             <ul className="flex flex-col gap-2 list-disc text-sm" style={{ listStyleType: "disc" }}>
               <li>
                 <span className="text-white">
-                  Amount sent to the creator: {creatorAmount} {currencySymbol}
+                  Amount sent to the creator: {formatAndRoundPrice(creatorAmount)} {currencySymbol}
                 </span>
               </li>
               <li>
                 <span className="text-white">
-                  Protocol fees: {protocolFeeAmount} {currencySymbol}
+                  Protocol fees: {formatAndRoundPrice(protocolFeeAmount)} {currencySymbol}
                 </span>
               </li>
               <li>
                 <span className="text-white">
-                  Total: {totalAmount} {currencySymbol}
+                  Total: {formatAndRoundPrice(totalAmount)} {currencySymbol}
                 </span>
               </li>
             </ul>
@@ -66,22 +66,23 @@ export default function TokenDetails({
             <ul className="flex flex-col gap-2 list-disc text-sm" style={{ listStyleType: "disc" }}>
               <li>
                 <span className="text-white">
-                  Amount sent to the lister: {listerAmount} {currencySymbol}
+                  Amount sent to the lister: {formatAndRoundPrice(listerAmount)} {currencySymbol}
                 </span>
               </li>
               <li>
                 <span className="text-white">
-                  Royalties sent to the creator: {royaltiesAmount} {currencySymbol}
+                  Royalties sent to the creator: {formatAndRoundPrice(royaltiesAmount)}{" "}
+                  {currencySymbol}
                 </span>
               </li>
               <li>
                 <span className="text-white">
-                  Protocol fees: {protocolFeeAmount} {currencySymbol}
+                  Protocol fees: {formatAndRoundPrice(protocolFeeAmount)} {currencySymbol}
                 </span>
               </li>
               <li>
                 <span className="text-white">
-                  Total: {totalAmount} {currencySymbol}
+                  Total: {formatAndRoundPrice(totalAmount)} {currencySymbol}
                 </span>
               </li>
             </ul>
