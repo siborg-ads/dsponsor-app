@@ -34,15 +34,15 @@ const Offer = () => {
 
   const offerId = router.query?.offerId;
   const chainId = router.query?.chainName as string;
-  const [refusedValidatedAdModal, setRefusedValidatedAdModal] = useState(null);
-  const [copied, setCopied] = useState(false);
-  const [offerData, setOfferData] = useState<any[]>([]);
-  const [royalties, setRoyalties] = useState(null);
+  const [refusedValidatedAdModal, setRefusedValidatedAdModal] = useState<boolean>(false);
+  const [copied, setCopied] = useState<boolean>(false);
+  const [offerData, setOfferData] = useState<any>(null);
+  const [royalties, setRoyalties] = useState<number | null>(null);
   const [currency, setCurrency] = useState(null);
   const [selectedItems, setSelectedItems] = useState<any[]>([]);
-  const [, setPrice] = useState(null);
+  const [, setPrice] = useState<number | null>(null);
   const [imageModal, setImageModal] = useState(false);
-  const [showEntireDescription, setShowEntireDescription] = useState(false);
+  const [showEntireDescription, setShowEntireDescription] = useState<boolean>(false);
   const [pendingProposalData, setPendingProposalData] = useState([]);
   const [isOwner, setIsOwner] = useState(false);
   const address = useAddress();
@@ -65,8 +65,8 @@ const Offer = () => {
   const { setSelectedChain } = useSwitchChainContext();
   const [, setCanChangeMintPrice] = useState(false);
   const [offerManagementActiveTab, setOfferManagementActiveTab] = useState("integration");
-  const [imageUrl, setImageUrl] = useState(null);
-  const [accordionActiveTab, setAccordionActiveTab] = useState([]);
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const [accordionActiveTab, setAccordionActiveTab] = useState<string[]>([]);
 
   const { data: bps } = useContractRead(DsponsorAdminContract, "feeBps");
   const maxBps = 10000;
@@ -87,13 +87,13 @@ const Offer = () => {
     }
   }, [offerData]);
 
-  const [itemProposals, setItemProposals] = useState(null);
+  const [itemProposals, setItemProposals] = useState<any | null>(null);
   const [mediaShouldValidateAnAd, setMediaShouldValidateAnAd] = useState(false);
   const [
     sponsorHasAtLeastOneRejectedProposalAndNoPending,
     setSponsorHasAtLeastOneRejectedProposalAndNoPending
   ] = useState(false);
-  const [offers, setOffers] = useState(null);
+  const [offers, setOffers] = useState<any[] | null>(null);
   const [isMedia, setIsMedia] = useState(false);
 
   const fetchAllOffersRef = React.useRef(false);
@@ -257,7 +257,7 @@ const Offer = () => {
   useEffect(() => {
     if (!offerData) return;
     try {
-      const currencyTokenObject = {};
+      const currencyTokenObject: any = {};
       if (
         !decimalsContract &&
         !symbolContract &&
@@ -281,7 +281,9 @@ const Offer = () => {
       const bigIntPrice =
         (BigInt(offerData?.nftContract?.prices[0]?.amount) * (BigInt(bps) + BigInt(maxBps))) /
         BigInt(maxBps);
-      const formatPrice = ethers.utils.formatUnits(bigIntPrice, currencyTokenObject.decimals);
+      const formatPrice = parseFloat(
+        ethers.utils.formatUnits(bigIntPrice, currencyTokenObject.decimals)
+      );
 
       setPrice(Number(Math.ceil(formatPrice * 1000) / 1000));
       setCurrency(currencyTokenObject);
@@ -785,7 +787,6 @@ const Offer = () => {
                   <Integration
                     chainId={chainId}
                     offerId={offerId}
-                    setCopied={setCopied}
                     copied={copied}
                     offerTokens={offerData?.nftContract?.tokens}
                   />
@@ -794,7 +795,7 @@ const Offer = () => {
                   <UpdateOffer offer={offerData} />
                 </TabPanel>
                 <TabPanel>
-                  <ChangeMintPrice offer={offerData} currency={currency} />
+                  <ChangeMintPrice offer={offerData} />
                 </TabPanel>
               </Tabs>
             </Accordion.Content>

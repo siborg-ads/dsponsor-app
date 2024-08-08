@@ -72,7 +72,7 @@ const Token = () => {
   const [link, setLink] = useState("");
   const [amountToApprove, setAmountToApprove] = useState(null);
   const [buyTokenEtherPrice, setBuyTokenEtherPrice] = useState(null);
-  const [tokenEtherPriceRelayer, setTokenEtherPriceRelayer] = useState(null);
+  const [tokenEtherPriceRelayer, setTokenEtherPriceRelayer] = useState<any | null>(null);
   const [royalties, setRoyalties] = useState(null);
   const [errors, setErrors] = useState({});
   const [marketplaceListings, setMarketplaceListings] = useState([]);

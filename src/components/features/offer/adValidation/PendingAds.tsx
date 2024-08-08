@@ -16,7 +16,8 @@ interface PendingAdsProps {
   // eslint-disable-next-line no-unused-vars
   setSelectedItems: (value: any) => void;
   selectedItems: any[];
-  handleItemSubmit: (i: any) => void;
+  // eslint-disable-next-line no-unused-vars
+  handleItemSubmit: (i: any) => Promise<unknown>;
   pendingProposalData: any;
   comments?: any;
   isToken: boolean;

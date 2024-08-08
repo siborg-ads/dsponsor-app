@@ -13,7 +13,7 @@ interface SwitchChainProviderProps {
 }
 
 const SwitchChainProvider: React.FC<SwitchChainProviderProps> = ({ children }) => {
-  const [selectedChain, setSelectedChain] = useState(Object.values(config)[0]?.network);
+  const [selectedChain, setSelectedChain] = useState<string>(Object.values(config)[0]?.network);
 
   const contextValue = useMemo(() => {
     return {
