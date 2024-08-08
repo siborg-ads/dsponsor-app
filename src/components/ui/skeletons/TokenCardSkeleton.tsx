@@ -10,18 +10,22 @@ const TokenCardSkeleton = ({ widthSize }) => {
       <Skeleton className="rounded-lg">
         <div className="rounded-lg bg-default-300 h-40"></div>
       </Skeleton>
+
       <div className=" flex justify-between ">
         <Skeleton className="w-3/5 rounded-lg">
           <div className="h-3 w-3/5 rounded-lg bg-default-200"></div>
         </Skeleton>
+
         <Skeleton className="w-1/5 rounded-lg">
           <div className="h-3 w-1/5 rounded-lg bg-default-200"></div>
         </Skeleton>
       </div>
+
       <div className=" flex justify-between ">
         <Skeleton className="w-2/5 rounded-lg">
           <div className="h-3 w-3/5 rounded-lg bg-default-200"></div>
         </Skeleton>
+
         <Skeleton className="w-1/5 rounded-lg">
           <div className="h-3 w-1/5 rounded-lg bg-default-200"></div>
         </Skeleton>

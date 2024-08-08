@@ -1,6 +1,12 @@
 import React from "react";
 
-const CarouselForm = ({ handlePreviewModal, numSteps, children, currentSlide, setCurrentSlide }) => {
+const CarouselForm = ({
+  handlePreviewModal,
+  numSteps,
+  children,
+  currentSlide,
+  setCurrentSlide
+}) => {
   const handleNextClick = () => {
     if (currentSlide < numSteps - 1) {
       setCurrentSlide(currentSlide + 1);
@@ -37,13 +43,14 @@ const CarouselForm = ({ handlePreviewModal, numSteps, children, currentSlide, se
 
             <div className="flex items-center justify-center">
               {Array.from({ length: numSteps }).map((_, index) => (
-                <div
-                  key={index}
+                <button
+                  key={`bullet-${index}`}
                   onClick={() => handleBulletClick(index)}
+                  tabIndex={0}
                   className={`${
                     currentSlide === index ? "bg-primaryPurple" : "bg-primaryBlack"
                   } w-3 h-3 rounded-full mx-1 cursor-pointer`}
-                ></div>
+                />
               ))}
             </div>
 
