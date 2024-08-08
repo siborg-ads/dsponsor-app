@@ -1,36 +1,70 @@
 import { getAddress } from "ethers/lib/utils";
+import { Address } from "thirdweb";
+
+interface Activity {
+  type: string;
+  date: string;
+  transactionHash: string;
+  points: number;
+  spender: string;
+  enabler: string;
+  refAddr: string;
+}
+
+interface FormattedActivityItem {
+  type: string;
+  date: string;
+  transactionHash: string;
+  fullTransactionHash: string;
+  points: number;
+  spender: string;
+  enabler: string;
+  refAddr: string;
+  spenderDisplayAddr: string;
+  enablerDisplayAddr: string;
+  refAddrDisplayAddr: string;
+  address?: string;
+}
+
+type FormattedActivity = FormattedActivityItem[];
+
+/**
+ * Converts activity type to display type.
+ * @param {string} type - The activity type.
+ * @returns {string} The display type.
+ */
+const toDisplayType = (type: string): string => {
+  let displayType;
+
+  switch (type) {
+    case "buy":
+      displayType = "Buy";
+      break;
+    case "auction":
+      displayType = "Auction closed";
+      break;
+    case "mint":
+      displayType = "Mint";
+      break;
+    default:
+      displayType = "Unknown";
+      break;
+  }
+
+  return displayType;
+};
 
 /**
  * Converts activity data to top holders format.
- * @param {Array} activity - The activity data.
- * @returns {Array} Formatted top holders data.
+ * @param {Array<Activity>} activity - The activity data.
+ * @param {Address} userAddress - The user address.
+ * @returns {Array<FormattedActivity>} Formatted top holders data.
  */
-const activityToTopHolders = (activities, userAddress) => {
-  const toDisplayType = (type) => {
-    let displayType;
-
-    switch (type) {
-      case "buy":
-        displayType = "Buy";
-        break;
-      case "auction":
-        displayType = "Auction closed";
-        break;
-      case "mint":
-        displayType = "Mint";
-        break;
-      default:
-        displayType = "Unknown";
-        break;
-    }
-
-    return displayType;
-  };
-
+const activityToTopHolders = (activities: Activity[], userAddress: Address): FormattedActivity => {
   if (userAddress === undefined) {
-    return activities
-      .sort((a, b) => b.points - a.points)
-      .map((activity) => ({
+    return [...activities]
+      ?.sort((a, b) => b.points - a.points)
+      ?.map((activity) => ({
         type: toDisplayType(activity.type),
         date: new Date(activity.date).toLocaleString(),
         transactionHash:
@@ -46,16 +80,16 @@ const activityToTopHolders = (activities, userAddress) => {
       }));
   }
 
-  const userActivity = activities.filter(
+  const userActivity = [...activities]?.filter(
     (item) => getAddress(item.spender) === getAddress(userAddress)
   );
   const otherActivity = activities;
 
-  const sortedOtherActivity = otherActivity.sort((a, b) => b.points - a.points);
+  const sortedOtherActivity = [...otherActivity]?.sort((a, b) => b.points - a.points);
 
   const sortedActivity = [...userActivity, ...sortedOtherActivity];
 
-  return sortedActivity.map((activity) => ({
+  return [...sortedActivity]?.map((activity) => ({
     type: toDisplayType(activity.type),
     date: new Date(activity.date).toLocaleString(),
     transactionHash:

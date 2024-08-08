@@ -79,13 +79,14 @@ interface FormattedCurrencyAmounts {
   totalProtocolFee: string;
 }
 
-interface CurrencyAmounts {
+export interface CurrencyAmounts {
   totalSpent: string;
   totalReceived: string;
   bidSpent: string;
   bidRefundReceived: string;
   totalProtocolFee: string;
   formatted: FormattedCurrencyAmounts;
+  buySpent?: string;
 }
 
 interface UsdcAmounts {
@@ -96,7 +97,7 @@ interface UsdcAmounts {
   totalProtocolFee: string;
 }
 
-interface Ranking {
+export interface Ranking {
   points: number;
   addr: string;
   balance: number;
@@ -112,6 +113,9 @@ interface Ranking {
   bidRefundsRank: number;
   totalProtocolFeeRank: number;
   displayAddr: string;
+  nbWinningBids?: number;
+  bidSpent?: string;
+  nbBuys?: number;
 }
 
 interface LeaderboardType {

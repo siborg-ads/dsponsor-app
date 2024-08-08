@@ -30,8 +30,8 @@ export type AdProposal = {
   status: AdProposalStatus;
   data: string;
   rejectReason?: string;
-  creationTimestamp: BigInt;
-  lastUpdateTimestamp: BigInt;
+  creationTimestamp: bigint;
+  lastUpdateTimestamp: bigint;
 };
 
 export type AdProposalStatus =
@@ -45,26 +45,26 @@ export type AdProposalStatus =
 export type Mint = {
   id: string;
   contractAddress: Address;
-  tokenId: BigInt;
+  tokenId: bigint;
   from: Address;
   to: Address;
   currency: Address;
-  amount: BigInt;
+  amount: bigint;
   tokenData: string;
-  blockNumber: BigInt;
-  blockTimestamp: BigInt;
+  blockNumber: bigint;
+  blockTimestamp: bigint;
   transactionHash: Address;
   revenueTransaction: RevenueTransaction;
   token: Token;
   feeMethodology: FeeMethodology;
-  amountSentToProtocol: BigInt;
+  amountSentToProtocol: bigint;
   protocolRecipient: Address;
-  totalPaid: BigInt;
+  totalPaid: bigint;
 };
 
 export type RevenueTransaction = {
   id: Address;
-  blockTimestamp: BigInt;
+  blockTimestamp: bigint;
   protocolFees: CallWithProtocolFee[];
   marketplaceBids: MarketplaceBid[];
   marketplaceDirectBuys: MarketplaceDirectBuy[];
@@ -76,12 +76,12 @@ export type CallWithProtocolFee = {
   id: Address;
   target: Address;
   currency: Address;
-  fee: BigInt;
+  fee: bigint;
   enabler: Address;
   spender: Address;
   referralAdditionalInformation: string;
-  blockNumber: BigInt;
-  blockTimestamp: BigInt;
+  blockNumber: bigint;
+  blockTimestamp: bigint;
   transactionHash: Address;
   revenueTransaction?: RevenueTransaction;
   referralAddresses: Address[];
@@ -95,7 +95,7 @@ export type EpochCurrencyRevenue = {
   year: number;
   month: number;
   currency: Address;
-  totalAmount: BigInt;
+  totalAmount: bigint;
   callsWithProtocolFee: CallWithProtocolFee[];
 };
 
@@ -103,42 +103,42 @@ export type MarketplaceBid = {
   id: string;
   listing: MarketplaceListing;
   bidder: Address;
-  quantity: BigInt;
-  newPricePerToken: BigInt;
-  totalBidAmount: BigInt;
-  paidBidAmount: BigInt;
-  refundBonus: BigInt;
-  refundProfit: BigInt;
+  quantity: bigint;
+  newPricePerToken: bigint;
+  totalBidAmount: bigint;
+  paidBidAmount: bigint;
+  refundBonus: bigint;
+  refundProfit: bigint;
   currency: Address;
   status: Status;
   creationTxHash: Address;
   revenueTransaction?: RevenueTransaction;
-  creationTimestamp: BigInt;
-  lastUpdateTimestamp: BigInt;
+  creationTimestamp: bigint;
+  lastUpdateTimestamp: bigint;
   feeMethodologyN: FeeMethodology;
-  amountSentToProtocol?: BigInt;
+  amountSentToProtocol?: bigint;
   protocolRecipient?: Address;
-  amountSentToSeller?: BigInt;
+  amountSentToSeller?: bigint;
   sellerRecipient?: Address;
-  amountSentToCreator?: BigInt;
+  amountSentToCreator?: bigint;
   creatorRecipient?: Address;
 };
 
 export type TokenPrice = {
   id: string;
   currency: Address;
-  amount: BigInt;
+  amount: bigint;
   enabled: boolean;
   token: Token;
 };
 
 export type UpdateUser = {
   id: Address;
-  tokenId: BigInt;
+  tokenId: bigint;
   user: Address;
-  expires: BigInt;
-  blockNumber: BigInt;
-  blockTimestamp: BigInt;
+  expires: bigint;
+  blockNumber: bigint;
+  blockTimestamp: bigint;
   transactionHash: Address;
 };
 
@@ -146,15 +146,15 @@ export type MarketplaceDirectBuy = {
   id: Address;
   listing: MarketplaceListing;
   buyer: Address;
-  quantityBought: BigInt;
-  totalPricePaid: BigInt;
+  quantityBought: bigint;
+  totalPricePaid: bigint;
   revenueTransaction: RevenueTransaction;
   feeMethodology?: FeeMethodology;
-  amountSentToProtocol: BigInt;
+  amountSentToProtocol: bigint;
   protocolRecipient: Address;
-  amountSentToSeller: BigInt;
+  amountSentToSeller: bigint;
   sellerRecipient: Address;
-  amountSentToCreator: BigInt;
+  amountSentToCreator: bigint;
   creatorRecipient: Address;
 };
 
@@ -169,8 +169,8 @@ export type Status = "UNSET" | "CREATED" | "COMPLETED" | "CANCELLED";
 export type FeeParamsForContract = {
   id: Address;
   feeRecipient: Address;
-  feeBps: BigInt;
-  lastUpdateTimestamp: BigInt;
+  feeBps: bigint;
+  lastUpdateTimestamp: bigint;
 };
 
 export type MarketplaceListing = {
@@ -179,18 +179,18 @@ export type MarketplaceListing = {
   listingType: ListingType;
   lister: Address;
   token: Token;
-  startTime: BigInt;
-  endTime: BigInt;
-  quantity: BigInt;
+  startTime: bigint;
+  endTime: bigint;
+  quantity: bigint;
   currency: Address;
-  reservePricePerToken: BigInt;
-  buyoutPricePerToken: BigInt;
+  reservePricePerToken: bigint;
+  buyoutPricePerToken: bigint;
   tokenType: TokenType;
   transferType: TransferType;
-  rentalExpirationTimestamp: BigInt;
+  rentalExpirationTimestamp: bigint;
   status: Status;
-  creationTimestamp: BigInt;
-  lastUpdateTimestamp: BigInt;
+  creationTimestamp: bigint;
+  lastUpdateTimestamp: bigint;
   completedBid: MarketplaceBid;
   bids: MarketplaceBid[];
   directBuys: MarketplaceDirectBuy[];
@@ -203,31 +203,31 @@ export type MarketplaceOffer = {
   origin: Address;
   offeror: Address;
   token: Token;
-  quantity: BigInt;
+  quantity: bigint;
   currency: Address;
-  totalprice: BigInt;
+  totalprice: bigint;
   tokenType: TokenType;
   transferType: TransferType;
-  expirationTimestamp: BigInt;
-  rentalExpirationTimestamp: BigInt;
+  expirationTimestamp: bigint;
+  rentalExpirationTimestamp: bigint;
   status: Status;
   revenueTransaction?: RevenueTransaction;
   referralAdditionalInformation?: string;
-  creationTimestamp: BigInt;
-  lastUpdateTimestamp?: BigInt;
+  creationTimestamp: bigint;
+  lastUpdateTimestamp?: bigint;
   feeMethodology?: FeeMethodology;
-  amountSentToProtocol?: BigInt;
+  amountSentToProtocol?: bigint;
   protocolRecipient?: Address;
-  amountSentToSeller?: BigInt;
+  amountSentToSeller?: bigint;
   sellerRecipient?: Address;
-  amountSentToCreator?: BigInt;
+  amountSentToCreator?: bigint;
   creatorRecipient: Address;
 };
 
 export type Token = {
   id: string;
   nftContract: NftContract;
-  tokenId: BigInt;
+  tokenId: bigint;
   setInAllowList: boolean;
   mint: Mint;
 };
@@ -250,7 +250,7 @@ export type AdOffer = {
   metadataURL: string;
   nftContract: NftContract;
   initialCreator: Address;
-  creationTimestamp: BigInt;
+  creationTimestamp: bigint;
   admins: Address[];
   validators: Address[];
   adParameters: AdOfferParameterLink[];
