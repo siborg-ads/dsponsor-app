@@ -22,12 +22,12 @@ function Providers({ children }) {
 }
 
 function InnerProviders({ children }: Readonly<{ children: React.ReactNode }>) {
-  const [chain, setChain] = useState(Object.entries(config)[0][1]?.chainObject);
+  const [chain, setChain] = useState(Object.values(config)[0]?.network);
   const { selectedChain } = useSwitchChainContext();
 
   useEffect(() => {
     if (selectedChain) {
-      setChain(selectedChain.toString());
+      setChain(selectedChain);
     }
   }, [selectedChain]);
 

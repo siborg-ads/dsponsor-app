@@ -2,8 +2,8 @@ import React, { createContext, useState, useMemo, ReactNode } from "react";
 import config from "@/config/config";
 
 interface SwitchChainContextType {
-  selectedChain: number;
-  setSelectedChain: React.Dispatch<React.SetStateAction<number>>;
+  selectedChain: string;
+  setSelectedChain: React.Dispatch<React.SetStateAction<string>>;
 }
 
 const SwitchChainContext = createContext<SwitchChainContextType | undefined>(undefined);
@@ -13,7 +13,7 @@ interface SwitchChainProviderProps {
 }
 
 const SwitchChainProvider: React.FC<SwitchChainProviderProps> = ({ children }) => {
-  const [selectedChain, setSelectedChain] = useState(parseFloat(Object.keys(config)[0]));
+  const [selectedChain, setSelectedChain] = useState(Object.values(config)[0]?.network);
 
   const contextValue = useMemo(() => {
     return {

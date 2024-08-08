@@ -4,15 +4,13 @@ import Footer from "@/components/Footer";
 import Link from "next/link";
 import { useState } from "react";
 import Header from "@/components/Header";
-import Wallet from "@/components/Wallet";
 
 export default function Layout({ children }) {
-  const [isHoveringSupport, setIsHoveringSupport] = useState(false);
+  const [isHoveringSupport, setIsHoveringSupport] = useState<boolean>(false);
 
   return (
     <>
       <Header />
-      <Wallet />
 
       <>{children}</>
 

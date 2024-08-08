@@ -1,4 +1,3 @@
-import "@/styles/globals.css";
 import { ThemeProvider } from "next-themes";
 import Layout from "@/components/Layout";
 import { Provider } from "react-redux";
@@ -13,8 +12,18 @@ import { NextUIProvider } from "@nextui-org/react";
 import Providers from "@/providers/Providers";
 import Hotjar from "@hotjar/browser";
 
+// styles
+import "@/styles/globals.css";
+
 const siteId = 5037837;
 const hotjarVersion = 6;
+
+const metadata = {
+  title: "SiBorg Ads - The Web3 Monetization Solution",
+  keyword:
+    "audience engagement, web3, creator economic, NFT, creator monetization, creator economy, creator token, creator coin, creator tokenization, creator economy",
+  desc: "Unlock The Web3 Monetization Solution."
+};
 
 function MyApp({ Component, pageProps }) {
   const router = useRouter();
@@ -28,13 +37,6 @@ function MyApp({ Component, pageProps }) {
   }, []);
 
   const value = useMemo(() => ({ scrollRef }), [scrollRef]);
-
-  const metadata = {
-    title: "SiBorg Ads - The Web3 Monetization Solution",
-    keyword:
-      "audience engagement, web3, creator economic, NFT, creator monetization, creator economy, creator token, creator coin, creator tokenization, creator economy",
-    desc: "Unlock The Web3 Monetization Solution."
-  };
 
   return (
     <>
