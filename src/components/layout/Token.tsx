@@ -61,7 +61,7 @@ const Token = () => {
 
   const [isLoadingAirdropButton, setIsLoadingAirdropButton] = useState(false);
   const [tokenIdString, setTokenIdString] = useState(null);
-  const [offerData, setOfferData] = useState(null);
+  const [offerData, setOfferData] = useState<any | null>(null);
   const [showBidsModal, setShowBidsModal] = useState(false);
   const address = useAddress();
   const [isOwner, setIsOwner] = useState(false);
@@ -113,7 +113,7 @@ const Token = () => {
   const [bidsAmount, setBidsAmount] = useState("");
   const [currencyDecimals, setCurrencyDecimals] = useState(null);
   const [isLister, setIsLister] = useState(false);
-  const [selectedItems, setSelectedItems] = useState([]);
+  const [selectedItems, setSelectedItems] = useState<any[]>([]);
   const [bids, setBids] = useState([]);
   const [insufficentBalance, setInsufficentBalance] = useState(false);
   const [canPayWithNativeToken, setCanPayWithNativeToken] = useState(false);
@@ -123,13 +123,13 @@ const Token = () => {
   const [airdropContainer, setAirdropContainer] = useState(true);
   const [tokenEtherPrice, setTokenEtherPrice] = useState(null);
   const [amountInEthWithSlippage, setAmountInEthWithSlippage] = useState(null);
-  const [displayedPrice, setDisplayedPrice] = useState(null);
+  const [displayedPrice, setDisplayedPrice] = useState<number | null>(null);
   const [isOfferOwner, setIsOfferOwner] = useState(false);
   const [
     sponsorHasAtLeastOneRejectedProposalAndNoPending,
     setSponsorHasAtLeastOneRejectedProposalAndNoPending
   ] = useState(false);
-  const [offers, setOffers] = useState(null);
+  const [offers, setOffers] = useState<any[] | null>(null);
   const [isMedia, setIsMedia] = useState(false);
   const [sales, setSales] = useState([]);
   const [minted, setMinted] = useState(false);
@@ -482,7 +482,7 @@ const Token = () => {
   }, [chainId, setSelectedChain]);
 
   useEffect(() => {
-    setTokenIdString(tokenId?.toString());
+    setTokenIdString(tokenId?.toString() as string);
   }, [tokenId]);
 
   useEffect(() => {

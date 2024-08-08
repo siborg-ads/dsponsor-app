@@ -3,9 +3,17 @@ import Link from "next/link";
 import Image from "next/image";
 import "tippy.js/dist/tippy.css";
 
-const ValidatedOrRefusedAds = ({ statut, proposalData, isToken }) => {
+const ValidatedOrRefusedAds = ({
+  statut,
+  proposalData,
+  isToken
+}: {
+  statut: boolean;
+  proposalData: any;
+  isToken?: boolean;
+}) => {
   const [modalStates, setModalStates] = useState({});
-  const [statutItem, setStatutItem] = useState(null);
+  const [statutItem, setStatutItem] = useState<"check" | "refused" | undefined>(undefined);
 
   const openModal = (tokenId) => {
     setModalStates((prev) => ({ ...prev, [tokenId]: true }));

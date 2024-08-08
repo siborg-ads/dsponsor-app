@@ -38,7 +38,7 @@ interface FormattedActivity {
 /**
  * Converts activity data to top spenders format.
  * @param {Array<Activity>} activity - The activity data.
- * @param {string} [userAddress] - The user's address.
+ * @param {string} userAddress - The user's address.
  * @returns {Array<FormattedActivity>} Formatted top spenders data.
  */
 const activityToTopSpenders = (activity: Activity[], userAddress?: string): FormattedActivity[] => {

@@ -33,13 +33,13 @@ const Offer = () => {
   const router = useRouter();
 
   const offerId = router.query?.offerId;
-  const chainId = router.query?.chainName;
+  const chainId = router.query?.chainName as string;
   const [refusedValidatedAdModal, setRefusedValidatedAdModal] = useState(null);
   const [copied, setCopied] = useState(false);
-  const [offerData, setOfferData] = useState([]);
+  const [offerData, setOfferData] = useState<any[]>([]);
   const [royalties, setRoyalties] = useState(null);
   const [currency, setCurrency] = useState(null);
-  const [selectedItems, setSelectedItems] = useState([]);
+  const [selectedItems, setSelectedItems] = useState<any[]>([]);
   const [, setPrice] = useState(null);
   const [imageModal, setImageModal] = useState(false);
   const [showEntireDescription, setShowEntireDescription] = useState(false);

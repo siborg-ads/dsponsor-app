@@ -9,14 +9,15 @@ import { formatUnits } from "ethers/lib/utils";
 import formatAndRound from "@/utils/prices/formatAndRound";
 import Meta from "@/components/Meta";
 import { useChainContext } from "@/hooks/useChainContext";
+import { Auctions } from "@/types/auctions";
 
 const Home = () => {
-  const [chainIdFilter, setChainIdFilter] = useState(null);
-  const [auctionsTemp, setAuctionsTemp] = useState([]);
-  const [auctions, setAuctions] = useState([]);
-  const [allTokens, setAllTokens] = useState(true);
-  const [isAuctionsLoading, setIsAuctionsLoading] = useState(true);
-  const [auctionsFetched, setAuctionsFetched] = useState(false);
+  const [chainIdFilter, setChainIdFilter] = useState<number | null>(null);
+  const [auctionsTemp, setAuctionsTemp] = useState<any[]>([]);
+  const [auctions, setAuctions] = useState<Auctions>([]);
+  const [allTokens, setAllTokens] = useState<boolean>(true);
+  const [isAuctionsLoading, setIsAuctionsLoading] = useState<boolean>(true);
+  const [auctionsFetched, setAuctionsFetched] = useState<boolean>(false);
 
   const { currentChainObject } = useChainContext();
   const chainId = currentChainObject?.chainId;
@@ -47,7 +48,7 @@ const Home = () => {
   useEffect(() => {
     if (auctionsTemp.length === 0) return;
 
-    const auctions = auctionsTemp.map((token) => {
+    const auctions = auctionsTemp?.map((token) => {
       const name = token.metadata.name;
       const category = token.metadata.categories ? token.metadata.categories[0] : "";
       const chain = token.chainConfig.network;

@@ -1,7 +1,32 @@
 import React, { forwardRef } from "react";
 import clsx from "clsx";
 
-const Input = forwardRef(
+interface InputProps {
+  className?: string;
+  type?: string;
+  id?: string;
+  placeholder?: string;
+  required?: boolean;
+  disabled?: boolean;
+  value?: any;
+  // eslint-disable-next-line no-unused-vars
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  // eslint-disable-next-line no-unused-vars
+  onWheel?: (e: React.WheelEvent<HTMLInputElement>) => void;
+  min?: number;
+  step?: number;
+  max?: number;
+  inputMode?: string;
+  pattern?: string;
+  readOnly?: boolean;
+  accept?: string;
+  // eslint-disable-next-line no-unused-vars
+  onClick?: (e: React.MouseEvent<HTMLInputElement>) => void;
+  name?: string;
+  checked?: boolean;
+}
+
+const Input = forwardRef<HTMLInputElement, InputProps>(
   (
     {
       className,
@@ -23,7 +48,7 @@ const Input = forwardRef(
       onClick,
       name,
       checked
-    },
+    }: InputProps,
     ref
   ) => {
     return (

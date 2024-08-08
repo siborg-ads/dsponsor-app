@@ -10,7 +10,21 @@ import {
 } from "@nextui-org/react";
 import Image from "next/image";
 
-const ModalHelper = ({ title, body, images, titleImages, dark, size = "default" }) => {
+const ModalHelper = ({
+  title,
+  body,
+  images,
+  titleImages,
+  dark,
+  size = "default"
+}: {
+  title: string;
+  body: string;
+  images?: string[];
+  titleImages?: string[];
+  dark?: boolean;
+  size?: "small" | "medium" | "large" | "default";
+}) => {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
   const displaySize = {

@@ -54,11 +54,11 @@ const Tables = ({ activity }) => {
   const [, setChainId] = useState();
   const [filteredActivity, setFilteredActivity] = useState([]);
 
-  const [, setBlockChainOptions] = useState([]);
+  const [, setBlockChainOptions] = useState<any[]>([]);
   const [leaderboards, setLeaderboards] = useState({});
 
   const address = useAddress();
-  const chainExplorer = currentChainObject?.explorerBaseUrl;
+  const chainExplorer = currentChainObject?.explorerBaseURL;
 
   useEffect(() => {
     const filteredActivity = activity?.filter(

@@ -25,7 +25,12 @@ const OfferName = ({
   if (!isSlideActive) return null;
 
   return (
-    <div ref={(el) => (stepsRef.current[1] = el)} className={styles.form__step}>
+    <div
+      ref={(el) => {
+        stepsRef.current[1] = el;
+      }}
+      className={styles.form__step}
+    >
       <div className="relative flex flex-col items-center gap-8 pr-6 pl-2">
         <div className="absolute top-0 right-0">
           {currentSlide + 1}/{numSteps}
@@ -109,8 +114,8 @@ const Description = ({ description, handleDescriptionChange }) => {
         id="item-description"
         value={description}
         onChange={handleDescriptionChange}
-        rows="4"
-        maxLength="2000"
+        rows={4}
+        maxLength={2000}
         placeholder="This is a description of the offer. characters limit : 2000"
         required
         className="placeholder:text-jacarta-300"

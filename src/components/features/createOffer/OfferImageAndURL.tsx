@@ -55,7 +55,12 @@ const OfferImageAndURL = ({
   if (currentSlide !== 2) return null;
 
   return (
-    <div ref={(el) => (stepsRef.current[2] = el)} className={styles.form__step}>
+    <div
+      ref={(el) => {
+        stepsRef.current[2] = el;
+      }}
+      className={styles.form__step}
+    >
       <div className="pr-6 pl-2 relative flex flex-col items-center gap-8">
         <div className="absolute top-0 right-0">
           {currentSlide + 1}/{numSteps}

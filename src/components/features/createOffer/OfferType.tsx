@@ -27,14 +27,14 @@ const AdSpaceSelector = ({
     <div className="flex flex-wrap justify-center gap-2">
       {AdIntegrationData.map((integration, index) => (
         <div key={index} className="relative">
-          <div
+          <button
             className={`card relative ${selectedIntegration.includes(index) ? "bg-primaryPurple-dark" : "hover:ring-primaryPurple/30 border-primaryPurple border-2"}`}
             onClick={(e) => {
-              if (e.target === e.currentTarget)
-                document.getElementById(`checkbox-${index}`).click();
+              if (e?.target === e?.currentTarget)
+                document?.getElementById(`checkbox-${index}`)?.click();
             }}
           >
-            {selectedIntegration.includes(index) && (
+            {selectedIntegration?.includes(index) && (
               <span className="absolute border-2 border-green rounded-2xl -right-3 text-green font-bold -bottom-2 z-30 w-6 h-6 flex justify-center items-center">
                 ✓
               </span>
@@ -54,8 +54,14 @@ const AdSpaceSelector = ({
                 htmlFor={`checkbox-${index}`}
                 className={`card-label ${selectedIntegration.includes(index) && "text-white"}`}
                 onClick={(e) => {
-                  e.stopPropagation();
-                  document.getElementById(`checkbox-${index}`).click();
+                  e?.stopPropagation();
+                  document?.getElementById(`checkbox-${index}`)?.click();
+                }}
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e?.key === "Enter" || e?.key === " ") {
+                    document?.getElementById(`checkbox-${index}`)?.click();
+                  }
                 }}
               >
                 {integration.integrationName}
@@ -82,7 +88,7 @@ const AdSpaceSelector = ({
                 handleCustomRatioInput={handleCustomRatioInput}
               />
             )}
-          </div>
+          </button>
         </div>
       ))}
     </div>
@@ -211,30 +217,10 @@ const OfferType = ({
     [setSelectedNumber]
   );
 
-  const handleIntegrationChange = useCallback(
-    (e) => {
-      const { value, checked } = e.target;
-      const intValue = parseInt(value);
-
-      if (checked) {
-        setSelectedIntegration([intValue]);
-        setImageRatios((prev) => ({
-          ...prev,
-          [intValue]: prev[intValue] || "1:1"
-        }));
-        handleAddParameter(intValue);
-      } else {
-        setSelectedIntegration((prev) => prev.filter((item) => item !== intValue));
-        handleRemoveParameter(intValue);
-      }
-    },
-    [setSelectedIntegration, setImageRatios, handleAddParameter, handleRemoveParameter]
-  );
-
   const handleAddParameter = useCallback(
     (value) => {
       const initialRatio = imageRatios[value] || "";
-      let paramsToAdd = [];
+      let paramsToAdd: string[] = [];
 
       if (value === 0) {
         paramsToAdd = [`imageURL${initialRatio ? `-${initialRatio}` : ""}`, "linkURL"];
@@ -258,6 +244,35 @@ const OfferType = ({
       setSelectedParameter((prev) => prev.filter((param) => !paramsToRemove.includes(param)));
     },
     [setDisplayedParameter, setSelectedParameter]
+  );
+
+  const handleIntegrationChange = useCallback(
+    (e) => {
+      const { value, checked } = e.target;
+      const intValue = parseInt(value);
+
+      if (checked) {
+        setSelectedIntegration([intValue]);
+        setImageRatios((prev) => ({
+          ...prev,
+          [intValue]: prev[intValue] || "1:1"
+        }));
+        handleAddParameter(intValue);
+      } else {
+        setSelectedIntegration((prev) => prev.filter((item) => item !== intValue));
+        handleRemoveParameter(intValue);
+      }
+    },
+    [setSelectedIntegration, setImageRatios, handleAddParameter, handleRemoveParameter]
+  );
+
+  const updateParameterWithRatio = useCallback(
+    (index, ratio) => {
+      setSelectedParameter((prev) =>
+        prev.map((param) => (param.startsWith(`imageURL`) ? `imageURL-${ratio}` : param))
+      );
+    },
+    [setSelectedParameter]
   );
 
   const handleCustomRatioChange = useCallback(
@@ -304,15 +319,6 @@ const OfferType = ({
       }
     },
     [setCustomImageRatio, setImageRatios, setValidRatio, updateParameterWithRatio]
-  );
-
-  const updateParameterWithRatio = useCallback(
-    (index, ratio) => {
-      setSelectedParameter((prev) =>
-        prev.map((param) => (param.startsWith(`imageURL`) ? `imageURL-${ratio}` : param))
-      );
-    },
-    [setSelectedParameter]
   );
 
   return (

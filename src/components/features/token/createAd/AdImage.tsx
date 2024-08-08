@@ -48,7 +48,12 @@ const AdImage = ({
   }, [id]);
 
   return (
-    <div ref={(el) => (stepsRef.current[currentStep] = el)} className={styles.form__step}>
+    <div
+      ref={(el) => {
+        stepsRef.current[currentStep] = el;
+      }}
+      className={styles.form__step}
+    >
       <div className="pr-6 pl-2" ref={containerElement}>
         <h3 className="mb-12 text-jacarta-200">
           Step {currentSlide + 1}/{numSteps} : Ad Image {id}

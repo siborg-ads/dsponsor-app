@@ -1,5 +1,4 @@
 import { getAddress } from "ethers/lib/utils";
-import { Address } from "thirdweb";
 
 interface Activity {
   type: string;
@@ -57,10 +56,10 @@ const toDisplayType = (type: string): string => {
 /**
  * Converts activity data to top holders format.
  * @param {Array<Activity>} activity - The activity data.
- * @param {Address} userAddress - The user address.
+ * @param {string} userAddress - The user address.
  * @returns {Array<FormattedActivity>} Formatted top holders data.
  */
-const activityToTopHolders = (activities: Activity[], userAddress: Address): FormattedActivity => {
+const activityToTopHolders = (activities: Activity[], userAddress?: string): FormattedActivity => {
   if (userAddress === undefined) {
     return [...activities]
       ?.sort((a, b) => b.points - a.points)

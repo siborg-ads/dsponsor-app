@@ -33,6 +33,6 @@
     "**/*.js",
     "**/*.jsx",
     ".next/types/**/*.js"
-  ],
+, "src/components/features/profile/referrals/Referrals.tsdx"  ],
   "exclude": ["node_modules"]
 }

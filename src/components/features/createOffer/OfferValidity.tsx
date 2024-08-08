@@ -111,7 +111,12 @@ const OfferValidity = ({
   return (
     <>
       {currentSlide === 3 && (
-        <div ref={(el) => (stepsRef.current[3] = el)} className={styles.form__step}>
+        <div
+          ref={(el) => {
+            stepsRef.current[3] = el;
+          }}
+          className={styles.form__step}
+        >
           <div className="pr-6 pl-2 relative flex flex-col gap-8 items-center">
             <div className="absolute top-0 right-0">
               {currentSlide + 1}/{numSteps}
@@ -164,8 +169,8 @@ const OfferValidity = ({
                 <Input
                   id="unit-price"
                   type="number"
-                  onWheel={(e) => e.target.blur()}
-                  step="0.1"
+                  onWheel={(e) => (e.target as HTMLInputElement).blur()}
+                  step={0.1}
                   value={selectedUnitPrice}
                   onChange={handleUnitPriceChange}
                   placeholder="Unit selling price"
@@ -224,10 +229,10 @@ const OfferValidity = ({
                 <Input
                   id="royalties"
                   type="number"
-                  min="0"
+                  min={0}
                   inputMode="decimal"
-                  step="0.01"
-                  max="100"
+                  step={0.01}
+                  max={100}
                   pattern="^\d+(?:[.,]\d+)?$"
                   value={selectedRoyalties}
                   onChange={handleRoyaltiesChange}

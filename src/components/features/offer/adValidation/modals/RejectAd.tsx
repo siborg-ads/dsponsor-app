@@ -15,6 +15,17 @@ const RejectAd = ({
   successFullRefuseModal,
   setIsRejecting,
   isRejecting
+}: {
+  selectedItems: any;
+  successFullModalObject: any;
+  closeRefuseModal: () => void;
+  // eslint-disable-next-line no-unused-vars
+  handleCommentChange: (tokenId: any, value: any) => void;
+  // eslint-disable-next-line no-unused-vars
+  handleItemSubmit: (b: boolean) => Promise<unknown> | (() => Promise<unknown>);
+  successFullRefuseModal: boolean;
+  setIsRejecting: React.Dispatch<React.SetStateAction<boolean>>;
+  isRejecting: boolean;
 }) => {
   const [filteredItems, setFilteredItems] = useState([]);
   const [allCommentsOk, setAllCommentsOk] = useState(false);
@@ -29,11 +40,12 @@ const RejectAd = ({
       }
     }
   }, [selectedItems]);
+
   useEffect(() => {
     const itemsMap = new Map();
 
-    const uniqueItems = selectedItems.filter((item) => {
-      const alreadyExists = itemsMap.has(item?.tokenId);
+    const uniqueItems = selectedItems?.filter((item) => {
+      const alreadyExists = itemsMap?.has(item?.tokenId);
       if (!alreadyExists) {
         itemsMap.set(item?.tokenId, true);
         return true;
@@ -67,8 +79,9 @@ const RejectAd = ({
         <div className="modal-body max-h-[400px] overflow-auto p-6 flex gap-4 flex-col items-center ">
           {!successFullRefuseModal ? (
             <>
-              {filteredItems.map((item) => {
+              {filteredItems?.map((item: any) => {
                 const tokenId = item?.tokenId;
+
                 return (
                   <div key={item?.id} className="mb-6 w-full ">
                     <div className="flex justify-between">
@@ -88,9 +101,12 @@ const RejectAd = ({
                     <TextArea
                       id={tokenId}
                       className="w-full"
-                      rows="4"
+                      rows={4}
                       required
-                      onChange={(e) => handleCommentChange(tokenId, e.target.value)}
+                      value={item?.reason}
+                      onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+                        handleCommentChange(tokenId, e.target.value)
+                      }
                       placeholder="Provide a comment of your refuse. min characters 3"
                     />
                   </div>
@@ -108,7 +124,7 @@ const RejectAd = ({
             <div className="flex items-center gap-4">
               {!successFullRefuseModal ? (
                 <Web3Button
-                  contractAddress={currentChainObject?.smartContracts?.DSPONSORADMIN?.address}
+                  contractAddress={currentChainObject?.smartContracts?.DSPONSORADMIN?.address ?? ""}
                   action={async () => {
                     setIsRejecting(true);
                     await toast
@@ -122,7 +138,7 @@ const RejectAd = ({
                       });
                   }}
                   className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!allCommentsOk || isRejecting ? "!btn-disabled !cursor-not-allowed !opacity-30" : "!bg-red !cursor-pointer"} `}
-                  disabled={!allCommentsOk || isRejecting}
+                  isDisabled={!allCommentsOk || isRejecting}
                 >
                   {isRejecting ? <Spinner size="sm" color="default" /> : "Refuse Ad Proposal"}
                 </Web3Button>

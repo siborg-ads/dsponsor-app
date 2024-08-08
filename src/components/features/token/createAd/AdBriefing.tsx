@@ -20,7 +20,12 @@ const AdBriefing = ({
   }, [adParameters, setImageUrlVariants]);
 
   return (
-    <div ref={(el) => (stepsRef.current[0] = el)} className={styles.form__step}>
+    <div
+      ref={(el) => {
+        stepsRef.current[0] = el;
+      }}
+      className={styles.form__step}
+    >
       <div className="pr-6 pl-2">
         <h3 className="mb-12 !text-jacarta-100">
           Step {currentSlide + 1}/{numSteps} : Ad Description

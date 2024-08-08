@@ -6,13 +6,30 @@ import Link from "next/link";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useChainContext } from "@/hooks/useChainContext";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Web3Button } from "@thirdweb-dev/react";
 import config from "@/config/config";
 import Input from "@/components/ui/Input";
 import { Spinner } from "@nextui-org/spinner";
 
-const PendingAds = ({
+interface PendingAdsProps {
+  // eslint-disable-next-line no-unused-vars
+  setSelectedItems: (value: any) => void;
+  selectedItems: any[];
+  handleItemSubmit: (i: any) => void;
+  pendingProposalData: any;
+  comments?: any;
+  isToken: boolean;
+  isOwner: boolean;
+  // eslint-disable-next-line no-unused-vars
+  setRefusedValidatedAdModal: (value: boolean) => void;
+  aspectRatio: string;
+  // eslint-disable-next-line no-unused-vars
+  setSponsorHasAtLeastOneRejectedProposalAndNoPending: (value: boolean) => void;
+  isRejecting: boolean;
+}
+
+const PendingAds: React.FC<PendingAdsProps> = ({
   setSelectedItems,
   selectedItems,
   handleItemSubmit,
@@ -31,8 +48,8 @@ const PendingAds = ({
   const [isSelectedItem, setIsSelectedItem] = useState({});
   const [modalStates, setModalStates] = useState({});
   const [copied, setCopied] = useState(false);
-  const [detectedRatios, setDetectedRatios] = useState([]);
-  const [detectedRatiosAreGood, setDetectedRatiosAreGood] = useState([]);
+  const [detectedRatios, setDetectedRatios] = useState<string[]>([]);
+  const [detectedRatiosAreGood, setDetectedRatiosAreGood] = useState<boolean[]>([]);
   const [isValidating, setIsValidating] = useState(false);
 
   const { currentChainObject } = useChainContext();
@@ -40,15 +57,15 @@ const PendingAds = ({
 
   useEffect(() => {
     if (detectedRatios.length) {
-      let newDetectedRatiosAreGood = [];
+      let newDetectedRatiosAreGood: boolean[] = [];
 
-      detectedRatios.forEach((detectedRatio) => {
+      detectedRatios.forEach((detectedRatio: string) => {
         if (!detectedRatio || !expectedRatio) {
           newDetectedRatiosAreGood.push(false);
           return;
         }
 
-        const realDetectedRatio = detectedRatio.split(":");
+        const realDetectedRatio = detectedRatio?.split(":");
         const realWidth = Number(realDetectedRatio[0]);
         const realHeight = Number(realDetectedRatio[1]);
         const realDetectedRatioValue = realWidth / realHeight;
@@ -89,7 +106,7 @@ const PendingAds = ({
   };
 
   const closeModal = () => {
-    setModalStates((prev) => ({ ...prev, [tokenId]: false }));
+    setModalStates((prev) => ({ ...prev, [tokenId as any]: false }));
   };
 
   const handleInput = (id) => {
@@ -219,7 +236,7 @@ const PendingAds = ({
               </Web3Button>
 
               <Web3Button
-                contractAddress={config[chainId]?.smartContracts?.DSPONSORADMIN?.address}
+                contractAddress={config[chainId as number]?.smartContracts?.DSPONSORADMIN?.address}
                 action={() => {
                   openRefuseModal();
 
@@ -344,11 +361,11 @@ const PendingAds = ({
         })}
       </div>
 
-      {modalStates[tokenId] && (
-        <div
+      {modalStates[tokenId ?? 0] && (
+        <button
           onClick={(e) => {
             if (e.target === e.currentTarget) {
-              closeModal(tokenId);
+              closeModal();
             }
           }}
           className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-xl h-screen w-full max-h-screen max-w-full"
@@ -395,7 +412,7 @@ const PendingAds = ({
               </button>
             </div>
           </div>
-        </div>
+        </button>
       )}
     </div>
   );

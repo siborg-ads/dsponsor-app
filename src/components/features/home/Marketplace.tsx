@@ -38,8 +38,8 @@ const MarketplaceHome = ({ auctions, setAllTokens, allTokens, isAuctionsLoading 
       tempAuctions = [...tempAuctions].filter(
         (auction) =>
           auction?.status === "CREATED" &&
-          new Date(auction?.startTime * 1000) < Date.now() &&
-          new Date(auction?.endTime * 1000) > Date.now()
+          new Date(auction?.startTime * 1000).getTime() < Date.now() &&
+          new Date(auction?.endTime * 1000).getTime() > Date.now()
       );
     }
 
@@ -198,24 +198,28 @@ const MarketplaceHome = ({ auctions, setAllTokens, allTokens, isAuctionsLoading 
                 anchor="bottom start"
                 className={`rounded-xl flex flex-col gap-2 [--anchor-gap:1rem] bg-secondaryBlack p-2 border border-jacarta-100 border-opacity-10`}
               >
-                <MenuItem
-                  onClick={() => {
-                    setFilterOption("All tokens");
-                    setAllTokens(true);
-                  }}
-                  className="hover:bg-primaryBlack p-2 rounded-lg w-full pr-12 md:pr-24"
-                >
-                  <span>All tokens</span>
+                <MenuItem>
+                  <button
+                    onClick={() => {
+                      setFilterOption("All tokens");
+                      setAllTokens(true);
+                    }}
+                    className="hover:bg-primaryBlack p-2 rounded-lg w-full pr-12 md:pr-24"
+                  >
+                    <span>All tokens</span>
+                  </button>
                 </MenuItem>
 
-                <MenuItem
-                  onClick={() => {
-                    setFilterOption("On auction");
-                    setAllTokens(false);
-                  }}
-                  className="hover:bg-primaryBlack p-2 rounded-lg w-full pr-12 md:pr-24"
-                >
-                  <span>On auction</span>
+                <MenuItem>
+                  <button
+                    onClick={() => {
+                      setFilterOption("On auction");
+                      setAllTokens(false);
+                    }}
+                    className="hover:bg-primaryBlack p-2 rounded-lg w-full pr-12 md:pr-24"
+                  >
+                    <span>On auction</span>
+                  </button>
                 </MenuItem>
               </MenuItems>
             </Menu>
@@ -231,38 +235,46 @@ const MarketplaceHome = ({ auctions, setAllTokens, allTokens, isAuctionsLoading 
                 anchor="bottom start"
                 className={`rounded-xl flex flex-col gap-2 [--anchor-gap:1rem] bg-secondaryBlack p-2 border border-jacarta-100 border-opacity-10`}
               >
-                <MenuItem
-                  onClick={() => {
-                    setSortOption("Sort by name");
-                  }}
-                  className="hover:bg-primaryBlack p-2 rounded-lg w-full pr-12 md:pr-24"
-                >
-                  <span>Sort by name</span>
+                <MenuItem>
+                  <button
+                    onClick={() => {
+                      setSortOption("Sort by name");
+                    }}
+                    className="hover:bg-primaryBlack p-2 rounded-lg w-full pr-12 md:pr-24"
+                  >
+                    <span>Sort by name</span>
+                  </button>
                 </MenuItem>
 
-                <MenuItem
-                  onClick={() => {
-                    setSortOption("Price: low to high");
-                  }}
-                  className="hover:bg-primaryBlack p-2 rounded-lg w-full pr-12 md:pr-24"
-                >
-                  <span>Price: low to high</span>
+                <MenuItem>
+                  <button
+                    onClick={() => {
+                      setSortOption("Price: low to high");
+                    }}
+                    className="hover:bg-primaryBlack p-2 rounded-lg w-full pr-12 md:pr-24"
+                  >
+                    <span>Price: low to high</span>
+                  </button>
                 </MenuItem>
-                <MenuItem
-                  onClick={() => {
-                    setSortOption("Price: high to low");
-                  }}
-                  className="hover:bg-primaryBlack p-2 rounded-lg w-full pr-12 md:pr-24"
-                >
-                  <span>Price: high to low</span>
+                <MenuItem>
+                  <button
+                    onClick={() => {
+                      setSortOption("Price: high to low");
+                    }}
+                    className="hover:bg-primaryBlack p-2 rounded-lg w-full pr-12 md:pr-24"
+                  >
+                    <span>Price: high to low</span>
+                  </button>
                 </MenuItem>
-                <MenuItem
-                  onClick={() => {
-                    setSortOption("Ending soon");
-                  }}
-                  className="hover:bg-primaryBlack p-2 rounded-lg w-full pr-12 md:pr-24"
-                >
-                  <span>Ending soon</span>
+                <MenuItem>
+                  <button
+                    onClick={() => {
+                      setSortOption("Ending soon");
+                    }}
+                    className="hover:bg-primaryBlack p-2 rounded-lg w-full pr-12 md:pr-24"
+                  >
+                    <span>Ending soon</span>
+                  </button>
                 </MenuItem>
               </MenuItems>
             </Menu>

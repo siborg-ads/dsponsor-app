@@ -30,6 +30,23 @@ const TokenCard = ({
   isDisabled,
   currencyDecimals,
   tokenId
+}: {
+  item: any;
+  url?: string;
+  isToken?: boolean;
+  isSelectionActive?: boolean;
+  isOwner?: boolean;
+  isAuction?: boolean;
+  isListing?: boolean;
+  listingType?: string;
+  disableLink?: boolean;
+  availableToSubmitAdFromOwnedTokens?: boolean;
+  createdOffersProposals?: boolean;
+  offer?: any;
+  offers?: any;
+  isDisabled?: boolean;
+  currencyDecimals?: number;
+  tokenId?: string;
 }) => {
   const [price, setPrice] = useState(null);
   const [totalPrice, setTotalPrice] = useState(null);

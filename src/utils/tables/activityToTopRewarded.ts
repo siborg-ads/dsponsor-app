@@ -36,7 +36,7 @@ interface FormattedActivity {
 /**
  * Converts activity data to top rewarded format.
  * @param {Array<Activity>} activity - The activity data.
- * @param {string} [userAddress] - The user's address.
+ * @param {string} userAddress - The user's address.
  * @returns {Array<FormattedActivity>} Formatted top rewarded data.
  */
 const activityToTopRewarded = (activity: Activity[], userAddress?: string): FormattedActivity[] => {

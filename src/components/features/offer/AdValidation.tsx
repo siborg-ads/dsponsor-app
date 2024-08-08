@@ -6,9 +6,9 @@ import RejectAd from "@/components/features/offer/adValidation/modals/RejectAd";
 import { ExclamationCircleIcon } from "@heroicons/react/24/solid";
 import ResponsiveTooltip from "@/components/ui/ResponsiveTooltip";
 import { CheckIcon, ClockIcon, XIcon } from "lucide-react";
+import { AdProposal } from "@/types/graphql";
 
 const AdValidation = ({
-  chainId,
   offer,
   offerId,
   isOwner,
@@ -28,14 +28,14 @@ const AdValidation = ({
   pendingProposalData,
   setPendingProposalData
 }) => {
-  const [validatedProposalData, setValidatedProposalData] = useState([]);
-  const [refusedProposalData, setRefusedProposalData] = useState([]);
-  const [itemActive, setItemActive] = useState(1);
-  const [comments, setComments] = useState({});
-  const [isApprouvedAd, setIsApprouvedAd] = useState(false);
+  const [validatedProposalData, setValidatedProposalData] = useState<AdProposal[]>([]);
+  const [refusedProposalData, setRefusedProposalData] = useState<AdProposal[]>([]);
+  const [itemActive, setItemActive] = useState<number>(1);
+  const [, setComments] = useState({});
+  const [isApprouvedAd, setIsApprouvedAd] = useState<boolean>(false);
   const [pendingProposalLength, setPendingProposalLength] = useState(0);
-  const [aspectRatio, setAspectRatio] = useState(null);
-  const [isRejecting, setIsRejecting] = useState(false);
+  const [aspectRatio, setAspectRatio] = useState<string | null>(null);
+  const [isRejecting, setIsRejecting] = useState<boolean>(false);
 
   const tabItem = [
     {
@@ -120,19 +120,19 @@ const AdValidation = ({
       }
     }
 
-    let formattedPendingAds = Object.values(groupedPendingAds);
-    let formattedValidatedAds = Object.values(groupedValidatedAds);
-    let formattedRefusedAds = Object.values(groupedRefusedAds);
+    let formattedPendingAds: AdProposal[] = Object.values(groupedPendingAds);
+    let formattedValidatedAds: AdProposal[] = Object.values(groupedValidatedAds);
+    let formattedRefusedAds: AdProposal[] = Object.values(groupedRefusedAds);
 
     if (isTokenView) {
       formattedPendingAds = formattedPendingAds.filter(
-        (ad) => Number(ad?.tokenId) === Number(itemTokenId)
+        (ad) => ad?.token?.tokenId === BigInt(itemTokenId)
       );
       formattedValidatedAds = formattedValidatedAds.filter(
-        (ad) => Number(ad?.tokenId) === Number(itemTokenId)
+        (ad) => ad?.token?.tokenId === BigInt(itemTokenId)
       );
       formattedRefusedAds = formattedRefusedAds.filter(
-        (ad) => Number(ad?.tokenId) === Number(itemTokenId)
+        (ad) => ad?.token?.tokenId === BigInt(itemTokenId)
       );
     }
 
@@ -143,7 +143,13 @@ const AdValidation = ({
   }, [isTokenView, offer, offerId, itemTokenId, setPendingProposalData]);
 
   const handleItemSubmit = async (approuved = false) => {
-    let submissionArgs = [];
+    let submissionArgs: {
+      tokenId: string;
+      offerId: string;
+      validated?: boolean;
+      item?: any;
+      reason?: string;
+    }[] = [];
     setIsApprouvedAd(approuved);
 
     for (const item of selectedItems) {
@@ -257,19 +263,14 @@ const AdValidation = ({
             <div className="container mb-12 relative p-0">
               {/* <!-- Filter --> */}
               <PendingAds
-                chainId={chainId}
                 setSelectedItems={setSelectedItems}
                 selectedItems={selectedItems}
                 setRefusedValidatedAdModal={setRefusedValidatedAdModal}
-                refusedValidatedAdModal={refusedValidatedAdModal}
                 pendingProposalData={pendingProposalData}
-                handleSubmit={handleSubmit}
-                successFullRefuseModal={successFullRefuseModal}
                 isToken={false}
                 isOwner={isOwner}
-                setSuccessFullRefuseModal={setSuccessFullRefuseModal}
                 handleItemSubmit={handleItemSubmit}
-                aspectRatio={aspectRatio}
+                aspectRatio={aspectRatio as string}
                 setSponsorHasAtLeastOneRejectedProposalAndNoPending={
                   setSponsorHasAtLeastOneRejectedProposalAndNoPending
                 }
@@ -300,7 +301,6 @@ const AdValidation = ({
       {refusedValidatedAdModal && (
         <div className="modal fade show bloc">
           <RejectAd
-            refusedValidatedAdModal={refusedValidatedAdModal}
             selectedItems={selectedItems}
             handleCommentChange={handleCommentChange}
             handleItemSubmit={handleItemSubmit}
@@ -309,8 +309,6 @@ const AdValidation = ({
             successFullModalObject={
               isApprouvedAd ? successFullValidatedAdModalObject : successFullRefusedAdModalObject
             }
-            comments={comments}
-            setIsApprouvedAd={setIsApprouvedAd}
             setIsRejecting={setIsRejecting}
             isRejecting={isRejecting}
           />

@@ -11,6 +11,17 @@ const TextArea = ({
   onChange,
   maxLength,
   rows
+}: {
+  className?: string;
+  id?: string;
+  placeholder?: string;
+  required?: boolean;
+  disabled?: boolean;
+  value?: string;
+  // eslint-disable-next-line no-unused-vars
+  onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
+  maxLength?: number;
+  rows?: number;
 }) => {
   return (
     <textarea
