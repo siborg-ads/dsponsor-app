@@ -35,10 +35,9 @@ const Offer = () => {
   const offerId = router.query?.offerId;
   const chainId = router.query?.chainName as string;
   const [refusedValidatedAdModal, setRefusedValidatedAdModal] = useState<boolean>(false);
-  const [copied, setCopied] = useState<boolean>(false);
   const [offerData, setOfferData] = useState<any>(null);
   const [royalties, setRoyalties] = useState<number | null>(null);
-  const [currency, setCurrency] = useState(null);
+  const [, setCurrency] = useState(null);
   const [selectedItems, setSelectedItems] = useState<any[]>([]);
   const [, setPrice] = useState<number | null>(null);
   const [imageModal, setImageModal] = useState(false);
@@ -513,13 +512,13 @@ const Offer = () => {
           <div className="container flex flex-col justify-center">
             <Accordion.Header className="w-full">
               <Accordion.Trigger
-                className={`${accordionActiveTab === "search" && "bg-primaryPurple"} w-full flex items-center justify-center gap-4 mb-6 border border-primaryPurple hover:bg-primaryPurple cursor-pointer p-2 rounded-lg`}
+                className={`${accordionActiveTab.includes("search") && "bg-primaryPurple"} w-full flex items-center justify-center gap-4 mb-6 border border-primaryPurple hover:bg-primaryPurple cursor-pointer p-2 rounded-lg`}
               >
                 <h2 className="text-jacarta-900 font-bold font-display text-center text-3xl dark:text-white ">
                   Search
                 </h2>
                 <ChevronDownIcon
-                  className={`w-6 h-6 duration-300 ${accordionActiveTab === "search" && "transform rotate-180"}`}
+                  className={`w-6 h-6 duration-300 ${accordionActiveTab.includes("search") && "transform rotate-180"}`}
                 />
               </Accordion.Trigger>
             </Accordion.Header>
@@ -595,13 +594,13 @@ const Offer = () => {
         <div className="container">
           <Accordion.Header className="w-full">
             <Accordion.Trigger
-              className={`${accordionActiveTab === "tokens" && "bg-primaryPurple"} w-full flex items-center justify-center gap-4 mb-6 border border-primaryPurple hover:bg-primaryPurple cursor-pointer p-2 rounded-lg`}
+              className={`${accordionActiveTab.includes("tokens") && "bg-primaryPurple"} w-full flex items-center justify-center gap-4 mb-6 border border-primaryPurple hover:bg-primaryPurple cursor-pointer p-2 rounded-lg`}
             >
               <h2 className="text-jacarta-900 font-bold font-display text-center text-3xl dark:text-white ">
                 Tokens
               </h2>
               <ChevronDownIcon
-                className={`w-6 h-6 duration-300 ${accordionActiveTab === "tokens" && "transform rotate-180"}`}
+                className={`w-6 h-6 duration-300 ${accordionActiveTab.includes("tokens") && "transform rotate-180"}`}
               />
             </Accordion.Trigger>
           </Accordion.Header>
@@ -637,9 +636,6 @@ const Offer = () => {
                 return (
                   <TokenCard
                     key={index}
-                    token={finalToken}
-                    offerData={offerData}
-                    chainId={chainId}
                     item={finalToken}
                     isToken={true}
                     url={`/${chainId}/offer/${offerId}/${finalToken?.tokenId}`}
@@ -658,7 +654,7 @@ const Offer = () => {
             <>
               <Accordion.Header className="w-full">
                 <Accordion.Trigger
-                  className={`${accordionActiveTab === "adValidation" && "bg-primaryPurple"} w-full flex items-center justify-center gap-4 mb-6 border border-primaryPurple hover:bg-primaryPurple cursor-pointer p-2 rounded-lg`}
+                  className={`${accordionActiveTab.includes("adValidation") && "bg-primaryPurple"} w-full flex items-center justify-center gap-4 mb-6 border border-primaryPurple hover:bg-primaryPurple cursor-pointer p-2 rounded-lg`}
                 >
                   {isOwner && sponsorHasAtLeastOneRejectedProposalAndNoPending && (
                     <ResponsiveTooltip text="You have at least one rejected proposal and no pending proposal.">
@@ -674,18 +670,17 @@ const Offer = () => {
                     Ad Validation
                   </h2>
                   <ChevronDownIcon
-                    className={`w-6 h-6 duration-300 ${accordionActiveTab === "adValidation" && "transform rotate-180"}`}
+                    className={`w-6 h-6 duration-300 ${accordionActiveTab.includes("adValidation") && "transform rotate-180"}`}
                   />
                 </Accordion.Trigger>
               </Accordion.Header>
               <Accordion.Content>
                 <AdValidation
-                  chainId={chainId}
                   setSuccessFullRefuseModal={setSuccessFullRefuseModal}
                   setSelectedItems={setSelectedItems}
                   selectedItems={selectedItems}
                   offer={offerData}
-                  offerId={offerId}
+                  offerId={offerId as string}
                   isOwner={isOwner}
                   handleSubmit={handleSubmit}
                   successFullRefuseModal={successFullRefuseModal}
@@ -699,7 +694,6 @@ const Offer = () => {
                   }
                   mediaShouldValidateAnAd={mediaShouldValidateAnAd}
                   isMedia={isMedia}
-                  isSponsor={isOwner}
                   itemTokenId={offerData?.nftContract?.id}
                   pendingProposalData={pendingProposalData}
                   setPendingProposalData={setPendingProposalData}
@@ -715,13 +709,13 @@ const Offer = () => {
           <div className="container">
             <Accordion.Header className="w-full">
               <Accordion.Trigger
-                className={`${accordionActiveTab === "offerManagement" && "bg-primaryPurple"} w-full flex items-center justify-center gap-4 mb-6 border border-primaryPurple hover:bg-primaryPurple cursor-pointer p-2 rounded-lg`}
+                className={`${accordionActiveTab.includes("offerManagement") && "bg-primaryPurple"} w-full flex items-center justify-center gap-4 mb-6 border border-primaryPurple hover:bg-primaryPurple cursor-pointer p-2 rounded-lg`}
               >
                 <h2 className="text-jacarta-900 font-bold font-display text-center text-3xl dark:text-white ">
                   Offer Management
                 </h2>
                 <ChevronDownIcon
-                  className={`w-6 h-6 duration-300 ${accordionActiveTab === "offerManagement" && "transform rotate-180"}`}
+                  className={`w-6 h-6 duration-300 ${accordionActiveTab.includes("offerManagement") && "transform rotate-180"}`}
                 />
               </Accordion.Trigger>
             </Accordion.Header>
@@ -787,7 +781,6 @@ const Offer = () => {
                   <Integration
                     chainId={chainId}
                     offerId={offerId}
-                    copied={copied}
                     offerTokens={offerData?.nftContract?.tokens}
                   />
                 </TabPanel>
@@ -807,13 +800,13 @@ const Offer = () => {
         <div className="container">
           <Accordion.Header className="w-full">
             <Accordion.Trigger
-              className={`${accordionActiveTab === "details" && "bg-primaryPurple"} w-full flex items-center justify-center gap-4 mb-6 border border-primaryPurple hover:bg-primaryPurple cursor-pointer p-2 rounded-lg`}
+              className={`${accordionActiveTab.includes("details") && "bg-primaryPurple"} w-full flex items-center justify-center gap-4 mb-6 border border-primaryPurple hover:bg-primaryPurple cursor-pointer p-2 rounded-lg`}
             >
               <h2 className="text-jacarta-900 font-bold font-display text-center text-3xl dark:text-white ">
                 Details
               </h2>
               <ChevronDownIcon
-                className={`w-6 h-6 duration-300 ${accordionActiveTab === "details" && "transform rotate-180"}`}
+                className={`w-6 h-6 duration-300 ${accordionActiveTab.includes("details") && "transform rotate-180"}`}
               />
             </Accordion.Trigger>
           </Accordion.Header>
@@ -821,11 +814,10 @@ const Offer = () => {
           <Accordion.Content className="mb-8">
             <Details
               contractAddress={offerData?.nftContract?.id}
-              offerId={offerId}
               initialCreator={offerData?.initialCreator}
               isToken={false}
               offerData={offerData}
-              chainId={chainId}
+              chainId={parseFloat(chainId)}
             />
           </Accordion.Content>
         </div>

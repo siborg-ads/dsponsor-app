@@ -32,7 +32,7 @@ const Integration = ({ chainId, offerId, offerTokens }) => {
 
         <div className="flex w-full mt-4">
           <Tabs.Content value="iframe">
-            <Iframe chainId={chainId} offerId={offerId} offerTokens={offerTokens} />
+            <Iframe chainId={chainId} offerId={offerId} />
           </Tabs.Content>
           <Tabs.Content value="html">
             <HTML chainId={chainId} offerId={offerId} offerTokens={offerTokens} />

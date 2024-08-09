@@ -27,18 +27,18 @@ const HTML = ({ chainId, offerId, offerTokens }) => {
   const [copied, setCopied] = React.useState(false);
   const [columns, setColumns] = useState(
     localStorage.getItem("htmlSettings")
-      ? JSON.parse(localStorage.getItem("htmlSettings")).columns
+      ? JSON.parse(localStorage.getItem("htmlSettings") as string).columns
       : false
   );
   const [numberOfColumns, setNumberOfColumns] = useState(
     localStorage.getItem("htmlSettings")
-      ? JSON.parse(localStorage.getItem("htmlSettings")).numberOfColumns
+      ? JSON.parse(localStorage.getItem("htmlSettings") as string).numberOfColumns
       : initialColumns(offerTokens?.length)
   );
   const [numberOfRows, setNumberOfRows] = useState(offerTokens?.length / numberOfColumns);
   const [bgColor, setBgColor] = useState(
     localStorage.getItem("htmlSettings")
-      ? JSON.parse(localStorage.getItem("htmlSettings")).bgColor
+      ? JSON.parse(localStorage.getItem("htmlSettings") as string).bgColor
       : false
   );
   const [color, setColor] = useState("#0d102d");
@@ -47,17 +47,18 @@ const HTML = ({ chainId, offerId, offerTokens }) => {
   const [displayType, setDisplayType] = useState("ClickableLogoGrid");
   const [ratio, setRatio] = useState(
     localStorage.getItem("htmlSettings")
-      ? JSON.parse(localStorage.getItem("htmlSettings")).ratio
+      ? JSON.parse(localStorage.getItem("htmlSettings") as string).ratio
       : false
   );
   const [ratioValue, setRatioValue] = useState(
     localStorage.getItem("htmlSettings")
-      ? JSON.parse(localStorage.getItem("htmlSettings")).ratioValue
+      ? JSON.parse(localStorage.getItem("htmlSettings") as string).ratioValue
       : "1:1"
   );
 
   useEffect(() => {
     const savedSettings = localStorage.getItem("htmlSettings");
+
     if (savedSettings) {
       const settings = JSON.parse(savedSettings);
       setColumns(settings.columns);
@@ -240,9 +241,7 @@ const HTML = ({ chainId, offerId, offerTokens }) => {
           <button
             className="z-10"
             onClick={() => {
-              handleCopy(htmlSrc);
-
-              setCopied(true);
+              handleCopy(htmlSrc, setCopied);
 
               setTimeout(() => {
                 setCopied(false);
@@ -297,9 +296,13 @@ const HTML = ({ chainId, offerId, offerTokens }) => {
                   value={parseInt(numberOfColumns)}
                   onChange={(e) => {
                     const value = e.target.value;
+
                     if (value === "") {
                       setNumberOfColumns("");
-                    } else if (value > 0 && value <= Math.min(offerTokens?.length, 25)) {
+                    } else if (
+                      parseFloat(value) > 0 &&
+                      parseFloat(value) <= Math.min(offerTokens?.length, 25)
+                    ) {
                       setNumberOfColumns(value);
                     } else {
                       setNumberOfColumns(Math.min(offerTokens?.length, 25));
@@ -343,9 +346,9 @@ const HTML = ({ chainId, offerId, offerTokens }) => {
       {displayType === "ClickableLogoGrid" && (
         <table
           width="100%"
-          border="0"
-          cellSpacing="0"
-          cellPadding="0"
+          border={0}
+          cellSpacing={0}
+          cellPadding={0}
           style={{ tableLayout: "fixed", backgroundColor: bgColor ? `#${color}` : "transparent" }}
         >
           <tbody>

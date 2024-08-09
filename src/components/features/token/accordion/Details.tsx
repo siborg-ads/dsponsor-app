@@ -18,11 +18,11 @@ const Details = ({
 }: {
   chainId: number;
   contractAddress: Address;
-  isUserOwner: Address;
+  isUserOwner?: Address;
   initialCreator: Address;
-  isToken: boolean;
-  status: string;
-  listerAddress: Address;
+  isToken?: boolean;
+  status?: string;
+  listerAddress?: Address;
   offerData: any;
 }) => {
   const { currentChainObject } = useChainContext();

@@ -27,6 +27,25 @@ const AdValidation = ({
   itemTokenId,
   pendingProposalData,
   setPendingProposalData
+}: {
+  offer: any;
+  offerId?: string;
+  isOwner: boolean;
+  handleSubmit: any;
+  successFullRefuseModal: boolean;
+  setSuccessFullRefuseModal: any;
+  setRefusedValidatedAdModal: any;
+  refusedValidatedAdModal: any;
+  setSelectedItems: any;
+  selectedItems: any;
+  sponsorHasAtLeastOneRejectedProposalAndNoPending: boolean;
+  setSponsorHasAtLeastOneRejectedProposalAndNoPending?: any;
+  mediaShouldValidateAnAd: boolean;
+  isMedia: boolean;
+  isTokenView?: boolean;
+  itemTokenId?: string;
+  pendingProposalData: any;
+  setPendingProposalData: any;
 }) => {
   const [validatedProposalData, setValidatedProposalData] = useState<AdProposal[]>([]);
   const [refusedProposalData, setRefusedProposalData] = useState<AdProposal[]>([]);
@@ -126,13 +145,13 @@ const AdValidation = ({
 
     if (isTokenView) {
       formattedPendingAds = formattedPendingAds.filter(
-        (ad) => ad?.token?.tokenId === BigInt(itemTokenId)
+        (ad) => ad?.token?.tokenId === BigInt(itemTokenId as string)
       );
       formattedValidatedAds = formattedValidatedAds.filter(
-        (ad) => ad?.token?.tokenId === BigInt(itemTokenId)
+        (ad) => ad?.token?.tokenId === BigInt(itemTokenId as string)
       );
       formattedRefusedAds = formattedRefusedAds.filter(
-        (ad) => ad?.token?.tokenId === BigInt(itemTokenId)
+        (ad) => ad?.token?.tokenId === BigInt(itemTokenId as string)
       );
     }
 

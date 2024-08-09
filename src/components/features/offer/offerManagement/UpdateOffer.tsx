@@ -12,6 +12,7 @@ import { DatePicker } from "@nextui-org/date-picker";
 import { parseDate } from "@internationalized/date";
 import Input from "@/components/ui/Input";
 import TextArea from "@/components/ui/TextArea";
+import { Address } from "thirdweb";
 
 const fileTypes = ["JPG", "PNG", "WEBP"];
 
@@ -46,7 +47,9 @@ const UpdateOffer = ({ offer }) => {
   const { currentChainObject } = useChainContext();
   const chainId = currentChainObject?.chainId;
 
-  const { contract } = useContract(config[chainId]?.smartContracts?.DSPONSORADMIN?.address);
+  const { contract } = useContract(
+    config[chainId as number]?.smartContracts?.DSPONSORADMIN?.address as Address
+  );
   const { mutateAsync } = useContractWrite(contract, "updateOffer");
 
   const handleLogoUpload = (file) => {

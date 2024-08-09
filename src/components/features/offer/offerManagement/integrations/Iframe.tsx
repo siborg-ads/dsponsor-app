@@ -3,8 +3,7 @@ import React, { useEffect, useState } from "react";
 import * as RadioGroup from "@radix-ui/react-radio-group";
 import { Divider } from "@nextui-org/react";
 import ResponsiveTooltip from "@/components/ui/ResponsiveTooltip";
-import { InformationCircleIcon } from "@heroicons/react/24/solid";
-import { ClipboardIcon } from "@heroicons/react/24/solid";
+import { InformationCircleIcon, ClipboardIcon } from "@heroicons/react/24/solid";
 import handleCopy from "@/utils/misc/handleCopy";
 import Tippy from "@tippyjs/react";
 import { ChromePicker } from "react-color";
@@ -15,62 +14,62 @@ const Iframe = ({ chainId, offerId }) => {
   const [iframeSrc, setIframeSrc] = useState("");
   const [customHeight, setCustomHeight] = useState(
     localStorage.getItem("iframeSettings")
-      ? JSON.parse(localStorage.getItem("iframeSettings")).customHeight
+      ? JSON.parse(localStorage.getItem("iframeSettings") as string).customHeight
       : false
   );
   const [height, setHeight] = useState(
     localStorage.getItem("iframeSettings")
-      ? JSON.parse(localStorage.getItem("iframeSettings")).height
+      ? JSON.parse(localStorage.getItem("iframeSettings") as string).height
       : "400px"
   );
   const [bgColor, setBgColor] = useState(
     localStorage.getItem("iframeSettings")
-      ? JSON.parse(localStorage.getItem("iframeSettings")).bgColor
+      ? JSON.parse(localStorage.getItem("iframeSettings") as string).bgColor
       : false
   );
   const [color, setColor] = useState(
     localStorage.getItem("iframeSettings")
-      ? JSON.parse(localStorage.getItem("iframeSettings")).color
+      ? JSON.parse(localStorage.getItem("iframeSettings") as string).color
       : "#0d102d"
   );
   const [changeRatio, setChangeRatio] = useState(
     localStorage.getItem("iframeSettings")
-      ? JSON.parse(localStorage.getItem("iframeSettings")).changeRatio
+      ? JSON.parse(localStorage.getItem("iframeSettings") as string).changeRatio
       : false
   );
   const [ratio, setRatio] = useState(
     localStorage.getItem("iframeSettings")
-      ? JSON.parse(localStorage.getItem("iframeSettings")).ratio
+      ? JSON.parse(localStorage.getItem("iframeSettings") as string).ratio
       : "1:1"
   );
   const [customAdPreview, setCustomAdPreview] = useState(
     localStorage.getItem("iframeSettings")
-      ? JSON.parse(localStorage.getItem("iframeSettings")).customAdPreview
+      ? JSON.parse(localStorage.getItem("iframeSettings") as string).customAdPreview
       : false
   );
   const [tokenId, setTokenId] = useState(
     localStorage.getItem("iframeSettings")
-      ? JSON.parse(localStorage.getItem("iframeSettings")).tokenId
+      ? JSON.parse(localStorage.getItem("iframeSettings") as string).tokenId
       : ""
   );
   const [tokenIds, setTokenIds] = useState(
     localStorage.getItem("iframeSettings")
-      ? JSON.parse(localStorage.getItem("iframeSettings")).tokenIds
+      ? JSON.parse(localStorage.getItem("iframeSettings") as string).tokenIds
       : []
   );
   const [previewImage, setPreviewImage] = useState(
     localStorage.getItem("iframeSettings")
-      ? JSON.parse(localStorage.getItem("iframeSettings")).previewImage
+      ? JSON.parse(localStorage.getItem("iframeSettings") as string).previewImage
       : ""
   );
   const [previewLink, setPreviewLink] = useState(
     localStorage.getItem("iframeSettings")
-      ? JSON.parse(localStorage.getItem("iframeSettings")).previewLink
+      ? JSON.parse(localStorage.getItem("iframeSettings") as string).previewLink
       : ""
   );
   const [displayType, setDisplayType] = useState(
     localStorage.getItem("iframeSettings")
-      ? JSON.parse(localStorage.getItem("iframeSettings")).displayType
+      ? JSON.parse(localStorage.getItem("iframeSettings") as string).displayType
       : "ClickableLogosGrid"
   );
 
@@ -225,10 +224,9 @@ const Iframe = ({ chainId, offerId }) => {
             className="z-10"
             onClick={() => {
               handleCopy(
-                `<iframe sandbox="allow-same-origin allow-scripts allow-popups allow-top-navigation-by-user-activation" src="${iframeSrc}" style="width: 100%; ${customHeight ? `height: ${height};` : "height: 100%;"} overflow: hidden; border: none;"></iframe>`
+                `<iframe sandbox="allow-same-origin allow-scripts allow-popups allow-top-navigation-by-user-activation" src="${iframeSrc}" style="width: 100%; ${customHeight ? `height: ${height};` : "height: 100%;"} overflow: hidden; border: none;"></iframe>`,
+                setCopied
               );
-
-              setCopied(true);
 
               setTimeout(() => {
                 setCopied(false);

@@ -19,7 +19,7 @@ const ModalHelper = ({
   size = "default"
 }: {
   title: string;
-  body: string;
+  body: React.ReactElement | string;
   images?: string[];
   titleImages?: string[];
   dark?: boolean;
@@ -73,10 +73,10 @@ const ModalHelper = ({
               <ModalBody>
                 <p>{body}</p>
                 <div className="flex justify-around flex-wrap">
-                  {images?.length > 0 &&
+                  {(images?.length as number) > 0 &&
                     images?.map((image, index) => (
                       <div className="flex flex-col items-center justify-center gap-3 " key={index}>
-                        <p>{titleImages[index]}</p>
+                        <p>{titleImages?.[index]}</p>
                         <Image
                           src={image ?? ""}
                           alt="image"
