@@ -65,7 +65,7 @@ const AdSubmission = ({
   selectedNumber?: number;
   selectedUnitPrice?: number;
   symbolContract?: string;
-  selectedParameter?: string;
+  selectedParameter?: string[];
   selectedCurrency?: string;
   selectedRoyalties?: number;
   previewImage?: string[];

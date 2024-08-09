@@ -13,22 +13,23 @@ import config from "@/config/config";
 import CarouselForm from "@/components/ui/misc/CarouselForm";
 import { useSwitchChainContext } from "@/hooks/useSwitchChainContext";
 import { useRouter } from "next/router";
+import { Address } from "thirdweb";
 
 const CreateOffer = () => {
-  const [files, setFiles] = useState([]);
-  const { mutateAsync: upload } = useStorageUpload();
-  const [currentSlide, setCurrentSlide] = useState(0);
-
   const router = useRouter();
   const chainId = router.query?.chainName;
-  const [link, setLink] = useState(null);
+
+  const [files, setFiles] = useState<any[]>([]);
+  const { mutateAsync: upload } = useStorageUpload();
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [link, setLink] = useState<string | null>(null);
   const [errors, setErrors] = useState({});
   const [description, setDescription] = useState("");
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(
     new Date(new Date().setFullYear(new Date().getFullYear() + 1))
   );
-  const [previewImages, setPreviewImages] = useState([]);
+  const [previewImages, setPreviewImages] = useState<string[]>([]);
   const [selectedNumber, setSelectedNumber] = useState(1);
   const [selectedUnitPrice, setSelectedUnitPrice] = useState(1);
   const [selectedCurrency, setSelectedCurrency] = useState("WETH");
@@ -38,34 +39,33 @@ const CreateOffer = () => {
   const [showPreviewModal, setShowPreviewModal] = useState(false);
   const [successFullUpload, setSuccessFullUpload] = useState(false);
   const [selectedIntegration, setSelectedIntegration] = useState([0]);
-  const [selectedParameter, setSelectedParameter] = useState(["imageURL-1:1", "linkURL"]);
+  const [selectedParameter, setSelectedParameter] = useState<string[]>(["imageURL-1:1", "linkURL"]);
   const [displayedParameter, setDisplayedParameter] = useState([]);
-  const [selectedTypeParameter] = useState(0);
+  const WETHCurrency = config[parseFloat(chainId as string)]?.smartContracts?.WETH;
+  const [imageRatios, setImageRatios] = useState(["1:1"]);
+  const [tokenDecimals, setTokenDecimals] = useState(0);
+  const [symbolContract, setSymbolContract] = useState<string | null>(null);
+  const [tokenContract, setTokenContract] = useState(WETHCurrency?.address);
+  const [, setCustomTokenContract] = useState(null);
+  const [terms, setTerms] = useState([]);
+  const [isLoadingButton, setIsLoadingButton] = useState(false);
+  const [minterAddress, setMinterAddress] = useState<Address | null>(null);
+  const { setSelectedChain } = useSwitchChainContext();
+
+  const address = useAddress();
+
   const { contract: DsponsorAdminContract } = useContract(
-    config[chainId]?.smartContracts?.DSPONSORADMIN?.address,
-    config[chainId]?.smartContracts?.DSPONSORADMIN?.abi
+    config[parseFloat(chainId as string)]?.smartContracts?.DSPONSORADMIN?.address,
+    config[parseFloat(chainId as string)]?.smartContracts?.DSPONSORADMIN?.abi
   );
   const { mutateAsync: createDSponsorNFTAndOffer } = useContractWrite(
     DsponsorAdminContract,
     "createDSponsorNFTAndOffer"
   );
-  const WETHCurrency = config[chainId]?.smartContracts?.WETH;
-  const [imageRatios, setImageRatios] = useState(["1:1"]);
-  const [tokenDecimals, setTokenDecimals] = useState(0);
-  const [symbolContract, setSymbolContract] = useState(null);
-  const [tokenContract, setTokenContract] = useState(WETHCurrency?.address);
-  const [, setCustomTokenContract] = useState(null);
-  const [terms, setTerms] = useState([]);
-  const [previewTerms, setPreviewTerms] = useState([]);
-  const [isLoadingButton, setIsLoadingButton] = useState(false);
-  const [minterAddress, setMinterAddress] = useState(null);
-  const { setSelectedChain } = useSwitchChainContext();
-
-  const address = useAddress();
 
   useEffect(() => {
     if (!address) return;
-    setMinterAddress(address);
+    setMinterAddress(address as Address);
   }, [address]);
 
   useEffect(() => {
@@ -79,7 +79,7 @@ const CreateOffer = () => {
 
   useEffect(() => {
     if (!chainId) return;
-    setSelectedChain(config[chainId]?.network);
+    setSelectedChain(config[parseFloat(chainId as string)]?.network);
   }, [chainId, setSelectedChain]);
 
   const handleUnitPriceChange = (e) => {
@@ -104,7 +104,7 @@ const CreateOffer = () => {
 
   useEffect(() => {
     let isValid = true;
-    let newErrors = {};
+    let newErrors: any = {};
 
     if (!name) {
       newErrors.nameError = "Name is missing.";
@@ -162,7 +162,7 @@ const CreateOffer = () => {
       isValid = false;
     }
 
-    if (parseFloat(selectedUnitPrice) < 1 * 10 ** -tokenDecimals) {
+    if (selectedUnitPrice < 1 * 10 ** -tokenDecimals) {
       newErrors.unitPriceError = `Unit price must be at least ${1 * 10 ** -tokenDecimals}.`;
       isValid = false;
     }
@@ -181,7 +181,7 @@ const CreateOffer = () => {
       isValid = false;
     }
 
-    if (parseFloat(selectedRoyalties) < 0.01 || parseFloat(selectedRoyalties) > 100) {
+    if (selectedRoyalties < 0.01 || selectedRoyalties > 100) {
       newErrors.royaltyError =
         "Royalties are missing or invalid. They should be between 0.01% and 100%.";
       isValid = false;
@@ -217,7 +217,8 @@ const CreateOffer = () => {
   const handleSubmit = async (userMinterAddress) => {
     try {
       setIsLoadingButton(true);
-      let paramsFormated = [];
+      let paramsFormated: any[] = [];
+
       selectedParameter.forEach((param) => {
         const a = param.split("-");
         const c = a.join("-");
@@ -229,7 +230,8 @@ const CreateOffer = () => {
         data: [files[0]],
         options: { uploadWithGatewayUrl: true, uploadWithoutDirectory: true }
       });
-      let uploadTerms = [];
+
+      let uploadTerms: any[] = [];
 
       if (typeof terms[0] === "string") {
         uploadTerms.push(terms[0]);
@@ -394,23 +396,16 @@ const CreateOffer = () => {
           </div>
         </div>
         <CarouselForm
-          styles={styles}
           handlePreviewModal={handlePreviewModal}
-          stepsRef={stepsRef}
           numSteps={numSteps}
-          selectedIntegration={selectedIntegration}
           currentSlide={currentSlide}
           setCurrentSlide={setCurrentSlide}
         >
           <OfferType
-            stepsRef={stepsRef}
-            styles={styles}
-            selectedTypeParameter={selectedTypeParameter}
             setSelectedParameter={setSelectedParameter}
             selectedNumber={selectedNumber}
             setSelectedNumber={setSelectedNumber}
             setDisplayedParameter={setDisplayedParameter}
-            displayedParameter={displayedParameter}
             selectedIntegration={selectedIntegration}
             setSelectedIntegration={setSelectedIntegration}
             imageRatios={imageRatios}
@@ -437,8 +432,6 @@ const CreateOffer = () => {
             link={link}
             terms={terms}
             setTerms={setTerms}
-            setPreviewTerms={setPreviewTerms}
-            previewTerms={previewTerms}
             previewImage={previewImages}
             file={files}
             handleLogoUpload={handleLogoUpload}
@@ -466,8 +459,6 @@ const CreateOffer = () => {
             setTokenDecimals={setTokenDecimals}
             symbolContract={symbolContract}
             setTokenContract={setTokenContract}
-            tokenDecimals={tokenDecimals}
-            tokenContract={tokenContract}
             setCustomTokenContract={setCustomTokenContract}
             numSteps={numSteps}
             currentSlide={currentSlide}
@@ -480,16 +471,14 @@ const CreateOffer = () => {
             handlePreviewModal={handlePreviewModal}
             handleSubmit={handleSubmit}
             name={name}
-            link={link}
-            file={files}
+            link={link as string}
             description={description}
             startDate={startDate}
             endDate={endDate}
             selectedNumber={selectedNumber}
             selectedUnitPrice={selectedUnitPrice}
-            symbolContract={symbolContract}
+            symbolContract={symbolContract as string}
             selectedCurrency={selectedCurrency}
-            customContract={customContract}
             selectedRoyalties={selectedRoyalties}
             imageURLSteps={["imageURL"]}
             previewImage={previewImages}
@@ -499,7 +488,7 @@ const CreateOffer = () => {
             validate={validate}
             errors={errors}
             successFullUpload={successFullUpload}
-            address={minterAddress}
+            address={minterAddress as Address}
             buttonTitle="Create ad space offer"
             modalTitle="Ad Space Offer "
             successFullUploadModal={successFullUploadModal}

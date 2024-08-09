@@ -1,6 +1,6 @@
 import { CrossmintPayButton } from "@crossmint/client-sdk-react-ui";
 import React from "react";
-import { BigNumber, ethers } from "ethers";
+import { ethers } from "ethers";
 import { formatUnits } from "ethers/lib/utils";
 
 /**

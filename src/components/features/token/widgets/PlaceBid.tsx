@@ -43,7 +43,7 @@ const PlaceBid = ({
   fetchOffers
 }) => {
   const [minimalBidPerToken, setMinimalBidPerToken] = useState(null);
-  const [bids, setBids] = useState(null);
+  const [bids, setBids] = useState<any>(null);
 
   useEffect(() => {
     const minimalBidPerToken = marketplaceListings[0]?.bidPriceStructure?.minimalBidPerToken;
@@ -179,7 +179,6 @@ const PlaceBid = ({
             handleApprove={handleApprove}
             checkAllowance={checkAllowance}
             allowanceTrue={allowanceTrue}
-            hasEnoughBalance={hasEnoughBalance}
             checkUserBalance={checkUserBalance}
             dsponsorMpContract={dsponsorMpContract}
             toggleBidsModal={toggleBidsModal}

@@ -132,7 +132,7 @@ const Manage = ({
     if (conditions?.isDirect && (conditions?.isOwner || conditions?.isLister)) {
       return (
         <Web3Button
-          contractAddress={currentChainObject?.smartContracts?.DSPONSORMP?.address}
+          contractAddress={currentChainObject?.smartContracts?.DSPONSORMP?.address as string}
           action={async () =>
             await toast.promise(handleSubmitCancel, {
               pending: "Waiting for confirmation 🕒",
@@ -156,7 +156,7 @@ const Manage = ({
     ) {
       return (
         <Web3Button
-          contractAddress={currentChainObject?.smartContracts?.DSPONSORMP?.address}
+          contractAddress={currentChainObject?.smartContracts?.DSPONSORMP?.address as string}
           action={async () =>
             await toast.promise(handleSubmitCancel, {
               pending: "Waiting for confirmation 🕒",
@@ -184,7 +184,7 @@ const Manage = ({
     ) {
       return (
         <Web3Button
-          contractAddress={currentChainObject?.smartContracts?.DSPONSORMP?.address}
+          contractAddress={currentChainObject?.smartContracts?.DSPONSORMP?.address as string}
           action={async () =>
             await toast.promise(handleSubmitCancel, {
               pending: "Waiting for confirmation 🕒",
@@ -221,7 +221,6 @@ const Manage = ({
             dsponsorMpContract={dsponsorMpContract}
             handleListingModal={handleListingModal}
             offerData={offerData}
-            marketplaceListings={marketplaceListings}
             tokenId={tokenId}
             setListingCreated={setListingCreated}
             fetchOffers={fetchOffers}
