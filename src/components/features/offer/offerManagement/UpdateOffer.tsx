@@ -17,32 +17,32 @@ import { Address } from "thirdweb";
 const fileTypes = ["JPG", "PNG", "WEBP"];
 
 const UpdateOffer = ({ offer }) => {
-  const [offerId, setOfferId] = useState(null);
+  const [offerId, setOfferId] = useState<string | null>(null);
   const [metadataURL, setMetadataURL] = useState(null);
-  const [admins, setAdmins] = useState([]);
-  const [initialAdmins, setInitialAdmins] = useState([]);
-  const [disabled, setDisabled] = useState(false);
-  const [validators, setValidators] = useState([]);
-  const [initialValidators, setInitialValidators] = useState([]);
-  const [imageRatio, setImageRatio] = useState(null);
-  const [initialImageRatio, setInitialImageRatio] = useState(null);
-  const [name, setName] = useState("");
-  const [disabledLocked, setDisabledLocked] = useState(false);
-  const [initialDescription, setInitialDescription] = useState("");
-  const [description, setDescription] = useState("");
-  const [initialImageUrl, setInitialImageUrl] = useState("");
-  const [, setImageUrl] = useState("");
-  const [initialExternalLink, setInitialExternalLink] = useState("");
-  const [externalLink, setExternalLink] = useState("");
-  const [initialValidDateFrom, setInitialValidDateFrom] = useState(null);
-  const [validDateFrom, setValidDateFrom] = useState(null);
-  const [initialValidDateTo, setInitialValidDateTo] = useState(null);
-  const [validDateTo, setValidDateTo] = useState(null);
-  const [files, setFiles] = useState([]);
-  const [previewImages, setPreviewImages] = useState([]);
-  const [initialMetadatas, setInitialMetadatas] = useState(null);
-  const [metadatas, setMetadatas] = useState(null);
-  const [initialName, setInitialName] = useState(null);
+  const [admins, setAdmins] = useState<string[]>([]);
+  const [initialAdmins, setInitialAdmins] = useState<string[]>([]);
+  const [disabled, setDisabled] = useState<boolean>(false);
+  const [validators, setValidators] = useState<string[]>([]);
+  const [initialValidators, setInitialValidators] = useState<string[]>([]);
+  const [imageRatio, setImageRatio] = useState<string | null>(null);
+  const [initialImageRatio, setInitialImageRatio] = useState<string | null>(null);
+  const [name, setName] = useState<string>("");
+  const [disabledLocked, setDisabledLocked] = useState<boolean>(false);
+  const [initialDescription, setInitialDescription] = useState<string>("");
+  const [description, setDescription] = useState<string>("");
+  const [initialImageUrl, setInitialImageUrl] = useState<string>("");
+  const [, setImageUrl] = useState<string>("");
+  const [initialExternalLink, setInitialExternalLink] = useState<string>("");
+  const [externalLink, setExternalLink] = useState<string>("");
+  const [initialValidDateFrom, setInitialValidDateFrom] = useState<any>(null);
+  const [validDateFrom, setValidDateFrom] = useState<any>(null);
+  const [initialValidDateTo, setInitialValidDateTo] = useState<any>(null);
+  const [validDateTo, setValidDateTo] = useState<any>(null);
+  const [files, setFiles] = useState<any[]>([]);
+  const [previewImages, setPreviewImages] = useState<string[]>([]);
+  const [initialMetadatas, setInitialMetadatas] = useState<any>(null);
+  const [metadatas, setMetadatas] = useState<any>(null);
+  const [initialName, setInitialName] = useState<string | null>(null);
 
   const { currentChainObject } = useChainContext();
   const chainId = currentChainObject?.chainId;
@@ -52,7 +52,7 @@ const UpdateOffer = ({ offer }) => {
   );
   const { mutateAsync } = useContractWrite(contract, "updateOffer");
 
-  const handleLogoUpload = (file) => {
+  const handleLogoUpload = (file: any) => {
     if (file) {
       setFiles([file]);
       setPreviewImages([URL.createObjectURL(file)]);
@@ -65,7 +65,7 @@ const UpdateOffer = ({ offer }) => {
     let finalMetadatas = { ...originalMetadatas };
 
     // check if image has changed, if so, upload the new image
-    let newImageUrl = null;
+    let newImageUrl: string | null = null;
     if (files.length > 0) {
       try {
         const imageUri = await storage.upload(files[0]);
@@ -113,15 +113,15 @@ const UpdateOffer = ({ offer }) => {
       finalMetadatas?.offer?.image === initialImageUrl &&
       finalMetadatas?.offer?.valid_from ===
         new Date(
-          initialValidDateFrom.year,
-          initialValidDateFrom.month - 1,
-          initialValidDateFrom.day + 1
+          initialValidDateFrom?.year,
+          initialValidDateFrom?.month - 1,
+          initialValidDateFrom?.day + 1
         ).toISOString() &&
       finalMetadatas?.offer?.valid_to ===
         new Date(
-          initialValidDateTo.year,
-          initialValidDateTo.month - 1,
-          initialValidDateTo.day + 1
+          initialValidDateTo?.year,
+          initialValidDateTo?.month - 1,
+          initialValidDateTo?.day + 1
         ).toISOString()
     ) {
       return null;
@@ -227,14 +227,14 @@ const UpdateOffer = ({ offer }) => {
           description,
           external_link: externalLink,
           valid_from: new Date(
-            validDateFrom.year,
-            validDateFrom.month - 1,
-            validDateFrom.day + 1
+            validDateFrom?.year as number,
+            (validDateFrom?.month as number) - 1,
+            (validDateFrom?.day as number) + 1
           ).toISOString(),
           valid_to: new Date(
-            validDateTo.year,
-            validDateTo.month - 1,
-            validDateTo.day + 1
+            validDateTo?.year as number,
+            (validDateTo?.month as number) - 1,
+            (validDateTo?.day as number) + 1
           ).toISOString()
         }
       });
@@ -251,8 +251,10 @@ const UpdateOffer = ({ offer }) => {
           name,
           description,
           external_link: externalLink,
-          valid_from: new Date(validDateFrom).toISOString(),
-          valid_to: new Date(validDateTo).toISOString(),
+          valid_from: validDateFrom
+            ? new Date(validDateFrom).toISOString()
+            : new Date().toISOString(),
+          valid_to: validDateTo ? new Date(validDateTo).toISOString() : new Date().toISOString(),
           token_metadata: {}
         }
       });
@@ -264,7 +266,7 @@ const UpdateOffer = ({ offer }) => {
       setAdmins([""]);
       return;
     }
-    if (admins.length === 0) {
+    if (admins?.length === 0) {
       setAdmins([""]);
       return;
     }
@@ -347,15 +349,10 @@ const UpdateOffer = ({ offer }) => {
     // check image ratio
     // ratio should be "0" or "x:x" specific format with x being a number
     if (imageRatio !== "" && imageRatio !== "0") {
-      const [width, height] = imageRatio.split(":");
-      const length = imageRatio.split(":").length;
+      const [width, height] = (imageRatio as string).split(":");
+      const length = (imageRatio as string).split(":").length;
 
       if (length > 2) {
-        toast("Image ratio is not correct, it should be 0 or width:height", { type: "error" });
-        return;
-      }
-
-      if (isNaN(width) || isNaN(height)) {
         toast("Image ratio is not correct, it should be 0 or width:height", { type: "error" });
         return;
       }
@@ -387,8 +384,8 @@ const UpdateOffer = ({ offer }) => {
       initialValidators?.filter((validator) => !updatedValidators?.includes(validator)) ?? [];
 
     // init ad parameters for add options and remove options
-    let updatedAdParametersForAddOptions = [];
-    let updatedAdParametersForRemoveOptions = [];
+    let updatedAdParametersForAddOptions: string[] = [];
+    let updatedAdParametersForRemoveOptions: string[] = [];
 
     // ad parameters as initial are in the format of [{adParameter: {id: string, base: string, variants: [""]}}]
     // we want to send to the blockchain an array of ad parameters that are string in the format base-variant1:variant2 (for image ratio for example)
@@ -405,9 +402,9 @@ const UpdateOffer = ({ offer }) => {
       updatedAdParametersForRemoveOptions.push("imageURL-" + initialImageRatio);
     }
 
-    let newMetadataUrl = null;
+    let newMetadataUrl: string = "";
     try {
-      newMetadataUrl = await uploadNewMetadatas(originalMetadatas);
+      newMetadataUrl = (await uploadNewMetadatas(originalMetadatas)) as string;
     } catch (error) {
       console.error(error);
       toast(error.message, { type: "error" });
@@ -417,7 +414,7 @@ const UpdateOffer = ({ offer }) => {
     setDisabledLocked(disabled);
 
     const updatedOfferParams = {
-      offerId: parseFloat(offerId),
+      offerId: parseFloat(offerId as string),
       disable: disabled,
       name,
       offerMetadata: newMetadataUrl ?? metadataURL,
@@ -479,7 +476,6 @@ const UpdateOffer = ({ offer }) => {
       <div className="mb-4">
         <label className="block text-gray-700 text-sm font-semibold mb-2">Offer Description</label>
         <TextArea
-          type="text"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           placeholder={description ?? ""}
@@ -651,7 +647,7 @@ const UpdateOffer = ({ offer }) => {
             <div className="flex items-center gap-2">
               <Input
                 type="text"
-                placeholder={imageRatio}
+                placeholder={imageRatio as string}
                 value={imageRatio}
                 onChange={handleImageRatioChange}
               />
@@ -689,7 +685,7 @@ const UpdateOffer = ({ offer }) => {
               console.error(error);
             });
         }}
-        contractAddress={config[chainId]?.smartContracts?.DSPONSORADMIN?.address}
+        contractAddress={config[chainId as number]?.smartContracts?.DSPONSORADMIN?.address}
         className="!mt-4 !bg-primaryPurple !w-fit !hover:bg-opacity-80 !px-4 !py-2 !text-white !font-semibold !rounded-full mb-4"
       >
         Update Offer

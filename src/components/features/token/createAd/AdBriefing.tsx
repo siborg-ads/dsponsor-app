@@ -8,7 +8,8 @@ const AdBriefing = ({
   currentSlide,
   numSteps
 }) => {
-  const [selectedItems, setSelectedItems] = useState([]);
+  const [selectedItems, setSelectedItems] = useState<any[]>([]);
+
   useEffect(() => {
     if (!adParameters) return;
     setSelectedItems(adParameters);
@@ -38,9 +39,10 @@ const AdBriefing = ({
               <div>
                 <p className="font-display">Image :</p>
                 {selectedItems
-                  .filter((id) => id.startsWith("imageURL"))
-                  .map((id) => {
+                  .filter((id: string) => id.startsWith("imageURL"))
+                  .map((id: string) => {
                     const variant = id.slice("imageURL-".length);
+
                     return (
                       <div key={id}>
                         <ul>
@@ -50,7 +52,7 @@ const AdBriefing = ({
                               ${(() => {
                                 const [width, height] = variant.split(":");
                                 return width && height
-                                  ? `${width * 100}x${height * 100}px`
+                                  ? `${parseFloat(width) * 100}x${parseFloat(height) * 100}px`
                                   : "No size";
                               })()})`
                               : "- Format : Any URL accepted"}

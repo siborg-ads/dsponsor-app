@@ -8,8 +8,8 @@ import Input from "@/components/ui/Input";
 import { useChainContext } from "@/hooks/useChainContext";
 
 const SiBorgApp = () => {
-  const [code, setCode] = useState(null);
-  const [copied, setCopied] = useState(false);
+  const [code, setCode] = useState<string | null>(null);
+  const [copied, setCopied] = useState<boolean>(false);
 
   const { currentChainObject } = useChainContext();
 
@@ -75,7 +75,7 @@ const SiBorgApp = () => {
           <Tippy content={copied ? "Copied!" : "Copy"} placement="top" trigger="click">
             <button
               onClick={() => {
-                navigator.clipboard.writeText(code);
+                navigator.clipboard.writeText(code as string);
                 setCopied(true);
               }}
               className="absolute right-0 top-0 h-full px-4 text-white hover:text-jacarta-100 rounded-r-lg"

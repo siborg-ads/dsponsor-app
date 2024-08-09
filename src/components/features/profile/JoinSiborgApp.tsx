@@ -1,6 +1,5 @@
 import { useAddress } from "@thirdweb-dev/react";
-import React from "react";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Tippy from "@tippyjs/react";
 import { ClipboardIcon } from "@heroicons/react/20/solid";
 import Link from "next/link";
@@ -9,7 +8,7 @@ import Input from "@/components/ui/Input";
 import { useChainContext } from "@/hooks/useChainContext";
 
 const JoinSiBorgApp = ({ manageAddress }) => {
-  const [code, setCode] = useState(null);
+  const [code, setCode] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
   const [isUserConnected, setIsUserConnected] = useState(false);
 
@@ -88,7 +87,7 @@ const JoinSiBorgApp = ({ manageAddress }) => {
               <Tippy content={copied ? "Copied!" : "Copy"} placement="top" trigger="click">
                 <button
                   onClick={() => {
-                    navigator.clipboard.writeText(code);
+                    navigator.clipboard.writeText(code as string);
                     setCopied(true);
                   }}
                   className="absolute right-0 top-0 h-full px-4 text-white hover:text-jacarta-100 rounded-r-lg"

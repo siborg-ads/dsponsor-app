@@ -4,7 +4,7 @@ import { ArrowPathIcon } from "@heroicons/react/20/solid";
 import { shortenAddress } from "@thirdweb-dev/react";
 
 const Overview = ({ userData, ownedTokens, isLoading, manageAddress }) => {
-  const [ranking, setRanking] = useState(null);
+  const [ranking, setRanking] = useState<any>(null);
 
   useEffect(() => {
     if (userData) {

@@ -6,12 +6,12 @@ import { useChainContext } from "@/hooks/useChainContext";
 import { Loader2Icon } from "lucide-react";
 
 const Transactions = ({ manageAddress, lastActivities, isLoading }) => {
-  const [startDate, setStartDate] = useState(null);
-  const [endDate, setEndDate] = useState(null);
-  const [filteredLastActivities, setFilteredLastActivities] = useState([]);
+  const [startDate, setStartDate] = useState<Date | null>(null);
+  const [endDate, setEndDate] = useState<Date | null>(null);
+  const [filteredLastActivities, setFilteredLastActivities] = useState<any[]>([]);
 
   const { currentChainObject } = useChainContext();
-  const chainExplorer = currentChainObject?.explorerBaseUrl;
+  const chainExplorer = currentChainObject?.explorerBaseURL;
 
   useEffect(() => {
     if (startDate && endDate) {

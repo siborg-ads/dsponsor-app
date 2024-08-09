@@ -33,7 +33,39 @@ import { formatUnits } from "ethers/lib/utils";
  * @returns {Element} - CrossmintPayButton
  * @constructor
  */
-export default function BuyWithCrossmintButton(props = {}) {
+export default function BuyWithCrossmintButton(
+  props: Readonly<{
+    offer: { offerId: string };
+    token: {
+      tokenId: string;
+      currency: string;
+      buyoutPricePerToken: string;
+      price: string;
+      listingId: string;
+      protocolFeeBPS: string;
+      royaltiesBPS: string;
+      fee: string;
+    };
+    user: { address: string; email: string };
+    referrer: { address: string };
+    actions: { processing: Function; success: Function; error: Function };
+    isDisabled: boolean;
+    isLoadingRender: () => React.JSX.Element;
+    isActiveRender?: (() => React.JSX.Element) | string;
+    isBid: boolean;
+    config: {
+      projectId: string;
+      buyCollectionId: string;
+      environment: string;
+      currency: any;
+      locale: any;
+      paymentMethod: any;
+    };
+    successCallbackURL?: string;
+    failureCallbackURL?: string;
+    isLoading: boolean;
+  }>
+) {
   const { offer, token, user, referrer } = props;
 
   const price = ethers.utils.parseUnits(props.token.buyoutPricePerToken, "wei");
@@ -41,7 +73,7 @@ export default function BuyWithCrossmintButton(props = {}) {
     console.warn("MintWithCrossmint: Token fee not found - Using default fee");
   }
 
-  let reason = null;
+  let reason: string = "";
   const expected = [
     "token.currency",
     "token.tokenId",
@@ -96,7 +128,9 @@ export default function BuyWithCrossmintButton(props = {}) {
         currency: token.currency,
         referralAdditionalInformation: referrer.address ?? "0x"
       }
-    }
+    },
+    successCallbackURL: props.successCallbackURL,
+    failureCallbackURL: props.failureCallbackURL
   };
 
   if (props?.successCallbackURL) {

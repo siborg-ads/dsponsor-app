@@ -1,20 +1,19 @@
 import React, { useEffect, useRef, useState } from "react";
-import { ethers } from "ethers";
+import { ethers, BigNumber } from "ethers";
 import { Web3Button, useContractWrite, useBalance, useAddress } from "@thirdweb-dev/react";
 import { Spinner } from "@nextui-org/spinner";
 import { toast } from "react-toastify";
 import Link from "next/link";
 import config from "@/config/config";
-import { computeBidAmounts } from "@/utils/computeBidAmounts";
+import { computeBidAmounts } from "@/utils/bids/computeBidAmounts";
 import { formatUnits, parseUnits } from "ethers/lib/utils";
 import formatAndRoundPrice from "@/utils/prices/formatAndRound";
 import { getCookie } from "cookies-next";
 import BidWithCrossmintButton from "@/components/ui/buttons/BidWithCrossmintButton/BidWithCrossmintButton";
 import Tippy from "@tippyjs/react";
 import { ClipboardIcon, InformationCircleIcon } from "@heroicons/react/20/solid";
-import handleCopy from "@/utils/handleCopy";
+import handleCopy from "@/utils/misc/handleCopy";
 import "tippy.js/dist/tippy.css";
-import { BigNumber } from "ethers";
 import ResponsiveTooltip from "@/components/ui/ResponsiveTooltip";
 import Input from "@/components/ui/Input";
 import { ngrokURL } from "@/data/ngrok";
@@ -50,26 +49,57 @@ const BidsModal = ({
   displayedPrice,
   setDisplayedPrice,
   fetchOffers
+}: {
+  setAmountToApprove: any;
+  bidsAmount: string;
+  setBidsAmount: any;
+  address: string;
+  chainId: number;
+  successFullBid: boolean;
+  setSuccessFullBid: any;
+  dsponsorMpContract: any;
+  toggleBidsModal: any;
+  marketplaceListings: any;
+  currencySymbol: string;
+  checkUserBalance: any;
+  tokenBalance: any;
+  allowanceTrue: any;
+  currencyTokenDecimals: number;
+  handleApprove: any;
+  checkAllowance: any;
+  isLoadingButton: boolean;
+  setIsLoadingButton: any;
+  currencyContract: any;
+  token: any;
+  user: any;
+  offer: any;
+  referrer: any;
+  showBidsModal: boolean;
+  tokenEtherPrice: string;
+  amountInEthWithSlippage: any;
+  displayedPrice: string;
+  setDisplayedPrice: any;
+  fetchOffers: any;
 }) => {
-  const [initialIntPrice, setInitialIntPrice] = useState(null);
+  const [initialIntPrice, setInitialIntPrice] = useState<string | null>(null);
   const [isLoadingApproveButton, setIsLoadingApproveButton] = useState(false);
   const [isLoadingBuyButton, setIsLoadingBuyButton] = useState(false);
   const [isPriceGood, setIsPriceGood] = useState(true);
   const { mutateAsync: auctionBids } = useContractWrite(dsponsorMpContract, "bid");
   const [checkTerms, setCheckTerms] = useState(false);
-  const [refundedPrice, setRefundedPrice] = useState(null);
-  const [, setEndDate] = useState(null);
-  const [, setMinBid] = useState(null);
-  const [, setEndDateHour] = useState(null);
+  const [refundedPrice, setRefundedPrice] = useState<string | null>(null);
+  const [, setEndDate] = useState<string | null>(null);
+  const [, setMinBid] = useState<string | null>(null);
+  const [, setEndDateHour] = useState<string | null>(null);
   const [buyoutPriceReached, setBuyoutPriceReached] = useState(false);
-  const [protocolFeeAmount, setProtocolFeeAmount] = useState(0);
+  const [protocolFeeAmount, setProtocolFeeAmount] = useState<string>("0");
   const [mount, setMount] = useState(false);
   const [insufficentBalance, setInsufficentBalance] = useState(false);
   const [canPayWithNativeToken, setCanPayWithNativeToken] = useState(false);
   const [notEnoughFunds, setNotEnoughFunds] = useState(false);
   const [copied, setCopied] = useState(false);
-  const [parsedBidsAmount, setParsedBidsAmount] = useState(null);
-  const [buyoutPrice, setBuyoutPrice] = useState(null);
+  const [parsedBidsAmount, setParsedBidsAmount] = useState<BigNumber | null>(null);
+  const [buyoutPrice, setBuyoutPrice] = useState<string | null>(null);
   const [tooHighPriceForCrossmint, setTooHighPriceForCrossmint] = useState(false);
 
   const chainConfig = config[chainId];
@@ -82,7 +112,7 @@ const BidsModal = ({
 
   const isWETH = currencyContract?.toLowerCase() === chainWETH;
   const canPayWithCrossmint = isWETH && chainConfig?.features?.crossmint?.enabled;
-  const modalRef = useRef();
+  const modalRef: any = useRef();
 
   const userAddr = useAddress();
 
@@ -94,14 +124,14 @@ const BidsModal = ({
 
     if (!parsedBidsAmount || parsedBidsAmount.lte(BigNumber.from(0))) return;
 
-    const hasInsufficientBalance =
-      currencyBalance &&
+    const hasInsufficientBalance: boolean =
+      !!currencyBalance &&
       (currencyBalance?.value.lt(amountInEthWithSlippage) ||
         parsedBidsAmount?.gt(currencyBalance?.value));
 
     setInsufficentBalance(hasInsufficientBalance);
 
-    if (nativeTokenBalance && nativeTokenBalance?.value.lt(amountInEthWithSlippage)) {
+    if (nativeTokenBalance?.value?.lt(amountInEthWithSlippage)) {
       setCanPayWithNativeToken(false);
     } else {
       setCanPayWithNativeToken(true);
@@ -126,8 +156,7 @@ const BidsModal = ({
 
   useEffect(() => {
     if (
-      marketplaceListings &&
-      marketplaceListings[0] &&
+      marketplaceListings?.[0] &&
       parsedBidsAmount &&
       BigNumber.from(parsedBidsAmount).gt(BigNumber.from(0)) &&
       !successFullBid
@@ -149,7 +178,7 @@ const BidsModal = ({
   }, [marketplaceListings, currencyTokenDecimals, parsedBidsAmount, successFullBid]);
 
   useEffect(() => {
-    if (marketplaceListings && marketplaceListings[0]) {
+    if (marketplaceListings?.[0]) {
       setBuyoutPrice(marketplaceListings[0]?.bidPriceStructure?.minimalBuyoutPerToken);
     }
   }, [marketplaceListings]);
@@ -178,7 +207,7 @@ const BidsModal = ({
         newProfitAmount
       } = computeBidAmounts(
         newBidPerToken,
-        1,
+        BigNumber.from(1),
         reservePricePerToken,
         buyoutPricePerToken,
         previousPricePerToken,
@@ -201,8 +230,8 @@ const BidsModal = ({
       setRefundedPrice(newProfitAmountFormatted);
       setMinBid(nextReservePricePerTokenFormatted);
     } else {
-      setMinBid(0);
-      setRefundedPrice(0);
+      setMinBid("0");
+      setRefundedPrice("0");
     }
   }, [parsedBidsAmount, marketplaceListings, currencyTokenDecimals]);
 
@@ -223,7 +252,7 @@ const BidsModal = ({
   }, [marketplaceListings, currencyTokenDecimals, mount]);
 
   useEffect(() => {
-    if (bidsAmount && parseFloat(bidsAmount) >= parseFloat(initialIntPrice)) {
+    if (bidsAmount && parseFloat(bidsAmount) >= parseFloat(initialIntPrice as string)) {
       setIsPriceGood(true);
     } else {
       setIsPriceGood(false);
@@ -276,7 +305,7 @@ const BidsModal = ({
     try {
       setIsLoadingButton(true);
       await handleParentApprove();
-      // await handleParentApprove();
+
       setSuccessFullBid(false);
     } catch (error) {
       setIsLoadingButton(false);
@@ -305,7 +334,7 @@ const BidsModal = ({
       setIsLoadingButton(true);
       const parsedBidsAmount = ethers.utils.parseUnits(bidsAmount, currencyTokenDecimals);
 
-      const referralAddress = getCookie("_rid") || "";
+      const referralAddress = getCookie("_rid") ?? "";
 
       await auctionBids({
         args: [marketplaceListings[0].id, parsedBidsAmount, address, referralAddress],
@@ -349,14 +378,14 @@ const BidsModal = ({
     }
     try {
       setIsLoadingButton(true);
-      const precision = bidsAmount.split(".")[1]?.length || 0;
+      const precision = bidsAmount.split(".")[1]?.length ?? 0;
 
       const bidsBigInt = ethers.utils.parseUnits(
         parseFloat(bidsAmount).toFixed(Math.min(Number(currencyTokenDecimals), precision)),
         Number(currencyTokenDecimals)
       );
 
-      const referralAddress = getCookie("_rid") || "";
+      const referralAddress = getCookie("_rid") ?? "";
 
       await auctionBids({
         args: [marketplaceListings[0].id, bidsBigInt, address, referralAddress]
@@ -464,7 +493,6 @@ const BidsModal = ({
                   <div className="flex items-center relative w-full overflow-hidden -pr-4">
                     <Input
                       type="number"
-                      onWheel={(e) => e.target.blur()}
                       className="pr-20 relative w-full flex-[3] rounded-xl text-2xl py-2 font-semibold text-white"
                       placeholder={`${initialIntPrice} or higher`}
                       value={bidsAmount ?? ""}
@@ -486,14 +514,14 @@ const BidsModal = ({
                 <div className="flex flex-col justify-center text-left md:flex-row items-center md:justify-between mb-8 mt-2 gap-2 md:gap-4">
                   {(initialIntPrice || (buyoutPriceReached && buyoutPrice)) && (
                     <div className="flex flex-col gap-1">
-                      {bidsAmount < initialIntPrice && (
+                      {parseFloat(bidsAmount) < parseFloat(initialIntPrice as string) && (
                         <button
                           className="text-sm text-left md:text-base whitespace-nowrap  text-green hover:text-opacity-80"
                           onClick={() => {
                             setBidsAmount(initialIntPrice);
 
                             const parsedInitialIntPrice = ethers.utils.parseUnits(
-                              initialIntPrice,
+                              initialIntPrice as string,
                               currencyTokenDecimals
                             );
                             setParsedBidsAmount(parsedInitialIntPrice);
@@ -508,7 +536,7 @@ const BidsModal = ({
                           className="text-sm text-left md:text-base whitespace-nowrap  text-green hover:text-opacity-80"
                           onClick={() => {
                             const formattedBuyoutPrice = ethers.utils.formatUnits(
-                              buyoutPrice,
+                              parseFloat(buyoutPrice as string),
                               currencyTokenDecimals
                             );
                             setBidsAmount(formattedBuyoutPrice);
@@ -518,7 +546,7 @@ const BidsModal = ({
                           }}
                         >
                           Set buyout price{" "}
-                          {ethers.utils.formatUnits(buyoutPrice, currencyTokenDecimals)}{" "}
+                          {ethers.utils.formatUnits(buyoutPrice as string, currencyTokenDecimals)}{" "}
                           {currencySymbol}
                         </button>
                       )}
@@ -538,12 +566,10 @@ const BidsModal = ({
 
                 <div className="flex flex-col gap-8 py-4 items-center justify-center">
                   {buyoutPriceReached ? (
-                    <>
-                      <div className="flex items-center justify-center text-center">
-                        Your bid is higher than the buyout price. You&apos;ll own the ad space
-                        immediately once the transaction is confirmed.
-                      </div>
-                    </>
+                    <div className="flex items-center justify-center text-center">
+                      Your bid is higher than the buyout price. You&apos;ll own the ad space
+                      immediately once the transaction is confirmed.
+                    </div>
                   ) : (
                     <>
                       <div className="flex flex-col gap-2 items-center text-center">
@@ -568,7 +594,7 @@ const BidsModal = ({
 
                           <div className="bg-jacarta-800 col-span-3 duration-400 shadow p-4 rounded-xl font-semibold text-xs md:text-base text-white text-center min-w-[125px] max-w-[125px] md:min-w-[200px] md:max-w-[200px]">
                             Your bid back +{" "}
-                            {parseFloat(bidsAmount) >= parseFloat(initialIntPrice)
+                            {parseFloat(bidsAmount) >= parseFloat(initialIntPrice as string)
                               ? formatAndRoundPrice(refundedPrice)
                               : 0}{" "}
                             {currencySymbol} Reward
@@ -625,8 +651,8 @@ const BidsModal = ({
                   {currencySymbol === "WETH" && (
                     <div className="flex flex-col items-center gap-1">
                       <span className="text-lg text-primaryPink font-semibold text-center">
-                        You will earn {Math.floor(protocolFeeAmount) ?? 0} boxes if you win the
-                        auction !
+                        You will earn {Math.floor(parseFloat(protocolFeeAmount)) ?? 0} boxes if you
+                        win the auction !
                       </span>
                       <span className="text-lg text-white font-semibold text-center">
                         Want to earn more?
@@ -691,46 +717,44 @@ const BidsModal = ({
                 </div>
               </div>
             ) : (
-              <>
-                <div className="modal-body p-6">
-                  <div className="flex flex-col gap-2">
-                    <div className="flex gap-4">
-                      <p>Congratulations ! 🎉 </p>
-                      <div
-                        className="dark:border-jacarta-800 bg-green   flex h-6 w-6 items-center justify-center rounded-full border-2 border-white"
-                        data-tippy-content="Verified Collection"
+              <div className="modal-body p-6">
+                <div className="flex flex-col gap-2">
+                  <div className="flex gap-4">
+                    <p>Congratulations ! 🎉 </p>
+                    <div
+                      className="dark:border-jacarta-800 bg-green   flex h-6 w-6 items-center justify-center rounded-full border-2 border-white"
+                      data-tippy-content="Verified Collection"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        width="24"
+                        height="24"
+                        className="h-[.875rem] w-[.875rem] fill-white"
                       >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          viewBox="0 0 24 24"
-                          width="24"
-                          height="24"
-                          className="h-[.875rem] w-[.875rem] fill-white"
-                        >
-                          <path fill="none" d="M0 0h24v24H0z"></path>
-                          <path d="M10 15.172l9.192-9.193 1.415 1.414L10 18l-6.364-6.364 1.414-1.414z"></path>
-                        </svg>
-                      </div>
+                        <path fill="none" d="M0 0h24v24H0z"></path>
+                        <path d="M10 15.172l9.192-9.193 1.415 1.414L10 18l-6.364-6.364 1.414-1.414z"></path>
+                      </svg>
                     </div>
                   </div>
-
-                  <div className="flex flex-col justify-center my-8">
-                    {currencySymbol === "WETH" && (
-                      <div className="flex flex-col items-center gap-1">
-                        <span className="text-lg text-white font-semibold text-center">
-                          Congratulations, you have increased your number of boxes by{" "}
-                          {Math.floor(protocolFeeAmount) ?? 0}. Check your profile page and referral
-                          link to earn more.
-                        </span>
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="mt-4 flex items-center">
-                    <span>You can check the bid status at anytime in your profile page.</span>
-                  </div>
                 </div>
-              </>
+
+                <div className="flex flex-col justify-center my-8">
+                  {currencySymbol === "WETH" && (
+                    <div className="flex flex-col items-center gap-1">
+                      <span className="text-lg text-white font-semibold text-center">
+                        Congratulations, you have increased your number of boxes by{" "}
+                        {Math.floor(parseFloat(protocolFeeAmount)) ?? 0}. Check your profile page
+                        and referral link to earn more.
+                      </span>
+                    </div>
+                  )}
+                </div>
+
+                <div className="mt-4 flex items-center">
+                  <span>You can check the bid status at anytime in your profile page.</span>
+                </div>
+              </div>
             )}
             {/* <!-- end body --> */}
             {!successFullBid && (

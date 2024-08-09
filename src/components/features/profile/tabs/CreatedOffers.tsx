@@ -8,7 +8,19 @@ import TokenCard from "@/components/ui/cards/TokenCard";
 import MainButton from "@/components/ui/buttons/MainButton";
 import { ExclamationCircleIcon } from "@heroicons/react/24/solid";
 
-const CreatedOffers = ({ data, isPendinAdsOnOffer, isOwner, offers, isLoading }) => {
+const CreatedOffers = ({
+  data,
+  isPendinAdsOnOffer,
+  isOwner,
+  offers,
+  isLoading
+}: {
+  data: any;
+  isPendinAdsOnOffer?: boolean;
+  isOwner: boolean;
+  offers: any;
+  isLoading: boolean;
+}) => {
   const { currentChainObject } = useChainContext();
   const chainId = currentChainObject?.chainId;
   const [filteredData, setFilteredData] = useState(data);

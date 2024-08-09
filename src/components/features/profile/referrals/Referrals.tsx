@@ -8,11 +8,11 @@ import "tippy.js/dist/tippy.css";
 import Input from "@/components/ui/Input";
 
 const Referrals = ({ userAddr, userData }) => {
-  const [isHovered, setIsHovered] = useState(false);
-  const [ranking, setRanking] = useState(null);
-  const [copied, setCopied] = useState(false);
+  const [isHovered, setIsHovered] = useState<boolean>(false);
+  const [ranking, setRanking] = useState<any>(null);
+  const [copied, setCopied] = useState<boolean>(false);
 
-  const inputRef = React.useRef();
+  const inputRef = React.useRef<any>();
 
   let frontURL;
   if (typeof window !== "undefined") {
@@ -79,7 +79,7 @@ const Referrals = ({ userAddr, userData }) => {
 
       <div className="h-full flex items-center justify-end">
         <div className="h-full w-full md:w-1/2 border border-primaryPurple bg-primaryBlack text-white p-6 rounded-lg relative">
-          <Popover placeholder="bottom" isOpen={isHovered}>
+          <Popover isOpen={isHovered}>
             <PopoverTrigger className="focus:ring-transparent focus:border-transparent">
               <button
                 className="absolute top-0 right-0 p-2 focus:ring-transparent focus:border-transparent"

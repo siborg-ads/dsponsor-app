@@ -62,11 +62,11 @@ const BuyModal = ({
   const { currentChainObject } = useChainContext();
   const chainId = currentChainObject?.chainId;
 
-  const modalRef = useRef();
+  const modalRef = useRef<any>();
 
   const { data: currencyBalance } = useBalance(currencyContract);
 
-  const chainConfig = config[chainId];
+  const chainConfig = config[chainId as number];
 
   useEffect(() => {
     if (!buyTokenEtherPrice || buyTokenEtherPrice <= 0) return;
@@ -77,7 +77,7 @@ const BuyModal = ({
       currencyBalance?.decimals
     );
 
-    if (currencyBalance && currencyBalance?.value.lt(buyTokenEtherPriceDecimals)) {
+    if (currencyBalance?.value?.lt(buyTokenEtherPriceDecimals)) {
       setInsufficentBalance(true);
     } else {
       setInsufficentBalance(false);
@@ -106,8 +106,7 @@ const BuyModal = ({
   }, [insufficentBalance, canPayWithNativeToken]);
 
   // If currency is WETH, we can pay with Crossmint
-  const canPayWithCrossmint =
-    selectedCurrency === "WETH" && features.canPayWithCrossmintEnabled;
+  const canPayWithCrossmint = selectedCurrency === "WETH" && features.canPayWithCrossmintEnabled;
 
   const handleTermService = (e) => {
     setValidate(e.target.checked);
@@ -119,8 +118,6 @@ const BuyModal = ({
     } catch (error) {
       console.error("Error approving", error);
       throw new Error(error);
-    } finally {
-      // handleBuyModal();
     }
   };
 
@@ -337,7 +334,7 @@ const BuyModal = ({
                       {!!totalPrice && parseFloat(totalPrice) > 0 && (
                         <Web3Button
                           contractAddress={
-                            currentChainObject?.smartContracts?.DSPONSORADMIN?.address
+                            currentChainObject?.smartContracts?.DSPONSORADMIN?.address as string
                           }
                           action={async () => {
                             setIsLoadingApproveButton(true);
@@ -379,7 +376,9 @@ const BuyModal = ({
 
                       {/* Place Bid Button */}
                       <Web3Button
-                        contractAddress={currentChainObject?.smartContracts?.DSPONSORADMIN?.address}
+                        contractAddress={
+                          currentChainObject?.smartContracts?.DSPONSORADMIN?.address as string
+                        }
                         action={async () => {
                           setIsLoadingBuyButton(true);
 
@@ -432,7 +431,9 @@ const BuyModal = ({
                 ) : (
                   // If insufficient balance, show this button
                   <Web3Button
-                    contractAddress={currentChainObject?.smartContracts?.DSPONSORADMIN?.address}
+                    contractAddress={
+                      currentChainObject?.smartContracts?.DSPONSORADMIN?.address as string
+                    }
                     action={async () => {
                       setIsLoadingBuyButton(true);
 

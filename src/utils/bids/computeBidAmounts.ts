@@ -1,16 +1,17 @@
-import { getMinimalBidPerToken } from "./getMinimalBidPerToken";
-import { getMinimalBuyoutPricePerToken } from "./getMinimalBuyoutPricePerToken";
+import { BigNumber } from "ethers";
+import { getMinimalBidPerToken } from "@/utils/bids/getMinimalBidPerToken";
+import { getMinimalBuyoutPricePerToken } from "@/utils/bids/getMinimalBuyoutPricePerToken";
 
 /**
  * Computes various bid-related amounts and checks for errors based on the auction parameters.
  * This function handles calculations for bid validation, bonus rewards, and payment distribution.
  *
- * @param {bigint} newBidPerToken - The bid amount per token that the new bidder is willing to pay.
- * @param {bigint} quantity - The number of tokens being bid on.
- * @param {bigint} reservePricePerToken - The minimum price per token that must be met or exceeded.
- * @param {bigint} buyoutPricePerToken - The price per token at which the auction will end immediately.
- * @param {bigint} previousPricePerToken - The price per token from the previous bid.
- * @param {bigint} minimalAuctionBps - The minimum basis points (bps) for the auction.
+ * @param {BigNumber} newBidPerToken - The bid amount per token that the new bidder is willing to pay.
+ * @param {BigNumber} quantity - The number of tokens being bid on.
+ * @param {BigNumber} reservePricePerToken - The minimum price per token that must be met or exceeded.
+ * @param {BigNumber} buyoutPricePerToken - The price per token at which the auction will end immediately.
+ * @param {BigNumber} previousPricePerToken - The price per token from the previous bid.
+ * @param {BigNumber} minimalAuctionBps - The minimum basis points (bps) for the auction.
  * @param {number} bonusRefundBps - The basis points used to calculate the bonus refund for the previous bidder.
  * @param {number} royaltyBps - The basis points allocated to the creator as a royalty.
  * @param {number} protocolFeeBps - The basis points allocated to the protocol as a fee.
@@ -20,15 +21,15 @@ import { getMinimalBuyoutPricePerToken } from "./getMinimalBuyoutPricePerToken";
  *
  * @example
  * const result = computeBidAmounts(
- *   BigInt("500000000000000000"), // newBidPerToken (0.5 ETH)
- *   BigInt("1"),                  // quantity
- *   BigInt("300000000000000000"), // reservePricePerToken (0.3 ETH)
- *   BigInt("1000000000000000000"), // buyoutPricePerToken (1 ETH)
- *   BigInt("450000000000000000"),  // previousPricePerToken (0.45 ETH)
- *   BigInt("500"),                // minimalAuctionBps (5%)
- *   BigInt("100"),                // bonusRefundBps (1%)
- *   BigInt("200"),                // royaltyBps (2%)
- *   BigInt("50")                  // protocolFeeBps (0.5%)
+ *   BigNumber.from("500000000000000000"), // newBidPerToken (0.5 ETH)
+ *   BigNumber.from("1"),                  // quantity
+ *   BigNumber.from("300000000000000000"), // reservePricePerToken (0.3 ETH)
+ *   BigNumber.from("1000000000000000000"), // buyoutPricePerToken (1 ETH)
+ *   BigNumber.from("450000000000000000"),  // previousPricePerToken (0.45 ETH)
+ *   BigNumber.from("500"),                // minimalAuctionBps (5%)
+ *   BigNumber.from("100"),                // bonusRefundBps (1%)
+ *   BigNumber.from("200"),                // royaltyBps (2%)
+ *   BigNumber.from("50")                  // protocolFeeBps (0.5%)
  * );
  *
  * console.log(result);
@@ -45,11 +46,11 @@ import { getMinimalBuyoutPricePerToken } from "./getMinimalBuyoutPricePerToken";
  * // - listerAmount
  */
 export function computeBidAmounts(
-  newBidPerToken: bigint,
-  quantity: bigint,
-  reservePricePerToken: bigint,
-  buyoutPricePerToken: bigint,
-  previousPricePerToken: bigint,
+  newBidPerToken: BigNumber,
+  quantity: BigNumber,
+  reservePricePerToken: BigNumber,
+  buyoutPricePerToken: BigNumber,
+  previousPricePerToken: BigNumber,
   minimalAuctionBps: number,
   bonusRefundBps: number,
   royaltyBps: number,
@@ -61,15 +62,15 @@ export function computeBidAmounts(
 
   const errors: string[] = [];
 
-  if (BigInt(quantity) <= BigInt("0")) {
+  if (BigNumber.from(quantity) <= BigNumber.from("0")) {
     errors.push("Quantity must be greater than 0");
   }
 
-  if (BigInt(minimalAuctionBps) <= BigInt(bonusRefundBps)) {
+  if (BigNumber.from(minimalAuctionBps) <= BigNumber.from(bonusRefundBps)) {
     errors.push("Minimal auction bps must be greater than bonus reward bps");
   }
 
-  const minimalBidPerToken = BigInt(
+  const minimalBidPerToken = BigNumber.from(
     getMinimalBidPerToken(previousPricePerToken, reservePricePerToken, minimalAuctionBps)
   );
 
@@ -87,31 +88,35 @@ export function computeBidAmounts(
   }
 
   const refundBonusPerToken =
-    (BigInt(bonusRefundBps) * BigInt(previousPricePerToken)) / BigInt("10000");
+    (BigNumber.from(bonusRefundBps) * BigNumber.from(previousPricePerToken)) /
+    BigNumber.from("10000");
 
-  const refundBonusAmount = BigInt(quantity) * refundBonusPerToken;
+  const refundBonusAmount = BigNumber.from(quantity) * refundBonusPerToken;
 
   const refundAmountToPreviousBidder =
-    BigInt(quantity) * BigInt(previousPricePerToken) + refundBonusAmount;
+    BigNumber.from(quantity) * BigNumber.from(previousPricePerToken) + refundBonusAmount;
 
   if (refundAmountToPreviousBidder >= totalBidAmount) {
     errors.push("Reward exceeds new bid amount");
   }
 
-  const newPricePerToken = BigInt(newBidPerToken) - BigInt(refundBonusPerToken);
-  const newAmount = newPricePerToken * BigInt(quantity);
+  const newPricePerToken = BigNumber.from(newBidPerToken) - BigNumber.from(refundBonusPerToken);
+  const newAmount = newPricePerToken * BigNumber.from(quantity);
 
-  const newRefundBonusPerToken = (BigInt(bonusRefundBps) * newPricePerToken) / BigInt("10000");
-  const newRefundBonusAmount = BigInt(quantity) * newRefundBonusPerToken;
+  const newRefundBonusPerToken =
+    (BigNumber.from(bonusRefundBps) * newPricePerToken) / BigNumber.from("10000");
+  const newRefundBonusAmount = BigNumber.from(quantity) * newRefundBonusPerToken;
 
   const newRefundAmount = newAmount + newRefundBonusAmount;
   const newProfitAmount = newRefundAmount - totalBidAmount;
 
-  const protocolFeeAmount = (BigInt(newAmount) * BigInt(protocolFeeBps)) / BigInt("10000");
-  const royaltyAmount = (BigInt(newAmount) * BigInt(royaltyBps)) / BigInt("10000");
-  const listerAmount = BigInt(newAmount) - protocolFeeAmount - royaltyAmount;
+  const protocolFeeAmount =
+    (BigNumber.from(newAmount) * BigNumber.from(protocolFeeBps)) / BigNumber.from("10000");
+  const royaltyAmount =
+    (BigNumber.from(newAmount) * BigNumber.from(royaltyBps)) / BigNumber.from("10000");
+  const listerAmount = BigNumber.from(newAmount) - protocolFeeAmount - royaltyAmount;
 
-  const nextReservePricePerToken = (newAmount * BigInt(110)) / BigInt(100);
+  const nextReservePricePerToken = (newAmount * BigNumber.from(110)) / BigNumber.from(100);
 
   // note: if quantity = 1 :
   // - newBidPerToken = totalBidAmount

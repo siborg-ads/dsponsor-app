@@ -10,13 +10,13 @@ interface InputProps {
   disabled?: boolean;
   value?: any;
   // eslint-disable-next-line no-unused-vars
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   // eslint-disable-next-line no-unused-vars
   onWheel?: (e: React.WheelEvent<HTMLInputElement>) => void;
   min?: number;
   step?: number;
   max?: number;
-  inputMode?: string;
+  inputMode?: any;
   pattern?: string;
   readOnly?: boolean;
   accept?: string;
@@ -24,6 +24,7 @@ interface InputProps {
   onClick?: (e: React.MouseEvent<HTMLInputElement>) => void;
   name?: string;
   checked?: boolean;
+  maxLength?: number;
 }
 
 const Input = forwardRef<HTMLInputElement, InputProps>(
@@ -47,9 +48,10 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
       accept,
       onClick,
       name,
-      checked
+      checked,
+      maxLength
     }: InputProps,
-    ref
+    ref: any
   ) => {
     return (
       <input
@@ -69,6 +71,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
         inputMode={inputMode}
         pattern={pattern}
         readOnly={readOnly}
+        maxLength={maxLength}
         className={clsx(
           "bg-jacarta-800 hover:bg-jacarta-800 border border-primaryPurple ring-0 focus:ring-0 focus:border-primaryPurple placeholder:text-jacarta-300 w-full rounded-lg py-3 px-3 text-white",
           className

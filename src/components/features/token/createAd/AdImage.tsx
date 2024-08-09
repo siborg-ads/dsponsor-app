@@ -21,8 +21,8 @@ const AdImage = ({
     body: "Ensuring images, especially logos, have the correct aspect ratio is crucial to prevent distortion when displayed. A distorted logo can undermine a brand’s professionalism and mislead potential clients. Maintaining the correct aspect ratio preserves the image's integrity across various platforms, supporting brand consistency and visual quality."
   };
   const containerElement = useRef(null);
-  const [widthRatioImage, setWidthRatioImage] = useState(null);
-  const [heightRatioImage, setHeightRatioImage] = useState(null);
+  const [widthRatioImage, setWidthRatioImage] = useState<number | null>(null);
+  const [heightRatioImage, setHeightRatioImage] = useState<number | null>(null);
   useEffect(() => {
     const stepWidth = 250;
     let tempId = id;

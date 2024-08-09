@@ -1,4 +1,5 @@
 import { CrossmintPayButton } from "@crossmint/client-sdk-react-ui";
+import { BigNumber } from "ethers";
 import React from "react";
 
 /**
@@ -32,14 +33,48 @@ import React from "react";
  * @returns {Element} - CrossmintPayButton
  * @constructor
  */
-export default function BidWithCrossmintButton(props = {}) {
+export default function BidWithCrossmintButton(
+  props: Readonly<{
+    offer: { offerId: string };
+    token: {
+      tokenId: string;
+      currency: string;
+      buyoutPricePerToken: string;
+      price: string;
+      listingId: string;
+      protocolFeeBPS: string;
+      royaltiesBPS: string;
+      fee: string;
+    };
+    user: { address: string; email: string };
+    referrer: { address: string };
+    actions: { processing: Function; success: Function; error: Function };
+    isDisabled: boolean;
+    isLoadingRender: () => React.JSX.Element;
+    isActiveRender?: () => React.JSX.Element;
+    isBid: boolean;
+    config: {
+      projectId: string;
+      bidCollectionId: string;
+      environment: string;
+      currency: any;
+      locale: any;
+      paymentMethod: any;
+    };
+    perPriceToken: BigNumber;
+    totalPriceFormatted: string;
+    successCallbackURL?: string;
+    failureCallbackURL?: string;
+    isLoading: boolean;
+  }>
+) {
   const { offer, token, user, referrer } = props;
 
   if (!token.fee) {
     console.warn("MintWithCrossmint: Token fee not found - Using default fee");
   }
 
-  let reason = null;
+  let reason: string = "";
   const expected = [
     "token.currency",
     "token.tokenId",
@@ -81,7 +116,9 @@ export default function BidWithCrossmintButton(props = {}) {
       _pricePerToken: props?.perPriceToken,
       _bidder: user.address,
       _referralAdditionalInformation: referrer.address ?? "0x"
-    }
+    },
+    successCallbackURL: props.successCallbackURL,
+    failureCallbackURL: props.failureCallbackURL
   };
 
   if (props?.successCallbackURL) {

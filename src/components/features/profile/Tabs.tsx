@@ -144,13 +144,7 @@ const UserTabs = ({
         <TokenAuctionBids data={tokenAuctionBids} isOwner={isOwner} isLoading={isLoading} />
       </TabPanel>
       <TabPanel>
-        <CreatedOffers
-          data={createdData}
-          isPendingAdsOnOffer={isPendingAdsOnOffer}
-          isOwner={isOwner}
-          offers={offers}
-          isLoading={isLoading}
-        />
+        <CreatedOffers data={createdData} isOwner={isOwner} offers={offers} isLoading={isLoading} />
       </TabPanel>
     </Tabs>
   );

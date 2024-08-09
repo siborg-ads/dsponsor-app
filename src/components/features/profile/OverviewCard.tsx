@@ -14,7 +14,7 @@ const OverviewCard = ({ card }) => {
       }}
     >
       <div className="flex flex-col justify-between p-6 bg-primaryBlack rounded-lg relative w-full">
-        <Popover placeholder="bottom" isOpen={isHovered}>
+        <Popover isOpen={isHovered}>
           <PopoverTrigger>
             <button
               className="absolute top-0 right-0 p-2"

@@ -9,15 +9,15 @@ import { DateRangePicker } from "@nextui-org/date-picker";
 const Activity = ({ userAddr, chainId }) => {
   const [copied, setCopied] = useState(false);
   const [, setUserData] = useState(null);
-  const [ranking, setRanking] = useState(null);
-  const [lastActivities, setLastActivities] = useState(null);
-  const [startDate, setStartDate] = useState(null);
-  const [endDate, setEndDate] = useState(null);
-  const [filteredLastActivities, setFilteredLastActivities] = useState(null);
+  const [ranking, setRanking] = useState<any>(null);
+  const [lastActivities, setLastActivities] = useState<any>(null);
+  const [startDate, setStartDate] = useState<Date | null>(null);
+  const [endDate, setEndDate] = useState<Date | null>(null);
+  const [filteredLastActivities, setFilteredLastActivities] = useState<any>(null);
   const [mount, setMount] = useState(false);
 
   const { currentChainObject } = useChainContext();
-  const chainExplorer = currentChainObject?.explorerBaseUrl;
+  const chainExplorer = currentChainObject?.explorerBaseURL;
 
   useEffect(() => {
     setTimeout(() => {
@@ -61,7 +61,7 @@ const Activity = ({ userAddr, chainId }) => {
 
   useEffect(() => {
     if (startDate && endDate) {
-      const filteredActivities = lastActivities.filter((activity) => {
+      const filteredActivities = lastActivities?.filter((activity: any) => {
         const activityDate = new Date(activity.date);
         return (
           activityDate.getTime() >= startDate.getTime() &&

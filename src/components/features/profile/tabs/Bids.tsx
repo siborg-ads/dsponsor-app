@@ -8,21 +8,21 @@ import { formatUnits } from "ethers/lib/utils";
 import { Loader2Icon } from "lucide-react";
 
 const Bids = ({ marketplaceBids, isLoading }) => {
-  const [startDate, setStartDate] = useState(null);
-  const [endDate, setEndDate] = useState(null);
-  const [filteredLastActivities, setFilteredLastActivities] = useState([]);
+  const [startDate, setStartDate] = useState<Date | null>(null);
+  const [endDate, setEndDate] = useState<Date | null>(null);
+  const [filteredLastActivities, setFilteredLastActivities] = useState<any[]>([]);
 
   const { currentChainObject } = useChainContext();
   const chainId = currentChainObject?.chainId;
 
   const formatBidTransactions = useCallback(
-    (bids) => {
+    (bids: any) => {
       if (!bids) return [];
 
-      let tempBids = [];
+      let tempBids: any[] = [];
 
-      bids.forEach(async (bid) => {
-        let tempBid = {};
+      bids?.forEach(async (bid) => {
+        let tempBid: any = {};
 
         if (bid?.refundProfit > 0 && bid?.status !== "COMPLETED") {
           tempBid.type = "outbid";

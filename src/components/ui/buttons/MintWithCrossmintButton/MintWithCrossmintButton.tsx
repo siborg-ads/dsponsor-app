@@ -1,6 +1,6 @@
 import { CrossmintPayButton } from "@crossmint/client-sdk-react-ui";
 import React from "react";
-import { ethers } from "ethers";
+import { BigNumber, ethers } from "ethers";
 import { formatUnits } from "ethers/lib/utils";
 
 /**
@@ -33,7 +33,40 @@ import { formatUnits } from "ethers/lib/utils";
  * @returns {Element} - CrossmintPayButton
  * @constructor
  */
-export default function MintWithCrossmintButton(props = {}) {
+export default function MintWithCrossmintButton(
+  props: Readonly<{
+    offer: { offerId: string };
+    token: {
+      tokenId: string;
+      currency: string;
+      buyoutPricePerToken: string;
+      price: string;
+      listingId: string;
+      protocolFeeBPS: string;
+      royaltiesBPS: string;
+      fee: string;
+      tokenData?: string;
+    };
+    user: { address: string; email: string };
+    referrer: { address: string };
+    actions: { processing: Function; success: Function; error: Function };
+    isDisabled: boolean;
+    isLoadingRender: () => React.JSX.Element;
+    isActiveRender?: (() => React.JSX.Element) | string;
+    isBid: boolean;
+    config: {
+      projectId: string;
+      mintCollectionId: string;
+      environment: string;
+      currency: any;
+      locale: any;
+      paymentMethod: any;
+    };
+    successCallbackURL?: string;
+    failureCallbackURL?: string;
+    isLoading: boolean;
+  }>
+) {
   const { offer, token, user, referrer } = props;
 
   const price = ethers.utils.parseUnits(props.token.price, "wei");
@@ -42,7 +75,7 @@ export default function MintWithCrossmintButton(props = {}) {
     console.warn("MintWithCrossmint: Token fee not found - Using default fee");
   }
 
-  let reason = null;
+  let reason: string = "";
   const expected = ["token.currency", "token.tokenId", "offer.offerId", "user.address"];
   for (const fullKey of expected) {
     const [parent, key] = fullKey.split(".");
@@ -88,7 +121,9 @@ export default function MintWithCrossmintButton(props = {}) {
         adDatas: [],
         referralAdditionalInformation: referrer.address ?? "0x"
       }
-    }
+    },
+    successCallbackURL: props.successCallbackURL,
+    failureCallbackURL: props.failureCallbackURL
   };
 
   if (props?.successCallbackURL) {
