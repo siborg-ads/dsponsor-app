@@ -10,30 +10,31 @@ import { useChainContext } from "@/hooks/useChainContext";
 import { InformationCircleIcon } from "@heroicons/react/20/solid";
 import ResponsiveTooltip from "@/components/ui/ResponsiveTooltip";
 import TextArea from "@/components/ui/TextArea";
+import { Address } from "thirdweb";
 
 const AdSubmission = ({
   approvalForAllToken = true,
   handleApprove,
   isListing = false,
-  helperFeesListing = null,
-  selectedStartingPrice = null,
+  helperFeesListing,
+  selectedStartingPrice,
   handlePreviewModal,
-  protocolFees = null,
+  protocolFees,
   handleSubmit,
   imageUrlVariants = [],
-  name = false,
-  link = false,
-  description = false,
-  startDate = null,
-  endDate = null,
-  selectedNumber = null,
-  selectedUnitPrice = null,
-  symbolContract = null,
-  selectedParameter = null,
-  selectedCurrency = null,
-  selectedRoyalties = null,
-  previewImage = null,
-  displayedParameter = null,
+  name,
+  link,
+  description,
+  startDate,
+  endDate,
+  selectedNumber,
+  selectedUnitPrice,
+  symbolContract,
+  selectedParameter,
+  selectedCurrency,
+  selectedRoyalties,
+  previewImage,
+  displayedParameter,
   terms = [],
   imageURLSteps = [],
   validate,
@@ -46,10 +47,46 @@ const AdSubmission = ({
   adSubmission,
   isLoadingButton,
   multipleAdsSubmission
+}: {
+  approvalForAllToken: boolean;
+  handleApprove: () => void;
+  isListing: boolean;
+  helperFeesListing: any;
+  selectedStartingPrice: number;
+  handlePreviewModal: () => void;
+  protocolFees: number;
+  // eslint-disable-next-line no-unused-vars
+  handleSubmit: (address: Address) => void;
+  imageUrlVariants: string[];
+  name: string;
+  link: string;
+  description: string;
+  startDate: Date;
+  endDate: Date;
+  selectedNumber: number;
+  selectedUnitPrice: number;
+  symbolContract: string;
+  selectedParameter: string;
+  selectedCurrency: string;
+  selectedRoyalties: number;
+  previewImage: string[];
+  displayedParameter: string[];
+  terms: any;
+  imageURLSteps: any;
+  validate: boolean;
+  errors: any;
+  successFullUpload: boolean;
+  buttonTitle: string;
+  modalTitle: string;
+  successFullUploadModal: any;
+  address: string;
+  adSubmission: boolean;
+  isLoadingButton: boolean;
+  multipleAdsSubmission: boolean;
 }) => {
-  const [imageRatios, setImageRatios] = React.useState([]);
-  const [isLoadingApproveButton, setIsLoadingApproveButton] = React.useState(false);
-  const [isLoadingSubmitButton, setIsLoadingSubmitButton] = React.useState(false);
+  const [imageRatios, setImageRatios] = React.useState<any[]>([]);
+  const [isLoadingApproveButton, setIsLoadingApproveButton] = React.useState<boolean>(false);
+  const [isLoadingSubmitButton, setIsLoadingSubmitButton] = React.useState<boolean>(false);
 
   const { currentChainObject } = useChainContext();
   const formatDate = (date) => {
@@ -72,7 +109,7 @@ const AdSubmission = ({
       const stepWidth = 250;
       let width = Number(ratios[0]);
       let height = Number(ratios[1]);
-      const ratioArray = [];
+      const ratioArray: number[] = [];
       if (ratios.length !== 2) {
         ratioArray.push(stepWidth);
         ratioArray.push(stepWidth);
@@ -92,7 +129,7 @@ const AdSubmission = ({
 
   useEffect(() => {
     if (imageUrlVariants.length > 0) {
-      let imageRatios = [];
+      let imageRatios: string[][] = [];
 
       imageUrlVariants.forEach((image, index) => {
         if (index < previewImage.length) {
@@ -166,8 +203,9 @@ const AdSubmission = ({
                       objectFit: "contain",
                       objectPosition: "center",
                       aspectRatio:
-                        `${imageRatios[0] ? imageRatios[0][0] : 1}/${imageRatios[0] ? imageRatios[0][1] : 1}` ??
-                        "1/1"
+                        imageRatios?.length > 0
+                          ? `${imageRatios[0] ? imageRatios[0][0] : 1}/${imageRatios[0] ? imageRatios[0][1] : 1}`
+                          : "1/1"
                     }}
                   />
                 </div>
@@ -179,12 +217,14 @@ const AdSubmission = ({
           <div className="modal-footer">
             <div className="flex items-center justify-center space-x-4">
               <Web3Button
-                contractAddress={currentChainObject?.smartContracts?.DSPONSORADMIN?.address}
+                contractAddress={
+                  currentChainObject?.smartContracts?.DSPONSORADMIN?.address as string
+                }
                 action={async () => {
                   setIsLoadingSubmitButton(true);
 
                   await toast
-                    .promise(handleSubmit(true), {
+                    .promise(handleSubmit(address), {
                       pending: "Waiting for confirmation 🕒",
                       success: "Transaction confirmed 👌",
                       error: "Transaction rejected 🤯"
@@ -263,8 +303,9 @@ const AdSubmission = ({
                         objectFit: "contain",
                         objectPosition: "center",
                         aspectRatio:
-                          `${imageRatios[index] ? imageRatios[index][0] : 1}/${imageRatios[index] ? imageRatios[index][1] : 1}` ??
-                          "1/1"
+                          imageRatios?.length > 0
+                            ? `${imageRatios[index] ? imageRatios[index][0] : 1}/${imageRatios[index] ? imageRatios[index][1] : 1}`
+                            : "1/1"
                       }}
                     />
                   </div>
@@ -277,7 +318,9 @@ const AdSubmission = ({
           <div className="modal-footer">
             <div className="flex items-center justify-center space-x-4">
               <Web3Button
-                contractAddress={currentChainObject?.smartContracts?.DSPONSORADMIN?.address}
+                contractAddress={
+                  currentChainObject?.smartContracts?.DSPONSORADMIN?.address as string
+                }
                 action={async () => {
                   await toast.promise(handleSubmit(true), {
                     pending: "Waiting for confirmation 🕒",

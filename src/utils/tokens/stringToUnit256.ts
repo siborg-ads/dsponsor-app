@@ -25,7 +25,7 @@ import { toUtf8Bytes, keccak256 } from "ethers/lib/utils";
  * const tokenId = stringToUint256(tokenString);
  * // `tokenId` will be a `BigInt` representing the hash of the normalized string "exampletoken".
  */
-export default function stringToUint256(s: string): BigInt {
+export default function stringToUint256(s: string): bigint {
   const normalized = s
     .toLowerCase()
     .normalize("NFKD")

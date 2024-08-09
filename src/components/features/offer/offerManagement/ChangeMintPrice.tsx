@@ -8,19 +8,20 @@ import * as Switch from "@radix-ui/react-switch";
 import { BigNumber } from "ethers";
 import { features } from "@/data/features";
 import Input from "@/components/ui/Input";
+import { Address } from "thirdweb";
 
-const isDisabledMessage = (disableMint) => {
+const isDisabledMessage = (disableMint: boolean) => {
   return disableMint
     ? `The minting feature has been disabled for this offer.`
     : `The minting feature has been enabled for this offer.`;
 };
 
 const ChangeMintPrice = ({ offer }) => {
-  const [amount, setAmount] = useState(undefined);
+  const [amount, setAmount] = useState<string | undefined>(undefined);
   const [initialAmount, setInitialAmount] = useState(undefined);
   const [currency, setCurrency] = useState(null);
   const [currencySymbol, setCurrencySymbol] = useState(null);
-  const [formattedAmountBN, setFormattedAmountBN] = useState(undefined);
+  const [formattedAmountBN, setFormattedAmountBN] = useState<BigNumber | undefined>(undefined);
   const [disableMint, setDisableMint] = useState(false);
   const [tokens, setTokens] = useState(null);
   const [nftContractAddress, setNftContractAddress] = useState(null);
@@ -43,9 +44,10 @@ const ChangeMintPrice = ({ offer }) => {
     if (offer) {
       // fallback to WETH from config if no currency is found
       let currency =
-        offer?.nftContract?.prices[0]?.currency ?? config[chainId]?.smartContracts?.WETH?.address;
+        offer?.nftContract?.prices[0]?.currency ??
+        config[chainId as number]?.smartContracts?.WETH?.address;
       if (initialDisabled) {
-        setCurrency(config[chainId]?.smartContracts?.WETH?.address);
+        setCurrency(config[chainId as number]?.smartContracts?.WETH?.address);
       } else {
         setCurrency(currency);
       }
@@ -53,7 +55,7 @@ const ChangeMintPrice = ({ offer }) => {
       setTokens(offer?.nftContract?.tokens);
       setNftContractAddress(offer?.nftContract?.id);
 
-      let tokensContractAddress = [];
+      let tokensContractAddress: Address[] = [];
       offer?.nftContract?.tokens?.forEach((token) => {
         tokensContractAddress.push(token?.tokenId);
       });
@@ -91,9 +93,9 @@ const ChangeMintPrice = ({ offer }) => {
 
   useEffect(() => {
     if (currency) {
-      const smartContracts = config[chainId]?.smartContracts;
-      const currency = Object?.values(smartContracts)?.find(
-        (contract) =>
+      const smartContracts = config[chainId as number]?.smartContracts;
+      const currency: any = Object?.values(smartContracts)?.find(
+        (contract: any) =>
           contract?.address?.toLowerCase() ===
           offer?.nftContract?.tokens[0]?.mint?.currency?.toLowerCase()
       );
@@ -117,7 +119,7 @@ const ChangeMintPrice = ({ offer }) => {
       value = value.replace(",", ".");
     }
 
-    const smartContracts = config[chainId]?.smartContracts;
+    const smartContracts = config[chainId as number]?.smartContracts;
     const currency = Object?.values(smartContracts)?.find(
       (contract) =>
         contract?.address?.toLowerCase() ===

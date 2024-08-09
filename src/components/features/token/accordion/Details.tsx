@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useChainContext } from "@/hooks/useChainContext";
 import config from "@/config/config";
 import displayOrCheckKnownAddress from "@/utils/addresses/displayOrCheckKnownAddress";
+import { Address } from "thirdweb";
 
 const Details = ({
   chainId,
@@ -14,6 +15,15 @@ const Details = ({
   status,
   listerAddress,
   offerData
+}: {
+  chainId: number;
+  contractAddress: Address;
+  isUserOwner: Address;
+  initialCreator: Address;
+  isToken: boolean;
+  status: string;
+  listerAddress: Address;
+  offerData: any;
 }) => {
   const { currentChainObject } = useChainContext();
 
