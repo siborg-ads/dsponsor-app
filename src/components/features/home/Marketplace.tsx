@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from "react";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import { ChevronDownIcon, InformationCircleIcon } from "@heroicons/react/20/solid";
-import TokenCardSkeleton from "@/components/ui/skeletons/TokenCardSkeleton.jsx";
+import TokenCardSkeleton from "@/components/ui/skeletons/TokenCardSkeleton";
 import TokenCard from "@/components/ui/cards/TokenCard";
 import { Popover, PopoverTrigger, PopoverContent } from "@nextui-org/popover";
 import Input from "@/components/ui/Input";

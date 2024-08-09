@@ -12,7 +12,6 @@ import { useChainContext } from "@/hooks/useChainContext";
 import { Auctions } from "@/types/auctions";
 
 const Home = () => {
-  const [chainIdFilter, setChainIdFilter] = useState<number | null>(null);
   const [auctionsTemp, setAuctionsTemp] = useState<any[]>([]);
   const [auctions, setAuctions] = useState<Auctions>([]);
   const [allTokens, setAllTokens] = useState<boolean>(true);
@@ -25,12 +24,12 @@ const Home = () => {
   const dataFetchedRef = useRef(false);
 
   useEffect(() => {
-    const fetchData = async (chainId, allTokens) => {
+    const fetchData = async (chainId: number, allTokens: any) => {
       if (dataFetchedRef.current) return;
 
       setIsAuctionsLoading(true);
 
-      let allListedTokenWithoutFilterArray = [];
+      let allListedTokenWithoutFilterArray: any[] = [];
       const data = await fetchHome(chainId, allTokens);
       allListedTokenWithoutFilterArray.push(...data);
 
@@ -188,8 +187,6 @@ const Home = () => {
         <MainAuctions auctions={auctions} isAuctionsLoading={isAuctionsLoading} />
         <MarketplaceHome
           auctions={auctions}
-          chainIdFilter={chainIdFilter}
-          setChainIdFilter={setChainIdFilter}
           setAllTokens={setAllTokens}
           isAuctionsLoading={isAuctionsLoading}
           allTokens={allTokens}

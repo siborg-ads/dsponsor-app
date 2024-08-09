@@ -12,6 +12,7 @@ import { useChainContext } from "@/hooks/useChainContext";
 import config from "@/config/config";
 import { getAddress } from "ethers/lib/utils";
 import { features } from "@/data/features";
+import { Address } from "thirdweb";
 
 const metadata = {
   title: "Profile || SiBorg Ads - The Web3 Monetization Solution",
@@ -23,29 +24,29 @@ const metadata = {
 const Profile = () => {
   const router = useRouter();
   const address = useAddress();
-  const [createdData, setCreatedData] = useState(null);
-  const [mappedOwnedAdProposals, setMappedOwnedAdProposals] = useState(null);
+  const [createdData, setCreatedData] = useState<any>(null);
+  const [mappedOwnedAdProposals, setMappedOwnedAdProposals] = useState<any[]>([]);
   const [listedAuctionToken, setListedAuctionToken] = useState(null);
   const [tokenAuctionBids, setTokenAuctionBids] = useState(null);
   const [copied, setCopied] = useState(false);
   const [isOwner, setIsOwner] = useState(false);
   const { currentChainObject } = useChainContext();
   const [isPendingAdsOnOffer, setIsPendingAdsOnOffer] = useState(false);
-  const [initialWallet, setInitialWallet] = useState(null);
+  const [initialWallet, setInitialWallet] = useState<Address | null>(null);
   const [, setMount] = useState(false);
   const [userData, setUserData] = useState(null);
   const [isUserConnected, setIsUserConnected] = useState(false);
-  const [createdOffers, setCreatedOffers] = useState(null);
+  const [createdOffers, setCreatedOffers] = useState<any[]>([]);
   const [isLoadingTransactions, setIsLoadingTransactions] = useState(false);
   const [lastActivities, setLastActivities] = useState(null);
   const [isLoadingBids, setIsLoadingBids] = useState(false);
   const [marketplaceBids, setMarketplaceBids] = useState(false);
-  const [isLoadingOwnedTokens, setIsLoadingOwnedTokens] = useState(false);
+  const [, setIsLoadingOwnedTokens] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  const userAddress = router.query.address;
+  const userAddress = router.query.address as Address;
   const chainId = currentChainObject?.chainId;
-  const chainConfig = config[chainId];
+  const chainConfig = config[chainId as number];
 
   useEffect(() => {
     if (address && userAddress && getAddress(address) === getAddress(userAddress)) {
@@ -59,7 +60,7 @@ const Profile = () => {
     if (createdOffers) {
       // we need to check the number of pending offers on the user's offer
       // but if there is already an accepted offer, we don't count it
-      const pendingOffers = createdOffers.filter(
+      const pendingOffers = createdOffers?.filter(
         (offer) =>
           offer?.allProposals?.filter((proposal) => proposal?.status === "CURRENT_PENDING").length >
           0
@@ -75,13 +76,13 @@ const Profile = () => {
 
   useEffect(() => {
     if (address && !initialWallet) {
-      setInitialWallet(address);
+      setInitialWallet(address as Address);
     }
   }, [address, initialWallet]);
 
   useEffect(() => {
     if (address && initialWallet && address !== initialWallet) {
-      setInitialWallet(address);
+      setInitialWallet(address as Address);
       router.push(`/profile/${address}`);
     }
   }, [address, initialWallet, router]);
@@ -93,7 +94,8 @@ const Profile = () => {
 
   const fetchDataByUserAddress = React.useCallback(
     async (fetchFunction) => {
-      const dataArray = [];
+      const dataArray: any[] = [];
+
       for (const [chainId] of Object.entries(config)) {
         const data = await fetchFunction(userAddress, chainId);
         dataArray?.push(...data);
@@ -118,7 +120,7 @@ const Profile = () => {
         offer?.nftContract?.tokens?.forEach((token) =>
           token?.marketplaceListings?.forEach((listing) =>
             listing?.bids?.forEach((bid) => {
-              if (bid?.bidder?.toLowerCase() === userAddress?.toLowerCase()) {
+              if (userAddress && bid?.bidder?.toLowerCase() === userAddress?.toLowerCase()) {
                 allUserBids = allUserBids ? [...allUserBids, bid] : [bid];
               }
             })
@@ -385,9 +387,7 @@ const Profile = () => {
               manageAddress={userAddress}
             />
 
-            {isUserConnected && (
-              <Referrals userData={userData} userAddr={address} manageAddress={userAddress} />
-            )}
+            {isUserConnected && <Referrals userData={userData} userAddr={address} />}
 
             <Tabs
               mappedownedAdProposals={mappedOwnedAdProposals}
@@ -402,7 +402,6 @@ const Profile = () => {
               lastActivities={lastActivities}
               isLoadingBids={isLoadingBids}
               marketplaceBids={marketplaceBids}
-              isLoadingOwnedTokens={isLoadingOwnedTokens}
               isLoading={isLoading}
               fetchCreatedData={fetchCreatedData}
             />

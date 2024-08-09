@@ -20,7 +20,6 @@ const PlaceBid = ({
   tokenBalance,
   handleApprove,
   price,
-  hasEnoughBalance,
   currencyTokenDecimals,
   checkUserBalance,
   allowanceTrue,

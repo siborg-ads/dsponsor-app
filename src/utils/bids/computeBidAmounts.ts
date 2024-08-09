@@ -56,7 +56,7 @@ export function computeBidAmounts(
   royaltyBps: number,
   protocolFeeBps: number
 ) {
-  const totalBidAmount = newBidPerToken * quantity;
+  const totalBidAmount = newBidPerToken.mul(quantity);
 
   previousPricePerToken = previousPricePerToken ?? "0";
 
@@ -87,36 +87,40 @@ export function computeBidAmounts(
     );
   }
 
-  const refundBonusPerToken =
-    (BigNumber.from(bonusRefundBps) * BigNumber.from(previousPricePerToken)) /
-    BigNumber.from("10000");
+  const refundBonusPerToken = BigNumber.from(bonusRefundBps)
+    .mul(BigNumber.from(previousPricePerToken))
+    .div(BigNumber.from("10000"));
 
-  const refundBonusAmount = BigNumber.from(quantity) * refundBonusPerToken;
+  const refundBonusAmount = BigNumber.from(quantity).mul(refundBonusPerToken);
 
-  const refundAmountToPreviousBidder =
-    BigNumber.from(quantity) * BigNumber.from(previousPricePerToken) + refundBonusAmount;
+  const refundAmountToPreviousBidder = BigNumber.from(quantity)
+    .mul(BigNumber.from(previousPricePerToken))
+    .add(refundBonusAmount);
 
-  if (refundAmountToPreviousBidder >= totalBidAmount) {
+  if (refundAmountToPreviousBidder.gte(totalBidAmount)) {
     errors.push("Reward exceeds new bid amount");
   }
 
-  const newPricePerToken = BigNumber.from(newBidPerToken) - BigNumber.from(refundBonusPerToken);
-  const newAmount = newPricePerToken * BigNumber.from(quantity);
+  const newPricePerToken = BigNumber.from(newBidPerToken).sub(refundBonusPerToken);
+  const newAmount = newPricePerToken.mul(BigNumber.from(quantity));
 
-  const newRefundBonusPerToken =
-    (BigNumber.from(bonusRefundBps) * newPricePerToken) / BigNumber.from("10000");
-  const newRefundBonusAmount = BigNumber.from(quantity) * newRefundBonusPerToken;
+  const newRefundBonusPerToken = BigNumber.from(bonusRefundBps)
+    .mul(newPricePerToken)
+    .div(BigNumber.from("10000"));
+  const newRefundBonusAmount = BigNumber.from(quantity).mul(newRefundBonusPerToken);
 
-  const newRefundAmount = newAmount + newRefundBonusAmount;
-  const newProfitAmount = newRefundAmount - totalBidAmount;
+  const newRefundAmount = newAmount.add(newRefundBonusAmount);
+  const newProfitAmount = newRefundAmount.sub(totalBidAmount);
 
-  const protocolFeeAmount =
-    (BigNumber.from(newAmount) * BigNumber.from(protocolFeeBps)) / BigNumber.from("10000");
-  const royaltyAmount =
-    (BigNumber.from(newAmount) * BigNumber.from(royaltyBps)) / BigNumber.from("10000");
-  const listerAmount = BigNumber.from(newAmount) - protocolFeeAmount - royaltyAmount;
+  const protocolFeeAmount = BigNumber.from(newAmount)
+    .mul(BigNumber.from(protocolFeeBps))
+    .div(BigNumber.from("10000"));
+  const royaltyAmount = BigNumber.from(newAmount)
+    .mul(BigNumber.from(royaltyBps))
+    .div(BigNumber.from("10000"));
+  const listerAmount = BigNumber.from(newAmount).sub(protocolFeeAmount).sub(royaltyAmount);
 
-  const nextReservePricePerToken = (newAmount * BigNumber.from(110)) / BigNumber.from(100);
+  const nextReservePricePerToken = newAmount.mul(BigNumber.from("110")).div(BigNumber.from("100"));
 
   // note: if quantity = 1 :
   // - newBidPerToken = totalBidAmount

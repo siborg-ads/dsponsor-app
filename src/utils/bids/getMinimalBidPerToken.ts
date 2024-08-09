@@ -1,12 +1,14 @@
+import { BigNumber } from "ethers";
+
 /**
  * Calculates the minimal bid price per token based on the previous price, reserve price,
  * and minimal auction basis points (bps). This function is useful for determining the
  * minimum bid amount required in an auction setting.
  *
- * @param {bigint} previousPricePerToken - The previous price per token. If not provided,
+ * @param {BigNumber} previousPricePerToken - The previous price per token. If not provided,
  *                                                   it defaults to "0". It should be a numeric value
  *                                                   in string format or a number.
- * @param {bigint} reservePricePerToken - The reserve price per token. This is the minimum
+ * @param {BigNumber} reservePricePerToken - The reserve price per token. This is the minimum
  *                                                  price that must be met if the previous price is zero
  *                                                  or not available. It should be a numeric value
  *                                                  in string format or a number.
@@ -32,17 +34,19 @@
  * // `minimalBidWithReserve` will be "90", the reserve price.
  */
 export function getMinimalBidPerToken(
-  previousPricePerToken: bigint,
-  reservePricePerToken: bigint,
+  previousPricePerToken: BigNumber,
+  reservePricePerToken: BigNumber,
   minimalAuctionBps: number
 ) {
   previousPricePerToken = previousPricePerToken ?? "0";
 
   const requiredMinimalPricePerToken =
-    BigInt(previousPricePerToken) > BigInt("0")
-      ? BigInt(previousPricePerToken) +
-        (BigInt(previousPricePerToken) * BigInt(minimalAuctionBps)) / BigInt("10000")
-      : BigInt(reservePricePerToken);
+    BigNumber.from(previousPricePerToken) > BigNumber.from("0")
+      ? BigNumber.from(previousPricePerToken)
+          .mul(BigNumber.from(minimalAuctionBps))
+          .div(BigNumber.from("10000"))
+          .add(BigNumber.from(previousPricePerToken))
+      : BigNumber.from(reservePricePerToken);
 
   return requiredMinimalPricePerToken.toString();
 }

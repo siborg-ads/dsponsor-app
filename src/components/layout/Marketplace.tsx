@@ -15,10 +15,10 @@ const Marketplace = () => {
   const router = useRouter();
   const address = useAddress();
 
-  const [listedAuctionToken, setListedAuctionToken] = useState(null);
+  const [listedAuctionToken, setListedAuctionToken] = useState<any[]>([]);
 
-  const [isOwner] = useState(false);
-  const [filterTypes, setFilterTypes] = useState([]);
+  const [isOwner] = useState<boolean>(false);
+  const [filterTypes, setFilterTypes] = useState<any[]>([]);
 
   const { currentChainObject } = useChainContext();
   const chainId = currentChainObject?.chainId;
@@ -32,7 +32,7 @@ const Marketplace = () => {
         fetchAllListedTokenRef.current = true;
 
         try {
-          const listingArray = [];
+          const listingArray: any[] = [];
 
           for (const [chainId] of Object.entries(config)) {
             const listings = await fetchMarketplace(chainId);
@@ -55,8 +55,8 @@ const Marketplace = () => {
     if (filterTypes.length === 0) return listedAuctionToken;
 
     const filterCategories = {
-      status: filterTypes.filter((f) => f.category === "status").map((f) => f.type),
-      chain: filterTypes.filter((f) => f.category === "chain").map((f) => f.type)
+      status: filterTypes.filter((f: any) => f.category === "status").map((f: any) => f.type),
+      chain: filterTypes.filter((f: any) => f.category === "chain").map((f: any) => f.type)
     };
 
     return listedAuctionToken?.filter((item) => {

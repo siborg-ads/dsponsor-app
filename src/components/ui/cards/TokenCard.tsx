@@ -49,17 +49,17 @@ const TokenCard = ({
   tokenId?: string;
 }) => {
   const [price, setPrice] = useState(null);
-  const [totalPrice, setTotalPrice] = useState(null);
+  const [totalPrice, setTotalPrice] = useState<string | null>(null);
   const [currencyToken, setCurrencyToken] = useState(null);
-  const [itemData, setItemData] = useState({});
-  const [itemStatut, setItemStatut] = useState(null);
+  const [itemData, setItemData] = useState<any>({});
+  const [itemStatut, setItemStatut] = useState<string | null>(null);
   const [lastSalePrice, setLastSalePrice] = useState(null);
   const [lastBidder, setLastBidder] = useState(null);
   const [isLastBidder, setIsLastBidder] = useState(false);
-  const [itemProposals, setItemProposals] = useState(null);
+  const [itemProposals, setItemProposals] = useState<any>(null);
   const [availableToSubmitAd, setAvailableToSubmitAd] = useState(false);
   const [isPendingAdsOnOffer, setIsPendingAdsOnOffer] = useState(false);
-  const [imageUrl, setImageUrl] = useState(null);
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
 
   const address = useAddress();
 
@@ -226,9 +226,9 @@ const TokenCard = ({
     }
   }, [offer]);
 
-  function formatDate(dateIsoString) {
+  function formatDate(dateIsoString: string): string {
     if (!dateIsoString) return "date not found";
-    const options = { year: "numeric", month: "long", day: "numeric" };
+    const options: Intl.DateTimeFormatOptions = { year: "numeric", month: "long", day: "numeric" };
     return new Date(dateIsoString).toLocaleDateString("en-EN", options);
   }
 
@@ -340,6 +340,7 @@ const TokenCard = ({
     } else {
       data = item?.metadata?.offer ? item?.metadata?.offer : null;
     }
+
     setItemData(data);
   }, [item, isToken]);
 
@@ -353,7 +354,7 @@ const TokenCard = ({
   useEffect(() => {
     const fetchImage = async (image) => {
       // get url image instead of ipfs:// starting url
-      if (image && image.startsWith("ipfs://")) {
+      if (image?.startsWith("ipfs://")) {
         const storage = new ThirdwebStorage({ clientId: "6f375d41f2a33f1f08f6042a65d49ec9" });
         const ipfsUrl = await storage.resolveScheme(image);
         setImageUrl(ipfsUrl);
@@ -415,9 +416,6 @@ const TokenCard = ({
           <Tippy
             content={item?.chainConfig?.network}
             placement="top"
-            style={{
-              transitionDuration: "500ms"
-            }}
             className="bg-jacarta-300 text-jacarta-900 box-border hover:border-2 dark:hover:border-2 hover:-m-1 duration-400 dark:hover:bg-jacarta-800 dark:border-jacarta-100 dark:border-opacity-10 border-opacity-10 border border-jacarta-900 hover:bg-jacarta-800 dark:text-jacarta-100 rounded-md p-2"
           >
             <div

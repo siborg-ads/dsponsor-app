@@ -14,7 +14,7 @@ const metadata = {
 };
 
 const Marketplace = () => {
-  const [activity, setActivity] = useState([]);
+  const [activity, setActivity] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -28,7 +28,8 @@ const Marketplace = () => {
 
     Promise.all(promises)
       .then((activities) => {
-        const mergedActivitiesArray = [];
+        const mergedActivitiesArray: any[] = [];
+
         for (const activity of activities) {
           const mergedActivities = {
             ...activity,

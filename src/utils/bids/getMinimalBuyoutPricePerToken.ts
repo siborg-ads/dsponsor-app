@@ -1,3 +1,5 @@
+import { BigNumber } from "ethers";
+
 /**
  * Calculates the minimal buyout price per token based on previous price, buyout price,
  * minimal auction basis points (bps), and bonus refund basis points (bps).
@@ -10,9 +12,9 @@
  * and returns the higher value. If the previous price is zero or not provided, it defaults to the
  * buyout price per token.
  *
- * @param {bigint} previousPricePerToken - The price per token from the previous sale or auction.
+ * @param {BigNumber} previousPricePerToken - The price per token from the previous sale or auction.
  *                                                   If not provided or zero, defaults to "0".
- * @param {bigint} buyoutPricePerToken - The buyout price per token for the current auction.
+ * @param {BigNumber} buyoutPricePerToken - The buyout price per token for the current auction.
  * @param {number} minimalAuctionBps - The minimal auction basis points (bps) as a percentage multiplier.
  * @param {number} bonusRefundBps - The bonus refund basis points (bps) as a percentage multiplier.
  *
@@ -34,20 +36,28 @@
  * // Result: "120" if it is greater than both, otherwise "110" or "105".
  */
 export function getMinimalBuyoutPricePerToken(
-  previousPricePerToken: bigint,
-  buyoutPricePerToken: bigint,
+  previousPricePerToken: BigNumber,
+  buyoutPricePerToken: BigNumber,
   minimalAuctionBps: number,
   bonusRefundBps: number
 ) {
   previousPricePerToken = previousPricePerToken ?? "0";
 
-  if (BigInt(previousPricePerToken) > BigInt("0")) {
-    const requiredMinimalPricePerTokenFromBuyoutPrice =
-      BigInt(buyoutPricePerToken) +
-      (BigInt(previousPricePerToken) * BigInt(bonusRefundBps)) / BigInt("10000");
-    const requiredMinimalPricePerTokenFromMinimalAuctionBps =
-      BigInt(previousPricePerToken) +
-      (BigInt(previousPricePerToken) * BigInt(minimalAuctionBps)) / BigInt("10000");
+  if (BigNumber.from(previousPricePerToken) > BigNumber.from("0")) {
+    const requiredMinimalPricePerTokenFromBuyoutPrice = BigNumber.from(buyoutPricePerToken).add(
+      BigNumber.from(previousPricePerToken)
+        .mul(BigNumber.from(bonusRefundBps))
+        .div(BigNumber.from("10000"))
+    );
+
+    const requiredMinimalPricePerTokenFromMinimalAuctionBps = BigNumber.from(
+      previousPricePerToken
+    ).add(
+      BigNumber.from(previousPricePerToken)
+        .mul(BigNumber.from(minimalAuctionBps))
+        .div(BigNumber.from("10000"))
+    );
+
     const result =
       requiredMinimalPricePerTokenFromBuyoutPrice >
       requiredMinimalPricePerTokenFromMinimalAuctionBps

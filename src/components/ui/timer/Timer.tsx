@@ -53,13 +53,14 @@ const renderer = ({ days, hours, minutes, seconds, completed }) => {
 
 export default function Timer({ endTime }) {
   const [showTimer, setShowTimer] = useState(false);
-  const [remainingTime, setRemainingTime] = useState(null);
+  const [remainingTime, setRemainingTime] = useState<Date | null>(null);
 
   useEffect(() => {
     const endDate = new Date(parseInt(endTime) * 1000); // Convert UNIX timestamp to JavaScript Date object
+
     setRemainingTime(endDate);
     setShowTimer(true);
   }, [endTime]);
 
-  return <>{showTimer && <Countdown date={remainingTime} renderer={renderer} />}</>;
+  return <>{showTimer && <Countdown date={remainingTime as Date} renderer={renderer} />}</>;
 }

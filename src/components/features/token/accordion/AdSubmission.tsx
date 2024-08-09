@@ -581,39 +581,38 @@ const AdSubmission = ({
                     ""
                   )}
                 </div>
-                {previewImage &&
-                  previewImage.map((image, index) => (
-                    <div className="mb-6  flex-col items-center justify-center " key={index}>
-                      <label
-                        htmlFor="item-description"
-                        className="font-display text-jacarta-100 text-sm text-center mb-2 block "
-                      >
-                        Image {imageUrlVariants[index] && `( ratio ${imageUrlVariants[index]} )`}{" "}
-                        preview
-                      </label>
-                      <div
-                        className="dark:bg-secondaryBlack dark:border-jacarta-800 border-jacarta-100  group relative flex max-w-md flex-col items-center justify-center rounded-lg border-2 border-dashed"
-                        style={{
-                          width:
-                            imageUrlVariants.length > 0
-                              ? `${imageRatioDisplay(index)[0]}px`
-                              : "275px",
-                          height:
-                            imageUrlVariants.length > 0
-                              ? `${imageRatioDisplay(index)[1]}px`
-                              : "275px",
-                          position: "relative"
-                        }}
-                      >
-                        <Image
-                          src={image ?? ""}
-                          fill={true}
-                          alt="Preview"
-                          className="object-contain h-full p-1"
-                        />
-                      </div>
+                {previewImage?.map((image: any, index: number) => (
+                  <div className="mb-6 flex-col items-center justify-center" key={index}>
+                    <label
+                      htmlFor="item-description"
+                      className="font-display text-jacarta-100 text-sm text-center mb-2 block "
+                    >
+                      Image {imageUrlVariants[index] && `( ratio ${imageUrlVariants[index]} )`}{" "}
+                      preview
+                    </label>
+                    <div
+                      className="dark:bg-secondaryBlack dark:border-jacarta-800 border-jacarta-100  group relative flex max-w-md flex-col items-center justify-center rounded-lg border-2 border-dashed"
+                      style={{
+                        width:
+                          imageUrlVariants.length > 0
+                            ? `${imageRatioDisplay(index)[0]}px`
+                            : "275px",
+                        height:
+                          imageUrlVariants.length > 0
+                            ? `${imageRatioDisplay(index)[1]}px`
+                            : "275px",
+                        position: "relative"
+                      }}
+                    >
+                      <Image
+                        src={image ?? ""}
+                        fill={true}
+                        alt="Preview"
+                        className="object-contain h-full p-1"
+                      />
                     </div>
-                  ))}
+                  </div>
+                ))}
               </div>
             ) : (
               <div className="flex flex-col gap-2">
