@@ -17,6 +17,7 @@ export interface ChainObject {
     DSPONSORADMIN: {
       address: string;
       feeBps: string;
+      abi: any;
     };
     DSPONSORMP: {
       address: string;

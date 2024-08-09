@@ -10,7 +10,6 @@ import { useChainContext } from "@/hooks/useChainContext";
 import { InformationCircleIcon } from "@heroicons/react/20/solid";
 import ResponsiveTooltip from "@/components/ui/ResponsiveTooltip";
 import TextArea from "@/components/ui/TextArea";
-import { Address } from "thirdweb";
 
 const AdSubmission = ({
   approvalForAllToken = true,
@@ -48,41 +47,41 @@ const AdSubmission = ({
   isLoadingButton,
   multipleAdsSubmission
 }: {
-  approvalForAllToken: boolean;
-  handleApprove: () => void;
-  isListing: boolean;
-  helperFeesListing: any;
-  selectedStartingPrice: number;
+  approvalForAllToken?: boolean;
+  handleApprove?: any;
+  isListing?: boolean;
+  helperFeesListing?: any;
+  selectedStartingPrice?: number;
   handlePreviewModal: () => void;
-  protocolFees: number;
+  protocolFees?: number;
   // eslint-disable-next-line no-unused-vars
-  handleSubmit: (address: Address) => void;
-  imageUrlVariants: string[];
-  name: string;
-  link: string;
-  description: string;
-  startDate: Date;
-  endDate: Date;
-  selectedNumber: number;
-  selectedUnitPrice: number;
-  symbolContract: string;
-  selectedParameter: string;
-  selectedCurrency: string;
-  selectedRoyalties: number;
-  previewImage: string[];
-  displayedParameter: string[];
-  terms: any;
-  imageURLSteps: any;
-  validate: boolean;
+  handleSubmit: any;
+  imageUrlVariants?: string[];
+  name: string | boolean;
+  link: string | boolean;
+  description: boolean | string;
+  startDate?: Date;
+  endDate?: Date;
+  selectedNumber?: number;
+  selectedUnitPrice?: number;
+  symbolContract?: string;
+  selectedParameter?: string;
+  selectedCurrency?: string;
+  selectedRoyalties?: number;
+  previewImage?: string[];
+  displayedParameter?: string[];
+  terms?: any;
+  imageURLSteps?: any;
+  validate: any;
   errors: any;
   successFullUpload: boolean;
-  buttonTitle: string;
-  modalTitle: string;
+  buttonTitle?: string;
+  modalTitle?: string;
   successFullUploadModal: any;
-  address: string;
-  adSubmission: boolean;
+  address?: string;
+  adSubmission?: boolean;
   isLoadingButton: boolean;
-  multipleAdsSubmission: boolean;
+  multipleAdsSubmission?: boolean;
 }) => {
   const [imageRatios, setImageRatios] = React.useState<any[]>([]);
   const [isLoadingApproveButton, setIsLoadingApproveButton] = React.useState<boolean>(false);
@@ -131,8 +130,8 @@ const AdSubmission = ({
     if (imageUrlVariants.length > 0) {
       let imageRatios: string[][] = [];
 
-      imageUrlVariants.forEach((image, index) => {
-        if (index < previewImage.length) {
+      imageUrlVariants?.forEach((image: any, index: number) => {
+        if (index < (previewImage?.length as number)) {
           const preSplit = image.split("-");
 
           const imageRatio =
@@ -194,7 +193,7 @@ const AdSubmission = ({
                 </div>
                 <div className="flex flex-col justify-center items-center gap-2 border border-dashed bg-jacarta-100 bg-opacity-10">
                   <Image
-                    src={previewImage[0]}
+                    src={previewImage?.[0] as string}
                     width={1600}
                     height={380}
                     className="w-full h-auto"
@@ -224,7 +223,7 @@ const AdSubmission = ({
                   setIsLoadingSubmitButton(true);
 
                   await toast
-                    .promise(handleSubmit(address), {
+                    .promise(handleSubmit(true), {
                       pending: "Waiting for confirmation 🕒",
                       success: "Transaction confirmed 👌",
                       error: "Transaction rejected 🤯"
@@ -281,7 +280,7 @@ const AdSubmission = ({
                 </span>
               </div>
 
-              {previewImage.map((image, index) => (
+              {previewImage?.map((image: any, index: number) => (
                 <div className="flex flex-col gap-2 w-full" key={index}>
                   <div className="flex items-center gap-2">
                     <span className="block dark:text-jacarta-100">
@@ -367,7 +366,7 @@ const AdSubmission = ({
               <div className="flex text-left flex-wrap gap-8 md:flex-row flex-col">
                 <div>
                   <p className="font-display mb-2 block dark:text-white">
-                    {name.length > 0 ? (
+                    {(name as string)?.length > 0 ? (
                       <span className="dark:text-jacarta-100 text-jacarta-100 text-sm">
                         Name : <span className="dark:text-white text-base ml-2"> {name} </span>
                       </span>
@@ -380,9 +379,9 @@ const AdSubmission = ({
                     )}
                   </p>
                   <p className="font-display mb-2 block text-sm dark:text-white">
-                    {description.length > 0 ? (
+                    {(description as string)?.length > 0 ? (
                       <span className="dark:text-jacarta-100 text-jacarta-100 text-sm flex  items-center">
-                        Description : <TextArea readOnly value={description} />
+                        Description : <TextArea readOnly value={description as string} />
                       </span>
                     ) : !description ? (
                       <span className="dark:text-jacarta-100 text-jacarta-100 font-display">
@@ -394,7 +393,7 @@ const AdSubmission = ({
                     )}
                   </p>
 
-                  {link?.length ? (
+                  {(link as string)?.length ? (
                     <div className="font-display  mb-2  text-jacarta-100 text-sm flex justify-between ">
                       <span className="mr-2 text-sm">Link : </span>{" "}
                       {!errors?.linkError ? (
@@ -412,7 +411,8 @@ const AdSubmission = ({
                     ""
                   )}
                   {imageURLSteps?.length > 0 &&
-                    previewImage.filter((item) => item).length < imageURLSteps?.length && (
+                    (previewImage?.filter((item: any) => item)?.length as number) <
+                      imageURLSteps?.length && (
                       <p className="font-display  mb-2 block text-jacarta-100 text-sm">
                         Image preview :{" "}
                         <span className="text-red text-base ml-2"> {errors.imageError}</span>
@@ -466,7 +466,7 @@ const AdSubmission = ({
                     <p className="font-display  mb-2 block text-jacarta-100 text-sm">
                       Type of Ad :{" "}
                       {!errors.typeAdError && !errors.imageRatioError ? (
-                        displayedParameter.map((item, index) => (
+                        displayedParameter?.map((item, index) => (
                           <span key={index} className="dark:text-white text-base ml-2">
                             {" "}
                             {item}{" "}

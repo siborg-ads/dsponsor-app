@@ -8,6 +8,8 @@ import ModalHelper from "@/components/ui/modals/Helper";
 import AdSubmission from "@/components/features/token/accordion/AdSubmission";
 import { useChainContext } from "@/hooks/useChainContext";
 import Input from "@/components/ui/Input";
+import { TokenContract } from "@thirdweb-dev/react";
+import { Address } from "thirdweb";
 
 const CreateListing = ({
   handleListingModal,
@@ -21,29 +23,34 @@ const CreateListing = ({
   setListingCreated,
   fetchOffers
 }) => {
-  const [selectedListingType, setSelectedListingType] = useState([]);
-  const { currentChainObject } = useChainContext();
-  const [selectedUnitPrice, setSelectedUnitPrice] = useState(0);
-  const [selectedStartingPrice, setSelectedStartingPrice] = useState(0);
-  const [selectedCurrency, setSelectedCurrency] = useState("WETH");
-  const [startDate, setStartDate] = useState(new Date());
-  const [endDate, setEndDate] = useState(new Date(new Date().setDate(new Date().getDate() + 7)));
-  const [errors, setErrors] = useState({});
-  const [showPreviewModal, setShowPreviewModal] = useState(false);
-  const [validate, setValidate] = useState(false);
-  const address = useAddress();
+  const [selectedListingType, setSelectedListingType] = useState<any[]>([]);
+  const [selectedUnitPrice, setSelectedUnitPrice] = useState<number>(0);
+  const [selectedStartingPrice, setSelectedStartingPrice] = useState<number>(0);
+  const [selectedCurrency, setSelectedCurrency] = useState<string>("WETH");
+  const [startDate, setStartDate] = useState<Date>(new Date());
+  const [endDate, setEndDate] = useState<Date>(
+    new Date(new Date().setDate(new Date().getDate() + 7))
+  );
+  const [errors, setErrors] = useState<any>({});
+  const [showPreviewModal, setShowPreviewModal] = useState<boolean>(false);
+  const [validate, setValidate] = useState<boolean>(false);
 
-  const [isLoadingButton, setIsLoadingButton] = useState(false);
-  const [customContract, setCustomContract] = useState(null);
-  const [tokenDecimals, setTokenDecimals] = useState(18);
-  const [symbolContract, setSymbolContract] = useState("WETH");
-  const [tokenContract, setTokenContract] = useState("");
-  const [customTokenContract, setCustomTokenContract] = useState("");
+  const address = useAddress();
+  const { currentChainObject } = useChainContext();
+
+  const [isLoadingButton, setIsLoadingButton] = useState<boolean>(false);
+  const [customContract, setCustomContract] = useState<Address | null>(null);
+  const [tokenDecimals, setTokenDecimals] = useState<number>(18);
+  const [symbolContract, setSymbolContract] = useState<string>("WETH");
+  const [tokenContract, setTokenContract] = useState<string>("");
+  const [customTokenContract, setCustomTokenContract] = useState<TokenContract | null>(null);
   const USDCCurrency = currentChainObject?.smartContracts?.USDC;
   const WETHCurrency = currentChainObject?.smartContracts?.WETH;
-  const USDTCurrency = currentChainObject?.smartContracts?.USDT;
+  //const USDTCurrency = currentChainObject?.smartContracts?.USDT;
   const NATIVECurrency = currentChainObject?.smartContracts?.NATIVE;
-  const [selectedCurrencyContract, setSelectedCurrencyContract] = useState(WETHCurrency?.address);
+  const [selectedCurrencyContract, setSelectedCurrencyContract] = useState<any>(
+    WETHCurrency?.address
+  );
   const { contract: tokenContractAsync } = useContract(selectedCurrencyContract, "token");
   const { data: symbolContractAsync } = useContractRead(tokenContractAsync, "symbol");
   const { data: decimalsContractAsync } = useContractRead(tokenContractAsync, "decimals");
@@ -58,8 +65,8 @@ const CreateListing = ({
   useEffect(() => {
     setSymbolContract(symbolContractAsync);
     setTokenDecimals(decimalsContractAsync);
-    setTokenContract(selectedCurrencyContract);
-    setCustomTokenContract(tokenContractAsync);
+    setTokenContract(selectedCurrencyContract as string);
+    setCustomTokenContract(tokenContractAsync as TokenContract);
   }, [
     decimalsContractAsync,
     symbolContractAsync,
@@ -191,12 +198,12 @@ const CreateListing = ({
     }
   };
   const handleCustomContractChange = (event) => {
-    if (event.target.value === NATIVECurrency.address) {
-      setCustomContract(NATIVECurrency.address);
+    if (event.target.value === NATIVECurrency?.address) {
+      setCustomContract(NATIVECurrency?.address as Address);
     } else {
       setCustomContract(event.target.value);
       setSelectedCurrencyContract(event.target.value);
-      setCustomTokenContract(tokenContractAsync);
+      setCustomTokenContract(tokenContractAsync as TokenContract);
     }
   };
   const handleListingTypeChange = (e) => {
@@ -205,7 +212,7 @@ const CreateListing = ({
   };
   const validateInputs = () => {
     let isValid = true;
-    let newErrors = {};
+    let newErrors: any = {};
     const currentDate = new Date();
     currentDate.setMinutes(currentDate.getMinutes() - 1);
 
@@ -230,12 +237,12 @@ const CreateListing = ({
       newErrors.endDateError = "End date cannot be before the start date.";
       isValid = false;
     }
-    if (parseFloat(selectedUnitPrice) <= parseFloat(selectedStartingPrice)) {
+    if (selectedUnitPrice <= selectedStartingPrice) {
       newErrors.unitPriceError = `Unit price must be higher than the unit starting price.`;
       isValid = false;
     }
     if (
-      parseFloat(selectedUnitPrice) < 1 * 10 ** -tokenDecimals ||
+      selectedUnitPrice < 1 * 10 ** -tokenDecimals ||
       isNaN(selectedUnitPrice) ||
       selectedUnitPrice === null
     ) {
@@ -244,8 +251,7 @@ const CreateListing = ({
     }
 
     if (
-      (selectedListingType[0] === 1 &&
-        parseFloat(selectedStartingPrice) < 1 * 10 ** -tokenDecimals) ||
+      (selectedListingType[0] === 1 && selectedStartingPrice < 1 * 10 ** -tokenDecimals) ||
       isNaN(selectedStartingPrice) ||
       selectedStartingPrice === null
     ) {
@@ -282,7 +288,6 @@ const CreateListing = ({
   const selectedCurrencyContractObject = {
     USDC: USDCCurrency?.address,
     WETH: WETHCurrency?.address,
-    USDT: USDTCurrency?.address,
     custom: customContract
   };
   const listingType = [
@@ -370,12 +375,12 @@ const CreateListing = ({
                   </p>
                   <div className="flex flex-col-reverse gap-4 justify-center items-center w-full text-jacarta-900 dark:text-white">
                     <div id="adsType" className={`grid grid-cols-1 md:grid-cols-2 gap-2`}>
-                      {listingType.map((listing, index) => (
+                      {listingType?.map((listing: any, index: number) => (
                         <div key={index} className="relative">
                           <div
                             className={`card z-0 relative ${selectedListingType.includes(index) ? "bg-primaryPurple" : "bg-white"} open`}
                             onClick={() => {
-                              document.getElementById(`checkbox-${index}`).click();
+                              document?.getElementById(`checkbox-${index}`)?.click();
                             }}
                           >
                             {selectedListingType.includes(index) && (
@@ -396,7 +401,7 @@ const CreateListing = ({
                                 htmlFor={`checkbox-${index}`}
                                 className={`card-label  ${selectedListingType.includes(index) ? "text-white" : "text-jacarta-900"}`}
                                 onClick={() => {
-                                  document.getElementById(`checkbox-${index}`).click();
+                                  document?.getElementById(`checkbox-${index}`)?.click();
                                 }}
                               >
                                 {selectedListingType[0] !== index ? (
@@ -414,7 +419,7 @@ const CreateListing = ({
                                 )}
                               </label>
                             </div>
-                            {selectedListingType.includes(index) && (
+                            {selectedListingType?.includes(index) && (
                               <div className="mb-6 flex flex-col items-center">
                                 <label
                                   htmlFor="item-description"
@@ -493,8 +498,7 @@ const CreateListing = ({
                                       <Input
                                         type="number"
                                         id="numberInput"
-                                        onWheel={(e) => e.target.blur()}
-                                        step="0.1"
+                                        step={0.1}
                                         value={selectedStartingPrice}
                                         onChange={handleStartingPriceChange}
                                         placeholder="Unit selling price"
@@ -523,8 +527,7 @@ const CreateListing = ({
                                     <Input
                                       type="number"
                                       id="numberInput"
-                                      onWheel={(e) => e.target.blur()}
-                                      step="0.1"
+                                      step={0.1}
                                       value={selectedUnitPrice}
                                       onChange={handleUnitPriceChange}
                                       placeholder="Direct selling price"
@@ -545,12 +548,8 @@ const CreateListing = ({
                                     className="dark:bg-secondaryBlack min-w-[110px] border-jacarta-100 hover:ring-primaryPurple/10 focus:ring-primaryPurple dark:border-jacarta-800 dark:placeholder:text-jacarta-100 w-full rounded-lg py-3 px-5 hover:ring-2 dark:text-white"
                                   >
                                     <option value="WETH">WETH</option>
-                                    {features.canAcceptUSDC && (
-                                      <option value="USDC">USDC</option>
-                                    )}
-                                    {features.canAcceptUSDT && (
-                                      <option value="USDT">USDT</option>
-                                    )}
+                                    {features.canAcceptUSDC && <option value="USDC">USDC</option>}
+                                    {features.canAcceptUSDT && <option value="USDT">USDT</option>}
                                     {features.canAcceptCustomTokens && (
                                       <option value="custom">Custom</option>
                                     )}
@@ -599,7 +598,7 @@ const CreateListing = ({
                   helperFeesListing={helperFeesListing}
                   protocolFees={4}
                   selectedUnitPrice={selectedUnitPrice}
-                  selectedStartingPrice={selectedListingType[0] === 1 && selectedStartingPrice}
+                  selectedStartingPrice={selectedListingType[0] === 1 ? selectedStartingPrice : 0}
                   selectedRoyalties={royalties}
                   selectedCurrency={selectedCurrency}
                   validate={validate}

@@ -7,7 +7,17 @@ const whiteClass =
 const purpleClass =
   "bg-primaryPurple  mb-6 flex items-center justify-center hover:bg-opacity-80 rounded-full py-3 px-8 text-center font-semibold text-white transition-all";
 
-const MainButton = ({ link, isPurple, text, isFullWidth }) => {
+const MainButton = ({
+  link,
+  isPurple,
+  text,
+  isFullWidth
+}: {
+  link?: string;
+  isPurple?: boolean;
+  text: string;
+  isFullWidth?: boolean;
+}) => {
   return (
     <>
       {link ? (

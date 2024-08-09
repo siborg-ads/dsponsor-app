@@ -1,5 +1,6 @@
 import Network from "@/utils/networks/networks";
 import { Base } from "@thirdweb-dev/chains";
+import contractABI from "@/abi/dsponsorAdmin.json";
 
 const devBaseSepolia = {
   chainId: 84532,
@@ -15,7 +16,8 @@ const devBaseSepolia = {
   smartContracts: {
     DSPONSORADMIN: {
       address: "0x5cF7F046818E5Dd71bd3E004f2040E0e3C59467D",
-      feeBps: "400"
+      feeBps: "400",
+      abi: contractABI
     },
     DSPONSORMP: {
       address: "0xdf42633BD40e8f46942e44a80F3A58d0Ec971f09",

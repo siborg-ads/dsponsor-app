@@ -14,7 +14,7 @@ import { features } from "@/data/features";
 
 const OwnedTokens = ({ data, isOwner, isLoading, fetchCreatedData }) => {
   const { currentChainObject } = useChainContext();
-  const [selectedItems, setSelectedItems] = useState([]);
+  const [selectedItems, setSelectedItems] = useState<any[]>([]);
   const [isSelectedItem, setIsSelectedItem] = useState({});
   const [validate, setValidate] = useState({});
   const [isSelectionActive, setIsSelectionActive] = useState(false);
@@ -22,16 +22,15 @@ const OwnedTokens = ({ data, isOwner, isLoading, fetchCreatedData }) => {
   const [isFirstSelection, setIsFirstSelection] = useState(true);
 
   const [successFullUpload, setSuccessFullUpload] = useState(false);
-  const [files, setFiles] = useState([]);
-  const [previewImages, setPreviewImages] = useState([]);
+  const [files, setFiles] = useState<any[]>([]);
+  const [previewImages, setPreviewImages] = useState<any[]>([]);
   const [link, setLink] = useState("");
   const [errors, setErrors] = useState({});
   const [showSliderForm, setShowSliderForm] = useState(false);
-  const [adParameters, setAdParameters] = useState([]);
-  const [imageURLSteps, setImageURLSteps] = useState([]);
+  const [adParameters, setAdParameters] = useState<any[]>([]);
+  const [imageURLSteps, setImageURLSteps] = useState<any[]>([]);
   const [currentSlide, setCurrentSlide] = useState(0);
-
-  const [imageUrlVariants, setImageUrlVariants] = useState([]);
+  const [imageUrlVariants, setImageUrlVariants] = useState<any[]>([]);
   const stepsRef = useRef([]);
   const [numSteps, setNumSteps] = useState(2);
   const { contract: DsponsorAdminContract } = useContract(
@@ -85,7 +84,7 @@ const OwnedTokens = ({ data, isOwner, isLoading, fetchCreatedData }) => {
 
   useEffect(() => {
     let isValid = true;
-    let newErrors = {};
+    let newErrors: any = {};
 
     if (files.length < imageURLSteps.length) {
       newErrors.imageError = "Image is missing.";
@@ -130,20 +129,21 @@ const OwnedTokens = ({ data, isOwner, isLoading, fetchCreatedData }) => {
       adDetails[id] = Array.from(adDetails[id]);
     }
 
-    const uniqueIdsArray = Array.from(uniqueIds);
+    const uniqueIdsArray: any[] = Array.from(uniqueIds);
     setAdParameters(uniqueIdsArray);
 
-    const imageURLStep = [];
+    const imageURLStep: any[] = [];
 
     uniqueIdsArray
-      .filter((id) => id.startsWith("imageURL"))
-      .map((id) => {
-        const variant = id.slice("imageURL-".length);
+      ?.filter((id) => id?.startsWith("imageURL"))
+      ?.map((id) => {
+        const variant = id?.slice("imageURL-".length);
         imageURLStep.push({
           uniqueId: variant,
           offerIds: adDetails[id]
         });
       });
+
     const totalNumSteps = numSteps + imageURLStep.length;
     setImageURLSteps(imageURLStep);
     setNumSteps(totalNumSteps);
@@ -153,10 +153,10 @@ const OwnedTokens = ({ data, isOwner, isLoading, fetchCreatedData }) => {
       return;
     }
 
-    const selectedOfferIdItems = [];
-    const selectedTokenIdItems = [];
-    const adParametersItems = [];
-    const dataItems = [];
+    const selectedOfferIdItems: any[] = [];
+    const selectedTokenIdItems: any[] = [];
+    const adParametersItems: any[] = [];
+    const dataItems: any[] = [];
 
     try {
       setIsLoadingButton(true);
@@ -321,7 +321,6 @@ const OwnedTokens = ({ data, isOwner, isLoading, fetchCreatedData }) => {
                       new Date(item?.metadata?.offer?.valid_to) < new Date()
                     }
                     isSelectionActive={isSelectionActive}
-                    canSubmitAdFromProfileOwnedTokens={true}
                     url={
                       !item?.tokenData
                         ? `/${item?.chainConfig?.chainId}/offer/${item.offerId}/${item.tokenId}`
@@ -382,10 +381,7 @@ const OwnedTokens = ({ data, isOwner, isLoading, fetchCreatedData }) => {
       {showSliderForm && (
         <div>
           <CarouselForm
-            styles={styles}
-            files={files}
             handlePreviewModal={handlePreviewModal}
-            stepsRef={stepsRef}
             numSteps={numSteps}
             currentSlide={currentSlide}
             setCurrentSlide={setCurrentSlide}
@@ -402,14 +398,13 @@ const OwnedTokens = ({ data, isOwner, isLoading, fetchCreatedData }) => {
             )}
 
             <>
-              {imageURLSteps.map((step, index) => (
+              {imageURLSteps?.map((step: any, index) => (
                 <div key={step.uniqueId}>
                   {currentSlide === index + 1 && (
                     <AdImage
                       key={step.uniqueId}
                       stepsRef={stepsRef}
                       currentStep={index + 2}
-                      offerIds={step.offerIds}
                       id={step.uniqueId}
                       styles={styles}
                       file={files[index]}

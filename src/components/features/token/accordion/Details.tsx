@@ -28,7 +28,7 @@ const Details = ({
   const { currentChainObject } = useChainContext();
 
   const chainName = config[chainId]?.chainName;
-  const chainExplorer = currentChainObject?.explorerBaseUrl;
+  const chainExplorer = currentChainObject?.explorerBaseURL;
 
   return (
     <>

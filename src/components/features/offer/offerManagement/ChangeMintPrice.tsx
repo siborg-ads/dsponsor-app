@@ -17,15 +17,15 @@ const isDisabledMessage = (disableMint: boolean) => {
 };
 
 const ChangeMintPrice = ({ offer }) => {
-  const [amount, setAmount] = useState<string | undefined>(undefined);
-  const [initialAmount, setInitialAmount] = useState(undefined);
+  const [amount, setAmount] = useState<number | undefined>(undefined);
+  const [initialAmount, setInitialAmount] = useState<number | undefined>(undefined);
   const [currency, setCurrency] = useState(null);
   const [currencySymbol, setCurrencySymbol] = useState(null);
   const [formattedAmountBN, setFormattedAmountBN] = useState<BigNumber | undefined>(undefined);
   const [disableMint, setDisableMint] = useState(false);
-  const [tokens, setTokens] = useState(null);
-  const [nftContractAddress, setNftContractAddress] = useState(null);
-  const [, setTokensContractAddress] = useState(["0x"]);
+  const [tokens, setTokens] = useState<any>(null);
+  const [nftContractAddress, setNftContractAddress] = useState<Address | null>(null);
+  const [, setTokensContractAddress] = useState<Address[] | null>(null);
   const [selectedToken, setSelectedToken] = useState(null);
   const [currencyDecimals, setCurrencyDecimals] = useState(null);
   const [indexSelectedToken, setIndexSelectedToken] = useState(null);
@@ -73,15 +73,19 @@ const ChangeMintPrice = ({ offer }) => {
 
       if (offer?.nftContract?.prices[0]?.amount) {
         setAmount(
-          formatUnits(
-            BigNumber.from(offer?.nftContract?.prices[0]?.amount),
-            offer?.nftContract?.prices[0]?.currencyDecimals
+          parseFloat(
+            formatUnits(
+              BigNumber.from(offer?.nftContract?.prices[0]?.amount),
+              offer?.nftContract?.prices[0]?.currencyDecimals
+            )
           )
         );
         setInitialAmount(
-          formatUnits(
-            BigNumber.from(offer?.nftContract?.prices[0]?.amount),
-            offer?.nftContract?.prices[0]?.currencyDecimals
+          parseFloat(
+            formatUnits(
+              BigNumber.from(offer?.nftContract?.prices[0]?.amount),
+              offer?.nftContract?.prices[0]?.currencyDecimals
+            )
           )
         );
       } else {
@@ -120,8 +124,8 @@ const ChangeMintPrice = ({ offer }) => {
     }
 
     const smartContracts = config[chainId as number]?.smartContracts;
-    const currency = Object?.values(smartContracts)?.find(
-      (contract) =>
+    const currency: any = Object?.values(smartContracts)?.find(
+      (contract: any) =>
         contract?.address?.toLowerCase() ===
         offer?.nftContract?.tokens[0]?.mint?.currency?.toLowerCase()
     );
@@ -234,7 +238,7 @@ const ChangeMintPrice = ({ offer }) => {
                   <p className="text-white text-sm font-semibold">
                     {formatUnits(
                       BigNumber.from(token?.nftContract?.prices[0]?.amount ?? "0"),
-                      currencyDecimals
+                      Number(currencyDecimals)
                     )}{" "}
                     {currencySymbol}
                   </p>
@@ -249,11 +253,11 @@ const ChangeMintPrice = ({ offer }) => {
         <label className="block text-gray-700 text-sm font-semibold mb-2">Mint price</label>
         <div className="relative max-w-xs w-full flex items-center">
           <Input
-            type="text"
+            type="number"
             className={`w-full rounded-lg p-2 text-white ${disableMint ? "opacity-50 cursor-not-allowed" : ""}`}
             disabled={disableMint}
             value={amount ?? ""}
-            placeholder={amount ?? "Enter the amount"}
+            placeholder={amount?.toString() ?? "Enter the amount"}
             onChange={(e) => handleAmount(e.target.value)}
           />
           <div className="absolute right-2 top-1/2 transform -translate-y-1/2 text-white text-sm font-semibold">
@@ -293,7 +297,7 @@ const ChangeMintPrice = ({ offer }) => {
               });
           }}
           isDisabled={!amount || !currency || !formattedAmountBN || !nftContractAddress}
-          contractAddress={nftContractAddress}
+          contractAddress={nftContractAddress as string}
           className={`!mt-4 !hover:bg-opacity-80 !px-4 !flex !py-2 !w-fit !text-white !font-semibold !rounded-full ${
             !amount || !currency || !formattedAmountBN || !nftContractAddress
               ? "!opacity-50 !cursor-not-allowed !bg-jacarta-100"
@@ -324,7 +328,7 @@ const ChangeMintPrice = ({ offer }) => {
             setIsLoading(false);
           }}
           isDisabled={!nftContractAddress || !currency}
-          contractAddress={nftContractAddress}
+          contractAddress={nftContractAddress as Address}
           className={`!hover:bg-opacity-80 !px-4 !w-fit !flex !py-2 !text-white !font-semibold !rounded-full ${
             !currency || !nftContractAddress
               ? "!opacity-50 !cursor-not-allowed !bg-jacarta-100"
