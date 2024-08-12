@@ -14,35 +14,19 @@
     - [`public/`](#public)
     - [`src/`](#src)
       - [`abi/`](#abi)
-    - [Goal:](#goal)
       - [`components/`](#components)
-    - [Goal:](#goal-1)
-    - [Goal:](#goal-2)
-    - [Goal:](#goal-3)
       - [`data/`](#data)
-    - [Goal:](#goal-4)
-    - [Configuring `features.ts` for Production or Testing](#configuring-featurests-for-production-or-testing)
-    - [Environment Configuration](#environment-configuration)
-      - [`.env.local` Configuration](#envlocal-configuration)
+      - [Configuring features for Production or Testing](#configuring-featurests-for-production-or-testing)
+      - [Environment Configuration](#environment-configuration)
+      - [`.env.local`](#envlocal-configuration)
       - [`hooks/`](#hooks)
-    - [Goal:](#goal-5)
       - [`lib/`](#lib)
-    - [Goal:](#goal-6)
       - [`pages/`](#pages)
-    - [Goal:](#goal-7)
       - [`styles/`](#styles)
-    - [Goal:](#goal-8)
       - [`utils/`](#utils)
-    - [Goal:](#goal-9)
       - [`config/`](#config)
-      - [Example Configuration File](#example-configuration-file)
-      - [Configuration Breakdown](#configuration-breakdown)
-      - [Usage](#usage)
-    - [Goal:](#goal-10)
       - [`contexts/`](#contexts)
-    - [Goal:](#goal-11)
       - [`middleware.ts`](#middlewarets)
-    - [Goal:](#goal-12)
   - [Development Commands](#development-commands)
   - [Naming Conventions](#naming-conventions)
   - [Thirdweb Integration](#thirdweb-integration)
@@ -94,7 +78,7 @@ yarn install
 
 ### Configuration
 
-The configuration is done through the config files. See the config folder specification below.
+To learn more about how to switch from testnet to production, check this section: [Environment Configuration](#environment-configuration).
 
 ## Environment
 
