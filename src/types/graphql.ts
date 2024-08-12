@@ -5,7 +5,7 @@ export type NftContract = {
   name?: string;
   symbol?: string;
   baseURI?: string;
-  bcontractURI?: string;
+  contractURI?: string;
   maxSupply?: bigint;
   minter?: Address;
   forwarder?: Address;
