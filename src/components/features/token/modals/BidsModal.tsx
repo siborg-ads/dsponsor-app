@@ -512,13 +512,14 @@ const BidsModal = ({
                 </div>
 
                 <div className="flex flex-col justify-center text-left md:flex-row items-center md:justify-between mb-8 mt-2 gap-2 md:gap-4">
-                  {(initialIntPrice || (buyoutPriceReached && buyoutPrice)) && (
+                  {(!!initialIntPrice || (buyoutPriceReached && buyoutPrice)) && (
                     <div className="flex flex-col gap-1">
-                      {parseFloat(bidsAmount) < parseFloat(initialIntPrice as string) && (
+                      {parseFloat(bidsAmount !== "" ? bidsAmount : "0") <
+                        parseFloat(initialIntPrice ?? "0") && (
                         <button
                           className="text-sm text-left md:text-base whitespace-nowrap  text-green hover:text-opacity-80"
                           onClick={() => {
-                            setBidsAmount(initialIntPrice);
+                            setBidsAmount(initialIntPrice ?? "0");
 
                             const parsedInitialIntPrice = ethers.utils.parseUnits(
                               initialIntPrice as string,
@@ -536,7 +537,7 @@ const BidsModal = ({
                           className="text-sm text-left md:text-base whitespace-nowrap  text-green hover:text-opacity-80"
                           onClick={() => {
                             const formattedBuyoutPrice = ethers.utils.formatUnits(
-                              parseFloat(buyoutPrice as string),
+                              BigNumber.from(buyoutPrice ?? "0"),
                               currencyTokenDecimals
                             );
                             setBidsAmount(formattedBuyoutPrice);
