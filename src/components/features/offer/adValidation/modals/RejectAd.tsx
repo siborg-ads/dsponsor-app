@@ -20,7 +20,7 @@ const RejectAd = ({
   successFullModalObject: any;
   closeRefuseModal: () => void;
   // eslint-disable-next-line no-unused-vars
-  handleCommentChange: (tokenId: any, value: any) => void;
+  handleCommentChange: (tokenId: string, value: string) => void;
   // eslint-disable-next-line no-unused-vars
   handleItemSubmit: (b: boolean) => Promise<unknown> | (() => Promise<unknown>);
   successFullRefuseModal: boolean;
@@ -105,7 +105,7 @@ const RejectAd = ({
                       required
                       value={item?.reason}
                       onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
-                        handleCommentChange(tokenId, e.target.value)
+                        handleCommentChange(tokenId?.toString(), e.target.value)
                       }
                       placeholder="Provide a comment of your refuse. min characters 3"
                     />

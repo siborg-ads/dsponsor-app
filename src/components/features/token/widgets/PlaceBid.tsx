@@ -2,10 +2,11 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import Timer from "@/components/ui/timer/Timer";
 import BidsModal from "@/components/features/token/modals/BidsModal";
-import { ethers } from "ethers";
+import { BigNumber, ethers } from "ethers";
 import { getAddress } from "ethers/lib/utils";
 import { Web3Button } from "@thirdweb-dev/react";
 import config from "@/config/config";
+import { Address } from "thirdweb";
 
 const PlaceBid = ({
   setAmountToApprove,
@@ -40,12 +41,53 @@ const PlaceBid = ({
   showBidsModal,
   setShowBidsModal,
   fetchOffers
+}: {
+  setAmountToApprove: React.Dispatch<React.SetStateAction<bigint | null>>;
+  bidsAmount: string;
+  setBidsAmount: React.Dispatch<React.SetStateAction<string>>;
+  successFullBid: boolean;
+  address: Address;
+  setSuccessFullBid: React.Dispatch<React.SetStateAction<boolean>>;
+  dsponsorMpContract: any;
+  marketplaceListings: any;
+  currencySymbol: string;
+  tokenBalance: {
+    symbol: string;
+    value: BigNumber;
+    name: string;
+    decimals: number;
+    displayValue: string;
+  };
+  handleApprove: () => void;
+  price: string;
+  currencyTokenDecimals: number;
+  // eslint-disable-next-line no-unused-vars
+  checkUserBalance: (tokenAddressBalance: any, priceToken: any, decimals: number) => boolean;
+  allowanceTrue: boolean;
+  // eslint-disable-next-line no-unused-vars
+  checkAllowance: (amount: ethers.BigNumber) => void;
+  chainId: number;
+  isLoadingButton: boolean;
+  setIsLoadingButton: React.Dispatch<React.SetStateAction<boolean>>;
+  currencyContract: any;
+  token: any;
+  user: any;
+  offer: any;
+  referrer: { address: Address };
+  isValidId: boolean;
+  tokenEtherPrice: string;
+  amountInEthWithSlippage: BigNumber;
+  displayedPrice: string;
+  setDisplayedPrice: React.Dispatch<React.SetStateAction<number | null>>;
+  showBidsModal: boolean;
+  setShowBidsModal: React.Dispatch<React.SetStateAction<boolean>>;
+  fetchOffers: () => void;
 }) => {
   const [minimalBidPerToken, setMinimalBidPerToken] = useState(null);
   const [bids, setBids] = useState<any>(null);
 
   useEffect(() => {
-    const minimalBidPerToken = marketplaceListings[0]?.bidPriceStructure?.minimalBidPerToken;
+    const minimalBidPerToken = marketplaceListings?.[0]?.bidPriceStructure?.minimalBidPerToken;
     setMinimalBidPerToken(minimalBidPerToken);
   }, [marketplaceListings]);
 

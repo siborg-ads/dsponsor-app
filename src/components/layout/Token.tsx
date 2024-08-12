@@ -51,6 +51,7 @@ import { useSearchParams } from "next/navigation";
 import { addLineBreaks } from "@/utils/misc/addLineBreaks";
 import formatAndRoundPrice from "@/utils/prices/formatAndRound";
 import CrossmintFail from "@/components/features/token/modals/CrossmintFail";
+import PlaceBid from "@/components/features/token/widgets/PlaceBid";
 
 const Token = () => {
   const router = useRouter();
@@ -59,13 +60,13 @@ const Token = () => {
   const offerId = router.query?.offerId;
   const tokenId = router.query?.tokenId;
   const chainId = currentChainObject?.chainId;
+  const address = useAddress();
 
-  const [isLoadingAirdropButton, setIsLoadingAirdropButton] = useState(false);
+  const [isLoadingAirdropButton, setIsLoadingAirdropButton] = useState<boolean>(false);
   const [tokenIdString, setTokenIdString] = useState<string | null>(null);
   const [offerData, setOfferData] = useState<any | null>(null);
-  const [, setShowBidsModal] = useState(false);
-  const address = useAddress();
-  const [isOwner, setIsOwner] = useState(false);
+  const [showBidsModal, setShowBidsModal] = useState<boolean>(false);
+  const [isOwner, setIsOwner] = useState<boolean>(false);
   const [firstSelectedListing, setFirstSelectedListing] = useState<any>({});
   const [files, setFiles] = useState<any[]>([]);
   const [previewImages, setPreviewImages] = useState<any[]>([]);
@@ -84,10 +85,10 @@ const Token = () => {
   const [successFullUpload, setSuccessFullUpload] = useState<boolean>(false);
   const [showPreviewModal, setShowPreviewModal] = useState<boolean>(false);
   const [validate, setValidate] = useState<boolean>(false);
-  const [currency, setCurrency] = useState(null);
+  const [currency, setCurrency] = useState<string | null>(null);
   const [, setAdStatut] = useState<number | null>(null);
   const [offerNotFormated] = useState(false);
-  const [price, setPrice] = useState(null);
+  const [price, setPrice] = useState<string | null>(null);
   const [buyModal, setBuyModal] = useState(false);
   const [buyMethod, setBuyMethod] = useState(false);
   const [feesAmount, setFeesAmount] = useState(null);
@@ -126,9 +127,9 @@ const Token = () => {
   const [itemProposals, setItemProposals] = useState<any>(null);
   const [mediaShouldValidateAnAd, setMediaShouldValidateAnAd] = useState(false);
   const [airdropContainer, setAirdropContainer] = useState(true);
-  const [, setTokenEtherPrice] = useState<string | null>(null);
-  const [, setAmountInEthWithSlippage] = useState<BigNumber | null>(null);
-  const [, setDisplayedPrice] = useState<number | null>(null);
+  const [tokenEtherPrice, setTokenEtherPrice] = useState<string | null>(null);
+  const [amountInEthWithSlippage, setAmountInEthWithSlippage] = useState<BigNumber | null>(null);
+  const [displayedPrice, setDisplayedPrice] = useState<number | null>(null);
   const [isOfferOwner, setIsOfferOwner] = useState(false);
   const [
     sponsorHasAtLeastOneRejectedProposalAndNoPending,
@@ -2302,11 +2303,60 @@ const Token = () => {
                     fetchOffers={fetchOffers}
                   />
 
-                  {((firstSelectedListing?.listingType === "Auction" &&
+                  {firstSelectedListing?.listingType === "Auction" &&
                     firstSelectedListing.startTime < now &&
                     firstSelectedListing.endTime > now &&
-                    firstSelectedListing?.status === "CREATED") ||
-                    successFullBid) && <LatestBids bids={bids} />}
+                    firstSelectedListing?.status === "CREATED" && (
+                      <PlaceBid
+                        setAmountToApprove={setAmountToApprove}
+                        fetchOffers={fetchOffers}
+                        bidsAmount={bidsAmount}
+                        setBidsAmount={setBidsAmount}
+                        chainId={chainId as number}
+                        checkUserBalance={checkUserBalance}
+                        price={price as string}
+                        allowanceTrue={allowanceTrue}
+                        checkAllowance={checkAllowance}
+                        handleApprove={handleApprove}
+                        dsponsorMpContract={dsponsorMpContract}
+                        marketplaceListings={marketplaceListings}
+                        currencySymbol={currency as string}
+                        tokenBalance={
+                          tokenBalance as {
+                            symbol: string;
+                            value: BigNumber;
+                            name: string;
+                            decimals: number;
+                            displayValue: string;
+                          }
+                        }
+                        currencyTokenDecimals={currencyDecimals as number}
+                        setSuccessFullBid={setSuccessFullBid}
+                        successFullBid={successFullBid}
+                        address={address as Address}
+                        isLoadingButton={isLoadingButton}
+                        setIsLoadingButton={setIsLoadingButton}
+                        token={tokenDO}
+                        isValidId={isValidId}
+                        user={{
+                          address,
+                          isOwner,
+                          isLister,
+                          isUserOwner
+                        }}
+                        offer={offerDO}
+                        referrer={{
+                          address: referralAddress as Address
+                        }}
+                        currencyContract={tokenCurrencyAddress}
+                        tokenEtherPrice={tokenEtherPrice as string}
+                        amountInEthWithSlippage={amountInEthWithSlippage as BigNumber}
+                        displayedPrice={(displayedPrice as number)?.toString()}
+                        setDisplayedPrice={setDisplayedPrice}
+                        showBidsModal={showBidsModal}
+                        setShowBidsModal={setShowBidsModal}
+                      />
+                    )}
                 </>
               )}
             </div>

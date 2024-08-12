@@ -210,14 +210,18 @@ const AdValidation = ({
     }
   };
 
-  const handleCommentChange = (tokenId, value) => {
+  const handleCommentChange = (tokenId: string, value: string) => {
     setComments((currentComments) => ({
       ...currentComments,
       [tokenId]: value
     }));
     setSelectedItems((currentItems) => {
       return currentItems.map((item) => {
-        if (!!item?.tokenId && tokenId && BigInt(item?.tokenId) === BigInt(tokenId)) {
+        if (
+          !!item?.tokenId &&
+          !!tokenId &&
+          BigInt(item?.tokenId as string) === BigInt(tokenId as string)
+        ) {
           return { ...item, reason: value };
         }
         return item;
