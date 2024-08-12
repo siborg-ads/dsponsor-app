@@ -1,6 +1,47 @@
 import { Address } from "thirdweb";
 
-export type NftContract = {};
+export type NftContract = {
+  id: Address;
+  name?: string;
+  symbol?: string;
+  baseURI?: string;
+  bcontractURI?: string;
+  maxSupply?: bigint;
+  minter?: Address;
+  forwarder?: Address;
+  owner?: OwnershipTransferred;
+  royalty?: RoyaltiesSet;
+  allowList: boolean;
+  adOffers: AdOffer[];
+  prices: NftPrice[];
+  tokens: Token[];
+};
+
+export type NftPrice = {
+  id: string;
+  currency: Address;
+  amount: bigint;
+  enabled: boolean;
+  nftContract: NftContract;
+};
+
+export type RoyaltiesSet = {
+  id: Address;
+  receiver: Address;
+  bps: bigint;
+  blockNumber: bigint;
+  blockTimestamp: bigint;
+  transactionHash: Address;
+};
+
+export type OwnershipTransferred = {
+  id: Address;
+  previousOwner: Address;
+  newOwner: Address;
+  blockNumber: bigint;
+  blockTimestamp: bigint;
+  transactionHash: Address;
+};
 
 export type AdOfferParameterLink = {
   id: string;
