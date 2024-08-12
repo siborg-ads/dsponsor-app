@@ -18,7 +18,7 @@
       - [`data/`](#data)
       - [Configuring features for Production or Testing](#configuring-featurests-for-production-or-testing)
       - [Environment Configuration](#environment-configuration)
-      - [.env.local Configuration](#envlocal-configuration)
+      - [`.env.local` Configuration](#envlocal-configuration)
       - [`hooks/`](#hooks)
       - [`lib/`](#lib)
       - [`pages/`](#pages)
