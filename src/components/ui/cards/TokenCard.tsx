@@ -347,7 +347,7 @@ const TokenCard = ({
 
   const {
     name = "OfferName",
-    image = "/images/gradient_creative.jpg",
+    image = "/images/gradients/gradient_creative.jpg",
     valid_from = null,
     valid_to = null
   } = itemData ?? {};
@@ -390,7 +390,7 @@ const TokenCard = ({
             {isSelectionActive ? (
               imageUrl && (
                 <Image
-                  src={imageUrl ?? "/images/gradient_creative.jpg"}
+                  src={imageUrl ?? "/images/gradients/gradient_creative.jpg"}
                   alt="logo"
                   height={230}
                   width={230}
@@ -402,7 +402,7 @@ const TokenCard = ({
               <>
                 {imageUrl && (
                   <Image
-                    src={imageUrl ?? "/images/gradient_creative.jpg"}
+                    src={imageUrl ?? "/images/gradients/gradient_creative.jpg"}
                     alt="logo"
                     height={230}
                     width={230}

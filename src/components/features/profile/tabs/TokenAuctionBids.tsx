@@ -7,7 +7,7 @@ const TokenAuctionBids = ({ data, isOwner, isLoading }) => {
   if (isLoading) {
     return (
       <div className="flex w-full justify-center">
-        <Image src="/images/loading-bullet.svg" alt="icon" width={60} height={60} />
+        <Image src="/images/loader/loading-bullet.svg" alt="icon" width={60} height={60} />
       </div>
     );
   }

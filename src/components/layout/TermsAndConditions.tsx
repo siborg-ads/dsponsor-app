@@ -7,7 +7,7 @@ export default function TermsAndConditions() {
     <div className="pt-[5.5rem] lg:pt-24">
       <section className="relative py-16 md:py-24">
         <picture className="pointer-events-none absolute inset-0 -z-10 dark:hidden">
-          <Image src="/images/gradient_light.jpg" alt="gradient" width={1920} height={789} />
+          <Image src="/images/gradients/gradient_light.jpg" alt="gradient" width={1920} height={789} />
         </picture>
 
         <div className="container">

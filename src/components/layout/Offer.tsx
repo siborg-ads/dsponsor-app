@@ -83,7 +83,7 @@ const Offer = () => {
     if (offerData?.metadata?.offer?.image) {
       setImageUrl(offerData.metadata.offer.image);
     } else {
-      setImageUrl("/images/gradient_creative.jpg");
+      setImageUrl("/images/gradients/gradient_creative.jpg");
     }
   }, [offerData]);
 
@@ -357,7 +357,7 @@ const Offer = () => {
           <img
             width={750}
             height={750}
-            src={imageUrl ?? "/images/gradient_creative.jpg"}
+            src={imageUrl ?? "/images/gradients/gradient_creative.jpg"}
             alt="gradient"
             className="h-auto w-full object-cover aspect-square"
           />
@@ -374,7 +374,7 @@ const Offer = () => {
               >
                 {imageUrl && (
                   <img
-                    src={imageUrl ?? "/images/gradient_creative.jpg"}
+                    src={imageUrl ?? "/images/gradients/gradient_creative.jpg"}
                     alt="image"
                     className="rounded-2xl cursor-pointer h-auto object-cover w-full aspect-square"
                   />
@@ -396,7 +396,7 @@ const Offer = () => {
                     <div className="modal fade show block">
                       <div className="modal-dialog !my-0 flex items-center justify-center items-start">
                         <img
-                          src={imageUrl ?? "/images/gradient_creative.jpg"}
+                          src={imageUrl ?? "/images/gradients/gradient_creative.jpg"}
                           alt="image"
                           className="h-auto object-cover w-full rounded-2xl aspect-square"
                         />

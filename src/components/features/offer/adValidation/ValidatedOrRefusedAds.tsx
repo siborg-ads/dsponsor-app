@@ -184,7 +184,7 @@ const ValidatedOrRefusedAds = ({
                     <Image
                       width={24}
                       height={24}
-                      src={`/images/${statutItem}.svg`}
+                      src={`/images/status/${statutItem}.svg`}
                       alt="icon"
                       className="w-4 h-4"
                     />

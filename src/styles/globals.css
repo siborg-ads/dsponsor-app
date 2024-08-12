@@ -124,7 +124,7 @@ html {
   select {
     -webkit-print-color-adjust: exact;
     -webkit-appearance: none;
-    background-image: url("/images/down-arrow.png");
+    background-image: url("/images/misc/down-arrow.png");
     background-position: right 0.5rem center;
     background-repeat: no-repeat;
     background-size: 0.7em;

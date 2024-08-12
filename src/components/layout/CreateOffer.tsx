@@ -377,7 +377,7 @@ const CreateOffer = () => {
             width={1519}
             height={773}
             priority
-            src="/images/gradient_light.jpg"
+            src="/images/gradients/gradient_light.jpg"
             alt="gradient"
             className="h-full w-full object-cover"
           />

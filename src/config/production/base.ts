@@ -8,7 +8,7 @@ const prodBase = {
   chainNameProvider: "base",
   chainObject: Base,
   network: Network.BASE_MAINNET,
-  logoURL: "/images/base-logo.png",
+  logoURL: "/images/chains/base-logo.png",
   explorerBaseUrl: "https://basescan.org",
 
   rpcURL: "https://mainnet.base.org",

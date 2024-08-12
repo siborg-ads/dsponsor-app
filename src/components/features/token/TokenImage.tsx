@@ -10,7 +10,7 @@ export default function TokenImage({ tokenImage }) {
         <Image
           width={585}
           height={726}
-          src={tokenImage ?? "/images/gradient_creative.jpg"}
+          src={tokenImage ?? "/images/gradients/gradient_creative.jpg"}
           alt="image"
           className="rounded-2xl cursor-pointer h-auto object-contain w-full shadow-lg"
         />
@@ -21,7 +21,7 @@ export default function TokenImage({ tokenImage }) {
           <Image
             width={582}
             height={722}
-            src={tokenImage ?? "/images/gradient_creative.jpg"}
+            src={tokenImage ?? "/images/gradients/gradient_creative.jpg"}
             alt="image"
             className="h-full object-cover w-full rounded-2xl"
           />

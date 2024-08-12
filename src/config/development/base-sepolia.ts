@@ -9,7 +9,7 @@ const devBaseSepolia = {
   network: Network.BASE_SEPOLIA,
   chainObject: Base,
   gaslessBalanceThreshold: 10000000000000000, // 0.01 ETH
-  logoURL: "/images/base-logo.png",
+  logoURL: "/images/chains/base-logo.png",
   explorerBaseURL: "https://sepolia.basescan.org",
   relayerURL: process.env.DEV ? process.env.DEV : "https://relayer.dsponsor.com",
   rpcURL: "https://sepolia.base.org",

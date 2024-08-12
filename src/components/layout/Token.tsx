@@ -197,7 +197,7 @@ const Token = () => {
 
   let description = "description not found";
   let id = "1";
-  let image = "/images/gradient_creative.jpg";
+  let image = "/images/gradients/gradient_creative.jpg";
   let name = "Unnamed Ad Space";
 
   if (offerData?.metadata?.offer) {
@@ -1951,7 +1951,7 @@ const Token = () => {
                 <Image
                   width={585}
                   height={726}
-                  src={imageUrl ?? "/images/gradient_creative.jpg"}
+                  src={imageUrl ?? "/images/gradients/gradient_creative.jpg"}
                   alt="image"
                   className="rounded-2xl cursor-pointer h-auto object-contain w-full shadow-lg"
                 />
@@ -1963,7 +1963,7 @@ const Token = () => {
                   <Image
                     width={582}
                     height={722}
-                    src={imageUrl ?? "/images/gradient_creative.jpg"}
+                    src={imageUrl ?? "/images/gradients/gradient_creative.jpg"}
                     alt="image"
                     className="h-full object-cover w-full rounded-2xl"
                   />
@@ -2636,7 +2636,7 @@ const Token = () => {
             handleBuyModal={handleBuyModal}
             handleBuySubmitWithNative={handleBuySubmit}
             name={name}
-            image={imageUrl ?? "/images/gradient_creative.jpg"}
+            image={imageUrl ?? "/images/gradients/gradient_creative.jpg"}
             selectedCurrency={currency}
             royalties={royalties}
             tokenId={tokenId}

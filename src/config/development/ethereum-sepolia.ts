@@ -9,7 +9,7 @@ const devEthereumSepolia = {
   gaslessBalanceThreshold: 10000000000000000, // 0.01 ETH
   network: Network.ETH_SEPOLIA,
   chainObject: Sepolia,
-  logoURL: "/images/ethereum-logo.png",
+  logoURL: "/images/chains/ethereum-logo.png",
   explorerBaseUrl: "https://sepolia.etherscan.io",
 
   rpcURL: "https://ethereum-sepolia-rpc.publicnode.com",
