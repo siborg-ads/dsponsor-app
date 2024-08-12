@@ -52,6 +52,7 @@ import { addLineBreaks } from "@/utils/misc/addLineBreaks";
 import formatAndRoundPrice from "@/utils/prices/formatAndRound";
 import CrossmintFail from "@/components/features/token/modals/CrossmintFail";
 import PlaceBid from "@/components/features/token/widgets/PlaceBid";
+import { clientId } from "@/data/services/client";
 
 const Token = () => {
   const router = useRouter();
@@ -224,7 +225,7 @@ const Token = () => {
     const fetchImage = async (image) => {
       // get url image instead of ipfs:// starting url
       if (image?.startsWith("ipfs://")) {
-        const storage = new ThirdwebStorage({ clientId: "6f375d41f2a33f1f08f6042a65d49ec9" });
+        const storage = new ThirdwebStorage({ clientId: clientId });
         const ipfsUrl = await storage.resolveScheme(image);
         setImageUrl(ipfsUrl);
       } else {

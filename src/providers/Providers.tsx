@@ -12,6 +12,7 @@ import ChainProvider from "@/providers/Chain";
 import { SwitchChainProvider } from "@/providers/SwitchChain";
 import { useSwitchChainContext } from "@/hooks/useSwitchChainContext";
 import config from "@/config/config";
+import { clientId } from "@/data/services/client";
 
 function Providers({ children }) {
   return (
@@ -34,7 +35,7 @@ function InnerProviders({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <ThirdwebProvider
       activeChain={chain}
-      clientId="6f375d41f2a33f1f08f6042a65d49ec9"
+      clientId={clientId}
       supportedChains={[Base, Ethereum, BaseSepoliaTestnet, Sepolia, Polygon]}
       authConfig={{ domain: "dsponsor.com" }}
       supportedWallets={[

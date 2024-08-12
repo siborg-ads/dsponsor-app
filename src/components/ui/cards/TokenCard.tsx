@@ -12,6 +12,7 @@ import { ExclamationCircleIcon } from "@heroicons/react/24/solid";
 import ResponsiveTooltip from "@/components/ui/ResponsiveTooltip";
 import { ThirdwebStorage } from "@thirdweb-dev/storage";
 import { BigNumber } from "ethers";
+import { clientId } from "@/data/services/client";
 
 const TokenCard = ({
   item,
@@ -355,7 +356,7 @@ const TokenCard = ({
     const fetchImage = async (image) => {
       // get url image instead of ipfs:// starting url
       if (image?.startsWith("ipfs://")) {
-        const storage = new ThirdwebStorage({ clientId: "6f375d41f2a33f1f08f6042a65d49ec9" });
+        const storage = new ThirdwebStorage({ clientId: clientId });
         const ipfsUrl = await storage.resolveScheme(image);
         setImageUrl(ipfsUrl);
       } else {

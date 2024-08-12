@@ -28,6 +28,7 @@ import { BadgePercentIcon, BlocksIcon, RefreshCwIcon } from "lucide-react";
 import Disable from "@/components/ui/misc/Disable";
 import TokenCard from "@/components/ui/cards/TokenCard";
 import { addLineBreaks } from "@/utils/misc/addLineBreaks";
+import { clientId } from "@/data/services/client";
 
 const Offer = () => {
   const router = useRouter();
@@ -222,7 +223,7 @@ const Offer = () => {
 
   useEffect(() => {
     const fetchImage = async (imageUrlLocal) => {
-      const storage = new ThirdwebStorage({ clientId: "6f375d41f2a33f1f08f6042a65d49ec9" });
+      const storage = new ThirdwebStorage({ clientId: clientId });
       try {
         const ipfsUrl = await storage.resolveScheme(imageUrlLocal);
         setImageUrl(ipfsUrl);

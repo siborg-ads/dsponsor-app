@@ -13,6 +13,7 @@ import { parseDate } from "@internationalized/date";
 import Input from "@/components/ui/Input";
 import TextArea from "@/components/ui/TextArea";
 import { Address } from "thirdweb";
+import { clientId } from "@/data/services/client";
 
 const fileTypes = ["JPG", "PNG", "WEBP"];
 
@@ -60,7 +61,7 @@ const UpdateOffer = ({ offer }) => {
   };
 
   const uploadNewMetadatas = async (originalMetadatas) => {
-    const storage = new ThirdwebStorage({ clientId: "6f375d41f2a33f1f08f6042a65d49ec9" });
+    const storage = new ThirdwebStorage({ clientId: clientId });
 
     let finalMetadatas = { ...originalMetadatas };
 
