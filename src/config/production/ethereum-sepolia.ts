@@ -39,6 +39,9 @@ const prodEthereumSepolia = {
     }
   },
   features: {
+    openZeppelinDefender: {
+      relayerURL: ""
+    },
     crossmint: {
       enabled: true,
 

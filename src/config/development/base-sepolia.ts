@@ -51,6 +51,9 @@ const devBaseSepolia = {
   },
 
   features: {
+    openZeppelinDefender: {
+      relayerURL: ""
+    },
     crossmint: {
       enabled: true,
       config: {

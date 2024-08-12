@@ -45,6 +45,9 @@ const prodBase = {
     }
   },
   features: {
+    openZeppelinDefender: {
+      relayerURL: ""
+    },
     crossmint: {
       enabled: false,
 

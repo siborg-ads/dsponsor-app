@@ -45,6 +45,10 @@ const devEthereumSepolia = {
     }
   },
   features: {
+    openZeppelinDefender: {
+      relayerURL:
+        "https://api.defender.openzeppelin.com/actions/60707c07-3e8b-49d6-8912-d529b39d5efa/runs/webhook/59ce7c60-9e0b-4c87-8910-a8b13e6f725e/TEBFAC5SvwbPxoYyYZQR5"
+    },
     crossmint: {
       enabled: true,
       config: {

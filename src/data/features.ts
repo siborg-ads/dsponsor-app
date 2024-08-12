@@ -35,5 +35,7 @@ export const features = {
   // Wether to show info bulle on the offer page showing the price of the token
   canSeeModalHelperOnOfferPage: false,
   // Wether we're able to pay with crossmint
-  canPayWithCrossmintEnabled: !!isDevelopment
+  canPayWithCrossmintEnabled: !!isDevelopment,
+  // Wether we're able to use gasless transactions
+  canUseGaslessTransactions: !!isDevelopment
 };

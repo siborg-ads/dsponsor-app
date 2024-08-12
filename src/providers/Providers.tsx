@@ -13,6 +13,7 @@ import { SwitchChainProvider } from "@/providers/SwitchChain";
 import { useSwitchChainContext } from "@/hooks/useSwitchChainContext";
 import config from "@/config/config";
 import { clientId } from "@/data/services/client";
+import { features } from "@/data/features";
 
 function Providers({ children }) {
   return (
@@ -32,8 +33,21 @@ function InnerProviders({ children }: Readonly<{ children: React.ReactNode }>) {
     }
   }, [selectedChain]);
 
+  const relayerURL = config?.[chain?.chainId as number]?.features?.openZeppelinDefender?.relayerURL;
+
+  const sdkOptions = features?.canUseGaslessTransactions
+    ? {
+        gasless: {
+          openzeppelin: {
+            relayerUrl: relayerURL
+          }
+        }
+      }
+    : undefined;
+
   return (
     <ThirdwebProvider
+      {...(sdkOptions && { sdkOptions })}
       activeChain={chain}
       clientId={clientId}
       supportedChains={[Base, Ethereum, BaseSepoliaTestnet, Sepolia, Polygon]}
