@@ -1610,6 +1610,7 @@ const Token = () => {
     setBuyModal(!buyModal);
     setBuyMethod(true);
   };
+
   const handlePreviewModal = () => {
     setSuccessFullUpload(false);
     setShowPreviewModal(!showPreviewModal);
@@ -2635,7 +2636,7 @@ const Token = () => {
             handleBuyModal={handleBuyModal}
             handleBuySubmitWithNative={handleBuySubmit}
             name={name}
-            image={image as string}
+            image={imageUrl ?? "/images/gradient_creative.jpg"}
             selectedCurrency={currency}
             royalties={royalties}
             tokenId={tokenId}

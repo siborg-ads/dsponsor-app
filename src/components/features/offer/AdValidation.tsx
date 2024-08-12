@@ -145,13 +145,13 @@ const AdValidation = ({
 
     if (isTokenView) {
       formattedPendingAds = formattedPendingAds.filter(
-        (ad) => ad?.token?.tokenId === BigInt(itemTokenId as string)
+        (ad) => !!itemTokenId && ad?.token?.tokenId === BigInt(itemTokenId)
       );
       formattedValidatedAds = formattedValidatedAds.filter(
-        (ad) => ad?.token?.tokenId === BigInt(itemTokenId as string)
+        (ad) => !!itemTokenId && ad?.token?.tokenId === BigInt(itemTokenId)
       );
       formattedRefusedAds = formattedRefusedAds.filter(
-        (ad) => ad?.token?.tokenId === BigInt(itemTokenId as string)
+        (ad) => !!itemTokenId && ad?.token?.tokenId === BigInt(itemTokenId)
       );
     }
 
