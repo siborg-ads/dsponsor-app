@@ -6,6 +6,7 @@ const devEthereumSepolia = {
   chainId: 11155111,
   chainName: "sepolia",
   chainNameProvider: "sepolia",
+  gaslessBalanceThreshold: 10000000000000000, // 0.01 ETH
   network: Network.ETH_SEPOLIA,
   chainObject: Sepolia,
   logoURL: "/images/ethereum-logo.png",
