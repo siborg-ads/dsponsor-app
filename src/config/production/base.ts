@@ -52,12 +52,12 @@ const prodBase = {
       enabled: false,
 
       config: {
-        projectId: "82d192a5-c754-4280-a6cb-cb3d7b0f9bd9",
+        projectId: "0572f9c1-13fb-4001-8b0d-48d1d4952bc4",
         priceLimit: 0.25,
 
-        bidCollectionId: "",
-        buyCollectionId: "",
-        mintCollectionId: "",
+        bidCollectionId: "5740ec5a-a90b-4a13-ae7d-462d89abc863",
+        buyCollectionId: "41dc44d6-3986-4969-a695-5da578d7edb1",
+        mintCollectionId: "41dea13e-ad06-4d5f-adae-822389689e2c",
 
         environment: "production",
 
