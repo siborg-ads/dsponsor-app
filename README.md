@@ -94,7 +94,7 @@ yarn install
 
 ### Configuration
 
-The configuration is done through the config files. See the config folder specification below.
+To learn more about how to switch from testnet to production, check this section: [Environment Configuration](#environment-configuration).
 
 ## Environment
 
