@@ -1862,10 +1862,10 @@ const Token = () => {
     "mint"
   );
 
-  const handleAirdrop = async (airdropAddress, tokenData) => {
+  const handleAirdrop = async (airdropAddress: Address, tokenData: string | null) => {
     let stringToUnit = BigInt(0);
 
-    if (tokenData) {
+    if (tokenData && tokenData !== null) {
       stringToUnit = stringToUint256(tokenData);
 
       if (tokenId && stringToUnit !== BigInt(tokenId as string)) {
@@ -1888,9 +1888,9 @@ const Token = () => {
       await airdropAsync({
         args: [
           tokenId as string,
-          airdropAddress as Address,
+          airdropAddress,
           "0x0000000000000000000000000000000000000000",
-          tokenData as string
+          tokenData ?? ""
         ]
       });
 
@@ -1901,7 +1901,7 @@ const Token = () => {
     }
   };
 
-  if (!offerData || offerData.length === 0) {
+  if (offerData?.length === 0) {
     return (
       <div>
         <OfferSkeleton />
@@ -2243,7 +2243,7 @@ const Token = () => {
                               setIsLoadingAirdropButton(true);
 
                               await toast
-                                .promise(handleAirdrop(airdropAddress, tokenData), {
+                                .promise(handleAirdrop(airdropAddress as Address, tokenData), {
                                   pending: "Airdrop in progress... 🚀",
                                   success: "Airdrop successful 🎉",
                                   error: "Airdrop failed ❌"

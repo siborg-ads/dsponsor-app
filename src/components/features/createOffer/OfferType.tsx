@@ -27,7 +27,7 @@ const AdSpaceSelector = ({
     <div className="flex flex-wrap justify-center gap-2">
       {AdIntegrationData.map((integration, index) => (
         <div key={index} className="relative">
-          <button
+          <div
             className={`card relative ${selectedIntegration.includes(index) ? "bg-primaryPurple-dark" : "hover:ring-primaryPurple/30 border-primaryPurple border-2"}`}
             onClick={(e) => {
               if (e?.target === e?.currentTarget)
@@ -50,8 +50,7 @@ const AdSpaceSelector = ({
             />
 
             <div className="flex gap-3">
-              <label
-                htmlFor={`checkbox-${index}`}
+              <div
                 className={`card-label ${selectedIntegration.includes(index) && "text-white"}`}
                 onClick={(e) => {
                   e?.stopPropagation();
@@ -65,7 +64,7 @@ const AdSpaceSelector = ({
                 }}
               >
                 {integration.integrationName}
-              </label>
+              </div>
 
               <ModalHelper
                 dark={false}
@@ -88,7 +87,7 @@ const AdSpaceSelector = ({
                 handleCustomRatioInput={handleCustomRatioInput}
               />
             )}
-          </button>
+          </div>
         </div>
       ))}
     </div>

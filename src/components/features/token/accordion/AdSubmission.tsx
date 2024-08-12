@@ -381,7 +381,8 @@ const AdSubmission = ({
                   <p className="font-display mb-2 block text-sm dark:text-white">
                     {(description as string)?.length > 0 ? (
                       <span className="dark:text-jacarta-100 text-jacarta-100 text-sm flex  items-center">
-                        Description : <TextArea readOnly value={description as string} />
+                        Description :{" "}
+                        <span className="dark:text-white text-base ml-2"> {description} </span>
                       </span>
                     ) : !description ? (
                       <span className="dark:text-jacarta-100 text-jacarta-100 font-display">

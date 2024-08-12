@@ -26,11 +26,16 @@ import { toUtf8Bytes, keccak256 } from "ethers/lib/utils";
  * // `tokenId` will be a `BigInt` representing the hash of the normalized string "exampletoken".
  */
 export default function stringToUint256(s: string): bigint {
-  const normalized = s
-    .toLowerCase()
-    .normalize("NFKD")
-    .replace(/\p{Diacritic}/gu, "")
-    .replace(/[^a-z0-9]/gi, "");
+  try {
+    const normalized = s
+      .toLowerCase()
+      .normalize("NFKD")
+      .replace(/\p{Diacritic}/gu, "")
+      .replace(/[^a-z0-9]/gi, "");
 
-  return BigInt(keccak256(toUtf8Bytes(normalized)));
+    return BigInt(keccak256(toUtf8Bytes(normalized)));
+  } catch (error) {
+    console.error("Error converting string to uint256:", error);
+    throw error;
+  }
 }
