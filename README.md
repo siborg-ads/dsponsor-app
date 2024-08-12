@@ -2,65 +2,92 @@
 
 ## Table of contents
 
-- [Installation](#installation)
-  - [Clone the repository](#clone-the-repository)
-  - [Navigate into the project directory](#navigate-into-the-project-directory)
-  - [Install dependencies](#install-dependencies)
-  - [Configuration](#configuration)
-- [Environment](#environment)
-- [Project Structure](#project-structure)
-  - [`public/`](#public)
-  - [`src/`](#src)
-    - [`abi/`](#abi)
-    - [`components/`](#components)
-      - [`ui/`](#ui)
-      - [`layout/`](#layout)
-      - [`features/`](#features)
-    - [`data/`](#data)
-    - [`hooks/`](#hooks)
-    - [`lib/`](#lib)
-    - [`pages/`](#pages)
-    - [`styles/`](#styles)
-    - [`utils/`](#utils)
-    - [`config/`](#config)
-    - [`contexts/`](#contexts)
-    - [`middleware.ts`](#middlewarets)
-- [Development Commands](#development-commands)
-- [Naming Conventions](#naming-conventions)
-- [Thirdweb Integration](#thirdweb-integration)
-  - [Key Features of Thirdweb](#key-features-of-thirdweb)
-  - [How Thirdweb is Used in This Application](#how-thirdweb-is-used-in-this-application)
-- [Crossmint Integration](#crossmint-integration)
-  - [Key Features of the Integration](#key-features-of-the-integration)
-  - [How the Integration is Used in This Application](#how-the-integration-is-used-in-this-application)
-- [Contribution](#contribution)
-- [GraphQL Precision](#graphql-precision)
-  - [`executeQuery` Function](#executequery-function)
-  - [Optimizing Requests](#optimizing-requests)
-  - [GraphQL Subgraph Definitions](#graphql-subgraph-definitions)
-- [Essential Concepts](#essential-concepts)
-  - [Minting](#minting)
-  - [Primary Market](#primary-market)
-  - [Secondary Market](#secondary-market)
-  - [Summary](#summary)
-  - [Subtilities](#subtilities)
-  - [Objects](#objects)
+- [DSponsor Dashboard](#dsponsor-dashboard)
+  - [Table of contents](#table-of-contents)
+  - [Installation](#installation)
+    - [Clone the repository](#clone-the-repository)
+    - [Navigate into the project directory](#navigate-into-the-project-directory)
+    - [Install dependencies](#install-dependencies)
+    - [Configuration](#configuration)
+  - [Environment](#environment)
+  - [Project Structure](#project-structure)
+    - [`public/`](#public)
+    - [`src/`](#src)
+      - [`abi/`](#abi)
+    - [Goal:](#goal)
+      - [`components/`](#components)
+    - [Goal:](#goal-1)
+    - [Goal:](#goal-2)
+    - [Goal:](#goal-3)
+      - [`data/`](#data)
+    - [Goal:](#goal-4)
+    - [Configuring `features.ts` for Production or Testing](#configuring-featurests-for-production-or-testing)
+    - [Environment Configuration](#environment-configuration)
+      - [`.env.local` Configuration](#envlocal-configuration)
+      - [`hooks/`](#hooks)
+    - [Goal:](#goal-5)
+      - [`lib/`](#lib)
+    - [Goal:](#goal-6)
+      - [`pages/`](#pages)
+    - [Goal:](#goal-7)
+      - [`styles/`](#styles)
+    - [Goal:](#goal-8)
+      - [`utils/`](#utils)
+    - [Goal:](#goal-9)
+      - [`config/`](#config)
+      - [Example Configuration File](#example-configuration-file)
+      - [Configuration Breakdown](#configuration-breakdown)
+      - [Usage](#usage)
+    - [Goal:](#goal-10)
+      - [`contexts/`](#contexts)
+    - [Goal:](#goal-11)
+      - [`middleware.ts`](#middlewarets)
+    - [Goal:](#goal-12)
+  - [Development Commands](#development-commands)
+  - [Naming Conventions](#naming-conventions)
+  - [Thirdweb Integration](#thirdweb-integration)
+    - [Key Features of Thirdweb](#key-features-of-thirdweb)
+    - [How Thirdweb is Used in This Application](#how-thirdweb-is-used-in-this-application)
+  - [Crossmint Integration](#crossmint-integration)
+    - [Key Features of the Integration](#key-features-of-the-integration)
+    - [How the Integration is Used in This Application](#how-the-integration-is-used-in-this-application)
+  - [Contribution](#contribution)
+  - [GraphQL Precision](#graphql-precision)
+    - [`executeQuery` Function](#executequery-function)
+      - [Function Definition](#function-definition)
+    - [Explanation](#explanation)
+    - [Example Usage of `executeQuery`](#example-usage-of-executequery)
+    - [Explanation](#explanation-1)
+    - [Optimizing Requests](#optimizing-requests)
+      - [Example](#example)
+      - [Explanation](#explanation-2)
+    - [GraphQL Subgraph Definitions](#graphql-subgraph-definitions)
+      - [Essentials Concepts](#essentials-concepts)
+        - [1. **Minting**](#1-minting)
+        - [2. **Primary Market**](#2-primary-market)
+        - [3. **Secondary Market**](#3-secondary-market)
+        - [**Summary**](#summary)
+      - [Subtilities](#subtilities)
+      - [Objects](#objects)
 
 ## Installation
 
 To install the project, you can simply clone the project repository and install the dependencies using Yarn. Follow these steps:
 
 ### Clone the repository
+
 ```bash
 git clone https://github.com/your-username/dsponsor-dashboard.git
 ```
 
 ### Navigate into the project directory
+
 ```bash
 cd dsponsor-dashboard
 ```
 
 ### Install dependencies
+
 ```bash
 yarn install
 ```
@@ -104,6 +131,7 @@ Contains the ABIs (Application Binary Interfaces) for smart contracts that the a
 - `dsponsorAdmin.json`: ABI file for `DSponsorAdmin` smart contract.
 
 ### Goal:
+
 The `abi/` folder centralizes all smart contract ABIs, making it easier to manage and update contract interactions. By keeping these files in a dedicated folder, the project maintains a clear separation between frontend logic and blockchain-specific configurations.
 
 #### `components/`
@@ -113,31 +141,37 @@ Contains all the reusable components for building the UI.
 - **`ui/`**: Reusable UI components, such as buttons, inputs, and modals.
 
   **Examples:**
+
   - `Button.tsx`: A reusable button component.
   - `Modal.tsx`: A reusable modal component.
 
   ### Goal:
+
   The `ui/` subfolder aims to create a consistent and uniform UI across the application. By centralizing reusable UI elements, the project ensures that styling and functionality remain consistent, reducing the need for duplicated code.
 
 - **`layout/`**: Components related to the overall layout of the application.
 
   **Examples:**
+
   - `Header.tsx`: The global header component.
   - `Footer.tsx`: The global footer component.
   - `Token.tsx`: The token page component.
 
   ### Goal:
+
   The `layout/` subfolder is dedicated to global components that define the structure and layout of the application. By separating layout components, the project can easily modify the application’s structure without affecting feature-specific code.
 
 - **`features/`**: Components that are specific to certain features or pages.
 
   **Examples:**
+
   - `OfferName.tsx`: A component used to create an offer by requesting the offer's name.
   - `OwnedTokens.tsx`: A component that lists every tokens owned by the user.
 
   ### Goal:
+
   The `features/` subfolder organizes components by specific features or pages, promoting modular development. This approach ensures that feature-related code is easy to locate and modify, facilitating the addition of new features or updates to existing ones.
- 
+
 #### `data/`
 
 Contains static or mock data used throughout the application.
@@ -147,6 +181,7 @@ Contains static or mock data used throughout the application.
 - `features.ts`: A file containing feature flags for controlling application functionality.
 
 ### Goal:
+
 The `data/` folder centralizes static and mock data to simplify testing and development. By maintaining all static data in one place, the project can easily switch between live and mock data sources, which is particularly useful during development and testing phases.
 
 ### Configuring `features.ts` for Production or Testing
@@ -189,7 +224,9 @@ To manage different configurations for development and production environments, 
 
   ```env
   NEXT_PUBLIC_CONFIG_MODE=dev
-  
+
+  ```
+
 #### `hooks/`
 
 Custom Hooks for managing state, effects, or other reusable logic.
@@ -200,6 +237,7 @@ Custom Hooks for managing state, effects, or other reusable logic.
 - `useSwitchChainContexte.ts`: Custom Hook for switching between chains, enabling a multichain infrastructure within the application.
 
 ### Goal:
+
 The `hooks/` folder encourages the reuse of logic across different components. Custom Hooks encapsulate state management and side effects, leading to cleaner and more maintainable components.
 
 #### `lib/`
@@ -211,6 +249,7 @@ Contains reusable code that is not specific to React, such as API calls, cookie 
 - `utils.ts`: Merge classnames using tailwind merge.
 
 ### Goal:
+
 The `lib/` folder houses utilities and libraries that can be used across the application. By isolating these functions, the project promotes DRY (Don’t Repeat Yourself) principles and ensures that common functionalities are easily accessible and maintainable.
 
 #### `pages/`
@@ -224,6 +263,7 @@ Contains the application's pages and API routes.
 - `api/auth/[...thirdweb].ts`: An API route for handling authentication requests using Thirdweb.
 
 ### Goal:
+
 The `pages/` folder organizes all the application's routes and page-level components. Each file represents a specific route, which Next.js uses to generate pages. This structure makes it easy to manage navigation and routing within the application.
 
 #### `styles/`
@@ -235,6 +275,7 @@ Contains global style files and theme-related configurations.
 - `globals.css`: Global CSS styles for the application.
 
 ### Goal:
+
 The `styles/` folder consolidates all styling configurations, ensuring consistent design across the application. By managing global styles and themes centrally, the project simplifies the process of applying and updating styles throughout the application.
 
 #### `utils/`
@@ -247,6 +288,7 @@ Utility functions that are used throughout the application. They should be docum
 - `prices/formatAndRound.ts`: Formats and rounds a numeric value to an appropriate number of decimal places.
 
 ### Goal:
+
 The `utils/` folder collects common utility functions to avoid redundancy and promote code reuse. By centralizing these functions, the project ensures that commonly used logic is standardized and easy to update.
 
 #### `config/`
@@ -357,6 +399,7 @@ export default prodBase;
 By organizing configurations this way, your application can easily adapt to various blockchain networks and deployment settings.
 
 ### Goal:
+
 This folder handles environment-specific settings and configurations, enabling the project to adapt seamlessly to different deployment environments by adjusting configuration values. Additionally, configurations are tailored for specific chains, such as production and development environments.
 
 #### `contexts/`
@@ -368,6 +411,7 @@ Contains global context providers for managing shared state across the applicati
 - `chain.ts`: Stores the connected chain object and current address.
 
 ### Goal:
+
 The `contexts/` folder centralizes global state management using React's Context API. By organizing context providers here, the project facilitates the sharing of state across different parts of the application without prop drilling.
 
 #### `middleware.ts`
@@ -379,6 +423,7 @@ Contains middleware functions for handling requests such as authentication and l
 - `middleware.ts`: Global middleware of the application.
 
 ### Goal:
+
 The `middleware.ts` file defines functions that act as intermediaries in the request-response cycle. These middlewares help in managing tasks like authentication, logging, and request validation in a centralized and reusable manner.
 
 ## Development Commands
@@ -404,7 +449,7 @@ The application uses [Thirdweb](https://thirdweb.com/) as the entry point for in
 - **Simplified Web3 Integration**: Thirdweb abstracts the complexities of Web3, making it easier to interact with blockchain networks and manage smart contracts.
 - **Multichain Support**: Thirdweb supports multiple blockchain networks, allowing the application to operate in a multichain environment.
 - **Smart Contract Management**: Thirdweb provides tools for deploying, managing, and interacting with smart contracts, simplifying the integration of blockchain functionality into the application.
--  **IPFS Storage**: Thirdweb integrates with IPFS (InterPlanetary File System) to provide decentralized storage solutions. This feature allows the application to securely store and retrieve files in a decentralized manner, ensuring data integrity and availability.
+- **IPFS Storage**: Thirdweb integrates with IPFS (InterPlanetary File System) to provide decentralized storage solutions. This feature allows the application to securely store and retrieve files in a decentralized manner, ensuring data integrity and availability.
 
 ### How Thirdweb is Used in This Application
 
@@ -527,6 +572,7 @@ export const executeQuery = async (url, query, variables) => {
 - **Purpose**: The `executeQuery` function performs a POST request to a GraphQL endpoint, sending a query and optional variables. It handles the request, checks for network errors, and processes the response.
 
 - **Parameters**:
+
   - `url`: The URL of the GraphQL API endpoint.
   - `query`: The GraphQL query to be executed.
   - `variables` (optional): Variables required by the query.
@@ -761,6 +807,7 @@ export const fetchHome = async (chainId: string, allTokens: boolean): Promise<Ar
 - **Purpose**: The `fetchHome` function retrieves all tokens listed on the marketplace for a specific blockchain chain. It uses the `executeQuery` function to send a GraphQL query and process the response.
 
 - **Parameters**:
+
   - `chainId`: The ID of the blockchain chain for which tokens are fetched.
   - `allTokens`: A boolean flag indicating whether to include all tokens or filter out those without marketplace listings.
 
@@ -777,8 +824,8 @@ When using the fetchHome function to retrieve data from a GraphQL API, it's impo
 Here’s how you can use useRef to prevent multiple simultaneous requests while ensuring that data fetching is managed efficiently:
 
 ```jsx
-import React, { useState, useEffect, useRef } from 'react';
-import { fetchHome } from '@/path/to/fetchHome';
+import React, { useState, useEffect, useRef } from "react";
+import { fetchHome } from "@/path/to/fetchHome";
 
 const TokenList = ({ chainId, allTokens }) => {
   const [tokens, setTokens] = useState([]);
@@ -796,7 +843,7 @@ const TokenList = ({ chainId, allTokens }) => {
         const data = await fetchHome(chainId, allTokens);
         setTokens(data);
       } catch (error) {
-        console.error('Error fetching tokens:', error);
+        console.error("Error fetching tokens:", error);
       } finally {
         isFetchingRef.current = false; // Reset fetching state
       }
@@ -811,7 +858,7 @@ const TokenList = ({ chainId, allTokens }) => {
         <p>Loading...</p>
       ) : (
         <ul>
-          {tokens.map(token => (
+          {tokens.map((token) => (
             <li key={token.tokenId}>{token.tokenData}</li>
           ))}
         </ul>
@@ -821,7 +868,6 @@ const TokenList = ({ chainId, allTokens }) => {
 };
 
 export default TokenList;
-
 ```
 
 #### Explanation
@@ -856,6 +902,7 @@ The life cycle of a token typically involves several key stages: minting, primar
 **Definition**: Transactions involving tokens after their initial sale, typically through a marketplace.
 
 - **Direct Buy**: Buyers can purchase tokens directly from sellers at agreed-upon prices. This involves:
+
   - **Listing**: Tokens are listed for sale with a fixed price.
   - **Transaction**: Buyers agree to the listed price, completing the purchase.
 
@@ -882,9 +929,10 @@ This life cycle ensures that tokens can be efficiently created, sold, and traded
 
 #### Objects
 
-*Note: Some optional flags may contain mistakes, please refer to the official Subgraph definition.*
+_Note: Some optional flags may contain mistakes, please refer to the official Subgraph definition._
 
 - **NftContract**: Represents an NFT contract with:
+
   - `id`: Unique identifier for the contract.
   - `name` (optional): Name of the contract.
   - `symbol` (optional): Symbol of the contract.
@@ -901,6 +949,7 @@ This life cycle ensures that tokens can be efficiently created, sold, and traded
   - `tokens`: Array of tokens associated with the contract.
 
 - **Token**: Represents a token with:
+
   - `id`: Unique identifier for the token.
   - `nftContract`: Associated NFT contract.
   - `tokenId`: Unique ID of the token. It should match the tokenData. (see: `utils/tokens/stringToUnit256.ts`)
@@ -908,6 +957,7 @@ This life cycle ensures that tokens can be efficiently created, sold, and traded
   - `mint`: Details of the mint transaction associated with the token.
 
 - **MarketplaceOffer**: Represents an offer in the marketplace with:
+
   - `id`: Unique identifier for the offer.
   - `origin`: Address where the offer originated.
   - `offeror`: Address making the offer.
@@ -933,6 +983,7 @@ This life cycle ensures that tokens can be efficiently created, sold, and traded
   - `creatorRecipient`: Address receiving the creator amount.
 
 - **MarketplaceListing**: Describes a marketplace listing with:
+
   - `id`: Unique identifier for the listing.
   - `origin`: Address where the listing originated.
   - `listingType`: Type of listing (Direct or Auction).
@@ -955,6 +1006,7 @@ This life cycle ensures that tokens can be efficiently created, sold, and traded
   - `directBuys`: Array of direct buys associated with the listing.
 
 - **AdOffer**: Represents an ad offer with:
+
   - `id`: Unique identifier for the ad offer.
   - `origin`: Address where the ad offer originated.
   - `disable`: Boolean indicating if the ad offer is disabled.
@@ -970,6 +1022,7 @@ This life cycle ensures that tokens can be efficiently created, sold, and traded
   - `currentProposals`: Array of current proposals related to the ad offer.
 
 - **CurrentProposal**: Contains information on current proposals with:
+
   - `id`: Unique identifier for the current proposal.
   - `adOffer`: Associated ad offer.
   - `token`: Token involved in the proposal.
@@ -979,10 +1032,12 @@ This life cycle ensures that tokens can be efficiently created, sold, and traded
   - `rejectedProposal`: Rejected proposal details.
 
 - **ListingType**: Enumeration for listing types:
+
   - `"Direct"`: Direct listing.
   - `"Auction"`: Auction listing.
 
 - **MarketplaceDirectBuy**: Represents a direct purchase in the marketplace with:
+
   - `id`: Unique identifier for the direct buy.
   - `listing`: Associated marketplace listing.
   - `buyer`: Address of the buyer.
@@ -998,6 +1053,7 @@ This life cycle ensures that tokens can be efficiently created, sold, and traded
   - `creatorRecipient`: Address receiving the creator amount.
 
 - **TokenPrice**: Defines the price of a token with:
+
   - `id`: Unique identifier for the token price.
   - `currency`: Currency used for the token price.
   - `amount`: Price amount.
@@ -1005,6 +1061,7 @@ This life cycle ensures that tokens can be efficiently created, sold, and traded
   - `token`: The token whose price is defined.
 
 - **MarketplaceBid**: Represents a bid in the marketplace with:
+
   - `id`: Unique identifier for the bid.
   - `listing`: Associated marketplace listing.
   - `bidder`: Address of the bidder.
@@ -1029,6 +1086,7 @@ This life cycle ensures that tokens can be efficiently created, sold, and traded
   - `creatorRecipient` (optional): Address receiving the creator amount.
 
 - **RevenueTransaction**: Tracks revenue details with:
+
   - `id`: Unique identifier for the revenue transaction.
   - `blockTimestamp`: Timestamp of the block containing the transaction.
   - `protocolFees`: Array of protocol fee calls.
@@ -1038,6 +1096,7 @@ This life cycle ensures that tokens can be efficiently created, sold, and traded
   - `mints`: Array of mint transactions.
 
 - **Mint**: Represents a mint transaction with:
+
   - `id`: Unique identifier for the mint.
   - `contractAddress`: Address of the contract.
   - `tokenId`: ID of the token minted.
@@ -1066,4 +1125,3 @@ This life cycle ensures that tokens can be efficiently created, sold, and traded
   - `rejectReason` (optional): Reason for rejection.
   - `creationTimestamp`: When the proposal was created.
   - `lastUpdateTimestamp`: Last update timestamp of the proposal.
-
