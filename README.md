@@ -27,7 +27,6 @@
       - [`config/`](#config)
       - [`contexts/`](#contexts)
       - [`middleware.ts`](#middlewarets)
-    - [Goal:](#goal-12)
   - [Development Commands](#development-commands)
   - [Naming Conventions](#naming-conventions)
   - [Thirdweb Integration](#thirdweb-integration)
