@@ -9,7 +9,6 @@ import ModalHelper from "@/components/ui/modals/Helper";
 import { useChainContext } from "@/hooks/useChainContext";
 import { InformationCircleIcon } from "@heroicons/react/20/solid";
 import ResponsiveTooltip from "@/components/ui/ResponsiveTooltip";
-import TextArea from "@/components/ui/TextArea";
 
 const AdSubmission = ({
   approvalForAllToken = true,

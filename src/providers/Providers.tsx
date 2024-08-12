@@ -69,7 +69,7 @@ function Providers({ children }) {
 function InnerProviders({ children }: Readonly<{ children: React.ReactNode }>) {
   const [chain, setChain] = useState(Object.values(config)[0]?.network);
   const { selectedChain } = useSwitchChainContext();
-  const { address, balance } = React.useContext(GaslessContext) as GasslessContextValue;
+  const { balance } = React.useContext(GaslessContext) as GasslessContextValue;
 
   useEffect(() => {
     if (selectedChain) {
