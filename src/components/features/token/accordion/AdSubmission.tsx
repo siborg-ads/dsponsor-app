@@ -9,6 +9,7 @@ import ModalHelper from "@/components/ui/modals/Helper";
 import { useChainContext } from "@/hooks/useChainContext";
 import { InformationCircleIcon } from "@heroicons/react/20/solid";
 import ResponsiveTooltip from "@/components/ui/ResponsiveTooltip";
+import { Divider } from "@nextui-org/react";
 
 const AdSubmission = ({
   approvalForAllToken = true,
@@ -191,6 +192,7 @@ const AdSubmission = ({
                   <span className="block dark:text-jacarta-100">
                     Image ({imageRatios[0] ? `${imageRatios[0][0]}:${imageRatios[0][1]}` : "N/A"})
                   </span>
+
                   <span className="font-semibold text-red">
                     {(errors.imageError || previewImage?.length === 0) && "No image provided"}
                   </span>
@@ -367,31 +369,31 @@ const AdSubmission = ({
 
           <div className="modal-body p-6 flex gap-4 items-center">
             {!successFullUpload ? (
-              <div className="flex text-left flex-wrap gap-8 md:flex-row flex-col">
-                <div>
-                  <p className="font-display mb-2 block dark:text-white">
+              <div className="flex justify-between gap-8 md:gap-32 md:flex-row flex-col">
+                <div className="flex flex-col gap-4">
+                  <p className="font-display block dark:text-white">
                     {(name as string)?.length > 0 ? (
-                      <span className="dark:text-jacarta-100 text-jacarta-100 text-sm">
-                        Name : <span className="dark:text-white text-base ml-2"> {name} </span>
+                      <span className="dark:text-jacarta-100 text-jacarta-100 text-sm flex flex-col">
+                        Name<span className="dark:text-white text-base">{name}</span>
                       </span>
                     ) : !name ? (
-                      <span className="dark:text-jacarta-100 text-jacarta-100 font-display text-sm">
-                        Name : <span className="text-red text-base ml-2">{errors.nameError}</span>
+                      <span className="dark:text-jacarta-100 text-jacarta-100 text-sm flex flex-col">
+                        Name<span className="text-red text-base">{errors.nameError}</span>
                       </span>
                     ) : (
                       ""
                     )}
                   </p>
-                  <p className="font-display mb-2 block text-sm dark:text-white">
+                  <p className="font-display block text-sm dark:text-white">
                     {(description as string)?.length > 0 ? (
-                      <span className="dark:text-jacarta-100 text-jacarta-100 text-sm flex  items-center">
-                        Description :{" "}
-                        <span className="dark:text-white text-base ml-2"> {description} </span>
+                      <span className="dark:text-jacarta-100 text-jacarta-100 text-sm flex flex-col">
+                        Description
+                        <span className="dark:text-white text-base">{description}</span>
                       </span>
                     ) : !description ? (
-                      <span className="dark:text-jacarta-100 text-jacarta-100 font-display">
-                        Description :{" "}
-                        <span className="text-red text-base ml-2">{errors.descriptionError}</span>
+                      <span className="dark:text-jacarta-100 text-jacarta-100 text-sm flex flex-col">
+                        Description
+                        <span className="text-red text-base">{errors.descriptionError}</span>
                       </span>
                     ) : (
                       ""
@@ -399,41 +401,31 @@ const AdSubmission = ({
                   </p>
 
                   {(link as string)?.length ? (
-                    <div className="font-display  mb-2  text-jacarta-100 text-sm flex justify-between ">
-                      <span className="mr-2 text-sm">Link : </span>{" "}
+                    <div className="font-display text-jacarta-100 text-sm flex flex-col">
+                      <span className="text-sm">Link</span>
                       {!errors?.linkError ? (
-                        <span className="dark:text-white text-base ml-2"> {link} </span>
+                        <span className="dark:text-white text-base">{link}</span>
                       ) : (
-                        <span className="text-red text-base ml-2"> {errors.linkError}</span>
+                        <span className="text-red text-base">{errors.linkError}</span>
                       )}
                     </div>
                   ) : !link ? (
-                    <div className="dark:text-jacarta-100 text-jacarta-100 font-display flex gap-2">
-                      <span className="text-sm"> Link :</span>
-                      <span className="text-red text-base ml-2">{errors.linkError}</span>
+                    <div className="dark:text-jacarta-100 text-jacarta-100 font-display flex flex-col">
+                      <span className="text-sm">Link</span>
+                      <span className="text-red text-base">{errors.linkError}</span>
                     </div>
                   ) : (
                     ""
                   )}
-                  {imageURLSteps?.length > 0 &&
-                    (previewImage?.filter((item: any) => item)?.length as number) <
-                      imageURLSteps?.length && (
-                      <p className="font-display  mb-2 block text-jacarta-100 text-sm">
-                        Image preview :{" "}
-                        <span className="text-red text-base ml-2"> {errors.imageError}</span>
-                      </p>
-                    )}
-                  <p className="font-display  mb-2 block text-jacarta-100 text-sm">
+
+                  <p className="font-display flex flex-col text-jacarta-100 text-sm">
                     {startDate ? (
-                      <span>
-                        Start Date :{" "}
+                      <span className="flex flex-col">
+                        Start Date
                         {!errors.startDateError ? (
-                          <span className="dark:text-white text-base ml-2">
-                            {" "}
-                            {formatDate(startDate)}{" "}
-                          </span>
+                          <span className="dark:text-white text-base">{formatDate(startDate)}</span>
                         ) : (
-                          <span className="text-red text-base ml-2">{errors.startDateError}</span>
+                          <span className="text-red text-base">{errors.startDateError}</span>
                         )}
                       </span>
                     ) : (
@@ -441,51 +433,45 @@ const AdSubmission = ({
                     )}
                   </p>
                   {endDate ? (
-                    <p className="font-display  mb-2 block text-jacarta-100 text-sm">
-                      End Date :{" "}
+                    <p className="font-display flex flex-col text-jacarta-100 text-sm">
+                      End Date
                       {!errors.endDateError ? (
-                        <span className="dark:text-white text-base ml-2">
-                          {" "}
-                          {formatDate(endDate)}{" "}
-                        </span>
+                        <span className="dark:text-white text-base">{formatDate(endDate)}</span>
                       ) : (
-                        <span className="text-red text-base ml-2">{errors.endDateError}</span>
+                        <span className="text-red text-base">{errors.endDateError}</span>
                       )}
                     </p>
                   ) : (
                     ""
                   )}
                   {selectedNumber ? (
-                    <p className="font-display  mb-2 block text-jacarta-100 text-sm">
-                      Number of Items :{" "}
+                    <p className="font-display flex flex-col text-jacarta-100 text-sm">
+                      Number of Items
                       {!errors.numberError ? (
-                        <span className="dark:text-white text-base ml-2"> {selectedNumber} </span>
+                        <span className="dark:text-white text-base">{selectedNumber}</span>
                       ) : (
-                        <span className="text-red text-base ml-2">{errors.numberError}</span>
+                        <span className="text-red text-base">{errors.numberError}</span>
                       )}
                     </p>
                   ) : (
                     ""
                   )}
-                  {selectedParameter ? (
-                    <p className="font-display  mb-2 block text-jacarta-100 text-sm">
-                      Type of Ad :{" "}
+                  {selectedParameter && (displayedParameter?.length as number) > 0 ? (
+                    <p className="font-display flex flex-col text-jacarta-100 text-sm">
+                      Type of Ad
                       {!errors.typeAdError && !errors.imageRatioError ? (
                         displayedParameter?.map((item, index) => (
-                          <span key={index} className="dark:text-white text-base ml-2">
-                            {" "}
-                            {item}{" "}
+                          <span key={index} className="dark:text-white text-base">
+                            {item}
                           </span>
                         ))
                       ) : (
                         <div>
                           {errors.typeAdError && (
-                            <span className="text-red text-base ml-2">{errors.typeAdError}</span>
+                            <span className="text-red text-base">{errors.typeAdError}</span>
                           )}
                           {errors.imageRatioError && (
-                            <span className="text-red text-base ml-2">
-                              {errors.imageRatioError}
-                            </span>
+                            <span className="text-red text-base">{errors.imageRatioError}</span>
                           )}
                         </div>
                       )}
@@ -494,15 +480,12 @@ const AdSubmission = ({
                     ""
                   )}
                   {selectedStartingPrice || errors.startingPriceError ? (
-                    <p className="font-display  mb-2 block text-jacarta-100 text-sm">
-                      Bid starting price :{" "}
+                    <p className="font-display flex flex-col text-jacarta-100 text-sm">
+                      Bid starting price
                       {!errors.startingPriceError ? (
-                        <span className="dark:text-white text-base ml-2">
-                          {" "}
-                          {selectedStartingPrice}{" "}
-                        </span>
+                        <span className="dark:text-white text-base">{selectedStartingPrice}</span>
                       ) : (
-                        <span className="text-red text-base ml-2">{errors.startingPriceError}</span>
+                        <span className="text-red text-base">{errors.startingPriceError}</span>
                       )}
                       {helperFeesListing && <ModalHelper {...helperFeesListing} />}
                     </p>
@@ -510,15 +493,12 @@ const AdSubmission = ({
                     ""
                   )}
                   {selectedUnitPrice || errors.unitPriceError ? (
-                    <p className="font-display  mb-2 block text-jacarta-100 text-sm">
-                      Buy Price :{" "}
+                    <p className="font-display flex flex-col text-jacarta-100 text-sm">
+                      Buy Price
                       {!errors.unitPriceError ? (
-                        <span className="dark:text-white text-base ml-2">
-                          {" "}
-                          {selectedUnitPrice}{" "}
-                        </span>
+                        <span className="dark:text-white text-base">{selectedUnitPrice}</span>
                       ) : (
-                        <span className="text-red text-base ml-2">{errors.unitPriceError}</span>
+                        <span className="text-red text-base">{errors.unitPriceError}</span>
                       )}
                       {helperFeesListing && <ModalHelper {...helperFeesListing} />}
                     </p>
@@ -526,59 +506,51 @@ const AdSubmission = ({
                     ""
                   )}
                   {symbolContract || selectedCurrency ? (
-                    <p className="font-display  mb-2 block text-jacarta-100 text-sm">
-                      Currency :{" "}
+                    <p className="font-display flex flex-col text-jacarta-100 text-sm">
+                      Currency
                       {!errors.currencyError ? (
-                        <span className="dark:text-white text-base ml-2">
-                          {" "}
-                          {symbolContract ?? selectedCurrency}{" "}
+                        <span className="dark:text-white text-base">
+                          {symbolContract ?? selectedCurrency}
                         </span>
                       ) : (
-                        <span className="text-red text-base ml-2">{errors.currencyError}</span>
+                        <span className="text-red text-base">{errors.currencyError}</span>
                       )}
                     </p>
                   ) : (
                     ""
                   )}
                   {selectedRoyalties ? (
-                    <p className="font-display  mb-2 block text-jacarta-100 text-sm">
-                      Royalties :{" "}
+                    <p className="font-display flex flex-col text-jacarta-100 text-sm">
+                      Royalties
                       {!errors.royaltyError ? (
-                        <span className="dark:text-white text-base ml-2">
-                          {" "}
-                          {selectedRoyalties} %{" "}
-                        </span>
+                        <span className="dark:text-white text-base">{selectedRoyalties}%</span>
                       ) : (
-                        <span className="text-red text-base ml-2">{errors.royaltyError}</span>
+                        <span className="text-red text-base">{errors.royaltyError}</span>
                       )}
                     </p>
                   ) : (
                     ""
                   )}
                   {address ? (
-                    <p className="font-display  mb-2 block text-jacarta-100 text-sm">
-                      Address :{" "}
-                      <span className="dark:text-white text-base ml-2">
-                        {" "}
-                        {shortenAddress(address)}{" "}
-                      </span>
+                    <p className="font-display flex flex-col text-jacarta-100 text-sm">
+                      Address
+                      <span className="dark:text-white text-base">{shortenAddress(address)} </span>
                     </p>
                   ) : (
                     ""
                   )}
                   {protocolFees ? (
-                    <p className="font-display  mb-2 block text-jacarta-100 text-sm">
-                      Protocol fees :{" "}
-                      <span className="dark:text-white text-base ml-2"> {protocolFees} % </span>
+                    <p className="font-display flex flex-col text-jacarta-100 text-sm">
+                      Protocol fees
+                      <span className="dark:text-white text-base">{protocolFees}%</span>
                     </p>
                   ) : (
                     ""
                   )}
                   {terms.length > 0 ? (
-                    <p className="font-display  mb-2 block text-jacarta-100 text-sm">
-                      Terms :{" "}
-                      <span className="dark:text-white text-base ml-2">
-                        {" "}
+                    <p className="font-display flex flex-col text-jacarta-100 text-sm">
+                      Terms
+                      <span className="dark:text-white text-base">
                         {terms[0].name ? terms[0].name : terms[0]}{" "}
                       </span>
                     </p>
@@ -586,11 +558,14 @@ const AdSubmission = ({
                     ""
                   )}
                 </div>
+
+                <Divider className="block md:hidden" />
+
                 {previewImage?.map((image: any, index: number) => (
-                  <div className="mb-6 flex-col items-center justify-center" key={index}>
+                  <div className="flex flex-col gap-2 items-start justify-start" key={index}>
                     <label
                       htmlFor="item-description"
-                      className="font-display text-jacarta-100 text-sm text-center mb-2 block "
+                      className="font-display text-jacarta-100 text-sm text-center"
                     >
                       Image {imageUrlVariants[index] && `( ratio ${imageUrlVariants[index]} )`}{" "}
                       preview
