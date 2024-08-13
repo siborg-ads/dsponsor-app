@@ -708,15 +708,17 @@ const AdSubmission = ({
                       </Web3Button>
                     </div>
 
-                    <ResponsiveTooltip
-                      text={`You need to approve the marketplace contract to spend your NFT on this
+                    {!createOffer && (
+                      <ResponsiveTooltip
+                        text={`You need to approve the marketplace contract to spend your NFT on this
       transaction.`}
-                    >
-                      <span className="text-xs text-jacarta-100 inline-flex items-center gap-1">
-                        <InformationCircleIcon className="w-4 h-4 text-jacarta-100" />
-                        Why do I have to approve ?
-                      </span>
-                    </ResponsiveTooltip>
+                      >
+                        <span className="text-xs text-jacarta-100 inline-flex items-center gap-1">
+                          <InformationCircleIcon className="w-4 h-4 text-jacarta-100" />
+                          Why do I have to approve ?
+                        </span>
+                      </ResponsiveTooltip>
+                    )}
                   </div>
                 ) : successFullUploadModal.hrefButton !== null ? (
                   <Link href={successFullUploadModal.hrefButton ?? "#"}>
