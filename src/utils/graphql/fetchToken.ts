@@ -246,6 +246,7 @@ export const fetchToken = async (chainId, offerId, tokenId) => {
         nftContract {
           id # DSponsorNFT smart contract address
           maxSupply
+          allowList
           royalty {
             bps
           }
@@ -262,6 +263,7 @@ export const fetchToken = async (chainId, offerId, tokenId) => {
             where: { tokenId: $tokenId }
           ) {
             tokenId
+            setInAllowList
             mint {
               transactionHash # if = null => not minted yet, so it's available
               from

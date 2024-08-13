@@ -1188,16 +1188,20 @@ const Token = () => {
       (token) => !!token?.tokenId && BigInt(token?.tokenId) === BigInt(tokenId as string)
     );
 
-    if (tokenData) {
-      const stringToUnit = stringToUint256(tokenData);
-
-      if (tokenId && BigInt(stringToUnit) === BigInt(tokenId as string)) {
-        setIsValidId(true);
-      } else {
-        setIsValidId(false);
-      }
-    } else if (token?.mint) {
+    if (offerData?.nftContract?.allowList && token?.setInAllowList) {
       setIsValidId(true);
+    } else {
+      if (tokenData) {
+        const stringToUnit = stringToUint256(tokenData);
+
+        if (tokenId && BigInt(stringToUnit) === BigInt(tokenId as string)) {
+          setIsValidId(true);
+        } else {
+          setIsValidId(false);
+        }
+      } else if (token?.mint) {
+        setIsValidId(true);
+      }
     }
   }, [offerData, tokenData, tokenId]);
 
