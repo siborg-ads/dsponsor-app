@@ -148,7 +148,7 @@ const Token = () => {
     | undefined
   >(undefined);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
-  const [accordionActiveTab, setAccordionActiveTab] = useState<string[]>([]);
+  const [accordionActiveTab, setAccordionActiveTab] = useState<string[]>(["adSubmission"]);
   const [listingCreated, setListingCreated] = useState(false);
   const [creatorAmount, setCreatorAmount] = useState(null);
   const [protocolFeeAmount, setProtocolFeeAmount] = useState(null);
