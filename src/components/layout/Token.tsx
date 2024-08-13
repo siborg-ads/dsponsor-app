@@ -105,7 +105,7 @@ const Token = () => {
   const [allowanceTrue, setAllowanceTrue] = useState(false);
   const [adParameters, setAdParameters] = useState<any[]>([]);
   const [imageURLSteps, setImageURLSteps] = useState<any[]>([]);
-  const [isValidId, setIsValidId] = useState(true);
+  const [isValidId, setIsValidId] = useState(false);
   const [isLoadingButton, setIsLoadingButton] = useState(false);
   const stepsRef = useRef([]);
   const [numSteps, setNumSteps] = useState(2);
@@ -781,6 +781,9 @@ const Token = () => {
       tokenData: tokenData as string,
 
       fee: offerData?.nftContract?.prices[0]?.protocolFeeAmount,
+      mint: offerData?.nftContract?.tokens?.find(
+        (token) => !!token?.tokenId && BigInt(token?.tokenId) === BigInt(tokenId as string)
+      )?.mint,
 
       price:
         offerData?.nftContract?.tokens
@@ -1181,6 +1184,24 @@ const Token = () => {
   ]);
 
   useEffect(() => {
+    const token = offerData?.nftContract?.tokens?.find(
+      (token) => !!token?.tokenId && BigInt(token?.tokenId) === BigInt(tokenId as string)
+    );
+
+    if (tokenData) {
+      const stringToUnit = stringToUint256(tokenData);
+
+      if (tokenId && BigInt(stringToUnit) === BigInt(tokenId as string)) {
+        setIsValidId(true);
+      } else {
+        setIsValidId(false);
+      }
+    } else if (token?.mint) {
+      setIsValidId(true);
+    }
+  }, [offerData, tokenData, tokenId]);
+
+  useEffect(() => {
     if (!tokenId || !offerData) return;
 
     if (tokenId?.length > 6) {
@@ -1196,18 +1217,6 @@ const Token = () => {
           (token) => !!token?.tokenId && BigInt(token?.tokenId) === BigInt(tokenId as string)
         ).mint.tokenData;
         setTokenData(tokenData);
-      }
-
-      let isValidId = false;
-      if (tokenData) {
-        const stringToUnit = stringToUint256(tokenData);
-
-        if (BigInt(stringToUnit) === BigInt(tokenId as string)) {
-          isValidId = true;
-          setIsValidId(true);
-        } else {
-          setIsValidId(false);
-        }
       }
 
       let tokenMetaData: { description: string; image: string; name: string } = {
@@ -1233,7 +1242,7 @@ const Token = () => {
 
       setTokenMetaData(tokenMetaData);
     }
-  }, [tokenId, offerData, tokenData, searchParams]);
+  }, [tokenId, offerData, tokenData, searchParams, isValidId]);
 
   useEffect(() => {
     if (!offerData || !offerData?.adParameters) return;
@@ -2146,7 +2155,9 @@ const Token = () => {
                               </span>
                               <Timer
                                 endTime={
-                                  marketplaceListings?.sort((a, b) => b?.id - a?.id)[0].endTime
+                                  marketplaceListings?.sort(
+                                    (a, b) => Number(b?.id) - Number(a?.id)
+                                  )[0].endTime
                                 }
                               />
                             </div>
@@ -2160,20 +2171,15 @@ const Token = () => {
                           </span>
                         </div>
                         <div className="w-full flex justify-center">
-                          <Web3Button
-                            contractAddress={
-                              marketplaceListings.length > 0
-                                ? config[chainId as number]?.smartContracts?.DSPONSORMP?.address
-                                : config[chainId as number]?.smartContracts?.DSPONSORADMIN?.address
-                            }
-                            action={() => {
+                          <button
+                            onClick={() => {
                               handleBuyModal();
                             }}
-                            isDisabled={!isValidId}
-                            className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all  !bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer ${!isValidId && "!btn-disabled !bg-opacity-30"} `}
+                            disabled={!isValidId}
+                            className={`!rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all  !bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer ${!isValidId && "!bg-white hover:!bg-opacity-30 !bg-opacity-30"} `}
                           >
                             Buy
-                          </Web3Button>
+                          </button>
                         </div>
                       </div>
                     )}
