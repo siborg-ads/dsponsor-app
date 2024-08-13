@@ -44,7 +44,8 @@ const AdSubmission = ({
   address,
   adSubmission,
   isLoadingButton,
-  multipleAdsSubmission
+  multipleAdsSubmission,
+  createOffer
 }: {
   approvalForAllToken?: boolean;
   handleApprove?: any;
@@ -81,6 +82,7 @@ const AdSubmission = ({
   adSubmission?: boolean;
   isLoadingButton: boolean;
   multipleAdsSubmission?: boolean;
+  createOffer?: boolean;
 }) => {
   const [imageRatios, setImageRatios] = React.useState<any[]>([]);
   const [isLoadingApproveButton, setIsLoadingApproveButton] = React.useState<boolean>(false);
@@ -648,35 +650,39 @@ const AdSubmission = ({
               <div className="flex items-center gap-4 w-full">
                 {!successFullUpload ? (
                   <div className="flex flex-col gap-2 justify-center items-center w-full">
-                    <div className="grid grid-cols-1 w-full mx-auto md:grid-cols-2 gap-6">
-                      <Web3Button
-                        contractAddress={
-                          currentChainObject?.smartContracts?.DSPONSORMP?.address ?? "no address"
-                        }
-                        action={async () => {
-                          setIsLoadingApproveButton(true);
+                    <div
+                      className={`grid grid-cols-1 w-full mx-auto ${!createOffer && "md:grid-cols-2"} gap-6`}
+                    >
+                      {!createOffer && (
+                        <Web3Button
+                          contractAddress={
+                            currentChainObject?.smartContracts?.DSPONSORMP?.address ?? "no address"
+                          }
+                          action={async () => {
+                            setIsLoadingApproveButton(true);
 
-                          await toast
-                            .promise(handleApprove, {
-                              pending: "Waiting for confirmation 🕒",
-                              success: "Approval confirmed 👌",
-                              error: "Approval rejected 🤯"
-                            })
-                            .finally(() => {
-                              setIsLoadingApproveButton(false);
-                            });
-                        }}
-                        className={`!rounded-full !w-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate || isLoadingApproveButton || approvalForAllToken ? "!btn-disabled !cursor-not-allowed !text-black opacity-30" : "!bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer"} `}
-                        isDisabled={!validate || isLoadingApproveButton || approvalForAllToken}
-                      >
-                        {isLoadingApproveButton ? (
-                          <Spinner size="sm" color="default" />
-                        ) : !isListing ? (
-                          "Approve 🔓 (1/2)"
-                        ) : (
-                          "Authorize 🔓 (1/2)"
-                        )}
-                      </Web3Button>
+                            await toast
+                              .promise(handleApprove, {
+                                pending: "Waiting for confirmation 🕒",
+                                success: "Approval confirmed 👌",
+                                error: "Approval rejected 🤯"
+                              })
+                              .finally(() => {
+                                setIsLoadingApproveButton(false);
+                              });
+                          }}
+                          className={`!rounded-full !w-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate || isLoadingApproveButton || approvalForAllToken ? "!btn-disabled !cursor-not-allowed !text-black opacity-30" : "!bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer"} `}
+                          isDisabled={!validate || isLoadingApproveButton || approvalForAllToken}
+                        >
+                          {isLoadingApproveButton ? (
+                            <Spinner size="sm" color="default" />
+                          ) : !isListing ? (
+                            "Approve 🔓 (1/2)"
+                          ) : (
+                            "Authorize 🔓 (1/2)"
+                          )}
+                        </Web3Button>
+                      )}
 
                       <Web3Button
                         contractAddress={
@@ -706,15 +712,17 @@ const AdSubmission = ({
                       </Web3Button>
                     </div>
 
-                    <ResponsiveTooltip
-                      text={`You need to approve the marketplace contract to spend your NFT on this
+                    {!createOffer && (
+                      <ResponsiveTooltip
+                        text={`You need to approve the marketplace contract to spend your NFT on this
       transaction.`}
-                    >
-                      <span className="text-xs text-jacarta-100 inline-flex items-center gap-1">
-                        <InformationCircleIcon className="w-4 h-4 text-jacarta-100" />
-                        Why do I have to approve ?
-                      </span>
-                    </ResponsiveTooltip>
+                      >
+                        <span className="text-xs text-jacarta-100 inline-flex items-center gap-1">
+                          <InformationCircleIcon className="w-4 h-4 text-jacarta-100" />
+                          Why do I have to approve ?
+                        </span>
+                      </ResponsiveTooltip>
+                    )}
                   </div>
                 ) : successFullUploadModal.hrefButton !== null ? (
                   <Link href={successFullUploadModal.hrefButton ?? "#"}>
