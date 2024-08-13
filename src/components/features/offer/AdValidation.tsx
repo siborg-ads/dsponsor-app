@@ -43,12 +43,42 @@ const AdValidation = ({
   mediaShouldValidateAnAd: boolean;
   isMedia: boolean;
   isTokenView?: boolean;
-  itemTokenId?: string;
+  itemTokenId: string;
   pendingProposalData: any;
   setPendingProposalData: any;
 }) => {
-  const [validatedProposalData, setValidatedProposalData] = useState<AdProposal[]>([]);
-  const [refusedProposalData, setRefusedProposalData] = useState<AdProposal[]>([]);
+  const [validatedProposalData, setValidatedProposalData] = useState<
+    {
+      tokenId: string;
+      offerId: string;
+      tokenData: string;
+      proposalIds: string[];
+      adParametersList: {
+        aspectRatio?: string;
+        cssAspectRatio?: string;
+        "imageURL-1:1"?: string;
+        linkURL?: string;
+      };
+      adParametersKeys: string[];
+      reason?: string;
+    }[]
+  >([]);
+  const [refusedProposalData, setRefusedProposalData] = useState<
+    {
+      tokenId: string;
+      offerId: string;
+      tokenData: string;
+      proposalIds: string[];
+      adParametersList: {
+        aspectRatio?: string;
+        cssAspectRatio?: string;
+        "imageURL-1:1"?: string;
+        linkURL?: string;
+      };
+      adParametersKeys: string[];
+      reason?: string;
+    }[]
+  >([]);
   const [itemActive, setItemActive] = useState<number>(1);
   const [, setComments] = useState({});
   const [isApprouvedAd, setIsApprouvedAd] = useState<boolean>(false);
@@ -83,11 +113,11 @@ const AdValidation = ({
 
     function processProposal(token, element, groupedAds, statusKey) {
       if (element[statusKey] !== null) {
-        if (!groupedAds[token.tokenId]) {
-          groupedAds[token.tokenId] = {
-            tokenId: token.tokenId,
-            offerId: offerId,
-            tokenData: token.mint.tokenData || null,
+        if (!groupedAds[token?.tokenId]) {
+          groupedAds[token?.tokenId] = {
+            tokenId: token?.tokenId,
+            offerId: offer?.id,
+            tokenData: token?.mint?.tokenData || null,
             proposalIds: [],
             adParametersList: {},
             adParametersKeys: []
@@ -139,21 +169,65 @@ const AdValidation = ({
       }
     }
 
-    let formattedPendingAds: AdProposal[] = Object.values(groupedPendingAds);
-    let formattedValidatedAds: AdProposal[] = Object.values(groupedValidatedAds);
-    let formattedRefusedAds: AdProposal[] = Object.values(groupedRefusedAds);
+    let formattedPendingAds: {
+      tokenId: string;
+      offerId: string;
+      tokenData: string;
+      proposalIds: string[];
+      adParametersList: {
+        aspectRatio?: string;
+        cssAspectRatio?: string;
+        "imageURL-1:1"?: string;
+        linkURL?: string;
+      };
+      adParametersKeys: string[];
+      reason?: string;
+    }[] = Object.values(groupedPendingAds);
+    let formattedValidatedAds: {
+      tokenId: string;
+      offerId: string;
+      tokenData: string;
+      proposalIds: string[];
+      adParametersList: {
+        aspectRatio?: string;
+        cssAspectRatio?: string;
+        "imageURL-1:1"?: string;
+        linkURL?: string;
+      };
+      adParametersKeys: string[];
+      reason?: string;
+    }[] = Object.values(groupedValidatedAds);
+    let formattedRefusedAds: {
+      tokenId: string;
+      offerId: string;
+      tokenData: string;
+      proposalIds: string[];
+      adParametersList: {
+        aspectRatio?: string;
+        cssAspectRatio?: string;
+        "imageURL-1:1"?: string;
+        linkURL?: string;
+      };
+      adParametersKeys: string[];
+      reason?: string;
+    }[] = Object.values(groupedRefusedAds);
+
+    console.log(formattedPendingAds);
+    console.log(itemTokenId);
 
     if (isTokenView) {
-      formattedPendingAds = formattedPendingAds.filter(
-        (ad) => !!itemTokenId && ad?.token?.tokenId === BigInt(itemTokenId)
+      formattedPendingAds = formattedPendingAds?.filter(
+        (ad) => !!itemTokenId && !!ad?.tokenId && BigInt(ad?.tokenId) === BigInt(itemTokenId)
       );
-      formattedValidatedAds = formattedValidatedAds.filter(
-        (ad) => !!itemTokenId && ad?.token?.tokenId === BigInt(itemTokenId)
+      formattedValidatedAds = formattedValidatedAds?.filter(
+        (ad) => !!itemTokenId && !!ad?.tokenId && BigInt(ad?.tokenId) === BigInt(itemTokenId)
       );
-      formattedRefusedAds = formattedRefusedAds.filter(
-        (ad) => !!itemTokenId && ad?.token?.tokenId === BigInt(itemTokenId)
+      formattedRefusedAds = formattedRefusedAds?.filter(
+        (ad) => !!itemTokenId && !!ad?.tokenId && BigInt(ad?.tokenId) === BigInt(itemTokenId)
       );
     }
+
+    console.log(formattedPendingAds);
 
     setPendingProposalData(formattedPendingAds);
     setPendingProposalLength(formattedPendingAds.length);

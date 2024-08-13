@@ -270,7 +270,7 @@ const PendingAds: React.FC<PendingAdsProps> = ({
                   {getImageUrl(adParametersList) && (
                     <div className="flex flex-col gap-2 w-full">
                       <Image
-                        src={getImageUrl(adParametersList) ?? ""}
+                        src={getImageUrl(adParametersList) ?? "/images/gradients/gradient_light.jpg"}
                         alt="logo"
                         height={600}
                         width={600}

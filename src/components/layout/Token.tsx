@@ -2505,6 +2505,7 @@ const Token = () => {
                     }
                     mediaShouldValidateAnAd={mediaShouldValidateAnAd}
                     isMedia={isMedia}
+                    itemTokenId={tokenId as string}
                     isTokenView={true}
                     handleSubmit={handleValidationSubmit}
                     selectedItems={selectedItems}
