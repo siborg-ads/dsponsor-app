@@ -14,7 +14,6 @@
     - [Environment Configuration](#environment-configuration)
       - [`.env.local` Configuration](#envlocal-configuration)
       - [Example Configuration File](#example-configuration-file)
-      - [Configuration Breakdown](#configuration-breakdown)
       - [ThirdWeb Configuration](#thirdweb-configuration)
   - [Environment](#environment)
   - [Project Structure](#project-structure)
@@ -34,27 +33,17 @@
   - [Development Commands](#development-commands)
   - [Naming Conventions](#naming-conventions)
   - [Thirdweb Integration](#thirdweb-integration)
-    - [Key Features of Thirdweb](#key-features-of-thirdweb)
-    - [How Thirdweb is Used in This Application](#how-thirdweb-is-used-in-this-application)
   - [Crossmint Integration](#crossmint-integration)
-    - [Key Features of the Integration](#key-features-of-the-integration)
-    - [How Crossmint is Used in This Application](#how-crossmint-is-used-in-this-application)
   - [Contribution](#contribution)
-  - [GraphQL Precision](#graphql-precision)
-    - [`executeQuery` Function](#executequery-function)
-      - [Function Definition](#function-definition)
-    - [Explanation](#explanation)
+  - [GraphQL Essentials](#graphql-essentials)
+    - [The `executeQuery` Function](#the-executequery-function)
     - [Example Usage of `executeQuery`](#example-usage-of-executequery)
-    - [Explanation](#explanation-1)
     - [Optimizing Requests](#optimizing-requests)
-      - [Example](#example)
-      - [Explanation](#explanation-2)
     - [GraphQL Subgraph Definitions](#graphql-subgraph-definitions)
       - [Essentials Concepts](#essentials-concepts)
         - [1. **Minting**](#1-minting)
         - [2. **Primary Market**](#2-primary-market)
         - [3. **Secondary Market**](#3-secondary-market)
-        - [**Summary**](#summary)
       - [Subtilities](#subtilities)
       - [Objects](#objects)
 
@@ -201,8 +190,6 @@ const prodBase = {
 
 export default prodBase;
 ```
-
-#### Configuration Breakdown
 
 - **`chainId`**: A unique identifier for the blockchain network.
 - **`chainName`**: A human-readable name of the chain.
@@ -450,14 +437,14 @@ We use Yarn to manage dependencies and run the application.
 
 The application uses [Thirdweb](https://thirdweb.com/) as the entry point for interacting with the Web3 ecosystem. Thirdweb provides an easy-to-use SDK that simplifies blockchain development, allowing the application to seamlessly connect to various blockchain networks and interact with smart contracts.
 
-### Key Features of Thirdweb
+**Key Features of Thirdweb**
 
 - **Simplified Web3 Integration**: Thirdweb abstracts the complexities of Web3, making it easier to interact with blockchain networks and manage smart contracts.
 - **Multichain Support**: Thirdweb supports multiple blockchain networks, allowing the application to operate in a multichain environment.
 - **Smart Contract Management**: Thirdweb provides tools for deploying, managing, and interacting with smart contracts, simplifying the integration of blockchain functionality into the application.
 - **IPFS Storage**: Thirdweb integrates with IPFS (InterPlanetary File System) to provide decentralized storage solutions. This feature allows the application to securely store and retrieve files in a decentralized manner, ensuring data integrity and availability.
 
-### How Thirdweb is Used in This Application
+**How Thirdweb is Used in This Application**
 
 - **Chain Management**: Thirdweb is integrated with custom hooks like `useChainContext.ts` and `useSwitchChainContext.ts` to manage the global chain state and enable multichain capabilities within the application.
 - **Wallet Connection**: Thirdweb supports social connection options, enabling users to connect their wallets through social accounts (e.g., Google, Twitter). This simplifies the onboarding process and makes it easier for users who are new to Web3.
@@ -468,13 +455,13 @@ The application uses [Thirdweb](https://thirdweb.com/) as the entry point for in
 
 The application integrates with [Crossmint](https://www.crossmint.com/), a service that allows users to mint NFTs using credit or debit cards, simplifying the process of purchasing and minting NFTs without needing to handle cryptocurrency directly.
 
-### Key Features of the Integration
+**Key Features of the Integration**
 
 - **Card Payments for NFTs**: Users can mint NFTs using credit or debit cards, making it easier for those unfamiliar with cryptocurrency transactions to participate in NFT minting.
 - **Seamless User Experience**: The integration provides a streamlined and user-friendly interface for purchasing and minting NFTs, removing the complexity of handling blockchain transactions.
 - **Secure Transactions**: The service ensures secure processing of card payments, safeguarding users' payment information and transactions.
 
-### How Crossmint is Used in This Application
+**How Crossmint is Used in This Application**
 
 - **Minting NFTs**: Users can select and mint NFTs directly using their credit or debit cards, with the process managed by the integrated payment service. This feature is especially useful for onboarding new users who may not have prior experience with cryptocurrencies.
 - **Payment Processing**: The service handles the payment processing, ensuring that transactions are secure and that users receive their NFTs once payment is completed.
@@ -491,15 +478,57 @@ To contribute to the project, please follow these guidelines:
 3. Make your changes.
 4. Submit a pull request.
 
-## GraphQL Precision
+## GraphQL Essentials
 
 GraphQL is a powerful query language for APIs that allows for precise and flexible data retrieval. To interact with a GraphQL API, you can use the `executeQuery` function. This helper function facilitates making POST requests to a GraphQL server, sending queries and variables, and handling responses.
 
-### `executeQuery` Function
+### The `executeQuery` Function
 
-The `executeQuery` function is designed to streamline the process of querying a GraphQL API. It takes care of sending the request, handling errors, and parsing the response data.
+The `executeQuery` function is designed to streamline the process of querying a GraphQL API. It takes care of sending the request, handling errors, and parsing the response data.- [DSponsor Dashboard](#dsponsor-dashboard)
+- [DSponsor Dashboard](#dsponsor-dashboard)
+  - [Table of contents](#table-of-contents)
+  - [Installation](#installation)
+    - [Clone the repository](#clone-the-repository)
+    - [Navigate into the project directory](#navigate-into-the-project-directory)
+    - [Install dependencies](#install-dependencies)
+  - [Configuration](#configuration)
+    - [Configuring `features.ts` for Production or Testing](#configuring-featurests-for-production-or-testing)
+    - [Environment Configuration](#environment-configuration)
+      - [`.env.local` Configuration](#envlocal-configuration)
+      - [Example Configuration File](#example-configuration-file)
+      - [ThirdWeb Configuration](#thirdweb-configuration)
+  - [Environment](#environment)
+  - [Project Structure](#project-structure)
+    - [`public/`](#public)
+    - [`src/`](#src)
+      - [`abi/`](#abi)
+      - [`components/`](#components)
+      - [`data/`](#data)
+      - [`hooks/`](#hooks)
+      - [`lib/`](#lib)
+      - [`pages/`](#pages)
+      - [`styles/`](#styles)
+      - [`utils/`](#utils)
+      - [`config/`](#config)
+      - [`contexts/`](#contexts)
+      - [`middleware.ts`](#middlewarets)
+  - [Development Commands](#development-commands)
+  - [Naming Conventions](#naming-conventions)
+  - [Thirdweb Integration](#thirdweb-integration)
+  - [Crossmint Integration](#crossmint-integration)
+  - [Contribution](#contribution)
+  - [GraphQL Essentials](#graphql-essentials)
+    - [The `executeQuery` Function](#the-executequery-function)
+    - [Example Usage of `executeQuery`](#example-usage-of-executequery)
+    - [Optimizing Requests](#optimizing-requests)
+    - [GraphQL Subgraph Definitions](#graphql-subgraph-definitions)
+      - [Essentials Concepts](#essentials-concepts)
+        - [1. **Minting**](#1-minting)
+        - [2. **Primary Market**](#2-primary-market)
+        - [3. **Secondary Market**](#3-secondary-market)
+      - [Subtilities](#subtilities)
+      - [Objects](#objects)
 
-#### Function Definition
 
 ```typescript
 /**
@@ -572,8 +601,6 @@ export const executeQuery = async (url, query, variables) => {
   }
 };
 ```
-
-### Explanation
 
 - **Purpose**: The `executeQuery` function performs a POST request to a GraphQL endpoint, sending a query and optional variables. It handles the request, checks for network errors, and processes the response.
 
@@ -808,8 +835,6 @@ export const fetchHome = async (chainId: string, allTokens: boolean): Promise<Ar
 };
 ```
 
-### Explanation
-
 - **Purpose**: The `fetchHome` function retrieves all tokens listed on the marketplace for a specific blockchain chain. It uses the `executeQuery` function to send a GraphQL query and process the response.
 
 - **Parameters**:
@@ -825,7 +850,7 @@ export const fetchHome = async (chainId: string, allTokens: boolean): Promise<Ar
 
 When using the fetchHome function to retrieve data from a GraphQL API, it's important to optimize the number of requests for better performance. To avoid making multiple simultaneous requests, you can use React's useRef to manage the state of ongoing fetch operations. This approach prevents redundant network calls by tracking whether a fetch operation is already in progress.
 
-#### Example
+**Example**
 
 Here’s how you can use useRef to prevent multiple simultaneous requests while ensuring that data fetching is managed efficiently:
 
@@ -876,12 +901,16 @@ const TokenList = ({ chainId, allTokens }) => {
 export default TokenList;
 ```
 
-#### Explanation
-
 - **useRef**: Used to store a boolean flag (`isFetchingRef`) that indicates whether a fetch operation is in progress. This prevents multiple concurrent requests.
 - **useEffect**: Responsible for fetching data when the `chainId` or `allTokens` dependencies change. It checks if a fetch operation is already ongoing using the `isFetchingRef` flag. If a fetch is not in progress, it starts a new fetch operation and sets the flag to `true`. Once the data is fetched or an error occurs, the flag is reset to `false`.
 
 ### GraphQL Subgraph Definitions
+
+1. **Minting**: The process of creating new tokens and specifying their initial attributes.
+2. **Primary Market**: The first sale of tokens, either through direct purchase or auction with reserve and buyout prices.
+3. **Secondary Market**: Subsequent transactions of tokens, which can involve direct buys or auctions with competitive bidding.
+
+This life cycle ensures that tokens can be efficiently created, sold, and traded, providing flexibility for both initial creators and subsequent buyers and sellers.
 
 #### Essentials Concepts
 
@@ -915,14 +944,6 @@ The life cycle of a token typically involves several key stages: minting, primar
 - **Auctions**: Tokens can be auctioned in the secondary market with a bidding process:
   - **Bidding**: Interested buyers place bids on the token. Each bid represents an offer to buy the token at a specified price.
   - **Bid-to-Earn Mechanism**: In auction-style listings, bids are placed over time. The highest bid at the end of the auction wins, and the token is sold to the highest bidder. Bidders may also receive rewards or earn status based on their participation and bid amounts.
-
-##### **Summary**
-
-1. **Minting**: The process of creating new tokens and specifying their initial attributes.
-2. **Primary Market**: The first sale of tokens, either through direct purchase or auction with reserve and buyout prices.
-3. **Secondary Market**: Subsequent transactions of tokens, which can involve direct buys or auctions with competitive bidding.
-
-This life cycle ensures that tokens can be efficiently created, sold, and traded, providing flexibility for both initial creators and subsequent buyers and sellers.
 
 #### Subtilities
 
