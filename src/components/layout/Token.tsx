@@ -5,9 +5,9 @@ import {
   useContract,
   useContractRead,
   useContractWrite,
+  useStorage,
   useStorageUpload
 } from "@thirdweb-dev/react";
-import { ThirdwebStorage } from "@thirdweb-dev/storage";
 import { Address } from "thirdweb";
 import { ethers, BigNumber } from "ethers";
 import Image from "next/image";
@@ -52,10 +52,10 @@ import { addLineBreaks } from "@/utils/misc/addLineBreaks";
 import formatAndRoundPrice from "@/utils/prices/formatAndRound";
 import CrossmintFail from "@/components/features/token/modals/CrossmintFail";
 import PlaceBid from "@/components/features/token/widgets/PlaceBid";
-import { clientId } from "@/data/services/client";
 
 const Token = () => {
   const router = useRouter();
+  const storage = useStorage();
 
   const { currentChainObject } = useChainContext();
   const offerId = router.query?.offerId;
@@ -224,8 +224,7 @@ const Token = () => {
   useEffect(() => {
     const fetchImage = async (image) => {
       // get url image instead of ipfs:// starting url
-      if (image?.startsWith("ipfs://")) {
-        const storage = new ThirdwebStorage({ clientId: clientId });
+      if (storage && image?.startsWith("ipfs://")) {
         const ipfsUrl = await storage.resolveScheme(image);
         setImageUrl(ipfsUrl);
       } else {
@@ -238,7 +237,7 @@ const Token = () => {
     } else {
       setImageUrl(null);
     }
-  }, [image]);
+  }, [image, storage]);
 
   const fetchOffersRef = useRef(false);
 

@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from "react";
 import * as Switch from "@radix-ui/react-switch";
-import { Web3Button, useContract, useContractWrite } from "@thirdweb-dev/react";
+import { Web3Button, useContract, useContractWrite, useStorage } from "@thirdweb-dev/react";
 import config from "@/config/config";
 import { useChainContext } from "@/hooks/useChainContext";
 import { toast } from "react-toastify";
 import { features } from "@/data/features";
-import { ThirdwebStorage } from "@thirdweb-dev/storage";
 import { FileUploader } from "react-drag-drop-files";
 import Image from "next/image";
 import { DatePicker } from "@nextui-org/date-picker";
@@ -13,7 +12,6 @@ import { parseDate } from "@internationalized/date";
 import Input from "@/components/ui/Input";
 import TextArea from "@/components/ui/TextArea";
 import { Address } from "thirdweb";
-import { clientId } from "@/data/services/client";
 
 const fileTypes = ["JPG", "PNG", "WEBP"];
 
@@ -47,6 +45,7 @@ const UpdateOffer = ({ offer }) => {
 
   const { currentChainObject } = useChainContext();
   const chainId = currentChainObject?.chainId;
+  const storage = useStorage();
 
   const { contract } = useContract(
     config[chainId as number]?.smartContracts?.DSPONSORADMIN?.address as Address
@@ -61,7 +60,7 @@ const UpdateOffer = ({ offer }) => {
   };
 
   const uploadNewMetadatas = async (originalMetadatas) => {
-    const storage = new ThirdwebStorage({ clientId: clientId });
+    if (!storage) return;
 
     let finalMetadatas = { ...originalMetadatas };
 
@@ -140,7 +139,7 @@ const UpdateOffer = ({ offer }) => {
 
   useEffect(() => {
     const fetchMetadatas = async (metadataURL) => {
-      const storage = new ThirdwebStorage({ clientId: clientId });
+      if (!storage) return;
 
       if (metadataURL) {
         try {
@@ -215,7 +214,7 @@ const UpdateOffer = ({ offer }) => {
 
       fetchMetadatas(offer?.metadataURL);
     }
-  }, [offer]);
+  }, [offer, storage]);
 
   useEffect(() => {
     if (initialMetadatas) {

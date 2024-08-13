@@ -6,7 +6,6 @@ import RejectAd from "@/components/features/offer/adValidation/modals/RejectAd";
 import { ExclamationCircleIcon } from "@heroicons/react/24/solid";
 import ResponsiveTooltip from "@/components/ui/ResponsiveTooltip";
 import { CheckIcon, ClockIcon, XIcon } from "lucide-react";
-import { AdProposal } from "@/types/graphql";
 
 const AdValidation = ({
   offer,

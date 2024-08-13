@@ -4,12 +4,17 @@ import Link from "next/link";
 import Meta from "@/components/Meta";
 import { ethers } from "ethers";
 import Image from "next/image";
-import { useContract, useContractWrite, useContractRead, useAddress } from "@thirdweb-dev/react";
+import {
+  useContract,
+  useContractWrite,
+  useContractRead,
+  useAddress,
+  useStorage
+} from "@thirdweb-dev/react";
 import Tippy from "@tippyjs/react";
 import OfferSkeleton from "@/components/ui/skeletons/OfferSkeleton";
 import { fetchOffer } from "@/utils/graphql/fetchOffer";
 import Integration from "@/components/features/offer/offerManagement/Integration";
-import { ThirdwebStorage } from "@thirdweb-dev/storage";
 import * as Accordion from "@radix-ui/react-accordion";
 import { ChevronDownIcon } from "@heroicons/react/24/solid";
 import { ExclamationCircleIcon } from "@heroicons/react/24/solid";
@@ -28,13 +33,14 @@ import { BadgePercentIcon, BlocksIcon, RefreshCwIcon } from "lucide-react";
 import Disable from "@/components/ui/misc/Disable";
 import TokenCard from "@/components/ui/cards/TokenCard";
 import { addLineBreaks } from "@/utils/misc/addLineBreaks";
-import { clientId } from "@/data/services/client";
 
 const Offer = () => {
   const router = useRouter();
+  const storage = useStorage();
 
   const offerId = router.query?.offerId;
   const chainId = router.query?.chainName as string;
+
   const [refusedValidatedAdModal, setRefusedValidatedAdModal] = useState<boolean>(false);
   const [offerData, setOfferData] = useState<any>(null);
   const [royalties, setRoyalties] = useState<number | null>(null);
@@ -223,7 +229,8 @@ const Offer = () => {
 
   useEffect(() => {
     const fetchImage = async (imageUrlLocal) => {
-      const storage = new ThirdwebStorage({ clientId: clientId });
+      if (!storage) return;
+
       try {
         const ipfsUrl = await storage.resolveScheme(imageUrlLocal);
         setImageUrl(ipfsUrl);
@@ -235,7 +242,7 @@ const Offer = () => {
     if (imageUrl && typeof imageUrl === "string" && imageUrl.startsWith("ipfs://")) {
       fetchImage(imageUrl);
     }
-  }, [imageUrl]);
+  }, [imageUrl, storage]);
 
   useEffect(() => {
     if (chainId) {

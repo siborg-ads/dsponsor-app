@@ -6,13 +6,11 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "tippy.js/dist/tippy.css";
 import TimerCard from "../timer/TimerCard";
-import { shortenAddress, useAddress } from "@thirdweb-dev/react";
+import { shortenAddress, useAddress, useStorage } from "@thirdweb-dev/react";
 import { getAddress, formatUnits } from "ethers/lib/utils";
 import { ExclamationCircleIcon } from "@heroicons/react/24/solid";
 import ResponsiveTooltip from "@/components/ui/ResponsiveTooltip";
-import { ThirdwebStorage } from "@thirdweb-dev/storage";
 import { BigNumber } from "ethers";
-import { clientId } from "@/data/services/client";
 
 const TokenCard = ({
   item,
@@ -63,6 +61,7 @@ const TokenCard = ({
   const [imageUrl, setImageUrl] = useState<string | null>(null);
 
   const address = useAddress();
+  const storage = useStorage();
 
   useEffect(() => {
     if (offers) {
@@ -355,8 +354,7 @@ const TokenCard = ({
   useEffect(() => {
     const fetchImage = async (image) => {
       // get url image instead of ipfs:// starting url
-      if (image?.startsWith("ipfs://")) {
-        const storage = new ThirdwebStorage({ clientId: clientId });
+      if (storage && image?.startsWith("ipfs://")) {
         const ipfsUrl = await storage.resolveScheme(image);
         setImageUrl(ipfsUrl);
       } else {
@@ -369,7 +367,7 @@ const TokenCard = ({
     } else {
       setImageUrl(null);
     }
-  }, [image]);
+  }, [image, storage]);
 
   const offerItemCard = (
     <article className="relative h-full">
