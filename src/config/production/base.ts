@@ -5,6 +5,7 @@ import { Base } from "@thirdweb-dev/chains";
 const prodBase = {
   chainId: 8453,
   chainName: "base",
+  gaslessBalanceThreshold: 1000000000000000, // 0.001 ETH
   chainNameProvider: "base",
   chainObject: Base,
   network: Network.BASE_MAINNET,
@@ -46,7 +47,8 @@ const prodBase = {
   },
   features: {
     openZeppelinDefender: {
-      relayerURL: ""
+      relayerURL:
+        "https://api.defender.openzeppelin.com/actions/803b194c-5e89-4020-b4fa-e3934128f3ef/runs/webhook/59ce7c60-9e0b-4c87-8910-a8b13e6f725e/47dJ2PR4Ffh6nhbHYUroA5"
     },
     crossmint: {
       enabled: false,
