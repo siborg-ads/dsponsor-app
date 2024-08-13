@@ -436,6 +436,7 @@ const OwnedTokens = ({ data, isOwner, isLoading, fetchCreatedData }) => {
             successFullUploadModal={successFullUploadModal}
             isLoadingButton={isLoadingButton}
             multipleAdsSubmission={true}
+            expectedMultipleAds={selectedItems?.length}
           />
         </div>
       )}
