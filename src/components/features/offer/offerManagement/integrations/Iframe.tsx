@@ -172,11 +172,13 @@ const Iframe = ({ chainId, offerId }) => {
 
       <Divider className="my-4" />
 
-      <div className="flex items-center">
-        <span className="dark:text-jacarta-100 text-jacarta-100 mr-8">Select display type : </span>
+      <div className="flex md:items-center items-start flex-col md:flex-row">
+        <span className="dark:text-jacarta-100 text-jacarta-100 md:mr-8 mb-4">
+          Select display type :{" "}
+        </span>
 
         <RadioGroup.Root
-          className="flex items-center gap-8"
+          className="flex md:items-center gap-4 md:gap-8 flex-col items-start md:flex-row"
           onValueChange={(value) => setDisplayType(value)}
           value={displayType}
         >
@@ -238,7 +240,8 @@ const Iframe = ({ chainId, offerId }) => {
             </Tippy>
           </button>
         </div>
-        <code className="text-sm">
+
+        <code className="text-sm flex overflow-x-scroll hide-scrollbar flex-col items-start">
           {`<iframe sandbox="allow-same-origin allow-scripts allow-popups allow-top-navigation-by-user-activation" src="${iframeSrc}" style="width:100%; ${customHeight ? `height:${height};` : "height:100%;"} overflow:hidden; border: none;"></iframe>`}
         </code>
       </div>
