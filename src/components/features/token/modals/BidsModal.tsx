@@ -904,7 +904,7 @@ const BidsModal = ({
                   </ResponsiveTooltip>
                 </div>
 
-                {canPayWithCrossmint && (
+                {canPayWithCrossmint && address && (
                   <>
                     <div className="flex items-center justify-center w-full">
                       <div className="flex-grow border-t border-gray-300"></div>
