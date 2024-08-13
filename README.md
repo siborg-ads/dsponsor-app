@@ -2,57 +2,7 @@
 
 ## Table of contents
 
-- [DSponsor Dashboard](#dsponsor-dashboard)
-  - [Table of contents](#table-of-contents)
-  - [Installation](#installation)
-    - [Clone the repository](#clone-the-repository)
-    - [Navigate into the project directory](#navigate-into-the-project-directory)
-    - [Install dependencies](#install-dependencies)
-    - [Configuration](#configuration)
-  - [Environment](#environment)
-  - [Project Structure](#project-structure)
-    - [`public/`](#public)
-    - [`src/`](#src)
-      - [`abi/`](#abi)
-      - [`components/`](#components)
-      - [`data/`](#data)
-      - [Configuring features for Production or Testing](#configuring-featurests-for-production-or-testing)
-      - [Environment Configuration](#environment-configuration)
-      - [`.env.local`](#envlocal-configuration)
-      - [`hooks/`](#hooks)
-      - [`lib/`](#lib)
-      - [`pages/`](#pages)
-      - [`styles/`](#styles)
-      - [`utils/`](#utils)
-      - [`config/`](#config)
-      - [`contexts/`](#contexts)
-      - [`middleware.ts`](#middlewarets)
-  - [Development Commands](#development-commands)
-  - [Naming Conventions](#naming-conventions)
-  - [Thirdweb Integration](#thirdweb-integration)
-    - [Key Features of Thirdweb](#key-features-of-thirdweb)
-    - [How Thirdweb is Used in This Application](#how-thirdweb-is-used-in-this-application)
-  - [Crossmint Integration](#crossmint-integration)
-    - [Key Features of the Integration](#key-features-of-the-integration)
-    - [How the Integration is Used in This Application](#how-the-integration-is-used-in-this-application)
-  - [Contribution](#contribution)
-  - [GraphQL Precision](#graphql-precision)
-    - [`executeQuery` Function](#executequery-function)
-      - [Function Definition](#function-definition)
-    - [Explanation](#explanation)
-    - [Example Usage of `executeQuery`](#example-usage-of-executequery)
-    - [Explanation](#explanation-1)
-    - [Optimizing Requests](#optimizing-requests)
-      - [Example](#example)
-      - [Explanation](#explanation-2)
-    - [GraphQL Subgraph Definitions](#graphql-subgraph-definitions)
-      - [Essentials Concepts](#essentials-concepts)
-        - [1. **Minting**](#1-minting)
-        - [2. **Primary Market**](#2-primary-market)
-        - [3. **Secondary Market**](#3-secondary-market)
-        - [**Summary**](#summary)
-      - [Subtilities](#subtilities)
-      - [Objects](#objects)
+
 
 ## Installation
 
@@ -76,97 +26,7 @@ cd dsponsor-dashboard
 yarn install
 ```
 
-### Configuration
-
-To learn more about how to switch from testnet to production, check this section: [Environment Configuration](#environment-configuration).
-
-## Environment
-
-The project operates in several environments:
-
-- **Development**: Local development environment. Start with `yarn dev`.
-- **[Testnet](https://app.testnet.dsponsor.com)**: Preview environment on the testnet blockchain network.
-- **[Staging](https://app.staging.dsponsor.com)**: Preview environment on the production blockchain network.
-- **[Production](https://app.dsponsor.com)**: Official live application.
-
-## Project Structure
-
-The application is organized to be modular and maintainable. Each folder in `src/` has a specific role and is structured to facilitate scalability.
-
-### `public/`
-
-Contains static files like images, fonts, and other assets that are publicly accessible.
-
-**Examples:**
-
-- `favicon.ico`: The favicon for the application.
-- `images/siborg-ads.png`: The SiBorg Ads logo.
-
-### `src/`
-
-The source folder contains all the application code.
-
-#### `abi/`
-
-Contains the ABIs (Application Binary Interfaces) for smart contracts that the application interacts with.
-
-**Examples:**
-
-- `dsponsorAdmin.json`: ABI file for `DSponsorAdmin` smart contract.
-
-### Goal:
-
-The `abi/` folder centralizes all smart contract ABIs, making it easier to manage and update contract interactions. By keeping these files in a dedicated folder, the project maintains a clear separation between frontend logic and blockchain-specific configurations.
-
-#### `components/`
-
-Contains all the reusable components for building the UI.
-
-- **`ui/`**: Reusable UI components, such as buttons, inputs, and modals.
-
-  **Examples:**
-
-  - `Button.tsx`: A reusable button component.
-  - `Modal.tsx`: A reusable modal component.
-
-  ### Goal:
-
-  The `ui/` subfolder aims to create a consistent and uniform UI across the application. By centralizing reusable UI elements, the project ensures that styling and functionality remain consistent, reducing the need for duplicated code.
-
-- **`layout/`**: Components related to the overall layout of the application.
-
-  **Examples:**
-
-  - `Header.tsx`: The global header component.
-  - `Footer.tsx`: The global footer component.
-  - `Token.tsx`: The token page component.
-
-  ### Goal:
-
-  The `layout/` subfolder is dedicated to global components that define the structure and layout of the application. By separating layout components, the project can easily modify the application’s structure without affecting feature-specific code.
-
-- **`features/`**: Components that are specific to certain features or pages.
-
-  **Examples:**
-
-  - `OfferName.tsx`: A component used to create an offer by requesting the offer's name.
-  - `OwnedTokens.tsx`: A component that lists every tokens owned by the user.
-
-  ### Goal:
-
-  The `features/` subfolder organizes components by specific features or pages, promoting modular development. This approach ensures that feature-related code is easy to locate and modify, facilitating the addition of new features or updates to existing ones.
-
-#### `data/`
-
-Contains static or mock data used throughout the application.
-
-**Examples:**
-
-- `features.ts`: A file containing feature flags for controlling application functionality.
-
-### Goal:
-
-The `data/` folder centralizes static and mock data to simplify testing and development. By maintaining all static data in one place, the project can easily switch between live and mock data sources, which is particularly useful during development and testing phases.
+## Configuration
 
 ### Configuring `features.ts` for Production or Testing
 
@@ -210,78 +70,6 @@ To manage different configurations for development and production environments, 
   NEXT_PUBLIC_CONFIG_MODE=dev
 
   ```
-
-#### `hooks/`
-
-Custom Hooks for managing state, effects, or other reusable logic.
-
-**Examples:**
-
-- `useChainContext.ts`: Provides access to the application's global chain state, managing all chain-related data and operations.
-- `useSwitchChainContexte.ts`: Custom Hook for switching between chains, enabling a multichain infrastructure within the application.
-
-### Goal:
-
-The `hooks/` folder encourages the reuse of logic across different components. Custom Hooks encapsulate state management and side effects, leading to cleaner and more maintainable components.
-
-#### `lib/`
-
-Contains reusable code that is not specific to React, such as API calls, cookie management, and utility functions.
-
-**Examples:**
-
-- `utils.ts`: Merge classnames using tailwind merge.
-
-### Goal:
-
-The `lib/` folder houses utilities and libraries that can be used across the application. By isolating these functions, the project promotes DRY (Don’t Repeat Yourself) principles and ensures that common functionalities are easily accessible and maintainable.
-
-#### `pages/`
-
-Contains the application's pages and API routes.
-
-**Examples:**
-
-- `index.tsx`: The homepage of the application.
-- `profile/[address].tsx`: Dynamic route for user's profile.
-- `api/auth/[...thirdweb].ts`: An API route for handling authentication requests using Thirdweb.
-
-### Goal:
-
-The `pages/` folder organizes all the application's routes and page-level components. Each file represents a specific route, which Next.js uses to generate pages. This structure makes it easy to manage navigation and routing within the application.
-
-#### `styles/`
-
-Contains global style files and theme-related configurations.
-
-**Examples:**
-
-- `globals.css`: Global CSS styles for the application.
-
-### Goal:
-
-The `styles/` folder consolidates all styling configurations, ensuring consistent design across the application. By managing global styles and themes centrally, the project simplifies the process of applying and updating styles throughout the application.
-
-#### `utils/`
-
-Utility functions that are used throughout the application. They should be documented using JSDoc to ensure clarity and maintainability.
-
-**Examples:**
-
-- `dates/renderDateToHumanString.ts`: Converts a date into a human-readable string representing the time elapsed since that date.
-- `prices/formatAndRound.ts`: Formats and rounds a numeric value to an appropriate number of decimal places.
-
-### Goal:
-
-The `utils/` folder collects common utility functions to avoid redundancy and promote code reuse. By centralizing these functions, the project ensures that commonly used logic is standardized and easy to update.
-
-#### `config/`
-
-Configuration files, such as environment-specific settings or API endpoints.
-
-**Examples:**
-
-The `config/` folder includes configuration files that manage environment-specific settings for different blockchain networks. One such file is used to define settings for a specific chain, such as the Base network. Below is an overview of the Base config file (`production/prod.ts`) and how to use it.
 
 #### Example Configuration File
 
@@ -372,15 +160,194 @@ export default prodBase;
 - **`smartContracts`**: Configuration details for various smart contracts deployed on the chain, including their addresses, ABIs, and other relevant details.
 - **`features`**: Optional features specific to the chain, such as configurations for external services like crossmint (allowing payment with cards).
 
-#### Usage
+#### ThirdWeb Configuration
 
-1. **Import the Configuration**: Include the configuration file in your application where needed.
+To configure ThirdWeb, you need to use a client ID. This ID is essential for authenticating your application with ThirdWeb's services. The client ID can be set using an environment variable, allowing you to keep sensitive information out of your source code.
 
-2. **Access Configuration Values**: Utilize the imported configuration to interact with blockchain networks and smart contracts. For example, you can use the `rpcURL` to set up a Web3 provider and access the `smartContracts` for interacting with deployed contracts.
+Here’s how to configure the ThirdWeb client in your Next.js application:
 
-3. **Adjust for Different Environments**: Create and maintain separate configuration files for different environments (e.g., development, production) and switch between them based on the deployment environment.
+```javascript
+import { createThirdwebClient } from "thirdweb";
 
-By organizing configurations this way, your application can easily adapt to various blockchain networks and deployment settings.
+export const clientId =
+  process.env.NEXT_PUBLIC_THIRDWEB_CLIENT_ID;
+
+const client = createThirdwebClient({
+  clientId: process.env.NEXT_PUBLIC_THIRDWEB_CLIENT_ID
+});
+
+export { client };
+export default client;
+```
+
+1. **Environment Variable Setup**:
+The clientId is retrieved from an environment variable NEXT_PUBLIC_THIRDWEB_CLIENT_ID. To set this up, create a .env.local file in the root directory of your Next.js project with the following content:
+
+```env
+NEXT_PUBLIC_THIRDWEB_CLIENT_ID=your_real_client_id_here
+```
+
+Replace your_real_client_id_here with the actual client ID provided by ThirdWeb.
+
+## Environment
+
+The project operates in several environments:
+
+- **Development**: Local development environment. Start with `yarn dev`.
+- **[Testnet](https://app.testnet.dsponsor.com)**: Preview environment on the testnet blockchain network.
+- **[Staging](https://app.staging.dsponsor.com)**: Preview environment on the production blockchain network.
+- **[Production](https://app.dsponsor.com)**: Official live application.
+
+## Project Structure
+
+The application is organized to be modular and maintainable. Each folder in `src/` has a specific role and is structured to facilitate scalability.
+
+### `public/`
+
+Contains static files like images, fonts, and other assets that are publicly accessible.
+
+**Examples:**
+
+- `favicon.ico`: The favicon for the application.
+- `images/siborg-ads.png`: The SiBorg Ads logo.
+
+### `src/`
+
+The source folder contains all the application code.
+
+#### `abi/`
+
+Contains the ABIs (Application Binary Interfaces) for smart contracts that the application interacts with.
+
+**Examples:**
+
+- `dsponsorAdmin.json`: ABI file for `DSponsorAdmin` smart contract.
+
+### Goal:
+
+The `abi/` folder centralizes all smart contract ABIs, making it easier to manage and update contract interactions. By keeping these files in a dedicated folder, the project maintains a clear separation between frontend logic and blockchain-specific configurations.
+
+#### `components/`
+
+Contains all the reusable components for building the UI.
+
+- **`ui/`**: Reusable UI components, such as buttons, inputs, and modals.
+
+  **Examples:**
+
+  - `Button.tsx`: A reusable button component.
+  - `Modal.tsx`: A reusable modal component.
+
+  ### Goal:
+
+  The `ui/` subfolder aims to create a consistent and uniform UI across the application. By centralizing reusable UI elements, the project ensures that styling and functionality remain consistent, reducing the need for duplicated code.
+
+- **`layout/`**: Components related to the overall layout of the application.
+
+  **Examples:**
+
+  - `Header.tsx`: The global header component.
+  - `Footer.tsx`: The global footer component.
+  - `Token.tsx`: The token page component.
+
+  ### Goal:
+
+  The `layout/` subfolder is dedicated to global components that define the structure and layout of the application. By separating layout components, the project can easily modify the application’s structure without affecting feature-specific code.
+
+- **`features/`**: Components that are specific to certain features or pages.
+
+  **Examples:**
+
+  - `OfferName.tsx`: A component used to create an offer by requesting the offer's name.
+  - `OwnedTokens.tsx`: A component that lists every tokens owned by the user.
+
+  ### Goal:
+
+  The `features/` subfolder organizes components by specific features or pages, promoting modular development. This approach ensures that feature-related code is easy to locate and modify, facilitating the addition of new features or updates to existing ones.
+
+#### `data/`
+
+Contains static or mock data used throughout the application.
+
+**Examples:**
+
+- `features.ts`: A file containing feature flags for controlling application functionality.
+
+### Goal:
+
+The `data/` folder centralizes static and mock data to simplify testing and development. By maintaining all static data in one place, the project can easily switch between live and mock data sources, which is particularly useful during development and testing phases.
+
+#### `hooks/`
+
+Custom Hooks for managing state, effects, or other reusable logic.
+
+**Examples:**
+
+- `useChainContext.ts`: Provides access to the application's global chain state, managing all chain-related data and operations.
+- `useSwitchChainContexte.ts`: Custom Hook for switching between chains, enabling a multichain infrastructure within the application.
+
+### Goal:
+
+The `hooks/` folder encourages the reuse of logic across different components. Custom Hooks encapsulate state management and side effects, leading to cleaner and more maintainable components.
+
+#### `lib/`
+
+Contains reusable code that is not specific to React, such as API calls, cookie management, and utility functions.
+
+**Examples:**
+
+- `utils.ts`: Merge classnames using tailwind merge.
+
+### Goal:
+
+The `lib/` folder houses utilities and libraries that can be used across the application. By isolating these functions, the project promotes DRY (Don’t Repeat Yourself) principles and ensures that common functionalities are easily accessible and maintainable.
+
+#### `pages/`
+
+Contains the application's pages and API routes.
+
+**Examples:**
+
+- `index.tsx`: The homepage of the application.
+- `profile/[address].tsx`: Dynamic route for user's profile.
+- `api/auth/[...thirdweb].ts`: An API route for handling authentication requests using Thirdweb.
+
+### Goal:
+
+The `pages/` folder organizes all the application's routes and page-level components. Each file represents a specific route, which Next.js uses to generate pages. This structure makes it easy to manage navigation and routing within the application.
+
+#### `styles/`
+
+Contains global style files and theme-related configurations.
+
+**Examples:**
+
+- `globals.css`: Global CSS styles for the application.
+
+### Goal:
+
+The `styles/` folder consolidates all styling configurations, ensuring consistent design across the application. By managing global styles and themes centrally, the project simplifies the process of applying and updating styles throughout the application.
+
+#### `utils/`
+
+Utility functions that are used throughout the application. They should be documented using JSDoc to ensure clarity and maintainability.
+
+**Examples:**
+
+- `dates/renderDateToHumanString.ts`: Converts a date into a human-readable string representing the time elapsed since that date.
+- `prices/formatAndRound.ts`: Formats and rounds a numeric value to an appropriate number of decimal places.
+
+### Goal:
+
+The `utils/` folder collects common utility functions to avoid redundancy and promote code reuse. By centralizing these functions, the project ensures that commonly used logic is standardized and easy to update.
+
+#### `config/`
+
+Configuration files, such as environment-specific settings or API endpoints.
+
+**Examples:**
+
+The `config/` folder includes configuration files that manage environment-specific settings for different blockchain networks. One such file is used to define settings for a specific chain, such as the Base network. Below is an overview of the Base config file (`production/prod.ts`) and how to use it.
 
 ### Goal:
 
