@@ -489,6 +489,7 @@ const CreateOffer = () => {
             errors={errors}
             successFullUpload={successFullUpload}
             address={minterAddress as Address}
+            createOffer={true}
             buttonTitle="Create ad space offer"
             modalTitle="Ad Space Offer "
             successFullUploadModal={successFullUploadModal}
