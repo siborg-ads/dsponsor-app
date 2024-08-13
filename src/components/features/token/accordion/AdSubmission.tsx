@@ -46,7 +46,8 @@ const AdSubmission = ({
   adSubmission,
   isLoadingButton,
   multipleAdsSubmission,
-  createOffer
+  createOffer,
+  expectedMultipleAds
 }: {
   approvalForAllToken?: boolean;
   handleApprove?: any;
@@ -84,6 +85,7 @@ const AdSubmission = ({
   isLoadingButton: boolean;
   multipleAdsSubmission?: boolean;
   createOffer?: boolean;
+  expectedMultipleAds?: number;
 }) => {
   const [imageRatios, setImageRatios] = React.useState<any[]>([]);
   const [isLoadingApproveButton, setIsLoadingApproveButton] = React.useState<boolean>(false);
@@ -182,7 +184,7 @@ const AdSubmission = ({
             <div className="flex flex-wrap gap-4 md:flex-row flex-col w-full">
               <div className="flex items-center justify-between gap-2 w-full">
                 <span className="block dark:text-jacarta-100">Link </span>
-                <span className="dark:text-white font-semibold text-white">
+                <span className="font-semibold text-red">
                   {!link || link === "" ? "No link provided" : link}
                 </span>
               </div>
@@ -280,42 +282,53 @@ const AdSubmission = ({
           <div className="modal-body p-6 flex gap-4">
             <div className="flex flex-wrap gap-4 md:flex-row flex-col w-full">
               <div className="flex items-center justify-between gap-2 w-full">
-                <span className="block dark:text-jacarta-100">Link </span>
-                <span className="dark:text-white font-semibold text-white">
-                  {link ?? "No link provided"}
+                <span className="block dark:text-jacarta-100">Link</span>
+                <span className="font-semibold text-red">
+                  {link || link !== "" ? link : "No link provided"}
                 </span>
               </div>
 
-              {previewImage?.map((image: any, index: number) => (
-                <div className="flex flex-col gap-2 w-full" key={index}>
-                  <div className="flex items-center gap-2">
-                    <span className="block dark:text-jacarta-100">
-                      Image {index + 1} - (
-                      {imageRatios[index]
-                        ? `${imageRatios[index][0]}:${imageRatios[index][1]}`
-                        : "N/A"}
-                      )
-                    </span>
-                  </div>
-                  <div className="flex flex-col justify-center items-center gap-2">
-                    <Image
-                      src={image}
-                      width={1600}
-                      height={380}
-                      className="w-full h-auto bg-jacarta-200"
-                      alt="Preview image"
-                      style={{
-                        objectFit: "contain",
-                        objectPosition: "center",
-                        aspectRatio:
-                          imageRatios?.length > 0
-                            ? `${imageRatios[index] ? imageRatios[index][0] : 1}/${imageRatios[index] ? imageRatios[index][1] : 1}`
-                            : "1/1"
-                      }}
-                    />
-                  </div>
+              {previewImage?.length === 0 && (
+                <div className="flex flex-col gap-2 w-full">
+                  <span className="font-semibold text-red">No images provided</span>
                 </div>
-              ))}
+              )}
+
+              {(previewImage?.length as number) > 0 &&
+                Array.from({ length: expectedMultipleAds as number })?.map((_, index: number) => (
+                  <div className="flex flex-col gap-2 w-full" key={index}>
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="block dark:text-jacarta-100">
+                        Image {index + 1} - (
+                        {imageRatios[index]
+                          ? `${imageRatios[index][0]}:${imageRatios[index][1]}`
+                          : "N/A"}
+                        )
+                      </span>
+
+                      <span className="font-semibold text-red">
+                        {!previewImage?.[index] && "No image provided"}
+                      </span>
+                    </div>
+                    <div className="flex flex-col justify-center items-center gap-2">
+                      <Image
+                        src={previewImage?.[index] as string}
+                        width={1600}
+                        height={380}
+                        className="w-full h-auto bg-jacarta-200"
+                        alt="Preview image"
+                        style={{
+                          objectFit: "contain",
+                          objectPosition: "center",
+                          aspectRatio:
+                            imageRatios?.length > 0
+                              ? `${imageRatios[index] ? imageRatios[index][0] : 1}/${imageRatios[index] ? imageRatios[index][1] : 1}`
+                              : "1/1"
+                        }}
+                      />
+                    </div>
+                  </div>
+                ))}
             </div>
           </div>
 
@@ -333,8 +346,19 @@ const AdSubmission = ({
                     error: "Transaction rejected 🤯"
                   });
                 }}
-                className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate ? "!btn-disabled !cursor-not-allowed !text-black" : "!bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer"} `}
-                isDisabled={!validate || isLoadingButton}
+                className={`!rounded-full !py-3 !px-8 !text-center !font-semibold !bg-primaryPurple hover:!bg-opacity-80 !text-white !transition-all ${
+                  (!validate ||
+                    isLoadingButton ||
+                    previewImage?.length === 0 ||
+                    previewImage?.some((image) => !image)) &&
+                  "!btn-disabled !cursor-not-allowed hover:!bg-opacity-30 !bg-white !bg-opacity-30"
+                }`}
+                isDisabled={
+                  !validate ||
+                  isLoadingButton ||
+                  previewImage?.length === 0 ||
+                  previewImage?.some((image) => !image)
+                }
               >
                 {isLoadingButton ? <Spinner size="sm" color="default" /> : buttonTitle}
               </Web3Button>

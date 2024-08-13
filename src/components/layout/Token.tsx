@@ -1340,22 +1340,9 @@ const Token = () => {
       isValid = false;
     }
 
-    if (!link || !isValidURL(link)) {
-      newErrors.linkError = "The link is missing or invalid.";
-      isValid = false;
-    }
     setValidate(isValid);
     setErrors(newErrors);
     return isValid;
-  };
-
-  const isValidURL = (url: string) => {
-    try {
-      new URL(url);
-      return true;
-    } catch (e) {
-      return false;
-    }
   };
 
   const handleLogoUpload = (file, index) => {
@@ -1545,11 +1532,27 @@ const Token = () => {
     try {
       setIsLoadingButton(true);
 
+      let offerIdParams;
+      let tokenIdParams;
+      let adParams;
+      let dataParams;
+      if (link && link !== "") {
+        offerIdParams = submitAdFormated?.offerId;
+        tokenIdParams = submitAdFormated?.tokenId;
+        adParams = submitAdFormated?.params;
+        dataParams = [uploadUrl[0], link];
+      } else {
+        offerIdParams = submitAdFormated?.offerId?.slice(0, -1);
+        tokenIdParams = submitAdFormated?.tokenId?.slice(0, -1);
+        adParams = submitAdFormated?.params?.filter((param) => param !== "linkURL");
+        dataParams = [uploadUrl[0]];
+      }
+
       const argsAdSubmited = {
-        offerId: submitAdFormated?.offerId,
-        tokenId: submitAdFormated?.tokenId,
-        adParameters: submitAdFormated?.params,
-        data: [uploadUrl[0], link]
+        offerId:  offerIdParams,
+        tokenId: tokenIdParams,
+        adParameters: adParams,
+        data: dataParams
       };
 
       const functionWithPossibleArgs = Object.values(argsAdSubmited);
