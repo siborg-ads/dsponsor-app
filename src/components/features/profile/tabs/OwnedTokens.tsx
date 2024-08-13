@@ -91,23 +91,9 @@ const OwnedTokens = ({ data, isOwner, isLoading, fetchCreatedData }) => {
       isValid = false;
     }
 
-    if (!link || !isValidURL(link)) {
-      newErrors.linkError = "The link is missing or invalid.";
-      isValid = false;
-    }
-
     setValidate(isValid);
     setErrors(newErrors);
   }, [files, imageURLSteps.length, link]);
-
-  const isValidURL = (url) => {
-    try {
-      new URL(url);
-      return true;
-    } catch (e) {
-      return false;
-    }
-  };
 
   const handleSliderForm = () => {
     setShowSliderForm(!showSliderForm);

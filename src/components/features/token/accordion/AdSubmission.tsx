@@ -180,14 +180,17 @@ const AdSubmission = ({
               <div className="flex items-center justify-between gap-2 w-full">
                 <span className="block dark:text-jacarta-100">Link </span>
                 <span className="dark:text-white font-semibold text-white">
-                  {link ?? "No link provided"}
+                  {!link || link === "" ? "No link provided" : link}
                 </span>
               </div>
 
               <div className="flex flex-col gap-2 w-full">
-                <div className="flex items-center gap-2">
+                <div className="flex items-center justify-between gap-2">
                   <span className="block dark:text-jacarta-100">
                     Image ({imageRatios[0] ? `${imageRatios[0][0]}:${imageRatios[0][1]}` : "N/A"})
+                  </span>
+                  <span className="font-semibold text-red">
+                    {(errors.imageError || previewImage?.length === 0) && "No image provided"}
                   </span>
                 </div>
                 <div className="flex flex-col justify-center items-center gap-2 border border-dashed bg-jacarta-100 bg-opacity-10">
