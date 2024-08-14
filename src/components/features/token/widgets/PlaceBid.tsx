@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import Timer from "@/components/ui/timer/Timer";
 import BidsModal from "@/components/features/token/modals/BidsModal";
-import { BigNumber, ethers } from "ethers";
+import { BigNumber } from "ethers";
 import { getAddress } from "ethers/lib/utils";
 import { Web3Button } from "@thirdweb-dev/react";
 import config from "@/config/config";
@@ -22,7 +22,6 @@ const PlaceBid = ({
   handleApprove,
   price,
   currencyTokenDecimals,
-  checkUserBalance,
   allowanceTrue,
   chainId,
   isLoadingButton,
@@ -33,13 +32,14 @@ const PlaceBid = ({
   offer,
   referrer,
   isValidId,
-  tokenEtherPrice,
   amountInEthWithSlippage,
   displayedPrice,
   setDisplayedPrice,
   showBidsModal,
   setShowBidsModal,
-  fetchOffers
+  fetchOffers,
+  hasEnoughBalance,
+  hasEnoughBalanceForNative
 }: {
   setAmountToApprove: React.Dispatch<React.SetStateAction<bigint | null>>;
   bidsAmount: string;
@@ -60,8 +60,6 @@ const PlaceBid = ({
   handleApprove: () => void;
   price: string;
   currencyTokenDecimals: number;
-  // eslint-disable-next-line no-unused-vars
-  checkUserBalance: (tokenAddressBalance: any, priceToken: any, decimals: number) => boolean;
   allowanceTrue: boolean;
   chainId: number;
   isLoadingButton: boolean;
@@ -72,13 +70,14 @@ const PlaceBid = ({
   offer: any;
   referrer: { address: Address };
   isValidId: boolean;
-  tokenEtherPrice: string;
   amountInEthWithSlippage: BigNumber;
   displayedPrice: string;
   setDisplayedPrice: React.Dispatch<React.SetStateAction<number | null>>;
   showBidsModal: boolean;
   setShowBidsModal: React.Dispatch<React.SetStateAction<boolean>>;
   fetchOffers: () => void;
+  hasEnoughBalance: boolean;
+  hasEnoughBalanceForNative: boolean;
 }) => {
   const [bids, setBids] = useState<any>(null);
 
@@ -207,7 +206,6 @@ const PlaceBid = ({
             setSuccessFullBid={setSuccessFullBid}
             handleApprove={handleApprove}
             allowanceTrue={allowanceTrue}
-            checkUserBalance={checkUserBalance}
             dsponsorMpContract={dsponsorMpContract}
             toggleBidsModal={toggleBidsModal}
             currencyTokenDecimals={currencyTokenDecimals}
@@ -222,10 +220,11 @@ const PlaceBid = ({
             offer={offer}
             referrer={referrer}
             currencyContract={currencyContract}
-            tokenEtherPrice={tokenEtherPrice}
             amountInEthWithSlippage={amountInEthWithSlippage}
             displayedPrice={displayedPrice}
             setDisplayedPrice={setDisplayedPrice}
+            hasEnoughBalance={hasEnoughBalance}
+            hasEnoughBalanceForNative={hasEnoughBalanceForNative}
           />
         </div>
       )}

@@ -30,7 +30,6 @@ const BidsModal = ({
   toggleBidsModal,
   marketplaceListings,
   currencySymbol,
-  checkUserBalance,
   tokenBalance,
   allowanceTrue,
   currencyTokenDecimals,
@@ -43,11 +42,12 @@ const BidsModal = ({
   offer,
   referrer,
   showBidsModal,
-  tokenEtherPrice,
   amountInEthWithSlippage,
   displayedPrice,
   setDisplayedPrice,
-  fetchOffers
+  fetchOffers,
+  hasEnoughBalance,
+  hasEnoughBalanceForNative
 }: {
   setAmountToApprove: any;
   bidsAmount: string;
@@ -60,7 +60,6 @@ const BidsModal = ({
   toggleBidsModal: any;
   marketplaceListings: any;
   currencySymbol: string;
-  checkUserBalance: any;
   tokenBalance: any;
   allowanceTrue: any;
   currencyTokenDecimals: number;
@@ -73,11 +72,12 @@ const BidsModal = ({
   offer: any;
   referrer: any;
   showBidsModal: boolean;
-  tokenEtherPrice: string;
   amountInEthWithSlippage: any;
   displayedPrice: string;
   setDisplayedPrice: any;
   fetchOffers: any;
+  hasEnoughBalance: boolean;
+  hasEnoughBalanceForNative: boolean;
 }) => {
   const [initialIntPrice, setInitialIntPrice] = useState<string | null>(null);
   const [isLoadingApproveButton, setIsLoadingApproveButton] = useState(false);
@@ -145,12 +145,12 @@ const BidsModal = ({
   ]);
 
   useEffect(() => {
-    if (insufficentBalance && !canPayWithNativeToken) {
+    if (!hasEnoughBalance && !hasEnoughBalanceForNative) {
       setNotEnoughFunds(true);
     } else {
       setNotEnoughFunds(false);
     }
-  }, [insufficentBalance, canPayWithNativeToken]);
+  }, [hasEnoughBalance, hasEnoughBalanceForNative]);
 
   useEffect(() => {
     if (
@@ -313,18 +313,11 @@ const BidsModal = ({
   };
 
   const handleSubmitWithNative = async () => {
-    const hasEnoughBalance = checkUserBalance(tokenBalance, bidsAmount, currencyTokenDecimals);
-
     if (!hasEnoughBalance && !canPayWithNativeToken) {
-      console.error("Not enough balance to confirm checkout");
-      throw new Error("Not enough balance to confirm checkout");
-    }
-
-    const hasEnoughBalanceForNative = checkUserBalance(nativeTokenBalance, tokenEtherPrice, 18);
-
-    if (!hasEnoughBalanceForNative) {
-      console.error("Not enough balance to confirm checkout");
-      throw new Error("Not enough balance to confirm checkout");
+      if (!hasEnoughBalanceForNative) {
+        console.error("Not enough balance to confirm checkout");
+        throw new Error("Not enough balance to confirm checkout");
+      }
     }
 
     try {
@@ -368,11 +361,11 @@ const BidsModal = ({
   }, [bidsAmount, chainConfig, chainId, currencyTokenDecimals]);
 
   const handleSubmit = async () => {
-    const hasEnoughBalance = checkUserBalance(tokenBalance, bidsAmount, currencyTokenDecimals);
     if (!hasEnoughBalance) {
       console.error("Not enough balance for approval.");
       throw new Error("Not enough balance for approval.");
     }
+
     try {
       setIsLoadingButton(true);
       const precision = bidsAmount.split(".")[1]?.length ?? 0;
@@ -821,12 +814,20 @@ const BidsModal = ({
                               });
                           }}
                           className={`!rounded-full !w-full !py-3 !px-8 !text-center !font-semibold !text-black !transition-all ${
-                            !isPriceGood || !checkTerms || allowanceTrue || isLoadingBuyButton
+                            !isPriceGood ||
+                            !checkTerms ||
+                            allowanceTrue ||
+                            isLoadingBuyButton ||
+                            (!hasEnoughBalance && !hasEnoughBalanceForNative)
                               ? "!btn-disabled !cursor-not-allowed !text-black !opacity-30"
                               : "!text-white !bg-primaryPurple !cursor-pointer"
                           } `}
                           isDisabled={
-                            !isPriceGood || !checkTerms || allowanceTrue || isLoadingBuyButton
+                            !isPriceGood ||
+                            !checkTerms ||
+                            allowanceTrue ||
+                            isLoadingBuyButton ||
+                            (!hasEnoughBalance && !hasEnoughBalanceForNative)
                           }
                         >
                           {isLoadingBuyButton ? (
@@ -864,7 +865,8 @@ const BidsModal = ({
                           !isPriceGood ||
                           !checkTerms ||
                           !canPayWithNativeToken ||
-                          isLoadingBuyButton
+                          isLoadingBuyButton ||
+                          !hasEnoughBalanceForNative
                             ? "!btn-disabled !cursor-not-allowed !text-black !opacity-30"
                             : "!text-white !bg-primaryPurple !cursor-pointer"
                         } `}
@@ -872,7 +874,8 @@ const BidsModal = ({
                           !isPriceGood ||
                           !checkTerms ||
                           !canPayWithNativeToken ||
-                          isLoadingBuyButton
+                          isLoadingBuyButton ||
+                          !hasEnoughBalanceForNative
                         }
                       >
                         {isLoadingBuyButton ? (

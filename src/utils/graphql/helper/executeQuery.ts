@@ -26,9 +26,6 @@
  * const variables = { id: "123" };
  *
  * executeQuery(url, query, variables)
- *   .then(data => {
- *     console.log("User data:", data.user);
- *   })
  *   .catch(error => {
  *     console.error("Error fetching user data:", error);
  *   });
