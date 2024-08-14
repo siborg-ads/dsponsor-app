@@ -1358,32 +1358,57 @@ const Token = () => {
     }
   };
 
-  // amount to approve is Big Number
-  const checkAllowance = async (amountToApprove) => {
-    if (tokenCurrencyAddress !== "0x0000000000000000000000000000000000000000" && address) {
-      let allowance;
+  // amount to approve is bigint
+  const checkAllowance = React.useCallback(
+    async (amountToApprove: bigint) => {
+      if (tokenCurrencyAddress !== "0x0000000000000000000000000000000000000000" && address) {
+        let allowance: [BigNumber] | undefined = undefined;
 
-      if (tokenStatut === "DIRECT" || tokenStatut === "AUCTION") {
-        allowance = await tokenContract?.call("allowance", [
-          address,
-          config[chainId as number]?.smartContracts?.DSPONSORMP?.address
-        ]);
-      } else {
-        allowance = await tokenContract?.call("allowance", [
-          address,
-          config[chainId as number]?.smartContracts?.DSPONSORADMIN?.address
-        ]);
+        if (tokenStatut === "DIRECT" || tokenStatut === "AUCTION") {
+          const result = await tokenContract?.call("allowance", [
+            address,
+            config[chainId as number]?.smartContracts?.DSPONSORMP?.address
+          ]);
+
+          if (result) {
+            allowance = result;
+          }
+        } else {
+          const result = await tokenContract?.call("allowance", [
+            address,
+            config[chainId as number]?.smartContracts?.DSPONSORADMIN?.address
+          ]);
+
+          if (result) {
+            allowance = result;
+          }
+        }
+
+        console.log("amount to approve", amountToApprove?.toString());
+
+        const allowanceBigInt = allowance ? BigInt(allowance?.toString()) : BigInt(0);
+
+        if (allowanceBigInt && amountToApprove && allowanceBigInt >= amountToApprove) {
+          setAllowanceTrue(false);
+          return false;
+        }
+
+        setAllowanceTrue(true);
+        return true;
       }
+    },
+    [address, chainId, tokenContract, tokenCurrencyAddress, tokenStatut]
+  );
 
-      if (allowance && amountToApprove && allowance?.gte(amountToApprove)) {
-        setAllowanceTrue(false);
-        return false;
-      }
+  useEffect(() => {
+    const asyncAllowance = async (amountToApproveTemp: bigint) => {
+      await checkAllowance(amountToApproveTemp);
+    };
 
-      setAllowanceTrue(true);
-      return true;
+    if (amountToApprove) {
+      asyncAllowance(amountToApprove);
     }
-  };
+  }, [amountToApprove, checkAllowance]);
 
   const handleApprove = async () => {
     try {
@@ -1549,7 +1574,7 @@ const Token = () => {
       }
 
       const argsAdSubmited = {
-        offerId:  offerIdParams,
+        offerId: offerIdParams,
         tokenId: tokenIdParams,
         adParameters: adParams,
         data: dataParams
@@ -1620,7 +1645,7 @@ const Token = () => {
   }
 
   const handleBuyModal = async () => {
-    await checkAllowance(amountToApprove);
+    await checkAllowance(amountToApprove ? BigInt(amountToApprove) : BigInt(0));
     setSuccessFullUpload(false);
     setBuyModal(!buyModal);
     setBuyMethod(true);
@@ -2330,7 +2355,6 @@ const Token = () => {
                         checkUserBalance={checkUserBalance}
                         price={price as string}
                         allowanceTrue={allowanceTrue}
-                        checkAllowance={checkAllowance}
                         handleApprove={handleApprove}
                         dsponsorMpContract={dsponsorMpContract}
                         marketplaceListings={marketplaceListings}
