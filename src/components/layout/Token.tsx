@@ -125,7 +125,6 @@ const Token = () => {
   const [itemProposals, setItemProposals] = useState<any>(null);
   const [mediaShouldValidateAnAd, setMediaShouldValidateAnAd] = useState(false);
   const [airdropContainer, setAirdropContainer] = useState(true);
-  const [tokenEtherPrice, setTokenEtherPrice] = useState<string | null>(null);
   const [amountInEthWithSlippage, setAmountInEthWithSlippage] = useState<BigNumber | null>(null);
   const [displayedPrice, setDisplayedPrice] = useState<number | null>(null);
   const [isOfferOwner, setIsOfferOwner] = useState(false);
@@ -510,7 +509,6 @@ const Token = () => {
 
       setBuyTokenEtherPrice(tokenEtherPriceDecimals);
       setAmountInEthWithSlippage(amountInEthWithSlippageBN);
-      setTokenEtherPrice(ethers.utils.formatUnits(amountInEthWithSlippageBN, 18));
     }
 
     if (bidsAmount && currencyDecimals && tokenEtherPriceRelayer) {

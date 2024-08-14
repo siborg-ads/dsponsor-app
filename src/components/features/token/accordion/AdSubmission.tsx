@@ -550,7 +550,9 @@ const AdSubmission = ({
                 {terms && (
                   <p className="font-display flex flex-col w-full text-jacarta-100 text-sm">
                     Terms
-                    <span className="dark:text-white overflow-y-auto hide-scrollbar pr-2 text-base flex w-full flex-wrap">{terms}</span>
+                    <span className="dark:text-white overflow-y-auto hide-scrollbar pr-2 text-base flex w-full flex-wrap">
+                      {terms}
+                    </span>
                   </p>
                 )}
               </div>
@@ -611,74 +613,72 @@ const AdSubmission = ({
           )}
         </div>
 
-          <div className="modal-footer w-full">
-            <div className="flex items-center justify-center space-x-4 w-full">
-              <div className="flex items-center gap-4 w-full">
-                {!successFullUpload ? (
-                  <div className="flex flex-col gap-2 justify-center items-center w-full">
-                    <div
-                      className={`grid grid-cols-1 w-full mx-auto ${!createOffer && "md:grid-cols-2"} gap-6`}
-                    >
-                      {!createOffer && (
-                        <StyledWeb3Button
-                          contractAddress={
-                            currentChainObject?.smartContracts?.DSPONSORMP?.address as Address
-                          }
-                          onClick={async () => {
-                            await toast.promise(handleApprove, {
-                              pending: "Waiting for confirmation 🕒",
-                              success: "Approval confirmed 👌",
-                              error: "Approval rejected 🤯"
-                            });
-                          }}
-                          isDisabled={!validate || approvalForAllToken}
-                          defaultText={!isListing ? "Approve 🔓 (1/2)" : "Authorize 🔓 (1/2)"}
-                        />
-                      )}
-
+        <div className="modal-footer w-full">
+          <div className="flex items-center justify-center space-x-4 w-full">
+            <div className="flex items-center gap-4 w-full">
+              {!successFullUpload ? (
+                <div className="flex flex-col gap-2 justify-center items-center w-full">
+                  <div
+                    className={`grid grid-cols-1 w-full mx-auto ${!createOffer && "md:grid-cols-2"} gap-6`}
+                  >
+                    {!createOffer && (
                       <StyledWeb3Button
                         contractAddress={
-                          currentChainObject?.smartContracts?.DSPONSORADMIN?.address as Address
+                          currentChainObject?.smartContracts?.DSPONSORMP?.address as Address
                         }
                         onClick={async () => {
-                          await toast.promise(handleSubmit(address), {
+                          await toast.promise(handleApprove, {
                             pending: "Waiting for confirmation 🕒",
-                            success: "Transaction confirmed 👌",
-                            error: "Transaction rejected 🤯"
+                            success: "Approval confirmed 👌",
+                            error: "Approval rejected 🤯"
                           });
                         }}
-                        defaultText={buttonTitle ?? "Submit"}
-                        isDisabled={!validate || !approvalForAllToken}
+                        isDisabled={!validate || approvalForAllToken}
+                        defaultText={!isListing ? "Approve 🔓 (1/2)" : "Authorize 🔓 (1/2)"}
                       />
-                    </div>
+                    )}
+
+                    <StyledWeb3Button
+                      contractAddress={
+                        currentChainObject?.smartContracts?.DSPONSORADMIN?.address as Address
+                      }
+                      onClick={async () => {
+                        await toast.promise(handleSubmit(address), {
+                          pending: "Waiting for confirmation 🕒",
+                          success: "Transaction confirmed 👌",
+                          error: "Transaction rejected 🤯"
+                        });
+                      }}
+                      defaultText={buttonTitle ?? "Submit"}
+                      isDisabled={!validate || !approvalForAllToken}
+                    />
+                  </div>
 
                   {!createOffer && (
                     <ResponsiveTooltip
-                      text={`You need to approve the marketplace contract to spend your NFT on this
-      transaction.`}
-                      >
-                        <span className="text-xs text-jacarta-100 inline-flex items-center gap-1">
-                          <InformationCircleIcon className="w-4 h-4 text-jacarta-100" />
-                          Why do I have to approve ?
-                        </span>
-                      </ResponsiveTooltip>
-                    )}
-                  </div>
-                ) : successFullUploadModal.hrefButton !== null ? (
-                  <Link href={successFullUploadModal.hrefButton ?? "#"}>
-                    <button className="!rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all !bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer">
-                      {successFullUploadModal.buttonTitle}
-                    </button>
-                  </Link>
-                ) : (
-                  <StyledWeb3Button
-                    isNormalButton
-                    contractAddress={"" as Address}
-                    onClick={() => handlePreviewModal()}
-                    defaultText="Close"
-                  />
-                )}
-              </div>
+                      text={`You need to approve the marketplace contract to spend your NFT on this transaction.`}
+                    >
+                      <span className="text-xs text-jacarta-100 inline-flex items-center gap-1">
+                        <InformationCircleIcon className="w-4 h-4 text-jacarta-100" />
+                        Why do I have to approve ?
+                      </span>
+                    </ResponsiveTooltip>
+                  )}
+                </div>
+              ) : successFullUploadModal.hrefButton !== null ? (
+                <Link href={successFullUploadModal.hrefButton ?? "#"}>
+                  <button className="!rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all !bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer">
+                    {successFullUploadModal.buttonTitle}
+                  </button>
+                </Link>
+              ) : (
+                <StyledWeb3Button
+                  isNormalButton
+                  contractAddress={"" as Address}
+                  onClick={() => handlePreviewModal()}
+                  defaultText="Close"
+                />
+              )}
             </div>
           </div>
         </div>
