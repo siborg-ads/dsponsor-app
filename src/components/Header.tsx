@@ -5,10 +5,7 @@ import { useRouter } from "next/router";
 import { isChildrenPageActive } from "@/utils/navigation/dynamicNavigation";
 import React, { useEffect, useState } from "react";
 
-import {
-  // ConnectWallet,
-  useAddress
-} from "@thirdweb-dev/react";
+import { ConnectWallet, useAddress } from "@thirdweb-dev/react";
 import { ConnectButton } from "thirdweb/react";
 import { client } from "@/data/services/client";
 
@@ -147,8 +144,11 @@ export default function Header() {
                 )}
 
                 <li className="group ml-4">
-                  {/* <ConnectWallet theme={"dark"} modalSize={"wide"} /> */}
-                  <ConnectButton client={client} />
+                  {features?.thirdwebV5 ? (
+                    <ConnectButton client={client} />
+                  ) : (
+                    <ConnectWallet theme={"dark"} modalSize={"wide"} />
+                  )}
                 </li>
               </ul>
             </nav>
@@ -334,8 +334,11 @@ export default function Header() {
         {/* End navbar mobile menu  */}
 
         <div className="mt-10 w-full lg:hidden">
-          {/* <ConnectWallet theme={"dark"} modalSize={"wide"} /> */}
-          <ConnectButton client={client} />;
+          {features?.thirdwebV5 ? (
+            <ConnectButton client={client} />
+          ) : (
+            <ConnectWallet theme={"dark"} modalSize={"wide"} />
+          )}
           <hr className="dark:bg-jacarta-800 bg-jacarta-100 my-5 h-px border-0" />
           <div className="flex items-center justify-center space-x-5">
             <Link href="#" className="group">
