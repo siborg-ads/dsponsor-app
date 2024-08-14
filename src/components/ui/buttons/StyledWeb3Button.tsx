@@ -1,5 +1,4 @@
 import React from "react";
-import { Web3Button } from "@thirdweb-dev/react";
 import { Spinner } from "@nextui-org/spinner";
 import { Address } from "thirdweb";
 
@@ -27,7 +26,7 @@ const StyledWeb3Button = ({
   isDisabled?: boolean;
   defaultText: string;
   // eslint-disable-next-line no-unused-vars
-  onClick: (contract?: any) => Promise<void> | void;
+  onClick: () => Promise<void> | void;
   contractAddress: Address;
   contractAbi?: any;
   // eslint-disable-next-line no-unused-vars
@@ -63,13 +62,13 @@ const StyledWeb3Button = ({
   }
 
   return (
-    <Web3Button
+    <button
       {...props}
       className={`${baseClass} ${isLoading ? loadingClass : ""} ${props.isDisabled ? disabledClass : ""} ${!props.isDisabled && !isLoading ? defaultClass : ""}`}
-      action={async (contract: any) => {
+      onClick={async () => {
         try {
           setIsLoading(true);
-          await props.onClick(contract);
+          await props.onClick();
         } catch (error) {
           console.error(error);
         } finally {
@@ -78,7 +77,7 @@ const StyledWeb3Button = ({
       }}
     >
       {isLoading ? <Spinner size="sm" color="default" /> : props.defaultText}
-    </Web3Button>
+    </button>
   );
 };
 
