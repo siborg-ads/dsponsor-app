@@ -39,7 +39,7 @@ const Details = ({
             <div className="mb-2 flex items-center">
               <span className="dark:text-jacarta-100 mr-2 min-w-[9rem]">Contract Address:</span>
               <Link
-                href={`${chainExplorer}/address/${contractAddress}`}
+                href={`${chainExplorer ?? ""}/address/${contractAddress}`}
                 target="_blank"
                 className="text-primaryPink hover:text-jacarta-100"
               >
