@@ -465,6 +465,10 @@ const Token = () => {
       }
     };
 
+    const token = offerData?.nftContract?.tokens?.find(
+      (token) => !!token?.tokenId && BigInt(token?.tokenId) === BigInt(tokenId as string)
+    );
+
     if (chainId && tokenCurrencyAddress && currencyDecimals) {
       if (tokenStatut === "AUCTION" && debouncedBidsAmount) {
         fetchBuyEtherPrice(debouncedBidsAmount);
@@ -479,7 +483,7 @@ const Token = () => {
         fetchBuyEtherPrice(formattedDirectBuyPrice);
       }
 
-      if (tokenStatut === "MINTABLE" && mintPriceBN) {
+      if (token?.mint === null && mintPriceBN) {
         const formattedMintPrice = ethers.utils.formatUnits(mintPriceBN, currencyDecimals);
 
         fetchBuyEtherPrice(formattedMintPrice);
@@ -492,7 +496,9 @@ const Token = () => {
     debouncedBidsAmount,
     tokenStatut,
     directBuyPriceBN,
-    mintPriceBN
+    mintPriceBN,
+    offerData?.nftContract?.tokens,
+    tokenId
   ]);
 
   useEffect(() => {
@@ -1489,18 +1495,11 @@ const Token = () => {
   };
 
   const handleBuySubmit = async () => {
-    if (!tokenBalance?.value) return;
-
     if (!hasEnoughBalance && !canPayWithNativeToken) {
-      console.error("Not enough balance to confirm checkout");
-      throw new Error("Not enough balance to confirm checkout");
-    }
-
-    if (!nativeTokenBalance?.value) return;
-
-    if (!hasEnoughBalanceForNative) {
-      console.error("Not enough balance to confirm checkout");
-      throw new Error("Not enough balance to confirm checkout");
+      if (!hasEnoughBalanceForNative) {
+        console.error("Not enough balance to confirm checkout");
+        throw new Error("Not enough balance to confirm checkout");
+      }
     }
 
     const argsMintAndSubmit = {
@@ -1568,6 +1567,7 @@ const Token = () => {
       setIsLoadingButton(false);
     }
   };
+
   const handleSubmit = async () => {
     if (!buyMethod) {
       if (!validateInputs()) {
@@ -1662,19 +1662,19 @@ const Token = () => {
 
   useEffect(() => {
     const fetchTokenBalance = async (tokenBalance: BigNumber) => {
-      if (!tokenBalance || !finalPrice) {
+      if (!tokenBalance) {
         return;
       }
 
-      console.log(tokenStatut);
+      const token = offerData?.nftContract?.tokens?.find(
+        (token) => !!token?.tokenId && BigInt(token?.tokenId) === BigInt(tokenId as string)
+      );
 
       if (tokenStatut === "AUCTION") {
         if (!auctionPriceBN) return;
 
         const result = await checkUserBalance(tokenBalance, auctionPriceBN);
         setHasEnoughBalance(result);
-
-        console.log(result);
 
         if (!nativeTokenBalance?.value || !amountInEthWithSlippage) return;
 
@@ -1696,7 +1696,7 @@ const Token = () => {
           amountInEthWithSlippage
         );
         setHasEnoughBalanceForNative(nativeResult);
-      } else if (tokenStatut === "MINTABLE") {
+      } else if (token?.mint === null) {
         if (!mintPriceBN) return;
 
         const result = await checkUserBalance(tokenBalance, mintPriceBN);
@@ -1712,19 +1712,20 @@ const Token = () => {
       }
     };
 
-    if (tokenBalance && finalPrice && amountInEthWithSlippage) {
+    if (tokenBalance && tokenStatut && tokenId) {
       fetchTokenBalance(tokenBalance?.value);
     }
   }, [
     checkUserBalance,
     tokenBalance,
-    finalPrice,
     tokenStatut,
     amountInEthWithSlippage,
     directBuyPriceBN,
     nativeTokenBalance,
     auctionPriceBN,
-    mintPriceBN
+    mintPriceBN,
+    offerData,
+    tokenId
   ]);
 
   function formatTokenId(str) {
@@ -2790,6 +2791,8 @@ const Token = () => {
             }}
             currencyContract={tokenCurrencyAddress}
             nativeTokenBalance={nativeTokenBalance}
+            hasEnoughBalance={hasEnoughBalance}
+            hasEnoughBalanceForNative={hasEnoughBalanceForNative}
           />
         </div>
       )}

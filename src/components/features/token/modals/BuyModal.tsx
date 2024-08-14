@@ -51,7 +51,9 @@ const BuyModal = ({
   setCanPayWithNativeToken,
   nativeTokenBalance,
   buyTokenEtherPrice,
-  totalPrice
+  totalPrice,
+  hasEnoughBalance,
+  hasEnoughBalanceForNative
 }) => {
   const [validate, setValidate] = useState(false);
   const [notEnoughFunds, setNotEnoughFunds] = useState(false);
@@ -98,12 +100,12 @@ const BuyModal = ({
   ]);
 
   useEffect(() => {
-    if (insufficentBalance && !canPayWithNativeToken) {
+    if (!hasEnoughBalance && !hasEnoughBalanceForNative) {
       setNotEnoughFunds(true);
     } else {
       setNotEnoughFunds(false);
     }
-  }, [insufficentBalance, canPayWithNativeToken]);
+  }, [hasEnoughBalance, hasEnoughBalanceForNative]);
 
   // If currency is WETH, we can pay with Crossmint
   const canPayWithCrossmint = selectedCurrency === "WETH" && features.canPayWithCrossmintEnabled;
@@ -395,14 +397,16 @@ const BuyModal = ({
                         className={`!rounded-full !py-3 !px-8 !w-full !text-center !font-semibold !text-black !transition-all ${
                           !validate ||
                           (allowanceTrue && parseFloat(totalPrice) > 0) ||
-                          isLoadingBuyButton
+                          isLoadingBuyButton ||
+                          (!hasEnoughBalance && !hasEnoughBalanceForNative)
                             ? "!btn-disabled !cursor-not-allowed !text-black !opacity-30"
                             : "!text-white !bg-primaryPurple !cursor-pointer"
                         }`}
                         isDisabled={
                           !validate ||
                           (allowanceTrue && parseFloat(totalPrice) > 0) ||
-                          isLoadingBuyButton
+                          isLoadingBuyButton ||
+                          (!hasEnoughBalance && !hasEnoughBalanceForNative)
                         }
                       >
                         {isLoadingBuyButton ? (
@@ -448,12 +452,19 @@ const BuyModal = ({
                         });
                     }}
                     className={`!rounded-full !col-span-2 !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${
-                      !validate || !canPayWithNativeToken || isLoadingBuyButton
+                      !validate ||
+                      !canPayWithNativeToken ||
+                      isLoadingBuyButton ||
+                      !hasEnoughBalanceForNative
                         ? "!btn-disabled !cursor-not-allowed !text-black !opacity-30"
                         : "!text-white !bg-primaryPurple !cursor-pointer"
                     }`}
                     isDisabled={
-                      !validate || isLoadingButton || !canPayWithNativeToken || isLoadingBuyButton
+                      !validate ||
+                      isLoadingButton ||
+                      !canPayWithNativeToken ||
+                      isLoadingBuyButton ||
+                      !hasEnoughBalanceForNative
                     }
                   >
                     {isLoadingBuyButton ? (

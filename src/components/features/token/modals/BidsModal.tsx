@@ -145,12 +145,12 @@ const BidsModal = ({
   ]);
 
   useEffect(() => {
-    if (insufficentBalance && !canPayWithNativeToken) {
+    if (!hasEnoughBalance && !hasEnoughBalanceForNative) {
       setNotEnoughFunds(true);
     } else {
       setNotEnoughFunds(false);
     }
-  }, [insufficentBalance, canPayWithNativeToken]);
+  }, [hasEnoughBalance, hasEnoughBalanceForNative]);
 
   useEffect(() => {
     if (
@@ -314,13 +314,10 @@ const BidsModal = ({
 
   const handleSubmitWithNative = async () => {
     if (!hasEnoughBalance && !canPayWithNativeToken) {
-      console.error("Not enough balance to confirm checkout");
-      throw new Error("Not enough balance to confirm checkout");
-    }
-
-    if (!hasEnoughBalanceForNative) {
-      console.error("Not enough balance to confirm checkout");
-      throw new Error("Not enough balance to confirm checkout");
+      if (!hasEnoughBalanceForNative) {
+        console.error("Not enough balance to confirm checkout");
+        throw new Error("Not enough balance to confirm checkout");
+      }
     }
 
     try {
@@ -817,12 +814,20 @@ const BidsModal = ({
                               });
                           }}
                           className={`!rounded-full !w-full !py-3 !px-8 !text-center !font-semibold !text-black !transition-all ${
-                            !isPriceGood || !checkTerms || allowanceTrue || isLoadingBuyButton
+                            !isPriceGood ||
+                            !checkTerms ||
+                            allowanceTrue ||
+                            isLoadingBuyButton ||
+                            (!hasEnoughBalance && !hasEnoughBalanceForNative)
                               ? "!btn-disabled !cursor-not-allowed !text-black !opacity-30"
                               : "!text-white !bg-primaryPurple !cursor-pointer"
                           } `}
                           isDisabled={
-                            !isPriceGood || !checkTerms || allowanceTrue || isLoadingBuyButton
+                            !isPriceGood ||
+                            !checkTerms ||
+                            allowanceTrue ||
+                            isLoadingBuyButton ||
+                            (!hasEnoughBalance && !hasEnoughBalanceForNative)
                           }
                         >
                           {isLoadingBuyButton ? (
@@ -860,7 +865,8 @@ const BidsModal = ({
                           !isPriceGood ||
                           !checkTerms ||
                           !canPayWithNativeToken ||
-                          isLoadingBuyButton
+                          isLoadingBuyButton ||
+                          !hasEnoughBalanceForNative
                             ? "!btn-disabled !cursor-not-allowed !text-black !opacity-30"
                             : "!text-white !bg-primaryPurple !cursor-pointer"
                         } `}
@@ -868,7 +874,8 @@ const BidsModal = ({
                           !isPriceGood ||
                           !checkTerms ||
                           !canPayWithNativeToken ||
-                          isLoadingBuyButton
+                          isLoadingBuyButton ||
+                          !hasEnoughBalanceForNative
                         }
                       >
                         {isLoadingBuyButton ? (
