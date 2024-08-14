@@ -155,8 +155,9 @@ const TermsPdfUploader = ({
 
     const file = e.target.files[0];
     const url = await storage.upload(file);
+    const finalURL = await storage.resolveScheme(url);
 
-    setTermsURL(url);
+    setTermsURL(finalURL);
   };
 
   return (
