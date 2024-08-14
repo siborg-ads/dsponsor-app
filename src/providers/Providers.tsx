@@ -5,12 +5,13 @@ import {
   embeddedWallet,
   localWallet,
   metamaskWallet,
-  ThirdwebProvider,
+  ThirdwebProvider as ThirdwebProviderV4,
   useAddress,
   useBalance,
   useChainId,
   walletConnect
-} from "@thirdweb-dev/react";
+} from "@thirdweb-dev/react"; // v4
+import { ThirdwebProvider } from "thirdweb/react"; // v5
 import ChainProvider from "@/providers/Chain";
 import { SwitchChainProvider } from "@/providers/SwitchChain";
 import { useSwitchChainContext } from "@/hooks/useSwitchChainContext";
@@ -123,7 +124,7 @@ function InnerProviders({ children }: Readonly<{ children: React.ReactNode }>) {
   const sdkOptionsKey = React.useMemo(() => JSON.stringify(sdkOptions), [sdkOptions]);
 
   return (
-    <ThirdwebProvider
+    <ThirdwebProviderV4
       key={sdkOptionsKey}
       {...(sdkOptions && { sdkOptions })}
       activeChain={chain}
@@ -140,10 +141,12 @@ function InnerProviders({ children }: Readonly<{ children: React.ReactNode }>) {
         })
       ]}
     >
-      <ChainProvider>
-        <GaslessCollector>{children}</GaslessCollector>
-      </ChainProvider>
-    </ThirdwebProvider>
+      <ThirdwebProvider>
+        <ChainProvider>
+          <GaslessCollector>{children}</GaslessCollector>
+        </ChainProvider>
+      </ThirdwebProvider>
+    </ThirdwebProviderV4>
   );
 }
 
