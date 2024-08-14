@@ -54,7 +54,7 @@
     "sharp": "^0.33.4",
     "swiper": "^8.2.4",
     "tailwind-merge": "^2.4.0",
-    "thirdweb": "^5.2.0"
+    "thirdweb": "^5.45.1"
   },
   "devDependencies": {
     "autoprefixer": "10.4.5",
