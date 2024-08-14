@@ -24,7 +24,6 @@ const PlaceBid = ({
   currencyTokenDecimals,
   checkUserBalance,
   allowanceTrue,
-  checkAllowance,
   chainId,
   isLoadingButton,
   setIsLoadingButton,
@@ -64,8 +63,6 @@ const PlaceBid = ({
   // eslint-disable-next-line no-unused-vars
   checkUserBalance: (tokenAddressBalance: any, priceToken: any, decimals: number) => boolean;
   allowanceTrue: boolean;
-  // eslint-disable-next-line no-unused-vars
-  checkAllowance: (amount: ethers.BigNumber) => void;
   chainId: number;
   isLoadingButton: boolean;
   setIsLoadingButton: React.Dispatch<React.SetStateAction<boolean>>;
@@ -83,18 +80,9 @@ const PlaceBid = ({
   setShowBidsModal: React.Dispatch<React.SetStateAction<boolean>>;
   fetchOffers: () => void;
 }) => {
-  const [minimalBidPerToken, setMinimalBidPerToken] = useState(null);
   const [bids, setBids] = useState<any>(null);
 
-  useEffect(() => {
-    const minimalBidPerToken = marketplaceListings?.[0]?.bidPriceStructure?.minimalBidPerToken;
-    setMinimalBidPerToken(minimalBidPerToken);
-  }, [marketplaceListings]);
-
   const toggleBidsModal = async () => {
-    if (minimalBidPerToken) {
-      await checkAllowance(ethers.BigNumber.from(minimalBidPerToken));
-    }
     setShowBidsModal(!showBidsModal);
     setSuccessFullBid(false);
   };
@@ -218,7 +206,6 @@ const PlaceBid = ({
             successFullBid={successFullBid}
             setSuccessFullBid={setSuccessFullBid}
             handleApprove={handleApprove}
-            checkAllowance={checkAllowance}
             allowanceTrue={allowanceTrue}
             checkUserBalance={checkUserBalance}
             dsponsorMpContract={dsponsorMpContract}

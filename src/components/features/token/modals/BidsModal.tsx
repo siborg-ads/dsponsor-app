@@ -35,7 +35,6 @@ const BidsModal = ({
   allowanceTrue,
   currencyTokenDecimals,
   handleApprove: handleParentApprove,
-  checkAllowance,
   isLoadingButton,
   setIsLoadingButton,
   currencyContract,
@@ -66,7 +65,6 @@ const BidsModal = ({
   allowanceTrue: any;
   currencyTokenDecimals: number;
   handleApprove: any;
-  checkAllowance: any;
   isLoadingButton: boolean;
   setIsLoadingButton: any;
   currencyContract: any;
@@ -292,7 +290,6 @@ const BidsModal = ({
       setBidsAmount(value);
       setParsedBidsAmount(parsedValue);
       setAmountToApprove(parsedValue);
-      await checkAllowance(parsedValue);
     } catch (error) {
       console.error("Invalid input for bids amount:", error);
       setParsedBidsAmount(null);
