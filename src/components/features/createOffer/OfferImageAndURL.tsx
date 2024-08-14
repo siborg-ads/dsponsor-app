@@ -182,6 +182,7 @@ const TermsPdfUploader = ({
           className={`flex justify-center items-center mt-4 text-white`}
           type="file"
           onChange={handleTermsUpload}
+          accept="application/pdf"
         />
       ) : (
         <div className="mt-4">
