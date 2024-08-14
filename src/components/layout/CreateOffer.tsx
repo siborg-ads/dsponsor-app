@@ -51,10 +51,6 @@ const CreateOffer = () => {
   const [minterAddress, setMinterAddress] = useState<Address | null>(null);
   const { setSelectedChain } = useSwitchChainContext();
 
-  useEffect(() => {
-    console.log(terms);
-  }, [terms]);
-
   const address = useAddress();
 
   const { contract: DsponsorAdminContract } = useContract(

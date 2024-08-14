@@ -210,9 +210,6 @@ const AdValidation = ({
       reason?: string;
     }[] = Object.values(groupedRefusedAds);
 
-    console.log(formattedPendingAds);
-    console.log(itemTokenId);
-
     if (isTokenView) {
       formattedPendingAds = formattedPendingAds?.filter(
         (ad) => !!itemTokenId && !!ad?.tokenId && BigInt(ad?.tokenId) === BigInt(itemTokenId)
@@ -224,8 +221,6 @@ const AdValidation = ({
         (ad) => !!itemTokenId && !!ad?.tokenId && BigInt(ad?.tokenId) === BigInt(itemTokenId)
       );
     }
-
-    console.log(formattedPendingAds);
 
     setPendingProposalData(formattedPendingAds);
     setPendingProposalLength(formattedPendingAds.length);

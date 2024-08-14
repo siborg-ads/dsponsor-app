@@ -21,7 +21,6 @@ const PlaceBid = ({
   handleApprove,
   price,
   currencyTokenDecimals,
-  checkUserBalance,
   allowanceTrue,
   chainId,
   currencyContract,
@@ -30,13 +29,14 @@ const PlaceBid = ({
   offer,
   referrer,
   isValidId,
-  tokenEtherPrice,
   amountInEthWithSlippage,
   displayedPrice,
   setDisplayedPrice,
   showBidsModal,
   setShowBidsModal,
-  fetchOffers
+  fetchOffers,
+  hasEnoughBalance,
+  hasEnoughBalanceForNative
 }: {
   setAmountToApprove: React.Dispatch<React.SetStateAction<bigint | null>>;
   bidsAmount: string;
@@ -57,8 +57,6 @@ const PlaceBid = ({
   handleApprove: () => void;
   price: string;
   currencyTokenDecimals: number;
-  // eslint-disable-next-line no-unused-vars
-  checkUserBalance: (tokenAddressBalance: any, priceToken: any, decimals: number) => boolean;
   allowanceTrue: boolean;
   chainId: number;
   currencyContract: any;
@@ -67,13 +65,14 @@ const PlaceBid = ({
   offer: any;
   referrer: { address: Address };
   isValidId: boolean;
-  tokenEtherPrice: string;
   amountInEthWithSlippage: BigNumber;
   displayedPrice: string;
   setDisplayedPrice: React.Dispatch<React.SetStateAction<number | null>>;
   showBidsModal: boolean;
   setShowBidsModal: React.Dispatch<React.SetStateAction<boolean>>;
   fetchOffers: () => void;
+  hasEnoughBalance: boolean;
+  hasEnoughBalanceForNative: boolean;
 }) => {
   const [bids, setBids] = useState<any>(null);
 
@@ -199,7 +198,6 @@ const PlaceBid = ({
             setSuccessFullBid={setSuccessFullBid}
             handleApprove={handleApprove}
             allowanceTrue={allowanceTrue}
-            checkUserBalance={checkUserBalance}
             dsponsorMpContract={dsponsorMpContract}
             toggleBidsModal={toggleBidsModal}
             currencyTokenDecimals={currencyTokenDecimals}
@@ -214,10 +212,11 @@ const PlaceBid = ({
             offer={offer}
             referrer={referrer}
             currencyContract={currencyContract}
-            tokenEtherPrice={tokenEtherPrice}
             amountInEthWithSlippage={amountInEthWithSlippage}
             displayedPrice={displayedPrice}
             setDisplayedPrice={setDisplayedPrice}
+            hasEnoughBalance={hasEnoughBalance}
+            hasEnoughBalanceForNative={hasEnoughBalanceForNative}
           />
         </div>
       )}

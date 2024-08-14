@@ -52,7 +52,9 @@ const BuyModal = ({
   setCanPayWithNativeToken,
   nativeTokenBalance,
   buyTokenEtherPrice,
-  totalPrice
+  totalPrice,
+  hasEnoughBalance,
+  hasEnoughBalanceForNative
 }) => {
   const [validate, setValidate] = useState(false);
   const [notEnoughFunds, setNotEnoughFunds] = useState(false);
@@ -97,12 +99,12 @@ const BuyModal = ({
   ]);
 
   useEffect(() => {
-    if (insufficentBalance && !canPayWithNativeToken) {
+    if (!hasEnoughBalance && !hasEnoughBalanceForNative) {
       setNotEnoughFunds(true);
     } else {
       setNotEnoughFunds(false);
     }
-  }, [insufficentBalance, canPayWithNativeToken]);
+  }, [hasEnoughBalance, hasEnoughBalanceForNative]);
 
   // If currency is WETH, we can pay with Crossmint
   const canPayWithCrossmint = selectedCurrency === "WETH" && features.canPayWithCrossmintEnabled;

@@ -32,7 +32,6 @@ const BidsModal = ({
   toggleBidsModal,
   marketplaceListings,
   currencySymbol,
-  checkUserBalance,
   tokenBalance,
   allowanceTrue,
   currencyTokenDecimals,
@@ -43,11 +42,12 @@ const BidsModal = ({
   offer,
   referrer,
   showBidsModal,
-  tokenEtherPrice,
   amountInEthWithSlippage,
   displayedPrice,
   setDisplayedPrice,
-  fetchOffers
+  fetchOffers,
+  hasEnoughBalance,
+  hasEnoughBalanceForNative
 }: {
   setAmountToApprove: any;
   bidsAmount: string;
@@ -60,7 +60,6 @@ const BidsModal = ({
   toggleBidsModal: any;
   marketplaceListings: any;
   currencySymbol: string;
-  checkUserBalance: any;
   tokenBalance: any;
   allowanceTrue: any;
   currencyTokenDecimals: number;
@@ -71,11 +70,12 @@ const BidsModal = ({
   offer: any;
   referrer: any;
   showBidsModal: boolean;
-  tokenEtherPrice: string;
   amountInEthWithSlippage: any;
   displayedPrice: string;
   setDisplayedPrice: any;
   fetchOffers: any;
+  hasEnoughBalance: boolean;
+  hasEnoughBalanceForNative: boolean;
 }) => {
   const [initialIntPrice, setInitialIntPrice] = useState<string | null>(null);
   const [isPriceGood, setIsPriceGood] = useState(true);
@@ -141,12 +141,12 @@ const BidsModal = ({
   ]);
 
   useEffect(() => {
-    if (insufficentBalance && !canPayWithNativeToken) {
+    if (!hasEnoughBalance && !hasEnoughBalanceForNative) {
       setNotEnoughFunds(true);
     } else {
       setNotEnoughFunds(false);
     }
-  }, [insufficentBalance, canPayWithNativeToken]);
+  }, [hasEnoughBalance, hasEnoughBalanceForNative]);
 
   useEffect(() => {
     if (
@@ -304,18 +304,11 @@ const BidsModal = ({
   };
 
   const handleSubmitWithNative = async () => {
-    const hasEnoughBalance = checkUserBalance(tokenBalance, bidsAmount, currencyTokenDecimals);
-
     if (!hasEnoughBalance && !canPayWithNativeToken) {
-      console.error("Not enough balance to confirm checkout");
-      throw new Error("Not enough balance to confirm checkout");
-    }
-
-    const hasEnoughBalanceForNative = checkUserBalance(nativeTokenBalance, tokenEtherPrice, 18);
-
-    if (!hasEnoughBalanceForNative) {
-      console.error("Not enough balance to confirm checkout");
-      throw new Error("Not enough balance to confirm checkout");
+      if (!hasEnoughBalanceForNative) {
+        console.error("Not enough balance to confirm checkout");
+        throw new Error("Not enough balance to confirm checkout");
+      }
     }
 
     try {
@@ -355,11 +348,11 @@ const BidsModal = ({
   }, [bidsAmount, chainConfig, chainId, currencyTokenDecimals]);
 
   const handleSubmit = async () => {
-    const hasEnoughBalance = checkUserBalance(tokenBalance, bidsAmount, currencyTokenDecimals);
     if (!hasEnoughBalance) {
       console.error("Not enough balance for approval.");
       throw new Error("Not enough balance for approval.");
     }
+
     try {
       const precision = bidsAmount.split(".")[1]?.length ?? 0;
 
@@ -772,7 +765,7 @@ const BidsModal = ({
                               error: buyoutPriceReached ? "Buy rejected 🤯" : "Bid rejected 🤯"
                             });
                           }}
-                          isDisabled={!isPriceGood || !checkTerms || allowanceTrue}
+                          isDisabled={!isPriceGood || !checkTerms || allowanceTrue || notEnoughFunds}
                           defaultText={
                             buyoutPriceReached
                               ? notEnoughFunds
@@ -794,7 +787,7 @@ const BidsModal = ({
                             error: buyoutPriceReached ? "Buy rejected 🤯" : "Bid rejected 🤯"
                           });
                         }}
-                        isDisabled={!isPriceGood || !checkTerms || !canPayWithNativeToken}
+                        isDisabled={!isPriceGood || !checkTerms || !canPayWithNativeToken || notEnoughFunds}
                         defaultText={
                           buyoutPriceReached
                             ? notEnoughFunds

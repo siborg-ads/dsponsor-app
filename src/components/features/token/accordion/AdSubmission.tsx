@@ -347,274 +347,269 @@ const AdSubmission = ({
   }
 
   return (
-    <div>
-      <div className="modal-dialog max-h-[75vh] max-w-2xl">
-        <div className="modal-content !bg-secondaryBlack md:min-w-[550px]">
-          <div className="modal-header">
-            <h5 className="modal-title mr-8" id="placeBidLabel">
-              {!successFullUpload ? modalTitle : successFullUploadModal.title}
-            </h5>
-            <button type="button" className="btn-close" onClick={() => handlePreviewModal()}>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                width="24"
-                height="24"
-                className="fill-jacarta-700 h-6 w-6 dark:fill-white"
-              >
-                <path fill="none" d="M0 0h24v24H0z"></path>
-                <path d="M12 10.586l4.95-4.95 1.414 1.414-4.95 4.95 4.95 4.95-1.414 1.414-4.95-4.95-4.95 4.95-1.414-1.414 4.95-4.95-4.95-4.95L7.05 5.636z"></path>
-              </svg>
-            </button>
-          </div>
+    <div className="modal-dialog w-full flex justify-center items-center">
+      <div className="modal-content !bg-secondaryBlack max-w-xs md:max-w-2xl">
+        <div className="modal-header">
+          <h5 className="modal-title mr-8" id="placeBidLabel">
+            {!successFullUpload ? modalTitle : successFullUploadModal.title}
+          </h5>
+          <button type="button" className="btn-close" onClick={() => handlePreviewModal()}>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              width="24"
+              height="24"
+              className="fill-jacarta-700 h-6 w-6 dark:fill-white"
+            >
+              <path fill="none" d="M0 0h24v24H0z"></path>
+              <path d="M12 10.586l4.95-4.95 1.414 1.414-4.95 4.95 4.95 4.95-1.414 1.414-4.95-4.95-4.95 4.95-1.414-1.414 4.95-4.95-4.95-4.95L7.05 5.636z"></path>
+            </svg>
+          </button>
+        </div>
 
-          <div className="modal-body p-6 flex gap-4 items-center">
-            {!successFullUpload ? (
-              <div className="flex justify-between gap-8 md:gap-32 md:flex-row flex-col">
-                <div className="flex flex-col gap-4">
-                  <p className="font-display block dark:text-white">
-                    {(name as string)?.length > 0 ? (
-                      <span className="dark:text-jacarta-100 text-jacarta-100 text-sm flex flex-col">
-                        Name<span className="dark:text-white text-base">{name}</span>
-                      </span>
-                    ) : !name ? (
-                      <span className="dark:text-jacarta-100 text-jacarta-100 text-sm flex flex-col">
-                        Name<span className="text-red text-base">{errors.nameError}</span>
-                      </span>
-                    ) : (
-                      ""
-                    )}
-                  </p>
-                  <p className="font-display block text-sm dark:text-white">
-                    {(description as string)?.length > 0 ? (
-                      <span className="dark:text-jacarta-100 text-jacarta-100 text-sm flex flex-col">
-                        Description
-                        <span className="dark:text-white text-base">{description}</span>
-                      </span>
-                    ) : !description ? (
-                      <span className="dark:text-jacarta-100 text-jacarta-100 text-sm flex flex-col">
-                        Description
-                        <span className="text-red text-base">{errors.descriptionError}</span>
-                      </span>
-                    ) : (
-                      ""
-                    )}
-                  </p>
+        <div className="modal-body p-6 flex gap-4 items-center w-full">
+          {!successFullUpload ? (
+            <div className="flex justify-between gap-8 md:gap-32 md:flex-row flex-col w-full">
+              <div className="flex flex-col gap-4 w-full">
+                <p className="font-display block dark:text-white">
+                  {(name as string)?.length > 0 ? (
+                    <span className="dark:text-jacarta-100 text-jacarta-100 text-sm flex flex-col">
+                      Name<span className="dark:text-white text-base">{name}</span>
+                    </span>
+                  ) : !name ? (
+                    <span className="dark:text-jacarta-100 text-jacarta-100 text-sm flex flex-col">
+                      Name<span className="text-red text-base">{errors.nameError}</span>
+                    </span>
+                  ) : (
+                    ""
+                  )}
+                </p>
+                <p className="font-display block text-sm dark:text-white">
+                  {(description as string)?.length > 0 ? (
+                    <span className="dark:text-jacarta-100 text-jacarta-100 text-sm flex flex-col">
+                      Description
+                      <span className="dark:text-white text-base">{description}</span>
+                    </span>
+                  ) : !description ? (
+                    <span className="dark:text-jacarta-100 text-jacarta-100 text-sm flex flex-col">
+                      Description
+                      <span className="text-red text-base">{errors.descriptionError}</span>
+                    </span>
+                  ) : (
+                    ""
+                  )}
+                </p>
 
-                  {(link as string)?.length ? (
-                    <div className="font-display text-jacarta-100 text-sm flex flex-col">
-                      <span className="text-sm">Link</span>
-                      {!errors?.linkError ? (
-                        <span className="dark:text-white text-base">{link}</span>
-                      ) : (
-                        <span className="text-red text-base">{errors.linkError}</span>
-                      )}
-                    </div>
-                  ) : !link ? (
-                    <div className="dark:text-jacarta-100 text-jacarta-100 font-display flex flex-col">
-                      <span className="text-sm">Link</span>
+                {(link as string)?.length ? (
+                  <div className="font-display text-jacarta-100 text-sm flex flex-col">
+                    <span className="text-sm">Link</span>
+                    {!errors?.linkError ? (
+                      <span className="dark:text-white text-base">{link}</span>
+                    ) : (
                       <span className="text-red text-base">{errors.linkError}</span>
-                    </div>
+                    )}
+                  </div>
+                ) : !link ? (
+                  <div className="dark:text-jacarta-100 text-jacarta-100 font-display flex flex-col">
+                    <span className="text-sm">Link</span>
+                    <span className="text-red text-base">{errors.linkError}</span>
+                  </div>
+                ) : (
+                  ""
+                )}
+
+                <p className="font-display flex flex-col text-jacarta-100 text-sm">
+                  {startDate ? (
+                    <span className="flex flex-col">
+                      Start Date
+                      {!errors.startDateError ? (
+                        <span className="dark:text-white text-base">{formatDate(startDate)}</span>
+                      ) : (
+                        <span className="text-red text-base">{errors.startDateError}</span>
+                      )}
+                    </span>
                   ) : (
                     ""
                   )}
-
+                </p>
+                {endDate ? (
                   <p className="font-display flex flex-col text-jacarta-100 text-sm">
-                    {startDate ? (
-                      <span className="flex flex-col">
-                        Start Date
-                        {!errors.startDateError ? (
-                          <span className="dark:text-white text-base">{formatDate(startDate)}</span>
-                        ) : (
-                          <span className="text-red text-base">{errors.startDateError}</span>
-                        )}
-                      </span>
+                    End Date
+                    {!errors.endDateError ? (
+                      <span className="dark:text-white text-base">{formatDate(endDate)}</span>
                     ) : (
-                      ""
+                      <span className="text-red text-base">{errors.endDateError}</span>
                     )}
                   </p>
-                  {endDate ? (
-                    <p className="font-display flex flex-col text-jacarta-100 text-sm">
-                      End Date
-                      {!errors.endDateError ? (
-                        <span className="dark:text-white text-base">{formatDate(endDate)}</span>
-                      ) : (
-                        <span className="text-red text-base">{errors.endDateError}</span>
-                      )}
-                    </p>
-                  ) : (
-                    ""
-                  )}
-                  {selectedNumber ? (
-                    <p className="font-display flex flex-col text-jacarta-100 text-sm">
-                      Number of Items
-                      {!errors.numberError ? (
-                        <span className="dark:text-white text-base">{selectedNumber}</span>
-                      ) : (
-                        <span className="text-red text-base">{errors.numberError}</span>
-                      )}
-                    </p>
-                  ) : (
-                    ""
-                  )}
-                  {selectedParameter && (displayedParameter?.length as number) > 0 ? (
-                    <p className="font-display flex flex-col text-jacarta-100 text-sm">
-                      Type of Ad
-                      {!errors.typeAdError && !errors.imageRatioError ? (
-                        displayedParameter?.map((item, index) => (
-                          <span key={index} className="dark:text-white text-base">
-                            {item}
-                          </span>
-                        ))
-                      ) : (
-                        <div>
-                          {errors.typeAdError && (
-                            <span className="text-red text-base">{errors.typeAdError}</span>
-                          )}
-                          {errors.imageRatioError && (
-                            <span className="text-red text-base">{errors.imageRatioError}</span>
-                          )}
-                        </div>
-                      )}
-                    </p>
-                  ) : (
-                    ""
-                  )}
-                  {selectedStartingPrice || errors.startingPriceError ? (
-                    <p className="font-display flex flex-col text-jacarta-100 text-sm">
-                      Bid starting price
-                      {!errors.startingPriceError ? (
-                        <span className="dark:text-white text-base">{selectedStartingPrice}</span>
-                      ) : (
-                        <span className="text-red text-base">{errors.startingPriceError}</span>
-                      )}
-                      {helperFeesListing && <ModalHelper {...helperFeesListing} />}
-                    </p>
-                  ) : (
-                    ""
-                  )}
-                  {selectedUnitPrice || errors.unitPriceError ? (
-                    <p className="font-display flex flex-col text-jacarta-100 text-sm">
-                      Buy Price
-                      {!errors.unitPriceError ? (
-                        <span className="dark:text-white text-base">{selectedUnitPrice}</span>
-                      ) : (
-                        <span className="text-red text-base">{errors.unitPriceError}</span>
-                      )}
-                      {helperFeesListing && <ModalHelper {...helperFeesListing} />}
-                    </p>
-                  ) : (
-                    ""
-                  )}
-                  {symbolContract || selectedCurrency ? (
-                    <p className="font-display flex flex-col text-jacarta-100 text-sm">
-                      Currency
-                      {!errors.currencyError ? (
-                        <span className="dark:text-white text-base">
-                          {symbolContract ?? selectedCurrency}
+                ) : (
+                  ""
+                )}
+                {selectedNumber ? (
+                  <p className="font-display flex flex-col text-jacarta-100 text-sm">
+                    Number of Items
+                    {!errors.numberError ? (
+                      <span className="dark:text-white text-base">{selectedNumber}</span>
+                    ) : (
+                      <span className="text-red text-base">{errors.numberError}</span>
+                    )}
+                  </p>
+                ) : (
+                  ""
+                )}
+                {selectedParameter && (displayedParameter?.length as number) > 0 ? (
+                  <p className="font-display flex flex-col text-jacarta-100 text-sm">
+                    Type of Ad
+                    {!errors.typeAdError && !errors.imageRatioError ? (
+                      displayedParameter?.map((item, index) => (
+                        <span key={index} className="dark:text-white text-base">
+                          {item}
                         </span>
-                      ) : (
-                        <span className="text-red text-base">{errors.currencyError}</span>
-                      )}
-                    </p>
-                  ) : (
-                    ""
-                  )}
-                  {selectedRoyalties ? (
-                    <p className="font-display flex flex-col text-jacarta-100 text-sm">
-                      Royalties
-                      {!errors.royaltyError ? (
-                        <span className="dark:text-white text-base">{selectedRoyalties}%</span>
-                      ) : (
-                        <span className="text-red text-base">{errors.royaltyError}</span>
-                      )}
-                    </p>
-                  ) : (
-                    ""
-                  )}
-                  {address ? (
-                    <p className="font-display flex flex-col text-jacarta-100 text-sm">
-                      Address
-                      <span className="dark:text-white text-base">{shortenAddress(address)} </span>
-                    </p>
-                  ) : (
-                    ""
-                  )}
-                  {protocolFees ? (
-                    <p className="font-display flex flex-col text-jacarta-100 text-sm">
-                      Protocol fees
-                      <span className="dark:text-white text-base">{protocolFees}%</span>
-                    </p>
-                  ) : (
-                    ""
-                  )}
-                  {terms && (
-                    <p className="font-display flex flex-col text-jacarta-100 text-sm">
-                      Terms
-                      <span className="dark:text-white text-base">{terms} </span>
-                    </p>
-                  )}
-                </div>
-
-                <Divider className="block md:hidden" />
-
-                {previewImage?.map((image: any, index: number) => (
-                  <div className="flex flex-col gap-2 items-start justify-start" key={index}>
-                    <label
-                      htmlFor="item-description"
-                      className="font-display text-jacarta-100 text-sm text-center"
-                    >
-                      Image {imageUrlVariants[index] && `( ratio ${imageUrlVariants[index]} )`}{" "}
-                      preview
-                    </label>
-                    <div
-                      className="dark:bg-secondaryBlack dark:border-jacarta-800 border-jacarta-100  group relative flex max-w-md flex-col items-center justify-center rounded-lg border-2 border-dashed"
-                      style={{
-                        width:
-                          imageUrlVariants.length > 0
-                            ? `${imageRatioDisplay(index)[0]}px`
-                            : "275px",
-                        height:
-                          imageUrlVariants.length > 0
-                            ? `${imageRatioDisplay(index)[1]}px`
-                            : "275px",
-                        position: "relative"
-                      }}
-                    >
-                      <Image
-                        src={image ?? ""}
-                        fill={true}
-                        alt="Preview"
-                        className="object-contain h-full p-1"
-                      />
-                    </div>
-                  </div>
-                ))}
+                      ))
+                    ) : (
+                      <div>
+                        {errors.typeAdError && (
+                          <span className="text-red text-base">{errors.typeAdError}</span>
+                        )}
+                        {errors.imageRatioError && (
+                          <span className="text-red text-base">{errors.imageRatioError}</span>
+                        )}
+                      </div>
+                    )}
+                  </p>
+                ) : (
+                  ""
+                )}
+                {selectedStartingPrice || errors.startingPriceError ? (
+                  <p className="font-display flex flex-col text-jacarta-100 text-sm">
+                    Bid starting price
+                    {!errors.startingPriceError ? (
+                      <span className="dark:text-white text-base">{selectedStartingPrice}</span>
+                    ) : (
+                      <span className="text-red text-base">{errors.startingPriceError}</span>
+                    )}
+                    {helperFeesListing && <ModalHelper {...helperFeesListing} />}
+                  </p>
+                ) : (
+                  ""
+                )}
+                {selectedUnitPrice || errors.unitPriceError ? (
+                  <p className="font-display flex flex-col text-jacarta-100 text-sm">
+                    Buy Price
+                    {!errors.unitPriceError ? (
+                      <span className="dark:text-white text-base">{selectedUnitPrice}</span>
+                    ) : (
+                      <span className="text-red text-base">{errors.unitPriceError}</span>
+                    )}
+                    {helperFeesListing && <ModalHelper {...helperFeesListing} />}
+                  </p>
+                ) : (
+                  ""
+                )}
+                {symbolContract || selectedCurrency ? (
+                  <p className="font-display flex flex-col text-jacarta-100 text-sm">
+                    Currency
+                    {!errors.currencyError ? (
+                      <span className="dark:text-white text-base">
+                        {symbolContract ?? selectedCurrency}
+                      </span>
+                    ) : (
+                      <span className="text-red text-base">{errors.currencyError}</span>
+                    )}
+                  </p>
+                ) : (
+                  ""
+                )}
+                {selectedRoyalties ? (
+                  <p className="font-display flex flex-col text-jacarta-100 text-sm">
+                    Royalties
+                    {!errors.royaltyError ? (
+                      <span className="dark:text-white text-base">{selectedRoyalties}%</span>
+                    ) : (
+                      <span className="text-red text-base">{errors.royaltyError}</span>
+                    )}
+                  </p>
+                ) : (
+                  ""
+                )}
+                {address ? (
+                  <p className="font-display flex flex-col text-jacarta-100 text-sm">
+                    Address
+                    <span className="dark:text-white text-base">{shortenAddress(address)} </span>
+                  </p>
+                ) : (
+                  ""
+                )}
+                {protocolFees ? (
+                  <p className="font-display flex flex-col text-jacarta-100 text-sm">
+                    Protocol fees
+                    <span className="dark:text-white text-base">{protocolFees}%</span>
+                  </p>
+                ) : (
+                  ""
+                )}
+                {terms && (
+                  <p className="font-display flex flex-col w-full text-jacarta-100 text-sm">
+                    Terms
+                    <span className="dark:text-white overflow-y-auto hide-scrollbar pr-2 text-base flex w-full flex-wrap">{terms}</span>
+                  </p>
+                )}
               </div>
-            ) : (
-              <div className="flex flex-col gap-2">
-                <div className="flex gap-4">
-                  <p>{successFullUploadModal.body} </p>
-                  <div
-                    className="dark:border-jacarta-800 bg-green   flex h-6 w-6 items-center justify-center rounded-full border-2 border-white"
-                    data-tippy-content="Verified Collection"
+
+              <Divider className="block md:hidden" />
+
+              {previewImage?.map((image: any, index: number) => (
+                <div className="flex flex-col gap-2 items-start justify-start" key={index}>
+                  <label
+                    htmlFor="item-description"
+                    className="font-display text-jacarta-100 text-sm text-center"
                   >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 24 24"
-                      width="24"
-                      height="24"
-                      className="h-[.875rem] w-[.875rem] fill-white"
-                    >
-                      <path fill="none" d="M0 0h24v24H0z"></path>
-                      <path d="M10 15.172l9.192-9.193 1.415 1.414L10 18l-6.364-6.364 1.414-1.414z"></path>
-                    </svg>
+                    Image {imageUrlVariants[index] && `( ratio ${imageUrlVariants[index]} )`}{" "}
+                    preview
+                  </label>
+                  <div
+                    className="dark:bg-secondaryBlack dark:border-jacarta-800 border-jacarta-100  group relative flex max-w-md flex-col items-center justify-center rounded-lg border-2 border-dashed"
+                    style={{
+                      width:
+                        imageUrlVariants.length > 0 ? `${imageRatioDisplay(index)[0]}px` : "275px",
+                      height:
+                        imageUrlVariants.length > 0 ? `${imageRatioDisplay(index)[1]}px` : "275px",
+                      position: "relative"
+                    }}
+                  >
+                    <Image
+                      src={image ?? ""}
+                      fill={true}
+                      alt="Preview"
+                      className="object-contain h-full p-1"
+                    />
                   </div>
                 </div>
-                {successFullUploadModal.subBody && <p>{successFullUploadModal.subBody} </p>}
+              ))}
+            </div>
+          ) : (
+            <div className="flex flex-col gap-2">
+              <div className="flex gap-4">
+                <p>{successFullUploadModal.body} </p>
+                <div
+                  className="dark:border-jacarta-800 bg-green   flex h-6 w-6 items-center justify-center rounded-full border-2 border-white"
+                  data-tippy-content="Verified Collection"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    width="24"
+                    height="24"
+                    className="h-[.875rem] w-[.875rem] fill-white"
+                  >
+                    <path fill="none" d="M0 0h24v24H0z"></path>
+                    <path d="M10 15.172l9.192-9.193 1.415 1.414L10 18l-6.364-6.364 1.414-1.414z"></path>
+                  </svg>
+                </div>
               </div>
-            )}
-          </div>
+              {successFullUploadModal.subBody && <p>{successFullUploadModal.subBody} </p>}
+            </div>
+          )}
+        </div>
 
           <div className="modal-footer w-full">
             <div className="flex items-center justify-center space-x-4 w-full">
@@ -657,9 +652,9 @@ const AdSubmission = ({
                       />
                     </div>
 
-                    {!createOffer && (
-                      <ResponsiveTooltip
-                        text={`You need to approve the marketplace contract to spend your NFT on this
+                  {!createOffer && (
+                    <ResponsiveTooltip
+                      text={`You need to approve the marketplace contract to spend your NFT on this
       transaction.`}
                       >
                         <span className="text-xs text-jacarta-100 inline-flex items-center gap-1">
