@@ -10,7 +10,7 @@ const prodBase = {
   chainObject: Base,
   network: Network.BASE_MAINNET,
   logoURL: "/images/chains/base-logo.png",
-  explorerBaseUrl: "https://basescan.org",
+  explorerBaseURL: "https://basescan.org",
 
   rpcURL: "https://mainnet.base.org",
   smartContracts: {
