@@ -47,10 +47,14 @@ const CreateOffer = () => {
   const [symbolContract, setSymbolContract] = useState<string | null>(null);
   const [tokenContract, setTokenContract] = useState(WETHCurrency?.address);
   const [, setCustomTokenContract] = useState(null);
-  const [terms, setTerms] = useState([]);
+  const [terms, setTerms] = useState<string | undefined>(undefined);
   const [isLoadingButton, setIsLoadingButton] = useState(false);
   const [minterAddress, setMinterAddress] = useState<Address | null>(null);
   const { setSelectedChain } = useSwitchChainContext();
+
+  useEffect(() => {
+    console.log(terms);
+  }, [terms]);
 
   const address = useAddress();
 
@@ -231,17 +235,6 @@ const CreateOffer = () => {
         options: { uploadWithGatewayUrl: true, uploadWithoutDirectory: true }
       });
 
-      let uploadTerms: any[] = [];
-
-      if (typeof terms[0] === "string") {
-        uploadTerms.push(terms[0]);
-      } else if (typeof terms[0] === "object" && terms[0] !== null && "name" in terms[0]) {
-        uploadTerms = await upload({
-          data: [terms[0]],
-          options: { uploadWithGatewayUrl: true, uploadWithoutDirectory: true }
-        });
-      }
-
       if (name && link) {
         onUpload(name, link);
       } else {
@@ -259,7 +252,7 @@ const CreateOffer = () => {
           name: name,
           description: description,
           image: uploadUrl[0] ?? "",
-          terms: uploadTerms[0],
+          terms: terms,
           external_link: link,
           valid_from: startDate || "1970-01-01T00:00:00Z",
           valid_to: endDate || "2100-01-01T00:00:00Z",
@@ -429,8 +422,8 @@ const CreateOffer = () => {
             stepsRef={stepsRef}
             styles={styles}
             setLink={setLink}
-            link={link}
-            terms={terms}
+            link={link ?? ""}
+            terms={terms ?? ""}
             setTerms={setTerms}
             previewImage={previewImages}
             file={files}

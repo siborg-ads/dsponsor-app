@@ -1,8 +1,10 @@
-import { useState, useCallback } from "react";
+import React, { useState, useCallback } from "react";
 import Image from "next/image";
 import { Switch, cn } from "@nextui-org/react";
 import { FileUploader } from "react-drag-drop-files";
 import Input from "@/components/ui/Input";
+import { useStorage } from "@thirdweb-dev/react";
+import MainButton from "@/components/ui/buttons/MainButton";
 
 const fileTypes = ["JPG", "PNG", "WEBP"];
 
@@ -18,6 +20,19 @@ const OfferImageAndURL = ({
   setTerms,
   numSteps,
   currentSlide
+}: {
+  stepsRef: React.MutableRefObject<any>;
+  styles: any;
+  setLink: React.Dispatch<React.SetStateAction<string>>;
+  link: string;
+  file: any;
+  // eslint-disable-next-line no-unused-vars
+  handleLogoUpload: (e: any) => void;
+  previewImage: string[];
+  terms: string;
+  setTerms: React.Dispatch<React.SetStateAction<string>>;
+  numSteps: number;
+  currentSlide: number;
 }) => {
   const [isSelected, setIsSelected] = useState(true);
 
@@ -28,29 +43,9 @@ const OfferImageAndURL = ({
     [setLink]
   );
 
-  const handleTermsSwitch = useCallback(
-    (value) => {
-      setIsSelected(value);
-      setTerms([]);
-    },
-    [setTerms]
-  );
-
-  const handleTermsUpload = useCallback(
-    (file) => {
-      if (file) {
-        setTerms([file]);
-      }
-    },
-    [setTerms]
-  );
-
-  const handleChangeTerms = useCallback(
-    (e) => {
-      setTerms([e.target.value]);
-    },
-    [setTerms]
-  );
+  const handleTermsSwitch = useCallback((value) => {
+    setIsSelected(value);
+  }, []);
 
   if (currentSlide !== 2) return null;
 
@@ -75,9 +70,8 @@ const OfferImageAndURL = ({
         <TermsSection
           isSelected={isSelected}
           onSwitchChange={handleTermsSwitch}
-          terms={terms}
-          handleChangeTerms={handleChangeTerms}
-          handleTermsUpload={handleTermsUpload}
+          termsURL={terms}
+          setTermsURL={setTerms}
         />
       </div>
     </div>
@@ -145,6 +139,60 @@ const FileUploadSection = ({ file, previewImage, handleLogoUpload }) => (
   </div>
 );
 
+const TermsPdfUploader = ({
+  termsURL,
+  setTermsURL
+}: {
+  termsURL: string;
+  setTermsURL: React.Dispatch<React.SetStateAction<string>>;
+}) => {
+  const storage = useStorage();
+
+  const handleTermsUpload = async (e) => {
+    if (!storage) {
+      throw new Error("Storage is not initialized");
+    }
+
+    const file = e.target.files[0];
+    const url = await storage.upload(file);
+
+    setTermsURL(url);
+  };
+
+  return (
+    <div className="flex items-center justify-center flex-col">
+      <label className="font-display text-jacarta-900 mb-2 block dark:text-white">
+        Terms of Use
+        <span className="text-red">*</span>
+      </label>
+      <p className="dark:text-jacarta-100 text-jacarta-100 text-2xs mb-3">
+        Submit the terms of use for the ad space you are offering.
+      </p>
+
+      {termsURL ? (
+        <p className="text-2xs mb-3 text-center text-green">Successfully uploaded: {termsURL}</p>
+      ) : (
+        <p className="dark:text-jacarta-100 text-jacarta-100 text-2xs mb-3">
+          Drag or choose your file to upload
+        </p>
+      )}
+
+      {!termsURL ? (
+        <Input
+          className={`flex justify-center items-center mt-4 text-white`}
+          type="file"
+          onChange={handleTermsUpload}
+          accept="application/pdf"
+        />
+      ) : (
+        <div className="mt-4">
+          <MainButton onClick={() => setTermsURL("")} text="Remove file" />
+        </div>
+      )}
+    </div>
+  );
+};
+
 const EmptyFileUploader = () => (
   <div className="relative flex justify-center items-center z-10 cursor-pointer p-1">
     <svg
@@ -182,9 +230,14 @@ const FileUploadOverlay = ({ handleChange, fileTypes }) => (
 const TermsSection = ({
   isSelected,
   onSwitchChange,
-  terms,
-  handleChangeTerms,
-  handleTermsUpload
+  termsURL,
+  setTermsURL
+}: {
+  isSelected: boolean;
+  // eslint-disable-next-line no-unused-vars
+  onSwitchChange: (value: boolean) => void;
+  termsURL: string;
+  setTermsURL: React.Dispatch<React.SetStateAction<string>>;
 }) => (
   <div className="mb-6 flex items-center justify-center flex-col">
     <label className="font-display text-jacarta-900 mb-2 block dark:text-white">
@@ -195,7 +248,7 @@ const TermsSection = ({
       is expected of the advertisements displayed in the sold spaces and the rules that must be
       adhered to. <br /> Import a PDF or a link.
     </p>
-    <div className="flex">
+    <div className="flex mb-4">
       <span className="mr-3">URL</span>
       <Switch
         isSelected={isSelected}
@@ -213,24 +266,12 @@ const TermsSection = ({
       />
       <span className="ml-1">File</span>
     </div>
-    {isSelected ? (
-      terms.length > 0 ? (
-        <p className="text-2xs mb-3 text-green">Successfully uploaded: {terms[0].name}</p>
-      ) : (
-        <p className="dark:text-jacarta-100 text-jacarta-100 text-2xs mb-3">
-          Drag or choose your terms to upload
-        </p>
-      )
-    ) : (
-      <ExternalTermsInput value={terms} onChange={handleChangeTerms} />
-    )}
-    {isSelected && (
-      <FileUploadSection handleLogoUpload={handleTermsUpload} previewImage={[]} file={terms} />
-    )}
+    {!isSelected && <ExternalTermsInput termsURL={termsURL} setTermsURL={setTermsURL} />}
+    {isSelected && <TermsPdfUploader termsURL={termsURL} setTermsURL={setTermsURL} />}
   </div>
 );
 
-const ExternalTermsInput = ({ value, onChange }) => (
+const ExternalTermsInput = ({ termsURL, setTermsURL }) => (
   <div className="mb-6">
     <label
       htmlFor="terms-external-link"
@@ -238,12 +279,13 @@ const ExternalTermsInput = ({ value, onChange }) => (
     >
       URL of your terms
     </label>
+
     <Input
       type="url"
       id="terms-external-link"
       placeholder="URL of your terms e.g., https://yoursite.com"
-      onChange={onChange}
-      value={value}
+      onChange={(e) => setTermsURL(e.target.value)}
+      value={termsURL}
     />
   </div>
 );

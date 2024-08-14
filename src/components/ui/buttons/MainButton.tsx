@@ -11,12 +11,14 @@ const MainButton = ({
   link,
   isPurple,
   text,
-  isFullWidth
+  isFullWidth,
+  onClick
 }: {
   link?: string;
   isPurple?: boolean;
   text: string;
   isFullWidth?: boolean;
+  onClick?: () => void;
 }) => {
   return (
     <>
@@ -28,7 +30,10 @@ const MainButton = ({
           {text}
         </Link>
       ) : (
-        <button className={`${isFullWidth && "w-full"} ${isPurple ? purpleClass : whiteClass}`}>
+        <button
+          onClick={onClick}
+          className={`${isFullWidth && "w-full"} ${isPurple ? purpleClass : whiteClass}`}
+        >
           {text}
         </button>
       )}

@@ -35,7 +35,6 @@ const AdSubmission = ({
   previewImage,
   displayedParameter,
   terms = [],
-  imageURLSteps = [],
   validate,
   errors,
   successFullUpload,
@@ -571,15 +570,11 @@ const AdSubmission = ({
                   ) : (
                     ""
                   )}
-                  {terms.length > 0 ? (
+                  {terms && (
                     <p className="font-display flex flex-col text-jacarta-100 text-sm">
                       Terms
-                      <span className="dark:text-white text-base">
-                        {terms[0].name ? terms[0].name : terms[0]}{" "}
-                      </span>
+                      <span className="dark:text-white text-base">{terms} </span>
                     </p>
-                  ) : (
-                    ""
                   )}
                 </div>
 
