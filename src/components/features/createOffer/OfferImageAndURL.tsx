@@ -4,6 +4,7 @@ import { Switch, cn } from "@nextui-org/react";
 import { FileUploader } from "react-drag-drop-files";
 import Input from "@/components/ui/Input";
 import { useStorage } from "@thirdweb-dev/react";
+import MainButton from "@/components/ui/buttons/MainButton";
 
 const fileTypes = ["JPG", "PNG", "WEBP"];
 
@@ -176,12 +177,16 @@ const TermsPdfUploader = ({
         </p>
       )}
 
-      {!termsURL && (
+      {!termsURL ? (
         <Input
           className={`flex justify-center items-center mt-4 text-white`}
           type="file"
           onChange={handleTermsUpload}
         />
+      ) : (
+        <div className="mt-4">
+          <MainButton onClick={() => setTermsURL("")} text="Remove file" />
+        </div>
       )}
     </div>
   );
