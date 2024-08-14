@@ -131,7 +131,7 @@ const prodBase = {
   chainObject: Base,
   network: Network.BASE_MAINNET,
   logoURL: "/images/base-logo.png",
-  explorerBaseUrl: "https://basescan.org",
+  explorerBaseURL: "https://basescan.org",
 
   rpcURL: "https://mainnet.base.org",
   smartContracts: {
@@ -197,7 +197,7 @@ export default prodBase;
 - **`chainObject`**: An object representing the chain, typically imported from a library like `@thirdweb-dev/chains`.
 - **`network`**: The network configuration object, imported from your utilities or configuration files.
 - **`logoURL`**: The path to the logo image for the chain.
-- **`explorerBaseUrl`**: The URL of the blockchain explorer for the chain.
+- **`explorerBaseURL`**: The URL of the blockchain explorer for the chain.
 - **`rpcURL`**: The RPC URL used to interact with the blockchain.
 - **`smartContracts`**: Configuration details for various smart contracts deployed on the chain, including their addresses, ABIs, and other relevant details.
 - **`features`**: Optional features specific to the chain, such as configurations for external services like crossmint (allowing payment with cards).

@@ -10,7 +10,7 @@ const devEthereumSepolia = {
   network: Network.ETH_SEPOLIA,
   chainObject: Sepolia,
   logoURL: "/images/chains/ethereum-logo.png",
-  explorerBaseUrl: "https://sepolia.etherscan.io",
+  explorerBaseURL: "https://sepolia.etherscan.io",
 
   rpcURL: "https://ethereum-sepolia-rpc.publicnode.com",
   smartContracts: {
