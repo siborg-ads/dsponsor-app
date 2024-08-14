@@ -132,6 +132,11 @@ const Token = () => {
   const [amountInEthWithSlippage, setAmountInEthWithSlippage] = useState<BigNumber | null>(null);
   const [displayedPrice, setDisplayedPrice] = useState<number | null>(null);
   const [isOfferOwner, setIsOfferOwner] = useState(false);
+  const [directBuyPriceBN, setDirectBuyPriceBN] = useState<BigNumber | undefined>(undefined);
+  const [auctionPriceBN, setAuctionPriceBN] = useState<BigNumber | undefined>(undefined);
+  const [mintPriceBN, setMintPriceBN] = useState<BigNumber | undefined>(undefined);
+  const [hasEnoughBalance, setHasEnoughBalance] = useState<boolean>(false);
+  const [hasEnoughBalanceForNative, setHasEnoughBalanceForNative] = useState<boolean>(false);
   const [
     sponsorHasAtLeastOneRejectedProposalAndNoPending,
     setSponsorHasAtLeastOneRejectedProposalAndNoPending
@@ -434,37 +439,61 @@ const Token = () => {
   }, [bidsAmount]);
 
   useEffect(() => {
-    const fetchBuyEtherPrice = async () => {
+    const fetchBuyEtherPrice = async (amount: string) => {
       try {
-        let amount: BigNumber = BigNumber.from(0);
-        if (currencyDecimals && debouncedBidsAmount) {
-          amount = ethers.utils.parseUnits(debouncedBidsAmount, Number(currencyDecimals));
-        }
+        if (currencyDecimals) {
+          const finalAmount = ethers.utils.parseUnits(amount, Number(currencyDecimals))?.toString();
 
-        const tokenEtherPrice = await fetch(
-          `https://relayer.dsponsor.com/api/${chainId}/prices?token=${tokenCurrencyAddress}&amount=${amount?.toString()}&slippage=0.3`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json"
+          const tokenEtherPrice = await fetch(
+            `https://relayer.dsponsor.com/api/${chainId}/prices?token=${tokenCurrencyAddress}&amount=${finalAmount}&slippage=0.3`,
+            {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json"
+              }
             }
-          }
-        )
-          .then((res) => res.json())
-          .then((data) => {
-            return data;
-          });
+          )
+            .then((res) => res.json())
+            .then((data) => {
+              return data;
+            });
 
-        setTokenEtherPriceRelayer(tokenEtherPrice);
+          setTokenEtherPriceRelayer(tokenEtherPrice);
+        }
       } catch (error) {
         console.error(error);
       }
     };
 
-    if (chainId && tokenCurrencyAddress && currencyDecimals && debouncedBidsAmount) {
-      fetchBuyEtherPrice();
+    if (chainId && tokenCurrencyAddress && currencyDecimals) {
+      if (tokenStatut === "AUCTION" && debouncedBidsAmount) {
+        fetchBuyEtherPrice(debouncedBidsAmount);
+      }
+
+      if (tokenStatut === "DIRECT" && directBuyPriceBN) {
+        const formattedDirectBuyPrice = ethers.utils.formatUnits(
+          directBuyPriceBN,
+          currencyDecimals
+        );
+
+        fetchBuyEtherPrice(formattedDirectBuyPrice);
+      }
+
+      if (tokenStatut === "MINTABLE" && mintPriceBN) {
+        const formattedMintPrice = ethers.utils.formatUnits(mintPriceBN, currencyDecimals);
+
+        fetchBuyEtherPrice(formattedMintPrice);
+      }
     }
-  }, [chainId, currencyDecimals, tokenCurrencyAddress, debouncedBidsAmount]);
+  }, [
+    chainId,
+    currencyDecimals,
+    tokenCurrencyAddress,
+    debouncedBidsAmount,
+    tokenStatut,
+    directBuyPriceBN,
+    mintPriceBN
+  ]);
 
   useEffect(() => {
     if (tokenEtherPriceRelayer) {
@@ -837,6 +866,8 @@ const Token = () => {
       const totalPrice = offerData?.nftContract?.prices[0]?.mintPriceStructure?.totalAmount;
       const totalPriceFormatted = parseFloat(formatUnits(totalPrice, currencyDecimals as number));
 
+      setMintPriceBN(ethers.BigNumber.from(totalPrice));
+
       setTotalPrice(totalPriceFormatted);
       setFeesAmount(
         offerData?.nftContract?.prices[0]?.mintPriceStructureFormatted?.protocolFeeAmount
@@ -918,6 +949,9 @@ const Token = () => {
           ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]
           ?.buyPriceStructure?.buyoutPricePerToken;
         const totalPriceFormatted = parseFloat(formatUnits(totalPrice, currencyDecimals as number));
+
+        const directBuyPriceBN = ethers.BigNumber.from(totalPrice);
+        setDirectBuyPriceBN(directBuyPriceBN);
 
         setTotalPrice(totalPriceFormatted);
         setFeesAmount(
@@ -1060,6 +1094,15 @@ const Token = () => {
         const totalPriceFormatted = parseFloat(formatUnits(totalPrice, currencyDecimals as number));
 
         setTotalPrice(totalPriceFormatted);
+
+        const finalPrice = offerData?.nftContract?.tokens
+          ?.find(
+            (token) => !!token?.tokenId && BigInt(token?.tokenId) === BigInt(tokenId as string)
+          )
+          ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]
+          ?.bidPriceStructure?.minimalBidPerToken;
+
+        setAuctionPriceBN(ethers.BigNumber.from(finalPrice));
 
         setAmountToApprove(
           BigInt(
@@ -1384,8 +1427,6 @@ const Token = () => {
           }
         }
 
-        console.log("amount to approve", amountToApprove?.toString());
-
         const allowanceBigInt = allowance ? BigInt(allowance?.toString()) : BigInt(0);
 
         if (allowanceBigInt && amountToApprove && allowanceBigInt >= amountToApprove) {
@@ -1448,19 +1489,14 @@ const Token = () => {
   };
 
   const handleBuySubmit = async () => {
-    const finalPriceLocal = formatUnits(
-      BigInt(finalPriceNotFormatted as string),
-      currencyDecimals as number
-    );
-
-    const hasEnoughBalance = checkUserBalance(tokenBalance, finalPriceLocal, currencyDecimals);
+    if (!tokenBalance?.value) return;
 
     if (!hasEnoughBalance && !canPayWithNativeToken) {
       console.error("Not enough balance to confirm checkout");
       throw new Error("Not enough balance to confirm checkout");
     }
 
-    const hasEnoughBalanceForNative = checkUserBalance(nativeTokenBalance, buyTokenEtherPrice, 18);
+    if (!nativeTokenBalance?.value) return;
 
     if (!hasEnoughBalanceForNative) {
       console.error("Not enough balance to confirm checkout");
@@ -1603,39 +1639,93 @@ const Token = () => {
     }
   };
 
-  const checkUserBalance = (tokenAddressBalance, priceToken, decimals) => {
-    if (Number(priceToken) === 0) {
-      return true;
+  const checkUserBalance = React.useCallback(
+    async (tokenAddressBalance: BigNumber, tokenPrice: BigNumber) => {
+      if (Number(tokenPrice) === 0) {
+        return true;
+      }
+
+      try {
+        if (!tokenAddressBalance || !tokenPrice) {
+          throw new Error("Invalid balance or price token");
+        }
+
+        return tokenAddressBalance.gte(tokenPrice);
+      } catch (error) {
+        toast.error("Error while checking user balance");
+        console.error("Failed to fetch token balance:", error);
+        throw Error("Failed to fetch token balance");
+      }
+    },
+    []
+  );
+
+  useEffect(() => {
+    const fetchTokenBalance = async (tokenBalance: BigNumber) => {
+      if (!tokenBalance || !finalPrice) {
+        return;
+      }
+
+      console.log(tokenStatut);
+
+      if (tokenStatut === "AUCTION") {
+        if (!auctionPriceBN) return;
+
+        const result = await checkUserBalance(tokenBalance, auctionPriceBN);
+        setHasEnoughBalance(result);
+
+        console.log(result);
+
+        if (!nativeTokenBalance?.value || !amountInEthWithSlippage) return;
+
+        const nativeResult = await checkUserBalance(
+          nativeTokenBalance?.value,
+          amountInEthWithSlippage
+        );
+        setHasEnoughBalanceForNative(nativeResult);
+      } else if (tokenStatut === "DIRECT") {
+        if (!directBuyPriceBN) return;
+
+        const result = await checkUserBalance(tokenBalance, directBuyPriceBN);
+        setHasEnoughBalance(result);
+
+        if (!nativeTokenBalance?.value || !amountInEthWithSlippage) return;
+
+        const nativeResult = await checkUserBalance(
+          nativeTokenBalance?.value,
+          amountInEthWithSlippage
+        );
+        setHasEnoughBalanceForNative(nativeResult);
+      } else if (tokenStatut === "MINTABLE") {
+        if (!mintPriceBN) return;
+
+        const result = await checkUserBalance(tokenBalance, mintPriceBN);
+        setHasEnoughBalance(result);
+
+        if (!nativeTokenBalance?.value || !amountInEthWithSlippage) return;
+
+        const nativeResult = await checkUserBalance(
+          nativeTokenBalance?.value,
+          amountInEthWithSlippage
+        );
+        setHasEnoughBalanceForNative(nativeResult);
+      }
+    };
+
+    if (tokenBalance && finalPrice && amountInEthWithSlippage) {
+      fetchTokenBalance(tokenBalance?.value);
     }
-
-    try {
-      if (!tokenAddressBalance || !priceToken) {
-        throw new Error("Invalid balance or price token");
-      }
-
-      const parsedTokenBalance = tokenAddressBalance?.value;
-
-      if (!parsedTokenBalance) {
-        throw new Error("Failed to parse token balance");
-      }
-
-      const priceTokenNumber = Number(priceToken);
-      if (isNaN(priceTokenNumber)) {
-        throw new Error("Invalid price token amount");
-      }
-
-      const parsedPriceToken = ethers.utils.parseUnits(
-        Number(priceTokenNumber).toFixed(decimals).toString(),
-        Number(decimals)
-      );
-
-      return parsedTokenBalance.gte(parsedPriceToken);
-    } catch (error) {
-      toast.error("Error while checking user balance");
-      console.error("Failed to fetch token balance:", error);
-      throw Error("Failed to fetch token balance");
-    }
-  };
+  }, [
+    checkUserBalance,
+    tokenBalance,
+    finalPrice,
+    tokenStatut,
+    amountInEthWithSlippage,
+    directBuyPriceBN,
+    nativeTokenBalance,
+    auctionPriceBN,
+    mintPriceBN
+  ]);
 
   function formatTokenId(str) {
     if (str?.length <= 6) {
@@ -2352,7 +2442,6 @@ const Token = () => {
                         bidsAmount={bidsAmount}
                         setBidsAmount={setBidsAmount}
                         chainId={chainId as number}
-                        checkUserBalance={checkUserBalance}
                         price={price as string}
                         allowanceTrue={allowanceTrue}
                         handleApprove={handleApprove}
@@ -2387,12 +2476,13 @@ const Token = () => {
                           address: referralAddress as Address
                         }}
                         currencyContract={tokenCurrencyAddress}
-                        tokenEtherPrice={tokenEtherPrice as string}
                         amountInEthWithSlippage={amountInEthWithSlippage as BigNumber}
                         displayedPrice={(displayedPrice as number)?.toString()}
                         setDisplayedPrice={setDisplayedPrice}
                         showBidsModal={showBidsModal}
                         setShowBidsModal={setShowBidsModal}
+                        hasEnoughBalance={hasEnoughBalance}
+                        hasEnoughBalanceForNative={hasEnoughBalanceForNative}
                       />
                     )}
                 </>
