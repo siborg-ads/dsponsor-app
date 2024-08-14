@@ -26,7 +26,6 @@ interface PendingAdsProps {
   aspectRatio: string;
   // eslint-disable-next-line no-unused-vars
   setSponsorHasAtLeastOneRejectedProposalAndNoPending: (value: boolean) => void;
-  isRejecting: boolean;
 }
 
 const PendingAds: React.FC<PendingAdsProps> = ({

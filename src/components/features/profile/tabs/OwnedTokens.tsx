@@ -37,7 +37,6 @@ const OwnedTokens = ({ data, isOwner, isLoading, fetchCreatedData }) => {
     currentChainObject?.smartContracts?.DSPONSORADMIN?.address,
     currentChainObject?.smartContracts?.DSPONSORADMIN?.abi
   );
-  const [isLoadingButton, setIsLoadingButton] = useState(false);
 
   const { mutateAsync: uploadToIPFS } = useStorageUpload();
   const { mutateAsync: submitAd } = useContractWrite(DsponsorAdminContract, "submitAdProposals");
@@ -145,7 +144,6 @@ const OwnedTokens = ({ data, isOwner, isLoading, fetchCreatedData }) => {
     const dataItems: any[] = [];
 
     try {
-      setIsLoadingButton(true);
       for (const item of selectedItems) {
         for (const args of item.adParameters) {
           if (args.adParameter.id !== "xSpaceId" && args.adParameter.id !== "xCreatorHandle") {
@@ -186,10 +184,7 @@ const OwnedTokens = ({ data, isOwner, isLoading, fetchCreatedData }) => {
       await fetchCreatedData();
     } catch (err) {
       console.error("Erreur lors de l'upload à Blockchain:", err);
-      setIsLoadingButton(false);
       throw new Error("Upload to Blockchain failed.");
-    } finally {
-      setIsLoadingButton(false);
     }
   };
 
@@ -434,7 +429,6 @@ const OwnedTokens = ({ data, isOwner, isLoading, fetchCreatedData }) => {
             buttonTitle="Submit ad"
             modalTitle="Ad Space Preview"
             successFullUploadModal={successFullUploadModal}
-            isLoadingButton={isLoadingButton}
             multipleAdsSubmission={true}
             expectedMultipleAds={selectedItems?.length}
           />
