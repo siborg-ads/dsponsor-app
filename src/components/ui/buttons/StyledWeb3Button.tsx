@@ -1,6 +1,7 @@
 import React from "react";
 import { Spinner } from "@nextui-org/spinner";
 import { Address } from "thirdweb";
+import { Web3Button } from "@thirdweb-dev/react";
 
 /**
  * StyledWeb3Button component
@@ -62,10 +63,10 @@ const StyledWeb3Button = ({
   }
 
   return (
-    <button
+    <Web3Button
       {...props}
       className={`${baseClass} ${isLoading ? loadingClass : ""} ${props.isDisabled ? disabledClass : ""} ${!props.isDisabled && !isLoading ? defaultClass : ""}`}
-      onClick={async () => {
+      action={async () => {
         try {
           setIsLoading(true);
           await props.onClick();
@@ -77,7 +78,7 @@ const StyledWeb3Button = ({
       }}
     >
       {isLoading ? <Spinner size="sm" color="default" /> : props.defaultText}
-    </button>
+    </Web3Button>
   );
 };
 
