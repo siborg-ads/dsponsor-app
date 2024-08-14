@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { Web3Button } from "@thirdweb-dev/react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useChainContext } from "@/hooks/useChainContext";
-import { Spinner } from "@nextui-org/spinner";
 import TextArea from "@/components/ui/TextArea";
+import StyledWeb3Button from "@/components/ui/buttons/StyledWeb3Button";
+import { Address } from "thirdweb";
 
 const RejectAd = ({
   selectedItems,
@@ -12,9 +12,7 @@ const RejectAd = ({
   closeRefuseModal,
   handleCommentChange,
   handleItemSubmit,
-  successFullRefuseModal,
-  setIsRejecting,
-  isRejecting
+  successFullRefuseModal
 }: {
   selectedItems: any;
   successFullModalObject: any;
@@ -24,8 +22,6 @@ const RejectAd = ({
   // eslint-disable-next-line no-unused-vars
   handleItemSubmit: (b: boolean) => Promise<unknown> | (() => Promise<unknown>);
   successFullRefuseModal: boolean;
-  setIsRejecting: React.Dispatch<React.SetStateAction<boolean>>;
-  isRejecting: boolean;
 }) => {
   const [filteredItems, setFilteredItems] = useState([]);
   const [allCommentsOk, setAllCommentsOk] = useState(false);
@@ -123,25 +119,21 @@ const RejectAd = ({
           <div className="flex items-center justify-center space-x-4">
             <div className="flex items-center gap-4">
               {!successFullRefuseModal ? (
-                <Web3Button
-                  contractAddress={currentChainObject?.smartContracts?.DSPONSORADMIN?.address ?? ""}
-                  action={async () => {
-                    setIsRejecting(true);
-                    await toast
-                      .promise(handleItemSubmit(false), {
-                        pending: "Waiting for confirmation 🕒",
-                        success: "Transaction confirmed 👌",
-                        error: "Transaction rejected 🤯"
-                      })
-                      .finally(() => {
-                        setIsRejecting(false);
-                      });
+                <StyledWeb3Button
+                  contractAddress={
+                    currentChainObject?.smartContracts?.DSPONSORADMIN?.address as Address
+                  }
+                  onClick={async () => {
+                    await toast.promise(handleItemSubmit(false), {
+                      pending: "Waiting for confirmation 🕒",
+                      success: "Transaction confirmed 👌",
+                      error: "Transaction rejected 🤯"
+                    });
                   }}
-                  className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!allCommentsOk || isRejecting ? "!btn-disabled !cursor-not-allowed !opacity-30" : "!bg-red !cursor-pointer"} `}
-                  isDisabled={!allCommentsOk || isRejecting}
-                >
-                  {isRejecting ? <Spinner size="sm" color="default" /> : "Refuse Ad Proposal"}
-                </Web3Button>
+                  isDisabled={!allCommentsOk}
+                  defaultText="Refuse Ad Proposal"
+                  isRed
+                />
               ) : (
                 <button
                   onClick={() => closeRefuseModal()}

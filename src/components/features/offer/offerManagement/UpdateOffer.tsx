@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import * as Switch from "@radix-ui/react-switch";
-import { Web3Button, useContract, useContractWrite, useStorage } from "@thirdweb-dev/react";
+import { useContract, useContractWrite, useStorage } from "@thirdweb-dev/react";
 import config from "@/config/config";
 import { useChainContext } from "@/hooks/useChainContext";
 import { toast } from "react-toastify";
@@ -12,6 +12,7 @@ import { parseDate } from "@internationalized/date";
 import Input from "@/components/ui/Input";
 import TextArea from "@/components/ui/TextArea";
 import { Address } from "thirdweb";
+import StyledWeb3Button from "@/components/ui/buttons/StyledWeb3Button";
 
 const fileTypes = ["JPG", "PNG", "WEBP"];
 
@@ -671,25 +672,19 @@ const UpdateOffer = ({ offer }) => {
         <label className="block text-white text-sm font-semibold">Disable the offer</label>
       </div>
 
-      <Web3Button
-        action={() => {
-          toast
-            .promise(handleUpdateOffer(metadatas), {
-              pending: "Waiting for confirmation 🕒",
-              success: disabledLocked
-                ? "The offer has been disabled 🎉"
-                : "The offer has been updated 🎉",
-              error: "Transaction rejected 🤯"
-            })
-            .catch((error) => {
-              console.error(error);
-            });
+      <StyledWeb3Button
+        onClick={async () => {
+          await toast.promise(handleUpdateOffer(metadatas), {
+            pending: "Waiting for confirmation 🕒",
+            success: disabledLocked
+              ? "The offer has been disabled 🎉"
+              : "The offer has been updated 🎉",
+            error: "Transaction rejected 🤯"
+          });
         }}
         contractAddress={config[chainId as number]?.smartContracts?.DSPONSORADMIN?.address}
-        className="!mt-4 !bg-primaryPurple !w-fit !hover:bg-opacity-80 !px-4 !py-2 !text-white !font-semibold !rounded-full mb-4"
-      >
-        Update Offer
-      </Web3Button>
+        defaultText="Update Offer"
+      />
     </div>
   );
 };

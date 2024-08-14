@@ -1,5 +1,4 @@
 import {
-  Web3Button,
   useAddress,
   useBalance,
   useContract,
@@ -13,7 +12,6 @@ import { ethers, BigNumber } from "ethers";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { Spinner } from "@nextui-org/react";
 import React, { useEffect, useRef, useState } from "react";
 import "tippy.js/dist/tippy.css";
 import Meta from "@/components/Meta";
@@ -52,6 +50,7 @@ import { addLineBreaks } from "@/utils/misc/addLineBreaks";
 import formatAndRoundPrice from "@/utils/prices/formatAndRound";
 import CrossmintFail from "@/components/features/token/modals/CrossmintFail";
 import PlaceBid from "@/components/features/token/widgets/PlaceBid";
+import StyledWeb3Button from "@/components/ui/buttons/StyledWeb3Button";
 
 const Token = () => {
   const router = useRouter();
@@ -63,7 +62,6 @@ const Token = () => {
   const chainId = currentChainObject?.chainId;
   const address = useAddress();
 
-  const [isLoadingAirdropButton, setIsLoadingAirdropButton] = useState<boolean>(false);
   const [tokenIdString, setTokenIdString] = useState<string | null>(null);
   const [offerData, setOfferData] = useState<any | null>(null);
   const [showBidsModal, setShowBidsModal] = useState<boolean>(false);
@@ -106,7 +104,6 @@ const Token = () => {
   const [adParameters, setAdParameters] = useState<any[]>([]);
   const [imageURLSteps, setImageURLSteps] = useState<any[]>([]);
   const [isValidId, setIsValidId] = useState(false);
-  const [isLoadingButton, setIsLoadingButton] = useState(false);
   const stepsRef = useRef([]);
   const [numSteps, setNumSteps] = useState(2);
   const [tokenStatut, setTokenStatut] = useState<string | null>(null);
@@ -1412,8 +1409,6 @@ const Token = () => {
 
   const handleApprove = async () => {
     try {
-      setIsLoadingButton(true);
-
       if (marketplaceListings.length > 0 && tokenStatut === "DIRECT") {
         await approve({
           args: [config[chainId as number]?.smartContracts?.DSPONSORMP?.address, amountToApprove]
@@ -1438,12 +1433,9 @@ const Token = () => {
       }
       setAllowanceTrue(false);
     } catch (error) {
-      setIsLoadingButton(false);
       console.error(error);
       console.error("Approval failed:", error.message);
       throw new Error("Approval failed.");
-    } finally {
-      setIsLoadingButton(false);
     }
   };
 
@@ -1487,8 +1479,6 @@ const Token = () => {
       referralAdditionalInformation: referralAddress
     };
     try {
-      setIsLoadingButton(true);
-
       const tokenEtherPriceBigNumber = parseUnits(
         Number(buyTokenEtherPrice).toFixed(18).toString(),
         18
@@ -1526,10 +1516,7 @@ const Token = () => {
     } catch (error) {
       console.error("Erreur de soumission du token:", error);
       setSuccessFullUpload(false);
-      setIsLoadingButton(false);
       throw error;
-    } finally {
-      setIsLoadingButton(false);
     }
   };
   const handleSubmit = async () => {
@@ -1549,14 +1536,11 @@ const Token = () => {
           options: { uploadWithGatewayUrl: true, uploadWithoutDirectory: true }
         });
       } catch (error) {
-        setIsLoadingButton(false);
         console.error("Erreur lors de l'upload à IPFS:", error);
         throw new Error("Upload to IPFS failed.");
       }
     }
     try {
-      setIsLoadingButton(true);
-
       let offerIdParams;
       let tokenIdParams;
       let adParams;
@@ -1596,10 +1580,7 @@ const Token = () => {
     } catch (error) {
       console.error("Erreur de soumission du token:", error);
       setSuccessFullUpload(false);
-      setIsLoadingButton(false);
       throw error;
-    } finally {
-      setIsLoadingButton(false);
     }
   };
 
@@ -2276,35 +2257,21 @@ const Token = () => {
                         </div>
 
                         <div className="w-full flex">
-                          <Web3Button
+                          <StyledWeb3Button
                             contractAddress={nftContractAddress as Address}
-                            action={async () => {
-                              setIsLoadingAirdropButton(true);
-
-                              await toast
-                                .promise(handleAirdrop(airdropAddress as Address, tokenData), {
+                            onClick={async () => {
+                              await toast.promise(
+                                handleAirdrop(airdropAddress as Address, tokenData),
+                                {
                                   pending: "Airdrop in progress... 🚀",
                                   success: "Airdrop successful 🎉",
                                   error: "Airdrop failed ❌"
-                                })
-                                .finally(() => {
-                                  setIsLoadingAirdropButton(false);
-                                });
+                                }
+                              );
                             }}
-                            className={`!rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all  !bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer ${(airdropAddress === "" || !airdropAddress || isLoadingAirdropButton || !isValidId) && "!btn-disabled !cursor-not-allowed !opacity-30"}`}
-                            isDisabled={
-                              airdropAddress === "" ||
-                              !airdropAddress ||
-                              isLoadingAirdropButton ||
-                              !isValidId
-                            }
-                          >
-                            {isLoadingAirdropButton ? (
-                              <Spinner size="sm" color="default" />
-                            ) : (
-                              "Airdrop"
-                            )}
-                          </Web3Button>
+                            isDisabled={airdropAddress === "" || !airdropAddress || !isValidId}
+                            defaultText="Airdrop"
+                          />
                         </div>
                       </div>
                     )}
@@ -2372,8 +2339,6 @@ const Token = () => {
                         setSuccessFullBid={setSuccessFullBid}
                         successFullBid={successFullBid}
                         address={address as Address}
-                        isLoadingButton={isLoadingButton}
-                        setIsLoadingButton={setIsLoadingButton}
                         token={tokenDO}
                         isValidId={isValidId}
                         user={{
@@ -2651,7 +2616,6 @@ const Token = () => {
             buttonTitle="Submit ad"
             modalTitle="Ad Space Preview"
             successFullUploadModal={successFullUploadModal}
-            isLoadingButton={isLoadingButton}
             adSubmission={true}
           />
         </div>
@@ -2679,7 +2643,6 @@ const Token = () => {
             tokenId={tokenId}
             tokenData={tokenData}
             formatTokenId={formatTokenId}
-            isLoadingButton={isLoadingButton}
             address={address}
             insufficentBalance={insufficentBalance}
             setInsufficentBalance={setInsufficentBalance}

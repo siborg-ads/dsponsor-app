@@ -1,15 +1,16 @@
 import React, { useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { shortenAddress, Web3Button } from "@thirdweb-dev/react";
+import { shortenAddress } from "@thirdweb-dev/react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { Spinner } from "@nextui-org/spinner";
 import ModalHelper from "@/components/ui/modals/Helper";
 import { useChainContext } from "@/hooks/useChainContext";
 import { InformationCircleIcon } from "@heroicons/react/20/solid";
 import ResponsiveTooltip from "@/components/ui/ResponsiveTooltip";
 import { Divider } from "@nextui-org/react";
+import StyledWeb3Button from "@/components/ui/buttons/StyledWeb3Button";
+import { Address } from "thirdweb";
 
 const AdSubmission = ({
   approvalForAllToken = true,
@@ -43,7 +44,6 @@ const AdSubmission = ({
   successFullUploadModal,
   address,
   adSubmission,
-  isLoadingButton,
   multipleAdsSubmission,
   createOffer,
   expectedMultipleAds
@@ -81,14 +81,11 @@ const AdSubmission = ({
   successFullUploadModal: any;
   address?: string;
   adSubmission?: boolean;
-  isLoadingButton: boolean;
   multipleAdsSubmission?: boolean;
   createOffer?: boolean;
   expectedMultipleAds?: number;
 }) => {
   const [imageRatios, setImageRatios] = React.useState<any[]>([]);
-  const [isLoadingApproveButton, setIsLoadingApproveButton] = React.useState<boolean>(false);
-  const [isLoadingSubmitButton, setIsLoadingSubmitButton] = React.useState<boolean>(false);
 
   const { currentChainObject } = useChainContext();
   const formatDate = (date) => {
@@ -222,28 +219,20 @@ const AdSubmission = ({
           {/* submit ad button */}
           <div className="modal-footer">
             <div className="flex items-center justify-center space-x-4">
-              <Web3Button
+              <StyledWeb3Button
                 contractAddress={
-                  currentChainObject?.smartContracts?.DSPONSORADMIN?.address as string
+                  currentChainObject?.smartContracts?.DSPONSORADMIN?.address as Address
                 }
-                action={async () => {
-                  setIsLoadingSubmitButton(true);
-
-                  await toast
-                    .promise(handleSubmit(true), {
-                      pending: "Waiting for confirmation 🕒",
-                      success: "Transaction confirmed 👌",
-                      error: "Transaction rejected 🤯"
-                    })
-                    .finally(() => {
-                      setIsLoadingSubmitButton(false);
-                    });
+                onClick={async () => {
+                  await toast.promise(handleSubmit(true), {
+                    pending: "Waiting for confirmation 🕒",
+                    success: "Transaction confirmed 👌",
+                    error: "Transaction rejected 🤯"
+                  });
                 }}
-                className={` !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate || isLoadingSubmitButton ? "!btn-disabled !cursor-not-allowed !text-black" : "!bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer"} `}
-                isDisabled={!validate || isLoadingSubmitButton}
-              >
-                {isLoadingSubmitButton ? <Spinner size="sm" color="default" /> : buttonTitle}
-              </Web3Button>
+                isDisabled={!validate}
+                defaultText={buttonTitle ?? "Submit"}
+              />
             </div>
           </div>
         </div>
@@ -334,33 +323,22 @@ const AdSubmission = ({
           {/* submit ad button */}
           <div className="modal-footer">
             <div className="flex items-center justify-center space-x-4">
-              <Web3Button
+              <StyledWeb3Button
                 contractAddress={
-                  currentChainObject?.smartContracts?.DSPONSORADMIN?.address as string
+                  currentChainObject?.smartContracts?.DSPONSORADMIN?.address as Address
                 }
-                action={async () => {
+                onClick={async () => {
                   await toast.promise(handleSubmit(true), {
                     pending: "Waiting for confirmation 🕒",
                     success: "Transaction confirmed 👌",
                     error: "Transaction rejected 🤯"
                   });
                 }}
-                className={`!rounded-full !py-3 !px-8 !text-center !font-semibold !bg-primaryPurple hover:!bg-opacity-80 !text-white !transition-all ${
-                  (!validate ||
-                    isLoadingButton ||
-                    previewImage?.length === 0 ||
-                    previewImage?.some((image) => !image)) &&
-                  "!btn-disabled !cursor-not-allowed hover:!bg-opacity-30 !bg-white !bg-opacity-30"
-                }`}
                 isDisabled={
-                  !validate ||
-                  isLoadingButton ||
-                  previewImage?.length === 0 ||
-                  previewImage?.some((image) => !image)
+                  !validate || previewImage?.length === 0 || previewImage?.some((image) => !image)
                 }
-              >
-                {isLoadingButton ? <Spinner size="sm" color="default" /> : buttonTitle}
-              </Web3Button>
+                defaultText={buttonTitle ?? "Submit"}
+              />
             </div>
           </div>
         </div>
@@ -647,62 +625,36 @@ const AdSubmission = ({
                       className={`grid grid-cols-1 w-full mx-auto ${!createOffer && "md:grid-cols-2"} gap-6`}
                     >
                       {!createOffer && (
-                        <Web3Button
+                        <StyledWeb3Button
                           contractAddress={
-                            currentChainObject?.smartContracts?.DSPONSORMP?.address ?? "no address"
+                            currentChainObject?.smartContracts?.DSPONSORMP?.address as Address
                           }
-                          action={async () => {
-                            setIsLoadingApproveButton(true);
-
-                            await toast
-                              .promise(handleApprove, {
-                                pending: "Waiting for confirmation 🕒",
-                                success: "Approval confirmed 👌",
-                                error: "Approval rejected 🤯"
-                              })
-                              .finally(() => {
-                                setIsLoadingApproveButton(false);
-                              });
+                          onClick={async () => {
+                            await toast.promise(handleApprove, {
+                              pending: "Waiting for confirmation 🕒",
+                              success: "Approval confirmed 👌",
+                              error: "Approval rejected 🤯"
+                            });
                           }}
-                          className={`!rounded-full !w-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate || isLoadingApproveButton || approvalForAllToken ? "!btn-disabled !cursor-not-allowed !text-black opacity-30" : "!bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer"} `}
-                          isDisabled={!validate || isLoadingApproveButton || approvalForAllToken}
-                        >
-                          {isLoadingApproveButton ? (
-                            <Spinner size="sm" color="default" />
-                          ) : !isListing ? (
-                            "Approve 🔓 (1/2)"
-                          ) : (
-                            "Authorize 🔓 (1/2)"
-                          )}
-                        </Web3Button>
+                          isDisabled={!validate || approvalForAllToken}
+                          defaultText={!isListing ? "Approve 🔓 (1/2)" : "Authorize 🔓 (1/2)"}
+                        />
                       )}
 
-                      <Web3Button
+                      <StyledWeb3Button
                         contractAddress={
-                          currentChainObject?.smartContracts?.DSPONSORADMIN?.address ?? "no address"
+                          currentChainObject?.smartContracts?.DSPONSORADMIN?.address as Address
                         }
-                        action={async () => {
-                          setIsLoadingSubmitButton(true);
-
-                          await toast
-                            .promise(handleSubmit(address), {
-                              pending: "Waiting for confirmation 🕒",
-                              success: "Transaction confirmed 👌",
-                              error: "Transaction rejected 🤯"
-                            })
-                            .finally(() => {
-                              setIsLoadingSubmitButton(false);
-                            });
+                        onClick={async () => {
+                          await toast.promise(handleSubmit(address), {
+                            pending: "Waiting for confirmation 🕒",
+                            success: "Transaction confirmed 👌",
+                            error: "Transaction rejected 🤯"
+                          });
                         }}
-                        className={`!w-full !rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate || isLoadingSubmitButton || !approvalForAllToken ? "!btn-disabled !cursor-not-allowed !text-black" : "!bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer"} `}
-                        isDisabled={!validate || isLoadingSubmitButton || !approvalForAllToken}
-                      >
-                        {isLoadingSubmitButton ? (
-                          <Spinner size="sm" color="default" />
-                        ) : (
-                          buttonTitle
-                        )}
-                      </Web3Button>
+                        defaultText={buttonTitle ?? "Submit"}
+                        isDisabled={!validate || !approvalForAllToken}
+                      />
                     </div>
 
                     {!createOffer && (
@@ -724,12 +676,12 @@ const AdSubmission = ({
                     </button>
                   </Link>
                 ) : (
-                  <button
-                    className="!rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all !bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer"
+                  <StyledWeb3Button
+                    isNormalButton
+                    contractAddress={"" as Address}
                     onClick={() => handlePreviewModal()}
-                  >
-                    Close
-                  </button>
+                    defaultText="Close"
+                  />
                 )}
               </div>
             </div>
