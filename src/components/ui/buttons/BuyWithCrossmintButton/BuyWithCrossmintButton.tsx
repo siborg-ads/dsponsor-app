@@ -63,7 +63,7 @@ export default function BuyWithCrossmintButton(
     };
     successCallbackURL?: string;
     failureCallbackURL?: string;
-    isLoading: boolean;
+    isLoading?: boolean;
   }>
 ) {
   const { offer, token, user, referrer } = props;

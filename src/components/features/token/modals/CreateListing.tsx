@@ -38,7 +38,6 @@ const CreateListing = ({
   const address = useAddress();
   const { currentChainObject } = useChainContext();
 
-  const [isLoadingButton, setIsLoadingButton] = useState<boolean>(false);
   const [customContract, setCustomContract] = useState<Address | null>(null);
   const [tokenDecimals, setTokenDecimals] = useState<number>(18);
   const [symbolContract, setSymbolContract] = useState<string>("WETH");
@@ -113,7 +112,6 @@ const CreateListing = ({
     const isValid = validateInputs();
     if (isValid) {
       try {
-        setIsLoadingButton(true);
         const startDateFormated = Math.floor(startDate.getTime() / 1000);
         const nowFormated = Math.floor(new Date().getTime() / 1000);
         const startTime = Math.max(startDateFormated, nowFormated);
@@ -149,28 +147,21 @@ const CreateListing = ({
 
         await fetchOffers();
       } catch (error) {
-        setIsLoadingButton(false);
         console.error(error);
         throw error;
-      } finally {
-        setIsLoadingButton(false);
       }
     }
   };
   const handleApprove = async () => {
     try {
-      setIsLoadingButton(true);
       await setApprovalForAll({
         args: [currentChainObject?.smartContracts?.DSPONSORMP?.address, true]
       });
       setApprovalForAllToken(true);
     } catch (error) {
-      setIsLoadingButton(false);
       console.error(error);
       setApprovalForAllToken(false);
       throw error;
-    } finally {
-      setIsLoadingButton(false);
     }
   };
 
@@ -608,7 +599,6 @@ const CreateListing = ({
                   buttonTitle="Create listing 🎉 (2/2)"
                   modalTitle="Listing preview"
                   successFullUploadModal={successFullListingModal}
-                  isLoadingButton={isLoadingButton}
                   approvalForAllToken={approvalForAllToken}
                   handleApprove={handleApprove}
                 />

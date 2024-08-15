@@ -7,10 +7,9 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useChainContext } from "@/hooks/useChainContext";
 import React, { useEffect, useState } from "react";
-import { Web3Button } from "@thirdweb-dev/react";
 import config from "@/config/config";
 import Input from "@/components/ui/Input";
-import { Spinner } from "@nextui-org/spinner";
+import StyledWeb3Button from "@/components/ui/buttons/StyledWeb3Button";
 
 interface PendingAdsProps {
   // eslint-disable-next-line no-unused-vars
@@ -27,7 +26,6 @@ interface PendingAdsProps {
   aspectRatio: string;
   // eslint-disable-next-line no-unused-vars
   setSponsorHasAtLeastOneRejectedProposalAndNoPending: (value: boolean) => void;
-  isRejecting: boolean;
 }
 
 const PendingAds: React.FC<PendingAdsProps> = ({
@@ -40,8 +38,7 @@ const PendingAds: React.FC<PendingAdsProps> = ({
   isOwner,
   setRefusedValidatedAdModal,
   aspectRatio: expectedRatio,
-  setSponsorHasAtLeastOneRejectedProposalAndNoPending,
-  isRejecting
+  setSponsorHasAtLeastOneRejectedProposalAndNoPending
 }) => {
   const [validate, setValidate] = useState({});
   const [tokenId, setTokenId] = useState(null);
@@ -51,7 +48,6 @@ const PendingAds: React.FC<PendingAdsProps> = ({
   const [copied, setCopied] = useState(false);
   const [detectedRatios, setDetectedRatios] = useState<string[]>([]);
   const [detectedRatiosAreGood, setDetectedRatiosAreGood] = useState<boolean[]>([]);
-  const [isValidating, setIsValidating] = useState(false);
 
   const { currentChainObject } = useChainContext();
   const chainId = currentChainObject?.chainId;
@@ -195,7 +191,7 @@ const PendingAds: React.FC<PendingAdsProps> = ({
             </div>
           )}
           <div
-            className={`fixed dark:border-jacarta-500 border z-[100] bottom-0 blury-background left-0 right-0 px-4 py-3  ${isFirstSelection ? "hidden" : selectedItems?.length === 0 ? "animated-modalSelectedItemDown" : "animated-modalSelectedItemUp"}`}
+            className={`fixed flex flex-col items-center justify-center dark:border-jacarta-500 border z-[100] bottom-0 blury-background left-0 right-0 px-4 py-3  ${isFirstSelection ? "hidden" : selectedItems?.length === 0 ? "animated-modalSelectedItemDown" : "animated-modalSelectedItemUp"}`}
           >
             <div className="dropdown-item mb-4 font-display   block w-full rounded-xl  text-left text-sm transition-colors dark:text-white">
               <span className="flex items-center justify-center gap-6">
@@ -215,41 +211,35 @@ const PendingAds: React.FC<PendingAdsProps> = ({
               </span>
             </div>
 
-            <div className="flex justify-center  gap-4 flex-wrap">
-              <Web3Button
+            <div className="grid grid-cols-2 gap-4 max-w-xs">
+              <StyledWeb3Button
                 contractAddress={config[Number(chainId)]?.smartContracts?.DSPONSORADMIN?.address}
-                action={async () => {
-                  setIsValidating(true);
-                  await toast
-                    .promise(handleItemSubmit(true), {
-                      pending: "Waiting for confirmation 🕒",
-                      success: "Transaction confirmed 👌",
-                      error: "Transaction rejected 🤯"
-                    })
-                    .finally(() => {
-                      setIsValidating(false);
-                    });
+                onClick={async () => {
+                  await toast.promise(handleItemSubmit(true), {
+                    pending: "Waiting for confirmation 🕒",
+                    success: "Transaction confirmed 👌",
+                    error: "Transaction rejected 🤯"
+                  });
                 }}
-                isDisabled={!validate["all"] || isValidating || isRejecting}
-                className={` !rounded-full !min-w-[100px] !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate["all"] || isValidating || isRejecting ? "!btn-disabled !cursor-not-allowed !opacity-30" : "!bg-green !cursor-pointer"} `}
-              >
-                {isValidating ? <Spinner size="sm" color="default" /> : "Validate"}
-              </Web3Button>
+                isDisabled={!validate["all"]}
+                defaultText="Validate"
+                isGreen
+              />
 
-              <Web3Button
-                contractAddress={config[chainId as number]?.smartContracts?.DSPONSORADMIN?.address}
-                action={() => {
+              <StyledWeb3Button
+                contractAddress={config[Number(chainId)]?.smartContracts?.DSPONSORADMIN?.address}
+                onClick={() => {
                   openRefuseModal();
 
                   if (pendingProposalData?.length === 1) {
                     setSponsorHasAtLeastOneRejectedProposalAndNoPending(true);
                   }
                 }}
-                isDisabled={!validate["all"] || isRejecting || isValidating}
-                className={` !rounded-full !min-w-[100px] !py-3 !px-8 !text-center !font-semibold !text-white !transition-all ${!validate["all"] || isRejecting || isValidating ? "!btn-disabled !cursor-not-allowed !opacity-30" : "!bg-red !cursor-pointer"} `}
-              >
-                {isRejecting ? <Spinner size="sm" color="default" /> : "Reject"}
-              </Web3Button>
+                isDisabled={!validate["all"]}
+                defaultText="Reject"
+                isRed
+                isNormalButton
+              />
             </div>
           </div>
         </div>
@@ -270,7 +260,9 @@ const PendingAds: React.FC<PendingAdsProps> = ({
                   {getImageUrl(adParametersList) && (
                     <div className="flex flex-col gap-2 w-full">
                       <Image
-                        src={getImageUrl(adParametersList) ?? "/images/gradients/gradient_light.jpg"}
+                        src={
+                          getImageUrl(adParametersList) ?? "/images/gradients/gradient_light.jpg"
+                        }
                         alt="logo"
                         height={600}
                         width={600}

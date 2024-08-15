@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Web3Button, useContract, useContractWrite } from "@thirdweb-dev/react";
+import { useContract, useContractWrite } from "@thirdweb-dev/react";
 import config from "@/config/config";
 import { useChainContext } from "@/hooks/useChainContext";
 import { toast } from "react-toastify";
@@ -9,6 +9,7 @@ import { BigNumber } from "ethers";
 import { features } from "@/data/features";
 import Input from "@/components/ui/Input";
 import { Address } from "thirdweb";
+import StyledWeb3Button from "@/components/ui/buttons/StyledWeb3Button";
 
 const isDisabledMessage = (disableMint: boolean) => {
   return disableMint
@@ -276,15 +277,15 @@ const ChangeMintPrice = ({ offer }) => {
       </div>
 
       {selectedToken !== null ? (
-        <Web3Button
-          action={() => {
+        <StyledWeb3Button
+          onClick={async () => {
             if (!nftContractAddress) return;
 
             if (!formattedAmountBN || !currency || !amount) {
               return;
             }
 
-            toast
+            await toast
               .promise(handleChangeTokenMintPrice, {
                 pending: "Waiting for confirmation 🕒",
                 success: disableMint
@@ -297,46 +298,28 @@ const ChangeMintPrice = ({ offer }) => {
               });
           }}
           isDisabled={!amount || !currency || !formattedAmountBN || !nftContractAddress}
-          contractAddress={nftContractAddress as string}
-          className={`!mt-4 !hover:bg-opacity-80 !px-4 !flex !py-2 !w-fit !text-white !font-semibold !rounded-full ${
-            !amount || !currency || !formattedAmountBN || !nftContractAddress
-              ? "!opacity-50 !cursor-not-allowed !bg-jacarta-100"
-              : "!bg-primaryPurple"
-          }`}
-        >
-          Change Token Mint Price
-        </Web3Button>
+          contractAddress={nftContractAddress as Address}
+          defaultText="Change Token Mint Price"
+        />
       ) : (
-        <Web3Button
-          action={() => {
+        <StyledWeb3Button
+          onClick={async () => {
             if (!nftContractAddress || !currency) return;
 
             setIsLoading(true);
-
-            toast
-              .promise(handleChangeMintPrice, {
-                pending: "Waiting for confirmation 🕒",
-                success: disableMint
-                  ? isDisabledMessage(disableMint)
-                  : "The mint price has been updated for this offer 🎉",
-                error: "Transaction rejected 🤯"
-              })
-              .catch((error) => {
-                console.error(error);
-              });
-
+            await toast.promise(handleChangeMintPrice, {
+              pending: "Waiting for confirmation 🕒",
+              success: disableMint
+                ? isDisabledMessage(disableMint)
+                : "The mint price has been updated for this offer 🎉",
+              error: "Transaction rejected 🤯"
+            });
             setIsLoading(false);
           }}
           isDisabled={!nftContractAddress || !currency}
           contractAddress={nftContractAddress as Address}
-          className={`!hover:bg-opacity-80 !px-4 !w-fit !flex !py-2 !text-white !font-semibold !rounded-full ${
-            !currency || !nftContractAddress
-              ? "!opacity-50 !cursor-not-allowed !bg-jacarta-100"
-              : "!bg-primaryPurple"
-          }`}
-        >
-          Change Mint Price
-        </Web3Button>
+          defaultText="Change Mint Price"
+        />
       )}
     </div>
   );

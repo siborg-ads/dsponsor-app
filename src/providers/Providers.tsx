@@ -43,7 +43,10 @@ function GaslessProvider({ children }: Readonly<{ children: React.ReactNode }>) 
   const [address, setAddress] = useState<Address | undefined>(undefined);
   const [chainId, setChainId] = useState<number | undefined>(undefined);
 
-  const value = { balance, address, chainId, setBalance, setAddress, setChainId };
+  const value = React.useMemo(
+    () => ({ balance, address, setBalance, setAddress, chainId, setChainId }),
+    [balance, address, chainId]
+  );
 
   return <GaslessContext.Provider value={value}>{children}</GaslessContext.Provider>;
 }
@@ -141,13 +144,17 @@ function InnerProviders({ children }: Readonly<{ children: React.ReactNode }>) {
         })
       ]}
     >
-      <ThirdwebProvider>
+      <ThirdwebProviderV5>
         <ChainProvider>
           <GaslessCollector>{children}</GaslessCollector>
         </ChainProvider>
-      </ThirdwebProvider>
+      </ThirdwebProviderV5>
     </ThirdwebProviderV4>
   );
+}
+
+function ThirdwebProviderV5({ children }: { children: React.ReactNode }) {
+  return features?.thirdwebV5 ? <ThirdwebProvider>{children}</ThirdwebProvider> : <>{children}</>;
 }
 
 export default Providers;

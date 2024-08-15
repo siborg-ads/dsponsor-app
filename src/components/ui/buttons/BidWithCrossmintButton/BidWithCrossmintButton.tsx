@@ -65,7 +65,7 @@ export default function BidWithCrossmintButton(
     totalPriceFormatted: string;
     successCallbackURL?: string;
     failureCallbackURL?: string;
-    isLoading: boolean;
+    isLoading?: boolean;
   }>
 ) {
   const { offer, token, user, referrer } = props;

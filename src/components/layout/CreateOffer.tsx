@@ -48,7 +48,6 @@ const CreateOffer = () => {
   const [tokenContract, setTokenContract] = useState(WETHCurrency?.address);
   const [, setCustomTokenContract] = useState(null);
   const [terms, setTerms] = useState<string | undefined>(undefined);
-  const [isLoadingButton, setIsLoadingButton] = useState(false);
   const [minterAddress, setMinterAddress] = useState<Address | null>(null);
   const { setSelectedChain } = useSwitchChainContext();
 
@@ -216,7 +215,6 @@ const CreateOffer = () => {
 
   const handleSubmit = async (userMinterAddress) => {
     try {
-      setIsLoadingButton(true);
       let paramsFormated: any[] = [];
 
       selectedParameter.forEach((param) => {
@@ -329,11 +327,8 @@ const CreateOffer = () => {
       setCustomTokenContract(null);
       setCurrentSlide(0);
     } catch (error) {
-      setIsLoadingButton(false);
       setSuccessFullUpload(false);
       throw error;
-    } finally {
-      setIsLoadingButton(false);
     }
   };
 
@@ -482,7 +477,6 @@ const CreateOffer = () => {
             buttonTitle="Create ad space offer"
             modalTitle="Ad Space Offer "
             successFullUploadModal={successFullUploadModal}
-            isLoadingButton={isLoadingButton}
           />
         </div>
       )}

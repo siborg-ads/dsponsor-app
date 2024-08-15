@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { Web3Button, useAddress, useContractWrite } from "@thirdweb-dev/react";
+import { useAddress, useContractWrite } from "@thirdweb-dev/react";
 import ItemManageModal from "@/components/features/token/modals/CreateListing";
 import { toast } from "react-toastify";
-import { Spinner } from "@nextui-org/spinner";
 import { useChainContext } from "@/hooks/useChainContext";
 import { getAddress } from "ethers/lib/utils";
+import StyledWeb3Button from "@/components/ui/buttons/StyledWeb3Button";
+import { Address } from "thirdweb";
 
 const Manage = ({
   successFullListing,
@@ -119,32 +120,29 @@ const Manage = ({
     ) {
       return (
         <div className="w-full flex justify-center">
-          <button
-            type="button"
-            className="bg-primaryPurple hover:bg-opacity-80 w-36 rounded-full py-3 px-3 text-center font-semibold text-white transition-all"
+          <StyledWeb3Button
+            contractAddress={"" as Address}
+            isNormalButton
             onClick={handleListingModal}
-          >
-            Create a listing
-          </button>
+            defaultText="Create a listing"
+          />
         </div>
       );
     }
     if (conditions?.isDirect && (conditions?.isOwner || conditions?.isLister)) {
       return (
-        <Web3Button
-          contractAddress={currentChainObject?.smartContracts?.DSPONSORMP?.address as string}
-          action={async () =>
+        <StyledWeb3Button
+          contractAddress={currentChainObject?.smartContracts?.DSPONSORMP?.address as Address}
+          onClick={async () =>
             await toast.promise(handleSubmitCancel, {
               pending: "Waiting for confirmation 🕒",
               success: "Cancel listing confirmed 👌",
               error: "Cancel listing rejected 🤯"
             })
           }
-          className="!rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all !bg-red !cursor-pointer"
-          isDisabled={isLoadingButton}
-        >
-          {isLoadingButton ? <Spinner size="sm" color="default" /> : "Cancel listing"}
-        </Web3Button>
+          isRed
+          defaultText="Cancel listing"
+        />
       );
     }
     if (
@@ -155,26 +153,18 @@ const Manage = ({
       (conditions?.isLister && !conditions?.hasBids)
     ) {
       return (
-        <Web3Button
-          contractAddress={currentChainObject?.smartContracts?.DSPONSORMP?.address as string}
-          action={async () =>
+        <StyledWeb3Button
+          contractAddress={currentChainObject?.smartContracts?.DSPONSORMP?.address as Address}
+          onClick={async () =>
             await toast.promise(handleSubmitCancel, {
               pending: "Waiting for confirmation 🕒",
               success: "Close auction confirmed 👌",
               error: "Close auction rejected 🤯"
             })
           }
-          className="!rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all !bg-green !cursor-pointer"
-          isDisabled={isLoadingButton}
-        >
-          {isLoadingButton ? (
-            <Spinner size="sm" color="default" />
-          ) : isLastBidder ? (
-            "Claim your earned Ad Space"
-          ) : (
-            "Close auction"
-          )}
-        </Web3Button>
+          isGreen
+          defaultText={isLastBidder ? "Claim your earned Ad Space" : "Close auction"}
+        />
       );
     }
     if (
@@ -183,20 +173,19 @@ const Manage = ({
         conditions?.isListerOrOwnerAndStartDateNotPassed)
     ) {
       return (
-        <Web3Button
-          contractAddress={currentChainObject?.smartContracts?.DSPONSORMP?.address as string}
-          action={async () =>
+        <StyledWeb3Button
+          contractAddress={currentChainObject?.smartContracts?.DSPONSORMP?.address as Address}
+          onClick={async () =>
             await toast.promise(handleSubmitCancel, {
               pending: "Waiting for confirmation 🕒",
               success: "Close auction confirmed 👌",
               error: "Close auction rejected 🤯"
             })
           }
-          className="!rounded-full !py-3 !px-8 !text-center !font-semibold !text-white !transition-all !bg-red !cursor-pointer"
           isDisabled={isLoadingButton}
-        >
-          {isLoadingButton ? <Spinner size="sm" color="default" /> : "Cancel auction"}
-        </Web3Button>
+          defaultText="Cancel auction"
+          isRed
+        />
       );
     }
     return null;
