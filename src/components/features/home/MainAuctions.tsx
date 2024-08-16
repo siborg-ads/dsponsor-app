@@ -5,13 +5,20 @@ import { InformationCircleIcon } from "@heroicons/react/20/solid";
 import { Popover, PopoverTrigger, PopoverContent } from "@nextui-org/popover";
 import { Auction } from "@/types/auctions";
 
-const MainAuctions = ({ auctions, isAuctionsLoading }) => {
-  const [mount, setMount] = useState(false);
-  const [hotAuctions, setHotAuctions] = useState([]);
-  const [isInformationHovered, setIsInformationHovered] = useState(false);
+const MainAuctions = ({
+  auctions,
+  isAuctionsLoading,
+  text
+}: {
+  auctions: Auction[];
+  isAuctionsLoading: boolean;
+  text: string;
+}) => {
+  const [hotAuctions, setHotAuctions] = useState<Auction[]>([]);
+  const [isInformationHovered, setIsInformationHovered] = useState<boolean>(false);
 
   useMemo(() => {
-    if (!mount && auctions && auctions.length > 0) {
+    if (auctions && auctions.length > 0) {
       const tempHotAuctions = auctions
         ?.filter(
           (auction) =>
@@ -26,30 +33,13 @@ const MainAuctions = ({ auctions, isAuctionsLoading }) => {
       const slicedHotAuctions = tempHotAuctions.slice(0, 4);
 
       setHotAuctions(slicedHotAuctions);
-      setMount(true);
     }
-  }, [auctions, mount]);
+  }, [auctions]);
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="text-xl font-semibold text-white flex items-center gap-2">
-        <Popover placement="top-start" isOpen={isInformationHovered}>
-          <PopoverTrigger>
-            <InformationCircleIcon
-              className="h-6 w-6 text-white cursor-pointer"
-              onMouseEnter={() => setIsInformationHovered(true)}
-              onMouseLeave={() => setIsInformationHovered(false)}
-            />
-          </PopoverTrigger>
-          <PopoverContent className="bg-secondaryBlack shadow border border-white border-opacity-10">
-            <div className="px-1 py-2">
-              <div className="text-small">
-                Hot auctions are live auctions with the most bids, they are the most popular
-              </div>
-            </div>
-          </PopoverContent>
-        </Popover>
-        <span>Hot Auctions 🔥 </span>
+      <div className="flex items-center gap-2">
+        <span className="text-xl font-semibold text-white ">{text}</span>
       </div>
       <div className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {!isAuctionsLoading ? (
