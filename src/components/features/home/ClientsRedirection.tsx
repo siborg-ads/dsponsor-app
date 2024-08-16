@@ -9,7 +9,7 @@ const ClientsRedirection = () => {
         Be part of the Web3 Monetization evolution
       </span>
 
-      <div className="grid grid-cols-2 gap-8">
+      <div className="grid md:grid-cols-2 gap-4 md:gap-8">
         <Link href="/marketplace" className="w-full flex items-center justify-center">
           <button className="bg-primaryPurple hover:bg-opacity-80 text-white rounded-lg w-full px-4 py-2">
             I am looking for visibility
