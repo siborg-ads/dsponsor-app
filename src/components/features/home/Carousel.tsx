@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import CarouselItem from "@/components/features/home/CarouselItem";
 import Slider from "react-slick";
+import { Filter } from "@/components/layout/Home";
+import { curationData } from "@/data/curationData";
 
 function SampleNextArrow(props) {
   const { className, onClick } = props;
@@ -12,29 +14,7 @@ function SamplePrevArrow(props) {
   return <div className={className} onClick={onClick} />;
 }
 
-const curationData: {
-  logo: string;
-  description: string;
-  buttonText: string;
-  buttonLink: string;
-}[] = [
-  {
-    logo: "/images/siborg-ads/siborg-ads.png",
-    description:
-      "SiBorg App is a web3-based Spotify-like application for Twitter Spaces and podcasts, featuring SocialFi capabilities.",
-    buttonText: "Own a part of SiBorg App",
-    buttonLink: "https://siborg.io"
-  },
-  {
-    logo: "/images/cryptoast/cryptoast.webp",
-    description:
-      "Cryptoast is a leading French-language media outlet focused on Bitcoin, blockchain, and cryptocurrencies. Established in 2017, it aims to provide comprehensive and accessible information to both newcomers and experienced users in the crypto space.",
-    buttonText: "Get your ads on Cryptoast",
-    buttonLink: "https://cryptoast.fr"
-  }
-];
-
-const Carousel = () => {
+const Carousel = ({ filter }: { filter: Filter }) => {
   const [isMobile, setIsMobile] = useState<boolean>(false);
 
   useEffect(() => {
@@ -49,17 +29,39 @@ const Carousel = () => {
     };
   }, []);
 
+  const filteredData = curationData.filter((curate) => {
+    if (filter !== "all") {
+      return curate?.type === filter;
+    }
+    return true;
+  });
+
   const settings = {
     speed: 500,
-    arrows: !isMobile,
+    arrows: !isMobile && filteredData?.length > 1,
     nextArrow: <SampleNextArrow className="bg-secondaryBlack h-4 w-4 rounded-full" />,
     prevArrow: <SamplePrevArrow className="bg-secondaryBlack h-4 w-4 rounded-full" />
   };
 
+  if (!filteredData?.length) {
+    return null;
+  }
+
+  if (filteredData?.length === 1) {
+    return (
+      <CarouselItem
+        logo={filteredData[0].logo}
+        description={filteredData[0].description}
+        buttonText={filteredData[0].buttonText}
+        buttonLink={filteredData[0].buttonLink}
+      />
+    );
+  }
+
   return (
     <div className="slider-container">
       <Slider {...settings}>
-        {curationData.map((item, index) => (
+        {filteredData?.map((item, index) => (
           <CarouselItem
             key={index}
             logo={item.logo}

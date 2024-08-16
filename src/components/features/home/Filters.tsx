@@ -1,6 +1,7 @@
 import React from "react";
 import type { Filter } from "@/components/layout/Home";
 import { features } from "@/data/features";
+import ResponsiveTooltip from "@/components/ui/ResponsiveTooltip";
 
 const Filters = ({
   filter,
@@ -16,40 +17,84 @@ const Filters = ({
         onClick={() => setFilter("all")}
         disabled={!features.homepageFilters.canSeeAll}
       >
-        {features.homepageFilters.canSeeAll ? "All" : "Coming soon..."}
+        All
       </button>
 
-      <button
-        className={`px-4 py-2 rounded-lg hover:bg-opacity-80 ${filter === "medias" ? "bg-white text-black" : "bg-secondaryBlack text-white"} ${!features.homepageFilters.canSeeMedias ? "cursor-not-allowed" : ""}`}
-        onClick={() => setFilter("medias")}
-        disabled={!features.homepageFilters.canSeeMedias}
-      >
-        {features.homepageFilters.canSeeMedias ? "Medias" : "Coming soon..."}
-      </button>
+      {features.homepageFilters.canSeeMedias ? (
+        <button
+          className={`px-4 py-2 rounded-lg hover:bg-opacity-80 ${filter === "medias" ? "bg-white text-black" : "bg-secondaryBlack text-white"} ${!features.homepageFilters.canSeeMedias ? "cursor-not-allowed" : ""}`}
+          onClick={() => setFilter("medias")}
+        >
+          Medias
+        </button>
+      ) : (
+        <ResponsiveTooltip text="Coming soon...">
+          <button
+            className={`px-4 py-2 rounded-lg hover:bg-opacity-80 ${filter === "medias" ? "bg-white text-black" : "bg-secondaryBlack text-white"} ${!features.homepageFilters.canSeeMedias ? "cursor-not-allowed" : ""}`}
+            onClick={() => setFilter("medias")}
+            disabled
+          >
+            Medias
+          </button>
+        </ResponsiveTooltip>
+      )}
 
-      <button
-        className={`px-4 py-2 rounded-lg hover:bg-opacity-80 ${filter === "dapps" ? "bg-white text-black" : "bg-secondaryBlack text-white"} ${!features.homepageFilters.canSeeDapps ? "cursor-not-allowed" : ""}`}
-        onClick={() => setFilter("dapps")}
-        disabled={!features.homepageFilters.canSeeDapps}
-      >
-        {features.homepageFilters.canSeeDapps ? "dApps" : "Coming soon..."}
-      </button>
+      {features.homepageFilters.canSeeDapps ? (
+        <button
+          className={`px-4 py-2 rounded-lg hover:bg-opacity-80 ${filter === "dapps" ? "bg-white text-black" : "bg-secondaryBlack text-white"} ${!features.homepageFilters.canSeeDapps ? "cursor-not-allowed" : ""}`}
+          onClick={() => setFilter("dapps")}
+        >
+          dApps
+        </button>
+      ) : (
+        <ResponsiveTooltip text="Coming soon...">
+          <button
+            className={`px-4 py-2 rounded-lg hover:bg-opacity-80 ${filter === "dapps" ? "bg-white text-black" : "bg-secondaryBlack text-white"} ${!features.homepageFilters.canSeeDapps ? "cursor-not-allowed" : ""}`}
+            onClick={() => setFilter("dapps")}
+            disabled
+          >
+            dApps
+          </button>
+        </ResponsiveTooltip>
+      )}
 
-      <button
-        className={`px-4 py-2 rounded-lg hover:bg-opacity-80 ${filter === "websites" ? "bg-white text-black" : "bg-secondaryBlack text-white"} ${!features.homepageFilters.canSeeWebsites ? "cursor-not-allowed" : ""}`}
-        onClick={() => setFilter("websites")}
-        disabled={!features.homepageFilters.canSeeWebsites}
-      >
-        {features.homepageFilters.canSeeWebsites ? "Websites" : "Coming soon..."}
-      </button>
+      {features.homepageFilters.canSeeWebsites ? (
+        <button
+          className={`px-4 py-2 rounded-lg hover:bg-opacity-80 ${filter === "websites" ? "bg-white text-black" : "bg-secondaryBlack text-white"} ${!features.homepageFilters.canSeeWebsites ? "cursor-not-allowed" : ""}`}
+          onClick={() => setFilter("websites")}
+        >
+          Websites
+        </button>
+      ) : (
+        <ResponsiveTooltip text="Coming soon...">
+          <button
+            className={`px-4 py-2 rounded-lg hover:bg-opacity-80 ${filter === "websites" ? "bg-white text-black" : "bg-secondaryBlack text-white"} ${!features.homepageFilters.canSeeWebsites ? "cursor-not-allowed" : ""}`}
+            onClick={() => setFilter("websites")}
+            disabled
+          >
+            Websites
+          </button>
+        </ResponsiveTooltip>
+      )}
 
-      <button
-        className={`px-4 py-2 rounded-lg hover:bg-opacity-80 ${filter === "newsletters" ? "bg-white text-black" : "bg-secondaryBlack text-white"} ${!features.homepageFilters.canSeeNewsletters ? "cursor-not-allowed" : ""}`}
-        onClick={() => setFilter("newsletters")}
-        disabled={!features.homepageFilters.canSeeNewsletters}
-      >
-        {features.homepageFilters.canSeeNewsletters ? "Newsletters" : "Coming soon..."}
-      </button>
+      {features.homepageFilters.canSeeNewsletters ? (
+        <button
+          className={`px-4 py-2 rounded-lg hover:bg-opacity-80 ${filter === "newsletters" ? "bg-white text-black" : "bg-secondaryBlack text-white"} ${!features.homepageFilters.canSeeNewsletters ? "cursor-not-allowed" : ""}`}
+          onClick={() => setFilter("newsletters")}
+        >
+          Newsletters
+        </button>
+      ) : (
+        <ResponsiveTooltip text="Coming soon...">
+          <button
+            className={`px-4 py-2 rounded-lg hover:bg-opacity-80 ${filter === "newsletters" ? "bg-white text-black" : "bg-secondaryBlack text-white"} ${!features.homepageFilters.canSeeNewsletters ? "cursor-not-allowed" : ""}`}
+            onClick={() => setFilter("newsletters")}
+            disabled
+          >
+            Newsletters
+          </button>
+        </ResponsiveTooltip>
+      )}
     </div>
   );
 };

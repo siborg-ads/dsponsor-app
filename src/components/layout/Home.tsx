@@ -214,7 +214,7 @@ const Home = () => {
       >
         <div className="flex flex-col gap-4">
           <Filters filter={filter} setFilter={setFilter} />
-          <Carousel />
+          <Carousel filter={filter} />
         </div>
 
         <HowDoesItWork />
