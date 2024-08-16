@@ -4,9 +4,8 @@ import Timer from "@/components/ui/timer/Timer";
 import BidsModal from "@/components/features/token/modals/BidsModal";
 import { BigNumber } from "ethers";
 import { getAddress } from "ethers/lib/utils";
-import { Web3Button } from "@thirdweb-dev/react";
-import config from "@/config/config";
 import { Address } from "thirdweb";
+import StyledWeb3Button from "@/components/ui/buttons/StyledWeb3Button";
 
 const PlaceBid = ({
   setAmountToApprove,
@@ -24,8 +23,6 @@ const PlaceBid = ({
   currencyTokenDecimals,
   allowanceTrue,
   chainId,
-  isLoadingButton,
-  setIsLoadingButton,
   currencyContract,
   token,
   user,
@@ -62,8 +59,6 @@ const PlaceBid = ({
   currencyTokenDecimals: number;
   allowanceTrue: boolean;
   chainId: number;
-  isLoadingButton: boolean;
-  setIsLoadingButton: React.Dispatch<React.SetStateAction<boolean>>;
   currencyContract: any;
   token: any;
   user: any;
@@ -162,16 +157,15 @@ const PlaceBid = ({
           </div>
 
           <div className="flex justify-center">
-            <Web3Button
-              contractAddress={config[chainId]?.smartContracts?.DSPONSORMP?.address}
-              action={() => {
+            <StyledWeb3Button
+              contractAddress={"" as Address}
+              isNormalButton
+              onClick={() => {
                 toggleBidsModal();
               }}
               isDisabled={!isValidId}
-              className={`${!isValidId && "!btn-disabled !bg-opacity-30"} !rounded-full !py-3 w-full !px-8 !text-center !font-semibold !text-white !transition-all !bg-primaryPurple hover:!bg-opacity-80 !cursor-pointer `}
-            >
-              Place Bid
-            </Web3Button>
+              defaultText="Place a bid"
+            />
           </div>
         </div>
 
@@ -196,8 +190,6 @@ const PlaceBid = ({
       {showBidsModal && (
         <div className="mt-8">
           <BidsModal
-            isLoadingButton={isLoadingButton}
-            setIsLoadingButton={setIsLoadingButton}
             setAmountToApprove={setAmountToApprove}
             bidsAmount={bidsAmount}
             setBidsAmount={setBidsAmount}

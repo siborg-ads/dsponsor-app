@@ -37,5 +37,7 @@ export const features = {
   // Wether we're able to pay with crossmint
   canPayWithCrossmintEnabled: !!isDevelopment,
   // Wether we're able to use gasless transactions
-  canUseGaslessTransactions: !!isDevelopment
+  canUseGaslessTransactions: !!isDevelopment,
+  // Wether to use the new thirdweb provider
+  thirdwebV5: false
 };

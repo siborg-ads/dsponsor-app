@@ -83,7 +83,6 @@ const AdValidation = ({
   const [isApprouvedAd, setIsApprouvedAd] = useState<boolean>(false);
   const [pendingProposalLength, setPendingProposalLength] = useState(0);
   const [aspectRatio, setAspectRatio] = useState<string | null>(null);
-  const [isRejecting, setIsRejecting] = useState<boolean>(false);
 
   const tabItem = [
     {
@@ -365,7 +364,6 @@ const AdValidation = ({
                 setSponsorHasAtLeastOneRejectedProposalAndNoPending={
                   setSponsorHasAtLeastOneRejectedProposalAndNoPending
                 }
-                isRejecting={isRejecting}
               />
             </div>
           </TabPanel>
@@ -400,8 +398,6 @@ const AdValidation = ({
             successFullModalObject={
               isApprouvedAd ? successFullValidatedAdModalObject : successFullRefusedAdModalObject
             }
-            setIsRejecting={setIsRejecting}
-            isRejecting={isRejecting}
           />
         </div>
       )}
