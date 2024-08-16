@@ -1,3 +1,4 @@
+import { ArrowUpRight } from "lucide-react";
 import Link from "next/link";
 import React from "react";
 
@@ -21,7 +22,9 @@ const ClientsRedirection = () => {
           className="w-full flex items-center justify-center"
         >
           <button className="bg-primaryBlack hover:bg-opacity-80 text-white rounded-lg w-full px-4 py-2">
-            I am looking for sponsors
+            <span className="flex items-center justify-center gap-1">
+              I am looking for sponsors <ArrowUpRight className="w-4 h-4" />
+            </span>
           </button>
         </Link>
       </div>
