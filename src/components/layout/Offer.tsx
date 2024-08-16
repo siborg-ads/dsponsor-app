@@ -72,7 +72,7 @@ const Offer = () => {
   const [, setCanChangeMintPrice] = useState(false);
   const [offerManagementActiveTab, setOfferManagementActiveTab] = useState("integration");
   const [imageUrl, setImageUrl] = useState<string | null>(null);
-  const [accordionActiveTab, setAccordionActiveTab] = useState<string[]>([]);
+  const [accordionActiveTab, setAccordionActiveTab] = useState<string[]>(["tokens"]);
 
   const { data: bps } = useContractRead(DsponsorAdminContract, "feeBps");
   const maxBps = 10000;
