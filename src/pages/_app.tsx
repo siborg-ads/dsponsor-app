@@ -5,7 +5,7 @@ import { store } from "@/contexts/store";
 import { useRouter } from "next/router";
 import Meta from "@/components/Meta";
 import UserContext from "@/contexts/user";
-import { useEffect, useMemo, useRef } from "react";
+import React, { useEffect, useMemo, useRef } from "react";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { NextUIProvider } from "@nextui-org/react";
@@ -14,8 +14,10 @@ import Hotjar from "@hotjar/browser";
 
 // styles
 import "@/styles/globals.css";
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
+import "swiper/css";
+import "swiper/css/navigation";
+import "swiper/css/pagination";
+import "swiper/css/scrollbar";
 
 const siteId = 5037837;
 const hotjarVersion = 6;
@@ -41,7 +43,7 @@ function MyApp({ Component, pageProps }) {
   const value = useMemo(() => ({ scrollRef }), [scrollRef]);
 
   return (
-    <>
+    <React.Fragment>
       <Meta {...metadata} />
       <Providers>
         <Provider store={store}>
@@ -61,7 +63,7 @@ function MyApp({ Component, pageProps }) {
           </ThemeProvider>
         </Provider>
       </Providers>
-    </>
+    </React.Fragment>
   );
 }
 

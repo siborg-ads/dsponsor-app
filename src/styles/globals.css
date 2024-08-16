@@ -46,6 +46,26 @@ html {
     background-color: hsla(0, 0%, 100%, 0.1);
   }
 
+  .embla {
+    width: 100%;
+    margin: auto;
+    --slide-height: 19rem;
+    --slide-spacing: 1rem;
+    --slide-size: 50%;
+    overflow: hidden;
+  }
+  .embla__container {
+    display: flex;
+    touch-action: pan-y pinch-zoom;
+    margin-left: calc(var(--slide-spacing) * -1);
+  }
+  .embla__slide {
+    transform: translate3d(0, 0, 0);
+    flex: 0 0 var(--slide-size);
+    min-width: 0;
+    padding-left: var(--slide-spacing);
+  }
+
   .swiper-slide-thumb-active .progress {
     transition-duration: 5s;
     transition-property: width;

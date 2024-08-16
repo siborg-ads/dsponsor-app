@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState, useRef } from "react";
-import MainAuctions from "@/components/features/home/MainAuctions";
+import AdSpaces from "@/components/features/home/AdSpaces";
 import { fetchMarketplace } from "@/utils/graphql/fetchMarketplace";
 import { formatUnits } from "ethers/lib/utils";
 import formatAndRound from "@/utils/prices/formatAndRound";
@@ -12,30 +12,26 @@ import Filters from "@/components/features/home/Filters";
 import Carousel from "@/components/features/home/Carousel";
 import Steps from "@/components/features/home/AdsSteps";
 import ClientsRedirection from "@/components/features/home/ClientsRedirection";
-import Arguments from "@/components/features/home/Arguments";
+import { curationData } from "@/data/curation";
 
 export type Filter = "all" | "medias" | "dapps" | "websites" | "newsletters";
 
 const allTokens: boolean = true;
 
-// assign an array of offer id to each filter
-const filters: {
-  // eslint-disable-next-line no-unused-vars
-  [key in Filter]: number[];
-} = {
-  all: [],
-  medias: [],
-  dapps: [1], // SiBorg dApp
-  websites: [],
-  newsletters: []
-};
-
 const Home = () => {
-  const [auctionsTemp, setAuctionsTemp] = useState<any[]>([]);
-  const [auctions, setAuctions] = useState<Auctions>([]);
-  const [isAuctionsLoading, setIsAuctionsLoading] = useState<boolean>(true);
+  const [tempAdSpaces, setTempAdSpaces] = useState<any[]>([]);
+  const [adSpaces, setAdSpaces] = useState<Auctions>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const [auctionsFetched, setAuctionsFetched] = useState<boolean>(false);
   const [filter, setFilter] = useState<Filter>("all");
+  const [offers, setOffers] = useState<any[]>([]);
+  const [curratedOfferIds, setCurratedOfferIds] = useState<number[]>([]);
+  const [curratedOfferIdsByType, setCurratedOfferIdsByType] = useState<
+    {
+      offerId: number;
+      type: Filter[];
+    }[]
+  >([]);
 
   const { currentChainObject } = useChainContext();
   const chainId = currentChainObject?.chainId;
@@ -46,16 +42,18 @@ const Home = () => {
     const fetchData = async (chainId: number, allTokens: any) => {
       if (dataFetchedRef.current) return;
 
-      setIsAuctionsLoading(true);
+      setIsLoading(true);
 
       let allListedTokenWithoutFilterArray: any[] = [];
       const data = await fetchMarketplace(chainId, allTokens);
       allListedTokenWithoutFilterArray.push(...data);
 
-      setAuctionsTemp(allListedTokenWithoutFilterArray);
+      setOffers(data);
+
+      setTempAdSpaces(allListedTokenWithoutFilterArray);
 
       setAuctionsFetched(true);
-      setIsAuctionsLoading(false);
+      setIsLoading(false);
     };
 
     if (chainId && !auctionsFetched && allTokens) {
@@ -64,19 +62,45 @@ const Home = () => {
   }, [auctionsFetched, chainId]);
 
   useEffect(() => {
-    if (auctionsTemp.length === 0) return;
+    if (!chainId) return;
 
-    let filteredAuctions = [...auctionsTemp]?.filter((token) => {
+    const baseURL = window.location.origin;
+
+    const currationArray = Object.entries(curationData(baseURL));
+
+    const chainIdCurrationArray = currationArray?.find(([key]) => Number(key) === chainId)?.[1];
+
+    if (!chainIdCurrationArray) return;
+
+    const curratedOfferIds = Object.values(chainIdCurrationArray)?.map((element) => {
+      return element?.offerId as number;
+    });
+
+    const curratedOfferIdsByType = Object.values(chainIdCurrationArray)?.map((element) => {
+      return {
+        offerId: element?.offerId as number,
+        type: element?.type
+      };
+    });
+
+    setCurratedOfferIds(curratedOfferIds);
+    setCurratedOfferIdsByType(curratedOfferIdsByType);
+  }, [chainId]);
+
+  useEffect(() => {
+    if (tempAdSpaces?.length === 0) return;
+
+    let filteredAdSpaces = [...tempAdSpaces]?.filter((token) => {
       if (filter !== "all") {
-        const offerIds = filters?.[filter];
-
-        return !!token?.offerId && offerIds?.includes(Number(token?.offerId));
+        return curratedOfferIdsByType?.some((element) => {
+          return element.offerId === Number(token?.offerId) && element.type.includes(filter);
+        });
       } else {
-        return true;
+        return curratedOfferIds?.includes(Number(token?.offerId));
       }
     });
 
-    const auctions = filteredAuctions?.map((token) => {
+    const adSpaces = filteredAdSpaces?.map((token) => {
       const name = token.metadata.name;
       const category = token.metadata.categories ? token.metadata.categories[0] : "";
       const chain = token.chainConfig.network;
@@ -194,8 +218,8 @@ const Home = () => {
       return object;
     });
 
-    setAuctions(auctions);
-  }, [auctionsTemp, filter]);
+    setAdSpaces(adSpaces);
+  }, [tempAdSpaces, filter, curratedOfferIds, curratedOfferIdsByType]);
 
   const metadata = {
     title: `SiBorg Ads - The Web3 Monetization Solution`,
@@ -218,15 +242,16 @@ const Home = () => {
           <Carousel filter={filter} />
         </div>
 
-        <Steps />
-
-        <MainAuctions
-          auctions={auctions}
-          isAuctionsLoading={isAuctionsLoading}
+        <AdSpaces
+          isLoading={isLoading}
           text="Trending Ad Spaces"
+          offers={offers}
+          adSpaces={adSpaces}
+          filter={filter}
+          curratedOfferIdsByType={curratedOfferIdsByType}
         />
 
-        <Arguments />
+        <Steps />
 
         <ClientsRedirection />
       </div>
