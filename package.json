@@ -31,6 +31,7 @@
     "@types/react-dom": "^18.3.0",
     "clsx": "^2.1.1",
     "cookies-next": "^4.2.1",
+    "embla-carousel-react": "^8.1.8",
     "ethers": "^5.7.2",
     "framer-motion": "^11.2.10",
     "lucide-react": "^0.414.0",
