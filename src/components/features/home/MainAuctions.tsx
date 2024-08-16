@@ -1,8 +1,6 @@
 import React, { useMemo, useState } from "react";
 import TokenCardSkeleton from "@/components/ui/skeletons/TokenCardSkeleton";
 import TokenCard from "@/components/ui/cards/TokenCard";
-import { InformationCircleIcon } from "@heroicons/react/20/solid";
-import { Popover, PopoverTrigger, PopoverContent } from "@nextui-org/popover";
 import { Auction } from "@/types/auctions";
 
 const MainAuctions = ({
@@ -15,7 +13,6 @@ const MainAuctions = ({
   text: string;
 }) => {
   const [hotAuctions, setHotAuctions] = useState<Auction[]>([]);
-  const [isInformationHovered, setIsInformationHovered] = useState<boolean>(false);
 
   useMemo(() => {
     if (auctions && auctions.length > 0) {

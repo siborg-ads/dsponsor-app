@@ -11,7 +11,7 @@ const ClientsRedirection = () => {
 
       <div className="grid grid-cols-2 gap-8">
         <Link href="/marketplace" className="w-full flex items-center justify-center">
-          <button className="bg-primaryBlack hover:bg-opacity-80 text-white rounded-lg w-full px-4 py-2">
+          <button className="bg-primaryPurple hover:bg-opacity-80 text-white rounded-lg w-full px-4 py-2">
             I am looking for visibility
           </button>
         </Link>
@@ -21,7 +21,7 @@ const ClientsRedirection = () => {
           href="mailto:contact@dsponsor.com"
           className="w-full flex items-center justify-center"
         >
-          <button className="bg-primaryBlack hover:bg-opacity-80 text-white rounded-lg w-full px-4 py-2">
+          <button className="bg-primaryPurple hover:bg-opacity-80 text-white rounded-lg w-full px-4 py-2">
             <span className="flex items-center justify-center gap-1">
               I am looking for sponsors <ArrowUpRight className="w-4 h-4" />
             </span>
