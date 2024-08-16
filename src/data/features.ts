@@ -39,5 +39,13 @@ export const features = {
   // Wether we're able to use gasless transactions
   canUseGaslessTransactions: !!isDevelopment,
   // Wether to use the new thirdweb provider
-  thirdwebV5: false
+  thirdwebV5: false,
+  // Wether to see the homepage filters
+  homepageFilters: {
+    canSeeAll: true,
+    canSeeMedias: false,
+    canSeeDapps: true,
+    canSeeWebsites: false,
+    canSeeNewsletters: false
+  }
 };

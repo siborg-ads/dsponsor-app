@@ -2,21 +2,39 @@
 
 import React, { useEffect, useState, useRef } from "react";
 import MainAuctions from "@/components/features/home/MainAuctions";
-import MarketplaceHome from "@/components/features/home/Marketplace";
-import Description from "@/components/features/home/Description";
-import { fetchHome } from "@/utils/graphql/fetchHome";
+import { fetchMarketplace } from "@/utils/graphql/fetchMarketplace";
 import { formatUnits } from "ethers/lib/utils";
 import formatAndRound from "@/utils/prices/formatAndRound";
 import Meta from "@/components/Meta";
 import { useChainContext } from "@/hooks/useChainContext";
 import { Auctions } from "@/types/auctions";
+import Filters from "@/components/features/home/Filters";
+import Carousel from "@/components/features/home/Carousel";
+import HowDoesItWork from "@/components/features/home/HowDoesItWork";
+import ClientsRedirection from "@/components/features/home/ClientsRedirection";
+
+export type Filter = "all" | "medias" | "dapps" | "websites" | "newsletters";
+
+const allTokens: boolean = true;
+
+// assign an array of offer id to each filter
+const filters: {
+  // eslint-disable-next-line no-unused-vars
+  [key in Filter]: number[];
+} = {
+  all: [],
+  medias: [],
+  dapps: [1], // SiBorg dApp
+  websites: [],
+  newsletters: []
+};
 
 const Home = () => {
   const [auctionsTemp, setAuctionsTemp] = useState<any[]>([]);
   const [auctions, setAuctions] = useState<Auctions>([]);
-  const [allTokens, setAllTokens] = useState<boolean>(true);
   const [isAuctionsLoading, setIsAuctionsLoading] = useState<boolean>(true);
   const [auctionsFetched, setAuctionsFetched] = useState<boolean>(false);
+  const [filter, setFilter] = useState<Filter>("all");
 
   const { currentChainObject } = useChainContext();
   const chainId = currentChainObject?.chainId;
@@ -30,7 +48,7 @@ const Home = () => {
       setIsAuctionsLoading(true);
 
       let allListedTokenWithoutFilterArray: any[] = [];
-      const data = await fetchHome(chainId, allTokens);
+      const data = await fetchMarketplace(chainId, allTokens);
       allListedTokenWithoutFilterArray.push(...data);
 
       setAuctionsTemp(allListedTokenWithoutFilterArray);
@@ -42,12 +60,22 @@ const Home = () => {
     if (chainId && !auctionsFetched && allTokens) {
       fetchData(chainId, allTokens);
     }
-  }, [allTokens, auctionsFetched, chainId]);
+  }, [auctionsFetched, chainId]);
 
   useEffect(() => {
     if (auctionsTemp.length === 0) return;
 
-    const auctions = auctionsTemp?.map((token) => {
+    let filteredAuctions = [...auctionsTemp]?.filter((token) => {
+      if (filter !== "all") {
+        const offerIds = filters?.[filter];
+
+        return !!token?.offerId && offerIds?.includes(Number(token?.offerId));
+      } else {
+        return true;
+      }
+    });
+
+    const auctions = filteredAuctions?.map((token) => {
       const name = token.metadata.name;
       const category = token.metadata.categories ? token.metadata.categories[0] : "";
       const chain = token.chainConfig.network;
@@ -166,7 +194,7 @@ const Home = () => {
     });
 
     setAuctions(auctions);
-  }, [auctionsTemp]);
+  }, [auctionsTemp, filter]);
 
   const metadata = {
     title: `SiBorg Ads - The Web3 Monetization Solution`,
@@ -174,25 +202,32 @@ const Home = () => {
       "audience engagement, web3, creator economic, NFT, creator monetization, creator economy, creator token, creator coin, creator tokenization, creator economy",
     desc: "Explore the future of media monetization. SiBorg Ads decentralized platform offers tokenized advertising spaces for dynamic and sustainable media funding."
   };
+
   return (
-    <>
+    <React.Fragment>
       <Meta {...metadata} />
       <div
-        className="mt-32 px-4 max-w-5xl mx-auto flex flex-col gap-12"
+        className="mt-32 px-4 max-w-5xl mx-auto flex flex-col gap-12 w-full"
         style={{
           marginTop: "8rem"
         }}
       >
-        <Description description={true} />
-        <MainAuctions auctions={auctions} isAuctionsLoading={isAuctionsLoading} />
-        <MarketplaceHome
+        <div className="flex flex-col gap-4">
+          <Filters filter={filter} setFilter={setFilter} />
+          <Carousel />
+        </div>
+
+        <HowDoesItWork />
+
+        <MainAuctions
           auctions={auctions}
-          setAllTokens={setAllTokens}
           isAuctionsLoading={isAuctionsLoading}
-          allTokens={allTokens}
+          text="Trending Ad Spaces"
         />
+
+        <ClientsRedirection />
       </div>
-    </>
+    </React.Fragment>
   );
 };
 

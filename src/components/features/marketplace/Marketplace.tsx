@@ -17,7 +17,7 @@ const onAuctionCondition = (auction, mint, direct) => {
   );
 };
 
-const MarketplaceHome = ({ auctions, setAllTokens, allTokens, isAuctionsLoading }) => {
+const MarketplaceComponent = ({ auctions, setAllTokens, allTokens, isAuctionsLoading }) => {
   const [filterName, setFilterName] = useState("");
   const [sortOption, setSortOption] = useState("Ending soon");
   const [filterOption, setFilterOption] = useState("All tokens");
@@ -174,7 +174,7 @@ const MarketplaceHome = ({ auctions, setAllTokens, allTokens, isAuctionsLoading 
         <span>Marketplace</span>
       </span>
       <div className="flex flex-col gap-20 md:gap-8">
-        <div className="flex flex-col md:flex-row items-center gap-2 h-10">
+        <div className="flex flex-col md:flex-row items-center gap-16 h-10">
           <Input
             type="text"
             placeholder="Filter by category"
@@ -185,8 +185,6 @@ const MarketplaceHome = ({ auctions, setAllTokens, allTokens, isAuctionsLoading 
             }}
           />
           <div className="grid grid-cols-2 md:flex h-full gap-2 w-full md:w-8/12">
-            {}
-
             <Menu as="div" className="py-4 md:py-0 h-full w-full">
               <MenuButton className="bg-secondaryBlack rounded-xl w-full h-full flex items-center justify-center hover:bg-opacity-80 border border-jacarta-100 border-opacity-10">
                 <div className="flex items-center gap-1">
@@ -240,7 +238,7 @@ const MarketplaceHome = ({ auctions, setAllTokens, allTokens, isAuctionsLoading 
                     onClick={() => {
                       setSortOption("Sort by name");
                     }}
-                    className="hover:bg-primaryBlack p-2 rounded-lg w-full pr-12 md:pr-24"
+                    className="hover:bg-primaryBlack p-2 text-left rounded-lg w-full pr-12 md:pr-24"
                   >
                     <span>Sort by name</span>
                   </button>
@@ -251,7 +249,7 @@ const MarketplaceHome = ({ auctions, setAllTokens, allTokens, isAuctionsLoading 
                     onClick={() => {
                       setSortOption("Price: low to high");
                     }}
-                    className="hover:bg-primaryBlack p-2 rounded-lg w-full pr-12 md:pr-24"
+                    className="hover:bg-primaryBlack p-2 text-left rounded-lg w-full pr-12 md:pr-24"
                   >
                     <span>Price: low to high</span>
                   </button>
@@ -261,7 +259,7 @@ const MarketplaceHome = ({ auctions, setAllTokens, allTokens, isAuctionsLoading 
                     onClick={() => {
                       setSortOption("Price: high to low");
                     }}
-                    className="hover:bg-primaryBlack p-2 rounded-lg w-full pr-12 md:pr-24"
+                    className="hover:bg-primaryBlack p-2 text-left rounded-lg w-full pr-12 md:pr-24"
                   >
                     <span>Price: high to low</span>
                   </button>
@@ -271,7 +269,7 @@ const MarketplaceHome = ({ auctions, setAllTokens, allTokens, isAuctionsLoading 
                     onClick={() => {
                       setSortOption("Ending soon");
                     }}
-                    className="hover:bg-primaryBlack p-2 rounded-lg w-full pr-12 md:pr-24"
+                    className="hover:bg-primaryBlack p-2 text-left rounded-lg w-full pr-12 md:pr-24"
                   >
                     <span>Ending soon</span>
                   </button>
@@ -316,4 +314,4 @@ const MarketplaceHome = ({ auctions, setAllTokens, allTokens, isAuctionsLoading 
   );
 };
 
-export default MarketplaceHome;
+export default MarketplaceComponent;

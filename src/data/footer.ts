@@ -7,15 +7,20 @@ const footerMenuList = [
       {
         id: 1,
         href: "/",
-        text: "Homepage"
+        text: "Home"
       },
       {
         id: 2,
+        href: "/marketplace",
+        text: "Marketplace"
+      },
+      {
+        id: 3,
         href: "/leaderboard",
         text: "Leaderboard"
       },
       {
-        id: 3,
+        id: 4,
         target: "_blank",
         href: "https://docs.google.com/document/d/1pKqqDFvHfYqTiUv6C_HeRU-jaTMwfdLOcLJoqlIDS3U/edit?usp=sharing",
         text: "FAQ"
