@@ -1,75 +1,14 @@
 import { executeQuery } from "@/utils/graphql/helper/executeQuery";
 import config from "@/config/config";
 
-type Royalty = {
-  bps: number;
-};
-
-type Mint = {
-  blockTimestamp: number;
-  tokenData: string | null;
-};
-
-type NFTContract = {
-  id: string;
-  royalty: Royalty;
-  adOffers: {
-    id: string;
-    metadataURL: string;
-  }[];
-};
-
-type Token = {
-  tokenId: string;
-  mint: Mint;
-  nftContract: NFTContract;
-  marketplaceListings: MarketplaceListing[];
-};
-
-type MarketplaceListing = {
-  id: string;
-  quantity: number;
-  token: Token;
-  listingType: "Direct" | "Auction";
-  currency: string;
-  reservePricePerToken: string;
-  buyoutPricePerToken: string;
-  bids: {
-    creationTimestamp: number;
-    bidder: string;
-    totalBidAmount: string;
-    status: string;
-  }[];
-  lister: string;
-  startTime: number;
-  endTime: number;
-  status: "UNSET" | "CREATED" | "COMPLETED" | "CANCELLED";
-  tokenType: string;
-  transferType: string;
-  rentalExpirationTimestamp?: number;
-};
-
-type AdOffer = {
-  id: string;
-  disable: boolean;
-  metadataURL: string;
-  nftContract: {
-    royalty: Royalty;
-    tokens: Token[];
-  };
-};
-
-type GetAllMarketplaceListingsResponse = {
-  adOffers: AdOffer[];
-};
-
 /**
- * Fetches all listed tokens.
+ * Fetches all listed tokens from the marketplace for a specific blockchain chain ID.
  *
- * @param {number} chainId - The ID of the blockchain chain to query.
- * @returns {Promise<Array>} - A promise that resolves to an array of mapped listed tokens.
+ * @param {number} chainId - The ID of the blockchain chain to fetch tokens from.
+ * @param {boolean} allTokens - Flag to include all tokens or filter out tokens with no marketplace listings.
+ * @returns {Promise<Array>} - A promise that resolves to an array of tokens with their details.
  */
-export const fetchMarketplace = async (chainId) => {
+export const fetchMarketplace = async (chainId: number, allTokens: boolean) => {
   const path = new URL(`https://relayer.dsponsor.com/api/${chainId}/graph`);
   const currentTimestamp = Math.floor(Date.now() / 1000);
 
@@ -88,6 +27,8 @@ export const fetchMarketplace = async (chainId) => {
             mint {
               blockTimestamp
               tokenData
+              totalPaid
+              currency
             }
             nftContract {
               id # = assetContract
@@ -105,12 +46,6 @@ export const fetchMarketplace = async (chainId) => {
               first: 1000
               orderBy: endTime
               orderDirection: asc
-              where: {
-                status: CREATED
-                quantity_gt: 0
-                startTime_lte: $currentTimestamp
-                endTime_gte: $currentTimestamp
-              }
             ) {
               id # listingId
               quantity
@@ -132,6 +67,7 @@ export const fetchMarketplace = async (chainId) => {
                   adOffers {
                     id
                     metadataURL # offerMetadata
+                    disable
                   }
                 }
                 mint {
@@ -151,7 +87,7 @@ export const fetchMarketplace = async (chainId) => {
               #    price = bids[0].totalBidAmount || reservePricePerToken
               reservePricePerToken
               buyoutPricePerToken
-              bids(orderBy: totalBidAmount, orderDirection: desc, first: 1) {
+              bids(orderBy: totalBidAmount, orderDirection: desc) {
                  creationTimestamp
                 bidder
                 totalBidAmount
@@ -183,43 +119,135 @@ export const fetchMarketplace = async (chainId) => {
     }
   `;
 
+  type QueryType = {
+    adOffers: [
+      {
+        id: string;
+        disable: boolean;
+        metadataURL: string;
+        nftContract: {
+          royalty: {
+            bps: string;
+          };
+          tokens: [
+            {
+              tokenId: string;
+              mint: {
+                blockTimestamp: string;
+                tokenData: string;
+                totalPaid: string;
+                currency: string;
+              };
+              nftContract: {
+                id: string;
+                adOffers: [
+                  {
+                    id: string;
+                    metadataURL: string;
+                    disable: boolean;
+                  }
+                ];
+                prices: [
+                  {
+                    currency: string;
+                    amount: string;
+                    enabled: boolean;
+                  }
+                ];
+              };
+              marketplaceListings: [
+                {
+                  id: string;
+                  quantity: string;
+                  token: {
+                    tokenId: string;
+                    nftContract: {
+                      id: string;
+                      royalty: {
+                        bps: string;
+                      };
+                      adOffers: [
+                        {
+                          id: string;
+                          metadataURL: string;
+                          disable: boolean;
+                        }
+                      ];
+                    };
+                    mint: {
+                      tokenData: string;
+                    };
+                  };
+                  listingType: string;
+                  currency: string;
+                  reservePricePerToken: string;
+                  buyoutPricePerToken: string;
+                  bids: [
+                    {
+                      creationTimestamp: string;
+                      bidder: string;
+                      totalBidAmount: string;
+                      status: string;
+                      newPricePerToken: string;
+                      paidBidAmount: string;
+                      refundBonus: string;
+                      refundAmount: string;
+                      refundProfit: string;
+                    }
+                  ];
+                  lister: string;
+                  startTime: string;
+                  endTime: string;
+                  status: string;
+                  tokenType: string;
+                  transferType: string;
+                  rentalExpirationTimestamp: string;
+                }
+              ];
+            }
+          ];
+        };
+      }
+    ];
+  };
+
+  const chainConfig = config[chainId];
   const variables = {
     currentTimestamp
   };
-  const chainConfig = config[chainId];
 
-  const response = (await executeQuery(
-    path.href,
-    GET_DATA,
-    variables
-  )) as GetAllMarketplaceListingsResponse;
+  const response = (await executeQuery(path.href, GET_DATA, variables)) as QueryType;
 
-  const mappedListedToken = response.adOffers
+  const mappedListedToken = response?.adOffers
     .map((offer) => {
       const newOffer = {
         ...offer,
         disable: offer.disable,
         nftContract: {
           ...offer.nftContract,
-          tokens: offer.nftContract.tokens.filter(
-            (token) => token.mint && token.marketplaceListings.length > 0
-          )
+          tokens: allTokens
+            ? offer.nftContract.tokens
+            : offer.nftContract.tokens.filter(
+                (token) => token.mint && token.marketplaceListings.length > 0
+              )
         }
       };
 
       return newOffer;
     })
-    .filter((offer) => offer.nftContract.tokens.length > 0)
     .flatMap((offer) =>
       offer.nftContract.tokens.map((token) => ({
         ...token,
         disable: offer.disable,
         offerId: offer.id,
-        tokenData: token.mint.tokenData ? token.mint.tokenData : null,
+        tokenData: token.mint?.tokenData ? token.mint.tokenData : null,
         chainConfig: chainConfig
       }))
     )
-    .sort((a, b) => b.marketplaceListings[0]?.startTime - a.marketplaceListings[0]?.startTime);
+    .sort(
+      (a, b) =>
+        Number(b.marketplaceListings[0]?.startTime) - Number(a.marketplaceListings[0]?.startTime)
+    );
 
   return mappedListedToken;
 };

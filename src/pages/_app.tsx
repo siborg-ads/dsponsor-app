@@ -14,6 +14,8 @@ import Hotjar from "@hotjar/browser";
 
 // styles
 import "@/styles/globals.css";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
 
 const siteId = 5037837;
 const hotjarVersion = 6;
