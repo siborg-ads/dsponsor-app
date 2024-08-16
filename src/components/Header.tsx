@@ -288,14 +288,14 @@ export default function Header() {
             </ConditionalCreateLi>
 
             <li className="group">
-              <Link href={`/`}>
+              <Link href={`/marketplace`}>
                 <button
                   onClick={() => setToggle(false)}
                   className="text-jacarta-900 font-display hover:text-primaryPurple focus:text-primaryPurple dark:hover:text-primaryPurple dark:focus:text-primaryPurple flex items-center justify-between py-3.5 text-base dark:text-white lg:px-5"
                 >
                   <span
                     className={
-                      isChildrenPageActive(route.asPath, `/`)
+                      isChildrenPageActive(route.asPath, `/marketplace`)
                         ? "text-primaryPurple dark:text-primaryPurple"
                         : ""
                     }

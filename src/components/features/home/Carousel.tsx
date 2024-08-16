@@ -2,7 +2,8 @@ import React, { useEffect, useState } from "react";
 import CarouselItem from "@/components/features/home/CarouselItem";
 import Slider from "react-slick";
 import { Filter } from "@/components/layout/Home";
-import { curationData } from "@/data/curationData";
+import { curationData } from "@/data/curation";
+import { useChainContext } from "@/hooks/useChainContext";
 
 function SampleNextArrow(props) {
   const { className, onClick } = props;
@@ -16,6 +17,10 @@ function SamplePrevArrow(props) {
 
 const Carousel = ({ filter }: { filter: Filter }) => {
   const [isMobile, setIsMobile] = useState<boolean>(false);
+  const [baseURL, setBaseURL] = useState<string>("");
+
+  const { currentChainObject } = useChainContext();
+  const chainId = currentChainObject?.chainId;
 
   useEffect(() => {
     window.addEventListener("resize", () => {
@@ -29,7 +34,18 @@ const Carousel = ({ filter }: { filter: Filter }) => {
     };
   }, []);
 
-  const filteredData = curationData.filter((curate) => {
+  useEffect(() => {
+    const baseURL = window.location.origin;
+    setBaseURL(baseURL);
+  }, []);
+
+  const curationArrayFromChainId =
+    Object?.entries(curationData(baseURL) ?? {})?.find(([key]) => Number(key) === chainId)?.[1] ??
+    [];
+
+  const curationArray = Object.values(curationArrayFromChainId);
+
+  const filteredData = curationArray.filter((curate) => {
     if (filter !== "all") {
       return curate?.type === filter;
     }
@@ -39,6 +55,8 @@ const Carousel = ({ filter }: { filter: Filter }) => {
   const settings = {
     speed: 500,
     arrows: !isMobile && filteredData?.length > 1,
+    autoplay: true,
+    autoplaySpeed: 5000,
     nextArrow: <SampleNextArrow className="bg-secondaryBlack h-4 w-4 rounded-full" />,
     prevArrow: <SamplePrevArrow className="bg-secondaryBlack h-4 w-4 rounded-full" />
   };
