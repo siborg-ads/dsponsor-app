@@ -11,12 +11,14 @@ const ResponsiveTooltip = ({ text, children }) => {
     <>
       <div className="md:hidden cursor-help" onClick={handleClick}>
         <Popover.Root>
-          <Popover.Trigger asChild>
-            <span>{children}</span>
-          </Popover.Trigger>
+          <Popover.Trigger asChild>{children}</Popover.Trigger>
           <Popover.Anchor />
           <Popover.Portal>
-            <Popover.Content className="bg-secondaryBlack z-[1000] max-w-xs md:max-w-lg p-2 rounded-md text-sm shadow-lg border border-jacarta-100 border-opacity-10">
+            <Popover.Content
+              align="center"
+              side="bottom"
+              className="bg-secondaryBlack z-[1000] max-w-xs md:max-w-lg p-2 rounded-md text-sm shadow-lg border border-jacarta-100 border-opacity-10"
+            >
               <p>{text}</p>
             </Popover.Content>
           </Popover.Portal>
@@ -26,9 +28,7 @@ const ResponsiveTooltip = ({ text, children }) => {
       <div className="hidden md:block cursor-help" onClick={handleClick}>
         <Tooltip.Provider delayDuration={0}>
           <Tooltip.Root>
-            <Tooltip.Trigger asChild>
-              <span>{children}</span>
-            </Tooltip.Trigger>
+            <Tooltip.Trigger asChild>{children}</Tooltip.Trigger>
             <Tooltip.Portal>
               <Tooltip.Content className="bg-secondaryBlack z-[1000] max-w-xs md:max-w-lg p-2 text-sm rounded-md shadow-lg border border-jacarta-100 border-opacity-10">
                 <p>{text}</p>

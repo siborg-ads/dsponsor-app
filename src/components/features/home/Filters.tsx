@@ -11,7 +11,7 @@ const Filters = ({
   setFilter: React.Dispatch<React.SetStateAction<Filter>>;
 }) => {
   return (
-    <div className="flex items-center flex-wrap gap-4">
+    <div className="flex items-center overflow-scroll md:overflow-auto md:flex-wrap gap-2 md:gap-4 hide-scrollbar">
       <button
         className={`px-4 py-2 rounded-lg hover:bg-opacity-80 ${filter === "all" ? "bg-white text-black" : "bg-secondaryBlack text-white"} ${!features.homepageFilters.canSeeAll ? "cursor-not-allowed" : ""}`}
         onClick={() => setFilter("all")}
