@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import Link from "next/link";
-import HowDoesItWork from "@/components/features/home/HowDoesItWork";
+import HowDoesItWork from "@/components/features/home/AdsSteps";
 
 const socials = [
   {

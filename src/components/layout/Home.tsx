@@ -10,8 +10,9 @@ import { useChainContext } from "@/hooks/useChainContext";
 import { Auctions } from "@/types/auctions";
 import Filters from "@/components/features/home/Filters";
 import Carousel from "@/components/features/home/Carousel";
-import HowDoesItWork from "@/components/features/home/HowDoesItWork";
+import Steps from "@/components/features/home/AdsSteps";
 import ClientsRedirection from "@/components/features/home/ClientsRedirection";
+import Arguments from "@/components/features/home/Arguments";
 
 export type Filter = "all" | "medias" | "dapps" | "websites" | "newsletters";
 
@@ -217,13 +218,15 @@ const Home = () => {
           <Carousel filter={filter} />
         </div>
 
-        <HowDoesItWork />
+        <Steps />
 
         <MainAuctions
           auctions={auctions}
           isAuctionsLoading={isAuctionsLoading}
           text="Trending Ad Spaces"
         />
+
+        <Arguments />
 
         <ClientsRedirection />
       </div>
