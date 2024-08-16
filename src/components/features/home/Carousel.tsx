@@ -1,38 +1,18 @@
 import React, { useEffect, useState } from "react";
 import CarouselItem from "@/components/features/home/CarouselItem";
-import Slider from "react-slick";
+import useEmblaCarousel from "embla-carousel-react";
 import { Filter } from "@/components/layout/Home";
 import { curationData } from "@/data/curation";
 import { useChainContext } from "@/hooks/useChainContext";
-
-function SampleNextArrow(props) {
-  const { className, onClick } = props;
-  return <div className={className} onClick={onClick} />;
-}
-
-function SamplePrevArrow(props) {
-  const { className, onClick } = props;
-  return <div className={className} onClick={onClick} />;
-}
+import Autoplay from "embla-carousel-autoplay";
 
 const Carousel = ({ filter }: { filter: Filter }) => {
-  const [isMobile, setIsMobile] = useState<boolean>(false);
   const [baseURL, setBaseURL] = useState<string>("");
+
+  const [emblaRef] = useEmblaCarousel({ loop: true }, [Autoplay({ delay: 5000 })]);
 
   const { currentChainObject } = useChainContext();
   const chainId = currentChainObject?.chainId;
-
-  useEffect(() => {
-    window.addEventListener("resize", () => {
-      setIsMobile(window.innerWidth < 768);
-    });
-
-    return () => {
-      window.removeEventListener("resize", () => {
-        setIsMobile(window.innerWidth < 768);
-      });
-    };
-  }, []);
 
   useEffect(() => {
     const baseURL = window.location.origin;
@@ -52,15 +32,6 @@ const Carousel = ({ filter }: { filter: Filter }) => {
     return true;
   });
 
-  const settings = {
-    speed: 500,
-    arrows: !isMobile && filteredData?.length > 1,
-    autoplay: true,
-    autoplaySpeed: 5000,
-    nextArrow: <SampleNextArrow className="bg-secondaryBlack h-4 w-4 rounded-full" />,
-    prevArrow: <SamplePrevArrow className="bg-secondaryBlack h-4 w-4 rounded-full" />
-  };
-
   if (!filteredData?.length) {
     return null;
   }
@@ -77,18 +48,25 @@ const Carousel = ({ filter }: { filter: Filter }) => {
   }
 
   return (
-    <div className="slider-container">
-      <Slider {...settings}>
+    <div className="embla" ref={emblaRef}>
+      <div className="embla__container">
         {filteredData?.map((item, index) => (
-          <CarouselItem
+          <div
             key={index}
-            logo={item.logo}
-            description={item.description}
-            buttonText={item.buttonText}
-            buttonLink={item.buttonLink}
-          />
+            className="embla__slide"
+            style={{
+              flex: "0 0 100%"
+            }}
+          >
+            <CarouselItem
+              logo={item.logo}
+              description={item.description}
+              buttonText={item.buttonText}
+              buttonLink={item.buttonLink}
+            />
+          </div>
         ))}
-      </Slider>
+      </div>
     </div>
   );
 };

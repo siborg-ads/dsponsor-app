@@ -67,7 +67,7 @@ const TokenCard = ({
     if (offers) {
       // we want to get all the proposals for the current item (accept, reject, pending, all)
       // for that we filter the offers to match the offer with the current offer that contains the current item
-      const itemOffer = offers?.find((offer) => offer?.id === item?.offerId);
+      const itemOffer = offers?.find((offer) => Number(offer?.offerId) === Number(item?.offerId));
 
       // itemOffers is an item that contains nftContract which contains tokens that contains the tokenId
       // we need to get the token item from the tokens array where the tokenId matches the current item tokenId
@@ -444,9 +444,9 @@ const TokenCard = ({
                   #{" "}
                   {item?.tokenData
                     ? item?.tokenData
-                    : item.mint?.tokenData
-                      ? item.mint?.tokenData
-                      : item.tokenId}
+                    : item?.mint?.tokenData
+                      ? item?.mint?.tokenData
+                      : item?.tokenId}
                 </span>
               </div>
             </Tippy>
@@ -470,7 +470,7 @@ const TokenCard = ({
               </span>
             ) : (
               <div className="overflow-hidden text-ellipsis whitespace-nowrap ">
-                <span className="font-display  text-primaryBlack hover:text-primaryPurple text-base dark:text-white flex items-center gap-1">
+                <span className="font-display text-primaryBlack hover:text-primaryPurple text-base dark:text-white flex items-center gap-1">
                   {availableToSubmitAd && availableToSubmitAdFromOwnedTokens && (
                     <ResponsiveTooltip text="You can submit an ad for this item">
                       <ExclamationCircleIcon className="h-5 w-5 text-red dark:text-red" />

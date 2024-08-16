@@ -373,9 +373,10 @@ const CreateOffer = () => {
 
           <div className="mx-auto max-w-[48.125rem]" style={{ maxWidth: "48.125rem" }}>
             <p className="text-center pt- pb-12 dark:text-white">
-              Finance your activity by selling ad space ownerships. The sponsors, the buyers of ad
-              spaces, will have the exclusive right to propose an ad on your media platform, such as
-              your website. You retain full control to accept or reject any ads submitted.{" "}
+              Fund your activities by selling ad space tokens. Sponsors who purchase these tokens
+              gain the exclusive right to propose ads on your platform, whether it&apos;s your
+              website or another location of your choice. You retain full control to approve or
+              reject any ads.
             </p>
           </div>
         </div>
