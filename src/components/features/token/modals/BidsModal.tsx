@@ -60,7 +60,13 @@ const BidsModal = ({
   toggleBidsModal: any;
   marketplaceListings: any;
   currencySymbol: string;
-  tokenBalance: any;
+  tokenBalance: {
+    symbol: string;
+    value: BigNumber;
+    name: string;
+    decimals: number;
+    displayValue: string;
+  };
   allowanceTrue: any;
   currencyTokenDecimals: number;
   handleApprove: any;
@@ -567,7 +573,7 @@ const BidsModal = ({
                           <div className="bg-jacarta-800 col-span-3 duration-400 shadow p-4 rounded-xl font-semibold text-xs md:text-base text-white text-center min-w-[125px] max-w-[125px] md:min-w-[200px] md:max-w-[200px]">
                             Your bid back +{" "}
                             {parseFloat(bidsAmount) >= parseFloat(initialIntPrice as string)
-                              ? formatAndRoundPrice(refundedPrice)
+                              ? formatAndRoundPrice(refundedPrice ?? "0")
                               : 0}{" "}
                             {currencySymbol} Reward
                           </div>
@@ -732,7 +738,9 @@ const BidsModal = ({
             {!successFullBid && (
               <div className="modal-footer flex items-center justify-center gap-4 p-6">
                 <div className="flex flex-col gap-6 md:gap-2 w-full justify-center items-center">
-                  <div className="grid grid-cols-1 mx-auto md:grid-cols-2 gap-6 md:w-7/12">
+                  <div
+                    className={`grid grid-cols-1 mx-auto ${!insufficentBalance && "md:grid-cols-2"} gap-6 md:w-7/12`}
+                  >
                     {!insufficentBalance ? (
                       <>
                         <StyledWeb3Button
@@ -765,7 +773,9 @@ const BidsModal = ({
                               error: buyoutPriceReached ? "Buy rejected 🤯" : "Bid rejected 🤯"
                             });
                           }}
-                          isDisabled={!isPriceGood || !checkTerms || allowanceTrue || notEnoughFunds}
+                          isDisabled={
+                            !isPriceGood || !checkTerms || allowanceTrue || notEnoughFunds
+                          }
                           defaultText={
                             buyoutPriceReached
                               ? notEnoughFunds
@@ -787,7 +797,9 @@ const BidsModal = ({
                             error: buyoutPriceReached ? "Buy rejected 🤯" : "Bid rejected 🤯"
                           });
                         }}
-                        isDisabled={!isPriceGood || !checkTerms || !canPayWithNativeToken || notEnoughFunds}
+                        isDisabled={
+                          !isPriceGood || !checkTerms || !canPayWithNativeToken || notEnoughFunds
+                        }
                         defaultText={
                           buyoutPriceReached
                             ? notEnoughFunds
@@ -800,14 +812,16 @@ const BidsModal = ({
                       />
                     )}
                   </div>
-                  <ResponsiveTooltip
-                    text={`You need to approve the marketplace contract to spend your ${currencySymbol} on this transaction.`}
-                  >
-                    <span className="text-xs text-center text-jacarta-100 inline-flex items-center gap-1">
-                      <InformationCircleIcon className="w-4 h-4 text-jacarta-100" />
-                      Why do I have to approve ?
-                    </span>
-                  </ResponsiveTooltip>
+                  {!insufficentBalance && (
+                    <ResponsiveTooltip
+                      text={`You need to approve the marketplace contract to spend your ${currencySymbol} on this transaction.`}
+                    >
+                      <span className="text-xs text-center text-jacarta-100 inline-flex items-center gap-1">
+                        <InformationCircleIcon className="w-4 h-4 text-jacarta-100" />
+                        Why do I have to approve ?
+                      </span>
+                    </ResponsiveTooltip>
+                  )}
                 </div>
 
                 {canPayWithCrossmint && address && (

@@ -1652,7 +1652,9 @@ const Token = () => {
       if (tokenStatut === "AUCTION") {
         if (!auctionPriceBN) return;
 
-        const result = await checkUserBalance(tokenBalance, auctionPriceBN);
+        const parsedBidsAmount = parseUnits(bidsAmount, currencyDecimals as number);
+
+        const result = await checkUserBalance(tokenBalance, parsedBidsAmount);
         setHasEnoughBalance(result);
 
         if (!nativeTokenBalance?.value || !amountInEthWithSlippage) return;
@@ -1704,7 +1706,9 @@ const Token = () => {
     auctionPriceBN,
     mintPriceBN,
     offerData,
-    tokenId
+    tokenId,
+    bidsAmount,
+    currencyDecimals
   ]);
 
   function formatTokenId(str) {
