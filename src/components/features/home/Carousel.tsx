@@ -47,7 +47,7 @@ const Carousel = ({ filter }: { filter: Filter }) => {
 
   const filteredData = curationArray.filter((curate) => {
     if (filter !== "all") {
-      return curate?.type === filter;
+      return curate.type.includes(filter);
     }
     return true;
   });

@@ -43,9 +43,9 @@ export const features = {
   // Wether to see the homepage filters
   homepageFilters: {
     canSeeAll: true,
-    canSeeMedias: false,
+    canSeeMedias: !!isDevelopment,
     canSeeDapps: true,
     canSeeWebsites: false,
-    canSeeNewsletters: false
+    canSeeNewsletters: !!isDevelopment
   }
 };
