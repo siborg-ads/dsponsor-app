@@ -11,6 +11,7 @@ import {
 } from "@heroicons/react/20/solid";
 import Image from "next/image";
 import { HistoryProposalType } from "../AdValidation";
+import { DateRangePicker } from "@nextui-org/react";
 
 function sanitizeType(type) {
   if (type === "linkURL") {
@@ -34,8 +35,11 @@ function santizeStatus(status) {
 }
 
 const ProposalHistory = ({ data }: { data: HistoryProposalType[] }) => {
-  const [currProposal, setCurrProposal] = useState<any>(null);
+  const [currProposal, setCurrProposal] = useState<HistoryProposalType | null>(null);
   const [visibleListings, setVisibleListings] = useState(0);
+  const [startDate, setStartDate] = useState<Date | null>(null);
+  const [endDate, setEndDate] = useState<Date | null>(null);
+  const [filteredData, setFilteredData] = useState<HistoryProposalType[]>(data);
 
   // No need to add the event when the modal opens and remove it when it closes because worst case it just remove an inexisting modal
   useEffect(() => {
@@ -51,10 +55,45 @@ const ProposalHistory = ({ data }: { data: HistoryProposalType[] }) => {
     };
   }, []);
 
-  const containsMetadata = data.some((proposal) => proposal.metadata);
+  useEffect(() => {
+    if (startDate && endDate) {
+      const filtered = data.filter((proposal) => {
+        const proposalDate = new Date(proposal.creationTimestamp * 1000);
+        return proposalDate >= startDate && proposalDate <= endDate;
+      });
+      setVisibleListings(0);
+      setFilteredData(filtered);
+    }
+  }, [startDate, endDate]);
+
+  const containsMetadata = filteredData.some((proposal) => proposal.metadata);
   return (
-    <div className="mt-4 overflow-x-auto">
-      <div className="w-full text-left min-w-[736px]    dark:bg-primaryBlack dark:text-white rounded-2lg">
+    <div className="flex flex-col mt-4">
+      <div className="flex items-center self-end justify-center mb-4 w-fit">
+        <DateRangePicker
+          aria-label="Select date range"
+          size="sm"
+          onChange={(value) => {
+            const startDateObject = value?.start;
+            const endDateObject = value?.end;
+
+            const startDate = new Date(
+              startDateObject.year,
+              startDateObject.month - 1,
+              startDateObject.day
+            );
+            const endDate = new Date(
+              endDateObject.year,
+              endDateObject.month - 1,
+              endDateObject.day
+            );
+
+            setStartDate(startDate);
+            setEndDate(endDate);
+          }}
+        />
+      </div>
+      <div className="w-full text-left min-w-[736px]    dark:bg-primaryBlack dark:text-white rounded-2lg overflow-x-auto">
         <table className="w-full mx-auto text-left border rounded-2lg dark:border-primaryPink dark:border-opacity-10">
           <thead className="rounded-2lg">
             <tr className="text-base bg-jacarta-50 dark:bg-primaryPurple rounded-2lg">
@@ -83,9 +122,9 @@ const ProposalHistory = ({ data }: { data: HistoryProposalType[] }) => {
             </tr>
           </thead>
           <tbody>
-            {data &&
-              data.length > 0 &&
-              data
+            {filteredData &&
+              filteredData.length > 0 &&
+              filteredData
                 .slice(visibleListings * 10, visibleListings * 10 + 10)
                 .map((proposal, proposalIndex) => (
                   <tr key={proposalIndex}>
@@ -142,7 +181,7 @@ const ProposalHistory = ({ data }: { data: HistoryProposalType[] }) => {
                 ))}
           </tbody>
         </table>
-        {data.length > 10 && (
+        {filteredData.length > 10 && (
           <div className="flex items-center justify-center gap-4 mx-auto mt-4 text-center">
             {visibleListings > 0 && (
               <button
@@ -157,7 +196,7 @@ const ProposalHistory = ({ data }: { data: HistoryProposalType[] }) => {
             )}
             {visibleListings + 1}
 
-            {visibleListings + 1 < Math.floor(data.length / 10) && (
+            {visibleListings + 1 < Math.floor(filteredData.length / 10) && (
               <button
                 className="px-4 py-2 text-white rounded-lg bg-secondaryBlack hover:bg-opacity-80"
                 onClick={() => setVisibleListings(visibleListings + 1)}
