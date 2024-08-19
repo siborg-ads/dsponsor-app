@@ -362,29 +362,6 @@ const ProposalHistory = ({ data }: { data: HistoryProposalType[] }) => {
           </div>
         </div>
       )}
-
-      {/* <div className="flex items-center justify-center gap-4 mx-auto mt-4 text-center">
-        {visibleListings > 1 && (
-          <button
-            className="px-4 py-2 text-white rounded-lg bg-secondaryBlack hover:bg-opacity-80"
-            onClick={handleViewLess}
-          >
-            <span className="flex items-center gap-1">
-              View Less <ChevronUpIcon className="w-4 h-4" />
-            </span>
-          </button>
-        )}
-        {visibleListings < sortedBids.length && (
-          <button
-            className="px-4 py-2 text-white rounded-lg bg-secondaryBlack hover:bg-opacity-80"
-            onClick={handleViewMore}
-          >
-            <span className="flex items-center gap-1">
-              View More <ChevronDownIcon className="w-4 h-4" />
-            </span>
-          </button>
-        )}
-      </div> */}
     </div>
   );
 };
