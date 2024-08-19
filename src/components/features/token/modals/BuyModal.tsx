@@ -54,7 +54,54 @@ const BuyModal = ({
   buyTokenEtherPrice,
   totalPrice,
   hasEnoughBalance,
-  hasEnoughBalanceForNative
+  hasEnoughBalanceForNative,
+  tokenEtherPriceRelayer
+}: {
+  // eslint-disable-next-line no-unused-vars
+  formatTokenId: (tokenId: string) => string;
+  tokenStatut: string;
+  allowanceTrue: boolean;
+  handleApprove: any;
+  finalPrice: any;
+  royaltiesFeesAmount: any;
+  successFullUpload: boolean;
+  feesAmount: any;
+  successFullBuyModal: {
+    title: string;
+    body: string;
+    subBody?: string;
+    hrefButton?: string;
+    buttonTitle: string;
+  };
+  finalPriceNotFormatted: string;
+  royalties: number;
+  price: string;
+  tokenId: string;
+  selectedCurrency: string;
+  name: string;
+  image: string;
+  handleSubmit: Promise<unknown> | (() => Promise<unknown>);
+  handleBuyModal: () => void;
+  handleBuySubmitWithNative: Promise<unknown> | (() => Promise<unknown>);
+  tokenData: string;
+  address: Address;
+  token: any;
+  user: any;
+  offer: any;
+  referrer: Address;
+  currencyContract: string;
+  insufficentBalance: boolean;
+  canPayWithNativeToken: boolean;
+  // eslint-disable-next-line no-unused-vars
+  setInsufficentBalance: (value: boolean) => void;
+  // eslint-disable-next-line no-unused-vars
+  setCanPayWithNativeToken: (value: boolean) => void;
+  nativeTokenBalance: any;
+  buyTokenEtherPrice: string;
+  totalPrice: number;
+  hasEnoughBalance: boolean;
+  hasEnoughBalanceForNative: boolean;
+  tokenEtherPriceRelayer: any;
 }) => {
   const [validate, setValidate] = useState(false);
   const [notEnoughFunds, setNotEnoughFunds] = useState(false);
@@ -70,7 +117,7 @@ const BuyModal = ({
   const chainConfig = config[chainId as number];
 
   useEffect(() => {
-    if (!buyTokenEtherPrice || buyTokenEtherPrice <= 0) return;
+    if (!buyTokenEtherPrice || Number(buyTokenEtherPrice) <= 0) return;
 
     const fixedBuyTokenEtherPrice = Number(buyTokenEtherPrice).toFixed(currencyBalance?.decimals);
     const buyTokenEtherPriceDecimals = parseUnits(
@@ -84,7 +131,7 @@ const BuyModal = ({
       setInsufficentBalance(false);
     }
 
-    if (nativeTokenBalance && nativeTokenBalance?.value.lt(buyTokenEtherPriceDecimals)) {
+    if (nativeTokenBalance?.value?.lt(buyTokenEtherPriceDecimals)) {
       setCanPayWithNativeToken(false);
     } else {
       setCanPayWithNativeToken(true);
@@ -136,11 +183,11 @@ const BuyModal = ({
   }, [handleBuyModal, modalRef]);
 
   useEffect(() => {
-    if (finalPriceNotFormatted && currencyBalance?.decimals && chainId && chainConfig) {
-      const parsedBuyAmount = BigNumber.from(finalPriceNotFormatted);
+    if (tokenEtherPriceRelayer && chainId && chainConfig) {
+      const parsedBuyAmount = BigNumber.from(tokenEtherPriceRelayer?.amountInEthWithSlippage);
       const parsedPriceLimit = parseUnits(
         chainConfig?.features?.crossmint?.config?.priceLimit?.toString(),
-        Number(currencyBalance?.decimals)
+        18
       );
 
       const tooHighPrice = parsedPriceLimit ? parsedBuyAmount?.gte(parsedPriceLimit) : true;
@@ -150,8 +197,10 @@ const BuyModal = ({
       } else {
         setTooHighPriceForCrossmint(false);
       }
+    } else {
+      setTooHighPriceForCrossmint(true);
     }
-  }, [finalPriceNotFormatted, chainConfig, chainId, currencyBalance?.decimals]);
+  }, [tokenEtherPriceRelayer, chainConfig, chainId]);
 
   // Ref instead of state to avoid re-renders
   const isProcessingRef = useRef(false);
@@ -330,9 +379,9 @@ const BuyModal = ({
                   <div className="flex flex-col items-center md:gap-2 gap-6">
                     {/* Approve Button */}
                     <div
-                      className={`grid grid-cols-1 mx-auto ${parseFloat(totalPrice) > 0 && "md:grid-cols-2"} gap-6 w-full`}
+                      className={`grid grid-cols-1 mx-auto ${totalPrice > 0 && "md:grid-cols-2"} gap-6 w-full`}
                     >
-                      {!!totalPrice && parseFloat(totalPrice) > 0 && (
+                      {totalPrice > 0 && (
                         <StyledWeb3Button
                           contractAddress={
                             currentChainObject?.smartContracts?.DSPONSORADMIN?.address as Address
@@ -364,21 +413,19 @@ const BuyModal = ({
                           });
                         }}
                         isDisabled={
-                          !validate ||
-                          (allowanceTrue && parseFloat(totalPrice) > 0) ||
-                          notEnoughFunds
+                          !validate || (allowanceTrue && totalPrice > 0) || notEnoughFunds
                         }
                         defaultText={
                           notEnoughFunds
                             ? "Not enough funds"
-                            : parseFloat(totalPrice) > 0
+                            : totalPrice > 0
                               ? "Buy Now 💸 (2/2)"
                               : "Mint for free"
                         }
                       />
                     </div>
 
-                    {!!totalPrice && parseFloat(totalPrice) > 0 && (
+                    {totalPrice > 0 && (
                       <ResponsiveTooltip
                         text={`You need to approve the marketplace contract to spend your ${selectedCurrency} on this transaction.`}
                       >

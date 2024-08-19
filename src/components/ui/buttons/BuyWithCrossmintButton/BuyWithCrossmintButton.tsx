@@ -2,6 +2,7 @@ import { CrossmintPayButton } from "@crossmint/client-sdk-react-ui";
 import React from "react";
 import { BigNumber, ethers } from "ethers";
 import { formatUnits } from "ethers/lib/utils";
+import { Address } from "thirdweb";
 
 /**
  * Buy with Crossmint Button
@@ -47,7 +48,7 @@ export default function BuyWithCrossmintButton(
       fee: string;
     };
     user: { address: string; email: string };
-    referrer: { address: string };
+    referrer: Address;
     actions: { processing: Function; success: Function; error: Function };
     isDisabled: boolean;
     isLoadingRender: () => React.JSX.Element;
@@ -126,7 +127,7 @@ export default function BuyWithCrossmintButton(
         buyFor: user.address,
         quantity: 1,
         currency: token.currency,
-        referralAdditionalInformation: referrer.address ?? "0x"
+        referralAdditionalInformation: referrer ?? "0x"
       }
     },
     successCallbackURL: props.successCallbackURL,
