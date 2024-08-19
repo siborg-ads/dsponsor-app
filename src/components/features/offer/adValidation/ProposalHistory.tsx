@@ -1,17 +1,12 @@
 import Link from "next/link";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import renderDateToHumanString from "@/utils/dates/renderDateToHumanString";
-import renderPriceToHumanString from "@/utils/prices/renderPriceToHumanString";
-import formatLongAddress from "@/utils/addresses/formatLongAddress";
-import {
-  ChevronDownIcon,
-  ChevronUpIcon,
-  ChevronRightIcon,
-  ChevronLeftIcon
-} from "@heroicons/react/20/solid";
+import { ChevronDownIcon, ChevronRightIcon, ChevronLeftIcon } from "@heroicons/react/20/solid";
 import Image from "next/image";
 import { HistoryProposalType } from "../AdValidation";
 import { DateRangePicker } from "@nextui-org/react";
+import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
+import Input from "@/components/ui/Input";
 
 function sanitizeType(type) {
   if (type === "linkURL") {
@@ -34,16 +29,19 @@ function santizeStatus(status) {
   return `Previously ${state.toLowerCase()}`;
 }
 
+type FilterOptionsType = "All proposals" | "Accepted" | "Pending" | "Rejected";
+
 const ProposalHistory = ({ data }: { data: HistoryProposalType[] }) => {
   const [currProposal, setCurrProposal] = useState<HistoryProposalType | null>(null);
   const [visibleListings, setVisibleListings] = useState(0);
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
-  const [filteredData, setFilteredData] = useState<HistoryProposalType[]>(data);
+  const [filterOption, setFilterOption] = useState<FilterOptionsType>("All proposals");
+  const [filterName, setFilterName] = useState("");
 
   // No need to add the event when the modal opens and remove it when it closes because worst case it just remove an inexisting modal
   useEffect(() => {
-    const handleEsc = (event) => {
+    const handleEsc = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         setCurrProposal(null);
       }
@@ -55,45 +53,156 @@ const ProposalHistory = ({ data }: { data: HistoryProposalType[] }) => {
     };
   }, []);
 
-  useEffect(() => {
+  const filteredData = useMemo(() => {
+    let tempData = [...data];
+    setVisibleListings(0);
+    // Filter by date
     if (startDate && endDate) {
-      const filtered = data.filter((proposal) => {
+      tempData = data.filter((proposal) => {
         const proposalDate = new Date(proposal.creationTimestamp * 1000);
         return proposalDate >= startDate && proposalDate <= endDate;
       });
-      setVisibleListings(0);
-      setFilteredData(filtered);
+    } else if (startDate) {
+      tempData = data.filter((proposal) => {
+        const proposalDate = new Date(proposal.creationTimestamp * 1000);
+        return proposalDate >= startDate;
+      });
+    } else if (endDate) {
+      tempData = data.filter((proposal) => {
+        const proposalDate = new Date(proposal.creationTimestamp * 1000);
+        return proposalDate <= endDate;
+      });
     }
-  }, [startDate, endDate]);
 
+    // Filter by name or metadata
+    if (filterName && filterName.length > 0 && filterName !== "") {
+      tempData = [...tempData].filter(
+        (proposal) =>
+          proposal.id?.toString().includes(filterName.toLowerCase()) ||
+          proposal.metadata?.toLowerCase().includes(filterName.toLowerCase())
+      );
+    }
+
+    // Filter by status
+    switch (filterOption) {
+      case "All proposals":
+        return tempData;
+      case "Accepted":
+        return tempData.filter((proposal) => proposal.status.includes("ACCEPTED"));
+      case "Pending":
+        return tempData.filter((proposal) => proposal.status.includes("PENDING"));
+      case "Rejected":
+        return tempData.filter((proposal) => proposal.status.includes("REJECTED"));
+    }
+  }, [filterOption, startDate, endDate, filterName]);
+
+  // In case there is one proposal with metadata, we will show the metadata column
   const containsMetadata = filteredData.some((proposal) => proposal.metadata);
   return (
     <div className="flex flex-col mt-4">
-      <div className="flex items-center self-end justify-center mb-4 w-fit">
-        <DateRangePicker
-          aria-label="Select date range"
-          size="sm"
-          onChange={(value) => {
-            const startDateObject = value?.start;
-            const endDateObject = value?.end;
+      <div className="flex flex-row flex-wrap-reverse items-center justify-end gap-2 mb-4 sm:gap-4">
+        <div className="flex mr-0 md:mr-auto">
+          <Input
+            type="text"
+            placeholder={`Filter by id${containsMetadata ? " or metadata" : ""}`}
+            name="search"
+            value={filterName}
+            onChange={(e) => {
+              setFilterName(e.target.value);
+            }}
+          />
+        </div>
+        <Menu as="div" className="h-8 w-fit">
+          <MenuButton className="flex items-center justify-center w-full h-full px-4 border bg-secondaryBlack rounded-xl hover:bg-opacity-80 border-jacarta-100 border-opacity-10">
+            <div className="flex items-center gap-1">
+              {filterOption} <ChevronDownIcon className="w-5 h-5" />
+            </div>
+          </MenuButton>
 
-            const startDate = new Date(
-              startDateObject.year,
-              startDateObject.month - 1,
-              startDateObject.day
-            );
-            const endDate = new Date(
-              endDateObject.year,
-              endDateObject.month - 1,
-              endDateObject.day
-            );
+          <MenuItems
+            anchor="bottom start"
+            className={`rounded-xl flex flex-col gap-2 [--anchor-gap:1rem] bg-secondaryBlack p-2 border border-jacarta-100 border-opacity-10`}
+          >
+            <MenuItem>
+              <button
+                onClick={() => {
+                  setFilterOption("All proposals");
+                }}
+                className="w-full p-2 pr-12 rounded-lg text-start hover:bg-primaryBlack md:pr-24"
+              >
+                <span>All proposals</span>
+              </button>
+            </MenuItem>
 
-            setStartDate(startDate);
-            setEndDate(endDate);
-          }}
-        />
+            <MenuItem>
+              <button
+                onClick={() => {
+                  setFilterOption("Accepted");
+                }}
+                className="w-full p-2 pr-12 rounded-lg text-start hover:bg-primaryBlack md:pr-24"
+              >
+                <span>Accepted</span>
+              </button>
+            </MenuItem>
+            <MenuItem>
+              <button
+                onClick={() => {
+                  setFilterOption("Pending");
+                }}
+                className="w-full p-2 pr-12 rounded-lg text-start hover:bg-primaryBlack md:pr-24"
+              >
+                <span>Pending</span>
+              </button>
+            </MenuItem>
+            <MenuItem>
+              <button
+                onClick={() => {
+                  setFilterOption("Rejected");
+                }}
+                className="w-full p-2 pr-12 rounded-lg text-start hover:bg-primaryBlack md:pr-24"
+              >
+                <span>Rejected</span>
+              </button>
+            </MenuItem>
+          </MenuItems>
+        </Menu>
+        <div className="flex items-center justify-center justify-self-start">
+          <DateRangePicker
+            aria-label="Select date range"
+            size="sm"
+            onChange={(value) => {
+              if (!value) {
+                setStartDate(null);
+                setEndDate(null);
+                return;
+              }
+
+              const startDateObject = value?.start;
+              const endDateObject = value?.end;
+              if (!startDateObject || !endDateObject) {
+                setStartDate(null);
+                setEndDate(null);
+                return;
+              }
+
+              const startDate = new Date(
+                startDateObject.year,
+                startDateObject.month - 1,
+                startDateObject.day
+              );
+              const endDate = new Date(
+                endDateObject.year,
+                endDateObject.month - 1,
+                endDateObject.day
+              );
+
+              setStartDate(startDate);
+              setEndDate(endDate);
+            }}
+          />
+        </div>
       </div>
-      <div className="w-full text-left min-w-[736px]    dark:bg-primaryBlack dark:text-white rounded-2lg overflow-x-auto">
+      <div className="w-full overflow-x-auto text-left dark:bg-primaryBlack dark:text-white rounded-2lg">
         <table className="w-full mx-auto text-left border rounded-2lg dark:border-primaryPink dark:border-opacity-10">
           <thead className="rounded-2lg">
             <tr className="text-base bg-jacarta-50 dark:bg-primaryPurple rounded-2lg">
@@ -129,7 +238,7 @@ const ProposalHistory = ({ data }: { data: HistoryProposalType[] }) => {
                 .map((proposal, proposalIndex) => (
                   <tr key={proposalIndex}>
                     <td className="px-4 py-4 text-jacarta-100 dark:text-jacarta-100">
-                      {proposal.id}
+                      {proposal.id?.toString().slice(0, 6)}...{proposal.id?.toString().slice(-4)}
                     </td>
                     {containsMetadata && (
                       <td
@@ -152,15 +261,12 @@ const ProposalHistory = ({ data }: { data: HistoryProposalType[] }) => {
                     <td className="px-4 py-4 text-jacarta-100 dark:text-jacarta-100">
                       <button
                         className="text-nowrap hover:cursor-pointer hover:underline"
-                        onClick={() =>
-                          proposal.type !== "linkURL"
-                            ? (e) => {
-                                e.preventDefault();
-                                console.log("clicked");
-                                setCurrProposal(proposal);
-                              }
-                            : null
-                        }
+                        onClick={(e) => {
+                          if (proposal.type !== "linkURL") {
+                            e.preventDefault();
+                            setCurrProposal(proposal);
+                          }
+                        }}
                       >
                         {proposal.type === "linkURL" ? (
                           <Link href={proposal.data} target="_blank" className="text-green">

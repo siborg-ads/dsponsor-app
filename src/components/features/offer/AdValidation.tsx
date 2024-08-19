@@ -17,12 +17,12 @@ export type HistoryProposalType = {
   status: string;
   cssAspectRatio: string | null;
   metadata?: string;
-  id?: number;
+  id: number;
 };
 
-function processAllProposals(proposals) {
+function processAllProposals(token) {
   const groupedProposals: HistoryProposalType[] = [];
-  for (const element of proposals) {
+  for (const element of token.allProposals) {
     let cssAspectRatio = null;
     if (element.status.startsWith("imageURL")) {
       const sanitizedStatus = element.status.replace("-0", "");
@@ -36,7 +36,9 @@ function processAllProposals(proposals) {
       lastUpdateTimestamp: parseInt(element.lastUpdateTimestamp),
       rejectReason: element.rejectReason,
       status: element.status,
-      cssAspectRatio: cssAspectRatio
+      cssAspectRatio: cssAspectRatio,
+      id: token.tokenId,
+      metadata: token.mint.tokenData
     });
   }
 
@@ -185,7 +187,7 @@ const AdValidation = ({
       }
     }
 
-    for (const [i, token] of offer.nftContract.tokens.entries()) {
+    for (const token of offer.nftContract.tokens) {
       if (token.mint !== null) {
         for (const element of token.currentProposals) {
           processProposal(token, element, groupedPendingAds, "pendingProposal");
@@ -194,11 +196,9 @@ const AdValidation = ({
         }
       }
 
-      processAllProposals(token.allProposals).forEach((proposal) => {
+      processAllProposals(token).forEach((proposal) => {
         groupedHistoryProposals.push({
-          ...proposal,
-          metadata: token.mint.tokenData,
-          id: i
+          ...proposal
         });
       });
     }
