@@ -374,16 +374,18 @@ const Offer = () => {
 
           <div className="md:flex md:flex-wrap" key={id}>
             {/* <!-- Image --> */}
-            <figure className="mb-8 md:w-2/5 relative md:flex-shrink-0 md:flex-grow-0 md:basis-auto lg:w-1/2 w-full flex justify-center items-start">
+            <figure className="mb-8 md:mb-0 md:w-2/5 md:flex-shrink-0 md:flex-grow-0 items-start md:basis-auto lg:w-1/2 w-full flex justify-center relative">
               <button
                 className="w-full md:sticky md:top-0 right-0"
                 onClick={() => setImageModal(true)}
               >
                 {imageUrl && (
-                  <img
+                  <Image
+                    width={585}
+                    height={726}
                     src={imageUrl ?? "/images/gradients/gradient_creative.jpg"}
                     alt="image"
-                    className="rounded-2xl cursor-pointer h-auto object-cover w-full aspect-square"
+                    className="rounded-2xl cursor-pointer h-auto object-contain w-full shadow-lg"
                   />
                 )}
               </button>
