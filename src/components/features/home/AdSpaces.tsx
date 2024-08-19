@@ -137,6 +137,8 @@ const AdSpaces = ({
 
                   resultArray[chunkIndex].push(item);
 
+                  console.log(resultArray);
+
                   return resultArray;
                 }, [])
             )?.map((element: any, index) => {
@@ -163,7 +165,7 @@ const AdSpaces = ({
                           url={
                             !element?.[0]?.tokenData
                               ? `/${element?.[0]?.chainId}/offer/${element?.[0]?.offerId}/${element?.[0]?.tokenId}`
-                              : `/${element?.[0]?.chainId}/offer/${element?.[0]?.item?.nftContract?.adOffers[0]?.id}/${element?.[0]?.tokenId}?tokenData=${element?.[0]?.item?.mint?.tokenData}`
+                              : `/${element?.[0]?.chainId}/offer/${element?.[0]?.offerId}/${element?.[0]?.tokenId}?tokenData=${element?.[0]?.item?.mint?.tokenData}`
                           }
                           currencyDecimals={element?.[0]?.currencyDecimals}
                         />
@@ -179,7 +181,7 @@ const AdSpaces = ({
                           url={
                             !element?.[1]?.tokenData
                               ? `/${element?.[1]?.chainId}/offer/${element?.[1]?.offerId}/${element?.[1]?.tokenId}`
-                              : `/${element?.[1]?.chainId}/offer/${element?.[1]?.item?.nftContract?.adOffers[1]?.id}/${element?.[1]?.tokenId}?tokenData=${element?.[1]?.item?.mint?.tokenData}`
+                              : `/${element?.[1]?.chainId}/offer/${element?.[1]?.offerId}/${element?.[1]?.tokenId}?tokenData=${element?.[1]?.item?.mint?.tokenData}`
                           }
                           currencyDecimals={element?.[1]?.currencyDecimals}
                         />
@@ -195,7 +197,7 @@ const AdSpaces = ({
                           url={
                             !element?.[2]?.tokenData
                               ? `/${element?.[2]?.chainId}/offer/${element?.[2]?.offerId}/${element?.[2]?.tokenId}`
-                              : `/${element?.[2]?.chainId}/offer/${element?.[2]?.item?.nftContract?.adOffers[2]?.id}/${element?.[2]?.tokenId}?tokenData=${element?.[2]?.item?.mint?.tokenData}`
+                              : `/${element?.[2]?.chainId}/offer/${element?.[2]?.offerId}/${element?.[2]?.tokenId}?tokenData=${element?.[2]?.item?.mint?.tokenData}`
                           }
                           currencyDecimals={element?.[2]?.currencyDecimals}
                         />
@@ -211,7 +213,7 @@ const AdSpaces = ({
                           url={
                             !element?.[3]?.tokenData
                               ? `/${element?.[3]?.chainId}/offer/${element?.[3]?.offerId}/${element?.[3]?.tokenId}`
-                              : `/${element?.[3]?.chainId}/offer/${element?.[3]?.item?.nftContract?.adOffers[0]?.id}/${element?.[3]?.tokenId}?tokenData=${element?.[3]?.item?.mint?.tokenData}`
+                              : `/${element?.[3]?.chainId}/offer/${element?.[3]?.offerId}/${element?.[3]?.tokenId}?tokenData=${element?.[3]?.item?.mint?.tokenData}`
                           }
                           currencyDecimals={element?.[3]?.currencyDecimals}
                         />
