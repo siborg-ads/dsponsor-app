@@ -2451,6 +2451,7 @@ const Token = () => {
                         setShowBidsModal={setShowBidsModal}
                         hasEnoughBalance={hasEnoughBalance}
                         hasEnoughBalanceForNative={hasEnoughBalanceForNative}
+                        tokenEtherPriceRelayer={tokenEtherPriceRelayer}
                       />
                     )}
                 </>
