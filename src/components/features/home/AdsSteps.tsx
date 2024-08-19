@@ -91,7 +91,8 @@ const Steps = () => {
                       {step.image && (
                         <button onClick={() => openModal(step.image)} className="text-left">
                           <span className="underline text-white hover:text-jacarta-100 text-left text-xs cursor-pointer">
-                            See example with &apos;Bitcoin&apos; search keyword
+                            See example with &apos;Bitcoin&apos; search keyword for the SiBorg app
+                            offer
                           </span>
                         </button>
                       )}
