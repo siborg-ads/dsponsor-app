@@ -25,10 +25,6 @@ const ClientsRedirection = () => {
       </span>
 
       <div className="rounded-xl w-full bg-secondaryBlack flex flex-col gap-8 p-8">
-        <span className="text-white text-center font-semibold text-2xl">
-          Be part of the Web3 Monetization evolution
-        </span>
-
         <div className="grid md:grid-cols-3 gap-4">
           {argumentsData.map((argument, index) => (
             <div

@@ -8,7 +8,6 @@ import formatAndRound from "@/utils/prices/formatAndRound";
 import Meta from "@/components/Meta";
 import { useChainContext } from "@/hooks/useChainContext";
 import { Auctions } from "@/types/auctions";
-import Filters from "@/components/features/home/Filters";
 import Carousel from "@/components/features/home/Carousel";
 import Steps from "@/components/features/home/AdsSteps";
 import ClientsRedirection from "@/components/features/home/ClientsRedirection";
@@ -237,10 +236,7 @@ const Home = () => {
           marginTop: "8rem"
         }}
       >
-        <div className="flex flex-col gap-4">
-          <Filters filter={filter} setFilter={setFilter} />
-          <Carousel filter={filter} />
-        </div>
+        <Carousel filter={filter} setFilter={setFilter} />
 
         <AdSpaces
           isLoading={isLoading}

@@ -47,5 +47,7 @@ export const features = {
     canSeeDapps: true,
     canSeeWebsites: false,
     canSeeNewsletters: !!isDevelopment
-  }
+  },
+  // Wether to show 2 tokens only by offer in the homepage
+  homepageTwoTokensOnly: !isDevelopment
 };
