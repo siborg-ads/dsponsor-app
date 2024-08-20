@@ -119,7 +119,6 @@ const Offer = () => {
           chainConfig: offers?.filter((offer) => Number(offer?.id) === Number(offerId))[0]
             ?.chainConfig
         };
-
         setOfferData(offerDataFinal);
       } catch (error) {
         console.error("Error fetching offers:", error);
@@ -354,19 +353,19 @@ const Offer = () => {
     >
       <Meta {...metadata} />
       {/*  <!-- Item --> */}
-      <section className="relative lg:mt-24 lg:pt-12  mt-24 pt-12 pb-8">
+      <section className="relative pt-12 pb-8 mt-24 lg:mt-24 lg:pt-12">
         <div className="container flex justify-center mb-6">
-          <h1 className="text-jacarta-900 font-bold font-display mb-6 text-center text-5xl dark:text-white md:text-left lg:text-6xl xl:text-6xl">
+          <h1 className="mb-6 text-5xl font-bold text-center text-jacarta-900 font-display dark:text-white md:text-left lg:text-6xl xl:text-6xl">
             Offer{" "}
           </h1>
         </div>
-        <picture className="pointer-events-none absolute inset-0 -z-10 dark:hidden">
+        <picture className="absolute inset-0 pointer-events-none -z-10 dark:hidden">
           <img
             width={750}
             height={750}
             src={imageUrl ?? "/images/gradients/gradient_creative.jpg"}
             alt="gradient"
-            className="h-auto w-full object-cover aspect-square"
+            className="object-cover w-full h-auto aspect-square"
           />
         </picture>
         <div className="container">
@@ -374,9 +373,9 @@ const Offer = () => {
 
           <div className="md:flex md:flex-wrap" key={id}>
             {/* <!-- Image --> */}
-            <figure className="mb-8 md:mb-0 md:w-2/5 md:flex-shrink-0 md:flex-grow-0 items-start md:basis-auto lg:w-1/2 w-full flex justify-center relative">
+            <figure className="relative flex items-start justify-center w-full mb-8 md:mb-0 md:w-2/5 md:flex-shrink-0 md:flex-grow-0 md:basis-auto lg:w-1/2">
               <button
-                className="w-full md:sticky md:top-0 right-0"
+                className="right-0 w-full md:sticky md:top-0"
                 onClick={() => setImageModal(true)}
               >
                 {imageUrl && (
@@ -385,7 +384,7 @@ const Offer = () => {
                     height={726}
                     src={imageUrl ?? "/images/gradients/gradient_creative.jpg"}
                     alt="image"
-                    className="rounded-2xl cursor-pointer h-auto object-contain w-full shadow-lg"
+                    className="object-contain w-full h-auto shadow-lg cursor-pointer rounded-2xl"
                   />
                 )}
               </button>
@@ -393,7 +392,7 @@ const Offer = () => {
               {/* <!-- Modal Backdrop --> */}
               {imageModal && (
                 <div
-                  className="fixed inset-0 bg-black bg-opacity-50 z-50"
+                  className="fixed inset-0 z-50 bg-black bg-opacity-50"
                   onClick={(e) => {
                     if (e.target === e.currentTarget) {
                       setImageModal(false);
@@ -402,18 +401,18 @@ const Offer = () => {
                 >
                   {/* <!-- Modal --> */}
                   <div className="modal-dialog !my-0 flex items-center justify-center">
-                    <div className="modal fade show block">
+                    <div className="block modal fade show">
                       <div className="modal-dialog !my-0 flex items-center justify-center items-start">
                         <img
                           src={imageUrl ?? "/images/gradients/gradient_creative.jpg"}
                           alt="image"
-                          className="h-auto object-cover w-full rounded-2xl aspect-square"
+                          className="object-cover w-full h-auto rounded-2xl aspect-square"
                         />
                       </div>
 
                       <button
                         type="button"
-                        className="btn-close absolute top-6 right-6"
+                        className="absolute btn-close top-6 right-6"
                         onClick={() => setImageModal(false)}
                       >
                         <svg
@@ -421,7 +420,7 @@ const Offer = () => {
                           viewBox="0 0 24 24"
                           width="24"
                           height="24"
-                          className="h-6 w-6 fill-white"
+                          className="w-6 h-6 fill-white"
                         >
                           <path fill="none" d="M0 0h24v24H0z" />
                           <path d="M12 10.586l4.95-4.95 1.414 1.414-4.95 4.95 4.95 4.95-1.414 1.414-4.95-4.95-4.95 4.95-1.414-1.414 4.95-4.95-4.95-4.95L7.05 5.636z" />
@@ -437,37 +436,37 @@ const Offer = () => {
             {/* <!-- Details --> */}
             <div className="md:w-3/5 md:basis-auto md:pl-8 lg:w-1/2 lg:pl-[3.75rem]">
               {/* <!-- Collection / Likes / Actions --> */}
-              <div className="mb-3 flex">
+              <div className="flex mb-3">
                 {/* <!-- Collection --> */}
                 <div className="flex items-center">
                   <Link
                     href={`/profile/${offerData?.initialCreator}`}
-                    className="text-primaryPurple mr-2 text-sm font-bold"
+                    className="mr-2 text-sm font-bold text-primaryPurple"
                   >
                     {offerData?.initialCreator}
                   </Link>
                 </div>
               </div>
 
-              <h2 className="font-display text-jacarta-900 mb-4 text-3xl font-semibold dark:text-white">
+              <h2 className="mb-4 text-3xl font-semibold font-display text-jacarta-900 dark:text-white">
                 {name}
               </h2>
 
-              <div className="mb-8 flex items-center flex-wrap gap-2 space-x-4 whitespace-nowrap">
+              <div className="flex flex-wrap items-center gap-2 mb-8 space-x-4 whitespace-nowrap">
                 {offerData?.nftContract?.allowList && (
-                  <span className="dark:text-jacarta-100 text-jacarta-100 text-sm">
+                  <span className="text-sm dark:text-jacarta-100 text-jacarta-100">
                     {offerData?.nftContract?.maxSupply -
                       offerData?.nftContract?.tokens?.filter((item) => item.mint != null)?.length}
                     /{offerData?.nftContract?.maxSupply} available
                   </span>
                 )}
-                <span className="text-jacarta-100 block text-sm dark:text-white">
+                <span className="block text-sm text-jacarta-100 dark:text-white">
                   Creator <strong>{royalties}% royalties</strong>
                 </span>
               </div>
 
               {showEntireDescription ? (
-                <p className="dark:text-jacarta-100 mb-10">
+                <p className="mb-10 dark:text-jacarta-100">
                   {addLineBreaks(description)}{" "}
                   {description?.length > 1000 && (
                     <button
@@ -480,7 +479,7 @@ const Offer = () => {
                 </p>
               ) : (
                 <div>
-                  <p className="dark:text-jacarta-100 mb-10">
+                  <p className="mb-10 dark:text-jacarta-100">
                     {description?.length > 1000
                       ? addLineBreaks(description?.slice(0, 1000) + "...")
                       : addLineBreaks(description)}{" "}
@@ -501,9 +500,9 @@ const Offer = () => {
                 offerData?.nftContract?.prices[0]?.enabled === false) && <Disable isOffer={true} />}
 
               {isOwner && (
-                <div className="dark:bg-secondaryBlack dark:border-jacarta-800 border-jacarta-100 rounded-2lg border bg-white p-8">
+                <div className="p-8 bg-white border dark:bg-secondaryBlack dark:border-jacarta-800 border-jacarta-100 rounded-2lg">
                   <div className=" sm:flex sm:flex-wrap">
-                    <span className="dark:text-jacarta-100 text-jacarta-100 text-sm">
+                    <span className="text-sm dark:text-jacarta-100 text-jacarta-100">
                       This page allows you to oversee submitted ads, offering tools to either
                       approve or reject them. Approve ads to make them live or reject those that
                       don&apos;t meet your standards, streamlining the content that reaches your
@@ -524,7 +523,7 @@ const Offer = () => {
               <Accordion.Trigger
                 className={`${accordionActiveTab.includes("search") && "bg-primaryPurple"} w-full flex items-center justify-center gap-4 mb-6 border border-primaryPurple hover:bg-primaryPurple cursor-pointer p-2 rounded-lg`}
               >
-                <h2 className="text-jacarta-900 font-bold font-display text-center text-3xl dark:text-white ">
+                <h2 className="text-3xl font-bold text-center text-jacarta-900 font-display dark:text-white ">
                   Search
                 </h2>
                 <ChevronDownIcon
@@ -534,9 +533,9 @@ const Offer = () => {
             </Accordion.Header>
 
             <Accordion.Content className="mb-4">
-              <div className="dark:bg-secondaryBlack mb-6 dark:border-jacarta-800 border-jacarta-100 rounded-2lg border bg-white p-8">
+              <div className="p-8 mb-6 bg-white border dark:bg-secondaryBlack dark:border-jacarta-800 border-jacarta-100 rounded-2lg">
                 <div className=" sm:flex sm:flex-wrap">
-                  <span className="dark:text-jacarta-100 text-jacarta-100 text-sm">
+                  <span className="text-sm dark:text-jacarta-100 text-jacarta-100">
                     You can check if a word is available for purchase by using the search bar.
                     Simply type the word into the search bar and press enter to see if it is
                     available. This feature allows you to quickly find out if the word you are
@@ -552,7 +551,7 @@ const Offer = () => {
                   <article className="relative">
                     <div className="dark:bg-secondaryBlack dark:border-jacarta-700 border-jacarta-100 rounded-2xl block border bg-white p-[1.1875rem] transition-shadow hover:shadow-lg text-jacarta-100">
                       {isWordAlreadyTaken ? (
-                        <span className="text-red  ">This word is already taken ❌</span>
+                        <span className="text-red ">This word is already taken ❌</span>
                       ) : (
                         <span className="text-green ">This word is available 🎉</span>
                       )}
@@ -570,13 +569,13 @@ const Offer = () => {
                           )}
                         </Link>
                       </figure>
-                      <div className="mt-4 flex items-center justify-between gap-4">
+                      <div className="flex items-center justify-between gap-4 mt-4">
                         <Tippy content={<span className="p-2">{name}</span>}>
                           <Link
                             href={urlFromChild ?? "#"}
                             className="overflow-hidden text-ellipsis whitespace-nowrap min-w-[120px]"
                           >
-                            <span className="font-display  text-jacarta-900 hover:text-primaryPurple text-base dark:text-white ">
+                            <span className="text-base font-display text-jacarta-900 hover:text-primaryPurple dark:text-white ">
                               {name}
                             </span>
                           </Link>
@@ -584,7 +583,7 @@ const Offer = () => {
 
                         <Tippy content={<span className="p-2">{tokenData}</span>}>
                           <div className="dark:border-jacarta-800 border-jacarta-100 max-w-[100px] overflow-hidden text-ellipsis flex items-center whitespace-nowrap rounded-md border py-1 px-2">
-                            <span className="text-green text-sm font-medium tracking-tight overflow-hidden text-ellipsis whitespace-nowrap">
+                            <span className="overflow-hidden text-sm font-medium tracking-tight text-green text-ellipsis whitespace-nowrap">
                               {" "}
                               {tokenData}
                             </span>
@@ -606,7 +605,7 @@ const Offer = () => {
             <Accordion.Trigger
               className={`${accordionActiveTab.includes("tokens") && "bg-primaryPurple"} w-full flex items-center justify-center gap-4 mb-6 border border-primaryPurple hover:bg-primaryPurple cursor-pointer p-2 rounded-lg`}
             >
-              <h2 className="text-jacarta-900 font-bold font-display text-center text-3xl dark:text-white ">
+              <h2 className="text-3xl font-bold text-center text-jacarta-900 font-display dark:text-white ">
                 Tokens
               </h2>
               <ChevronDownIcon
@@ -616,40 +615,45 @@ const Offer = () => {
           </Accordion.Header>
 
           <Accordion.Content>
-            <div className="dark:bg-secondaryBlack mb-6 dark:border-jacarta-800 border-jacarta-100 rounded-2lg border bg-white p-4">
-              <div className="sm:flex justify-center items-center sm:flex-wrap">
-                <span className="dark:text-jacarta-100 text-jacarta-100 text-sm text-center">
+            <div className="p-4 mb-6 bg-white border dark:bg-secondaryBlack dark:border-jacarta-800 border-jacarta-100 rounded-2lg">
+              <div className="items-center justify-center sm:flex sm:flex-wrap">
+                <span className="text-sm text-center dark:text-jacarta-100 text-jacarta-100">
                   This section allows you to see every tokens associated with the offer.
                 </span>
               </div>
             </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-6">
+            <div className="grid grid-cols-2 gap-4 mb-6 md:grid-cols-3 lg:grid-cols-4">
               {offerData?.nftContract?.tokens?.map((token, index) => {
+                const currentListing = token?.marketplaceListings?.sort(
+                  (a, b) => Number(b.id) - Number(a.id)
+                )[0];
                 const currencyDecimals =
-                  token?.marketplaceListings?.sort((a, b) => Number(b.id) - Number(a.id))[0]
-                    ?.listingType === "Auction" ||
-                  token?.marketplaceListings?.sort((a, b) => Number(b.id) - Number(a.id))[0]
-                    ?.listingType === "Direct"
-                    ? Number(
-                        token?.marketplaceListings?.sort((a, b) => Number(b.id) - Number(a.id))[0]
-                          ?.currencyDecimals
-                      )
+                  currentListing?.listingType === "Auction" ||
+                  currentListing?.listingType === "Direct"
+                    ? Number(currentListing?.currencyDecimals)
                     : Number(token?.nftContract?.prices[0]?.currencyDecimals);
 
                 const finalToken = {
                   ...token,
                   chainConfig: offerData?.chainConfig,
-                  currencyDecimals
+                  currencyDecimals,
+                  listingType: currentListing?.listingType,
+                  endTime: currentListing?.endTime
                 };
+
+                console.log(finalToken);
 
                 return (
                   <TokenCard
                     key={index}
                     item={finalToken}
                     isToken={true}
-                    url={`/${chainId}/offer/${offerId}/${finalToken?.tokenId}`}
+                    url={`/${chainId}/offer/${offerId}/${finalToken?.tokenId}${finalToken?.mint?.tokenData ? `?tokenData=${finalToken?.mint?.tokenData}` : ""}`}
                     currencyDecimals={currencyDecimals}
+                    listingType={finalToken.listingType}
+                    isListing={finalToken.listingType}
+                    isAuction={finalToken.listingType === "Auction"}
                   />
                 );
               })}
@@ -676,7 +680,7 @@ const Offer = () => {
                       <ExclamationCircleIcon className="w-6 h-6 text-red" />
                     </ResponsiveTooltip>
                   )}
-                  <h2 className="text-jacarta-900 font-bold font-display text-center text-3xl dark:text-white ">
+                  <h2 className="text-3xl font-bold text-center text-jacarta-900 font-display dark:text-white ">
                     Ad Validation
                   </h2>
                   <ChevronDownIcon
@@ -721,7 +725,7 @@ const Offer = () => {
               <Accordion.Trigger
                 className={`${accordionActiveTab.includes("offerManagement") && "bg-primaryPurple"} w-full flex items-center justify-center gap-4 mb-6 border border-primaryPurple hover:bg-primaryPurple cursor-pointer p-2 rounded-lg`}
               >
-                <h2 className="text-jacarta-900 font-bold font-display text-center text-3xl dark:text-white ">
+                <h2 className="text-3xl font-bold text-center text-jacarta-900 font-display dark:text-white ">
                   Offer Management
                 </h2>
                 <ChevronDownIcon
@@ -732,7 +736,7 @@ const Offer = () => {
 
             <Accordion.Content className="mb-8">
               <Tabs className="tabs">
-                <TabList className="nav nav-tabs hide-scrollbar mb-12 flex items-center justify-start overflow-x-auto overflow-y-hidden border-b border-jacarta-100 pb-px dark:border-jacarta-800 md:justify-center">
+                <TabList className="flex items-center justify-start pb-px mb-12 overflow-x-auto overflow-y-hidden border-b nav nav-tabs hide-scrollbar border-jacarta-100 dark:border-jacarta-800 md:justify-center">
                   <Tab
                     className="nav-item"
                     onClick={() => setOfferManagementActiveTab("integration")}
@@ -812,7 +816,7 @@ const Offer = () => {
             <Accordion.Trigger
               className={`${accordionActiveTab.includes("details") && "bg-primaryPurple"} w-full flex items-center justify-center gap-4 mb-6 border border-primaryPurple hover:bg-primaryPurple cursor-pointer p-2 rounded-lg`}
             >
-              <h2 className="text-jacarta-900 font-bold font-display text-center text-3xl dark:text-white ">
+              <h2 className="text-3xl font-bold text-center text-jacarta-900 font-display dark:text-white ">
                 Details
               </h2>
               <ChevronDownIcon
