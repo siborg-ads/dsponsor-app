@@ -673,7 +673,6 @@ const AdSubmission = ({
                 </Link>
               ) : (
                 <StyledWeb3Button
-                  isNormalButton
                   contractAddress={"" as Address}
                   onClick={() => handlePreviewModal()}
                   defaultText="Close"

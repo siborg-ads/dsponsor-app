@@ -161,7 +161,6 @@ const PlaceBid = ({
           <div className="flex justify-center">
             <StyledWeb3Button
               contractAddress={"" as Address}
-              isNormalButton
               onClick={() => {
                 toggleBidsModal();
               }}
