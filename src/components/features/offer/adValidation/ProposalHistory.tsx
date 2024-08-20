@@ -78,7 +78,7 @@ const ProposalHistory = ({ data }: { data: HistoryProposalType[] }) => {
     if (filterName && filterName.length > 0 && filterName !== "") {
       tempData = [...tempData].filter(
         (proposal) =>
-          proposal.id?.toString().includes(filterName.toLowerCase()) ||
+          proposal.id.includes(filterName.toLowerCase()) ||
           proposal.metadata?.toLowerCase().includes(filterName.toLowerCase())
       );
     }
@@ -94,7 +94,7 @@ const ProposalHistory = ({ data }: { data: HistoryProposalType[] }) => {
       case "Rejected":
         return tempData.filter((proposal) => proposal.status.includes("REJECTED"));
     }
-  }, [filterOption, startDate, endDate, filterName]);
+  }, [filterOption, startDate, endDate, filterName, data]);
 
   // In case there is one proposal with metadata, we will show the metadata column
   const containsMetadata = filteredData.some((proposal) => proposal.metadata);
@@ -238,7 +238,9 @@ const ProposalHistory = ({ data }: { data: HistoryProposalType[] }) => {
                 .map((proposal, proposalIndex) => (
                   <tr key={proposalIndex}>
                     <td className="px-4 py-4 text-jacarta-100 dark:text-jacarta-100">
-                      {proposal.id?.toString().slice(0, 6)}...{proposal.id?.toString().slice(-4)}
+                      {proposal.id.length > 10
+                        ? `${proposal.id.slice(0, 6)}...${proposal.id.slice(-4)}`
+                        : proposal.id}
                     </td>
                     {containsMetadata && (
                       <td
