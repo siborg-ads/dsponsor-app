@@ -17,6 +17,17 @@ const argumentsData: { title: string; description: string }[] = [
   }
 ];
 
+const buttons: { title: string; link: string }[] = [
+  {
+    title: "I am looking for visibility",
+    link: "https://forms.dsponsor.com/looking-for-visibility"
+  },
+  {
+    title: "I am looking for sponsors",
+    link: "https://forms.dsponsor.com/looking-for-sponsors"
+  }
+];
+
 const ClientsRedirection = () => {
   return (
     <div className="flex flex-col gap-4">
@@ -43,23 +54,20 @@ const ClientsRedirection = () => {
         </div>
 
         <div className="grid md:grid-cols-2 gap-4 md:gap-8">
-          <Link href="/marketplace" className="w-full flex items-center justify-center">
-            <button className="bg-primaryPurple hover:bg-opacity-80 text-white rounded-lg w-full px-4 py-2">
-              I am looking for visibility
-            </button>
-          </Link>
-
-          <Link
-            target="_blank"
-            href="mailto:contact@dsponsor.com"
-            className="w-full flex items-center justify-center"
-          >
-            <button className="bg-primaryPurple hover:bg-opacity-80 text-white rounded-lg w-full px-4 py-2">
-              <span className="flex items-center justify-center gap-1">
-                I am looking for sponsors <ArrowUpRight className="w-4 h-4" />
-              </span>
-            </button>
-          </Link>
+          {buttons.map((button, index) => (
+            <Link
+              key={index}
+              href={button.link}
+              className="w-full flex items-center justify-center"
+            >
+              <button className="bg-primaryPurple hover:bg-opacity-80 text-white rounded-lg w-full px-4 py-2">
+                <span className="flex items-center gap-1">
+                  {button.title}
+                  <ArrowUpRight className="w-4 h-4" />
+                </span>
+              </button>
+            </Link>
+          ))}
         </div>
       </div>
     </div>
