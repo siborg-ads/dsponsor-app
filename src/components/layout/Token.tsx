@@ -5,7 +5,8 @@ import {
   useContractRead,
   useContractWrite,
   useStorage,
-  useStorageUpload
+  useStorageUpload,
+  useTokenDecimals
 } from "@thirdweb-dev/react";
 import { Address } from "thirdweb";
 import { ethers, BigNumber } from "ethers";
@@ -895,6 +896,7 @@ const Token = () => {
           )
           ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.listingType === "Direct"
       ) {
+        setTokenCurrencyAddress(null);
         setTokenBigIntPrice(
           offerData?.nftContract?.tokens
             ?.find(
@@ -1132,13 +1134,6 @@ const Token = () => {
         }
         setTokenStatut("AUCTION");
       }
-      setCurrencyDecimals(
-        offerData?.nftContract?.tokens
-          ?.find(
-            (token) => !!token?.tokenId && BigInt(token?.tokenId) === BigInt(tokenId as string)
-          )
-          ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.currencyDecimals
-      );
       setTokenCurrencyAddress(
         offerData?.nftContract?.tokens
           ?.find(
@@ -1163,7 +1158,6 @@ const Token = () => {
       setTokenStatut("COMPLETED");
       setTokenCurrencyAddress(offerData?.nftContract?.prices[0]?.currency);
       setCurrency(offerData?.nftContract?.prices[0]?.currencySymbol);
-      setCurrencyDecimals(offerData?.nftContract?.prices[0]?.currencyDecimals);
       return;
     }
     if (
@@ -1190,6 +1184,15 @@ const Token = () => {
     currencyDecimals,
     tokenData
   ]);
+
+  const { contract: tokenCurrencyContract } = useContract(tokenCurrencyAddress, "token");
+  const { data: currencyDecimalsData } = useTokenDecimals(tokenCurrencyContract);
+
+  useEffect(() => {
+    if (currencyDecimalsData) {
+      setCurrencyDecimals(currencyDecimalsData);
+    }
+  }, [currencyDecimalsData]);
 
   useEffect(() => {
     if (!isUserOwner || !marketplaceListings || !address) return;
@@ -1650,7 +1653,7 @@ const Token = () => {
       );
 
       if (tokenStatut === "AUCTION") {
-        if (!auctionPriceBN) return;
+        if (!auctionPriceBN || !currencyDecimals || !bidsAmount) return;
 
         const parsedBidsAmount = parseUnits(bidsAmount, currencyDecimals as number);
 

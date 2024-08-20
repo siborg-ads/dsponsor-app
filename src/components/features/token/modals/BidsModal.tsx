@@ -176,6 +176,8 @@ const BidsModal = ({
       } else {
         setBuyoutPriceReached(false);
       }
+    } else {
+      setBuyoutPriceReached(false);
     }
   }, [marketplaceListings, currencyTokenDecimals, parsedBidsAmount, successFullBid]);
 
@@ -364,7 +366,7 @@ const BidsModal = ({
     }
 
     try {
-      const precision = bidsAmount.split(".")[1]?.length ?? 0;
+      const precision = bidsAmount?.split(".")[1]?.length ?? 0;
 
       const bidsBigInt = ethers.utils.parseUnits(
         parseFloat(bidsAmount).toFixed(Math.min(Number(currencyTokenDecimals), precision)),
@@ -374,7 +376,7 @@ const BidsModal = ({
       const referralAddress = getCookie("_rid") ?? "";
 
       await auctionBids({
-        args: [marketplaceListings[0].id, bidsBigInt, address, referralAddress]
+        args: [marketplaceListings?.[0]?.id, bidsBigInt, address, referralAddress]
       });
       setSuccessFullBid(true);
       await fetchOffers();
