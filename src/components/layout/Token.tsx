@@ -132,8 +132,8 @@ const Token = () => {
   const [directBuyPriceBN, setDirectBuyPriceBN] = useState<BigNumber | undefined>(undefined);
   const [auctionPriceBN, setAuctionPriceBN] = useState<BigNumber | undefined>(undefined);
   const [mintPriceBN, setMintPriceBN] = useState<BigNumber | undefined>(undefined);
-  const [hasEnoughBalance, setHasEnoughBalance] = useState<boolean>(false);
-  const [hasEnoughBalanceForNative, setHasEnoughBalanceForNative] = useState<boolean>(false);
+  const [hasEnoughBalance, setHasEnoughBalance] = useState<boolean>(true);
+  const [hasEnoughBalanceForNative, setHasEnoughBalanceForNative] = useState<boolean>(true);
   const [
     sponsorHasAtLeastOneRejectedProposalAndNoPending,
     setSponsorHasAtLeastOneRejectedProposalAndNoPending
@@ -1644,9 +1644,7 @@ const Token = () => {
 
   useEffect(() => {
     const fetchTokenBalance = async (tokenBalance: BigNumber) => {
-      if (!tokenBalance) {
-        return;
-      }
+      if (!tokenBalance) return;
 
       const token = offerData?.nftContract?.tokens?.find(
         (token) => !!token?.tokenId && BigInt(token?.tokenId) === BigInt(tokenId as string)
@@ -1655,7 +1653,7 @@ const Token = () => {
       if (tokenStatut === "AUCTION") {
         if (!auctionPriceBN || !currencyDecimals || !bidsAmount) return;
 
-        const parsedBidsAmount = parseUnits(bidsAmount, currencyDecimals as number);
+        const parsedBidsAmount = parseUnits(bidsAmount, currencyDecimals);
 
         const result = await checkUserBalance(tokenBalance, parsedBidsAmount);
         setHasEnoughBalance(result);
