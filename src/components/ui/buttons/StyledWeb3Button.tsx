@@ -37,7 +37,6 @@ const StyledWeb3Button = ({
   onSubmit?: () => void;
   isGreen?: boolean;
   isRed?: boolean;
-  isNormalButton?: boolean;
   isFullWidth?: boolean;
 }) => {
   const [isLoading, setIsLoading] = React.useState(false);
@@ -50,19 +49,6 @@ const StyledWeb3Button = ({
   const defaultClass = `!bg-opacity-100 !text-white !cursor-pointer hover:!bg-opacity-80 ${
     props.isGreen ? "!bg-green" : ""
   } ${props.isRed ? "!bg-red" : ""} ${!props.isRed && !props.isGreen ? "!bg-primaryPurple" : ""}`;
-
-  if (props.isNormalButton) {
-    return (
-      <button
-        className={`${baseClass} ${props.isDisabled && address ? disabledClass : ""} ${!props.isDisabled || !address ? defaultClass : ""}`}
-        onClick={async () => {
-          await props.onClick();
-        }}
-      >
-        {props.defaultText}
-      </button>
-    );
-  }
 
   return (
     <Web3Button
