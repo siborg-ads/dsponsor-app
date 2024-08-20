@@ -79,7 +79,7 @@ const Token = () => {
   const [marketplaceListings, setMarketplaceListings] = useState<any>([]);
   const [refusedValidatedAdModal, setRefusedValidatedAdModal] = useState<boolean>(false);
   const [successFullRefuseModal, setSuccessFullRefuseModal] = useState<boolean>(false);
-  const [finalPrice, setFinalPrice] = useState(null);
+  const [finalPrice, setFinalPrice] = useState<any>(null);
   const [finalPriceNotFormatted, setFinalPriceNotFormatted] = useState<string | null>(null);
   const [successFullUpload, setSuccessFullUpload] = useState<boolean>(false);
   const [showPreviewModal, setShowPreviewModal] = useState<boolean>(false);
@@ -90,7 +90,7 @@ const Token = () => {
   const [price, setPrice] = useState<string | null>(null);
   const [buyModal, setBuyModal] = useState(false);
   const [buyMethod, setBuyMethod] = useState(false);
-  const [feesAmount, setFeesAmount] = useState(null);
+  const [feesAmount, setFeesAmount] = useState<any>(null);
   const [imageUrlVariants, setImageUrlVariants] = useState([]);
   const [submitAdFormated, setSubmitAdFormated] = useState<any>({});
   const [tokenData, setTokenData] = useState<string | null>(null);
@@ -113,7 +113,7 @@ const Token = () => {
   const [isTokenInAuction, setIsTokenInAuction] = useState(false);
   const [pendingProposalData, setPendingProposalData] = useState([]);
   const [successFullListing, setSuccessFullListing] = useState(false);
-  const [royaltiesFeesAmount, setRoyaltiesFeesAmount] = useState(null);
+  const [royaltiesFeesAmount, setRoyaltiesFeesAmount] = useState<any>(null);
   const [bidsAmount, setBidsAmount] = useState<string>("");
   const [currencyDecimals, setCurrencyDecimals] = useState<number | null>(null);
   const [isLister, setIsLister] = useState(false);
@@ -2451,6 +2451,7 @@ const Token = () => {
                         setShowBidsModal={setShowBidsModal}
                         hasEnoughBalance={hasEnoughBalance}
                         hasEnoughBalanceForNative={hasEnoughBalanceForNative}
+                        tokenEtherPriceRelayer={tokenEtherPriceRelayer}
                       />
                     )}
                 </>
@@ -2717,33 +2718,33 @@ const Token = () => {
         <div className="modal fade show block">
           <BuyModal
             finalPrice={finalPrice}
-            finalPriceNotFormatted={finalPriceNotFormatted}
-            tokenStatut={tokenStatut}
+            finalPriceNotFormatted={finalPriceNotFormatted as string}
+            tokenStatut={tokenStatut as string}
             allowanceTrue={allowanceTrue}
             handleApprove={handleApprove}
             successFullUpload={successFullUpload}
             feesAmount={feesAmount}
             successFullBuyModal={successFullBuyModal}
             royaltiesFeesAmount={royaltiesFeesAmount}
-            price={price}
+            price={price as string}
             handleSubmit={handleBuySubmit}
             handleBuyModal={handleBuyModal}
             handleBuySubmitWithNative={handleBuySubmit}
             name={name}
             image={imageUrl ?? "/images/gradients/gradient_creative.jpg"}
-            selectedCurrency={currency}
-            royalties={royalties}
-            tokenId={tokenId}
-            tokenData={tokenData}
+            selectedCurrency={currency as string}
+            royalties={royalties as number}
+            tokenId={tokenId as string}
+            tokenData={tokenData as string}
             formatTokenId={formatTokenId}
-            address={address}
+            address={address as Address}
             insufficentBalance={insufficentBalance}
             setInsufficentBalance={setInsufficentBalance}
             canPayWithNativeToken={canPayWithNativeToken}
             setCanPayWithNativeToken={setCanPayWithNativeToken}
             token={tokenDO}
-            buyTokenEtherPrice={buyTokenEtherPrice}
-            totalPrice={totalPrice}
+            buyTokenEtherPrice={buyTokenEtherPrice as string}
+            totalPrice={totalPrice as number}
             user={{
               address: address,
               isOwner: isOwner,
@@ -2751,13 +2752,12 @@ const Token = () => {
               isUserOwner: isUserOwner
             }}
             offer={offerDO}
-            referrer={{
-              address: referralAddress
-            }}
-            currencyContract={tokenCurrencyAddress}
+            referrer={referralAddress as Address}
+            currencyContract={tokenCurrencyAddress as Address}
             nativeTokenBalance={nativeTokenBalance}
             hasEnoughBalance={hasEnoughBalance}
             hasEnoughBalanceForNative={hasEnoughBalanceForNative}
+            tokenEtherPriceRelayer={tokenEtherPriceRelayer}
           />
         </div>
       )}

@@ -1,6 +1,7 @@
 import { CrossmintPayButton } from "@crossmint/client-sdk-react-ui";
 import { BigNumber } from "ethers";
 import React from "react";
+import { Address } from "thirdweb";
 
 /**
  * Bid with Crossmint Button
@@ -47,7 +48,7 @@ export default function BidWithCrossmintButton(
       fee: string;
     };
     user: { address: string; email: string };
-    referrer: { address: string };
+    referrer: Address;
     actions: { processing: Function; success: Function; error: Function };
     isDisabled: boolean;
     isLoadingRender: () => React.JSX.Element;
@@ -115,7 +116,7 @@ export default function BidWithCrossmintButton(
       _listingId: token.listingId,
       _pricePerToken: props?.perPriceToken,
       _bidder: user.address,
-      _referralAdditionalInformation: referrer.address ?? "0x"
+      _referralAdditionalInformation: referrer ?? "0x"
     },
     successCallbackURL: props.successCallbackURL,
     failureCallbackURL: props.failureCallbackURL

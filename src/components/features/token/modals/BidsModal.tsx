@@ -47,7 +47,8 @@ const BidsModal = ({
   setDisplayedPrice,
   fetchOffers,
   hasEnoughBalance,
-  hasEnoughBalanceForNative
+  hasEnoughBalanceForNative,
+  tokenEtherPriceRelayer
 }: {
   setAmountToApprove: any;
   bidsAmount: string;
@@ -82,6 +83,7 @@ const BidsModal = ({
   fetchOffers: any;
   hasEnoughBalance: boolean;
   hasEnoughBalanceForNative: boolean;
+  tokenEtherPriceRelayer: any;
 }) => {
   const [initialIntPrice, setInitialIntPrice] = useState<string | null>(null);
   const [isPriceGood, setIsPriceGood] = useState(true);
@@ -336,22 +338,24 @@ const BidsModal = ({
   };
 
   useEffect(() => {
-    if (bidsAmount && currencyTokenDecimals && chainId && chainConfig) {
-      const parsedBidsAmount = parseUnits(bidsAmount?.toString(), Number(currencyTokenDecimals));
+    if (tokenEtherPriceRelayer && chainId && chainConfig) {
+      const parsedBuyAmount = BigNumber.from(tokenEtherPriceRelayer?.amountInEthWithSlippage);
       const parsedPriceLimit = parseUnits(
         chainConfig?.features?.crossmint?.config?.priceLimit?.toString(),
-        Number(currencyTokenDecimals)
+        18
       );
 
-      const tooHighPrice = parsedPriceLimit ? parsedBidsAmount?.gte(parsedPriceLimit) : true;
+      const tooHighPrice = parsedPriceLimit ? parsedBuyAmount?.gte(parsedPriceLimit) : true;
 
       if (tooHighPrice) {
         setTooHighPriceForCrossmint(true);
       } else {
         setTooHighPriceForCrossmint(false);
       }
+    } else {
+      setTooHighPriceForCrossmint(true);
     }
-  }, [bidsAmount, chainConfig, chainId, currencyTokenDecimals]);
+  }, [tokenEtherPriceRelayer, chainConfig, chainId]);
 
   const handleSubmit = async () => {
     if (!hasEnoughBalance) {
@@ -837,7 +841,7 @@ const BidsModal = ({
                         token={token}
                         user={user}
                         isBid={!buyoutPriceReached}
-                        referrer={referrer}
+                        referrer={referrer as Address}
                         config={chainConfig?.features.crossmint.config}
                         actions={{
                           processing: onProcessingBid,
