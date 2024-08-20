@@ -36,7 +36,8 @@ const PlaceBid = ({
   setShowBidsModal,
   fetchOffers,
   hasEnoughBalance,
-  hasEnoughBalanceForNative
+  hasEnoughBalanceForNative,
+  tokenEtherPriceRelayer,
 }: {
   setAmountToApprove: React.Dispatch<React.SetStateAction<bigint | null>>;
   bidsAmount: string;
@@ -73,6 +74,7 @@ const PlaceBid = ({
   fetchOffers: () => void;
   hasEnoughBalance: boolean;
   hasEnoughBalanceForNative: boolean;
+  tokenEtherPriceRelayer: any;
 }) => {
   const [bids, setBids] = useState<any>(null);
 
@@ -159,7 +161,6 @@ const PlaceBid = ({
           <div className="flex justify-center">
             <StyledWeb3Button
               contractAddress={"" as Address}
-              isNormalButton
               onClick={() => {
                 toggleBidsModal();
               }}
@@ -217,6 +218,7 @@ const PlaceBid = ({
             setDisplayedPrice={setDisplayedPrice}
             hasEnoughBalance={hasEnoughBalance}
             hasEnoughBalanceForNative={hasEnoughBalanceForNative}
+            tokenEtherPriceRelayer={tokenEtherPriceRelayer}
           />
         </div>
       )}

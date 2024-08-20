@@ -5,7 +5,8 @@ import {
   useContractRead,
   useContractWrite,
   useStorage,
-  useStorageUpload
+  useStorageUpload,
+  useTokenDecimals
 } from "@thirdweb-dev/react";
 import { Address } from "thirdweb";
 import { ethers, BigNumber } from "ethers";
@@ -79,7 +80,7 @@ const Token = () => {
   const [marketplaceListings, setMarketplaceListings] = useState<any>([]);
   const [refusedValidatedAdModal, setRefusedValidatedAdModal] = useState<boolean>(false);
   const [successFullRefuseModal, setSuccessFullRefuseModal] = useState<boolean>(false);
-  const [finalPrice, setFinalPrice] = useState(null);
+  const [finalPrice, setFinalPrice] = useState<any>(null);
   const [finalPriceNotFormatted, setFinalPriceNotFormatted] = useState<string | null>(null);
   const [successFullUpload, setSuccessFullUpload] = useState<boolean>(false);
   const [showPreviewModal, setShowPreviewModal] = useState<boolean>(false);
@@ -90,7 +91,7 @@ const Token = () => {
   const [price, setPrice] = useState<string | null>(null);
   const [buyModal, setBuyModal] = useState(false);
   const [buyMethod, setBuyMethod] = useState(false);
-  const [feesAmount, setFeesAmount] = useState(null);
+  const [feesAmount, setFeesAmount] = useState<any>(null);
   const [imageUrlVariants, setImageUrlVariants] = useState([]);
   const [submitAdFormated, setSubmitAdFormated] = useState<any>({});
   const [tokenData, setTokenData] = useState<string | null>(null);
@@ -113,7 +114,7 @@ const Token = () => {
   const [isTokenInAuction, setIsTokenInAuction] = useState(false);
   const [pendingProposalData, setPendingProposalData] = useState([]);
   const [successFullListing, setSuccessFullListing] = useState(false);
-  const [royaltiesFeesAmount, setRoyaltiesFeesAmount] = useState(null);
+  const [royaltiesFeesAmount, setRoyaltiesFeesAmount] = useState<any>(null);
   const [bidsAmount, setBidsAmount] = useState<string>("");
   const [currencyDecimals, setCurrencyDecimals] = useState<number | null>(null);
   const [isLister, setIsLister] = useState(false);
@@ -895,6 +896,7 @@ const Token = () => {
           )
           ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.listingType === "Direct"
       ) {
+        setTokenCurrencyAddress(null);
         setTokenBigIntPrice(
           offerData?.nftContract?.tokens
             ?.find(
@@ -1132,13 +1134,6 @@ const Token = () => {
         }
         setTokenStatut("AUCTION");
       }
-      setCurrencyDecimals(
-        offerData?.nftContract?.tokens
-          ?.find(
-            (token) => !!token?.tokenId && BigInt(token?.tokenId) === BigInt(tokenId as string)
-          )
-          ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.currencyDecimals
-      );
       setTokenCurrencyAddress(
         offerData?.nftContract?.tokens
           ?.find(
@@ -1163,7 +1158,6 @@ const Token = () => {
       setTokenStatut("COMPLETED");
       setTokenCurrencyAddress(offerData?.nftContract?.prices[0]?.currency);
       setCurrency(offerData?.nftContract?.prices[0]?.currencySymbol);
-      setCurrencyDecimals(offerData?.nftContract?.prices[0]?.currencyDecimals);
       return;
     }
     if (
@@ -1190,6 +1184,15 @@ const Token = () => {
     currencyDecimals,
     tokenData
   ]);
+
+  const { contract: tokenCurrencyContract } = useContract(tokenCurrencyAddress, "token");
+  const { data: currencyDecimalsData } = useTokenDecimals(tokenCurrencyContract);
+
+  useEffect(() => {
+    if (currencyDecimalsData) {
+      setCurrencyDecimals(currencyDecimalsData);
+    }
+  }, [currencyDecimalsData]);
 
   useEffect(() => {
     if (!isUserOwner || !marketplaceListings || !address) return;
@@ -1650,7 +1653,7 @@ const Token = () => {
       );
 
       if (tokenStatut === "AUCTION") {
-        if (!auctionPriceBN) return;
+        if (!auctionPriceBN || !currencyDecimals || !bidsAmount) return;
 
         const parsedBidsAmount = parseUnits(bidsAmount, currencyDecimals as number);
 
@@ -2451,6 +2454,7 @@ const Token = () => {
                         setShowBidsModal={setShowBidsModal}
                         hasEnoughBalance={hasEnoughBalance}
                         hasEnoughBalanceForNative={hasEnoughBalanceForNative}
+                        tokenEtherPriceRelayer={tokenEtherPriceRelayer}
                       />
                     )}
                 </>
@@ -2717,33 +2721,33 @@ const Token = () => {
         <div className="modal fade show block">
           <BuyModal
             finalPrice={finalPrice}
-            finalPriceNotFormatted={finalPriceNotFormatted}
-            tokenStatut={tokenStatut}
+            finalPriceNotFormatted={finalPriceNotFormatted as string}
+            tokenStatut={tokenStatut as string}
             allowanceTrue={allowanceTrue}
             handleApprove={handleApprove}
             successFullUpload={successFullUpload}
             feesAmount={feesAmount}
             successFullBuyModal={successFullBuyModal}
             royaltiesFeesAmount={royaltiesFeesAmount}
-            price={price}
+            price={price as string}
             handleSubmit={handleBuySubmit}
             handleBuyModal={handleBuyModal}
             handleBuySubmitWithNative={handleBuySubmit}
             name={name}
             image={imageUrl ?? "/images/gradients/gradient_creative.jpg"}
-            selectedCurrency={currency}
-            royalties={royalties}
-            tokenId={tokenId}
-            tokenData={tokenData}
+            selectedCurrency={currency as string}
+            royalties={royalties as number}
+            tokenId={tokenId as string}
+            tokenData={tokenData as string}
             formatTokenId={formatTokenId}
-            address={address}
+            address={address as Address}
             insufficentBalance={insufficentBalance}
             setInsufficentBalance={setInsufficentBalance}
             canPayWithNativeToken={canPayWithNativeToken}
             setCanPayWithNativeToken={setCanPayWithNativeToken}
             token={tokenDO}
-            buyTokenEtherPrice={buyTokenEtherPrice}
-            totalPrice={totalPrice}
+            buyTokenEtherPrice={buyTokenEtherPrice as string}
+            totalPrice={totalPrice as number}
             user={{
               address: address,
               isOwner: isOwner,
@@ -2751,13 +2755,12 @@ const Token = () => {
               isUserOwner: isUserOwner
             }}
             offer={offerDO}
-            referrer={{
-              address: referralAddress
-            }}
-            currencyContract={tokenCurrencyAddress}
+            referrer={referralAddress as Address}
+            currencyContract={tokenCurrencyAddress as Address}
             nativeTokenBalance={nativeTokenBalance}
             hasEnoughBalance={hasEnoughBalance}
             hasEnoughBalanceForNative={hasEnoughBalanceForNative}
+            tokenEtherPriceRelayer={tokenEtherPriceRelayer}
           />
         </div>
       )}

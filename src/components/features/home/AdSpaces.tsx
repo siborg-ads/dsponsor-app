@@ -124,8 +124,8 @@ const AdSpaces = ({
       </div>
 
       {!isLoading ? (
-        <div className="embla flex flex-col gap-2" ref={emblaRef}>
-          <div className="embla__container mt-1">
+        <div className="flex flex-col gap-2 embla" ref={emblaRef}>
+          <div className="mt-1 embla__container">
             {((breakpoint as number) <= 640
               ? finalAdSpaces
               : finalAdSpaces.reduce((resultArray, item, index) => {
@@ -136,6 +136,8 @@ const AdSpaces = ({
                   }
 
                   resultArray[chunkIndex].push(item);
+
+                  console.log(resultArray);
 
                   return resultArray;
                 }, [])
@@ -163,7 +165,7 @@ const AdSpaces = ({
                           url={
                             !element?.[0]?.tokenData
                               ? `/${element?.[0]?.chainId}/offer/${element?.[0]?.offerId}/${element?.[0]?.tokenId}`
-                              : `/${element?.[0]?.chainId}/offer/${element?.[0]?.item?.nftContract?.adOffers[0]?.id}/${element?.[0]?.tokenId}?tokenData=${element?.[0]?.item?.mint?.tokenData}`
+                              : `/${element?.[0]?.chainId}/offer/${element?.[0]?.offerId}/${element?.[0]?.tokenId}?tokenData=${element?.[0]?.item?.mint?.tokenData}`
                           }
                           currencyDecimals={element?.[0]?.currencyDecimals}
                         />
@@ -179,7 +181,7 @@ const AdSpaces = ({
                           url={
                             !element?.[1]?.tokenData
                               ? `/${element?.[1]?.chainId}/offer/${element?.[1]?.offerId}/${element?.[1]?.tokenId}`
-                              : `/${element?.[1]?.chainId}/offer/${element?.[1]?.item?.nftContract?.adOffers[1]?.id}/${element?.[1]?.tokenId}?tokenData=${element?.[1]?.item?.mint?.tokenData}`
+                              : `/${element?.[1]?.chainId}/offer/${element?.[1]?.offerId}/${element?.[1]?.tokenId}?tokenData=${element?.[1]?.item?.mint?.tokenData}`
                           }
                           currencyDecimals={element?.[1]?.currencyDecimals}
                         />
@@ -195,7 +197,7 @@ const AdSpaces = ({
                           url={
                             !element?.[2]?.tokenData
                               ? `/${element?.[2]?.chainId}/offer/${element?.[2]?.offerId}/${element?.[2]?.tokenId}`
-                              : `/${element?.[2]?.chainId}/offer/${element?.[2]?.item?.nftContract?.adOffers[2]?.id}/${element?.[2]?.tokenId}?tokenData=${element?.[2]?.item?.mint?.tokenData}`
+                              : `/${element?.[2]?.chainId}/offer/${element?.[2]?.offerId}/${element?.[2]?.tokenId}?tokenData=${element?.[2]?.item?.mint?.tokenData}`
                           }
                           currencyDecimals={element?.[2]?.currencyDecimals}
                         />
@@ -211,7 +213,7 @@ const AdSpaces = ({
                           url={
                             !element?.[3]?.tokenData
                               ? `/${element?.[3]?.chainId}/offer/${element?.[3]?.offerId}/${element?.[3]?.tokenId}`
-                              : `/${element?.[3]?.chainId}/offer/${element?.[3]?.item?.nftContract?.adOffers[0]?.id}/${element?.[3]?.tokenId}?tokenData=${element?.[3]?.item?.mint?.tokenData}`
+                              : `/${element?.[3]?.chainId}/offer/${element?.[3]?.offerId}/${element?.[3]?.tokenId}?tokenData=${element?.[3]?.item?.mint?.tokenData}`
                           }
                           currencyDecimals={element?.[3]?.currencyDecimals}
                         />
@@ -241,13 +243,13 @@ const AdSpaces = ({
           {(breakpoint as number) <= 640 ? (
             <div className="flex items-center gap-2">
               <button
-                className="embla__prev bg-secondaryBlack rounded-full p-2"
+                className="p-2 rounded-full embla__prev bg-secondaryBlack"
                 onClick={scrollPrev}
               >
                 <ArrowLeftIcon className="w-4 h-4" />
               </button>
               <button
-                className="embla__next bg-secondaryBlack rounded-full p-2"
+                className="p-2 rounded-full embla__next bg-secondaryBlack"
                 onClick={scrollNext}
               >
                 <ArrowRightIcon className="w-4 h-4" />
@@ -258,13 +260,13 @@ const AdSpaces = ({
             finalAdSpaces?.length > cardChunks && (
               <div className="flex items-center gap-2">
                 <button
-                  className="embla__prev bg-secondaryBlack rounded-full p-2"
+                  className="p-2 rounded-full embla__prev bg-secondaryBlack"
                   onClick={scrollPrev}
                 >
                   <ArrowLeftIcon className="w-4 h-4" />
                 </button>
                 <button
-                  className="embla__next bg-secondaryBlack rounded-full p-2"
+                  className="p-2 rounded-full embla__next bg-secondaryBlack"
                   onClick={scrollNext}
                 >
                   <ArrowRightIcon className="w-4 h-4" />
@@ -275,19 +277,19 @@ const AdSpaces = ({
         </div>
       ) : (
         <React.Fragment>
-          <div className="grid grid-cols-1 sm:hidden gap-4">
+          <div className="grid grid-cols-1 gap-4 sm:hidden">
             <TokenCardSkeleton />
           </div>
-          <div className="hidden sm:grid sm:grid-cols-2 md:hidden gap-4">
-            <TokenCardSkeleton />
-            <TokenCardSkeleton />
-          </div>
-          <div className="hidden md:grid md:grid-cols-3 lg:hidden gap-4">
-            <TokenCardSkeleton />
+          <div className="hidden gap-4 sm:grid sm:grid-cols-2 md:hidden">
             <TokenCardSkeleton />
             <TokenCardSkeleton />
           </div>
-          <div className="hidden lg:grid lg:grid-cols-4 gap-4">
+          <div className="hidden gap-4 md:grid md:grid-cols-3 lg:hidden">
+            <TokenCardSkeleton />
+            <TokenCardSkeleton />
+            <TokenCardSkeleton />
+          </div>
+          <div className="hidden gap-4 lg:grid lg:grid-cols-4">
             <TokenCardSkeleton />
             <TokenCardSkeleton />
             <TokenCardSkeleton />

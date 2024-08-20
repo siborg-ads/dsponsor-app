@@ -238,7 +238,6 @@ const PendingAds: React.FC<PendingAdsProps> = ({
                 isDisabled={!validate["all"]}
                 defaultText="Reject"
                 isRed
-                isNormalButton
               />
             </div>
           </div>

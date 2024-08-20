@@ -54,7 +54,54 @@ const BuyModal = ({
   buyTokenEtherPrice,
   totalPrice,
   hasEnoughBalance,
-  hasEnoughBalanceForNative
+  hasEnoughBalanceForNative,
+  tokenEtherPriceRelayer
+}: {
+  // eslint-disable-next-line no-unused-vars
+  formatTokenId: (tokenId: string) => string;
+  tokenStatut: string;
+  allowanceTrue: boolean;
+  handleApprove: any;
+  finalPrice: any;
+  royaltiesFeesAmount: any;
+  successFullUpload: boolean;
+  feesAmount: any;
+  successFullBuyModal: {
+    title: string;
+    body: string;
+    subBody?: string;
+    hrefButton?: string;
+    buttonTitle: string;
+  };
+  finalPriceNotFormatted: string;
+  royalties: number;
+  price: string;
+  tokenId: string;
+  selectedCurrency: string;
+  name: string;
+  image: string;
+  handleSubmit: Promise<unknown> | (() => Promise<unknown>);
+  handleBuyModal: () => void;
+  handleBuySubmitWithNative: Promise<unknown> | (() => Promise<unknown>);
+  tokenData: string;
+  address: Address;
+  token: any;
+  user: any;
+  offer: any;
+  referrer: Address;
+  currencyContract: string;
+  insufficentBalance: boolean;
+  canPayWithNativeToken: boolean;
+  // eslint-disable-next-line no-unused-vars
+  setInsufficentBalance: (value: boolean) => void;
+  // eslint-disable-next-line no-unused-vars
+  setCanPayWithNativeToken: (value: boolean) => void;
+  nativeTokenBalance: any;
+  buyTokenEtherPrice: string;
+  totalPrice: number;
+  hasEnoughBalance: boolean;
+  hasEnoughBalanceForNative: boolean;
+  tokenEtherPriceRelayer: any;
 }) => {
   const [validate, setValidate] = useState(false);
   const [notEnoughFunds, setNotEnoughFunds] = useState(false);
@@ -70,21 +117,19 @@ const BuyModal = ({
   const chainConfig = config[chainId as number];
 
   useEffect(() => {
-    if (!buyTokenEtherPrice || buyTokenEtherPrice <= 0) return;
+    if (!tokenEtherPriceRelayer?.amountInEthWithSlippage) return;
 
-    const fixedBuyTokenEtherPrice = Number(buyTokenEtherPrice).toFixed(currencyBalance?.decimals);
-    const buyTokenEtherPriceDecimals = parseUnits(
-      fixedBuyTokenEtherPrice.toString(),
-      currencyBalance?.decimals
+    const amountInEthWithSlippageBN = BigNumber.from(
+      tokenEtherPriceRelayer?.amountInEthWithSlippage
     );
 
-    if (currencyBalance?.value?.lt(buyTokenEtherPriceDecimals)) {
+    if (currencyBalance?.value?.lt(amountInEthWithSlippageBN)) {
       setInsufficentBalance(true);
     } else {
       setInsufficentBalance(false);
     }
 
-    if (nativeTokenBalance && nativeTokenBalance?.value.lt(buyTokenEtherPriceDecimals)) {
+    if (nativeTokenBalance?.value?.lt(amountInEthWithSlippageBN)) {
       setCanPayWithNativeToken(false);
     } else {
       setCanPayWithNativeToken(true);
@@ -95,7 +140,7 @@ const BuyModal = ({
     setInsufficentBalance,
     setCanPayWithNativeToken,
     finalPriceNotFormatted,
-    buyTokenEtherPrice
+    tokenEtherPriceRelayer
   ]);
 
   useEffect(() => {
@@ -136,11 +181,11 @@ const BuyModal = ({
   }, [handleBuyModal, modalRef]);
 
   useEffect(() => {
-    if (finalPriceNotFormatted && currencyBalance?.decimals && chainId && chainConfig) {
-      const parsedBuyAmount = BigNumber.from(finalPriceNotFormatted);
+    if (tokenEtherPriceRelayer && chainId && chainConfig) {
+      const parsedBuyAmount = BigNumber.from(tokenEtherPriceRelayer?.amountInEthWithSlippage);
       const parsedPriceLimit = parseUnits(
         chainConfig?.features?.crossmint?.config?.priceLimit?.toString(),
-        Number(currencyBalance?.decimals)
+        18
       );
 
       const tooHighPrice = parsedPriceLimit ? parsedBuyAmount?.gte(parsedPriceLimit) : true;
@@ -150,8 +195,10 @@ const BuyModal = ({
       } else {
         setTooHighPriceForCrossmint(false);
       }
+    } else {
+      setTooHighPriceForCrossmint(true);
     }
-  }, [finalPriceNotFormatted, chainConfig, chainId, currencyBalance?.decimals]);
+  }, [tokenEtherPriceRelayer, chainConfig, chainId]);
 
   // Ref instead of state to avoid re-renders
   const isProcessingRef = useRef(false);
@@ -224,7 +271,7 @@ const BuyModal = ({
                   <div className="overflow-hidden flex flex-col text-ellipsis whitespace-nowrap   ">
                     <div className="flex gap-6  items-center justify-between">
                       <h3 className="font-display overflow-hidden text-ellipsis whitespace-nowrap text-jacarta-900 text-sm font-semibold dark:text-white">
-                        Price :{" "}
+                        Price
                       </h3>
                       <span className="dark:text-jacarta-100 text-sm font-medium tracking-tight overflow-auto min-w-[70px] flex justify-end">
                         {price} {selectedCurrency}
@@ -232,7 +279,7 @@ const BuyModal = ({
                     </div>
 
                     <div className="flex gap-6  items-center justify-between">
-                      <span className="dark:text-jacarta-100 text-jacarta-100 mr-1 block text-sm">
+                      <span className="dark:text-jacarta-100 text-jacarta-100 mr-1 block text-sm font-semibold">
                         Protocol fees: 4%
                       </span>
                       <span className="dark:text-jacarta-100 text-sm  tracking-tight overflow-auto min-w-[60px] flex justify-end">
@@ -242,7 +289,7 @@ const BuyModal = ({
 
                     {tokenStatut === "DIRECT" && (
                       <div className="flex gap-6  items-center justify-between">
-                        <span className="dark:text-jacarta-100 text-jacarta-100 mr-1 block text-sm">
+                        <span className="dark:text-jacarta-100 text-jacarta-100 mr-1 block text-sm font-semibold">
                           Royalties fees: {royalties}%
                         </span>
                         <span className="dark:text-jacarta-100 text-sm  tracking-tight overflow-auto min-w-[60px] flex justify-end">
@@ -250,23 +297,12 @@ const BuyModal = ({
                         </span>
                       </div>
                     )}
+
                     <div className="flex justify-end">
                       <Divider className="mt-4 w-16 " />
                     </div>
                   </div>
                 </div>
-
-                {/* <div className="ml-auto h-full">
-                  <span className="mb-1 flex flex-col items-end justify-end whitespace-nowrap">
-                    <span className="dark:text-jacarta-100 text-sm font-medium tracking-tight">
-                      {price} {canPayWithNativeToken && insufficentBalance ? "ETH" : selectedCurrency}
-                    </span>
-                    <span className="dark:text-jacarta-100 text-sm font-medium tracking-tight">
-                      {(price * protocolFees) / 100} {canPayWithNativeToken && insufficentBalance ? "ETH" : selectedCurrency}
-                    </span>
-                  </span>
-                  <div className="dark:text-jacarta-100 text-right text-sm">$130.82</div>
-                </div> */}
               </div>
 
               {/* <!-- Total --> */}
@@ -277,7 +313,8 @@ const BuyModal = ({
                 <div className="ml-auto">
                   <span className="flex items-center whitespace-nowrap">
                     <span className="text-green font-medium tracking-tight">
-                      {finalPrice} {selectedCurrency}
+                      {finalPrice} {selectedCurrency} ($
+                      {tokenEtherPriceRelayer?.amountUSDCFormatted})
                     </span>
                   </span>
                   {/* <div className="dark:text-jacarta-100 text-right">$130.82</div> */}
@@ -324,90 +361,92 @@ const BuyModal = ({
 
           {/* <!-- end body --> */}
           {!successFullUpload && (
-            <div className="modal-footer p-6">
+            <div className="modal-footer flex flex-col p-6">
               <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
-                {!insufficentBalance ? (
-                  <div className="flex flex-col items-center md:gap-2 gap-6">
-                    {/* Approve Button */}
-                    <div
-                      className={`grid grid-cols-1 mx-auto ${parseFloat(totalPrice) > 0 && "md:grid-cols-2"} gap-6 w-full`}
-                    >
-                      {!!totalPrice && parseFloat(totalPrice) > 0 && (
+                <div className="flex flex-col items-center md:gap-2 gap-6">
+                  {!insufficentBalance ? (
+                    <React.Fragment>
+                      {/* Approve Button */}
+                      <div
+                        className={`grid grid-cols-1 mx-auto ${totalPrice > 0 && "md:grid-cols-2"} gap-6 w-full`}
+                      >
+                        {totalPrice > 0 && (
+                          <StyledWeb3Button
+                            contractAddress={
+                              currentChainObject?.smartContracts?.DSPONSORADMIN?.address as Address
+                            }
+                            onClick={async () => {
+                              await toast.promise(handleApprove, {
+                                pending: "Waiting for confirmation 🕒",
+                                success: "Approval confirmed 👌",
+                                error: "Approval rejected 🤯"
+                              });
+                            }}
+                            isDisabled={
+                              !validate ||
+                              !finalPriceNotFormatted ||
+                              !allowanceTrue ||
+                              notEnoughFunds
+                            }
+                            defaultText={notEnoughFunds ? "Not enough funds" : "Approve 🔓 (1/2)"}
+                          />
+                        )}
+
+                        {/* Place Bid Button */}
                         <StyledWeb3Button
                           contractAddress={
                             currentChainObject?.smartContracts?.DSPONSORADMIN?.address as Address
                           }
                           onClick={async () => {
-                            await toast.promise(handleApprove, {
+                            await toast.promise(handleSubmit, {
                               pending: "Waiting for confirmation 🕒",
-                              success: "Approval confirmed 👌",
-                              error: "Approval rejected 🤯"
+                              success: "Buy confirmed 👌",
+                              error: "Buy rejected 🤯"
                             });
                           }}
                           isDisabled={
-                            !validate || !finalPriceNotFormatted || !allowanceTrue || notEnoughFunds
+                            !validate || (allowanceTrue && totalPrice > 0) || notEnoughFunds
                           }
-                          defaultText={notEnoughFunds ? "Not enough funds" : "Approve 🔓 (1/2)"}
+                          defaultText={
+                            notEnoughFunds
+                              ? "Not enough funds"
+                              : totalPrice > 0
+                                ? "Buy Now 💸 (2/2)"
+                                : "Mint for free"
+                          }
                         />
+                      </div>
+
+                      {totalPrice > 0 && (
+                        <ResponsiveTooltip
+                          text={`You need to approve the marketplace contract to spend your ${selectedCurrency} on this transaction.`}
+                        >
+                          <span className="text-xs text-jacarta-100 inline-flex items-center gap-1">
+                            <InformationCircleIcon className="w-4 h-4 text-jacarta-100" />
+                            Why do I have to approve ?
+                          </span>
+                        </ResponsiveTooltip>
                       )}
-
-                      {/* Place Bid Button */}
-                      <StyledWeb3Button
-                        contractAddress={
-                          currentChainObject?.smartContracts?.DSPONSORADMIN?.address as Address
-                        }
-                        onClick={async () => {
-                          await toast.promise(handleSubmit, {
-                            pending: "Waiting for confirmation 🕒",
-                            success: "Buy confirmed 👌",
-                            error: "Buy rejected 🤯"
-                          });
-                        }}
-                        isDisabled={
-                          !validate ||
-                          (allowanceTrue && parseFloat(totalPrice) > 0) ||
-                          notEnoughFunds
-                        }
-                        defaultText={
-                          notEnoughFunds
-                            ? "Not enough funds"
-                            : parseFloat(totalPrice) > 0
-                              ? "Buy Now 💸 (2/2)"
-                              : "Mint for free"
-                        }
-                      />
-                    </div>
-
-                    {!!totalPrice && parseFloat(totalPrice) > 0 && (
-                      <ResponsiveTooltip
-                        text={`You need to approve the marketplace contract to spend your ${selectedCurrency} on this transaction.`}
-                      >
-                        <span className="text-xs text-jacarta-100 inline-flex items-center gap-1">
-                          <InformationCircleIcon className="w-4 h-4 text-jacarta-100" />
-                          Why do I have to approve ?
-                        </span>
-                      </ResponsiveTooltip>
-                    )}
-                  </div>
-                ) : (
-                  // If insufficient balance, show this button
-                  <StyledWeb3Button
-                    contractAddress={
-                      currentChainObject?.smartContracts?.DSPONSORADMIN?.address as Address
-                    }
-                    onClick={async () => {
-                      await toast.promise(handleBuySubmitWithNative, {
-                        pending: "Waiting for confirmation 🕒",
-                        success: "Transaction confirmed 👌",
-                        error: "Transaction rejected 🤯"
-                      });
-                    }}
-                    isDisabled={!validate || !canPayWithNativeToken || notEnoughFunds}
-                    defaultText={
-                      notEnoughFunds ? "Not enough funds" : "Confirm checkout with ETH 💸"
-                    }
-                  />
-                )}
+                    </React.Fragment>
+                  ) : (
+                    <StyledWeb3Button
+                      contractAddress={
+                        currentChainObject?.smartContracts?.DSPONSORADMIN?.address as Address
+                      }
+                      onClick={async () => {
+                        await toast.promise(handleBuySubmitWithNative, {
+                          pending: "Waiting for confirmation 🕒",
+                          success: "Transaction confirmed 👌",
+                          error: "Transaction rejected 🤯"
+                        });
+                      }}
+                      isDisabled={!validate || !canPayWithNativeToken || notEnoughFunds}
+                      defaultText={
+                        notEnoughFunds ? "Not enough funds" : "Confirm checkout with ETH 💸"
+                      }
+                    />
+                  )}
+                </div>
 
                 {/* SuccessFullUpload condition to show a Link */}
                 {successFullUpload && (
