@@ -58,10 +58,11 @@ const ClientsRedirection = () => {
             <Link
               key={index}
               href={button.link}
+              target="_blank"
               className="w-full flex items-center justify-center"
             >
               <button className="bg-primaryPurple hover:bg-opacity-80 text-white rounded-lg w-full px-4 py-2">
-                <span className="flex items-center gap-1">
+                <span className="flex items-center justify-center gap-1">
                   {button.title}
                   <ArrowUpRight className="w-4 h-4" />
                 </span>
