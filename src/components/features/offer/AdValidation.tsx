@@ -5,7 +5,45 @@ import PendingAds from "@/components/features/offer/adValidation/PendingAds";
 import RejectAd from "@/components/features/offer/adValidation/modals/RejectAd";
 import { ExclamationCircleIcon } from "@heroicons/react/24/solid";
 import ResponsiveTooltip from "@/components/ui/ResponsiveTooltip";
-import { CheckIcon, ClockIcon, XIcon } from "lucide-react";
+import { CheckIcon, ClockIcon, XIcon, History } from "lucide-react";
+import ProposalHistory from "@/components/features/offer/adValidation/ProposalHistory";
+
+export type HistoryProposalType = {
+  type: string;
+  creationTimestamp: number;
+  data: string;
+  lastUpdateTimestamp: number;
+  rejectReason: string;
+  status: string;
+  cssAspectRatio: string | null;
+  metadata?: string;
+  id: number;
+};
+
+function processAllProposals(token) {
+  const groupedProposals: HistoryProposalType[] = [];
+  for (const element of token.allProposals) {
+    let cssAspectRatio = null;
+    if (element.status.startsWith("imageURL")) {
+      const sanitizedStatus = element.status.replace("-0", "");
+      const ratio = sanitizedStatus.split("-")[1];
+      cssAspectRatio = ratio?.replace(":", "/");
+    }
+    groupedProposals.push({
+      type: element.adParameter.id,
+      creationTimestamp: parseInt(element.creationTimestamp),
+      data: element.data,
+      lastUpdateTimestamp: parseInt(element.lastUpdateTimestamp),
+      rejectReason: element.rejectReason,
+      status: element.status,
+      cssAspectRatio: cssAspectRatio,
+      id: token.tokenId,
+      metadata: token.mint.tokenData
+    });
+  }
+
+  return groupedProposals;
+}
 
 const AdValidation = ({
   offer,
@@ -46,38 +84,24 @@ const AdValidation = ({
   pendingProposalData: any;
   setPendingProposalData: any;
 }) => {
-  const [validatedProposalData, setValidatedProposalData] = useState<
-    {
-      tokenId: string;
-      offerId: string;
-      tokenData: string;
-      proposalIds: string[];
-      adParametersList: {
-        aspectRatio?: string;
-        cssAspectRatio?: string;
-        "imageURL-1:1"?: string;
-        linkURL?: string;
-      };
-      adParametersKeys: string[];
-      reason?: string;
-    }[]
-  >([]);
-  const [refusedProposalData, setRefusedProposalData] = useState<
-    {
-      tokenId: string;
-      offerId: string;
-      tokenData: string;
-      proposalIds: string[];
-      adParametersList: {
-        aspectRatio?: string;
-        cssAspectRatio?: string;
-        "imageURL-1:1"?: string;
-        linkURL?: string;
-      };
-      adParametersKeys: string[];
-      reason?: string;
-    }[]
-  >([]);
+  type Proposal = {
+    tokenId: string;
+    offerId: string;
+    tokenData: string;
+    proposalIds: string[];
+    adParametersList: {
+      aspectRatio?: string;
+      cssAspectRatio?: string;
+      "imageURL-1:1"?: string;
+      linkURL?: string;
+    };
+    adParametersKeys: string[];
+    reason?: string;
+  };
+
+  const [validatedProposalData, setValidatedProposalData] = useState<Proposal[]>([]);
+  const [refusedProposalData, setRefusedProposalData] = useState<Proposal[]>([]);
+  const [historyProposals, setHistoryProposals] = useState<HistoryProposalType[]>([]);
   const [itemActive, setItemActive] = useState<number>(1);
   const [, setComments] = useState({});
   const [isApprouvedAd, setIsApprouvedAd] = useState<boolean>(false);
@@ -100,6 +124,11 @@ const AdValidation = ({
       id: 3,
       text: "Refused",
       icon: <XIcon className="w-4 h-4" />
+    },
+    {
+      id: 4,
+      text: "History",
+      icon: <History className="w-4 h-4" />
     }
   ];
   useEffect(() => {
@@ -108,6 +137,7 @@ const AdValidation = ({
     const groupedPendingAds = {};
     const groupedValidatedAds = {};
     const groupedRefusedAds = {};
+    const groupedHistoryProposals: HistoryProposalType[] = [];
 
     function processProposal(token, element, groupedAds, statusKey) {
       if (element[statusKey] !== null) {
@@ -165,50 +195,18 @@ const AdValidation = ({
           processProposal(token, element, groupedRefusedAds, "rejectedProposal");
         }
       }
+
+      processAllProposals(token).forEach((proposal) => {
+        groupedHistoryProposals.push({
+          ...proposal
+        });
+      });
     }
 
-    let formattedPendingAds: {
-      tokenId: string;
-      offerId: string;
-      tokenData: string;
-      proposalIds: string[];
-      adParametersList: {
-        aspectRatio?: string;
-        cssAspectRatio?: string;
-        "imageURL-1:1"?: string;
-        linkURL?: string;
-      };
-      adParametersKeys: string[];
-      reason?: string;
-    }[] = Object.values(groupedPendingAds);
-    let formattedValidatedAds: {
-      tokenId: string;
-      offerId: string;
-      tokenData: string;
-      proposalIds: string[];
-      adParametersList: {
-        aspectRatio?: string;
-        cssAspectRatio?: string;
-        "imageURL-1:1"?: string;
-        linkURL?: string;
-      };
-      adParametersKeys: string[];
-      reason?: string;
-    }[] = Object.values(groupedValidatedAds);
-    let formattedRefusedAds: {
-      tokenId: string;
-      offerId: string;
-      tokenData: string;
-      proposalIds: string[];
-      adParametersList: {
-        aspectRatio?: string;
-        cssAspectRatio?: string;
-        "imageURL-1:1"?: string;
-        linkURL?: string;
-      };
-      adParametersKeys: string[];
-      reason?: string;
-    }[] = Object.values(groupedRefusedAds);
+    let formattedPendingAds: Proposal[] = Object.values(groupedPendingAds);
+    let formattedValidatedAds: Proposal[] = Object.values(groupedValidatedAds);
+    let formattedRefusedAds: Proposal[] = Object.values(groupedRefusedAds);
+    groupedHistoryProposals.sort((a, b) => b.creationTimestamp - a.creationTimestamp);
 
     if (isTokenView) {
       formattedPendingAds = formattedPendingAds?.filter(
@@ -226,6 +224,7 @@ const AdValidation = ({
     setPendingProposalLength(formattedPendingAds.length);
     setValidatedProposalData(formattedValidatedAds);
     setRefusedProposalData(formattedRefusedAds);
+    setHistoryProposals(groupedHistoryProposals);
   }, [isTokenView, offer, offerId, itemTokenId, setPendingProposalData]);
 
   const handleItemSubmit = async (approuved = false) => {
@@ -300,7 +299,7 @@ const AdValidation = ({
     <>
       {/* <!-- Tabs Nav --> */}
       <Tabs className="tabs">
-        <TabList className="nav nav-tabs scrollbar-custom mb-12 flex items-center justify-start overflow-x-auto overflow-y-hidden border-b border-jacarta-100 pb-px dark:border-jacarta-800 md:justify-center">
+        <TabList className="flex items-center justify-start pb-px mb-12 overflow-x-auto overflow-y-hidden border-b nav nav-tabs scrollbar-custom border-jacarta-100 dark:border-jacarta-800 md:justify-center">
           {tabItem.map(({ id, text, icon }) => {
             return (
               <Tab className="nav-item" key={id} onClick={() => setItemActive(id)}>
@@ -315,7 +314,7 @@ const AdValidation = ({
                     isOwner &&
                     text === "Refused" && (
                       <ResponsiveTooltip text="You ad as been refused and you have no pending ad. Try to submit a new one.">
-                        <ExclamationCircleIcon className="h-5 w-5 text-red dark:text-red" />
+                        <ExclamationCircleIcon className="w-5 h-5 text-red dark:text-red" />
                       </ResponsiveTooltip>
                     )}
                   {mediaShouldValidateAnAd &&
@@ -323,11 +322,11 @@ const AdValidation = ({
                     isMedia &&
                     pendingProposalLength !== 0 && (
                       <ResponsiveTooltip text="You have at least one ad to validate or to refuse.">
-                        <ExclamationCircleIcon className="h-5 w-5 text-red dark:text-red" />
+                        <ExclamationCircleIcon className="w-5 h-5 text-red dark:text-red" />
                       </ResponsiveTooltip>
                     )}
                   {icon}
-                  <span className="font-display text-base font-medium ml-2">
+                  <span className="ml-2 text-base font-medium font-display">
                     <div className="flex items-center">
                       <span>
                         {text} (
@@ -337,7 +336,9 @@ const AdValidation = ({
                             ? validatedProposalData?.length
                             : text === "Refused"
                               ? refusedProposalData?.length
-                              : 0}
+                              : text === "History"
+                                ? historyProposals?.length
+                                : 0}
                         )
                       </span>
                     </div>
@@ -350,7 +351,7 @@ const AdValidation = ({
 
         <div>
           <TabPanel>
-            <div className="container mb-12 relative p-0">
+            <div className="container relative p-0 mb-12">
               {/* <!-- Filter --> */}
               <PendingAds
                 setSelectedItems={setSelectedItems}
@@ -370,7 +371,7 @@ const AdValidation = ({
         </div>
 
         <TabPanel>
-          <div className="container mb-12 relative p-0">
+          <div className="container relative p-0 mb-12">
             {/* <!-- Filter --> */}
             <ValidatedOrRefusedAds
               statut={true}
@@ -380,9 +381,15 @@ const AdValidation = ({
           </div>
         </TabPanel>
         <TabPanel>
-          <div className="container mb-12 relative p-0">
+          <div className="container relative p-0 mb-12">
             {/* <!-- Filter --> */}
             <ValidatedOrRefusedAds statut={false} proposalData={refusedProposalData} />
+          </div>
+        </TabPanel>
+        <TabPanel>
+          <div className="container relative p-0 mb-12">
+            {/* <!-- Filter --> */}
+            <ProposalHistory data={historyProposals} />
           </div>
         </TabPanel>
       </Tabs>
