@@ -273,7 +273,7 @@ const BuyModal = ({
                   <div className="overflow-hidden flex flex-col text-ellipsis whitespace-nowrap   ">
                     <div className="flex gap-6  items-center justify-between">
                       <h3 className="font-display overflow-hidden text-ellipsis whitespace-nowrap text-jacarta-900 text-sm font-semibold dark:text-white">
-                        Price :{" "}
+                        Price
                       </h3>
                       <span className="dark:text-jacarta-100 text-sm font-medium tracking-tight overflow-auto min-w-[70px] flex justify-end">
                         {price} {selectedCurrency}
@@ -281,7 +281,16 @@ const BuyModal = ({
                     </div>
 
                     <div className="flex gap-6  items-center justify-between">
-                      <span className="dark:text-jacarta-100 text-jacarta-100 mr-1 block text-sm">
+                      <span className="dark:text-jacarta-100 text-jacarta-100 mr-1 block text-sm font-semibold">
+                        USD Price
+                      </span>
+                      <span className="dark:text-jacarta-100 text-sm  tracking-tight overflow-auto min-w-[60px] flex justify-end">
+                        {tokenEtherPriceRelayer?.amountUSDCFormatted} USD
+                      </span>
+                    </div>
+
+                    <div className="flex gap-6  items-center justify-between">
+                      <span className="dark:text-jacarta-100 text-jacarta-100 mr-1 block text-sm font-semibold">
                         Protocol fees: 4%
                       </span>
                       <span className="dark:text-jacarta-100 text-sm  tracking-tight overflow-auto min-w-[60px] flex justify-end">
@@ -291,7 +300,7 @@ const BuyModal = ({
 
                     {tokenStatut === "DIRECT" && (
                       <div className="flex gap-6  items-center justify-between">
-                        <span className="dark:text-jacarta-100 text-jacarta-100 mr-1 block text-sm">
+                        <span className="dark:text-jacarta-100 text-jacarta-100 mr-1 block text-sm font-semibold">
                           Royalties fees: {royalties}%
                         </span>
                         <span className="dark:text-jacarta-100 text-sm  tracking-tight overflow-auto min-w-[60px] flex justify-end">
@@ -299,23 +308,12 @@ const BuyModal = ({
                         </span>
                       </div>
                     )}
+
                     <div className="flex justify-end">
                       <Divider className="mt-4 w-16 " />
                     </div>
                   </div>
                 </div>
-
-                {/* <div className="ml-auto h-full">
-                  <span className="mb-1 flex flex-col items-end justify-end whitespace-nowrap">
-                    <span className="dark:text-jacarta-100 text-sm font-medium tracking-tight">
-                      {price} {canPayWithNativeToken && insufficentBalance ? "ETH" : selectedCurrency}
-                    </span>
-                    <span className="dark:text-jacarta-100 text-sm font-medium tracking-tight">
-                      {(price * protocolFees) / 100} {canPayWithNativeToken && insufficentBalance ? "ETH" : selectedCurrency}
-                    </span>
-                  </span>
-                  <div className="dark:text-jacarta-100 text-right text-sm">$130.82</div>
-                </div> */}
               </div>
 
               {/* <!-- Total --> */}
