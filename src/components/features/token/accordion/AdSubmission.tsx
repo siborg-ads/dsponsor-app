@@ -11,6 +11,7 @@ import ResponsiveTooltip from "@/components/ui/ResponsiveTooltip";
 import { Divider } from "@nextui-org/react";
 import StyledWeb3Button from "@/components/ui/buttons/StyledWeb3Button";
 import { Address } from "thirdweb";
+import NormalButton from "@/components/ui/buttons/NormalButton";
 
 const AdSubmission = ({
   approvalForAllToken = true,
@@ -672,11 +673,7 @@ const AdSubmission = ({
                   </button>
                 </Link>
               ) : (
-                <StyledWeb3Button
-                  contractAddress={"" as Address}
-                  onClick={() => handlePreviewModal()}
-                  defaultText="Close"
-                />
+                <NormalButton onClick={() => handlePreviewModal()} defaultText="Close" />
               )}
             </div>
           </div>
