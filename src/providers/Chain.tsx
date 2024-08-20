@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, ReactNode } from "react";
-import { useChainId, useAddress } from "@thirdweb-dev/react";
+import { useChainId, useAddress, useSwitchChain } from "@thirdweb-dev/react";
 import ChainContext from "@/contexts/chain";
 import config from "@/config/config";
 import type { ChainObject } from "@/types/chain";
@@ -19,15 +19,24 @@ const ChainProvider = ({ children }: ChainProviderProps) => {
   const connectedAddress = useAddress();
   const [currentChainObject, setCurrentChainObject] = useState<ChainObject | null>(null);
 
+  const switchChain = useSwitchChain();
+  const address = useAddress();
+
   useEffect(() => {
     if (config[chainId as number]) {
       setCurrentChainObject(config[chainId as number] as ChainObject);
+      if (address) {
+        switchChain(chainId as number);
+      }
     } else {
       const [firstChainId, firstChainConfig] = Object.entries(config)[0];
       console.warn(`Unknown chainId: ${chainId} - Using default chainId: ${firstChainId}`);
       setCurrentChainObject(firstChainConfig);
+      if (address) {
+        switchChain(Number(firstChainId));
+      }
     }
-  }, [chainId]);
+  }, [address, chainId, switchChain]);
 
   const value = useMemo<ChainContextValue>(
     () => ({

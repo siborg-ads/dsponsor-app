@@ -122,7 +122,6 @@ const Manage = ({
         <div className="w-full flex justify-center">
           <StyledWeb3Button
             contractAddress={"" as Address}
-            isNormalButton
             onClick={handleListingModal}
             defaultText="Create a listing"
           />

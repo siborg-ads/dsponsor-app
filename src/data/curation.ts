@@ -30,9 +30,9 @@ export function curationData(baseURL: string): CurationData {
         logo: "/images/cryptoast/cryptoast.webp",
         description:
           "Cryptoast is a leading French-language media outlet focused on Bitcoin, blockchain, and cryptocurrencies. Established in 2017, it aims to provide comprehensive and accessible information to both newcomers and experienced users in the crypto space.",
-        offerId: 28,
+        offerId: 35,
         buttonText: "Get your ads on Cryptoast",
-        buttonLink: `${baseURL}/${11155111}/offer/${28}`,
+        buttonLink: `${baseURL}/${11155111}/offer/${35}`,
         type: ["medias", "newsletters"] as Filter[]
       }
     },

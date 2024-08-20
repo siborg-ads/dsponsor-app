@@ -1,8 +1,18 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import TokenCardSkeleton from "@/components/ui/skeletons/TokenCardSkeleton";
 import TokenCard from "@/components/ui/cards/TokenCard";
 import { Filter } from "@/components/layout/Home";
 import useEmblaCarousel from "embla-carousel-react";
+import { ArrowLeftIcon, ArrowRightIcon } from "lucide-react";
+import { features } from "@/data/features";
+
+const getChunksFromInnerWidth = (innerWidth: number) => {
+  if (innerWidth <= 1024) {
+    return 3;
+  } else {
+    return 4;
+  }
+};
 
 const AdSpaces = ({
   isLoading,
@@ -20,14 +30,31 @@ const AdSpaces = ({
   curratedOfferIdsByType: { offerId: number; type: Filter[] }[];
 }) => {
   const [finalAdSpaces, setFinalAdSpaces] = useState<any[]>([]);
-  const [isMobile, setIsMobile] = useState<boolean>(false);
+  const [breakpoint, setBreakpoint] = useState<number | undefined>(640);
+  const [cardChunks, setCardChunks] = useState<number>(1);
 
-  const [emblaRef] = useEmblaCarousel({ loop: true });
+  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true });
+
+  const scrollPrev = useCallback(() => {
+    if (emblaApi) emblaApi.scrollPrev();
+  }, [emblaApi]);
+
+  const scrollNext = useCallback(() => {
+    if (emblaApi) emblaApi.scrollNext();
+  }, [emblaApi]);
 
   useEffect(() => {
-    if (window.innerWidth < 768) {
-      setIsMobile(true);
-    }
+    const handleResize = () => {
+      setBreakpoint(window.innerWidth);
+    };
+
+    handleResize();
+
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
   }, []);
 
   useEffect(() => {
@@ -63,16 +90,28 @@ const AdSpaces = ({
       const finalAdSpaces: any[] = [];
       const offerIds: number[] = [];
 
-      almostFinalAdSpaces?.forEach((element) => {
-        if (offerIds?.filter((id) => id === Number(element?.offerId))?.length < 2) {
+      if (features.homepageTwoTokensOnly) {
+        almostFinalAdSpaces?.forEach((element) => {
+          if (offerIds?.filter((id) => id === Number(element?.offerId))?.length < 2) {
+            offerIds.push(Number(element?.offerId));
+            finalAdSpaces.push(element);
+          }
+        }, []);
+      } else {
+        almostFinalAdSpaces?.forEach((element) => {
           offerIds.push(Number(element?.offerId));
           finalAdSpaces.push(element);
-        }
-      }, []);
+        }, []);
+      }
 
       setFinalAdSpaces(finalAdSpaces);
     }
   }, [adSpaces, curratedOfferIdsByType, filter, offers]);
+
+  useEffect(() => {
+    const cardChunks = getChunksFromInnerWidth(breakpoint as number);
+    setCardChunks(cardChunks);
+  }, [breakpoint]);
 
   if (!isLoading && finalAdSpaces?.length === 0) {
     return null;
@@ -85,12 +124,12 @@ const AdSpaces = ({
       </div>
 
       {!isLoading ? (
-        <div className="embla" ref={emblaRef}>
-          <div className="embla__container my-4">
-            {(isMobile
+        <div className="embla flex flex-col gap-2" ref={emblaRef}>
+          <div className="embla__container mt-1">
+            {((breakpoint as number) <= 640
               ? finalAdSpaces
               : finalAdSpaces.reduce((resultArray, item, index) => {
-                  const chunkIndex = Math.floor(index / 2);
+                  const chunkIndex = Math.floor(index / cardChunks);
 
                   if (!resultArray[chunkIndex]) {
                     resultArray[chunkIndex] = [];
@@ -98,11 +137,11 @@ const AdSpaces = ({
 
                   resultArray[chunkIndex].push(item);
 
+                  console.log(resultArray);
+
                   return resultArray;
                 }, [])
             )?.map((element: any, index) => {
-              console.log(element);
-
               return (
                 <div
                   key={index}
@@ -111,36 +150,74 @@ const AdSpaces = ({
                     flex: "0 0 100%"
                   }}
                 >
-                  {!isMobile ? (
-                    <div className="grid grid-cols-2 gap-2 w-full">
-                      <TokenCard
-                        item={element?.[0]?.item}
-                        isToken={true}
-                        listingType={element?.[0]?.listingType}
-                        isListing={element?.[0]?.listingType === "Direct"}
-                        isAuction={element?.[0]?.listingType === "Auction"}
-                        offers={offers}
-                        url={
-                          !element?.[0]?.tokenData
-                            ? `/${element?.[0]?.chainId}/offer/${element?.[0]?.offerId}/${element?.[0]?.tokenId}`
-                            : `/${element?.[0]?.chainId}/offer/${element?.[0]?.item?.nftContract?.adOffers[0]?.id}/${element?.[0]?.tokenId}?tokenData=${element?.[0]?.item?.mint?.tokenData}`
-                        }
-                        currencyDecimals={element?.[0]?.currencyDecimals}
-                      />
-                      <TokenCard
-                        item={element?.[1]?.item}
-                        isToken={true}
-                        listingType={element?.[1]?.listingType}
-                        isListing={element?.[1]?.listingType === "Direct"}
-                        isAuction={element?.[1]?.listingType === "Auction"}
-                        offers={offers}
-                        url={
-                          !element?.[1]?.tokenData
-                            ? `/${element?.[1]?.chainId}/offer/${element?.[1]?.offerId}/${element?.[1]?.tokenId}`
-                            : `/${element?.[1]?.chainId}/offer/${element?.[1]?.item?.nftContract?.adOffers[0]?.id}/${element?.[1]?.tokenId}?tokenData=${element?.[1]?.item?.mint?.tokenData}`
-                        }
-                        currencyDecimals={element?.[1]?.currencyDecimals}
-                      />
+                  {(breakpoint as number) > 640 ? (
+                    <div
+                      className={`grid ${(breakpoint as number) <= 1024 ? "grid-cols-3" : "grid-cols-4"} gap-2 w-full`}
+                    >
+                      {element?.[0] && (
+                        <TokenCard
+                          item={element?.[0]?.item}
+                          isToken={true}
+                          listingType={element?.[0]?.listingType}
+                          isListing={element?.[0]?.listingType === "Direct"}
+                          isAuction={element?.[0]?.listingType === "Auction"}
+                          offers={offers}
+                          url={
+                            !element?.[0]?.tokenData
+                              ? `/${element?.[0]?.chainId}/offer/${element?.[0]?.offerId}/${element?.[0]?.tokenId}`
+                              : `/${element?.[0]?.chainId}/offer/${element?.[0]?.offerId}/${element?.[0]?.tokenId}?tokenData=${element?.[0]?.item?.mint?.tokenData}`
+                          }
+                          currencyDecimals={element?.[0]?.currencyDecimals}
+                        />
+                      )}
+                      {element?.[1] && (
+                        <TokenCard
+                          item={element?.[1]?.item}
+                          isToken={true}
+                          listingType={element?.[1]?.listingType}
+                          isListing={element?.[1]?.listingType === "Direct"}
+                          isAuction={element?.[1]?.listingType === "Auction"}
+                          offers={offers}
+                          url={
+                            !element?.[1]?.tokenData
+                              ? `/${element?.[1]?.chainId}/offer/${element?.[1]?.offerId}/${element?.[1]?.tokenId}`
+                              : `/${element?.[1]?.chainId}/offer/${element?.[1]?.offerId}/${element?.[1]?.tokenId}?tokenData=${element?.[1]?.item?.mint?.tokenData}`
+                          }
+                          currencyDecimals={element?.[1]?.currencyDecimals}
+                        />
+                      )}
+                      {element?.[2] && (
+                        <TokenCard
+                          item={element?.[2]?.item}
+                          isToken={true}
+                          listingType={element?.[2]?.listingType}
+                          isListing={element?.[2]?.listingType === "Direct"}
+                          isAuction={element?.[2]?.listingType === "Auction"}
+                          offers={offers}
+                          url={
+                            !element?.[2]?.tokenData
+                              ? `/${element?.[2]?.chainId}/offer/${element?.[2]?.offerId}/${element?.[2]?.tokenId}`
+                              : `/${element?.[2]?.chainId}/offer/${element?.[2]?.offerId}/${element?.[2]?.tokenId}?tokenData=${element?.[2]?.item?.mint?.tokenData}`
+                          }
+                          currencyDecimals={element?.[2]?.currencyDecimals}
+                        />
+                      )}
+                      {element?.[3] && (
+                        <TokenCard
+                          item={element?.[3]?.item}
+                          isToken={true}
+                          listingType={element?.[3]?.listingType}
+                          isListing={element?.[3]?.listingType === "Direct"}
+                          isAuction={element?.[3]?.listingType === "Auction"}
+                          offers={offers}
+                          url={
+                            !element?.[3]?.tokenData
+                              ? `/${element?.[3]?.chainId}/offer/${element?.[3]?.offerId}/${element?.[3]?.tokenId}`
+                              : `/${element?.[3]?.chainId}/offer/${element?.[3]?.offerId}/${element?.[3]?.tokenId}?tokenData=${element?.[3]?.item?.mint?.tokenData}`
+                          }
+                          currencyDecimals={element?.[3]?.currencyDecimals}
+                        />
+                      )}
                     </div>
                   ) : (
                     <TokenCard
@@ -162,12 +239,63 @@ const AdSpaces = ({
               );
             })}
           </div>
+
+          {(breakpoint as number) <= 640 ? (
+            <div className="flex items-center gap-2">
+              <button
+                className="embla__prev bg-secondaryBlack rounded-full p-2"
+                onClick={scrollPrev}
+              >
+                <ArrowLeftIcon className="w-4 h-4" />
+              </button>
+              <button
+                className="embla__next bg-secondaryBlack rounded-full p-2"
+                onClick={scrollNext}
+              >
+                <ArrowRightIcon className="w-4 h-4" />
+              </button>
+            </div>
+          ) : (
+            (breakpoint as number) > 640 &&
+            finalAdSpaces?.length > cardChunks && (
+              <div className="flex items-center gap-2">
+                <button
+                  className="embla__prev bg-secondaryBlack rounded-full p-2"
+                  onClick={scrollPrev}
+                >
+                  <ArrowLeftIcon className="w-4 h-4" />
+                </button>
+                <button
+                  className="embla__next bg-secondaryBlack rounded-full p-2"
+                  onClick={scrollNext}
+                >
+                  <ArrowRightIcon className="w-4 h-4" />
+                </button>
+              </div>
+            )
+          )}
         </div>
       ) : (
-        <div className="grid grid-cols-1 xs:grid-cols-2 gap-4">
-          <TokenCardSkeleton />
-          <TokenCardSkeleton />
-        </div>
+        <React.Fragment>
+          <div className="grid grid-cols-1 sm:hidden gap-4">
+            <TokenCardSkeleton />
+          </div>
+          <div className="hidden sm:grid sm:grid-cols-2 md:hidden gap-4">
+            <TokenCardSkeleton />
+            <TokenCardSkeleton />
+          </div>
+          <div className="hidden md:grid md:grid-cols-3 lg:hidden gap-4">
+            <TokenCardSkeleton />
+            <TokenCardSkeleton />
+            <TokenCardSkeleton />
+          </div>
+          <div className="hidden lg:grid lg:grid-cols-4 gap-4">
+            <TokenCardSkeleton />
+            <TokenCardSkeleton />
+            <TokenCardSkeleton />
+            <TokenCardSkeleton />
+          </div>
+        </React.Fragment>
       )}
     </div>
   );

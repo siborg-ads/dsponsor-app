@@ -35,7 +35,7 @@ export const features = {
   // Wether to show info bulle on the offer page showing the price of the token
   canSeeModalHelperOnOfferPage: false,
   // Wether we're able to pay with crossmint
-  canPayWithCrossmintEnabled: !!isDevelopment,
+  canPayWithCrossmintEnabled: true,
   // Wether we're able to use gasless transactions
   canUseGaslessTransactions: !!isDevelopment,
   // Wether to use the new thirdweb provider
@@ -47,5 +47,7 @@ export const features = {
     canSeeDapps: true,
     canSeeWebsites: false,
     canSeeNewsletters: !!isDevelopment
-  }
+  },
+  // Wether to show 2 tokens only by offer in the homepage
+  homepageTwoTokensOnly: !isDevelopment
 };
