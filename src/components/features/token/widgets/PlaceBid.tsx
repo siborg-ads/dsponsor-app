@@ -6,6 +6,7 @@ import { BigNumber } from "ethers";
 import { getAddress } from "ethers/lib/utils";
 import { Address } from "thirdweb";
 import StyledWeb3Button from "@/components/ui/buttons/StyledWeb3Button";
+import NormalButton from "@/components/ui/buttons/NormalButton";
 
 const PlaceBid = ({
   setAmountToApprove,
@@ -37,7 +38,7 @@ const PlaceBid = ({
   fetchOffers,
   hasEnoughBalance,
   hasEnoughBalanceForNative,
-  tokenEtherPriceRelayer,
+  tokenEtherPriceRelayer
 }: {
   setAmountToApprove: React.Dispatch<React.SetStateAction<bigint | null>>;
   bidsAmount: string;
@@ -159,8 +160,7 @@ const PlaceBid = ({
           </div>
 
           <div className="flex justify-center">
-            <StyledWeb3Button
-              contractAddress={"" as Address}
+            <NormalButton
               onClick={() => {
                 toggleBidsModal();
               }}
