@@ -6,6 +6,7 @@ import { useChainContext } from "@/hooks/useChainContext";
 import { getAddress } from "ethers/lib/utils";
 import StyledWeb3Button from "@/components/ui/buttons/StyledWeb3Button";
 import { Address } from "thirdweb";
+import NormalButton from "@/components/ui/buttons/NormalButton";
 
 const Manage = ({
   successFullListing,
@@ -120,11 +121,7 @@ const Manage = ({
     ) {
       return (
         <div className="w-full flex justify-center">
-          <StyledWeb3Button
-            contractAddress={"" as Address}
-            onClick={handleListingModal}
-            defaultText="Create a listing"
-          />
+          <NormalButton onClick={handleListingModal} defaultText="Create a listing" />
         </div>
       );
     }

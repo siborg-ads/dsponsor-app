@@ -49,5 +49,5 @@ export const features = {
     canSeeNewsletters: !!isDevelopment
   },
   // Wether to show 2 tokens only by offer in the homepage
-  homepageTwoTokensOnly: !isDevelopment
+  homepageTwoTokensOnly: true
 };
