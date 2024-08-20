@@ -282,15 +282,6 @@ const BuyModal = ({
 
                     <div className="flex gap-6  items-center justify-between">
                       <span className="dark:text-jacarta-100 text-jacarta-100 mr-1 block text-sm font-semibold">
-                        USD Price
-                      </span>
-                      <span className="dark:text-jacarta-100 text-sm  tracking-tight overflow-auto min-w-[60px] flex justify-end">
-                        {tokenEtherPriceRelayer?.amountUSDCFormatted} USD
-                      </span>
-                    </div>
-
-                    <div className="flex gap-6  items-center justify-between">
-                      <span className="dark:text-jacarta-100 text-jacarta-100 mr-1 block text-sm font-semibold">
                         Protocol fees: 4%
                       </span>
                       <span className="dark:text-jacarta-100 text-sm  tracking-tight overflow-auto min-w-[60px] flex justify-end">
@@ -324,7 +315,8 @@ const BuyModal = ({
                 <div className="ml-auto">
                   <span className="flex items-center whitespace-nowrap">
                     <span className="text-green font-medium tracking-tight">
-                      {finalPrice} {selectedCurrency}
+                      {finalPrice} {selectedCurrency} ($
+                      {tokenEtherPriceRelayer?.amountUSDCFormatted})
                     </span>
                   </span>
                   {/* <div className="dark:text-jacarta-100 text-right">$130.82</div> */}
