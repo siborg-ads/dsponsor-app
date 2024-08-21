@@ -30,9 +30,9 @@ export function addLineBreaks(text: string): React.ReactNode {
   if (typeof text !== "string") return text;
 
   return text.split("\n").map((line, index, array) => (
-    <div key={index}>
+    <p key={index}>
       {line}
       {index < array.length - 1 && <br />}
-    </div>
+    </p>
   ));
 }
