@@ -575,7 +575,7 @@ const Offer = () => {
               </div>
 
               {showEntireDescription ? (
-                <p className="mb-10 dark:text-jacarta-100">
+                <div className="mb-10 dark:text-jacarta-100">
                   {addLineBreaks(description)}{" "}
                   {description?.length > 1000 && (
                     <button
@@ -585,22 +585,20 @@ const Offer = () => {
                       Show less
                     </button>
                   )}
-                </p>
+                </div>
               ) : (
-                <div>
-                  <p className="mb-10 dark:text-jacarta-100">
-                    {description?.length > 1000
-                      ? addLineBreaks(description?.slice(0, 1000) + "...")
-                      : addLineBreaks(description)}{" "}
-                    {description?.length > 1000 && (
-                      <button
-                        onClick={() => setShowEntireDescription(true)}
-                        className="text-primaryPurple"
-                      >
-                        Show more
-                      </button>
-                    )}
-                  </p>
+                <div className="mb-10 dark:text-jacarta-100">
+                  {description?.length > 1000
+                    ? addLineBreaks(description?.slice(0, 1000) + "...")
+                    : addLineBreaks(description)}{" "}
+                  {description?.length > 1000 && (
+                    <button
+                      onClick={() => setShowEntireDescription(true)}
+                      className="text-primaryPurple"
+                    >
+                      Show more
+                    </button>
+                  )}
                 </div>
               )}
 
