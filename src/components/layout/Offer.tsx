@@ -163,6 +163,7 @@ const Offer = () => {
 
         setOfferData(offerDataFinal);
       } catch (error) {
+        console.error("Error fetching offers:", error);
       } finally {
         fetchAllOffersRef.current = false;
       }
@@ -380,8 +381,10 @@ const Offer = () => {
   };
 
   const filteredOffers = useMemo(() => {
-    if (!offerData) return [];
-    let tempOffers = [...offerData?.nftContract?.tokens];
+    if (!offerData || !offerData?.nftContract?.tokens) {
+      return [];
+    }
+    let tempOffers = [...offerData.nftContract.tokens];
 
     if (filterName.length > 0) {
       tempOffers = tempOffers.filter((offer) =>
@@ -421,7 +424,7 @@ const Offer = () => {
         tempOffers = [...liveAuctions, ...notLiveAuctions];
         break;
       }
-      case "Ending soon":
+      case "Ending soon": {
         const liveAuctions = tempOffers.filter(
           (offer) => onAuctionCondition(offer, true, true) && offer.endTime
         );
@@ -434,6 +437,7 @@ const Offer = () => {
 
         tempOffers = [...liveAuctions, ...notLiveAuctions];
         break;
+      }
       case "Sort by name":
         tempOffers.sort((a, b) => a.metadata.name.localeCompare(b.metadata.name));
         break;
