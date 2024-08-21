@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import Meta from "@/components/Meta";
@@ -33,6 +33,21 @@ import { BadgePercentIcon, BlocksIcon, RefreshCwIcon } from "lucide-react";
 import Disable from "@/components/ui/misc/Disable";
 import TokenCard from "@/components/ui/cards/TokenCard";
 import { addLineBreaks } from "@/utils/misc/addLineBreaks";
+import Input from "../ui/Input";
+import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
+
+const onAuctionCondition = (offer, mint, direct) => {
+  return (
+    (offer?.status === "CREATED" &&
+      (offer?.listingType === "Auction" || (offer?.listingType === "Direct" && direct)) &&
+      Number(offer?.quantity) > 0 &&
+      new Date(Number(offer?.startTime) * 1000) < new Date() &&
+      new Date(Number(offer?.endTime) * 1000) > new Date()) ||
+    (mint && offer?.mint === null)
+  );
+};
+
+type SortOptionsType = "Price: low to high" | "Price: high to low" | "Ending soon" | "Sort by name";
 
 const Offer = () => {
   const router = useRouter();
@@ -73,6 +88,9 @@ const Offer = () => {
   const [offerManagementActiveTab, setOfferManagementActiveTab] = useState("integration");
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [accordionActiveTab, setAccordionActiveTab] = useState<string[]>(["tokens"]);
+  const [filterName, setFilterName] = useState("");
+  const [filterOption, setFilterOption] = useState<"All tokens" | "On auction">("All tokens");
+  const [sortOption, setSortOption] = useState<SortOptionsType>("Sort by name");
 
   const { data: bps } = useContractRead(DsponsorAdminContract, "feeBps");
   const maxBps = 10000;
@@ -119,9 +137,32 @@ const Offer = () => {
           chainConfig: offers?.filter((offer) => Number(offer?.id) === Number(offerId))[0]
             ?.chainConfig
         };
+
+        offerDataFinal.nftContract.tokens = offerDataFinal.nftContract.tokens.map((token) => {
+          const currentListing = token?.marketplaceListings?.sort(
+            (a, b) => Number(b.id) - Number(a.id)
+          )[0];
+          const currencyDecimals =
+            currentListing?.listingType === "Auction" || currentListing?.listingType === "Direct"
+              ? Number(currentListing?.currencyDecimals)
+              : Number(token?.nftContract?.prices[0]?.currencyDecimals);
+
+          return {
+            ...token,
+            listingType: currentListing?.listingType,
+            endTime: currentListing?.endTime,
+            status: currentListing?.status,
+            startTime: currentListing?.startTime,
+            quantity: currentListing?.quantity,
+            currencyDecimals,
+            directPrice: currentListing?.buyPriceStructure?.buyoutPricePerToken,
+            auctionPrice: currentListing?.bidPriceStructure?.minimalBidPerToken,
+            mintPrice: token?.nftContract?.prices[0]?.amount
+          };
+        });
+
         setOfferData(offerDataFinal);
       } catch (error) {
-        console.error("Error fetching offers:", error);
       } finally {
         fetchAllOffersRef.current = false;
       }
@@ -337,7 +378,71 @@ const Offer = () => {
 
     desc: "Explore the future of media monetization. SiBorg Ads decentralized platform offers tokenized advertising spaces for dynamic and sustainable media funding."
   };
-  if (!offerData || offerData.length === 0) {
+
+  const filteredOffers = useMemo(() => {
+    if (!offerData) return [];
+    let tempOffers = [...offerData?.nftContract?.tokens];
+
+    if (filterName.length > 0) {
+      tempOffers = tempOffers.filter((offer) =>
+        offer?.metadata.name?.toLowerCase().includes(filterName.toLowerCase())
+      );
+    }
+
+    if (filterOption === "On auction") {
+      tempOffers = tempOffers.filter((offer) => onAuctionCondition(offer, false, false));
+    }
+
+    switch (sortOption) {
+      case "Price: low to high":
+      case "Price: high to low": {
+        const liveAuctions = tempOffers.filter((offer) => onAuctionCondition(offer, true, true));
+        liveAuctions.sort(
+          (a, b) =>
+            (a.listingType === "Auction"
+              ? a.auctionPrice
+              : a.listingType === "Direct"
+                ? a.directPrice
+                : a.mintPrice) -
+            (b.listingType === "Auction"
+              ? b.auctionPrice
+              : b.listingType === "Direct"
+                ? b.directPrice
+                : b.mintPrice)
+        );
+
+        if (sortOption === "Price: high to low") {
+          liveAuctions.reverse();
+        }
+
+        const notLiveAuctions = tempOffers.filter(
+          (offer) => !onAuctionCondition(offer, true, true)
+        );
+        tempOffers = [...liveAuctions, ...notLiveAuctions];
+        break;
+      }
+      case "Ending soon":
+        const liveAuctions = tempOffers.filter(
+          (offer) => onAuctionCondition(offer, true, true) && offer.endTime
+        );
+
+        liveAuctions.sort((a, b) => a.endTime - b.endTime);
+
+        const notLiveAuctions = tempOffers.filter(
+          (offer) => !onAuctionCondition(offer, true, true) || !offer.endTime
+        );
+
+        tempOffers = [...liveAuctions, ...notLiveAuctions];
+        break;
+      case "Sort by name":
+        tempOffers.sort((a, b) => a.metadata.name.localeCompare(b.metadata.name));
+        break;
+    }
+
+    return tempOffers;
+  }, [offerData, filterName, filterOption, sortOption]);
+
+  if (!filteredOffers) {
     return (
       <div>
         <OfferSkeleton />
@@ -614,35 +719,123 @@ const Offer = () => {
             </Accordion.Trigger>
           </Accordion.Header>
 
-          <Accordion.Content>
-            <div className="p-4 mb-6 bg-white border dark:bg-secondaryBlack dark:border-jacarta-800 border-jacarta-100 rounded-2lg">
+          <Accordion.Content className="flex flex-col gap-7">
+            <div className="flex items-center justify-center p-4 bg-white border dark:bg-secondaryBlack dark:border-jacarta-800 border-jacarta-100 rounded-2lg">
               <div className="items-center justify-center sm:flex sm:flex-wrap">
                 <span className="text-sm text-center dark:text-jacarta-100 text-jacarta-100">
                   This section allows you to see every tokens associated with the offer.
                 </span>
               </div>
             </div>
+            <div className="flex flex-row flex-wrap-reverse items-center justify-end gap-2 mb-4 sm:gap-4">
+              <div className="flex w-full mr-0 md:mr-auto md:max-w-[500px]">
+                <Input
+                  type="text"
+                  placeholder="Filter by category"
+                  name="search"
+                  value={filterName}
+                  onChange={(e) => {
+                    setFilterName(e.target.value);
+                  }}
+                />
+              </div>
+              <Menu as="div" className="h-12 w-fit">
+                <MenuButton className="flex items-center justify-center w-full h-full px-4 border bg-secondaryBlack rounded-xl hover:bg-opacity-80 border-jacarta-100 border-opacity-10">
+                  <div className="flex items-center gap-1">
+                    {filterOption} <ChevronDownIcon className="w-5 h-5" />
+                  </div>
+                </MenuButton>
+
+                <MenuItems
+                  anchor="bottom start"
+                  className={`rounded-xl flex flex-col gap-2 [--anchor-gap:1rem] bg-secondaryBlack p-2 border border-jacarta-100 border-opacity-10`}
+                >
+                  <MenuItem>
+                    <button
+                      onClick={() => {
+                        setFilterOption("All tokens");
+                      }}
+                      className="w-full p-2 pr-12 rounded-lg hover:bg-primaryBlack md:pr-24"
+                    >
+                      <span>All tokens</span>
+                    </button>
+                  </MenuItem>
+
+                  <MenuItem>
+                    <button
+                      onClick={() => {
+                        setFilterOption("On auction");
+                      }}
+                      className="w-full p-2 pr-12 rounded-lg hover:bg-primaryBlack md:pr-24"
+                    >
+                      <span>On auction</span>
+                    </button>
+                  </MenuItem>
+                </MenuItems>
+              </Menu>
+
+              <Menu as="div" className="h-12 w-fit">
+                <MenuButton className="flex items-center justify-center w-full h-full px-4 border bg-secondaryBlack rounded-xl hover:bg-opacity-80 border-jacarta-100 border-opacity-10">
+                  <div className="flex items-center gap-1">
+                    {sortOption ?? "Sort by"} <ChevronDownIcon className="w-5 h-5" />
+                  </div>
+                </MenuButton>
+
+                <MenuItems
+                  anchor="bottom start"
+                  className={`rounded-xl flex flex-col gap-2 [--anchor-gap:1rem] bg-secondaryBlack p-2 border border-jacarta-100 border-opacity-10`}
+                >
+                  <MenuItem>
+                    <button
+                      onClick={() => {
+                        setSortOption("Sort by name");
+                      }}
+                      className="w-full p-2 pr-12 text-left rounded-lg hover:bg-primaryBlack md:pr-24"
+                    >
+                      <span>Sort by name</span>
+                    </button>
+                  </MenuItem>
+
+                  <MenuItem>
+                    <button
+                      onClick={() => {
+                        setSortOption("Price: low to high");
+                      }}
+                      className="w-full p-2 pr-12 text-left rounded-lg hover:bg-primaryBlack md:pr-24"
+                    >
+                      <span>Price: low to high</span>
+                    </button>
+                  </MenuItem>
+                  <MenuItem>
+                    <button
+                      onClick={() => {
+                        setSortOption("Price: high to low");
+                      }}
+                      className="w-full p-2 pr-12 text-left rounded-lg hover:bg-primaryBlack md:pr-24"
+                    >
+                      <span>Price: high to low</span>
+                    </button>
+                  </MenuItem>
+                  <MenuItem>
+                    <button
+                      onClick={() => {
+                        setSortOption("Ending soon");
+                      }}
+                      className="w-full p-2 pr-12 text-left rounded-lg hover:bg-primaryBlack md:pr-24"
+                    >
+                      <span>Ending soon</span>
+                    </button>
+                  </MenuItem>
+                </MenuItems>
+              </Menu>
+            </div>
 
             <div className="grid grid-cols-2 gap-4 mb-6 md:grid-cols-3 lg:grid-cols-4">
-              {offerData?.nftContract?.tokens?.map((token, index) => {
-                const currentListing = token?.marketplaceListings?.sort(
-                  (a, b) => Number(b.id) - Number(a.id)
-                )[0];
-                const currencyDecimals =
-                  currentListing?.listingType === "Auction" ||
-                  currentListing?.listingType === "Direct"
-                    ? Number(currentListing?.currencyDecimals)
-                    : Number(token?.nftContract?.prices[0]?.currencyDecimals);
-
+              {filteredOffers?.map((token, index) => {
                 const finalToken = {
                   ...token,
-                  chainConfig: offerData?.chainConfig,
-                  currencyDecimals,
-                  listingType: currentListing?.listingType,
-                  endTime: currentListing?.endTime
+                  chainConfig: offerData?.chainConfig
                 };
-
-                console.log(finalToken);
 
                 return (
                   <TokenCard
@@ -650,7 +843,7 @@ const Offer = () => {
                     item={finalToken}
                     isToken={true}
                     url={`/${chainId}/offer/${offerId}/${finalToken?.tokenId}${finalToken?.mint?.tokenData ? `?tokenData=${finalToken?.mint?.tokenData}` : ""}`}
-                    currencyDecimals={currencyDecimals}
+                    currencyDecimals={finalToken.currencyDecimals}
                     listingType={finalToken.listingType}
                     isListing={finalToken.listingType}
                     isAuction={finalToken.listingType === "Auction"}

@@ -39,6 +39,7 @@ type NFTContract = {
     currency: string;
     amount: string;
     enabled: boolean;
+    currencyDecimals: string;
   }[];
   tokens: Token[];
 };
@@ -52,6 +53,34 @@ type Token = {
   setInAllowList: boolean;
   currentProposals: Proposal[];
   allProposals: ProposalHistory[];
+};
+
+type BidPriceStructure = {
+  listerAmount: string;
+  minimalBidPerToken: string;
+  minimalBuyoutPerToken: string;
+  newAmount: string;
+  newBidPerToken: string;
+  newPricePerToken: string;
+  newProfitAmount: string;
+  newRefundAmount: string;
+  newRefundBonusAmount: string;
+  newRefundBonusPerToken: string;
+  previousBidAmount: string;
+  previousPricePerToken: string;
+  protocolFeeAmount: string;
+  refundAmountToPreviousBidder: string;
+  refundBonusAmount: string;
+  refundBonusPerToken: string;
+  royaltyAmount: string;
+  totalBidAmount: string;
+};
+
+type BuyPriceStructure = {
+  buyoutPricePerToken: string;
+  listerBuyAmount: string;
+  protocolFeeBuyAmount: string;
+  royaltiesBuyAmount: string;
 };
 
 type MarketplaceListing = {
@@ -68,6 +97,9 @@ type MarketplaceListing = {
   directBuys: DirectBuy[];
   token: Token;
   bids: Bid[];
+  currencyDecimals: string;
+  bidPriceStructure: BidPriceStructure;
+  buyPriceStructure: BuyPriceStructure;
 };
 
 type MarketplaceOffer = {
