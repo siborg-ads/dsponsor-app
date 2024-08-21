@@ -17,7 +17,7 @@ export type HistoryProposalType = {
   status: string;
   cssAspectRatio: string | null;
   metadata?: string;
-  id: number;
+  id: string;
 };
 
 function processAllProposals(token) {
@@ -37,7 +37,7 @@ function processAllProposals(token) {
       rejectReason: element.rejectReason,
       status: element.status,
       cssAspectRatio: cssAspectRatio,
-      id: token.tokenId,
+      id: token.tokenId.toString(),
       metadata: token.mint.tokenData
     });
   }
