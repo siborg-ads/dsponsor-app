@@ -124,8 +124,8 @@ const AdSpaces = ({
       </div>
 
       {!isLoading ? (
-        <div className="embla flex flex-col gap-2" ref={emblaRef}>
-          <div className="embla__container mt-1">
+        <div className="flex flex-col gap-2 embla" ref={emblaRef}>
+          <div className="mt-1 embla__container">
             {((breakpoint as number) <= 640
               ? finalAdSpaces
               : finalAdSpaces.reduce((resultArray, item, index) => {
@@ -243,13 +243,13 @@ const AdSpaces = ({
           {(breakpoint as number) <= 640 ? (
             <div className="flex items-center gap-2">
               <button
-                className="embla__prev bg-secondaryBlack rounded-full p-2"
+                className="p-2 rounded-full embla__prev bg-secondaryBlack"
                 onClick={scrollPrev}
               >
                 <ArrowLeftIcon className="w-4 h-4" />
               </button>
               <button
-                className="embla__next bg-secondaryBlack rounded-full p-2"
+                className="p-2 rounded-full embla__next bg-secondaryBlack"
                 onClick={scrollNext}
               >
                 <ArrowRightIcon className="w-4 h-4" />
@@ -260,13 +260,13 @@ const AdSpaces = ({
             finalAdSpaces?.length > cardChunks && (
               <div className="flex items-center gap-2">
                 <button
-                  className="embla__prev bg-secondaryBlack rounded-full p-2"
+                  className="p-2 rounded-full embla__prev bg-secondaryBlack"
                   onClick={scrollPrev}
                 >
                   <ArrowLeftIcon className="w-4 h-4" />
                 </button>
                 <button
-                  className="embla__next bg-secondaryBlack rounded-full p-2"
+                  className="p-2 rounded-full embla__next bg-secondaryBlack"
                   onClick={scrollNext}
                 >
                   <ArrowRightIcon className="w-4 h-4" />
@@ -277,19 +277,19 @@ const AdSpaces = ({
         </div>
       ) : (
         <React.Fragment>
-          <div className="grid grid-cols-1 sm:hidden gap-4">
+          <div className="grid grid-cols-1 gap-4 sm:hidden">
             <TokenCardSkeleton />
           </div>
-          <div className="hidden sm:grid sm:grid-cols-2 md:hidden gap-4">
-            <TokenCardSkeleton />
-            <TokenCardSkeleton />
-          </div>
-          <div className="hidden md:grid md:grid-cols-3 lg:hidden gap-4">
-            <TokenCardSkeleton />
+          <div className="hidden gap-4 sm:grid sm:grid-cols-2 md:hidden">
             <TokenCardSkeleton />
             <TokenCardSkeleton />
           </div>
-          <div className="hidden lg:grid lg:grid-cols-4 gap-4">
+          <div className="hidden gap-4 md:grid md:grid-cols-3 lg:hidden">
+            <TokenCardSkeleton />
+            <TokenCardSkeleton />
+            <TokenCardSkeleton />
+          </div>
+          <div className="hidden gap-4 lg:grid lg:grid-cols-4">
             <TokenCardSkeleton />
             <TokenCardSkeleton />
             <TokenCardSkeleton />
