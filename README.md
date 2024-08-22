@@ -47,7 +47,6 @@
       - [Subtilities](#subtilities)
       - [Objects](#objects)
 
-
 ## Installation
 
 To install the project, you can simply clone the project repository and install the dependencies using Yarn. Follow these steps:
@@ -67,7 +66,7 @@ cd dsponsor-dashboard
 ### Install dependencies
 
 ```bash
-yarn install
+npm i
 ```
 
 ## Configuration
@@ -485,6 +484,7 @@ GraphQL is a powerful query language for APIs that allows for precise and flexib
 ### The `executeQuery` Function
 
 The `executeQuery` function is designed to streamline the process of querying a GraphQL API. It takes care of sending the request, handling errors, and parsing the response data.- [DSponsor Dashboard](#dsponsor-dashboard)
+
 - [DSponsor Dashboard](#dsponsor-dashboard)
   - [Table of contents](#table-of-contents)
   - [Installation](#installation)
@@ -528,7 +528,6 @@ The `executeQuery` function is designed to streamline the process of querying a 
         - [3. **Secondary Market**](#3-secondary-market)
       - [Subtilities](#subtilities)
       - [Objects](#objects)
-
 
 ```typescript
 /**
