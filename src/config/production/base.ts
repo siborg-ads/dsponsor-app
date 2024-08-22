@@ -51,7 +51,7 @@ const prodBase = {
         "https://api.defender.openzeppelin.com/actions/803b194c-5e89-4020-b4fa-e3934128f3ef/runs/webhook/59ce7c60-9e0b-4c87-8910-a8b13e6f725e/47dJ2PR4Ffh6nhbHYUroA5"
     },
     crossmint: {
-      enabled: false,
+      enabled: true,
 
       config: {
         projectId: "0572f9c1-13fb-4001-8b0d-48d1d4952bc4",

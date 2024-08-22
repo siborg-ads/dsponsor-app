@@ -16,7 +16,7 @@ export default function Layout({ children }) {
 
       <div className="fixed bottom-0 right-0 p-6">
         <Link
-          href="https://discord.gg/siborgapp"
+          href="https://discord.gg/siborglabs"
           onMouseEnter={() => setIsHoveringSupport(true)}
           onMouseLeave={() => setIsHoveringSupport(false)}
         >

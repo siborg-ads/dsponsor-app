@@ -22,7 +22,7 @@ const socials = [
   },
   {
     name: "Discord",
-    href: "https://discord.gg/siborgapp",
+    href: "https://discord.gg/siborglabs",
     icon: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
