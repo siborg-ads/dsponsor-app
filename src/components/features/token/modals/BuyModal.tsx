@@ -51,7 +51,6 @@ const BuyModal = ({
   setInsufficentBalance,
   setCanPayWithNativeToken,
   nativeTokenBalance,
-  buyTokenEtherPrice,
   totalPrice,
   hasEnoughBalance,
   hasEnoughBalanceForNative,
@@ -97,7 +96,6 @@ const BuyModal = ({
   // eslint-disable-next-line no-unused-vars
   setCanPayWithNativeToken: (value: boolean) => void;
   nativeTokenBalance: any;
-  buyTokenEtherPrice: string;
   totalPrice: number;
   hasEnoughBalance: boolean;
   hasEnoughBalanceForNative: boolean;

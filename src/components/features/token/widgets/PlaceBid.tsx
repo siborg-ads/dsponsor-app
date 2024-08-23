@@ -5,7 +5,6 @@ import BidsModal from "@/components/features/token/modals/BidsModal";
 import { BigNumber } from "ethers";
 import { getAddress } from "ethers/lib/utils";
 import { Address } from "thirdweb";
-import StyledWeb3Button from "@/components/ui/buttons/StyledWeb3Button";
 import NormalButton from "@/components/ui/buttons/NormalButton";
 
 const PlaceBid = ({
