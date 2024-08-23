@@ -839,16 +839,21 @@ const Offer = () => {
                   chainConfig: offerData?.chainConfig
                 };
 
+                console.log(filteredOffers);
+                console.log(finalToken);
+
                 return (
                   <TokenCard
                     key={index}
                     item={finalToken}
                     isToken={true}
-                    url={`/${chainId}/offer/${offerId}/${finalToken?.tokenId}${finalToken?.mint?.tokenData ? `?tokenData=${finalToken?.mint?.tokenData}` : ""}`}
-                    currencyDecimals={finalToken.currencyDecimals}
                     listingType={finalToken.listingType}
                     isListing={finalToken.listingType}
                     isAuction={finalToken.listingType === "Auction"}
+                    url={`/${chainId}/offer/${offerId}/${finalToken?.tokenId}${finalToken?.mint?.tokenData ? `?tokenData=${finalToken?.mint?.tokenData}` : ""}`}
+                    currencyDecimals={finalToken.currencyDecimals}
+                    tokenId={finalToken.tokenId}
+                    offer={finalToken}
                   />
                 );
               })}

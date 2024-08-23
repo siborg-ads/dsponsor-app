@@ -505,7 +505,8 @@ const TokenCard = ({
                 </span>
               </div>
             ) : (
-              itemStatut === "AUCTION" && (
+              itemStatut === "AUCTION" &&
+              !isToken && (
                 <span
                   className={`${item.status === "CREATED" ? "text-primaryPurple" : item.status !== "OUTBID" ? "text-green" : "text-red"} text-xs min-w-[100px] text-end font-medium tracking-tight`}
                 >
