@@ -733,7 +733,7 @@ const Offer = () => {
               <div className="flex w-full mr-0 md:mr-auto md:max-w-[500px]">
                 <Input
                   type="text"
-                  placeholder="Filter by category"
+                  placeholder="Search..."
                   name="search"
                   value={filterName}
                   onChange={(e) => {

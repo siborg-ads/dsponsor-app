@@ -247,7 +247,7 @@ const Home = () => {
           curratedOfferIdsByType={curratedOfferIdsByType}
         />
 
-        <Steps />
+        <Steps chainId={chainId} />
 
         <ClientsRedirection />
       </div>
