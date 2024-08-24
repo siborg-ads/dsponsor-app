@@ -2,6 +2,7 @@ import Modal from "react-modal";
 import Image from "next/image";
 import { XMarkIcon } from "@heroicons/react/20/solid";
 import React from "react";
+import Link from "next/link";
 
 const steps: {
   title: string;
@@ -40,7 +41,7 @@ const steps: {
   }
 ];
 
-const Steps = () => {
+const Steps = ({ chainId }: { chainId?: number }) => {
   const [modalIsOpen, setModalIsOpen] = React.useState<boolean>(false);
   const [selectedImage, setSelectedImage] = React.useState<string>("");
 
@@ -89,12 +90,23 @@ const Steps = () => {
                       <span className="text-jacarta-100 text-sm">{step.description}</span>
 
                       {step.image && (
-                        <button onClick={() => openModal(step.image)} className="text-left">
-                          <span className="underline text-white hover:text-jacarta-100 text-left text-xs cursor-pointer">
-                            See example with &apos;Bitcoin&apos; search keyword for the SiBorg app
-                            offer
-                          </span>
-                        </button>
+                        <div className="text-left text-xs">
+                          <button
+                            onClick={() => openModal(step.image)}
+                            className="inline text-left"
+                          >
+                            <span className="underline text-white hover:text-jacarta-100 text-left text-xs cursor-pointer inline">
+                              See example with &apos;Bitcoin&apos; search
+                            </span>
+                          </button>
+                          <span className="inline"> for </span>
+                          <Link
+                            href={`/${chainId}/offer/1`}
+                            className="underline text-white hover:text-jacarta-100 inline"
+                          >
+                            the SiBorg app offer
+                          </Link>
+                        </div>
                       )}
                     </div>
                   </div>
