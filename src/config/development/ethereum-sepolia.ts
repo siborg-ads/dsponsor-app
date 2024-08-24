@@ -11,7 +11,7 @@ const devEthereumSepolia = {
   chainObject: Sepolia,
   logoURL: "/images/chains/ethereum-logo.png",
   explorerBaseURL: "https://sepolia.etherscan.io",
-
+  relayerURL: "https://d-sponsor-relayer-ecl1w7ri7-d-sponsor.vercel.app",
   rpcURL: "https://ethereum-sepolia-rpc.publicnode.com",
   smartContracts: {
     NATIVE: {

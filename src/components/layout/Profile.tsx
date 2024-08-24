@@ -287,6 +287,7 @@ const Profile = () => {
           adParameters: element.adParameters,
           id: `${element.id}-${token.tokenId}`,
           offerId: element.id,
+          admins: element.admins,
           disable: element.disable,
           endTime: token?.marketplaceListings?.length > 0 && token?.marketplaceListings[0]?.endTime
         }))
