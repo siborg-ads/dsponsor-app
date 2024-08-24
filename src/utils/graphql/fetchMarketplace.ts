@@ -10,10 +10,9 @@ import config from "@/config/config";
  */
 export const fetchMarketplace = async (chainId: number, allTokens: boolean) => {
   const path = new URL(`https://relayer.dsponsor.com/api/${chainId}/graph`);
-  const currentTimestamp = Math.floor(Date.now() / 1000);
 
   const GET_DATA = `
-    query getAllMarketplaceListings($currentTimestamp: Int!) {
+    query getAllMarketplaceListings {
       adOffers {
         id
         disable
@@ -212,9 +211,7 @@ export const fetchMarketplace = async (chainId: number, allTokens: boolean) => {
   };
 
   const chainConfig = config[chainId];
-  const variables = {
-    currentTimestamp
-  };
+  const variables = {};
 
   const response = (await executeQuery(path.href, GET_DATA, variables)) as QueryType;
 
