@@ -511,7 +511,7 @@ const Offer = () => {
                   {/* <!-- Modal --> */}
                   <div className="modal-dialog !my-0 flex items-center justify-center">
                     <div className="block modal fade show">
-                      <div className="modal-dialog !my-0 flex items-center justify-center items-start">
+                      <div className="modal-dialog !my-0 flex items-center justify-center">
                         <img
                           src={imageUrl ?? "/images/gradients/gradient_creative.jpg"}
                           alt="image"
@@ -993,9 +993,10 @@ const Offer = () => {
 
                 <TabPanel>
                   <Integration
-                    chainId={chainId}
-                    offerId={offerId}
+                    chainId={parseInt(chainId)}
+                    offerId={parseInt(offerId as string)}
                     offerTokens={offerData?.nftContract?.tokens}
+                    offerData={offerData}
                   />
                 </TabPanel>
                 <TabPanel>

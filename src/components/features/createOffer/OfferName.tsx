@@ -10,14 +10,34 @@ const OfferName = ({
   description,
   setDescription,
   numSteps,
-  currentSlide
+  currentSlide,
+  telegramChannels,
+  setTelegramChannels
 }) => {
-  const handleNameChange = (e) => {
+  const [valueTelegramChannels, setValueTelegramChannels] = useState<string | undefined>(undefined);
+
+  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setName(e.target.value);
   };
 
-  const handleDescriptionChange = (e) => {
+  const handleDescriptionChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setDescription(e.target.value);
+  };
+
+  const handleTelegramChannelsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const channels = e.target.value?.split(/[\s,]+/).map((channel) => channel.trim());
+    const filteredChannels = channels.filter((channel) => channel !== "");
+    const uniqueChannels = [...new Set(filteredChannels)];
+    const almostFinalChannels: (number | null)[] =
+      uniqueChannels?.map((channel) => {
+        const parsedChannel = parseInt(channel);
+        return isNaN(parsedChannel) ? null : parsedChannel;
+      }) ?? [];
+
+    const finalChannels = almostFinalChannels?.filter((channel) => channel !== null) as number[];
+
+    setTelegramChannels(finalChannels);
+    setValueTelegramChannels(e.target.value);
   };
 
   const isSlideActive = currentSlide === 1;
@@ -40,15 +60,25 @@ const OfferName = ({
           <Header />
         </div>
 
-        <div className="w-full">
-          <Title name={name} handleNameChange={handleNameChange} />
-        </div>
+        <div className="flex flex-col w-full gap-6 mb-6">
+          <div className="w-full">
+            <Title name={name} handleNameChange={handleNameChange} />
+          </div>
 
-        <div className="mb-6 w-full">
-          <Description
-            description={description}
-            handleDescriptionChange={handleDescriptionChange}
-          />
+          <div className="w-full">
+            <Description
+              description={description}
+              handleDescriptionChange={handleDescriptionChange}
+            />
+          </div>
+
+          <div className="w-full">
+            <TelegramIntegration
+              telegramChannels={telegramChannels}
+              handleTelegramChannelsChange={handleTelegramChannelsChange}
+              valueTelegramChannels={valueTelegramChannels}
+            />
+          </div>
         </div>
       </div>
     </div>
@@ -68,7 +98,14 @@ const Header = () => {
   );
 };
 
-const Title = ({ name, handleNameChange }) => {
+const Title = ({
+  name,
+  handleNameChange
+}: {
+  name: string;
+  // eslint-disable-next-line no-unused-vars
+  handleNameChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+}) => {
   return (
     <React.Fragment>
       <label
@@ -89,7 +126,14 @@ const Title = ({ name, handleNameChange }) => {
   );
 };
 
-const Description = ({ description, handleDescriptionChange }) => {
+const Description = ({
+  description,
+  handleDescriptionChange
+}: {
+  description: string;
+  // eslint-disable-next-line no-unused-vars
+  handleDescriptionChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
+}) => {
   const [charCount, setCharCount] = useState(description.length);
 
   useEffect(() => {
@@ -123,6 +167,39 @@ const Description = ({ description, handleDescriptionChange }) => {
       <p className={`mt-1 text-2xs ${remainingChars > 0 ? "text-green" : "text-red"}`}>
         {remainingChars} characters remaining
       </p>
+    </React.Fragment>
+  );
+};
+
+const TelegramIntegration = ({
+  telegramChannels,
+  handleTelegramChannelsChange,
+  valueTelegramChannels
+}: {
+  telegramChannels: number[] | undefined;
+  // eslint-disable-next-line no-unused-vars
+  handleTelegramChannelsChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  valueTelegramChannels: string | undefined;
+}) => {
+  return (
+    <React.Fragment>
+      <label
+        htmlFor="item-telegram"
+        className="block mb-2 font-display text-center text-jacarta-900 dark:text-white"
+      >
+        Telegram Channels
+      </label>
+      <p className="mb-3 text-center text-2xs text-jacarta-100 dark:text-jacarta-100">
+        You can specify your Telegram channels to automatically publish your ads in the channels.
+      </p>
+      <Input
+        type="text"
+        id="item-telegram"
+        placeholder="Channels separated by commas (e.g., -124234, 234234)"
+        value={valueTelegramChannels}
+        onChange={handleTelegramChannelsChange}
+        className="placeholder:text-jacarta-300"
+      />
     </React.Fragment>
   );
 };
