@@ -306,6 +306,15 @@ const CreateOffer = () => {
 
       await createDSponsorNFTAndOffer({ args: preparedArgs });
 
+      const relayerURL = config[parseFloat(chainId as string)]?.relayerURL;
+      if (relayerURL) {
+        await fetch(`${relayerURL}/api/revalidate`, {
+          method: "POST",
+          body: JSON.stringify({
+            tags: [`${chainId}-adOffers`, `${chainId}-userAddress-${userMinterAddress}`]
+          })
+        });
+      }
       setSuccessFullUpload(true);
 
       // reset form data
