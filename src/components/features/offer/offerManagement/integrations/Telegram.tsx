@@ -111,6 +111,7 @@ const Telegram = ({ chainId, offerData }: { chainId: number; offerData: any }) =
       <div className="flex flex-col gap-8">
         <div className="flex flex-col gap-4">
           <Input
+            className="max-w-lg"
             type="text"
             id="item-telegram"
             value={valueTelegramChannels}
@@ -127,6 +128,7 @@ const Telegram = ({ chainId, offerData }: { chainId: number; offerData: any }) =
         </div>
 
         <StyledWeb3Button
+          isFullWidth={false}
           defaultText="Update Telegram Channels"
           onClick={async () => {
             await toast.promise(handleUpdateOffer(metadatas), {
