@@ -999,7 +999,7 @@ const Offer = () => {
                   />
                 </TabPanel>
                 <TabPanel>
-                  <UpdateOffer offer={offerData} />
+                  <UpdateOffer offer={offerData} contractOwner={owner} />
                 </TabPanel>
                 <TabPanel>
                   <ChangeMintPrice offer={offerData} />
