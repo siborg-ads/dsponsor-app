@@ -1029,6 +1029,7 @@ const Offer = () => {
             <Details
               contractAddress={offerData?.nftContract?.id}
               initialCreator={offerData?.initialCreator}
+              contractOwner={owner}
               isToken={false}
               offerData={offerData}
               chainId={parseFloat(chainId)}
