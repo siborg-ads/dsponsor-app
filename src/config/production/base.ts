@@ -11,7 +11,9 @@ const prodBase = {
   network: Network.BASE_MAINNET,
   logoURL: "/images/chains/base-logo.png",
   explorerBaseURL: "https://basescan.org",
-
+  relayerURL: process.env.NEXT_PUBLIC_RELAYER_URL
+    ? process.env.NEXT_PUBLIC_RELAYER_URL
+    : "https://relayer.dsponsor.com",
   rpcURL: "https://mainnet.base.org",
   smartContracts: {
     NATIVE: {

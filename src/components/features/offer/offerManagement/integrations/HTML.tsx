@@ -8,6 +8,7 @@ import handleCopy from "@/utils/misc/handleCopy";
 import Tippy from "@tippyjs/react";
 import { ChromePicker } from "react-color";
 import Input from "@/components/ui/Input";
+import config from "@/config/config";
 
 const initialColumns = (numberOfTokens) => {
   if (numberOfTokens % 7 === 0) return 7;
@@ -24,6 +25,8 @@ const initialColumns = (numberOfTokens) => {
 };
 
 const HTML = ({ chainId, offerId, offerTokens }) => {
+  const relayerURL = config[chainId]?.relayerURL;
+
   const [copied, setCopied] = React.useState(false);
   const [columns, setColumns] = useState(
     localStorage.getItem("htmlSettings")
@@ -89,7 +92,7 @@ const HTML = ({ chainId, offerId, offerTokens }) => {
   useEffect(() => {
     const generateTableHTML = () => {
       if (displayType === "DynamicBanner") {
-        return `<img src="https://relayer.dsponsor.com/${chainId}/integrations/${offerId}/DynamicBanner/image${ratio && ratioValue !== "" ? `?ratio=${ratioValue}` : ""}" style="max-width: 100%; height: auto; display: block;" alt="No Ad" />`;
+        return `<img src="${relayerURL}/${chainId}/integrations/${offerId}/DynamicBanner/image${ratio && ratioValue !== "" ? `?ratio=${ratioValue}` : ""}" style="max-width: 100%; height: auto; display: block;" alt="No Ad" />`;
       }
 
       if (!offerTokens || offerTokens.length === 0) return "";
@@ -130,8 +133,8 @@ const HTML = ({ chainId, offerId, offerTokens }) => {
 
           if (index < sortedOfferTokens?.length) {
             tableHTML += `<td width="${100 / numberOfColumns}%" style="text-align: center; padding: 10px;">
-            <a href="https://relayer.dsponsor.com/${chainId}/integrations/${offerId}/${sortedOfferTokens[index]?.tokenId}/link" target="_blank" rel="noopener noreferrer">
-              <img src="https://relayer.dsponsor.com/${chainId}/integrations/${offerId}/${sortedOfferTokens[index]?.tokenId}/image" style="max-width: 100%; height: auto; display: block;" alt="No Ad" />
+            <a href="${relayerURL}/${chainId}/integrations/${offerId}/${sortedOfferTokens[index]?.tokenId}/link" target="_blank" rel="noopener noreferrer">
+              <img src="${relayerURL}/${chainId}/integrations/${offerId}/${sortedOfferTokens[index]?.tokenId}/image" style="max-width: 100%; height: auto; display: block;" alt="No Ad" />
             </a>
           </td>`;
           }
@@ -154,6 +157,7 @@ const HTML = ({ chainId, offerId, offerTokens }) => {
     setHtmlSrc(htmlSrc);
   }, [
     chainId,
+    relayerURL,
     offerId,
     offerTokens,
     numberOfColumns,
@@ -394,12 +398,12 @@ const HTML = ({ chainId, offerId, offerTokens }) => {
                             style={{ textAlign: "center", padding: "10px" }}
                           >
                             <a
-                              href={`https://relayer.dsponsor.com/${chainId}/integrations/${offerId}/${offerTokens?.sort((a, b) => a?.tokenId - b?.tokenId)[index]?.tokenId}/link`}
+                              href={`${relayerURL}/${chainId}/integrations/${offerId}/${offerTokens?.sort((a, b) => a?.tokenId - b?.tokenId)[index]?.tokenId}/link`}
                               target="_blank"
                               rel="noopener noreferrer"
                             >
                               <img
-                                src={`https://relayer.dsponsor.com/${chainId}/integrations/${offerId}/${offerTokens?.sort((a, b) => a?.tokenId - b?.tokenId)[index]?.tokenId}/image`}
+                                src={`${relayerURL}/${chainId}/integrations/${offerId}/${offerTokens?.sort((a, b) => a?.tokenId - b?.tokenId)[index]?.tokenId}/image`}
                                 style={{ maxWidth: "100%", height: "auto", display: "block" }}
                                 alt="No Ad"
                               />
@@ -438,7 +442,7 @@ const HTML = ({ chainId, offerId, offerTokens }) => {
       {displayType === "DynamicBanner" && (
         // eslint-disable-next-line @next/next/no-img-element
         <img
-          src={`https://relayer.dsponsor.com/${encodeURIComponent(Number(chainId))}/integrations/${encodeURIComponent(Number(offerId))}/DynamicBanner/image?ratio=${encodeURIComponent(ratio && ratioValue !== "" ? ratioValue : "1:1")}`}
+          src={`${relayerURL}/${encodeURIComponent(Number(chainId))}/integrations/${encodeURIComponent(Number(offerId))}/DynamicBanner/image?ratio=${encodeURIComponent(ratio && ratioValue !== "" ? ratioValue : "1:1")}`}
           style={{ maxWidth: "100%", height: "auto", display: "block" }}
           alt="No Ad"
         />

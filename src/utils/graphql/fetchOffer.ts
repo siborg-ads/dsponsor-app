@@ -228,7 +228,8 @@ type OfferPageContainerResponse = {
  *                               ad offer, enriched with blockchain-specific configuration and additional token details.
  */
 export const fetchOffer = async (chainId, offerId) => {
-  const path = new URL(`https://relayer.dsponsor.com/api/${chainId}/graph`);
+  const relayerURL = config[chainId].relayerURL;
+  const path = new URL(`${relayerURL}/api/${chainId}/graph`);
 
   const GET_DATA = `
     query OfferPageContainer($offerId: ID!) {

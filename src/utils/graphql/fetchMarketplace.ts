@@ -9,7 +9,8 @@ import config from "@/config/config";
  * @returns {Promise<Array>} - A promise that resolves to an array of tokens with their details.
  */
 export const fetchMarketplace = async (chainId: number, allTokens: boolean) => {
-  const path = new URL(`https://relayer.dsponsor.com/api/${chainId}/graph`);
+  const relayerURL = config[chainId].relayerURL;
+  const path = new URL(`${relayerURL}/api/${chainId}/graph`);
 
   const GET_DATA = `
     query getAllMarketplaceListings {

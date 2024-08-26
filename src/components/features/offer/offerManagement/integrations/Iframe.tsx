@@ -8,8 +8,11 @@ import handleCopy from "@/utils/misc/handleCopy";
 import Tippy from "@tippyjs/react";
 import { ChromePicker } from "react-color";
 import Input from "@/components/ui/Input";
+import config from "@/config/config";
 
 const Iframe = ({ chainId, offerId }) => {
+  const relayerURL = config[chainId]?.relayerURL;
+
   const [copied, setCopied] = useState(false);
   const [iframeSrc, setIframeSrc] = useState("");
   const [customHeight, setCustomHeight] = useState(
@@ -85,10 +88,11 @@ const Iframe = ({ chainId, offerId }) => {
       if (previewLink) params.append("previewLink", previewLink);
     }
     setIframeSrc(
-      `https://relayer.dsponsor.com/${chainId}/integrations/${offerId}/${displayType}/iFrame${params.toString() ? "?" + params.toString() : ""}`
+      `${relayerURL}/${chainId}/integrations/${offerId}/${displayType}/iFrame${params.toString() ? "?" + params.toString() : ""}`
     );
   }, [
     chainId,
+    relayerURL,
     offerId,
     bgColor,
     color,

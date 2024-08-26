@@ -58,6 +58,7 @@ const Token = () => {
   const storage = useStorage();
 
   const { currentChainObject } = useChainContext();
+  const relayerURL = currentChainObject?.relayerURL;
   const offerId = router.query?.offerId;
   const tokenId = router.query?.tokenId;
   const chainId = currentChainObject?.chainId;
@@ -442,7 +443,7 @@ const Token = () => {
           const finalAmount = ethers.utils.parseUnits(amount, Number(currencyDecimals))?.toString();
 
           const tokenEtherPrice = await fetch(
-            `https://relayer.dsponsor.com/api/${chainId}/prices?token=${tokenCurrencyAddress}&amount=${finalAmount}&slippage=0.3`,
+            `${relayerURL}/api/${chainId}/prices?token=${tokenCurrencyAddress}&amount=${finalAmount}&slippage=0.3`,
             {
               method: "GET",
               headers: {
@@ -488,6 +489,7 @@ const Token = () => {
     }
   }, [
     chainId,
+    relayerURL,
     currencyDecimals,
     tokenCurrencyAddress,
     debouncedBidsAmount,
@@ -2744,7 +2746,7 @@ const Token = () => {
             canPayWithNativeToken={canPayWithNativeToken}
             setCanPayWithNativeToken={setCanPayWithNativeToken}
             token={tokenDO}
-            buyTokenEtherPrice={buyTokenEtherPrice as string}
+            //  buyTokenEtherPrice={buyTokenEtherPrice as string}
             totalPrice={totalPrice as number}
             user={{
               address: address,

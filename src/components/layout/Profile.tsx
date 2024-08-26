@@ -47,6 +47,7 @@ const Profile = () => {
   const userAddress = router.query.address as Address;
   const chainId = currentChainObject?.chainId;
   const chainConfig = config[chainId as number];
+  const relayerURL = chainConfig?.relayerURL;
 
   useEffect(() => {
     if (address && userAddress && getAddress(address) === getAddress(userAddress)) {
@@ -235,15 +236,12 @@ const Profile = () => {
     setIsLoadingTransactions(true);
 
     try {
-      const data = await fetch(
-        `https://relayer.dsponsor.com/api/${chainId}/activity?userAddress=${userAddress}`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json"
-          }
+      const data = await fetch(`${relayerURL}/api/${chainId}/activity?userAddress=${userAddress}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json"
         }
-      )
+      })
         .then((res) => res.json())
         .then((data) => {
           return data;

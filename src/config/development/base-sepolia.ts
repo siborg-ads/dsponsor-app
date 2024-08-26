@@ -11,7 +11,9 @@ const devBaseSepolia = {
   gaslessBalanceThreshold: 1000000000000000, // 0.001 ETH
   logoURL: "/images/chains/base-logo.png",
   explorerBaseURL: "https://sepolia.basescan.org",
-  relayerURL: process.env.DEV ? process.env.DEV : "https://relayer.dsponsor.com",
+  relayerURL: process.env.NEXT_PUBLIC_RELAYER_URL
+    ? process.env.NEXT_PUBLIC_RELAYER_URL
+    : "https://relayer.dsponsor.com",
   rpcURL: "https://sepolia.base.org",
   subgraphURL: "https://api.studio.thegraph.com/proxy/65744/dsponsor-base-sepolia/version/latest",
   smartContracts: {

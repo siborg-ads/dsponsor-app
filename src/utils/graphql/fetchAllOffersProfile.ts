@@ -10,7 +10,8 @@ import { Address } from "@thirdweb-dev/sdk";
  * @returns {Promise<Array<Object>>} - A promise that resolves to an array of offer profiles.
  */
 export const fetchAllOffersProfile = async (userAddress: Address, chainId: number) => {
-  const path = new URL(`https://relayer.dsponsor.com/api/${chainId}/graph`);
+  const relayerURL = config[chainId].relayerURL;
+  const path = new URL(`${relayerURL}/api/${chainId}/graph`);
 
   const GET_DATA = `
     query OffersManagedByUser($userAddress: ID!) {

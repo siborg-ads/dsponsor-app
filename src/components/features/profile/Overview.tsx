@@ -29,7 +29,7 @@ const Overview = ({ userData, ownedTokens, isLoading, manageAddress }) => {
       informations: "The total number of outbids received"
     },
     {
-      value: `$${ranking?.usdcAmounts.bidRefundReceived ?? 0}`,
+      value: `$${ranking?.usdcAmounts?.bidRefundReceived ?? 0}`,
       label: "Rewards Earned",
       informations: "The total amount of rewards earned"
     },

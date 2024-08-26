@@ -109,10 +109,10 @@ To manage different configurations for development and production environments, 
 
 - **Development (`dev`)**: The environment is set to `"dev"` by adding the following line to your `.env.local` file:
 
-  ```env
-  NEXT_PUBLIC_CONFIG_MODE=dev
-
-  ```
+```env
+NEXT_PUBLIC_CONFIG_MODE=dev
+NEXT_PUBLIC_RELAYER_URL=https://relayer.dsponsor.com
+```
 
 #### Example Configuration File
 

@@ -216,7 +216,8 @@ type OfferAndTokenInfoResponse = {
  *                                  advertisement offer and the specified token.
  */
 export const fetchToken = async (chainId, offerId, tokenId) => {
-  const path = new URL(`https://relayer.dsponsor.com/api/${chainId}/graph`);
+  const relayerURL = config[chainId].relayerURL;
+  const path = new URL(`${relayerURL}/api/${chainId}/graph`);
 
   const GET_DATA = `
     query OfferAndTokenInfo($offerId: ID!, $tokenId: ID!) {
