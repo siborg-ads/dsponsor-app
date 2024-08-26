@@ -1,1 +1,1 @@
-export const ngrokURL = "https://368b-185-228-228-239.ngrok-free.app";
+export const ngrokURL = process.env.NEXT_PUBLIC_TUNNELING_URL;

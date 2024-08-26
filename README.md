@@ -112,6 +112,7 @@ To manage different configurations for development and production environments, 
 ```env
 NEXT_PUBLIC_CONFIG_MODE=dev
 NEXT_PUBLIC_RELAYER_URL=https://relayer.dsponsor.com
+NEXT_PUBLIC_TUNNELING_URL=https://xxx-xxx-xxx-xxx-xxx.ngrok-free.app
 ```
 
 #### Example Configuration File
