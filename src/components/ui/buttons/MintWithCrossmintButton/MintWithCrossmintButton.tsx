@@ -65,10 +65,11 @@ export default function MintWithCrossmintButton(
     };
     successCallbackURL?: string;
     failureCallbackURL?: string;
+    whPassThroughArgs?: string;
     isLoading?: boolean;
   }>
 ) {
-  const { offer, token, user, referrer } = props;
+  const { offer, token, user, referrer, whPassThroughArgs } = props;
 
   const price = ethers.utils.parseUnits(props.token.price, "wei");
 
@@ -128,15 +129,18 @@ export default function MintWithCrossmintButton(
   };
 
   if (props?.successCallbackURL) {
-    buttonProps.successCallbackURL = props.successCallbackURL;
+    const successCallbackURL = props.successCallbackURL.split("?")[0];
+    buttonProps.successCallbackURL = successCallbackURL;
   }
 
   if (props?.failureCallbackURL) {
-    buttonProps.failureCallbackURL = props.failureCallbackURL;
+    const failureCallbackURL = props.failureCallbackURL.split("?")[0];
+    buttonProps.failureCallbackURL = failureCallbackURL;
   }
 
   return (
     <CrossmintPayButton
+      whPassThroughArgs={whPassThroughArgs}
       disabled={props?.isDisabled}
       className={(props?.isDisabled && "opacity-30 cursor-not-allowed") || ""}
       getButtonText={() => {

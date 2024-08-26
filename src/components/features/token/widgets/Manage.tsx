@@ -87,6 +87,8 @@ const Manage = ({
       });
 
       setSuccessFullListing(true);
+
+      await fetchOffers();
     } catch (e) {
       console.error(e);
       setIsLoadingButton(false);

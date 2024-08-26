@@ -163,6 +163,7 @@ const Token = () => {
   const [nftContractAddress, setNftContractAddress] = useState<Address | null>(null);
   const [showEntireDescription, setShowEntireDescription] = useState(false);
   const [failedCrossmintTransaction, setFailedCrossmintTransaction] = useState(false);
+  const [tags, setTags] = useState<string[]>([]);
 
   const searchParams = useSearchParams();
   const encodedPayload = searchParams.get("p");
@@ -173,11 +174,25 @@ const Token = () => {
   const bidCollectionId = chainConfig?.features.crossmint.config?.bidCollectionId;
 
   useEffect(() => {
+    const revalidate = async (args) => {
+      const { tags } = args;
+      if (relayerURL && tags) {
+        await fetch(`${relayerURL}/api/revalidate`, {
+          method: "POST",
+          body: JSON.stringify({ tags })
+        });
+      }
+      await fetchOffers();
+    };
+
+    console.log("encodedPayload", encodedPayload);
+
     if (encodedPayload) {
       const decodedPayload = decodeURIComponent(encodedPayload);
       const parsedPayload = JSON.parse(decodedPayload);
-
+      console.log("parsedPayload", parsedPayload);
       if (parsedPayload[0]?.status === "success") {
+        revalidate(parsedPayload[0]?.passThroughArgs);
         const collectionId = parsedPayload[0]?.collectionId;
 
         if (collectionId === mintCollectionId) {
@@ -196,7 +211,7 @@ const Token = () => {
         setFailedCrossmintTransaction(true);
       }
     }
-  }, [bidCollectionId, buyCollectionId, mintCollectionId, encodedPayload]);
+  }, [relayerURL, bidCollectionId, buyCollectionId, mintCollectionId, encodedPayload]);
 
   let description = "description not found";
   let id = "1";
@@ -567,16 +582,29 @@ const Token = () => {
   }, [listingCreated, offerId, tokenId, chainId, offers]);
 
   useEffect(() => {
-    if (offerData?.nftContract?.tokens.length > 0 && tokenId) {
-      setMarketplaceListings(
-        offerData?.nftContract?.tokens
+    if (offerData?.nftContract && address) {
+      const toUpdateTags = [
+        `${chainId}-userAddress-${address}`,
+        `${chainId}-activity`,
+        `${chainId}-nftContract-${offerData.nftContract.id}`
+      ];
+
+      if (offerData?.nftContract?.tokens.length > 0 && tokenId) {
+        const listings = offerData?.nftContract?.tokens
           ?.find(
             (token) => !!token?.tokenId && BigInt(token?.tokenId) === BigInt(tokenId as string)
           )
-          ?.marketplaceListings.sort((a, b) => b.id - a.id)
-      );
+          ?.marketplaceListings.sort((a, b) => b.id - a.id);
+
+        const mostRecentListing = listings && listings[0] ? listings[0] : null;
+        if (mostRecentListing) {
+          toUpdateTags.push(`${chainId}-userAddress-${mostRecentListing.lister}`);
+        }
+        setMarketplaceListings(listings);
+      }
+      setTags(toUpdateTags);
     }
-  }, [offerData, tokenId]);
+  }, [chainId, offerData, tokenId, address]);
 
   useEffect(() => {
     let bids: any[] = [];
@@ -1541,11 +1569,7 @@ const Token = () => {
         await fetch(`${relayerURL}/api/revalidate`, {
           method: "POST",
           body: JSON.stringify({
-            tags: [
-              `${chainId}-adOffer-${offerId}`,
-              `${chainId}-userAddress-${address}`,
-              `${chainId}-activity`
-            ]
+            tags
           })
         });
 
@@ -1555,13 +1579,6 @@ const Token = () => {
         await fetchOffers();
       } else {
         await directBuy(argsWithPossibleOverrides);
-
-        const tags = [
-          `${chainId}-userAddress-${address}`,
-          `${chainId}-userAddress-${firstSelectedListing.lister}`,
-          `${chainId}-activity`,
-          `${chainId}-nftContract-${firstSelectedListing.token.nftContract.id}`
-        ];
 
         await fetch(`${relayerURL}/api/revalidate`, {
           method: "POST",
@@ -1627,9 +1644,12 @@ const Token = () => {
 
       const functionWithPossibleArgs = Object.values(argsAdSubmited);
 
-      const tags = [`${chainId}-adOffer-${offerId}`, `${chainId}-userAddress-${isUserOwner}`];
+      const submitAdTags = [
+        `${chainId}-adOffer-${offerId}`,
+        `${chainId}-userAddress-${isUserOwner}`
+      ];
       for (const admin of offerData.admins) {
-        tags.push(`${chainId}-userAddress-${admin}`);
+        submitAdTags.push(`${chainId}-userAddress-${admin}`);
       }
 
       await submitAd({ args: functionWithPossibleArgs });
@@ -1637,7 +1657,7 @@ const Token = () => {
       await fetch(`${relayerURL}/api/revalidate`, {
         method: "POST",
         body: JSON.stringify({
-          tags
+          tags: submitAdTags
         })
       });
 
@@ -1795,9 +1815,12 @@ const Token = () => {
 
   const handleValidationSubmit = async (submissionArgs) => {
     try {
-      const tags = [`${chainId}-adOffer-${offerId}`, `${chainId}-userAddress-${isUserOwner}`];
+      const validateAdsTags = [
+        `${chainId}-adOffer-${offerId}`,
+        `${chainId}-userAddress-${isUserOwner}`
+      ];
       for (const admin of offerData.admins) {
-        tags.push(`${chainId}-userAddress-${admin}`);
+        validateAdsTags.push(`${chainId}-userAddress-${admin}`);
       }
 
       await validationAsync({
@@ -1807,12 +1830,14 @@ const Token = () => {
       await fetch(`${relayerURL}/api/revalidate`, {
         method: "POST",
         body: JSON.stringify({
-          tags
+          tags: validateAdsTags
         })
       });
 
       setRefusedValidatedAdModal(true);
       setSuccessFullRefuseModal(true);
+
+      await fetchOffers();
     } catch (error) {
       console.error("Erreur de validation du token:", error);
       setSuccessFullRefuseModal(false);
@@ -2069,6 +2094,7 @@ const Token = () => {
       });
 
       setAirdropContainer(false);
+      await fetchOffers();
     } catch (error) {
       console.error("Error while airdropping:", error);
       throw error;
@@ -2776,6 +2802,7 @@ const Token = () => {
       {buyModal && (
         <div className="modal fade show block">
           <BuyModal
+            tags={tags}
             finalPrice={finalPrice}
             finalPriceNotFormatted={finalPriceNotFormatted as string}
             tokenStatut={tokenStatut as string}

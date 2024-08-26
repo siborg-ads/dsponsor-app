@@ -106,21 +106,38 @@ const BidsModal = ({
   const [tooHighPriceForCrossmint, setTooHighPriceForCrossmint] = useState(false);
 
   const chainConfig = config[chainId];
-  const chainWETH = chainConfig?.smartContracts.WETH.address.toLowerCase();
+  // const chainWETH = chainConfig?.smartContracts.WETH.address.toLowerCase();
 
   let frontURL;
   if (typeof window !== "undefined") {
     frontURL = window.location.origin;
   }
 
-  const isWETH = currencyContract?.toLowerCase() === chainWETH;
-  const canPayWithCrossmint = isWETH && chainConfig?.features?.crossmint?.enabled;
+  // const isWETH = currencyContract?.toLowerCase() === chainWETH;
+  const canPayWithCrossmint = chainConfig?.features?.crossmint?.enabled;
   const modalRef: any = useRef();
 
   const userAddr = useAddress();
 
   const { data: nativeTokenBalance } = useBalance();
   const { data: currencyBalance } = useBalance(currencyContract);
+
+  const tags = [
+    `${chainId}-userAddress-${address}`,
+    `${chainId}-userAddress-${marketplaceListings[0].lister}`,
+    `${chainId}-activity`,
+    `${chainId}-nftContract-${marketplaceListings[0].token.nftContract.id}`
+  ];
+
+  const { bids } = marketplaceListings[0];
+  if (bids?.length) {
+    const { bidder } = bids.sort(
+      (a, b) => Number(b.creationTimestamp) - Number(a.creationTimestamp)
+    )[0];
+    tags.push(`${chainId}-userAddress-${bidder}`);
+  }
+
+  const whArgsSerialized = JSON.stringify({ tags });
 
   useEffect(() => {
     if (!amountInEthWithSlippage || amountInEthWithSlippage.lte(BigNumber.from(0))) return;
@@ -326,21 +343,6 @@ const BidsModal = ({
       const parsedBidsAmount = ethers.utils.parseUnits(bidsAmount, currencyTokenDecimals);
 
       const referralAddress = getCookie("_rid") ?? "";
-
-      const tags = [
-        `${chainId}-userAddress-${address}`,
-        `${chainId}-userAddress-${marketplaceListings[0].lister}`,
-        `${chainId}-activity`,
-        `${chainId}-nftContract-${marketplaceListings[0].token.nftContract.id}`
-      ];
-
-      const { bids } = marketplaceListings[0];
-      if (bids?.length) {
-        const { bidder } = bids.sort(
-          (a, b) => Number(b.creationTimestamp) - Number(a.creationTimestamp)
-        )[0];
-        tags.push(`${chainId}-userAddress-${bidder}`);
-      }
 
       await auctionBids({
         args: [marketplaceListings[0].id, parsedBidsAmount, address, referralAddress],
@@ -917,6 +919,7 @@ const BidsModal = ({
                           "http://localhost:3000",
                           ngrokURL
                         )}
+                        whPassThroughArgs={whArgsSerialized}
                       />
 
                       {tooHighPriceForCrossmint && (
