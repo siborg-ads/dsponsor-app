@@ -11,6 +11,7 @@ import { Address } from "@thirdweb-dev/sdk";
  */
 export const fetchAllOffersProfile = async (userAddress: Address, chainId: number) => {
   const relayerURL = config[chainId].relayerURL;
+
   const path = new URL(`${relayerURL}/api/${chainId}/graph`);
 
   const GET_DATA = `
@@ -356,9 +357,14 @@ export const fetchAllOffersProfile = async (userAddress: Address, chainId: numbe
     }[];
   };
 
-  const response = (await executeQuery(path.href, GET_DATA, {
+  const variables = {
     userAddress: userAddress
-  })) as QueryType;
+  };
+  const options = {
+    populate: true,
+    next: { tags: [`${chainId}-userAddress-${userAddress}`] }
+  };
+  const response = (await executeQuery(path.href, GET_DATA, variables, options)) as QueryType;
   const chainConfig = config[chainId];
 
   const resultMappedData = response?.adOffers

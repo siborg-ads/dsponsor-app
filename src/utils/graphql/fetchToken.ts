@@ -413,10 +413,21 @@ export const fetchToken = async (chainId, offerId, tokenId) => {
     }
   `;
 
-  const response = (await executeQuery(path.href, GET_DATA, {
+  const variables = {
     offerId,
     tokenId
-  })) as OfferAndTokenInfoResponse;
+  };
+  const options = {
+    populate: true,
+    next: { tags: [`${chainId}-adOffer-${offerId}`] }
+  };
+
+  const response = (await executeQuery(
+    path.href,
+    GET_DATA,
+    variables,
+    options
+  )) as OfferAndTokenInfoResponse;
 
   const chainConfig = config[chainId];
 

@@ -430,9 +430,19 @@ export const fetchOffer = async (chainId, offerId) => {
     }
   `;
 
-  const response = (await executeQuery(path.href, GET_DATA, {
+  const variables = {
     offerId
-  })) as OfferPageContainerResponse;
+  };
+  const options = {
+    populate: true,
+    next: { tags: [`${chainId}-adOffer-${offerId}`] }
+  };
+  const response = (await executeQuery(
+    path.href,
+    GET_DATA,
+    variables,
+    options
+  )) as OfferPageContainerResponse;
 
   const chainConfig = config[chainId];
 

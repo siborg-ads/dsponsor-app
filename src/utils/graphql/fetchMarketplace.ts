@@ -213,8 +213,12 @@ export const fetchMarketplace = async (chainId: number, allTokens: boolean) => {
 
   const chainConfig = config[chainId];
   const variables = {};
+  const options = {
+    populate: true,
+    next: { tags: [`${chainId}-adOffers`] }
+  };
 
-  const response = (await executeQuery(path.href, GET_DATA, variables)) as QueryType;
+  const response = (await executeQuery(path.href, GET_DATA, variables, options)) as QueryType;
 
   const mappedListedToken = response?.adOffers
     .map((offer) => {
