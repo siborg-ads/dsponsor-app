@@ -177,7 +177,7 @@ const MarketplaceComponent = ({ auctions, setAllTokens, allTokens, isAuctionsLoa
         <div className="flex flex-col md:flex-row items-center gap-16 h-10">
           <Input
             type="text"
-            placeholder="Filter by category"
+            placeholder="Search..."
             name="search"
             value={filterName}
             onChange={(e) => {
