@@ -85,6 +85,7 @@ const BidsModal = ({
   hasEnoughBalanceForNative: boolean;
   tokenEtherPriceRelayer: any;
 }) => {
+  const relayerURL = config[chainId].relayerURL;
   const [initialIntPrice, setInitialIntPrice] = useState<string | null>(null);
   const [isPriceGood, setIsPriceGood] = useState(true);
   const { mutateAsync: auctionBids } = useContractWrite(dsponsorMpContract, "bid");
@@ -326,9 +327,31 @@ const BidsModal = ({
 
       const referralAddress = getCookie("_rid") ?? "";
 
+      const tags = [
+        `${chainId}-userAddress-${address}`,
+        `${chainId}-userAddress-${marketplaceListings[0].lister}`,
+        `${chainId}-activity`,
+        `${chainId}-nftContract-${marketplaceListings[0].token.nftContract.id}`
+      ];
+
+      const { bids } = marketplaceListings[0];
+      if (bids?.length) {
+        const { bidder } = bids.sort(
+          (a, b) => Number(b.creationTimestamp) - Number(a.creationTimestamp)
+        )[0];
+        tags.push(`${chainId}-userAddress-${bidder}`);
+      }
+
       await auctionBids({
         args: [marketplaceListings[0].id, parsedBidsAmount, address, referralAddress],
         overrides: { value: amountInEthWithSlippage }
+      });
+
+      await fetch(`${relayerURL}/api/revalidate`, {
+        method: "POST",
+        body: JSON.stringify({
+          tags
+        })
       });
 
       setSuccessFullBid(true);
@@ -375,9 +398,31 @@ const BidsModal = ({
 
       const referralAddress = getCookie("_rid") ?? "";
 
+      const tags = [
+        `${chainId}-userAddress-${address}`,
+        `${chainId}-userAddress-${marketplaceListings[0].lister}`,
+        `${chainId}-activity`,
+        `${chainId}-nftContract-${marketplaceListings[0].token.nftContract.id}`
+      ];
+      const { bids } = marketplaceListings[0];
+      if (bids?.length) {
+        const { bidder } = bids.sort(
+          (a, b) => Number(b.creationTimestamp) - Number(a.creationTimestamp)
+        )[0];
+        tags.push(`${chainId}-userAddress-${bidder}`);
+      }
+
       await auctionBids({
         args: [marketplaceListings?.[0]?.id, bidsBigInt, address, referralAddress]
       });
+
+      await fetch(`${relayerURL}/api/revalidate`, {
+        method: "POST",
+        body: JSON.stringify({
+          tags
+        })
+      });
+
       setSuccessFullBid(true);
       await fetchOffers();
     } catch (error) {

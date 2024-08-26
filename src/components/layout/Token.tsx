@@ -1535,19 +1535,41 @@ const Token = () => {
       if (marketplaceListings.length <= 0) {
         // address of the minter as referral
         argsWithPossibleOverrides.args[0].referralAdditionalInformation = referralAddress;
-        await mintAndSubmit(argsWithPossibleOverrides).catch((error) => {
-          console.error("Error while minting and submitting:", error);
-          throw error;
+
+        await mintAndSubmit(argsWithPossibleOverrides);
+
+        await fetch(`${relayerURL}/api/revalidate`, {
+          method: "POST",
+          body: JSON.stringify({
+            tags: [
+              `${chainId}-adOffer-${offerId}`,
+              `${chainId}-userAddress-${address}`,
+              `${chainId}-activity`
+            ]
+          })
         });
+
         setSuccessFullUpload(true);
         setIsOwner(true);
         setMinted(true);
         await fetchOffers();
       } else {
-        await directBuy(argsWithPossibleOverrides).catch((error) => {
-          console.error("Error while buying:", error);
-          throw error;
+        await directBuy(argsWithPossibleOverrides);
+
+        const tags = [
+          `${chainId}-userAddress-${address}`,
+          `${chainId}-userAddress-${firstSelectedListing.lister}`,
+          `${chainId}-activity`,
+          `${chainId}-nftContract-${firstSelectedListing.token.nftContract.id}`
+        ];
+
+        await fetch(`${relayerURL}/api/revalidate`, {
+          method: "POST",
+          body: JSON.stringify({
+            tags
+          })
         });
+
         setSuccessFullUpload(true);
         await fetchOffers();
       }
@@ -1605,7 +1627,20 @@ const Token = () => {
 
       const functionWithPossibleArgs = Object.values(argsAdSubmited);
 
+      const tags = [`${chainId}-adOffer-${offerId}`, `${chainId}-userAddress-${isUserOwner}`];
+      for (const admin of offerData.admins) {
+        tags.push(`${chainId}-userAddress-${admin}`);
+      }
+
       await submitAd({ args: functionWithPossibleArgs });
+
+      await fetch(`${relayerURL}/api/revalidate`, {
+        method: "POST",
+        body: JSON.stringify({
+          tags
+        })
+      });
+
       setSuccessFullUpload(true);
 
       // fetch new data
@@ -1760,9 +1795,22 @@ const Token = () => {
 
   const handleValidationSubmit = async (submissionArgs) => {
     try {
+      const tags = [`${chainId}-adOffer-${offerId}`, `${chainId}-userAddress-${isUserOwner}`];
+      for (const admin of offerData.admins) {
+        tags.push(`${chainId}-userAddress-${admin}`);
+      }
+
       await validationAsync({
         args: [submissionArgs]
       });
+
+      await fetch(`${relayerURL}/api/revalidate`, {
+        method: "POST",
+        body: JSON.stringify({
+          tags
+        })
+      });
+
       setRefusedValidatedAdModal(true);
       setSuccessFullRefuseModal(true);
     } catch (error) {
@@ -2011,6 +2059,13 @@ const Token = () => {
           "0x0000000000000000000000000000000000000000",
           tokenData ?? ""
         ]
+      });
+
+      await fetch(`${relayerURL}/api/revalidate`, {
+        method: "POST",
+        body: JSON.stringify({
+          tags: [`${chainId}-adOffer-${offerId}`, `${chainId}-userAddress-${airdropAddress}`]
+        })
       });
 
       setAirdropContainer(false);
@@ -2392,6 +2447,7 @@ const Token = () => {
                     )}
 
                   <Manage
+                    chainId={chainId}
                     successFullListing={successFullListing}
                     setSuccessFullListing={setSuccessFullListing}
                     dsponsorNFTContract={DsponsorNFTContract}

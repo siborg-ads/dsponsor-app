@@ -11,6 +11,8 @@ import {
   useAddress,
   useStorage
 } from "@thirdweb-dev/react";
+import { ThirdwebSDK } from "@thirdweb-dev/sdk";
+
 import Tippy from "@tippyjs/react";
 import OfferSkeleton from "@/components/ui/skeletons/OfferSkeleton";
 import { fetchOffer } from "@/utils/graphql/fetchOffer";
@@ -35,6 +37,7 @@ import TokenCard from "@/components/ui/cards/TokenCard";
 import { addLineBreaks } from "@/utils/misc/addLineBreaks";
 import Input from "../ui/Input";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
+import DsponsorNftABI from "@/abi/dsponsorNFT.json";
 
 const onAuctionCondition = (offer, mint, direct) => {
   return (
@@ -55,6 +58,7 @@ const Offer = () => {
 
   const offerId = router.query?.offerId;
   const chainId = router.query?.chainName as string;
+  const relayerURL = config[chainId]?.relayerURL;
 
   const [refusedValidatedAdModal, setRefusedValidatedAdModal] = useState<boolean>(false);
   const [offerData, setOfferData] = useState<any>(null);
@@ -350,9 +354,29 @@ const Offer = () => {
 
   const handleSubmit = async (submissionArgs) => {
     try {
+      const tags = [`${chainId}-adOffer-${offerId}`];
+      for (const admin of offerData.admins) {
+        tags.push(`${chainId}-userAddress-${admin}`);
+      }
+      const sdk = new ThirdwebSDK(config[chainId]?.network);
+      const contract = await sdk.getContract(offerData.nftContract.id, DsponsorNftABI);
+
+      for (const sub of submissionArgs) {
+        const owner = await contract.call("ownerOf", [sub.tokenId]);
+        tags.push(`${chainId}-userAddress-${owner}`);
+      }
+
       await mutateAsync({
         args: [submissionArgs]
       });
+
+      await fetch(`${relayerURL}/api/revalidate`, {
+        method: "POST",
+        body: JSON.stringify({
+          tags
+        })
+      });
+
       setRefusedValidatedAdModal(true);
       setSuccessFullRefuseModal(true);
     } catch (error) {
@@ -838,9 +862,6 @@ const Offer = () => {
                   ...token,
                   chainConfig: offerData?.chainConfig
                 };
-
-                console.log(filteredOffers);
-                console.log(finalToken);
 
                 return (
                   <TokenCard

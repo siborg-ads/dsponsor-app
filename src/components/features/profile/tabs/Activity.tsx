@@ -96,7 +96,7 @@ const Activity = ({ userAddr, chainId }) => {
                 <div className="flex items-center gap-4 justify-between">
                   <span className="text-white text-lg font-bold">{/* Activity */}</span>
                   <p className="text-left text-xs text-jacarta-100">
-                    Data is updated every 15 minutes
+                    {/* Data is updated every 15 minutes */}
                   </p>
                 </div>
                 <div className={`grid grid-cols-2 md:grid-cols-4 gap-4`}>

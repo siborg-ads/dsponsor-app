@@ -232,7 +232,9 @@ const Tables = ({ activity }) => {
                   </p>
                 )}
               </div>
-              <p className="text-xs text-jacarta-100 mb-4">Data is updated every 15 minutes</p>
+              <p className="text-xs text-jacarta-100 mb-4">
+                {/* Data is updated every 15 minutes */}
+              </p>
               <div className="overflow-x-auto">{renderTable(data, columns[key], address)}</div>
             </TabPanel>
           ))}

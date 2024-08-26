@@ -48,13 +48,18 @@ const Overview = ({ userData, ownedTokens, isLoading, manageAddress }) => {
           <span className="md:block text-jacarta-100 text-xs md:text-sm inline-flex items-center gap-1">
             {manageAddress}
           </span>
+          {/*}
           <span className="md:hidden text-jacarta-100 text-xs md:text-sm inline-flex items-center gap-1">
             {shortenAddress(manageAddress)}
           </span>
+          */}
         </div>
         <span className="text-jacarta-100 text-xs md:text-sm inline-flex items-center gap-1">
-          {isLoading && <ArrowPathIcon className="w-4 h-4 text-white animate-spin" />} Updated every
+          {isLoading && <ArrowPathIcon className="w-4 h-4 text-white animate-spin" />}
+          {/* 
+          Updated every
           15 minutes
+          */}
         </span>
       </div>
 

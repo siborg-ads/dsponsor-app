@@ -38,6 +38,9 @@ const CreateListing = ({
   const address = useAddress();
   const { currentChainObject } = useChainContext();
 
+  const relayerURL = currentChainObject?.relayerURL;
+  const chainId = currentChainObject?.chainId;
+
   const [customContract, setCustomContract] = useState<Address | null>(null);
   const [tokenDecimals, setTokenDecimals] = useState<number>(18);
   const [symbolContract, setSymbolContract] = useState<string>("WETH");
@@ -142,6 +145,19 @@ const CreateListing = ({
           listingType: selectedListingType[0]
         };
         await createListing({ args: [args] });
+
+        const tags = [
+          `${chainId}-userAddress-${address}`,
+          `${chainId}-nftContract-${assetContract}`
+        ];
+
+        await fetch(`${relayerURL}/api/revalidate`, {
+          method: "POST",
+          body: JSON.stringify({
+            tags
+          })
+        });
+
         setSuccessFullListing(true);
         setListingCreated(true);
 
