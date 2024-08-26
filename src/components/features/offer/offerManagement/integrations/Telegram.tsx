@@ -18,7 +18,7 @@ const Telegram = ({ chainId, offerData }: { chainId: number; offerData: any }) =
   const storage = useStorage();
 
   const { contract } = useContract(
-    config[chainId as number]?.smartContracts?.DSPONSORADMIN?.address as Address
+    config[chainId]?.smartContracts?.DSPONSORADMIN?.address as Address
   );
   const { mutateAsync } = useContractWrite(contract, "updateOffer");
 
@@ -31,9 +31,9 @@ const Telegram = ({ chainId, offerData }: { chainId: number; offerData: any }) =
           const initialMetadatas = await storage.downloadJSON(metadataURL);
 
           setMetadatas(initialMetadatas);
-          setTelegramChannels(initialMetadatas?.offer?.telegramIntegration?.channels);
+          setTelegramChannels(initialMetadatas?.offer?.telegramIntegration?.telegramChannels);
           setValueTelegramChannels(
-            initialMetadatas?.offer?.telegramIntegration?.channels?.join(", ")
+            initialMetadatas?.offer?.telegramIntegration?.telegramChannels?.join(", ")
           );
           setIsTelegramEnabled(initialMetadatas?.offer?.telegramIntegration?.enabled);
         } catch (error) {
@@ -119,10 +119,7 @@ const Telegram = ({ chainId, offerData }: { chainId: number; offerData: any }) =
             placeholder="Telegram Channels (e.g., -124234, 234234)"
           />
 
-          <Switch
-            checked={isTelegramEnabled}
-            onChange={() => setIsTelegramEnabled(!isTelegramEnabled)}
-          >
+          <Switch isSelected={isTelegramEnabled} onValueChange={setIsTelegramEnabled}>
             Enable Telegram
           </Switch>
         </div>
