@@ -91,36 +91,41 @@ const Marketplace = () => {
         formatAndRound(
           Number(
             formatUnits(
-              token.marketplaceListings.sort((a, b) => Number(b.id) - Number(a.id))[0]
+              token?.marketplaceListings?.sort((a, b) => Number(b.id) - Number(a.id))[0]
                 ?.currencyPriceUSDC ?? 0,
               6
             )
           )
         ) ?? 0
       );
-      const directPrice = token.marketplaceListings.sort((a, b) => Number(b.id) - Number(a.id))[0]
+      const directPrice = token?.marketplaceListings?.sort((a, b) => Number(b.id) - Number(a.id))[0]
         ?.buyPriceStructure?.buyoutPricePerToken;
-      const auctionPrice = token.marketplaceListings.sort((a, b) => Number(b.id) - Number(a.id))[0]
-        ?.bidPriceStructure?.minimalBidPerToken;
+      const auctionPrice = token?.marketplaceListings?.sort(
+        (a, b) => Number(b.id) - Number(a.id)
+      )[0]?.bidPriceStructure?.minimalBidPerToken;
       const mintPrice = token?.nftContract?.prices[0]?.amount;
-      const startTime = token?.marketplaceListings.sort((a, b) => Number(b.id) - Number(a.id))[0]
+      const startTime = token?.marketplaceListings?.sort((a, b) => Number(b.id) - Number(a.id))[0]
         ?.startTime;
-      const endTime = token?.marketplaceListings.sort((a, b) => Number(b.id) - Number(a.id))[0]
+      const endTime = token?.marketplaceListings?.sort((a, b) => Number(b.id) - Number(a.id))[0]
         ?.endTime;
-      const status = token?.marketplaceListings.sort((a, b) => Number(b.id) - Number(a.id))[0]
+      const status = token?.marketplaceListings?.sort((a, b) => Number(b.id) - Number(a.id))[0]
         ?.status;
-      const quantity = token.marketplaceListings.sort((a, b) => Number(b.id) - Number(a.id))[0]
+      const quantity = token?.marketplaceListings?.sort((a, b) => Number(b.id) - Number(a.id))[0]
         ?.quantity;
-      const numberOfBids = token.marketplaceListings.sort((a, b) => Number(b.id) - Number(a.id))[0]
-        ?.bids.length;
+      const numberOfBids = token?.marketplaceListings?.sort(
+        (a, b) => Number(b.id) - Number(a.id)
+      )[0]?.bids.length;
       const sold =
-        token?.marketplaceListings.sort((a, b) => Number(b.id) - Number(a.id))[0]?.status ===
+        token?.marketplaceListings?.sort((a, b) => Number(b.id) - Number(a.id))[0]?.status ===
           "COMPLETED" ||
-        (token?.marketplaceListings.sort((a, b) => Number(b.id) - Number(a.id))[0]?.listingType !==
+        (token?.marketplaceListings?.sort((a, b) => Number(b.id) - Number(a.id))[0]?.listingType !==
           "Auction" &&
-          token?.marketplaceListings.sort((a, b) => Number(b.id) - Number(a.id))[0]?.listingType !==
-            "Direct" &&
+          token?.marketplaceListings?.sort((a, b) => Number(b.id) - Number(a.id))[0]
+            ?.listingType !== "Direct" &&
           token?.mint !== null);
+      const currency =
+        token?.marketplaceListings?.sort((a, b) => Number(b.id) - Number(a.id))[0]?.currency ??
+        token?.nftContract?.prices[0]?.currency;
 
       const object = {
         name: name,
@@ -129,6 +134,7 @@ const Marketplace = () => {
         chain: chain,
         chainId: chainId,
         price: price,
+        currency: currency,
         currencySymbol: currencySymbol,
         link: `/${chainId}/offer/${offerId}/${tokenId}?tokenData=${tokenData}`,
         live: live,
@@ -153,6 +159,7 @@ const Marketplace = () => {
         item: {
           disable: token?.disable,
           metadata: token.metadata,
+          currency: currency,
           mint: token.mint,
           nftContract: token.nftContract,
           marketplaceListings: token.marketplaceListings,

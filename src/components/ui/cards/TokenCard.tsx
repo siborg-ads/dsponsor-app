@@ -6,11 +6,19 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "tippy.js/dist/tippy.css";
 import TimerCard from "../timer/TimerCard";
-import { shortenAddress, useAddress, useStorage } from "@thirdweb-dev/react";
+import {
+  shortenAddress,
+  useAddress,
+  useContract,
+  useContractRead,
+  useStorage
+} from "@thirdweb-dev/react";
 import { getAddress, formatUnits } from "ethers/lib/utils";
 import { ExclamationCircleIcon } from "@heroicons/react/24/solid";
 import ResponsiveTooltip from "@/components/ui/ResponsiveTooltip";
 import { BigNumber } from "ethers";
+import formatAndRoundPrice from "@/utils/prices/formatAndRound";
+import { Address } from "thirdweb";
 
 const TokenCard = ({
   item,
@@ -27,7 +35,7 @@ const TokenCard = ({
   offer,
   offers,
   isDisabled,
-  currencyDecimals,
+  currencyAddress,
   tokenId
 }: {
   item: any;
@@ -44,12 +52,11 @@ const TokenCard = ({
   offer?: any;
   offers?: any;
   isDisabled?: boolean;
-  currencyDecimals?: number;
+  currencyAddress?: Address;
   tokenId?: string;
 }) => {
   const [price, setPrice] = useState(null);
   const [totalPrice, setTotalPrice] = useState<string | null>(null);
-  const [currencyToken, setCurrencyToken] = useState(null);
   const [itemData, setItemData] = useState<any>({});
   const [itemStatut, setItemStatut] = useState<string | null>(null);
   const [lastSalePrice, setLastSalePrice] = useState(null);
@@ -59,6 +66,22 @@ const TokenCard = ({
   const [availableToSubmitAd, setAvailableToSubmitAd] = useState(false);
   const [isPendingAdsOnOffer, setIsPendingAdsOnOffer] = useState(false);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const [currencySymbol, setCurrencySymbol] = useState<string | null>(null);
+  const [currencyDecimals, setCurrencyDecimals] = useState<number | null>(null);
+
+  const { contract: currencyContract } = useContract(currencyAddress, "token");
+  const { data: currencyDecimalsData } = useContractRead(currencyContract, "decimals");
+  const { data: currencySymbolData } = useContractRead(currencyContract, "symbol");
+
+  useEffect(() => {
+    if (currencyDecimalsData) {
+      setCurrencyDecimals(Number(currencyDecimalsData));
+    }
+
+    if (currencySymbolData) {
+      setCurrencySymbol(currencySymbolData);
+    }
+  }, [currencyDecimalsData, currencySymbolData]);
 
   const address = useAddress();
   const storage = useStorage();
@@ -246,7 +269,6 @@ const TokenCard = ({
         );
         setTotalPrice(formattedTotalPrice);
       }
-      setCurrencyToken(item?.nftContract?.prices[0]?.currencySymbol);
       return;
     }
 
@@ -262,12 +284,10 @@ const TokenCard = ({
         );
         setTotalPrice(formattedTotalPrice);
       }
-      setCurrencyToken(item?.nftContract?.prices[0]?.currencySymbol);
       return;
     }
     if (isToken && item?.marketplaceListings?.length <= 0 && item.mint !== null) {
       setPrice(null);
-      setCurrencyToken(item?.nftContract?.prices[0]?.currencySymbol);
       setItemStatut("TOKENMINTED");
       return;
     }
@@ -289,12 +309,6 @@ const TokenCard = ({
         );
         setTotalPrice(formattedTotalPrice);
       }
-      setCurrencyToken(
-        item?.marketplaceListings?.sort((a, b) => Number(b.id) - Number(a.id))[0]
-          ? item?.marketplaceListings?.sort((a, b) => Number(b.id) - Number(a.id))[0]
-              ?.currencySymbol
-          : item?.currencySymbol
-      );
 
       setItemStatut("AUCTION");
       return;
@@ -313,9 +327,6 @@ const TokenCard = ({
         );
         setTotalPrice(formattedTotalPrice);
       }
-      setCurrencyToken(
-        item?.marketplaceListings?.sort((a, b) => Number(b.id) - Number(a.id))[0]?.currencySymbol
-      );
       setItemStatut("DIRECT");
     }
   }, [
@@ -492,7 +503,7 @@ const TokenCard = ({
               </span>
             )}
 
-            {currencyToken &&
+            {currencySymbol &&
             price &&
             (item?.marketplaceListings?.sort((a, b) => Number(b.id) - Number(a.id))[0]?.status ===
               "CREATED" ||
@@ -500,7 +511,7 @@ const TokenCard = ({
               <div className="dark:border-jacarta-800 border-jacarta-100 flex items-center whitespace-nowrap rounded-md border py-1 px-2">
                 <span className="text-green text-sm font-medium tracking-tight">
                   {!!totalPrice && parseFloat(totalPrice) > 0
-                    ? `${price ?? 0} ${currencyToken}`
+                    ? `${formatAndRoundPrice(totalPrice) ?? 0} ${currencySymbol}`
                     : "Free"}
                 </span>
               </div>
@@ -605,7 +616,7 @@ const TokenCard = ({
           )}
         {lastSalePrice && Number(lastSalePrice) > 0 && (
           <div className="flex items-center mt-4 text-sm text-jacarta-100">
-            Last Sale: {lastSalePrice} {currencyToken}
+            Last Sale: {lastSalePrice} {currencySymbol}
           </div>
         )}
       </div>

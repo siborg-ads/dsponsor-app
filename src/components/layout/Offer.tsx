@@ -92,6 +92,19 @@ const Offer = () => {
   const [filterOption, setFilterOption] = useState<"All tokens" | "On auction">("All tokens");
   const [sortOption, setSortOption] = useState<SortOptionsType>("Sort by name");
 
+  const [currencyDecimals, setCurrencyDecimals] = useState<number | null>(null);
+  const [currencySymbol, setCurrencySymbol] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (decimalsContract) {
+      setCurrencyDecimals(decimalsContract);
+    }
+
+    if (symbolContract) {
+      setCurrencySymbol(symbolContract);
+    }
+  }, [decimalsContract, symbolContract]);
+
   const { data: bps } = useContractRead(DsponsorAdminContract, "feeBps");
   const maxBps = 10000;
 
@@ -848,9 +861,9 @@ const Offer = () => {
                     isListing={finalToken.listingType}
                     isAuction={finalToken.listingType === "Auction"}
                     url={`/${chainId}/offer/${offerId}/${finalToken?.tokenId}${finalToken?.mint?.tokenData ? `?tokenData=${finalToken?.mint?.tokenData}` : ""}`}
-                    currencyDecimals={finalToken.currencyDecimals}
                     tokenId={finalToken.tokenId}
                     offer={finalToken}
+                    currencyAddress={tokenCurrencyAddress}
                   />
                 );
               })}

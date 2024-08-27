@@ -5,8 +5,7 @@ import {
   useContractRead,
   useContractWrite,
   useStorage,
-  useStorageUpload,
-  useTokenDecimals
+  useStorageUpload
 } from "@thirdweb-dev/react";
 import { Address } from "thirdweb";
 import { ethers, BigNumber } from "ethers";
@@ -487,10 +486,7 @@ const Token = () => {
       }
 
       if (tokenStatut === "DIRECT" && directBuyPriceBN) {
-        const formattedDirectBuyPrice = ethers.utils.formatUnits(
-          directBuyPriceBN,
-          tokenDecimals
-        );
+        const formattedDirectBuyPrice = ethers.utils.formatUnits(directBuyPriceBN, tokenDecimals);
 
         fetchBuyEtherPrice(formattedDirectBuyPrice);
       }
@@ -630,7 +626,7 @@ const Token = () => {
     }, []);
 
     setBids(bids);
-  }, [marketplaceListings]);
+  }, [marketplaceListings, tokenDecimals, tokenSymbol]);
 
   useEffect(() => {
     const fetchSalesData = async () => {
@@ -1201,15 +1197,6 @@ const Token = () => {
     tokenDecimals,
     tokenData
   ]);
-
-  const { contract: tokenCurrencyContract } = useContract(tokenCurrencyAddress, "token");
-  const { data: currencyDecimalsData } = useTokenDecimals(tokenCurrencyContract);
-
-  useEffect(() => {
-    if (currencyDecimalsData) {
-      setCurrencyDecimals(currencyDecimalsData);
-    }
-  }, [currencyDecimalsData]);
 
   useEffect(() => {
     if (!isUserOwner || !marketplaceListings || !address) return;

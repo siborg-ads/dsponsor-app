@@ -5,6 +5,8 @@ import TokenCardSkeleton from "@/components/ui/skeletons/TokenCardSkeleton";
 import TokenCard from "@/components/ui/cards/TokenCard";
 import { Popover, PopoverTrigger, PopoverContent } from "@nextui-org/popover";
 import Input from "@/components/ui/Input";
+import { ThirdwebSDK } from "@thirdweb-dev/sdk";
+import { useChainContext } from "@/hooks/useChainContext";
 
 const onAuctionCondition = (auction, mint, direct) => {
   return (
@@ -22,6 +24,8 @@ const MarketplaceComponent = ({ auctions, setAllTokens, allTokens, isAuctionsLoa
   const [sortOption, setSortOption] = useState("Ending soon");
   const [filterOption, setFilterOption] = useState("All tokens");
   const [isInformationHovered, setIsInformationHovered] = useState(false);
+
+  const { currentChainObject } = useChainContext();
 
   const filteredAuctions = useMemo(() => {
     let tempAuctions = [...auctions];
@@ -282,24 +286,27 @@ const MarketplaceComponent = ({ auctions, setAllTokens, allTokens, isAuctionsLoa
         <div className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {!isAuctionsLoading ? (
             <>
-              {filteredAuctions?.map((auction, index) => (
-                <TokenCard
-                  key={index}
-                  item={auction.item}
-                  isToken={true}
-                  listingType={auction?.listingType}
-                  isListing={auction?.listingType}
-                  isAuction={auction?.listingType === "Auction"}
-                  url={
-                    !auction?.tokenData
-                      ? `/${auction?.chainId}/offer/${auction?.offerId}/${auction?.tokenId}`
-                      : `/${auction?.chainId}/offer/${auction.item?.nftContract?.adOffers[0]?.id}/${auction?.tokenId}?tokenData=${auction.item?.mint?.tokenData}`
-                  }
-                  currencyDecimals={auction?.currencyDecimals}
-                  tokenId={auction?.tokenId}
-                  offer={auction}
-                />
-              ))}
+              {filteredAuctions?.map((auction, index) => {
+                console.log(auction);
+                return (
+                  <TokenCard
+                    key={index}
+                    item={auction.item}
+                    isToken={true}
+                    listingType={auction?.listingType}
+                    isListing={auction?.listingType}
+                    isAuction={auction?.listingType === "Auction"}
+                    url={
+                      !auction?.tokenData
+                        ? `/${auction?.chainId}/offer/${auction?.offerId}/${auction?.tokenId}`
+                        : `/${auction?.chainId}/offer/${auction.item?.nftContract?.adOffers[0]?.id}/${auction?.tokenId}?tokenData=${auction.item?.mint?.tokenData}`
+                    }
+                    currencyAddress={auction?.currency}
+                    tokenId={auction?.tokenId}
+                    offer={auction}
+                  />
+                );
+              })}
             </>
           ) : (
             <>

@@ -105,7 +105,9 @@ const BidsModal = ({
   const [tooHighPriceForCrossmint, setTooHighPriceForCrossmint] = useState(false);
 
   const chainConfig = config[chainId];
-  const chainWETH = chainConfig?.smartContracts.WETH.address.toLowerCase();
+  const chainWETH = Object.values(
+    chainConfig?.chainObject?.smartContracts?.currencies
+  )?.[0]?.address?.toLowerCase();
 
   let frontURL;
   if (typeof window !== "undefined") {
