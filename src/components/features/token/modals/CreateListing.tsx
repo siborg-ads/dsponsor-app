@@ -10,6 +10,8 @@ import { useChainContext } from "@/hooks/useChainContext";
 import Input from "@/components/ui/Input";
 import { TokenContract } from "@thirdweb-dev/react";
 import { Address } from "thirdweb";
+import config from "@/config/config";
+import { Currency } from "@/components/layout/CreateOffer";
 
 const CreateListing = ({
   handleListingModal,
@@ -23,10 +25,17 @@ const CreateListing = ({
   setListingCreated,
   fetchOffers
 }) => {
+  const { currentChainObject } = useChainContext();
+  const chainId = currentChainObject?.chainId;
+
+  const currencies = Object.values(
+    config[chainId as number]?.smartContracts?.currencies
+  ) as Currency[];
+
   const [selectedListingType, setSelectedListingType] = useState<any[]>([]);
   const [selectedUnitPrice, setSelectedUnitPrice] = useState<number>(0);
   const [selectedStartingPrice, setSelectedStartingPrice] = useState<number>(0);
-  const [selectedCurrency, setSelectedCurrency] = useState<string>("WETH");
+  const [selectedCurrency, setSelectedCurrency] = useState<Currency>(currencies[0]);
   const [startDate, setStartDate] = useState<Date>(new Date());
   const [endDate, setEndDate] = useState<Date>(
     new Date(new Date().setDate(new Date().getDate() + 7))
@@ -36,24 +45,20 @@ const CreateListing = ({
   const [validate, setValidate] = useState<boolean>(false);
 
   const address = useAddress();
-  const { currentChainObject } = useChainContext();
 
   const [customContract, setCustomContract] = useState<Address | null>(null);
-  const [tokenDecimals, setTokenDecimals] = useState<number>(18);
-  const [symbolContract, setSymbolContract] = useState<string>("WETH");
   const [tokenContract, setTokenContract] = useState<string>("");
   const [customTokenContract, setCustomTokenContract] = useState<TokenContract | null>(null);
-  const USDCCurrency = currentChainObject?.smartContracts?.USDC;
-  const WETHCurrency = currentChainObject?.smartContracts?.WETH;
-  //const USDTCurrency = currentChainObject?.smartContracts?.USDT;
-  const NATIVECurrency = currentChainObject?.smartContracts?.NATIVE;
-  const [selectedCurrencyContract, setSelectedCurrencyContract] = useState<any>(
-    WETHCurrency?.address
+  const [selectedCurrencyContract, setSelectedCurrencyContract] = useState<Address | string>(
+    currencies[0].address
   );
   const { contract: tokenContractAsync } = useContract(selectedCurrencyContract, "token");
   const { data: symbolContractAsync } = useContractRead(tokenContractAsync, "symbol");
   const { data: decimalsContractAsync } = useContractRead(tokenContractAsync, "decimals");
+
   const [approvalForAllToken, setApprovalForAllToken] = useState(false);
+  const [currencySymbol, setCurrencySymbol] = useState<string>(currencies[0].symbol);
+  const [currencyDecimals, setCurrencyDecimals] = useState<number>(currencies[0].decimals);
 
   const { mutateAsync: setApprovalForAll } = useContractWrite(
     dsponsorNFTContract,
@@ -62,8 +67,16 @@ const CreateListing = ({
   const { mutateAsync: createListing } = useContractWrite(dsponsorMpContract, "createListing");
 
   useEffect(() => {
-    setSymbolContract(symbolContractAsync);
-    setTokenDecimals(decimalsContractAsync);
+    if (symbolContractAsync) {
+      setCurrencySymbol(symbolContractAsync);
+    }
+
+    if (decimalsContractAsync) {
+      setCurrencyDecimals(decimalsContractAsync);
+    }
+  }, [symbolContractAsync, decimalsContractAsync]);
+
+  useEffect(() => {
     setTokenContract(selectedCurrencyContract as string);
     setCustomTokenContract(tokenContractAsync as TokenContract);
   }, [
@@ -72,8 +85,6 @@ const CreateListing = ({
     selectedCurrencyContract,
     tokenContractAsync,
     currentChainObject,
-    setSymbolContract,
-    setTokenDecimals,
     setTokenContract,
     setCustomTokenContract
   ]);
@@ -119,12 +130,12 @@ const CreateListing = ({
         const secondsUntilEndTime = endDateFormated - startTime;
 
         const startingPrice = ethers.utils
-          .parseUnits(selectedStartingPrice.toString(), tokenDecimals)
+          .parseUnits(selectedStartingPrice.toString(), currencyDecimals)
           .toString();
 
         const isAuction = selectedListingType[0] === 1;
         const price = ethers.utils
-          .parseUnits(selectedUnitPrice.toString(), tokenDecimals)
+          .parseUnits(selectedUnitPrice.toString(), currencyDecimals)
           .toString();
         const assetContract = offerData?.nftContract?.id;
 
@@ -182,21 +193,26 @@ const CreateListing = ({
   const handleCurrencyChange = (event) => {
     setSelectedCurrency(event.target.value);
     if (event.target.value === "custom") {
-      setSelectedCurrencyContract("f");
+      setSelectedCurrencyContract(event.target.value);
+      setCustomContract(event.target.value);
     } else {
-      setSelectedCurrencyContract(selectedCurrencyContractObject[event.target.value]);
+      setSelectedCurrencyContract(
+        currencies?.find((currency) => currency.address === event.target.value)?.address as Address
+      );
       setCustomContract(null);
     }
   };
+
   const handleCustomContractChange = (event) => {
-    if (event.target.value === NATIVECurrency?.address) {
-      setCustomContract(NATIVECurrency?.address as Address);
+    if (event.target.value === currencies?.["NATIVE"].address) {
+      setCustomContract(currencies?.["NATIVE"].address);
     } else {
       setCustomContract(event.target.value);
       setSelectedCurrencyContract(event.target.value);
       setCustomTokenContract(tokenContractAsync as TokenContract);
     }
   };
+
   const handleListingTypeChange = (e) => {
     const value = parseInt(e.target.value);
     setSelectedListingType([value]);
@@ -233,24 +249,24 @@ const CreateListing = ({
       isValid = false;
     }
     if (
-      selectedUnitPrice < 1 * 10 ** -tokenDecimals ||
+      selectedUnitPrice < 1 * 10 ** -currencyDecimals ||
       isNaN(selectedUnitPrice) ||
       selectedUnitPrice === null
     ) {
-      newErrors.unitPriceError = `Unit price must be at least ${1 * 10 ** -tokenDecimals}.`;
+      newErrors.unitPriceError = `Unit price must be at least ${1 * 10 ** -currencyDecimals}.`;
       isValid = false;
     }
 
     if (
-      (selectedListingType[0] === 1 && selectedStartingPrice < 1 * 10 ** -tokenDecimals) ||
+      (selectedListingType[0] === 1 && selectedStartingPrice < 1 * 10 ** -currencyDecimals) ||
       isNaN(selectedStartingPrice) ||
       selectedStartingPrice === null
     ) {
-      newErrors.startingPriceError = `Unit starting price must be at least ${1 * 10 ** -tokenDecimals}.`;
+      newErrors.startingPriceError = `Unit starting price must be at least ${1 * 10 ** -currencyDecimals}.`;
       isValid = false;
     }
 
-    if (selectedCurrency === "custom" && customTokenContract === undefined) {
+    if (selectedCurrency?.address === "custom" && customTokenContract === undefined) {
       newErrors.currencyError = "Custom contract is missing or invalid.";
       isValid = false;
     }
@@ -270,17 +286,12 @@ const CreateListing = ({
     const finalPrice = price - price * (fees[0] + fees[1]);
 
     if (smartContract) {
-      return Number(finalPrice).toFixed(tokenDecimals);
+      return Number(finalPrice).toFixed(currencyDecimals);
     } else {
       return Number(finalPrice).toFixed(3);
     }
   };
 
-  const selectedCurrencyContractObject = {
-    USDC: USDCCurrency?.address,
-    WETH: WETHCurrency?.address,
-    custom: customContract
-  };
   const listingType = [
     {
       title: "Direct Listing",
@@ -499,7 +510,7 @@ const CreateListing = ({
                                     <p className="dark:text-jacarta-100 text-jacarta-100 text-2xs ">
                                       You will receive :{" "}
                                       {calculatePriceWithTaxes(selectedStartingPrice)}{" "}
-                                      {selectedCurrency}
+                                      {selectedCurrency?.symbol}
                                     </p>
                                   </div>
                                 )}
@@ -527,25 +538,25 @@ const CreateListing = ({
                                     <p className="dark:text-jacarta-100 text-jacarta-100 text-2xs ">
                                       You will receive :{" "}
                                       {calculatePriceWithTaxes(selectedUnitPrice)}{" "}
-                                      {selectedCurrency}
+                                      {selectedCurrency?.symbol}
                                     </p>
                                   </div>
                                 </div>
                                 <div className="flex flex-start gap-4 mt-2">
                                   <select
                                     id="currency"
-                                    value={selectedCurrency}
+                                    value={selectedCurrency?.address}
                                     onChange={handleCurrencyChange}
                                     className="dark:bg-secondaryBlack min-w-[110px] border-jacarta-100 hover:ring-primaryPurple/10 focus:ring-primaryPurple dark:border-jacarta-800 dark:placeholder:text-jacarta-100 w-full rounded-lg py-3 px-5 hover:ring-2 dark:text-white"
                                   >
-                                    <option value="WETH">WETH</option>
-                                    {features.canAcceptUSDC && <option value="USDC">USDC</option>}
-                                    {features.canAcceptUSDT && <option value="USDT">USDT</option>}
-                                    {features.canAcceptCustomTokens && (
-                                      <option value="custom">Custom</option>
-                                    )}
+                                    {currencies.map((currency) => (
+                                      <option key={currency.address} value={currency.address}>
+                                        {currency.symbol}
+                                      </option>
+                                    ))}
+                                    <option value="custom">Custom</option>
                                   </select>
-                                  {selectedCurrency === "custom" && (
+                                  {selectedCurrency?.address === "custom" && (
                                     <Input
                                       type="text"
                                       value={customContract}
@@ -591,9 +602,7 @@ const CreateListing = ({
                   selectedUnitPrice={selectedUnitPrice}
                   selectedStartingPrice={selectedListingType[0] === 1 ? selectedStartingPrice : 0}
                   selectedRoyalties={royalties}
-                  selectedCurrency={selectedCurrency}
                   validate={validate}
-                  symbolContract={symbolContract}
                   errors={errors}
                   successFullUpload={successFullListing}
                   buttonTitle="Create listing 🎉 (2/2)"
@@ -601,6 +610,9 @@ const CreateListing = ({
                   successFullUploadModal={successFullListingModal}
                   approvalForAllToken={approvalForAllToken}
                   handleApprove={handleApprove}
+                  tokenSymbol={currencySymbol}
+                  tokenDecimals={currencyDecimals}
+                  tokenAddress={selectedCurrency?.address as Address}
                 />
               </div>
             )}

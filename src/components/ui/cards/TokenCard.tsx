@@ -262,6 +262,7 @@ const TokenCard = ({
       setItemStatut("OFFER");
       setPrice(item?.nftContract.prices?.[0]?.mintPriceStructureFormatted?.totalAmount);
       const totalPrice = item?.nftContract.prices[0]?.mintPriceStructure?.totalAmount;
+      console.log("totalPrice", totalPrice);
       if (currencyDecimals && totalPrice) {
         const formattedTotalPrice = formatUnits(
           BigNumber.from(totalPrice),

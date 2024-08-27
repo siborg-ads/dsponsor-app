@@ -378,6 +378,8 @@ const BidsModal = ({
 
       const referralAddress = getCookie("_rid") ?? "";
 
+      console.log("bidsBigInt", bidsBigInt?.toString());
+
       await auctionBids({
         args: [marketplaceListings?.[0]?.id, bidsBigInt, address, referralAddress]
       });

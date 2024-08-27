@@ -25,8 +25,6 @@ const MarketplaceComponent = ({ auctions, setAllTokens, allTokens, isAuctionsLoa
   const [filterOption, setFilterOption] = useState("All tokens");
   const [isInformationHovered, setIsInformationHovered] = useState(false);
 
-  const { currentChainObject } = useChainContext();
-
   const filteredAuctions = useMemo(() => {
     let tempAuctions = [...auctions];
 

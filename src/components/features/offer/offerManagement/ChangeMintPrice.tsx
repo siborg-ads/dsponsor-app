@@ -10,6 +10,8 @@ import { features } from "@/data/features";
 import Input from "@/components/ui/Input";
 import { Address } from "thirdweb";
 import StyledWeb3Button from "@/components/ui/buttons/StyledWeb3Button";
+import ResponsiveTooltip from "@/components/ui/ResponsiveTooltip";
+import { QuestionMarkCircleIcon } from "@heroicons/react/24/solid";
 
 const isDisabledMessage = (disableMint: boolean) => {
   return disableMint
@@ -58,9 +60,7 @@ const ChangeMintPrice = ({ offer }) => {
   useEffect(() => {
     if (offer) {
       // fallback to WETH from config if no currency is found
-      let currency =
-        offer?.nftContract?.prices[0]?.currency ??
-        config[chainId as number]?.smartContracts?.currencies?.WETH?.address;
+      let currency = offer?.nftContract?.prices[0]?.currency;
       if (initialDisabled) {
         setCurrency(config[chainId as number]?.smartContracts?.currencies?.WETH?.address);
       } else {
@@ -86,7 +86,7 @@ const ChangeMintPrice = ({ offer }) => {
         setDisabled(true);
       }
 
-      if (offer?.nftContract?.prices[0]?.amount) {
+      if (offer?.nftContract?.prices[0]?.amount && currencyDecimals) {
         setAmount(
           parseFloat(
             formatUnits(
@@ -125,15 +125,7 @@ const ChangeMintPrice = ({ offer }) => {
       value = value.replace(",", ".");
     }
 
-    const smartContracts = config[chainId as number]?.smartContracts;
-    const currency: any = Object?.values(smartContracts)?.find(
-      (contract: any) =>
-        contract?.address?.toLowerCase() ===
-        offer?.nftContract?.tokens[0]?.mint?.currency?.toLowerCase()
-    );
-    const decimals = currency?.decimals;
-
-    const formattedValue = parseUnits(value, decimals);
+    const formattedValue = parseUnits(value, currencyDecimals as number);
 
     setAmount(value);
     setFormattedAmountBN(formattedValue);
@@ -252,7 +244,14 @@ const ChangeMintPrice = ({ offer }) => {
       )}
 
       <div className="mb-4">
-        <label className="block text-gray-700 text-sm font-semibold mb-2">Mint price</label>
+        <div className="flex items-center gap-2 mb-2">
+          <label className="block text-gray-700 text-sm font-semibold">Mint price</label>
+
+          <ResponsiveTooltip text="The mint price is the amount of currency required to mint a token, this price will be the same for all tokens in the offer. However, the user will have to pay the protocol fees in addition to this price.">
+            <QuestionMarkCircleIcon className="h-4 w-4 text-white" />
+          </ResponsiveTooltip>
+        </div>
+
         <div className="relative max-w-xs w-full flex items-center">
           <Input
             type="number"
