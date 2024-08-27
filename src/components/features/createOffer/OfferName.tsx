@@ -12,11 +12,11 @@ const OfferName = ({
   numSteps,
   currentSlide
 }) => {
-  const handleNameChange = (e) => {
+  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setName(e.target.value);
   };
 
-  const handleDescriptionChange = (e) => {
+  const handleDescriptionChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setDescription(e.target.value);
   };
 
@@ -40,15 +40,17 @@ const OfferName = ({
           <Header />
         </div>
 
-        <div className="w-full">
-          <Title name={name} handleNameChange={handleNameChange} />
-        </div>
+        <div className="flex flex-col w-full gap-6 mb-6">
+          <div className="w-full">
+            <Title name={name} handleNameChange={handleNameChange} />
+          </div>
 
-        <div className="mb-6 w-full">
-          <Description
-            description={description}
-            handleDescriptionChange={handleDescriptionChange}
-          />
+          <div className="w-full">
+            <Description
+              description={description}
+              handleDescriptionChange={handleDescriptionChange}
+            />
+          </div>
         </div>
       </div>
     </div>
@@ -68,7 +70,14 @@ const Header = () => {
   );
 };
 
-const Title = ({ name, handleNameChange }) => {
+const Title = ({
+  name,
+  handleNameChange
+}: {
+  name: string;
+  // eslint-disable-next-line no-unused-vars
+  handleNameChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+}) => {
   return (
     <React.Fragment>
       <label
@@ -89,7 +98,14 @@ const Title = ({ name, handleNameChange }) => {
   );
 };
 
-const Description = ({ description, handleDescriptionChange }) => {
+const Description = ({
+  description,
+  handleDescriptionChange
+}: {
+  description: string;
+  // eslint-disable-next-line no-unused-vars
+  handleDescriptionChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
+}) => {
   const [charCount, setCharCount] = useState(description.length);
 
   useEffect(() => {
