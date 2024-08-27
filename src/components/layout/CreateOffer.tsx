@@ -1,8 +1,15 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useMemo } from "react";
 import Meta from "@/components/Meta";
 import Image from "next/image";
 import "react-datepicker/dist/react-datepicker.css";
-import { useAddress, useContract, useContractWrite, useStorageUpload } from "@thirdweb-dev/react";
+import {
+  useAddress,
+  useContract,
+  useContractRead,
+  useContractWrite,
+  useStorageUpload,
+  useTokenBalance
+} from "@thirdweb-dev/react";
 import styles from "@/styles/style.module.scss";
 import AdSubmission from "@/components/features/token/accordion/AdSubmission";
 import OfferType from "@/components/features/createOffer/OfferType";
@@ -14,10 +21,32 @@ import CarouselForm from "@/components/ui/misc/CarouselForm";
 import { useSwitchChainContext } from "@/hooks/useSwitchChainContext";
 import { useRouter } from "next/router";
 import { Address } from "thirdweb";
+import { features } from "@/data/features";
+
+export type Currency = {
+  address: Address | string;
+  decimals: number;
+  symbol: string;
+};
 
 const CreateOffer = () => {
   const router = useRouter();
   const chainId = router.query?.chainName;
+
+  const initialCurrencies = useMemo(
+    () => config[parseInt(chainId as string)]?.smartContracts?.currencies || {},
+    [chainId]
+  ) as { [key: string]: Currency };
+
+  const currencies = Object?.entries(initialCurrencies)
+    ?.map((currency) => {
+      if (!features?.canAcceptNativeTokens && currency[0] === "NATIVE") {
+        return null;
+      }
+
+      return currency?.[1];
+    })
+    ?.filter((currency) => currency !== null);
 
   const [files, setFiles] = useState<any[]>([]);
   const { mutateAsync: upload } = useStorageUpload();
@@ -32,8 +61,6 @@ const CreateOffer = () => {
   const [previewImages, setPreviewImages] = useState<string[]>([]);
   const [selectedNumber, setSelectedNumber] = useState(1);
   const [selectedUnitPrice, setSelectedUnitPrice] = useState(1);
-  const [selectedCurrency, setSelectedCurrency] = useState("WETH");
-  const [customContract, setCustomContract] = useState(null);
   const [selectedRoyalties, setSelectedRoyalties] = useState(10);
   const [validate, setValidate] = useState(true);
   const [showPreviewModal, setShowPreviewModal] = useState(false);
@@ -41,14 +68,35 @@ const CreateOffer = () => {
   const [selectedIntegration, setSelectedIntegration] = useState([0]);
   const [selectedParameter, setSelectedParameter] = useState<string[]>(["imageURL-1:1", "linkURL"]);
   const [displayedParameter, setDisplayedParameter] = useState([]);
-  const WETHCurrency = config[parseFloat(chainId as string)]?.smartContracts?.WETH;
   const [imageRatios, setImageRatios] = useState(["1:1"]);
-  const [tokenDecimals, setTokenDecimals] = useState(0);
-  const [symbolContract, setSymbolContract] = useState<string | null>(null);
-  const [tokenContract, setTokenContract] = useState(WETHCurrency?.address);
-  const [, setCustomTokenContract] = useState(null);
   const [terms, setTerms] = useState<string | undefined>(undefined);
   const [minterAddress, setMinterAddress] = useState<Address | null>(null);
+
+  const [tokenDecimals, setTokenDecimals] = useState<number>(currencies?.[0]?.decimals);
+  const [tokenSymbol, setTokenSymbol] = useState<string>(currencies?.[0]?.symbol);
+  const [tokenAddress, setTokenAddress] = useState<Address>(currencies?.[0]?.address as Address);
+  const [customTokenAddress, setCustomTokenAddress] = useState<Address | undefined>(undefined);
+  const [selectedCurrency, setSelectedCurrency] = useState<Currency>(currencies?.[0]);
+
+  //const { contract: tokenContractAsync } = useContract(selectedCurrency?.address, "token");
+  //const { data: tokenData } = useTokenBalance(tokenContractAsync, "token");
+
+  const { contract: customTokenContractAsync } = useContract(customTokenAddress, "token");
+  const { data: customTokenSymbol } = useContractRead(customTokenContractAsync, "symbol");
+  const { data: customTokenDecimals } = useContractRead(customTokenContractAsync, "decimals");
+
+  useEffect(() => {
+    if (customTokenAddress) {
+      setTokenAddress(customTokenAddress as Address);
+      setTokenDecimals(customTokenDecimals as number);
+      setTokenSymbol(customTokenSymbol as string);
+    } else {
+      setTokenAddress(selectedCurrency?.address as Address);
+      setTokenDecimals(selectedCurrency?.decimals);
+      setTokenSymbol(selectedCurrency?.symbol);
+    }
+  }, [customTokenAddress, selectedCurrency]);
+
   const { setSelectedChain } = useSwitchChainContext();
 
   const address = useAddress();
@@ -66,11 +114,6 @@ const CreateOffer = () => {
     if (!address) return;
     setMinterAddress(address as Address);
   }, [address]);
-
-  useEffect(() => {
-    if (!WETHCurrency) return;
-    setTokenContract(WETHCurrency?.address);
-  }, [tokenContract, WETHCurrency]);
 
   const [name, setName] = useState("");
   const stepsRef = useRef([]);
@@ -130,7 +173,7 @@ const CreateOffer = () => {
       isValid = false;
     }
 
-    if (!tokenContract) {
+    if (!tokenAddress) {
       newErrors.tokenError = "Token contract is missing.";
       isValid = false;
     }
@@ -175,7 +218,7 @@ const CreateOffer = () => {
       isValid = false;
     }
 
-    if (selectedCurrency === "custom" && customContract === undefined) {
+    if (selectedCurrency?.address === "custom" && customTokenAddress === null) {
       newErrors.currencyError = "Custom contract is missing or invalid.";
       isValid = false;
     }
@@ -189,7 +232,7 @@ const CreateOffer = () => {
     setValidate(isValid);
     setErrors(newErrors);
   }, [
-    customContract,
+    customTokenAddress,
     description,
     endDate,
     files.length,
@@ -205,7 +248,7 @@ const CreateOffer = () => {
     selectedUnitPrice,
     startDate,
     tokenDecimals,
-    tokenContract
+    tokenAddress
   ]);
 
   const handlePreviewModal = () => {
@@ -288,7 +331,7 @@ const CreateOffer = () => {
           forwarder: "0x0000000000000000000000000000000000000000", // forwarder
           initialOwner: userMinterAddress, // owner
           royaltyBps: selectedRoyalties * 100, // royalties
-          currencies: [tokenContract], // accepted token
+          currencies: [tokenAddress], // accepted token
           prices: [ethers.utils.parseUnits(selectedUnitPrice.toString(), tokenDecimals)], // prices with decimals
           allowedTokenIds: Array.from({ length: selectedNumber }, (_, i) => i) // allowed token ids
         }),
@@ -319,13 +362,13 @@ const CreateOffer = () => {
       setEndDate(new Date(new Date().setFullYear(new Date().getFullYear() + 1)));
       setSelectedNumber(1);
       setSelectedUnitPrice(1);
-      setSelectedCurrency("WETH");
-      setCustomContract(null);
+      setSelectedCurrency(currencies?.[0]);
+      setCustomTokenAddress(undefined);
       setSelectedParameter(["imageURL-1:1", "linkURL"]);
       setSelectedIntegration([0]);
       setSelectedRoyalties(10);
-      setTokenContract(WETHCurrency?.address);
-      setCustomTokenContract(null);
+      setTokenAddress(currencies?.[0]?.address as Address);
+      setCustomTokenAddress(undefined);
       setCurrentSlide(0);
     } catch (error) {
       setSuccessFullUpload(false);
@@ -426,7 +469,6 @@ const CreateOffer = () => {
           />
 
           <OfferValidity
-            chainId={chainId}
             stepsRef={stepsRef}
             styles={styles}
             startDate={startDate}
@@ -435,19 +477,17 @@ const CreateOffer = () => {
             setEndDate={setEndDate}
             selectedUnitPrice={selectedUnitPrice}
             handleUnitPriceChange={handleUnitPriceChange}
-            selectedCurrency={selectedCurrency}
-            setSelectedCurrency={setSelectedCurrency}
-            customContract={customContract}
-            setCustomContract={setCustomContract}
-            selectedRoyalties={selectedRoyalties}
-            handleRoyaltiesChange={handleRoyaltiesChange}
-            setSymbolContract={setSymbolContract}
-            setTokenDecimals={setTokenDecimals}
-            symbolContract={symbolContract}
-            setTokenContract={setTokenContract}
-            setCustomTokenContract={setCustomTokenContract}
             numSteps={numSteps}
             currentSlide={currentSlide}
+            currencies={currencies}
+            tokenSymbol={tokenSymbol}
+            tokenAddress={tokenAddress}
+            customTokenAddress={customTokenAddress as Address}
+            setCustomTokenAddress={setCustomTokenAddress}
+            selectedCurrency={selectedCurrency}
+            setSelectedCurrency={setSelectedCurrency}
+            handleRoyaltiesChange={handleRoyaltiesChange}
+            selectedRoyalties={selectedRoyalties}
           />
         </CarouselForm>
       </section>
@@ -463,8 +503,7 @@ const CreateOffer = () => {
             endDate={endDate}
             selectedNumber={selectedNumber}
             selectedUnitPrice={selectedUnitPrice}
-            symbolContract={symbolContract as string}
-            selectedCurrency={selectedCurrency}
+            tokenSymbol={tokenSymbol}
             selectedRoyalties={selectedRoyalties}
             imageURLSteps={["imageURL"]}
             previewImage={previewImages}

@@ -1,16 +1,14 @@
-import { useEffect, useState, useMemo } from "react";
+import React, { useEffect } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { useContract, useContractRead } from "@thirdweb-dev/react";
-import { features } from "@/data/features";
 import ModalHelper from "@/components/ui/modals/Helper";
-import config from "@/config/config";
 import Input from "@/components/ui/Input";
+import { Currency } from "@/components/layout/CreateOffer";
+import { Address } from "thirdweb";
 
 const ConditionalRender = ({ condition, children }) => (condition ? <div>{children}</div> : null);
 
 const OfferValidity = ({
-  chainId,
   stepsRef,
   styles,
   startDate,
@@ -19,75 +17,57 @@ const OfferValidity = ({
   setEndDate,
   selectedUnitPrice,
   handleUnitPriceChange,
-  selectedCurrency,
-  setSelectedCurrency,
-  customContract,
   selectedRoyalties,
-  setTokenDecimals,
   handleRoyaltiesChange,
-  setSymbolContract,
-  symbolContract,
-  setCustomContract,
-  setTokenContract,
-  setCustomTokenContract,
   numSteps,
-  currentSlide
+  currentSlide,
+  currencies,
+  tokenSymbol,
+  customTokenAddress,
+  setCustomTokenAddress,
+  selectedCurrency,
+  setSelectedCurrency
+}: {
+  stepsRef: any;
+  styles: any;
+  startDate: Date;
+  setStartDate: any;
+  endDate: Date;
+  setEndDate: any;
+  selectedUnitPrice: number;
+  handleUnitPriceChange: any;
+  selectedRoyalties?: number;
+  handleRoyaltiesChange?: any;
+  numSteps: number;
+  currentSlide: number;
+  currencies: Currency[];
+  tokenSymbol: string;
+  tokenAddress: Address;
+  customTokenAddress: Address | undefined;
+  setCustomTokenAddress: React.Dispatch<React.SetStateAction<Address | undefined>>;
+  selectedCurrency: Currency;
+  setSelectedCurrency: React.Dispatch<React.SetStateAction<Currency | undefined>>;
 }) => {
-  const { USDC, NATIVE, WETH, USDT } = config[chainId]?.smartContracts || {};
-
-  const currencyOptions = useMemo(
-    () => ({
-      WETH: WETH?.address,
-      USDC: USDC?.address,
-      USDT: USDT?.address,
-      custom: customContract
-    }),
-    [WETH, USDC, USDT, customContract]
-  );
-
-  const [selectedCurrencyContract, setSelectedCurrencyContract] = useState(WETH?.address);
-
-  const { contract: tokenContractAsync } = useContract(selectedCurrencyContract, "token");
-  const { data: symbolContractAsync } = useContractRead(tokenContractAsync, "symbol");
-  const { data: decimalsContractAsync } = useContractRead(tokenContractAsync, "decimals");
-
-  useEffect(() => {
-    setSymbolContract(symbolContractAsync);
-    setTokenDecimals(decimalsContractAsync);
-    setTokenContract(selectedCurrencyContract);
-    setCustomTokenContract(tokenContractAsync);
-  }, [
-    symbolContractAsync,
-    decimalsContractAsync,
-    selectedCurrencyContract,
-    tokenContractAsync,
-    setSymbolContract,
-    setTokenDecimals,
-    setTokenContract,
-    setCustomTokenContract
-  ]);
+  const [customCurrencyEnabled, setCustomCurrencyEnabled] = React.useState<boolean>(false);
 
   const handleCurrencyChange = (event) => {
     const currency = event.target.value;
-    setSelectedCurrency(currency);
+    const isCurrencyKnown = currencies?.find((c) => c?.address === currency);
 
-    if (currency === "NATIVE") {
-      setTokenDecimals(NATIVE.decimals);
-      setSymbolContract(NATIVE.symbol);
-      setTokenContract(NATIVE.address);
-    } else if (currency === "custom") {
-      setSelectedCurrencyContract("");
-      setCustomContract(null);
-    } else {
-      setSelectedCurrencyContract(currencyOptions[currency]);
-      setCustomContract(null);
+    if (isCurrencyKnown) {
+      setSelectedCurrency(isCurrencyKnown);
+      setCustomCurrencyEnabled(false);
+      setCustomTokenAddress(undefined);
+      return;
     }
+
+    setCustomCurrencyEnabled(true);
+    setSelectedCurrency(undefined);
   };
 
   const handleCustomContractChange = (event) => {
     const contractAddress = event.target.value;
-    setCustomContract(contractAddress);
-    setSelectedCurrencyContract(contractAddress);
+    setCustomTokenAddress(contractAddress);
   };
 
   const renderDatePicker = (date, setDate, label, helper) => (
@@ -158,7 +138,7 @@ const OfferValidity = ({
               >
                 Unit selling price <span className="text-red">*</span>
               </label>
-              <ConditionalRender condition={["USDT", "USDC"].includes(selectedCurrency)}>
+              <ConditionalRender condition={["USDT", "USDC"].includes(selectedCurrency?.symbol)}>
                 <p className="dark:text-jacarta-100 text-jacarta-100 text-2xs mb-3">
                   USD payment means you&apos;ll receive USD tokens (1 USDC = 1$). You&apos;ll be
                   able to cash out via wire transfer with a service like MtPelerin. You can change
@@ -176,41 +156,36 @@ const OfferValidity = ({
                   placeholder="Unit selling price"
                   className="flex-grow border-jacarta-100 hover:ring-primaryPurple/10 focus:ring-primaryPurple dark:border-primaryPurple dark:placeholder:text-jacarta-100 rounded-lg py-3 px-3 hover:ring-2 dark:text-white"
                 />
-                <ConditionalRender condition={features.canHaveMultipleCurrencies}>
-                  <div className="flex gap-4">
-                    <select
-                      id="currency"
-                      value={selectedCurrency}
-                      onChange={handleCurrencyChange}
-                      className="bg-jacarta-800 min-w-[110px] border-jacarta-100 hover:ring-primaryPurple/10 focus:ring-primaryPurple dark:border-primaryPurple dark:placeholder:text-jacarta-100 w-full rounded-lg py-3 px-5 hover:ring-2 dark:text-white"
-                    >
-                      <option value="WETH">WETH</option>
-                      {features.canAcceptUSDC && <option value="USDC">USDC</option>}
-                      {features.canAcceptNativeTokens && (
-                        <option value="NATIVE">{NATIVE?.symbol}</option>
-                      )}
-                      {features.canAcceptUSDT && <option value="USDT">USDT</option>}
-                      {features.canAcceptCustomTokens && <option value="custom">Custom</option>}
-                    </select>
-                    {selectedCurrency === "custom" && (
-                      <Input
-                        type="text"
-                        value={customContract}
-                        onChange={handleCustomContractChange}
-                        placeholder="Contract address"
-                        className={`dark:bg-secondaryBlack hover:ring-primaryPurple/10 ${
-                          tokenContractAsync && customContract ? "border-green" : "border-red"
-                        } focus:ring-primaryPurple dark:placeholder:text-jacarta-100 w-full rounded-lg py-3 px-3 hover:ring-2 dark:text-white`}
-                      />
-                    )}
-                  </div>
-                </ConditionalRender>
+
+                <div className="flex gap-4 w-full">
+                  <select
+                    id="currency"
+                    value={selectedCurrency?.address}
+                    onChange={handleCurrencyChange}
+                    className="bg-jacarta-800 min-w-[110px] border-jacarta-100 hover:ring-primaryPurple/10 focus:ring-primaryPurple dark:border-primaryPurple dark:placeholder:text-jacarta-100 w-full rounded-lg py-3 px-5 hover:ring-2 dark:text-white"
+                  >
+                    {currencies?.map((currency) => (
+                      <option key={currency?.address} value={currency?.address}>
+                        {currency?.symbol}
+                      </option>
+                    ))}
+                    <option value="custom">Custom</option>
+                  </select>
+                  {customCurrencyEnabled && (
+                    <Input
+                      type="text"
+                      value={customTokenAddress}
+                      onChange={handleCustomContractChange}
+                      placeholder="Contract address"
+                      className={`${customTokenAddress ? "border-green" : "border-red"}`}
+                    />
+                  )}
+                </div>
               </div>
               <p className="dark:text-jacarta-100 text-jacarta-100 text-2xs mt-3">
-                You&apos;ll earn up to {selectedUnitPrice} {symbolContract ?? selectedCurrency}. As
-                DSponsor charges a fee of 4%, sponsors will pay{" "}
-                {(parseFloat(selectedUnitPrice) * 1.04).toFixed(2)}{" "}
-                {symbolContract ?? selectedCurrency}.
+                You&apos;ll earn up to {selectedUnitPrice} {tokenSymbol ?? selectedCurrency?.symbol}
+                . As DSponsor charges a fee of 4%, sponsors will pay{" "}
+                {(selectedUnitPrice * 1.04)?.toFixed(2)} {tokenSymbol ?? selectedCurrency?.symbol}.
               </p>
             </div>
             <div className="mb-6 flex flex-col items-center">

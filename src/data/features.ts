@@ -17,13 +17,13 @@ export const features = {
   // Whether to show the "Create Offer" button in the footer
   canSeeCreateOfferButton: !!isDevelopment,
   // Whether to accept USDC as payment
-  canAcceptUSDC: false,
+  canAcceptUSDC: true,
   // Whether to accept custom tokens as payment
-  canAcceptCustomTokens: false,
+  canAcceptCustomTokens: true,
   // Whether to accept Native Tokens as payment
   canAcceptNativeTokens: false,
   // Whether to accept USDT as payment
-  canAcceptUSDT: false,
+  canAcceptUSDT: true,
   // Whether to see home in the mobile menu
   canSeeHomeInMobileMenu: false,
   // Whether to filter transactions in activity with WETH only

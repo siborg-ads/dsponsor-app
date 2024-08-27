@@ -672,7 +672,7 @@ const Token = () => {
 
                 const directBuy = listingTokenData?.directBuys[0]; // only one direct buy per listing so we can take the first one
 
-                const smartContracts = currentChainObject?.smartContracts;
+                const smartContracts = currentChainObject?.smartContracts?.currencies;
                 const targetAddress = listing?.currency;
 
                 let tempCurrency: any = null;
@@ -2744,7 +2744,6 @@ const Token = () => {
             canPayWithNativeToken={canPayWithNativeToken}
             setCanPayWithNativeToken={setCanPayWithNativeToken}
             token={tokenDO}
-            buyTokenEtherPrice={buyTokenEtherPrice as string}
             totalPrice={totalPrice as number}
             user={{
               address: address,

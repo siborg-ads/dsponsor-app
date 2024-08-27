@@ -14,25 +14,22 @@ const prodBase = {
 
   rpcURL: "https://mainnet.base.org",
   smartContracts: {
-    NATIVE: {
-      address: "0x0000000000000000000000000000000000000000",
-      decimals: 18,
-      symbol: "ETH"
-    },
-    WNATIVE: {
-      address: "0x4200000000000000000000000000000000000006",
-      decimals: 18,
-      symbol: "WETH"
-    },
-    USDC: {
-      address: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
-      decimals: 6,
-      symbol: "USDC"
-    },
-    WETH: {
-      address: "0x4200000000000000000000000000000000000006",
-      decimals: 18,
-      symbol: "WETH"
+    currencies: {
+      WETH: {
+        address: "0x4200000000000000000000000000000000000006",
+        decimals: 18,
+        symbol: "WETH"
+      },
+      NATIVE: {
+        address: "0x0000000000000000000000000000000000000000",
+        decimals: 18,
+        symbol: "ETH"
+      },
+      USDC: {
+        address: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+        decimals: 6,
+        symbol: "USDC"
+      }
     },
     UNISWAP_QUOTER: {
       address: "0x3d4e44Eb1374240CE5F1B871ab261CD16335B76a"
