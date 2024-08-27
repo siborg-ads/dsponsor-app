@@ -3,8 +3,19 @@ import "tippy.js/dist/tippy.css";
 import * as Tabs from "@radix-ui/react-tabs";
 import Iframe from "@/components/features/offer/offerManagement/integrations/Iframe";
 import HTML from "@/components/features/offer/offerManagement/integrations/HTML";
+import Telegram from "./integrations/Telegram";
 
-const Integration = ({ chainId, offerId, offerTokens }) => {
+const Integration = ({
+  chainId,
+  offerId,
+  offerTokens,
+  offerData
+}: {
+  chainId: number;
+  offerId: number;
+  offerTokens: any;
+  offerData: any;
+}) => {
   return (
     <div className="flex flex-col gap-4">
       <div className="bg-secondaryBlack p-4 rounded-md">
@@ -22,11 +33,19 @@ const Integration = ({ chainId, offerId, offerTokens }) => {
           >
             Website (iFrame)
           </Tabs.Trigger>
+
           <Tabs.Trigger
             value="html"
             className="cursor-pointer data-[state=active]:bg-primaryPurple border border-primaryPurple rounded-md p-2"
           >
             Newsletter (HTML)
+          </Tabs.Trigger>
+
+          <Tabs.Trigger
+            value="telegram"
+            className="cursor-pointer data-[state=active]:bg-primaryPurple border border-primaryPurple rounded-md p-2"
+          >
+            Telegram (Bot)
           </Tabs.Trigger>
         </Tabs.List>
 
@@ -34,8 +53,13 @@ const Integration = ({ chainId, offerId, offerTokens }) => {
           <Tabs.Content value="iframe" className="w-full">
             <Iframe chainId={chainId} offerId={offerId} />
           </Tabs.Content>
+
           <Tabs.Content value="html" className="w-full">
             <HTML chainId={chainId} offerId={offerId} offerTokens={offerTokens} />
+          </Tabs.Content>
+
+          <Tabs.Content value="telegram" className="w-full">
+            <Telegram chainId={chainId} offerData={offerData} offerId={offerId} />
           </Tabs.Content>
         </div>
       </Tabs.Root>

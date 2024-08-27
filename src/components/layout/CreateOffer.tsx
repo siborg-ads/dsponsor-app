@@ -234,6 +234,7 @@ const CreateOffer = () => {
       } else {
         console.error("Missing name or link");
       }
+
       const jsonMetadata = JSON.stringify({
         creator: {
           name: "",
