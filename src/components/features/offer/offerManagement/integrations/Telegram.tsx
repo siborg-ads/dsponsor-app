@@ -14,7 +14,7 @@ const Telegram = ({
 }: {
   chainId: number;
   offerData: any;
-  offerId;
+  offerId: number;
 }) => {
   const [telegramChannels, setTelegramChannels] = React.useState<number[] | undefined>(undefined);
   const [valueTelegramChannels, setValueTelegramChannels] = React.useState<string | undefined>(
@@ -22,6 +22,7 @@ const Telegram = ({
   );
   const [isTelegramEnabled, setIsTelegramEnabled] = React.useState<boolean>(true);
   const [metadatas, setMetadatas] = React.useState<any | null>(null);
+  const [isMounted, setIsMounted] = React.useState<boolean>(false);
 
   const storage = useStorage();
 
@@ -47,13 +48,15 @@ const Telegram = ({
         } catch (error) {
           console.error(error);
         }
+
+        setIsMounted(true);
       }
     };
 
-    if (offerData) {
+    if (offerData && !isMounted) {
       fetchMetadatas(offerData?.metadataURL);
     }
-  }, [offerData, storage]);
+  }, [isMounted, offerData, storage]);
 
   const handleTelegramChannelsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const channels = e.target.value?.split(/[\s,]+/).map((channel) => channel.trim());
@@ -131,12 +134,10 @@ const Telegram = ({
 
     const offerMetadata = newMetadataUrl ?? offerData?.metadataURL;
 
-    console.log(offerMetadata);
-
     try {
       await mutateAsync({
         args: [
-          parseInt(offerData?.id),
+          offerId,
           offerData?.disable,
           offerData?.metadata?.offer?.name,
           offerMetadata,
@@ -156,6 +157,12 @@ const Telegram = ({
       console.error("Error updating offer:", error);
       throw new Error("Error updating offer");
     }
+
+    setValueTelegramChannels(
+      updatedMetadatas?.offer?.telegramIntegration?.telegramChannels?.join(", ")
+    );
+    setIsTelegramEnabled(updatedMetadatas?.offer?.telegramIntegration?.enabled);
+    setTelegramChannels(updatedMetadatas?.offer?.telegramIntegration?.telegramChannels);
   };
 
   return (
