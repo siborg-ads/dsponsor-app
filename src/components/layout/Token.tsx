@@ -116,7 +116,6 @@ const Token = () => {
   const [successFullListing, setSuccessFullListing] = useState(false);
   const [royaltiesFeesAmount, setRoyaltiesFeesAmount] = useState<any>(null);
   const [bidsAmount, setBidsAmount] = useState<string>("");
-  const [currencyDecimals, setCurrencyDecimals] = useState<number | null>(null);
   const [isLister, setIsLister] = useState(false);
   const [selectedItems, setSelectedItems] = useState<any[]>([]);
   const [bids, setBids] = useState<any[] | null>([]);
@@ -162,6 +161,22 @@ const Token = () => {
   const [nftContractAddress, setNftContractAddress] = useState<Address | null>(null);
   const [showEntireDescription, setShowEntireDescription] = useState(false);
   const [failedCrossmintTransaction, setFailedCrossmintTransaction] = useState(false);
+  const [tokenSymbol, setTokenSymbol] = useState<string | null>(null);
+  const [tokenDecimals, setTokenDecimals] = useState<number | null>(null);
+
+  const { contract: currencyContract } = useContract(tokenCurrencyAddress, "token");
+  const { data: tokenSymbolData } = useContractRead(currencyContract, "symbol");
+  const { data: tokenDecimalsData } = useContractRead(currencyContract, "decimals");
+
+  useEffect(() => {
+    if (tokenSymbolData) {
+      setTokenSymbol(tokenSymbolData);
+    }
+
+    if (tokenDecimalsData) {
+      setTokenDecimals(tokenDecimalsData);
+    }
+  }, [tokenDecimalsData, tokenSymbolData]);
 
   const searchParams = useSearchParams();
   const encodedPayload = searchParams.get("p");
@@ -438,8 +453,8 @@ const Token = () => {
   useEffect(() => {
     const fetchBuyEtherPrice = async (amount: string) => {
       try {
-        if (currencyDecimals) {
-          const finalAmount = ethers.utils.parseUnits(amount, Number(currencyDecimals))?.toString();
+        if (tokenDecimals) {
+          const finalAmount = ethers.utils.parseUnits(amount, Number(tokenDecimals))?.toString();
 
           const tokenEtherPrice = await fetch(
             `https://relayer.dsponsor.com/api/${chainId}/prices?token=${tokenCurrencyAddress}&amount=${finalAmount}&slippage=0.3`,
@@ -466,7 +481,7 @@ const Token = () => {
       (token) => !!token?.tokenId && BigInt(token?.tokenId) === BigInt(tokenId as string)
     );
 
-    if (chainId && tokenCurrencyAddress && currencyDecimals) {
+    if (chainId && tokenCurrencyAddress && tokenDecimals) {
       if (tokenStatut === "AUCTION" && debouncedBidsAmount) {
         fetchBuyEtherPrice(debouncedBidsAmount);
       }
@@ -474,21 +489,21 @@ const Token = () => {
       if (tokenStatut === "DIRECT" && directBuyPriceBN) {
         const formattedDirectBuyPrice = ethers.utils.formatUnits(
           directBuyPriceBN,
-          currencyDecimals
+          tokenDecimals
         );
 
         fetchBuyEtherPrice(formattedDirectBuyPrice);
       }
 
       if (token?.mint === null && mintPriceBN) {
-        const formattedMintPrice = ethers.utils.formatUnits(mintPriceBN, currencyDecimals);
+        const formattedMintPrice = ethers.utils.formatUnits(mintPriceBN, tokenDecimals);
 
         fetchBuyEtherPrice(formattedMintPrice);
       }
     }
   }, [
     chainId,
-    currencyDecimals,
+    tokenDecimals,
     tokenCurrencyAddress,
     debouncedBidsAmount,
     tokenStatut,
@@ -512,7 +527,7 @@ const Token = () => {
       setAmountInEthWithSlippage(amountInEthWithSlippageBN);
     }
 
-    if (bidsAmount && currencyDecimals && tokenEtherPriceRelayer) {
+    if (bidsAmount && tokenDecimals && tokenEtherPriceRelayer) {
       const amountUSDC = tokenEtherPriceRelayer?.amountUSDC;
 
       const priceToDisplay = formatUnits(amountUSDC, 6);
@@ -521,7 +536,7 @@ const Token = () => {
     } else {
       setDisplayedPrice(0);
     }
-  }, [bidsAmount, currencyDecimals, tokenEtherPriceRelayer]);
+  }, [bidsAmount, tokenDecimals, tokenEtherPriceRelayer]);
 
   useEffect(() => {
     if (chainId) {
@@ -590,8 +605,8 @@ const Token = () => {
               bid: bid,
               currency: {
                 contract: listing.currency,
-                currencySymbol: listing.currencySymbol,
-                currencyDecimals: listing.currencyDecimals
+                currencySymbol: tokenSymbol,
+                tokenDecimals: tokenDecimals
               },
               listing: {
                 id: listing.id,
@@ -641,13 +656,13 @@ const Token = () => {
             saleInfo = {
               address: winnerBid?.bidder,
               amount: winnerBid?.paidBidAmount
-                ? formatUnits(BigInt(winnerBid?.paidBidAmount), listing?.currencyDecimals)
+                ? formatUnits(BigInt(winnerBid?.paidBidAmount), listing?.tokenDecimals)
                 : 0,
               date: winnerBid?.creationTimestamp,
               currency: {
                 contract: listing?.currency,
-                currencySymbol: listing?.currencySymbol,
-                currencyDecimals: listing?.currencyDecimals
+                currencySymbol: tokenSymbol,
+                tokenDecimals: tokenDecimals
               },
               listing: {
                 id: listing?.id,
@@ -696,8 +711,8 @@ const Token = () => {
                   date: directBuy?.revenueTransaction?.blockTimestamp,
                   currency: {
                     contract: listing?.currency,
-                    currencySymbol: tempCurrency?.symbol,
-                    currencyDecimals: tempCurrency?.decimals
+                    currencySymbol: tokenSymbol,
+                    tokenDecimals: tokenDecimals
                   },
                   listing: {
                     id: directBuy?.listing?.id,
@@ -749,8 +764,8 @@ const Token = () => {
             date: tokenData?.mint?.revenueTransaction?.blockTimestamp,
             currency: {
               contract: tokenData?.mint?.currency,
-              currencySymbol: tempCurrency?.symbol,
-              currencyDecimals: tempCurrency?.decimals
+              currencySymbol: tokenSymbol,
+              tokenDecimals: tokenDecimals
             },
             listing: {
               id: 1,
@@ -791,7 +806,9 @@ const Token = () => {
     offerData,
     tokenId,
     offers,
-    offerId
+    offerId,
+    tokenSymbol,
+    tokenDecimals
   ]);
 
   useEffect(() => {
@@ -866,7 +883,7 @@ const Token = () => {
       setTotalAmount(offerData?.nftContract?.prices[0]?.mintPriceStructureFormatted?.totalAmount);
 
       const totalPrice = offerData?.nftContract?.prices[0]?.mintPriceStructure?.totalAmount;
-      const totalPriceFormatted = parseFloat(formatUnits(totalPrice, currencyDecimals as number));
+      const totalPriceFormatted = parseFloat(formatUnits(totalPrice, tokenDecimals as number));
 
       setMintPriceBN(ethers.BigNumber.from(totalPrice));
 
@@ -951,7 +968,7 @@ const Token = () => {
           )
           ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]
           ?.buyPriceStructure?.buyoutPricePerToken;
-        const totalPriceFormatted = parseFloat(formatUnits(totalPrice, currencyDecimals as number));
+        const totalPriceFormatted = parseFloat(formatUnits(totalPrice, tokenDecimals as number));
 
         const directBuyPriceBN = ethers.BigNumber.from(totalPrice);
         setDirectBuyPriceBN(directBuyPriceBN);
@@ -1094,7 +1111,7 @@ const Token = () => {
           )
           ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]
           ?.bidPriceStructure?.totalBidAmount;
-        const totalPriceFormatted = parseFloat(formatUnits(totalPrice, currencyDecimals as number));
+        const totalPriceFormatted = parseFloat(formatUnits(totalPrice, tokenDecimals as number));
 
         setTotalPrice(totalPriceFormatted);
 
@@ -1181,7 +1198,7 @@ const Token = () => {
     successFullUpload,
     marketplaceListings,
     offerId,
-    currencyDecimals,
+    tokenDecimals,
     tokenData
   ]);
 
@@ -1464,8 +1481,8 @@ const Token = () => {
       } else if (tokenStatut === "AUCTION" && marketplaceListings.length > 0) {
         const precision = bidsAmount.split(".")[1]?.length || 0;
         const bidsBigInt = parseUnits(
-          Number(bidsAmount).toFixed(Math.min(Number(currencyDecimals), precision)),
-          Number(currencyDecimals)
+          Number(bidsAmount).toFixed(Math.min(Number(tokenDecimals), precision)),
+          Number(tokenDecimals)
         );
 
         await approve({
@@ -1651,9 +1668,9 @@ const Token = () => {
       );
 
       if (tokenStatut === "AUCTION") {
-        if (!auctionPriceBN || !currencyDecimals || !bidsAmount) return;
+        if (!auctionPriceBN || !tokenDecimals || !bidsAmount) return;
 
-        const parsedBidsAmount = parseUnits(bidsAmount, currencyDecimals);
+        const parsedBidsAmount = parseUnits(bidsAmount, tokenDecimals);
 
         const result = await checkUserBalance(tokenBalance, parsedBidsAmount);
         setHasEnoughBalance(result);
@@ -1709,7 +1726,7 @@ const Token = () => {
     offerData,
     tokenId,
     bidsAmount,
-    currencyDecimals
+    tokenDecimals
   ]);
 
   function formatTokenId(str) {
@@ -1918,17 +1935,17 @@ const Token = () => {
             <ul className="flex flex-col gap-2 list-disc text-sm" style={{ listStyleType: "disc" }}>
               <li>
                 <span className="text-white">
-                  Amount sent to the creator: {creatorAmount} {currency}
+                  Amount sent to the creator: {creatorAmount} {tokenSymbol}
                 </span>
               </li>
               <li>
                 <span className="text-white">
-                  Protocol fees: {protocolFeeAmount} {currency}
+                  Protocol fees: {protocolFeeAmount} {tokenSymbol}
                 </span>
               </li>
               <li>
                 <span className="text-white">
-                  Total: {totalAmount} {currency}
+                  Total: {totalAmount} {tokenSymbol}
                 </span>
               </li>
             </ul>
@@ -1943,22 +1960,22 @@ const Token = () => {
             <ul className="flex flex-col gap-2 list-disc text-sm" style={{ listStyleType: "disc" }}>
               <li>
                 <span className="text-white">
-                  Amount sent to the lister: {listerAmount} {currency}
+                  Amount sent to the lister: {listerAmount} {tokenSymbol}
                 </span>
               </li>
               <li>
                 <span className="text-white">
-                  Royalties sent to the creator: {royaltiesAmount} {currency}
+                  Royalties sent to the creator: {royaltiesAmount} {tokenSymbol}
                 </span>
               </li>
               <li>
                 <span className="text-white">
-                  Protocol fees: {protocolFeeAmount} {currency}
+                  Protocol fees: {protocolFeeAmount} {tokenSymbol}
                 </span>
               </li>
               <li>
                 <span className="text-white">
-                  Total: {totalAmount} {currency}
+                  Total: {totalAmount} {tokenSymbol}
                 </span>
               </li>
             </ul>
@@ -2122,7 +2139,9 @@ const Token = () => {
                     tokenStatut === "MINTABLE")) && (
                   <div className="flex items-center">
                     <span className="text-green text-sm font-medium tracking-tight mr-2">
-                      {!!totalPrice && totalPrice > 0 ? `${finalPrice ?? 0} ${currency}` : "Free"}
+                      {!!totalPrice && totalPrice > 0
+                        ? `${finalPrice ?? 0} ${tokenSymbol}`
+                        : "Free"}
                     </span>
 
                     <ModalHelper {...modalHelper} size="small" />
@@ -2418,7 +2437,7 @@ const Token = () => {
                         handleApprove={handleApprove}
                         dsponsorMpContract={dsponsorMpContract}
                         marketplaceListings={marketplaceListings}
-                        currencySymbol={currency as string}
+                        currencySymbol={tokenSymbol as string}
                         tokenBalance={
                           tokenBalance as {
                             symbol: string;
@@ -2428,7 +2447,7 @@ const Token = () => {
                             displayValue: string;
                           }
                         }
-                        currencyTokenDecimals={currencyDecimals as number}
+                        currencyTokenDecimals={tokenDecimals as number}
                         setSuccessFullBid={setSuccessFullBid}
                         successFullBid={successFullBid}
                         address={address as Address}
@@ -2733,7 +2752,7 @@ const Token = () => {
             handleBuySubmitWithNative={handleBuySubmit}
             name={name}
             image={imageUrl ?? "/images/gradients/gradient_creative.jpg"}
-            selectedCurrency={currency as string}
+            selectedCurrency={tokenSymbol as string}
             royalties={royalties as number}
             tokenId={tokenId as string}
             tokenData={tokenData as string}

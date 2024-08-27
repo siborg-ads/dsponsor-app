@@ -480,6 +480,7 @@ const CreateOffer = () => {
             numSteps={numSteps}
             currentSlide={currentSlide}
             currencies={currencies}
+            tokenDecimals={tokenDecimals}
             tokenSymbol={tokenSymbol}
             tokenAddress={tokenAddress}
             customTokenAddress={customTokenAddress as Address}

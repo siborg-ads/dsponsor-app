@@ -5,6 +5,7 @@ import ModalHelper from "@/components/ui/modals/Helper";
 import Input from "@/components/ui/Input";
 import { Currency } from "@/components/layout/CreateOffer";
 import { Address } from "thirdweb";
+import formatAndRoundPrice from "@/utils/prices/formatAndRound";
 
 const ConditionalRender = ({ condition, children }) => (condition ? <div>{children}</div> : null);
 
@@ -23,6 +24,7 @@ const OfferValidity = ({
   currentSlide,
   currencies,
   tokenSymbol,
+  tokenDecimals,
   customTokenAddress,
   setCustomTokenAddress,
   selectedCurrency,
@@ -42,6 +44,7 @@ const OfferValidity = ({
   currentSlide: number;
   currencies: Currency[];
   tokenSymbol: string;
+  tokenDecimals: number;
   tokenAddress: Address;
   customTokenAddress: Address | undefined;
   setCustomTokenAddress: React.Dispatch<React.SetStateAction<Address | undefined>>;
@@ -154,6 +157,7 @@ const OfferValidity = ({
                   value={selectedUnitPrice}
                   onChange={handleUnitPriceChange}
                   placeholder="Unit selling price"
+                  maxLength={tokenDecimals}
                   className="flex-grow border-jacarta-100 hover:ring-primaryPurple/10 focus:ring-primaryPurple dark:border-primaryPurple dark:placeholder:text-jacarta-100 rounded-lg py-3 px-3 hover:ring-2 dark:text-white"
                 />
 
@@ -185,7 +189,8 @@ const OfferValidity = ({
               <p className="dark:text-jacarta-100 text-jacarta-100 text-2xs mt-3">
                 You&apos;ll earn up to {selectedUnitPrice} {tokenSymbol ?? selectedCurrency?.symbol}
                 . As DSponsor charges a fee of 4%, sponsors will pay{" "}
-                {(selectedUnitPrice * 1.04)?.toFixed(2)} {tokenSymbol ?? selectedCurrency?.symbol}.
+                {formatAndRoundPrice(selectedUnitPrice * 1.04)}{" "}
+                {tokenSymbol ?? selectedCurrency?.symbol}.
               </p>
             </div>
             <div className="mb-6 flex flex-col items-center">

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useContract, useContractWrite } from "@thirdweb-dev/react";
+import { useContract, useContractRead, useContractWrite } from "@thirdweb-dev/react";
 import config from "@/config/config";
 import { useChainContext } from "@/hooks/useChainContext";
 import { toast } from "react-toastify";
@@ -20,19 +20,33 @@ const isDisabledMessage = (disableMint: boolean) => {
 const ChangeMintPrice = ({ offer }) => {
   const [amount, setAmount] = useState<number | undefined>(undefined);
   const [initialAmount, setInitialAmount] = useState<number | undefined>(undefined);
-  const [currency, setCurrency] = useState(null);
-  const [currencySymbol, setCurrencySymbol] = useState(null);
+  const [currency, setCurrency] = useState<Address | null>(null);
+  const [currencySymbol, setCurrencySymbol] = useState<string | null>(null);
   const [formattedAmountBN, setFormattedAmountBN] = useState<BigNumber | undefined>(undefined);
-  const [disableMint, setDisableMint] = useState(false);
+  const [disableMint, setDisableMint] = useState<boolean>(false);
   const [tokens, setTokens] = useState<any>(null);
   const [nftContractAddress, setNftContractAddress] = useState<Address | null>(null);
   const [, setTokensContractAddress] = useState<Address[] | null>(null);
-  const [selectedToken, setSelectedToken] = useState(null);
-  const [currencyDecimals, setCurrencyDecimals] = useState(null);
-  const [indexSelectedToken, setIndexSelectedToken] = useState(null);
+  const [selectedToken, setSelectedToken] = useState<any>(null);
+  const [currencyDecimals, setCurrencyDecimals] = useState<number | null>(null);
+  const [indexSelectedToken, setIndexSelectedToken] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [initialDisabled, setInitialDisabled] = useState(false);
   const [disabled, setDisabled] = useState(false);
+
+  const { contract: currencyContract } = useContract(currency);
+  const { data: currencyDecimalsData } = useContractRead(currencyContract, "decimals");
+  const { data: currencySymbolData } = useContractRead(currencyContract, "symbol");
+
+  useEffect(() => {
+    if (currencyDecimalsData) {
+      setCurrencyDecimals(currencyDecimalsData);
+    }
+
+    if (currencySymbolData) {
+      setCurrencySymbol(currencySymbolData);
+    }
+  }, [currencyDecimalsData, currencySymbolData]);
 
   const { currentChainObject } = useChainContext();
   const chainId = currentChainObject?.chainId;
@@ -46,9 +60,9 @@ const ChangeMintPrice = ({ offer }) => {
       // fallback to WETH from config if no currency is found
       let currency =
         offer?.nftContract?.prices[0]?.currency ??
-        config[chainId as number]?.smartContracts?.WETH?.address;
+        config[chainId as number]?.smartContracts?.currencies?.WETH?.address;
       if (initialDisabled) {
-        setCurrency(config[chainId as number]?.smartContracts?.WETH?.address);
+        setCurrency(config[chainId as number]?.smartContracts?.currencies?.WETH?.address);
       } else {
         setCurrency(currency);
       }
@@ -77,7 +91,7 @@ const ChangeMintPrice = ({ offer }) => {
           parseFloat(
             formatUnits(
               BigNumber.from(offer?.nftContract?.prices[0]?.amount),
-              offer?.nftContract?.prices[0]?.currencyDecimals
+              currencyDecimals as number
             )
           )
         );
@@ -85,7 +99,7 @@ const ChangeMintPrice = ({ offer }) => {
           parseFloat(
             formatUnits(
               BigNumber.from(offer?.nftContract?.prices[0]?.amount),
-              offer?.nftContract?.prices[0]?.currencyDecimals
+              currencyDecimals as number
             )
           )
         );
@@ -94,20 +108,7 @@ const ChangeMintPrice = ({ offer }) => {
         setInitialAmount(undefined);
       }
     }
-  }, [chainId, initialDisabled, offer]);
-
-  useEffect(() => {
-    if (currency) {
-      const smartContracts = config[chainId as number]?.smartContracts;
-      const currency: any = Object?.values(smartContracts)?.find(
-        (contract: any) =>
-          contract?.address?.toLowerCase() ===
-          offer?.nftContract?.tokens[0]?.mint?.currency?.toLowerCase()
-      );
-      setCurrencySymbol(currency?.symbol ?? offer?.nftContract?.prices[0]?.currencySymbol);
-      setCurrencyDecimals(currency?.decimals);
-    }
-  }, [chainId, currency, offer?.nftContract?.prices, offer?.nftContract?.tokens]);
+  }, [chainId, currencyDecimals, initialDisabled, offer]);
 
   const handleAmount = (value) => {
     if (!value) {
