@@ -153,6 +153,16 @@ const Telegram = ({
           }
         ]
       });
+
+      const relayerURL = config[chainId as number]?.relayerURL;
+      if (relayerURL) {
+        await fetch(`${relayerURL}/api/revalidate`, {
+          method: "POST",
+          body: JSON.stringify({
+            tags: [`${chainId}-adOffer-${offerId}`]
+          })
+        });
+      }
     } catch (error) {
       console.error("Error updating offer:", error);
       throw new Error("Error updating offer");
