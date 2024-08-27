@@ -19,6 +19,7 @@ import Input from "@/components/ui/Input";
 import { ngrokURL } from "@/data/ngrok";
 import StyledWeb3Button from "@/components/ui/buttons/StyledWeb3Button";
 import { Address } from "thirdweb";
+import { ChainObject } from "@/types/chain";
 
 const BidsModal = ({
   setAmountToApprove,
@@ -104,9 +105,9 @@ const BidsModal = ({
   const [buyoutPrice, setBuyoutPrice] = useState<string | null>(null);
   const [tooHighPriceForCrossmint, setTooHighPriceForCrossmint] = useState(false);
 
-  const chainConfig = config[chainId];
+  const chainConfig = config[chainId] as ChainObject;
   const chainWETH = Object.values(
-    chainConfig?.chainObject?.smartContracts?.currencies
+    chainConfig?.smartContracts?.currencies
   )?.[0]?.address?.toLowerCase();
 
   let frontURL;
