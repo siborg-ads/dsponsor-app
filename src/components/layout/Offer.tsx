@@ -839,9 +839,6 @@ const Offer = () => {
                   chainConfig: offerData?.chainConfig
                 };
 
-                console.log(filteredOffers);
-                console.log(finalToken);
-
                 return (
                   <TokenCard
                     key={index}

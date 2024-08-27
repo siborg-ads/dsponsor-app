@@ -59,7 +59,7 @@ const Integration = ({
           </Tabs.Content>
 
           <Tabs.Content value="telegram" className="w-full">
-            <Telegram chainId={chainId} offerData={offerData} />
+            <Telegram chainId={chainId} offerData={offerData} offerId={offerId} />
           </Tabs.Content>
         </div>
       </Tabs.Root>

@@ -50,7 +50,6 @@ const CreateOffer = () => {
   const [terms, setTerms] = useState<string | undefined>(undefined);
   const [minterAddress, setMinterAddress] = useState<Address | null>(null);
   const { setSelectedChain } = useSwitchChainContext();
-  const [telegramChannels, setTelegramChannels] = useState<number[]>([]);
 
   const address = useAddress();
 
@@ -253,11 +252,7 @@ const CreateOffer = () => {
           valid_from: startDate || "1970-01-01T00:00:00Z",
           valid_to: endDate || "2100-01-01T00:00:00Z",
           categories: ["Community", "NFT", "Crypto"],
-          token_metadata: {},
-          telegramIntegration: {
-            telegramChannels: telegramChannels,
-            enabled: true
-          }
+          token_metadata: {}
         }
       });
 
@@ -414,8 +409,6 @@ const CreateOffer = () => {
             description={description}
             numSteps={numSteps}
             currentSlide={currentSlide}
-            telegramChannels={telegramChannels}
-            setTelegramChannels={setTelegramChannels}
           />
 
           <OfferImageAndURL

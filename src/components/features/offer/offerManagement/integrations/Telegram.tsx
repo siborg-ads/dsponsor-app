@@ -7,7 +7,15 @@ import Link from "next/link";
 import React, { useEffect } from "react";
 import { toast } from "react-toastify";
 
-const Telegram = ({ chainId, offerData }: { chainId: number; offerData: any }) => {
+const Telegram = ({
+  chainId,
+  offerData,
+  offerId
+}: {
+  chainId: number;
+  offerData: any;
+  offerId;
+}) => {
   const [telegramChannels, setTelegramChannels] = React.useState<number[] | undefined>(undefined);
   const [valueTelegramChannels, setValueTelegramChannels] = React.useState<string | undefined>(
     undefined
@@ -63,20 +71,87 @@ const Telegram = ({ chainId, offerData }: { chainId: number; offerData: any }) =
     setValueTelegramChannels(e.target.value);
   };
 
+  const uploadNewMetadatas = async (originalMetadatas) => {
+    if (!storage) return;
+
+    let finalMetadatas = { ...originalMetadatas };
+
+    // make sure metadatas is a valid JSON object
+    if (typeof finalMetadatas !== "object") {
+      throw new Error("Metadatas are not correct");
+    }
+
+    // check if the metadatas object has the required fields
+    if (!finalMetadatas?.offer?.name) {
+      throw new Error("Metadatas must have a name field");
+    } else if (!finalMetadatas?.offer?.description) {
+      throw new Error("Metadatas must have a description field");
+    } else if (!finalMetadatas?.offer?.external_link) {
+      throw new Error("Metadatas must have an external_link field");
+    } else if (!finalMetadatas?.offer?.image) {
+      throw new Error("Metadatas must have an image field");
+    } else if (!finalMetadatas?.offer?.valid_from) {
+      throw new Error("Metadatas must have a valid_from field");
+    } else if (!finalMetadatas?.offer?.valid_to) {
+      throw new Error("Metadatas must have a valid_to field");
+    }
+
+    try {
+      const jsonUri = await storage.upload(finalMetadatas);
+      const jsonUrl = await storage.resolveScheme(jsonUri);
+      return jsonUrl;
+    } catch (error) {
+      console.error(error);
+      throw new Error(error);
+    }
+  };
+
   const handleUpdateOffer = async (metadatas: any) => {
     if (!metadatas) return;
 
     const updatedMetadatas = {
       ...metadatas,
-      telegramIntegration: {
-        enabled: isTelegramEnabled,
-        channels: telegramChannels
+      offer: {
+        ...metadatas.offer,
+        telegramIntegration: {
+          enabled: isTelegramEnabled,
+          telegramChannels: telegramChannels
+        }
       }
     };
 
+    let newMetadataUrl: string = "";
     try {
-      // TODO: Fix this line with appropriate contract method
-      await mutateAsync(updatedMetadatas);
+      newMetadataUrl = (await uploadNewMetadatas(updatedMetadatas)) as string;
+    } catch (error) {
+      console.error(error);
+      toast(error.message, { type: "error" });
+      throw new Error(error);
+    }
+
+    const offerMetadata = newMetadataUrl ?? offerData?.metadataURL;
+
+    console.log(offerMetadata);
+
+    try {
+      await mutateAsync({
+        args: [
+          parseInt(offerData?.id),
+          offerData?.disable,
+          offerData?.metadata?.offer?.name,
+          offerMetadata,
+          {
+            admins: [],
+            validators: [],
+            adParameters: []
+          },
+          {
+            admins: [],
+            validators: [],
+            adParameters: []
+          }
+        ]
+      });
     } catch (error) {
       console.error("Error updating offer:", error);
       throw new Error("Error updating offer");

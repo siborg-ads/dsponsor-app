@@ -10,34 +10,14 @@ const OfferName = ({
   description,
   setDescription,
   numSteps,
-  currentSlide,
-  telegramChannels,
-  setTelegramChannels
+  currentSlide
 }) => {
-  const [valueTelegramChannels, setValueTelegramChannels] = useState<string | undefined>(undefined);
-
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setName(e.target.value);
   };
 
   const handleDescriptionChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setDescription(e.target.value);
-  };
-
-  const handleTelegramChannelsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const channels = e.target.value?.split(/[\s,]+/).map((channel) => channel.trim());
-    const filteredChannels = channels.filter((channel) => channel !== "");
-    const uniqueChannels = [...new Set(filteredChannels)];
-    const almostFinalChannels: (number | null)[] =
-      uniqueChannels?.map((channel) => {
-        const parsedChannel = parseInt(channel);
-        return isNaN(parsedChannel) ? null : parsedChannel;
-      }) ?? [];
-
-    const finalChannels = almostFinalChannels?.filter((channel) => channel !== null) as number[];
-
-    setTelegramChannels(finalChannels);
-    setValueTelegramChannels(e.target.value);
   };
 
   const isSlideActive = currentSlide === 1;
@@ -69,14 +49,6 @@ const OfferName = ({
             <Description
               description={description}
               handleDescriptionChange={handleDescriptionChange}
-            />
-          </div>
-
-          <div className="w-full">
-            <TelegramIntegration
-              telegramChannels={telegramChannels}
-              handleTelegramChannelsChange={handleTelegramChannelsChange}
-              valueTelegramChannels={valueTelegramChannels}
             />
           </div>
         </div>
@@ -167,39 +139,6 @@ const Description = ({
       <p className={`mt-1 text-2xs ${remainingChars > 0 ? "text-green" : "text-red"}`}>
         {remainingChars} characters remaining
       </p>
-    </React.Fragment>
-  );
-};
-
-const TelegramIntegration = ({
-  telegramChannels,
-  handleTelegramChannelsChange,
-  valueTelegramChannels
-}: {
-  telegramChannels: number[] | undefined;
-  // eslint-disable-next-line no-unused-vars
-  handleTelegramChannelsChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  valueTelegramChannels: string | undefined;
-}) => {
-  return (
-    <React.Fragment>
-      <label
-        htmlFor="item-telegram"
-        className="block mb-2 font-display text-center text-jacarta-900 dark:text-white"
-      >
-        Telegram Channels
-      </label>
-      <p className="mb-3 text-center text-2xs text-jacarta-100 dark:text-jacarta-100">
-        You can specify your Telegram channels to automatically publish your ads in the channels.
-      </p>
-      <Input
-        type="text"
-        id="item-telegram"
-        placeholder="Channels separated by commas (e.g., -124234, 234234)"
-        value={valueTelegramChannels}
-        onChange={handleTelegramChannelsChange}
-        className="placeholder:text-jacarta-300"
-      />
     </React.Fragment>
   );
 };
