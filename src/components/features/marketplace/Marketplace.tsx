@@ -71,19 +71,15 @@ const MarketplaceComponent = ({ auctions, setAllTokens, allTokens, isAuctionsLoa
           let liveAuctions = [...tempAuctions].filter((auction) =>
             onAuctionCondition(auction, true, true)
           );
-          liveAuctions = [...liveAuctions].sort(
-            (a, b) =>
-              (a.listingType === "Auction"
-                ? a.auctionPrice
-                : a.listingType === "Direct"
-                  ? a.directPrice
-                  : a.mintPrice) -
-              (b.listingType === "Auction"
-                ? b.auctionPrice
-                : b.listingType === "Direct"
-                  ? b.directPrice
-                  : b.mintPrice)
-          );
+          liveAuctions = [...liveAuctions].sort((a, b) => {
+            if (a?.usdcPriceBN?.USDCPrice.lt(b?.usdcPriceBN?.USDCPrice)) {
+              return -1;
+            } else if (a?.usdcPriceBN?.USDCPrice.gt(b?.usdcPriceBN?.USDCPrice)) {
+              return 1;
+            } else {
+              return 0;
+            }
+          });
 
           const otherAuctions = tempAuctions.filter(
             (auction) => !onAuctionCondition(auction, true, true)
@@ -98,19 +94,15 @@ const MarketplaceComponent = ({ auctions, setAllTokens, allTokens, isAuctionsLoa
             onAuctionCondition(auction, true, true)
           );
           liveAuctions = [...liveAuctions]
-            .sort(
-              (a, b) =>
-                (a.listingType === "Auction"
-                  ? a.auctionPrice
-                  : a.listingType === "Direct"
-                    ? a.directPrice
-                    : a.mintPrice) -
-                (b.listingType === "Auction"
-                  ? b.auctionPrice
-                  : b.listingType === "Direct"
-                    ? b.directPrice
-                    : b.mintPrice)
-            )
+            .sort((a, b) => {
+              if (a?.usdcPriceBN?.USDCPrice.gt(b?.usdcPriceBN?.USDCPrice)) {
+                return -1;
+              } else if (a?.usdcPriceBN?.USDCPrice.lt(b?.usdcPriceBN?.USDCPrice)) {
+                return 1;
+              } else {
+                return 0;
+              }
+            })
             .reverse();
 
           let otherAuctions = [...tempAuctions].filter(

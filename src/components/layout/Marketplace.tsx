@@ -7,6 +7,7 @@ import { Auctions } from "@/types/auctions";
 import { useChainContext } from "@/hooks/useChainContext";
 import formatAndRound from "@/utils/prices/formatAndRound";
 import { formatUnits } from "ethers/lib/utils";
+import { BigNumber } from "ethers";
 
 const metadata = {
   title: "Marketplace || SiBorg Ads - The Web3 Monetization Solution",
@@ -126,6 +127,17 @@ const Marketplace = () => {
       const currency =
         token?.marketplaceListings?.sort((a, b) => Number(b.id) - Number(a.id))[0]?.currency ??
         token?.nftContract?.prices[0]?.currency;
+      const usdcPriceBN = {
+        USDCPrice: BigNumber.from(
+          token?.marketplaceListings?.sort((a, b) => Number(b.id) - Number(a.id))[0]
+            ?.currencyPriceUSDC ??
+            token?.nftContract?.prices?.[0]?.currencyPriceUSDC ??
+            0
+        ),
+        decimals: 6
+      };
+
+      console.log(token);
 
       const object = {
         name: name,
@@ -134,6 +146,7 @@ const Marketplace = () => {
         chain: chain,
         chainId: chainId,
         price: price,
+        usdcPriceBN: usdcPriceBN,
         currency: currency,
         currencySymbol: currencySymbol,
         link: `/${chainId}/offer/${offerId}/${tokenId}?tokenData=${tokenData}`,
@@ -158,6 +171,7 @@ const Marketplace = () => {
         numberOfBids: numberOfBids,
         item: {
           disable: token?.disable,
+          usdcPriceBN: usdcPriceBN,
           metadata: token.metadata,
           currency: currency,
           mint: token.mint,
