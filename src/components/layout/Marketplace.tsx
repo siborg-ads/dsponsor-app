@@ -137,8 +137,6 @@ const Marketplace = () => {
         decimals: 6
       };
 
-      console.log(token);
-
       const object = {
         name: name,
         category: category,

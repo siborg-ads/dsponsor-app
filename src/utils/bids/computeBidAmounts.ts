@@ -32,8 +32,6 @@ import { getMinimalBuyoutPricePerToken } from "@/utils/bids/getMinimalBuyoutPric
  *   BigNumber.from("50")                  // protocolFeeBps (0.5%)
  * );
  *
- * console.log(result);
- *
  * // The result object will contain all computed values such as:
  * // - minimalBidPerToken
  * // - minimalBuyoutPerToken

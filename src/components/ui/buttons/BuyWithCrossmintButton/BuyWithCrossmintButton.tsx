@@ -54,6 +54,7 @@ export default function BuyWithCrossmintButton(
     isLoadingRender: () => React.JSX.Element;
     isActiveRender?: (() => React.JSX.Element) | string;
     isBid: boolean;
+    price: BigNumber;
     config: {
       projectId: string;
       buyCollectionId: string;
@@ -65,11 +66,11 @@ export default function BuyWithCrossmintButton(
     successCallbackURL?: string;
     failureCallbackURL?: string;
     isLoading?: boolean;
+    currencyDecimals: number;
   }>
 ) {
   const { offer, token, user, referrer } = props;
 
-  const price = ethers.utils.parseUnits(props.token.buyoutPricePerToken, "wei");
   if (!token.fee) {
     console.warn("MintWithCrossmint: Token fee not found - Using default fee");
   }
@@ -104,12 +105,12 @@ export default function BuyWithCrossmintButton(
   const royaltyBPS = BigNumber.from(token.royaltiesBPS || 0);
   const protocolBPS = BigNumber.from(token.protocolFeeBPS || 0);
 
-  const royalty = price.mul(royaltyBPS).div(10000);
-  const protocolFee = price.mul(protocolBPS).div(10000);
+  const royalty = props?.price.mul(royaltyBPS).div(10000);
+  const protocolFee = props?.price.mul(protocolBPS).div(10000);
   const totalFees = royalty.add(protocolFee);
 
-  const cumulativePrice = price.add(totalFees);
-  const totalPriceFormatted = formatUnits(cumulativePrice, "ether");
+  const cumulativePrice = props?.price.add(totalFees);
+  const totalPriceFormatted = formatUnits(cumulativePrice, props?.currencyDecimals);
 
   const buttonProps = {
     projectId: props.config?.projectId,
@@ -133,6 +134,8 @@ export default function BuyWithCrossmintButton(
     successCallbackURL: props.successCallbackURL,
     failureCallbackURL: props.failureCallbackURL
   };
+
+  console.log(totalPriceFormatted);
 
   if (props?.successCallbackURL) {
     buttonProps.successCallbackURL = props.successCallbackURL;

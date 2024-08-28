@@ -2725,6 +2725,7 @@ const Token = () => {
         <div className="modal fade show block">
           <BuyModal
             finalPrice={finalPrice}
+            currencyDecimals={tokenDecimals as number}
             finalPriceNotFormatted={finalPriceNotFormatted as string}
             tokenStatut={tokenStatut as string}
             allowanceTrue={allowanceTrue}

@@ -277,7 +277,6 @@ const MarketplaceComponent = ({ auctions, setAllTokens, allTokens, isAuctionsLoa
           {!isAuctionsLoading ? (
             <>
               {filteredAuctions?.map((auction, index) => {
-                console.log(auction);
                 return (
                   <TokenCard
                     key={index}

@@ -106,17 +106,13 @@ const BidsModal = ({
   const [tooHighPriceForCrossmint, setTooHighPriceForCrossmint] = useState(false);
 
   const chainConfig = config[chainId] as ChainObject;
-  const chainWETH = Object.values(
-    chainConfig?.smartContracts?.currencies
-  )?.[0]?.address?.toLowerCase();
 
   let frontURL;
   if (typeof window !== "undefined") {
     frontURL = window.location.origin;
   }
 
-  const isWETH = currencyContract?.toLowerCase() === chainWETH;
-  const canPayWithCrossmint = isWETH && chainConfig?.features?.crossmint?.enabled;
+  const canPayWithCrossmint = chainConfig?.features?.crossmint?.enabled;
   const modalRef: any = useRef();
 
   const userAddr = useAddress();
@@ -377,8 +373,6 @@ const BidsModal = ({
       );
 
       const referralAddress = getCookie("_rid") ?? "";
-
-      console.log("bidsBigInt", bidsBigInt?.toString());
 
       await auctionBids({
         args: [marketplaceListings?.[0]?.id, bidsBigInt, address, referralAddress]
@@ -859,9 +853,8 @@ const BidsModal = ({
                             toast.error(`Buying failed: ${error.message}`);
                           }
                         }}
-                        perPriceToken={parseUnits(
-                          !!bidsAmount && bidsAmount !== "" ? bidsAmount : "0",
-                          Number(currencyTokenDecimals)
+                        perPriceToken={BigNumber.from(
+                          amountInEthWithSlippage ? amountInEthWithSlippage?.toString() : "0"
                         )}
                         totalPriceFormatted={formatUnits(
                           amountInEthWithSlippage ?? "0",
