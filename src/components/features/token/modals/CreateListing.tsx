@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { features } from "@/data/features";
 import { useAddress, useContract, useContractWrite, useContractRead } from "@thirdweb-dev/react";
 import "react-toastify/dist/ReactToastify.css";
@@ -28,9 +28,20 @@ const CreateListing = ({
   const { currentChainObject } = useChainContext();
   const chainId = currentChainObject?.chainId;
 
-  const currencies = Object.values(
-    config[chainId as number]?.smartContracts?.currencies
-  ) as Currency[];
+  const initialCurrencies = useMemo(
+    () => config[chainId as number]?.smartContracts?.currencies || {},
+    [chainId]
+  ) as { [key: string]: Currency };
+
+  const currencies = Object?.entries(initialCurrencies)
+    ?.map((currency) => {
+      if (!features?.canAcceptNativeTokens && currency[0] === "NATIVE") {
+        return null;
+      }
+
+      return currency?.[1];
+    })
+    ?.filter((currency) => currency !== null);
 
   const [selectedListingType, setSelectedListingType] = useState<any[]>([]);
   const [selectedUnitPrice, setSelectedUnitPrice] = useState<number>(0);
