@@ -218,7 +218,7 @@ const CreateListing = ({
       setSelectedCurrencyContract(currency?.address as Address);
       setCustomContract(null);
       setIsCustomEnabled(false);
-      setSelectedCurrency(currency?.address)
+      setSelectedCurrency(currency as Currency)
     }
   };
 
