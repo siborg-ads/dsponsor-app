@@ -93,7 +93,7 @@ const Marketplace = () => {
           Number(
             formatUnits(
               token?.marketplaceListings?.sort((a, b) => Number(b.id) - Number(a.id))[0]
-                ?.currencyPriceUSDC ?? 0,
+                ?.currencyPriceUSDC ?? token?.nftContract?.prices?.[0]?.currencyPriceUSDC,
               6
             )
           )
@@ -167,6 +167,7 @@ const Marketplace = () => {
         quantity: quantity,
         sold: sold,
         numberOfBids: numberOfBids,
+        usdcPriceBNString: usdcPriceBN?.USDCPrice?.toString(),
         item: {
           disable: token?.disable,
           usdcPriceBN: usdcPriceBN,
