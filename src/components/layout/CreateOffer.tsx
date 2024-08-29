@@ -71,38 +71,52 @@ const CreateOffer = () => {
   const [terms, setTerms] = useState<string | undefined>(undefined);
   const [minterAddress, setMinterAddress] = useState<Address | null>(null);
 
-  const [tokenDecimals, setTokenDecimals] = useState<number | null>(currencies?.[0]?.decimals);
-  const [tokenSymbol, setTokenSymbol] = useState<string | null>(currencies?.[0]?.symbol);
+  const [tokenDecimals, setTokenDecimals] = useState<number | null>(null);
+  const [tokenSymbol, setTokenSymbol] = useState<string | null>(null);
   const [tokenAddress, setTokenAddress] = useState<Address>(currencies?.[0]?.address as Address);
   const [customTokenAddress, setCustomTokenAddress] = useState<Address | undefined>(undefined);
   const [selectedCurrency, setSelectedCurrency] = useState<Currency>(currencies?.[0]);
+  const [mounted, setMounted] = useState(false);
 
-  //const { contract: tokenContractAsync } = useContract(selectedCurrency?.address, "token");
-  //const { data: tokenData } = useTokenBalance(tokenContractAsync, "token");
-
-  const { contract: customTokenContractAsync } = useContract(customTokenAddress, "token");
-  const { data: customTokenSymbol } = useContractRead(customTokenContractAsync, "symbol");
-  const { data: customTokenDecimals } = useContractRead(customTokenContractAsync, "decimals");
+  const { contract: tokenContractAsync } = useContract(tokenAddress, "token");
+  const { data: customTokenSymbol } = useContractRead(tokenContractAsync, "symbol");
+  const { data: customTokenDecimals } = useContractRead(tokenContractAsync, "decimals");
 
   useEffect(() => {
-    if (customTokenAddress) {
+    if (!mounted && currencies && currencies?.length > 0) {
+      console.log(currencies);
+      setTokenAddress(currencies?.[0]?.address as Address);
+      setTokenDecimals(currencies?.[0]?.decimals);
+      setTokenSymbol(currencies?.[0]?.symbol);
+      setMounted(true);
+    }
+  }, [currencies, mounted]);
+
+  const [customCurrencyEnabled, setCustomCurrencyEnabled] = React.useState<boolean>(false);
+
+  useEffect(() => {
+    if (customCurrencyEnabled) {
       setTokenAddress(customTokenAddress as Address);
-      if (customTokenDecimals) {
-        setTokenDecimals(customTokenDecimals);
-      } else {
-        setTokenDecimals(null);
-      }
-      if (customTokenSymbol) {
-        setTokenSymbol(customTokenSymbol);
-      } else {
-        setTokenSymbol(null);
-      }
+      setTokenDecimals(null);
+      setTokenSymbol(null);
     } else {
       setTokenAddress(selectedCurrency?.address as Address);
-      setTokenDecimals(selectedCurrency?.decimals);
-      setTokenSymbol(selectedCurrency?.symbol);
     }
-  }, [customTokenAddress, customTokenDecimals, customTokenSymbol, selectedCurrency]);
+  }, [customCurrencyEnabled, customTokenAddress, selectedCurrency]);
+
+  useEffect(() => {
+    if (customTokenDecimals) {
+      setTokenDecimals(customTokenDecimals);
+    } else {
+      setTokenDecimals(null);
+    }
+
+    if (customTokenSymbol) {
+      setTokenSymbol(customTokenSymbol);
+    } else {
+      setTokenSymbol(null);
+    }
+  }, [customTokenDecimals, customTokenSymbol]);
 
   const { setSelectedChain } = useSwitchChainContext();
 
@@ -505,6 +519,8 @@ const CreateOffer = () => {
             setSelectedCurrency={setSelectedCurrency}
             handleRoyaltiesChange={handleRoyaltiesChange}
             selectedRoyalties={selectedRoyalties}
+            customCurrencyEnabled={customCurrencyEnabled}
+            setCustomCurrencyEnabled={setCustomCurrencyEnabled}
           />
         </CarouselForm>
       </section>

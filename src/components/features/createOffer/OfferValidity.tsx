@@ -28,7 +28,9 @@ const OfferValidity = ({
   customTokenAddress,
   setCustomTokenAddress,
   selectedCurrency,
-  setSelectedCurrency
+  setSelectedCurrency,
+  customCurrencyEnabled,
+  setCustomCurrencyEnabled
 }: {
   stepsRef: any;
   styles: any;
@@ -50,9 +52,9 @@ const OfferValidity = ({
   setCustomTokenAddress: React.Dispatch<React.SetStateAction<Address | undefined>>;
   selectedCurrency: Currency;
   setSelectedCurrency: React.Dispatch<React.SetStateAction<Currency | undefined>>;
+  customCurrencyEnabled: boolean;
+  setCustomCurrencyEnabled: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
-  const [customCurrencyEnabled, setCustomCurrencyEnabled] = React.useState<boolean>(false);
-
   const handleCurrencyChange = (event) => {
     const currency = event.target.value;
     const isCurrencyKnown = currencies?.find((c) => c?.address === currency);
@@ -60,7 +62,6 @@ const OfferValidity = ({
     if (isCurrencyKnown) {
       setSelectedCurrency(isCurrencyKnown);
       setCustomCurrencyEnabled(false);
-      setCustomTokenAddress(undefined);
       return;
     }
 
