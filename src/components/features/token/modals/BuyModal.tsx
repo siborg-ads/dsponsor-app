@@ -123,7 +123,11 @@ const BuyModal = ({
       tokenEtherPriceRelayer?.amountInEthWithSlippage
     );
 
-    if (currencyBalance?.value?.lt(amountInEthWithSlippageBN)) {
+    const priceBN = BigNumber.from(finalPriceNotFormatted);
+
+    console.log(finalPriceNotFormatted, "finalPriceNotFormatted");
+
+    if (currencyBalance?.value?.lt(priceBN)) {
       setInsufficentBalance(true);
     } else {
       setInsufficentBalance(false);

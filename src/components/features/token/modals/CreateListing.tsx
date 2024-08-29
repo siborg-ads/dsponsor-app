@@ -54,6 +54,7 @@ const CreateListing = ({
   const [errors, setErrors] = useState<any>({});
   const [showPreviewModal, setShowPreviewModal] = useState<boolean>(false);
   const [validate, setValidate] = useState<boolean>(false);
+  const [isCustomEnabled, setIsCustomEnabled] = useState<boolean>(false);
 
   const address = useAddress();
 
@@ -68,8 +69,8 @@ const CreateListing = ({
   const { data: decimalsContractAsync } = useContractRead(tokenContractAsync, "decimals");
 
   const [approvalForAllToken, setApprovalForAllToken] = useState(false);
-  const [currencySymbol, setCurrencySymbol] = useState<string>(currencies[0].symbol);
-  const [currencyDecimals, setCurrencyDecimals] = useState<number>(currencies[0].decimals);
+  const [currencySymbol, setCurrencySymbol] = useState<string | null>(currencies[0].symbol);
+  const [currencyDecimals, setCurrencyDecimals] = useState<number | null>(currencies[0].decimals);
 
   const { mutateAsync: setApprovalForAll } = useContractWrite(
     dsponsorNFTContract,
@@ -80,10 +81,14 @@ const CreateListing = ({
   useEffect(() => {
     if (symbolContractAsync) {
       setCurrencySymbol(symbolContractAsync);
+    } else {
+      setCurrencySymbol(null);
     }
 
     if (decimalsContractAsync) {
       setCurrencyDecimals(decimalsContractAsync);
+    } else {
+      setCurrencyDecimals(null);
     }
   }, [symbolContractAsync, decimalsContractAsync]);
 
@@ -141,12 +146,12 @@ const CreateListing = ({
         const secondsUntilEndTime = endDateFormated - startTime;
 
         const startingPrice = ethers.utils
-          .parseUnits(selectedStartingPrice.toString(), currencyDecimals)
+          .parseUnits(selectedStartingPrice.toString(), currencyDecimals as number)
           .toString();
 
         const isAuction = selectedListingType[0] === 1;
         const price = ethers.utils
-          .parseUnits(selectedUnitPrice.toString(), currencyDecimals)
+          .parseUnits(selectedUnitPrice.toString(), currencyDecimals as number)
           .toString();
         const assetContract = offerData?.nftContract?.id;
 
@@ -202,10 +207,10 @@ const CreateListing = ({
     setSelectedStartingPrice(value === "" ? null : price);
   };
   const handleCurrencyChange = (event) => {
-    setSelectedCurrency(event.target.value);
     if (event.target.value === "custom") {
       setSelectedCurrencyContract(event.target.value);
-      setCustomContract(event.target.value);
+      setIsCustomEnabled(true);
+      setSelectedCurrency(event.target.value);
     } else {
       setSelectedCurrencyContract(
         currencies?.find((currency) => currency.address === event.target.value)?.address as Address
@@ -215,7 +220,7 @@ const CreateListing = ({
   };
 
   const handleCustomContractChange = (event) => {
-    if (event.target.value === currencies?.["NATIVE"].address) {
+    if (event.target.value === currencies?.["NATIVE"]?.address) {
       setCustomContract(currencies?.["NATIVE"].address);
     } else {
       setCustomContract(event.target.value);
@@ -228,6 +233,7 @@ const CreateListing = ({
     const value = parseInt(e.target.value);
     setSelectedListingType([value]);
   };
+
   const validateInputs = () => {
     let isValid = true;
     let newErrors: any = {};
@@ -259,22 +265,30 @@ const CreateListing = ({
       newErrors.unitPriceError = `Unit price must be higher than the unit starting price.`;
       isValid = false;
     }
-    if (
-      selectedUnitPrice < 1 * 10 ** -currencyDecimals ||
-      isNaN(selectedUnitPrice) ||
-      selectedUnitPrice === null
-    ) {
-      newErrors.unitPriceError = `Unit price must be at least ${1 * 10 ** -currencyDecimals}.`;
+
+    if (!currencyDecimals || !currencySymbol) {
+      newErrors.currencyError = "Currency is missing or invalid.";
       isValid = false;
     }
 
-    if (
-      (selectedListingType[0] === 1 && selectedStartingPrice < 1 * 10 ** -currencyDecimals) ||
-      isNaN(selectedStartingPrice) ||
-      selectedStartingPrice === null
-    ) {
-      newErrors.startingPriceError = `Unit starting price must be at least ${1 * 10 ** -currencyDecimals}.`;
-      isValid = false;
+    if (currencyDecimals) {
+      if (
+        selectedUnitPrice < 1 * 10 ** -currencyDecimals ||
+        isNaN(selectedUnitPrice) ||
+        selectedUnitPrice === null
+      ) {
+        newErrors.unitPriceError = `Unit price must be at least ${1 * 10 ** -currencyDecimals}.`;
+        isValid = false;
+      }
+
+      if (
+        (selectedListingType[0] === 1 && selectedStartingPrice < 1 * 10 ** -currencyDecimals) ||
+        isNaN(selectedStartingPrice) ||
+        selectedStartingPrice === null
+      ) {
+        newErrors.startingPriceError = `Unit starting price must be at least ${1 * 10 ** -currencyDecimals}.`;
+        isValid = false;
+      }
     }
 
     if (selectedCurrency?.address === "custom" && customTokenContract === undefined) {
@@ -296,7 +310,7 @@ const CreateListing = ({
 
     const finalPrice = price - price * (fees[0] + fees[1]);
 
-    if (smartContract) {
+    if (smartContract && currencyDecimals) {
       return Number(finalPrice).toFixed(currencyDecimals);
     } else {
       return Number(finalPrice).toFixed(3);
@@ -345,7 +359,7 @@ const CreateListing = ({
   const helperFeesListing = {
     title: "Fees",
     body: `The fees are calculated on the final price. The fees are 4% for the platform and ${royalties} % royalties for the creator.  
-    e.g. If you put 100 USDC, the buyer will pay 100 USDC. You will receive 100 - 4%  (protocol fees) - ${royalties}% (royalties fees) USDC.
+    e.g. If you put 100 ${currencySymbol}, the buyer will pay 100 ${currencySymbol}. You will receive 100 - 4%  (protocol fees) - ${royalties}% (royalties fees) ${currencySymbol}.
     `,
     size: "small"
   };
@@ -567,7 +581,7 @@ const CreateListing = ({
                                     ))}
                                     <option value="custom">Custom</option>
                                   </select>
-                                  {selectedCurrency?.address === "custom" && (
+                                  {isCustomEnabled && (
                                     <Input
                                       type="text"
                                       value={customContract}
@@ -621,8 +635,8 @@ const CreateListing = ({
                   successFullUploadModal={successFullListingModal}
                   approvalForAllToken={approvalForAllToken}
                   handleApprove={handleApprove}
-                  tokenSymbol={currencySymbol}
-                  tokenDecimals={currencyDecimals}
+                  tokenSymbol={currencySymbol as string}
+                  tokenDecimals={currencyDecimals as number}
                   tokenAddress={selectedCurrency?.address as Address}
                 />
               </div>

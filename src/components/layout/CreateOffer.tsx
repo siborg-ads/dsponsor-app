@@ -7,8 +7,7 @@ import {
   useContract,
   useContractRead,
   useContractWrite,
-  useStorageUpload,
-  useTokenBalance
+  useStorageUpload
 } from "@thirdweb-dev/react";
 import styles from "@/styles/style.module.scss";
 import AdSubmission from "@/components/features/token/accordion/AdSubmission";
@@ -72,8 +71,8 @@ const CreateOffer = () => {
   const [terms, setTerms] = useState<string | undefined>(undefined);
   const [minterAddress, setMinterAddress] = useState<Address | null>(null);
 
-  const [tokenDecimals, setTokenDecimals] = useState<number>(currencies?.[0]?.decimals);
-  const [tokenSymbol, setTokenSymbol] = useState<string>(currencies?.[0]?.symbol);
+  const [tokenDecimals, setTokenDecimals] = useState<number | null>(currencies?.[0]?.decimals);
+  const [tokenSymbol, setTokenSymbol] = useState<string | null>(currencies?.[0]?.symbol);
   const [tokenAddress, setTokenAddress] = useState<Address>(currencies?.[0]?.address as Address);
   const [customTokenAddress, setCustomTokenAddress] = useState<Address | undefined>(undefined);
   const [selectedCurrency, setSelectedCurrency] = useState<Currency>(currencies?.[0]);
@@ -88,14 +87,22 @@ const CreateOffer = () => {
   useEffect(() => {
     if (customTokenAddress) {
       setTokenAddress(customTokenAddress as Address);
-      setTokenDecimals(customTokenDecimals as number);
-      setTokenSymbol(customTokenSymbol as string);
+      if (customTokenDecimals) {
+        setTokenDecimals(customTokenDecimals);
+      } else {
+        setTokenDecimals(null);
+      }
+      if (customTokenSymbol) {
+        setTokenSymbol(customTokenSymbol);
+      } else {
+        setTokenSymbol(null);
+      }
     } else {
       setTokenAddress(selectedCurrency?.address as Address);
       setTokenDecimals(selectedCurrency?.decimals);
       setTokenSymbol(selectedCurrency?.symbol);
     }
-  }, [customTokenAddress, selectedCurrency]);
+  }, [customTokenAddress, customTokenDecimals, customTokenSymbol, selectedCurrency]);
 
   const { setSelectedChain } = useSwitchChainContext();
 
@@ -204,9 +211,17 @@ const CreateOffer = () => {
       isValid = false;
     }
 
-    if (selectedUnitPrice < 1 * 10 ** -tokenDecimals) {
-      newErrors.unitPriceError = `Unit price must be at least ${1 * 10 ** -tokenDecimals}.`;
+    if (!tokenSymbol || !tokenDecimals) {
+      newErrors.currencyError = "Token contract is invalid.";
+      newErrors.tokenError = "Token contract is invalid.";
       isValid = false;
+    }
+
+    if (tokenDecimals) {
+      if (selectedUnitPrice < 1 * 10 ** -tokenDecimals) {
+        newErrors.unitPriceError = `Unit price must be at least ${1 * 10 ** -tokenDecimals}.`;
+        isValid = false;
+      }
     }
 
     if (selectedNumber < 0) {
@@ -248,7 +263,8 @@ const CreateOffer = () => {
     selectedUnitPrice,
     startDate,
     tokenDecimals,
-    tokenAddress
+    tokenAddress,
+    tokenSymbol
   ]);
 
   const handlePreviewModal = () => {
@@ -480,8 +496,8 @@ const CreateOffer = () => {
             numSteps={numSteps}
             currentSlide={currentSlide}
             currencies={currencies}
-            tokenDecimals={tokenDecimals}
-            tokenSymbol={tokenSymbol}
+            tokenDecimals={tokenDecimals as number}
+            tokenSymbol={tokenSymbol as string}
             tokenAddress={tokenAddress}
             customTokenAddress={customTokenAddress as Address}
             setCustomTokenAddress={setCustomTokenAddress}
@@ -504,7 +520,7 @@ const CreateOffer = () => {
             endDate={endDate}
             selectedNumber={selectedNumber}
             selectedUnitPrice={selectedUnitPrice}
-            tokenSymbol={tokenSymbol}
+            tokenSymbol={tokenSymbol as string}
             selectedRoyalties={selectedRoyalties}
             imageURLSteps={["imageURL"]}
             previewImage={previewImages}

@@ -84,7 +84,6 @@ const Token = () => {
   const [successFullUpload, setSuccessFullUpload] = useState<boolean>(false);
   const [showPreviewModal, setShowPreviewModal] = useState<boolean>(false);
   const [validate, setValidate] = useState<boolean>(false);
-  const [currency, setCurrency] = useState<string | null>(null);
   const [, setAdStatut] = useState<number | null>(null);
   const [offerNotFormated] = useState(false);
   const [price, setPrice] = useState<string | null>(null);
@@ -794,18 +793,7 @@ const Token = () => {
     };
 
     fetchSalesData();
-  }, [
-    marketplaceListings,
-    chainId,
-    currency,
-    currentChainObject,
-    offerData,
-    tokenId,
-    offers,
-    offerId,
-    tokenSymbol,
-    tokenDecimals
-  ]);
+  }, [currentChainObject, marketplaceListings, offerData, tokenDecimals, tokenId, tokenSymbol]);
 
   useEffect(() => {
     if (!offerData || !tokenId) return;
@@ -893,7 +881,6 @@ const Token = () => {
         offerData?.nftContract?.prices[0]?.mintPriceStructure?.totalAmount &&
           BigInt(offerData?.nftContract?.prices[0]?.mintPriceStructure?.totalAmount)
       );
-      setCurrency(offerData?.nftContract?.prices[0]?.currencySymbol);
       return;
     }
 
@@ -1154,13 +1141,6 @@ const Token = () => {
           )
           ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.currency
       );
-      setCurrency(
-        offerData?.nftContract?.tokens
-          ?.find(
-            (token) => !!token?.tokenId && BigInt(token?.tokenId) === BigInt(tokenId as string)
-          )
-          ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.currencySymbol
-      );
       return;
     }
     if (
@@ -1170,7 +1150,6 @@ const Token = () => {
     ) {
       setTokenStatut("COMPLETED");
       setTokenCurrencyAddress(offerData?.nftContract?.prices[0]?.currency);
-      setCurrency(offerData?.nftContract?.prices[0]?.currencySymbol);
       return;
     }
     if (
@@ -2118,7 +2097,7 @@ const Token = () => {
               </Link>
 
               <div className="mb-8 flex items-center gap-4 whitespace-nowrap flex-wrap">
-                {((currency &&
+                {((tokenSymbol &&
                   tokenStatut !== "MINTED" &&
                   (firstSelectedListing?.status === "CREATED" ||
                     marketplaceListings?.length <= 0)) ||

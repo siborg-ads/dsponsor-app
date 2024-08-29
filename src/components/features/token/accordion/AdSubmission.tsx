@@ -507,18 +507,16 @@ const AdSubmission = ({
                 ) : (
                   ""
                 )}
-                {tokenSymbol ? (
-                  <p className="font-display flex flex-col text-jacarta-100 text-sm">
-                    Currency
-                    {!errors.currencyError ? (
-                      <span className="dark:text-white text-base">{tokenSymbol}</span>
-                    ) : (
-                      <span className="text-red text-base">{errors.currencyError}</span>
-                    )}
-                  </p>
-                ) : (
-                  ""
-                )}
+
+                <p className="font-display flex flex-col text-jacarta-100 text-sm">
+                  Currency
+                  {!errors.currencyError ? (
+                    <span className="dark:text-white text-base">{tokenSymbol}</span>
+                  ) : (
+                    <span className="text-red text-base">{errors.currencyError}</span>
+                  )}
+                </p>
+
                 {selectedRoyalties ? (
                   <p className="font-display flex flex-col text-jacarta-100 text-sm">
                     Royalties

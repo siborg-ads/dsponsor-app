@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import ModalHelper from "@/components/ui/modals/Helper";
@@ -186,12 +186,15 @@ const OfferValidity = ({
                   )}
                 </div>
               </div>
-              <p className="dark:text-jacarta-100 text-jacarta-100 text-2xs mt-3">
-                You&apos;ll earn up to {selectedUnitPrice} {tokenSymbol ?? selectedCurrency?.symbol}
-                . As DSponsor charges a fee of 4%, sponsors will pay{" "}
-                {formatAndRoundPrice(selectedUnitPrice * 1.04)}{" "}
-                {tokenSymbol ?? selectedCurrency?.symbol}.
-              </p>
+              {tokenSymbol ? (
+                <p className="dark:text-jacarta-100 text-jacarta-100 text-2xs mt-3">
+                  You&apos;ll earn up to {selectedUnitPrice} {tokenSymbol}. As DSponsor charges a
+                  fee of 4%, sponsors will pay {formatAndRoundPrice(selectedUnitPrice * 1.04)}{" "}
+                  {tokenSymbol}.
+                </p>
+              ) : (
+                <p className="text-red text-2xs mt-3">The currency is not valid.</p>
+              )}
             </div>
             <div className="mb-6 flex flex-col items-center">
               <label
