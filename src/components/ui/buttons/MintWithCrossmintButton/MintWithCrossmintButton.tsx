@@ -100,7 +100,7 @@ export default function MintWithCrossmintButton(
   const feesBPS = token.protocolFeeBPS ?? 400;
   const fee = props?.price.mul(feesBPS).div(10000);
   const totalFee = fee;
-  const totalPriceFormatted = formatUnits(props?.price.add(totalFee), props?.currencyDecimals);
+  const totalPriceFormatted = formatUnits(props?.price.add(totalFee), "ether");
 
   const buttonProps = {
     projectId: props.config?.projectId,

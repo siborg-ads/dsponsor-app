@@ -110,7 +110,7 @@ export default function BuyWithCrossmintButton(
   const totalFees = royalty.add(protocolFee);
 
   const cumulativePrice = props?.price.add(totalFees);
-  const totalPriceFormatted = formatUnits(cumulativePrice, props?.currencyDecimals);
+  const totalPriceFormatted = formatUnits(cumulativePrice, "ether");
 
   const buttonProps = {
     projectId: props.config?.projectId,
@@ -134,8 +134,6 @@ export default function BuyWithCrossmintButton(
     successCallbackURL: props.successCallbackURL,
     failureCallbackURL: props.failureCallbackURL
   };
-
-  console.log(totalPriceFormatted);
 
   if (props?.successCallbackURL) {
     buttonProps.successCallbackURL = props.successCallbackURL;

@@ -125,8 +125,6 @@ const BuyModal = ({
 
     const priceBN = BigNumber.from(finalPriceNotFormatted);
 
-    console.log(finalPriceNotFormatted, "finalPriceNotFormatted");
-
     if (currencyBalance?.value?.lt(priceBN)) {
       setInsufficentBalance(true);
     } else {

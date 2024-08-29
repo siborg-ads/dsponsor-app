@@ -856,10 +856,7 @@ const BidsModal = ({
                         perPriceToken={BigNumber.from(
                           amountInEthWithSlippage ? amountInEthWithSlippage?.toString() : "0"
                         )}
-                        totalPriceFormatted={formatUnits(
-                          amountInEthWithSlippage ?? "0",
-                          Number(currencyTokenDecimals)
-                        )}
+                        totalPriceFormatted={formatUnits(amountInEthWithSlippage ?? "0", "ether")}
                         isDisabled={!checkTerms || !isPriceGood || tooHighPriceForCrossmint}
                         isLoadingRender={() => <Spinner size="sm" color="default" />}
                         successCallbackURL={window.location.href.replace(
