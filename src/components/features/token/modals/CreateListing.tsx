@@ -212,10 +212,13 @@ const CreateListing = ({
       setIsCustomEnabled(true);
       setSelectedCurrency(event.target.value);
     } else {
-      setSelectedCurrencyContract(
-        currencies?.find((currency) => currency.address === event.target.value)?.address as Address
-      );
+      const currency = currencies?.find((currency) => currency.address === event.target.value);
+      console.log("currency", currency);
+
+      setSelectedCurrencyContract(currency?.address as Address);
       setCustomContract(null);
+      setIsCustomEnabled(false);
+      setSelectedCurrency(currency?.address)
     }
   };
 
