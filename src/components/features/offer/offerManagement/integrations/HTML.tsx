@@ -183,6 +183,7 @@ const HTML = ({ chainId, offerId, offerTokens }) => {
           Compatible with platforms such as: Mailchimp, Brevo, etc...
         </span>
 
+        {/*
         <span className="dark:text-jacarta-100 text-jacarta-100">
           Read the full documentation by clicking{" "}
           <Link href="/" target="_blank" className="text-primaryPurple hover:text-opacity-80">
@@ -190,6 +191,8 @@ const HTML = ({ chainId, offerId, offerTokens }) => {
           </Link>
           .
         </span>
+
+        */}
       </div>
 
       <Divider className="my-4" />

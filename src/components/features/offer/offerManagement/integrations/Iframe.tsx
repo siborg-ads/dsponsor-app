@@ -165,6 +165,7 @@ const Iframe = ({ chainId, offerId }) => {
           GoDaddy, Squarespace, etc...{" "}
         </span>
 
+        {/* Add the following code snippet 
         <span className="dark:text-jacarta-100 text-jacarta-100">
           Read the full documentation by clicking{" "}
           <Link href="/" target="_blank" className="text-primaryPurple hover:text-opacity-80">
@@ -172,6 +173,7 @@ const Iframe = ({ chainId, offerId }) => {
           </Link>
           .
         </span>
+        */}
       </div>
 
       <Divider className="my-4" />
