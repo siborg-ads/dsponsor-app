@@ -117,23 +117,24 @@ const Marketplace = () => {
         token?.marketplaceListings?.sort((a, b) => Number(b.id) - Number(a.id))[0]?.currency ??
         token?.nftContract?.prices[0]?.currency;
 
-      const currencyUSDCPriceBN = BigNumber.from(
-        token?.marketplaceListings?.sort((a, b) => Number(b.id) - Number(a.id))[0]
-          ?.currencyPriceUSDC ??
-          token?.nftContract?.prices?.[0]?.currencyPriceUSDC ??
-          0
+      const directPriceUsdcBN = BigNumber.from(
+        token?.marketplaceListings?.sort((a, b) => Number(b.id) - Number(a.id))?.[0]
+          ?.buyPriceStructureUsdc?.buyoutPricePerToken ?? 0
       );
-
-      const directPriceBN = BigNumber.from(directPrice ?? 0);
-      const auctionPriceBN = BigNumber.from(auctionPrice ?? 0);
-      const mintPrinceBN = BigNumber.from(mintPrice ?? 0);
+      const auctionPriceUsdcBN = BigNumber.from(
+        token?.marketplaceListings?.sort((a, b) => Number(b.id) - Number(a.id))?.[0]
+          ?.bidPriceStructureUsdc?.minimalBidPerToken ?? 0
+      );
+      const mintPrinceUsdcBN = BigNumber.from(
+        token?.nftContract?.prices?.[0]?.mintPriceStructureUsdc?.totalAmount ?? 0
+      );
       const usdcPriceBN = {
         USDCPrice:
           listingType === "AUCTION"
-            ? auctionPriceBN.mul(currencyUSDCPriceBN)
+            ? auctionPriceUsdcBN
             : listingType === "DIRECT"
-              ? directPriceBN.mul(currencyUSDCPriceBN)
-              : mintPrinceBN.mul(currencyUSDCPriceBN),
+              ? directPriceUsdcBN
+              : mintPrinceUsdcBN,
         decimals: currencyDecimals
       };
 
