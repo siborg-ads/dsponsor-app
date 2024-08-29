@@ -88,17 +88,6 @@ const Marketplace = () => {
             )
           )
         : 0;
-      const priceUSD = Number(
-        formatAndRound(
-          Number(
-            formatUnits(
-              token?.marketplaceListings?.sort((a, b) => Number(b.id) - Number(a.id))[0]
-                ?.currencyPriceUSDC ?? token?.nftContract?.prices?.[0]?.currencyPriceUSDC,
-              6
-            )
-          )
-        ) ?? 0
-      );
       const directPrice = token?.marketplaceListings?.sort((a, b) => Number(b.id) - Number(a.id))[0]
         ?.buyPriceStructure?.buyoutPricePerToken;
       const auctionPrice = token?.marketplaceListings?.sort(
@@ -127,14 +116,25 @@ const Marketplace = () => {
       const currency =
         token?.marketplaceListings?.sort((a, b) => Number(b.id) - Number(a.id))[0]?.currency ??
         token?.nftContract?.prices[0]?.currency;
+
+      const currencyUSDCPriceBN = BigNumber.from(
+        token?.marketplaceListings?.sort((a, b) => Number(b.id) - Number(a.id))[0]
+          ?.currencyPriceUSDC ??
+          token?.nftContract?.prices?.[0]?.currencyPriceUSDC ??
+          0
+      );
+
+      const directPriceBN = BigNumber.from(directPrice ?? 0);
+      const auctionPriceBN = BigNumber.from(auctionPrice ?? 0);
+      const mintPrinceBN = BigNumber.from(mintPrice ?? 0);
       const usdcPriceBN = {
-        USDCPrice: BigNumber.from(
-          token?.marketplaceListings?.sort((a, b) => Number(b.id) - Number(a.id))[0]
-            ?.currencyPriceUSDC ??
-            token?.nftContract?.prices?.[0]?.currencyPriceUSDC ??
-            0
-        ),
-        decimals: 6
+        USDCPrice:
+          listingType === "AUCTION"
+            ? auctionPriceBN.mul(currencyUSDCPriceBN)
+            : listingType === "DIRECT"
+              ? directPriceBN.mul(currencyUSDCPriceBN)
+              : mintPrinceBN.mul(currencyUSDCPriceBN),
+        decimals: currencyDecimals
       };
 
       const object = {
@@ -158,7 +158,6 @@ const Marketplace = () => {
         offerId: offerId,
         tokenId: tokenId,
         tokenData: tokenData,
-        priceUSD: priceUSD,
         directPrice: directPrice,
         auctionPrice: auctionPrice,
         mintPrice: mintPrice,
