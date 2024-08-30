@@ -121,22 +121,39 @@ const Marketplace = () => {
         token?.marketplaceListings?.sort((a, b) => Number(b.id) - Number(a.id))?.[0]
           ?.buyPriceStructureUsdc?.buyoutPricePerToken ?? 0
       );
+      const directPriceUsdcFormatted = token?.marketplaceListings?.sort(
+        (a, b) => Number(b.id) - Number(a.id)
+      )?.[0]?.buyPriceStructureUsdcFormatted?.buyoutPricePerToken;
+
       const auctionPriceUsdcBN = BigNumber.from(
         token?.marketplaceListings?.sort((a, b) => Number(b.id) - Number(a.id))?.[0]
           ?.bidPriceStructureUsdc?.minimalBidPerToken ?? 0
       );
-      const mintPrinceUsdcBN = BigNumber.from(
+      const auctionPriceUsdcFormatted = token?.marketplaceListings?.sort(
+        (a, b) => Number(b.id) - Number(a.id)
+      )?.[0]?.bidPriceStructureUsdcFormatted?.minimalBidPerToken;
+
+      const mintPriceUsdcBN = BigNumber.from(
         token?.nftContract?.prices?.[0]?.mintPriceStructureUsdc?.totalAmount ?? 0
       );
+      const mintPriceUsdcFormatted =
+        token?.nftContract?.prices?.[0]?.mintPriceStructureUsdcFormatted?.totalAmount;
+
       const usdcPriceBN = {
         USDCPrice:
           listingType === "AUCTION"
             ? auctionPriceUsdcBN
             : listingType === "DIRECT"
               ? directPriceUsdcBN
-              : mintPrinceUsdcBN,
+              : mintPriceUsdcBN,
         decimals: currencyDecimals
       };
+      const usdcPriceFormatted =
+        listingType === "AUCTION"
+          ? auctionPriceUsdcFormatted
+          : listingType === "DIRECT"
+            ? directPriceUsdcFormatted
+            : mintPriceUsdcFormatted;
 
       const object = {
         name: name,
@@ -152,6 +169,7 @@ const Marketplace = () => {
         live: live,
         image: image ?? "",
         latestBid: latestBid,
+        usdcPriceFormatted,
         currencyDecimals: currencyDecimals,
         startTime: startTime,
         endTime: endTime,
@@ -180,6 +198,7 @@ const Marketplace = () => {
           offerId: offerId,
           tokenId: tokenId,
           tokenData: tokenData,
+          usdcPriceFormatted,
           startTime: startTime,
           endTime: endTime,
           currencyDecimals: currencyDecimals

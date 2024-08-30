@@ -19,6 +19,8 @@ import ResponsiveTooltip from "@/components/ui/ResponsiveTooltip";
 import { BigNumber } from "ethers";
 import formatAndRoundPrice from "@/utils/prices/formatAndRound";
 import { Address } from "thirdweb";
+import { features } from "@/data/features";
+import React from "react";
 
 const TokenCard = ({
   item,
@@ -36,7 +38,8 @@ const TokenCard = ({
   offers,
   isDisabled,
   currencyAddress,
-  tokenId
+  tokenId,
+  usdcPriceFormatted
 }: {
   item: any;
   url?: string;
@@ -54,8 +57,9 @@ const TokenCard = ({
   isDisabled?: boolean;
   currencyAddress?: Address;
   tokenId?: string;
+  usdcPriceFormatted?: string;
 }) => {
-  const [price, setPrice] = useState(null);
+  const [price, setPrice] = useState<string | null>(null);
   const [totalPrice, setTotalPrice] = useState<string | null>(null);
   const [itemData, setItemData] = useState<any>({});
   const [itemStatut, setItemStatut] = useState<string | null>(null);
@@ -511,9 +515,17 @@ const TokenCard = ({
               itemStatut === "TOKENMINTABLE") ? (
               <div className="dark:border-jacarta-800 border-jacarta-100 flex items-center whitespace-nowrap rounded-md border py-1 px-2">
                 <span className="text-green text-sm font-medium tracking-tight">
-                  {!!totalPrice && parseFloat(totalPrice) > 0
-                    ? `${formatAndRoundPrice(totalPrice) ?? 0} ${currencySymbol}`
-                    : "Free"}
+                  {features?.marketplaceIsUSDC ? (
+                    <React.Fragment>
+                      {!!usdcPriceFormatted && <span>{usdcPriceFormatted} USDC</span>}
+                    </React.Fragment>
+                  ) : (
+                    <ResponsiveTooltip text={`${usdcPriceFormatted} USDC`}>
+                      {!!price && parseFloat(price) > 0
+                        ? `${formatAndRoundPrice(price) ?? 0} ${currencySymbol}`
+                        : "Free"}
+                    </ResponsiveTooltip>
+                  )}
                 </span>
               </div>
             ) : (

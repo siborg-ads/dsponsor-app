@@ -96,9 +96,9 @@ const MarketplaceComponent = ({ auctions, setAllTokens, allTokens, isAuctionsLoa
           liveAuctions = [...liveAuctions]
             .sort((a, b) => {
               if (a?.usdcPriceBN?.USDCPrice.gt(b?.usdcPriceBN?.USDCPrice)) {
-                return -1;
-              } else if (a?.usdcPriceBN?.USDCPrice.lt(b?.usdcPriceBN?.USDCPrice)) {
                 return 1;
+              } else if (a?.usdcPriceBN?.USDCPrice.lt(b?.usdcPriceBN?.USDCPrice)) {
+                return -1;
               } else {
                 return 0;
               }
@@ -293,6 +293,7 @@ const MarketplaceComponent = ({ auctions, setAllTokens, allTokens, isAuctionsLoa
                     currencyAddress={auction?.currency}
                     tokenId={auction?.tokenId}
                     offer={auction}
+                    usdcPriceFormatted={auction?.usdcPriceFormatted}
                   />
                 );
               })}
