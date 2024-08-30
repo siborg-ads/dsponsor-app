@@ -5,7 +5,6 @@ import MarketplaceComponent from "@/components/features/marketplace/Marketplace"
 import { fetchMarketplace } from "@/utils/graphql/fetchMarketplace";
 import { Auctions } from "@/types/auctions";
 import { useChainContext } from "@/hooks/useChainContext";
-import formatAndRound from "@/utils/prices/formatAndRound";
 import { formatUnits } from "ethers/lib/utils";
 import { BigNumber } from "ethers";
 

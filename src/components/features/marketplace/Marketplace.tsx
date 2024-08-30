@@ -5,8 +5,6 @@ import TokenCardSkeleton from "@/components/ui/skeletons/TokenCardSkeleton";
 import TokenCard from "@/components/ui/cards/TokenCard";
 import { Popover, PopoverTrigger, PopoverContent } from "@nextui-org/popover";
 import Input from "@/components/ui/Input";
-import { ThirdwebSDK } from "@thirdweb-dev/sdk";
-import { useChainContext } from "@/hooks/useChainContext";
 
 const onAuctionCondition = (auction, mint, direct) => {
   return (
