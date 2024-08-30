@@ -51,5 +51,5 @@ export const features = {
   // Wether to show 2 tokens only by offer in the homepage
   homepageTwoTokensOnly: true,
   // USDC Price for the marketplace
-  marketplaceIsUSDC: !!isDevelopment
+  marketplaceIsUSDC: false // !!isDevelopment
 };

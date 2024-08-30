@@ -140,17 +140,17 @@ const Marketplace = () => {
 
       const usdcPriceBN = {
         USDCPrice:
-          listingType === "AUCTION"
+          listingType === "Auction"
             ? auctionPriceUsdcBN
-            : listingType === "DIRECT"
+            : listingType === "Direct"
               ? directPriceUsdcBN
               : mintPriceUsdcBN,
         decimals: currencyDecimals
       };
       const usdcPriceFormatted =
-        listingType === "AUCTION"
+        listingType === "Auction"
           ? auctionPriceUsdcFormatted
-          : listingType === "DIRECT"
+          : listingType === "Direct"
             ? directPriceUsdcFormatted
             : mintPriceUsdcFormatted;
 

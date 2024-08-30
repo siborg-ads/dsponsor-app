@@ -521,9 +521,7 @@ const TokenCard = ({
                     </React.Fragment>
                   ) : (
                     <ResponsiveTooltip text={`${usdcPriceFormatted} USDC`}>
-                      {!!price && parseFloat(price) > 0
-                        ? `${formatAndRoundPrice(price) ?? 0} ${currencySymbol}`
-                        : "Free"}
+                      {!!price && price !== "0" ? `${price} ${currencySymbol}` : "Free"}
                     </ResponsiveTooltip>
                   )}
                 </span>
