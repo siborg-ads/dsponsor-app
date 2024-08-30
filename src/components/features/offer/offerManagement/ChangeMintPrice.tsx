@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useContract, useContractWrite } from "@thirdweb-dev/react";
+import { useContract, useContractRead, useContractWrite } from "@thirdweb-dev/react";
 import config from "@/config/config";
 import { useChainContext } from "@/hooks/useChainContext";
 import { toast } from "react-toastify";
@@ -10,6 +10,8 @@ import { features } from "@/data/features";
 import Input from "@/components/ui/Input";
 import { Address } from "thirdweb";
 import StyledWeb3Button from "@/components/ui/buttons/StyledWeb3Button";
+import ResponsiveTooltip from "@/components/ui/ResponsiveTooltip";
+import { QuestionMarkCircleIcon } from "@heroicons/react/24/solid";
 
 const isDisabledMessage = (disableMint: boolean) => {
   return disableMint
@@ -20,19 +22,33 @@ const isDisabledMessage = (disableMint: boolean) => {
 const ChangeMintPrice = ({ offer }) => {
   const [amount, setAmount] = useState<number | undefined>(undefined);
   const [initialAmount, setInitialAmount] = useState<number | undefined>(undefined);
-  const [currency, setCurrency] = useState(null);
-  const [currencySymbol, setCurrencySymbol] = useState(null);
+  const [currency, setCurrency] = useState<Address | null>(null);
+  const [currencySymbol, setCurrencySymbol] = useState<string | null>(null);
   const [formattedAmountBN, setFormattedAmountBN] = useState<BigNumber | undefined>(undefined);
-  const [disableMint, setDisableMint] = useState(false);
+  const [disableMint, setDisableMint] = useState<boolean>(false);
   const [tokens, setTokens] = useState<any>(null);
   const [nftContractAddress, setNftContractAddress] = useState<Address | null>(null);
   const [, setTokensContractAddress] = useState<Address[] | null>(null);
-  const [selectedToken, setSelectedToken] = useState(null);
-  const [currencyDecimals, setCurrencyDecimals] = useState(null);
-  const [indexSelectedToken, setIndexSelectedToken] = useState(null);
+  const [selectedToken, setSelectedToken] = useState<any>(null);
+  const [currencyDecimals, setCurrencyDecimals] = useState<number | null>(null);
+  const [indexSelectedToken, setIndexSelectedToken] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [initialDisabled, setInitialDisabled] = useState(false);
   const [disabled, setDisabled] = useState(false);
+
+  const { contract: currencyContract } = useContract(currency);
+  const { data: currencyDecimalsData } = useContractRead(currencyContract, "decimals");
+  const { data: currencySymbolData } = useContractRead(currencyContract, "symbol");
+
+  useEffect(() => {
+    if (currencyDecimalsData) {
+      setCurrencyDecimals(currencyDecimalsData);
+    }
+
+    if (currencySymbolData) {
+      setCurrencySymbol(currencySymbolData);
+    }
+  }, [currencyDecimalsData, currencySymbolData]);
 
   const { currentChainObject } = useChainContext();
   const chainId = currentChainObject?.chainId;
@@ -44,11 +60,9 @@ const ChangeMintPrice = ({ offer }) => {
   useEffect(() => {
     if (offer) {
       // fallback to WETH from config if no currency is found
-      let currency =
-        offer?.nftContract?.prices[0]?.currency ??
-        config[chainId as number]?.smartContracts?.WETH?.address;
+      let currency = offer?.nftContract?.prices[0]?.currency;
       if (initialDisabled) {
-        setCurrency(config[chainId as number]?.smartContracts?.WETH?.address);
+        setCurrency(config[chainId as number]?.smartContracts?.currencies?.WETH?.address);
       } else {
         setCurrency(currency);
       }
@@ -72,12 +86,12 @@ const ChangeMintPrice = ({ offer }) => {
         setDisabled(true);
       }
 
-      if (offer?.nftContract?.prices[0]?.amount) {
+      if (offer?.nftContract?.prices[0]?.amount && currencyDecimals) {
         setAmount(
           parseFloat(
             formatUnits(
               BigNumber.from(offer?.nftContract?.prices[0]?.amount),
-              offer?.nftContract?.prices[0]?.currencyDecimals
+              currencyDecimals as number
             )
           )
         );
@@ -85,7 +99,7 @@ const ChangeMintPrice = ({ offer }) => {
           parseFloat(
             formatUnits(
               BigNumber.from(offer?.nftContract?.prices[0]?.amount),
-              offer?.nftContract?.prices[0]?.currencyDecimals
+              currencyDecimals as number
             )
           )
         );
@@ -94,20 +108,7 @@ const ChangeMintPrice = ({ offer }) => {
         setInitialAmount(undefined);
       }
     }
-  }, [chainId, initialDisabled, offer]);
-
-  useEffect(() => {
-    if (currency) {
-      const smartContracts = config[chainId as number]?.smartContracts;
-      const currency: any = Object?.values(smartContracts)?.find(
-        (contract: any) =>
-          contract?.address?.toLowerCase() ===
-          offer?.nftContract?.tokens[0]?.mint?.currency?.toLowerCase()
-      );
-      setCurrencySymbol(currency?.symbol ?? offer?.nftContract?.prices[0]?.currencySymbol);
-      setCurrencyDecimals(currency?.decimals);
-    }
-  }, [chainId, currency, offer?.nftContract?.prices, offer?.nftContract?.tokens]);
+  }, [chainId, currencyDecimals, initialDisabled, offer]);
 
   const handleAmount = (value) => {
     if (!value) {
@@ -124,15 +125,7 @@ const ChangeMintPrice = ({ offer }) => {
       value = value.replace(",", ".");
     }
 
-    const smartContracts = config[chainId as number]?.smartContracts;
-    const currency: any = Object?.values(smartContracts)?.find(
-      (contract: any) =>
-        contract?.address?.toLowerCase() ===
-        offer?.nftContract?.tokens[0]?.mint?.currency?.toLowerCase()
-    );
-    const decimals = currency?.decimals;
-
-    const formattedValue = parseUnits(value, decimals);
+    const formattedValue = parseUnits(value, currencyDecimals as number);
 
     setAmount(value);
     setFormattedAmountBN(formattedValue);
@@ -270,7 +263,14 @@ const ChangeMintPrice = ({ offer }) => {
       )}
 
       <div className="mb-4">
-        <label className="block text-gray-700 text-sm font-semibold mb-2">Mint price</label>
+        <div className="flex items-center gap-2 mb-2">
+          <label className="block text-gray-700 text-sm font-semibold">Mint price</label>
+
+          <ResponsiveTooltip text="The mint price is the amount of currency required to mint a token, this price will be the same for all tokens in the offer. However, the user will have to pay the protocol fees in addition to this price.">
+            <QuestionMarkCircleIcon className="h-4 w-4 text-white" />
+          </ResponsiveTooltip>
+        </div>
+
         <div className="relative max-w-xs w-full flex items-center">
           <Input
             type="number"

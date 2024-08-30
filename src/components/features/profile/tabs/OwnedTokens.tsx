@@ -274,14 +274,9 @@ const OwnedTokens = ({ data, isOwner, isLoading, fetchCreatedData, manageAddress
           {!showSliderForm && (
             <div className={`grid w-full grid-cols-1 gap-[1.875rem] md:grid-cols-2 lg:grid-cols-4`}>
               {data?.map((item, index) => {
-                let currencyDecimals = 0;
-                if (item?.prices?.length > 0) {
-                  currencyDecimals = item?.prices[0]?.currencyDecimals;
-                } else {
-                  currencyDecimals = item?.marketplaceListings?.sort(
-                    (a, b) => Number(b?.id) - Number(a?.id)
-                  )[0]?.currencyDecimals;
-                }
+                const currencyAddress =
+                  item?.marketplaceListings?.sort((a, b) => Number(b?.id) - Number(a?.id))[0]
+                    ?.currency ?? item?.nftContract?.prices?.[0]?.currency;
 
                 return isSelectionActive ? (
                   <div
@@ -307,7 +302,7 @@ const OwnedTokens = ({ data, isOwner, isLoading, fetchCreatedData, manageAddress
                           : `/${item?.chainConfig?.chainId}/offer/${item.offerId}/${item.tokenId}?tokenData=${item.tokenData}`
                       }
                       availableToSubmitAdFromOwnedTokens={true}
-                      currencyDecimals={currencyDecimals}
+                      currencyAddress={currencyAddress}
                     />
                   </div>
                 ) : (
@@ -329,7 +324,7 @@ const OwnedTokens = ({ data, isOwner, isLoading, fetchCreatedData, manageAddress
                         : `/${item?.chainConfig?.chainId}/offer/${item.offerId}/${item.tokenId}?tokenData=${item.tokenData}`
                     }
                     availableToSubmitAdFromOwnedTokens={true}
-                    currencyDecimals={currencyDecimals}
+                    currencyAddress={currencyAddress}
                   />
                 );
               })}

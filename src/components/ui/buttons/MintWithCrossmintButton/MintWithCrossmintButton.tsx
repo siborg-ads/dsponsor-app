@@ -1,6 +1,6 @@
 import { CrossmintPayButton } from "@crossmint/client-sdk-react-ui";
 import React from "react";
-import { ethers } from "ethers";
+import { BigNumber } from "ethers";
 import { formatUnits } from "ethers/lib/utils";
 import { Address } from "thirdweb";
 
@@ -55,6 +55,8 @@ export default function MintWithCrossmintButton(
     isLoadingRender: () => React.JSX.Element;
     isActiveRender?: (() => React.JSX.Element) | string;
     isBid: boolean;
+    currencyDecimals: number;
+    price: BigNumber;
     config: {
       projectId: string;
       mintCollectionId: string;
@@ -70,8 +72,6 @@ export default function MintWithCrossmintButton(
   }>
 ) {
   const { offer, token, user, referrer, whPassThroughArgs } = props;
-
-  const price = ethers.utils.parseUnits(props.token.price, "wei");
 
   if (!token.fee) {
     console.warn("MintWithCrossmint: Token fee not found - Using default fee");
@@ -99,9 +99,9 @@ export default function MintWithCrossmintButton(
   }
 
   const feesBPS = token.protocolFeeBPS ?? 400;
-  const fee = price.mul(feesBPS).div(10000);
+  const fee = props?.price.mul(feesBPS).div(10000);
   const totalFee = fee;
-  const totalPriceFormatted = formatUnits(price.add(totalFee), "ether");
+  const totalPriceFormatted = formatUnits(props?.price.add(totalFee), "ether");
 
   const buttonProps = {
     projectId: props.config?.projectId,

@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import Link from "next/link";
 import * as RadioGroup from "@radix-ui/react-radio-group";
 import { Divider } from "@nextui-org/react";
 import ResponsiveTooltip from "@/components/ui/ResponsiveTooltip";

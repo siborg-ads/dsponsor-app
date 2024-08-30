@@ -16,25 +16,22 @@ const devEthereumSepolia = {
     : "https://relayer.dsponsor.com",
   rpcURL: "https://ethereum-sepolia-rpc.publicnode.com",
   smartContracts: {
-    NATIVE: {
-      address: "0x0000000000000000000000000000000000000000",
-      decimals: 18,
-      symbol: "ETH"
-    },
-    WNATIVE: {
-      address: "0xfFf9976782d46CC05630D1f6eBAb18b2324d6B14",
-      decimals: 18,
-      symbol: "WETH"
-    },
-    USDC: {
-      address: "0x94a9D9AC8a22534E3FaCa9F4e7F2E2cf85d5E4C8",
-      decimals: 6,
-      symbol: "USDC"
-    },
-    WETH: {
-      address: "0xfFf9976782d46CC05630D1f6eBAb18b2324d6B14",
-      decimals: 18,
-      symbol: "WETH"
+    currencies: {
+      WETH: {
+        address: "0xfFf9976782d46CC05630D1f6eBAb18b2324d6B14",
+        decimals: 18,
+        symbol: "WETH"
+      },
+      NATIVE: {
+        address: "0x0000000000000000000000000000000000000000",
+        decimals: 18,
+        symbol: "ETH"
+      },
+      USDC: {
+        address: "0x94a9D9AC8a22534E3FaCa9F4e7F2E2cf85d5E4C8",
+        decimals: 6,
+        symbol: "USDC"
+      }
     },
     UNISWAP_QUOTER: {
       address: "0xEd1f6473345F45b75F8179591dd5bA1888cf2FB3"

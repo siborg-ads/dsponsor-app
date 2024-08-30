@@ -19,6 +19,7 @@ import Input from "@/components/ui/Input";
 import { ngrokURL } from "@/data/ngrok";
 import StyledWeb3Button from "@/components/ui/buttons/StyledWeb3Button";
 import { Address } from "thirdweb";
+import { ChainObject } from "@/types/chain";
 
 const BidsModal = ({
   setAmountToApprove,
@@ -105,8 +106,7 @@ const BidsModal = ({
   const [buyoutPrice, setBuyoutPrice] = useState<string | null>(null);
   const [tooHighPriceForCrossmint, setTooHighPriceForCrossmint] = useState(false);
 
-  const chainConfig = config[chainId];
-  // const chainWETH = chainConfig?.smartContracts.WETH.address.toLowerCase();
+  const chainConfig = config[chainId] as ChainObject;
 
   let frontURL;
   if (typeof window !== "undefined") {
@@ -901,14 +901,10 @@ const BidsModal = ({
                             toast.error(`Buying failed: ${error.message}`);
                           }
                         }}
-                        perPriceToken={parseUnits(
-                          !!bidsAmount && bidsAmount !== "" ? bidsAmount : "0",
-                          Number(currencyTokenDecimals)
+                        perPriceToken={BigNumber.from(
+                          amountInEthWithSlippage ? amountInEthWithSlippage?.toString() : "0"
                         )}
-                        totalPriceFormatted={formatUnits(
-                          amountInEthWithSlippage ?? "0",
-                          Number(currencyTokenDecimals)
-                        )}
+                        totalPriceFormatted={formatUnits(amountInEthWithSlippage ?? "0", "ether")}
                         isDisabled={!checkTerms || !isPriceGood || tooHighPriceForCrossmint}
                         isLoadingRender={() => <Spinner size="sm" color="default" />}
                         successCallbackURL={window.location.href.replace(

@@ -55,10 +55,11 @@ const BuyModal = ({
   totalPrice,
   hasEnoughBalance,
   hasEnoughBalanceForNative,
-  tokenEtherPriceRelayer
+  tokenEtherPriceRelayer,
+  currencyDecimals
 }: {
-  // eslint-disable-next-line no-unused-vars
   tags: string[];
+  // eslint-disable-next-line no-unused-vars
   formatTokenId: (tokenId: string) => string;
   tokenStatut: string;
   allowanceTrue: boolean;
@@ -102,6 +103,7 @@ const BuyModal = ({
   hasEnoughBalance: boolean;
   hasEnoughBalanceForNative: boolean;
   tokenEtherPriceRelayer: any;
+  currencyDecimals: number;
 }) => {
   const [validate, setValidate] = useState(false);
   const [notEnoughFunds, setNotEnoughFunds] = useState(false);
@@ -123,7 +125,9 @@ const BuyModal = ({
       tokenEtherPriceRelayer?.amountInEthWithSlippage
     );
 
-    if (currencyBalance?.value?.lt(amountInEthWithSlippageBN)) {
+    const priceBN = BigNumber.from(finalPriceNotFormatted);
+
+    if (currencyBalance?.value?.lt(priceBN)) {
       setInsufficentBalance(true);
     } else {
       setInsufficentBalance(false);
@@ -152,7 +156,7 @@ const BuyModal = ({
   }, [hasEnoughBalance, hasEnoughBalanceForNative]);
 
   // If currency is WETH, we can pay with Crossmint
-  const canPayWithCrossmint = features.canPayWithCrossmintEnabled;
+  const canPayWithCrossmint = features?.canPayWithCrossmintEnabled;
 
   const handleTermService = (e) => {
     setValidate(e.target.checked);
@@ -474,6 +478,10 @@ const BuyModal = ({
                           whPassThroughArgs={JSON.stringify({ tags })}
                           offer={offer}
                           token={token}
+                          currencyDecimals={currencyDecimals}
+                          price={BigNumber.from(
+                            tokenEtherPriceRelayer?.amountInEthWithSlippage ?? "0"
+                          )}
                           user={user}
                           isBid={false}
                           referrer={referrer}
@@ -515,6 +523,10 @@ const BuyModal = ({
                           token={token}
                           user={user}
                           isBid={false}
+                          price={BigNumber.from(
+                            tokenEtherPriceRelayer?.amountInEthWithSlippage ?? "0"
+                          )}
+                          currencyDecimals={currencyDecimals}
                           referrer={referrer}
                           actions={{
                             processing: onProcessingBuy,

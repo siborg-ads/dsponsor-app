@@ -5,8 +5,8 @@ import MarketplaceComponent from "@/components/features/marketplace/Marketplace"
 import { fetchMarketplace } from "@/utils/graphql/fetchMarketplace";
 import { Auctions } from "@/types/auctions";
 import { useChainContext } from "@/hooks/useChainContext";
-import formatAndRound from "@/utils/prices/formatAndRound";
 import { formatUnits } from "ethers/lib/utils";
+import { BigNumber } from "ethers";
 
 const metadata = {
   title: "Marketplace || SiBorg Ads - The Web3 Monetization Solution",
@@ -87,40 +87,72 @@ const Marketplace = () => {
             )
           )
         : 0;
-      const priceUSD = Number(
-        formatAndRound(
-          Number(
-            formatUnits(
-              token.marketplaceListings.sort((a, b) => Number(b.id) - Number(a.id))[0]
-                ?.currencyPriceUSDC ?? 0,
-              6
-            )
-          )
-        ) ?? 0
-      );
-      const directPrice = token.marketplaceListings.sort((a, b) => Number(b.id) - Number(a.id))[0]
+      const directPrice = token?.marketplaceListings?.sort((a, b) => Number(b.id) - Number(a.id))[0]
         ?.buyPriceStructure?.buyoutPricePerToken;
-      const auctionPrice = token.marketplaceListings.sort((a, b) => Number(b.id) - Number(a.id))[0]
-        ?.bidPriceStructure?.minimalBidPerToken;
+      const auctionPrice = token?.marketplaceListings?.sort(
+        (a, b) => Number(b.id) - Number(a.id)
+      )[0]?.bidPriceStructure?.minimalBidPerToken;
       const mintPrice = token?.nftContract?.prices[0]?.amount;
-      const startTime = token?.marketplaceListings.sort((a, b) => Number(b.id) - Number(a.id))[0]
+      const startTime = token?.marketplaceListings?.sort((a, b) => Number(b.id) - Number(a.id))[0]
         ?.startTime;
-      const endTime = token?.marketplaceListings.sort((a, b) => Number(b.id) - Number(a.id))[0]
+      const endTime = token?.marketplaceListings?.sort((a, b) => Number(b.id) - Number(a.id))[0]
         ?.endTime;
-      const status = token?.marketplaceListings.sort((a, b) => Number(b.id) - Number(a.id))[0]
+      const status = token?.marketplaceListings?.sort((a, b) => Number(b.id) - Number(a.id))[0]
         ?.status;
-      const quantity = token.marketplaceListings.sort((a, b) => Number(b.id) - Number(a.id))[0]
+      const quantity = token?.marketplaceListings?.sort((a, b) => Number(b.id) - Number(a.id))[0]
         ?.quantity;
-      const numberOfBids = token.marketplaceListings.sort((a, b) => Number(b.id) - Number(a.id))[0]
-        ?.bids.length;
+      const numberOfBids = token?.marketplaceListings?.sort(
+        (a, b) => Number(b.id) - Number(a.id)
+      )[0]?.bids.length;
       const sold =
-        token?.marketplaceListings.sort((a, b) => Number(b.id) - Number(a.id))[0]?.status ===
+        token?.marketplaceListings?.sort((a, b) => Number(b.id) - Number(a.id))[0]?.status ===
           "COMPLETED" ||
-        (token?.marketplaceListings.sort((a, b) => Number(b.id) - Number(a.id))[0]?.listingType !==
+        (token?.marketplaceListings?.sort((a, b) => Number(b.id) - Number(a.id))[0]?.listingType !==
           "Auction" &&
-          token?.marketplaceListings.sort((a, b) => Number(b.id) - Number(a.id))[0]?.listingType !==
-            "Direct" &&
+          token?.marketplaceListings?.sort((a, b) => Number(b.id) - Number(a.id))[0]
+            ?.listingType !== "Direct" &&
           token?.mint !== null);
+      const currency =
+        token?.marketplaceListings?.sort((a, b) => Number(b.id) - Number(a.id))[0]?.currency ??
+        token?.nftContract?.prices[0]?.currency;
+
+      const directPriceUsdcBN = BigNumber.from(
+        token?.marketplaceListings?.sort((a, b) => Number(b.id) - Number(a.id))?.[0]
+          ?.buyPriceStructureUsdc?.buyoutPricePerToken ?? 0
+      );
+      const directPriceUsdcFormatted = token?.marketplaceListings?.sort(
+        (a, b) => Number(b.id) - Number(a.id)
+      )?.[0]?.buyPriceStructureUsdcFormatted?.buyoutPricePerToken;
+
+      const auctionPriceUsdcBN = BigNumber.from(
+        token?.marketplaceListings?.sort((a, b) => Number(b.id) - Number(a.id))?.[0]
+          ?.bidPriceStructureUsdc?.minimalBidPerToken ?? 0
+      );
+      const auctionPriceUsdcFormatted = token?.marketplaceListings?.sort(
+        (a, b) => Number(b.id) - Number(a.id)
+      )?.[0]?.bidPriceStructureUsdcFormatted?.minimalBidPerToken;
+
+      const mintPriceUsdcBN = BigNumber.from(
+        token?.nftContract?.prices?.[0]?.mintPriceStructureUsdc?.totalAmount ?? 0
+      );
+      const mintPriceUsdcFormatted =
+        token?.nftContract?.prices?.[0]?.mintPriceStructureUsdcFormatted?.totalAmount;
+
+      const usdcPriceBN = {
+        USDCPrice:
+          listingType === "Auction"
+            ? auctionPriceUsdcBN
+            : listingType === "Direct"
+              ? directPriceUsdcBN
+              : mintPriceUsdcBN,
+        decimals: currencyDecimals
+      };
+      const usdcPriceFormatted =
+        listingType === "Auction"
+          ? auctionPriceUsdcFormatted
+          : listingType === "Direct"
+            ? directPriceUsdcFormatted
+            : mintPriceUsdcFormatted;
 
       const object = {
         name: name,
@@ -129,11 +161,14 @@ const Marketplace = () => {
         chain: chain,
         chainId: chainId,
         price: price,
+        usdcPriceBN: usdcPriceBN,
+        currency: currency,
         currencySymbol: currencySymbol,
         link: `/${chainId}/offer/${offerId}/${tokenId}?tokenData=${tokenData}`,
         live: live,
         image: image ?? "",
         latestBid: latestBid,
+        usdcPriceFormatted,
         currencyDecimals: currencyDecimals,
         startTime: startTime,
         endTime: endTime,
@@ -141,7 +176,6 @@ const Marketplace = () => {
         offerId: offerId,
         tokenId: tokenId,
         tokenData: tokenData,
-        priceUSD: priceUSD,
         directPrice: directPrice,
         auctionPrice: auctionPrice,
         mintPrice: mintPrice,
@@ -150,9 +184,12 @@ const Marketplace = () => {
         quantity: quantity,
         sold: sold,
         numberOfBids: numberOfBids,
+        usdcPriceBNString: usdcPriceBN?.USDCPrice?.toString(),
         item: {
           disable: token?.disable,
+          usdcPriceBN: usdcPriceBN,
           metadata: token.metadata,
+          currency: currency,
           mint: token.mint,
           nftContract: token.nftContract,
           marketplaceListings: token.marketplaceListings,
@@ -160,6 +197,7 @@ const Marketplace = () => {
           offerId: offerId,
           tokenId: tokenId,
           tokenData: tokenData,
+          usdcPriceFormatted,
           startTime: startTime,
           endTime: endTime,
           currencyDecimals: currencyDecimals

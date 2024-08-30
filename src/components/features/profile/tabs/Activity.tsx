@@ -55,7 +55,7 @@ const Activity = ({ userAddr, chainId }) => {
     if (userAddr && chainId && !mount) {
       fetchData();
     }
-  }, [userAddr, chainId, mount]);
+  }, [userAddr, chainId, mount, relayerURL]);
 
   useEffect(() => {
     if (startDate && endDate) {

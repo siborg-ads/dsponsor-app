@@ -264,7 +264,7 @@ const Profile = () => {
       setIsLoadingTransactions(false);
       fetchDataRef.current = false;
     }
-  }, [chainId, userAddress]);
+  }, [chainId, userAddress, relayerURL]);
 
   const fetchOwnedAdProposals = React.useCallback(async () => {
     if (fetchOwnedAdProposalsRef.current) {
