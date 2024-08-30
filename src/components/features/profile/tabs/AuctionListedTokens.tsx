@@ -29,6 +29,14 @@ const AuctionListedTokens = ({ data, isOwner, isLoading }) => {
               item?.marketplaceListings?.sort((a, b) => Number(b?.id) - Number(a?.id))[0]
                 ?.currency ?? item?.nftContract?.prices?.[0]?.currency;
 
+            const currencyDecimals = Number(
+              item?.marketplaceListings?.sort((a, b) => Number(b?.id) - Number(a?.id))[0]
+                ?.currencyDecimals ?? item?.nftContract?.prices?.[0]?.currencyDecimals
+            );
+            const currencySymbol =
+              item?.marketplaceListings?.sort((a, b) => Number(b?.id) - Number(a?.id))[0]
+                ?.currencySymbol ?? item?.nftContract?.prices?.[0]?.currencySymbol;
+
             return (
               <TokenCard
                 item={item}
@@ -43,7 +51,8 @@ const AuctionListedTokens = ({ data, isOwner, isLoading }) => {
                 isToken={true}
                 isAuction={true}
                 isListing={true}
-                currencyAddress={currencyAddress}
+                currencySymbol={currencySymbol}
+                currencyDecimals={currencyDecimals}
               />
             );
           })}

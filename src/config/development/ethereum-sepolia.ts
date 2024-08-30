@@ -5,7 +5,6 @@ import { Sepolia } from "@thirdweb-dev/chains";
 const devEthereumSepolia = {
   chainId: 11155111,
   chainName: "sepolia",
-  chainNameProvider: "sepolia",
   gaslessBalanceThreshold: 1000000000000000, // 0.001 ETH
   network: Network.ETH_SEPOLIA,
   chainObject: Sepolia,

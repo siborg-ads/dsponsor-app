@@ -83,21 +83,12 @@ const isDevelopment = env === "dev";
 
 // Feature flags configuration
 export const features = {
-  canCreateOffer: !!isDevelopment,
-  canHaveMultipleCurrencies: !!isDevelopment,
+  canCreateOffer: true,
   canSeeSubmittedAds: true,
-  canSeeIntegrationDetails: true,
-  canSeeCreateOfferButton: !!isDevelopment,
-  canAcceptUSDC: false,
-  canAcceptCustomTokens: false,
   canAcceptNativeTokens: false,
-  canAcceptUSDT: false,
-  canSeeHomeInMobileMenu: false,
   canFilterTransactionsWithWETH: true,
   canChangeTokenMintPrice: false,
-  canChangeValidators: false,
-  canSeeModalHelperOnOfferPage: false,
-  canPayWithCrossmintEnabled: !!isDevelopment
+  canChangeValidators: false
 };
 ```
 
@@ -127,7 +118,6 @@ import { Base } from "@thirdweb-dev/chains";
 const prodBase = {
   chainId: 8453,
   chainName: "base",
-  chainNameProvider: "base",
   chainObject: Base,
   network: Network.BASE_MAINNET,
   logoURL: "/images/base-logo.png",
@@ -193,7 +183,6 @@ export default prodBase;
 
 - **`chainId`**: A unique identifier for the blockchain network.
 - **`chainName`**: A human-readable name of the chain.
-- **`chainNameProvider`**: The name used to identify the chain in various contexts.
 - **`chainObject`**: An object representing the chain, typically imported from a library like `@thirdweb-dev/chains`.
 - **`network`**: The network configuration object, imported from your utilities or configuration files.
 - **`logoURL`**: The path to the logo image for the chain.

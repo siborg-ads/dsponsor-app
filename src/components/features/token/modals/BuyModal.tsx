@@ -6,7 +6,6 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Divider, Spinner } from "@nextui-org/react";
 import { useChainContext } from "@/hooks/useChainContext";
-import { features } from "@/data/features";
 import MintWithCrossmintButton from "@/components/ui/buttons/MintWithCrossmintButton/MintWithCrossmintButton";
 import BuyWithCrossmintButton from "@/components/ui/buttons/BuyWithCrossmintButton/BuyWithCrossmintButton";
 import { parseUnits } from "ethers/lib/utils";
@@ -155,8 +154,7 @@ const BuyModal = ({
     }
   }, [hasEnoughBalance, hasEnoughBalanceForNative]);
 
-  // If currency is WETH, we can pay with Crossmint
-  const canPayWithCrossmint = features?.canPayWithCrossmintEnabled;
+  const canPayWithCrossmint = chainConfig?.features?.crossmint?.enabled;
 
   const handleTermService = (e) => {
     setValidate(e.target.checked);

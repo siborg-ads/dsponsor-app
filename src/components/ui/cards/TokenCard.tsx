@@ -36,7 +36,8 @@ const TokenCard = ({
   offer,
   offers,
   isDisabled,
-  currencyAddress,
+  currencyDecimals,
+  currencySymbol,
   tokenId,
   usdcPriceFormatted
 }: {
@@ -54,7 +55,8 @@ const TokenCard = ({
   offer?: any;
   offers?: any;
   isDisabled?: boolean;
-  currencyAddress?: Address;
+  currencyDecimals: number;
+  currencySymbol: string;
   tokenId?: string;
   usdcPriceFormatted?: string;
 }) => {
@@ -69,22 +71,6 @@ const TokenCard = ({
   const [availableToSubmitAd, setAvailableToSubmitAd] = useState(false);
   const [isPendingAdsOnOffer, setIsPendingAdsOnOffer] = useState(false);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
-  const [currencySymbol, setCurrencySymbol] = useState<string | null>(null);
-  const [currencyDecimals, setCurrencyDecimals] = useState<number | null>(null);
-
-  const { contract: currencyContract } = useContract(currencyAddress, "token");
-  const { data: currencyDecimalsData } = useContractRead(currencyContract, "decimals");
-  const { data: currencySymbolData } = useContractRead(currencyContract, "symbol");
-
-  useEffect(() => {
-    if (currencyDecimalsData) {
-      setCurrencyDecimals(Number(currencyDecimalsData));
-    }
-
-    if (currencySymbolData) {
-      setCurrencySymbol(currencySymbolData);
-    }
-  }, [currencyDecimalsData, currencySymbolData]);
 
   const address = useAddress();
   const storage = useStorage();
@@ -514,15 +500,9 @@ const TokenCard = ({
               itemStatut === "TOKENMINTABLE") ? (
               <div className="dark:border-jacarta-800 border-jacarta-100 flex items-center whitespace-nowrap rounded-md border py-1 px-2">
                 <span className="text-green text-sm font-medium tracking-tight">
-                  {features?.marketplaceIsUSDC ? (
-                    <React.Fragment>
-                      {!!usdcPriceFormatted && <span>{usdcPriceFormatted} USDC</span>}
-                    </React.Fragment>
-                  ) : (
-                    <ResponsiveTooltip text={`${usdcPriceFormatted} USDC`}>
-                      {!!price && price !== "0" ? `${price} ${currencySymbol}` : "Free"}
-                    </ResponsiveTooltip>
-                  )}
+                  <ResponsiveTooltip text={`${usdcPriceFormatted} USDC`}>
+                    {!!price && price !== "0" ? `${price} ${currencySymbol}` : "Free"}
+                  </ResponsiveTooltip>
                 </span>
               </div>
             ) : (

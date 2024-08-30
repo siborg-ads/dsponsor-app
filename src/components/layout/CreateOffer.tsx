@@ -84,7 +84,6 @@ const CreateOffer = () => {
 
   useEffect(() => {
     if (!mounted && currencies && currencies?.length > 0) {
-      console.log(currencies);
       setTokenAddress(currencies?.[0]?.address as Address);
       setTokenDecimals(currencies?.[0]?.decimals);
       setTokenSymbol(currencies?.[0]?.symbol);

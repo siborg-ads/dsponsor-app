@@ -5,7 +5,6 @@ import { NetworkType } from "@/utils/networks/networks";
 export interface ChainObject {
   chainId: number;
   chainName: string;
-  chainNameProvider: string;
   network: NetworkType;
   chainObject: typeof Base;
   logoURL: string;

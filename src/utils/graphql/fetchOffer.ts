@@ -40,6 +40,10 @@ type NFTContract = {
     amount: string;
     enabled: boolean;
     currencyDecimals: string;
+    currencySymbol: string;
+    mintPriceStructure: MintPriceStructure;
+    mintPriceStructureUsdc: MintPriceStructure;
+    mintPriceStructureUsdcFormatted: MintPriceStructure;
   }[];
   tokens: Token[];
 };
@@ -76,6 +80,11 @@ type BidPriceStructure = {
   totalBidAmount: string;
 };
 
+type MintPriceStructure = {
+  creatorAmount: string;
+  protocolFeeAmount: string;
+  totalAmount: string;
+};
 type BuyPriceStructure = {
   buyoutPricePerToken: string;
   listerBuyAmount: string;
@@ -98,8 +107,13 @@ type MarketplaceListing = {
   token: Token;
   bids: Bid[];
   currencyDecimals: string;
+  currencySymbol: string;
   bidPriceStructure: BidPriceStructure;
+  bidPriceStructureUsdc: BidPriceStructure;
+  bidPriceStructureUsdcFormatted: BidPriceStructure;
   buyPriceStructure: BuyPriceStructure;
+  buyPriceStructureUsdc: BuyPriceStructure;
+  buyPriceStructureUsdcFormatted: BuyPriceStructure;
 };
 
 type MarketplaceOffer = {

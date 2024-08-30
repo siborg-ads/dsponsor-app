@@ -220,12 +220,9 @@ const Token = () => {
       await fetchOffers();
     };
 
-    console.log("encodedPayload", encodedPayload);
-
     if (encodedPayload) {
       const decodedPayload = decodeURIComponent(encodedPayload);
       const parsedPayload = JSON.parse(decodedPayload);
-      console.log("parsedPayload", parsedPayload);
       if (parsedPayload[0]?.status === "success") {
         revalidate(parsedPayload[0]?.passThroughArgs);
         const collectionId = parsedPayload[0]?.collectionId;
@@ -630,8 +627,8 @@ const Token = () => {
               bid: bid,
               currency: {
                 contract: listing.currency,
-                currencySymbol: tokenSymbol,
-                tokenDecimals: tokenDecimals
+                currencySymbol: listing.currencySymbol,
+                tokenDecimals: listing.currencyDecimals
               },
               listing: {
                 id: listing.id,

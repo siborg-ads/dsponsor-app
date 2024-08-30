@@ -113,7 +113,6 @@ const BidsModal = ({
     frontURL = window.location.origin;
   }
 
-  // const isWETH = currencyContract?.toLowerCase() === chainWETH;
   const canPayWithCrossmint = chainConfig?.features?.crossmint?.enabled;
   const modalRef: any = useRef();
 

@@ -288,7 +288,8 @@ const MarketplaceComponent = ({ auctions, setAllTokens, allTokens, isAuctionsLoa
                         ? `/${auction?.chainId}/offer/${auction?.offerId}/${auction?.tokenId}`
                         : `/${auction?.chainId}/offer/${auction.item?.nftContract?.adOffers[0]?.id}/${auction?.tokenId}?tokenData=${auction.item?.mint?.tokenData}`
                     }
-                    currencyAddress={auction?.currency}
+                    currencyDecimals={auction?.currencyDecimals}
+                    currencySymbol={auction?.currencySymbol}
                     tokenId={auction?.tokenId}
                     offer={auction}
                     usdcPriceFormatted={auction?.usdcPriceFormatted}

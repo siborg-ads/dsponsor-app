@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import Meta from "@/components/Meta";
-import { ethers } from "ethers";
+import { ethers, BigNumber } from "ethers";
 import Image from "next/image";
 import {
   useContract,
@@ -167,17 +167,76 @@ const Offer = () => {
               ? Number(currentListing?.currencyDecimals)
               : Number(token?.nftContract?.prices[0]?.currencyDecimals);
 
+          const currencySymbol =
+            currentListing?.listingType === "Auction" || currentListing?.listingType === "Direct"
+              ? currentListing?.currencySymbol
+              : token?.nftContract?.prices[0]?.currencySymbol;
+
+          const listingType = currentListing?.listingType;
+          const quantity = currentListing?.quantity;
+          const numberOfBids = currentListing?.bids.length;
+          const sold =
+            currentListing?.status === "COMPLETED" ||
+            (!currentListing?.listingType && token?.mint !== null);
+          const currency =
+            token?.marketplaceListings?.sort((a, b) => Number(b.id) - Number(a.id))[0]?.currency ??
+            token?.nftContract?.prices[0]?.currency;
+
+          const directPriceUsdcBN = BigNumber.from(
+            token?.marketplaceListings?.sort((a, b) => Number(b.id) - Number(a.id))?.[0]
+              ?.buyPriceStructureUsdc?.buyoutPricePerToken ?? 0
+          );
+          const directPriceUsdcFormatted = token?.marketplaceListings?.sort(
+            (a, b) => Number(b.id) - Number(a.id)
+          )?.[0]?.buyPriceStructureUsdcFormatted?.buyoutPricePerToken;
+
+          const auctionPriceUsdcBN = BigNumber.from(
+            token?.marketplaceListings?.sort((a, b) => Number(b.id) - Number(a.id))?.[0]
+              ?.bidPriceStructureUsdc?.minimalBidPerToken ?? 0
+          );
+          const auctionPriceUsdcFormatted = token?.marketplaceListings?.sort(
+            (a, b) => Number(b.id) - Number(a.id)
+          )?.[0]?.bidPriceStructureUsdcFormatted?.minimalBidPerToken;
+
+          const mintPriceUsdcBN = BigNumber.from(
+            token?.nftContract?.prices?.[0]?.mintPriceStructureUsdc?.totalAmount ?? 0
+          );
+          const mintPriceUsdcFormatted =
+            token?.nftContract?.prices?.[0]?.mintPriceStructureUsdcFormatted?.totalAmount;
+
+          const usdcPriceBN = {
+            USDCPrice:
+              listingType === "Auction"
+                ? auctionPriceUsdcBN
+                : listingType === "Direct"
+                  ? directPriceUsdcBN
+                  : mintPriceUsdcBN,
+            decimals: 6
+          };
+          const usdcPriceFormatted =
+            listingType === "Auction"
+              ? auctionPriceUsdcFormatted
+              : listingType === "Direct"
+                ? directPriceUsdcFormatted
+                : mintPriceUsdcFormatted;
+
           return {
             ...token,
             listingType: currentListing?.listingType,
             endTime: currentListing?.endTime,
             status: currentListing?.status,
             startTime: currentListing?.startTime,
-            quantity: currentListing?.quantity,
+            currencySymbol,
             currencyDecimals,
+            quantity,
+            sold,
+            numberOfBids,
+            currency,
             directPrice: currentListing?.buyPriceStructure?.buyoutPricePerToken,
             auctionPrice: currentListing?.bidPriceStructure?.minimalBidPerToken,
-            mintPrice: token?.nftContract?.prices[0]?.amount
+            mintPrice: token?.nftContract?.prices[0]?.amount,
+            usdcPriceBN,
+            usdcPriceFormatted
           };
         });
 
@@ -890,7 +949,9 @@ const Offer = () => {
                     url={`/${chainId}/offer/${offerId}/${finalToken?.tokenId}${finalToken?.mint?.tokenData ? `?tokenData=${finalToken?.mint?.tokenData}` : ""}`}
                     tokenId={finalToken.tokenId}
                     offer={finalToken}
-                    currencyAddress={tokenCurrencyAddress}
+                    currencyDecimals={finalToken.currencyDecimals}
+                    currencySymbol={finalToken.currencySymbol}
+                    usdcPriceFormatted={finalToken.usdcPriceFormatted}
                   />
                 );
               })}

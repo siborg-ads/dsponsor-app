@@ -228,7 +228,6 @@ const CreateListing = ({
       setSelectedCurrency(event.target.value);
     } else {
       const currency = currencies?.find((currency) => currency.address === event.target.value);
-      console.log("currency", currency);
 
       setSelectedCurrencyContract(currency?.address as Address);
       setCustomContract(null);
