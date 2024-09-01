@@ -496,31 +496,47 @@ const Offer = () => {
     }
 
     switch (sortOption) {
-      case "Price: low to high":
+      case "Price: low to high": {
+        let liveAuctions = [...tempOffers].filter((auction) =>
+          onAuctionCondition(auction, true, true)
+        );
+        liveAuctions = [...liveAuctions].sort((a, b) => {
+          if (a?.usdcPriceBN?.USDCPrice.lt(b?.usdcPriceBN?.USDCPrice)) {
+            return -1;
+          } else if (a?.usdcPriceBN?.USDCPrice.gt(b?.usdcPriceBN?.USDCPrice)) {
+            return 1;
+          } else {
+            return 0;
+          }
+        });
+
+        const otherAuctions = tempOffers.filter(
+          (auction) => !onAuctionCondition(auction, true, true)
+        );
+
+        tempOffers = [...liveAuctions, ...otherAuctions];
+
+        break;
+      }
       case "Price: high to low": {
-        const liveAuctions = tempOffers.filter((offer) => onAuctionCondition(offer, true, true));
-        liveAuctions.sort(
-          (a, b) =>
-            (a.listingType === "Auction"
-              ? a.auctionPrice
-              : a.listingType === "Direct"
-                ? a.directPrice
-                : a.mintPrice) -
-            (b.listingType === "Auction"
-              ? b.auctionPrice
-              : b.listingType === "Direct"
-                ? b.directPrice
-                : b.mintPrice)
+        let liveAuctions = [...tempOffers].filter((auction) =>
+          onAuctionCondition(auction, true, true)
+        );
+        liveAuctions = [...liveAuctions].sort((a, b) => {
+          if (a?.usdcPriceBN?.USDCPrice.gt(b?.usdcPriceBN?.USDCPrice)) {
+            return -1;
+          } else if (a?.usdcPriceBN?.USDCPrice.lt(b?.usdcPriceBN?.USDCPrice)) {
+            return 1;
+          } else {
+            return 0;
+          }
+        });
+
+        let otherAuctions = [...tempOffers].filter(
+          (auction) => !onAuctionCondition(auction, true, true)
         );
 
-        if (sortOption === "Price: high to low") {
-          liveAuctions.reverse();
-        }
-
-        const notLiveAuctions = tempOffers.filter(
-          (offer) => !onAuctionCondition(offer, true, true)
-        );
-        tempOffers = [...liveAuctions, ...notLiveAuctions];
+        tempOffers = [...liveAuctions, ...otherAuctions];
         break;
       }
       case "Ending soon": {
