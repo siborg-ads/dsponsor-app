@@ -40,7 +40,7 @@ const Profile = () => {
   const [isLoadingTransactions, setIsLoadingTransactions] = useState(false);
   const [lastActivities, setLastActivities] = useState(null);
   const [isLoadingBids, setIsLoadingBids] = useState(false);
-  const [marketplaceBids, setMarketplaceBids] = useState(false);
+  const [marketplaceBids, setMarketplaceBids] = useState<any[]>([]);
   const [, setIsLoadingOwnedTokens] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -116,16 +116,17 @@ const Profile = () => {
       setIsLoadingBids(true);
       const offersByUserAddressArray = await fetchDataByUserAddress(fetchAllOffersProfile);
 
-      let allUserBids;
+      const allUserBids: any[] = [];
       offersByUserAddressArray?.forEach((offer) => {
         offer?.nftContract?.tokens?.forEach((token) =>
-          token?.marketplaceListings?.forEach((listing) =>
+          token?.marketplaceListings?.forEach((listing) => {
+            const { currencyDecimals, currencySymbol } = listing || {};
             listing?.bids?.forEach((bid) => {
               if (userAddress && bid?.bidder?.toLowerCase() === userAddress?.toLowerCase()) {
-                allUserBids = allUserBids ? [...allUserBids, bid] : [bid];
+                allUserBids.push({ currencyDecimals, currencySymbol, ...bid });
               }
-            })
-          )
+            });
+          })
         );
       });
 
