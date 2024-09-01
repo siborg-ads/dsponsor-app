@@ -686,8 +686,8 @@ const Token = () => {
               date: winnerBid?.creationTimestamp,
               currency: {
                 contract: listing?.currency,
-                currencySymbol: tokenSymbol,
-                tokenDecimals: tokenDecimals
+                currencySymbol: listing?.currencySymbol,
+                tokenDecimals: listing?.currencyDecimals
               },
               listing: {
                 id: listing?.id,
@@ -712,32 +712,16 @@ const Token = () => {
 
                 const directBuy = listingTokenData?.directBuys[0]; // only one direct buy per listing so we can take the first one
 
-                const smartContracts = chainConfig?.smartContracts?.currencies;
-                const targetAddress = listing?.currency;
-
-                let tempCurrency: any = null;
-
-                if (smartContracts) {
-                  for (const key in smartContracts) {
-                    if (
-                      smartContracts[key]?.address?.toLowerCase() === targetAddress?.toLowerCase()
-                    ) {
-                      tempCurrency = smartContracts[key];
-                      break;
-                    }
-                  }
-                }
-
                 saleInfo = {
                   address: directBuy?.buyer,
                   amount: directBuy?.totalPricePaid
-                    ? formatUnits(BigInt(directBuy?.totalPricePaid), tempCurrency?.decimals)
+                    ? formatUnits(BigInt(directBuy?.totalPricePaid), listing.currencyDecimals)
                     : 0,
                   date: directBuy?.revenueTransaction?.blockTimestamp,
                   currency: {
                     contract: listing?.currency,
-                    currencySymbol: tokenSymbol,
-                    tokenDecimals: tokenDecimals
+                    currencySymbol: listing.currencySymbol,
+                    tokenDecimals: listing.currencyDecimals
                   },
                   listing: {
                     id: directBuy?.listing?.id,
@@ -767,30 +751,21 @@ const Token = () => {
           (token) => !!token?.tokenId && BigInt(token?.tokenId) === BigInt(tokenId as string)
         );
 
-        const smartContracts = chainConfig?.smartContracts;
         const targetAddress = tokenData?.mint?.currency;
-
-        let tempCurrency: any = null;
-        if (smartContracts) {
-          for (const key in smartContracts) {
-            if (smartContracts[key]?.address?.toLowerCase() === targetAddress?.toLowerCase()) {
-              tempCurrency = smartContracts[key];
-              break;
-            }
-          }
-        }
+        const mintPrices = offerData?.nftContract?.prices;
+        const mintPrice = mintPrices?.find((p) => p?.currency === targetAddress);
 
         if (tokenData) {
           saleMintInfo = {
             address: tokenData?.mint?.to,
             amount: tokenData?.mint?.totalPaid
-              ? formatUnits(BigInt(tokenData?.mint?.totalPaid), tempCurrency?.decimals)
+              ? formatUnits(BigInt(tokenData?.mint?.totalPaid), mintPrice?.currencyDecimals)
               : 0,
             date: tokenData?.mint?.revenueTransaction?.blockTimestamp,
             currency: {
               contract: tokenData?.mint?.currency,
-              currencySymbol: tokenSymbol,
-              tokenDecimals: tokenDecimals
+              currencySymbol: mintPrice?.currencySymbol,
+              tokenDecimals: mintPrice?.currencyDecimals
             },
             listing: {
               id: 1,
