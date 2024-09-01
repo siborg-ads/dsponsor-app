@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import TokenCardSkeleton from "@/components/ui/skeletons/TokenCardSkeleton";
 import TokenCard from "@/components/ui/cards/TokenCard";
-import { Filter } from "@/components/layout/Home";
+import { Filter } from "@/data/curation";
 import useEmblaCarousel from "embla-carousel-react";
 import { ArrowLeftIcon, ArrowRightIcon } from "lucide-react";
 
