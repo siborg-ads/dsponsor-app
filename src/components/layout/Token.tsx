@@ -39,7 +39,6 @@ import stringToUint256 from "@/utils/tokens/stringToUnit256";
 import { formatUnits, getAddress, parseUnits } from "ethers/lib/utils";
 import "react-toastify/dist/ReactToastify.css";
 import { features } from "@/data/features";
-import { useChainContext } from "@/hooks/useChainContext";
 import * as Accordion from "@radix-ui/react-accordion";
 import { ChevronDownIcon, ExclamationCircleIcon } from "@heroicons/react/24/solid";
 import ResponsiveTooltip from "@/components/ui/ResponsiveTooltip";
@@ -56,11 +55,14 @@ const Token = () => {
   const router = useRouter();
   const storage = useStorage();
 
-  const { currentChainObject } = useChainContext();
-  const relayerURL = currentChainObject?.relayerURL;
   const offerId = router.query?.offerId;
   const tokenId = router.query?.tokenId;
-  const chainId = currentChainObject?.chainId;
+
+  const chainId = router.query?.chainId;
+  const chainConfig = config[Number(chainId)];
+
+  const relayerURL = chainConfig?.relayerURL;
+
   const address = useAddress();
 
   const [tokenIdString, setTokenIdString] = useState<string | null>(null);
@@ -176,11 +178,11 @@ const Token = () => {
       setTokenDecimals(tokenDecimalsData);
     }
   }, [tokenDecimalsData, tokenSymbolData]);
+
   const [tags, setTags] = useState<string[]>([]);
 
   const searchParams = useSearchParams();
   const encodedPayload = searchParams.get("p");
-  const chainConfig = config[chainId as number];
 
   const mintCollectionId = chainConfig?.features.crossmint.config?.mintCollectionId;
   const buyCollectionId = chainConfig?.features.crossmint.config?.buyCollectionId;
@@ -414,8 +416,8 @@ const Token = () => {
   }, [address, userDO]);
 
   const { contract: DsponsorAdminContract } = useContract(
-    config[chainId as number]?.smartContracts?.DSPONSORADMIN?.address,
-    config[chainId as number]?.smartContracts?.DSPONSORADMIN?.abi
+    chainConfig?.smartContracts?.DSPONSORADMIN?.address,
+    chainConfig?.smartContracts?.DSPONSORADMIN?.abi
   );
   const { contract: DsponsorNFTContract } = useContract(offerData?.nftContract?.id);
   const { mutateAsync: uploadToIPFS } = useStorageUpload();
@@ -437,7 +439,7 @@ const Token = () => {
   );
 
   const { contract: dsponsorMpContract } = useContract(
-    config[chainId as number]?.smartContracts?.DSPONSORMP?.address
+    chainConfig?.smartContracts?.DSPONSORMP?.address
   );
   const { mutateAsync: directBuy } = useContractWrite(dsponsorMpContract, "buy");
   const { setSelectedChain } = useSwitchChainContext();
@@ -549,9 +551,9 @@ const Token = () => {
 
   useEffect(() => {
     if (chainId) {
-      setSelectedChain(config[chainId]?.network);
+      setSelectedChain(chainConfig?.network);
     }
-  }, [chainId, setSelectedChain]);
+  }, [chainId, chainConfig, setSelectedChain]);
 
   useEffect(() => {
     setTokenIdString(tokenId?.toString() as string);
@@ -589,12 +591,13 @@ const Token = () => {
   }, [listingCreated, offerId, tokenId, chainId, offers]);
 
   useEffect(() => {
-    if (offerData?.nftContract && address) {
+    if (offerData?.nftContract) {
       const toUpdateTags = [
-        `${chainId}-userAddress-${address}`,
         `${chainId}-activity`,
         `${chainId}-nftContract-${offerData.nftContract.id}`
       ];
+
+      if (address) toUpdateTags.push(`${chainId}-userAddress-${address}`);
 
       if (offerData?.nftContract?.tokens.length > 0 && tokenId) {
         const listings = offerData?.nftContract?.tokens
@@ -709,7 +712,7 @@ const Token = () => {
 
                 const directBuy = listingTokenData?.directBuys[0]; // only one direct buy per listing so we can take the first one
 
-                const smartContracts = currentChainObject?.smartContracts?.currencies;
+                const smartContracts = chainConfig?.smartContracts?.currencies;
                 const targetAddress = listing?.currency;
 
                 let tempCurrency: any = null;
@@ -764,7 +767,7 @@ const Token = () => {
           (token) => !!token?.tokenId && BigInt(token?.tokenId) === BigInt(tokenId as string)
         );
 
-        const smartContracts = currentChainObject?.smartContracts;
+        const smartContracts = chainConfig?.smartContracts;
         const targetAddress = tokenData?.mint?.currency;
 
         let tempCurrency: any = null;
@@ -820,7 +823,7 @@ const Token = () => {
     };
 
     fetchSalesData();
-  }, [currentChainObject, marketplaceListings, offerData, tokenDecimals, tokenId, tokenSymbol]);
+  }, [chainConfig, marketplaceListings, offerData, tokenDecimals, tokenId, tokenSymbol]);
 
   useEffect(() => {
     if (!offerData || !tokenId) return;
@@ -1424,7 +1427,7 @@ const Token = () => {
         if (tokenStatut === "DIRECT" || tokenStatut === "AUCTION") {
           const result = await tokenContract?.call("allowance", [
             address,
-            config[chainId as number]?.smartContracts?.DSPONSORMP?.address
+            chainConfig?.smartContracts?.DSPONSORMP?.address
           ]);
 
           if (result) {
@@ -1433,7 +1436,7 @@ const Token = () => {
         } else {
           const result = await tokenContract?.call("allowance", [
             address,
-            config[chainId as number]?.smartContracts?.DSPONSORADMIN?.address
+            chainConfig?.smartContracts?.DSPONSORADMIN?.address
           ]);
 
           if (result) {
@@ -1452,7 +1455,7 @@ const Token = () => {
         return true;
       }
     },
-    [address, chainId, tokenContract, tokenCurrencyAddress, tokenStatut]
+    [chainConfig, address, tokenContract, tokenCurrencyAddress, tokenStatut]
   );
 
   useEffect(() => {
@@ -1469,7 +1472,7 @@ const Token = () => {
     try {
       if (marketplaceListings.length > 0 && tokenStatut === "DIRECT") {
         await approve({
-          args: [config[chainId as number]?.smartContracts?.DSPONSORMP?.address, amountToApprove]
+          args: [chainConfig?.smartContracts?.DSPONSORMP?.address, amountToApprove]
         });
       } else if (tokenStatut === "AUCTION" && marketplaceListings.length > 0) {
         const precision = bidsAmount.split(".")[1]?.length || 0;
@@ -1479,14 +1482,11 @@ const Token = () => {
         );
 
         await approve({
-          args: [
-            config[chainId as number]?.smartContracts?.DSPONSORMP?.address,
-            bidsBigInt.toString()
-          ]
+          args: [chainConfig?.smartContracts?.DSPONSORMP?.address, bidsBigInt.toString()]
         });
       } else {
         await approve({
-          args: [config[chainId as number]?.smartContracts?.DSPONSORADMIN?.address, amountToApprove]
+          args: [chainConfig?.smartContracts?.DSPONSORADMIN?.address, amountToApprove]
         });
       }
       setAllowanceTrue(false);
@@ -2478,7 +2478,7 @@ const Token = () => {
                         fetchOffers={fetchOffers}
                         bidsAmount={bidsAmount}
                         setBidsAmount={setBidsAmount}
-                        chainId={chainId as number}
+                        chainId={Number(chainId)}
                         price={price as string}
                         allowanceTrue={allowanceTrue}
                         handleApprove={handleApprove}
@@ -2748,7 +2748,7 @@ const Token = () => {
 
           <Accordion.Content className="mb-12">
             <Details
-              chainId={chainId as number}
+              chainId={Number(chainId)}
               contractAddress={offerData?.nftContract?.id}
               isUserOwner={isUserOwner}
               initialCreator={offerData?.initialCreator}

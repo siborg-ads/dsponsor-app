@@ -30,7 +30,7 @@ export type Currency = {
 
 const CreateOffer = () => {
   const router = useRouter();
-  const chainId = router.query?.chainName;
+  const chainId = router.query?.chainId;
 
   const initialCurrencies = useMemo(
     () => config[parseInt(chainId as string)]?.smartContracts?.currencies || {},

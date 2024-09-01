@@ -57,7 +57,7 @@ const Offer = () => {
   const storage = useStorage();
 
   const offerId = router.query?.offerId;
-  const chainId = router.query?.chainName as string;
+  const chainId = router.query?.chainId as string;
   const relayerURL = config[chainId]?.relayerURL;
 
   const [refusedValidatedAdModal, setRefusedValidatedAdModal] = useState<boolean>(false);
