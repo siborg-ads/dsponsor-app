@@ -681,7 +681,7 @@ const Token = () => {
             saleInfo = {
               address: winnerBid?.bidder,
               amount: winnerBid?.paidBidAmount
-                ? formatUnits(BigInt(winnerBid?.paidBidAmount), listing?.tokenDecimals)
+                ? formatUnits(BigInt(winnerBid?.paidBidAmount), listing?.currencyDecimals)
                 : 0,
               date: winnerBid?.creationTimestamp,
               currency: {

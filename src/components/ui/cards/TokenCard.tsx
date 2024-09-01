@@ -65,6 +65,7 @@ const TokenCard = ({
   const [itemData, setItemData] = useState<any>({});
   const [itemStatut, setItemStatut] = useState<string | null>(null);
   const [lastSalePrice, setLastSalePrice] = useState(null);
+  const [lastSaleCurrencySymbol, setLastSaleCurrencySymbol] = useState(null);
   const [lastBidder, setLastBidder] = useState(null);
   const [isLastBidder, setIsLastBidder] = useState(false);
   const [itemProposals, setItemProposals] = useState<any>(null);
@@ -160,6 +161,7 @@ const TokenCard = ({
   useEffect(() => {
     if (item) {
       let lastSalePrice;
+      let lastSaleCurrencySymbol;
 
       if (item?.marketplaceListings?.length > 0) {
         // we look for the latest completed listing
@@ -179,12 +181,14 @@ const TokenCard = ({
               BigInt(latestListing?.buyoutPricePerToken),
               Number(latestListing?.currencyDecimals)
             );
+            lastSaleCurrencySymbol = latestListing?.currencySymbol;
           } else if (latestListing?.listingType === "Auction") {
             // auction price
             lastSalePrice = formatUnits(
               BigInt(latestListing?.bids[0]?.paidBidAmount),
               Number(latestListing?.currencyDecimals)
             );
+            lastSaleCurrencySymbol = latestListing?.currencySymbol;
           }
         }
       }
@@ -192,18 +196,28 @@ const TokenCard = ({
       if (!lastSalePrice && item?.mint !== null) {
         // we handle the mint case
         const mintPrice = item?.mint?.totalPaid;
-        if (mintPrice) {
-          lastSalePrice = formatUnits(BigInt(mintPrice), Number(item?.currencyDecimals));
+        const mintCurrencyAddr = item?.mint?.currency;
+        const mintPrices = item?.nftContract?.prices;
+        const mintCurrency = mintPrices?.find(
+          (price) => getAddress(price.currency) === getAddress(mintCurrencyAddr)
+        );
+
+        if (mintPrice && mintCurrency) {
+          lastSalePrice = formatUnits(BigInt(mintPrice), Number(mintCurrency?.currencyDecimals));
+          lastSaleCurrencySymbol = mintCurrency?.currencySymbol;
         }
       }
 
       if (lastSalePrice) {
         setLastSalePrice(lastSalePrice);
+        setLastSaleCurrencySymbol(lastSaleCurrencySymbol);
       } else {
         setLastSalePrice(null);
+        setLastSaleCurrencySymbol(null);
       }
     } else {
       setLastSalePrice(null);
+      setLastSaleCurrencySymbol(null);
     }
   }, [item]);
 
@@ -606,7 +620,7 @@ const TokenCard = ({
           )}
         {lastSalePrice && Number(lastSalePrice) > 0 && (
           <div className="flex items-center mt-4 text-sm text-jacarta-100">
-            Last Sale: {lastSalePrice} {currencySymbol}
+            Last Sale: {lastSalePrice} {lastSaleCurrencySymbol}
           </div>
         )}
       </div>
