@@ -876,7 +876,7 @@ const BidsModal = ({
                   )}
                 </div>
 
-                {canPayWithCrossmint && address && (
+                {canPayWithCrossmint && address && parsedBidsAmount && (
                   <>
                     <div className="flex items-center justify-center w-full">
                       <div className="flex-grow border-t border-gray-300"></div>
@@ -900,9 +900,7 @@ const BidsModal = ({
                             toast.error(`Buying failed: ${error.message}`);
                           }
                         }}
-                        perPriceToken={BigNumber.from(
-                          amountInEthWithSlippage ? amountInEthWithSlippage?.toString() : "0"
-                        )}
+                        perPriceToken={parsedBidsAmount}
                         totalPriceFormatted={formatUnits(amountInEthWithSlippage ?? "0", "ether")}
                         isDisabled={!checkTerms || !isPriceGood || tooHighPriceForCrossmint}
                         isLoadingRender={() => <Spinner size="sm" color="default" />}
