@@ -6,19 +6,11 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "tippy.js/dist/tippy.css";
 import TimerCard from "../timer/TimerCard";
-import {
-  shortenAddress,
-  useAddress,
-  useContract,
-  useContractRead,
-  useStorage
-} from "@thirdweb-dev/react";
+import { shortenAddress, useAddress, useStorage } from "@thirdweb-dev/react";
 import { getAddress, formatUnits } from "ethers/lib/utils";
 import { ExclamationCircleIcon } from "@heroicons/react/24/solid";
 import ResponsiveTooltip from "@/components/ui/ResponsiveTooltip";
 import { BigNumber } from "ethers";
-import { Address } from "thirdweb";
-import { features } from "@/data/features";
 import React from "react";
 
 const TokenCard = ({
@@ -39,7 +31,8 @@ const TokenCard = ({
   currencyDecimals,
   currencySymbol,
   tokenId,
-  usdcPriceFormatted
+  usdcPriceFormatted,
+  hasBidStatus
 }: {
   item: any;
   url?: string;
@@ -59,6 +52,7 @@ const TokenCard = ({
   currencySymbol: string;
   tokenId?: string;
   usdcPriceFormatted?: string;
+  hasBidStatus?: boolean;
 }) => {
   const [price, setPrice] = useState<string | null>(null);
   const [totalPrice, setTotalPrice] = useState<string | null>(null);
@@ -516,7 +510,8 @@ const TokenCard = ({
               </div>
             ) : (
               itemStatut === "AUCTION" &&
-              !isToken && (
+              item?.status &&
+              hasBidStatus && (
                 <span
                   className={`${item.status === "CREATED" ? "text-primaryPurple" : item.status !== "OUTBID" ? "text-green" : "text-red"} text-xs min-w-[100px] text-end font-medium tracking-tight`}
                 >

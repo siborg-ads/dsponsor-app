@@ -25,10 +25,6 @@ const AuctionListedTokens = ({ data, isOwner, isLoading }) => {
       {data?.length > 0 ? (
         <div className="grid grid-cols-1 gap-[1.875rem] md:grid-cols-2 lg:grid-cols-4">
           {data?.map((item, index) => {
-            const currencyAddress =
-              item?.marketplaceListings?.sort((a, b) => Number(b?.id) - Number(a?.id))[0]
-                ?.currency ?? item?.nftContract?.prices?.[0]?.currency;
-
             const currencyDecimals = Number(
               item?.marketplaceListings?.sort((a, b) => Number(b?.id) - Number(a?.id))[0]
                 ?.currencyDecimals ?? item?.nftContract?.prices?.[0]?.currencyDecimals

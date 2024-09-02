@@ -202,7 +202,7 @@ const Profile = () => {
             if (lastUserBid) {
               const token = {
                 ...element,
-                marketplaceListings: [tokenElement?.lastLiveAuction],
+                marketplaceListings: [lastLiveAuctionListing],
                 status: handleBidsStatusType(lastUserBid?.status),
                 listingStatus: handleListingsStatusType(tokenElement?.lastLiveAuction?.status),
                 metadata: lastLiveAuctionListing?.token?.metadata,

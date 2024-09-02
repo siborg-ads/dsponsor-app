@@ -1,5 +1,4 @@
 import React from "react";
-import { features } from "@/data/features";
 import ResponsiveTooltip from "@/components/ui/ResponsiveTooltip";
 import type { Filter, CurationDataItem } from "@/data/curation";
 
