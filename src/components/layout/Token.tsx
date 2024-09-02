@@ -752,21 +752,17 @@ const Token = () => {
           (token) => !!token?.tokenId && BigInt(token?.tokenId) === BigInt(tokenId as string)
         );
 
-        const targetAddress = tokenData?.mint?.currency;
-        const mintPrices = offerData?.nftContract?.prices;
-        const mintPrice = mintPrices?.find((p) => p?.currency === targetAddress);
-
         if (tokenData) {
           saleMintInfo = {
             address: tokenData?.mint?.to,
             amount: tokenData?.mint?.totalPaid
-              ? formatUnits(BigInt(tokenData?.mint?.totalPaid), mintPrice?.currencyDecimals)
+              ? formatUnits(BigInt(tokenData?.mint?.totalPaid), tokenData?.mint?.currencyDecimals)
               : 0,
             date: tokenData?.mint?.revenueTransaction?.blockTimestamp,
             currency: {
               contract: tokenData?.mint?.currency,
-              currencySymbol: mintPrice?.currencySymbol,
-              tokenDecimals: mintPrice?.currencyDecimals
+              currencySymbol: tokenData?.mint?.currencySymbol,
+              tokenDecimals: tokenData?.mint?.currencyDecimals
             },
             listing: {
               id: 1,

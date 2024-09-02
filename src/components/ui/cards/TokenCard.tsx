@@ -195,16 +195,11 @@ const TokenCard = ({
 
       if (!lastSalePrice && item?.mint !== null) {
         // we handle the mint case
-        const mintPrice = item?.mint?.totalPaid;
-        const mintCurrencyAddr = item?.mint?.currency;
-        const mintPrices = item?.nftContract?.prices;
-        const mintCurrency = mintPrices?.find(
-          (price) => getAddress(price.currency) === getAddress(mintCurrencyAddr)
-        );
+        const { totalPaid: mintPrice, currencyDecimals, currencySymbol } = item?.mint ?? {};
 
-        if (mintPrice && mintCurrency) {
-          lastSalePrice = formatUnits(BigInt(mintPrice), Number(mintCurrency?.currencyDecimals));
-          lastSaleCurrencySymbol = mintCurrency?.currencySymbol;
+        if (mintPrice && currencyDecimals && currencySymbol) {
+          lastSalePrice = formatUnits(BigInt(mintPrice), Number(currencyDecimals));
+          lastSaleCurrencySymbol = currencySymbol;
         }
       }
 
