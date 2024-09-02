@@ -493,6 +493,7 @@ const Token = () => {
     const token = offerData?.nftContract?.tokens?.find(
       (token) => !!token?.tokenId && BigInt(token?.tokenId) === BigInt(tokenId as string)
     );
+    const allowList = offerData?.nftContract?.allowList;
 
     if (chainId && tokenCurrencyAddress && tokenDecimals) {
       if (tokenStatut === "AUCTION" && debouncedBidsAmount) {
@@ -505,7 +506,7 @@ const Token = () => {
         fetchBuyEtherPrice(formattedDirectBuyPrice);
       }
 
-      if (token?.mint === null && mintPriceBN) {
+      if ((token?.mint === null || allowList === false) && mintPriceBN) {
         const formattedMintPrice = ethers.utils.formatUnits(mintPriceBN, tokenDecimals);
 
         fetchBuyEtherPrice(formattedMintPrice);
@@ -520,7 +521,7 @@ const Token = () => {
     tokenStatut,
     directBuyPriceBN,
     mintPriceBN,
-    offerData?.nftContract?.tokens,
+    offerData,
     tokenId
   ]);
 
