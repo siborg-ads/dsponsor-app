@@ -1,9 +1,9 @@
 import Link from "next/link";
 import React, { useState } from "react";
 import renderDateToHumanString from "@/utils/dates/renderDateToHumanString";
-import renderPriceToHumanString from "@/utils/prices/renderPriceToHumanString";
 import formatLongAddress from "@/utils/addresses/formatLongAddress";
 import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/20/solid";
+import { formatUnits } from "ethers/lib/utils";
 
 const LatestBids = ({ bids }) => {
   const [visibleListings, setVisibleListings] = useState(1);
@@ -32,6 +32,8 @@ const LatestBids = ({ bids }) => {
   const handleViewLess = () => {
     setVisibleListings((prev) => Math.max(prev - 5, 1));
   };
+
+  console.log(bids);
 
   return (
     <div className="overflow-x-auto mt-4">
@@ -79,7 +81,8 @@ const LatestBids = ({ bids }) => {
                           </Link>
                         </td>
                         <td className="py-4 px-4 text-jacarta-100 dark:text-jacarta-100">
-                          {bid.bid.amountsFormatted.paidBidAmount} {bid.currency.currencySymbol}
+                          {formatUnits(bid.bid.paidBidAmount, bid.currency.tokenDecimals)}{" "}
+                          {bid.currency.currencySymbol}
                         </td>
                         <td className="py-4 px-4 text-jacarta-100 dark:text-jacarta-100">
                           {renderDateToHumanString(
@@ -87,9 +90,9 @@ const LatestBids = ({ bids }) => {
                           )}
                         </td>
                         <td className="py-4 px-4 text-jacarta-100 dark:text-jacarta-100">
-                          {bid.bid.amountsFormatted.refundProfit &&
+                          {bid.bid.refundProfit &&
                           Number(bid.bid.amountsFormatted.refundProfit) !== 0
-                            ? `${bid.bid.amountsFormatted.refundProfit} ${bid.currency.currencySymbol}`
+                            ? `${formatUnits(bid.bid.refundProfit, bid.currency.tokenDecimals)} ${bid.currency.currencySymbol}`
                             : "-"}
                         </td>
                         <td className="py-4 px-4 text-jacarta-100 dark:text-jacarta-100">
