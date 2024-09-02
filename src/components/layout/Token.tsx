@@ -1136,6 +1136,7 @@ const Token = () => {
         }
         setTokenStatut("AUCTION");
       }
+
       setTokenCurrencyAddress(
         offerData?.nftContract?.tokens
           ?.find(
@@ -2441,7 +2442,8 @@ const Token = () => {
                     fetchOffers={fetchOffers}
                   />
 
-                  {firstSelectedListing?.listingType === "Auction" &&
+                  {tokenDecimals &&
+                    firstSelectedListing?.listingType === "Auction" &&
                     firstSelectedListing.startTime < now &&
                     firstSelectedListing.endTime > now &&
                     firstSelectedListing?.status === "CREATED" && (

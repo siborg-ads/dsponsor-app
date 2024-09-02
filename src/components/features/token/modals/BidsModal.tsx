@@ -144,9 +144,9 @@ const BidsModal = ({
     if (!parsedBidsAmount || parsedBidsAmount.lte(BigNumber.from(0))) return;
 
     const hasInsufficientBalance: boolean =
-      !!currencyBalance &&
-      (currencyBalance?.value.lt(amountInEthWithSlippage) ||
-        parsedBidsAmount?.gt(currencyBalance?.value));
+      !!currencyBalance && parsedBidsAmount?.gt(currencyBalance?.value);
+    // (currencyBalance?.value.lt(amountInEthWithSlippage) ||
+    //   parsedBidsAmount?.gt(currencyBalance?.value));
 
     setInsufficentBalance(hasInsufficientBalance);
 
