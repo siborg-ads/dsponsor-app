@@ -3,17 +3,13 @@
  * The rounding precision is determined based on the magnitude of the input value.
  *
  * @param {number | string} value - The numeric value to be formatted and rounded. It can be either a number or a string that represents a number.
- * @returns {number} - The formatted and rounded number. The number is rounded to a maximum of 9 decimal places based on its magnitude.
+ * @returns {number} - The formatted and rounded number. The number is rounded to a maximum of 18 decimal places based on its magnitude.
  *
  * @description
  * - Values greater than 1 are rounded to 2 decimal places.
  * - Values between 0.1 and 1 are rounded to 3 decimal places.
  * - Values between 0.01 and 0.1 are rounded to 4 decimal places.
- * - Values between 0.001 and 0.01 are rounded to 5 decimal places.
- * - Values between 0.0001 and 0.001 are rounded to 6 decimal places.
- * - Values between 0.00001 and 0.0001 are rounded to 7 decimal places.
- * - Values between 0.000001 and 0.00001 are rounded to 8 decimal places.
- * - Values less than 0.000001 are rounded to 9 decimal places.
+ * - etc
  *
  * @example
  * // Example usage:
@@ -48,8 +44,28 @@ const formatAndRoundPrice = (value: string | number) => {
     return parseFloat(num.toFixed(7));
   } else if (num > 0.000001) {
     return parseFloat(num.toFixed(8));
-  } else {
+  } else if (num > 0.0000001) {
     return parseFloat(num.toFixed(9));
+  } else if (num > 0.00000001) {
+    return parseFloat(num.toFixed(10));
+  } else if (num > 0.000000001) {
+    return parseFloat(num.toFixed(11));
+  } else if (num > 0.0000000001) {
+    return parseFloat(num.toFixed(12));
+  } else if (num > 0.00000000001) {
+    return parseFloat(num.toFixed(13));
+  } else if (num > 0.000000000001) {
+    return parseFloat(num.toFixed(14));
+  } else if (num > 0.0000000000001) {
+    return parseFloat(num.toFixed(15));
+  } else if (num > 0.00000000000001) {
+    return parseFloat(num.toFixed(16));
+  } else if (num > 0.000000000000001) {
+    return parseFloat(num.toFixed(17));
+  } else if (num > 0.0000000000000001) {
+    return parseFloat(num.toFixed(18));
+  } else {
+    return num;
   }
 };
 

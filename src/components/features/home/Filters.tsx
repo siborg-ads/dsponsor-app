@@ -1,28 +1,34 @@
 import React from "react";
-import type { Filter } from "@/components/layout/Home";
-import { features } from "@/data/features";
 import ResponsiveTooltip from "@/components/ui/ResponsiveTooltip";
+import type { Filter, CurationDataItem } from "@/data/curation";
 
 const Filters = ({
+  data,
   filter,
   setFilter
 }: {
+  data: CurationDataItem[];
   filter: Filter;
   setFilter: React.Dispatch<React.SetStateAction<Filter>>;
 }) => {
+  const hasSomeMedias = data.find((d) => d.type.includes("medias"));
+  const hasSomeDapps = data.find((d) => d.type.includes("dapps"));
+  const hasSomeWebsites = data.find((d) => d.type.includes("websites"));
+  const hasSomeNewsletters = data.find((d) => d.type.includes("newsletters"));
+
   return (
     <div className="flex items-center overflow-scroll md:overflow-auto md:flex-wrap gap-2 md:gap-4 hide-scrollbar">
       <button
-        className={`px-4 py-2 rounded-lg hover:bg-opacity-80 ${filter === "all" ? "bg-white text-black" : "bg-secondaryBlack text-white"} ${!features.homepageFilters.canSeeAll ? "cursor-not-allowed" : ""}`}
+        className={`px-4 py-2 rounded-lg hover:bg-opacity-80 ${filter === "all" ? "bg-white text-black" : "bg-secondaryBlack text-white"}`}
         onClick={() => setFilter("all")}
-        disabled={!features.homepageFilters.canSeeAll}
+        disabled={data.length === 0}
       >
         All
       </button>
 
-      {features.homepageFilters.canSeeMedias ? (
+      {hasSomeMedias ? (
         <button
-          className={`px-4 py-2 rounded-lg hover:bg-opacity-80 ${filter === "medias" ? "bg-white text-black" : "bg-secondaryBlack text-white"} ${!features.homepageFilters.canSeeMedias ? "cursor-not-allowed" : ""}`}
+          className={`px-4 py-2 rounded-lg hover:bg-opacity-80 ${filter === "medias" ? "bg-white text-black" : "bg-secondaryBlack text-white"}`}
           onClick={() => setFilter("medias")}
         >
           Medias
@@ -30,7 +36,7 @@ const Filters = ({
       ) : (
         <ResponsiveTooltip text="Coming soon...">
           <button
-            className={`px-4 py-2 rounded-lg hover:bg-opacity-80 ${filter === "medias" ? "bg-white text-black" : "bg-secondaryBlack text-white"} ${!features.homepageFilters.canSeeMedias ? "cursor-not-allowed" : ""}`}
+            className={`px-4 py-2 rounded-lg hover:bg-opacity-80 ${filter === "medias" ? "bg-white text-black" : "bg-secondaryBlack text-white"}`}
             onClick={() => setFilter("medias")}
             disabled
           >
@@ -39,9 +45,9 @@ const Filters = ({
         </ResponsiveTooltip>
       )}
 
-      {features.homepageFilters.canSeeDapps ? (
+      {hasSomeDapps ? (
         <button
-          className={`px-4 py-2 rounded-lg hover:bg-opacity-80 ${filter === "dapps" ? "bg-white text-black" : "bg-secondaryBlack text-white"} ${!features.homepageFilters.canSeeDapps ? "cursor-not-allowed" : ""}`}
+          className={`px-4 py-2 rounded-lg hover:bg-opacity-80 ${filter === "dapps" ? "bg-white text-black" : "bg-secondaryBlack text-white"}`}
           onClick={() => setFilter("dapps")}
         >
           dApps
@@ -49,7 +55,7 @@ const Filters = ({
       ) : (
         <ResponsiveTooltip text="Coming soon...">
           <button
-            className={`px-4 py-2 rounded-lg hover:bg-opacity-80 ${filter === "dapps" ? "bg-white text-black" : "bg-secondaryBlack text-white"} ${!features.homepageFilters.canSeeDapps ? "cursor-not-allowed" : ""}`}
+            className={`px-4 py-2 rounded-lg hover:bg-opacity-80 ${filter === "dapps" ? "bg-white text-black" : "bg-secondaryBlack text-white"}`}
             onClick={() => setFilter("dapps")}
             disabled
           >
@@ -58,9 +64,9 @@ const Filters = ({
         </ResponsiveTooltip>
       )}
 
-      {features.homepageFilters.canSeeWebsites ? (
+      {hasSomeWebsites ? (
         <button
-          className={`px-4 py-2 rounded-lg hover:bg-opacity-80 ${filter === "websites" ? "bg-white text-black" : "bg-secondaryBlack text-white"} ${!features.homepageFilters.canSeeWebsites ? "cursor-not-allowed" : ""}`}
+          className={`px-4 py-2 rounded-lg hover:bg-opacity-80 ${filter === "websites" ? "bg-white text-black" : "bg-secondaryBlack text-white"}`}
           onClick={() => setFilter("websites")}
         >
           Websites
@@ -68,7 +74,7 @@ const Filters = ({
       ) : (
         <ResponsiveTooltip text="Coming soon...">
           <button
-            className={`px-4 py-2 rounded-lg hover:bg-opacity-80 ${filter === "websites" ? "bg-white text-black" : "bg-secondaryBlack text-white"} ${!features.homepageFilters.canSeeWebsites ? "cursor-not-allowed" : ""}`}
+            className={`px-4 py-2 rounded-lg hover:bg-opacity-80 ${filter === "websites" ? "bg-white text-black" : "bg-secondaryBlack text-white"}`}
             onClick={() => setFilter("websites")}
             disabled
           >
@@ -77,9 +83,9 @@ const Filters = ({
         </ResponsiveTooltip>
       )}
 
-      {features.homepageFilters.canSeeNewsletters ? (
+      {hasSomeNewsletters ? (
         <button
-          className={`px-4 py-2 rounded-lg hover:bg-opacity-80 ${filter === "newsletters" ? "bg-white text-black" : "bg-secondaryBlack text-white"} ${!features.homepageFilters.canSeeNewsletters ? "cursor-not-allowed" : ""}`}
+          className={`px-4 py-2 rounded-lg hover:bg-opacity-80 ${filter === "newsletters" ? "bg-white text-black" : "bg-secondaryBlack text-white"}`}
           onClick={() => setFilter("newsletters")}
         >
           Newsletters
@@ -87,7 +93,7 @@ const Filters = ({
       ) : (
         <ResponsiveTooltip text="Coming soon...">
           <button
-            className={`px-4 py-2 rounded-lg hover:bg-opacity-80 ${filter === "newsletters" ? "bg-white text-black" : "bg-secondaryBlack text-white"} ${!features.homepageFilters.canSeeNewsletters ? "cursor-not-allowed" : ""}`}
+            className={`px-4 py-2 rounded-lg hover:bg-opacity-80 ${filter === "newsletters" ? "bg-white text-black" : "bg-secondaryBlack text-white"}`}
             onClick={() => setFilter("newsletters")}
             disabled
           >

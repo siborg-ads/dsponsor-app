@@ -30,9 +30,8 @@ const AdSubmission = ({
   endDate,
   selectedNumber,
   selectedUnitPrice,
-  symbolContract,
+  tokenSymbol,
   selectedParameter,
-  selectedCurrency,
   selectedRoyalties,
   previewImage,
   displayedParameter,
@@ -66,9 +65,11 @@ const AdSubmission = ({
   endDate?: Date;
   selectedNumber?: number;
   selectedUnitPrice?: number;
-  symbolContract?: string;
+  tokenSymbol?: string;
+  tokenAddress?: Address;
+  customTokenAddress?: Address;
+  tokenDecimals?: number;
   selectedParameter?: string[];
-  selectedCurrency?: string;
   selectedRoyalties?: number;
   previewImage?: string[];
   displayedParameter?: string[];
@@ -152,7 +153,7 @@ const AdSubmission = ({
 
   if (adSubmission && !successFullUpload) {
     return (
-      <div className="modal-dialog max-h-[75vh] max-w-2xl">
+      <div className="modal-dialog max-h-[75vh] max-w-2xl md:min-w-md">
         <div className="modal-content !bg-secondaryBlack">
           <div className="modal-header">
             <div className="flex items-center justify-between w-full space-x-4">
@@ -243,7 +244,7 @@ const AdSubmission = ({
 
   if (multipleAdsSubmission && !successFullUpload) {
     return (
-      <div className="modal-dialog max-h-[75vh] max-w-2xl">
+      <div className="modal-dialog max-h-[75vh] max-w-2xl md:min-w-md">
         <div className="modal-content !bg-secondaryBlack">
           <div className="modal-header">
             <div className="flex items-center justify-between w-full space-x-4">
@@ -349,7 +350,7 @@ const AdSubmission = ({
 
   return (
     <div className="modal-dialog w-full flex justify-center items-center">
-      <div className="modal-content !bg-secondaryBlack max-w-xs md:max-w-2xl">
+      <div className="modal-content !bg-secondaryBlack max-w-xs md:min-w-[600px] md:max-w-2xl">
         <div className="modal-header">
           <h5 className="modal-title mr-8" id="placeBidLabel">
             {!successFullUpload ? modalTitle : successFullUploadModal.title}
@@ -506,20 +507,16 @@ const AdSubmission = ({
                 ) : (
                   ""
                 )}
-                {symbolContract || selectedCurrency ? (
-                  <p className="font-display flex flex-col text-jacarta-100 text-sm">
-                    Currency
-                    {!errors.currencyError ? (
-                      <span className="dark:text-white text-base">
-                        {symbolContract ?? selectedCurrency}
-                      </span>
-                    ) : (
-                      <span className="text-red text-base">{errors.currencyError}</span>
-                    )}
-                  </p>
-                ) : (
-                  ""
-                )}
+
+                <p className="font-display flex flex-col text-jacarta-100 text-sm">
+                  Currency
+                  {!errors.currencyError ? (
+                    <span className="dark:text-white text-base">{tokenSymbol}</span>
+                  ) : (
+                    <span className="text-red text-base">{errors.currencyError}</span>
+                  )}
+                </p>
+
                 {selectedRoyalties ? (
                   <p className="font-display flex flex-col text-jacarta-100 text-sm">
                     Royalties

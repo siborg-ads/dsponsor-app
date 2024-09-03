@@ -216,7 +216,8 @@ type OfferAndTokenInfoResponse = {
  *                                  advertisement offer and the specified token.
  */
 export const fetchToken = async (chainId, offerId, tokenId) => {
-  const path = new URL(`https://relayer.dsponsor.com/api/${chainId}/graph`);
+  const relayerURL = config[chainId].relayerURL;
+  const path = new URL(`${relayerURL}/api/${chainId}/graph`);
 
   const GET_DATA = `
     query OfferAndTokenInfo($offerId: ID!, $tokenId: ID!) {
@@ -412,10 +413,21 @@ export const fetchToken = async (chainId, offerId, tokenId) => {
     }
   `;
 
-  const response = (await executeQuery(path.href, GET_DATA, {
+  const variables = {
     offerId,
     tokenId
-  })) as OfferAndTokenInfoResponse;
+  };
+  const options = {
+    populate: true,
+    next: { tags: [`${chainId}-adOffer-${offerId}`] }
+  };
+
+  const response = (await executeQuery(
+    path.href,
+    GET_DATA,
+    variables,
+    options
+  )) as OfferAndTokenInfoResponse;
 
   const chainConfig = config[chainId];
 

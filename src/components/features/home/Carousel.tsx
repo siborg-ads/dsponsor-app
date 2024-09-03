@@ -1,31 +1,21 @@
 import React, { useCallback, useEffect, useState } from "react";
 import CarouselItem from "@/components/features/home/CarouselItem";
 import useEmblaCarousel from "embla-carousel-react";
-import type { Filter } from "@/components/layout/Home";
-import { curationData } from "@/data/curation";
-import { useChainContext } from "@/hooks/useChainContext";
 import Autoplay from "embla-carousel-autoplay";
 import Filters from "@/components/features/home/Filters";
 import { ArrowLeftIcon, ArrowRightIcon } from "lucide-react";
+import type { Filter, CurationDataItem } from "@/data/curation";
 
 const Carousel = ({
+  data,
   filter,
   setFilter
 }: {
+  data: CurationDataItem[];
   filter: Filter;
   setFilter: React.Dispatch<React.SetStateAction<Filter>>;
 }) => {
-  const [baseURL, setBaseURL] = useState<string>("");
-  const [filteredData, setFilteredData] = useState<
-    {
-      logo: string;
-      description: string;
-      buttonText: string;
-      offerId?: number;
-      buttonLink: string;
-      type: Filter[];
-    }[]
-  >([]);
+  const [filteredData, setFilteredData] = useState<CurationDataItem[]>([]);
 
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true }, [Autoplay({ delay: 5000 })]);
 
@@ -37,24 +27,8 @@ const Carousel = ({
     if (emblaApi) emblaApi.scrollNext();
   }, [emblaApi]);
 
-  const { currentChainObject } = useChainContext();
-  const chainId = currentChainObject?.chainId;
-
   useEffect(() => {
-    const baseURL = window.location.origin;
-    setBaseURL(baseURL);
-  }, []);
-
-  useEffect(() => {
-    if (!chainId) return;
-
-    const curationArrayFromChainId =
-      Object?.entries(curationData(baseURL) ?? {})?.find(([key]) => Number(key) === chainId)?.[1] ??
-      [];
-
-    const curationArray = Object.values(curationArrayFromChainId);
-
-    const filteredData = curationArray.filter((curate) => {
+    const filteredData = data.filter((curate) => {
       if (filter !== "all") {
         return curate.type.includes(filter);
       }
@@ -62,12 +36,12 @@ const Carousel = ({
     });
 
     setFilteredData(filteredData);
-  }, [filter, baseURL, chainId]);
+  }, [data, filter]);
 
   return (
     <React.Fragment>
       <div className="flex flex-col gap-4">
-        <Filters filter={filter} setFilter={setFilter} />
+        <Filters data={data} filter={filter} setFilter={setFilter} />
 
         {filteredData?.length > 0 && (
           <div className="embla flex flex-col gap-2" ref={emblaRef}>

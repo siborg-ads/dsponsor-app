@@ -69,19 +69,15 @@ const MarketplaceComponent = ({ auctions, setAllTokens, allTokens, isAuctionsLoa
           let liveAuctions = [...tempAuctions].filter((auction) =>
             onAuctionCondition(auction, true, true)
           );
-          liveAuctions = [...liveAuctions].sort(
-            (a, b) =>
-              (a.listingType === "Auction"
-                ? a.auctionPrice
-                : a.listingType === "Direct"
-                  ? a.directPrice
-                  : a.mintPrice) -
-              (b.listingType === "Auction"
-                ? b.auctionPrice
-                : b.listingType === "Direct"
-                  ? b.directPrice
-                  : b.mintPrice)
-          );
+          liveAuctions = [...liveAuctions].sort((a, b) => {
+            if (a?.usdcPriceBN?.USDCPrice.lt(b?.usdcPriceBN?.USDCPrice)) {
+              return -1;
+            } else if (a?.usdcPriceBN?.USDCPrice.gt(b?.usdcPriceBN?.USDCPrice)) {
+              return 1;
+            } else {
+              return 0;
+            }
+          });
 
           const otherAuctions = tempAuctions.filter(
             (auction) => !onAuctionCondition(auction, true, true)
@@ -95,21 +91,15 @@ const MarketplaceComponent = ({ auctions, setAllTokens, allTokens, isAuctionsLoa
           let liveAuctions = [...tempAuctions].filter((auction) =>
             onAuctionCondition(auction, true, true)
           );
-          liveAuctions = [...liveAuctions]
-            .sort(
-              (a, b) =>
-                (a.listingType === "Auction"
-                  ? a.auctionPrice
-                  : a.listingType === "Direct"
-                    ? a.directPrice
-                    : a.mintPrice) -
-                (b.listingType === "Auction"
-                  ? b.auctionPrice
-                  : b.listingType === "Direct"
-                    ? b.directPrice
-                    : b.mintPrice)
-            )
-            .reverse();
+          liveAuctions = [...liveAuctions].sort((a, b) => {
+            if (a?.usdcPriceBN?.USDCPrice.gt(b?.usdcPriceBN?.USDCPrice)) {
+              return -1;
+            } else if (a?.usdcPriceBN?.USDCPrice.lt(b?.usdcPriceBN?.USDCPrice)) {
+              return 1;
+            } else {
+              return 0;
+            }
+          });
 
           let otherAuctions = [...tempAuctions].filter(
             (auction) => !onAuctionCondition(auction, true, true)
@@ -177,7 +167,7 @@ const MarketplaceComponent = ({ auctions, setAllTokens, allTokens, isAuctionsLoa
         <div className="flex flex-col md:flex-row items-center gap-16 h-10">
           <Input
             type="text"
-            placeholder="Filter by category"
+            placeholder="Search..."
             name="search"
             value={filterName}
             onChange={(e) => {
@@ -282,24 +272,28 @@ const MarketplaceComponent = ({ auctions, setAllTokens, allTokens, isAuctionsLoa
         <div className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {!isAuctionsLoading ? (
             <>
-              {filteredAuctions?.map((auction, index) => (
-                <TokenCard
-                  key={index}
-                  item={auction.item}
-                  isToken={true}
-                  listingType={auction?.listingType}
-                  isListing={auction?.listingType}
-                  isAuction={auction?.listingType === "Auction"}
-                  url={
-                    !auction?.tokenData
-                      ? `/${auction?.chainId}/offer/${auction?.offerId}/${auction?.tokenId}`
-                      : `/${auction?.chainId}/offer/${auction.item?.nftContract?.adOffers[0]?.id}/${auction?.tokenId}?tokenData=${auction.item?.mint?.tokenData}`
-                  }
-                  currencyDecimals={auction?.currencyDecimals}
-                  tokenId={auction?.tokenId}
-                  offer={auction}
-                />
-              ))}
+              {filteredAuctions?.map((auction, index) => {
+                return (
+                  <TokenCard
+                    key={index}
+                    item={auction.item}
+                    isToken={true}
+                    listingType={auction?.listingType}
+                    isListing={auction?.listingType}
+                    isAuction={auction?.listingType === "Auction"}
+                    url={
+                      auction?.tokenData
+                        ? `/${auction?.chainId}/offer/${auction.offerId}/${auction.tokenId}?tokenData=${auction.tokenData}`
+                        : `/${auction?.chainId}/offer/${auction?.offerId}/${auction?.tokenId}`
+                    }
+                    currencyDecimals={auction?.currencyDecimals}
+                    currencySymbol={auction?.currencySymbol}
+                    tokenId={auction?.tokenId}
+                    offer={auction}
+                    usdcPriceFormatted={auction?.usdcPriceFormatted}
+                  />
+                );
+              })}
             </>
           ) : (
             <>

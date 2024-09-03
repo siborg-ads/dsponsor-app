@@ -6,7 +6,6 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Divider, Spinner } from "@nextui-org/react";
 import { useChainContext } from "@/hooks/useChainContext";
-import { features } from "@/data/features";
 import MintWithCrossmintButton from "@/components/ui/buttons/MintWithCrossmintButton/MintWithCrossmintButton";
 import BuyWithCrossmintButton from "@/components/ui/buttons/BuyWithCrossmintButton/BuyWithCrossmintButton";
 import { parseUnits } from "ethers/lib/utils";
@@ -20,6 +19,7 @@ import StyledWeb3Button from "@/components/ui/buttons/StyledWeb3Button";
 import { Address } from "thirdweb";
 
 const BuyModal = ({
+  tags,
   formatTokenId,
   tokenStatut,
   allowanceTrue,
@@ -54,8 +54,10 @@ const BuyModal = ({
   totalPrice,
   hasEnoughBalance,
   hasEnoughBalanceForNative,
-  tokenEtherPriceRelayer
+  tokenEtherPriceRelayer,
+  currencyDecimals
 }: {
+  tags: string[];
   // eslint-disable-next-line no-unused-vars
   formatTokenId: (tokenId: string) => string;
   tokenStatut: string;
@@ -100,6 +102,7 @@ const BuyModal = ({
   hasEnoughBalance: boolean;
   hasEnoughBalanceForNative: boolean;
   tokenEtherPriceRelayer: any;
+  currencyDecimals: number;
 }) => {
   const [validate, setValidate] = useState(false);
   const [notEnoughFunds, setNotEnoughFunds] = useState(false);
@@ -121,7 +124,9 @@ const BuyModal = ({
       tokenEtherPriceRelayer?.amountInEthWithSlippage
     );
 
-    if (currencyBalance?.value?.lt(amountInEthWithSlippageBN)) {
+    const priceBN = BigNumber.from(finalPriceNotFormatted);
+
+    if (currencyBalance?.value?.lt(priceBN)) {
       setInsufficentBalance(true);
     } else {
       setInsufficentBalance(false);
@@ -149,8 +154,7 @@ const BuyModal = ({
     }
   }, [hasEnoughBalance, hasEnoughBalanceForNative]);
 
-  // If currency is WETH, we can pay with Crossmint
-  const canPayWithCrossmint = selectedCurrency === "WETH" && features.canPayWithCrossmintEnabled;
+  const canPayWithCrossmint = chainConfig?.features?.crossmint?.enabled;
 
   const handleTermService = (e) => {
     setValidate(e.target.checked);
@@ -469,8 +473,13 @@ const BuyModal = ({
                     {!token.isListed ? (
                       <div className="flex flex-col gap-2">
                         <MintWithCrossmintButton
+                          whPassThroughArgs={JSON.stringify({ tags })}
                           offer={offer}
                           token={token}
+                          currencyDecimals={currencyDecimals}
+                          price={BigNumber.from(
+                            tokenEtherPriceRelayer?.amountInEthWithSlippage ?? "0"
+                          )}
                           user={user}
                           isBid={false}
                           referrer={referrer}
@@ -507,10 +516,15 @@ const BuyModal = ({
                     ) : (
                       <div className="flex flex-col gap-2">
                         <BuyWithCrossmintButton
+                          whPassThroughArgs={JSON.stringify({ tags })}
                           offer={offer}
                           token={token}
                           user={user}
                           isBid={false}
+                          price={BigNumber.from(
+                            tokenEtherPriceRelayer?.amountInEthWithSlippage ?? "0"
+                          )}
+                          currencyDecimals={currencyDecimals}
                           referrer={referrer}
                           actions={{
                             processing: onProcessingBuy,

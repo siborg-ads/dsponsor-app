@@ -1,10 +1,9 @@
 "use client";
-
+import { BigNumber } from "ethers";
 import React, { useEffect, useState, useRef } from "react";
 import AdSpaces from "@/components/features/home/AdSpaces";
 import { fetchMarketplace } from "@/utils/graphql/fetchMarketplace";
 import { formatUnits } from "ethers/lib/utils";
-import formatAndRound from "@/utils/prices/formatAndRound";
 import Meta from "@/components/Meta";
 import { useChainContext } from "@/hooks/useChainContext";
 import { Auctions } from "@/types/auctions";
@@ -12,8 +11,8 @@ import Carousel from "@/components/features/home/Carousel";
 import Steps from "@/components/features/home/AdsSteps";
 import ClientsRedirection from "@/components/features/home/ClientsRedirection";
 import { curationData } from "@/data/curation";
-
-export type Filter = "all" | "medias" | "dapps" | "websites" | "newsletters";
+import type { Filter, CurationDataItem } from "@/data/curation";
+import config from "@/config/config";
 
 const allTokens: boolean = true;
 
@@ -24,6 +23,8 @@ const Home = () => {
   const [auctionsFetched, setAuctionsFetched] = useState<boolean>(false);
   const [filter, setFilter] = useState<Filter>("all");
   const [offers, setOffers] = useState<any[]>([]);
+  const [chainIdCurrationArray, setChainIdCurrationArray] = useState<CurationDataItem[]>([]);
+
   const [curratedOfferIds, setCurratedOfferIds] = useState<number[]>([]);
   const [curratedOfferIdsByType, setCurratedOfferIdsByType] = useState<
     {
@@ -61,15 +62,18 @@ const Home = () => {
   }, [auctionsFetched, chainId]);
 
   useEffect(() => {
-    if (!chainId) return;
-
     const baseURL = window.location.origin;
 
-    const currationArray = Object.entries(curationData(baseURL));
+    const currationArray = curationData(baseURL);
 
-    const chainIdCurrationArray = currationArray?.find(([key]) => Number(key) === chainId)?.[1];
+    let chainIdCurrationArray: CurationDataItem[] = [];
 
+    for (const c of Object.keys(config)) {
+      chainIdCurrationArray = [...chainIdCurrationArray, ...currationArray[Number(c)]];
+    }
     if (!chainIdCurrationArray) return;
+
+    setChainIdCurrationArray(chainIdCurrationArray);
 
     const curratedOfferIds = Object.values(chainIdCurrationArray)?.map((element) => {
       return element?.offerId as number;
@@ -84,7 +88,7 @@ const Home = () => {
 
     setCurratedOfferIds(curratedOfferIds);
     setCurratedOfferIdsByType(curratedOfferIdsByType);
-  }, [chainId]);
+  }, []);
 
   useEffect(() => {
     if (tempAdSpaces?.length === 0) return;
@@ -116,6 +120,7 @@ const Home = () => {
       const image = token.metadata.image;
       const listingType = token.marketplaceListings.sort((a, b) => Number(b.id) - Number(a.id))[0]
         ?.listingType;
+
       const currencyDecimals =
         listingType === "Auction" || listingType === "Direct"
           ? Number(
@@ -123,9 +128,12 @@ const Home = () => {
                 ?.currencyDecimals
             )
           : Number(token?.nftContract?.prices[0]?.currencyDecimals);
-      const currencySymbol = token?.marketplaceListings.sort(
-        (a, b) => Number(b.id) - Number(a.id)
-      )[0]?.currencySymbol;
+      const currencySymbol =
+        listingType === "Auction" || listingType === "Direct"
+          ? token?.marketplaceListings.sort((a, b) => Number(b.id) - Number(a.id))[0]
+              ?.currencySymbol
+          : token?.nftContract?.prices[0]?.currencySymbol;
+
       const latestBid = currencyDecimals
         ? Number(
             formatUnits(
@@ -135,17 +143,6 @@ const Home = () => {
             )
           )
         : 0;
-      const priceUSD = Number(
-        formatAndRound(
-          Number(
-            formatUnits(
-              token.marketplaceListings.sort((a, b) => Number(b.id) - Number(a.id))[0]
-                ?.currencyPriceUSDC ?? 0,
-              6
-            )
-          )
-        ) ?? 0
-      );
       const directPrice = token.marketplaceListings.sort((a, b) => Number(b.id) - Number(a.id))[0]
         ?.buyPriceStructure?.buyoutPricePerToken;
       const auctionPrice = token.marketplaceListings.sort((a, b) => Number(b.id) - Number(a.id))[0]
@@ -170,6 +167,48 @@ const Home = () => {
             "Direct" &&
           token?.mint !== null);
 
+      const currency =
+        token?.marketplaceListings?.sort((a, b) => Number(b.id) - Number(a.id))[0]?.currency ??
+        token?.nftContract?.prices[0]?.currency;
+
+      const directPriceUsdcBN = BigNumber.from(
+        token?.marketplaceListings?.sort((a, b) => Number(b.id) - Number(a.id))?.[0]
+          ?.buyPriceStructureUsdc?.buyoutPricePerToken ?? 0
+      );
+      const directPriceUsdcFormatted = token?.marketplaceListings?.sort(
+        (a, b) => Number(b.id) - Number(a.id)
+      )?.[0]?.buyPriceStructureUsdcFormatted?.buyoutPricePerToken;
+
+      const auctionPriceUsdcBN = BigNumber.from(
+        token?.marketplaceListings?.sort((a, b) => Number(b.id) - Number(a.id))?.[0]
+          ?.bidPriceStructureUsdc?.minimalBidPerToken ?? 0
+      );
+      const auctionPriceUsdcFormatted = token?.marketplaceListings?.sort(
+        (a, b) => Number(b.id) - Number(a.id)
+      )?.[0]?.bidPriceStructureUsdcFormatted?.minimalBidPerToken;
+
+      const mintPriceUsdcBN = BigNumber.from(
+        token?.nftContract?.prices?.[0]?.mintPriceStructureUsdc?.totalAmount ?? 0
+      );
+      const mintPriceUsdcFormatted =
+        token?.nftContract?.prices?.[0]?.mintPriceStructureUsdcFormatted?.totalAmount;
+
+      const usdcPriceBN = {
+        USDCPrice:
+          listingType === "Auction"
+            ? auctionPriceUsdcBN
+            : listingType === "Direct"
+              ? directPriceUsdcBN
+              : mintPriceUsdcBN,
+        decimals: 6
+      };
+      const usdcPriceFormatted =
+        listingType === "Auction"
+          ? auctionPriceUsdcFormatted
+          : listingType === "Direct"
+            ? directPriceUsdcFormatted
+            : mintPriceUsdcFormatted;
+
       const object = {
         name: name,
         category: category,
@@ -177,11 +216,14 @@ const Home = () => {
         chain: chain,
         chainId: chainId,
         price: price,
+        usdcPriceBN: usdcPriceBN,
+        currency: currency,
         currencySymbol: currencySymbol,
         link: `/${chainId}/offer/${offerId}/${tokenId}?tokenData=${tokenData}`,
         live: live,
         image: image ?? "",
         latestBid: latestBid,
+        usdcPriceFormatted,
         currencyDecimals: currencyDecimals,
         startTime: startTime,
         endTime: endTime,
@@ -189,7 +231,6 @@ const Home = () => {
         offerId: offerId,
         tokenId: tokenId,
         tokenData: tokenData,
-        priceUSD: priceUSD,
         directPrice: directPrice,
         auctionPrice: auctionPrice,
         mintPrice: mintPrice,
@@ -200,7 +241,9 @@ const Home = () => {
         numberOfBids: numberOfBids,
         item: {
           disable: token?.disable,
+          usdcPriceBN: usdcPriceBN,
           metadata: token.metadata,
+          currency: currency,
           mint: token.mint,
           nftContract: token.nftContract,
           marketplaceListings: token.marketplaceListings,
@@ -208,6 +251,7 @@ const Home = () => {
           offerId: offerId,
           tokenId: tokenId,
           tokenData: tokenData,
+          usdcPriceFormatted,
           startTime: startTime,
           endTime: endTime,
           currencyDecimals: currencyDecimals
@@ -236,7 +280,7 @@ const Home = () => {
           marginTop: "8rem"
         }}
       >
-        <Carousel filter={filter} setFilter={setFilter} />
+        <Carousel data={chainIdCurrationArray} filter={filter} setFilter={setFilter} />
 
         <AdSpaces
           isLoading={isLoading}
@@ -247,7 +291,7 @@ const Home = () => {
           curratedOfferIdsByType={curratedOfferIdsByType}
         />
 
-        <Steps />
+        <Steps chainId={chainId} />
 
         <ClientsRedirection />
       </div>

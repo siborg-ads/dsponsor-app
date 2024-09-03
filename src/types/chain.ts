@@ -5,7 +5,6 @@ import { NetworkType } from "@/utils/networks/networks";
 export interface ChainObject {
   chainId: number;
   chainName: string;
-  chainNameProvider: string;
   network: NetworkType;
   chainObject: typeof Base;
   logoURL: string;
@@ -14,6 +13,13 @@ export interface ChainObject {
   rpcURL: string;
   subgraphURL: string;
   smartContracts: {
+    currencies: {
+      [key: string]: {
+        address: string;
+        decimals: number;
+        symbol: string;
+      };
+    };
     DSPONSORADMIN: {
       address: string;
       feeBps: string;
@@ -24,26 +30,6 @@ export interface ChainObject {
       feeBps: string;
       minimalBidBps: string;
       previousBidAmountBps: string;
-    };
-    NATIVE: {
-      address: string;
-      decimals: number;
-      symbol: string;
-    };
-    WNATIVE: {
-      address: string;
-      decimals: number;
-      symbol: string;
-    };
-    USDC: {
-      address: string;
-      decimals: number;
-      symbol: string;
-    };
-    WETH: {
-      address: string;
-      decimals: number;
-      symbol: string;
     };
     UNISWAP_QUOTER: {
       address: string;

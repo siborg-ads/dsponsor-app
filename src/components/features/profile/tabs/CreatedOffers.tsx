@@ -80,14 +80,13 @@ const CreatedOffers = ({
           {filteredData?.map((item, index) => {
             const offer = offers?.find((offer) => offer?.id === item?.id);
 
-            let currencyDecimals = 0;
-            if (item?.prices?.length > 0) {
-              currencyDecimals = item?.prices[0]?.currencyDecimals;
-            } else {
-              currencyDecimals = item?.marketplaceListings?.sort(
-                (a, b) => Number(b?.id) - Number(a?.id)
-              )[0]?.currencyDecimals;
-            }
+            const currencyDecimals = Number(
+              item?.marketplaceListings?.sort((a, b) => Number(b?.id) - Number(a?.id))[0]
+                ?.currencyDecimals ?? item?.nftContract?.prices?.[0]?.currencyDecimals
+            );
+            const currencySymbol =
+              item?.marketplaceListings?.sort((a, b) => Number(b?.id) - Number(a?.id))[0]
+                ?.currencySymbol ?? item?.nftContract?.prices?.[0]?.currencySymbol;
 
             return (
               <TokenCard
@@ -103,6 +102,7 @@ const CreatedOffers = ({
                 isOwner={isOwner}
                 offer={offer}
                 createdOffersProposals={true}
+                currencySymbol={currencySymbol}
                 currencyDecimals={currencyDecimals}
               />
             );
