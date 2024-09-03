@@ -4,9 +4,10 @@ import Meta from "@/components/Meta";
 import MarketplaceComponent from "@/components/features/marketplace/Marketplace";
 import { fetchMarketplace } from "@/utils/graphql/fetchMarketplace";
 import { Auctions } from "@/types/auctions";
-import { useChainContext } from "@/hooks/useChainContext";
 import { formatUnits } from "ethers/lib/utils";
 import { BigNumber } from "ethers";
+
+import config from "@/config/config";
 
 const metadata = {
   title: "Marketplace || SiBorg Ads - The Web3 Monetization Solution",
@@ -23,19 +24,18 @@ const Marketplace = () => {
   const [auctionsTemp, setAuctionsTemp] = useState<any[]>([]);
   const [auctionsFetched, setAuctionsFetched] = useState<boolean>(false);
 
-  const { currentChainObject } = useChainContext();
-  const chainId = currentChainObject?.chainId;
-
   const dataFetchedRef = useRef(false);
   useEffect(() => {
-    const fetchData = async (chainId: number, allTokens: any) => {
+    const fetchData = async (allTokens: any) => {
       if (dataFetchedRef.current) return;
 
       setIsLoading(true);
 
-      let allListedTokenWithoutFilterArray: any[] = [];
-      const data = await fetchMarketplace(chainId, allTokens);
-      allListedTokenWithoutFilterArray.push(...data);
+      const allData = await Promise.all(
+        Object.keys(config).map((chainId) => fetchMarketplace(Number(chainId), allTokens))
+      );
+
+      const allListedTokenWithoutFilterArray = allData.flat();
 
       setAuctionsTemp(allListedTokenWithoutFilterArray);
 
@@ -43,10 +43,10 @@ const Marketplace = () => {
       setIsLoading(false);
     };
 
-    if (chainId && !auctionsFetched && allTokens) {
-      fetchData(chainId, allTokens);
+    if (!auctionsFetched && allTokens) {
+      fetchData(allTokens);
     }
-  }, [allTokens, auctionsFetched, chainId]);
+  }, [allTokens, auctionsFetched]);
 
   useEffect(() => {
     if (auctionsTemp.length === 0) return;
