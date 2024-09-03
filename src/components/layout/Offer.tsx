@@ -39,6 +39,8 @@ import Input from "../ui/Input";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import DsponsorNftABI from "@/abi/dsponsorNFT.json";
 
+import ERC20ABI from "@/abi/ERC20.json";
+
 const onAuctionCondition = (offer, mint, direct) => {
   return (
     (offer?.status === "CREATED" &&
@@ -82,7 +84,7 @@ const Offer = () => {
   const [isWordAlreadyTaken, setIsWordAlreadyTaken] = useState(false);
   const { contract: tokenContract } = useContract(
     offerData?.nftContract?.prices?.[0]?.currency,
-    "token"
+    ERC20ABI
   );
   const { data: symbolContract } = useContractRead(tokenContract, "symbol");
   const { data: decimalsContract } = useContractRead(tokenContract, "decimals");

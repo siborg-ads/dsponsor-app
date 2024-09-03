@@ -51,6 +51,8 @@ import CrossmintFail from "@/components/features/token/modals/CrossmintFail";
 import PlaceBid from "@/components/features/token/widgets/PlaceBid";
 import StyledWeb3Button from "@/components/ui/buttons/StyledWeb3Button";
 
+import ERC20ABI from "@/abi/ERC20.json";
+
 const Token = () => {
   const router = useRouter();
   const storage = useStorage();
@@ -165,7 +167,7 @@ const Token = () => {
   const [tokenSymbol, setTokenSymbol] = useState<string | null>(null);
   const [tokenDecimals, setTokenDecimals] = useState<number | null>(null);
 
-  const { contract: currencyContract } = useContract(tokenCurrencyAddress, "token");
+  const { contract: currencyContract } = useContract(tokenCurrencyAddress, ERC20ABI);
   const { data: tokenSymbolData } = useContractRead(currencyContract, "symbol");
   const { data: tokenDecimalsData } = useContractRead(currencyContract, "decimals");
 
@@ -423,7 +425,7 @@ const Token = () => {
   const { mutateAsync: uploadToIPFS } = useStorageUpload();
   const { mutateAsync: mintAndSubmit } = useContractWrite(DsponsorAdminContract, "mintAndSubmit");
   const { mutateAsync: submitAd } = useContractWrite(DsponsorAdminContract, "submitAdProposals");
-  const { contract: tokenContract } = useContract(tokenCurrencyAddress, "token");
+  const { contract: tokenContract } = useContract(tokenCurrencyAddress, ERC20ABI);
   const { data: tokenBalance } = useBalance(tokenCurrencyAddress as Address);
   const { mutateAsync: approve } = useContractWrite(tokenContract, "approve");
 

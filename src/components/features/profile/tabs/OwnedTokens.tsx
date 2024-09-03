@@ -274,9 +274,13 @@ const OwnedTokens = ({ data, isOwner, isLoading, fetchCreatedData, manageAddress
           {!showSliderForm && (
             <div className={`grid w-full grid-cols-1 gap-[1.875rem] md:grid-cols-2 lg:grid-cols-4`}>
               {data?.map((item, index) => {
-                const currencyAddress =
+                const currencyDecimals = Number(
                   item?.marketplaceListings?.sort((a, b) => Number(b?.id) - Number(a?.id))[0]
-                    ?.currency ?? item?.nftContract?.prices?.[0]?.currency;
+                    ?.currencyDecimals ?? item?.nftContract?.prices?.[0]?.currencyDecimals
+                );
+                const currencySymbol =
+                  item?.marketplaceListings?.sort((a, b) => Number(b?.id) - Number(a?.id))[0]
+                    ?.currencySymbol ?? item?.nftContract?.prices?.[0]?.currencySymbol;
 
                 return isSelectionActive ? (
                   <div
@@ -302,7 +306,8 @@ const OwnedTokens = ({ data, isOwner, isLoading, fetchCreatedData, manageAddress
                           : `/${item?.chainConfig?.chainId}/offer/${item.offerId}/${item.tokenId}?tokenData=${item.tokenData}`
                       }
                       availableToSubmitAdFromOwnedTokens={true}
-                      currencyAddress={currencyAddress}
+                      currencySymbol={currencySymbol}
+                      currencyDecimals={currencyDecimals}
                     />
                   </div>
                 ) : (
@@ -324,7 +329,8 @@ const OwnedTokens = ({ data, isOwner, isLoading, fetchCreatedData, manageAddress
                         : `/${item?.chainConfig?.chainId}/offer/${item.offerId}/${item.tokenId}?tokenData=${item.tokenData}`
                     }
                     availableToSubmitAdFromOwnedTokens={true}
-                    currencyAddress={currencyAddress}
+                    currencySymbol={currencySymbol}
+                    currencyDecimals={currencyDecimals}
                   />
                 );
               })}

@@ -13,6 +13,8 @@ import { Address } from "thirdweb";
 import config from "@/config/config";
 import { Currency } from "@/components/layout/CreateOffer";
 
+import ERC20ABI from "@/abi/ERC20.json";
+
 const CreateListing = ({
   handleListingModal,
   offerData,
@@ -66,7 +68,7 @@ const CreateListing = ({
   const [selectedCurrencyContract, setSelectedCurrencyContract] = useState<Address | string>(
     currencies[0].address
   );
-  const { contract: tokenContractAsync } = useContract(selectedCurrencyContract, "token");
+  const { contract: tokenContractAsync } = useContract(selectedCurrencyContract, ERC20ABI);
   const { data: symbolContractAsync } = useContractRead(tokenContractAsync, "symbol");
   const { data: decimalsContractAsync } = useContractRead(tokenContractAsync, "decimals");
 

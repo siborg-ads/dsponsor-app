@@ -22,6 +22,8 @@ import { useRouter } from "next/router";
 import { Address } from "thirdweb";
 import { features } from "@/data/features";
 
+import ERC20ABI from "@/abi/ERC20.json";
+
 export type Currency = {
   address: Address | string;
   decimals: number;
@@ -78,7 +80,7 @@ const CreateOffer = () => {
   const [selectedCurrency, setSelectedCurrency] = useState<Currency>(currencies?.[0]);
   const [mounted, setMounted] = useState(false);
 
-  const { contract: tokenContractAsync } = useContract(tokenAddress, "token");
+  const { contract: tokenContractAsync } = useContract(tokenAddress, ERC20ABI);
   const { data: customTokenSymbol } = useContractRead(tokenContractAsync, "symbol");
   const { data: customTokenDecimals } = useContractRead(tokenContractAsync, "decimals");
 
