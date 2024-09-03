@@ -103,21 +103,34 @@ const CreateOffer = () => {
     }
   }, [customCurrencyEnabled, customTokenAddress, selectedCurrency]);
 
-  useEffect(() => {
-    if (customTokenDecimals) {
-      setTokenDecimals(customTokenDecimals);
-    } else {
-      setTokenDecimals(null);
-    }
-
-    if (customTokenSymbol) {
-      setTokenSymbol(customTokenSymbol);
-    } else {
-      setTokenSymbol(null);
-    }
-  }, [customTokenDecimals, customTokenSymbol]);
-
   const { setSelectedChain } = useSwitchChainContext();
+
+  useEffect(() => {
+    const currencies = Object.entries(
+      config[chainId as string]?.smartContracts?.currencies || {}
+    ) as any;
+
+    const [, { symbol, decimals }] = currencies.find(
+      ([, value]) => value?.address?.toLowerCase() === tokenAddress?.toLowerCase()
+    ) ?? ["", {}];
+
+    if (symbol && decimals) {
+      setTokenSymbol(symbol);
+      setTokenDecimals(decimals);
+    } else {
+      if (customTokenSymbol) {
+        setTokenSymbol(customTokenSymbol);
+      } else {
+        setTokenSymbol(null);
+      }
+
+      if (customTokenDecimals) {
+        setTokenDecimals(customTokenDecimals);
+      } else {
+        setTokenDecimals(null);
+      }
+    }
+  }, [chainId, tokenAddress, customTokenDecimals, customTokenSymbol]);
 
   const address = useAddress();
 
