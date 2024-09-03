@@ -83,7 +83,7 @@ export const fetchAllOffersProfile = async (userAddress: Address, chainId: numbe
                   }
                   adOffers {
                     id
-                    metadataURL # offerMetadata
+                    # metadataURL 
                     disable
                   }
                   prices {

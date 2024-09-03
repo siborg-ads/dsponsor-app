@@ -319,7 +319,7 @@ export const fetchToken = async (chainId, offerId, tokenId) => {
                   }
                   adOffers {
                     id
-                    metadataURL
+                    # metadataURL
                     disable
                   }
                 }
