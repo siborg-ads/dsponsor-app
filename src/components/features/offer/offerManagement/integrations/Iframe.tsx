@@ -1,4 +1,3 @@
-import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import * as RadioGroup from "@radix-ui/react-radio-group";
 import { Divider } from "@nextui-org/react";
@@ -8,8 +7,11 @@ import handleCopy from "@/utils/misc/handleCopy";
 import Tippy from "@tippyjs/react";
 import { ChromePicker } from "react-color";
 import Input from "@/components/ui/Input";
+import config from "@/config/config";
 
 const Iframe = ({ chainId, offerId }) => {
+  const relayerURL = config[chainId]?.relayerURL;
+
   const [copied, setCopied] = useState(false);
   const [iframeSrc, setIframeSrc] = useState("");
   const [customHeight, setCustomHeight] = useState(
@@ -85,10 +87,11 @@ const Iframe = ({ chainId, offerId }) => {
       if (previewLink) params.append("previewLink", previewLink);
     }
     setIframeSrc(
-      `https://relayer.dsponsor.com/${chainId}/integrations/${offerId}/${displayType}/iFrame${params.toString() ? "?" + params.toString() : ""}`
+      `${relayerURL}/${chainId}/integrations/${offerId}/${displayType}/iFrame${params.toString() ? "?" + params.toString() : ""}`
     );
   }, [
     chainId,
+    relayerURL,
     offerId,
     bgColor,
     color,
@@ -161,6 +164,7 @@ const Iframe = ({ chainId, offerId }) => {
           GoDaddy, Squarespace, etc...{" "}
         </span>
 
+        {/* Add the following code snippet 
         <span className="dark:text-jacarta-100 text-jacarta-100">
           Read the full documentation by clicking{" "}
           <Link href="/" target="_blank" className="text-primaryPurple hover:text-opacity-80">
@@ -168,6 +172,7 @@ const Iframe = ({ chainId, offerId }) => {
           </Link>
           .
         </span>
+        */}
       </div>
 
       <Divider className="my-4" />

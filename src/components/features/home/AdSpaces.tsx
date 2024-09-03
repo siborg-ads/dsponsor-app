@@ -1,10 +1,9 @@
 import React, { useState, useEffect, useCallback } from "react";
 import TokenCardSkeleton from "@/components/ui/skeletons/TokenCardSkeleton";
 import TokenCard from "@/components/ui/cards/TokenCard";
-import { Filter } from "@/components/layout/Home";
+import { Filter } from "@/data/curation";
 import useEmblaCarousel from "embla-carousel-react";
 import { ArrowLeftIcon, ArrowRightIcon } from "lucide-react";
-import { features } from "@/data/features";
 
 const getChunksFromInnerWidth = (innerWidth: number) => {
   if (innerWidth <= 1024) {
@@ -89,20 +88,12 @@ const AdSpaces = ({
       // show only 2 tokens per offer id
       const finalAdSpaces: any[] = [];
       const offerIds: number[] = [];
-
-      if (features.homepageTwoTokensOnly) {
-        almostFinalAdSpaces?.forEach((element) => {
-          if (offerIds?.filter((id) => id === Number(element?.offerId))?.length < 2) {
-            offerIds.push(Number(element?.offerId));
-            finalAdSpaces.push(element);
-          }
-        }, []);
-      } else {
-        almostFinalAdSpaces?.forEach((element) => {
+      almostFinalAdSpaces?.forEach((element) => {
+        if (offerIds?.filter((id) => id === Number(element?.offerId))?.length < 2) {
           offerIds.push(Number(element?.offerId));
           finalAdSpaces.push(element);
-        }, []);
-      }
+        }
+      }, []);
 
       setFinalAdSpaces(finalAdSpaces);
     }
@@ -165,11 +156,9 @@ const AdSpaces = ({
                               ? `/${element?.[0]?.chainId}/offer/${element?.[0]?.offerId}/${element?.[0]?.tokenId}`
                               : `/${element?.[0]?.chainId}/offer/${element?.[0]?.offerId}/${element?.[0]?.tokenId}?tokenData=${element?.[0]?.item?.mint?.tokenData}`
                           }
-                          currencyAddress={
-                            element?.[0]?.item?.marketplaceListings?.sort(
-                              (a, b) => Number(b?.id) - Number(a?.id)
-                            )[0]?.currency ?? element?.[0]?.item?.nftContract?.prices?.[0]?.currency
-                          }
+                          currencyDecimals={element?.[0]?.currencyDecimals}
+                          currencySymbol={element?.[0]?.currencySymbol}
+                          usdcPriceFormatted={element?.[0]?.usdcPriceFormatted}
                         />
                       )}
                       {element?.[1] && (
@@ -185,11 +174,9 @@ const AdSpaces = ({
                               ? `/${element?.[1]?.chainId}/offer/${element?.[1]?.offerId}/${element?.[1]?.tokenId}`
                               : `/${element?.[1]?.chainId}/offer/${element?.[1]?.offerId}/${element?.[1]?.tokenId}?tokenData=${element?.[1]?.item?.mint?.tokenData}`
                           }
-                          currencyAddress={
-                            element?.[1]?.item?.marketplaceListings?.sort(
-                              (a, b) => Number(b?.id) - Number(a?.id)
-                            )[0]?.currency ?? element?.[1]?.item?.nftContract?.prices?.[0]?.currency
-                          }
+                          currencyDecimals={element?.[1]?.currencyDecimals}
+                          currencySymbol={element?.[1]?.currencySymbol}
+                          usdcPriceFormatted={element?.[1]?.usdcPriceFormatted}
                         />
                       )}
                       {element?.[2] && (
@@ -205,11 +192,9 @@ const AdSpaces = ({
                               ? `/${element?.[2]?.chainId}/offer/${element?.[2]?.offerId}/${element?.[2]?.tokenId}`
                               : `/${element?.[2]?.chainId}/offer/${element?.[2]?.offerId}/${element?.[2]?.tokenId}?tokenData=${element?.[2]?.item?.mint?.tokenData}`
                           }
-                          currencyAddress={
-                            element?.[2]?.item?.marketplaceListings?.sort(
-                              (a, b) => Number(b?.id) - Number(a?.id)
-                            )[0]?.currency ?? element?.[2]?.item?.nftContract?.prices?.[0]?.currency
-                          }
+                          currencyDecimals={element?.[2]?.currencyDecimals}
+                          currencySymbol={element?.[2]?.currencySymbol}
+                          usdcPriceFormatted={element?.[2]?.usdcPriceFormatted}
                         />
                       )}
                       {element?.[3] && (
@@ -225,11 +210,9 @@ const AdSpaces = ({
                               ? `/${element?.[3]?.chainId}/offer/${element?.[3]?.offerId}/${element?.[3]?.tokenId}`
                               : `/${element?.[3]?.chainId}/offer/${element?.[3]?.offerId}/${element?.[3]?.tokenId}?tokenData=${element?.[3]?.item?.mint?.tokenData}`
                           }
-                          currencyAddress={
-                            element?.[3]?.item?.marketplaceListings?.sort(
-                              (a, b) => Number(b?.id) - Number(a?.id)
-                            )[0]?.currency ?? element?.[3]?.item?.nftContract?.prices?.[0]?.currency
-                          }
+                          currencyDecimals={element?.[3]?.currencyDecimals}
+                          currencySymbol={element?.[3]?.currencySymbol}
+                          usdcPriceFormatted={element?.[3]?.usdcPriceFormatted}
                         />
                       )}
                     </div>
@@ -246,11 +229,9 @@ const AdSpaces = ({
                           ? `/${element?.chainId}/offer/${element?.offerId}/${element?.tokenId}`
                           : `/${element?.chainId}/offer/${element?.item?.nftContract?.adOffers?.[0]?.id}/${element?.tokenId}?tokenData=${element?.item?.mint?.tokenData}`
                       }
-                      currencyAddress={
-                        element?.item?.marketplaceListings?.sort(
-                          (a, b) => Number(b?.id) - Number(a?.id)
-                        )[0]?.currency ?? element?.item?.nftContract?.prices?.[0]?.currency
-                      }
+                      currencyDecimals={element?.currencyDecimals}
+                      currencySymbol={element?.currencySymbol}
+                      usdcPriceFormatted={element?.usdcPriceFormatted}
                     />
                   )}
                 </div>

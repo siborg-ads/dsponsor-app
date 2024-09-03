@@ -6,20 +6,11 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "tippy.js/dist/tippy.css";
 import TimerCard from "../timer/TimerCard";
-import {
-  shortenAddress,
-  useAddress,
-  useContract,
-  useContractRead,
-  useStorage
-} from "@thirdweb-dev/react";
+import { shortenAddress, useAddress, useStorage } from "@thirdweb-dev/react";
 import { getAddress, formatUnits } from "ethers/lib/utils";
 import { ExclamationCircleIcon } from "@heroicons/react/24/solid";
 import ResponsiveTooltip from "@/components/ui/ResponsiveTooltip";
 import { BigNumber } from "ethers";
-import formatAndRoundPrice from "@/utils/prices/formatAndRound";
-import { Address } from "thirdweb";
-import { features } from "@/data/features";
 import React from "react";
 
 const TokenCard = ({
@@ -37,9 +28,11 @@ const TokenCard = ({
   offer,
   offers,
   isDisabled,
-  currencyAddress,
+  currencyDecimals,
+  currencySymbol,
   tokenId,
-  usdcPriceFormatted
+  usdcPriceFormatted,
+  hasBidStatus
 }: {
   item: any;
   url?: string;
@@ -55,37 +48,24 @@ const TokenCard = ({
   offer?: any;
   offers?: any;
   isDisabled?: boolean;
-  currencyAddress?: Address;
+  currencyDecimals: number;
+  currencySymbol: string;
   tokenId?: string;
   usdcPriceFormatted?: string;
+  hasBidStatus?: boolean;
 }) => {
   const [price, setPrice] = useState<string | null>(null);
   const [totalPrice, setTotalPrice] = useState<string | null>(null);
   const [itemData, setItemData] = useState<any>({});
   const [itemStatut, setItemStatut] = useState<string | null>(null);
   const [lastSalePrice, setLastSalePrice] = useState(null);
+  const [lastSaleCurrencySymbol, setLastSaleCurrencySymbol] = useState(null);
   const [lastBidder, setLastBidder] = useState(null);
   const [isLastBidder, setIsLastBidder] = useState(false);
   const [itemProposals, setItemProposals] = useState<any>(null);
   const [availableToSubmitAd, setAvailableToSubmitAd] = useState(false);
   const [isPendingAdsOnOffer, setIsPendingAdsOnOffer] = useState(false);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
-  const [currencySymbol, setCurrencySymbol] = useState<string | null>(null);
-  const [currencyDecimals, setCurrencyDecimals] = useState<number | null>(null);
-
-  const { contract: currencyContract } = useContract(currencyAddress, "token");
-  const { data: currencyDecimalsData } = useContractRead(currencyContract, "decimals");
-  const { data: currencySymbolData } = useContractRead(currencyContract, "symbol");
-
-  useEffect(() => {
-    if (currencyDecimalsData) {
-      setCurrencyDecimals(Number(currencyDecimalsData));
-    }
-
-    if (currencySymbolData) {
-      setCurrencySymbol(currencySymbolData);
-    }
-  }, [currencyDecimalsData, currencySymbolData]);
 
   const address = useAddress();
   const storage = useStorage();
@@ -175,6 +155,7 @@ const TokenCard = ({
   useEffect(() => {
     if (item) {
       let lastSalePrice;
+      let lastSaleCurrencySymbol;
 
       if (item?.marketplaceListings?.length > 0) {
         // we look for the latest completed listing
@@ -194,31 +175,38 @@ const TokenCard = ({
               BigInt(latestListing?.buyoutPricePerToken),
               Number(latestListing?.currencyDecimals)
             );
+            lastSaleCurrencySymbol = latestListing?.currencySymbol;
           } else if (latestListing?.listingType === "Auction") {
             // auction price
             lastSalePrice = formatUnits(
               BigInt(latestListing?.bids[0]?.paidBidAmount),
               Number(latestListing?.currencyDecimals)
             );
+            lastSaleCurrencySymbol = latestListing?.currencySymbol;
           }
         }
       }
 
       if (!lastSalePrice && item?.mint !== null) {
         // we handle the mint case
-        const mintPrice = item?.mint?.totalPaid;
-        if (mintPrice) {
-          lastSalePrice = formatUnits(BigInt(mintPrice), Number(item?.currencyDecimals));
+        const { totalPaid: mintPrice, currencyDecimals, currencySymbol } = item?.mint ?? {};
+
+        if (mintPrice && currencyDecimals && currencySymbol) {
+          lastSalePrice = formatUnits(BigInt(mintPrice), Number(currencyDecimals));
+          lastSaleCurrencySymbol = currencySymbol;
         }
       }
 
       if (lastSalePrice) {
         setLastSalePrice(lastSalePrice);
+        setLastSaleCurrencySymbol(lastSaleCurrencySymbol);
       } else {
         setLastSalePrice(null);
+        setLastSaleCurrencySymbol(null);
       }
     } else {
       setLastSalePrice(null);
+      setLastSaleCurrencySymbol(null);
     }
   }, [item]);
 
@@ -515,20 +503,15 @@ const TokenCard = ({
               itemStatut === "TOKENMINTABLE") ? (
               <div className="dark:border-jacarta-800 border-jacarta-100 flex items-center whitespace-nowrap rounded-md border py-1 px-2">
                 <span className="text-green text-sm font-medium tracking-tight">
-                  {features?.marketplaceIsUSDC ? (
-                    <React.Fragment>
-                      {!!usdcPriceFormatted && <span>{usdcPriceFormatted} USDC</span>}
-                    </React.Fragment>
-                  ) : (
-                    <ResponsiveTooltip text={`${usdcPriceFormatted} USDC`}>
-                      {!!price && price !== "0" ? `${price} ${currencySymbol}` : "Free"}
-                    </ResponsiveTooltip>
-                  )}
+                  <ResponsiveTooltip text={`${usdcPriceFormatted} USDC`}>
+                    {!!price && price !== "0" ? `${price} ${currencySymbol}` : "Free"}
+                  </ResponsiveTooltip>
                 </span>
               </div>
             ) : (
               itemStatut === "AUCTION" &&
-              !isToken && (
+              item?.status &&
+              hasBidStatus && (
                 <span
                   className={`${item.status === "CREATED" ? "text-primaryPurple" : item.status !== "OUTBID" ? "text-green" : "text-red"} text-xs min-w-[100px] text-end font-medium tracking-tight`}
                 >
@@ -627,7 +610,7 @@ const TokenCard = ({
           )}
         {lastSalePrice && Number(lastSalePrice) > 0 && (
           <div className="flex items-center mt-4 text-sm text-jacarta-100">
-            Last Sale: {lastSalePrice} {currencySymbol}
+            Last Sale: {lastSalePrice} {lastSaleCurrencySymbol}
           </div>
         )}
       </div>

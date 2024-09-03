@@ -86,6 +86,7 @@ const BidsModal = ({
   hasEnoughBalanceForNative: boolean;
   tokenEtherPriceRelayer: any;
 }) => {
+  const relayerURL = config[chainId].relayerURL;
   const [initialIntPrice, setInitialIntPrice] = useState<string | null>(null);
   const [isPriceGood, setIsPriceGood] = useState(true);
   const { mutateAsync: auctionBids } = useContractWrite(dsponsorMpContract, "bid");
@@ -120,15 +121,32 @@ const BidsModal = ({
   const { data: nativeTokenBalance } = useBalance();
   const { data: currencyBalance } = useBalance(currencyContract);
 
+  const tags = [
+    `${chainId}-userAddress-${address}`,
+    `${chainId}-userAddress-${marketplaceListings[0].lister}`,
+    `${chainId}-activity`,
+    `${chainId}-nftContract-${marketplaceListings[0].token.nftContract.id}`
+  ];
+
+  const { bids } = marketplaceListings[0];
+  if (bids?.length) {
+    const { bidder } = bids.sort(
+      (a, b) => Number(b.creationTimestamp) - Number(a.creationTimestamp)
+    )[0];
+    tags.push(`${chainId}-userAddress-${bidder}`);
+  }
+
+  const whArgsSerialized = JSON.stringify({ tags });
+
   useEffect(() => {
     if (!amountInEthWithSlippage || amountInEthWithSlippage.lte(BigNumber.from(0))) return;
 
     if (!parsedBidsAmount || parsedBidsAmount.lte(BigNumber.from(0))) return;
 
     const hasInsufficientBalance: boolean =
-      !!currencyBalance &&
-      (currencyBalance?.value.lt(amountInEthWithSlippage) ||
-        parsedBidsAmount?.gt(currencyBalance?.value));
+      !!currencyBalance && parsedBidsAmount?.gt(currencyBalance?.value);
+    // (currencyBalance?.value.lt(amountInEthWithSlippage) ||
+    //   parsedBidsAmount?.gt(currencyBalance?.value));
 
     setInsufficentBalance(hasInsufficientBalance);
 
@@ -330,6 +348,13 @@ const BidsModal = ({
         overrides: { value: amountInEthWithSlippage }
       });
 
+      await fetch(`${relayerURL}/api/revalidate`, {
+        method: "POST",
+        body: JSON.stringify({
+          tags
+        })
+      });
+
       setSuccessFullBid(true);
       await fetchOffers();
     } catch (error) {
@@ -374,9 +399,31 @@ const BidsModal = ({
 
       const referralAddress = getCookie("_rid") ?? "";
 
+      const tags = [
+        `${chainId}-userAddress-${address}`,
+        `${chainId}-userAddress-${marketplaceListings[0].lister}`,
+        `${chainId}-activity`,
+        `${chainId}-nftContract-${marketplaceListings[0].token.nftContract.id}`
+      ];
+      const { bids } = marketplaceListings[0];
+      if (bids?.length) {
+        const { bidder } = bids.sort(
+          (a, b) => Number(b.creationTimestamp) - Number(a.creationTimestamp)
+        )[0];
+        tags.push(`${chainId}-userAddress-${bidder}`);
+      }
+
       await auctionBids({
         args: [marketplaceListings?.[0]?.id, bidsBigInt, address, referralAddress]
       });
+
+      await fetch(`${relayerURL}/api/revalidate`, {
+        method: "POST",
+        body: JSON.stringify({
+          tags
+        })
+      });
+
       setSuccessFullBid(true);
       await fetchOffers();
     } catch (error) {
@@ -829,7 +876,7 @@ const BidsModal = ({
                   )}
                 </div>
 
-                {canPayWithCrossmint && address && (
+                {canPayWithCrossmint && address && parsedBidsAmount && (
                   <>
                     <div className="flex items-center justify-center w-full">
                       <div className="flex-grow border-t border-gray-300"></div>
@@ -853,9 +900,7 @@ const BidsModal = ({
                             toast.error(`Buying failed: ${error.message}`);
                           }
                         }}
-                        perPriceToken={BigNumber.from(
-                          amountInEthWithSlippage ? amountInEthWithSlippage?.toString() : "0"
-                        )}
+                        perPriceToken={parsedBidsAmount}
                         totalPriceFormatted={formatUnits(amountInEthWithSlippage ?? "0", "ether")}
                         isDisabled={!checkTerms || !isPriceGood || tooHighPriceForCrossmint}
                         isLoadingRender={() => <Spinner size="sm" color="default" />}
@@ -867,6 +912,7 @@ const BidsModal = ({
                           "http://localhost:3000",
                           ngrokURL
                         )}
+                        whPassThroughArgs={whArgsSerialized}
                       />
 
                       {tooHighPriceForCrossmint && (

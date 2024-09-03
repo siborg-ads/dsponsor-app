@@ -91,17 +91,15 @@ const MarketplaceComponent = ({ auctions, setAllTokens, allTokens, isAuctionsLoa
           let liveAuctions = [...tempAuctions].filter((auction) =>
             onAuctionCondition(auction, true, true)
           );
-          liveAuctions = [...liveAuctions]
-            .sort((a, b) => {
-              if (a?.usdcPriceBN?.USDCPrice.gt(b?.usdcPriceBN?.USDCPrice)) {
-                return 1;
-              } else if (a?.usdcPriceBN?.USDCPrice.lt(b?.usdcPriceBN?.USDCPrice)) {
-                return -1;
-              } else {
-                return 0;
-              }
-            })
-            .reverse();
+          liveAuctions = [...liveAuctions].sort((a, b) => {
+            if (a?.usdcPriceBN?.USDCPrice.gt(b?.usdcPriceBN?.USDCPrice)) {
+              return -1;
+            } else if (a?.usdcPriceBN?.USDCPrice.lt(b?.usdcPriceBN?.USDCPrice)) {
+              return 1;
+            } else {
+              return 0;
+            }
+          });
 
           let otherAuctions = [...tempAuctions].filter(
             (auction) => !onAuctionCondition(auction, true, true)
@@ -284,11 +282,12 @@ const MarketplaceComponent = ({ auctions, setAllTokens, allTokens, isAuctionsLoa
                     isListing={auction?.listingType}
                     isAuction={auction?.listingType === "Auction"}
                     url={
-                      !auction?.tokenData
-                        ? `/${auction?.chainId}/offer/${auction?.offerId}/${auction?.tokenId}`
-                        : `/${auction?.chainId}/offer/${auction.item?.nftContract?.adOffers[0]?.id}/${auction?.tokenId}?tokenData=${auction.item?.mint?.tokenData}`
+                      auction?.tokenData
+                        ? `/${auction?.chainId}/offer/${auction.offerId}/${auction.tokenId}?tokenData=${auction.tokenData}`
+                        : `/${auction?.chainId}/offer/${auction?.offerId}/${auction?.tokenId}`
                     }
-                    currencyAddress={auction?.currency}
+                    currencyDecimals={auction?.currencyDecimals}
+                    currencySymbol={auction?.currencySymbol}
                     tokenId={auction?.tokenId}
                     offer={auction}
                     usdcPriceFormatted={auction?.usdcPriceFormatted}

@@ -5,13 +5,14 @@ import { Sepolia } from "@thirdweb-dev/chains";
 const devEthereumSepolia = {
   chainId: 11155111,
   chainName: "sepolia",
-  chainNameProvider: "sepolia",
   gaslessBalanceThreshold: 1000000000000000, // 0.001 ETH
   network: Network.ETH_SEPOLIA,
   chainObject: Sepolia,
   logoURL: "/images/chains/ethereum-logo.png",
   explorerBaseURL: "https://sepolia.etherscan.io",
-
+  relayerURL: process.env.NEXT_PUBLIC_RELAYER_URL
+    ? process.env.NEXT_PUBLIC_RELAYER_URL
+    : "https://relayer.dsponsor.com",
   rpcURL: "https://ethereum-sepolia-rpc.publicnode.com",
   smartContracts: {
     currencies: {

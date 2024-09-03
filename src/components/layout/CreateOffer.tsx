@@ -30,7 +30,7 @@ export type Currency = {
 
 const CreateOffer = () => {
   const router = useRouter();
-  const chainId = router.query?.chainName;
+  const chainId = router.query?.chainId;
 
   const initialCurrencies = useMemo(
     () => config[parseInt(chainId as string)]?.smartContracts?.currencies || {},
@@ -84,7 +84,6 @@ const CreateOffer = () => {
 
   useEffect(() => {
     if (!mounted && currencies && currencies?.length > 0) {
-      console.log(currencies);
       setTokenAddress(currencies?.[0]?.address as Address);
       setTokenDecimals(currencies?.[0]?.decimals);
       setTokenSymbol(currencies?.[0]?.symbol);
@@ -360,9 +359,16 @@ const CreateOffer = () => {
           maxSupply: selectedNumber, // max supply
           forwarder: "0x0000000000000000000000000000000000000000", // forwarder
           initialOwner: userMinterAddress, // owner
-          royaltyBps: selectedRoyalties * 100, // royalties
+          royaltyBps: (parseFloat(selectedRoyalties.toString()) * 100).toFixed(0).toString(), // royalties
           currencies: [tokenAddress], // accepted token
-          prices: [ethers.utils.parseUnits(selectedUnitPrice.toString(), tokenDecimals)], // prices with decimals
+          prices: [
+            ethers.utils.parseUnits(
+              parseFloat(selectedUnitPrice.toString())
+                .toFixed(tokenDecimals as number)
+                .toString(),
+              tokenDecimals
+            )
+          ], // prices with decimals
           allowedTokenIds: Array.from({ length: selectedNumber }, (_, i) => i) // allowed token ids
         }),
         JSON.stringify({
@@ -376,10 +382,20 @@ const CreateOffer = () => {
           }
         })
       ];
+
       const preparedArgs = [Object.values(JSON.parse(args[0])), Object.values(JSON.parse(args[1]))];
 
       await createDSponsorNFTAndOffer({ args: preparedArgs });
 
+      const relayerURL = config[parseFloat(chainId as string)]?.relayerURL;
+      if (relayerURL) {
+        await fetch(`${relayerURL}/api/revalidate`, {
+          method: "POST",
+          body: JSON.stringify({
+            tags: [`${chainId}-adOffers`, `${chainId}-userAddress-${userMinterAddress}`]
+          })
+        });
+      }
       setSuccessFullUpload(true);
 
       // reset form data

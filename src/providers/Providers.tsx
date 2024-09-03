@@ -105,16 +105,16 @@ function InnerProviders({ children }: Readonly<{ children: React.ReactNode }>) {
 
   useEffect(() => {
     if (chainId && balance && address) {
-      const relayerURL = config?.[chainId]?.features?.openZeppelinDefender?.relayerURL;
+      const OZrelayer = config?.[chainId]?.features?.openZeppelinDefender?.relayerURL;
       const balanceThreshold = BigInt(config?.[chainId]?.gaslessBalanceThreshold ?? 0);
       const gaslessBalanceCondition = balanceThreshold && balance < balanceThreshold;
 
       const sdkOptions =
-        features?.canUseGaslessTransactions && gaslessBalanceCondition
+        OZrelayer && gaslessBalanceCondition
           ? {
               gasless: {
                 openzeppelin: {
-                  relayerUrl: relayerURL
+                  relayerUrl: OZrelayer
                 }
               }
             }

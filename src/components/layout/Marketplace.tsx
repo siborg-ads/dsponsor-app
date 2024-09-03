@@ -68,6 +68,7 @@ const Marketplace = () => {
       const image = token.metadata.image;
       const listingType = token.marketplaceListings.sort((a, b) => Number(b.id) - Number(a.id))[0]
         ?.listingType;
+
       const currencyDecimals =
         listingType === "Auction" || listingType === "Direct"
           ? Number(
@@ -75,9 +76,13 @@ const Marketplace = () => {
                 ?.currencyDecimals
             )
           : Number(token?.nftContract?.prices[0]?.currencyDecimals);
-      const currencySymbol = token?.marketplaceListings.sort(
-        (a, b) => Number(b.id) - Number(a.id)
-      )[0]?.currencySymbol;
+
+      const currencySymbol =
+        listingType === "Auction" || listingType === "Direct"
+          ? token?.marketplaceListings.sort((a, b) => Number(b.id) - Number(a.id))[0]
+              ?.currencySymbol
+          : token?.nftContract?.prices[0]?.currencySymbol;
+
       const latestBid = currencyDecimals
         ? Number(
             formatUnits(
@@ -145,7 +150,7 @@ const Marketplace = () => {
             : listingType === "Direct"
               ? directPriceUsdcBN
               : mintPriceUsdcBN,
-        decimals: currencyDecimals
+        decimals: 6
       };
       const usdcPriceFormatted =
         listingType === "Auction"
@@ -184,7 +189,6 @@ const Marketplace = () => {
         quantity: quantity,
         sold: sold,
         numberOfBids: numberOfBids,
-        usdcPriceBNString: usdcPriceBN?.USDCPrice?.toString(),
         item: {
           disable: token?.disable,
           usdcPriceBN: usdcPriceBN,

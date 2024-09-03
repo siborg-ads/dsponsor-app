@@ -5,15 +5,17 @@ import { Address } from "@thirdweb-dev/sdk";
 /**
  * Fetches all offers profile for a given user address and chain ID.
  *
- * @param {string} userAddress - The address of the user.
+ * @param {string} userAddress - The address of the user. - Hard fix : for now userAddress is not used in the query
  * @param {number} chainId - The ID of the blockchain chain.
  * @returns {Promise<Array<Object>>} - A promise that resolves to an array of offer profiles.
  */
 export const fetchAllOffersProfile = async (userAddress: Address, chainId: number) => {
-  const path = new URL(`https://relayer.dsponsor.com/api/${chainId}/graph`);
+  const relayerURL = config[chainId].relayerURL;
+
+  const path = new URL(`${relayerURL}/api/${chainId}/graph`);
 
   const GET_DATA = `
-    query OffersManagedByUser($userAddress: ID!) {
+    query OffersManagedByUser {
       adOffers(
         first: 1000
       ) {
@@ -355,9 +357,15 @@ export const fetchAllOffersProfile = async (userAddress: Address, chainId: numbe
     }[];
   };
 
-  const response = (await executeQuery(path.href, GET_DATA, {
-    userAddress: userAddress
-  })) as QueryType;
+  const variables = {
+    // userAddress: userAddress
+  };
+  const options = {
+    populate: true,
+    // next: { tags: [`${chainId}-userAddress-${userAddress}`] }
+    next: { tags: [`${chainId}-adOffers`] }
+  };
+  const response = (await executeQuery(path.href, GET_DATA, variables, options)) as QueryType;
   const chainConfig = config[chainId];
 
   const resultMappedData = response?.adOffers

@@ -80,9 +80,13 @@ const CreatedOffers = ({
           {filteredData?.map((item, index) => {
             const offer = offers?.find((offer) => offer?.id === item?.id);
 
-            const currencyAddress =
+            const currencyDecimals = Number(
               item?.marketplaceListings?.sort((a, b) => Number(b?.id) - Number(a?.id))[0]
-                ?.currency ?? item?.nftContract?.prices?.[0]?.currency;
+                ?.currencyDecimals ?? item?.nftContract?.prices?.[0]?.currencyDecimals
+            );
+            const currencySymbol =
+              item?.marketplaceListings?.sort((a, b) => Number(b?.id) - Number(a?.id))[0]
+                ?.currencySymbol ?? item?.nftContract?.prices?.[0]?.currencySymbol;
 
             return (
               <TokenCard
@@ -98,7 +102,8 @@ const CreatedOffers = ({
                 isOwner={isOwner}
                 offer={offer}
                 createdOffersProposals={true}
-                currencyAddress={currencyAddress}
+                currencySymbol={currencySymbol}
+                currencyDecimals={currencyDecimals}
               />
             );
           })}

@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import OverviewCard from "@/components/features/profile/OverviewCard";
 import { ArrowPathIcon } from "@heroicons/react/20/solid";
-import { shortenAddress } from "@thirdweb-dev/react";
 
 const Overview = ({ userData, ownedTokens, isLoading, manageAddress }) => {
   const [ranking, setRanking] = useState<any>(null);
@@ -29,7 +28,7 @@ const Overview = ({ userData, ownedTokens, isLoading, manageAddress }) => {
       informations: "The total number of outbids received"
     },
     {
-      value: `$${ranking?.usdcAmounts.bidRefundReceived ?? 0}`,
+      value: `$${ranking?.usdcAmounts?.bidRefundReceived ?? 0}`,
       label: "Rewards Earned",
       informations: "The total amount of rewards earned"
     },
@@ -48,13 +47,18 @@ const Overview = ({ userData, ownedTokens, isLoading, manageAddress }) => {
           <span className="md:block text-jacarta-100 text-xs md:text-sm inline-flex items-center gap-1">
             {manageAddress}
           </span>
+          {/*}
           <span className="md:hidden text-jacarta-100 text-xs md:text-sm inline-flex items-center gap-1">
             {shortenAddress(manageAddress)}
           </span>
+          */}
         </div>
         <span className="text-jacarta-100 text-xs md:text-sm inline-flex items-center gap-1">
-          {isLoading && <ArrowPathIcon className="w-4 h-4 text-white animate-spin" />} Updated every
+          {isLoading && <ArrowPathIcon className="w-4 h-4 text-white animate-spin" />}
+          {/* 
+          Updated every
           15 minutes
+          */}
         </span>
       </div>
 

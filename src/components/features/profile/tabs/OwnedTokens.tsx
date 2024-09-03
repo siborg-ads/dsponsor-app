@@ -12,7 +12,7 @@ import AdSubmission from "@/components/features/token/accordion/AdSubmission";
 import MainButton from "@/components/ui/buttons/MainButton";
 import { features } from "@/data/features";
 
-const OwnedTokens = ({ data, isOwner, isLoading, fetchCreatedData }) => {
+const OwnedTokens = ({ data, isOwner, isLoading, fetchCreatedData, manageAddress }) => {
   const { currentChainObject } = useChainContext();
   const [selectedItems, setSelectedItems] = useState<any[]>([]);
   const [isSelectedItem, setIsSelectedItem] = useState({});
@@ -37,6 +37,7 @@ const OwnedTokens = ({ data, isOwner, isLoading, fetchCreatedData }) => {
     currentChainObject?.smartContracts?.DSPONSORADMIN?.address,
     currentChainObject?.smartContracts?.DSPONSORADMIN?.abi
   );
+  const relayerUrl = currentChainObject?.relayerURL;
 
   const { mutateAsync: uploadToIPFS } = useStorageUpload();
   const { mutateAsync: submitAd } = useContractWrite(DsponsorAdminContract, "submitAdProposals");
@@ -143,10 +144,20 @@ const OwnedTokens = ({ data, isOwner, isLoading, fetchCreatedData }) => {
     const adParametersItems: any[] = [];
     const dataItems: any[] = [];
 
+    let revalidateTags: string[] = [];
+
     try {
       for (const item of selectedItems) {
         for (const args of item.adParameters) {
           if (args.adParameter.id !== "xSpaceId" && args.adParameter.id !== "xCreatorHandle") {
+            revalidateTags.push(`${currentChainObject?.chainId}-adOffer-${item.offerId}`);
+            revalidateTags.push(
+              `${currentChainObject?.chainId}-nftContract-${item.nftContract.id}`
+            );
+            for (const adminAddr of item.admins) {
+              revalidateTags.push(`${currentChainObject?.chainId}-userAddress-${adminAddr}`);
+            }
+
             selectedOfferIdItems.push(item.offerId);
             selectedTokenIdItems.push(item.tokenId);
             adParametersItems.push(args.adParameter.id);
@@ -177,7 +188,17 @@ const OwnedTokens = ({ data, isOwner, isLoading, fetchCreatedData }) => {
         adParameters: adParametersItems,
         data: dataItems
       };
+
+      revalidateTags.push(`${currentChainObject?.chainId}-userAddress-${manageAddress}`);
+      revalidateTags = [...new Set(revalidateTags)];
+
       await submitAd({ args: Object.values(argsAdSubmited) });
+      if (relayerUrl) {
+        await fetch(`${relayerUrl}/api/revalidate`, {
+          method: "POST",
+          body: JSON.stringify({ tags: revalidateTags })
+        });
+      }
       setSuccessFullUpload(true);
 
       // refetch created offers

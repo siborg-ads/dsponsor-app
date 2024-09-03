@@ -40,6 +40,10 @@ type NFTContract = {
     amount: string;
     enabled: boolean;
     currencyDecimals: string;
+    currencySymbol: string;
+    mintPriceStructure: MintPriceStructure;
+    mintPriceStructureUsdc: MintPriceStructure;
+    mintPriceStructureUsdcFormatted: MintPriceStructure;
   }[];
   tokens: Token[];
 };
@@ -76,6 +80,11 @@ type BidPriceStructure = {
   totalBidAmount: string;
 };
 
+type MintPriceStructure = {
+  creatorAmount: string;
+  protocolFeeAmount: string;
+  totalAmount: string;
+};
 type BuyPriceStructure = {
   buyoutPricePerToken: string;
   listerBuyAmount: string;
@@ -98,8 +107,13 @@ type MarketplaceListing = {
   token: Token;
   bids: Bid[];
   currencyDecimals: string;
+  currencySymbol: string;
   bidPriceStructure: BidPriceStructure;
+  bidPriceStructureUsdc: BidPriceStructure;
+  bidPriceStructureUsdcFormatted: BidPriceStructure;
   buyPriceStructure: BuyPriceStructure;
+  buyPriceStructureUsdc: BuyPriceStructure;
+  buyPriceStructureUsdcFormatted: BuyPriceStructure;
 };
 
 type MarketplaceOffer = {
@@ -228,7 +242,8 @@ type OfferPageContainerResponse = {
  *                               ad offer, enriched with blockchain-specific configuration and additional token details.
  */
 export const fetchOffer = async (chainId, offerId) => {
-  const path = new URL(`https://relayer.dsponsor.com/api/${chainId}/graph`);
+  const relayerURL = config[chainId].relayerURL;
+  const path = new URL(`${relayerURL}/api/${chainId}/graph`);
 
   const GET_DATA = `
     query OfferPageContainer($offerId: ID!) {
@@ -429,9 +444,19 @@ export const fetchOffer = async (chainId, offerId) => {
     }
   `;
 
-  const response = (await executeQuery(path.href, GET_DATA, {
+  const variables = {
     offerId
-  })) as OfferPageContainerResponse;
+  };
+  const options = {
+    populate: true,
+    next: { tags: [`${chainId}-adOffer-${offerId}`] }
+  };
+  const response = (await executeQuery(
+    path.href,
+    GET_DATA,
+    variables,
+    options
+  )) as OfferPageContainerResponse;
 
   const chainConfig = config[chainId];
 

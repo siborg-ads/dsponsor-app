@@ -9,12 +9,12 @@ import config from "@/config/config";
  * @returns {Promise<Array>} - A promise that resolves to an array of tokens with their details.
  */
 export const fetchMarketplace = async (chainId: number, allTokens: boolean) => {
-  const path = new URL(`https://relayer.dsponsor.com/api/${chainId}/graph`);
-  const currentTimestamp = Math.floor(Date.now() / 1000);
+  const relayerURL = config[chainId].relayerURL;
+  const path = new URL(`${relayerURL}/api/${chainId}/graph`);
 
   const GET_DATA = `
-    query getAllMarketplaceListings($currentTimestamp: Int!) {
-      adOffers {
+    query getAllMarketplaceListings {
+      adOffers(first: 1000) {
         id
         disable
         metadataURL
@@ -31,63 +31,40 @@ export const fetchMarketplace = async (chainId: number, allTokens: boolean) => {
               currency
             }
             nftContract {
-              id # = assetContract
-              adOffers {
-                id
-                metadataURL # offerMetadata
-              }
+              id 
               prices {
-                currency # ERC20 smart contract
-                amount # wei, mind decimals() function to transform in human readable value !
+                currency 
+                amount 
                 enabled
               }
             }
             marketplaceListings(
-              first: 1000
-              orderBy: endTime
-              orderDirection: asc
+              where: { status_not_in: ["CANCELLED"]  }
+              first: 2
+              orderBy: id
+              orderDirection: desc
             ) {
-              id # listingId
+              id 
               quantity
-              # METADATA - if INVALID, ignore this listing
-              # offerMetadata = adOffers[0].metadataURL
-              # if tokenData?.length
-              #    if offerMetadata.offer.token_metadata.name exists => replace all {tokenData} by tokenData value
-              #    (same for offerMetadata.offer.token_metadata.description & offerMetadata.offer.token_metadata.image)
-              # NAME = offerMetadata.offer.token_metadata.name || offerMetadata.offer.name || INVALID
-              # DESCRIPTION = offerMetadata.offer.token_metadata.description || offerMetadata.offer.description || INVALID
-              # IMAGE = offerMetadata.offer.token_metadata.image || offerMetadata.offer.image || INVALID
               token {
                 tokenId
                 nftContract {
-                  id # = assetContract
+                  id 
                   royalty {
                     bps
-                  }
-                  adOffers {
-                    id
-                    metadataURL # offerMetadata
-                    disable
                   }
                 }
                 mint {
                   tokenData
                 }
               }
-
-              # listingType = 0 <-> 'Direct', listingType = 1 <-> 'Auction'
-              # 'Direct' or 'Auction'
+              
               listingType
 
-              currency # ERC20 smart contract addr
-              # PRICE
-              # if listingType = 'Direct'
-              #    price = buyoutPricePerToken
-              # else if listingType = 'Auction'
-              #    price = bids[0].totalBidAmount || reservePricePerToken
+              currency               
               reservePricePerToken
               buyoutPricePerToken
-              bids(orderBy: totalBidAmount, orderDirection: desc) {
+              bids(first: 1, orderBy: totalBidAmount, orderDirection: desc) {
                  creationTimestamp
                 bidder
                 totalBidAmount
@@ -104,11 +81,9 @@ export const fetchMarketplace = async (chainId: number, allTokens: boolean) => {
 
               startTime
               endTime
-
-              # 'UNSET', 'CREATED', 'COMPLETED' or 'CANCELLED'
+             
               status
 
-              # will be useful later
               tokenType
               transferType
               rentalExpirationTimestamp
@@ -212,11 +187,13 @@ export const fetchMarketplace = async (chainId: number, allTokens: boolean) => {
   };
 
   const chainConfig = config[chainId];
-  const variables = {
-    currentTimestamp
+  const variables = {};
+  const options = {
+    populate: true,
+    next: { tags: [`${chainId}-adOffers`] }
   };
 
-  const response = (await executeQuery(path.href, GET_DATA, variables)) as QueryType;
+  const response = (await executeQuery(path.href, GET_DATA, variables, options)) as QueryType;
 
   const mappedListedToken = response?.adOffers
     .map((offer) => {

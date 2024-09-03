@@ -1,23 +1,22 @@
-import { Filter } from "@/components/layout/Home";
+export type Filter = "all" | "medias" | "dapps" | "websites" | "newsletters";
+
+export type CurationDataItem = {
+  logo: string;
+  description: string;
+  buttonText: string;
+  offerId: number;
+  buttonLink: string;
+  type: Filter[];
+};
 
 type CurationData = {
-  [key: number]: {
-    [key: string]: {
-      logo: string;
-      description: string;
-      buttonText: string;
-      offerId?: number;
-      buttonLink: string;
-      type: Filter[];
-    };
-  };
+  [key: number]: CurationDataItem[];
 };
 
 export function curationData(baseURL: string): CurationData {
-  const data = {
-    11155111: {
-      // Sepolia chainId
-      SiBorg: {
+  return {
+    11155111: [
+      {
         logo: "/images/siborg-ads/siborg-ads.png",
         description:
           "SiBorg App is a web3-based Spotify-like application for Twitter Spaces and podcasts, featuring SocialFi capabilities.",
@@ -26,7 +25,7 @@ export function curationData(baseURL: string): CurationData {
         buttonLink: `${baseURL}/${11155111}/offer/${1}`,
         type: ["dapps"] as Filter[]
       },
-      Cryptoast: {
+      {
         logo: "/images/cryptoast/cryptoast.webp",
         description:
           "Cryptoast is a leading French-language media outlet focused on Bitcoin, blockchain, and cryptocurrencies. Established in 2017, it aims to provide comprehensive and accessible information to both newcomers and experienced users in the crypto space.",
@@ -35,10 +34,9 @@ export function curationData(baseURL: string): CurationData {
         buttonLink: `${baseURL}/${11155111}/offer/${35}`,
         type: ["medias", "newsletters"] as Filter[]
       }
-    },
-    8453: {
-      // Base chainId
-      SiBorg: {
+    ],
+    8453: [
+      {
         logo: "/images/siborg-ads/siborg-ads.png",
         description:
           "SiBorg App is a web3-based Spotify-like application for Twitter Spaces and podcasts, featuring SocialFi capabilities.",
@@ -47,8 +45,6 @@ export function curationData(baseURL: string): CurationData {
         buttonLink: `${baseURL}/${8453}/offer/${1}`,
         type: ["dapps"] as Filter[]
       }
-    }
+    ]
   };
-
-  return data;
 }

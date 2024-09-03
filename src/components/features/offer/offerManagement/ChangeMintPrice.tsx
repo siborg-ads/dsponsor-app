@@ -156,6 +156,16 @@ const ChangeMintPrice = ({ offer }) => {
         args: [currency, !disableMint, finalFormattedAmountBN]
       });
 
+      const relayerURL = config[chainId as number]?.relayerURL;
+      if (relayerURL) {
+        await fetch(`${relayerURL}/api/revalidate`, {
+          method: "POST",
+          body: JSON.stringify({
+            tags: [`${chainId}-adOffer-${offer.id}`, `${chainId}-nftContract-${nftContractAddress}`]
+          })
+        });
+      }
+
       setDisabled(disableMint);
     } catch (error) {
       console.error(error);
@@ -170,6 +180,15 @@ const ChangeMintPrice = ({ offer }) => {
       await mutateTokenAsync({
         args: [selectedToken, currency, !disableMint, formattedAmountBN]
       });
+      const relayerURL = config[chainId as number]?.relayerURL;
+      if (relayerURL) {
+        await fetch(`${relayerURL}/api/revalidate`, {
+          method: "POST",
+          body: JSON.stringify({
+            tags: [`${chainId}-adOffer-${offer.id}`, `${chainId}-nftContract-${nftContractAddress}`]
+          })
+        });
+      }
     } catch (error) {
       console.error(error);
       throw new Error(error);

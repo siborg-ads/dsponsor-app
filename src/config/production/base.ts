@@ -6,12 +6,13 @@ const prodBase = {
   chainId: 8453,
   chainName: "base",
   gaslessBalanceThreshold: 1000000000000000, // 0.001 ETH
-  chainNameProvider: "base",
-  chainObject: Base,
   network: Network.BASE_MAINNET,
+  chainObject: Base,
   logoURL: "/images/chains/base-logo.png",
   explorerBaseURL: "https://basescan.org",
-
+  relayerURL: process.env.NEXT_PUBLIC_RELAYER_URL
+    ? process.env.NEXT_PUBLIC_RELAYER_URL
+    : "https://relayer.dsponsor.com",
   rpcURL: "https://mainnet.base.org",
   smartContracts: {
     currencies: {

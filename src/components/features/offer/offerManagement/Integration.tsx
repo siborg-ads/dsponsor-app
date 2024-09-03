@@ -41,12 +41,14 @@ const Integration = ({
             Newsletter (HTML)
           </Tabs.Trigger>
 
+          {/*
           <Tabs.Trigger
             value="telegram"
             className="cursor-pointer data-[state=active]:bg-primaryPurple border border-primaryPurple rounded-md p-2"
           >
             Telegram (Bot)
           </Tabs.Trigger>
+          */}
         </Tabs.List>
 
         <div className="flex w-full mt-4">

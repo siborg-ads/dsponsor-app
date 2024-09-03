@@ -58,6 +58,8 @@ const CreateListing = ({
 
   const address = useAddress();
 
+  const relayerURL = currentChainObject?.relayerURL;
+
   const [customContract, setCustomContract] = useState<Address | null>(null);
   const [tokenContract, setTokenContract] = useState<string>("");
   const [customTokenContract, setCustomTokenContract] = useState<TokenContract | null>(null);
@@ -169,6 +171,19 @@ const CreateListing = ({
           listingType: selectedListingType[0]
         };
         await createListing({ args: [args] });
+
+        const tags = [
+          `${chainId}-userAddress-${address}`,
+          `${chainId}-nftContract-${assetContract}`
+        ];
+
+        await fetch(`${relayerURL}/api/revalidate`, {
+          method: "POST",
+          body: JSON.stringify({
+            tags
+          })
+        });
+
         setSuccessFullListing(true);
         setListingCreated(true);
 
@@ -213,12 +228,11 @@ const CreateListing = ({
       setSelectedCurrency(event.target.value);
     } else {
       const currency = currencies?.find((currency) => currency.address === event.target.value);
-      console.log("currency", currency);
 
       setSelectedCurrencyContract(currency?.address as Address);
       setCustomContract(null);
       setIsCustomEnabled(false);
-      setSelectedCurrency(currency as Currency)
+      setSelectedCurrency(currency as Currency);
     }
   };
 

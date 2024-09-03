@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import Meta from "@/components/Meta";
-import { ethers } from "ethers";
+import { ethers, BigNumber } from "ethers";
 import Image from "next/image";
 import {
   useContract,
@@ -11,6 +11,8 @@ import {
   useAddress,
   useStorage
 } from "@thirdweb-dev/react";
+import { ThirdwebSDK } from "@thirdweb-dev/sdk";
+
 import Tippy from "@tippyjs/react";
 import OfferSkeleton from "@/components/ui/skeletons/OfferSkeleton";
 import { fetchOffer } from "@/utils/graphql/fetchOffer";
@@ -35,6 +37,7 @@ import TokenCard from "@/components/ui/cards/TokenCard";
 import { addLineBreaks } from "@/utils/misc/addLineBreaks";
 import Input from "../ui/Input";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
+import DsponsorNftABI from "@/abi/dsponsorNFT.json";
 
 const onAuctionCondition = (offer, mint, direct) => {
   return (
@@ -54,7 +57,8 @@ const Offer = () => {
   const storage = useStorage();
 
   const offerId = router.query?.offerId;
-  const chainId = router.query?.chainName as string;
+  const chainId = router.query?.chainId as string;
+  const relayerURL = config[chainId]?.relayerURL;
 
   const [refusedValidatedAdModal, setRefusedValidatedAdModal] = useState<boolean>(false);
   const [offerData, setOfferData] = useState<any>(null);
@@ -92,10 +96,12 @@ const Offer = () => {
   const [filterOption, setFilterOption] = useState<"All tokens" | "On auction">("All tokens");
   const [sortOption, setSortOption] = useState<SortOptionsType>("Sort by name");
 
+  /*
   const [currencyDecimals, setCurrencyDecimals] = useState<number | null>(null);
   const [currencySymbol, setCurrencySymbol] = useState<string | null>(null);
-
+ 
   useEffect(() => {
+   
     if (decimalsContract) {
       setCurrencyDecimals(decimalsContract);
     }
@@ -104,6 +110,7 @@ const Offer = () => {
       setCurrencySymbol(symbolContract);
     }
   }, [decimalsContract, symbolContract]);
+*/
 
   const { data: bps } = useContractRead(DsponsorAdminContract, "feeBps");
   const maxBps = 10000;
@@ -160,17 +167,76 @@ const Offer = () => {
               ? Number(currentListing?.currencyDecimals)
               : Number(token?.nftContract?.prices[0]?.currencyDecimals);
 
+          const currencySymbol =
+            currentListing?.listingType === "Auction" || currentListing?.listingType === "Direct"
+              ? currentListing?.currencySymbol
+              : token?.nftContract?.prices[0]?.currencySymbol;
+
+          const listingType = currentListing?.listingType;
+          const quantity = currentListing?.quantity;
+          const numberOfBids = currentListing?.bids.length;
+          const sold =
+            currentListing?.status === "COMPLETED" ||
+            (!currentListing?.listingType && token?.mint !== null);
+          const currency =
+            token?.marketplaceListings?.sort((a, b) => Number(b.id) - Number(a.id))[0]?.currency ??
+            token?.nftContract?.prices[0]?.currency;
+
+          const directPriceUsdcBN = BigNumber.from(
+            token?.marketplaceListings?.sort((a, b) => Number(b.id) - Number(a.id))?.[0]
+              ?.buyPriceStructureUsdc?.buyoutPricePerToken ?? 0
+          );
+          const directPriceUsdcFormatted = token?.marketplaceListings?.sort(
+            (a, b) => Number(b.id) - Number(a.id)
+          )?.[0]?.buyPriceStructureUsdcFormatted?.buyoutPricePerToken;
+
+          const auctionPriceUsdcBN = BigNumber.from(
+            token?.marketplaceListings?.sort((a, b) => Number(b.id) - Number(a.id))?.[0]
+              ?.bidPriceStructureUsdc?.minimalBidPerToken ?? 0
+          );
+          const auctionPriceUsdcFormatted = token?.marketplaceListings?.sort(
+            (a, b) => Number(b.id) - Number(a.id)
+          )?.[0]?.bidPriceStructureUsdcFormatted?.minimalBidPerToken;
+
+          const mintPriceUsdcBN = BigNumber.from(
+            token?.nftContract?.prices?.[0]?.mintPriceStructureUsdc?.totalAmount ?? 0
+          );
+          const mintPriceUsdcFormatted =
+            token?.nftContract?.prices?.[0]?.mintPriceStructureUsdcFormatted?.totalAmount;
+
+          const usdcPriceBN = {
+            USDCPrice:
+              listingType === "Auction"
+                ? auctionPriceUsdcBN
+                : listingType === "Direct"
+                  ? directPriceUsdcBN
+                  : mintPriceUsdcBN,
+            decimals: 6
+          };
+          const usdcPriceFormatted =
+            listingType === "Auction"
+              ? auctionPriceUsdcFormatted
+              : listingType === "Direct"
+                ? directPriceUsdcFormatted
+                : mintPriceUsdcFormatted;
+
           return {
             ...token,
             listingType: currentListing?.listingType,
             endTime: currentListing?.endTime,
             status: currentListing?.status,
             startTime: currentListing?.startTime,
-            quantity: currentListing?.quantity,
+            currencySymbol,
             currencyDecimals,
+            quantity,
+            sold,
+            numberOfBids,
+            currency,
             directPrice: currentListing?.buyPriceStructure?.buyoutPricePerToken,
             auctionPrice: currentListing?.bidPriceStructure?.minimalBidPerToken,
-            mintPrice: token?.nftContract?.prices[0]?.amount
+            mintPrice: token?.nftContract?.prices[0]?.amount,
+            usdcPriceBN,
+            usdcPriceFormatted
           };
         });
 
@@ -363,9 +429,29 @@ const Offer = () => {
 
   const handleSubmit = async (submissionArgs) => {
     try {
+      const tags = [`${chainId}-adOffer-${offerId}`];
+      for (const admin of offerData.admins) {
+        tags.push(`${chainId}-userAddress-${admin}`);
+      }
+      const sdk = new ThirdwebSDK(config[chainId]?.network);
+      const contract = await sdk.getContract(offerData.nftContract.id, DsponsorNftABI);
+
+      for (const sub of submissionArgs) {
+        const owner = await contract.call("ownerOf", [sub.tokenId]);
+        tags.push(`${chainId}-userAddress-${owner}`);
+      }
+
       await mutateAsync({
         args: [submissionArgs]
       });
+
+      await fetch(`${relayerURL}/api/revalidate`, {
+        method: "POST",
+        body: JSON.stringify({
+          tags
+        })
+      });
+
       setRefusedValidatedAdModal(true);
       setSuccessFullRefuseModal(true);
     } catch (error) {
@@ -410,31 +496,47 @@ const Offer = () => {
     }
 
     switch (sortOption) {
-      case "Price: low to high":
+      case "Price: low to high": {
+        let liveAuctions = [...tempOffers].filter((auction) =>
+          onAuctionCondition(auction, true, true)
+        );
+        liveAuctions = [...liveAuctions].sort((a, b) => {
+          if (a?.usdcPriceBN?.USDCPrice.lt(b?.usdcPriceBN?.USDCPrice)) {
+            return -1;
+          } else if (a?.usdcPriceBN?.USDCPrice.gt(b?.usdcPriceBN?.USDCPrice)) {
+            return 1;
+          } else {
+            return 0;
+          }
+        });
+
+        const otherAuctions = tempOffers.filter(
+          (auction) => !onAuctionCondition(auction, true, true)
+        );
+
+        tempOffers = [...liveAuctions, ...otherAuctions];
+
+        break;
+      }
       case "Price: high to low": {
-        const liveAuctions = tempOffers.filter((offer) => onAuctionCondition(offer, true, true));
-        liveAuctions.sort(
-          (a, b) =>
-            (a.listingType === "Auction"
-              ? a.auctionPrice
-              : a.listingType === "Direct"
-                ? a.directPrice
-                : a.mintPrice) -
-            (b.listingType === "Auction"
-              ? b.auctionPrice
-              : b.listingType === "Direct"
-                ? b.directPrice
-                : b.mintPrice)
+        let liveAuctions = [...tempOffers].filter((auction) =>
+          onAuctionCondition(auction, true, true)
+        );
+        liveAuctions = [...liveAuctions].sort((a, b) => {
+          if (a?.usdcPriceBN?.USDCPrice.gt(b?.usdcPriceBN?.USDCPrice)) {
+            return -1;
+          } else if (a?.usdcPriceBN?.USDCPrice.lt(b?.usdcPriceBN?.USDCPrice)) {
+            return 1;
+          } else {
+            return 0;
+          }
+        });
+
+        let otherAuctions = [...tempOffers].filter(
+          (auction) => !onAuctionCondition(auction, true, true)
         );
 
-        if (sortOption === "Price: high to low") {
-          liveAuctions.reverse();
-        }
-
-        const notLiveAuctions = tempOffers.filter(
-          (offer) => !onAuctionCondition(offer, true, true)
-        );
-        tempOffers = [...liveAuctions, ...notLiveAuctions];
+        tempOffers = [...liveAuctions, ...otherAuctions];
         break;
       }
       case "Ending soon": {
@@ -863,7 +965,9 @@ const Offer = () => {
                     url={`/${chainId}/offer/${offerId}/${finalToken?.tokenId}${finalToken?.mint?.tokenData ? `?tokenData=${finalToken?.mint?.tokenData}` : ""}`}
                     tokenId={finalToken.tokenId}
                     offer={finalToken}
-                    currencyAddress={tokenCurrencyAddress}
+                    currencyDecimals={finalToken.currencyDecimals}
+                    currencySymbol={finalToken.currencySymbol}
+                    usdcPriceFormatted={finalToken.usdcPriceFormatted}
                   />
                 );
               })}
