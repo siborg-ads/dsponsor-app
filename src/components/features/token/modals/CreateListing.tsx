@@ -163,12 +163,18 @@ const CreateListing = ({
         const secondsUntilEndTime = endDateFormated - startTime;
 
         const startingPrice = ethers.utils
-          .parseUnits(selectedStartingPrice.toString(), currencyDecimals as number)
+          .parseUnits(
+            parseFloat(selectedStartingPrice.toString()).toFixed(currencyDecimals as number),
+            currencyDecimals as number
+          )
           .toString();
 
         const isAuction = selectedListingType[0] === 1;
         const price = ethers.utils
-          .parseUnits(selectedUnitPrice.toString(), currencyDecimals as number)
+          .parseUnits(
+            parseFloat(selectedUnitPrice.toString()).toFixed(currencyDecimals as number),
+            currencyDecimals as number
+          )
           .toString();
         const assetContract = offerData?.nftContract?.id;
 
@@ -293,7 +299,7 @@ const CreateListing = ({
       newErrors.endDateError = "End date cannot be before the start date.";
       isValid = false;
     }
-    if (selectedUnitPrice <= selectedStartingPrice) {
+    if (parseFloat(selectedUnitPrice.toString()) <= parseFloat(selectedStartingPrice.toString())) {
       newErrors.unitPriceError = `Unit price must be higher than the unit starting price.`;
       isValid = false;
     }

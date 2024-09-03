@@ -309,7 +309,10 @@ const BidsModal = ({
     }
 
     try {
-      const parsedValue = ethers.utils.parseUnits(value.replace(",", "."), currencyTokenDecimals);
+      const parsedValue = ethers.utils.parseUnits(
+        parseFloat(value.replace(",", ".")).toFixed(currencyTokenDecimals as number),
+        currencyTokenDecimals
+      );
       setBidsAmount(value);
       setParsedBidsAmount(parsedValue);
       setAmountToApprove(parsedValue);

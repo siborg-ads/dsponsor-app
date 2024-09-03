@@ -350,7 +350,7 @@ export const fetchOffer = async (chainId, offerId) => {
                   }
                   adOffers {
                     id
-                    metadataURL
+                    # metadataURL
                     disable
                   }
                 }

@@ -118,16 +118,17 @@ const Profile = () => {
 
       const allUserBids: any[] = [];
       offersByUserAddressArray?.forEach((offer) => {
-        offer?.nftContract?.tokens?.forEach((token) =>
+        offer?.nftContract?.tokens?.forEach((token) => {
           token?.marketplaceListings?.forEach((listing) => {
             const { currencyDecimals, currencySymbol } = listing || {};
+            listing.token.metadata = token.metadata;
             listing?.bids?.forEach((bid) => {
               if (userAddress && bid?.bidder?.toLowerCase() === userAddress?.toLowerCase()) {
                 allUserBids.push({ currencyDecimals, currencySymbol, ...bid });
               }
             });
-          })
-        );
+          });
+        });
       });
 
       setMarketplaceBids(allUserBids);
