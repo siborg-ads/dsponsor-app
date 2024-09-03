@@ -1,6 +1,7 @@
 export type Filter = "all" | "medias" | "dapps" | "websites" | "newsletters";
 
 export type CurationDataItem = {
+  chainId?: number;
   logo: string;
   description: string;
   buttonText: string;
@@ -25,6 +26,7 @@ export function curationData(baseURL: string): CurationData {
         buttonLink: `${baseURL}/${11155111}/offer/${1}`,
         type: ["dapps"] as Filter[]
       },
+
       {
         logo: "/images/cryptoast/cryptoast.webp",
         description:
