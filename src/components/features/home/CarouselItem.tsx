@@ -25,7 +25,7 @@ const CarouselItem = ({
         </div>
       </div>
 
-      <Link href={buttonLink} target="_blank">
+      <Link href={buttonLink}>
         <button className="bg-primaryPurple hover:bg-opacity-80 text-white rounded-lg py-2 px-4 mt-4">
           {buttonText}
         </button>

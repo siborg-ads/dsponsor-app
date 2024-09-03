@@ -127,7 +127,10 @@ const ChangeMintPrice = ({ offer }) => {
       value = value.replace(",", ".");
     }
 
-    const formattedValue = parseUnits(value, currencyDecimals as number);
+    const formattedValue = parseUnits(
+      parseFloat(value.toString()).toFixed(currencyDecimals as number),
+      currencyDecimals as number
+    );
 
     setAmount(value);
     setFormattedAmountBN(formattedValue);

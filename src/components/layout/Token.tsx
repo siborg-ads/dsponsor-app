@@ -1665,7 +1665,10 @@ const Token = () => {
       if (tokenStatut === "AUCTION") {
         if (!auctionPriceBN || !tokenDecimals || !bidsAmount) return;
 
-        const parsedBidsAmount = parseUnits(bidsAmount, tokenDecimals);
+        const parsedBidsAmount = parseUnits(
+          Number(bidsAmount).toFixed(tokenDecimals),
+          tokenDecimals
+        );
 
         const result = await checkUserBalance(tokenBalance, parsedBidsAmount);
         setHasEnoughBalance(result);
