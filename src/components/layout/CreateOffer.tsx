@@ -22,6 +22,8 @@ import { useRouter } from "next/router";
 import { Address } from "thirdweb";
 import { features } from "@/data/features";
 
+import ERC20ABI from "@/abi/ERC20.json";
+
 export type Currency = {
   address: Address | string;
   decimals: number;
@@ -78,7 +80,7 @@ const CreateOffer = () => {
   const [selectedCurrency, setSelectedCurrency] = useState<Currency>(currencies?.[0]);
   const [mounted, setMounted] = useState(false);
 
-  const { contract: tokenContractAsync } = useContract(tokenAddress, "token");
+  const { contract: tokenContractAsync } = useContract(tokenAddress, ERC20ABI);
   const { data: customTokenSymbol } = useContractRead(tokenContractAsync, "symbol");
   const { data: customTokenDecimals } = useContractRead(tokenContractAsync, "decimals");
 
@@ -103,21 +105,34 @@ const CreateOffer = () => {
     }
   }, [customCurrencyEnabled, customTokenAddress, selectedCurrency]);
 
-  useEffect(() => {
-    if (customTokenDecimals) {
-      setTokenDecimals(customTokenDecimals);
-    } else {
-      setTokenDecimals(null);
-    }
-
-    if (customTokenSymbol) {
-      setTokenSymbol(customTokenSymbol);
-    } else {
-      setTokenSymbol(null);
-    }
-  }, [customTokenDecimals, customTokenSymbol]);
-
   const { setSelectedChain } = useSwitchChainContext();
+
+  useEffect(() => {
+    const currencies = Object.entries(
+      config[chainId as string]?.smartContracts?.currencies || {}
+    ) as any;
+
+    const [, { symbol, decimals }] = currencies.find(
+      ([, value]) => value?.address?.toLowerCase() === tokenAddress?.toLowerCase()
+    ) ?? ["", {}];
+
+    if (symbol && decimals) {
+      setTokenSymbol(symbol);
+      setTokenDecimals(decimals);
+    } else {
+      if (customTokenSymbol) {
+        setTokenSymbol(customTokenSymbol);
+      } else {
+        setTokenSymbol(null);
+      }
+
+      if (customTokenDecimals) {
+        setTokenDecimals(customTokenDecimals);
+      } else {
+        setTokenDecimals(null);
+      }
+    }
+  }, [chainId, tokenAddress, customTokenDecimals, customTokenSymbol]);
 
   const address = useAddress();
 

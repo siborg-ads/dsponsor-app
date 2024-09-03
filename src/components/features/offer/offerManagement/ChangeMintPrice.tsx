@@ -13,6 +13,8 @@ import StyledWeb3Button from "@/components/ui/buttons/StyledWeb3Button";
 import ResponsiveTooltip from "@/components/ui/ResponsiveTooltip";
 import { QuestionMarkCircleIcon } from "@heroicons/react/24/solid";
 
+import ERC20ABI from "@/abi/ERC20.json";
+
 const isDisabledMessage = (disableMint: boolean) => {
   return disableMint
     ? `The minting feature has been disabled for this offer.`
@@ -36,7 +38,7 @@ const ChangeMintPrice = ({ offer }) => {
   const [initialDisabled, setInitialDisabled] = useState(false);
   const [disabled, setDisabled] = useState(false);
 
-  const { contract: currencyContract } = useContract(currency);
+  const { contract: currencyContract } = useContract(currency, ERC20ABI);
   const { data: currencyDecimalsData } = useContractRead(currencyContract, "decimals");
   const { data: currencySymbolData } = useContractRead(currencyContract, "symbol");
 

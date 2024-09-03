@@ -13,6 +13,8 @@ import { Address } from "thirdweb";
 import config from "@/config/config";
 import { Currency } from "@/components/layout/CreateOffer";
 
+import ERC20ABI from "@/abi/ERC20.json";
+
 const CreateListing = ({
   handleListingModal,
   offerData,
@@ -66,7 +68,7 @@ const CreateListing = ({
   const [selectedCurrencyContract, setSelectedCurrencyContract] = useState<Address | string>(
     currencies[0].address
   );
-  const { contract: tokenContractAsync } = useContract(selectedCurrencyContract, "token");
+  const { contract: tokenContractAsync } = useContract(selectedCurrencyContract, ERC20ABI);
   const { data: symbolContractAsync } = useContractRead(tokenContractAsync, "symbol");
   const { data: decimalsContractAsync } = useContractRead(tokenContractAsync, "decimals");
 
@@ -81,18 +83,31 @@ const CreateListing = ({
   const { mutateAsync: createListing } = useContractWrite(dsponsorMpContract, "createListing");
 
   useEffect(() => {
-    if (symbolContractAsync) {
-      setCurrencySymbol(symbolContractAsync);
-    } else {
-      setCurrencySymbol(null);
-    }
+    const currencies = Object.entries(
+      config[chainId as number]?.smartContracts?.currencies || {}
+    ) as any;
 
-    if (decimalsContractAsync) {
-      setCurrencyDecimals(decimalsContractAsync);
+    const [, { symbol, decimals }] = currencies.find(
+      ([, value]) => value?.address?.toLowerCase() === selectedCurrencyContract?.toLowerCase()
+    ) ?? ["", {}];
+
+    if (symbol && decimals) {
+      setCurrencySymbol(symbol);
+      setCurrencyDecimals(decimals);
     } else {
-      setCurrencyDecimals(null);
+      if (symbolContractAsync) {
+        setCurrencySymbol(symbolContractAsync);
+      } else {
+        setCurrencySymbol(null);
+      }
+
+      if (decimalsContractAsync) {
+        setCurrencyDecimals(decimalsContractAsync);
+      } else {
+        setCurrencyDecimals(null);
+      }
     }
-  }, [symbolContractAsync, decimalsContractAsync]);
+  }, [chainId, selectedCurrencyContract, symbolContractAsync, decimalsContractAsync]);
 
   useEffect(() => {
     setTokenContract(selectedCurrencyContract as string);
