@@ -359,9 +359,16 @@ const CreateOffer = () => {
           maxSupply: selectedNumber, // max supply
           forwarder: "0x0000000000000000000000000000000000000000", // forwarder
           initialOwner: userMinterAddress, // owner
-          royaltyBps: selectedRoyalties * 100, // royalties
+          royaltyBps: (parseFloat(selectedRoyalties.toString()) * 100).toFixed(0).toString(), // royalties
           currencies: [tokenAddress], // accepted token
-          prices: [ethers.utils.parseUnits(selectedUnitPrice.toString(), tokenDecimals)], // prices with decimals
+          prices: [
+            ethers.utils.parseUnits(
+              parseFloat(selectedUnitPrice.toString())
+                .toFixed(tokenDecimals as number)
+                .toString(),
+              tokenDecimals
+            )
+          ], // prices with decimals
           allowedTokenIds: Array.from({ length: selectedNumber }, (_, i) => i) // allowed token ids
         }),
         JSON.stringify({
@@ -375,6 +382,7 @@ const CreateOffer = () => {
           }
         })
       ];
+
       const preparedArgs = [Object.values(JSON.parse(args[0])), Object.values(JSON.parse(args[1]))];
 
       await createDSponsorNFTAndOffer({ args: preparedArgs });
