@@ -40,6 +40,7 @@ import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import DsponsorNftABI from "@/abi/dsponsorNFT.json";
 
 import ERC20ABI from "@/abi/ERC20.json";
+import { Address } from "thirdweb";
 
 const onAuctionCondition = (offer, mint, direct) => {
   return (
@@ -98,6 +99,9 @@ const Offer = () => {
   const [filterOption, setFilterOption] = useState<"All tokens" | "On auction">("All tokens");
   const [sortOption, setSortOption] = useState<SortOptionsType>("Sort by name");
 
+  const [nftContractAddress, setNftContractAddress] = useState<Address | null>(null);
+  const { contract } = useContract(nftContractAddress);
+  const { data: owner } = useContractRead(contract, "owner");
   /*
   const [currencyDecimals, setCurrencyDecimals] = useState<number | null>(null);
   const [currencySymbol, setCurrencySymbol] = useState<string | null>(null);
@@ -115,7 +119,6 @@ const Offer = () => {
 */
 
   const { data: bps } = useContractRead(DsponsorAdminContract, "feeBps");
-  const { data: owner } = useContractRead(DsponsorAdminContract, "owner");
   const maxBps = 10000;
 
   let tokenCurrencyAddress = offerData?.nftContract?.prices[0]?.currency;
@@ -245,6 +248,7 @@ const Offer = () => {
 
         console.log("FINAL", offerDataFinal);
         setOfferData(offerDataFinal);
+        setNftContractAddress(offerDataFinal?.nftContract?.id as Address);
       } catch (error) {
         console.error("Error fetching offers:", error);
       } finally {
@@ -376,6 +380,7 @@ const Offer = () => {
 
   useEffect(() => {
     if (address && owner) {
+      console.log("popo", owner);
       setIsAdmin(offerData?.admins?.includes(address.toLowerCase()));
       setIsOwner(owner.toLowerCase() === address.toLowerCase());
     }
