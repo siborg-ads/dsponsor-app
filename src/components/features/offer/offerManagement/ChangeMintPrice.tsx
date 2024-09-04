@@ -14,6 +14,8 @@ import ResponsiveTooltip from "@/components/ui/ResponsiveTooltip";
 import { QuestionMarkCircleIcon } from "@heroicons/react/24/solid";
 
 import ERC20ABI from "@/abi/ERC20.json";
+import { COINBASE } from "thirdweb/dist/types/wallets/constants";
+import { isAddress } from "ethers/lib/utils";
 
 const isDisabledMessage = (disableMint: boolean) => {
   return disableMint
@@ -23,7 +25,15 @@ const isDisabledMessage = (disableMint: boolean) => {
 
 const ChangeMintPrice = ({ offer }) => {
   const [amount, setAmount] = useState<number | undefined>(undefined);
+  const [royaltiesAmount, setRoyaltiesAmount] = useState<number | undefined>(undefined);
   const [initialAmount, setInitialAmount] = useState<number | undefined>(undefined);
+  const [initialRoyaltiesAmount, setInitialRoyaltiesAmount] = useState<number | undefined>(
+    undefined
+  );
+  const [isValidRoyalties, setIsValidRoyalties] = useState(true);
+  const [isValidReceiver, setIsValidReceiver] = useState(true);
+  const [receiver, setReceiver] = useState<Address | null>(null);
+  const [initialReceiver, setInitialReceiver] = useState<Address | null>(null);
   const [currency, setCurrency] = useState<Address | null>(null);
   const [currencySymbol, setCurrencySymbol] = useState<string | null>(null);
   const [formattedAmountBN, setFormattedAmountBN] = useState<BigNumber | undefined>(undefined);
@@ -56,8 +66,9 @@ const ChangeMintPrice = ({ offer }) => {
   const chainId = currentChainObject?.chainId;
 
   const { contract } = useContract(nftContractAddress);
-  const { mutateAsync } = useContractWrite(contract, "setDefaultMintPrice");
+  const { mutateAsync: mutateDefaultMintPrice } = useContractWrite(contract, "setDefaultMintPrice");
   const { mutateAsync: mutateTokenAsync } = useContractWrite(contract, "setMintPrice");
+  const { mutateAsync: mutateRoyalties } = useContractWrite(contract, "setRoyalty");
 
   useEffect(() => {
     if (offer) {
@@ -105,6 +116,14 @@ const ChangeMintPrice = ({ offer }) => {
             )
           )
         );
+        console.log("offer", offer);
+
+        const royalties = offer?.nftContract?.royalty?.bps / 100;
+        setRoyaltiesAmount(royalties);
+        setInitialRoyaltiesAmount(royalties);
+
+        setReceiver(offer?.nftContract?.royalty.receiver);
+        setInitialReceiver(offer?.nftContract?.royalty?.receiver);
       } else {
         setAmount(undefined);
         setInitialAmount(undefined);
@@ -136,6 +155,42 @@ const ChangeMintPrice = ({ offer }) => {
     setFormattedAmountBN(formattedValue);
   };
 
+  const handleRoyaltiesAmount = (value) => {
+    if (!value) {
+      setRoyaltiesAmount(undefined);
+      setIsValidRoyalties(false);
+      return;
+    }
+
+    if (value.includes(",")) {
+      value = value.replace(",", ".");
+    }
+
+    setRoyaltiesAmount(value);
+
+    // only allow numbers, commas and dots
+    if (!/^[0-9.,]*$/.test(value)) {
+      setIsValidRoyalties(false);
+    } else if (parseFloat(value) > 100) {
+      setIsValidRoyalties(false);
+    } else if (value.includes(".") && value.split(".")[1].length > 2) {
+      setIsValidRoyalties(false);
+    } else {
+      setIsValidRoyalties(true);
+    }
+  };
+
+  const handleReceiverAddress = (value) => {
+    if (!value) {
+      setReceiver(null);
+      setIsValidReceiver(false);
+      return;
+    }
+
+    setReceiver(value);
+    setIsValidReceiver(isAddress(value));
+  };
+
   useEffect(() => {
     if (disableMint) {
       setAmount(0);
@@ -157,8 +212,41 @@ const ChangeMintPrice = ({ offer }) => {
     }
 
     try {
-      await mutateAsync({
+      await mutateDefaultMintPrice({
         args: [currency, !disableMint, finalFormattedAmountBN]
+      });
+
+      const relayerURL = config[chainId as number]?.relayerURL;
+      if (relayerURL) {
+        await fetch(`${relayerURL}/api/revalidate`, {
+          method: "POST",
+          body: JSON.stringify({
+            tags: [`${chainId}-adOffer-${offer.id}`, `${chainId}-nftContract-${nftContractAddress}`]
+          })
+        });
+      }
+
+      setDisabled(disableMint);
+    } catch (error) {
+      console.error(error);
+      throw new Error(error);
+    }
+  };
+
+  const handleChangeRoyaltiesPercentage = async () => {
+    if (!royaltiesAmount) {
+      toast("Please enter a valid royalties percentage", { type: "error" });
+      throw new Error("Please enter a valid royalties percentage");
+    }
+    let finalFormattedAmount = royaltiesAmount * 100;
+
+    if (disableMint) {
+      finalFormattedAmount = 0;
+    }
+
+    try {
+      await mutateRoyalties({
+        args: [receiver, finalFormattedAmount]
       });
 
       const relayerURL = config[chainId as number]?.relayerURL;
@@ -201,18 +289,22 @@ const ChangeMintPrice = ({ offer }) => {
   };
 
   return (
-    <div className="flex flex-col gap-4 justify-center">
+    <div className="flex flex-col justify-center gap-4">
+      <div className="p-4 rounded-md bg-secondaryBlack">
+        <span className="dark:text-jacarta-100 text-jacarta-100">
+          Offer contract owner has the exclusive right to set up mint price and royaties settings.
+          Mint funds are sent to offer contract owner
+        </span>
+      </div>
       {disabled && (
-        <p className="text-red text-sm">The minting feature is currently disabled for this offer</p>
+        <p className="text-sm text-red">The minting feature is currently disabled for this offer</p>
       )}
-
       {!disabled && (
-        <p className="text-green text-sm">
+        <p className="text-sm text-green">
           The minting feature is currently enabled for this offer
         </p>
       )}
-
-      <div className="mb-4 flex items-center gap-2">
+      <div className="flex items-center gap-2 mb-4">
         <Switch.Root
           checked={disableMint}
           onCheckedChange={setDisableMint}
@@ -222,17 +314,16 @@ const ChangeMintPrice = ({ offer }) => {
         >
           <Switch.Thumb className="block w-[19px] h-[19px] bg-white rounded-full transition-transform duration-100 translate-x-0.5 will-change-transform data-[state=checked]:translate-x-[19px]" />
         </Switch.Root>
-        <label className="block text-white text-sm font-semibold">Disable mint</label>
+        <label className="block text-sm font-semibold text-white">Disable mint</label>
       </div>
-
       {features?.canChangeTokenMintPrice && (
         <div className="mb-4">
-          <label className="block text-gray-700 text-sm font-semibold">Offer tokens</label>
-          <span className="text-jacarta-200 text-xs font-semibold">
+          <label className="block text-sm font-semibold text-gray-700">Offer tokens</label>
+          <span className="text-xs font-semibold text-jacarta-200">
             When selecting a token, the mint price will be changed for that token however the new
             mint price will be the same for all tokens.
           </span>
-          <div className="flex items-center flex-wrap gap-4 mt-4">
+          <div className="flex flex-wrap items-center gap-4 mt-4">
             {tokens?.map((token, index) => {
               if (token?.mint !== null) return null;
 
@@ -251,9 +342,9 @@ const ChangeMintPrice = ({ offer }) => {
                   }}
                   className={`flex flex-col cursor-pointer border-2 items-center gap-2 bg-secondaryBlack p-4 rounded-lg ${indexSelectedToken === index ? "border-primaryPurple" : disableMint ? "border-jacarta-100 border-opacity-20" : "border-transparent"}`}
                 >
-                  <p className="text-white text-sm font-semibold">Token #{token?.tokenId}</p>
+                  <p className="text-sm font-semibold text-white">Token #{token?.tokenId}</p>
 
-                  <p className="text-white text-sm font-semibold">
+                  <p className="text-sm font-semibold text-white">
                     {formatUnits(
                       BigNumber.from(token?.nftContract?.prices[0]?.amount ?? "0"),
                       Number(currencyDecimals)
@@ -266,17 +357,16 @@ const ChangeMintPrice = ({ offer }) => {
           </div>
         </div>
       )}
-
       <div className="mb-4">
         <div className="flex items-center gap-2 mb-2">
-          <label className="block text-gray-700 text-sm font-semibold">Mint price</label>
+          <label className="block text-sm font-semibold text-gray-700">Mint price</label>
 
           <ResponsiveTooltip text="The mint price is the amount of currency required to mint a token, this price will be the same for all tokens in the offer. However, the user will have to pay the protocol fees in addition to this price.">
-            <QuestionMarkCircleIcon className="h-4 w-4 text-white" />
+            <QuestionMarkCircleIcon className="w-4 h-4 text-white" />
           </ResponsiveTooltip>
         </div>
 
-        <div className="relative max-w-xs w-full flex items-center">
+        <div className="relative flex items-center w-full max-w-xs">
           <Input
             type="number"
             className={`w-full rounded-lg p-2 text-white ${disableMint ? "opacity-50 cursor-not-allowed" : ""}`}
@@ -285,7 +375,7 @@ const ChangeMintPrice = ({ offer }) => {
             placeholder={amount?.toString() ?? "Enter the amount"}
             onChange={(e) => handleAmount(e.target.value)}
           />
-          <div className="absolute right-2 top-1/2 transform -translate-y-1/2 text-white text-sm font-semibold">
+          <div className="absolute text-sm font-semibold text-white transform -translate-y-1/2 right-2 top-1/2">
             {currencySymbol ?? "WETH"}
           </div>
         </div>
@@ -299,7 +389,6 @@ const ChangeMintPrice = ({ offer }) => {
           </button>
         )}
       </div>
-
       {selectedToken !== null ? (
         <StyledWeb3Button
           onClick={async () => {
@@ -345,6 +434,91 @@ const ChangeMintPrice = ({ offer }) => {
           defaultText="Change Mint Price"
         />
       )}
+      <div className="flex flex-col gap-6 my-5">
+        <div>
+          <label className="block mb-2 text-sm font-semibold text-gray-700">
+            Royalties percentage
+          </label>
+          <div className="relative flex items-center w-full max-w-xs">
+            <Input
+              type="number"
+              className={`w-full rounded-lg p-2 text-white ${disableMint ? "opacity-50 cursor-not-allowed" : ""}`}
+              disabled={disableMint}
+              value={royaltiesAmount}
+              placeholder={royaltiesAmount?.toString() ?? "Enter the amount"}
+              onChange={(e) => handleRoyaltiesAmount(e.target.value)}
+            />
+            <div className="absolute text-sm font-semibold text-white transform -translate-y-1/2 right-2 top-1/2">
+              %
+            </div>
+          </div>
+
+          {!initialDisabled && (
+            <button
+              onClick={() => {
+                setRoyaltiesAmount(initialRoyaltiesAmount);
+                setIsValidRoyalties(true);
+              }}
+              className="flex items-center gap-2 mt-2 text-sm cursor-pointer text-primaryPurple hover:text-opacity-80"
+            >
+              Set to current royalties amount
+            </button>
+          )}
+          {!isValidRoyalties && royaltiesAmount !== null && (
+            <p className="flex items-center gap-2 mt-2 text-sm text-red">
+              Please enter a valid royalties percentage with maximum 2 decimals
+            </p>
+          )}
+        </div>
+
+        <div>
+          <label className="block mb-2 text-sm font-semibold text-gray-700">
+            Royalties receiver
+          </label>
+          <div className="relative flex items-center w-full max-w-md">
+            <Input
+              className={`w-full rounded-lg p-2 text-white ${disableMint ? "opacity-50 cursor-not-allowed" : ""}`}
+              disabled={disableMint}
+              value={receiver}
+              placeholder={receiver ?? "Enter the receiver address"}
+              onChange={(e) => handleReceiverAddress(e.target.value)}
+            />
+          </div>
+
+          {!initialDisabled && (
+            <button
+              onClick={() => {
+                setReceiver(initialReceiver);
+                setIsValidReceiver(true);
+              }}
+              className="flex items-center gap-2 mt-2 text-sm cursor-pointer text-primaryPurple hover:text-opacity-80"
+            >
+              Set to current royalties receiver
+            </button>
+          )}
+          {!isValidReceiver && receiver !== undefined && (
+            <p className="flex items-center gap-2 mt-2 text-sm text-red">
+              Please enter a valid address
+            </p>
+          )}
+        </div>
+      </div>
+      <StyledWeb3Button
+        onClick={async () => {
+          if (!nftContractAddress || !isValidRoyalties || !isValidReceiver) return;
+
+          setIsLoading(true);
+          await toast.promise(handleChangeRoyaltiesPercentage, {
+            pending: "Waiting for confirmation 🕒",
+            success: "The royalies settings has been updated for this offer 🎉",
+            error: "Transaction rejected 🤯"
+          });
+          setIsLoading(false);
+        }}
+        isDisabled={!nftContractAddress || !isValidRoyalties || !isValidReceiver}
+        contractAddress={nftContractAddress as Address}
+        defaultText="Change Royalties Settings"
+      />
     </div>
   );
 };
