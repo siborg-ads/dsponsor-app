@@ -1,6 +1,6 @@
 import { CrossmintPayButton } from "@crossmint/client-sdk-react-ui";
 import React from "react";
-import { BigNumber, ethers } from "ethers";
+import { BigNumber } from "ethers";
 import { formatUnits } from "ethers/lib/utils";
 import { Address } from "thirdweb";
 
@@ -54,6 +54,7 @@ export default function BuyWithCrossmintButton(
     isLoadingRender: () => React.JSX.Element;
     isActiveRender?: (() => React.JSX.Element) | string;
     isBid: boolean;
+    price: BigNumber;
     config: {
       projectId: string;
       buyCollectionId: string;
@@ -64,12 +65,13 @@ export default function BuyWithCrossmintButton(
     };
     successCallbackURL?: string;
     failureCallbackURL?: string;
+    whPassThroughArgs?: string;
     isLoading?: boolean;
+    currencyDecimals: number;
   }>
 ) {
-  const { offer, token, user, referrer } = props;
+  const { offer, token, user, referrer, whPassThroughArgs } = props;
 
-  const price = ethers.utils.parseUnits(props.token.buyoutPricePerToken, "wei");
   if (!token.fee) {
     console.warn("MintWithCrossmint: Token fee not found - Using default fee");
   }
@@ -104,11 +106,11 @@ export default function BuyWithCrossmintButton(
   const royaltyBPS = BigNumber.from(token.royaltiesBPS || 0);
   const protocolBPS = BigNumber.from(token.protocolFeeBPS || 0);
 
-  const royalty = price.mul(royaltyBPS).div(10000);
-  const protocolFee = price.mul(protocolBPS).div(10000);
+  const royalty = props?.price.mul(royaltyBPS).div(10000);
+  const protocolFee = props?.price.mul(protocolBPS).div(10000);
   const totalFees = royalty.add(protocolFee);
 
-  const cumulativePrice = price.add(totalFees);
+  const cumulativePrice = props?.price.add(totalFees);
   const totalPriceFormatted = formatUnits(cumulativePrice, "ether");
 
   const buttonProps = {
@@ -135,15 +137,18 @@ export default function BuyWithCrossmintButton(
   };
 
   if (props?.successCallbackURL) {
-    buttonProps.successCallbackURL = props.successCallbackURL;
+    const successCallbackURL = props.successCallbackURL.split("?")[0];
+    buttonProps.successCallbackURL = successCallbackURL;
   }
 
   if (props?.failureCallbackURL) {
-    buttonProps.failureCallbackURL = props.failureCallbackURL;
+    const failureCallbackURL = props.failureCallbackURL.split("?")[0];
+    buttonProps.failureCallbackURL = failureCallbackURL;
   }
 
   return (
     <CrossmintPayButton
+      whPassThroughArgs={whPassThroughArgs}
       disabled={props?.isDisabled}
       className={(props?.isDisabled && "opacity-30 cursor-not-allowed") || ""}
       getButtonText={() => {

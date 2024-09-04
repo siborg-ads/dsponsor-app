@@ -32,7 +32,7 @@
  *
  * // In this example, `data.user` will contain the `id` and `name` fields of the user with ID 123.
  */
-export const executeQuery = async (url, query, variables) => {
+export const executeQuery = async (url, query, variables, options) => {
   try {
     const response = await fetch(url, {
       method: "POST",
@@ -41,7 +41,8 @@ export const executeQuery = async (url, query, variables) => {
       },
       body: JSON.stringify({
         query: query,
-        variables
+        variables,
+        options
       })
     });
 

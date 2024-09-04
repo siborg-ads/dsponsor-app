@@ -112,6 +112,18 @@ const Details = ({
                 <span className="dark:text-jacarta-100 mr-2 min-w-[9rem]">Blockchain:</span>
                 <span className="text-jacarta-900 dark:text-white">{chainName}</span>
               </div>
+              {offerData?.metadata?.offer?.telegramIntegration?.enabled && (
+                <div className="flex items-center">
+                  <span className="dark:text-jacarta-100 mr-2 min-w-[9rem]">
+                    Telegram Channels ID:
+                  </span>
+                  <span className="text-jacarta-900 dark:text-white">
+                    {offerData?.metadata?.offer?.telegramIntegration?.telegramChannels?.map(
+                      (channel: any) => <span key={channel}>{channel}</span>
+                    )}
+                  </span>
+                </div>
+              )}
               {offerData?.metadata?.offer?.terms && (
                 <div className="flex items-center">
                   <span className="dark:text-jacarta-100 mr-2 min-w-[9rem]">

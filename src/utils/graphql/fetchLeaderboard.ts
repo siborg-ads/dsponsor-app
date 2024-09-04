@@ -1,3 +1,5 @@
+import config from "@/config/config";
+
 interface ProtocolFeeCurrency {
   address: string;
   decimals: number;
@@ -143,7 +145,8 @@ interface LeaderboardType {
  * @returns {Promise<Object>} - A promise that resolves to an object containing the marketplace activity data.
  */
 export const fetchLeaderboard = async (chainId) => {
-  const path = new URL(`https://relayer.dsponsor.com/api/${chainId}/activity`);
+  const relayerURL = config[chainId].relayerURL;
+  const path = new URL(`${relayerURL}/api/${chainId}/activity`);
 
   const response = await fetch(path.href);
   const data = (await response.json()) as LeaderboardType;

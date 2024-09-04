@@ -441,6 +441,15 @@ const UpdateOffer = ({ offer, contractOwner }: { offer: any; contractOwner: Addr
           updatedOfferParams?.removeOptions
         ]
       });
+      const relayerURL = config[chainId as number]?.relayerURL;
+      if (relayerURL) {
+        await fetch(`${relayerURL}/api/revalidate`, {
+          method: "POST",
+          body: JSON.stringify({
+            tags: [`${chainId}-adOffer-${updatedOfferParams?.offerId}`]
+          })
+        });
+      }
     } catch (error) {
       console.error(error);
       throw new Error(error);

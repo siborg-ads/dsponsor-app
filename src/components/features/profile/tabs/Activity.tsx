@@ -18,6 +18,7 @@ const Activity = ({ userAddr, chainId }) => {
 
   const { currentChainObject } = useChainContext();
   const chainExplorer = currentChainObject?.explorerBaseURL;
+  const relayerURL = currentChainObject?.relayerURL;
 
   useEffect(() => {
     setTimeout(() => {
@@ -27,15 +28,12 @@ const Activity = ({ userAddr, chainId }) => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const data = await fetch(
-        `https://relayer.dsponsor.com/api/${chainId}/activity?userAddress=${userAddr}`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json"
-          }
+      const data = await fetch(`${relayerURL}/api/${chainId}/activity?userAddress=${userAddr}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json"
         }
-      )
+      })
         .then((res) => res.json())
         .then((data) => {
           return data;
@@ -57,7 +55,7 @@ const Activity = ({ userAddr, chainId }) => {
     if (userAddr && chainId && !mount) {
       fetchData();
     }
-  }, [userAddr, chainId, mount]);
+  }, [userAddr, chainId, mount, relayerURL]);
 
   useEffect(() => {
     if (startDate && endDate) {
@@ -98,7 +96,7 @@ const Activity = ({ userAddr, chainId }) => {
                 <div className="flex items-center gap-4 justify-between">
                   <span className="text-white text-lg font-bold">{/* Activity */}</span>
                   <p className="text-left text-xs text-jacarta-100">
-                    Data is updated every 15 minutes
+                    {/* Data is updated every 15 minutes */}
                   </p>
                 </div>
                 <div className={`grid grid-cols-2 md:grid-cols-4 gap-4`}>
@@ -119,7 +117,7 @@ const Activity = ({ userAddr, chainId }) => {
 
                   <div className="flex flex-col bg-primaryPurple text-white items-center justify-center p-4 rounded-2lg">
                     <span className="text-2xl font-bold">
-                      ${ranking?.usdcAmounts.bidRefundReceived ?? 0}
+                      ${ranking?.usdcAmounts?.bidRefundReceived ?? 0}
                     </span>
                     <span>Rewarded</span>
                   </div>

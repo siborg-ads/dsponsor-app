@@ -49,25 +49,18 @@ const Bids = ({ marketplaceBids, isLoading }) => {
           (bid?.listing?.token?.mint?.tokenData ? " #" + bid?.listing?.token?.mint?.tokenData : "");
         tempBid.tokenLink = `/${chainId}/offer/${offerId}/${tokenId}`;
 
-        let currency;
-        for (const key in currentChainObject?.smartContracts) {
-          if (
-            currentChainObject?.smartContracts[key]?.address.toLowerCase() ===
-            bid?.currency.toLowerCase()
-          ) {
-            currency = currentChainObject?.smartContracts[key];
-            break;
-          }
-        }
-
-        tempBid.currency = currency;
+        tempBid.currency = {
+          address: bid.currency,
+          decimals: bid.currencyDecimals,
+          symbol: bid.currencySymbol
+        };
 
         tempBids.push(tempBid);
       });
 
       return tempBids;
     },
-    [chainId, currentChainObject?.smartContracts]
+    [chainId]
   );
 
   useEffect(() => {

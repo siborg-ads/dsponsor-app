@@ -20,6 +20,9 @@ const TokenAuctionBids = ({ data, isOwner, isLoading }) => {
       {data?.length > 0 ? (
         <div className="grid grid-cols-1 gap-[1.875rem] md:grid-cols-2 lg:grid-cols-4">
           {data?.map((item, index) => {
+            const { currencyDecimals, currencySymbol } =
+              item?.marketplaceListings?.sort((a, b) => Number(b?.id) - Number(a?.id))[0] || {};
+
             return (
               <TokenCard
                 item={item}
@@ -34,6 +37,9 @@ const TokenAuctionBids = ({ data, isOwner, isLoading }) => {
                 isToken={true}
                 isAuction={true}
                 isListing={true}
+                currencyDecimals={currencyDecimals}
+                currencySymbol={currencySymbol}
+                hasBidStatus={true}
               />
             );
           })}

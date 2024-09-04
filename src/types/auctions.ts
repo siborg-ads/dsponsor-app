@@ -1,3 +1,5 @@
+import { BigNumber } from "ethers";
+
 export interface Auction {
   name: string;
   category: string;
@@ -17,17 +19,24 @@ export interface Auction {
   offerId: string;
   tokenId: string;
   tokenData: any;
-  priceUSD: number;
   directPrice: number;
   auctionPrice: number;
   mintPrice: number;
   listingType: string;
   status: string;
   quantity: number;
+  usdcPriceBN: {
+    USDCPrice: BigNumber;
+    decimals: number;
+  };
   sold: boolean;
   numberOfBids: number;
   item: {
     disable: boolean;
+    usdcPriceBN: {
+      USDCPrice: BigNumber;
+      decimals: number;
+    };
     metadata: any;
     mint: any;
     nftContract: any;

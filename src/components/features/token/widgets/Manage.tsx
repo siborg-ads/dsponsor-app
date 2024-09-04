@@ -7,8 +7,10 @@ import { getAddress } from "ethers/lib/utils";
 import StyledWeb3Button from "@/components/ui/buttons/StyledWeb3Button";
 import { Address } from "thirdweb";
 import NormalButton from "@/components/ui/buttons/NormalButton";
+import config from "@/config/config";
 
 const Manage = ({
+  chainId,
   successFullListing,
   setSuccessFullListing,
   offerData,
@@ -21,6 +23,8 @@ const Manage = ({
   setListingCreated,
   fetchOffers
 }) => {
+  const relayerURL = config[chainId].relayerURL;
+
   const [listingModal, setListingModal] = useState(false);
   const [isLoadingButton, setIsLoadingButton] = useState(false);
   const [isLastBidder, setIsLastBidder] = useState(false);
@@ -53,13 +57,38 @@ const Manage = ({
   const handleSubmitCancel = async () => {
     try {
       setIsLoadingButton(true);
-      const { listingType, id } = marketplaceListings.sort((a, b) => b?.id - a?.id)[0];
+
+      const listing = marketplaceListings.sort((a, b) => b?.id - a?.id)[0];
+      const { listingType, id, lister, token, bids } = listing;
+
+      const tags = [
+        `${chainId}-userAddress-${lister}`,
+        `${chainId}-nftContract-${token.nftContract.id}`
+      ];
+
       if (listingType === "Auction") {
+        if (bids?.length) {
+          const { bidder } = bids.sort(
+            (a, b) => Number(b.creationTimestamp) - Number(a.creationTimestamp)
+          )[0];
+          tags.push(`${chainId}-activity`);
+          tags.push(`${chainId}-userAddress-${bidder}`);
+        }
         await closeAuctionListing({ args: [id] });
       } else if (listingType === "Direct") {
         await cancelDirectListing({ args: [id] });
       }
+
+      await fetch(`${relayerURL}/api/revalidate`, {
+        method: "POST",
+        body: JSON.stringify({
+          tags
+        })
+      });
+
       setSuccessFullListing(true);
+
+      await fetchOffers();
     } catch (e) {
       console.error(e);
       setIsLoadingButton(false);

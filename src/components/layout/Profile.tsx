@@ -40,13 +40,14 @@ const Profile = () => {
   const [isLoadingTransactions, setIsLoadingTransactions] = useState(false);
   const [lastActivities, setLastActivities] = useState(null);
   const [isLoadingBids, setIsLoadingBids] = useState(false);
-  const [marketplaceBids, setMarketplaceBids] = useState(false);
+  const [marketplaceBids, setMarketplaceBids] = useState<any[]>([]);
   const [, setIsLoadingOwnedTokens] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   const userAddress = router.query.address as Address;
   const chainId = currentChainObject?.chainId;
   const chainConfig = config[chainId as number];
+  const relayerURL = chainConfig?.relayerURL;
 
   useEffect(() => {
     if (address && userAddress && getAddress(address) === getAddress(userAddress)) {
@@ -115,17 +116,19 @@ const Profile = () => {
       setIsLoadingBids(true);
       const offersByUserAddressArray = await fetchDataByUserAddress(fetchAllOffersProfile);
 
-      let allUserBids;
+      const allUserBids: any[] = [];
       offersByUserAddressArray?.forEach((offer) => {
-        offer?.nftContract?.tokens?.forEach((token) =>
-          token?.marketplaceListings?.forEach((listing) =>
+        offer?.nftContract?.tokens?.forEach((token) => {
+          token?.marketplaceListings?.forEach((listing) => {
+            const { currencyDecimals, currencySymbol } = listing || {};
+            listing.token.metadata = token.metadata;
             listing?.bids?.forEach((bid) => {
               if (userAddress && bid?.bidder?.toLowerCase() === userAddress?.toLowerCase()) {
-                allUserBids = allUserBids ? [...allUserBids, bid] : [bid];
+                allUserBids.push({ currencyDecimals, currencySymbol, ...bid });
               }
-            })
-          )
-        );
+            });
+          });
+        });
       });
 
       setMarketplaceBids(allUserBids);
@@ -200,7 +203,7 @@ const Profile = () => {
             if (lastUserBid) {
               const token = {
                 ...element,
-                marketplaceListings: [tokenElement?.lastLiveAuction],
+                marketplaceListings: [lastLiveAuctionListing],
                 status: handleBidsStatusType(lastUserBid?.status),
                 listingStatus: handleListingsStatusType(tokenElement?.lastLiveAuction?.status),
                 metadata: lastLiveAuctionListing?.token?.metadata,
@@ -235,15 +238,12 @@ const Profile = () => {
     setIsLoadingTransactions(true);
 
     try {
-      const data = await fetch(
-        `https://relayer.dsponsor.com/api/${chainId}/activity?userAddress=${userAddress}`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json"
-          }
+      const data = await fetch(`${relayerURL}/api/${chainId}/activity?userAddress=${userAddress}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json"
         }
-      )
+      })
         .then((res) => res.json())
         .then((data) => {
           return data;
@@ -266,7 +266,7 @@ const Profile = () => {
       setIsLoadingTransactions(false);
       fetchDataRef.current = false;
     }
-  }, [chainId, userAddress]);
+  }, [chainId, userAddress, relayerURL]);
 
   const fetchOwnedAdProposals = React.useCallback(async () => {
     if (fetchOwnedAdProposalsRef.current) {
@@ -287,6 +287,7 @@ const Profile = () => {
           adParameters: element.adParameters,
           id: `${element.id}-${token.tokenId}`,
           offerId: element.id,
+          admins: element.admins,
           disable: element.disable,
           endTime: token?.marketplaceListings?.length > 0 && token?.marketplaceListings[0]?.endTime
         }))

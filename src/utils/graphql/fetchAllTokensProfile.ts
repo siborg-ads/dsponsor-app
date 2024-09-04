@@ -138,9 +138,10 @@ interface ResponseType {
  * @returns {Promise<Array>} - A promise that resolves to an array of tokens owned by the user, with additional chain configuration.
  */
 export const fetchAllTokensProfile = async (ownerAddress: Address, chainId: number) => {
+  const relayerURL = config[chainId].relayerURL;
   const options = { method: "GET", headers: { accept: "application/json" } };
   const response = await fetch(
-    `https://relayer.dsponsor.com/api/${chainId}/account/${ownerAddress}/tokens`,
+    `${relayerURL}/api/${chainId}/account/${ownerAddress}/tokens`,
     options
   );
 

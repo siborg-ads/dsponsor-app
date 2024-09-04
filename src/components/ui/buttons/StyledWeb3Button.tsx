@@ -43,7 +43,7 @@ const StyledWeb3Button = ({
 
   const address = useAddress();
 
-  const baseClass = `!rounded-full !py-3 !px-8 !text-center !font-semibold !transition-all ${props.isFullWidth ? "!w-full" : ""}`;
+  const baseClass = `!rounded-full !py-3 !px-8 !text-center !font-semibold !transition-all ${props.isFullWidth ? "!w-full" : "!w-fit"}`;
   const loadingClass = "!bg-white !bg-opacity-30 !text-opacity-30 !text-white !cursor-not-allowed";
   const disabledClass = "!bg-white !bg-opacity-30 !text-opacity-30 !text-white !cursor-not-allowed";
   const defaultClass = `!bg-opacity-100 !text-white !cursor-pointer hover:!bg-opacity-80 ${

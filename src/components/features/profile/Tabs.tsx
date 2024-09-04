@@ -131,6 +131,7 @@ const UserTabs = ({
       </TabPanel>
       <TabPanel>
         <OwnedTokens
+          manageAddress={manageAddress}
           data={mappedownedAdProposals}
           isOwner={isOwner}
           isLoading={isLoading}
