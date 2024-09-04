@@ -6,7 +6,6 @@ import { ethers } from "ethers";
 import DatePicker from "react-datepicker";
 import ModalHelper from "@/components/ui/modals/Helper";
 import AdSubmission from "@/components/features/token/accordion/AdSubmission";
-import { useChainContext } from "@/hooks/useChainContext";
 import Input from "@/components/ui/Input";
 import { TokenContract } from "@thirdweb-dev/react";
 import { Address } from "thirdweb";
@@ -16,6 +15,7 @@ import { Currency } from "@/components/layout/CreateOffer";
 import ERC20ABI from "@/abi/ERC20.json";
 
 const CreateListing = ({
+  chainConfig,
   handleListingModal,
   offerData,
   setSuccessFullListing,
@@ -27,8 +27,7 @@ const CreateListing = ({
   setListingCreated,
   fetchOffers
 }) => {
-  const { currentChainObject } = useChainContext();
-  const chainId = currentChainObject?.chainId;
+  const chainId = chainConfig?.chainId;
 
   const initialCurrencies = useMemo(
     () => config[chainId as number]?.smartContracts?.currencies || {},
@@ -60,7 +59,7 @@ const CreateListing = ({
 
   const address = useAddress();
 
-  const relayerURL = currentChainObject?.relayerURL;
+  const relayerURL = chainConfig?.relayerURL;
 
   const [customContract, setCustomContract] = useState<Address | null>(null);
   const [tokenContract, setTokenContract] = useState<string>("");
@@ -117,7 +116,7 @@ const CreateListing = ({
     symbolContractAsync,
     selectedCurrencyContract,
     tokenContractAsync,
-    currentChainObject,
+    chainConfig,
     setTokenContract,
     setCustomTokenContract
   ]);
@@ -142,7 +141,7 @@ const CreateListing = ({
   const handlePreviewModal = async () => {
     const isApprovedForAll = await dsponsorNFTContract.call("isApprovedForAll", [
       address,
-      currentChainObject?.smartContracts?.DSPONSORMP?.address
+      chainConfig?.smartContracts?.DSPONSORMP?.address
     ]);
     setApprovalForAllToken(isApprovedForAll);
     if (successFullListing) {
@@ -218,7 +217,7 @@ const CreateListing = ({
   const handleApprove = async () => {
     try {
       await setApprovalForAll({
-        args: [currentChainObject?.smartContracts?.DSPONSORMP?.address, true]
+        args: [chainConfig?.smartContracts?.DSPONSORMP?.address, true]
       });
       setApprovalForAllToken(true);
     } catch (error) {
@@ -652,6 +651,7 @@ const CreateListing = ({
             {showPreviewModal && (
               <div className="modal fade show bloc">
                 <AdSubmission
+                  chainConfig={chainConfig}
                   handlePreviewModal={handlePreviewModal}
                   isListing={true}
                   handleSubmit={handleSubmit}

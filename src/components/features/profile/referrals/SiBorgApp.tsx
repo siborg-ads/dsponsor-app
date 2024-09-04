@@ -5,13 +5,10 @@ import Tippy from "@tippyjs/react";
 import { ClipboardIcon } from "@heroicons/react/20/solid";
 import "tippy.js/dist/tippy.css";
 import Input from "@/components/ui/Input";
-import { useChainContext } from "@/hooks/useChainContext";
 
 const SiBorgApp = () => {
   const [code, setCode] = useState<string | null>(null);
   const [copied, setCopied] = useState<boolean>(false);
-
-  const { currentChainObject } = useChainContext();
 
   const address = useAddress();
 
@@ -48,10 +45,7 @@ const SiBorgApp = () => {
         <div className="text-jacarta-100 text-sm md:text-base w-3/4">
           <span>
             Ad spaces token owners from the{" "}
-            <Link
-              href={`/${currentChainObject?.chainId}/offer/1`}
-              className="text-primaryPurple hover:text-opacity-80"
-            >
+            <Link href={`/8453/offer/1`} className="text-primaryPurple hover:text-opacity-80">
               SiBorg Ads
             </Link>{" "}
             offer can submit an ad to be displayed on the SiBorg App.

@@ -7,6 +7,7 @@ import { ExclamationCircleIcon } from "@heroicons/react/24/solid";
 import ResponsiveTooltip from "@/components/ui/ResponsiveTooltip";
 import { CheckIcon, ClockIcon, XIcon, History } from "lucide-react";
 import ProposalHistory from "@/components/features/offer/adValidation/ProposalHistory";
+import { ChainObject } from "@/types/chain";
 
 export type HistoryProposalType = {
   type: string;
@@ -46,6 +47,7 @@ function processAllProposals(token) {
 }
 
 const AdValidation = ({
+  chainConfig,
   offer,
   offerId,
   isOwner,
@@ -65,6 +67,7 @@ const AdValidation = ({
   pendingProposalData,
   setPendingProposalData
 }: {
+  chainConfig: ChainObject;
   offer: any;
   offerId?: string;
   isOwner: boolean;
@@ -354,6 +357,7 @@ const AdValidation = ({
             <div className="container relative p-0 mb-12">
               {/* <!-- Filter --> */}
               <PendingAds
+                chainConfig={chainConfig}
                 setSelectedItems={setSelectedItems}
                 selectedItems={selectedItems}
                 setRefusedValidatedAdModal={setRefusedValidatedAdModal}
@@ -397,6 +401,7 @@ const AdValidation = ({
       {refusedValidatedAdModal && (
         <div className="modal fade show bloc">
           <RejectAd
+            chainConfig={chainConfig}
             selectedItems={selectedItems}
             handleCommentChange={handleCommentChange}
             handleItemSubmit={handleItemSubmit}

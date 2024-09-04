@@ -1,15 +1,11 @@
 import Link from "next/link";
 import { footerMenuList as defaultFooterMenuList } from "@/data/footer";
 import Image from "next/image";
-import { useChainContext } from "@/hooks/useChainContext";
 import { useAddress } from "@thirdweb-dev/react";
 import { features } from "@/data/features";
 import Logo from "@/../public/images/siborg-ads/siborg-ads.png";
 
 const Footer = () => {
-  const { currentChainObject } = useChainContext();
-  const chainId = currentChainObject?.chainId;
-
   const address = useAddress();
 
   const footerMenuList = defaultFooterMenuList.concat(
@@ -29,7 +25,7 @@ const Footer = () => {
                 ? [
                     {
                       id: 2,
-                      href: `${chainId}/offer/create`,
+                      href: "/createOffer",
                       text: "Create Offer"
                     }
                   ]

@@ -2635,6 +2635,7 @@ const Token = () => {
 
                 <Accordion.Content>
                   <AdValidation
+                    chainConfig={chainConfig}
                     offer={offerData}
                     isOwner={isOfferOwner}
                     successFullRefuseModal={successFullRefuseModal}
@@ -2743,6 +2744,7 @@ const Token = () => {
       {showPreviewModal && (
         <div className="modal fade show bloc">
           <AdSubmission
+            chainConfig={chainConfig}
             handlePreviewModal={handlePreviewModal}
             handleSubmit={handleSubmit}
             imageUrlVariants={imageUrlVariants}

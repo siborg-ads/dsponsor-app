@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { DateRangePicker } from "@nextui-org/date-picker";
 import Link from "next/link";
-import { useChainContext } from "@/hooks/useChainContext";
 import formatAndRound from "@/utils/prices/formatAndRound";
 import { BigNumber } from "ethers";
 import { formatUnits } from "ethers/lib/utils";
@@ -12,56 +11,52 @@ const Bids = ({ marketplaceBids, isLoading }) => {
   const [endDate, setEndDate] = useState<Date | null>(null);
   const [filteredLastActivities, setFilteredLastActivities] = useState<any[]>([]);
 
-  const { currentChainObject } = useChainContext();
-  const chainId = currentChainObject?.chainId;
+  const formatBidTransactions = useCallback((bids: any) => {
+    if (!bids) return [];
 
-  const formatBidTransactions = useCallback(
-    (bids: any) => {
-      if (!bids) return [];
+    let tempBids: any[] = [];
 
-      let tempBids: any[] = [];
+    bids?.forEach(async (bid) => {
+      const chainConfig = bid.chainConfig;
+      const chainId = chainConfig.chainId;
 
-      bids?.forEach(async (bid) => {
-        let tempBid: any = {};
+      let tempBid: any = {};
 
-        if (bid?.refundProfit > 0 && bid?.status !== "COMPLETED") {
-          tempBid.type = "outbid";
-        } else if (bid?.status === "COMPLETED") {
-          tempBid.type = "completed";
-        } else {
-          tempBid.type = "bid";
-        }
+      if (bid?.refundProfit > 0 && bid?.status !== "COMPLETED") {
+        tempBid.type = "outbid";
+      } else if (bid?.status === "COMPLETED") {
+        tempBid.type = "completed";
+      } else {
+        tempBid.type = "bid";
+      }
 
-        const tokenId = bid?.listing?.token?.tokenId;
-        const offerId = bid?.listing?.token?.nftContract?.adOffers[0]?.id;
+      const tokenId = bid?.listing?.token?.tokenId;
+      const offerId = bid?.listing?.token?.nftContract?.adOffers[0]?.id;
 
-        tempBid.date = new Date(bid?.creationTimestamp * 1000);
-        tempBid.transactionHash = bid?.creationTxHash;
-        tempBid.refundAmount = BigNumber.from(bid?.refundProfit);
-        tempBid.refundDate = new Date(bid?.lastUpdateTimestamp * 1000);
-        tempBid.refundBid = BigNumber.from(bid?.refundAmount).sub(
-          BigNumber.from(bid?.refundProfit)
-        );
-        tempBid.currencyAddress = bid?.currency;
-        tempBid.bidAmount = BigNumber.from(bid?.paidBidAmount);
-        tempBid.tokenName =
-          bid?.listing?.token?.nftContract?.adOffers[0]?.name +
-          (bid?.listing?.token?.mint?.tokenData ? " #" + bid?.listing?.token?.mint?.tokenData : "");
-        tempBid.tokenLink = `/${chainId}/offer/${offerId}/${tokenId}`;
+      tempBid.chainConfig = chainConfig;
+      tempBid.date = new Date(bid?.creationTimestamp * 1000);
+      tempBid.transactionHash = bid?.creationTxHash;
+      tempBid.refundAmount = BigNumber.from(bid?.refundProfit);
+      tempBid.refundDate = new Date(bid?.lastUpdateTimestamp * 1000);
+      tempBid.refundBid = BigNumber.from(bid?.refundAmount).sub(BigNumber.from(bid?.refundProfit));
+      tempBid.currencyAddress = bid?.currency;
+      tempBid.bidAmount = BigNumber.from(bid?.paidBidAmount);
+      tempBid.tokenName =
+        bid?.listing?.token?.nftContract?.adOffers[0]?.name +
+        (bid?.listing?.token?.mint?.tokenData ? " #" + bid?.listing?.token?.mint?.tokenData : "");
+      tempBid.tokenLink = `/${chainId}/offer/${offerId}/${tokenId}`;
 
-        tempBid.currency = {
-          address: bid.currency,
-          decimals: bid.currencyDecimals,
-          symbol: bid.currencySymbol
-        };
+      tempBid.currency = {
+        address: bid.currency,
+        decimals: bid.currencyDecimals,
+        symbol: bid.currencySymbol
+      };
 
-        tempBids.push(tempBid);
-      });
+      tempBids.push(tempBid);
+    });
 
-      return tempBids;
-    },
-    [chainId]
-  );
+    return tempBids;
+  }, []);
 
   useEffect(() => {
     if (startDate && endDate) {
@@ -142,6 +137,9 @@ const Bids = ({ marketplaceBids, isLoading }) => {
             <thead className="text-white text-left bg-primaryPurple rounded-2lg">
               <tr className="bg-jacarta-50 dark:bg-primaryPurple rounded-2lg text-base">
                 <th className="py-3 px-4 font-medium text-jacarta-100 dark:text-jacarta-100">
+                  Network
+                </th>
+                <th className="py-3 px-4 font-medium text-jacarta-100 dark:text-jacarta-100">
                   Status
                 </th>
                 <th className="py-3 px-4 font-medium text-jacarta-100 dark:text-jacarta-100">
@@ -165,6 +163,9 @@ const Bids = ({ marketplaceBids, isLoading }) => {
               {filteredLastActivities?.map((activity, index) => {
                 return (
                   <tr key={index}>
+                    <td className="py-4 px-4 text-jacarta-100 dark:text-jacarta-100">
+                      {activity?.chainConfig.chainName}
+                    </td>
                     <td className="py-4 px-4 text-jacarta-100 dark:text-jacarta-100">
                       {toDisplayType(activity?.type)}
                     </td>

@@ -22,7 +22,6 @@
       - [`abi/`](#abi)
       - [`components/`](#components)
       - [`data/`](#data)
-      - [`hooks/`](#hooks)
       - [`lib/`](#lib)
       - [`pages/`](#pages)
       - [`styles/`](#styles)
@@ -308,19 +307,6 @@ Contains static or mock data used throughout the application.
 
 The `data/` folder centralizes static and mock data to simplify testing and development. By maintaining all static data in one place, the project can easily switch between live and mock data sources, which is particularly useful during development and testing phases.
 
-#### `hooks/`
-
-Custom Hooks for managing state, effects, or other reusable logic.
-
-**Examples:**
-
-- `useChainContext.ts`: Provides access to the application's global chain state, managing all chain-related data and operations.
-- `useSwitchChainContexte.ts`: Custom Hook for switching between chains, enabling a multichain infrastructure within the application.
-
-**Goal**:
-
-The `hooks/` folder encourages the reuse of logic across different components. Custom Hooks encapsulate state management and side effects, leading to cleaner and more maintainable components.
-
 #### `lib/`
 
 Contains reusable code that is not specific to React, such as API calls, cookie management, and utility functions.
@@ -435,7 +421,7 @@ The application uses [Thirdweb](https://thirdweb.com/) as the entry point for in
 
 **How Thirdweb is Used in This Application**
 
-- **Chain Management**: Thirdweb is integrated with custom hooks like `useChainContext.ts` and `useSwitchChainContext.ts` to manage the global chain state and enable multichain capabilities within the application.
+- **Chain Management**: Thirdweb is integrated with custom hooks like `useSwitchChainContext.ts` to manage the global chain state and enable multichain capabilities within the application.
 - **Wallet Connection**: Thirdweb supports social connection options, enabling users to connect their wallets through social accounts (e.g., Google, Twitter). This simplifies the onboarding process and makes it easier for users who are new to Web3.
 - **Smart Contract Interaction**: Thirdweb is used to interact with the deployed smart contracts, enabling features such as token management, minting, and transactions within the application.
 - **Gasless Transactions with Account Abstraction**: While we use OpenZeppelin Defender for implementing gasless transactions, Thirdweb simplifies the integration of this feature through its provider.
@@ -494,7 +480,6 @@ The `executeQuery` function is designed to streamline the process of querying a 
       - [`abi/`](#abi)
       - [`components/`](#components)
       - [`data/`](#data)
-      - [`hooks/`](#hooks)
       - [`lib/`](#lib)
       - [`pages/`](#pages)
       - [`styles/`](#styles)

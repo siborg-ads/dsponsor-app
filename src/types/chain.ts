@@ -1,8 +1,9 @@
 // src/types/ChainObject.ts
 // import { Base } from "@thirdweb-dev/chains";
 import { NetworkType } from "@/utils/networks/networks";
+import { Address } from "thirdweb";
 
-export interface ChainConfig {
+export interface ChainsConfig {
   [key: number]: ChainObject;
 }
 
@@ -18,21 +19,26 @@ export interface ChainObject {
   rpcURL: string;
   smartContracts: {
     currencies: {
+      NATIVE: {
+        address: Address;
+        decimals: number;
+        symbol: string;
+      };
       [key: string]: {
-        address: string;
+        address: Address;
         decimals: number;
         symbol: string;
       };
     };
     DSPONSORADMIN: {
-      address: string;
+      address: Address;
       abi: any;
     };
     DSPONSORMP: {
-      address: string;
+      address: Address;
     };
     UNISWAP_QUOTER: {
-      address: string;
+      address: Address;
     };
   };
   features: {

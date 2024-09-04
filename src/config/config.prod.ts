@@ -1,7 +1,7 @@
 import prodBase from "@/config/production/base";
-import { ChainConfig } from "@/types/chain";
+import { ChainsConfig } from "@/types/chain";
 
-const config: ChainConfig = {
+const config: ChainsConfig = {
   8453: prodBase
 };
 

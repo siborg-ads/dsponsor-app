@@ -2,16 +2,12 @@ import React, { useState, useEffect } from "react";
 import { getAddress } from "ethers/lib/utils";
 import { DateRangePicker } from "@nextui-org/date-picker";
 import Link from "next/link";
-import { useChainContext } from "@/hooks/useChainContext";
 import { Loader2Icon } from "lucide-react";
 
 const Transactions = ({ manageAddress, lastActivities, isLoading }) => {
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
   const [filteredLastActivities, setFilteredLastActivities] = useState<any[]>([]);
-
-  const { currentChainObject } = useChainContext();
-  const chainExplorer = currentChainObject?.explorerBaseURL;
 
   useEffect(() => {
     if (startDate && endDate) {
@@ -84,6 +80,9 @@ const Transactions = ({ manageAddress, lastActivities, isLoading }) => {
           <thead className="text-white bg-primaryPurple rounded-2lg">
             <tr className="bg-jacarta-50 dark:bg-primaryPurple rounded-2lg text-base">
               <th className="py-3 px-4 font-medium text-jacarta-100 dark:text-jacarta-100">
+                Network
+              </th>
+              <th className="py-3 px-4 font-medium text-jacarta-100 dark:text-jacarta-100">
                 Operation
               </th>
               <th className="py-3 px-4 font-medium text-jacarta-100 dark:text-jacarta-100">Date</th>
@@ -103,8 +102,11 @@ const Transactions = ({ manageAddress, lastActivities, isLoading }) => {
           </thead>
           <tbody className="rounded-2lg overflow-x-auto">
             {filteredLastActivities?.map((activity, index) => {
+              const chainExplorer = activity.chainConfig?.explorerBaseURL;
+              const chainName = activity.chainConfig?.chainName;
               return (
                 <tr key={index}>
+                  <td className="py-4 px-4 text-jacarta-100 dark:text-jacarta-100">{chainName}</td>
                   <td className="py-4 px-4 text-jacarta-100 dark:text-jacarta-100">
                     {toDisplayType(activity?.type)}
                   </td>

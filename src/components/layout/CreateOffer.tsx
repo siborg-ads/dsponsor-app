@@ -18,11 +18,11 @@ import OfferValidity from "@/components/features/createOffer/OfferValidity";
 import config from "@/config/config";
 import CarouselForm from "@/components/ui/misc/CarouselForm";
 import { useSwitchChainContext } from "@/providers/SwitchChain";
-import { useRouter } from "next/router";
 import { Address } from "thirdweb";
 import { features } from "@/data/features";
 
 import ERC20ABI from "@/abi/ERC20.json";
+import { ChainObject } from "@/types/chain";
 
 export type Currency = {
   address: Address | string;
@@ -31,12 +31,13 @@ export type Currency = {
 };
 
 const CreateOffer = () => {
-  const router = useRouter();
-  const chainId = router.query?.chainId;
+  const [chainConfig, setChainConfig] = useState<ChainObject>(Object.entries(config)[0][1]);
+
+  const chainId = chainConfig.chainId;
 
   const initialCurrencies = useMemo(
-    () => config[parseInt(chainId as string)]?.smartContracts?.currencies || {},
-    [chainId]
+    () => chainConfig?.smartContracts?.currencies || {},
+    [chainConfig]
   ) as { [key: string]: Currency };
 
   const currencies = Object?.entries(initialCurrencies)
@@ -106,11 +107,13 @@ const CreateOffer = () => {
   }, [customCurrencyEnabled, customTokenAddress, selectedCurrency]);
 
   const { setSelectedChain } = useSwitchChainContext();
+  useEffect(() => {
+    if (!chainConfig) return;
+    setSelectedChain(chainConfig?.network);
+  }, [chainConfig, setSelectedChain]);
 
   useEffect(() => {
-    const currencies = Object.entries(
-      config[chainId as string]?.smartContracts?.currencies || {}
-    ) as any;
+    const currencies = Object.entries(chainConfig?.smartContracts?.currencies || {}) as any;
 
     const [, { symbol, decimals }] = currencies.find(
       ([, value]) => value?.address?.toLowerCase() === tokenAddress?.toLowerCase()
@@ -132,13 +135,13 @@ const CreateOffer = () => {
         setTokenDecimals(null);
       }
     }
-  }, [chainId, tokenAddress, customTokenDecimals, customTokenSymbol]);
+  }, [chainConfig, tokenAddress, customTokenDecimals, customTokenSymbol]);
 
   const address = useAddress();
 
   const { contract: DsponsorAdminContract } = useContract(
-    config[parseFloat(chainId as string)]?.smartContracts?.DSPONSORADMIN?.address,
-    config[parseFloat(chainId as string)]?.smartContracts?.DSPONSORADMIN?.abi
+    chainConfig?.smartContracts?.DSPONSORADMIN?.address,
+    chainConfig?.smartContracts?.DSPONSORADMIN?.abi
   );
   const { mutateAsync: createDSponsorNFTAndOffer } = useContractWrite(
     DsponsorAdminContract,
@@ -155,9 +158,9 @@ const CreateOffer = () => {
   const { ethers } = require("ethers");
 
   useEffect(() => {
-    if (!chainId) return;
-    setSelectedChain(config[parseFloat(chainId as string)]?.network);
-  }, [chainId, setSelectedChain]);
+    if (!chainConfig) return;
+    setSelectedChain(chainConfig?.network);
+  }, [chainConfig, setSelectedChain]);
 
   const handleUnitPriceChange = (e) => {
     const { value } = e.target;
@@ -402,7 +405,7 @@ const CreateOffer = () => {
 
       await createDSponsorNFTAndOffer({ args: preparedArgs });
 
-      const relayerURL = config[parseFloat(chainId as string)]?.relayerURL;
+      const relayerURL = chainConfig?.relayerURL;
       if (relayerURL) {
         await fetch(`${relayerURL}/api/revalidate`, {
           method: "POST",
@@ -558,6 +561,7 @@ const CreateOffer = () => {
       {showPreviewModal && (
         <div className="modal fade show bloc">
           <AdSubmission
+            chainConfig={chainConfig}
             handlePreviewModal={handlePreviewModal}
             handleSubmit={handleSubmit}
             name={name}

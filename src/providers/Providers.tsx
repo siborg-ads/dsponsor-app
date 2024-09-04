@@ -11,12 +11,9 @@ import {
   useChainId,
   walletConnect
 } from "@thirdweb-dev/react"; // v4
-import { ThirdwebProvider } from "thirdweb/react"; // v5
-import ChainProvider from "@/providers/Chain";
 import { SwitchChainProvider, useSwitchChainContext } from "@/providers/SwitchChain";
 import config from "@/config/config";
 import { clientId } from "@/data/services/client";
-import { features } from "@/data/features";
 import { Address } from "thirdweb";
 
 interface GasslessContextValue {
@@ -125,7 +122,7 @@ function InnerProviders({ children }: Readonly<{ children: React.ReactNode }>) {
 
   const sdkOptionsKey = React.useMemo(() => JSON.stringify(sdkOptions), [sdkOptions]);
 
-  console.log("/providers/Providers (before thirdweb)", { chain });
+  console.log("/providers/Providers (to thirdweb)", { chain });
 
   return (
     <ThirdwebProviderV4
@@ -145,17 +142,9 @@ function InnerProviders({ children }: Readonly<{ children: React.ReactNode }>) {
         })
       ]}
     >
-      <ThirdwebProviderV5>
-        <ChainProvider>
-          <GaslessCollector>{children}</GaslessCollector>
-        </ChainProvider>
-      </ThirdwebProviderV5>
+      <GaslessCollector>{children}</GaslessCollector>
     </ThirdwebProviderV4>
   );
-}
-
-function ThirdwebProviderV5({ children }: { children: React.ReactNode }) {
-  return features?.thirdwebV5 ? <ThirdwebProvider>{children}</ThirdwebProvider> : <>{children}</>;
 }
 
 export default Providers;
