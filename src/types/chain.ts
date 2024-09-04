@@ -2,6 +2,10 @@
 // import { Base } from "@thirdweb-dev/chains";
 import { NetworkType } from "@/utils/networks/networks";
 
+export interface ChainConfig {
+  [key: number]: ChainObject;
+}
+
 export interface ChainObject {
   chainId: number;
   chainName: string;

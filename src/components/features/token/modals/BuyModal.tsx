@@ -5,20 +5,20 @@ import { useBalance } from "@thirdweb-dev/react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Divider, Spinner } from "@nextui-org/react";
-import { useChainContext } from "@/hooks/useChainContext";
 import MintWithCrossmintButton from "@/components/ui/buttons/MintWithCrossmintButton/MintWithCrossmintButton";
 import BuyWithCrossmintButton from "@/components/ui/buttons/BuyWithCrossmintButton/BuyWithCrossmintButton";
 import { parseUnits } from "ethers/lib/utils";
 import { InformationCircleIcon } from "@heroicons/react/24/solid";
 import ResponsiveTooltip from "@/components/ui/ResponsiveTooltip";
 import Input from "@/components/ui/Input";
-import config from "@/config/config";
 import { ngrokURL } from "@/data/ngrok";
 import { BigNumber } from "ethers";
 import StyledWeb3Button from "@/components/ui/buttons/StyledWeb3Button";
 import { Address } from "thirdweb";
+import { ChainObject } from "@/types/chain";
 
 const BuyModal = ({
+  chainConfig,
   tags,
   formatTokenId,
   tokenStatut,
@@ -57,6 +57,7 @@ const BuyModal = ({
   tokenEtherPriceRelayer,
   currencyDecimals
 }: {
+  chainConfig: ChainObject;
   tags: string[];
   // eslint-disable-next-line no-unused-vars
   formatTokenId: (tokenId: string) => string;
@@ -108,14 +109,11 @@ const BuyModal = ({
   const [notEnoughFunds, setNotEnoughFunds] = useState(false);
   const [tooHighPriceForCrossmint, setTooHighPriceForCrossmint] = useState(false);
 
-  const { currentChainObject } = useChainContext();
-  const chainId = currentChainObject?.chainId;
+  const chainId = chainConfig.chainId;
 
   const modalRef = useRef<any>();
 
   const { data: currencyBalance } = useBalance(currencyContract);
-
-  const chainConfig = config[chainId as number];
 
   useEffect(() => {
     if (!tokenEtherPriceRelayer?.amountInEthWithSlippage) return;
@@ -375,7 +373,7 @@ const BuyModal = ({
                         {totalPrice > 0 && (
                           <StyledWeb3Button
                             contractAddress={
-                              currentChainObject?.smartContracts?.DSPONSORADMIN?.address as Address
+                              chainConfig?.smartContracts?.DSPONSORADMIN?.address as Address
                             }
                             onClick={async () => {
                               await toast.promise(handleApprove, {
@@ -397,7 +395,7 @@ const BuyModal = ({
                         {/* Place Bid Button */}
                         <StyledWeb3Button
                           contractAddress={
-                            currentChainObject?.smartContracts?.DSPONSORADMIN?.address as Address
+                            chainConfig?.smartContracts?.DSPONSORADMIN?.address as Address
                           }
                           onClick={async () => {
                             await toast.promise(handleSubmit, {
@@ -433,7 +431,7 @@ const BuyModal = ({
                   ) : (
                     <StyledWeb3Button
                       contractAddress={
-                        currentChainObject?.smartContracts?.DSPONSORADMIN?.address as Address
+                        chainConfig?.smartContracts?.DSPONSORADMIN?.address as Address
                       }
                       onClick={async () => {
                         await toast.promise(handleBuySubmitWithNative, {

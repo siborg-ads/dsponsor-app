@@ -2764,6 +2764,7 @@ const Token = () => {
       {buyModal && (
         <div className="modal fade show block">
           <BuyModal
+            chainConfig={chainConfig}
             tags={tags}
             finalPrice={finalPrice}
             currencyDecimals={tokenDecimals as number}
