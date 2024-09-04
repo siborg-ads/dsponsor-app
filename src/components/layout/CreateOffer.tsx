@@ -17,7 +17,7 @@ import OfferImageAndURL from "@/components/features/createOffer/OfferImageAndURL
 import OfferValidity from "@/components/features/createOffer/OfferValidity";
 import config from "@/config/config";
 import CarouselForm from "@/components/ui/misc/CarouselForm";
-import { useSwitchChainContext } from "@/hooks/useSwitchChainContext";
+import { useSwitchChainContext } from "@/providers/SwitchChain";
 import { useRouter } from "next/router";
 import { Address } from "thirdweb";
 import { features } from "@/data/features";

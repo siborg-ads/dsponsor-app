@@ -26,7 +26,7 @@ import "tippy.js/dist/tippy.css";
 import AdValidation from "@/components/features/offer/AdValidation";
 import Details from "@/components/features/token/accordion/Details";
 import config from "@/config/config";
-import { useSwitchChainContext } from "@/hooks/useSwitchChainContext";
+import { useSwitchChainContext } from "@/providers/SwitchChain";
 import { features } from "@/data/features";
 import UpdateOffer from "@/components/features/offer/offerManagement/UpdateOffer";
 import ChangeMintPrice from "@/components/features/offer/offerManagement/ChangeMintPrice";

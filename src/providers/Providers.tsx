@@ -13,8 +13,7 @@ import {
 } from "@thirdweb-dev/react"; // v4
 import { ThirdwebProvider } from "thirdweb/react"; // v5
 import ChainProvider from "@/providers/Chain";
-import { SwitchChainProvider } from "@/providers/SwitchChain";
-import { useSwitchChainContext } from "@/hooks/useSwitchChainContext";
+import { SwitchChainProvider, useSwitchChainContext } from "@/providers/SwitchChain";
 import config from "@/config/config";
 import { clientId } from "@/data/services/client";
 import { features } from "@/data/features";
@@ -106,7 +105,7 @@ function InnerProviders({ children }: Readonly<{ children: React.ReactNode }>) {
   useEffect(() => {
     if (chainId && balance && address) {
       const OZrelayer = config?.[chainId]?.features?.openZeppelinDefender?.relayerURL;
-      const balanceThreshold = BigInt(config?.[chainId]?.gaslessBalanceThreshold ?? 0);
+      const balanceThreshold = BigInt(config?.[chainId]?.gaslessBalanceThreshold ?? "0");
       const gaslessBalanceCondition = balanceThreshold && balance < balanceThreshold;
 
       const sdkOptions =
@@ -125,6 +124,8 @@ function InnerProviders({ children }: Readonly<{ children: React.ReactNode }>) {
   }, [balance, address, chainId]);
 
   const sdkOptionsKey = React.useMemo(() => JSON.stringify(sdkOptions), [sdkOptions]);
+
+  console.log("/providers/Providers (before thirdweb)", { chain });
 
   return (
     <ThirdwebProviderV4

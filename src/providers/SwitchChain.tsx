@@ -1,4 +1,4 @@
-import React, { createContext, useState, useMemo, ReactNode } from "react";
+import React, { createContext, useState, useContext, ReactNode } from "react";
 import config from "@/config/config";
 
 interface SwitchChainContextType {
@@ -6,7 +6,10 @@ interface SwitchChainContextType {
   setSelectedChain: React.Dispatch<React.SetStateAction<string>>;
 }
 
-const SwitchChainContext = createContext<SwitchChainContextType | undefined>(undefined);
+const SwitchChainContext = createContext<SwitchChainContextType>({
+  selectedChain: Object.values(config)[0]?.network as string,
+  setSelectedChain: () => {}
+});
 
 interface SwitchChainProviderProps {
   children: ReactNode;
@@ -15,14 +18,22 @@ interface SwitchChainProviderProps {
 const SwitchChainProvider: React.FC<SwitchChainProviderProps> = ({ children }) => {
   const [selectedChain, setSelectedChain] = useState<string>(Object.values(config)[0]?.network);
 
-  const contextValue = useMemo(() => {
-    return {
-      selectedChain,
-      setSelectedChain
-    };
-  }, [selectedChain, setSelectedChain]);
+  console.log("/providers/SwitchChain", { selectedChain });
 
-  return <SwitchChainContext.Provider value={contextValue}>{children}</SwitchChainContext.Provider>;
+  return (
+    <SwitchChainContext.Provider
+      value={{
+        selectedChain,
+        setSelectedChain
+      }}
+    >
+      {children}
+    </SwitchChainContext.Provider>
+  );
 };
 
-export { SwitchChainProvider, SwitchChainContext };
+const useSwitchChainContext = () => {
+  return useContext(SwitchChainContext);
+};
+
+export { SwitchChainProvider, useSwitchChainContext };

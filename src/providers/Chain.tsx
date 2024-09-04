@@ -22,6 +22,8 @@ const ChainProvider = ({ children }: ChainProviderProps) => {
   const switchChain = useSwitchChain();
   const address = useAddress();
 
+  console.log("/providers/Chain", { chainId, connectedAddress, address });
+
   useEffect(() => {
     if (config[chainId as number]) {
       setCurrentChainObject(config[chainId as number] as ChainObject);
