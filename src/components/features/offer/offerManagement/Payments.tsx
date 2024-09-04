@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { SetStateAction, useEffect, useState } from "react";
 import { useContract, useContractRead, useContractWrite } from "@thirdweb-dev/react";
 import config from "@/config/config";
 import { useChainContext } from "@/hooks/useChainContext";
@@ -14,7 +14,6 @@ import ResponsiveTooltip from "@/components/ui/ResponsiveTooltip";
 import { QuestionMarkCircleIcon } from "@heroicons/react/24/solid";
 
 import ERC20ABI from "@/abi/ERC20.json";
-import { COINBASE } from "thirdweb/dist/types/wallets/constants";
 import { isAddress } from "ethers/lib/utils";
 
 const isDisabledMessage = (disableMint: boolean) => {
@@ -23,7 +22,7 @@ const isDisabledMessage = (disableMint: boolean) => {
     : `The minting feature has been enabled for this offer.`;
 };
 
-const ChangeMintPrice = ({ offer }) => {
+const Payments = ({ offer }) => {
   const [amount, setAmount] = useState<number | undefined>(undefined);
   const [royaltiesAmount, setRoyaltiesAmount] = useState<number | undefined>(undefined);
   const [initialAmount, setInitialAmount] = useState<number | undefined>(undefined);
@@ -34,6 +33,9 @@ const ChangeMintPrice = ({ offer }) => {
   const [isValidReceiver, setIsValidReceiver] = useState(true);
   const [receiver, setReceiver] = useState<Address | null>(null);
   const [initialReceiver, setInitialReceiver] = useState<Address | null>(null);
+  const [currentOwner, setCurrentOwner] = useState<Address | null>(null);
+  const [initialOwner, setInitialOwner] = useState<Address | null>(null);
+  const [isValidOwner, setIsValidOwner] = useState(true);
   const [currency, setCurrency] = useState<Address | null>(null);
   const [currencySymbol, setCurrencySymbol] = useState<string | null>(null);
   const [formattedAmountBN, setFormattedAmountBN] = useState<BigNumber | undefined>(undefined);
@@ -69,6 +71,9 @@ const ChangeMintPrice = ({ offer }) => {
   const { mutateAsync: mutateDefaultMintPrice } = useContractWrite(contract, "setDefaultMintPrice");
   const { mutateAsync: mutateTokenAsync } = useContractWrite(contract, "setMintPrice");
   const { mutateAsync: mutateRoyalties } = useContractWrite(contract, "setRoyalty");
+  const { mutateAsync: mutateOwner } = useContractWrite(contract, "transferOwnership");
+
+  const { data: owner } = useContractRead(contract, "owner");
 
   useEffect(() => {
     if (offer) {
@@ -116,7 +121,6 @@ const ChangeMintPrice = ({ offer }) => {
             )
           )
         );
-        console.log("offer", offer);
 
         const royalties = offer?.nftContract?.royalty?.bps / 100;
         setRoyaltiesAmount(royalties);
@@ -130,6 +134,13 @@ const ChangeMintPrice = ({ offer }) => {
       }
     }
   }, [chainId, currencyDecimals, initialDisabled, offer]);
+
+  useEffect(() => {
+    if (owner) {
+      setCurrentOwner(owner);
+      setInitialOwner(owner);
+    }
+  }, [owner]);
 
   const handleAmount = (value) => {
     if (!value) {
@@ -180,15 +191,19 @@ const ChangeMintPrice = ({ offer }) => {
     }
   };
 
-  const handleReceiverAddress = (value) => {
+  const handleAddress = (
+    value: string,
+    setValue: (value: SetStateAction<`0x${string}` | null | string>) => void,
+    setIsValidValue: (value: boolean) => void
+  ) => {
     if (!value) {
-      setReceiver(null);
-      setIsValidReceiver(false);
+      setValue(null);
+      setIsValidValue(false);
       return;
     }
 
-    setReceiver(value);
-    setIsValidReceiver(isAddress(value));
+    setValue(value);
+    setIsValidValue(isAddress(value));
   };
 
   useEffect(() => {
@@ -260,6 +275,32 @@ const ChangeMintPrice = ({ offer }) => {
       }
 
       setDisabled(disableMint);
+    } catch (error) {
+      console.error(error);
+      throw new Error(error);
+    }
+  };
+
+  const handleTransferOwner = async () => {
+    if (!isValidOwner) {
+      toast("Please enter a valid owner address", { type: "error" });
+      throw new Error("Please enter a valid owner address");
+    }
+
+    try {
+      await mutateOwner({
+        args: [currentOwner]
+      });
+
+      const relayerURL = config[chainId as number]?.relayerURL;
+      if (relayerURL) {
+        await fetch(`${relayerURL}/api/revalidate`, {
+          method: "POST",
+          body: JSON.stringify({
+            tags: [`${chainId}-adOffer-${offer.id}`, `${chainId}-nftContract-${nftContractAddress}`]
+          })
+        });
+      }
     } catch (error) {
       console.error(error);
       throw new Error(error);
@@ -434,7 +475,7 @@ const ChangeMintPrice = ({ offer }) => {
           defaultText="Change Mint Price"
         />
       )}
-      <div className="flex flex-col gap-6 my-5">
+      <div className="flex flex-col gap-6 my-6">
         <div>
           <label className="block mb-2 text-sm font-semibold text-gray-700">
             Royalties percentage
@@ -481,7 +522,7 @@ const ChangeMintPrice = ({ offer }) => {
               disabled={disableMint}
               value={receiver}
               placeholder={receiver ?? "Enter the receiver address"}
-              onChange={(e) => handleReceiverAddress(e.target.value)}
+              onChange={(e) => handleAddress(e.target.value, setReceiver, setIsValidReceiver)}
             />
           </div>
 
@@ -496,31 +537,87 @@ const ChangeMintPrice = ({ offer }) => {
               Set to current royalties receiver
             </button>
           )}
-          {!isValidReceiver && receiver !== undefined && (
+          {!isValidReceiver && receiver !== null && (
             <p className="flex items-center gap-2 mt-2 text-sm text-red">
               Please enter a valid address
             </p>
           )}
         </div>
+        <StyledWeb3Button
+          onClick={async () => {
+            if (!nftContractAddress || !isValidRoyalties || !isValidReceiver) return;
+
+            setIsLoading(true);
+            await toast.promise(handleChangeRoyaltiesPercentage, {
+              pending: "Waiting for confirmation 🕒",
+              success: "The royalies settings has been updated for this offer 🎉",
+              error: "Transaction rejected 🤯"
+            });
+            setIsLoading(false);
+          }}
+          isDisabled={!nftContractAddress || !isValidRoyalties || !isValidReceiver}
+          contractAddress={nftContractAddress as Address}
+          defaultText="Change Royalties Settings"
+        />
+      </div>
+
+      <div className="my-4">
+        <div className="flex items-center gap-2 mb-2">
+          <label className="block text-sm font-semibold text-gray-700">Owner</label>
+
+          <ResponsiveTooltip text="The mint price is the amount of currency required to mint a token, this price will be the same for all tokens in the offer. However, the user will have to pay the protocol fees in addition to this price.">
+            <QuestionMarkCircleIcon className="w-4 h-4 text-white" />
+          </ResponsiveTooltip>
+        </div>
+
+        <div className="relative flex items-center w-full max-w-md">
+          <Input
+            className={`w-full rounded-lg p-2 text-white`}
+            value={currentOwner ?? ""}
+            placeholder={currentOwner ?? "Enter the owner address"}
+            onChange={(e) => handleAddress(e.target.value, setCurrentOwner, setIsValidOwner)}
+          />
+        </div>
+
+        <button
+          onClick={() => setCurrentOwner(initialOwner)}
+          className="flex items-center gap-2 mt-2 text-sm cursor-pointer text-primaryPurple hover:text-opacity-80"
+        >
+          Set to current owner
+        </button>
+        {!isValidOwner && owner !== null && (
+          <p className="flex items-center gap-2 mt-2 text-sm text-red">
+            Please enter a valid address
+          </p>
+        )}
       </div>
       <StyledWeb3Button
         onClick={async () => {
-          if (!nftContractAddress || !isValidRoyalties || !isValidReceiver) return;
+          if (!nftContractAddress) return;
 
-          setIsLoading(true);
-          await toast.promise(handleChangeRoyaltiesPercentage, {
-            pending: "Waiting for confirmation 🕒",
-            success: "The royalies settings has been updated for this offer 🎉",
-            error: "Transaction rejected 🤯"
-          });
-          setIsLoading(false);
+          if (!currentOwner) {
+            return;
+          }
+
+          /* TODO: Add modal to ensure the user understands the consequences of this action
+          when transfering if the new owner is not an admin, set the new owner as an admin*/
+
+          await toast
+            .promise(handleTransferOwner, {
+              pending: "Waiting for confirmation 🕒",
+              success: "The owner of the token has been transfered 🎉",
+              error: "Transaction rejected 🤯"
+            })
+            .catch((error) => {
+              console.error(error);
+            });
         }}
-        isDisabled={!nftContractAddress || !isValidRoyalties || !isValidReceiver}
+        isDisabled={!isValidOwner || !nftContractAddress}
         contractAddress={nftContractAddress as Address}
-        defaultText="Change Royalties Settings"
+        defaultText="Transfer Ownership"
       />
     </div>
   );
 };
 
-export default ChangeMintPrice;
+export default Payments;

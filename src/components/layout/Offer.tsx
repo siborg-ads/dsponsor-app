@@ -29,7 +29,7 @@ import config from "@/config/config";
 import { useSwitchChainContext } from "@/hooks/useSwitchChainContext";
 import { features } from "@/data/features";
 import UpdateOffer from "@/components/features/offer/offerManagement/UpdateOffer";
-import ChangeMintPrice from "@/components/features/offer/offerManagement/ChangeMintPrice";
+import Payments from "@/components/features/offer/offerManagement/Payments";
 import { Tabs, Tab, TabList, TabPanel } from "react-tabs";
 import { BadgePercentIcon, BlocksIcon, RefreshCwIcon } from "lucide-react";
 import Disable from "@/components/ui/misc/Disable";
@@ -246,7 +246,6 @@ const Offer = () => {
           };
         });
 
-        console.log("FINAL", offerDataFinal);
         setOfferData(offerDataFinal);
         setNftContractAddress(offerDataFinal?.nftContract?.id as Address);
       } catch (error) {
@@ -380,7 +379,6 @@ const Offer = () => {
 
   useEffect(() => {
     if (address && owner) {
-      console.log("popo", owner);
       setIsAdmin(offerData?.admins?.includes(address.toLowerCase()));
       setIsOwner(owner.toLowerCase() === address.toLowerCase());
     }
@@ -1125,7 +1123,7 @@ const Offer = () => {
                 </TabPanel>
                 {isOwner && (
                   <TabPanel>
-                    <ChangeMintPrice offer={offerData} />
+                    <Payments offer={offerData} />
                   </TabPanel>
                 )}
               </Tabs>
