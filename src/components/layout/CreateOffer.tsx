@@ -29,6 +29,10 @@ export type Currency = {
 const CreateOffer = () => {
   const [chainConfig, setChainConfig] = useState<ChainObject>(Object.entries(config)[0][1]);
 
+  const allCurrencies = Object.values(config)
+    .map((c) => c.smartContracts.currencies)
+    .flat();
+
   const initialCurrencies = useMemo(
     () => chainConfig?.smartContracts?.currencies || {},
     [chainConfig]
@@ -83,33 +87,9 @@ const CreateOffer = () => {
   const [customCurrencyEnabled, setCustomCurrencyEnabled] = React.useState<boolean>(false);
 
   useEffect(() => {
-    if (customCurrencyEnabled) {
-      setTokenAddress(customTokenAddress as Address);
-      setTokenDecimals(null);
-      setTokenSymbol(null);
-    } else {
-      setTokenAddress(selectedCurrency?.address as Address);
-    }
-  }, [chainConfig, customCurrencyEnabled, customTokenAddress, selectedCurrency]);
-
-  const { setSelectedChain } = useSwitchChainContext();
-  useEffect(() => {
-    if (!chainConfig) return;
-    setSelectedChain(chainConfig?.network);
-  }, [chainConfig, setSelectedChain]);
-
-  useEffect(() => {
     const updateCurrencyInfos = async () => {
-      const currencies = Object.entries(chainConfig?.smartContracts?.currencies || {}) as any;
-
-      const [, { symbol, decimals }] = currencies.find(
-        ([, value]) => value?.address?.toLowerCase() === tokenAddress?.toLowerCase()
-      ) ?? ["", {}];
-
-      if (symbol && decimals) {
-        setTokenSymbol(symbol);
-        setTokenDecimals(decimals);
-      } else {
+      if (customCurrencyEnabled) {
+        setTokenAddress(customTokenAddress as Address);
         let customTokenSymbol;
         let customTokenDecimals;
         try {
@@ -136,10 +116,55 @@ const CreateOffer = () => {
         } else {
           setTokenDecimals(null);
         }
+      } else {
+        const tokenAddrIsInCurrentChain = currencies?.find(
+          (c) => c.address.toLowerCase() === selectedCurrency?.address.toLowerCase()
+        );
+
+        if (tokenAddrIsInCurrentChain) {
+          setTokenAddress(selectedCurrency?.address as Address);
+          setTokenDecimals(selectedCurrency?.decimals);
+          setTokenSymbol(selectedCurrency?.symbol);
+        } else {
+          let tokenAddrInAnotherChain;
+          for (const currenciesInAnotherChain of allCurrencies) {
+            const c: any[] = Object.entries(currenciesInAnotherChain);
+            tokenAddrInAnotherChain = c.find(
+              ([_, cObj]) => cObj.address.toLowerCase() === selectedCurrency?.address.toLowerCase()
+            );
+            if (tokenAddrInAnotherChain) break;
+          }
+
+          if (tokenAddrInAnotherChain) {
+            setTokenAddress(
+              chainConfig.smartContracts.currencies[tokenAddrInAnotherChain[0]].address as Address
+            );
+            setTokenDecimals(
+              chainConfig.smartContracts.currencies[tokenAddrInAnotherChain[0]].decimals
+            );
+            setTokenSymbol(
+              chainConfig.smartContracts.currencies[tokenAddrInAnotherChain[0]].symbol
+            );
+          }
+        }
       }
     };
     updateCurrencyInfos();
-  }, [chainConfig, tokenAddress]);
+  }, [
+    chainConfig,
+    currencies,
+    allCurrencies,
+    customCurrencyEnabled,
+    customTokenAddress,
+    tokenAddress,
+    selectedCurrency
+  ]);
+
+  const { setSelectedChain } = useSwitchChainContext();
+  useEffect(() => {
+    if (!chainConfig) return;
+    setSelectedChain(chainConfig?.network);
+  }, [chainConfig, setSelectedChain]);
 
   const address = useAddress();
 
@@ -375,7 +400,7 @@ const CreateOffer = () => {
         JSON.stringify({
           name: name, // name
           symbol: "DSPONSORNFT", // symbol
-          baseURI: "https://api.dsponsor.com/tokenMetadata/", // baseURI
+          baseURI: `https://relayer.dsponsor.com/api/${chainConfig.chainId}/tokenMetadata`, // baseURI
           contractURI: jsonIpfsLinkContractURI, // contractURI from json
           minter: userMinterAddress,
           maxSupply: selectedNumber, // max supply

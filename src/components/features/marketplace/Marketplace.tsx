@@ -155,13 +155,13 @@ const MarketplaceComponent = ({ auctions, setAllTokens, allTokens, isAuctionsLoa
           <PopoverContent className="bg-secondaryBlack shadow border border-white border-opacity-10">
             <div className="px-1 py-2">
               <div className="text-small">
-                The marketplace lists all available ad spaces for sale, you can filter and sort them
-                as you wish
+                This page highlights all ad spaces from curated offers. You will not see your tokens
+                below if they are not from offers curated by SiBorg Ads team.
               </div>
             </div>
           </PopoverContent>
         </Popover>
-        <span>Marketplace</span>
+        <span>Marketplace (curated offers)</span>
       </span>
       <div className="flex flex-col gap-20 md:gap-8">
         <div className="flex flex-col md:flex-row items-center gap-16 h-10">

@@ -37,10 +37,20 @@ const Home = () => {
     const fetchData = async (allTokens: any) => {
       if (dataFetchedRef.current) return;
 
+      if (!curratedOfferIds.length) return;
+
       setIsLoading(true);
 
       const allData = await Promise.all(
-        Object.keys(config).map((chainId) => fetchMarketplace(Number(chainId), allTokens))
+        Object.keys(config).map(async (chainId) => {
+          return fetchMarketplace(
+            Number(chainId),
+            allTokens,
+            curratedOfferIds
+              .filter((e) => Number(e.chainId) === Number(chainId))
+              .map((e) => e.offerId)
+          );
+        })
       );
       const flatAllData = allData.flatMap((data) => data);
 
@@ -53,7 +63,7 @@ const Home = () => {
     if (allTokens) {
       fetchData(allTokens);
     }
-  }, []);
+  }, [curratedOfferIds]);
 
   useEffect(() => {
     const baseURL = window.location.origin;
@@ -70,12 +80,16 @@ const Home = () => {
 
     setChainIdCurrationArray(chainIdCurrationArray);
 
-    const curratedOfferIds = Object.values(chainIdCurrationArray)?.map((element) => {
-      return {
-        chainId: element?.chainId as number,
-        offerId: element?.offerId as number,
-        type: element?.type
-      };
+    const curratedOfferIds: any[] = [];
+
+    Object.values(chainIdCurrationArray)?.forEach((element) => {
+      if (element.inTrending) {
+        curratedOfferIds.push({
+          chainId: element?.chainId as number,
+          offerId: element?.offerId as number,
+          type: element?.type
+        });
+      }
     });
 
     setCurratedOfferIds(curratedOfferIds);

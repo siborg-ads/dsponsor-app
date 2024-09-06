@@ -8,10 +8,16 @@ export type CurationDataItem = {
   offerId: number;
   buttonLink: string;
   type: Filter[];
+  inTrending: boolean;
 };
 
 type CurationData = {
   [key: number]: CurationDataItem[];
+};
+
+export const marketplaceOffersCuration = {
+  11155111: [1, ...Array.from({ length: 50 }, (_, i) => 20 + i)],
+  8453: [1]
 };
 
 export function curationData(baseURL: string): CurationData {
@@ -24,7 +30,8 @@ export function curationData(baseURL: string): CurationData {
         buttonText: "Own a part of SiBorg App",
         offerId: 1,
         buttonLink: `${baseURL}/${11155111}/offer/${1}`,
-        type: ["dapps"] as Filter[]
+        type: ["dapps"] as Filter[],
+        inTrending: true
       },
 
       {
@@ -34,7 +41,8 @@ export function curationData(baseURL: string): CurationData {
         offerId: 35,
         buttonText: "Get your ads on Cryptoast",
         buttonLink: `${baseURL}/${11155111}/offer/${35}`,
-        type: ["medias", "newsletters"] as Filter[]
+        type: ["medias", "newsletters"] as Filter[],
+        inTrending: true
       }
     ],
     8453: [
@@ -45,7 +53,8 @@ export function curationData(baseURL: string): CurationData {
         buttonText: "Own a part of SiBorg App",
         offerId: 1,
         buttonLink: `${baseURL}/${8453}/offer/${1}`,
-        type: ["dapps"] as Filter[]
+        type: ["dapps"] as Filter[],
+        inTrending: true
       }
     ]
   };

@@ -23,7 +23,7 @@ const Meta = ({ title, keyword, desc }) => {
           property="og:image"
           content="https://orange-elegant-swallow-161.mypinata.cloud/ipfs/QmaKVtq9B8UaraFDfkYaodti2VummZ4FvR2MZeTTV7Ycke"
         />
-        <meta property="og:url" content="https://app.dsponsor.com" />
+        <meta property="og:url" content="https://dsponsor-app.siborg.io" />
         <meta name="og:site_name" content={title} />
         <meta property="og:type" content="website" />
         <meta name="twitter:card" content="summary_large_image" />
@@ -37,7 +37,7 @@ const Meta = ({ title, keyword, desc }) => {
         />
         <script
           defer
-          data-domain="app.dsponsor.com"
+          data-domain="dsponsor-app.siborg.io"
           src="https://plausible.io/js/script.js"
         ></script>
       </Head>

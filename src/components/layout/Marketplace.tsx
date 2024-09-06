@@ -6,6 +6,7 @@ import { fetchMarketplace } from "@/utils/graphql/fetchMarketplace";
 import { Auctions } from "@/types/auctions";
 import { formatUnits } from "ethers/lib/utils";
 import { BigNumber } from "ethers";
+import { marketplaceOffersCuration } from "@/data/curation";
 
 import config from "@/config/config";
 
@@ -32,7 +33,10 @@ const Marketplace = () => {
       setIsLoading(true);
 
       const allData = await Promise.all(
-        Object.keys(config).map((chainId) => fetchMarketplace(Number(chainId), allTokens))
+        Object.keys(config).map(async (chainId) => {
+          const offerIds = marketplaceOffersCuration[chainId];
+          return fetchMarketplace(Number(chainId), allTokens, offerIds);
+        })
       );
 
       const allListedTokenWithoutFilterArray = allData.flat();

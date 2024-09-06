@@ -100,7 +100,7 @@ function InnerProviders({ children }: Readonly<{ children: React.ReactNode }>) {
   }, [selectedChain]);
 
   useEffect(() => {
-    if (chainId && balance && address) {
+    if (chainId && address && balance !== undefined) {
       const OZrelayer = config?.[chainId]?.features?.openZeppelinDefender?.relayerURL;
       const balanceThreshold = BigInt(config?.[chainId]?.gaslessBalanceThreshold ?? "0");
       const gaslessBalanceCondition = balanceThreshold && balance < balanceThreshold;
@@ -129,7 +129,7 @@ function InnerProviders({ children }: Readonly<{ children: React.ReactNode }>) {
       activeChain={chain}
       clientId={clientId}
       supportedChains={[Base, Ethereum, BaseSepoliaTestnet, Sepolia, Polygon]}
-      authConfig={{ domain: "dsponsor.com" }}
+      // authConfig={{ domain: "dsponsor.com" }}
       supportedWallets={[
         metamaskWallet(),
         coinbaseWallet({ recommended: true }),

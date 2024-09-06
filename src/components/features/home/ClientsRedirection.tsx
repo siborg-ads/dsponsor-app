@@ -20,11 +20,11 @@ const argumentsData: { title: string; description: string }[] = [
 const buttons: { title: string; link: string }[] = [
   {
     title: "I am looking for visibility",
-    link: "https://forms.dsponsor.com/looking-for-visibility"
+    link: "https://forms.siborg.io/looking-for-visibility"
   },
   {
     title: "I am looking for sponsors",
-    link: "https://forms.dsponsor.com/looking-for-sponsors"
+    link: "https://forms.siborg.io/looking-for-sponsors"
   }
 ];
 
