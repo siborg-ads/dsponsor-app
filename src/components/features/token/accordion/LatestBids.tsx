@@ -33,8 +33,6 @@ const LatestBids = ({ bids }) => {
     setVisibleListings((prev) => Math.max(prev - 5, 1));
   };
 
-  console.log(bids);
-
   return (
     <div className="overflow-x-auto mt-4">
       <div className="w-full text-left min-w-[736px] border dark:border-primaryPink dark:border-opacity-10 dark:bg-primaryBlack dark:text-white rounded-2lg">

@@ -1,11 +1,12 @@
 import Network from "@/utils/networks/networks";
 import contractABI from "@/abi/dsponsorAdmin.json";
 import { Sepolia } from "@thirdweb-dev/chains";
+import { ChainObject } from "@/types/chain";
 
-const devEthereumSepolia = {
+const devEthereumSepolia: ChainObject = {
   chainId: 11155111,
   chainName: "sepolia",
-  gaslessBalanceThreshold: 1000000000000000, // 0.001 ETH
+  gaslessBalanceThreshold: "1000000000000000", // 0.001 ETH
   network: Network.ETH_SEPOLIA,
   chainObject: Sepolia,
   logoURL: "/images/chains/ethereum-logo.png",

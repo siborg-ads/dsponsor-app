@@ -9,7 +9,6 @@ import { ConnectWallet, useAddress } from "@thirdweb-dev/react";
 import { ConnectButton } from "thirdweb/react";
 import { client } from "@/data/services/client";
 
-import { useChainContext } from "@/hooks/useChainContext";
 import { features } from "@/data/features";
 import { useSearchParams } from "next/navigation";
 
@@ -37,9 +36,7 @@ export default function Header() {
       }
     });
   });
-  const { currentChainObject } = useChainContext();
 
-  const chainId = currentChainObject?.chainId;
   const route = useRouter();
 
   return (
@@ -106,11 +103,11 @@ export default function Header() {
 
                 <ConditionalCreateLi condition={features.canCreateOffer}>
                   <li className="group">
-                    <Link href={chainId ? `/${chainId}/offer/create` : "#"}>
+                    <Link href="/createOffer">
                       <button className="text-jacarta-900 font-display hover:text-primaryPurple focus:text-primaryPurple dark:hover:text-primaryPurple dark:focus:text-primaryPurple flex items-center justify-between py-3.5 text-base dark:text-white lg:px-5">
                         <span
                           className={
-                            isChildrenPageActive(route.asPath, `/${chainId}/offer/create`)
+                            isChildrenPageActive(route.asPath, `/createOffer`)
                               ? "text-primaryPurple dark:text-primaryPurple"
                               : ""
                           }
@@ -266,14 +263,14 @@ export default function Header() {
             {/* create */}
             <ConditionalCreateLi condition={features.canCreateOffer}>
               <li className="group">
-                <Link href={chainId ? `/${chainId}/offer/create` : "#"}>
+                <Link href="/createOffer">
                   <button
                     onClick={() => setToggle(false)}
                     className="text-jacarta-900 font-display hover:text-primaryPurple focus:text-primaryPurple dark:hover:text-primaryPurple dark:focus:text-primaryPurple flex items-center justify-between py-3.5 text-base dark:text-white lg:px-5"
                   >
                     <span
                       className={
-                        isChildrenPageActive(route.asPath, `/${chainId}/offer/create`)
+                        isChildrenPageActive(route.asPath, `/createOffer`)
                           ? "text-primaryPurple dark:text-primaryPurple"
                           : ""
                       }

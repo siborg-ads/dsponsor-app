@@ -189,8 +189,8 @@ const OfferValidity = ({
               </div>
               {tokenSymbol ? (
                 <p className="dark:text-jacarta-100 text-jacarta-100 text-2xs mt-3">
-                  You&apos;ll earn up to {selectedUnitPrice} {tokenSymbol}. As DSponsor charges a
-                  fee of 4%, sponsors will pay {formatAndRoundPrice(selectedUnitPrice * 1.04)}{" "}
+                  You&apos;ll earn up to {selectedUnitPrice} {tokenSymbol}. As the protocol charges
+                  a fee of 4%, sponsors will pay {formatAndRoundPrice(selectedUnitPrice * 1.04)}{" "}
                   {tokenSymbol}.
                 </p>
               ) : (

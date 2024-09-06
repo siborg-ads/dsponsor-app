@@ -4,12 +4,13 @@ import Link from "next/link";
 import activityToTopPoints from "@/utils/tables/activityToTopPoints";
 import activityToTopRewarded from "@/utils/tables/activityToTopRewarded";
 import activityToHighestTransactions from "@/utils/tables/activityToHighestTransactions";
-import config from "@/config/config";
-import { useChainContext } from "@/hooks/useChainContext";
 import Cards from "@/components/features/leaderboard/Cards";
 import formatLongAddress from "@/utils/addresses/formatLongAddress";
 import { useAddress } from "@thirdweb-dev/react";
 import { getAddress } from "ethers/lib/utils";
+import config from "@/config/config";
+import { ChainObject } from "@/types/chain";
+import ChainSelector from "../chain/ChainSelector";
 
 const renderTable = (data, columns, userAddress) => {
   if (!data || data.length === 0 || !Array.isArray(data)) {
@@ -48,40 +49,26 @@ const renderTable = (data, columns, userAddress) => {
 };
 
 const Tables = ({ activity }) => {
-  const { currentChainObject } = useChainContext();
-  const [activeBlockchain] = useState(currentChainObject?.chainId);
   const [itemActive, setItemActive] = useState(1);
-  const [, setChainId] = useState();
-  const [filteredActivity, setFilteredActivity] = useState([]);
 
-  const [, setBlockChainOptions] = useState<any[]>([]);
   const [leaderboards, setLeaderboards] = useState({});
 
+  const [chainConfig, setChainConfig] = useState<ChainObject>(Object.entries(config)[0][1]);
+
+  const filteredActivity = activity.find((a) => Number(a.chainId) === Number(chainConfig.chainId));
+
+  const chainExplorer = chainConfig.explorerBaseURL;
+
   const address = useAddress();
-  const chainExplorer = currentChainObject?.explorerBaseURL;
 
   useEffect(() => {
-    const filteredActivity = activity?.filter(
-      (item) => Number(item?.chainId) === Number(activeBlockchain)
-    );
-    setChainId(filteredActivity[0]?.chainId);
-    setFilteredActivity(filteredActivity[0]);
-
     setLeaderboards({
-      topPoints: activityToTopPoints(filteredActivity[0]?.rankings, address),
-      // topHolders: activityToTopHolders(filteredActivity[0]?.rankings, address),
-      topRewarded: activityToTopRewarded(filteredActivity[0]?.rankings, address),
-      topSpenders: activityToHighestTransactions(filteredActivity[0]?.lastActivities, address)
+      topPoints: activityToTopPoints(filteredActivity?.rankings, address),
+      // topHolders: activityToTopHolders(filteredActivity?.rankings, address),
+      topRewarded: activityToTopRewarded(filteredActivity?.rankings, address),
+      topSpenders: activityToHighestTransactions(filteredActivity?.lastActivities, address)
     });
-  }, [activeBlockchain, activity, address]);
-
-  useEffect(() => {
-    const chains = Object.entries(config).map((value) => {
-      return value[1]?.chainId;
-    });
-
-    setBlockChainOptions(chains);
-  }, []);
+  }, [filteredActivity, address]);
 
   const pointColumns = [
     { header: "Rank", render: (item) => item.rank },
@@ -115,12 +102,14 @@ const Tables = ({ activity }) => {
     { header: "Date", render: (item) => `${item.date}` },
     {
       header: "Transaction",
-      render: (item) => (
-        <Link target="_blank" href={`${chainExplorer}/tx/${item.fullTransactionHash}`}>
-          {/* to change */}
-          <span className="text-primaryPink hover:text-jacarta-100">{item.transactionHash}</span>
-        </Link>
-      )
+      render: (item) => {
+        return (
+          <Link target="_blank" href={`${chainExplorer}/tx/${item.fullTransactionHash}`}>
+            {/* to change */}
+            <span className="text-primaryPink hover:text-jacarta-100">{item.transactionHash}</span>
+          </Link>
+        );
+      }
     },
     { header: "Boxes", render: (item) => item.points },
     {
@@ -172,6 +161,8 @@ const Tables = ({ activity }) => {
       <h1 className="text-4xl font-medium text-center pt-8 pb-4 mb-4 dark:text-white">
         Leaderboard Rankings
       </h1>
+      <ChainSelector setChainConfig={setChainConfig} />
+      <div className="mb-8 grid grid-cols-2 md:grid-cols-3 gap-4 flex-wrap items-center justify-between"></div>
       <div className="mb-8 grid grid-cols-2 md:grid-cols-3 gap-4 flex-wrap items-center justify-between">
         <Cards activity={filteredActivity} />
       </div>

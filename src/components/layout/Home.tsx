@@ -5,7 +5,6 @@ import AdSpaces from "@/components/features/home/AdSpaces";
 import { fetchMarketplace } from "@/utils/graphql/fetchMarketplace";
 import { formatUnits } from "ethers/lib/utils";
 import Meta from "@/components/Meta";
-import { useChainContext } from "@/hooks/useChainContext";
 import { Auctions } from "@/types/auctions";
 import Carousel from "@/components/features/home/Carousel";
 import Steps from "@/components/features/home/AdsSteps";
@@ -20,46 +19,51 @@ const Home = () => {
   const [tempAdSpaces, setTempAdSpaces] = useState<any[]>([]);
   const [adSpaces, setAdSpaces] = useState<Auctions>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [auctionsFetched, setAuctionsFetched] = useState<boolean>(false);
   const [filter, setFilter] = useState<Filter>("all");
   const [offers, setOffers] = useState<any[]>([]);
   const [chainIdCurrationArray, setChainIdCurrationArray] = useState<CurationDataItem[]>([]);
 
-  const [curratedOfferIds, setCurratedOfferIds] = useState<number[]>([]);
-  const [curratedOfferIdsByType, setCurratedOfferIdsByType] = useState<
+  const [curratedOfferIds, setCurratedOfferIds] = useState<
     {
+      chainId: number;
       offerId: number;
       type: Filter[];
     }[]
   >([]);
 
-  const { currentChainObject } = useChainContext();
-  const chainId = currentChainObject?.chainId;
-
   const dataFetchedRef = useRef(false);
 
   useEffect(() => {
-    const fetchData = async (chainId: number, allTokens: any) => {
+    const fetchData = async (allTokens: any) => {
       if (dataFetchedRef.current) return;
+
+      if (!curratedOfferIds.length) return;
 
       setIsLoading(true);
 
-      let allListedTokenWithoutFilterArray: any[] = [];
-      const data = await fetchMarketplace(chainId, allTokens);
-      allListedTokenWithoutFilterArray.push(...data);
+      const allData = await Promise.all(
+        Object.keys(config).map(async (chainId) => {
+          return fetchMarketplace(
+            Number(chainId),
+            allTokens,
+            curratedOfferIds
+              .filter((e) => Number(e.chainId) === Number(chainId))
+              .map((e) => e.offerId)
+          );
+        })
+      );
+      const flatAllData = allData.flatMap((data) => data);
 
-      setOffers(data);
+      setOffers(flatAllData);
+      setTempAdSpaces(flatAllData);
 
-      setTempAdSpaces(allListedTokenWithoutFilterArray);
-
-      setAuctionsFetched(true);
       setIsLoading(false);
     };
 
-    if (chainId && !auctionsFetched && allTokens) {
-      fetchData(chainId, allTokens);
+    if (allTokens) {
+      fetchData(allTokens);
     }
-  }, [auctionsFetched, chainId]);
+  }, [curratedOfferIds]);
 
   useEffect(() => {
     const baseURL = window.location.origin;
@@ -68,26 +72,27 @@ const Home = () => {
 
     let chainIdCurrationArray: CurationDataItem[] = [];
 
-    for (const c of Object.keys(config)) {
-      chainIdCurrationArray = [...chainIdCurrationArray, ...currationArray[Number(c)]];
+    for (const chainId of Object.keys(config)) {
+      const c = currationArray[Number(chainId)].map((e) => ({ ...e, chainId: Number(chainId) }));
+      chainIdCurrationArray = [...chainIdCurrationArray, ...c];
     }
     if (!chainIdCurrationArray) return;
 
     setChainIdCurrationArray(chainIdCurrationArray);
 
-    const curratedOfferIds = Object.values(chainIdCurrationArray)?.map((element) => {
-      return element?.offerId as number;
-    });
+    const curratedOfferIds: any[] = [];
 
-    const curratedOfferIdsByType = Object.values(chainIdCurrationArray)?.map((element) => {
-      return {
-        offerId: element?.offerId as number,
-        type: element?.type
-      };
+    Object.values(chainIdCurrationArray)?.forEach((element) => {
+      if (element.inTrending) {
+        curratedOfferIds.push({
+          chainId: element?.chainId as number,
+          offerId: element?.offerId as number,
+          type: element?.type
+        });
+      }
     });
 
     setCurratedOfferIds(curratedOfferIds);
-    setCurratedOfferIdsByType(curratedOfferIdsByType);
   }, []);
 
   useEffect(() => {
@@ -95,11 +100,20 @@ const Home = () => {
 
     let filteredAdSpaces = [...tempAdSpaces]?.filter((token) => {
       if (filter !== "all") {
-        return curratedOfferIdsByType?.some((element) => {
-          return element.offerId === Number(token?.offerId) && element.type.includes(filter);
+        return curratedOfferIds?.some((element) => {
+          return (
+            Number(element.chainId) == Number(token.chainConfig.chainId) &&
+            Number(element.offerId) === Number(token?.offerId) &&
+            element.type.includes(filter)
+          );
         });
       } else {
-        return curratedOfferIds?.includes(Number(token?.offerId));
+        return curratedOfferIds?.some((element) => {
+          return (
+            Number(element.chainId) == Number(token.chainConfig.chainId) &&
+            Number(element.offerId) === Number(token?.offerId)
+          );
+        });
       }
     });
 
@@ -262,7 +276,7 @@ const Home = () => {
     });
 
     setAdSpaces(adSpaces);
-  }, [tempAdSpaces, filter, curratedOfferIds, curratedOfferIdsByType]);
+  }, [tempAdSpaces, filter, curratedOfferIds]);
 
   const metadata = {
     title: `SiBorg Ads - The Web3 Monetization Solution`,
@@ -288,10 +302,10 @@ const Home = () => {
           offers={offers}
           adSpaces={adSpaces}
           filter={filter}
-          curratedOfferIdsByType={curratedOfferIdsByType}
+          curratedOfferIds={curratedOfferIds}
         />
 
-        <Steps chainId={chainId} />
+        <Steps />
 
         <ClientsRedirection />
       </div>
