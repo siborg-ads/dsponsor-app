@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { useAddress, useContractWrite } from "@thirdweb-dev/react";
 import ItemManageModal from "@/components/features/token/modals/CreateListing";
 import { toast } from "react-toastify";
-import { useChainContext } from "@/hooks/useChainContext";
 import { getAddress } from "ethers/lib/utils";
 import StyledWeb3Button from "@/components/ui/buttons/StyledWeb3Button";
 import { Address } from "thirdweb";
@@ -23,12 +22,12 @@ const Manage = ({
   setListingCreated,
   fetchOffers
 }) => {
-  const relayerURL = config[chainId].relayerURL;
+  const currentChainObject = config[chainId];
+  const relayerURL = currentChainObject.relayerURL;
 
   const [listingModal, setListingModal] = useState(false);
   const [isLoadingButton, setIsLoadingButton] = useState(false);
   const [isLastBidder, setIsLastBidder] = useState(false);
-  const { currentChainObject } = useChainContext();
   const { mutateAsync: cancelDirectListing } = useContractWrite(
     dsponsorMpContract,
     "cancelDirectListing"
@@ -228,6 +227,7 @@ const Manage = ({
       {listingModal && (
         <div className="modal fade show block">
           <ItemManageModal
+            chainConfig={currentChainObject}
             setSuccessFullListing={setSuccessFullListing}
             successFullListing={successFullListing}
             royalties={royalties}

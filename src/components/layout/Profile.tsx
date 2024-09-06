@@ -8,7 +8,6 @@ import Tabs from "@/components/features/profile/Tabs";
 import { useAddress } from "@thirdweb-dev/react";
 import { fetchAllOffersProfile } from "@/utils/graphql/fetchAllOffersProfile";
 import { fetchAllTokensProfile } from "@/utils/graphql/fetchAllTokensProfile";
-import { useChainContext } from "@/hooks/useChainContext";
 import config from "@/config/config";
 import { getAddress } from "ethers/lib/utils";
 import { features } from "@/data/features";
@@ -30,24 +29,26 @@ const Profile = () => {
   const [tokenAuctionBids, setTokenAuctionBids] = useState(null);
   const [copied, setCopied] = useState(false);
   const [isOwner, setIsOwner] = useState(false);
-  const { currentChainObject } = useChainContext();
   const [isPendingAdsOnOffer, setIsPendingAdsOnOffer] = useState(false);
   const [initialWallet, setInitialWallet] = useState<Address | null>(null);
   const [, setMount] = useState(false);
-  const [userData, setUserData] = useState(null);
+  const [userData, setUserData] = useState({
+    nbBids: 0,
+    nbRefunds: 0,
+    bidRefundReceived: 0,
+    points: 0,
+    nbProtocolFeeReferrals: 0
+  });
   const [isUserConnected, setIsUserConnected] = useState(false);
   const [createdOffers, setCreatedOffers] = useState<any[]>([]);
   const [isLoadingTransactions, setIsLoadingTransactions] = useState(false);
-  const [lastActivities, setLastActivities] = useState(null);
+  const [lastActivities, setLastActivities] = useState<any[]>([]);
   const [isLoadingBids, setIsLoadingBids] = useState(false);
   const [marketplaceBids, setMarketplaceBids] = useState<any[]>([]);
   const [, setIsLoadingOwnedTokens] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   const userAddress = router.query.address as Address;
-  const chainId = currentChainObject?.chainId;
-  const chainConfig = config[chainId as number];
-  const relayerURL = chainConfig?.relayerURL;
 
   useEffect(() => {
     if (address && userAddress && getAddress(address) === getAddress(userAddress)) {
@@ -118,13 +119,14 @@ const Profile = () => {
 
       const allUserBids: any[] = [];
       offersByUserAddressArray?.forEach((offer) => {
+        const { chainConfig } = offer;
         offer?.nftContract?.tokens?.forEach((token) => {
           token?.marketplaceListings?.forEach((listing) => {
             const { currencyDecimals, currencySymbol } = listing || {};
             listing.token.metadata = token.metadata;
             listing?.bids?.forEach((bid) => {
               if (userAddress && bid?.bidder?.toLowerCase() === userAddress?.toLowerCase()) {
-                allUserBids.push({ currencyDecimals, currencySymbol, ...bid });
+                allUserBids.push({ chainConfig, currencyDecimals, currencySymbol, ...bid });
               }
             });
           });
@@ -238,27 +240,75 @@ const Profile = () => {
     setIsLoadingTransactions(true);
 
     try {
-      const data = await fetch(`${relayerURL}/api/${chainId}/activity?userAddress=${userAddress}`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json"
-        }
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          return data;
-        })
-        .catch((err) => console.error(err));
-
-      let lastActivities = features?.canFilterTransactionsWithWETH
-        ? data?.lastActivities.filter(
-            (activity) => activity.symbol === "WETH" && activity.points > 0
+      const allActivityResults = await Promise.all(
+        Object.keys(config).map(async (chainId) => {
+          const chainConfig = config[chainId];
+          const relayerURL = config[chainId].relayerURL;
+          const data = await fetch(
+            `${relayerURL}/api/${chainId}/activity?userAddress=${userAddress}`,
+            {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json"
+              }
+            }
           )
-        : data?.lastActivities.filter((activity) => activity.points > 0);
+            .then((res) => res.json())
+            .then((data) => {
+              return data;
+            })
+            .catch((err) => console.error(err));
+
+          const toKeepActivities = features?.canFilterTransactionsWithWETH
+            ? data?.lastActivities.filter(
+                (activity) => activity.symbol === "WETH" && activity.points > 0
+              )
+            : data?.lastActivities.filter((activity) => activity.points > 0);
+
+          const activityData = data?.rankings[0];
+
+          return {
+            toKeepActivities: toKeepActivities
+              ? toKeepActivities.map((e) => ({ ...e, chainConfig }))
+              : [],
+            activityData: activityData ? activityData : {}
+          };
+        })
+      );
+
+      const lastActivities = allActivityResults
+        .flatMap((element) => element.toKeepActivities)
+        .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
+      const rankingInfos = {
+        nbBids: 0,
+        nbRefunds: 0,
+        bidRefundReceived: 0,
+        points: 0,
+        nbProtocolFeeReferrals: 0
+      };
+      allActivityResults.forEach((element) => {
+        if (element?.activityData?.nbBids) {
+          rankingInfos.nbBids += element.activityData.nbBids;
+        }
+        if (element?.activityData?.nbRefunds) {
+          rankingInfos.nbRefunds += element.activityData.nbRefunds;
+        }
+        if (element?.activityData?.usdcAmounts?.bidRefundReceived) {
+          rankingInfos.bidRefundReceived += parseFloat(
+            element.activityData.usdcAmounts.bidRefundReceived
+          );
+        }
+        if (element?.activityData?.points) {
+          rankingInfos.points += element.activityData.points;
+        }
+        if (element?.activityData?.nbProtocolFeeReferrals) {
+          rankingInfos.nbProtocolFeeReferrals += element.activityData.nbProtocolFeeReferrals;
+        }
+      });
 
       setLastActivities(lastActivities);
-
-      setUserData(data);
+      setUserData(rankingInfos);
       setMount(true);
     } catch (error) {
       console.error("Error fetching user data:", error);
@@ -266,7 +316,7 @@ const Profile = () => {
       setIsLoadingTransactions(false);
       fetchDataRef.current = false;
     }
-  }, [chainId, userAddress, relayerURL]);
+  }, [userAddress]);
 
   const fetchOwnedAdProposals = React.useCallback(async () => {
     if (fetchOwnedAdProposalsRef.current) {
@@ -303,7 +353,7 @@ const Profile = () => {
   }, [fetchDataByUserAddress]);
 
   useEffect(() => {
-    if (userAddress && chainId) {
+    if (userAddress) {
       const fetchAllManageData = async () => {
         if (fetchAllDataRef.current) {
           return;
@@ -312,7 +362,7 @@ const Profile = () => {
 
         setIsLoading(true);
 
-        if (chainId && userAddress) {
+        if (userAddress) {
           try {
             await fetchProfileData();
             await fetchCreatedData();
@@ -332,15 +382,7 @@ const Profile = () => {
 
       fetchAllManageData();
     }
-  }, [
-    userAddress,
-    address,
-    chainId,
-    chainConfig,
-    fetchProfileData,
-    fetchCreatedData,
-    fetchOwnedAdProposals
-  ]);
+  }, [userAddress, address, fetchProfileData, fetchCreatedData, fetchOwnedAdProposals]);
 
   const handleListingsStatusType = (status) => {
     switch (status) {

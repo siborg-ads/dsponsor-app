@@ -1,6 +1,5 @@
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
-import { useChainContext } from "@/hooks/useChainContext";
 import { features } from "@/data/features";
 //import { updateTrendingCategoryItemData } from "@/redux/counterSlice";
 import ConditionalDisplayedComponent from "@/components/ui/misc/ConditionalDisplayedComponent";
@@ -21,8 +20,6 @@ const CreatedOffers = ({
   offers: any;
   isLoading: boolean;
 }) => {
-  const { currentChainObject } = useChainContext();
-  const chainId = currentChainObject?.chainId;
   const [filteredData, setFilteredData] = useState(data);
 
   const [filter, setFilter] = useState("all");
@@ -112,7 +109,7 @@ const CreatedOffers = ({
         <ConditionalDisplayedComponent condition={features.canCreateOffer}>
           <div className="w-full flex flex-col gap-4 justify-center items-center">
             <span>No offers yet...</span>
-            <MainButton link={`/${chainId}/offer/create`} isPurple={true} text="Create" />
+            <MainButton link={`/createOffer`} isPurple={true} text="Create" />
           </div>
         </ConditionalDisplayedComponent>
       )}

@@ -33,7 +33,7 @@ import OfferSkeleton from "@/components/ui/skeletons/OfferSkeleton";
 import AdValidation from "@/components/features/offer/AdValidation";
 import LatestBids from "@/components/features/token/accordion/LatestBids";
 import Manage from "@/components/features/token/widgets/Manage";
-import { useSwitchChainContext } from "@/hooks/useSwitchChainContext";
+import { useSwitchChainContext } from "@/providers/SwitchChain";
 import config from "@/config/config";
 import stringToUint256 from "@/utils/tokens/stringToUnit256";
 import { formatUnits, getAddress, parseUnits } from "ethers/lib/utils";
@@ -66,6 +66,14 @@ const Token = () => {
   const relayerURL = chainConfig?.relayerURL;
 
   const address = useAddress();
+
+  const { setSelectedChain } = useSwitchChainContext();
+
+  useEffect(() => {
+    if (chainId) {
+      setSelectedChain(chainConfig?.network);
+    }
+  }, [chainId, chainConfig, setSelectedChain]);
 
   const [tokenIdString, setTokenIdString] = useState<string | null>(null);
   const [offerData, setOfferData] = useState<any | null>(null);
@@ -444,7 +452,6 @@ const Token = () => {
     chainConfig?.smartContracts?.DSPONSORMP?.address
   );
   const { mutateAsync: directBuy } = useContractWrite(dsponsorMpContract, "buy");
-  const { setSelectedChain } = useSwitchChainContext();
 
   const now = Math.floor(new Date().getTime() / 1000);
 
@@ -551,12 +558,6 @@ const Token = () => {
       setDisplayedPrice(0);
     }
   }, [bidsAmount, tokenDecimals, tokenEtherPriceRelayer]);
-
-  useEffect(() => {
-    if (chainId) {
-      setSelectedChain(chainConfig?.network);
-    }
-  }, [chainId, chainConfig, setSelectedChain]);
 
   useEffect(() => {
     setTokenIdString(tokenId?.toString() as string);
@@ -2634,6 +2635,7 @@ const Token = () => {
 
                 <Accordion.Content>
                   <AdValidation
+                    chainConfig={chainConfig}
                     offer={offerData}
                     isOwner={isOfferOwner}
                     successFullRefuseModal={successFullRefuseModal}
@@ -2742,6 +2744,7 @@ const Token = () => {
       {showPreviewModal && (
         <div className="modal fade show bloc">
           <AdSubmission
+            chainConfig={chainConfig}
             handlePreviewModal={handlePreviewModal}
             handleSubmit={handleSubmit}
             imageUrlVariants={imageUrlVariants}
@@ -2763,6 +2766,7 @@ const Token = () => {
       {buyModal && (
         <div className="modal fade show block">
           <BuyModal
+            chainConfig={chainConfig}
             tags={tags}
             finalPrice={finalPrice}
             currencyDecimals={tokenDecimals as number}
