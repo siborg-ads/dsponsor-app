@@ -229,7 +229,7 @@ const AdSpaces = ({
                       url={
                         !element?.tokenData
                           ? `/${element?.chainId}/offer/${element?.offerId}/${element?.tokenId}`
-                          : `/${element?.chainId}/offer/${element?.item?.nftContract?.adOffers?.[0]?.id}/${element?.tokenId}?tokenData=${element?.item?.mint?.tokenData}`
+                          : `/${element?.chainId}/offer/${element?.offerId}/${element?.tokenId}?tokenData=${element?.item?.mint?.tokenData}`
                       }
                       currencyDecimals={element?.currencyDecimals}
                       currencySymbol={element?.currencySymbol}
