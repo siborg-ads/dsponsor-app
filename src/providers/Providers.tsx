@@ -122,8 +122,6 @@ function InnerProviders({ children }: Readonly<{ children: React.ReactNode }>) {
 
   const sdkOptionsKey = React.useMemo(() => JSON.stringify(sdkOptions), [sdkOptions]);
 
-  console.log("/providers/Providers (to thirdweb)", { chain });
-
   return (
     <ThirdwebProviderV4
       key={sdkOptionsKey}

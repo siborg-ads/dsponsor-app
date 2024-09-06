@@ -2,13 +2,8 @@ import React, { useEffect, useState, useRef, useMemo } from "react";
 import Meta from "@/components/Meta";
 import Image from "next/image";
 import "react-datepicker/dist/react-datepicker.css";
-import {
-  useAddress,
-  useContract,
-  useContractRead,
-  useContractWrite,
-  useStorageUpload
-} from "@thirdweb-dev/react";
+import { useAddress, useContract, useContractWrite, useStorageUpload } from "@thirdweb-dev/react";
+import { ThirdwebSDK } from "@thirdweb-dev/sdk";
 import styles from "@/styles/style.module.scss";
 import AdSubmission from "@/components/features/token/accordion/AdSubmission";
 import OfferType from "@/components/features/createOffer/OfferType";
@@ -23,6 +18,7 @@ import { features } from "@/data/features";
 
 import ERC20ABI from "@/abi/ERC20.json";
 import { ChainObject } from "@/types/chain";
+import ChainSelector from "../features/chain/ChainSelector";
 
 export type Currency = {
   address: Address | string;
@@ -32,8 +28,6 @@ export type Currency = {
 
 const CreateOffer = () => {
   const [chainConfig, setChainConfig] = useState<ChainObject>(Object.entries(config)[0][1]);
-
-  const chainId = chainConfig.chainId;
 
   const initialCurrencies = useMemo(
     () => chainConfig?.smartContracts?.currencies || {},
@@ -76,23 +70,15 @@ const CreateOffer = () => {
 
   const [tokenDecimals, setTokenDecimals] = useState<number | null>(null);
   const [tokenSymbol, setTokenSymbol] = useState<string | null>(null);
-  const [tokenAddress, setTokenAddress] = useState<Address>(currencies?.[0]?.address as Address);
+  const [tokenAddress, setTokenAddress] = useState<Address>("0x");
   const [customTokenAddress, setCustomTokenAddress] = useState<Address | undefined>(undefined);
   const [selectedCurrency, setSelectedCurrency] = useState<Currency>(currencies?.[0]);
-  const [mounted, setMounted] = useState(false);
-
-  const { contract: tokenContractAsync } = useContract(tokenAddress, ERC20ABI);
-  const { data: customTokenSymbol } = useContractRead(tokenContractAsync, "symbol");
-  const { data: customTokenDecimals } = useContractRead(tokenContractAsync, "decimals");
 
   useEffect(() => {
-    if (!mounted && currencies && currencies?.length > 0) {
-      setTokenAddress(currencies?.[0]?.address as Address);
-      setTokenDecimals(currencies?.[0]?.decimals);
-      setTokenSymbol(currencies?.[0]?.symbol);
-      setMounted(true);
-    }
-  }, [currencies, mounted]);
+    setTokenAddress(currencies?.[0]?.address as Address);
+    setTokenDecimals(currencies?.[0]?.decimals);
+    setTokenSymbol(currencies?.[0]?.symbol);
+  }, []);
 
   const [customCurrencyEnabled, setCustomCurrencyEnabled] = React.useState<boolean>(false);
 
@@ -104,7 +90,7 @@ const CreateOffer = () => {
     } else {
       setTokenAddress(selectedCurrency?.address as Address);
     }
-  }, [customCurrencyEnabled, customTokenAddress, selectedCurrency]);
+  }, [chainConfig, customCurrencyEnabled, customTokenAddress, selectedCurrency]);
 
   const { setSelectedChain } = useSwitchChainContext();
   useEffect(() => {
@@ -113,29 +99,47 @@ const CreateOffer = () => {
   }, [chainConfig, setSelectedChain]);
 
   useEffect(() => {
-    const currencies = Object.entries(chainConfig?.smartContracts?.currencies || {}) as any;
+    const updateCurrencyInfos = async () => {
+      const currencies = Object.entries(chainConfig?.smartContracts?.currencies || {}) as any;
 
-    const [, { symbol, decimals }] = currencies.find(
-      ([, value]) => value?.address?.toLowerCase() === tokenAddress?.toLowerCase()
-    ) ?? ["", {}];
+      const [, { symbol, decimals }] = currencies.find(
+        ([, value]) => value?.address?.toLowerCase() === tokenAddress?.toLowerCase()
+      ) ?? ["", {}];
 
-    if (symbol && decimals) {
-      setTokenSymbol(symbol);
-      setTokenDecimals(decimals);
-    } else {
-      if (customTokenSymbol) {
-        setTokenSymbol(customTokenSymbol);
+      if (symbol && decimals) {
+        setTokenSymbol(symbol);
+        setTokenDecimals(decimals);
       } else {
-        setTokenSymbol(null);
-      }
+        let customTokenSymbol;
+        let customTokenDecimals;
+        try {
+          const sdk = new ThirdwebSDK(chainConfig?.network);
 
-      if (customTokenDecimals) {
-        setTokenDecimals(customTokenDecimals);
-      } else {
-        setTokenDecimals(null);
+          const tokenContractAsync = await sdk.getContract(tokenAddress, ERC20ABI);
+
+          if (tokenContractAsync) {
+            customTokenSymbol = await tokenContractAsync.call("symbol");
+            customTokenDecimals = await tokenContractAsync.call("decimals");
+          }
+        } catch (e) {
+          // console.error("error getting token symbol", e)
+        }
+
+        if (customTokenSymbol) {
+          setTokenSymbol(customTokenSymbol);
+        } else {
+          setTokenSymbol(null);
+        }
+
+        if (customTokenDecimals) {
+          setTokenDecimals(customTokenDecimals);
+        } else {
+          setTokenDecimals(null);
+        }
       }
-    }
-  }, [chainConfig, tokenAddress, customTokenDecimals, customTokenSymbol]);
+    };
+    updateCurrencyInfos();
+  }, [chainConfig, tokenAddress]);
 
   const address = useAddress();
 
@@ -410,7 +414,10 @@ const CreateOffer = () => {
         await fetch(`${relayerURL}/api/revalidate`, {
           method: "POST",
           body: JSON.stringify({
-            tags: [`${chainId}-adOffers`, `${chainId}-userAddress-${userMinterAddress}`]
+            tags: [
+              `${chainConfig.chainId}-adOffers`,
+              `${chainConfig.chainId}-userAddress-${userMinterAddress}`
+            ]
           })
         });
       }
@@ -486,6 +493,7 @@ const CreateOffer = () => {
               website or another location of your choice. You retain full control to approve or
               reject any ads.
             </p>
+            <ChainSelector setChainConfig={setChainConfig} />
           </div>
         </div>
         <CarouselForm
