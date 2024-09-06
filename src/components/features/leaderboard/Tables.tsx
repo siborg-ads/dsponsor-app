@@ -9,6 +9,8 @@ import formatLongAddress from "@/utils/addresses/formatLongAddress";
 import { useAddress } from "@thirdweb-dev/react";
 import { getAddress } from "ethers/lib/utils";
 import config from "@/config/config";
+import { ChainObject } from "@/types/chain";
+import ChainSelector from "../chain/ChainSelector";
 
 const renderTable = (data, columns, userAddress) => {
   if (!data || data.length === 0 || !Array.isArray(data)) {
@@ -51,10 +53,11 @@ const Tables = ({ activity }) => {
 
   const [leaderboards, setLeaderboards] = useState({});
 
-  const filteredActivity = activity[0];
+  const [chainConfig, setChainConfig] = useState<ChainObject>(Object.entries(config)[0][1]);
 
-  const chainId = filteredActivity?.chainId;
-  const chainExplorer = chainId && config[chainId]?.explorerBaseURL;
+  const filteredActivity = activity.find((a) => Number(a.chainId) === Number(chainConfig.chainId));
+
+  const chainExplorer = chainConfig.explorerBaseURL;
 
   const address = useAddress();
 
@@ -158,6 +161,8 @@ const Tables = ({ activity }) => {
       <h1 className="text-4xl font-medium text-center pt-8 pb-4 mb-4 dark:text-white">
         Leaderboard Rankings
       </h1>
+      <ChainSelector setChainConfig={setChainConfig} />
+      <div className="mb-8 grid grid-cols-2 md:grid-cols-3 gap-4 flex-wrap items-center justify-between"></div>
       <div className="mb-8 grid grid-cols-2 md:grid-cols-3 gap-4 flex-wrap items-center justify-between">
         <Cards activity={filteredActivity} />
       </div>
