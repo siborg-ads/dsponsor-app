@@ -160,7 +160,7 @@ const AdSpaceNumberSelector = ({ selectedNumber, handleNumberChange }) => (
         <label htmlFor="numberSelect">Select a number</label>
         <ModalHelper
           title="Number of ad spaces"
-          body="Specify the number of items you want to sell..."
+          body="Specify the number of tokens you want to sell."
         />
       </div>
       <select
@@ -329,8 +329,8 @@ const OfferType = ({
         <div className="flex flex-col w-full items-center border-b-1 border-primaryPurple shadow-2xl pb-2">
           <h3 className="mb-2 text-jacarta-100"> OFFER TYPE & AVAILABILITY</h3>
           <p className="dark:text-white text-center">
-            Choose the type of ad space suitable for your media and the number of spaces available
-            for purchase.
+            Choose the type of ad space that suits your media and specify the number of tokenized
+            spaces available for purchase.
           </p>
         </div>
         <AdSpaceSelector

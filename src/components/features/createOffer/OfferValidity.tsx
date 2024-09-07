@@ -119,10 +119,10 @@ const OfferValidity = ({
                 Validity period<span className="text-red">*</span>
               </label>
               <p className="dark:text-jacarta-100 text-jacarta-100 text-2xs mb-3">
-                Set the validity period for this listing associated with your offer. During this
-                period, the acquired NFT grants the right to display an advertisement in the
-                reserved space on your platform. The length of this validity period may influence
-                the resale value of these NFTs on the secondary market.
+                Set the validity period for your offer. During this time, the acquired NFT grants
+                the right to display an advertisement in the reserved space on your platform. The
+                duration of this period may affect the resale value of these NFTs on the secondary
+                market.
               </p>
               <div className="flex gap-4 items-center text-jacarta-900 dark:text-white mb-3">
                 {renderDatePicker(startDate, setStartDate, "Start date", {
