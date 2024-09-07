@@ -19,7 +19,7 @@ const onAuctionCondition = (auction, mint, direct) => {
 
 const MarketplaceComponent = ({ auctions, setAllTokens, allTokens, isAuctionsLoading }) => {
   const [filterName, setFilterName] = useState("");
-  const [sortOption, setSortOption] = useState("Ending soon");
+  const [sortOption, setSortOption] = useState("Price: low to high");
   const [filterOption, setFilterOption] = useState("All tokens");
   const [isInformationHovered, setIsInformationHovered] = useState(false);
 
