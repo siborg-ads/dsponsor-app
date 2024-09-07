@@ -60,9 +60,7 @@ const OfferName = ({
 const Header = () => {
   return (
     <React.Fragment>
-      <h3 className="px-4 py-2 mb-2 text-jacarta-100 bg-primaryPurple rounded-md">
-        Name & Description
-      </h3>
+      <h3 className="mb-2 text-jacarta-100"> Name & Description</h3>
       <p className="pt-2 text-center dark:text-white">
         Provide offer&apos;s name and a brief description.
       </p>
