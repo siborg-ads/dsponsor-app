@@ -351,6 +351,7 @@ export default function Header() {
             <ConnectWallet theme={"dark"} modalSize={"wide"} />
           )}
           <hr className="dark:bg-jacarta-800 bg-jacarta-100 my-5 h-px border-0" />
+          {/*
           <div className="flex items-center justify-center space-x-5">
             <Link href="#" className="group">
               <svg
@@ -422,7 +423,9 @@ export default function Header() {
               </svg>
             </Link>
           </div>
+           */}
         </div>
+
         {/* mt-10 w-full lg:hidden */}
       </div>
       {/* End mobile menu and it's other materials */}
