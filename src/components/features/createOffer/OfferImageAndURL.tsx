@@ -80,7 +80,7 @@ const OfferImageAndURL = ({
 
 const StepHeader = ({ title }) => (
   <div className="flex flex-col w-full items-center border-b-1 border-primaryPurple shadow-2xl pb-2">
-    <h3 className="mb-2 text-jacarta-100 bg-primaryPurple rounded-md px-4 py-2">{title}</h3>
+    <h3 className="mb-2 text-jacarta-100">{title}</h3>
     <p className="text-center pt-2 dark:text-white">
       Provide the landing page URL, an image, and the terms that represent the offer.
     </p>

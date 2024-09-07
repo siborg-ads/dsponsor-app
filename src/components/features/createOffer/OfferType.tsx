@@ -327,9 +327,7 @@ const OfferType = ({
           {currentSlide + 1}/{numSteps}
         </div>
         <div className="flex flex-col w-full items-center border-b-1 border-primaryPurple shadow-2xl pb-2">
-          <h3 className="mb-2 text-jacarta-100 font-semibold bg-primaryPurple rounded-md px-4 py-2">
-            OFFER TYPE & AVAILABILITY
-          </h3>
+          <h3 className="mb-2 text-jacarta-100"> OFFER TYPE & AVAILABILITY</h3>
           <p className="dark:text-white text-center">
             Choose the type of ad space suitable for your media and the number of spaces available
             for purchase.
