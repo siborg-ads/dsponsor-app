@@ -1,5 +1,5 @@
 import knownAddresses from "@/data/knownAddresses";
-import { Address } from "thirdweb";
+import { Address, getAddress } from "thirdweb";
 
 /**
  * Checks if a given address is in the known addresses list and returns a formatted string
@@ -30,7 +30,7 @@ import { Address } from "thirdweb";
  *                                        to their corresponding identity information (e.g., name).
  */
 export default function displayOrCheckKnownAddress(address: Address): string {
-  const known = knownAddresses[address];
+  const known = address ? knownAddresses[getAddress(address)] : address;
 
   if (known) {
     return `${known.name} ${address.slice(0, 6)}...${address.slice(-4)} - ✅ Identity verified by SiBorg Team`;

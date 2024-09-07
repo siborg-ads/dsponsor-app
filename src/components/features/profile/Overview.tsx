@@ -1,6 +1,7 @@
 import React from "react";
 import OverviewCard from "@/components/features/profile/OverviewCard";
 import { ArrowPathIcon } from "@heroicons/react/20/solid";
+import displayOrCheckKnownAddress from "@/utils/addresses/displayOrCheckKnownAddress";
 
 const Overview = ({ userData, ownedTokens, isLoading, manageAddress }) => {
   const overviewCards = [
@@ -37,7 +38,7 @@ const Overview = ({ userData, ownedTokens, isLoading, manageAddress }) => {
         <div className="flex items-end gap-4">
           <h2 className="text-white font-semibold text-xl md:text-2xl">Overview</h2>
           <span className="md:block text-jacarta-100 text-xs md:text-sm inline-flex items-center gap-1">
-            {manageAddress}
+            {displayOrCheckKnownAddress(manageAddress)}
           </span>
           {/*}
           <span className="md:hidden text-jacarta-100 text-xs md:text-sm inline-flex items-center gap-1">
