@@ -1,5 +1,6 @@
 import config from "@/config/config";
 import { Address } from "@thirdweb-dev/sdk";
+import { executeQuery } from "@/utils/graphql/helper/executeQuery";
 
 interface AdParameter {
   adParameter: {
@@ -157,3 +158,166 @@ export const fetchAllTokensProfile = async (ownerAddress: Address, chainId: numb
 
   return resultMappedData;
 };
+
+/*
+export const fetchAllTokensProfile = async (ownerAddress: Address, chainId: number) => {
+  const relayerURL = config[chainId].relayerURL;
+
+  const path = new URL(`${relayerURL}/api/${chainId}/graph`);
+
+  const GET_DATA = `
+    query OwnedTokens($ownerAddress: Bytes!) {
+      adOffers(
+        first: 1000
+      ) {
+        id
+        disable
+        metadataURL        
+        name
+        initialCreator
+        validators
+        admins
+        creationTimestamp # data (unix time)
+        adParameters(where: { enable: true }) {
+          enable
+          adParameter {
+            id # adParameter value, ex: imageURL-320x50 or linkURL
+            base # ex: imageURL or linkURL
+            variants # ex: ["320x50"]
+          }
+        }
+        nftContract {
+          id # DSponsorNFT smart contract address
+          allowList
+          maxSupply
+          royalty {
+            bps
+            receiver
+          }
+          prices {
+            currency # ERC20 smart contract
+            amount # wei, mind decimals() function to transform in human readable value !
+            enabled
+          }
+          tokens(
+            where: { owner: $ownerAddress }
+            first: 1000            
+          ) {
+            tokenId
+            setInAllowList
+            marketplaceListings(
+              first: 1000
+              orderBy: lastUpdateTimestamp
+              orderDirection: desc
+              where: { status: CREATED }
+           ) {
+              id # listingId
+              lister
+              quantity
+              listingType
+              startTime
+              endTime
+              currency
+              buyoutPricePerToken
+              reservePricePerToken
+              status
+              bids(orderBy: totalBidAmount, orderDirection: desc, first: 1) {                  
+                  amountSentToCreator
+                  creatorRecipient
+                  amountSentToProtocol
+                  amountSentToSeller
+                  sellerRecipient
+                  ####
+                  creationTxHash
+                  creationTimestamp
+                  bidder
+                  totalBidAmount # current bid / new price per token * quantity
+                  paidBidAmount # how much bidder paid
+                  refundBonus
+                  refundAmount # refund (outbid case)
+                  refundProfit # how much bidder gains from refund
+                  currency
+                  status
+              }
+            }
+            nftContract {
+              id
+              allowList
+              maxSupply
+              royalty {
+                bps
+                receiver
+              }
+              prices {
+                currency
+                amount
+                enabled
+              }            
+            }
+            mint {
+              tokenData
+              blockTimestamp
+              totalPaid
+              currency
+            }       
+            currentProposals {
+              adOffer {
+                id
+              }
+              adParameter {
+                id
+                base
+                variants
+              }
+              acceptedProposal {
+                id
+                status
+                data
+                creationTimestamp
+              }
+              pendingProposal {
+                id
+                status
+                data
+                creationTimestamp
+              }
+              rejectedProposal {
+                id
+                status
+                data
+                rejectReason
+                creationTimestamp
+              }
+            }
+          }
+        }
+      }
+    }
+  `;
+
+  const variables = {
+    ownerAddress
+  };
+  const options = {
+    populate: true,
+    next: { tags: [`${chainId}-userAddress-${ownerAddress}`] }
+  };
+  const response = await executeQuery(path.href, GET_DATA, variables, options);
+
+  const data = response.adOffers as ResponseType[];
+
+  const resultMappedData = data
+    ?.filter((item) => {
+      return item.nftContract.tokens.length > 0;
+    })
+    .map((item) => {
+      const combinedData = {
+        ...item,
+        chainConfig: config[chainId]
+      };
+      return combinedData;
+    });
+
+  return resultMappedData;
+};
+*/

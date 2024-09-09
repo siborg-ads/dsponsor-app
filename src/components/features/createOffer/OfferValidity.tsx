@@ -7,7 +7,7 @@ import { Currency } from "@/components/layout/CreateOffer";
 import { Address } from "thirdweb";
 import formatAndRoundPrice from "@/utils/prices/formatAndRound";
 
-const ConditionalRender = ({ condition, children }) => (condition ? <div>{children}</div> : null);
+// const ConditionalRender = ({ condition, children }) => (condition ? <div>{children}</div> : null);
 
 const OfferValidity = ({
   stepsRef,
@@ -50,7 +50,7 @@ const OfferValidity = ({
   tokenAddress: Address;
   customTokenAddress: Address | undefined;
   setCustomTokenAddress: React.Dispatch<React.SetStateAction<Address | undefined>>;
-  selectedCurrency: Currency;
+  selectedCurrency: Currency | undefined;
   setSelectedCurrency: React.Dispatch<React.SetStateAction<Currency | undefined>>;
   customCurrencyEnabled: boolean;
   setCustomCurrencyEnabled: React.Dispatch<React.SetStateAction<boolean>>;
@@ -167,7 +167,7 @@ const OfferValidity = ({
                 <div className="flex gap-4 w-full">
                   <select
                     id="currency"
-                    value={selectedCurrency?.address}
+                    value={selectedCurrency?.address ? selectedCurrency?.address : "custom"}
                     onChange={handleCurrencyChange}
                     className="bg-jacarta-800 min-w-[110px] border-jacarta-100 hover:ring-primaryPurple/10 focus:ring-primaryPurple dark:border-primaryPurple dark:placeholder:text-jacarta-100 w-full rounded-lg py-3 px-5 hover:ring-2 dark:text-white"
                   >
@@ -181,7 +181,7 @@ const OfferValidity = ({
                   {customCurrencyEnabled && (
                     <Input
                       type="text"
-                      value={customTokenAddress}
+                      value={`${customTokenAddress ? customTokenAddress : ""}`}
                       onChange={handleCustomContractChange}
                       placeholder="Contract address"
                       className={`${customTokenAddress ? "border-green" : "border-red"}`}

@@ -3,7 +3,7 @@ import contractABI from "@/abi/dsponsorAdmin.json";
 import { Sepolia } from "@thirdweb-dev/chains";
 import { ChainObject } from "@/types/chain";
 
-const devEthereumSepolia: ChainObject = {
+const sepoliaConfig: ChainObject = {
   chainId: 11155111,
   chainName: "sepolia",
   gaslessBalanceThreshold: "1000000000000000", // 0.001 ETH
@@ -69,4 +69,4 @@ const devEthereumSepolia: ChainObject = {
   }
 };
 
-export default devEthereumSepolia;
+export default sepoliaConfig;

@@ -10,7 +10,7 @@ export interface ChainsConfig {
 export interface ChainObject {
   chainId: number;
   chainName: string;
-  gaslessBalanceThreshold: string;
+  gaslessBalanceThreshold?: string;
   network: NetworkType;
   chainObject: any;
   logoURL: string;
@@ -43,11 +43,11 @@ export interface ChainObject {
   };
   features: {
     openZeppelinDefender: {
-      relayerURL: string;
+      relayerURL?: string;
     };
     crossmint: {
       enabled: boolean;
-      config: {
+      config?: {
         projectId: string;
         priceLimit: number;
         bidCollectionId: string;

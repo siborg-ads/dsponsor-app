@@ -16,6 +16,7 @@ const Cards = ({ activity }) => {
 
   return (
     <>
+      {/*
       <div
         className="flex p-[1px] bg-primaryBlack hover:-translate-y-1 duration-300 rounded-lg"
         style={{
@@ -53,6 +54,8 @@ const Cards = ({ activity }) => {
           </div>
         </div>
       </div>
+
+     
       <div
         className="flex p-[1px] bg-primaryBlack hover:-translate-y-1 duration-300 rounded-lg"
         style={{
@@ -79,14 +82,17 @@ const Cards = ({ activity }) => {
               </PopoverContent>
             </Popover>
           </div>
+          
           <div className="flex flex-col gap-2 items-center justify-center sm:flex sm:flex-wrap">
             <p className="dark:text-white font-medium">Total Rewards</p>
             <span className="text-jacarta-100 font-semibold text-ellipsis whitespace-nowrap overflow-hidden">
               ${activity?.totalBidRefundUSDCAmount}
             </span>
           </div>
+          
         </div>
       </div>
+      */}
       <div
         className="flex p-[1px] bg-primaryBlack hover:-translate-y-1 duration-300 rounded-lg"
         style={{
@@ -106,7 +112,9 @@ const Cards = ({ activity }) => {
               </PopoverTrigger>
               <PopoverContent className="bg-secondaryBlack shadow border border-white border-opacity-10">
                 <div className="px-1 py-2">
-                  <div className="text-small">This is the total amount spent in all auctions</div>
+                  <div className="text-small">
+                    This is the total amount spent in all sales (mints and listings)
+                  </div>
                 </div>
               </PopoverContent>
             </Popover>
