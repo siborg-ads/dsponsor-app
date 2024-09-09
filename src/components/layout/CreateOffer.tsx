@@ -76,12 +76,13 @@ const CreateOffer = () => {
   const [tokenSymbol, setTokenSymbol] = useState<string | null>(null);
   const [tokenAddress, setTokenAddress] = useState<Address>("0x");
   const [customTokenAddress, setCustomTokenAddress] = useState<Address | undefined>(undefined);
-  const [selectedCurrency, setSelectedCurrency] = useState<Currency>(currencies?.[0]);
+  const [selectedCurrency, setSelectedCurrency] = useState<Currency | undefined>(currencies?.[0]);
 
   useEffect(() => {
     setTokenAddress(currencies?.[0]?.address as Address);
     setTokenDecimals(currencies?.[0]?.decimals);
     setTokenSymbol(currencies?.[0]?.symbol);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const [customCurrencyEnabled, setCustomCurrencyEnabled] = React.useState<boolean>(false);
@@ -121,7 +122,7 @@ const CreateOffer = () => {
           (c) => c.address.toLowerCase() === selectedCurrency?.address.toLowerCase()
         );
 
-        if (tokenAddrIsInCurrentChain) {
+        if (tokenAddrIsInCurrentChain && selectedCurrency) {
           setTokenAddress(selectedCurrency?.address as Address);
           setTokenDecimals(selectedCurrency?.decimals);
           setTokenSymbol(selectedCurrency?.symbol);
@@ -130,21 +131,36 @@ const CreateOffer = () => {
           for (const currenciesInAnotherChain of allCurrencies) {
             const c: any[] = Object.entries(currenciesInAnotherChain);
             tokenAddrInAnotherChain = c.find(
-              ([_, cObj]) => cObj.address.toLowerCase() === selectedCurrency?.address.toLowerCase()
+              // eslint-disable-next-line
+              ([_, cObj]) => {
+                return cObj.address.toLowerCase() === selectedCurrency?.address.toLowerCase();
+              }
             );
             if (tokenAddrInAnotherChain) break;
           }
 
           if (tokenAddrInAnotherChain) {
-            setTokenAddress(
-              chainConfig.smartContracts.currencies[tokenAddrInAnotherChain[0]].address as Address
-            );
-            setTokenDecimals(
-              chainConfig.smartContracts.currencies[tokenAddrInAnotherChain[0]].decimals
-            );
-            setTokenSymbol(
-              chainConfig.smartContracts.currencies[tokenAddrInAnotherChain[0]].symbol
-            );
+            if (
+              chainConfig.smartContracts.currencies[tokenAddrInAnotherChain[0]]?.address &&
+              chainConfig.smartContracts.currencies[tokenAddrInAnotherChain[0]]?.decimals &&
+              chainConfig.smartContracts.currencies[tokenAddrInAnotherChain[0]]?.symbol
+            ) {
+              setSelectedCurrency(
+                chainConfig.smartContracts.currencies[tokenAddrInAnotherChain[0]]
+              );
+              setTokenAddress(
+                chainConfig.smartContracts.currencies[tokenAddrInAnotherChain[0]].address as Address
+              );
+              setTokenDecimals(
+                chainConfig.smartContracts.currencies[tokenAddrInAnotherChain[0]].decimals
+              );
+              setTokenSymbol(
+                chainConfig.smartContracts.currencies[tokenAddrInAnotherChain[0]].symbol
+              );
+            } else {
+              setSelectedCurrency(undefined);
+              setCustomCurrencyEnabled(true);
+            }
           }
         }
       }

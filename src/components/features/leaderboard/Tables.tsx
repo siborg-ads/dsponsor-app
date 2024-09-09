@@ -65,7 +65,7 @@ const Tables = ({ activity }) => {
     setLeaderboards({
       topPoints: activityToTopPoints(filteredActivity?.rankings, address),
       // topHolders: activityToTopHolders(filteredActivity?.rankings, address),
-      topRewarded: activityToTopRewarded(filteredActivity?.rankings, address),
+      // topRewarded: activityToTopRewarded(filteredActivity?.rankings, address),
       topSpenders: activityToHighestTransactions(filteredActivity?.lastActivities, address)
     });
   }, [filteredActivity, address]);
@@ -152,8 +152,8 @@ const Tables = ({ activity }) => {
 
   const tabItem = [
     { id: 1, text: "Top Boxes", icon: "activity" },
-    { id: 2, text: "Top Rewarded", icon: "activity" },
-    { id: 3, text: "Top Spenders", icon: "activity" }
+    // { id: 2, text: "Top Rewarded", icon: "activity" },
+    { id: 3, text: "Top Transactions", icon: "activity" }
   ];
 
   return (
@@ -163,9 +163,11 @@ const Tables = ({ activity }) => {
       </h1>
       <ChainSelector setChainConfig={setChainConfig} />
       <div className="mb-8 grid grid-cols-2 md:grid-cols-3 gap-4 flex-wrap items-center justify-between"></div>
-      <div className="mb-8 grid grid-cols-2 md:grid-cols-3 gap-4 flex-wrap items-center justify-between">
+      {/*
+      <div className="mb-8 grid grid-cols-1 md:grid-cols-3 gap-4 flex-wrap items-center justify-between">
         <Cards activity={filteredActivity} />
       </div>
+      */}
       <div className="hide-scrollbar overflow-x-auto">
         {/* <!-- Tabs Nav --> */}
         <Tabs className="tabs hide-scrollbar">
@@ -195,9 +197,11 @@ const Tables = ({ activity }) => {
               <div className="max-w-2xl text-center mx-auto">
                 {key === "topPoints" && (
                   <p className="text-jacarta-100 text-sm md:text-base mb-4">
-                    Each transaction where a sale or auction closes rewards the seller, buyer, and
-                    referrer based on the amount paid. Here are the profiles with the highest
-                    rewards.
+                    Each transaction in <b>WETH</b> {/*, <b>USDC</b>, or <b>MODE</b> */} where a
+                    sale or auction is completed rewards in &quot;Boxes&quot; the seller, buyer, and
+                    referrer based on the amount paid. Below are the profiles with the highest
+                    rewards. The more you spend, the more &quot;Boxes&quot; you earn.
+                    &quot;Boxes&quot; may be subject to an airdrop.
                   </p>
                 )}
 
@@ -217,9 +221,9 @@ const Tables = ({ activity }) => {
 
                 {key === "topSpenders" && (
                   <p className="text-jacarta-100 text-sm md:text-base mb-4">
-                    Each transaction where a sale or auction closes rewards the seller, buyer, and
-                    referrer based on the amount paid. Here are the transactions with the highest
-                    rewards.
+                    Here are the transactions with the highest amounts spent in <b>WETH</b> and the
+                    number of &quot;Boxes&quot; earned. The more you spend, the more
+                    &quot;Boxes&quot; you earn. &quot;Boxes&quot; may be subject to an airdrop.
                   </p>
                 )}
               </div>

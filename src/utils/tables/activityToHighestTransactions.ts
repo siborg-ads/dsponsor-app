@@ -78,15 +78,19 @@ const activityToTopHolders = (activities: Activity[], userAddress?: string): For
         refAddrDisplayAddr: activity.refAddr
       }));
   }
-
+  /*
   const userActivity = [...activities]?.filter(
     (item) => getAddress(item.spender) === getAddress(userAddress)
   );
+  */
   const otherActivity = activities;
 
   const sortedOtherActivity = [...otherActivity]?.sort((a, b) => b.points - a.points);
 
-  const sortedActivity = [...userActivity, ...sortedOtherActivity];
+  const sortedActivity = [
+    // ...userActivity,
+    ...sortedOtherActivity
+  ];
 
   return [...sortedActivity]?.map((activity) => ({
     type: toDisplayType(activity.type),

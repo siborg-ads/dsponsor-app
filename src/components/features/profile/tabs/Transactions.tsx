@@ -71,8 +71,10 @@ const Transactions = ({ manageAddress, lastActivities, isLoading }) => {
       </div>
 
       <p className="text-jacarta-100 text-sm">
-        Each transaction where a sale or auction closes rewards the seller, buyer, and referrer
-        based on the amount paid. Here are the transactions for each role that reward this profile.
+        Each transaction in <b>WETH</b> {/*, <b>USDC</b>, or <b>MODE</b> */} where a sale or auction
+        is completed rewards the seller, buyer, and referrer with &quot;Boxes&quot; based on the
+        amount paid. Below are the transactions for each role that rewarded this profile.
+        &quot;Boxes&quot; may be eligible for an airdrop.
       </p>
 
       <div className="overflow-x-auto">
