@@ -39,7 +39,7 @@ const ConditionModal = ({ title, body, onConfirm, onCancel, isVisible, setIsVisi
               onChange={(e) => setChecked(e.target.checked)}
               color="primary"
             >
-              J'ai bien compris
+              J&apos;ai bien compris
             </Checkbox>
           </ModalBody>
           <ModalFooter>

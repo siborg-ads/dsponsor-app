@@ -1,6 +1,5 @@
-import React, { SetStateAction, useEffect, useMemo, useState } from "react";
+import React, { SetStateAction, useEffect, useState } from "react";
 import { useContract, useContractRead, useContractWrite } from "@thirdweb-dev/react";
-import config from "@/config/config";
 import { toast } from "react-toastify";
 import { parseUnits, formatUnits } from "ethers/lib/utils";
 import * as Switch from "@radix-ui/react-switch";
@@ -45,7 +44,6 @@ const Payments = ({ offer, chainConfig }: { offer: any; chainConfig: ChainObject
   const [initialReceiver, setInitialReceiver] = useState<Address | null>(null);
   const [currentOwner, setCurrentOwner] = useState<Address | null>(null);
   const [initialOwner, setInitialOwner] = useState<Address | null>(null);
-  const [isValidOwner, setIsValidOwner] = useState(true);
   const [currency, setCurrency] = useState<Address | null>(null);
   const [currencySymbol, setCurrencySymbol] = useState<string | null>(null);
   const [formattedAmountBN, setFormattedAmountBN] = useState<BigNumber | undefined>(undefined);
@@ -292,7 +290,7 @@ const Payments = ({ offer, chainConfig }: { offer: any; chainConfig: ChainObject
   };
 
   const handleTransferOwner = async () => {
-    if (!isValidOwner || !currentOwner || !isAddress(currentOwner)) {
+    if (!currentOwner || !isAddress(currentOwner)) {
       toast("Please enter a valid owner address", { type: "error" });
       throw new Error("Please enter a valid owner address");
     }
@@ -622,11 +620,6 @@ const Payments = ({ offer, chainConfig }: { offer: any; chainConfig: ChainObject
         >
           Set to current owner
         </button>
-        {!isValidOwner && owner !== null && (
-          <p className="flex items-center gap-2 mt-2 text-sm text-red">
-            Please enter a valid address
-          </p>
-        )}
       </div>
       <ConditionModal
         title="Transfer Ownership"
@@ -653,7 +646,7 @@ const Payments = ({ offer, chainConfig }: { offer: any; chainConfig: ChainObject
 
           setIsModalVisible(true);
         }}
-        isDisabled={!isValidOwner || !nftContractAddress}
+        isDisabled={!nftContractAddress}
         contractAddress={nftContractAddress as Address}
         defaultText="Transfer Ownership"
       />
