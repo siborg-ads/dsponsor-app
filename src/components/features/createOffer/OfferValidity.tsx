@@ -7,7 +7,7 @@ import { Currency } from "@/components/layout/CreateOffer";
 import { Address } from "thirdweb";
 import formatAndRoundPrice from "@/utils/prices/formatAndRound";
 
-const ConditionalRender = ({ condition, children }) => (condition ? <div>{children}</div> : null);
+// const ConditionalRender = ({ condition, children }) => (condition ? <div>{children}</div> : null);
 
 const OfferValidity = ({
   stepsRef,
@@ -50,7 +50,7 @@ const OfferValidity = ({
   tokenAddress: Address;
   customTokenAddress: Address | undefined;
   setCustomTokenAddress: React.Dispatch<React.SetStateAction<Address | undefined>>;
-  selectedCurrency: Currency;
+  selectedCurrency: Currency | undefined;
   setSelectedCurrency: React.Dispatch<React.SetStateAction<Currency | undefined>>;
   customCurrencyEnabled: boolean;
   setCustomCurrencyEnabled: React.Dispatch<React.SetStateAction<boolean>>;
@@ -119,10 +119,10 @@ const OfferValidity = ({
                 Validity period<span className="text-red">*</span>
               </label>
               <p className="dark:text-jacarta-100 text-jacarta-100 text-2xs mb-3">
-                Set the validity period for this listing associated with your offer. During this
-                period, the acquired NFT grants the right to display an advertisement in the
-                reserved space on your platform. The length of this validity period may influence
-                the resale value of these NFTs on the secondary market.
+                Set the validity period for your offer. During this time, the acquired NFT grants
+                the right to display an advertisement in the reserved space on your platform. The
+                duration of this period may affect the resale value of these NFTs on the secondary
+                market.
               </p>
               <div className="flex gap-4 items-center text-jacarta-900 dark:text-white mb-3">
                 {renderDatePicker(startDate, setStartDate, "Start date", {
@@ -142,13 +142,15 @@ const OfferValidity = ({
               >
                 Unit selling price <span className="text-red">*</span>
               </label>
-              <ConditionalRender condition={["USDT", "USDC"].includes(selectedCurrency?.symbol)}>
-                <p className="dark:text-jacarta-100 text-jacarta-100 text-2xs mb-3">
-                  USD payment means you&apos;ll receive USD tokens (1 USDC = 1$). You&apos;ll be
-                  able to cash out via wire transfer with a service like MtPelerin. You can change
-                  the pricing later.
-                </p>
-              </ConditionalRender>
+              {/*
+                <ConditionalRender condition={["USDT", "USDC"].includes(selectedCurrency?.symbol)}>
+                  <p className="dark:text-jacarta-100 text-jacarta-100 text-2xs mb-3">
+                    USD payment means you&apos;ll receive USD tokens (1 USDC = 1$). You&apos;ll be
+                    able to cash out via wire transfer with a service like MtPelerin. You can change
+                    the pricing later.
+                  </p>
+                </ConditionalRender>
+             */}
               <div className="flex flex-wrap gap-4 items-center text-jacarta-900 dark:text-white">
                 <Input
                   id="unit-price"
@@ -165,7 +167,7 @@ const OfferValidity = ({
                 <div className="flex gap-4 w-full">
                   <select
                     id="currency"
-                    value={selectedCurrency?.address}
+                    value={selectedCurrency?.address ? selectedCurrency?.address : "custom"}
                     onChange={handleCurrencyChange}
                     className="bg-jacarta-800 min-w-[110px] border-jacarta-100 hover:ring-primaryPurple/10 focus:ring-primaryPurple dark:border-primaryPurple dark:placeholder:text-jacarta-100 w-full rounded-lg py-3 px-5 hover:ring-2 dark:text-white"
                   >
@@ -179,7 +181,7 @@ const OfferValidity = ({
                   {customCurrencyEnabled && (
                     <Input
                       type="text"
-                      value={customTokenAddress}
+                      value={`${customTokenAddress ? customTokenAddress : ""}`}
                       onChange={handleCustomContractChange}
                       placeholder="Contract address"
                       className={`${customTokenAddress ? "border-green" : "border-red"}`}
@@ -189,9 +191,9 @@ const OfferValidity = ({
               </div>
               {tokenSymbol ? (
                 <p className="dark:text-jacarta-100 text-jacarta-100 text-2xs mt-3">
-                  You&apos;ll earn up to {selectedUnitPrice} {tokenSymbol}. As DSponsor charges a
-                  fee of 4%, sponsors will pay {formatAndRoundPrice(selectedUnitPrice * 1.04)}{" "}
-                  {tokenSymbol}.
+                  You&apos;ll earn {selectedUnitPrice} {tokenSymbol} per minted token.
+                  <br /> Since the protocol charges a 4% fee, sponsors will pay{" "}
+                  {formatAndRoundPrice(selectedUnitPrice * 1.04)} {tokenSymbol}.
                 </p>
               ) : (
                 <p className="text-red text-2xs mt-3">The currency is not valid.</p>
@@ -205,9 +207,9 @@ const OfferValidity = ({
                 Royalties <span className="text-red">*</span>
               </label>
               <p className="dark:text-jacarta-100 text-jacarta-100 text-2xs mb-3">
-                Sponsors can sell an ad space ownership on the marketplace. Define the fee you want
-                to get from secondary sales. Sponsors might refuse to buy an ad space if your
-                royalty fee is too high. You can change this value later.
+                Sponsors can sell ad space ownership on the marketplace. Define the fee you want to
+                receive from secondary sales. Keep in mind that sponsors may refuse to buy ad space
+                if your royalty fee is too high. You can change this value later.
               </p>
               <div className="flex gap-4 items-center text-jacarta-900 dark:text-white">
                 <Input

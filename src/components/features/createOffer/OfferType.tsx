@@ -153,14 +153,14 @@ const AdSpaceNumberSelector = ({ selectedNumber, handleNumberChange }) => (
       Number of ads to display for this offer <span className="text-red">*</span>
     </label>
     <p className="dark:text-jacarta-100 text-2xs mb-3">
-      Warning: DSponsor works with a fixed quantity of ads per location...
+      {/*  Warning: DSponsor works with a fixed quantity of ads per location... */}
     </p>
     <div className="flex gap-4 justify-center items-center w-full text-jacarta-900 dark:text-white">
       <div className="flex gap-2 items-center justify-center">
         <label htmlFor="numberSelect">Select a number</label>
         <ModalHelper
           title="Number of ad spaces"
-          body="Specify the number of items you want to sell..."
+          body="Specify the number of tokens you want to sell."
         />
       </div>
       <select
@@ -327,12 +327,10 @@ const OfferType = ({
           {currentSlide + 1}/{numSteps}
         </div>
         <div className="flex flex-col w-full items-center border-b-1 border-primaryPurple shadow-2xl pb-2">
-          <h3 className="mb-2 text-jacarta-100 font-semibold bg-primaryPurple rounded-md px-4 py-2">
-            OFFER TYPE & AVAILABILITY
-          </h3>
+          <h3 className="mb-2 text-jacarta-100"> OFFER TYPE & AVAILABILITY</h3>
           <p className="dark:text-white text-center">
-            Choose the type of ad space suitable for your media and the number of spaces available
-            for purchase.
+            Choose the type of ad space that suits your media and specify the number of tokenized
+            spaces available for purchase.
           </p>
         </div>
         <AdSpaceSelector

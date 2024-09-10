@@ -2,16 +2,12 @@ import React, { useState, useEffect } from "react";
 import { getAddress } from "ethers/lib/utils";
 import { DateRangePicker } from "@nextui-org/date-picker";
 import Link from "next/link";
-import { useChainContext } from "@/hooks/useChainContext";
 import { Loader2Icon } from "lucide-react";
 
 const Transactions = ({ manageAddress, lastActivities, isLoading }) => {
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
   const [filteredLastActivities, setFilteredLastActivities] = useState<any[]>([]);
-
-  const { currentChainObject } = useChainContext();
-  const chainExplorer = currentChainObject?.explorerBaseURL;
 
   useEffect(() => {
     if (startDate && endDate) {
@@ -75,14 +71,19 @@ const Transactions = ({ manageAddress, lastActivities, isLoading }) => {
       </div>
 
       <p className="text-jacarta-100 text-sm">
-        Each transaction where a sale or auction closes rewards the seller, buyer, and referrer
-        based on the amount paid. Here are the transactions for each role that reward this profile.
+        Each transaction in <b>WETH</b> {/*, <b>USDC</b>, or <b>MODE</b> */} where a sale or auction
+        is completed rewards the seller, buyer, and referrer with &quot;Boxes&quot; based on the
+        amount paid. Below are the transactions for each role that rewarded this profile.
+        &quot;Boxes&quot; may be eligible for an airdrop.
       </p>
 
       <div className="overflow-x-auto">
         <table className="w-full rounded-2lg overflow-x-auto hide-scrollbar">
           <thead className="text-white bg-primaryPurple rounded-2lg">
             <tr className="bg-jacarta-50 dark:bg-primaryPurple rounded-2lg text-base">
+              <th className="py-3 px-4 font-medium text-jacarta-100 dark:text-jacarta-100">
+                Network
+              </th>
               <th className="py-3 px-4 font-medium text-jacarta-100 dark:text-jacarta-100">
                 Operation
               </th>
@@ -103,8 +104,11 @@ const Transactions = ({ manageAddress, lastActivities, isLoading }) => {
           </thead>
           <tbody className="rounded-2lg overflow-x-auto">
             {filteredLastActivities?.map((activity, index) => {
+              const chainExplorer = activity.chainConfig?.explorerBaseURL;
+              const chainName = activity.chainConfig?.chainName;
               return (
                 <tr key={index}>
+                  <td className="py-4 px-4 text-jacarta-100 dark:text-jacarta-100">{chainName}</td>
                   <td className="py-4 px-4 text-jacarta-100 dark:text-jacarta-100">
                     {toDisplayType(activity?.type)}
                   </td>

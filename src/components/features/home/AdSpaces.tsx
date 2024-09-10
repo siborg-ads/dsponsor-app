@@ -19,14 +19,14 @@ const AdSpaces = ({
   offers,
   adSpaces,
   filter,
-  curratedOfferIdsByType
+  curratedOfferIds
 }: {
   isLoading: boolean;
   text: string;
   offers: any[];
   adSpaces: any[];
   filter: Filter;
-  curratedOfferIdsByType: { offerId: number; type: Filter[] }[];
+  curratedOfferIds: { chainId: number; offerId: number; type: Filter[] }[];
 }) => {
   const [finalAdSpaces, setFinalAdSpaces] = useState<any[]>([]);
   const [breakpoint, setBreakpoint] = useState<number | undefined>(640);
@@ -72,7 +72,7 @@ const AdSpaces = ({
       // need to filter the ad spaces based on the filter
       let almostFinalAdSpaces: any[] = [];
       if (filter !== "all") {
-        const filteredByType = curratedOfferIdsByType
+        const filteredByType = curratedOfferIds
           ?.filter((element) => element?.type?.includes(filter))
           ?.map((element) => element?.offerId);
 
@@ -87,17 +87,19 @@ const AdSpaces = ({
 
       // show only 2 tokens per offer id
       const finalAdSpaces: any[] = [];
-      const offerIds: number[] = [];
-      almostFinalAdSpaces?.forEach((element) => {
-        if (offerIds?.filter((id) => id === Number(element?.offerId))?.length < 2) {
-          offerIds.push(Number(element?.offerId));
+      const nbTokens: { [key: string]: number } = {};
+
+      for (const element of almostFinalAdSpaces) {
+        const key = `${element.chainId}-${element.offerId}`;
+        nbTokens[key] = nbTokens[key] ? nbTokens[key] + 1 : 1;
+        if (nbTokens[key] < 3) {
           finalAdSpaces.push(element);
         }
-      }, []);
+      }
 
       setFinalAdSpaces(finalAdSpaces);
     }
-  }, [adSpaces, curratedOfferIdsByType, filter, offers]);
+  }, [adSpaces, curratedOfferIds, filter, offers]);
 
   useEffect(() => {
     const cardChunks = getChunksFromInnerWidth(breakpoint as number);
@@ -227,7 +229,7 @@ const AdSpaces = ({
                       url={
                         !element?.tokenData
                           ? `/${element?.chainId}/offer/${element?.offerId}/${element?.tokenId}`
-                          : `/${element?.chainId}/offer/${element?.item?.nftContract?.adOffers?.[0]?.id}/${element?.tokenId}?tokenData=${element?.item?.mint?.tokenData}`
+                          : `/${element?.chainId}/offer/${element?.offerId}/${element?.tokenId}?tokenData=${element?.item?.mint?.tokenData}`
                       }
                       currencyDecimals={element?.currencyDecimals}
                       currencySymbol={element?.currencySymbol}

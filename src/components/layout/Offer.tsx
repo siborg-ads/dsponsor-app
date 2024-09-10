@@ -26,7 +26,7 @@ import "tippy.js/dist/tippy.css";
 import AdValidation from "@/components/features/offer/AdValidation";
 import Details from "@/components/features/token/accordion/Details";
 import config from "@/config/config";
-import { useSwitchChainContext } from "@/hooks/useSwitchChainContext";
+import { useSwitchChainContext } from "@/providers/SwitchChain";
 import { features } from "@/data/features";
 import UpdateOffer from "@/components/features/offer/offerManagement/UpdateOffer";
 import Payments from "@/components/features/offer/offerManagement/Payments";
@@ -40,6 +40,7 @@ import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import DsponsorNftABI from "@/abi/dsponsorNFT.json";
 
 import ERC20ABI from "@/abi/ERC20.json";
+import { ChainObject } from "@/types/chain";
 import { Address } from "thirdweb";
 
 const onAuctionCondition = (offer, mint, direct) => {
@@ -61,7 +62,9 @@ const Offer = () => {
 
   const offerId = router.query?.offerId;
   const chainId = router.query?.chainId as string;
-  const relayerURL = config[chainId]?.relayerURL;
+  const chainConfig: ChainObject = config[Number(chainId)];
+
+  const relayerURL = chainConfig?.relayerURL;
 
   const [refusedValidatedAdModal, setRefusedValidatedAdModal] = useState<boolean>(false);
   const [offerData, setOfferData] = useState<any>(null);
@@ -76,8 +79,8 @@ const Offer = () => {
   const [isAdmin, setIsAdmin] = useState(false);
   const address = useAddress();
   const { contract: DsponsorAdminContract } = useContract(
-    config[chainId]?.smartContracts?.DSPONSORADMIN?.address,
-    config[chainId]?.smartContracts?.DSPONSORADMIN?.abi
+    chainConfig?.smartContracts?.DSPONSORADMIN?.address,
+    chainConfig?.smartContracts?.DSPONSORADMIN?.abi
   );
   const { mutateAsync } = useContractWrite(DsponsorAdminContract, "reviewAdProposals");
   const [urlFromChild, setUrlFromChild] = useState("");
@@ -90,7 +93,7 @@ const Offer = () => {
   );
   const { data: symbolContract } = useContractRead(tokenContract, "symbol");
   const { data: decimalsContract } = useContractRead(tokenContract, "decimals");
-  const NATIVECurrency = config[chainId]?.smartContracts?.NATIVE;
+  const NATIVECurrency = chainConfig?.smartContracts?.currencies?.NATIVE;
   const { setSelectedChain } = useSwitchChainContext();
   const [offerManagementActiveTab, setOfferManagementActiveTab] = useState("integration");
   const [imageUrl, setImageUrl] = useState<string | null>(null);
@@ -372,10 +375,10 @@ const Offer = () => {
   }, [imageUrl, storage]);
 
   useEffect(() => {
-    if (chainId) {
-      setSelectedChain(config[chainId]?.network);
+    if (chainConfig?.network) {
+      setSelectedChain(chainConfig?.network);
     }
-  }, [chainId, setSelectedChain]);
+  }, [chainConfig, setSelectedChain]);
 
   useEffect(() => {
     if (address && owner) {
@@ -436,7 +439,7 @@ const Offer = () => {
       for (const admin of offerData.admins) {
         tags.push(`${chainId}-userAddress-${admin}`);
       }
-      const sdk = new ThirdwebSDK(config[chainId]?.network);
+      const sdk = new ThirdwebSDK(chainConfig?.network);
       const contract = await sdk.getContract(offerData.nftContract.id, DsponsorNftABI);
 
       for (const sub of submissionArgs) {
@@ -769,7 +772,7 @@ const Offer = () => {
                 </div>
               </div>
               <div className="flex justify-center mt-6">
-                <Form offerId={offerId} onUrlChange={handleUrlChange} />
+                <Form offerId={offerId} chainConfig={chainConfig} onUrlChange={handleUrlChange} />
               </div>
               {urlFromChild && (
                 <div className="grid grid-cols-1 gap-[1.875rem] md:grid-cols-2 lg:grid-cols-4">
@@ -1007,6 +1010,7 @@ const Offer = () => {
               </Accordion.Header>
               <Accordion.Content>
                 <AdValidation
+                  chainConfig={chainConfig}
                   setSuccessFullRefuseModal={setSuccessFullRefuseModal}
                   setSelectedItems={setSelectedItems}
                   selectedItems={selectedItems}
@@ -1119,11 +1123,11 @@ const Offer = () => {
                   />
                 </TabPanel>
                 <TabPanel>
-                  <UpdateOffer offer={offerData} contractOwner={owner} />
+                  <UpdateOffer chainConfig={chainConfig} offer={offerData} contractOwner={owner} />
                 </TabPanel>
                 {isOwner && (
                   <TabPanel>
-                    <Payments offer={offerData} />
+                    <Payments chainConfig={chainConfig} offer={offerData} />
                   </TabPanel>
                 )}
               </Tabs>

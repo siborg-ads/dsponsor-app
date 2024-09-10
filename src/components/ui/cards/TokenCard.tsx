@@ -503,7 +503,16 @@ const TokenCard = ({
               itemStatut === "TOKENMINTABLE") ? (
               <div className="dark:border-jacarta-800 border-jacarta-100 flex items-center whitespace-nowrap rounded-md border py-1 px-2">
                 <span className="text-green text-sm font-medium tracking-tight">
-                  <ResponsiveTooltip text={`${usdcPriceFormatted} USDC`}>
+                  <ResponsiveTooltip
+                    text={
+                      !usdcPriceFormatted ||
+                      usdcPriceFormatted.includes("T") ||
+                      usdcPriceFormatted.includes("B") ||
+                      usdcPriceFormatted.includes("M")
+                        ? ""
+                        : `${usdcPriceFormatted} USDC`
+                    }
+                  >
                     {!!price && price !== "0" ? `${price} ${currencySymbol}` : "Free"}
                   </ResponsiveTooltip>
                 </span>

@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import * as Switch from "@radix-ui/react-switch";
 import { useContract, useContractWrite, useStorage } from "@thirdweb-dev/react";
 import config from "@/config/config";
-import { useChainContext } from "@/hooks/useChainContext";
 import { toast } from "react-toastify";
 import { features } from "@/data/features";
 import { FileUploader } from "react-drag-drop-files";
@@ -13,13 +12,22 @@ import Input from "@/components/ui/Input";
 import TextArea from "@/components/ui/TextArea";
 import { Address } from "thirdweb";
 import StyledWeb3Button from "@/components/ui/buttons/StyledWeb3Button";
+import { ChainObject } from "@/types/chain";
 import { cn } from "@nextui-org/react";
 import Tippy from "@tippyjs/react";
 import "tippy.js/dist/tippy.css";
 
 const fileTypes = ["JPG", "PNG", "WEBP"];
 
-const UpdateOffer = ({ offer, contractOwner }: { offer: any; contractOwner: Address }) => {
+const UpdateOffer = ({
+  offer,
+  chainConfig,
+  contractOwner
+}: {
+  offer: any;
+  chainConfig: ChainObject;
+  contractOwner: Address;
+}) => {
   const [offerId, setOfferId] = useState<string | null>(null);
   const [metadataURL, setMetadataURL] = useState(null);
   const [admins, setAdmins] = useState<string[]>([]);
@@ -47,8 +55,7 @@ const UpdateOffer = ({ offer, contractOwner }: { offer: any; contractOwner: Addr
   const [metadatas, setMetadatas] = useState<any>(null);
   const [initialName, setInitialName] = useState<string | null>(null);
 
-  const { currentChainObject } = useChainContext();
-  const chainId = currentChainObject?.chainId;
+  const chainId = chainConfig?.chainId;
   const storage = useStorage();
 
   const { contract } = useContract(

@@ -1,4 +1,5 @@
-import { useContract, useContractWrite, useStorageUpload } from "@thirdweb-dev/react";
+import { useChain, useContract, useContractWrite, useStorageUpload } from "@thirdweb-dev/react";
+
 import Image from "next/image";
 import React, { useEffect, useRef, useState } from "react";
 import styles from "@/styles/style.module.scss";
@@ -7,13 +8,15 @@ import AdBriefing from "@/components/features/token/createAd/AdBriefing";
 import AdURL from "@/components/features/token/createAd/AdURL";
 import AdImage from "@/components/features/token/createAd/AdImage";
 import CarouselForm from "@/components/ui/misc/CarouselForm";
-import { useChainContext } from "@/hooks/useChainContext";
 import AdSubmission from "@/components/features/token/accordion/AdSubmission";
 import MainButton from "@/components/ui/buttons/MainButton";
 import { features } from "@/data/features";
+import config from "@/config/config";
 
 const OwnedTokens = ({ data, isOwner, isLoading, fetchCreatedData, manageAddress }) => {
-  const { currentChainObject } = useChainContext();
+  const { chainId, name: chainName } = useChain() || {};
+  const currentChainObject = config[chainId as number];
+
   const [selectedItems, setSelectedItems] = useState<any[]>([]);
   const [isSelectedItem, setIsSelectedItem] = useState({});
   const [validate, setValidate] = useState({});
@@ -266,7 +269,10 @@ const OwnedTokens = ({ data, isOwner, isLoading, fetchCreatedData, manageAddress
               </div>
               {isSelectionActive && (
                 <div className="dark:bg-secondaryBlack dark:text-jacarta-100 rounded-2lg bg-white p-3 flex gap-4 justify-center items-center mb-6">
-                  <span>Select tokens to submit an ad on</span>
+                  <span>
+                    Here is your tokens on the current network ({chainName}). Select tokens to
+                    submit an ad on
+                  </span>
                 </div>
               )}
             </div>
@@ -283,33 +289,37 @@ const OwnedTokens = ({ data, isOwner, isLoading, fetchCreatedData, manageAddress
                     ?.currencySymbol ?? item?.nftContract?.prices?.[0]?.currencySymbol;
 
                 return isSelectionActive ? (
-                  <div
-                    onClick={() => handleSelection(item)}
-                    key={index}
-                    className={`  ${isSelectedItem[item.id] ? "border-4 border-jacarta-100 rounded-2xl " : ""} `}
-                  >
-                    <TokenCard
-                      item={item}
-                      isToken={true}
-                      listingType={item?.marketplaceListings[0]?.listingType}
-                      isListing={false}
-                      isDisabled={
-                        item?.disable ||
-                        (!item?.nftContract?.prices[0]?.enabled && item?.mint === null) ||
-                        new Date(item?.metadata?.offer?.valid_to) < new Date()
-                      }
-                      isSelectionActive={isSelectionActive}
-                      disableLink={isSelectionActive}
-                      url={
-                        !item.tokenData
-                          ? `/${item?.chainConfig?.chainId}/offer/${item.offerId}/${item.tokenId}`
-                          : `/${item?.chainConfig?.chainId}/offer/${item.offerId}/${item.tokenId}?tokenData=${item.tokenData}`
-                      }
-                      availableToSubmitAdFromOwnedTokens={true}
-                      currencySymbol={currencySymbol}
-                      currencyDecimals={currencyDecimals}
-                    />
-                  </div>
+                  item.chainConfig.chainId === currentChainObject?.chainId ? (
+                    <div
+                      onClick={() => handleSelection(item)}
+                      key={index}
+                      className={`  ${isSelectedItem[item.id] ? "border-4 border-jacarta-100 rounded-2xl " : ""} `}
+                    >
+                      <TokenCard
+                        item={item}
+                        isToken={true}
+                        listingType={item?.marketplaceListings[0]?.listingType}
+                        isListing={false}
+                        isDisabled={
+                          item?.disable ||
+                          (!item?.nftContract?.prices[0]?.enabled && item?.mint === null) ||
+                          new Date(item?.metadata?.offer?.valid_to) < new Date()
+                        }
+                        isSelectionActive={isSelectionActive}
+                        disableLink={isSelectionActive}
+                        url={
+                          !item.tokenData
+                            ? `/${item?.chainConfig?.chainId}/offer/${item.offerId}/${item.tokenId}`
+                            : `/${item?.chainConfig?.chainId}/offer/${item.offerId}/${item.tokenId}?tokenData=${item.tokenData}`
+                        }
+                        availableToSubmitAdFromOwnedTokens={true}
+                        currencySymbol={currencySymbol}
+                        currencyDecimals={currencyDecimals}
+                      />
+                    </div>
+                  ) : (
+                    <></>
+                  )
                 ) : (
                   <TokenCard
                     item={item}
@@ -437,6 +447,7 @@ const OwnedTokens = ({ data, isOwner, isLoading, fetchCreatedData, manageAddress
       {showPreviewModal && (
         <div className="modal fade show bloc">
           <AdSubmission
+            chainConfig={currentChainObject}
             handlePreviewModal={handlePreviewModal}
             handleSubmit={handleSubmit}
             link={link}

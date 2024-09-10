@@ -2,13 +2,8 @@ import React, { useEffect, useState, useRef, useMemo } from "react";
 import Meta from "@/components/Meta";
 import Image from "next/image";
 import "react-datepicker/dist/react-datepicker.css";
-import {
-  useAddress,
-  useContract,
-  useContractRead,
-  useContractWrite,
-  useStorageUpload
-} from "@thirdweb-dev/react";
+import { useAddress, useContract, useContractWrite, useStorageUpload } from "@thirdweb-dev/react";
+import { ThirdwebSDK } from "@thirdweb-dev/sdk";
 import styles from "@/styles/style.module.scss";
 import AdSubmission from "@/components/features/token/accordion/AdSubmission";
 import OfferType from "@/components/features/createOffer/OfferType";
@@ -17,12 +12,13 @@ import OfferImageAndURL from "@/components/features/createOffer/OfferImageAndURL
 import OfferValidity from "@/components/features/createOffer/OfferValidity";
 import config from "@/config/config";
 import CarouselForm from "@/components/ui/misc/CarouselForm";
-import { useSwitchChainContext } from "@/hooks/useSwitchChainContext";
-import { useRouter } from "next/router";
+import { useSwitchChainContext } from "@/providers/SwitchChain";
 import { Address } from "thirdweb";
 import { features } from "@/data/features";
 
 import ERC20ABI from "@/abi/ERC20.json";
+import { ChainObject } from "@/types/chain";
+import ChainSelector from "../features/chain/ChainSelector";
 
 export type Currency = {
   address: Address | string;
@@ -31,12 +27,15 @@ export type Currency = {
 };
 
 const CreateOffer = () => {
-  const router = useRouter();
-  const chainId = router.query?.chainId;
+  const [chainConfig, setChainConfig] = useState<ChainObject>(Object.entries(config)[0][1]);
+
+  const allCurrencies = Object.values(config)
+    .map((c) => c.smartContracts.currencies)
+    .flat();
 
   const initialCurrencies = useMemo(
-    () => config[parseInt(chainId as string)]?.smartContracts?.currencies || {},
-    [chainId]
+    () => chainConfig?.smartContracts?.currencies || {},
+    [chainConfig]
   ) as { [key: string]: Currency };
 
   const currencies = Object?.entries(initialCurrencies)
@@ -75,70 +74,119 @@ const CreateOffer = () => {
 
   const [tokenDecimals, setTokenDecimals] = useState<number | null>(null);
   const [tokenSymbol, setTokenSymbol] = useState<string | null>(null);
-  const [tokenAddress, setTokenAddress] = useState<Address>(currencies?.[0]?.address as Address);
+  const [tokenAddress, setTokenAddress] = useState<Address>("0x");
   const [customTokenAddress, setCustomTokenAddress] = useState<Address | undefined>(undefined);
-  const [selectedCurrency, setSelectedCurrency] = useState<Currency>(currencies?.[0]);
-  const [mounted, setMounted] = useState(false);
-
-  const { contract: tokenContractAsync } = useContract(tokenAddress, ERC20ABI);
-  const { data: customTokenSymbol } = useContractRead(tokenContractAsync, "symbol");
-  const { data: customTokenDecimals } = useContractRead(tokenContractAsync, "decimals");
+  const [selectedCurrency, setSelectedCurrency] = useState<Currency | undefined>(currencies?.[0]);
 
   useEffect(() => {
-    if (!mounted && currencies && currencies?.length > 0) {
-      setTokenAddress(currencies?.[0]?.address as Address);
-      setTokenDecimals(currencies?.[0]?.decimals);
-      setTokenSymbol(currencies?.[0]?.symbol);
-      setMounted(true);
-    }
-  }, [currencies, mounted]);
+    setTokenAddress(currencies?.[0]?.address as Address);
+    setTokenDecimals(currencies?.[0]?.decimals);
+    setTokenSymbol(currencies?.[0]?.symbol);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const [customCurrencyEnabled, setCustomCurrencyEnabled] = React.useState<boolean>(false);
 
   useEffect(() => {
-    if (customCurrencyEnabled) {
-      setTokenAddress(customTokenAddress as Address);
-      setTokenDecimals(null);
-      setTokenSymbol(null);
-    } else {
-      setTokenAddress(selectedCurrency?.address as Address);
-    }
-  }, [customCurrencyEnabled, customTokenAddress, selectedCurrency]);
+    const updateCurrencyInfos = async () => {
+      if (customCurrencyEnabled) {
+        setTokenAddress(customTokenAddress as Address);
+        let customTokenSymbol;
+        let customTokenDecimals;
+        try {
+          const sdk = new ThirdwebSDK(chainConfig?.network);
+
+          const tokenContractAsync = await sdk.getContract(tokenAddress, ERC20ABI);
+
+          if (tokenContractAsync) {
+            customTokenSymbol = await tokenContractAsync.call("symbol");
+            customTokenDecimals = await tokenContractAsync.call("decimals");
+          }
+        } catch (e) {
+          // console.error("error getting token symbol", e)
+        }
+
+        if (customTokenSymbol) {
+          setTokenSymbol(customTokenSymbol);
+        } else {
+          setTokenSymbol(null);
+        }
+
+        if (customTokenDecimals) {
+          setTokenDecimals(customTokenDecimals);
+        } else {
+          setTokenDecimals(null);
+        }
+      } else {
+        const tokenAddrIsInCurrentChain = currencies?.find(
+          (c) => c.address.toLowerCase() === selectedCurrency?.address.toLowerCase()
+        );
+
+        if (tokenAddrIsInCurrentChain && selectedCurrency) {
+          setTokenAddress(selectedCurrency?.address as Address);
+          setTokenDecimals(selectedCurrency?.decimals);
+          setTokenSymbol(selectedCurrency?.symbol);
+        } else {
+          let tokenAddrInAnotherChain;
+          for (const currenciesInAnotherChain of allCurrencies) {
+            const c: any[] = Object.entries(currenciesInAnotherChain);
+            tokenAddrInAnotherChain = c.find(
+              // eslint-disable-next-line
+              ([_, cObj]) => {
+                return cObj.address.toLowerCase() === selectedCurrency?.address.toLowerCase();
+              }
+            );
+            if (tokenAddrInAnotherChain) break;
+          }
+
+          if (tokenAddrInAnotherChain) {
+            if (
+              chainConfig.smartContracts.currencies[tokenAddrInAnotherChain[0]]?.address &&
+              chainConfig.smartContracts.currencies[tokenAddrInAnotherChain[0]]?.decimals &&
+              chainConfig.smartContracts.currencies[tokenAddrInAnotherChain[0]]?.symbol
+            ) {
+              setSelectedCurrency(
+                chainConfig.smartContracts.currencies[tokenAddrInAnotherChain[0]]
+              );
+              setTokenAddress(
+                chainConfig.smartContracts.currencies[tokenAddrInAnotherChain[0]].address as Address
+              );
+              setTokenDecimals(
+                chainConfig.smartContracts.currencies[tokenAddrInAnotherChain[0]].decimals
+              );
+              setTokenSymbol(
+                chainConfig.smartContracts.currencies[tokenAddrInAnotherChain[0]].symbol
+              );
+            } else {
+              setSelectedCurrency(undefined);
+              setCustomCurrencyEnabled(true);
+            }
+          }
+        }
+      }
+    };
+    updateCurrencyInfos();
+  }, [
+    chainConfig,
+    currencies,
+    allCurrencies,
+    customCurrencyEnabled,
+    customTokenAddress,
+    tokenAddress,
+    selectedCurrency
+  ]);
 
   const { setSelectedChain } = useSwitchChainContext();
-
   useEffect(() => {
-    const currencies = Object.entries(
-      config[chainId as string]?.smartContracts?.currencies || {}
-    ) as any;
-
-    const [, { symbol, decimals }] = currencies.find(
-      ([, value]) => value?.address?.toLowerCase() === tokenAddress?.toLowerCase()
-    ) ?? ["", {}];
-
-    if (symbol && decimals) {
-      setTokenSymbol(symbol);
-      setTokenDecimals(decimals);
-    } else {
-      if (customTokenSymbol) {
-        setTokenSymbol(customTokenSymbol);
-      } else {
-        setTokenSymbol(null);
-      }
-
-      if (customTokenDecimals) {
-        setTokenDecimals(customTokenDecimals);
-      } else {
-        setTokenDecimals(null);
-      }
-    }
-  }, [chainId, tokenAddress, customTokenDecimals, customTokenSymbol]);
+    if (!chainConfig) return;
+    setSelectedChain(chainConfig?.network);
+  }, [chainConfig, setSelectedChain]);
 
   const address = useAddress();
 
   const { contract: DsponsorAdminContract } = useContract(
-    config[parseFloat(chainId as string)]?.smartContracts?.DSPONSORADMIN?.address,
-    config[parseFloat(chainId as string)]?.smartContracts?.DSPONSORADMIN?.abi
+    chainConfig?.smartContracts?.DSPONSORADMIN?.address,
+    chainConfig?.smartContracts?.DSPONSORADMIN?.abi
   );
   const { mutateAsync: createDSponsorNFTAndOffer } = useContractWrite(
     DsponsorAdminContract,
@@ -155,9 +203,9 @@ const CreateOffer = () => {
   const { ethers } = require("ethers");
 
   useEffect(() => {
-    if (!chainId) return;
-    setSelectedChain(config[parseFloat(chainId as string)]?.network);
-  }, [chainId, setSelectedChain]);
+    if (!chainConfig) return;
+    setSelectedChain(chainConfig?.network);
+  }, [chainConfig, setSelectedChain]);
 
   const handleUnitPriceChange = (e) => {
     const { value } = e.target;
@@ -368,7 +416,7 @@ const CreateOffer = () => {
         JSON.stringify({
           name: name, // name
           symbol: "DSPONSORNFT", // symbol
-          baseURI: "https://api.dsponsor.com/tokenMetadata/", // baseURI
+          baseURI: `https://relayer.dsponsor.com/api/${chainConfig.chainId}/tokenMetadata`, // baseURI
           contractURI: jsonIpfsLinkContractURI, // contractURI from json
           minter: userMinterAddress,
           maxSupply: selectedNumber, // max supply
@@ -402,12 +450,15 @@ const CreateOffer = () => {
 
       await createDSponsorNFTAndOffer({ args: preparedArgs });
 
-      const relayerURL = config[parseFloat(chainId as string)]?.relayerURL;
+      const relayerURL = chainConfig?.relayerURL;
       if (relayerURL) {
         await fetch(`${relayerURL}/api/revalidate`, {
           method: "POST",
           body: JSON.stringify({
-            tags: [`${chainId}-adOffers`, `${chainId}-userAddress-${userMinterAddress}`]
+            tags: [
+              `${chainConfig.chainId}-adOffers`,
+              `${chainConfig.chainId}-userAddress-${userMinterAddress}`
+            ]
           })
         });
       }
@@ -483,6 +534,7 @@ const CreateOffer = () => {
               website or another location of your choice. You retain full control to approve or
               reject any ads.
             </p>
+            <ChainSelector setChainConfig={setChainConfig} />
           </div>
         </div>
         <CarouselForm
@@ -558,6 +610,7 @@ const CreateOffer = () => {
       {showPreviewModal && (
         <div className="modal fade show bloc">
           <AdSubmission
+            chainConfig={chainConfig}
             handlePreviewModal={handlePreviewModal}
             handleSubmit={handleSubmit}
             name={name}

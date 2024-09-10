@@ -19,7 +19,7 @@ const onAuctionCondition = (auction, mint, direct) => {
 
 const MarketplaceComponent = ({ auctions, setAllTokens, allTokens, isAuctionsLoading }) => {
   const [filterName, setFilterName] = useState("");
-  const [sortOption, setSortOption] = useState("Ending soon");
+  const [sortOption, setSortOption] = useState("Price: low to high");
   const [filterOption, setFilterOption] = useState("All tokens");
   const [isInformationHovered, setIsInformationHovered] = useState(false);
 
@@ -142,7 +142,7 @@ const MarketplaceComponent = ({ auctions, setAllTokens, allTokens, isAuctionsLoa
   }, [filterName, filterOption, sortOption, auctions, allTokens]);
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-7">
       <span className="text-xl text-white font-semibold flex items-center gap-2">
         <Popover placement="top-start" isOpen={isInformationHovered}>
           <PopoverTrigger>
@@ -155,154 +155,114 @@ const MarketplaceComponent = ({ auctions, setAllTokens, allTokens, isAuctionsLoa
           <PopoverContent className="bg-secondaryBlack shadow border border-white border-opacity-10">
             <div className="px-1 py-2">
               <div className="text-small">
-                The marketplace lists all available ad spaces for sale, you can filter and sort them
-                as you wish
+                This page highlights all ad spaces from curated offers. You will not see your tokens
+                below if they are not from offers curated by the SiBorg Ads team.
               </div>
             </div>
           </PopoverContent>
         </Popover>
-        <span>Marketplace</span>
+        <span>Marketplace (curated offers)</span>
       </span>
-      <div className="flex flex-col gap-20 md:gap-8">
-        <div className="flex flex-col md:flex-row items-center gap-16 h-10">
+
+      <div className="flex flex-row flex-wrap-reverse items-center justify-end gap-2 mb-4 sm:gap-4">
+        <div className="flex w-full mr-0 md:mr-auto md:max-w-[500px]">
           <Input
             type="text"
             placeholder="Search..."
             name="search"
             value={filterName}
-            onChange={(e) => {
-              setFilterName(e.target.value);
-            }}
+            onChange={(e) => setFilterName(e.target.value)}
           />
-          <div className="grid grid-cols-2 md:flex h-full gap-2 w-full md:w-8/12">
-            <Menu as="div" className="py-4 md:py-0 h-full w-full">
-              <MenuButton className="bg-secondaryBlack rounded-xl w-full h-full flex items-center justify-center hover:bg-opacity-80 border border-jacarta-100 border-opacity-10">
-                <div className="flex items-center gap-1">
-                  {filterOption} <ChevronDownIcon className="w-5 h-5" />
-                </div>
-              </MenuButton>
-
-              <MenuItems
-                anchor="bottom start"
-                className={`rounded-xl flex flex-col gap-2 [--anchor-gap:1rem] bg-secondaryBlack p-2 border border-jacarta-100 border-opacity-10`}
-              >
-                <MenuItem>
-                  <button
-                    onClick={() => {
-                      setFilterOption("All tokens");
-                      setAllTokens(true);
-                    }}
-                    className="hover:bg-primaryBlack p-2 rounded-lg w-full pr-12 md:pr-24"
-                  >
-                    <span>All tokens</span>
-                  </button>
-                </MenuItem>
-
-                <MenuItem>
-                  <button
-                    onClick={() => {
-                      setFilterOption("On auction");
-                      setAllTokens(false);
-                    }}
-                    className="hover:bg-primaryBlack p-2 rounded-lg w-full pr-12 md:pr-24"
-                  >
-                    <span>On auction</span>
-                  </button>
-                </MenuItem>
-              </MenuItems>
-            </Menu>
-
-            <Menu as="div" className="py-4 md:py-0 h-full w-full">
-              <MenuButton className="bg-secondaryBlack rounded-xl w-full h-full flex items-center justify-center hover:bg-opacity-80 border border-jacarta-100 border-opacity-10">
-                <div className="flex items-center gap-1">
-                  {sortOption ?? "Sort by"} <ChevronDownIcon className="w-5 h-5" />
-                </div>
-              </MenuButton>
-
-              <MenuItems
-                anchor="bottom start"
-                className={`rounded-xl flex flex-col gap-2 [--anchor-gap:1rem] bg-secondaryBlack p-2 border border-jacarta-100 border-opacity-10`}
-              >
-                <MenuItem>
-                  <button
-                    onClick={() => {
-                      setSortOption("Sort by name");
-                    }}
-                    className="hover:bg-primaryBlack p-2 text-left rounded-lg w-full pr-12 md:pr-24"
-                  >
-                    <span>Sort by name</span>
-                  </button>
-                </MenuItem>
-
-                <MenuItem>
-                  <button
-                    onClick={() => {
-                      setSortOption("Price: low to high");
-                    }}
-                    className="hover:bg-primaryBlack p-2 text-left rounded-lg w-full pr-12 md:pr-24"
-                  >
-                    <span>Price: low to high</span>
-                  </button>
-                </MenuItem>
-                <MenuItem>
-                  <button
-                    onClick={() => {
-                      setSortOption("Price: high to low");
-                    }}
-                    className="hover:bg-primaryBlack p-2 text-left rounded-lg w-full pr-12 md:pr-24"
-                  >
-                    <span>Price: high to low</span>
-                  </button>
-                </MenuItem>
-                <MenuItem>
-                  <button
-                    onClick={() => {
-                      setSortOption("Ending soon");
-                    }}
-                    className="hover:bg-primaryBlack p-2 text-left rounded-lg w-full pr-12 md:pr-24"
-                  >
-                    <span>Ending soon</span>
-                  </button>
-                </MenuItem>
-              </MenuItems>
-            </Menu>
-          </div>
         </div>
 
-        <div className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {!isAuctionsLoading ? (
-            <>
-              {filteredAuctions?.map((auction, index) => {
-                return (
-                  <TokenCard
-                    key={index}
-                    item={auction.item}
-                    isToken={true}
-                    listingType={auction?.listingType}
-                    isListing={auction?.listingType}
-                    isAuction={auction?.listingType === "Auction"}
-                    url={
-                      auction?.tokenData
-                        ? `/${auction?.chainId}/offer/${auction.offerId}/${auction.tokenId}?tokenData=${auction.tokenData}`
-                        : `/${auction?.chainId}/offer/${auction?.offerId}/${auction?.tokenId}`
-                    }
-                    currencyDecimals={auction?.currencyDecimals}
-                    currencySymbol={auction?.currencySymbol}
-                    tokenId={auction?.tokenId}
-                    offer={auction}
-                    usdcPriceFormatted={auction?.usdcPriceFormatted}
-                  />
-                );
-              })}
-            </>
-          ) : (
-            <>
-              {Array.from({ length: 12 }).map((_, index) => (
-                <TokenCardSkeleton key={index} />
-              ))}
-            </>
-          )}
-        </div>
+        {/* Filter Menu */}
+        <Menu as="div" className="h-12 w-fit">
+          <MenuButton className="flex items-center justify-center w-full h-full px-4 border bg-secondaryBlack rounded-xl hover:bg-opacity-80 border-jacarta-100 border-opacity-10">
+            <div className="flex items-center gap-1">
+              {filterOption} <ChevronDownIcon className="w-5 h-5" />
+            </div>
+          </MenuButton>
+          <MenuItems
+            anchor="bottom start"
+            className={`rounded-xl flex flex-col gap-2 [--anchor-gap:1rem] bg-secondaryBlack p-2 border border-jacarta-100 border-opacity-10`}
+          >
+            <MenuItem>
+              <button
+                onClick={() => {
+                  setFilterOption("All tokens");
+                  setAllTokens(true);
+                }}
+                className="hover:bg-primaryBlack p-2 rounded-lg w-full pr-12 md:pr-24"
+              >
+                All tokens
+              </button>
+            </MenuItem>
+            <MenuItem>
+              <button
+                onClick={() => {
+                  setFilterOption("On auction");
+                  setAllTokens(false);
+                }}
+                className="hover:bg-primaryBlack p-2 rounded-lg w-full pr-12 md:pr-24"
+              >
+                On auction
+              </button>
+            </MenuItem>
+          </MenuItems>
+        </Menu>
+
+        {/* Sort Menu */}
+        <Menu as="div" className="h-12 w-fit">
+          <MenuButton className="flex items-center justify-center w-full h-full px-4 border bg-secondaryBlack rounded-xl hover:bg-opacity-80 border-jacarta-100 border-opacity-10">
+            <div className="flex items-center gap-1">
+              {sortOption ?? "Sort by"} <ChevronDownIcon className="w-5 h-5" />
+            </div>
+          </MenuButton>
+          <MenuItems
+            anchor="bottom start"
+            className={`rounded-xl flex flex-col gap-2 [--anchor-gap:1rem] bg-secondaryBlack p-2 border border-jacarta-100 border-opacity-10`}
+          >
+            {" "}
+            {["Sort by name", "Price: low to high", "Price: high to low", "Ending soon"].map(
+              (option) => (
+                <MenuItem key={option}>
+                  <button
+                    onClick={() => setSortOption(option)}
+                    className="hover:bg-primaryBlack p-2 text-left rounded-lg w-full pr-12 md:pr-24"
+                  >
+                    {option}
+                  </button>
+                </MenuItem>
+              )
+            )}
+          </MenuItems>
+        </Menu>
+      </div>
+
+      {/* Auction Listings */}
+      <div className="grid grid-cols-2 gap-4 mb-6 md:grid-cols-3 lg:grid-cols-4">
+        {!isAuctionsLoading
+          ? filteredAuctions?.map((auction, index) => (
+              <TokenCard
+                key={index}
+                item={auction.item}
+                isToken={true}
+                listingType={auction?.listingType}
+                isListing={auction?.listingType}
+                isAuction={auction?.listingType === "Auction"}
+                url={
+                  auction?.tokenData
+                    ? `/${auction?.chainId}/offer/${auction.offerId}/${auction.tokenId}?tokenData=${auction.tokenData}`
+                    : `/${auction?.chainId}/offer/${auction?.offerId}/${auction?.tokenId}`
+                }
+                currencyDecimals={auction?.currencyDecimals}
+                currencySymbol={auction?.currencySymbol}
+                tokenId={auction?.tokenId}
+                offer={auction}
+                usdcPriceFormatted={auction?.usdcPriceFormatted}
+              />
+            ))
+          : Array.from({ length: 12 }).map((_, index) => <TokenCardSkeleton key={index} />)}
       </div>
     </div>
   );

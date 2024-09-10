@@ -1,44 +1,53 @@
 // src/types/ChainObject.ts
-import { Base } from "@thirdweb-dev/chains";
+// import { Base } from "@thirdweb-dev/chains";
 import { NetworkType } from "@/utils/networks/networks";
+import { Address } from "thirdweb";
+
+export interface ChainsConfig {
+  [key: number]: ChainObject;
+}
 
 export interface ChainObject {
   chainId: number;
   chainName: string;
+  gaslessBalanceThreshold?: string;
   network: NetworkType;
-  chainObject: typeof Base;
+  chainObject: any;
   logoURL: string;
   explorerBaseURL: string;
   relayerURL: string;
   rpcURL: string;
-  subgraphURL: string;
   smartContracts: {
     currencies: {
+      NATIVE: {
+        address: Address;
+        decimals: number;
+        symbol: string;
+      };
       [key: string]: {
-        address: string;
+        address: Address;
         decimals: number;
         symbol: string;
       };
     };
     DSPONSORADMIN: {
-      address: string;
-      feeBps: string;
+      address: Address;
       abi: any;
     };
     DSPONSORMP: {
-      address: string;
-      feeBps: string;
-      minimalBidBps: string;
-      previousBidAmountBps: string;
+      address: Address;
     };
     UNISWAP_QUOTER: {
-      address: string;
+      address: Address;
     };
   };
   features: {
+    openZeppelinDefender: {
+      relayerURL?: string;
+    };
     crossmint: {
       enabled: boolean;
-      config: {
+      config?: {
         projectId: string;
         priceLimit: number;
         bidCollectionId: string;

@@ -369,10 +369,10 @@ const BidsModal = ({
   useEffect(() => {
     if (tokenEtherPriceRelayer && chainId && chainConfig) {
       const parsedBuyAmount = BigNumber.from(tokenEtherPriceRelayer?.amountInEthWithSlippage);
-      const parsedPriceLimit = parseUnits(
-        chainConfig?.features?.crossmint?.config?.priceLimit?.toString(),
-        18
-      );
+
+      const priceLimit = chainConfig?.features?.crossmint?.config?.priceLimit?.toString();
+
+      const parsedPriceLimit = priceLimit ? parseUnits(priceLimit, 18) : null;
 
       const tooHighPrice = parsedPriceLimit ? parsedBuyAmount?.gte(parsedPriceLimit) : true;
 
@@ -515,10 +515,12 @@ const BidsModal = ({
                     </span>
                   </div>
                   <div>
-                    <span className="dark:text-jacarta-100 text-sm">
-                      Balance: {formatAndRoundPrice(tokenBalance?.displayValue) ?? 0}{" "}
-                      {currencySymbol}
-                    </span>
+                    {tokenBalance?.displayValue && (
+                      <span className="dark:text-jacarta-100 text-sm">
+                        Balance: {formatAndRoundPrice(tokenBalance?.displayValue) ?? 0}{" "}
+                        {currencySymbol}
+                      </span>
+                    )}
                   </div>
                 </div>
                 <div className="flex items-center gap-4">
@@ -536,11 +538,15 @@ const BidsModal = ({
                     </span>
                   </div>
 
-                  <div className="bg-jacarta-800 w-1/4 border border-jacarta-900 border-opacity-10 rounded-xl flex flex-1 justify-center self-stretch border-l">
-                    <span className="self-center px-4 text-xl text-center text-white font-semibold">
-                      ${displayedPrice ?? 0}
-                    </span>
-                  </div>
+                  {displayedPrice &&
+                    parseFloat(displayedPrice) < 1000000 &&
+                    parseFloat(displayedPrice) > 0 && (
+                      <div className="bg-jacarta-800 w-1/4 border border-jacarta-900 border-opacity-10 rounded-xl flex flex-1 justify-center self-stretch border-l">
+                        <span className="self-center px-4 text-xl text-center text-white font-semibold">
+                          {`$${displayedPrice}`}
+                        </span>
+                      </div>
+                    )}
                 </div>
 
                 <div className="flex flex-col justify-center text-left md:flex-row items-center md:justify-between mb-8 mt-2 gap-2 md:gap-4">
@@ -879,55 +885,59 @@ const BidsModal = ({
                   )}
                 </div>
 
-                {canPayWithCrossmint && address && parsedBidsAmount && (
-                  <>
-                    <div className="flex items-center justify-center w-full">
-                      <div className="flex-grow border-t border-gray-300"></div>
-                      <span className="mx-4 text-gray-500">or</span>
-                      <div className="flex-grow border-t border-gray-300"></div>
-                    </div>
-                    <div className="flex flex-col gap-2">
-                      <BidWithCrossmintButton
-                        offer={offer}
-                        token={token}
-                        user={user}
-                        isBid={!buyoutPriceReached}
-                        referrer={referrer as Address}
-                        config={chainConfig?.features.crossmint.config}
-                        actions={{
-                          processing: onProcessingBid,
-                          success: () => {
-                            toast.success("Buying successful");
-                          },
-                          error: (error) => {
-                            toast.error(`Buying failed: ${error.message}`);
-                          }
-                        }}
-                        perPriceToken={parsedBidsAmount}
-                        totalPriceFormatted={formatUnits(amountInEthWithSlippage ?? "0", "ether")}
-                        isDisabled={!checkTerms || !isPriceGood || tooHighPriceForCrossmint}
-                        isLoadingRender={() => <Spinner size="sm" color="default" />}
-                        successCallbackURL={window.location.href.replace(
-                          "http://localhost:3000",
-                          ngrokURL
-                        )}
-                        failureCallbackURL={window.location.href.replace(
-                          "http://localhost:3000",
-                          ngrokURL
-                        )}
-                        whPassThroughArgs={whArgsSerialized}
-                      />
+                {canPayWithCrossmint &&
+                  address &&
+                  parsedBidsAmount &&
+                  chainConfig?.features?.crossmint?.config &&
+                  chainConfig?.features?.crossmint?.enabled && (
+                    <>
+                      <div className="flex items-center justify-center w-full">
+                        <div className="flex-grow border-t border-gray-300"></div>
+                        <span className="mx-4 text-gray-500">or</span>
+                        <div className="flex-grow border-t border-gray-300"></div>
+                      </div>
+                      <div className="flex flex-col gap-2">
+                        <BidWithCrossmintButton
+                          offer={offer}
+                          token={token}
+                          user={user}
+                          isBid={!buyoutPriceReached}
+                          referrer={referrer as Address}
+                          config={chainConfig?.features.crossmint.config}
+                          actions={{
+                            processing: onProcessingBid,
+                            success: () => {
+                              toast.success("Buying successful");
+                            },
+                            error: (error) => {
+                              toast.error(`Buying failed: ${error.message}`);
+                            }
+                          }}
+                          perPriceToken={parsedBidsAmount}
+                          totalPriceFormatted={formatUnits(amountInEthWithSlippage ?? "0", "ether")}
+                          isDisabled={!checkTerms || !isPriceGood || tooHighPriceForCrossmint}
+                          isLoadingRender={() => <Spinner size="sm" color="default" />}
+                          successCallbackURL={window.location.href.replace(
+                            "http://localhost:3000",
+                            ngrokURL
+                          )}
+                          failureCallbackURL={window.location.href.replace(
+                            "http://localhost:3000",
+                            ngrokURL
+                          )}
+                          whPassThroughArgs={whArgsSerialized}
+                        />
 
-                      {tooHighPriceForCrossmint && (
-                        <span className="text-xs text-center text-red inline-flex items-center gap-1">
-                          <InformationCircleIcon className="w-4 h-4 text-white" />
-                          Amount is too high to {buyoutPriceReached ? "buy" : "bid"} with credit
-                          card.
-                        </span>
-                      )}
-                    </div>
-                  </>
-                )}
+                        {tooHighPriceForCrossmint && (
+                          <span className="text-xs text-center text-red inline-flex items-center gap-1">
+                            <InformationCircleIcon className="w-4 h-4 text-white" />
+                            Amount is too high to {buyoutPriceReached ? "buy" : "bid"} with credit
+                            card.
+                          </span>
+                        )}
+                      </div>
+                    </>
+                  )}
               </div>
             )}
           </div>

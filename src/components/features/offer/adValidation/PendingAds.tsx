@@ -5,13 +5,13 @@ import "tippy.js/dist/tippy.css";
 import Link from "next/link";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { useChainContext } from "@/hooks/useChainContext";
 import React, { useEffect, useState } from "react";
-import config from "@/config/config";
 import Input from "@/components/ui/Input";
 import StyledWeb3Button from "@/components/ui/buttons/StyledWeb3Button";
+import { ChainObject } from "@/types/chain";
 
 interface PendingAdsProps {
+  chainConfig: ChainObject;
   // eslint-disable-next-line no-unused-vars
   setSelectedItems: (value: any) => void;
   selectedItems: any[];
@@ -29,6 +29,7 @@ interface PendingAdsProps {
 }
 
 const PendingAds: React.FC<PendingAdsProps> = ({
+  chainConfig,
   setSelectedItems,
   selectedItems,
   handleItemSubmit,
@@ -48,9 +49,6 @@ const PendingAds: React.FC<PendingAdsProps> = ({
   const [copied, setCopied] = useState(false);
   const [detectedRatios, setDetectedRatios] = useState<string[]>([]);
   const [detectedRatiosAreGood, setDetectedRatiosAreGood] = useState<boolean[]>([]);
-
-  const { currentChainObject } = useChainContext();
-  const chainId = currentChainObject?.chainId;
 
   useEffect(() => {
     if (detectedRatios.length) {
@@ -213,7 +211,7 @@ const PendingAds: React.FC<PendingAdsProps> = ({
 
             <div className="grid grid-cols-2 gap-4 max-w-xs">
               <StyledWeb3Button
-                contractAddress={config[Number(chainId)]?.smartContracts?.DSPONSORADMIN?.address}
+                contractAddress={chainConfig?.smartContracts?.DSPONSORADMIN?.address}
                 onClick={async () => {
                   await toast.promise(handleItemSubmit(true), {
                     pending: "Waiting for confirmation 🕒",
@@ -227,7 +225,7 @@ const PendingAds: React.FC<PendingAdsProps> = ({
               />
 
               <StyledWeb3Button
-                contractAddress={config[Number(chainId)]?.smartContracts?.DSPONSORADMIN?.address}
+                contractAddress={chainConfig?.smartContracts?.DSPONSORADMIN?.address}
                 onClick={() => {
                   openRefuseModal();
 

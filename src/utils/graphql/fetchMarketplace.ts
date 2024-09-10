@@ -8,13 +8,22 @@ import config from "@/config/config";
  * @param {boolean} allTokens - Flag to include all tokens or filter out tokens with no marketplace listings.
  * @returns {Promise<Array>} - A promise that resolves to an array of tokens with their details.
  */
-export const fetchMarketplace = async (chainId: number, allTokens: boolean) => {
+export const fetchMarketplace = async (
+  chainId: number,
+  allTokens: boolean,
+  offerIds,
+  searchTerm = ""
+) => {
   const relayerURL = config[chainId].relayerURL;
   const path = new URL(`${relayerURL}/api/${chainId}/graph`);
 
+  const where = searchTerm.length
+    ? `where: { name_contains: "${searchTerm}" }`
+    : `where: { id_in: [${offerIds.map((e) => `"${e}"`)}] }`;
+
   const GET_DATA = `
     query getAllMarketplaceListings {
-      adOffers(first: 1000) {
+      adOffers(first: 1000, ${where}) {
         id
         disable
         metadataURL
@@ -190,7 +199,12 @@ export const fetchMarketplace = async (chainId: number, allTokens: boolean) => {
   const variables = {};
   const options = {
     populate: true,
-    next: { tags: [`${chainId}-adOffers`] }
+    next: {
+      tags:
+        searchTerm.length || offerIds.length > 63
+          ? [`${chainId}-adOffers`]
+          : offerIds.map((offerId) => `${chainId}-adOffer-${offerId}`)
+    }
   };
 
   const response = (await executeQuery(path.href, GET_DATA, variables, options)) as QueryType;

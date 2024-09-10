@@ -1,7 +1,6 @@
 import React, { SetStateAction, useEffect, useMemo, useState } from "react";
 import { useContract, useContractRead, useContractWrite } from "@thirdweb-dev/react";
 import config from "@/config/config";
-import { useChainContext } from "@/hooks/useChainContext";
 import { toast } from "react-toastify";
 import { parseUnits, formatUnits } from "ethers/lib/utils";
 import * as Switch from "@radix-ui/react-switch";
@@ -14,6 +13,8 @@ import ResponsiveTooltip from "@/components/ui/ResponsiveTooltip";
 import { QuestionMarkCircleIcon } from "@heroicons/react/24/solid";
 
 import ERC20ABI from "@/abi/ERC20.json";
+import { ChainObject } from "@/types/chain";
+
 import { isAddress } from "ethers/lib/utils";
 import ConditionModal from "@/components/ui/modals/ConditionModal";
 import {
@@ -31,7 +32,7 @@ const isDisabledMessage = (disableMint: boolean) => {
     : `The minting feature has been enabled for this offer.`;
 };
 
-const Payments = ({ offer }) => {
+const Payments = ({ offer, chainConfig }: { offer: any; chainConfig: ChainObject }) => {
   const [amount, setAmount] = useState<number | undefined>(undefined);
   const [royaltiesAmount, setRoyaltiesAmount] = useState<number | undefined>(undefined);
   const [initialAmount, setInitialAmount] = useState<number | undefined>(undefined);
@@ -74,8 +75,7 @@ const Payments = ({ offer }) => {
     }
   }, [currencyDecimalsData, currencySymbolData]);
 
-  const { currentChainObject } = useChainContext();
-  const chainId = currentChainObject?.chainId;
+  const chainId = chainConfig?.chainId;
 
   const { contract } = useContract(nftContractAddress);
   const { mutateAsync: mutateDefaultMintPrice } = useContractWrite(contract, "setDefaultMintPrice");
@@ -90,7 +90,7 @@ const Payments = ({ offer }) => {
       // fallback to WETH from config if no currency is found
       let currency = offer?.nftContract?.prices[0]?.currency;
       if (initialDisabled) {
-        setCurrency(config[chainId as number]?.smartContracts?.currencies?.WETH?.address);
+        setCurrency(chainConfig?.smartContracts?.currencies?.WETH?.address);
       } else {
         setCurrency(currency);
       }
@@ -143,7 +143,7 @@ const Payments = ({ offer }) => {
         setInitialAmount(undefined);
       }
     }
-  }, [chainId, currencyDecimals, initialDisabled, offer]);
+  }, [chainConfig, currencyDecimals, initialDisabled, offer]);
 
   useEffect(() => {
     if (owner) {
@@ -241,7 +241,7 @@ const Payments = ({ offer }) => {
         args: [currency, !disableMint, finalFormattedAmountBN]
       });
 
-      const relayerURL = config[chainId as number]?.relayerURL;
+      const relayerURL = chainConfig?.relayerURL;
       if (relayerURL) {
         await fetch(`${relayerURL}/api/revalidate`, {
           method: "POST",
@@ -274,7 +274,7 @@ const Payments = ({ offer }) => {
         args: [receiver, finalFormattedAmount]
       });
 
-      const relayerURL = config[chainId as number]?.relayerURL;
+      const relayerURL = chainConfig.relayerURL;
       if (relayerURL) {
         await fetch(`${relayerURL}/api/revalidate`, {
           method: "POST",
@@ -307,7 +307,7 @@ const Payments = ({ offer }) => {
         args: [currentOwner]
       });
 
-      const relayerURL = config[chainId as number]?.relayerURL;
+      const relayerURL = chainConfig?.relayerURL;
       if (relayerURL) {
         await fetch(`${relayerURL}/api/revalidate`, {
           method: "POST",
@@ -329,7 +329,7 @@ const Payments = ({ offer }) => {
       await mutateTokenAsync({
         args: [selectedToken, currency, !disableMint, formattedAmountBN]
       });
-      const relayerURL = config[chainId as number]?.relayerURL;
+      const relayerURL = chainConfig?.relayerURL;
       if (relayerURL) {
         await fetch(`${relayerURL}/api/revalidate`, {
           method: "POST",

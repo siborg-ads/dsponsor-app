@@ -1,13 +1,20 @@
 import { useState } from "react";
 import { toUtf8Bytes, keccak256 } from "ethers/lib/utils";
-import { useChainContext } from "@/hooks/useChainContext";
 import Input from "@/components/ui/Input";
+import { ChainObject } from "@/types/chain";
 
-const SearchForm = ({ offerId, onUrlChange }) => {
+const SearchForm = ({
+  offerId,
+  chainConfig,
+  onUrlChange
+}: {
+  offerId: any;
+  chainConfig: ChainObject;
+  onUrlChange: any;
+}) => {
   const [searchTerm, setSearchTerm] = useState("");
-  const { currentChainObject } = useChainContext();
 
-  const chainId = currentChainObject?.chainId;
+  const chainId = chainConfig?.chainId;
 
   const handleSubmit = (event) => {
     event.preventDefault(); // Prevent default form submission

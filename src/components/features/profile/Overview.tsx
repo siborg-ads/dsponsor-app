@@ -1,16 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import OverviewCard from "@/components/features/profile/OverviewCard";
 import { ArrowPathIcon } from "@heroicons/react/20/solid";
+import displayOrCheckKnownAddress from "@/utils/addresses/displayOrCheckKnownAddress";
 
 const Overview = ({ userData, ownedTokens, isLoading, manageAddress }) => {
-  const [ranking, setRanking] = useState<any>(null);
-
-  useEffect(() => {
-    if (userData) {
-      setRanking(userData?.rankings[0]);
-    }
-  }, [userData]);
-
   const overviewCards = [
     {
       value: ownedTokens?.length ?? 0,
@@ -18,22 +11,22 @@ const Overview = ({ userData, ownedTokens, isLoading, manageAddress }) => {
       informations: "The number of ad spaces you own"
     },
     {
-      value: ranking?.nbBids ?? 0,
+      value: userData?.nbBids ?? 0,
       label: "Total Bids",
       informations: "The total number of bids placed"
     },
     {
-      value: ranking?.nbRefunds ?? 0,
+      value: userData?.nbRefunds ?? 0,
       label: "Outbided",
       informations: "The total number of outbids received"
     },
     {
-      value: `$${ranking?.usdcAmounts?.bidRefundReceived ?? 0}`,
+      value: `$${parseFloat(userData?.bidRefundReceived).toFixed(2) ?? 0}`,
       label: "Rewards Earned",
       informations: "The total amount of rewards earned"
     },
     {
-      value: ranking?.points ?? 0,
+      value: userData?.points ?? 0,
       label: "Boxes Won",
       informations: "The total number of boxes won"
     }
@@ -45,7 +38,7 @@ const Overview = ({ userData, ownedTokens, isLoading, manageAddress }) => {
         <div className="flex items-end gap-4">
           <h2 className="text-white font-semibold text-xl md:text-2xl">Overview</h2>
           <span className="md:block text-jacarta-100 text-xs md:text-sm inline-flex items-center gap-1">
-            {manageAddress}
+            {displayOrCheckKnownAddress(manageAddress)}
           </span>
           {/*}
           <span className="md:hidden text-jacarta-100 text-xs md:text-sm inline-flex items-center gap-1">

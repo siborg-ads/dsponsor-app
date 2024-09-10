@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { useChainContext } from "@/hooks/useChainContext";
 import TextArea from "@/components/ui/TextArea";
 import StyledWeb3Button from "@/components/ui/buttons/StyledWeb3Button";
 import { Address } from "thirdweb";
+import { ChainObject } from "@/types/chain";
 
 const RejectAd = ({
+  chainConfig,
   selectedItems,
   successFullModalObject,
   closeRefuseModal,
@@ -14,6 +15,7 @@ const RejectAd = ({
   handleItemSubmit,
   successFullRefuseModal
 }: {
+  chainConfig: ChainObject;
   selectedItems: any;
   successFullModalObject: any;
   closeRefuseModal: () => void;
@@ -25,7 +27,6 @@ const RejectAd = ({
 }) => {
   const [filteredItems, setFilteredItems] = useState([]);
   const [allCommentsOk, setAllCommentsOk] = useState(false);
-  const { currentChainObject } = useChainContext();
 
   useEffect(() => {
     for (const item of selectedItems) {
@@ -120,9 +121,7 @@ const RejectAd = ({
             <div className="flex items-center gap-4">
               {!successFullRefuseModal ? (
                 <StyledWeb3Button
-                  contractAddress={
-                    currentChainObject?.smartContracts?.DSPONSORADMIN?.address as Address
-                  }
+                  contractAddress={chainConfig?.smartContracts?.DSPONSORADMIN?.address as Address}
                   onClick={async () => {
                     await toast.promise(handleItemSubmit(false), {
                       pending: "Waiting for confirmation 🕒",

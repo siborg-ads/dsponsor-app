@@ -41,7 +41,7 @@ const steps: {
   }
 ];
 
-const Steps = ({ chainId }: { chainId?: number }) => {
+const Steps = () => {
   const [modalIsOpen, setModalIsOpen] = React.useState<boolean>(false);
   const [selectedImage, setSelectedImage] = React.useState<string>("");
 
@@ -101,7 +101,7 @@ const Steps = ({ chainId }: { chainId?: number }) => {
                           </button>
                           <span className="inline"> for </span>
                           <Link
-                            href={`/${chainId}/offer/1`}
+                            href={`/8453/offer/1`}
                             className="underline text-white hover:text-jacarta-100 inline"
                           >
                             the SiBorg app offer

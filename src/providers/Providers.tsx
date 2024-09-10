@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Ethereum, Polygon, BaseSepoliaTestnet, Sepolia, Base } from "@thirdweb-dev/chains";
+import { Base, Mode, Sepolia } from "@thirdweb-dev/chains";
 import {
   coinbaseWallet,
   embeddedWallet,
@@ -11,13 +11,9 @@ import {
   useChainId,
   walletConnect
 } from "@thirdweb-dev/react"; // v4
-import { ThirdwebProvider } from "thirdweb/react"; // v5
-import ChainProvider from "@/providers/Chain";
-import { SwitchChainProvider } from "@/providers/SwitchChain";
-import { useSwitchChainContext } from "@/hooks/useSwitchChainContext";
+import { SwitchChainProvider, useSwitchChainContext } from "@/providers/SwitchChain";
 import config from "@/config/config";
 import { clientId } from "@/data/services/client";
-import { features } from "@/data/features";
 import { Address } from "thirdweb";
 
 interface GasslessContextValue {
@@ -104,9 +100,9 @@ function InnerProviders({ children }: Readonly<{ children: React.ReactNode }>) {
   }, [selectedChain]);
 
   useEffect(() => {
-    if (chainId && balance && address) {
+    if (chainId && address && balance !== undefined) {
       const OZrelayer = config?.[chainId]?.features?.openZeppelinDefender?.relayerURL;
-      const balanceThreshold = BigInt(config?.[chainId]?.gaslessBalanceThreshold ?? 0);
+      const balanceThreshold = BigInt(config?.[chainId]?.gaslessBalanceThreshold ?? "0");
       const gaslessBalanceCondition = balanceThreshold && balance < balanceThreshold;
 
       const sdkOptions =
@@ -132,8 +128,8 @@ function InnerProviders({ children }: Readonly<{ children: React.ReactNode }>) {
       {...(sdkOptions && { sdkOptions })}
       activeChain={chain}
       clientId={clientId}
-      supportedChains={[Base, Ethereum, BaseSepoliaTestnet, Sepolia, Polygon]}
-      authConfig={{ domain: "dsponsor.com" }}
+      supportedChains={[Base, Mode, Sepolia]}
+      // authConfig={{ domain: "dsponsor.com" }}
       supportedWallets={[
         metamaskWallet(),
         coinbaseWallet({ recommended: true }),
@@ -144,17 +140,9 @@ function InnerProviders({ children }: Readonly<{ children: React.ReactNode }>) {
         })
       ]}
     >
-      <ThirdwebProviderV5>
-        <ChainProvider>
-          <GaslessCollector>{children}</GaslessCollector>
-        </ChainProvider>
-      </ThirdwebProviderV5>
+      <GaslessCollector>{children}</GaslessCollector>
     </ThirdwebProviderV4>
   );
-}
-
-function ThirdwebProviderV5({ children }: { children: React.ReactNode }) {
-  return features?.thirdwebV5 ? <ThirdwebProvider>{children}</ThirdwebProvider> : <>{children}</>;
 }
 
 export default Providers;

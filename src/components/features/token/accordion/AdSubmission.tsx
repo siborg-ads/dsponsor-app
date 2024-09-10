@@ -5,15 +5,17 @@ import { shortenAddress } from "@thirdweb-dev/react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import ModalHelper from "@/components/ui/modals/Helper";
-import { useChainContext } from "@/hooks/useChainContext";
 import { InformationCircleIcon } from "@heroicons/react/20/solid";
 import ResponsiveTooltip from "@/components/ui/ResponsiveTooltip";
 import { Divider } from "@nextui-org/react";
 import StyledWeb3Button from "@/components/ui/buttons/StyledWeb3Button";
 import { Address } from "thirdweb";
 import NormalButton from "@/components/ui/buttons/NormalButton";
+import { ChainObject } from "@/types/chain";
+import { useSwitchChainContext } from "@/providers/SwitchChain";
 
 const AdSubmission = ({
+  chainConfig,
   approvalForAllToken = true,
   handleApprove,
   isListing = false,
@@ -48,6 +50,7 @@ const AdSubmission = ({
   createOffer,
   expectedMultipleAds
 }: {
+  chainConfig: ChainObject;
   approvalForAllToken?: boolean;
   handleApprove?: any;
   isListing?: boolean;
@@ -89,7 +92,13 @@ const AdSubmission = ({
 }) => {
   const [imageRatios, setImageRatios] = React.useState<any[]>([]);
 
-  const { currentChainObject } = useChainContext();
+  const { setSelectedChain } = useSwitchChainContext();
+  useEffect(() => {
+    if (chainConfig) {
+      setSelectedChain(chainConfig?.network);
+    }
+  }, [chainConfig, setSelectedChain]);
+
   const formatDate = (date) => {
     if (!date) return "";
     return date.toLocaleString("en-EN", {
@@ -222,9 +231,7 @@ const AdSubmission = ({
           <div className="modal-footer">
             <div className="flex items-center justify-center space-x-4">
               <StyledWeb3Button
-                contractAddress={
-                  currentChainObject?.smartContracts?.DSPONSORADMIN?.address as Address
-                }
+                contractAddress={chainConfig?.smartContracts?.DSPONSORADMIN?.address as Address}
                 onClick={async () => {
                   await toast.promise(handleSubmit(true), {
                     pending: "Waiting for confirmation 🕒",
@@ -326,9 +333,7 @@ const AdSubmission = ({
           <div className="modal-footer">
             <div className="flex items-center justify-center space-x-4">
               <StyledWeb3Button
-                contractAddress={
-                  currentChainObject?.smartContracts?.DSPONSORADMIN?.address as Address
-                }
+                contractAddress={chainConfig?.smartContracts?.DSPONSORADMIN?.address as Address}
                 onClick={async () => {
                   await toast.promise(handleSubmit(true), {
                     pending: "Waiting for confirmation 🕒",
@@ -622,7 +627,7 @@ const AdSubmission = ({
                     {!createOffer && (
                       <StyledWeb3Button
                         contractAddress={
-                          currentChainObject?.smartContracts?.DSPONSORMP?.address as Address
+                          chainConfig?.smartContracts?.DSPONSORMP?.address as Address
                         }
                         onClick={async () => {
                           await toast.promise(handleApprove, {
@@ -638,7 +643,7 @@ const AdSubmission = ({
 
                     <StyledWeb3Button
                       contractAddress={
-                        currentChainObject?.smartContracts?.DSPONSORADMIN?.address as Address
+                        chainConfig?.smartContracts?.DSPONSORADMIN?.address as Address
                       }
                       onClick={async () => {
                         await toast.promise(handleSubmit(address), {

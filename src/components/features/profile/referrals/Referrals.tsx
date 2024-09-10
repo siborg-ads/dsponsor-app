@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { InformationCircleIcon } from "@heroicons/react/20/solid";
 import { Popover, PopoverTrigger, PopoverContent } from "@nextui-org/react";
 import { ClipboardIcon } from "@heroicons/react/20/solid";
@@ -9,7 +9,6 @@ import Input from "@/components/ui/Input";
 
 const Referrals = ({ userAddr, userData }) => {
   const [isHovered, setIsHovered] = useState<boolean>(false);
-  const [ranking, setRanking] = useState<any>(null);
   const [copied, setCopied] = useState<boolean>(false);
 
   const inputRef = React.useRef<any>();
@@ -18,12 +17,6 @@ const Referrals = ({ userAddr, userData }) => {
   if (typeof window !== "undefined") {
     frontURL = window.location.origin;
   }
-
-  useEffect(() => {
-    if (userData) {
-      setRanking(userData?.rankings[0]);
-    }
-  }, [userData]);
 
   return (
     <div className="bg-secondaryBlack p-6 rounded-lg relative grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -98,7 +91,7 @@ const Referrals = ({ userAddr, userData }) => {
           </Popover>
           <div className="flex items-center text-center justify-center">
             <span className="text-white text-4xl md:text-8xl font-semibold">
-              {ranking?.nbProtocolFeeReferrals ?? 0}
+              {userData?.nbProtocolFeeReferrals ?? 0}
             </span>
           </div>
           <div className="flex items-center justify-center text-center mt-1">

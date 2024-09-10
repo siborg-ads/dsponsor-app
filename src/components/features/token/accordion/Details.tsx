@@ -1,7 +1,6 @@
 import React from "react";
 import Link from "next/link";
 
-import { useChainContext } from "@/hooks/useChainContext";
 import config from "@/config/config";
 import displayOrCheckKnownAddress from "@/utils/addresses/displayOrCheckKnownAddress";
 import { Address } from "thirdweb";
@@ -27,10 +26,8 @@ const Details = ({
   listerAddress?: Address;
   offerData: any;
 }) => {
-  const { currentChainObject } = useChainContext();
-
   const chainName = config[chainId]?.chainName;
-  const chainExplorer = currentChainObject?.explorerBaseURL;
+  const chainExplorer = config[chainId]?.explorerBaseURL;
 
   return (
     <>
