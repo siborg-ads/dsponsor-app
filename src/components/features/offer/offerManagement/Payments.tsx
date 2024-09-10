@@ -15,6 +15,7 @@ import { QuestionMarkCircleIcon } from "@heroicons/react/24/solid";
 
 import ERC20ABI from "@/abi/ERC20.json";
 import { isAddress } from "ethers/lib/utils";
+import ConditionModal from "@/components/ui/modals/ConditionModal";
 
 const isDisabledMessage = (disableMint: boolean) => {
   return disableMint
@@ -49,6 +50,7 @@ const Payments = ({ offer }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [initialDisabled, setInitialDisabled] = useState(false);
   const [disabled, setDisabled] = useState(false);
+  const [isModalVisible, setIsModalVisible] = useState(false);
 
   const { contract: currencyContract } = useContract(currency, ERC20ABI);
   const { data: currencyDecimalsData } = useContractRead(currencyContract, "decimals");
@@ -591,17 +593,12 @@ const Payments = ({ offer }) => {
           </p>
         )}
       </div>
-      <StyledWeb3Button
-        onClick={async () => {
-          if (!nftContractAddress) return;
-
-          if (!currentOwner) {
-            return;
-          }
-
-          /* TODO: Add modal to ensure the user understands the consequences of this action
-          when transfering if the new owner is not an admin, set the new owner as an admin*/
-
+      <ConditionModal
+        title="Transfer Ownership"
+        body="If you transfer your ownership, you won’t be able to manage this “Payment” section of this offer anymore and funds from the next mints with be sent to the new owner address."
+        isVisible={isModalVisible}
+        setIsVisible={setIsModalVisible}
+        onConfirm={async () => {
           await toast
             .promise(handleTransferOwner, {
               pending: "Waiting for confirmation 🕒",
@@ -611,6 +608,15 @@ const Payments = ({ offer }) => {
             .catch((error) => {
               console.error(error);
             });
+          setIsModalVisible(false);
+        }}
+        onCancel={() => setIsModalVisible(false)}
+      />
+      <StyledWeb3Button
+        onClick={() => {
+          if (!nftContractAddress || !currentOwner) return;
+
+          setIsModalVisible(true);
         }}
         isDisabled={!isValidOwner || !nftContractAddress}
         contractAddress={nftContractAddress as Address}
