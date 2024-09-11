@@ -10,6 +10,7 @@ import { formatUnits, getAddress } from "ethers/lib/utils";
 import config from "@/config/config";
 import { ChainObject } from "@/types/chain";
 import ChainSelector from "../chain/ChainSelector";
+import { isAddress } from "thirdweb";
 
 const renderTable = (data, columns, userAddress) => {
   if (!data || data.length === 0 || !Array.isArray(data)) {
@@ -162,7 +163,7 @@ const Tables = ({ activity }) => {
     {
       header: "Referrer",
       render: (item) => (
-        <Link href={`/profile/${item.refAddr}`}>
+        <Link href={isAddress(item.refAddr) ? `/profile/${item.refAddr}` : "#"}>
           <span className="text-primaryPink hover:text-jacarta-100">
             {formatLongAddress(item.refAddrDisplayAddr)}
           </span>

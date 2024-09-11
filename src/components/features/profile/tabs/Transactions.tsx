@@ -166,7 +166,7 @@ const Transactions = ({ manageAddress, lastActivities, isLoading }) => {
                   <td className="py-4 px-4 text-jacarta-100 dark:text-jacarta-100">
                     {activity?.refAddr &&
                     manageAddress &&
-                    getAddress(activity?.refAddr) === getAddress(manageAddress)
+                    activity.refAddr.toLowerCase() === manageAddress.toLowerCase()
                       ? activity?.points
                       : 0}
                   </td>

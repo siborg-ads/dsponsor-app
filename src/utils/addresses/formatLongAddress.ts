@@ -33,11 +33,10 @@ import { isAddress } from "ethers/lib/utils";
  * // `userResult` will be "You".
  */
 const shortenAddress = (address: string): string => {
-  if (address === "You") return address;
-
-  if (!isAddress(address)) return "unknown.eth";
-
-  return `${address.slice(0, 6)}...${address.slice(-4)}`;
+  if (isAddress(address)) {
+    return `${address.slice(0, 6)}...${address.slice(-4)}`;
+  }
+  return address;
 };
 
 export default shortenAddress;

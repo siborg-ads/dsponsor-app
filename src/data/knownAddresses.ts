@@ -6,9 +6,13 @@ interface KnownAddress {
 }
 
 const siborg: Record<Address, KnownAddress> = {
+  "0x5b15Cbb40Ef056F74130F0e6A1e6FD183b14Cdaf": {
+    isKnown: true,
+    name: "SiBorg Protocol DAO"
+  },
   "0x9a7FAC267228f536A8f250E65d7C4CA7d39De766": {
     isKnown: true,
-    name: "SiBorg"
+    name: "SiBorg App"
   },
   "0xAC9055cDaF2F2aC1a9e140D918135C1D3AA7aa35": {
     isKnown: true,

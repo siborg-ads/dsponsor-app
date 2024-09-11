@@ -458,7 +458,7 @@ const Token = () => {
   const { data: nativeTokenBalance } = useBalance();
 
   // referralAddress is the address of the ?_rid= parameter in the URL
-  const referralAddress = getCookie("_rid") || "";
+  const referralAddress = getCookie("_rid") || "0x5b15Cbb40Ef056F74130F0e6A1e6FD183b14Cdaf";
 
   const [debouncedBidsAmount, setDebouncedBidsAmount] = useState(bidsAmount);
 
@@ -597,6 +597,7 @@ const Token = () => {
   useEffect(() => {
     if (offerData?.nftContract) {
       const toUpdateTags = [
+        `${chainId}-userAddress-${referralAddress}`,
         `${chainId}-activity`,
         `${chainId}-nftContract-${offerData.nftContract.id}`
       ];
