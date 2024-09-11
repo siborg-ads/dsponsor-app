@@ -78,7 +78,11 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
         )}
         required={required}
         disabled={disabled}
-        onWheel={onWheel}
+        onWheel={(e) => {
+          if (type === "number") {
+            e.currentTarget.blur();
+          }
+        }}
       />
     );
   }
