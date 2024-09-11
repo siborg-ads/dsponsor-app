@@ -259,11 +259,14 @@ const Profile = () => {
             })
             .catch((err) => console.error(err));
 
-          const toKeepActivities = features?.canFilterTransactionsWithWETH
+          const toKeepActivities = data.lastActivities;
+          /*
+          features?.canFilterTransactionsWithWETH
             ? data?.lastActivities.filter(
                 (activity) => activity.symbol === "WETH" && activity.points > 0
               )
             : data?.lastActivities.filter((activity) => activity.points > 0);
+           */
 
           const activityData = data?.rankings[0];
 

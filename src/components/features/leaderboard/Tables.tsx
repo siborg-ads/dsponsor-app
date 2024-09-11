@@ -2,12 +2,11 @@ import React, { useState, useEffect } from "react";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import Link from "next/link";
 import activityToTopPoints from "@/utils/tables/activityToTopPoints";
-import activityToTopRewarded from "@/utils/tables/activityToTopRewarded";
 import activityToHighestTransactions from "@/utils/tables/activityToHighestTransactions";
 import Cards from "@/components/features/leaderboard/Cards";
 import formatLongAddress from "@/utils/addresses/formatLongAddress";
 import { useAddress } from "@thirdweb-dev/react";
-import { getAddress } from "ethers/lib/utils";
+import { formatUnits, getAddress } from "ethers/lib/utils";
 import config from "@/config/config";
 import { ChainObject } from "@/types/chain";
 import ChainSelector from "../chain/ChainSelector";
@@ -36,7 +35,16 @@ const renderTable = (data, columns, userAddress) => {
               className={`${userAddress && item.address && getAddress(item.address) === getAddress(userAddress) ? (index === 0 ? "bg-primaryPurple bg-opacity-10 border-primaryPurple border" : "bg-primaryPurple bg-opacity-10") : "border-t border-opacity-10 border-jacarta-100 dark:border-primaryPink dark:border-opacity-10"}`}
             >
               {columns.map((col, colIndex) => (
-                <td key={colIndex} className="py-4 px-4">
+                <td
+                  key={colIndex}
+                  className="py-4 px-4"
+                  style={{
+                    maxWidth: "150px", // Set the maximum width here
+                    whiteSpace: "nowrap", // Prevent text wrapping
+                    overflow: "hidden", // Hide overflow text
+                    textOverflow: "ellipsis" // Show '...' for overflowed text
+                  }}
+                >
                   {col.render(item)}
                 </td>
               ))}
@@ -83,6 +91,7 @@ const Tables = ({ activity }) => {
     { header: "Total Boxes", render: (item) => item.totalPoints }
   ];
 
+  /*
   const rewardedColumns = [
     { header: "Rank", render: (item) => item.rank },
     { header: "Total Amount Earned", render: (item) => `${item.totalReceived} USDC` },
@@ -96,6 +105,7 @@ const Tables = ({ activity }) => {
     },
     { header: "# of Outbids", render: (item) => item.refunds }
   ];
+  */
 
   const highestTransactionsColumns = [
     { header: "Type", render: (item) => item.type },
@@ -111,7 +121,24 @@ const Tables = ({ activity }) => {
         );
       }
     },
-    { header: "Boxes", render: (item) => item.points },
+    {
+      header: "Item",
+      render: (item) => (
+        <Link href={`/${chainConfig.chainId}/offer/${item.offerId}/${item.tokenId}`}>
+          <span className="text-primaryPink hover:text-jacarta-100">
+            {item.offerName} #{item.tokenData ? item.tokenData : item.tokenId}
+          </span>
+        </Link>
+      )
+    },
+    {
+      header: "Protocol Fee",
+      render: (item) => {
+        return `${parseFloat(formatUnits(item.fee, item.decimals)).toFixed(4)} ${item.symbol}`;
+      }
+    },
+
+    { header: "Boxes", render: (item) => parseFloat(item.points).toFixed(2) },
     {
       header: "Seller",
       render: (item) => (
@@ -146,7 +173,7 @@ const Tables = ({ activity }) => {
 
   const columns = {
     topPoints: pointColumns,
-    topRewarded: rewardedColumns,
+    //  topRewarded: rewardedColumns,
     topSpenders: highestTransactionsColumns
   };
 
@@ -197,14 +224,14 @@ const Tables = ({ activity }) => {
               <div className="max-w-2xl text-center mx-auto">
                 {key === "topPoints" && (
                   <p className="text-jacarta-100 text-sm md:text-base mb-4">
-                    Each transaction in <b>WETH</b> {/*, <b>USDC</b>, or <b>MODE</b> */} where a
-                    sale or auction is completed rewards in &quot;Boxes&quot; the seller, buyer, and
-                    referrer based on the amount paid. Below are the profiles with the highest
-                    rewards. The more you spend, the more &quot;Boxes&quot; you earn.
-                    &quot;Boxes&quot; may be subject to an airdrop.
+                    Each transaction in <b>WETH</b> or <b>USDC</b> where a sale or auction is
+                    completed rewards in &quot;Boxes&quot; the seller, buyer, and referrer based on
+                    the amount paid. Below are the profiles with the highest rewards. The more you
+                    spend, the more &quot;Boxes&quot; you earn. &quot;Boxes&quot; may be subject to
+                    an airdrop.
                   </p>
                 )}
-
+                {/*
                 {key === "topHolders" && (
                   <p className="text-jacarta-100 text-sm md:text-base mb-4">
                     Here is the list of wallets that acquired the most tokens, along with the total
@@ -218,6 +245,7 @@ const Tables = ({ activity }) => {
                     Here is the list of those who received the most bonuses.
                   </p>
                 )}
+          */}
 
                 {key === "topSpenders" && (
                   <p className="text-jacarta-100 text-sm md:text-base mb-4">

@@ -8,8 +8,9 @@ const Overview = ({ userData, ownedTokens, isLoading, manageAddress }) => {
     {
       value: ownedTokens?.length ?? 0,
       label: "Ad Spaces",
-      informations: "The number of ad spaces you own"
+      informations: "The number of ad spaces this profil own"
     },
+    /*
     {
       value: userData?.nbBids ?? 0,
       label: "Total Bids",
@@ -25,10 +26,11 @@ const Overview = ({ userData, ownedTokens, isLoading, manageAddress }) => {
       label: "Rewards Earned",
       informations: "The total amount of rewards earned"
     },
+    */
     {
       value: userData?.points ?? 0,
-      label: "Boxes Won",
-      informations: "The total number of boxes won"
+      label: "Boxes",
+      informations: "The total number of boxes this profil has earned"
     }
   ];
 

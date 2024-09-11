@@ -53,7 +53,12 @@ const UserTabs = ({
 
   const tabItem = useMemo(
     () => [
-      { id: 1, text: "Activity", section: "activity", icon: <ActivityIcon className="h-4 w-4" /> },
+      {
+        id: 1,
+        text: "Transactions",
+        section: "activity",
+        icon: <ActivityIcon className="h-4 w-4" />
+      },
       { id: 2, text: "Bids", section: "bids", icon: <GavelIcon className="h-4 w-4" /> },
       { id: 3, text: "Owned tokens", section: "owned", icon: <CoinsIcon className="h-4 w-4" /> },
       {
