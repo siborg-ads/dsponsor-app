@@ -92,7 +92,7 @@ const AdSpaces = ({
       for (const element of almostFinalAdSpaces) {
         const key = `${element.chainId}-${element.offerId}`;
         nbTokens[key] = nbTokens[key] ? nbTokens[key] + 1 : 1;
-        if (nbTokens[key] < 3) {
+        if (nbTokens[key] < 2) {
           finalAdSpaces.push(element);
         }
       }

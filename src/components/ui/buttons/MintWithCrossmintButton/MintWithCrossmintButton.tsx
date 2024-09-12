@@ -121,7 +121,7 @@ export default function MintWithCrossmintButton(
         offerId: offer.offerId,
         adParameters: [],
         adDatas: [],
-        referralAdditionalInformation: referrer ?? "0x"
+        referralAdditionalInformation: referrer ?? "0x5b15Cbb40Ef056F74130F0e6A1e6FD183b14Cdaf"
       }
     },
     successCallbackURL: props.successCallbackURL,

@@ -117,7 +117,7 @@ export default function BidWithCrossmintButton(
       _listingId: token.listingId,
       _pricePerToken: props?.perPriceToken,
       _bidder: user.address,
-      _referralAdditionalInformation: referrer ?? "0x"
+      _referralAdditionalInformation: referrer ?? "0x5b15Cbb40Ef056F74130F0e6A1e6FD183b14Cdaf"
     },
     successCallbackURL: props.successCallbackURL,
     failureCallbackURL: props.failureCallbackURL

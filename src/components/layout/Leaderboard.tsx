@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Tables from "@/components/features/leaderboard/Tables";
 import { fetchLeaderboard } from "@/utils/graphql/fetchLeaderboard";
-import processBidsAndCalculateRewards from "@/utils/bids/processBidsAndCalculateRewards";
+// import processBidsAndCalculateRewards from "@/utils/bids/processBidsAndCalculateRewards";
 import LeaderboardSkeleton from "@/components/layout/skeletons/LeaderboardSkeleton";
 import Meta from "@/components/Meta";
 import config from "@/config/config";
@@ -32,8 +32,8 @@ const Marketplace = () => {
 
         for (const activity of activities) {
           const mergedActivities = {
-            ...activity,
-            rankings: processBidsAndCalculateRewards(activity.rankings)
+            ...activity
+            // rankings: processBidsAndCalculateRewards(activity.rankings)
           };
           mergedActivitiesArray.push(mergedActivities);
         }
