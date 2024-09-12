@@ -136,10 +136,8 @@ const Profile = () => {
       setMarketplaceBids(allUserBids);
       setIsLoadingBids(false);
 
-      const createdOffers = offersByUserAddressArray?.filter(
-        (offer) =>
-          offer?.admins?.includes(userAddress?.toLowerCase()) ||
-          offer?.initialCreator?.toLowerCase() === userAddress?.toLowerCase()
+      const createdOffers = offersByUserAddressArray?.filter((offer) =>
+        offer?.admins?.includes(userAddress?.toLowerCase())
       );
 
       setCreatedOffers(createdOffers);

@@ -29,7 +29,7 @@ import config from "@/config/config";
 import { useSwitchChainContext } from "@/providers/SwitchChain";
 import { features } from "@/data/features";
 import UpdateOffer from "@/components/features/offer/offerManagement/UpdateOffer";
-import ChangeMintPrice from "@/components/features/offer/offerManagement/ChangeMintPrice";
+import Payments from "@/components/features/offer/offerManagement/Payments";
 import { Tabs, Tab, TabList, TabPanel } from "react-tabs";
 import { BadgePercentIcon, BlocksIcon, RefreshCwIcon } from "lucide-react";
 import Disable from "@/components/ui/misc/Disable";
@@ -41,6 +41,7 @@ import DsponsorNftABI from "@/abi/dsponsorNFT.json";
 
 import ERC20ABI from "@/abi/ERC20.json";
 import { ChainObject } from "@/types/chain";
+import { Address } from "thirdweb";
 
 const onAuctionCondition = (offer, mint, direct) => {
   return (
@@ -75,6 +76,7 @@ const Offer = () => {
   const [showEntireDescription, setShowEntireDescription] = useState<boolean>(false);
   const [pendingProposalData, setPendingProposalData] = useState([]);
   const [isOwner, setIsOwner] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
   const address = useAddress();
   const { contract: DsponsorAdminContract } = useContract(
     chainConfig?.smartContracts?.DSPONSORADMIN?.address,
@@ -93,7 +95,6 @@ const Offer = () => {
   const { data: decimalsContract } = useContractRead(tokenContract, "decimals");
   const NATIVECurrency = chainConfig?.smartContracts?.currencies?.NATIVE;
   const { setSelectedChain } = useSwitchChainContext();
-  const [, setCanChangeMintPrice] = useState(false);
   const [offerManagementActiveTab, setOfferManagementActiveTab] = useState("integration");
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [accordionActiveTab, setAccordionActiveTab] = useState<string[]>(["tokens"]);
@@ -101,6 +102,9 @@ const Offer = () => {
   const [filterOption, setFilterOption] = useState<"All tokens" | "On auction">("All tokens");
   const [sortOption, setSortOption] = useState<SortOptionsType>("Sort by name");
 
+  const [nftContractAddress, setNftContractAddress] = useState<Address | null>(null);
+  const { contract } = useContract(nftContractAddress);
+  const { data: owner } = useContractRead(contract, "owner");
   /*
   const [currencyDecimals, setCurrencyDecimals] = useState<number | null>(null);
   const [currencySymbol, setCurrencySymbol] = useState<string | null>(null);
@@ -246,6 +250,7 @@ const Offer = () => {
         });
 
         setOfferData(offerDataFinal);
+        setNftContractAddress(offerDataFinal?.nftContract?.id as Address);
       } catch (error) {
         console.error("Error fetching offers:", error);
       } finally {
@@ -376,15 +381,11 @@ const Offer = () => {
   }, [chainConfig, setSelectedChain]);
 
   useEffect(() => {
-    if (
-      address &&
-      (address?.toLowerCase() === offerData?.nftContract?.owner?.newOwner?.toLowerCase() ||
-        offerData?.admins?.includes(address.toLowerCase()))
-    ) {
-      setCanChangeMintPrice(true);
-      setIsOwner(true);
+    if (address && owner) {
+      setIsAdmin(offerData?.admins?.includes(address.toLowerCase()));
+      setIsOwner(owner.toLowerCase() === address.toLowerCase());
     }
-  }, [address, offerData]);
+  }, [address, offerData, owner]);
 
   useEffect(() => {
     if (!offerData) return;
@@ -726,7 +727,7 @@ const Offer = () => {
                 new Date(offerData?.metadata?.offer?.valid_to).getTime() < Date.now() ||
                 offerData?.nftContract?.prices[0]?.enabled === false) && <Disable isOffer={true} />}
 
-              {isOwner && (
+              {isAdmin && (
                 <div className="p-8 bg-white border dark:bg-secondaryBlack dark:border-jacarta-800 border-jacarta-100 rounded-2lg">
                   <div className=" sm:flex sm:flex-wrap">
                     <span className="text-sm dark:text-jacarta-100 text-jacarta-100">
@@ -989,7 +990,7 @@ const Offer = () => {
                 <Accordion.Trigger
                   className={`${accordionActiveTab.includes("adValidation") && "bg-primaryPurple"} w-full flex items-center justify-center gap-4 mb-6 border border-primaryPurple hover:bg-primaryPurple cursor-pointer p-2 rounded-lg`}
                 >
-                  {isOwner && sponsorHasAtLeastOneRejectedProposalAndNoPending && (
+                  {isAdmin && sponsorHasAtLeastOneRejectedProposalAndNoPending && (
                     <ResponsiveTooltip text="You have at least one rejected proposal and no pending proposal.">
                       <ExclamationCircleIcon className="w-6 h-6 text-red" />
                     </ResponsiveTooltip>
@@ -1039,7 +1040,7 @@ const Offer = () => {
       </Accordion.Item>
 
       <Accordion.Item value="offerManagement">
-        {isOwner && (
+        {isAdmin && (
           <div className="container">
             <Accordion.Header className="w-full">
               <Accordion.Trigger
@@ -1092,23 +1093,25 @@ const Offer = () => {
                       Update Offer
                     </button>
                   </Tab>
-                  <Tab
-                    className="nav-item"
-                    onClick={() => setOfferManagementActiveTab("changeMintPrice")}
-                  >
-                    <button
-                      className={
-                        offerManagementActiveTab === "changeMintPrice"
-                          ? "nav-link hover:text-jacarta-900 text-jacarta-100 relative flex items-center whitespace-nowrap py-3 px-4 dark:hover:text-white active font-semibold"
-                          : "nav-link hover:text-jacarta-900 text-jacarta-100 relative flex items-center whitespace-nowrap py-3 px-4 dark:hover:text-white font-semibold"
-                      }
+                  {isOwner && (
+                    <Tab
+                      className="nav-item"
+                      onClick={() => setOfferManagementActiveTab("changeMintPrice")}
                     >
-                      <span className="mr-2">
-                        <BadgePercentIcon className="w-4 h-4" />
-                      </span>
-                      Change Initial Price
-                    </button>
-                  </Tab>
+                      <button
+                        className={
+                          offerManagementActiveTab === "changeMintPrice"
+                            ? "nav-link hover:text-jacarta-900 text-jacarta-100 relative flex items-center whitespace-nowrap py-3 px-4 dark:hover:text-white active font-semibold"
+                            : "nav-link hover:text-jacarta-900 text-jacarta-100 relative flex items-center whitespace-nowrap py-3 px-4 dark:hover:text-white font-semibold"
+                        }
+                      >
+                        <span className="mr-2">
+                          <BadgePercentIcon className="w-4 h-4" />
+                        </span>
+                        Payments
+                      </button>
+                    </Tab>
+                  )}
                 </TabList>
 
                 <TabPanel>
@@ -1120,11 +1123,13 @@ const Offer = () => {
                   />
                 </TabPanel>
                 <TabPanel>
-                  <UpdateOffer chainConfig={chainConfig} offer={offerData} />
+                  <UpdateOffer chainConfig={chainConfig} offer={offerData} contractOwner={owner} />
                 </TabPanel>
-                <TabPanel>
-                  <ChangeMintPrice chainConfig={chainConfig} offer={offerData} />
-                </TabPanel>
+                {isOwner && (
+                  <TabPanel>
+                    <Payments chainConfig={chainConfig} offer={offerData} />
+                  </TabPanel>
+                )}
               </Tabs>
             </Accordion.Content>
           </div>
@@ -1150,6 +1155,7 @@ const Offer = () => {
             <Details
               contractAddress={offerData?.nftContract?.id}
               initialCreator={offerData?.initialCreator}
+              contractOwner={owner}
               isToken={false}
               offerData={offerData}
               chainId={parseFloat(chainId)}

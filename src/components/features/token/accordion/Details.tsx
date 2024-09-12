@@ -8,6 +8,7 @@ import { Address } from "thirdweb";
 const Details = ({
   chainId,
   contractAddress,
+  contractOwner,
   isUserOwner,
   initialCreator,
   isToken = true,
@@ -17,6 +18,7 @@ const Details = ({
 }: {
   chainId: number;
   contractAddress: Address;
+  contractOwner: Address;
   isUserOwner?: Address;
   initialCreator: Address;
   isToken?: boolean;
@@ -29,11 +31,11 @@ const Details = ({
 
   return (
     <>
-      <div className="scrollbar-custom overflow-x-auto rounded-lg dark:bg-secondaryBlack">
+      <div className="overflow-x-auto rounded-lg scrollbar-custom dark:bg-secondaryBlack">
         {/* <!-- Details --> */}
         <div className="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
-          <div className=" dark:bg-secondaryBlack rounded-t-2lg rounded-b-2lg rounded-tl-none bg-white p-6 md:p-10">
-            <div className="mb-2 flex items-center">
+          <div className="p-6 bg-white rounded-tl-none dark:bg-secondaryBlack rounded-t-2lg rounded-b-2lg md:p-10">
+            <div className="flex items-center mb-2">
               <span className="dark:text-jacarta-100 mr-2 min-w-[9rem]">Contract Address:</span>
               <Link
                 href={`${chainExplorer ?? ""}/address/${contractAddress}`}
@@ -43,7 +45,7 @@ const Details = ({
                 {contractAddress}
               </Link>
             </div>
-            <div className="mb-2 flex items-center">
+            <div className="flex items-center mb-2">
               <span className="dark:text-jacarta-100 mr-2 min-w-[9rem]">Contract Creator:</span>
               <Link
                 href={`/profile/${initialCreator}`}
@@ -53,15 +55,25 @@ const Details = ({
                 {displayOrCheckKnownAddress(initialCreator)}
               </Link>
             </div>
+            <div className="flex items-center mb-2">
+              <span className="dark:text-jacarta-100 mr-2 min-w-[9rem]">Contract Owner:</span>
+              <Link
+                href={`/profile/${contractOwner}`}
+                target="_blank"
+                className="text-primaryPink hover:text-jacarta-100"
+              >
+                {displayOrCheckKnownAddress(contractOwner)}
+              </Link>
+            </div>
 
             {isToken && (
-              <div className="mb-2 flex items-center">
+              <div className="flex items-center mb-2">
                 <span className="dark:text-jacarta-100 mr-2 min-w-[9rem]">Owner:</span>
                 {isUserOwner || (listerAddress && status) ? (
                   <div>
                     <Link
                       href={`/profile/${status === "CREATED" ? listerAddress : isUserOwner}`}
-                      className="text-primaryPink hover:text-jacarta-100 mr-2"
+                      className="mr-2 text-primaryPink hover:text-jacarta-100"
                     >
                       {status === "CREATED" ? listerAddress : isUserOwner}
                     </Link>
@@ -71,7 +83,7 @@ const Details = ({
                 )}
               </div>
             )}
-            <div className="flex flex-col gap-2 justify-center">
+            <div className="flex flex-col justify-center gap-2">
               {offerData?.metadata?.offer?.valid_from && offerData?.metadata?.offer?.valid_to && (
                 <div className="flex items-center">
                   <span className="dark:text-jacarta-100 mr-2 min-w-[9rem]">Validity Period:</span>

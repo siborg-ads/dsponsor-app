@@ -13,10 +13,21 @@ import TextArea from "@/components/ui/TextArea";
 import { Address } from "thirdweb";
 import StyledWeb3Button from "@/components/ui/buttons/StyledWeb3Button";
 import { ChainObject } from "@/types/chain";
+import { cn } from "@nextui-org/react";
+import Tippy from "@tippyjs/react";
+import "tippy.js/dist/tippy.css";
 
 const fileTypes = ["JPG", "PNG", "WEBP"];
 
-const UpdateOffer = ({ offer, chainConfig }: { offer: any; chainConfig: ChainObject }) => {
+const UpdateOffer = ({
+  offer,
+  chainConfig,
+  contractOwner
+}: {
+  offer: any;
+  chainConfig: ChainObject;
+  contractOwner: Address;
+}) => {
   const [offerId, setOfferId] = useState<string | null>(null);
   const [metadataURL, setMetadataURL] = useState(null);
   const [admins, setAdmins] = useState<string[]>([]);
@@ -48,7 +59,8 @@ const UpdateOffer = ({ offer, chainConfig }: { offer: any; chainConfig: ChainObj
   const storage = useStorage();
 
   const { contract } = useContract(
-    config[chainId as number]?.smartContracts?.DSPONSORADMIN?.address as Address
+    config[chainId as number]?.smartContracts?.DSPONSORADMIN?.address as Address,
+    config[chainId as number]?.smartContracts?.DSPONSORADMIN?.abi
   );
   const { mutateAsync } = useContractWrite(contract, "updateOffer");
 
@@ -275,11 +287,6 @@ const UpdateOffer = ({ offer, chainConfig }: { offer: any; chainConfig: ChainObj
   };
 
   const handleRemoveAdmin = (index) => {
-    if (index === 0) {
-      toast("You can't remove the initial admin", { type: "error" });
-      return;
-    }
-
     setAdmins(admins.filter((_, i) => i !== index));
   };
 
@@ -457,33 +464,33 @@ const UpdateOffer = ({ offer, chainConfig }: { offer: any; chainConfig: ChainObj
   };
 
   return (
-    <div className="flex flex-col gap-4 justify-center w-full">
-      <div className="flex items-center flex-wrap gap-8">
-        <div className="mb-4 w-1/3">
-          <label className="block text-gray-700 text-sm font-semibold mb-2">Offer name</label>
+    <div className="flex flex-col justify-center w-full gap-4">
+      <div className="flex flex-wrap items-center gap-8">
+        <div className="w-1/3 mb-4">
+          <label className="block mb-2 text-sm font-semibold text-gray-700">Offer name</label>
           <Input
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder={name ?? ""}
-            className="rounded-lg w-full p-2 text-white"
+            className="w-full p-2 text-white rounded-lg"
           />
         </div>
 
-        <div className="mb-4 w-1/3">
-          <label className="block text-gray-700 text-sm font-semibold mb-2">External Link</label>
+        <div className="w-1/3 mb-4">
+          <label className="block mb-2 text-sm font-semibold text-gray-700">External Link</label>
           <Input
             type="text"
             value={externalLink}
             onChange={(e) => setExternalLink(e.target.value)}
             placeholder={externalLink ?? ""}
-            className="rounded-lg w-full p-2 text-white"
+            className="w-full p-2 text-white rounded-lg"
           />
         </div>
       </div>
 
       <div className="mb-4">
-        <label className="block text-gray-700 text-sm font-semibold mb-2">Offer Description</label>
+        <label className="block mb-2 text-sm font-semibold text-gray-700">Offer Description</label>
         <TextArea
           value={description}
           onChange={(e) => setDescription(e.target.value)}
@@ -493,9 +500,9 @@ const UpdateOffer = ({ offer, chainConfig }: { offer: any; chainConfig: ChainObj
       </div>
 
       <div className="mb-4">
-        <label className="block text-gray-700 text-sm font-semibold mb-2">Image</label>
+        <label className="block mb-2 text-sm font-semibold text-gray-700">Image</label>
 
-        <div className="flex items-start gap-4 flex-wrap">
+        <div className="flex flex-wrap items-start gap-4">
           <div
             className={`dark:bg-secondaryBlack dark:border-primaryPurple border-jacarta-100 group relative flex max-w-md flex-col items-center justify-center rounded-lg border-2 border-dashed bg-white  px-1 text-center ${
               previewImages.length <= 0 ? "py-20" : "p-1"
@@ -512,18 +519,18 @@ const UpdateOffer = ({ offer, chainConfig }: { offer: any; chainConfig: ChainObj
                     viewBox="0 0 24 24"
                     width="24"
                     height="24"
-                    className="fill-jacarta-500 mb-4 inline-block dark:fill-white"
+                    className="inline-block mb-4 fill-jacarta-500 dark:fill-white"
                   >
                     <path fill="none" d="M0 0h24v24H0z" />
                     <path d="M16 13l6.964 4.062-2.973.85 2.125 3.681-1.732 1-2.125-3.68-2.223 2.15L16 13zm-2-7h2v2h5a1 1 0 0 1 1 1v4h-2v-3H10v10h4v2H9a1 1 0 0 1-1-1v-5H6v-2h2V9a1 1 0 0 1 1-1h5V6zM4 14v2H2v-2h2zm0-4v2H2v-2h2zm0-4v2H2V6h2zm0-4v2H2V2h2zm4 0v2H6V2h2zm4 0v2h-2V2h2zm4 0v2h-2V2h2z" />
                   </svg>
-                  <p className="dark:text-jacarta-100 mx-auto max-w-xs text-xs">
+                  <p className="max-w-xs mx-auto text-xs dark:text-jacarta-100">
                     JPG, PNG, WEBP Max size: 25 MB
                   </p>
                 </div>
               ) : (
                 <div
-                  className="flex justify-center items-center"
+                  className="flex items-center justify-center"
                   style={{ width: `300px`, height: `300px` }}
                 >
                   <Image
@@ -536,7 +543,7 @@ const UpdateOffer = ({ offer, chainConfig }: { offer: any; chainConfig: ChainObj
                 </div>
               )}
             </div>
-            <div className="dark:bg-primaryPurple bg-jacarta-50 absolute inset-4 cursor-pointer rounded opacity-0 group-hover:opacity-100 ">
+            <div className="absolute rounded opacity-0 cursor-pointer dark:bg-primaryPurple bg-jacarta-50 inset-4 group-hover:opacity-100 ">
               <FileUploader
                 handleChange={handleLogoUpload}
                 name="file"
@@ -554,7 +561,7 @@ const UpdateOffer = ({ offer, chainConfig }: { offer: any; chainConfig: ChainObj
                 setPreviewImages([initialImageUrl]);
                 setFiles([]);
               }}
-              className="bg-green text-white rounded-lg px-4 py-2"
+              className="px-4 py-2 text-white rounded-lg bg-green"
             >
               Reset to default
             </button>
@@ -564,7 +571,7 @@ const UpdateOffer = ({ offer, chainConfig }: { offer: any; chainConfig: ChainObj
                 setPreviewImages([]);
                 setFiles([]);
               }}
-              className="bg-red text-white rounded-lg px-4 py-2"
+              className="px-4 py-2 text-white rounded-lg bg-red"
             >
               Remove Image
             </button>
@@ -574,18 +581,18 @@ const UpdateOffer = ({ offer, chainConfig }: { offer: any; chainConfig: ChainObj
 
       <div className="flex items-center gap-8">
         <div className="mb-4">
-          <label className="block text-gray-700 text-sm font-semibold mb-2">Valid From</label>
+          <label className="block mb-2 text-sm font-semibold text-gray-700">Valid From</label>
           <DatePicker className="max-w-md" value={validDateFrom} onChange={setValidDateFrom} />
         </div>
 
         <div className="mb-4">
-          <label className="block text-gray-700 text-sm font-semibold mb-2">Valid To</label>
+          <label className="block mb-2 text-sm font-semibold text-gray-700">Valid To</label>
           <DatePicker className="max-w-md" value={validDateTo} onChange={setValidDateTo} />
         </div>
       </div>
 
       <div className="mb-4">
-        <label className="block text-gray-700 text-sm font-semibold mb-2">Admins</label>
+        <label className="block mb-2 text-sm font-semibold text-gray-700">Admins</label>
 
         {admins &&
           admins.map((admin, index) => (
@@ -596,19 +603,34 @@ const UpdateOffer = ({ offer, chainConfig }: { offer: any; chainConfig: ChainObj
                 value={admin}
                 onChange={(e) => handleAdminChange(index, e.target.value)}
               />
-              <button
-                type="button"
-                className="bg-red text-white rounded-lg px-4 py-2"
-                onClick={() => handleRemoveAdmin(index)}
+              <Tippy
+                content="You can't remove the contract owner"
+                placement="top"
+                className="box-border p-2 border rounded-md bg-jacarta-300 text-jacarta-900 hover:border-2 dark:hover:border-2 hover:-m-1 duration-400 dark:hover:bg-jacarta-800 dark:border-jacarta-100 dark:border-opacity-10 border-opacity-10 border-jacarta-900 hover:bg-jacarta-800 dark:text-jacarta-100"
+                disabled={admin.toLowerCase() !== contractOwner.toLowerCase()}
               >
-                Remove
-              </button>
+                {/* Wrap in a div because if the button is disabled the tooltip won't show */}
+                <div>
+                  <button
+                    type="button"
+                    className={cn(
+                      "px-4 py-2 text-white rounded-lg bg-red",
+                      admin.toLowerCase() === contractOwner.toLowerCase() &&
+                        "cursor-not-allowed bg-opacity-30"
+                    )}
+                    disabled={admin.toLowerCase() === contractOwner.toLowerCase()}
+                    onClick={() => handleRemoveAdmin(index)}
+                  >
+                    Remove
+                  </button>
+                </div>
+              </Tippy>
             </div>
           ))}
 
         <button
           type="button"
-          className="bg-green text-white rounded-lg px-4 py-2 mt-2"
+          className="px-4 py-2 mt-2 text-white rounded-lg bg-green"
           onClick={handleAddAdmin}
         >
           Add Admin
@@ -617,7 +639,7 @@ const UpdateOffer = ({ offer, chainConfig }: { offer: any; chainConfig: ChainObj
 
       {features.canChangeValidators && (
         <div className="mb-4">
-          <label className="block text-gray-700 text-sm font-semibold mb-2">Validators</label>
+          <label className="block mb-2 text-sm font-semibold text-gray-700">Validators</label>
 
           {validators &&
             validators.map((validator, index) => (
@@ -630,7 +652,7 @@ const UpdateOffer = ({ offer, chainConfig }: { offer: any; chainConfig: ChainObj
                 />
                 <button
                   type="button"
-                  className="bg-red text-white rounded-lg px-4 py-2"
+                  className="px-4 py-2 text-white rounded-lg bg-red"
                   onClick={() => handleRemoveValidator(index)}
                 >
                   Remove
@@ -639,7 +661,7 @@ const UpdateOffer = ({ offer, chainConfig }: { offer: any; chainConfig: ChainObj
             ))}
           <button
             type="button"
-            className="bg-green text-white rounded-lg px-4 py-2"
+            className="px-4 py-2 text-white rounded-lg bg-green"
             onClick={handleAddValidator}
           >
             Add Validator
@@ -648,11 +670,11 @@ const UpdateOffer = ({ offer, chainConfig }: { offer: any; chainConfig: ChainObj
       )}
 
       <div className="mb-4">
-        <label className="block text-gray-700 text-sm font-semibold mb-4">Ad Parameters</label>
+        <label className="block mb-4 text-sm font-semibold text-gray-700">Ad Parameters</label>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           <div className="flex flex-col gap-2 mb-4">
-            <label className="block text-gray-700 text-xs">Image aspect ratio (width:height)</label>
+            <label className="block text-xs text-gray-700">Image aspect ratio (width:height)</label>
             <div className="flex items-center gap-2">
               <Input
                 type="text"
@@ -661,14 +683,14 @@ const UpdateOffer = ({ offer, chainConfig }: { offer: any; chainConfig: ChainObj
                 onChange={handleImageRatioChange}
               />
             </div>
-            <span className="text-jacarta-300 text-xs">
+            <span className="text-xs text-jacarta-300">
               Leave empty or put 0 if you don&apos;t want to specify an aspect ratio.
             </span>
           </div>
         </div>
       </div>
 
-      <div className="mb-4 flex items-center gap-2">
+      <div className="flex items-center gap-2 mb-4">
         <Switch.Root
           checked={disabled}
           onCheckedChange={setDisabled}
@@ -677,7 +699,7 @@ const UpdateOffer = ({ offer, chainConfig }: { offer: any; chainConfig: ChainObj
         >
           <Switch.Thumb className="block w-[19px] h-[19px] bg-white rounded-full transition-transform duration-100 translate-x-0.5 will-change-transform data-[state=checked]:translate-x-[19px]" />
         </Switch.Root>
-        <label className="block text-white text-sm font-semibold">Disable the offer</label>
+        <label className="block text-sm font-semibold text-white">Disable the offer</label>
       </div>
 
       <StyledWeb3Button

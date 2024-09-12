@@ -436,6 +436,7 @@ const Token = () => {
   const { contract: tokenContract } = useContract(tokenCurrencyAddress, ERC20ABI);
   const { data: tokenBalance } = useBalance(tokenCurrencyAddress as Address);
   const { mutateAsync: approve } = useContractWrite(tokenContract, "approve");
+  const { data: owner } = useContractRead(DsponsorAdminContract, "owner");
 
   const { data: isAllowedToMint } = useContractRead<any, any, any, any, any, any>(
     DsponsorNFTContract,
@@ -1201,10 +1202,7 @@ const Token = () => {
       setIsLister(true);
     }
 
-    if (
-      offerData?.admins?.includes(address?.toLowerCase()) ||
-      offerData?.initialCreator?.toLowerCase() === address?.toLowerCase()
-    ) {
+    if (offerData?.admins?.includes(address?.toLowerCase())) {
       setIsOfferOwner(true);
     }
 
@@ -1939,7 +1937,7 @@ const Token = () => {
     title: "Protocol Fees",
     body: (
       <div className="flex flex-col gap-8">
-        <span className="text-jacarta-100 text-sm">
+        <span className="text-sm text-jacarta-100">
           The protocol fees (4%) are used to maintain the platform and the services provided. The
           fees are calculated based on the price of the ad space and are automatically deducted from
           the total amount paid by the buyer.
@@ -1950,7 +1948,7 @@ const Token = () => {
             !!token?.tokenId && tokenId && BigInt(token?.tokenId) === BigInt(tokenId as string)
         )?.mint === null && (
           <div className="flex flex-col gap-2">
-            <ul className="flex flex-col gap-2 list-disc text-sm" style={{ listStyleType: "disc" }}>
+            <ul className="flex flex-col gap-2 text-sm list-disc" style={{ listStyleType: "disc" }}>
               <li>
                 <span className="text-white">
                   Amount sent to the creator: {creatorAmount} {tokenSymbol}
@@ -1975,7 +1973,7 @@ const Token = () => {
             !!token?.tokenId && tokenId && BigInt(token?.tokenId) === BigInt(tokenId as string)
         )?.mint !== null && (
           <div className="flex flex-col gap-2">
-            <ul className="flex flex-col gap-2 list-disc text-sm" style={{ listStyleType: "disc" }}>
+            <ul className="flex flex-col gap-2 text-sm list-disc" style={{ listStyleType: "disc" }}>
               <li>
                 <span className="text-white">
                   Amount sent to the lister: {listerAmount} {tokenSymbol}
@@ -2081,10 +2079,10 @@ const Token = () => {
     >
       <Meta {...metadata} />
       {/*  <!-- Item --> */}
-      <section className="relative lg:mt-24 lg:pt-12  mt-24 pt-12 pb-8">
-        <div className="mb-8 container flex justify-center flex-col items-center ">
-          <div className=" flex justify-center ">
-            <h1 className="text-jacarta-900 font-bold font-display mb-6 text-center text-5xl dark:text-white md:text-left lg:text-6xl xl:text-6xl">
+      <section className="relative pt-12 pb-8 mt-24 lg:mt-24 lg:pt-12">
+        <div className="container flex flex-col items-center justify-center mb-8 ">
+          <div className="flex justify-center ">
+            <h1 className="mb-6 text-5xl font-bold text-center text-jacarta-900 font-display dark:text-white md:text-left lg:text-6xl xl:text-6xl">
               {isOwner && isValidId ? "Your Ad Space" : "Buy Ad Space"}{" "}
             </h1>
             {/* <span className={`ml-2 text-sm font-bold ${isOwner ? (adStatut === 0 ? "text-red" : adStatut === 1 ? "text-green" : adStatut === 2 ? "text-primaryPurple" : "hidden") : "hidden"}`}>
@@ -2101,7 +2099,7 @@ const Token = () => {
 
           <div className="md:flex md:flex-wrap" key={id}>
             {/* <!-- Image --> */}
-            <figure className="mb-8 md:mb-0 md:w-2/5 md:flex-shrink-0 md:flex-grow-0 items-start md:basis-auto lg:w-1/2 w-full flex justify-center relative">
+            <figure className="relative flex items-start justify-center w-full mb-8 md:mb-0 md:w-2/5 md:flex-shrink-0 md:flex-grow-0 md:basis-auto lg:w-1/2">
               <button
                 className="w-full md:sticky md:top-0 md:right-0"
                 onClick={() => setImageModal(true)}
@@ -2111,7 +2109,7 @@ const Token = () => {
                   height={726}
                   src={imageUrl ?? "/images/gradients/gradient_creative.jpg"}
                   alt="image"
-                  className="rounded-2xl cursor-pointer h-auto object-contain w-full shadow-lg"
+                  className="object-contain w-full h-auto shadow-lg cursor-pointer rounded-2xl"
                 />
               </button>
 
@@ -2123,13 +2121,13 @@ const Token = () => {
                     height={722}
                     src={imageUrl ?? "/images/gradients/gradient_creative.jpg"}
                     alt="image"
-                    className="h-full object-cover w-full rounded-2xl"
+                    className="object-cover w-full h-full rounded-2xl"
                   />
                 </div>
 
                 <button
                   type="button"
-                  className="btn-close absolute top-6 right-6"
+                  className="absolute btn-close top-6 right-6"
                   onClick={() => setImageModal(false)}
                 >
                   <svg
@@ -2137,7 +2135,7 @@ const Token = () => {
                     viewBox="0 0 24 24"
                     width="24"
                     height="24"
-                    className="h-6 w-6 fill-white"
+                    className="w-6 h-6 fill-white"
                   >
                     <path fill="none" d="M0 0h24v24H0z" />
                     <path d="M12 10.586l4.95-4.95 1.414 1.414-4.95 4.95 4.95 4.95-1.414 1.414-4.95-4.95-4.95 4.95-1.414-1.414 4.95-4.95-4.95-4.95L7.05 5.636z" />
@@ -2151,12 +2149,12 @@ const Token = () => {
             <div className="md:w-3/5 md:basis-auto md:pl-8 lg:w-1/2 lg:pl-[3.75rem]">
               {/* <!-- Collection / Likes / Actions --> */}
               <Link href={`/${chainId}/offer/${offerId}`} className="flex">
-                <h2 className="font-display text-jacarta-900 mb-4 dark:hover:text-primaryPurple text-3xl font-semibold dark:text-white">
+                <h2 className="mb-4 text-3xl font-semibold font-display text-jacarta-900 dark:hover:text-primaryPurple dark:text-white">
                   {name}
                 </h2>
               </Link>
 
-              <div className="mb-8 flex items-center gap-4 whitespace-nowrap flex-wrap">
+              <div className="flex flex-wrap items-center gap-4 mb-8 whitespace-nowrap">
                 {((tokenSymbol &&
                   tokenStatut !== "MINTED" &&
                   (firstSelectedListing?.status === "CREATED" ||
@@ -2164,7 +2162,7 @@ const Token = () => {
                   (conditions?.conditionsObject?.mintDisabled === false &&
                     tokenStatut === "MINTABLE")) && (
                   <div className="flex items-center">
-                    <span className="text-green text-sm font-medium tracking-tight mr-2">
+                    <span className="mr-2 text-sm font-medium tracking-tight text-green">
                       {!!totalPrice && totalPrice > 0
                         ? `${finalPrice ?? 0} ${tokenSymbol}`
                         : "Free"}
@@ -2173,11 +2171,11 @@ const Token = () => {
                     <ModalHelper {...modalHelper} size="small" />
                   </div>
                 )}
-                <span className="dark:text-jacarta-100 text-jacarta-100 text-sm">
+                <span className="text-sm dark:text-jacarta-100 text-jacarta-100">
                   Space #{" "}
                   <strong className="dark:text-white">{tokenData ?? formatTokenId(tokenId)}</strong>{" "}
                 </span>
-                <span className="text-jacarta-100 block text-sm ">
+                <span className="block text-sm text-jacarta-100 ">
                   Creator <strong className="dark:text-white">{royalties}% royalties</strong>
                 </span>
                 {offerData?.nftContract?.tokens?.find(
@@ -2186,7 +2184,7 @@ const Token = () => {
                     tokenId &&
                     BigInt(token?.tokenId) === BigInt(tokenId as string)
                 )?.metadata?.valid_from && (
-                  <span className="text-jacarta-100 text-sm flex flex-wrap gap-1">
+                  <span className="flex flex-wrap gap-1 text-sm text-jacarta-100">
                     Ownership period:{" "}
                     <strong className="dark:text-white">
                       {offerData?.nftContract?.tokens?.find(
@@ -2229,7 +2227,7 @@ const Token = () => {
               </div>
 
               {showEntireDescription ? (
-                <p className="dark:text-jacarta-100 mb-10">
+                <p className="mb-10 dark:text-jacarta-100">
                   {addLineBreaks(description)}{" "}
                   {description?.length > 1000 && (
                     <button
@@ -2242,7 +2240,7 @@ const Token = () => {
                 </p>
               ) : (
                 <div>
-                  <p className="dark:text-jacarta-100 mb-10">
+                  <p className="mb-10 dark:text-jacarta-100">
                     {description?.length > 1000
                       ? addLineBreaks(description?.slice(0, 1000) + "...")
                       : addLineBreaks(description)}{" "}
@@ -2273,8 +2271,8 @@ const Token = () => {
                 ((conditions?.conditionsObject?.isAuction &&
                   !conditions?.conditionsObject?.hasBids) ||
                   conditions?.conditionsObject?.isDirect) && (
-                  <div className="p-4 bg-secondaryBlack rounded-lg my-4">
-                    <p className="text-center text-white font-semibold">
+                  <div className="p-4 my-4 rounded-lg bg-secondaryBlack">
+                    <p className="font-semibold text-center text-white">
                       The current listing is ended
                     </p>
                   </div>
@@ -2298,11 +2296,11 @@ const Token = () => {
                       firstSelectedListing?.startTime < now &&
                       firstSelectedListing?.endTime > now)) &&
                     successFullBuyModal && (
-                      <div className="dark:bg-secondaryBlack dark:border-jacarta-800 mb-2 border-jacarta-100 rounded-2lg border flex flex-col gap-4 bg-white p-8">
-                        <div className="sm:flex sm:flex-wrap flex-col gap-8">
+                      <div className="flex flex-col gap-4 p-8 mb-2 bg-white border dark:bg-secondaryBlack dark:border-jacarta-800 border-jacarta-100 rounded-2lg">
+                        <div className="flex-col gap-8 sm:flex sm:flex-wrap">
                           {firstSelectedListing?.listingType === "Direct" && (
-                            <div className="flex items-center justify-between gap-4 w-full">
-                              <span className="js-countdown-ends-label text-base text-jacarta-100 dark:text-jacarta-100">
+                            <div className="flex items-center justify-between w-full gap-4">
+                              <span className="text-base js-countdown-ends-label text-jacarta-100 dark:text-jacarta-100">
                                 Direct listing ends in:
                               </span>
                               <Timer
@@ -2315,14 +2313,14 @@ const Token = () => {
                             </div>
                           )}
 
-                          <span className="dark:text-jacarta-100 text-jacarta-100 text-sm">
+                          <span className="text-sm dark:text-jacarta-100 text-jacarta-100">
                             Buying the ad space give you the exclusive right to submit an ad. The
                             media still has the power to validate or reject ad assets. You re free
                             to change the ad at anytime. And free to resell on the open market your
                             ad space.{" "}
                           </span>
                         </div>
-                        <div className="w-full flex justify-center">
+                        <div className="flex justify-center w-full">
                           <button
                             onClick={() => {
                               handleBuyModal();
@@ -2339,10 +2337,10 @@ const Token = () => {
                   {firstSelectedListing?.status === "CREATED" &&
                     firstSelectedListing?.listingType === "Auction" &&
                     firstSelectedListing?.startTime >= now && (
-                      <div className="dark:bg-secondaryBlack dark:border-jacarta-800 mb-2 border-jacarta-100 rounded-2lg border flex flex-col gap-4 bg-white p-8">
-                        <div className="sm:flex sm:flex-wrap flex-col gap-8">
-                          <div className="flex items-center justify-between gap-4 w-full">
-                            <span className="js-countdown-ends-label text-base text-jacarta-100 dark:text-jacarta-100">
+                      <div className="flex flex-col gap-4 p-8 mb-2 bg-white border dark:bg-secondaryBlack dark:border-jacarta-800 border-jacarta-100 rounded-2lg">
+                        <div className="flex-col gap-8 sm:flex sm:flex-wrap">
+                          <div className="flex items-center justify-between w-full gap-4">
+                            <span className="text-base js-countdown-ends-label text-jacarta-100 dark:text-jacarta-100">
                               Auction will start in:
                             </span>
                             <Timer
@@ -2358,8 +2356,8 @@ const Token = () => {
                   {conditions?.conditionsObject?.isCreator &&
                     airdropContainer &&
                     !conditions?.conditionsObject?.isMinted && (
-                      <div className="dark:bg-secondaryBlack mt-4 dark:border-jacarta-800 mb-2 border-jacarta-100 rounded-2lg border flex flex-col gap-4 bg-white p-8">
-                        <span className="dark:text-jacarta-100 text-jacarta-100 text-lg">
+                      <div className="flex flex-col gap-4 p-8 mt-4 mb-2 bg-white border dark:bg-secondaryBlack dark:border-jacarta-800 border-jacarta-100 rounded-2lg">
+                        <span className="text-lg dark:text-jacarta-100 text-jacarta-100">
                           Airdrop this token
                         </span>
 
@@ -2395,7 +2393,7 @@ const Token = () => {
                           )}
                         </div>
 
-                        <div className="w-full flex">
+                        <div className="flex w-full">
                           <StyledWeb3Button
                             contractAddress={nftContractAddress as Address}
                             onClick={async () => {
@@ -2418,10 +2416,10 @@ const Token = () => {
                   {firstSelectedListing?.status === "CREATED" &&
                     firstSelectedListing?.listingType === "Direct" &&
                     firstSelectedListing?.startTime >= now && (
-                      <div className="dark:bg-secondaryBlack dark:border-jacarta-800 mb-2 border-jacarta-100 rounded-2lg border flex flex-col gap-4 bg-white p-8">
-                        <div className="sm:flex sm:flex-wrap flex-col gap-8">
-                          <div className="flex items-center justify-between gap-4 w-full">
-                            <span className="js-countdown-ends-label text-base text-jacarta-100 dark:text-jacarta-100">
+                      <div className="flex flex-col gap-4 p-8 mb-2 bg-white border dark:bg-secondaryBlack dark:border-jacarta-800 border-jacarta-100 rounded-2lg">
+                        <div className="flex-col gap-8 sm:flex sm:flex-wrap">
+                          <div className="flex items-center justify-between w-full gap-4">
+                            <span className="text-base js-countdown-ends-label text-jacarta-100 dark:text-jacarta-100">
                               Direct listing will start in:
                             </span>
                             <Timer
@@ -2520,7 +2518,7 @@ const Token = () => {
                 <Accordion.Trigger
                   className={`${accordionActiveTab.includes("adSubmission") && "bg-primaryPurple"} w-full flex items-center justify-center gap-4 mb-6 border border-primaryPurple hover:bg-primaryPurple cursor-pointer p-2 rounded-lg`}
                 >
-                  <h2 className="text-jacarta-900 font-bold font-display text-center text-3xl dark:text-white ">
+                  <h2 className="text-3xl font-bold text-center text-jacarta-900 font-display dark:text-white ">
                     Ad Submission
                   </h2>
                   <ChevronDownIcon
@@ -2531,7 +2529,7 @@ const Token = () => {
 
               <Accordion.Content className="mb-6">
                 {isTokenInAuction && (
-                  <div className="text-center w-full">
+                  <div className="w-full text-center">
                     <span className="dark:text-warning text-md ">
                       ⚠️ You cannot submit an ad while your token is in auction.
                     </span>
@@ -2625,7 +2623,7 @@ const Token = () => {
                         <ExclamationCircleIcon className="w-6 h-6 text-red" />
                       </ResponsiveTooltip>
                     )}
-                    <h2 className="text-jacarta-900 font-bold font-display text-center text-3xl dark:text-white ">
+                    <h2 className="text-3xl font-bold text-center text-jacarta-900 font-display dark:text-white ">
                       Ad Validation
                     </h2>
                     <ChevronDownIcon
@@ -2669,7 +2667,7 @@ const Token = () => {
               <Accordion.Trigger
                 className={`${accordionActiveTab.includes("latestSales") && "bg-primaryPurple"} w-full flex items-center justify-center gap-4 mb-6 border border-primaryPurple hover:bg-primaryPurple cursor-pointer p-2 rounded-lg`}
               >
-                <h2 className="text-jacarta-900 font-bold font-display text-center text-3xl dark:text-white ">
+                <h2 className="text-3xl font-bold text-center text-jacarta-900 font-display dark:text-white ">
                   Latest Sales
                 </h2>
                 <ChevronDownIcon
@@ -2697,7 +2695,7 @@ const Token = () => {
                 <Accordion.Trigger
                   className={`${accordionActiveTab.includes("latestBids") && "bg-primaryPurple"} w-full flex items-center justify-center gap-4 mb-6 border border-primaryPurple hover:bg-primaryPurple cursor-pointer p-2 rounded-lg`}
                 >
-                  <h2 className="text-jacarta-900 font-bold font-display text-center text-3xl dark:text-white ">
+                  <h2 className="text-3xl font-bold text-center text-jacarta-900 font-display dark:text-white ">
                     Latest Bids
                   </h2>
                   <ChevronDownIcon
@@ -2719,7 +2717,7 @@ const Token = () => {
             <Accordion.Trigger
               className={`${accordionActiveTab.includes("details") && "bg-primaryPurple"} w-full flex items-center justify-center gap-4 mb-6 border border-primaryPurple hover:bg-primaryPurple cursor-pointer p-2 rounded-lg`}
             >
-              <h2 className="text-jacarta-900 font-bold font-display text-center text-3xl dark:text-white ">
+              <h2 className="text-3xl font-bold text-center text-jacarta-900 font-display dark:text-white ">
                 Details
               </h2>
               <ChevronDownIcon
@@ -2737,6 +2735,7 @@ const Token = () => {
               status={firstSelectedListing?.status}
               listerAddress={firstSelectedListing?.lister}
               offerData={offerData}
+              contractOwner={owner}
             />
           </Accordion.Content>
         </div>
@@ -2765,7 +2764,7 @@ const Token = () => {
         </div>
       )}
       {buyModal && (
-        <div className="modal fade show block">
+        <div className="block modal fade show">
           <BuyModal
             chainConfig={chainConfig}
             tags={tags}
