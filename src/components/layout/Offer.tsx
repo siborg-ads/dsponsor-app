@@ -266,6 +266,7 @@ const Offer = () => {
   useEffect(() => {
     if (offerData && address) {
       if (offerData?.admins?.includes(address?.toLowerCase())) {
+        setAccordionActiveTab(["adValidation"]);
         setIsMedia(true);
       } else {
         setIsMedia(false);
