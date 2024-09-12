@@ -1108,7 +1108,7 @@ const Offer = () => {
                         <span className="mr-2">
                           <BadgePercentIcon className="w-4 h-4" />
                         </span>
-                        Payements
+                        Payments
                       </button>
                     </Tab>
                   )}

@@ -39,12 +39,12 @@ const ConditionModal = ({ title, body, onConfirm, onCancel, isVisible, setIsVisi
               onChange={(e) => setChecked(e.target.checked)}
               color="primary"
             >
-              J&apos;ai bien compris
+              I understand
             </Checkbox>
           </ModalBody>
           <ModalFooter>
             <Button color="danger" onPress={closeModal}>
-              Annuler
+              Cancel
             </Button>
             <Button
               onPress={handleConfirm}
@@ -55,7 +55,7 @@ const ConditionModal = ({ title, body, onConfirm, onCancel, isVisible, setIsVisi
                   : "bg-primaryPurple text-white"
               )}
             >
-              Valider
+              Validate
             </Button>
           </ModalFooter>
         </ModalContent>

@@ -1202,10 +1202,7 @@ const Token = () => {
       setIsLister(true);
     }
 
-    if (
-      offerData?.admins?.includes(address?.toLowerCase()) ||
-      offerData?.initialCreator?.toLowerCase() === address?.toLowerCase()
-    ) {
+    if (offerData?.admins?.includes(address?.toLowerCase())) {
       setIsOfferOwner(true);
     }
 

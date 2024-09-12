@@ -350,6 +350,83 @@ const Payments = ({ offer, chainConfig }: { offer: any; chainConfig: ChainObject
           Mint funds are sent to offer contract owner
         </span>
       </div>
+      <div className="my-4">
+        <div className="flex items-center gap-2 mb-2">
+          <label className="block text-sm font-semibold text-gray-700">Owner</label>
+
+          <ResponsiveTooltip text="The owner of the token has the exclusive right to manage the mint price and royalties settings. You can transfer the ownership to another address that needs to be an admin of the offer.">
+            <QuestionMarkCircleIcon className="w-4 h-4 text-white" />
+          </ResponsiveTooltip>
+        </div>
+
+        <div className="relative flex items-center w-full max-w-md">
+          <Dropdown showArrow>
+            <DropdownTrigger>
+              <Button
+                size="lg"
+                className="flex justify-start w-full h-full p-3 text-white border rounded-lg text-start bg-jacarta-800 hover:bg-jacarta-800 border-primaryPurple ring-0 focus:ring-0 focus:border-primaryPurple placeholder:text-jacarta-300"
+              >
+                {currentOwner ?? "Select owner"}
+              </Button>
+            </DropdownTrigger>
+            <DropdownMenu
+              variant="shadow"
+              disallowEmptySelection
+              selectionMode="single"
+              selectedKeys={currentOwner!}
+              onSelectionChange={(selected) => {
+                setCurrentOwner(selected.anchorKey as Address);
+              }}
+              className="w-full"
+            >
+              <DropdownSection title="Admins">
+                {offer.admins.map((admin: Address) => (
+                  <DropdownItem key={admin} className="w-full text-7xl">
+                    {admin}
+                  </DropdownItem>
+                ))}
+              </DropdownSection>
+            </DropdownMenu>
+          </Dropdown>
+        </div>
+
+        <button
+          onClick={() => setCurrentOwner(initialOwner)}
+          className="flex items-center gap-2 mt-2 text-sm cursor-pointer text-primaryPurple hover:text-opacity-80"
+        >
+          Set to current owner
+        </button>
+      </div>
+      <ConditionModal
+        title="Transfer Ownership"
+        body="If you transfer your ownership, you won’t be able to manage this “Payment” section of this offer anymore and funds from the next mints with be sent to the new owner address."
+        isVisible={isModalVisible}
+        setIsVisible={setIsModalVisible}
+        onConfirm={async () => {
+          await toast
+            .promise(handleTransferOwner, {
+              pending: "Waiting for confirmation 🕒",
+              success: "The owner of the token has been transfered 🎉",
+              error: "Transaction rejected 🤯"
+            })
+            .catch((error) => {
+              console.error(error);
+            });
+          setIsModalVisible(false);
+        }}
+        onCancel={() => setIsModalVisible(false)}
+      />
+      <StyledWeb3Button
+        onClick={() => {
+          if (!nftContractAddress || !currentOwner) return;
+
+          setIsModalVisible(true);
+        }}
+        isDisabled={!nftContractAddress}
+        contractAddress={nftContractAddress as Address}
+        defaultText="Transfer Ownership"
+      />
+      <hr />
       {disabled && (
         <p className="text-sm text-red">The minting feature is currently disabled for this offer</p>
       )}
@@ -488,6 +565,7 @@ const Payments = ({ offer, chainConfig }: { offer: any; chainConfig: ChainObject
           defaultText="Change Mint Price"
         />
       )}
+      <hr />
       <div className="flex flex-col gap-6 my-6">
         <div>
           <label className="block mb-2 text-sm font-semibold text-gray-700">
@@ -573,83 +651,6 @@ const Payments = ({ offer, chainConfig }: { offer: any; chainConfig: ChainObject
           defaultText="Change Royalties Settings"
         />
       </div>
-
-      <div className="my-4">
-        <div className="flex items-center gap-2 mb-2">
-          <label className="block text-sm font-semibold text-gray-700">Owner</label>
-
-          <ResponsiveTooltip text="The owner of the token has the exclusive right to manage the mint price and royalties settings. You can transfer the ownership to another address that needs to be an admin of the offer.">
-            <QuestionMarkCircleIcon className="w-4 h-4 text-white" />
-          </ResponsiveTooltip>
-        </div>
-
-        <div className="relative flex items-center w-full max-w-md">
-          <Dropdown showArrow>
-            <DropdownTrigger>
-              <Button
-                size="lg"
-                className="flex justify-start w-full h-full p-3 text-white border rounded-lg text-start bg-jacarta-800 hover:bg-jacarta-800 border-primaryPurple ring-0 focus:ring-0 focus:border-primaryPurple placeholder:text-jacarta-300"
-              >
-                {currentOwner ?? "Select owner"}
-              </Button>
-            </DropdownTrigger>
-            <DropdownMenu
-              variant="shadow"
-              disallowEmptySelection
-              selectionMode="single"
-              selectedKeys={currentOwner!}
-              onSelectionChange={(selected) => {
-                setCurrentOwner(selected.anchorKey as Address);
-              }}
-              className="w-full"
-            >
-              <DropdownSection title="Admins">
-                {offer.admins.map((admin: Address) => (
-                  <DropdownItem key={admin} className="w-full text-7xl">
-                    {admin}
-                  </DropdownItem>
-                ))}
-              </DropdownSection>
-            </DropdownMenu>
-          </Dropdown>
-        </div>
-
-        <button
-          onClick={() => setCurrentOwner(initialOwner)}
-          className="flex items-center gap-2 mt-2 text-sm cursor-pointer text-primaryPurple hover:text-opacity-80"
-        >
-          Set to current owner
-        </button>
-      </div>
-      <ConditionModal
-        title="Transfer Ownership"
-        body="If you transfer your ownership, you won’t be able to manage this “Payment” section of this offer anymore and funds from the next mints with be sent to the new owner address."
-        isVisible={isModalVisible}
-        setIsVisible={setIsModalVisible}
-        onConfirm={async () => {
-          await toast
-            .promise(handleTransferOwner, {
-              pending: "Waiting for confirmation 🕒",
-              success: "The owner of the token has been transfered 🎉",
-              error: "Transaction rejected 🤯"
-            })
-            .catch((error) => {
-              console.error(error);
-            });
-          setIsModalVisible(false);
-        }}
-        onCancel={() => setIsModalVisible(false)}
-      />
-      <StyledWeb3Button
-        onClick={() => {
-          if (!nftContractAddress || !currentOwner) return;
-
-          setIsModalVisible(true);
-        }}
-        isDisabled={!nftContractAddress}
-        contractAddress={nftContractAddress as Address}
-        defaultText="Transfer Ownership"
-      />
     </div>
   );
 };
