@@ -6,7 +6,7 @@ import Input from "@/components/ui/Input";
 import { useStorage } from "@thirdweb-dev/react";
 import MainButton from "@/components/ui/buttons/MainButton";
 
-const fileTypes = ["JPG", "PNG", "WEBP"];
+const fileTypes = ["JPG", "PNG", "WEBP", "GIF"];
 
 const OfferImageAndURL = ({
   stepsRef,
@@ -56,7 +56,7 @@ const OfferImageAndURL = ({
       }}
       className={styles.form__step}
     >
-      <div className="pr-6 pl-2 relative flex flex-col items-center gap-8">
+      <div className="relative flex flex-col items-center gap-8 pl-2 pr-6">
         <div className="absolute top-0 right-0">
           {currentSlide + 1}/{numSteps}
         </div>
@@ -79,9 +79,9 @@ const OfferImageAndURL = ({
 };
 
 const StepHeader = ({ title }) => (
-  <div className="flex flex-col w-full items-center border-b-1 border-primaryPurple shadow-2xl pb-2">
+  <div className="flex flex-col items-center w-full pb-2 shadow-2xl border-b-1 border-primaryPurple">
     <h3 className="mb-2 text-jacarta-100">{title}</h3>
-    <p className="text-center pt-2 dark:text-white">
+    <p className="pt-2 text-center dark:text-white">
       Provide the landing page URL, an image, and the terms that represent the offer.
     </p>
   </div>
@@ -91,7 +91,7 @@ const ExternalLinkInput = ({ value, onChange }) => (
   <div className="">
     <label
       htmlFor="item-external-link"
-      className="font-display text-jacarta-900 mb-2 block dark:text-white"
+      className="block mb-2 font-display text-jacarta-900 dark:text-white"
     >
       Specify where advertisements will be exposed (website URL, mobile app, ...)
       <span className="text-red">*</span>
@@ -107,18 +107,18 @@ const ExternalLinkInput = ({ value, onChange }) => (
 );
 
 const FileUploadSection = ({ file, previewImage, handleLogoUpload }) => (
-  <div className="flex items-center justify-center flex-col">
-    <label className="font-display text-jacarta-900 mb-2 block dark:text-white">
+  <div className="flex flex-col items-center justify-center">
+    <label className="block mb-2 font-display text-jacarta-900 dark:text-white">
       Illustration
       <span className="text-red">*</span>
     </label>
-    <p className="dark:text-jacarta-100 text-jacarta-100 text-2xs mb-3">
+    <p className="mb-3 dark:text-jacarta-100 text-jacarta-100 text-2xs">
       Submit a square image to illustrate your offer
     </p>
     {file.length > 0 ? (
-      <p className="text-2xs mb-3 text-green">Successfully uploaded: {file[0].name}</p>
+      <p className="mb-3 text-2xs text-green">Successfully uploaded: {file[0].name}</p>
     ) : (
-      <p className="dark:text-jacarta-100 text-jacarta-100 text-2xs mb-3">
+      <p className="mb-3 dark:text-jacarta-100 text-jacarta-100 text-2xs">
         Drag or choose your file to upload
       </p>
     )}
@@ -161,19 +161,19 @@ const TermsPdfUploader = ({
   };
 
   return (
-    <div className="flex items-center justify-center flex-col">
-      <label className="font-display text-jacarta-900 mb-2 block dark:text-white">
+    <div className="flex flex-col items-center justify-center">
+      <label className="block mb-2 font-display text-jacarta-900 dark:text-white">
         Terms of Use
         <span className="text-red">*</span>
       </label>
-      <p className="dark:text-jacarta-100 text-jacarta-100 text-2xs mb-3">
+      <p className="mb-3 dark:text-jacarta-100 text-jacarta-100 text-2xs">
         Submit the terms of use for the ad space you are offering.
       </p>
 
       {termsURL ? (
-        <p className="text-2xs mb-3 text-center text-green">Successfully uploaded: {termsURL}</p>
+        <p className="mb-3 text-center text-2xs text-green">Successfully uploaded: {termsURL}</p>
       ) : (
-        <p className="dark:text-jacarta-100 text-jacarta-100 text-2xs mb-3">
+        <p className="mb-3 dark:text-jacarta-100 text-jacarta-100 text-2xs">
           Drag or choose your file to upload
         </p>
       )}
@@ -195,18 +195,20 @@ const TermsPdfUploader = ({
 };
 
 const EmptyFileUploader = () => (
-  <div className="relative flex justify-center items-center z-10 cursor-pointer p-1">
+  <div className="relative z-10 flex items-center justify-center p-1 cursor-pointer">
     <svg
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 24 24"
       width="24"
       height="24"
-      className="fill-jacarta-500 mb-4 inline-block dark:fill-white"
+      className="inline-block mb-4 fill-jacarta-500 dark:fill-white"
     >
       <path fill="none" d="M0 0h24v24H0z" />
       <path d="M16 13l6.964 4.062-2.973.85 2.125 3.681-1.732 1-2.125-3.68-2.223 2.15L16 13zm-2-7h2v2h5a1 1 0 0 1 1 1v4h-2v-3H10v10h4v2H9a1 1 0 0 1-1-1v-5H6v-2h2V9a1 1 0 0 1 1-1h5V6zM4 14v2H2v-2h2zm0-4v2H2v-2h2zm0-4v2H2V6h2zm0-4v2H2V2h2zm4 0v2H6V2h2zm4 0v2h-2V2h2zm4 0v2h-2V2h2z" />
     </svg>
-    <p className="dark:text-jacarta-100 mx-auto max-w-xs text-xs">JPG, PNG, WEBP Max size: 25 MB</p>
+    <p className="max-w-xs mx-auto text-xs dark:text-jacarta-100">
+      JPG, PNG, WEBP, GIF Max size: 25 MB
+    </p>
   </div>
 );
 
@@ -217,7 +219,7 @@ const ImagePreview = ({ previewImage }) => (
 );
 
 const FileUploadOverlay = ({ handleChange, fileTypes }) => (
-  <div className="dark:bg-primaryPurple bg-jacarta-50 absolute inset-4 cursor-pointer rounded opacity-0 group-hover:opacity-100">
+  <div className="absolute rounded opacity-0 cursor-pointer dark:bg-primaryPurple bg-jacarta-50 inset-4 group-hover:opacity-100">
     <FileUploader
       handleChange={handleChange}
       name="file"
@@ -240,11 +242,11 @@ const TermsSection = ({
   termsURL: string;
   setTermsURL: React.Dispatch<React.SetStateAction<string>>;
 }) => (
-  <div className="mb-6 flex items-center justify-center flex-col">
-    <label className="font-display text-jacarta-900 mb-2 block dark:text-white">
+  <div className="flex flex-col items-center justify-center mb-6">
+    <label className="block mb-2 font-display text-jacarta-900 dark:text-white">
       Legal <span className="text-sm text-jacarta-100">(optional)</span>
     </label>
-    <p className="dark:text-jacarta-100 text-jacarta-100 text-2xs mb-3">
+    <p className="mb-3 dark:text-jacarta-100 text-jacarta-100 text-2xs">
       Provide the terms of use for the ad space you are offering. This helps to clearly define what
       is expected of the advertisements displayed in the sold spaces and the rules that must be
       adhered to. <br /> Import a PDF or a link.
@@ -276,7 +278,7 @@ const ExternalTermsInput = ({ termsURL, setTermsURL }) => (
   <div className="mb-6">
     <label
       htmlFor="terms-external-link"
-      className="font-display text-jacarta-900 mb-2 block dark:text-white"
+      className="block mb-2 font-display text-jacarta-900 dark:text-white"
     >
       URL of your terms
     </label>
