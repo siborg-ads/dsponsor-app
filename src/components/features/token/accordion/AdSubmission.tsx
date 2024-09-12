@@ -99,6 +99,20 @@ const AdSubmission = ({
     }
   }, [chainConfig, setSelectedChain]);
 
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        handlePreviewModal();
+      }
+    };
+
+    window.addEventListener("keydown", handleEscape);
+
+    return () => {
+      window.removeEventListener("keydown", handleEscape);
+    };
+  }, []);
+
   const formatDate = (date) => {
     if (!date) return "";
     return date.toLocaleString("en-EN", {
@@ -179,7 +193,7 @@ const AdSubmission = ({
                   viewBox="0 0 24 24"
                   width="24"
                   height="24"
-                  className="fill-jacarta-700 h-6 w-6 dark:fill-white"
+                  className="w-6 h-6 fill-jacarta-700 dark:fill-white"
                 >
                   <path fill="none" d="M0 0h24v24H0z"></path>
                   <path d="M12 10.586l4.95-4.95 1.414 1.414-4.95 4.95 4.95 4.95-1.414 1.414-4.95-4.95-4.95 4.95-1.414-1.414 4.95-4.95-4.95-4.95L7.05 5.636z"></path>
@@ -187,16 +201,16 @@ const AdSubmission = ({
               </button>
             </div>
           </div>
-          <div className="modal-body p-6 flex gap-4">
-            <div className="flex flex-wrap gap-4 md:flex-row flex-col w-full">
-              <div className="flex items-center justify-between gap-2 w-full">
+          <div className="flex gap-4 p-6 modal-body">
+            <div className="flex flex-col flex-wrap w-full gap-4 md:flex-row">
+              <div className="flex items-center justify-between w-full gap-2">
                 <span className="block dark:text-jacarta-100">Link </span>
                 <span className="font-semibold text-red">
                   {!link || link === "" ? "No link provided" : link}
                 </span>
               </div>
 
-              <div className="flex flex-col gap-2 w-full">
+              <div className="flex flex-col w-full gap-2">
                 <div className="flex items-center justify-between gap-2">
                   <span className="block dark:text-jacarta-100">
                     Image ({imageRatios[0] ? `${imageRatios[0][0]}:${imageRatios[0][1]}` : "N/A"})
@@ -206,7 +220,7 @@ const AdSubmission = ({
                     {(errors.imageError || previewImage?.length === 0) && "No image provided"}
                   </span>
                 </div>
-                <div className="flex flex-col justify-center items-center gap-2 border border-dashed bg-jacarta-100 bg-opacity-10">
+                <div className="flex flex-col items-center justify-center gap-2 border border-dashed bg-jacarta-100 bg-opacity-10">
                   <Image
                     src={previewImage?.[0] as string}
                     width={1600}
@@ -268,7 +282,7 @@ const AdSubmission = ({
                   viewBox="0 0 24 24"
                   width="24"
                   height="24"
-                  className="fill-jacarta-700 h-6 w-6 dark:fill-white"
+                  className="w-6 h-6 fill-jacarta-700 dark:fill-white"
                 >
                   <path fill="none" d="M0 0h24v24H0z"></path>
                   <path d="M12 10.586l4.95-4.95 1.414 1.414-4.95 4.95 4.95 4.95-1.414 1.414-4.95-4.95-4.95 4.95-1.414-1.414 4.95-4.95-4.95-4.95L7.05 5.636z"></path>
@@ -276,9 +290,9 @@ const AdSubmission = ({
               </button>
             </div>
           </div>
-          <div className="modal-body p-6 flex gap-4">
-            <div className="flex flex-wrap gap-4 md:flex-row flex-col w-full">
-              <div className="flex items-center justify-between gap-2 w-full">
+          <div className="flex gap-4 p-6 modal-body">
+            <div className="flex flex-col flex-wrap w-full gap-4 md:flex-row">
+              <div className="flex items-center justify-between w-full gap-2">
                 <span className="block dark:text-jacarta-100">Link</span>
                 <span className="font-semibold text-red">
                   {link || link !== "" ? link : "No link provided"}
@@ -286,14 +300,14 @@ const AdSubmission = ({
               </div>
 
               {previewImage?.length === 0 && (
-                <div className="flex flex-col gap-2 w-full">
+                <div className="flex flex-col w-full gap-2">
                   <span className="font-semibold text-red">No images provided</span>
                 </div>
               )}
 
               {(previewImage?.length as number) > 0 &&
                 Array.from({ length: expectedMultipleAds as number })?.map((_, index: number) => (
-                  <div className="flex flex-col gap-2 w-full" key={index}>
+                  <div className="flex flex-col w-full gap-2" key={index}>
                     <div className="flex items-center justify-between gap-2">
                       <span className="block dark:text-jacarta-100">
                         Image {index + 1} - (
@@ -307,7 +321,7 @@ const AdSubmission = ({
                         {!previewImage?.[index] && "No image provided"}
                       </span>
                     </div>
-                    <div className="flex flex-col justify-center items-center gap-2">
+                    <div className="flex flex-col items-center justify-center gap-2">
                       <Image
                         src={previewImage?.[index] as string}
                         width={1600}
@@ -354,10 +368,10 @@ const AdSubmission = ({
   }
 
   return (
-    <div className="modal-dialog w-full flex justify-center items-center">
+    <div className="flex items-center justify-center w-full modal-dialog">
       <div className="modal-content !bg-secondaryBlack max-w-xs md:min-w-[600px] md:max-w-2xl">
         <div className="modal-header">
-          <h5 className="modal-title mr-8" id="placeBidLabel">
+          <h5 className="mr-8 modal-title" id="placeBidLabel">
             {!successFullUpload ? modalTitle : successFullUploadModal.title}
           </h5>
           <button type="button" className="btn-close" onClick={() => handlePreviewModal()}>
@@ -366,7 +380,7 @@ const AdSubmission = ({
               viewBox="0 0 24 24"
               width="24"
               height="24"
-              className="fill-jacarta-700 h-6 w-6 dark:fill-white"
+              className="w-6 h-6 fill-jacarta-700 dark:fill-white"
             >
               <path fill="none" d="M0 0h24v24H0z"></path>
               <path d="M12 10.586l4.95-4.95 1.414 1.414-4.95 4.95 4.95 4.95-1.414 1.414-4.95-4.95-4.95 4.95-1.414-1.414 4.95-4.95-4.95-4.95L7.05 5.636z"></path>
@@ -374,33 +388,33 @@ const AdSubmission = ({
           </button>
         </div>
 
-        <div className="modal-body p-6 flex gap-4 items-center w-full">
+        <div className="flex items-center w-full gap-4 p-6 modal-body">
           {!successFullUpload ? (
-            <div className="flex justify-between gap-8 md:gap-32 md:flex-row flex-col w-full">
-              <div className="flex flex-col gap-4 w-full">
-                <p className="font-display block dark:text-white">
+            <div className="flex flex-col justify-between w-full gap-8 md:gap-32 md:flex-row">
+              <div className="flex flex-col w-full gap-4">
+                <p className="block font-display dark:text-white">
                   {(name as string)?.length > 0 ? (
-                    <span className="dark:text-jacarta-100 text-jacarta-100 text-sm flex flex-col">
-                      Name<span className="dark:text-white text-base">{name}</span>
+                    <span className="flex flex-col text-sm dark:text-jacarta-100 text-jacarta-100">
+                      Name<span className="text-base dark:text-white">{name}</span>
                     </span>
                   ) : !name ? (
-                    <span className="dark:text-jacarta-100 text-jacarta-100 text-sm flex flex-col">
-                      Name<span className="text-red text-base">{errors.nameError}</span>
+                    <span className="flex flex-col text-sm dark:text-jacarta-100 text-jacarta-100">
+                      Name<span className="text-base text-red">{errors.nameError}</span>
                     </span>
                   ) : (
                     ""
                   )}
                 </p>
-                <p className="font-display block text-sm dark:text-white">
+                <p className="block text-sm font-display dark:text-white">
                   {(description as string)?.length > 0 ? (
-                    <span className="dark:text-jacarta-100 text-jacarta-100 text-sm flex flex-col">
+                    <span className="flex flex-col text-sm dark:text-jacarta-100 text-jacarta-100">
                       Description
-                      <span className="dark:text-white text-base">{description}</span>
+                      <span className="text-base dark:text-white">{description}</span>
                     </span>
                   ) : !description ? (
-                    <span className="dark:text-jacarta-100 text-jacarta-100 text-sm flex flex-col">
+                    <span className="flex flex-col text-sm dark:text-jacarta-100 text-jacarta-100">
                       Description
-                      <span className="text-red text-base">{errors.descriptionError}</span>
+                      <span className="text-base text-red">{errors.descriptionError}</span>
                     </span>
                   ) : (
                     ""
@@ -408,31 +422,31 @@ const AdSubmission = ({
                 </p>
 
                 {(link as string)?.length ? (
-                  <div className="font-display text-jacarta-100 text-sm flex flex-col">
+                  <div className="flex flex-col text-sm font-display text-jacarta-100">
                     <span className="text-sm">Link</span>
                     {!errors?.linkError ? (
-                      <span className="dark:text-white text-base">{link}</span>
+                      <span className="text-base dark:text-white">{link}</span>
                     ) : (
-                      <span className="text-red text-base">{errors.linkError}</span>
+                      <span className="text-base text-red">{errors.linkError}</span>
                     )}
                   </div>
                 ) : !link ? (
-                  <div className="dark:text-jacarta-100 text-jacarta-100 font-display flex flex-col">
+                  <div className="flex flex-col dark:text-jacarta-100 text-jacarta-100 font-display">
                     <span className="text-sm">Link</span>
-                    <span className="text-red text-base">{errors.linkError}</span>
+                    <span className="text-base text-red">{errors.linkError}</span>
                   </div>
                 ) : (
                   ""
                 )}
 
-                <p className="font-display flex flex-col text-jacarta-100 text-sm">
+                <p className="flex flex-col text-sm font-display text-jacarta-100">
                   {startDate ? (
                     <span className="flex flex-col">
                       Start Date
                       {!errors.startDateError ? (
-                        <span className="dark:text-white text-base">{formatDate(startDate)}</span>
+                        <span className="text-base dark:text-white">{formatDate(startDate)}</span>
                       ) : (
-                        <span className="text-red text-base">{errors.startDateError}</span>
+                        <span className="text-base text-red">{errors.startDateError}</span>
                       )}
                     </span>
                   ) : (
@@ -440,45 +454,45 @@ const AdSubmission = ({
                   )}
                 </p>
                 {endDate ? (
-                  <p className="font-display flex flex-col text-jacarta-100 text-sm">
+                  <p className="flex flex-col text-sm font-display text-jacarta-100">
                     End Date
                     {!errors.endDateError ? (
-                      <span className="dark:text-white text-base">{formatDate(endDate)}</span>
+                      <span className="text-base dark:text-white">{formatDate(endDate)}</span>
                     ) : (
-                      <span className="text-red text-base">{errors.endDateError}</span>
+                      <span className="text-base text-red">{errors.endDateError}</span>
                     )}
                   </p>
                 ) : (
                   ""
                 )}
                 {selectedNumber ? (
-                  <p className="font-display flex flex-col text-jacarta-100 text-sm">
+                  <p className="flex flex-col text-sm font-display text-jacarta-100">
                     Number of Items
                     {!errors.numberError ? (
-                      <span className="dark:text-white text-base">{selectedNumber}</span>
+                      <span className="text-base dark:text-white">{selectedNumber}</span>
                     ) : (
-                      <span className="text-red text-base">{errors.numberError}</span>
+                      <span className="text-base text-red">{errors.numberError}</span>
                     )}
                   </p>
                 ) : (
                   ""
                 )}
                 {selectedParameter && (displayedParameter?.length as number) > 0 ? (
-                  <p className="font-display flex flex-col text-jacarta-100 text-sm">
+                  <p className="flex flex-col text-sm font-display text-jacarta-100">
                     Type of Ad
                     {!errors.typeAdError && !errors.imageRatioError ? (
                       displayedParameter?.map((item, index) => (
-                        <span key={index} className="dark:text-white text-base">
+                        <span key={index} className="text-base dark:text-white">
                           {item}
                         </span>
                       ))
                     ) : (
                       <div>
                         {errors.typeAdError && (
-                          <span className="text-red text-base">{errors.typeAdError}</span>
+                          <span className="text-base text-red">{errors.typeAdError}</span>
                         )}
                         {errors.imageRatioError && (
-                          <span className="text-red text-base">{errors.imageRatioError}</span>
+                          <span className="text-base text-red">{errors.imageRatioError}</span>
                         )}
                       </div>
                     )}
@@ -487,12 +501,12 @@ const AdSubmission = ({
                   ""
                 )}
                 {selectedStartingPrice || errors.startingPriceError ? (
-                  <p className="font-display flex flex-col text-jacarta-100 text-sm">
+                  <p className="flex flex-col text-sm font-display text-jacarta-100">
                     Bid starting price
                     {!errors.startingPriceError ? (
-                      <span className="dark:text-white text-base">{selectedStartingPrice}</span>
+                      <span className="text-base dark:text-white">{selectedStartingPrice}</span>
                     ) : (
-                      <span className="text-red text-base">{errors.startingPriceError}</span>
+                      <span className="text-base text-red">{errors.startingPriceError}</span>
                     )}
                     {helperFeesListing && <ModalHelper {...helperFeesListing} />}
                   </p>
@@ -500,12 +514,12 @@ const AdSubmission = ({
                   ""
                 )}
                 {selectedUnitPrice || errors.unitPriceError ? (
-                  <p className="font-display flex flex-col text-jacarta-100 text-sm">
+                  <p className="flex flex-col text-sm font-display text-jacarta-100">
                     Buy Price
                     {!errors.unitPriceError ? (
-                      <span className="dark:text-white text-base">{selectedUnitPrice}</span>
+                      <span className="text-base dark:text-white">{selectedUnitPrice}</span>
                     ) : (
-                      <span className="text-red text-base">{errors.unitPriceError}</span>
+                      <span className="text-base text-red">{errors.unitPriceError}</span>
                     )}
                     {helperFeesListing && <ModalHelper {...helperFeesListing} />}
                   </p>
@@ -513,47 +527,47 @@ const AdSubmission = ({
                   ""
                 )}
 
-                <p className="font-display flex flex-col text-jacarta-100 text-sm">
+                <p className="flex flex-col text-sm font-display text-jacarta-100">
                   Currency
                   {!errors.currencyError ? (
-                    <span className="dark:text-white text-base">{tokenSymbol}</span>
+                    <span className="text-base dark:text-white">{tokenSymbol}</span>
                   ) : (
-                    <span className="text-red text-base">{errors.currencyError}</span>
+                    <span className="text-base text-red">{errors.currencyError}</span>
                   )}
                 </p>
 
                 {selectedRoyalties ? (
-                  <p className="font-display flex flex-col text-jacarta-100 text-sm">
+                  <p className="flex flex-col text-sm font-display text-jacarta-100">
                     Royalties
                     {!errors.royaltyError ? (
-                      <span className="dark:text-white text-base">{selectedRoyalties}%</span>
+                      <span className="text-base dark:text-white">{selectedRoyalties}%</span>
                     ) : (
-                      <span className="text-red text-base">{errors.royaltyError}</span>
+                      <span className="text-base text-red">{errors.royaltyError}</span>
                     )}
                   </p>
                 ) : (
                   ""
                 )}
                 {address ? (
-                  <p className="font-display flex flex-col text-jacarta-100 text-sm">
+                  <p className="flex flex-col text-sm font-display text-jacarta-100">
                     Address
-                    <span className="dark:text-white text-base">{shortenAddress(address)} </span>
+                    <span className="text-base dark:text-white">{shortenAddress(address)} </span>
                   </p>
                 ) : (
                   ""
                 )}
                 {protocolFees ? (
-                  <p className="font-display flex flex-col text-jacarta-100 text-sm">
+                  <p className="flex flex-col text-sm font-display text-jacarta-100">
                     Protocol fees
-                    <span className="dark:text-white text-base">{protocolFees}%</span>
+                    <span className="text-base dark:text-white">{protocolFees}%</span>
                   </p>
                 ) : (
                   ""
                 )}
                 {terms && (
-                  <p className="font-display flex flex-col w-full text-jacarta-100 text-sm">
+                  <p className="flex flex-col w-full text-sm font-display text-jacarta-100">
                     Terms
-                    <span className="dark:text-white overflow-y-auto hide-scrollbar pr-2 text-base flex w-full flex-wrap">
+                    <span className="flex flex-wrap w-full pr-2 overflow-y-auto text-base dark:text-white hide-scrollbar">
                       {terms}
                     </span>
                   </p>
@@ -563,16 +577,16 @@ const AdSubmission = ({
               <Divider className="block md:hidden" />
 
               {previewImage?.map((image: any, index: number) => (
-                <div className="flex flex-col gap-2 items-start justify-start" key={index}>
+                <div className="flex flex-col items-start justify-start gap-2" key={index}>
                   <label
                     htmlFor="item-description"
-                    className="font-display text-jacarta-100 text-sm text-center"
+                    className="text-sm text-center font-display text-jacarta-100"
                   >
                     Image {imageUrlVariants[index] && `( ratio ${imageUrlVariants[index]} )`}{" "}
                     preview
                   </label>
                   <div
-                    className="dark:bg-secondaryBlack dark:border-jacarta-800 border-jacarta-100  group relative flex max-w-md flex-col items-center justify-center rounded-lg border-2 border-dashed"
+                    className="relative flex flex-col items-center justify-center max-w-md border-2 border-dashed rounded-lg dark:bg-secondaryBlack dark:border-jacarta-800 border-jacarta-100 group"
                     style={{
                       width:
                         imageUrlVariants.length > 0 ? `${imageRatioDisplay(index)[0]}px` : "275px",
@@ -590,13 +604,18 @@ const AdSubmission = ({
                   </div>
                 </div>
               ))}
+              {previewImage?.length === 0 && (
+                <div className="flex flex-col w-full gap-2">
+                  <span className="font-semibold text-red">No image provided</span>
+                </div>
+              )}
             </div>
           ) : (
             <div className="flex flex-col gap-2">
               <div className="flex gap-4">
                 <p>{successFullUploadModal.body} </p>
                 <div
-                  className="dark:border-jacarta-800 bg-green   flex h-6 w-6 items-center justify-center rounded-full border-2 border-white"
+                  className="flex items-center justify-center w-6 h-6 border-2 border-white rounded-full dark:border-jacarta-800 bg-green"
                   data-tippy-content="Verified Collection"
                 >
                   <svg
@@ -616,11 +635,11 @@ const AdSubmission = ({
           )}
         </div>
 
-        <div className="modal-footer w-full">
-          <div className="flex items-center justify-center space-x-4 w-full">
-            <div className="flex items-center gap-4 w-full">
+        <div className="w-full modal-footer">
+          <div className="flex items-center justify-center w-full space-x-4">
+            <div className="flex items-center w-full gap-4">
               {!successFullUpload ? (
-                <div className="flex flex-col gap-2 justify-center items-center w-full">
+                <div className="flex flex-col items-center justify-center w-full gap-2">
                   <div
                     className={`grid grid-cols-1 w-full mx-auto ${!createOffer && "md:grid-cols-2"} gap-6`}
                   >
@@ -661,7 +680,7 @@ const AdSubmission = ({
                     <ResponsiveTooltip
                       text={`You need to approve the marketplace contract to spend your NFT on this transaction.`}
                     >
-                      <span className="text-xs text-jacarta-100 inline-flex items-center gap-1">
+                      <span className="inline-flex items-center gap-1 text-xs text-jacarta-100">
                         <InformationCircleIcon className="w-4 h-4 text-jacarta-100" />
                         Why do I have to approve ?
                       </span>
