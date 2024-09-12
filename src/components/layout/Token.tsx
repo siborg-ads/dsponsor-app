@@ -138,7 +138,7 @@ const Token = () => {
   const [airdropContainer, setAirdropContainer] = useState(true);
   const [amountInEthWithSlippage, setAmountInEthWithSlippage] = useState<BigNumber | null>(null);
   const [displayedPrice, setDisplayedPrice] = useState<number | null>(null);
-  const [isOfferOwner, :] = useState(false);
+  const [isOfferOwner, setIsOfferOwner] = useState(false);
   const [directBuyPriceBN, setDirectBuyPriceBN] = useState<BigNumber | undefined>(undefined);
   const [auctionPriceBN, setAuctionPriceBN] = useState<BigNumber | undefined>(undefined);
   const [mintPriceBN, setMintPriceBN] = useState<BigNumber | undefined>(undefined);
@@ -2479,7 +2479,9 @@ const Token = () => {
                         <span className="text-sm text-red">Invalid address</span>
                       )}
                       {transferAddress?.toLowerCase() === address?.toLowerCase() && (
-                        <span className="text-sm text-red">You can&apos;t transfer to yourself</span>
+                        <span className="text-sm text-red">
+                          You can&apos;t transfer to yourself
+                        </span>
                       )}
 
                       <div className="flex items-center gap-2">
