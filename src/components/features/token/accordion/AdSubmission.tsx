@@ -99,6 +99,20 @@ const AdSubmission = ({
     }
   }, [chainConfig, setSelectedChain]);
 
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        handlePreviewModal();
+      }
+    };
+
+    window.addEventListener("keydown", handleEscape);
+
+    return () => {
+      window.removeEventListener("keydown", handleEscape);
+    };
+  }, []);
+
   const formatDate = (date) => {
     if (!date) return "";
     return date.toLocaleString("en-EN", {
