@@ -355,9 +355,10 @@ const Iframe = ({ chainId, offerId }) => {
               onChange={(e) => setIncludeAvailable(e.target.checked)}
               className=" !text-primaryPurple border-jacarta-200 focus:ring-primaryPurple/20 dark:border-jacarta-500 h-5 !w-5 self-start rounded focus:ring-offset-0"
             />
-            <span className="text-white">Include Available</span>
-            {/* TODO: Add tooltip */}
-            <ResponsiveTooltip text="">
+            <span className="text-white">Show Available tokens</span>
+            <ResponsiveTooltip
+              text={`Show "Own this ad space" if there is no validated ad but the token is available on the market`}
+            >
               <InformationCircleIcon className="w-5 h-5 text-white hover:text-jacarta-100 cursor-help" />
             </ResponsiveTooltip>
           </label>
@@ -371,9 +372,10 @@ const Iframe = ({ chainId, offerId }) => {
               onChange={(e) => setIncludeReserved(e.target.checked)}
               className=" !text-primaryPurple border-jacarta-200 focus:ring-primaryPurple/20 dark:border-jacarta-500 h-5 !w-5 self-start rounded focus:ring-offset-0"
             />
-            <span className="text-white">Include Reserved</span>
-            {/* TODO: Add tooltip */}
-            <ResponsiveTooltip text="">
+            <span className="text-white">Show Reserved tokens</span>
+            <ResponsiveTooltip
+              text={`Show "Reserved ad space" if there is no validated ad and the token is not available on the market`}
+            >
               <InformationCircleIcon className="w-5 h-5 text-white hover:text-jacarta-100 cursor-help" />
             </ResponsiveTooltip>
           </label>
