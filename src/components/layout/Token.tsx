@@ -36,7 +36,7 @@ import Manage from "@/components/features/token/widgets/Manage";
 import { useSwitchChainContext } from "@/providers/SwitchChain";
 import config from "@/config/config";
 import stringToUint256 from "@/utils/tokens/stringToUnit256";
-import { formatUnits, getAddress, parseUnits } from "ethers/lib/utils";
+import { formatUnits, getAddress, isAddress, parseUnits } from "ethers/lib/utils";
 import "react-toastify/dist/ReactToastify.css";
 import { features } from "@/data/features";
 import * as Accordion from "@radix-ui/react-accordion";
@@ -138,7 +138,7 @@ const Token = () => {
   const [airdropContainer, setAirdropContainer] = useState(true);
   const [amountInEthWithSlippage, setAmountInEthWithSlippage] = useState<BigNumber | null>(null);
   const [displayedPrice, setDisplayedPrice] = useState<number | null>(null);
-  const [isOfferOwner, setIsOfferOwner] = useState(false);
+  const [isOfferOwner, :] = useState(false);
   const [directBuyPriceBN, setDirectBuyPriceBN] = useState<BigNumber | undefined>(undefined);
   const [auctionPriceBN, setAuctionPriceBN] = useState<BigNumber | undefined>(undefined);
   const [mintPriceBN, setMintPriceBN] = useState<BigNumber | undefined>(undefined);
@@ -169,6 +169,7 @@ const Token = () => {
   const [listerAmount, setListerAmount] = useState(null);
   const [royaltiesAmount, setRoyaltiesAmount] = useState(null);
   const [airdropAddress, setAirdropAddress] = useState<string | undefined>(undefined);
+  const [transferAddress, setTransferAddress] = useState<string | undefined>(undefined);
   const [nftContractAddress, setNftContractAddress] = useState<Address | null>(null);
   const [showEntireDescription, setShowEntireDescription] = useState(false);
   const [failedCrossmintTransaction, setFailedCrossmintTransaction] = useState(false);
@@ -1205,10 +1206,6 @@ const Token = () => {
     if (offerData?.admins?.includes(address?.toLowerCase())) {
       setIsOfferOwner(true);
     }
-
-    if (isUserOwner?.toLowerCase() === address?.toLowerCase()) {
-      setIsOwner(true);
-    }
   }, [
     isUserOwner,
     address,
@@ -2012,6 +2009,11 @@ const Token = () => {
     "mint"
   );
 
+  const { mutateAsync: transferAsync } = useContractWrite<any, any, any, any, any>(
+    DsponsorNFTContract,
+    "transferFrom"
+  );
+
   const handleAirdrop = async (airdropAddress: Address, tokenData: string | null) => {
     let stringToUnit = BigInt(0);
 
@@ -2055,6 +2057,52 @@ const Token = () => {
       await fetchOffers();
     } catch (error) {
       console.error("Error while airdropping:", error);
+      throw error;
+    }
+  };
+
+  const handleTransfer = async () => {
+    let stringToUnit = BigInt(0);
+
+    if (tokenData && tokenData !== null) {
+      stringToUnit = stringToUint256(tokenData);
+
+      if (tokenId && stringToUnit !== BigInt(tokenId as string)) {
+        console.error("Token ID and token data do not match");
+        throw new Error("Token ID and token data do not match");
+      }
+    }
+
+    if (!transferAddress || !isAddress(transferAddress)) {
+      console.error("Tranfer address not found");
+      throw new Error("Trandfer address not found");
+    }
+
+    if (!tokenId) {
+      console.error("Token ID not found");
+      throw new Error("Token ID not found");
+    }
+
+    try {
+      await transferAsync({
+        args: [address, transferAddress, tokenId as string]
+      });
+
+      await fetch(`${relayerURL}/api/revalidate`, {
+        method: "POST",
+        body: JSON.stringify({
+          tags: [
+            `${chainId}-adOffer-${offerId}`,
+            `${chainId}-nftContract-${nftContractAddress}`,
+            `${chainId}-userAddress-${address}`,
+            `${chainId}-userAddress-${transferAddress}`
+          ]
+        })
+      });
+
+      await fetchOffers();
+    } catch (error) {
+      console.error("Error while transfering:", error);
       throw error;
     }
   };
@@ -2412,6 +2460,60 @@ const Token = () => {
                         </div>
                       </div>
                     )}
+
+                  {isUserOwner?.toLowerCase() === address?.toLowerCase() && (
+                    <div className="flex flex-col gap-4 p-8 mt-4 mb-2 bg-white border dark:bg-secondaryBlack dark:border-jacarta-800 border-jacarta-100 rounded-2lg">
+                      <span className="text-lg dark:text-jacarta-100 text-jacarta-100">
+                        Transfer this token
+                      </span>
+
+                      <Input
+                        placeholder={"Enter the address"}
+                        onChange={(e) => setTransferAddress(e.target.value)}
+                        value={transferAddress}
+                        type="text"
+                        className="w-full"
+                      />
+
+                      {!isAddress(transferAddress || "") && (transferAddress || "") !== "" && (
+                        <span className="text-sm text-red">Invalid address</span>
+                      )}
+                      {transferAddress?.toLowerCase() === address?.toLowerCase() && (
+                        <span className="text-sm text-red">You can&apos;t transfer to yourself</span>
+                      )}
+
+                      <div className="flex items-center gap-2">
+                        {navigator?.clipboard && (
+                          <button
+                            onClick={() => {
+                              // get clipboard content
+                              navigator.clipboard.readText().then((text) => {
+                                setTransferAddress(text);
+                              });
+                            }}
+                            className="w-fit"
+                          >
+                            <span className="text-sm text-primaryPurple">Paste from clipboard</span>
+                          </button>
+                        )}
+                      </div>
+
+                      <div className="flex w-full">
+                        <StyledWeb3Button
+                          contractAddress={nftContractAddress as Address}
+                          onClick={async () => {
+                            await toast.promise(handleTransfer, {
+                              pending: "Transfer in progress... 🚀",
+                              success: "Transfer successful 🎉",
+                              error: "Transfer failed ❌"
+                            });
+                          }}
+                          isDisabled={!isAddress(transferAddress || "") || !isValidId}
+                          defaultText="Transfer"
+                        />
+                      </div>
+                    </div>
+                  )}
 
                   {firstSelectedListing?.status === "CREATED" &&
                     firstSelectedListing?.listingType === "Direct" &&
