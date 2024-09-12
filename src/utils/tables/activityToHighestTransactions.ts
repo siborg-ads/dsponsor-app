@@ -64,8 +64,9 @@ const activityToTopHolders = (activities: Activity[], userAddress?: string): For
     return [...activities]
       ?.sort((a, b) => b.points - a.points)
       ?.map((activity) => ({
+        ...activity,
         type: toDisplayType(activity.type),
-        date: new Date(activity.date).toLocaleString(),
+        date: new Date(activity.date).toLocaleDateString(),
         transactionHash:
           activity.transactionHash.slice(0, 6) + "..." + activity.transactionHash.slice(-4),
         fullTransactionHash: activity.transactionHash,
@@ -93,8 +94,9 @@ const activityToTopHolders = (activities: Activity[], userAddress?: string): For
   ];
 
   return [...sortedActivity]?.map((activity) => ({
+    ...activity,
     type: toDisplayType(activity.type),
-    date: new Date(activity.date).toLocaleString(),
+    date: new Date(activity.date).toLocaleDateString(),
     transactionHash:
       activity.transactionHash.slice(0, 6) + "..." + activity.transactionHash.slice(-4),
     fullTransactionHash: activity.transactionHash,

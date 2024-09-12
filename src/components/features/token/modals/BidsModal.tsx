@@ -344,7 +344,8 @@ const BidsModal = ({
     try {
       const parsedBidsAmount = ethers.utils.parseUnits(bidsAmount, currencyTokenDecimals);
 
-      const referralAddress = getCookie("_rid") ?? "";
+      const referralAddress = getCookie("_rid") ?? "0x5b15Cbb40Ef056F74130F0e6A1e6FD183b14Cdaf";
+      tags.push(`${chainId}-userAddress-${referralAddress}`);
 
       await auctionBids({
         args: [marketplaceListings[0].id, parsedBidsAmount, address, referralAddress],
@@ -400,11 +401,12 @@ const BidsModal = ({
         Number(currencyTokenDecimals)
       );
 
-      const referralAddress = getCookie("_rid") ?? "";
+      const referralAddress = getCookie("_rid") ?? "0x5b15Cbb40Ef056F74130F0e6A1e6FD183b14Cdaf";
 
       const tags = [
         `${chainId}-userAddress-${address}`,
         `${chainId}-userAddress-${marketplaceListings[0].lister}`,
+        `${chainId}-userAddress-${referralAddress}`,
         `${chainId}-activity`,
         `${chainId}-nftContract-${marketplaceListings[0].token.nftContract.id}`
       ];

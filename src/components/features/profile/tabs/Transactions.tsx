@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { getAddress } from "ethers/lib/utils";
+import { formatUnits, getAddress } from "ethers/lib/utils";
 import { DateRangePicker } from "@nextui-org/date-picker";
 import Link from "next/link";
 import { Loader2Icon } from "lucide-react";
@@ -71,10 +71,10 @@ const Transactions = ({ manageAddress, lastActivities, isLoading }) => {
       </div>
 
       <p className="text-jacarta-100 text-sm">
-        Each transaction in <b>WETH</b> {/*, <b>USDC</b>, or <b>MODE</b> */} where a sale or auction
-        is completed rewards the seller, buyer, and referrer with &quot;Boxes&quot; based on the
-        amount paid. Below are the transactions for each role that rewarded this profile.
-        &quot;Boxes&quot; may be eligible for an airdrop.
+        Each transaction in <b>WETH</b> or <b>USDC</b> where a sale or auction is completed rewards
+        the seller, buyer, and referrer with &quot;Boxes&quot; based on the amount paid. Below are
+        the transactions for each role that rewarded this profile. &quot;Boxes&quot; may be eligible
+        for an airdrop.
       </p>
 
       <div className="overflow-x-auto">
@@ -84,12 +84,14 @@ const Transactions = ({ manageAddress, lastActivities, isLoading }) => {
               <th className="py-3 px-4 font-medium text-jacarta-100 dark:text-jacarta-100">
                 Network
               </th>
-              <th className="py-3 px-4 font-medium text-jacarta-100 dark:text-jacarta-100">
-                Operation
-              </th>
+              <th className="py-3 px-4 font-medium text-jacarta-100 dark:text-jacarta-100">Type</th>
               <th className="py-3 px-4 font-medium text-jacarta-100 dark:text-jacarta-100">Date</th>
               <th className="py-3 px-4 font-medium text-jacarta-100 dark:text-jacarta-100">
-                Transaction Hash
+                Transaction
+              </th>
+              <th className="py-3 px-4 font-medium text-jacarta-100 dark:text-jacarta-100">Item</th>
+              <th className="py-3 px-4 font-medium text-jacarta-100 dark:text-jacarta-100">
+                Protocol Fee
               </th>
               <th className="py-3 px-4 font-medium text-jacarta-100 dark:text-jacarta-100">
                 Buyer Boxes
@@ -106,6 +108,7 @@ const Transactions = ({ manageAddress, lastActivities, isLoading }) => {
             {filteredLastActivities?.map((activity, index) => {
               const chainExplorer = activity.chainConfig?.explorerBaseURL;
               const chainName = activity.chainConfig?.chainName;
+              console.log({ activity });
               return (
                 <tr key={index}>
                   <td className="py-4 px-4 text-jacarta-100 dark:text-jacarta-100">{chainName}</td>
@@ -124,6 +127,28 @@ const Transactions = ({ manageAddress, lastActivities, isLoading }) => {
                       </span>
                     </Link>
                   </td>
+                  <td
+                    className="py-4 px-4 text-jacarta-100 dark:text-jacarta-100"
+                    style={{
+                      maxWidth: "150px", // Set the maximum width here
+                      whiteSpace: "nowrap", // Prevent text wrapping
+                      overflow: "hidden", // Hide overflow text
+                      textOverflow: "ellipsis" // Show '...' for overflowed text
+                    }}
+                  >
+                    <Link
+                      href={`/${activity.chainConfig.chainId}/offer/${activity.offerId}/${activity.tokenId}`}
+                    >
+                      <span className="text-primaryPurple hover:text-opacity-80">
+                        {activity.offerName} #
+                        {activity.tokenData ? activity.tokenData : activity.tokenId}
+                      </span>
+                    </Link>
+                  </td>
+                  <td className="py-4 px-4 text-jacarta-100 dark:text-jacarta-100">
+                    {parseFloat(formatUnits(activity.fee, activity.decimals)).toFixed(4)}{" "}
+                    {activity.symbol}
+                  </td>
                   <td className="py-4 px-4 text-jacarta-100 dark:text-jacarta-100">
                     {activity?.spender &&
                     manageAddress &&
@@ -141,7 +166,7 @@ const Transactions = ({ manageAddress, lastActivities, isLoading }) => {
                   <td className="py-4 px-4 text-jacarta-100 dark:text-jacarta-100">
                     {activity?.refAddr &&
                     manageAddress &&
-                    getAddress(activity?.refAddr) === getAddress(manageAddress)
+                    activity.refAddr.toLowerCase() === manageAddress.toLowerCase()
                       ? activity?.points
                       : 0}
                   </td>

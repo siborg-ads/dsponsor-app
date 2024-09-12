@@ -374,7 +374,7 @@ const TokenCard = ({
   }, [image, storage]);
 
   const offerItemCard = (
-    <article className="relative h-full">
+    <article className="relative h-full ">
       {item?.isPending && isOwner && (
         <div className="absolute -top-2 -right-2 rounded-2xl bg-red rounded-2xl dark:text-white px-2">
           !
@@ -388,7 +388,7 @@ const TokenCard = ({
         className="dark:bg-secondaryBlack h-full cursor-pointer dark:hover:bg-opacity-80 box-border hover:border-2 duration-1000 hover:duration-1000 hover:-translate-y-1 dark:hover:border-2 dark:border-jacarta-100 dark:border-opacity-10 border-opacity-10 border-jacarta-900 relative rounded-2xl flex flex-col border bg-white p-4 transition-shadow hover:shadow-lg text-jacarta-100"
       >
         <div className="relative">
-          <figure>
+          <figure className="h-[230px] w-full flex items-center justify-center">
             {isSelectionActive ? (
               imageUrl && (
                 <Image
@@ -396,7 +396,7 @@ const TokenCard = ({
                   alt="logo"
                   height={230}
                   width={230}
-                  className="w-full lg:h-full object-cover rounded-lg"
+                  className="max-h-full max-w-full object-contain"
                   loading="lazy"
                 />
               )
@@ -408,7 +408,7 @@ const TokenCard = ({
                     alt="logo"
                     height={230}
                     width={230}
-                    className="w-full lg:h-full object-cover rounded-lg"
+                    className="max-w-full max-h-full object-contain rounded-lg"
                     loading="lazy"
                   />
                 )}
