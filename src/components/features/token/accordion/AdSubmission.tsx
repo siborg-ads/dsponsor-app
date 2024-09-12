@@ -13,6 +13,8 @@ import { Address } from "thirdweb";
 import NormalButton from "@/components/ui/buttons/NormalButton";
 import { ChainObject } from "@/types/chain";
 import { useSwitchChainContext } from "@/providers/SwitchChain";
+import { cn } from "@/lib/utils";
+import isUrlValid from "@/utils/misc/isUrlValid";
 
 const AdSubmission = ({
   chainConfig,
@@ -205,7 +207,12 @@ const AdSubmission = ({
             <div className="flex flex-col flex-wrap w-full gap-4 md:flex-row">
               <div className="flex items-center justify-between w-full gap-2">
                 <span className="block dark:text-jacarta-100">Link </span>
-                <span className="font-semibold text-red">
+                <span
+                  className={cn(
+                    "font-semibold",
+                    isUrlValid(link.toString()) ? "text-green" : "text-red"
+                  )}
+                >
                   {!link || link === "" ? "No link provided" : link}
                 </span>
               </div>
