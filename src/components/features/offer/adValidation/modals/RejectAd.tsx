@@ -13,7 +13,8 @@ const RejectAd = ({
   closeRefuseModal,
   handleCommentChange,
   handleItemSubmit,
-  successFullRefuseModal
+  successFullRefuseModal,
+  comments
 }: {
   chainConfig: ChainObject;
   selectedItems: any;
@@ -24,6 +25,7 @@ const RejectAd = ({
   // eslint-disable-next-line no-unused-vars
   handleItemSubmit: (b: boolean) => Promise<unknown> | (() => Promise<unknown>);
   successFullRefuseModal: boolean;
+  comments: { [key: string]: string };
 }) => {
   const [filteredItems, setFilteredItems] = useState([]);
   const [allCommentsOk, setAllCommentsOk] = useState(false);
@@ -66,7 +68,7 @@ const RejectAd = ({
               viewBox="0 0 24 24"
               width="24"
               height="24"
-              className="fill-jacarta-700 h-6 w-6 dark:fill-white"
+              className="w-6 h-6 fill-jacarta-700 dark:fill-white"
             >
               <path fill="none" d="M0 0h24v24H0z"></path>
               <path d="M12 10.586l4.95-4.95 1.414 1.414-4.95 4.95 4.95 4.95-1.414 1.414-4.95-4.95-4.95 4.95-1.414-1.414 4.95-4.95-4.95-4.95L7.05 5.636z"></path>
@@ -80,18 +82,18 @@ const RejectAd = ({
                 const tokenId = item?.tokenId;
 
                 return (
-                  <div key={item?.id} className="mb-6 w-full ">
+                  <div key={item?.id} className="w-full mb-6 ">
                     <div className="flex justify-between">
                       <div>
                         <label
                           htmlFor="item-description"
-                          className="font-display text-jacarta-900 mb-2 block dark:text-white"
+                          className="block mb-2 font-display text-jacarta-900 dark:text-white"
                         >
                           Comments
                           <span className="text-red">*</span>
                         </label>
                       </div>
-                      <div className="font-display text-jacarta-900 mb-2 block dark:text-white">
+                      <div className="block mb-2 font-display text-jacarta-900 dark:text-white">
                         Space # <span className="text-primaryPurple">{tokenId}</span>
                       </div>
                     </div>
@@ -100,7 +102,7 @@ const RejectAd = ({
                       className="w-full"
                       rows={4}
                       required
-                      value={item?.reason}
+                      value={comments[tokenId?.toString()] || ""}
                       onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
                         handleCommentChange(tokenId?.toString(), e.target.value)
                       }
