@@ -1,7 +1,8 @@
 function isUrlValid(string: string): boolean {
   try {
-    new URL(string);
-    return true;
+    const { protocol } = new URL(string);
+
+    return protocol === "http:" || protocol === "https:";
   } catch (err) {
     return false;
   }
