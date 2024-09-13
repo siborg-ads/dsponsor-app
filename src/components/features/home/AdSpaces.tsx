@@ -61,7 +61,7 @@ const AdSpaces = ({
       // only get mint and buy tokens
       const filteredAdSpaces = adSpaces?.filter((element) => {
         return (
-          (element?.listingType === "Direct" &&
+          (element?.listingType &&
             element?.status === "CREATED" &&
             new Date(element?.startTime * 1000).getTime() < new Date().getTime() &&
             new Date(element?.endTime * 1000).getTime() > new Date().getTime()) ||
