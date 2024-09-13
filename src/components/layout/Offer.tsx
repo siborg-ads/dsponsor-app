@@ -38,6 +38,7 @@ import { addLineBreaks } from "@/utils/misc/addLineBreaks";
 import Input from "../ui/Input";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import DsponsorNftABI from "@/abi/dsponsorNFT.json";
+import { getOwnershipPeriod } from "@/utils/dates/period";
 
 import ERC20ABI from "@/abi/ERC20.json";
 import { ChainObject } from "@/types/chain";
@@ -696,6 +697,28 @@ const Offer = () => {
                 <span className="block text-sm text-jacarta-100 dark:text-white">
                   Creator <strong>{royalties}% royalties</strong>
                 </span>
+                <div>
+                  <span className="flex flex-wrap gap-1 text-sm text-jacarta-100 dark:text-white">
+                    <b>
+                      {(() => {
+                        let ownershipText = "";
+
+                        if (
+                          offerData?.metadata?.offer?.valid_from &&
+                          offerData?.metadata?.offer?.valid_to
+                        ) {
+                          const startDate = offerData?.metadata?.offer?.valid_from;
+                          const endDate = offerData?.metadata?.offer?.valid_to;
+                          if (startDate && endDate) {
+                            ownershipText = getOwnershipPeriod(startDate, endDate);
+                          }
+                        }
+
+                        return ownershipText;
+                      })()}
+                    </b>
+                  </span>
+                </div>
               </div>
 
               {showEntireDescription ? (

@@ -52,6 +52,7 @@ import PlaceBid from "@/components/features/token/widgets/PlaceBid";
 import StyledWeb3Button from "@/components/ui/buttons/StyledWeb3Button";
 
 import ERC20ABI from "@/abi/ERC20.json";
+import { getOwnershipPeriod } from "@/utils/dates/period";
 
 const Token = () => {
   const router = useRouter();
@@ -2230,52 +2231,44 @@ const Token = () => {
                 <span className="block text-sm text-jacarta-100 ">
                   Creator <strong className="dark:text-white">{royalties}% royalties</strong>
                 </span>
-                {offerData?.nftContract?.tokens?.find(
-                  (token) =>
-                    !!token?.tokenId &&
-                    tokenId &&
-                    BigInt(token?.tokenId) === BigInt(tokenId as string)
-                )?.metadata?.valid_from && (
-                  <span className="flex flex-wrap gap-1 text-sm text-jacarta-100">
-                    Ownership period:{" "}
-                    <strong className="dark:text-white">
-                      {offerData?.nftContract?.tokens?.find(
-                        (token) =>
-                          !!token?.tokenId &&
-                          tokenId &&
-                          BigInt(token?.tokenId) === BigInt(tokenId as string)
-                      )?.metadata?.valid_from &&
-                        (() => {
-                          const date = new Date(
-                            offerData?.nftContract?.tokens?.find(
+                <div>
+                  {offerData?.nftContract?.tokens?.find(
+                    (token) =>
+                      !!token?.tokenId &&
+                      tokenId &&
+                      BigInt(token?.tokenId) === BigInt(tokenId as string)
+                  )?.metadata?.valid_from && (
+                    <span className="flex flex-wrap gap-1 text-sm text-jacarta-100 dark:text-white">
+                      <b>
+                        {offerData?.nftContract?.tokens?.find(
+                          (token) =>
+                            !!token?.tokenId &&
+                            tokenId &&
+                            BigInt(token?.tokenId) === BigInt(tokenId as string)
+                        )?.metadata?.valid_from &&
+                          (() => {
+                            const token = offerData?.nftContract?.tokens?.find(
                               (token) =>
                                 !!token?.tokenId &&
                                 tokenId &&
                                 BigInt(token?.tokenId) === BigInt(tokenId as string)
-                            )?.metadata?.valid_from
-                          );
-                          return `${date.getDate().toString().padStart(2, "0")}/${(date.getMonth() + 1).toString().padStart(2, "0")}/${date.getFullYear()} at ${date.getHours().toString().padStart(2, "0")}:${date.getMinutes().toString().padStart(2, "0")}:${date.getSeconds().toString().padStart(2, "0")}`;
-                        })()}
-                    </strong>{" "}
-                    to{" "}
-                    <strong className="dark:text-white">
-                      {offerData?.nftContract?.tokens?.find(
-                        (token) =>
-                          !!token?.tokenId &&
-                          tokenId &&
-                          BigInt(token?.tokenId) === BigInt(tokenId as string)
-                      )?.metadata?.valid_to &&
-                        new Date(
-                          offerData?.nftContract?.tokens?.find(
-                            (token) =>
-                              !!token?.tokenId &&
-                              tokenId &&
-                              BigInt(token?.tokenId) === BigInt(tokenId as string)
-                          )?.metadata?.valid_to
-                        ).toLocaleString()}
-                    </strong>
-                  </span>
-                )}
+                            );
+                            let ownershipText = "";
+
+                            if (token?.metadata?.valid_from && token?.metadata?.valid_to) {
+                              const startDate = token?.metadata?.valid_from;
+                              const endDate = token?.metadata?.valid_to;
+                              if (startDate && endDate) {
+                                ownershipText = getOwnershipPeriod(startDate, endDate);
+                              }
+                            }
+
+                            return ownershipText;
+                          })()}
+                      </b>
+                    </span>
+                  )}
+                </div>
               </div>
 
               {showEntireDescription ? (
