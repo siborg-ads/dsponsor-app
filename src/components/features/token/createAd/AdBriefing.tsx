@@ -55,7 +55,7 @@ const AdBriefing = ({
                                   ? `${parseFloat(width) * 100}x${parseFloat(height) * 100}px`
                                   : "No size";
                               })()})`
-                              : "- Format : Any URL accepted"}
+                              : "- Format : Any format accepted"}
                           </li>
                         </ul>
                       </div>
@@ -69,7 +69,7 @@ const AdBriefing = ({
                     return (
                       <div key={id}>
                         <ul>
-                          <li>{variant ? `- ${variant}` : "- Any URL accepted"}</li>
+                          <li>{variant ? `- ${variant}` : "- Should start with https://"}</li>
                         </ul>
                       </div>
                     );

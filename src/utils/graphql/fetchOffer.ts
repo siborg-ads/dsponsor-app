@@ -275,6 +275,7 @@ export const fetchOffer = async (chainId, offerId) => {
           allowList
           maxSupply
           royalty {
+            receiver
             bps
           }
           prices {

@@ -82,6 +82,18 @@ const CreateListing = ({
   const { mutateAsync: createListing } = useContractWrite(dsponsorMpContract, "createListing");
 
   useEffect(() => {
+    const handleEsc = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        handleListingModal();
+      }
+    };
+    window.addEventListener("keydown", handleEsc);
+    return () => {
+      window.removeEventListener("keydown", handleEsc);
+    };
+  }, []);
+
+  useEffect(() => {
     const currencies = Object.entries(
       config[chainId as number]?.smartContracts?.currencies || {}
     ) as any;
@@ -404,10 +416,10 @@ const CreateListing = ({
   return (
     <div className="w-full">
       {/* <!-- Buy Now Modal --> */}
-      <div className="modal-dialog max-w-3xl">
+      <div className="max-w-3xl modal-dialog">
         <div className="modal-content !bg-secondaryBlack">
           <div className="modal-header">
-            <h5 className="modal-title mr-8" id="buyNowModalLabel">
+            <h5 className="mr-8 modal-title" id="buyNowModalLabel">
               Create a listing
             </h5>
             <button type="button" className="btn-close" onClick={handleListingModal}>
@@ -416,28 +428,28 @@ const CreateListing = ({
                 viewBox="0 0 24 24"
                 width="24"
                 height="24"
-                className="fill-jacarta-700 h-6 w-6 dark:fill-white"
+                className="w-6 h-6 fill-jacarta-700 dark:fill-white"
               >
                 <path fill="none" d="M0 0h24v24H0z" />
                 <path d="M12 10.586l4.95-4.95 1.414 1.414-4.95 4.95 4.95 4.95-1.414 1.414-4.95-4.95-4.95 4.95-1.414-1.414 4.95-4.95-4.95-4.95L7.05 5.636z" />
               </svg>
             </button>
           </div>
-          <div className="modal-body p-6 flex gap-4 items-center justify-center">
+          <div className="flex items-center justify-center gap-4 p-6 modal-body">
             <div className="flex items-center justify-center space-x-4">
-              <div className="mb-6 flex flex-col justify-center items-center gap-4">
+              <div className="flex flex-col items-center justify-center gap-4 mb-6">
                 <div className="flex flex-col items-center">
                   <label
                     htmlFor="item-description"
-                    className="font-display text-jacarta-900 mb-2 block dark:text-white "
+                    className="block mb-2 font-display text-jacarta-900 dark:text-white "
                   >
                     Type of listing for this ad space
                     <span className="text-red">*</span>
                   </label>
-                  <p className="dark:text-jacarta-100 text-jacarta-100 text-2xs mb-3">
+                  <p className="mb-3 dark:text-jacarta-100 text-jacarta-100 text-2xs">
                     Select the appropriate type:
                   </p>
-                  <div className="flex flex-col-reverse gap-4 justify-center items-center w-full text-jacarta-900 dark:text-white">
+                  <div className="flex flex-col-reverse items-center justify-center w-full gap-4 text-jacarta-900 dark:text-white">
                     <div id="adsType" className={`grid grid-cols-1 md:grid-cols-2 gap-2`}>
                       {listingType?.map((listing: any, index: number) => (
                         <div key={index} className="relative">
@@ -448,7 +460,7 @@ const CreateListing = ({
                             }}
                           >
                             {selectedListingType.includes(index) && (
-                              <span className="absolute border-2 border-green rounded-2xl -right-3 text-green font-bold -bottom-2 z-30 w-6 h-6 flex justify-center items-center">
+                              <span className="absolute z-30 flex items-center justify-center w-6 h-6 font-bold border-2 border-green rounded-2xl -right-3 text-green -bottom-2">
                                 ✓
                               </span>
                             )}
@@ -469,13 +481,13 @@ const CreateListing = ({
                                 }}
                               >
                                 {selectedListingType[0] !== index ? (
-                                  <div className="flex gap-2 justify-center items-center">
+                                  <div className="flex items-center justify-center gap-2">
                                     <span className="w-[25px]">{listing.picture("black")}</span>
                                     <span>{listing.title}</span>
                                     <ModalHelper dark={true} {...listing} />
                                   </div>
                                 ) : (
-                                  <div className="flex gap-2 justify-center">
+                                  <div className="flex justify-center gap-2">
                                     <span className="w-[25px]">{listing.picture("white")}</span>
                                     <span>{listing.title}</span>
                                     <ModalHelper dark={false} {...listing} />
@@ -484,18 +496,18 @@ const CreateListing = ({
                               </label>
                             </div>
                             {selectedListingType?.includes(index) && (
-                              <div className="mb-6 flex flex-col items-center">
+                              <div className="flex flex-col items-center mb-6">
                                 <label
                                   htmlFor="item-description"
-                                  className="font-display mt-2 text-jacarta-900 text-sm mb-2 block dark:text-white"
+                                  className="block mt-2 mb-2 text-sm font-display text-jacarta-900 dark:text-white"
                                 >
                                   Validity period<span className="text-red">*</span>
                                 </label>
-                                <p className="dark:text-jacarta-100 text-jacarta-100 text-2xs mb-3">
+                                <p className="mb-3 dark:text-jacarta-100 text-jacarta-100 text-2xs">
                                   Set the validity period for this listing.
                                 </p>
-                                <div className="flex flex-col gap-4 items-center text-jacarta-900 dark:text-white mb-3">
-                                  <div className="flex flex-col justify-center items-center gap-1">
+                                <div className="flex flex-col items-center gap-4 mb-3 text-jacarta-900 dark:text-white">
+                                  <div className="flex flex-col items-center justify-center gap-1">
                                     <DatePicker
                                       minDate={new Date()}
                                       selected={startDate}
@@ -511,17 +523,17 @@ const CreateListing = ({
                                       showYearDropdown
                                       showTimeSelect
                                       dateFormat="MMMM d, yyyy h:mm aa"
-                                      className="z-50 dark:bg-secondaryBlack border-jacarta-100 hover:ring-primaryPurple/10 focus:ring-primaryPurple dark:border-jacarta-800 dark:placeholder:text-jacarta-100 w-full rounded-lg py-3 px-3 hover:ring-2 dark:text-white"
+                                      className="z-50 w-full px-3 py-3 rounded-lg dark:bg-secondaryBlack border-jacarta-100 hover:ring-primaryPurple/10 focus:ring-primaryPurple dark:border-jacarta-800 dark:placeholder:text-jacarta-100 hover:ring-2 dark:text-white"
                                       style={{ width: "357px" }}
                                     />
-                                    <div className="flex gap-2 justify-center items-center">
+                                    <div className="flex items-center justify-center gap-2">
                                       <span className="text-jacarta-900 dark:text-white">
                                         Start date
                                       </span>
                                       {/* <ModalHelper title={helperStartDate.title} body={helperStartDate.body} size="small" /> */}
                                     </div>
                                   </div>
-                                  <div className="flex flex-col justify-center items-center gap-1">
+                                  <div className="flex flex-col items-center justify-center gap-1">
                                     <DatePicker
                                       minDate={new Date()}
                                       selected={endDate}
@@ -537,9 +549,9 @@ const CreateListing = ({
                                       showYearDropdown
                                       showTimeSelect
                                       dateFormat="MMMM d, yyyy h:mm aa"
-                                      className="z-50 dark:bg-secondaryBlack border-jacarta-100 hover:ring-primaryPurple/10 focus:ring-primaryPurple dark:border-jacarta-800 dark:placeholder:text-jacarta-100 w-full rounded-lg py-3 px-3 hover:ring-2 dark:text-white"
+                                      className="z-50 w-full px-3 py-3 rounded-lg dark:bg-secondaryBlack border-jacarta-100 hover:ring-primaryPurple/10 focus:ring-primaryPurple dark:border-jacarta-800 dark:placeholder:text-jacarta-100 hover:ring-2 dark:text-white"
                                     />
-                                    <div className="flex gap-2 justify-center items-center">
+                                    <div className="flex items-center justify-center gap-2">
                                       <span className="text-jacarta-900 dark:text-white">
                                         End date
                                       </span>
@@ -548,17 +560,17 @@ const CreateListing = ({
                                   </div>
                                 </div>
                                 {selectedListingType[0] === 1 && (
-                                  <div className="text-center  mb-2">
-                                    <div className="flex gap-2 justify-center items-center">
+                                  <div className="mb-2 text-center">
+                                    <div className="flex items-center justify-center gap-2">
                                       <label
                                         htmlFor="item-description"
-                                        className="font-display text-jacarta-900 text-sm mb-2 block dark:text-white"
+                                        className="block mb-2 text-sm font-display text-jacarta-900 dark:text-white"
                                       >
                                         Unit starting price <span className="text-red">*</span>
                                         <ModalHelper {...helperSartingPrice} size="small" />
                                       </label>
                                     </div>
-                                    <div className="flex  flex-wrap   gap-4 items-center text-jacarta-900 dark:text-white">
+                                    <div className="flex flex-wrap items-center gap-4 text-jacarta-900 dark:text-white">
                                       <Input
                                         type="number"
                                         id="numberInput"
@@ -566,7 +578,7 @@ const CreateListing = ({
                                         value={selectedStartingPrice}
                                         onChange={handleStartingPriceChange}
                                         placeholder="Unit selling price"
-                                        className="flex-grow border-jacarta-100 hover:ring-primaryPurple/10 focus:ring-primaryPurple dark:border-jacarta-800 dark:placeholder:text-jacarta-100  rounded-lg py-3 px-3 hover:ring-2 dark:text-white"
+                                        className="flex-grow px-3 py-3 rounded-lg border-jacarta-100 hover:ring-primaryPurple/10 focus:ring-primaryPurple dark:border-jacarta-800 dark:placeholder:text-jacarta-100 hover:ring-2 dark:text-white"
                                       />
                                     </div>
                                     <p className="dark:text-jacarta-100 text-jacarta-100 text-2xs ">
@@ -576,18 +588,18 @@ const CreateListing = ({
                                     </p>
                                   </div>
                                 )}
-                                <div className="text-center mb-2">
-                                  <div className="flex gap-2 justify-center items-center">
+                                <div className="mb-2 text-center">
+                                  <div className="flex items-center justify-center gap-2">
                                     <label
                                       htmlFor="item-description"
-                                      className="font-display text-jacarta-900 mb-2 text-sm block dark:text-white"
+                                      className="block mb-2 text-sm font-display text-jacarta-900 dark:text-white"
                                     >
                                       Direct selling price <span className="text-red">*</span>
                                       <ModalHelper {...helperBuyoutPrice} size="small" />
                                     </label>
                                   </div>
 
-                                  <div className="flex  flex-col items-center text-jacarta-900 dark:text-white">
+                                  <div className="flex flex-col items-center text-jacarta-900 dark:text-white">
                                     <Input
                                       type="number"
                                       id="numberInput"
@@ -595,7 +607,7 @@ const CreateListing = ({
                                       value={selectedUnitPrice}
                                       onChange={handleUnitPriceChange}
                                       placeholder="Direct selling price"
-                                      className="flex-grow border-jacarta-100 hover:ring-primaryPurple/10 focus:ring-primaryPurple dark:border-jacarta-800 dark:placeholder:text-jacarta-100  rounded-lg py-3 px-3 hover:ring-2 dark:text-white"
+                                      className="flex-grow px-3 py-3 rounded-lg border-jacarta-100 hover:ring-primaryPurple/10 focus:ring-primaryPurple dark:border-jacarta-800 dark:placeholder:text-jacarta-100 hover:ring-2 dark:text-white"
                                     />
                                     <p className="dark:text-jacarta-100 text-jacarta-100 text-2xs ">
                                       You will receive :{" "}
@@ -604,7 +616,7 @@ const CreateListing = ({
                                     </p>
                                   </div>
                                 </div>
-                                <div className="flex flex-start gap-4 mt-2">
+                                <div className="flex gap-4 mt-2 flex-start">
                                   <select
                                     id="currency"
                                     value={selectedCurrency?.address}
@@ -676,6 +688,7 @@ const CreateListing = ({
                   tokenSymbol={currencySymbol as string}
                   tokenDecimals={currencyDecimals as number}
                   tokenAddress={selectedCurrency?.address as Address}
+                  terms={false}
                 />
               </div>
             )}

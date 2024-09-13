@@ -39,6 +39,19 @@ const Iframe = ({ chainId, offerId }) => {
       ? JSON.parse(localStorage.getItem("iframeSettings") as string).changeRatio
       : false
   );
+
+  const [includeAvailable, setIncludeAvailable] = useState(
+    localStorage.getItem("iframeSettings")
+      ? JSON.parse(localStorage.getItem("iframeSettings") as string).includeAvailable
+      : true
+  );
+
+  const [includeReserved, setIncludeReserved] = useState(
+    localStorage.getItem("iframeSettings")
+      ? JSON.parse(localStorage.getItem("iframeSettings") as string).includeReserved
+      : true
+  );
+
   const [ratio, setRatio] = useState(
     localStorage.getItem("iframeSettings")
       ? JSON.parse(localStorage.getItem("iframeSettings") as string).ratio
@@ -80,6 +93,9 @@ const Iframe = ({ chainId, offerId }) => {
 
     if (bgColor) params.append("bgColor", color);
     if (changeRatio) params.append("ratio", ratio);
+    if (!includeAvailable) params.append("includeAvailable", includeAvailable);
+    if (!includeReserved) params.append("includeReserved", includeReserved);
+
     if (customAdPreview) {
       if (displayType === "ClickableLogosGrid") params.append("previewTokenId", tokenId);
       if (displayType === "DynamicBanner") params.append("tokenIds", tokenIds.join(","));
@@ -102,7 +118,9 @@ const Iframe = ({ chainId, offerId }) => {
     tokenIds,
     previewImage,
     previewLink,
-    displayType
+    displayType,
+    includeAvailable,
+    includeReserved
   ]);
 
   useEffect(() => {
@@ -121,6 +139,8 @@ const Iframe = ({ chainId, offerId }) => {
       setPreviewImage(settings.previewImage);
       setPreviewLink(settings.previewLink);
       setDisplayType(settings.displayType);
+      setIncludeAvailable(settings.includeAvailable);
+      setIncludeReserved(settings.includeReserved);
     }
   }, []);
 
@@ -137,7 +157,9 @@ const Iframe = ({ chainId, offerId }) => {
       tokenIds,
       previewImage,
       previewLink,
-      displayType
+      displayType,
+      includeAvailable,
+      includeReserved
     };
     localStorage.setItem("iframeSettings", JSON.stringify(settings));
   }, [
@@ -152,7 +174,9 @@ const Iframe = ({ chainId, offerId }) => {
     tokenIds,
     previewImage,
     previewLink,
-    displayType
+    displayType,
+    includeAvailable,
+    includeReserved
   ]);
 
   return (
@@ -177,25 +201,25 @@ const Iframe = ({ chainId, offerId }) => {
 
       <Divider className="my-4" />
 
-      <div className="flex md:items-center items-start flex-col md:flex-row">
-        <span className="dark:text-jacarta-100 text-jacarta-100 md:mr-8 mb-4">
+      <div className="flex flex-col items-start md:items-center md:flex-row">
+        <span className="mb-4 dark:text-jacarta-100 text-jacarta-100 md:mr-8">
           Select display type :{" "}
         </span>
 
         <RadioGroup.Root
-          className="flex md:items-center gap-4 md:gap-8 flex-col items-start md:flex-row"
+          className="flex flex-col items-start gap-4 md:items-center md:gap-8 md:flex-row"
           onValueChange={(value) => setDisplayType(value)}
           value={displayType}
         >
           <div className="flex items-center gap-2">
             <RadioGroup.Item
-              className="bg-white w-4 h-4 rounded-full hover:border-primaryPink outline-none cursor-default"
+              className="w-4 h-4 bg-white rounded-full outline-none cursor-default hover:border-primaryPink"
               value="ClickableLogosGrid"
               id="r1"
             >
               <RadioGroup.Indicator className="flex items-center justify-center w-full h-full relative after:content-[''] after:block after:w-[11px] after:h-[11px] after:rounded-[50%] after:bg-primaryPurple" />
             </RadioGroup.Item>
-            <label className="text-white leading-none pl-1" htmlFor="r1">
+            <label className="pl-1 leading-none text-white" htmlFor="r1">
               Clickable Logo Grid
             </label>
             <ResponsiveTooltip text="This integration allows you to display a grid of clickable logos. (Example: sponsor logo grid at the bottom of the page). Each slot in the grid will display the sponsor's proposed logo redirecting to a URL. If you need to display a single static logo, you can also choose this integration.">
@@ -205,13 +229,13 @@ const Iframe = ({ chainId, offerId }) => {
 
           <div className="flex items-center gap-2">
             <RadioGroup.Item
-              className="bg-white w-4 h-4 rounded-full hover:border-primaryPink outline-none cursor-default"
+              className="w-4 h-4 bg-white rounded-full outline-none cursor-default hover:border-primaryPink"
               value="DynamicBanner"
               id="r2"
             >
               <RadioGroup.Indicator className="flex items-center justify-center w-full h-full relative after:content-[''] after:block after:w-[11px] after:h-[11px] after:rounded-[50%] after:bg-primaryPurple" />
             </RadioGroup.Item>
-            <label className="text-white leading-none pl-1" htmlFor="r2">
+            <label className="pl-1 leading-none text-white" htmlFor="r2">
               Dynamic Banner
             </label>
             <ResponsiveTooltip text="This integration lets you display a randomly selected ad from those submitted by sponsors, with a new ad randomly selected at each request. The ad redirects to a URL.">
@@ -225,7 +249,7 @@ const Iframe = ({ chainId, offerId }) => {
         Copy and paste the following code to the desired location on your page.
       </span>
 
-      <div className="bg-jacarta-800 relative hover:bg-jacarta-800 border border-primaryPurple ring-0 focus:ring-0 focus:border-primaryPurple placeholder:text-jacarta-300 w-full rounded-lg p-3 text-white">
+      <div className="relative w-full p-3 text-white border rounded-lg bg-jacarta-800 hover:bg-jacarta-800 border-primaryPurple ring-0 focus:ring-0 focus:border-primaryPurple placeholder:text-jacarta-300">
         <div className="absolute top-2 right-2">
           <button
             className="z-10"
@@ -241,19 +265,19 @@ const Iframe = ({ chainId, offerId }) => {
             }}
           >
             <Tippy content={`${copied ? "copied" : "copy"}`} placement="top" hideOnClick={false}>
-              <ClipboardIcon className="w-5 h-5 text-white hover:text-jacarta-100 cursor-pointer" />
+              <ClipboardIcon className="w-5 h-5 text-white cursor-pointer hover:text-jacarta-100" />
             </Tippy>
           </button>
         </div>
 
-        <code className="text-sm flex overflow-x-scroll hide-scrollbar flex-col items-start">
+        <code className="flex flex-col items-start overflow-x-scroll text-sm hide-scrollbar">
           {`<iframe sandbox="allow-same-origin allow-scripts allow-popups allow-top-navigation-by-user-activation" src="${iframeSrc}" style="width:100%; ${customHeight ? `height:${height};` : "height:100%;"} overflow:hidden; border: none;"></iframe>`}
         </code>
       </div>
 
       <Divider className="my-4" />
 
-      <span className="text-white text-lg font-semibold">Customize</span>
+      <span className="text-lg font-semibold text-white">Customize</span>
 
       <div className="flex flex-wrap items-start gap-8">
         <div className="flex flex-col gap-4">
@@ -321,6 +345,40 @@ const Iframe = ({ chainId, offerId }) => {
               placeholder="Ratio (ex: 16:9)"
             />
           )}
+        </div>
+
+        <div className="flex flex-col gap-4">
+          <label className="flex items-center gap-2">
+            <Input
+              type="checkbox"
+              checked={includeAvailable}
+              onChange={(e) => setIncludeAvailable(e.target.checked)}
+              className=" !text-primaryPurple border-jacarta-200 focus:ring-primaryPurple/20 dark:border-jacarta-500 h-5 !w-5 self-start rounded focus:ring-offset-0"
+            />
+            <span className="text-white">Show Available tokens</span>
+            <ResponsiveTooltip
+              text={`Show "Own this ad space" if there is no validated ad but the token is available on the market`}
+            >
+              <InformationCircleIcon className="w-5 h-5 text-white hover:text-jacarta-100 cursor-help" />
+            </ResponsiveTooltip>
+          </label>
+        </div>
+
+        <div className="flex flex-col gap-4">
+          <label className="flex items-center gap-2">
+            <Input
+              type="checkbox"
+              checked={includeReserved}
+              onChange={(e) => setIncludeReserved(e.target.checked)}
+              className=" !text-primaryPurple border-jacarta-200 focus:ring-primaryPurple/20 dark:border-jacarta-500 h-5 !w-5 self-start rounded focus:ring-offset-0"
+            />
+            <span className="text-white">Show Reserved tokens</span>
+            <ResponsiveTooltip
+              text={`Show "Reserved ad space" if there is no validated ad and the token is not available on the market`}
+            >
+              <InformationCircleIcon className="w-5 h-5 text-white hover:text-jacarta-100 cursor-help" />
+            </ResponsiveTooltip>
+          </label>
         </div>
 
         {/* 
@@ -398,7 +456,7 @@ const Iframe = ({ chainId, offerId }) => {
 
       <Divider className="my-4" />
 
-      <span className="text-white text-lg font-semibold">Preview</span>
+      <span className="text-lg font-semibold text-white">Preview</span>
 
       <div className={`w-full`} style={{ height: customHeight ? height : "500px" }}>
         <iframe

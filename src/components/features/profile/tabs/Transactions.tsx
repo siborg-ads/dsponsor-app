@@ -108,7 +108,6 @@ const Transactions = ({ manageAddress, lastActivities, isLoading }) => {
             {filteredLastActivities?.map((activity, index) => {
               const chainExplorer = activity.chainConfig?.explorerBaseURL;
               const chainName = activity.chainConfig?.chainName;
-              console.log({ activity });
               return (
                 <tr key={index}>
                   <td className="py-4 px-4 text-jacarta-100 dark:text-jacarta-100">{chainName}</td>

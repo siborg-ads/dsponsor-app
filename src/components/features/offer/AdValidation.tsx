@@ -106,7 +106,7 @@ const AdValidation = ({
   const [refusedProposalData, setRefusedProposalData] = useState<Proposal[]>([]);
   const [historyProposals, setHistoryProposals] = useState<HistoryProposalType[]>([]);
   const [itemActive, setItemActive] = useState<number>(1);
-  const [, setComments] = useState({});
+  const [comments, setComments] = useState({});
   const [isApprouvedAd, setIsApprouvedAd] = useState<boolean>(false);
   const [pendingProposalLength, setPendingProposalLength] = useState(0);
   const [aspectRatio, setAspectRatio] = useState<string | null>(null);
@@ -410,6 +410,7 @@ const AdValidation = ({
             successFullModalObject={
               isApprouvedAd ? successFullValidatedAdModalObject : successFullRefusedAdModalObject
             }
+            comments={comments}
           />
         </div>
       )}
