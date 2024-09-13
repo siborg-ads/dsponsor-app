@@ -1206,6 +1206,10 @@ const Token = () => {
     if (offerData?.admins?.includes(address?.toLowerCase())) {
       setIsOfferOwner(true);
     }
+
+    if (isUserOwner?.toLowerCase() === address?.toLowerCase()) {
+      setIsOwner(true);
+    }
   }, [
     isUserOwner,
     address,
@@ -2461,62 +2465,6 @@ const Token = () => {
                       </div>
                     )}
 
-                  {isUserOwner?.toLowerCase() === address?.toLowerCase() && (
-                    <div className="flex flex-col gap-4 p-8 mt-4 mb-2 bg-white border dark:bg-secondaryBlack dark:border-jacarta-800 border-jacarta-100 rounded-2lg">
-                      <span className="text-lg dark:text-jacarta-100 text-jacarta-100">
-                        Transfer this token
-                      </span>
-
-                      <Input
-                        placeholder={"Enter the address"}
-                        onChange={(e) => setTransferAddress(e.target.value)}
-                        value={transferAddress}
-                        type="text"
-                        className="w-full"
-                      />
-
-                      {!isAddress(transferAddress || "") && (transferAddress || "") !== "" && (
-                        <span className="text-sm text-red">Invalid address</span>
-                      )}
-                      {transferAddress?.toLowerCase() === address?.toLowerCase() && (
-                        <span className="text-sm text-red">
-                          You can&apos;t transfer to yourself
-                        </span>
-                      )}
-
-                      <div className="flex items-center gap-2">
-                        {navigator?.clipboard && (
-                          <button
-                            onClick={() => {
-                              // get clipboard content
-                              navigator.clipboard.readText().then((text) => {
-                                setTransferAddress(text);
-                              });
-                            }}
-                            className="w-fit"
-                          >
-                            <span className="text-sm text-primaryPurple">Paste from clipboard</span>
-                          </button>
-                        )}
-                      </div>
-
-                      <div className="flex w-full">
-                        <StyledWeb3Button
-                          contractAddress={nftContractAddress as Address}
-                          onClick={async () => {
-                            await toast.promise(handleTransfer, {
-                              pending: "Transfer in progress... 🚀",
-                              success: "Transfer successful 🎉",
-                              error: "Transfer failed ❌"
-                            });
-                          }}
-                          isDisabled={!isAddress(transferAddress || "") || !isValidId}
-                          defaultText="Transfer"
-                        />
-                      </div>
-                    </div>
-                  )}
-
                   {firstSelectedListing?.status === "CREATED" &&
                     firstSelectedListing?.listingType === "Direct" &&
                     firstSelectedListing?.startTime >= now && (
@@ -2603,6 +2551,65 @@ const Token = () => {
                         hasEnoughBalanceForNative={hasEnoughBalanceForNative}
                         tokenEtherPriceRelayer={tokenEtherPriceRelayer}
                       />
+                    )}
+
+                  {isUserOwner?.toLowerCase() === address?.toLowerCase() &&
+                    firstSelectedListing?.status !== "CREATED" && (
+                      <div className="flex flex-col gap-4 p-8 mt-4 mb-2 bg-white border dark:bg-secondaryBlack dark:border-jacarta-800 border-jacarta-100 rounded-2lg">
+                        <span className="text-lg dark:text-jacarta-100 text-jacarta-100">
+                          Transfer this token
+                        </span>
+
+                        <Input
+                          placeholder={"Enter the address"}
+                          onChange={(e) => setTransferAddress(e.target.value)}
+                          value={transferAddress}
+                          type="text"
+                          className="w-full"
+                        />
+
+                        {!isAddress(transferAddress || "") && (transferAddress || "") !== "" && (
+                          <span className="text-sm text-red">Invalid address</span>
+                        )}
+                        {transferAddress?.toLowerCase() === address?.toLowerCase() && (
+                          <span className="text-sm text-red">
+                            You can&apos;t transfer to yourself
+                          </span>
+                        )}
+
+                        <div className="flex items-center gap-2">
+                          {navigator?.clipboard && (
+                            <button
+                              onClick={() => {
+                                // get clipboard content
+                                navigator.clipboard.readText().then((text) => {
+                                  setTransferAddress(text);
+                                });
+                              }}
+                              className="w-fit"
+                            >
+                              <span className="text-sm text-primaryPurple">
+                                Paste from clipboard
+                              </span>
+                            </button>
+                          )}
+                        </div>
+
+                        <div className="flex w-full">
+                          <StyledWeb3Button
+                            contractAddress={nftContractAddress as Address}
+                            onClick={async () => {
+                              await toast.promise(handleTransfer, {
+                                pending: "Transfer in progress... 🚀",
+                                success: "Transfer successful 🎉",
+                                error: "Transfer failed ❌"
+                              });
+                            }}
+                            isDisabled={!isAddress(transferAddress || "") || !isValidId}
+                            defaultText="Transfer"
+                          />
+                        </div>
+                      </div>
                     )}
                 </>
               )}
