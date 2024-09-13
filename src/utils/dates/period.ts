@@ -1,6 +1,6 @@
 export function getOwnershipPeriod(startDate: string, endDate: string): string {
-  const start: Date = new Date(startDate);
-  const end: Date = new Date(endDate);
+  const start: Date = new Date(startDate.split("T")[0]);
+  const end: Date = new Date(endDate.split("T")[0]);
   const today: Date = new Date();
 
   // Detect user locale from the browser
