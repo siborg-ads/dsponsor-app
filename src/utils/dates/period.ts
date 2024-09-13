@@ -1,4 +1,8 @@
-export function getOwnershipPeriod(startDate: string, endDate: string): string {
+export function getOwnershipPeriod(
+  startDate: string,
+  endDate: string,
+  introText: string = "Display period:"
+): string {
   const start: Date = new Date(startDate.split("T")[0]);
   const end: Date = new Date(endDate.split("T")[0]);
   const today: Date = new Date();
@@ -27,5 +31,5 @@ export function getOwnershipPeriod(startDate: string, endDate: string): string {
     status = `expires in ${daysLeft} days`;
   }
 
-  return `Display period: ${startFormatted} - ${endFormatted} (${daysBetween} days, ${status})`;
+  return `${introText} ${startFormatted} - ${endFormatted} (${daysBetween} days, ${status})`;
 }

@@ -4,6 +4,7 @@ import Link from "next/link";
 import config from "@/config/config";
 import displayOrCheckKnownAddress from "@/utils/addresses/displayOrCheckKnownAddress";
 import { Address } from "thirdweb";
+import { getOwnershipPeriod } from "@/utils/dates/period";
 
 const Details = ({
   chainId,
@@ -88,8 +89,13 @@ const Details = ({
                 <div className="flex items-center">
                   <span className="dark:text-jacarta-100 mr-2 min-w-[9rem]">Validity Period:</span>
                   <span className="text-jacarta-900 dark:text-white">
-                    {new Date(offerData?.metadata?.offer?.valid_from).toLocaleDateString() ?? ""} to{" "}
-                    {new Date(offerData?.metadata?.offer?.valid_to).toLocaleDateString() ?? ""}
+                    {offerData?.metadata?.offer?.valid_from && offerData?.metadata?.offer?.valid_to
+                      ? getOwnershipPeriod(
+                          offerData?.metadata?.offer?.valid_from,
+                          offerData?.metadata?.offer?.valid_to,
+                          ""
+                        )
+                      : ""}
                   </span>
                 </div>
               )}
