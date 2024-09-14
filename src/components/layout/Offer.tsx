@@ -690,7 +690,12 @@ const Offer = () => {
                 {offerData?.nftContract?.allowList && (
                   <span className="text-sm dark:text-jacarta-100 text-jacarta-100">
                     {offerData?.nftContract?.maxSupply -
-                      offerData?.nftContract?.tokens?.filter((item) => item.mint != null)?.length}
+                      offerData?.nftContract?.tokens?.filter((item) => {
+                        const isListing = item?.marketplaceListings?.some(
+                          (item) => item.status === "CREATED"
+                        );
+                        return item.mint != null && !isListing;
+                      })?.length}
                     /{offerData?.nftContract?.maxSupply} available
                   </span>
                 )}

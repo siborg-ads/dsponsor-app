@@ -2546,7 +2546,8 @@ const Token = () => {
                       />
                     )}
 
-                  {isUserOwner?.toLowerCase() === address?.toLowerCase() &&
+                  {address !== undefined &&
+                    isUserOwner?.toLowerCase() === address?.toLowerCase() &&
                     firstSelectedListing?.status !== "CREATED" && (
                       <div className="flex flex-col gap-4 p-8 mt-4 mb-2 bg-white border dark:bg-secondaryBlack dark:border-jacarta-800 border-jacarta-100 rounded-2lg">
                         <span className="text-lg dark:text-jacarta-100 text-jacarta-100">
@@ -2564,7 +2565,7 @@ const Token = () => {
                         {!isAddress(transferAddress || "") && (transferAddress || "") !== "" && (
                           <span className="text-sm text-red">Invalid address</span>
                         )}
-                        {transferAddress?.toLowerCase() === address?.toLowerCase() && (
+                        {transferAddress?.toLowerCase() === address.toLowerCase() && (
                           <span className="text-sm text-red">
                             You can&apos;t transfer to yourself
                           </span>
