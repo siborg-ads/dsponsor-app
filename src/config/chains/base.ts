@@ -1,4 +1,3 @@
-import Network from "@/utils/networks/networks";
 import contractABI from "@/abi/dsponsorAdmin.json";
 import { Base } from "@thirdweb-dev/chains";
 import { ChainObject } from "@/types/chain";
@@ -7,7 +6,7 @@ const baseConfig: ChainObject = {
   chainId: 8453,
   chainName: "base",
   gaslessBalanceThreshold: "1000000000000000", // 0.001 ETH
-  network: Network.BASE_MAINNET,
+  network: Base.slug,
   chainObject: Base,
   logoURL: "/images/chains/base-logo.png",
   explorerBaseURL: "https://basescan.org",
