@@ -140,28 +140,6 @@ interface ResponseType {
  */
 export const fetchAllTokensProfile = async (ownerAddress: Address, chainId: number) => {
   const relayerURL = config[chainId].relayerURL;
-  const options = { method: "GET", headers: { accept: "application/json" } };
-  const response = await fetch(
-    `${relayerURL}/api/${chainId}/account/${ownerAddress}/tokens`,
-    options
-  );
-
-  const data = (await response.json()) as ResponseType[];
-
-  const resultMappedData = data?.map((item) => {
-    const combinedData = {
-      ...item,
-      chainConfig: config[chainId]
-    };
-    return combinedData;
-  });
-
-  return resultMappedData;
-};
-
-/*
-export const fetchAllTokensProfile = async (ownerAddress: Address, chainId: number) => {
-  const relayerURL = config[chainId].relayerURL;
 
   const path = new URL(`${relayerURL}/api/${chainId}/graph`);
 
@@ -203,7 +181,7 @@ export const fetchAllTokensProfile = async (ownerAddress: Address, chainId: numb
             where: { owner: $ownerAddress }
             first: 1000            
           ) {
-            tokenId
+            tokenId            
             setInAllowList
             marketplaceListings(
               first: 1000
@@ -320,4 +298,3 @@ export const fetchAllTokensProfile = async (ownerAddress: Address, chainId: numb
 
   return resultMappedData;
 };
-*/
