@@ -110,7 +110,6 @@ NEXT_PUBLIC_TUNNELING_URL=https://xxx-xxx-xxx-xxx-xxx.ngrok-free.app
 Here’s an example of a chain configuration file for the Base network:
 
 ```typescript
-import Network from "@/utils/networks/networks";
 import contractABI from "@/abi/dsponsorAdmin.json";
 import { Base } from "@thirdweb-dev/chains";
 
@@ -118,7 +117,7 @@ const prodBase = {
   chainId: 8453,
   chainName: "base",
   chainObject: Base,
-  network: Network.BASE_MAINNET,
+  network: Base.slug,
   logoURL: "/images/base-logo.png",
   explorerBaseURL: "https://basescan.org",
 

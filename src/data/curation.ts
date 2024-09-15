@@ -47,29 +47,16 @@ export function curationData(baseURL: string): CurationData {
       }
     ],
     34443: [
-      /*
-    {
-      logo: "/images/siborg-ads/siborg-ads.png",
-      description:
-        "SiBorg App is a web3-based Spotify-like application for Twitter Spaces and podcasts, featuring SocialFi capabilities.",
-      buttonText: "Own a part of SiBorg App",
-      offerId: 1,
-      buttonLink: `${baseURL}/${11155111}/offer/${1}`,
-      type: ["dapps"] as Filter[],
-      inTrending: true
-    },
-
-    {
-      logo: "/images/cryptoast/cryptoast.webp",
-      description:
-        "Cryptoast is a leading French-language media outlet focused on Bitcoin, blockchain, and cryptocurrencies. Established in 2017, it aims to provide comprehensive and accessible information to both newcomers and experienced users in the crypto space.",
-      offerId: 35,
-      buttonText: "Get your ads on Cryptoast",
-      buttonLink: `${baseURL}/${11155111}/offer/${35}`,
-      type: ["medias", "newsletters"] as Filter[],
-      inTrending: true
-    }
-      */
+      {
+        logo: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSG4ECvF3PK6ADTOJOkmfmU4JOffleZqMuGdSBZSl0x3oXhDp2pLgy37pxUPA9L1eIkZw&usqp=CAU",
+        description:
+          "Mode is the Ethereum L2 that rewards you for growing the network via new economic mechanisms. Powered by Optimism.",
+        buttonText: "Own a part of Mode website",
+        offerId: 1,
+        buttonLink: `${baseURL}/${34443}/offer/${1}`,
+        type: ["dapps"] as Filter[],
+        inTrending: true
+      }
     ],
     11155111: [
       {
