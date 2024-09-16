@@ -262,7 +262,7 @@ const Offer = () => {
     if (chainId) {
       fetchOffers();
     }
-  }, [chainId, offerId]);
+  }, [chainId, fetchOffers, offerId]);
 
   useEffect(() => {
     if (offerData && address) {

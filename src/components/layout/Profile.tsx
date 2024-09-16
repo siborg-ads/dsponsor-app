@@ -10,7 +10,6 @@ import { fetchAllOffersProfile } from "@/utils/graphql/fetchAllOffersProfile";
 import { fetchAllTokensProfile } from "@/utils/graphql/fetchAllTokensProfile";
 import config from "@/config/config";
 import { getAddress } from "ethers/lib/utils";
-import { features } from "@/data/features";
 import { Address } from "thirdweb";
 
 const metadata = {

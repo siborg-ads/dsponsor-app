@@ -806,24 +806,43 @@ const BidsModal = ({
                   >
                     {!insufficentBalance ? (
                       <>
-                        <StyledWeb3Button
-                          contractAddress={config[chainId]?.smartContracts?.DSPONSORMP?.address}
-                          onClick={async () => {
-                            await toast.promise(handleApprove, {
-                              pending: "Waiting for confirmation 🕒",
-                              success: "Approval confirmed 👌",
-                              error: "Approval rejected 🤯"
-                            });
-                          }}
-                          isDisabled={
-                            !isPriceGood ||
-                            !checkTerms ||
-                            !bidsAmount ||
-                            !allowanceTrue ||
-                            notEnoughFunds
-                          }
-                          defaultText={notEnoughFunds ? "Not enough funds" : "Approve 🔓 (1/2)"}
-                        />
+                        {nativeTokenBalance?.value?.gte(
+                          BigNumber.from(config[chainId]?.gaslessBalanceThreshold ?? "0")
+                        ) ? (
+                          <StyledWeb3Button
+                            contractAddress={config[chainId]?.smartContracts?.DSPONSORMP?.address}
+                            onClick={async () => {
+                              await toast.promise(handleApprove, {
+                                pending: "Waiting for confirmation 🕒",
+                                success: "Approval confirmed 👌",
+                                error: "Approval rejected 🤯"
+                              });
+                            }}
+                            isDisabled={
+                              !isPriceGood ||
+                              !checkTerms ||
+                              !bidsAmount ||
+                              !allowanceTrue ||
+                              notEnoughFunds
+                            }
+                            defaultText={notEnoughFunds ? "Not enough funds" : "Approve 🔓 (1/2)"}
+                          />
+                        ) : (
+                          <StyledWeb3Button
+                            contractAddress={
+                              chainConfig?.smartContracts?.DSPONSORADMIN?.address as Address
+                            }
+                            onClick={async () => {
+                              await toast.promise(handleApprove, {
+                                pending: "Waiting for confirmation 🕒",
+                                success: "Approval confirmed 👌",
+                                error: "Approval rejected 🤯"
+                              });
+                            }}
+                            isDisabled={true}
+                            defaultText={`You need more than ${formatUnits(BigNumber.from(config[chainId].gaslessBalanceThreshold), "ether")} ETH to execute this tx.`}
+                          />
+                        )}
 
                         <StyledWeb3Button
                           contractAddress={

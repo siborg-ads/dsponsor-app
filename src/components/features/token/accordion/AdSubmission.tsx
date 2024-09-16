@@ -113,7 +113,7 @@ const AdSubmission = ({
     return () => {
       window.removeEventListener("keydown", handleEscape);
     };
-  }, []);
+  }, [handlePreviewModal]);
 
   const formatDate = (date) => {
     if (!date) return "";

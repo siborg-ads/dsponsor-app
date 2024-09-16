@@ -16,6 +16,7 @@ import { BigNumber } from "ethers";
 import StyledWeb3Button from "@/components/ui/buttons/StyledWeb3Button";
 import { Address } from "thirdweb";
 import { ChainObject } from "@/types/chain";
+import config from "@/config/config";
 
 const BuyModal = ({
   chainConfig,
@@ -369,11 +370,38 @@ const BuyModal = ({
                 <div className="flex flex-col items-center md:gap-2 gap-6">
                   {!insufficentBalance ? (
                     <React.Fragment>
-                      {/* Approve Button */}
                       <div
                         className={`grid grid-cols-1 mx-auto ${totalPrice > 0 && "md:grid-cols-2"} gap-6 w-full`}
                       >
-                        {totalPrice > 0 && (
+                        {nativeTokenBalance?.value?.gte(
+                          BigNumber.from(config[chainId]?.gaslessBalanceThreshold ?? "0")
+                        ) ? (
+                          <React.Fragment>
+                            {totalPrice > 0 && (
+                              <StyledWeb3Button
+                                contractAddress={
+                                  chainConfig?.smartContracts?.DSPONSORADMIN?.address as Address
+                                }
+                                onClick={async () => {
+                                  await toast.promise(handleApprove, {
+                                    pending: "Waiting for confirmation 🕒",
+                                    success: "Approval confirmed 👌",
+                                    error: "Approval rejected 🤯"
+                                  });
+                                }}
+                                isDisabled={
+                                  !validate ||
+                                  !finalPriceNotFormatted ||
+                                  !allowanceTrue ||
+                                  notEnoughFunds
+                                }
+                                defaultText={
+                                  notEnoughFunds ? "Not enough funds" : "Approve 🔓 (1/2)"
+                                }
+                              />
+                            )}
+                          </React.Fragment>
+                        ) : (
                           <StyledWeb3Button
                             contractAddress={
                               chainConfig?.smartContracts?.DSPONSORADMIN?.address as Address
@@ -385,13 +413,8 @@ const BuyModal = ({
                                 error: "Approval rejected 🤯"
                               });
                             }}
-                            isDisabled={
-                              !validate ||
-                              !finalPriceNotFormatted ||
-                              !allowanceTrue ||
-                              notEnoughFunds
-                            }
-                            defaultText={notEnoughFunds ? "Not enough funds" : "Approve 🔓 (1/2)"}
+                            isDisabled={true}
+                            defaultText={`You need more than ${formatUnits(BigNumber.from(config[chainId].gaslessBalanceThreshold), "ether")} ETH to execute this tx.`}
                           />
                         )}
 

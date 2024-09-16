@@ -622,7 +622,7 @@ const Token = () => {
       }
       setTags(toUpdateTags);
     }
-  }, [chainId, offerData, tokenId, address]);
+  }, [chainId, offerData, tokenId, address, referralAddress]);
 
   useEffect(() => {
     let bids: any[] = [];

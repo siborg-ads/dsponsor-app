@@ -38,7 +38,6 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
       disabled,
       value,
       onChange,
-      onWheel,
       min,
       step,
       max,

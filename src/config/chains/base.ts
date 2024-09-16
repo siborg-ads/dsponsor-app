@@ -5,7 +5,7 @@ import { ChainObject } from "@/types/chain";
 const baseConfig: ChainObject = {
   chainId: 8453,
   chainName: "base",
-  gaslessBalanceThreshold: "1000000000000000", // 0.001 ETH
+  gaslessBalanceThreshold: "50000000000000", // 0.00005 ETH
   network: Base.slug,
   chainObject: Base,
   logoURL: "/images/chains/base-logo.png",
