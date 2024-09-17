@@ -390,7 +390,7 @@ const CreateListing = ({
   ];
   const successFullListingModal = {
     body: "Your listing has been created successfully",
-    subBody: "You can see your listing on the martketplace page.",
+    subBody: "Check this page regularly to stay updated on the progress of this listing!",
     buttonTitle: "Manage Spaces",
     hrefButton: null
   };
