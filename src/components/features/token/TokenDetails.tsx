@@ -33,10 +33,14 @@ export default function TokenDetails({
 
   React.useEffect(() => {
     if (offerData) {
-      console.log("token details - offerdata", offerData);
-      const nftContracts = offerData.nftContracts;
-      const hasEnabledPrice = nftContracts.prices.some((price) => price.enabled);
-      const isPermissionless = !nftContracts.allowList;
+      const token = offerData?.nftContract?.tokens?.find(
+        (token) =>
+          !!token?.tokenId && tokenId && BigInt(token?.tokenId) === BigInt(tokenId as string)
+      );
+
+      const nftContract = offerData?.nftContract;
+      const hasEnabledPrice = nftContract?.prices.some((price) => price.enabled);
+      const isPermissionless = !nftContract?.allowList;
       const isTokenInAllowList = token?.setInAllowList;
 
       if (hasEnabledPrice && (isPermissionless || isTokenInAllowList)) {
@@ -45,7 +49,7 @@ export default function TokenDetails({
         setIsMintable(false);
       }
     }
-  }, [offerData, token]);
+  }, [offerData, tokenId]);
 
   const modalHelper = {
     title: "Protocol Fees",
