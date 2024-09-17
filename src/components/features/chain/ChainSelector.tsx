@@ -5,7 +5,12 @@ import { ChainObject } from "@/types/chain";
 import { useAddress, useSwitchChain } from "@thirdweb-dev/react";
 
 const ChainSelector = ({ setChainConfig, chainConfig }) => {
-  const [chainName, setChainName] = useState<string>(Object.entries(config)[0][1].chainName);
+  const [chainName, setChainName] = useState<string>(
+    localStorage?.getItem("chainName") ?? Object.entries(config)[0][1].chainName
+  );
+  const [chainId, setChainId] = useState<number>(
+    Number(localStorage?.getItem("chainId")) ?? Object.entries(config)[0][1].chainId
+  );
 
   const switchChain = useSwitchChain();
   const address = useAddress();
@@ -21,15 +26,35 @@ const ChainSelector = ({ setChainConfig, chainConfig }) => {
       return;
     }
 
+    localStorage.setItem("chainName", selectedChainName);
+    localStorage.setItem("chainId", chainConfig.chainId.toString());
+
     setChainName(selectedChainName);
     setChainConfig(chainConfig);
+    setChainId(chainConfig.chainId);
   };
 
   React.useEffect(() => {
-    if (address && chainConfig) {
-      switchChain(chainConfig.chainId);
+    if (chainConfig) {
+      setChainConfig(chainConfig);
+    } else {
+      setChainConfig(Object.entries(config)[0][1]);
     }
-  }, [chainConfig, switchChain, address]);
+  }, [chainConfig, chainName, setChainConfig]);
+
+  React.useEffect(() => {
+    const switchingChain = async (chainId: number) => {
+      try {
+        await switchChain(chainId);
+      } catch (error) {
+        console.error("Error switching chain", error);
+      }
+    };
+
+    if (address && chainId) {
+      switchingChain(Number(chainId));
+    }
+  }, [chainId, switchChain, address]);
 
   return (
     <div className="flex gap-4 justify-center items-center w-full text-jacarta-900 dark:text-white">
