@@ -205,8 +205,8 @@ const OfferType = ({
       ],
       titleImages: ["Clickable logos Grid", "Dynamic Banner"],
       tooltips: [
-        "This integration allows you to display a grid of clickable logos. (Example: sponsor logo grid at the bottom of the page). Each slot in the grid will display the sponsor's proposed logo redirecting to a URL. If you need to display a single static logo, you can also choose this integration.",
-        "This integration lets you display a randomly selected ad from those submitted by sponsors, with a new ad randomly selected at each request. The ad does not redirect to a URL."
+        "This ad integration lets you display a grid of clickable logos, like a sponsor section at the bottom of a webpage. Each slot in the grid will show a sponsor's logo, and clicking it will redirect to their URL. You can use this integration to display logos, with or without a link.",
+        "This ad integration displays a randomly selected ad from the submitted sponsor ads, choosing a new one with each request."
       ],
       bodyDescription: "Available ad integrations: You are free to integrate ads as you like."
     }

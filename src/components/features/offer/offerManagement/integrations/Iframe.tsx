@@ -222,7 +222,7 @@ const Iframe = ({ chainId, offerId }) => {
             <label className="pl-1 leading-none text-white" htmlFor="r1">
               Clickable Logo Grid
             </label>
-            <ResponsiveTooltip text="This integration allows you to display a grid of clickable logos. (Example: sponsor logo grid at the bottom of the page). Each slot in the grid will display the sponsor's proposed logo redirecting to a URL. If you need to display a single static logo, you can also choose this integration.">
+            <ResponsiveTooltip text="This ad integration lets you display a grid of clickable logos, like a sponsor section at the bottom of a webpage. Each slot in the grid will show a sponsor's logo, and clicking it will redirect to their URL. You can use this integration to display logos, with or without a link.">
               <InformationCircleIcon className="w-5 h-5 text-white hover:text-jacarta-100 cursor-help" />
             </ResponsiveTooltip>
           </div>
@@ -238,7 +238,7 @@ const Iframe = ({ chainId, offerId }) => {
             <label className="pl-1 leading-none text-white" htmlFor="r2">
               Dynamic Banner
             </label>
-            <ResponsiveTooltip text="This integration lets you display a randomly selected ad from those submitted by sponsors, with a new ad randomly selected at each request. The ad redirects to a URL.">
+            <ResponsiveTooltip text="This ad integration displays a randomly selected ad from the submitted sponsor ads, choosing a new one with each request.">
               <InformationCircleIcon className="w-5 h-5 text-white hover:text-jacarta-100 cursor-help" />
             </ResponsiveTooltip>
           </div>
