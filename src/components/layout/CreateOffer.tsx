@@ -420,7 +420,7 @@ const CreateOffer = () => {
           contractURI: jsonIpfsLinkContractURI, // contractURI from json
           minter: userMinterAddress,
           maxSupply: selectedNumber, // max supply
-          forwarder: "0x0000000000000000000000000000000000000000", // forwarder
+          forwarder: chainConfig.forwarder, // forwarder
           initialOwner: userMinterAddress, // owner
           royaltyBps: (parseFloat(selectedRoyalties.toString()) * 100).toFixed(0).toString(), // royalties
           currencies: [tokenAddress], // accepted token
@@ -498,8 +498,8 @@ const CreateOffer = () => {
     body: "Your offer has been created successfully",
     subBody:
       "Find the integration code to copy/paste onto your platform in your offer management page",
-    buttonTitle: "Manage Spaces",
-    hrefButton: `/profile/${minterAddress}`
+    buttonTitle: "Created Offers",
+    hrefButton: `/profile/${minterAddress}?tab=createdOffers`
   };
   const metadata = {
     title: "Create Offer || SiBorg Ads - The Web3 Monetization Solution",
