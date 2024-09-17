@@ -25,9 +25,27 @@ export default function TokenDetails({
   tokenPriceBN,
   tokenStatus,
   isMintDisabled,
-  currencyDecimals
+  currencyDecimals,
+  offerData
 }) {
   const [showEntireDescription, setShowEntireDescription] = useState(false);
+  const [isMintable, setIsMintable] = useState(false);
+
+  React.useEffect(() => {
+    if (offerData) {
+      console.log("token details - offerdata", offerData);
+      const nftContracts = offerData.nftContracts;
+      const hasEnabledPrice = nftContracts.prices.some((price) => price.enabled);
+      const isPermissionless = !nftContracts.allowList;
+      const isTokenInAllowList = token?.setInAllowList;
+
+      if (hasEnabledPrice && (isPermissionless || isTokenInAllowList)) {
+        setIsMintable(true);
+      } else {
+        setIsMintable(false);
+      }
+    }
+  }, [offerData, token]);
 
   const modalHelper = {
     title: "Protocol Fees",
@@ -39,7 +57,7 @@ export default function TokenDetails({
           the total amount paid by the buyer.
         </span>
 
-        {token?.mint === null && (
+        {isMintable && (
           <div className="flex flex-col gap-2">
             <ul className="flex flex-col gap-2 list-disc text-sm" style={{ listStyleType: "disc" }}>
               <li>
@@ -61,7 +79,7 @@ export default function TokenDetails({
           </div>
         )}
 
-        {token?.mint !== null && (
+        {!isMintable && (
           <div className="flex flex-col gap-2">
             <ul className="flex flex-col gap-2 list-disc text-sm" style={{ listStyleType: "disc" }}>
               <li>
