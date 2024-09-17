@@ -2,13 +2,9 @@ import React, { useState } from "react";
 import ModalHelper from "@/components/ui/modals/Helper";
 import config from "@/config/config";
 import { ChainObject } from "@/types/chain";
-import { useAddress, useSwitchChain } from "@thirdweb-dev/react";
 
-const ChainSelector = ({ setChainConfig, chainConfig }) => {
+const ChainSelector = ({ setChainConfig }) => {
   const [chainName, setChainName] = useState<string>(Object.entries(config)[0][1].chainName);
-
-  const switchChain = useSwitchChain();
-  const address = useAddress();
 
   const onChange = (e) => {
     const selectedChainName = e?.target?.value;
@@ -24,12 +20,6 @@ const ChainSelector = ({ setChainConfig, chainConfig }) => {
     setChainName(selectedChainName);
     setChainConfig(chainConfig);
   };
-
-  React.useEffect(() => {
-    if (address && chainConfig) {
-      switchChain(chainConfig.chainId);
-    }
-  }, [chainConfig, switchChain, address]);
 
   return (
     <div className="flex gap-4 justify-center items-center w-full text-jacarta-900 dark:text-white">
