@@ -1923,8 +1923,8 @@ const Token = () => {
     title: "Checkout",
     body: "Congratulations, you purchased this ad space. 🎉",
     subBody: "Check your ad space in your profile page.",
-    buttonTitle: "Manage Spaces",
-    hrefButton: `/profile/${address}`
+    buttonTitle: "Profil Page",
+    hrefButton: `/profile/${address}?tab=owned`
   };
 
   const metadata = {
