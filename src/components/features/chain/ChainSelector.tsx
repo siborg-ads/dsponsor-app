@@ -5,12 +5,22 @@ import { ChainObject } from "@/types/chain";
 import { useAddress, useSwitchChain } from "@thirdweb-dev/react";
 
 const ChainSelector = ({ setChainConfig, chainConfig }) => {
-  const [chainName, setChainName] = useState<string>(
-    localStorage?.getItem("chainName") ?? Object.entries(config)[0][1].chainName
-  );
-  const [chainId, setChainId] = useState<number>(
-    Number(localStorage?.getItem("chainId")) ?? Object.entries(config)[0][1].chainId
-  );
+  const getInitialChainName = () => {
+    if (typeof window !== "undefined" && window.localStorage) {
+      return localStorage.getItem("chainName") ?? Object.entries(config)[0][1].chainName;
+    }
+    return Object.entries(config)[0][1].chainName;
+  };
+
+  const getInitialChainId = () => {
+    if (typeof window !== "undefined" && window.localStorage) {
+      return Number(localStorage.getItem("chainId")) ?? Object.entries(config)[0][1].chainId;
+    }
+    return Object.entries(config)[0][1].chainId;
+  };
+
+  const [chainName, setChainName] = useState<string>(getInitialChainName());
+  const [chainId, setChainId] = useState<number>(getInitialChainId());
 
   const switchChain = useSwitchChain();
   const address = useAddress();
@@ -26,8 +36,10 @@ const ChainSelector = ({ setChainConfig, chainConfig }) => {
       return;
     }
 
-    localStorage.setItem("chainName", selectedChainName);
-    localStorage.setItem("chainId", chainConfig.chainId.toString());
+    if (typeof window !== "undefined" && window.localStorage) {
+      localStorage.setItem("chainName", selectedChainName);
+      localStorage.setItem("chainId", chainConfig.chainId.toString());
+    }
 
     setChainName(selectedChainName);
     setChainConfig(chainConfig);
