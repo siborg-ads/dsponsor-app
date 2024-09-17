@@ -1,6 +1,12 @@
 import React, { useEffect, useRef, useState } from "react";
 import { ethers, BigNumber } from "ethers";
-import { useContractWrite, useBalance, useAddress } from "@thirdweb-dev/react";
+import {
+  useContractWrite,
+  useBalance,
+  useAddress,
+  useSwitchChain,
+  useChainId
+} from "@thirdweb-dev/react";
 import { Spinner } from "@nextui-org/spinner";
 import { toast } from "react-toastify";
 import Link from "next/link";
@@ -19,7 +25,7 @@ import Input from "@/components/ui/Input";
 import { ngrokURL } from "@/data/ngrok";
 import StyledWeb3Button from "@/components/ui/buttons/StyledWeb3Button";
 import { Address } from "thirdweb";
-import { ChainObject } from "@/types/chain";
+import NormalButton from "@/components/ui/buttons/NormalButton";
 
 const BidsModal = ({
   setAmountToApprove,
@@ -105,8 +111,19 @@ const BidsModal = ({
   const [parsedBidsAmount, setParsedBidsAmount] = useState<BigNumber | null>(null);
   const [buyoutPrice, setBuyoutPrice] = useState<string | null>(null);
   const [tooHighPriceForCrossmint, setTooHighPriceForCrossmint] = useState(false);
+  const [chainIdIsCorrect, setChainIdIsCorrect] = useState(false);
 
-  const chainConfig = config[chainId] as ChainObject;
+  const chainConfig = config[chainId];
+  const switchChain = useSwitchChain();
+  const userChainId = useChainId();
+
+  useEffect(() => {
+    if (Number(chainId) === Number(userChainId)) {
+      setChainIdIsCorrect(true);
+    } else {
+      setChainIdIsCorrect(false);
+    }
+  }, [chainId, userChainId]);
 
   let frontURL;
   if (typeof window !== "undefined") {
@@ -310,7 +327,7 @@ const BidsModal = ({
 
     try {
       const parsedValue = ethers.utils.parseUnits(
-        parseFloat(value.replace(",", ".")).toFixed(currencyTokenDecimals as number),
+        parseFloat(value.replace(",", ".")).toFixed(currencyTokenDecimals),
         currencyTokenDecimals
       );
       setBidsAmount(value);
@@ -802,95 +819,121 @@ const BidsModal = ({
               <div className="modal-footer flex items-center justify-center gap-4 p-6">
                 <div className="flex flex-col gap-6 md:gap-2 w-full justify-center items-center">
                   <div
-                    className={`grid grid-cols-1 mx-auto ${!insufficentBalance && "md:grid-cols-2"} gap-6 md:w-7/12`}
+                    className={`grid grid-cols-1 mx-auto ${!insufficentBalance && chainIdIsCorrect && address && "md:grid-cols-2"} gap-6 md:w-7/12`}
                   >
-                    {!insufficentBalance ? (
+                    {chainIdIsCorrect && address ? (
                       <>
-                        {nativeTokenBalance?.value?.gte(
-                          BigNumber.from(config[chainId]?.gaslessBalanceThreshold ?? "0")
-                        ) ? (
+                        {!insufficentBalance ? (
+                          <>
+                            {nativeTokenBalance?.value?.gte(
+                              BigNumber.from(config[chainId]?.gaslessBalanceThreshold ?? "0")
+                            ) ? (
+                              <StyledWeb3Button
+                                contractAddress={
+                                  config[chainId]?.smartContracts?.DSPONSORMP?.address
+                                }
+                                onClick={async () => {
+                                  await toast.promise(handleApprove, {
+                                    pending: "Waiting for confirmation 🕒",
+                                    success: "Approval confirmed 👌",
+                                    error: "Approval rejected 🤯"
+                                  });
+                                }}
+                                isDisabled={
+                                  !isPriceGood ||
+                                  !checkTerms ||
+                                  !bidsAmount ||
+                                  !allowanceTrue ||
+                                  notEnoughFunds
+                                }
+                                defaultText={
+                                  notEnoughFunds ? "Not enough funds" : "Approve 🔓 (1/2)"
+                                }
+                              />
+                            ) : (
+                              <StyledWeb3Button
+                                contractAddress={
+                                  chainConfig?.smartContracts?.DSPONSORADMIN?.address
+                                }
+                                onClick={async () => {
+                                  await toast.promise(handleApprove, {
+                                    pending: "Waiting for confirmation 🕒",
+                                    success: "Approval confirmed 👌",
+                                    error: "Approval rejected 🤯"
+                                  });
+                                }}
+                                isDisabled={true}
+                                defaultText={`You need more than ${formatUnits(BigNumber.from(config[chainId].gaslessBalanceThreshold), "ether")} ETH to execute this tx.`}
+                              />
+                            )}
+
+                            <StyledWeb3Button
+                              contractAddress={
+                                config[chainId]?.smartContracts?.DSPONSORMP?.address as Address
+                              }
+                              onClick={async () => {
+                                await toast.promise(handleSubmit, {
+                                  pending: "Waiting for confirmation 🕒",
+                                  success: buyoutPriceReached
+                                    ? "Buy confirmed 👌"
+                                    : "Bid confirmed 👌",
+                                  error: buyoutPriceReached ? "Buy rejected 🤯" : "Bid rejected 🤯"
+                                });
+                              }}
+                              isDisabled={
+                                !isPriceGood || !checkTerms || allowanceTrue || notEnoughFunds
+                              }
+                              defaultText={
+                                buyoutPriceReached
+                                  ? notEnoughFunds
+                                    ? "Not enough funds"
+                                    : "Buy Now 💸 (2/2)"
+                                  : notEnoughFunds
+                                    ? "Not enough funds"
+                                    : "Place Bid 💸 (2/2)"
+                              }
+                            />
+                          </>
+                        ) : (
                           <StyledWeb3Button
                             contractAddress={config[chainId]?.smartContracts?.DSPONSORMP?.address}
                             onClick={async () => {
-                              await toast.promise(handleApprove, {
+                              await toast.promise(handleSubmitWithNative, {
                                 pending: "Waiting for confirmation 🕒",
-                                success: "Approval confirmed 👌",
-                                error: "Approval rejected 🤯"
+                                success: buyoutPriceReached
+                                  ? "Buy confirmed 👌"
+                                  : "Bid confirmed 👌",
+                                error: buyoutPriceReached ? "Buy rejected 🤯" : "Bid rejected 🤯"
                               });
                             }}
                             isDisabled={
                               !isPriceGood ||
                               !checkTerms ||
-                              !bidsAmount ||
-                              !allowanceTrue ||
+                              !canPayWithNativeToken ||
                               notEnoughFunds
                             }
-                            defaultText={notEnoughFunds ? "Not enough funds" : "Approve 🔓 (1/2)"}
-                          />
-                        ) : (
-                          <StyledWeb3Button
-                            contractAddress={
-                              chainConfig?.smartContracts?.DSPONSORADMIN?.address as Address
+                            defaultText={
+                              buyoutPriceReached
+                                ? notEnoughFunds
+                                  ? "Not enough funds"
+                                  : "Buy Now with ETH 💸"
+                                : notEnoughFunds
+                                  ? "Not enough funds"
+                                  : "Place Bid with ETH 💸"
                             }
-                            onClick={async () => {
-                              await toast.promise(handleApprove, {
-                                pending: "Waiting for confirmation 🕒",
-                                success: "Approval confirmed 👌",
-                                error: "Approval rejected 🤯"
-                              });
-                            }}
-                            isDisabled={true}
-                            defaultText={`You need more than ${formatUnits(BigNumber.from(config[chainId].gaslessBalanceThreshold), "ether")} ETH to execute this tx.`}
                           />
                         )}
-
-                        <StyledWeb3Button
-                          contractAddress={
-                            config[chainId]?.smartContracts?.DSPONSORMP?.address as Address
-                          }
-                          onClick={async () => {
-                            await toast.promise(handleSubmit, {
-                              pending: "Waiting for confirmation 🕒",
-                              success: buyoutPriceReached ? "Buy confirmed 👌" : "Bid confirmed 👌",
-                              error: buyoutPriceReached ? "Buy rejected 🤯" : "Bid rejected 🤯"
-                            });
-                          }}
-                          isDisabled={
-                            !isPriceGood || !checkTerms || allowanceTrue || notEnoughFunds
-                          }
-                          defaultText={
-                            buyoutPriceReached
-                              ? notEnoughFunds
-                                ? "Not enough funds"
-                                : "Buy Now 💸 (2/2)"
-                              : notEnoughFunds
-                                ? "Not enough funds"
-                                : "Place Bid 💸 (2/2)"
-                          }
-                        />
                       </>
                     ) : (
-                      <StyledWeb3Button
-                        contractAddress={config[chainId]?.smartContracts?.DSPONSORMP?.address}
+                      <NormalButton
                         onClick={async () => {
-                          await toast.promise(handleSubmitWithNative, {
-                            pending: "Waiting for confirmation 🕒",
-                            success: buyoutPriceReached ? "Buy confirmed 👌" : "Bid confirmed 👌",
-                            error: buyoutPriceReached ? "Buy rejected 🤯" : "Bid rejected 🤯"
-                          });
+                          try {
+                            await switchChain(Number(chainId));
+                          } catch (error) {
+                            console.error(error);
+                          }
                         }}
-                        isDisabled={
-                          !isPriceGood || !checkTerms || !canPayWithNativeToken || notEnoughFunds
-                        }
-                        defaultText={
-                          buyoutPriceReached
-                            ? notEnoughFunds
-                              ? "Not enough funds"
-                              : "Buy Now with ETH 💸"
-                            : notEnoughFunds
-                              ? "Not enough funds"
-                              : "Place Bid with ETH 💸"
-                        }
+                        defaultText="Switch network"
                       />
                     )}
                   </div>

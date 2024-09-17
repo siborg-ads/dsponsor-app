@@ -1,7 +1,7 @@
 import Link from "next/link";
 import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import { useBalance } from "@thirdweb-dev/react";
+import { useBalance, useChainId, useSwitchChain } from "@thirdweb-dev/react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Divider, Spinner } from "@nextui-org/react";
@@ -17,6 +17,8 @@ import StyledWeb3Button from "@/components/ui/buttons/StyledWeb3Button";
 import { Address } from "thirdweb";
 import { ChainObject } from "@/types/chain";
 import config from "@/config/config";
+import { useRouter } from "next/router";
+import NormalButton from "@/components/ui/buttons/NormalButton";
 
 const BuyModal = ({
   chainConfig,
@@ -109,8 +111,21 @@ const BuyModal = ({
   const [validate, setValidate] = useState(false);
   const [notEnoughFunds, setNotEnoughFunds] = useState(false);
   const [tooHighPriceForCrossmint, setTooHighPriceForCrossmint] = useState(false);
+  const [chainIdIsCorrect, setChainIdIsCorrect] = useState(false);
 
-  const chainId = chainConfig.chainId;
+  const router = useRouter();
+
+  const chainId = router?.query?.chainId;
+  const switchChain = useSwitchChain();
+  const userChainId = useChainId();
+
+  useEffect(() => {
+    if (Number(chainId) === Number(userChainId)) {
+      setChainIdIsCorrect(true);
+    } else {
+      setChainIdIsCorrect(false);
+    }
+  }, [chainId, userChainId]);
 
   const modalRef = useRef<any>();
 
@@ -368,19 +383,47 @@ const BuyModal = ({
             <div className="modal-footer flex flex-col p-6">
               <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
                 <div className="flex flex-col items-center md:gap-2 gap-6">
-                  {!insufficentBalance ? (
-                    <React.Fragment>
-                      <div
-                        className={`grid grid-cols-1 mx-auto ${totalPrice > 0 && "md:grid-cols-2"} gap-6 w-full`}
-                      >
-                        {nativeTokenBalance?.value?.gte(
-                          BigNumber.from(config[chainId]?.gaslessBalanceThreshold ?? "0")
-                        ) ? (
-                          <React.Fragment>
-                            {totalPrice > 0 && (
+                  {chainIdIsCorrect && address ? (
+                    <>
+                      {!insufficentBalance ? (
+                        <React.Fragment>
+                          <div
+                            className={`grid grid-cols-1 mx-auto ${totalPrice > 0 && chainIdIsCorrect && address && "md:grid-cols-2"} gap-6 w-full`}
+                          >
+                            {nativeTokenBalance?.value?.gte(
+                              BigNumber.from(
+                                config[Number(chainId)]?.gaslessBalanceThreshold ?? "0"
+                              )
+                            ) ? (
+                              <React.Fragment>
+                                {totalPrice > 0 && (
+                                  <StyledWeb3Button
+                                    contractAddress={
+                                      chainConfig?.smartContracts?.DSPONSORADMIN?.address
+                                    }
+                                    onClick={async () => {
+                                      await toast.promise(handleApprove, {
+                                        pending: "Waiting for confirmation 🕒",
+                                        success: "Approval confirmed 👌",
+                                        error: "Approval rejected 🤯"
+                                      });
+                                    }}
+                                    isDisabled={
+                                      !validate ||
+                                      !finalPriceNotFormatted ||
+                                      !allowanceTrue ||
+                                      notEnoughFunds
+                                    }
+                                    defaultText={
+                                      notEnoughFunds ? "Not enough funds" : "Approve 🔓 (1/2)"
+                                    }
+                                  />
+                                )}
+                              </React.Fragment>
+                            ) : (
                               <StyledWeb3Button
                                 contractAddress={
-                                  chainConfig?.smartContracts?.DSPONSORADMIN?.address as Address
+                                  chainConfig?.smartContracts?.DSPONSORADMIN?.address
                                 }
                                 onClick={async () => {
                                   await toast.promise(handleApprove, {
@@ -389,87 +432,74 @@ const BuyModal = ({
                                     error: "Approval rejected 🤯"
                                   });
                                 }}
-                                isDisabled={
-                                  !validate ||
-                                  !finalPriceNotFormatted ||
-                                  !allowanceTrue ||
-                                  notEnoughFunds
-                                }
-                                defaultText={
-                                  notEnoughFunds ? "Not enough funds" : "Approve 🔓 (1/2)"
-                                }
+                                isDisabled={true}
+                                defaultText={`You need more than ${formatUnits(BigNumber.from(config[Number(chainId)].gaslessBalanceThreshold), "ether")} ETH to execute this tx.`}
                               />
                             )}
-                          </React.Fragment>
-                        ) : (
-                          <StyledWeb3Button
-                            contractAddress={
-                              chainConfig?.smartContracts?.DSPONSORADMIN?.address as Address
-                            }
-                            onClick={async () => {
-                              await toast.promise(handleApprove, {
-                                pending: "Waiting for confirmation 🕒",
-                                success: "Approval confirmed 👌",
-                                error: "Approval rejected 🤯"
-                              });
-                            }}
-                            isDisabled={true}
-                            defaultText={`You need more than ${formatUnits(BigNumber.from(config[chainId].gaslessBalanceThreshold), "ether")} ETH to execute this tx.`}
-                          />
-                        )}
 
-                        {/* Place Bid Button */}
+                            {/* Place Bid Button */}
+                            <StyledWeb3Button
+                              contractAddress={chainConfig?.smartContracts?.DSPONSORADMIN?.address}
+                              onClick={async () => {
+                                await toast.promise(handleSubmit, {
+                                  pending: "Waiting for confirmation 🕒",
+                                  success: "Buy confirmed 👌",
+                                  error: "Buy rejected 🤯"
+                                });
+                              }}
+                              isDisabled={
+                                !validate || (allowanceTrue && totalPrice > 0) || notEnoughFunds
+                              }
+                              defaultText={
+                                notEnoughFunds
+                                  ? "Not enough funds"
+                                  : totalPrice > 0
+                                    ? "Buy Now 💸 (2/2)"
+                                    : "Mint for free"
+                              }
+                            />
+                          </div>
+
+                          {totalPrice > 0 && (
+                            <ResponsiveTooltip
+                              text={`You need to approve the marketplace contract to spend your ${selectedCurrency} on this transaction.`}
+                            >
+                              <span className="text-xs text-jacarta-100 inline-flex items-center gap-1">
+                                <InformationCircleIcon className="w-4 h-4 text-jacarta-100" />
+                                Why do I have to approve ?
+                              </span>
+                            </ResponsiveTooltip>
+                          )}
+                        </React.Fragment>
+                      ) : (
                         <StyledWeb3Button
                           contractAddress={
                             chainConfig?.smartContracts?.DSPONSORADMIN?.address as Address
                           }
                           onClick={async () => {
-                            await toast.promise(handleSubmit, {
+                            await toast.promise(handleBuySubmitWithNative, {
                               pending: "Waiting for confirmation 🕒",
-                              success: "Buy confirmed 👌",
-                              error: "Buy rejected 🤯"
+                              success: "Transaction confirmed 👌",
+                              error: "Transaction rejected 🤯"
                             });
                           }}
-                          isDisabled={
-                            !validate || (allowanceTrue && totalPrice > 0) || notEnoughFunds
-                          }
+                          isDisabled={!validate || !canPayWithNativeToken || notEnoughFunds}
                           defaultText={
-                            notEnoughFunds
-                              ? "Not enough funds"
-                              : totalPrice > 0
-                                ? "Buy Now 💸 (2/2)"
-                                : "Mint for free"
+                            notEnoughFunds ? "Not enough funds" : "Confirm checkout with ETH 💸"
                           }
                         />
-                      </div>
-
-                      {totalPrice > 0 && (
-                        <ResponsiveTooltip
-                          text={`You need to approve the marketplace contract to spend your ${selectedCurrency} on this transaction.`}
-                        >
-                          <span className="text-xs text-jacarta-100 inline-flex items-center gap-1">
-                            <InformationCircleIcon className="w-4 h-4 text-jacarta-100" />
-                            Why do I have to approve ?
-                          </span>
-                        </ResponsiveTooltip>
                       )}
-                    </React.Fragment>
+                    </>
                   ) : (
-                    <StyledWeb3Button
-                      contractAddress={
-                        chainConfig?.smartContracts?.DSPONSORADMIN?.address as Address
-                      }
+                    <NormalButton
                       onClick={async () => {
-                        await toast.promise(handleBuySubmitWithNative, {
-                          pending: "Waiting for confirmation 🕒",
-                          success: "Transaction confirmed 👌",
-                          error: "Transaction rejected 🤯"
-                        });
+                        try {
+                          await switchChain(Number(chainId));
+                        } catch (error) {
+                          console.error("Error switching chain", error);
+                        }
                       }}
-                      isDisabled={!validate || !canPayWithNativeToken || notEnoughFunds}
-                      defaultText={
-                        notEnoughFunds ? "Not enough funds" : "Confirm checkout with ETH 💸"
-                      }
+                      defaultText="Switch network"
                     />
                   )}
                 </div>
