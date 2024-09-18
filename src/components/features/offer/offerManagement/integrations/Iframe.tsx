@@ -257,7 +257,7 @@ const Iframe = ({ chainId, offerId }) => {
             className="z-10"
             onClick={() => {
               handleCopy(
-                `<iframe allowtransparency="true" sandbox="allow-same-origin allow-scripts allow-popups allow-top-navigation-by-user-activation" src="${iframeSrc}" style="width: 100%; ${customHeight ? `height: ${height};` : "height: 100%;"} ${bgColor ? "" : "background-color: transparent;"} overflow: hidden; border: none;"></iframe>`,
+                `<iframe allowtransparency="true" sandbox="allow-same-origin allow-scripts allow-popups allow-top-navigation-by-user-activation" src="${iframeSrc}" style="width: 100%; ${customHeight ? `height: ${height};` : "height: 100%;"} ${bgColor ? "" : "background-color: transparent;"} overflow: hidden; border: none; color-scheme: normal;"></iframe>`,
                 setCopied
               );
 
@@ -273,7 +273,7 @@ const Iframe = ({ chainId, offerId }) => {
         </div>
 
         <code className="flex flex-col items-start overflow-x-scroll text-sm hide-scrollbar">
-          {`<iframe allowtransparency="true" sandbox="allow-same-origin allow-scripts allow-popups allow-top-navigation-by-user-activation" src="${iframeSrc}" style="width:100%; ${customHeight ? `height:${height};` : "height:100%;"} ${bgColor ? "" : "background-color: transparent;"} overflow:hidden; border: none;"></iframe>`}
+          {`<iframe allowtransparency="true" sandbox="allow-same-origin allow-scripts allow-popups allow-top-navigation-by-user-activation" src="${iframeSrc}" style="width:100%; ${customHeight ? `height:${height};` : "height:100%;"} ${bgColor ? "" : "background-color: transparent;"} overflow:hidden; border: none; color-scheme: normal;"></iframe>`}
         </code>
       </div>
 
