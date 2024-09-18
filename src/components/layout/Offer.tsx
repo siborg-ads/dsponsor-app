@@ -1050,7 +1050,6 @@ const Offer = () => {
                     </ResponsiveTooltip>
                   )}
                   */}
-
                   {isMedia && mediaShouldValidateAnAd && (
                     <ResponsiveTooltip text="You have at least one ad to validate or to refuse.">
                       <ExclamationCircleIcon className="w-6 h-6 text-red" />
