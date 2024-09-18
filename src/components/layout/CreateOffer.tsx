@@ -28,6 +28,10 @@ export type Currency = {
 
 const CreateOffer = () => {
   const getAllSavedOfferFields = () => {
+    if (typeof window === "undefined") {
+      return {};
+    }
+
     const savedOfferFields = localStorage.getItem("savedOfferFields");
     if (savedOfferFields) {
       return JSON.parse(savedOfferFields);
@@ -56,76 +60,55 @@ const CreateOffer = () => {
     })
     ?.filter((currency) => currency !== null);
 
+  const savedData = getAllSavedOfferFields();
+
   const [files, setFiles] = useState<any[]>([]);
-  const [name, setName] = useState("");
+  const [name, setName] = useState(savedData?.name ?? "");
   const { mutateAsync: upload } = useStorageUpload();
   const [currentSlide, setCurrentSlide] = useState(0);
-  const [link, setLink] = useState<string | null>(null);
+  const [link, setLink] = useState<string | null>(savedData?.link ?? null);
   const [errors, setErrors] = useState({});
-  const [description, setDescription] = useState("");
-  const [startDate, setStartDate] = useState(new Date());
+  const [description, setDescription] = useState(savedData?.description ?? "");
+  const [startDate, setStartDate] = useState(savedData?.startDate ?? new Date());
   const [endDate, setEndDate] = useState(
-    new Date(new Date().setFullYear(new Date().getFullYear() + 1))
+    savedData?.endDate ?? new Date(new Date().setFullYear(new Date().getFullYear() + 1))
   );
   const [previewImages, setPreviewImages] = useState<string[]>([]);
-  const [selectedNumber, setSelectedNumber] = useState(1);
-  const [selectedUnitPrice, setSelectedUnitPrice] = useState(1);
-  const [selectedRoyalties, setSelectedRoyalties] = useState(10);
+  const [selectedNumber, setSelectedNumber] = useState(savedData?.selectedNumber ?? 1);
+  const [selectedUnitPrice, setSelectedUnitPrice] = useState(savedData?.selectedUnitPrice ?? 1);
+  const [selectedRoyalties, setSelectedRoyalties] = useState(savedData?.selectedRoyalties ?? 10);
   const [validate, setValidate] = useState(true);
   const [showPreviewModal, setShowPreviewModal] = useState(false);
   const [successFullUpload, setSuccessFullUpload] = useState(false);
-  const [selectedIntegration, setSelectedIntegration] = useState([0]);
-  const [selectedParameter, setSelectedParameter] = useState<string[]>(["imageURL-1:1", "linkURL"]);
-  const [displayedParameter, setDisplayedParameter] = useState([]);
-  const [imageRatios, setImageRatios] = useState(["1:1"]);
-  const [terms, setTerms] = useState<string | undefined>(undefined);
-  const [minterAddress, setMinterAddress] = useState<Address | null>(null);
+  const [selectedIntegration, setSelectedIntegration] = useState(
+    savedData?.selectedIntegration ?? [0]
+  );
+  const [selectedParameter, setSelectedParameter] = useState<string[]>(
+    savedData?.selectedParameter ?? ["imageURL-1:1", "linkURL"]
+  );
+  const [displayedParameter, setDisplayedParameter] = useState(savedData?.displayedParameter ?? []);
+  const [imageRatios, setImageRatios] = useState(savedData?.imageRatios ?? ["1:1"]);
+  const [terms, setTerms] = useState<string | undefined>(savedData?.terms ?? undefined);
+  const [minterAddress, setMinterAddress] = useState<Address | null>(
+    savedData?.minterAddress ?? null
+  );
 
-  const [tokenDecimals, setTokenDecimals] = useState<number | null>(null);
-  const [tokenSymbol, setTokenSymbol] = useState<string | null>(null);
-  const [tokenAddress, setTokenAddress] = useState<Address>("0x");
-  const [customTokenAddress, setCustomTokenAddress] = useState<Address | undefined>(undefined);
-  const [selectedCurrency, setSelectedCurrency] = useState<Currency | undefined>(currencies?.[0]);
-
-  useEffect(() => {
-    const savedOfferFields = getAllSavedOfferFields();
-
-    if (savedOfferFields) {
-      // metadata
-      setName(savedOfferFields.name);
-      setDescription(savedOfferFields.description);
-      setFiles(savedOfferFields.files); // upload URL
-      setTerms(savedOfferFields.terms);
-      setLink(savedOfferFields.link);
-      setStartDate(new Date(savedOfferFields.startDate));
-      setEndDate(new Date(savedOfferFields.endDate));
-
-      // offer
-      setSelectedNumber(savedOfferFields.selectedNumber);
-      setSelectedRoyalties(savedOfferFields.selectedRoyalties);
-      setTokenAddress(savedOfferFields.tokenAddress);
-      setCustomTokenAddress(savedOfferFields.customTokenAddress);
-      setTokenDecimals(savedOfferFields.tokenDecimals);
-      setTokenSymbol(savedOfferFields.tokenSymbol);
-      setSelectedUnitPrice(savedOfferFields.selectedUnitPrice);
-      setSelectedCurrency(savedOfferFields.selectedCurrency);
-
-      // ad space
-      setSelectedParameter(savedOfferFields.selectedParameter);
-      setSelectedIntegration(savedOfferFields.selectedIntegration);
-      setPreviewImages(savedOfferFields.previewImages);
-      setMinterAddress(savedOfferFields.minterAddress);
-      setSelectedIntegration(savedOfferFields.selectedIntegration);
-      setDisplayedParameter(savedOfferFields.displayedParameter);
-      setImageRatios(savedOfferFields.imageRatios);
-    }
-  }, []);
+  const [tokenDecimals, setTokenDecimals] = useState<number | null>(
+    savedData?.tokenDecimals ?? null
+  );
+  const [tokenSymbol, setTokenSymbol] = useState<string | null>(savedData?.tokenSymbol ?? null);
+  const [tokenAddress, setTokenAddress] = useState<Address>(savedData?.tokenAddress ?? "0x");
+  const [customTokenAddress, setCustomTokenAddress] = useState<Address | undefined>(
+    savedData?.customTokenAddress ?? undefined
+  );
+  const [selectedCurrency, setSelectedCurrency] = useState<Currency | undefined>(
+    savedData?.selectedCurrency ?? currencies?.[0]
+  );
 
   useEffect(() => {
     const formData = {
       name,
       description,
-      files,
       terms,
       link,
       startDate,
@@ -139,7 +122,6 @@ const CreateOffer = () => {
       selectedUnitPrice,
       selectedCurrency,
       selectedParameter,
-      previewImages,
       minterAddress,
       selectedIntegration,
       displayedParameter,
@@ -160,8 +142,6 @@ const CreateOffer = () => {
     selectedParameter,
     selectedIntegration,
     selectedRoyalties,
-    files,
-    previewImages,
     terms,
     tokenDecimals,
     tokenSymbol,
