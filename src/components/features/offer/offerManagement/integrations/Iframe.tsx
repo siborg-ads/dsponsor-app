@@ -91,7 +91,9 @@ const Iframe = ({ chainId, offerId }) => {
   useEffect(() => {
     const params = new URLSearchParams();
 
-    if (bgColor) params.append("bgColor", color);
+    if (bgColor) {
+      params.append("bgColor", color);
+    }
     if (changeRatio) params.append("ratio", ratio);
     if (!includeAvailable) params.append("includeAvailable", includeAvailable);
     if (!includeReserved) params.append("includeReserved", includeReserved);
@@ -255,7 +257,7 @@ const Iframe = ({ chainId, offerId }) => {
             className="z-10"
             onClick={() => {
               handleCopy(
-                `<iframe sandbox="allow-same-origin allow-scripts allow-popups allow-top-navigation-by-user-activation" src="${iframeSrc}" style="width: 100%; ${customHeight ? `height: ${height};` : "height: 100%;"} overflow: hidden; border: none;"></iframe>`,
+                `<iframe allowtransparency="true" sandbox="allow-same-origin allow-scripts allow-popups allow-top-navigation-by-user-activation" src="${iframeSrc}" style="width: 100%; ${customHeight ? `height: ${height};` : "height: 100%;"} ${bgColor ? "" : "background-color: transparent;"} overflow: hidden; border: none;"></iframe>`,
                 setCopied
               );
 
@@ -271,7 +273,7 @@ const Iframe = ({ chainId, offerId }) => {
         </div>
 
         <code className="flex flex-col items-start overflow-x-scroll text-sm hide-scrollbar">
-          {`<iframe sandbox="allow-same-origin allow-scripts allow-popups allow-top-navigation-by-user-activation" src="${iframeSrc}" style="width:100%; ${customHeight ? `height:${height};` : "height:100%;"} overflow:hidden; border: none;"></iframe>`}
+          {`<iframe allowtransparency="true" sandbox="allow-same-origin allow-scripts allow-popups allow-top-navigation-by-user-activation" src="${iframeSrc}" style="width:100%; ${customHeight ? `height:${height};` : "height:100%;"} ${bgColor ? "" : "background-color: transparent;"} overflow:hidden; border: none;"></iframe>`}
         </code>
       </div>
 
@@ -458,14 +460,19 @@ const Iframe = ({ chainId, offerId }) => {
 
       <span className="text-lg font-semibold text-white">Preview</span>
 
-      <div className={`w-full`} style={{ height: customHeight ? height : "500px" }}>
+      <div
+        className={`w-full bg-transparent dark:bg-transparent`}
+        style={{ height: customHeight ? height : "500px" }}
+      >
         <iframe
           title="offer"
           loading="lazy"
           src={iframeSrc}
           height={customHeight ? height : "100%"}
           width="100%"
-          className="w-full"
+          className={`w-full ${bgColor ? `bg-${color} dark:bg-${color}` : "bg-transparent dark:bg-transparent"}`}
+          allowTransparency={true}
+          style={{ colorScheme: "normal" }}
         />
       </div>
     </div>
