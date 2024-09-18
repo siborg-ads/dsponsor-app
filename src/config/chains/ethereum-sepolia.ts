@@ -14,6 +14,7 @@ const sepoliaConfig: ChainObject = {
     ? process.env.NEXT_PUBLIC_RELAYER_URL
     : "https://relayer.dsponsor.com",
   rpcURL: "https://ethereum-sepolia-rpc.publicnode.com",
+  forwarder: "0xD04F98C88cE1054c90022EE34d566B9237a1203C",
   smartContracts: {
     currencies: {
       WETH: {

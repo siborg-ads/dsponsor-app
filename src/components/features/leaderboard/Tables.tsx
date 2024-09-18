@@ -189,7 +189,7 @@ const Tables = ({ activity }) => {
       <h1 className="text-4xl font-medium text-center pt-8 pb-4 mb-4 dark:text-white">
         Leaderboard Rankings
       </h1>
-      <ChainSelector setChainConfig={setChainConfig} chainConfig={chainConfig} />
+      <ChainSelector setChainConfig={setChainConfig} />
       <div className="mb-8 grid grid-cols-2 md:grid-cols-3 gap-4 flex-wrap items-center justify-between"></div>
       {/*
       <div className="mb-8 grid grid-cols-1 md:grid-cols-3 gap-4 flex-wrap items-center justify-between">

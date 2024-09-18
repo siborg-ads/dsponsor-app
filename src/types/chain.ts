@@ -14,6 +14,7 @@ export interface ChainObject {
   explorerBaseURL: string;
   relayerURL: string;
   rpcURL: string;
+  forwarder: Address;
   smartContracts: {
     currencies: {
       NATIVE: {
