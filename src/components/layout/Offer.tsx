@@ -333,6 +333,7 @@ const Offer = () => {
     // we check if the sponsor has only rejected proposals
     const sponsorHasAtLeastOneRejectedProposal = itemProposals?.rejectedProposals?.length > 0;
     const sponsorHasNoPendingProposal = itemProposals?.pendingProposals?.length === 0;
+    const noValidated = itemProposals?.acceptedProposals?.length === 0;
     const lastAcceptedProposalTimestamp =
       parseFloat(
         itemProposals?.acceptedProposals?.sort(
@@ -345,13 +346,13 @@ const Offer = () => {
           (a, b) => b?.creationTimestamp - a?.creationTimestamp
         )[0]?.lastUpdateTimestamp
       ) * 1000;
-    const sponsorHasNoMoreRecentValidatedProposal =
+    const refusedIsMoreRecentThanAccepted =
       new Date(lastAcceptedProposalTimestamp) <= new Date(lastRefusedProposalTimestamp);
 
     setSponsorHasAtLeastOneRejectedProposalAndNoPending(
       sponsorHasAtLeastOneRejectedProposal &&
         sponsorHasNoPendingProposal &&
-        sponsorHasNoMoreRecentValidatedProposal
+        (refusedIsMoreRecentThanAccepted || noValidated)
     );
 
     // now we check if the media should validate an ad
@@ -1055,6 +1056,7 @@ const Offer = () => {
                   sponsorHasAtLeastOneRejectedProposalAndNoPending={
                     sponsorHasAtLeastOneRejectedProposalAndNoPending
                   }
+                  isAdmin={isAdmin}
                   setSponsorHasAtLeastOneRejectedProposalAndNoPending={
                     setSponsorHasAtLeastOneRejectedProposalAndNoPending
                   }

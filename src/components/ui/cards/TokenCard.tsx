@@ -24,6 +24,7 @@ const TokenCard = ({
   listingType,
   disableLink,
   availableToSubmitAdFromOwnedTokens,
+  availableToSubmitAdFromCreatedOffers,
   createdOffersProposals,
   offer,
   offers,
@@ -44,6 +45,7 @@ const TokenCard = ({
   listingType?: string;
   disableLink?: boolean;
   availableToSubmitAdFromOwnedTokens?: boolean;
+  availableToSubmitAdFromCreatedOffers?: boolean;
   createdOffersProposals?: boolean;
   offer?: any;
   offers?: any;
@@ -460,7 +462,12 @@ const TokenCard = ({
           <div className="mt-4 flex items-center justify-between gap-2">
             {isSelectionActive ? (
               <span className="font-display  text-primaryBlack hover:text-primaryPurple text-base dark:text-white flex items-center gap-1">
-                {availableToSubmitAd && availableToSubmitAdFromOwnedTokens && (
+                {availableToSubmitAd && !!availableToSubmitAdFromCreatedOffers && (
+                  <ResponsiveTooltip text="You can submit an ad for this item">
+                    <ExclamationCircleIcon className="h-5 w-5 text-red dark:text-red" />
+                  </ResponsiveTooltip>
+                )}
+                {!!availableToSubmitAdFromOwnedTokens && (
                   <ResponsiveTooltip text="You can submit an ad for this item">
                     <ExclamationCircleIcon className="h-5 w-5 text-red dark:text-red" />
                   </ResponsiveTooltip>
@@ -475,7 +482,12 @@ const TokenCard = ({
             ) : (
               <div className="overflow-hidden text-ellipsis whitespace-nowrap ">
                 <span className="font-display text-primaryBlack hover:text-primaryPurple text-base dark:text-white flex items-center gap-1">
-                  {availableToSubmitAd && availableToSubmitAdFromOwnedTokens && (
+                  {availableToSubmitAd && !!availableToSubmitAdFromCreatedOffers && (
+                    <ResponsiveTooltip text="You can submit an ad for this item">
+                      <ExclamationCircleIcon className="h-5 w-5 text-red dark:text-red" />
+                    </ResponsiveTooltip>
+                  )}
+                  {!!availableToSubmitAdFromOwnedTokens && (
                     <ResponsiveTooltip text="You can submit an ad for this item">
                       <ExclamationCircleIcon className="h-5 w-5 text-red dark:text-red" />
                     </ResponsiveTooltip>

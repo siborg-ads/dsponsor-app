@@ -58,6 +58,7 @@ const AdValidation = ({
   refusedValidatedAdModal,
   setSelectedItems,
   selectedItems,
+  isAdmin,
   sponsorHasAtLeastOneRejectedProposalAndNoPending,
   setSponsorHasAtLeastOneRejectedProposalAndNoPending,
   mediaShouldValidateAnAd,
@@ -82,6 +83,7 @@ const AdValidation = ({
   setSponsorHasAtLeastOneRejectedProposalAndNoPending?: any;
   mediaShouldValidateAnAd: boolean;
   isMedia: boolean;
+  isAdmin: boolean;
   isTokenView?: boolean;
   itemTokenId: string;
   pendingProposalData: any;
@@ -314,7 +316,7 @@ const AdValidation = ({
                   }
                 >
                   {sponsorHasAtLeastOneRejectedProposalAndNoPending &&
-                    isOwner &&
+                    isAdmin &&
                     text === "Refused" && (
                       <ResponsiveTooltip text="You ad as been refused and you have no pending ad. Try to submit a new one.">
                         <ExclamationCircleIcon className="w-5 h-5 text-red dark:text-red" />

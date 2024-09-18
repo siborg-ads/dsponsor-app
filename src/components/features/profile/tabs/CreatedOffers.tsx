@@ -101,6 +101,7 @@ const CreatedOffers = ({
                 createdOffersProposals={true}
                 currencySymbol={currencySymbol}
                 currencyDecimals={currencyDecimals}
+                availableToSubmitAdFromCreatedOffers
               />
             );
           })}

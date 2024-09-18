@@ -121,6 +121,7 @@ const Token = () => {
   const [numSteps, setNumSteps] = useState(2);
   const [tokenStatut, setTokenStatut] = useState<string | null>(null);
   const [tokenCurrencyAddress, setTokenCurrencyAddress] = useState<Address | null>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [, setTokenBigIntPrice] = useState(null);
   const [successFullBid, setSuccessFullBid] = useState(false);
   const [isTokenInAuction, setIsTokenInAuction] = useState(false);
@@ -1204,8 +1205,9 @@ const Token = () => {
       setIsLister(true);
     }
 
-    if (offerData?.admins?.includes(address?.toLowerCase())) {
+    if (address && offerData?.admins?.includes(address?.toLowerCase())) {
       setIsOfferOwner(true);
+      setIsAdmin(true);
     }
 
     if (isUserOwner?.toLowerCase() === address?.toLowerCase()) {
@@ -2742,6 +2744,7 @@ const Token = () => {
                     chainConfig={chainConfig}
                     offer={offerData}
                     isOwner={isOfferOwner}
+                    isAdmin={isAdmin}
                     successFullRefuseModal={successFullRefuseModal}
                     setRefusedValidatedAdModal={setRefusedValidatedAdModal}
                     refusedValidatedAdModal={refusedValidatedAdModal}

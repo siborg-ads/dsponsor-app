@@ -12,8 +12,23 @@ import AdSubmission from "@/components/features/token/accordion/AdSubmission";
 import MainButton from "@/components/ui/buttons/MainButton";
 import { features } from "@/data/features";
 import config from "@/config/config";
+import { Address } from "thirdweb";
 
-const OwnedTokens = ({ data, isOwner, isLoading, fetchCreatedData, manageAddress }) => {
+const OwnedTokens = ({
+  data,
+  isOwner,
+  isLoading,
+  fetchCreatedData,
+  manageAddress,
+  tokenStatuses
+}: {
+  data: any;
+  isOwner: boolean;
+  isLoading: boolean;
+  fetchCreatedData: any;
+  manageAddress: Address;
+  tokenStatuses: ("pending" | "rejected" | "accepted" | null)[];
+}) => {
   const { chainId, name: chainName } = useChain() || {};
   const currentChainObject = config[chainId as number];
 
@@ -23,7 +38,6 @@ const OwnedTokens = ({ data, isOwner, isLoading, fetchCreatedData, manageAddress
   const [isSelectionActive, setIsSelectionActive] = useState(false);
   const [showPreviewModal, setShowPreviewModal] = useState(false);
   const [isFirstSelection, setIsFirstSelection] = useState(true);
-
   const [successFullUpload, setSuccessFullUpload] = useState(false);
   const [files, setFiles] = useState<any[]>([]);
   const [previewImages, setPreviewImages] = useState<any[]>([]);
@@ -40,6 +54,7 @@ const OwnedTokens = ({ data, isOwner, isLoading, fetchCreatedData, manageAddress
     currentChainObject?.smartContracts?.DSPONSORADMIN?.address,
     currentChainObject?.smartContracts?.DSPONSORADMIN?.abi
   );
+
   const relayerUrl = currentChainObject?.relayerURL;
 
   const { mutateAsync: uploadToIPFS } = useStorageUpload();
@@ -239,6 +254,7 @@ const OwnedTokens = ({ data, isOwner, isLoading, fetchCreatedData, manageAddress
       </div>
     );
   }
+
   return (
     <>
       {/* <!-- Filter --> */}
@@ -288,6 +304,9 @@ const OwnedTokens = ({ data, isOwner, isLoading, fetchCreatedData, manageAddress
                   item?.marketplaceListings?.sort((a, b) => Number(b?.id) - Number(a?.id))[0]
                     ?.currencySymbol ?? item?.nftContract?.prices?.[0]?.currencySymbol;
 
+                const sponsorHasAtLeastOneRejectedProposalAndNoPending =
+                  tokenStatuses[index] === "rejected" || tokenStatuses[index] === null;
+
                 return isSelectionActive ? (
                   item.chainConfig.chainId === currentChainObject?.chainId ? (
                     <div
@@ -300,6 +319,10 @@ const OwnedTokens = ({ data, isOwner, isLoading, fetchCreatedData, manageAddress
                         isToken={true}
                         listingType={item?.marketplaceListings[0]?.listingType}
                         isListing={false}
+                        isOwner={true}
+                        availableToSubmitAdFromOwnedTokens={
+                          sponsorHasAtLeastOneRejectedProposalAndNoPending
+                        }
                         isDisabled={
                           item?.disable ||
                           (!item?.nftContract?.prices[0]?.enabled && item?.mint === null) ||
@@ -312,7 +335,6 @@ const OwnedTokens = ({ data, isOwner, isLoading, fetchCreatedData, manageAddress
                             ? `/${item?.chainConfig?.chainId}/offer/${item.offerId}/${item.tokenId}`
                             : `/${item?.chainConfig?.chainId}/offer/${item.offerId}/${item.tokenId}?tokenData=${item.tokenData}`
                         }
-                        availableToSubmitAdFromOwnedTokens={true}
                         currencySymbol={currencySymbol}
                         currencyDecimals={currencyDecimals}
                       />
@@ -338,7 +360,10 @@ const OwnedTokens = ({ data, isOwner, isLoading, fetchCreatedData, manageAddress
                         ? `/${item?.chainConfig?.chainId}/offer/${item.offerId}/${item.tokenId}`
                         : `/${item?.chainConfig?.chainId}/offer/${item.offerId}/${item.tokenId}?tokenData=${item.tokenData}`
                     }
-                    availableToSubmitAdFromOwnedTokens={true}
+                    availableToSubmitAdFromOwnedTokens={
+                      sponsorHasAtLeastOneRejectedProposalAndNoPending
+                    }
+                    isOwner={isOwner}
                     currencySymbol={currencySymbol}
                     currencyDecimals={currencyDecimals}
                   />
