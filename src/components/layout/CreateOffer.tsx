@@ -534,7 +534,7 @@ const CreateOffer = () => {
               website or another location of your choice. You retain full control to approve or
               reject any ads.
             </p>
-            <ChainSelector setChainConfig={setChainConfig} chainConfig={chainConfig} />
+            <ChainSelector setChainConfig={setChainConfig} />
           </div>
         </div>
         <CarouselForm

@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import ModalHelper from "@/components/ui/modals/Helper";
 import config from "@/config/config";
 import { ChainObject } from "@/types/chain";
-import { useAddress, useSwitchChain } from "@thirdweb-dev/react";
 
 const ChainSelector = ({ setChainConfig, chainConfig }) => {
   const getInitialChainName = () => {

@@ -70,6 +70,7 @@ const AdSpaceSelector = ({
                 dark={false}
                 title={integration.integrationName}
                 body={integration.bodyDescription}
+                tooltips={integration.tooltips}
                 images={integration.imagesExemple ?? ""}
                 titleImages={integration.titleImages ?? ""}
               />
@@ -203,6 +204,10 @@ const OfferType = ({
         "/images/examples/offer_exemple_1.png"
       ],
       titleImages: ["Clickable logos Grid", "Dynamic Banner"],
+      tooltips: [
+        "This ad integration lets you display a grid of clickable logos, like a sponsor section at the bottom of a webpage. Each slot in the grid will show a sponsor's logo, and clicking it will redirect to their URL. You can use this integration to display logos, with or without a link.",
+        "This ad integration displays a randomly selected ad from the submitted sponsor ads, choosing a new one with each request."
+      ],
       bodyDescription: "Available ad integrations: You are free to integrate ads as you like."
     }
   ];
