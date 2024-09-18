@@ -1244,9 +1244,12 @@ const Token = () => {
     }
 
     if (address && offerData?.admins?.includes(address?.toLowerCase())) {
+      setIsOfferOwner(true);
       setIsAdmin(true);
-    } else {
-      setIsAdmin(false);
+    }
+
+    if (isUserOwner?.toLowerCase() === address?.toLowerCase()) {
+      setIsOwner(true);
     }
   }, [
     isUserOwner,
@@ -2869,9 +2872,8 @@ const Token = () => {
                   <AdValidation
                     chainConfig={chainConfig}
                     offer={offerData}
-                    isOwner={isOwner}
-                    fromToken={true}
-                    isAdmin={isOfferOwner}
+                    isOwner={isOfferOwner}
+                    isAdmin={isAdmin}
                     successFullRefuseModal={successFullRefuseModal}
                     setRefusedValidatedAdModal={setRefusedValidatedAdModal}
                     refusedValidatedAdModal={refusedValidatedAdModal}

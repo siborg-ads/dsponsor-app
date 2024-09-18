@@ -471,21 +471,12 @@ const TokenCard = ({
           <div className="mt-4 flex items-center justify-between gap-2">
             {isSelectionActive ? (
               <span className="font-display  text-primaryBlack hover:text-primaryPurple text-base dark:text-white flex items-center gap-1">
-                {((!!fromProfilePage &&
-                  profileAddress?.toLowerCase() === address?.toLowerCase() &&
-                  availableToSubmitAd &&
-                  !!availableToSubmitAdFromCreatedOffers) ||
-                  (!fromProfilePage &&
-                    availableToSubmitAd &&
-                    !!availableToSubmitAdFromCreatedOffers)) && (
-                  <ResponsiveTooltip text="You can review the ad proposals for this item">
+                {availableToSubmitAd && !!availableToSubmitAdFromCreatedOffers && (
+                  <ResponsiveTooltip text="You can submit an ad for this item">
                     <ExclamationCircleIcon className="h-5 w-5 text-red dark:text-red" />
                   </ResponsiveTooltip>
                 )}
-                {((!!fromProfilePage &&
-                  profileAddress?.toLowerCase() === address?.toLowerCase() &&
-                  !!availableToSubmitAdFromOwnedTokens) ||
-                  (!fromProfilePage && !!availableToSubmitAdFromOwnedTokens)) && (
+                {!!availableToSubmitAdFromOwnedTokens && (
                   <ResponsiveTooltip text="You can submit an ad for this item">
                     <ExclamationCircleIcon className="h-5 w-5 text-red dark:text-red" />
                   </ResponsiveTooltip>
@@ -504,21 +495,12 @@ const TokenCard = ({
             ) : (
               <div className="overflow-hidden text-ellipsis whitespace-nowrap ">
                 <span className="font-display text-primaryBlack hover:text-primaryPurple text-base dark:text-white flex items-center gap-1">
-                  {((!!fromProfilePage &&
-                    profileAddress?.toLowerCase() === address?.toLowerCase() &&
-                    availableToSubmitAd &&
-                    !!availableToSubmitAdFromCreatedOffers) ||
-                    (!fromProfilePage &&
-                      availableToSubmitAd &&
-                      !!availableToSubmitAdFromCreatedOffers)) && (
-                    <ResponsiveTooltip text="You can review the ad proposals for this item">
+                  {availableToSubmitAd && !!availableToSubmitAdFromCreatedOffers && (
+                    <ResponsiveTooltip text="You can submit an ad for this item">
                       <ExclamationCircleIcon className="h-5 w-5 text-red dark:text-red" />
                     </ResponsiveTooltip>
                   )}
-                  {((!!fromProfilePage &&
-                    profileAddress?.toLowerCase() === address?.toLowerCase() &&
-                    !!availableToSubmitAdFromOwnedTokens) ||
-                    (!fromProfilePage && !!availableToSubmitAdFromOwnedTokens)) && (
+                  {!!availableToSubmitAdFromOwnedTokens && (
                     <ResponsiveTooltip text="You can submit an ad for this item">
                       <ExclamationCircleIcon className="h-5 w-5 text-red dark:text-red" />
                     </ResponsiveTooltip>

@@ -313,8 +313,7 @@ const AdValidation = ({
                   }
                 >
                   {sponsorHasAtLeastOneRejectedProposalAndNoPending &&
-                    isOwner &&
-                    fromToken &&
+                    isAdmin &&
                     text === "Refused" && (
                       <ResponsiveTooltip text="Your ad has been refused and you have no pending ad. Try to submit a new one.">
                         <ExclamationCircleIcon className="w-5 h-5 text-red dark:text-red" />
