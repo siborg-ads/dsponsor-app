@@ -42,8 +42,12 @@ export default function TokenDetails({
       const hasEnabledPrice = nftContract?.prices.some((price) => price.enabled);
       const isPermissionless = !nftContract?.allowList;
       const isTokenInAllowList = token?.setInAllowList;
+      const tokenAlreadyMinted = token?.mint !== null;
 
-      if (hasEnabledPrice && (isPermissionless || isTokenInAllowList)) {
+      const mintableCondition =
+        !tokenAlreadyMinted && hasEnabledPrice && (isPermissionless || isTokenInAllowList);
+
+      if (mintableCondition) {
         setIsMintable(true);
       } else {
         setIsMintable(false);
