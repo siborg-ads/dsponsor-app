@@ -9,12 +9,15 @@ import {
   useDisclosure
 } from "@nextui-org/react";
 import Image from "next/image";
+import ResponsiveTooltip from "@/components/ui/ResponsiveTooltip";
+import { InformationCircleIcon } from "@heroicons/react/24/solid";
 
 const ModalHelper = ({
   title,
   body,
   images,
   titleImages,
+  tooltips,
   dark,
   size = "default"
 }: {
@@ -22,6 +25,7 @@ const ModalHelper = ({
   body: React.ReactElement | string;
   images?: string[];
   titleImages?: string[];
+  tooltips?: string[];
   dark?: boolean;
   size?: "small" | "medium" | "large" | "default";
 }) => {
@@ -76,7 +80,16 @@ const ModalHelper = ({
                   {(images?.length as number) > 0 &&
                     images?.map((image, index) => (
                       <div className="flex flex-col items-center justify-center gap-3 " key={index}>
-                        <p>{titleImages?.[index]}</p>
+                        {tooltips ? (
+                          <ResponsiveTooltip text={tooltips?.[index]}>
+                            <span className="flex items-center gap-2">
+                              <p>{titleImages?.[index]}</p>
+                              <InformationCircleIcon className="h-5 w-5 text-gray-400" />
+                            </span>
+                          </ResponsiveTooltip>
+                        ) : (
+                          <p>{titleImages?.[index]}</p>
+                        )}
                         <Image
                           src={image ?? ""}
                           alt="image"
