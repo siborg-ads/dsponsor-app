@@ -27,6 +27,14 @@ export type Currency = {
 };
 
 const CreateOffer = () => {
+  const getAllSavedOfferFields = () => {
+    const savedOfferFields = localStorage.getItem("savedOfferFields");
+    if (savedOfferFields) {
+      return JSON.parse(savedOfferFields);
+    }
+    return {};
+  };
+
   const [chainConfig, setChainConfig] = useState<ChainObject>(Object.entries(config)[0][1]);
 
   const allCurrencies = Object.values(config)
@@ -49,6 +57,7 @@ const CreateOffer = () => {
     ?.filter((currency) => currency !== null);
 
   const [files, setFiles] = useState<any[]>([]);
+  const [name, setName] = useState("");
   const { mutateAsync: upload } = useStorageUpload();
   const [currentSlide, setCurrentSlide] = useState(0);
   const [link, setLink] = useState<string | null>(null);
@@ -77,6 +86,90 @@ const CreateOffer = () => {
   const [tokenAddress, setTokenAddress] = useState<Address>("0x");
   const [customTokenAddress, setCustomTokenAddress] = useState<Address | undefined>(undefined);
   const [selectedCurrency, setSelectedCurrency] = useState<Currency | undefined>(currencies?.[0]);
+
+  useEffect(() => {
+    const savedOfferFields = getAllSavedOfferFields();
+
+    if (savedOfferFields) {
+      // metadata
+      setName(savedOfferFields.name);
+      setDescription(savedOfferFields.description);
+      setFiles(savedOfferFields.files); // upload URL
+      setTerms(savedOfferFields.terms);
+      setLink(savedOfferFields.link);
+      setStartDate(new Date(savedOfferFields.startDate));
+      setEndDate(new Date(savedOfferFields.endDate));
+
+      // offer
+      setSelectedNumber(savedOfferFields.selectedNumber);
+      setSelectedRoyalties(savedOfferFields.selectedRoyalties);
+      setTokenAddress(savedOfferFields.tokenAddress);
+      setCustomTokenAddress(savedOfferFields.customTokenAddress);
+      setTokenDecimals(savedOfferFields.tokenDecimals);
+      setTokenSymbol(savedOfferFields.tokenSymbol);
+      setSelectedUnitPrice(savedOfferFields.selectedUnitPrice);
+      setSelectedCurrency(savedOfferFields.selectedCurrency);
+
+      // ad space
+      setSelectedParameter(savedOfferFields.selectedParameter);
+      setSelectedIntegration(savedOfferFields.selectedIntegration);
+      setPreviewImages(savedOfferFields.previewImages);
+      setMinterAddress(savedOfferFields.minterAddress);
+      setSelectedIntegration(savedOfferFields.selectedIntegration);
+      setDisplayedParameter(savedOfferFields.displayedParameter);
+      setImageRatios(savedOfferFields.imageRatios);
+    }
+  }, []);
+
+  useEffect(() => {
+    const formData = {
+      name,
+      description,
+      files,
+      terms,
+      link,
+      startDate,
+      endDate,
+      selectedNumber,
+      selectedRoyalties,
+      tokenAddress,
+      customTokenAddress,
+      tokenDecimals,
+      tokenSymbol,
+      selectedUnitPrice,
+      selectedCurrency,
+      selectedParameter,
+      previewImages,
+      minterAddress,
+      selectedIntegration,
+      displayedParameter,
+      imageRatios
+    };
+
+    localStorage.setItem("savedOfferFields", JSON.stringify(formData));
+  }, [
+    name,
+    description,
+    link,
+    startDate,
+    endDate,
+    selectedNumber,
+    selectedUnitPrice,
+    selectedCurrency,
+    customTokenAddress,
+    selectedParameter,
+    selectedIntegration,
+    selectedRoyalties,
+    files,
+    previewImages,
+    terms,
+    tokenDecimals,
+    tokenSymbol,
+    tokenAddress,
+    minterAddress,
+    displayedParameter,
+    imageRatios
+  ]);
 
   useEffect(() => {
     setTokenAddress(currencies?.[0]?.address as Address);
@@ -198,7 +291,6 @@ const CreateOffer = () => {
     setMinterAddress(address as Address);
   }, [address]);
 
-  const [name, setName] = useState("");
   const stepsRef = useRef([]);
   const { ethers } = require("ethers");
 
@@ -482,6 +574,8 @@ const CreateOffer = () => {
       setTokenAddress(currencies?.[0]?.address as Address);
       setCustomTokenAddress(undefined);
       setCurrentSlide(0);
+
+      localStorage.removeItem("savedOfferFields");
     } catch (error) {
       setSuccessFullUpload(false);
       throw error;
