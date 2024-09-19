@@ -53,6 +53,7 @@ import StyledWeb3Button from "@/components/ui/buttons/StyledWeb3Button";
 
 import ERC20ABI from "@/abi/ERC20.json";
 import { getOwnershipPeriod } from "@/utils/dates/period";
+import isUrlValid from "@/utils/misc/isUrlValid";
 
 const Token = () => {
   const router = useRouter();
@@ -215,6 +216,7 @@ const Token = () => {
       // set offer data for the current offer
       const currentOffer = offers?.find((offer) => Number(offer?.id) === Number(offerId));
       setOfferData(currentOffer);
+      console.log(currentOffer);
     } catch (error) {
       console.error("Error fetching offers:", error);
     } finally {
@@ -2231,6 +2233,23 @@ const Token = () => {
                 <span className="block text-sm text-jacarta-100 ">
                   Creator <strong className="dark:text-white">{royalties}% royalties</strong>
                 </span>
+                {offerData?.external_url && (
+                  <span className="block w-full text-sm text-jacarta-100 dark:text-white">
+                    Ad Space location :{" "}
+                    {isUrlValid(offerData.external_url) ? (
+                      <a
+                        href={offerData?.external_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="font-bold text-primaryPurple hover:underline"
+                      >
+                        {offerData?.external_url}
+                      </a>
+                    ) : (
+                      <strong>{offerData?.external_url}</strong>
+                    )}
+                  </span>
+                )}
                 <div>
                   {offerData?.nftContract?.tokens?.find(
                     (token) =>
