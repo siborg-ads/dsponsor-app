@@ -216,7 +216,6 @@ const Token = () => {
       // set offer data for the current offer
       const currentOffer = offers?.find((offer) => Number(offer?.id) === Number(offerId));
       setOfferData(currentOffer);
-      console.log(currentOffer);
     } catch (error) {
       console.error("Error fetching offers:", error);
     } finally {

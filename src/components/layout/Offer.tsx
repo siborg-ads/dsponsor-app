@@ -162,12 +162,10 @@ const Offer = () => {
       setOffers(offers);
 
       const offerData = offers?.filter((offer) => Number(offer?.id) === Number(offerId))[0];
-      console.log("offerDATA METADATA", offerData);
       const external_url =
         offerData.metadata?.offer?.external_url ??
         offerData.metadata?.offer?.external_link ??
         undefined;
-      console.log("external_url", external_url);
 
       const offerDataFinal = {
         ...offerData,
