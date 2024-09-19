@@ -176,6 +176,27 @@ const Token = () => {
   const [failedCrossmintTransaction, setFailedCrossmintTransaction] = useState(false);
   const [tokenSymbol, setTokenSymbol] = useState<string | null>(null);
   const [tokenDecimals, setTokenDecimals] = useState<number | null>(null);
+  const [isMintable, setIsMintable] = useState(false);
+
+  React.useEffect(() => {
+    if (offerData) {
+      const token = offerData?.nftContract?.tokens?.find(
+        (token) =>
+          !!token?.tokenId && tokenId && BigInt(token?.tokenId) === BigInt(tokenId as string)
+      );
+
+      const nftContract = offerData?.nftContract;
+      const hasEnabledPrice = nftContract?.prices?.some((price) => price.enabled);
+      const isPermissionless = !nftContract?.allowList;
+      const isTokenInAllowList = token?.setInAllowList;
+
+      if (hasEnabledPrice && (isPermissionless || isTokenInAllowList)) {
+        setIsMintable(true);
+      } else {
+        setIsMintable(false);
+      }
+    }
+  }, [offerData, tokenId]);
 
   const { contract: currencyContract } = useContract(tokenCurrencyAddress, ERC20ABI);
   const { data: tokenSymbolData } = useContractRead(currencyContract, "symbol");
@@ -1945,10 +1966,7 @@ const Token = () => {
           the total amount paid by the buyer.
         </span>
 
-        {offerData?.nftContract?.tokens?.find(
-          (token) =>
-            !!token?.tokenId && tokenId && BigInt(token?.tokenId) === BigInt(tokenId as string)
-        )?.mint === null && (
+        {isMintable && (
           <div className="flex flex-col gap-2">
             <ul className="flex flex-col gap-2 text-sm list-disc" style={{ listStyleType: "disc" }}>
               <li>
@@ -1970,10 +1988,7 @@ const Token = () => {
           </div>
         )}
 
-        {offerData?.nftContract?.tokens?.find(
-          (token) =>
-            !!token?.tokenId && tokenId && BigInt(token?.tokenId) === BigInt(tokenId as string)
-        )?.mint !== null && (
+        {!isMintable && (
           <div className="flex flex-col gap-2">
             <ul className="flex flex-col gap-2 text-sm list-disc" style={{ listStyleType: "disc" }}>
               <li>
