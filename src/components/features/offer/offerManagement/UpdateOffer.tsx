@@ -333,31 +333,25 @@ const UpdateOffer = ({
       return;
     }
 
-    if (value.includes("/")) {
-      const [width, height] = value.split("/");
-
-      if (width === "" || height === "") {
-        setImageRatio("");
-        return;
-      }
-
-      if (isNaN(width) || isNaN(height)) {
-        setImageRatio("");
-        return;
-      }
-
-      setImageRatio(width + ":" + height);
-    } else {
-      setImageRatio(value);
-    }
+    setImageRatio(value);
   };
 
   const handleUpdateOffer = async (originalMetadatas) => {
     // check image ratio
     // ratio should be "0" or "x:x" specific format with x being a number
-    if (imageRatio !== "" && imageRatio !== "0") {
-      const [width, height] = (imageRatio as string).split(":");
-      const length = (imageRatio as string).split(":").length;
+    let formattedRatio = imageRatio;
+    if (formattedRatio !== "" && formattedRatio !== "0") {
+      if (!formattedRatio) {
+        toast("Image ratio is not correct, it should be 0 or width:height", { type: "error" });
+        return;
+      }
+
+      if (formattedRatio.includes("/")) {
+        formattedRatio = formattedRatio.replace("/", ":");
+      }
+
+      const [width, height] = formattedRatio.split(":");
+      const length = formattedRatio.split(":").length;
 
       if (length > 2) {
         toast("Image ratio is not correct, it should be 0 or width:height", { type: "error" });
@@ -365,6 +359,11 @@ const UpdateOffer = ({
       }
 
       if (width === "" || height === "") {
+        toast("Image ratio is not correct, it should be 0 or width:height", { type: "error" });
+        return;
+      }
+
+      if (/[^0-9]/.test(width) || /[^0-9]/.test(height)) {
         toast("Image ratio is not correct, it should be 0 or width:height", { type: "error" });
         return;
       }
@@ -397,11 +396,11 @@ const UpdateOffer = ({
     // ad parameters as initial are in the format of [{adParameter: {id: string, base: string, variants: [""]}}]
     // we want to send to the blockchain an array of ad parameters that are string in the format base-variant1:variant2 (for image ratio for example)
     // so we need to check if the new image ratio is different from the initial image ratio
-    const isRatioDifferent = initialImageRatio !== imageRatio;
+    const isRatioDifferent = initialImageRatio !== formattedRatio;
 
     // if the ratio is different, we need to add it to the ad parameters for add options
     if (isRatioDifferent) {
-      updatedAdParametersForAddOptions.push("imageURL-" + imageRatio);
+      updatedAdParametersForAddOptions.push("imageURL-" + formattedRatio);
     }
 
     // if the ratio is different, we need to remove it from the ad parameters for remove options
@@ -680,7 +679,7 @@ const UpdateOffer = ({
                 type="text"
                 placeholder={imageRatio as string}
                 value={imageRatio}
-                onChange={handleImageRatioChange}
+                onChange={(e) => handleImageRatioChange(e.target.value)}
               />
             </div>
             <span className="text-xs text-jacarta-300">
