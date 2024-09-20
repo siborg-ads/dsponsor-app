@@ -308,7 +308,7 @@ const OwnedTokens = ({
                   tokenStatuses[index] === "rejected" || tokenStatuses[index] === null;
 
                 return isSelectionActive ? (
-                  item.chainConfig.chainId === currentChainObject?.chainId ? (
+                  item.chainConfig.chainId === currentChainObject?.chainId && (
                     <div
                       onClick={() => handleSelection(item)}
                       key={index}
@@ -337,10 +337,10 @@ const OwnedTokens = ({
                         }
                         currencySymbol={currencySymbol}
                         currencyDecimals={currencyDecimals}
+                        fromProfilePage={true}
+                        profileAddress={manageAddress}
                       />
                     </div>
-                  ) : (
-                    <></>
                   )
                 ) : (
                   <TokenCard
@@ -366,6 +366,8 @@ const OwnedTokens = ({
                     isOwner={isOwner}
                     currencySymbol={currencySymbol}
                     currencyDecimals={currencyDecimals}
+                    fromProfilePage={true}
+                    profileAddress={manageAddress}
                   />
                 );
               })}

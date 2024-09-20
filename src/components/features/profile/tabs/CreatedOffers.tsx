@@ -6,19 +6,22 @@ import ConditionalDisplayedComponent from "@/components/ui/misc/ConditionalDispl
 import TokenCard from "@/components/ui/cards/TokenCard";
 import MainButton from "@/components/ui/buttons/MainButton";
 import { ExclamationCircleIcon } from "@heroicons/react/24/solid";
+import { Address } from "thirdweb";
 
 const CreatedOffers = ({
   data,
   isPendinAdsOnOffer,
   isOwner,
   offers,
-  isLoading
+  isLoading,
+  manageAddress
 }: {
   data: any;
   isPendinAdsOnOffer?: boolean;
   isOwner: boolean;
   offers: any;
   isLoading: boolean;
+  manageAddress: Address;
 }) => {
   const [filteredData, setFilteredData] = useState(data);
 
@@ -102,6 +105,8 @@ const CreatedOffers = ({
                 currencySymbol={currencySymbol}
                 currencyDecimals={currencyDecimals}
                 availableToSubmitAdFromCreatedOffers
+                fromProfilePage={true}
+                profileAddress={manageAddress}
               />
             );
           })}
