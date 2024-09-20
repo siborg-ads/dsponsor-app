@@ -368,6 +368,8 @@ const Offer = () => {
       setImageUrl("/images/gradients/gradient_creative.jpg");
     } else if (localUrl && typeof localUrl === "string" && localUrl.startsWith("ipfs://")) {
       fetchImage(localUrl);
+    } else {
+      setImageUrl(localUrl);
     }
   }, [storage, offerData]);
 
