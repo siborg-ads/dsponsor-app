@@ -97,10 +97,13 @@ const Profile = () => {
     async (fetchFunction) => {
       const dataArray: any[] = [];
 
-      for (const [chainId] of Object.entries(config)) {
-        const data = await fetchFunction(userAddress, chainId);
-        dataArray?.push(...data);
-      }
+      await Promise.all(
+        Object.keys(config).map(async (chainId) => {
+          const data = await fetchFunction(userAddress, chainId);
+          dataArray?.push(...data);
+        })
+      );
+
       return dataArray;
     },
     [userAddress]
@@ -364,9 +367,7 @@ const Profile = () => {
 
         if (userAddress) {
           try {
-            await fetchProfileData();
-            await fetchCreatedData();
-            await fetchOwnedAdProposals();
+            await Promise.all([fetchProfileData(), fetchCreatedData(), fetchOwnedAdProposals()]);
           } catch (error) {
             console.error("Error fetching manage data:", error);
           } finally {
