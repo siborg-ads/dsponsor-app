@@ -1966,7 +1966,7 @@ const Token = () => {
           the total amount paid by the buyer.
         </span>
 
-        {isMintable && (
+        {tokenStatut === "MINTABLE" && (
           <div className="flex flex-col gap-2">
             <ul className="flex flex-col gap-2 text-sm list-disc" style={{ listStyleType: "disc" }}>
               <li>
@@ -1988,7 +1988,7 @@ const Token = () => {
           </div>
         )}
 
-        {!isMintable && (
+        {tokenStatut !== "MINTABLE" && (
           <div className="flex flex-col gap-2">
             <ul className="flex flex-col gap-2 text-sm list-disc" style={{ listStyleType: "disc" }}>
               <li>
