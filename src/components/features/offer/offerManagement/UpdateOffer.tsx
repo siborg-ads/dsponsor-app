@@ -657,8 +657,8 @@ const UpdateOffer = ({
 
         {admins &&
           admins.map((admin, index) => (
-            <div className="mb-2">
-              <div key={index} className="flex items-center gap-4 mb-1">
+            <div className="mb-2" key={index}>
+              <div className="flex items-center gap-4 mb-1">
                 <Input
                   type="text"
                   placeholder={admin}
