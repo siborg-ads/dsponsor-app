@@ -23,11 +23,13 @@ const fileTypes = ["JPG", "PNG", "WEBP", "GIF"];
 const UpdateOffer = ({
   offer,
   chainConfig,
-  contractOwner
+  contractOwner,
+  onSubmit
 }: {
   offer: any;
   chainConfig: ChainObject;
   contractOwner: Address;
+  onSubmit: () => Promise<void>;
 }) => {
   const [offerId, setOfferId] = useState<string | null>(null);
   const [metadataURL, setMetadataURL] = useState(null);
@@ -514,6 +516,8 @@ const UpdateOffer = ({
           })
         });
       }
+
+      await onSubmit();
     } catch (error) {
       console.error(error);
       throw new Error(error);

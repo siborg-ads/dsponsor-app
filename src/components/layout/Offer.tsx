@@ -1151,7 +1151,12 @@ const Offer = () => {
                   />
                 </TabPanel>
                 <TabPanel>
-                  <UpdateOffer chainConfig={chainConfig} offer={offerData} contractOwner={owner} />
+                  <UpdateOffer
+                    chainConfig={chainConfig}
+                    offer={offerData}
+                    contractOwner={owner}
+                    onSubmit={fetchOffers}
+                  />
                 </TabPanel>
                 {isOwner && (
                   <TabPanel>
