@@ -176,9 +176,17 @@ const TermsPdfUploader = ({
       </p>
 
       {termsURL ? (
-        <p className="mb-3 text-center break-all text-2xs text-green text-wrap">
-          Successfully uploaded: {termsURL}
-        </p>
+        <div className="mb-3 text-center text-2xs text-green">
+          Successfully uploaded:{" "}
+          <Link
+            href={termsURL}
+            passHref
+            target="_blank"
+            className="text-primaryPurple hover:text-opacity-80 hover:underline"
+          >
+            {termsURL.length > 70 ? `${termsURL.slice(0, 20)}...${termsURL.slice(-20)}` : termsURL}
+          </Link>
+        </div>
       ) : (
         <p className="mb-3 dark:text-jacarta-100 text-jacarta-100 text-2xs">
           Drag or choose your file to upload
