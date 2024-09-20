@@ -106,6 +106,8 @@ const CreatedOffers = ({
                 currencySymbol={currencySymbol}
                 currencyDecimals={currencyDecimals}
                 availableToSubmitAdFromCreatedOffers
+                fromProfilePage={true}
+                profileAddress={manageAddress}
               />
             );
           })}

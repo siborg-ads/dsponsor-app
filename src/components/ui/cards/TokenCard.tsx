@@ -471,12 +471,21 @@ const TokenCard = ({
           <div className="mt-4 flex items-center justify-between gap-2">
             {isSelectionActive ? (
               <span className="font-display  text-primaryBlack hover:text-primaryPurple text-base dark:text-white flex items-center gap-1">
-                {availableToSubmitAd && !!availableToSubmitAdFromCreatedOffers && (
-                  <ResponsiveTooltip text="You can submit an ad for this item">
+                {((!!fromProfilePage &&
+                  profileAddress?.toLowerCase() === address?.toLowerCase() &&
+                  availableToSubmitAd &&
+                  !!availableToSubmitAdFromCreatedOffers) ||
+                  (!fromProfilePage &&
+                    availableToSubmitAd &&
+                    !!availableToSubmitAdFromCreatedOffers)) && (
+                  <ResponsiveTooltip text="You can review the ad proposals for this item">
                     <ExclamationCircleIcon className="h-5 w-5 text-red dark:text-red" />
                   </ResponsiveTooltip>
                 )}
-                {!!availableToSubmitAdFromOwnedTokens && (
+                {((!!fromProfilePage &&
+                  profileAddress?.toLowerCase() === address?.toLowerCase() &&
+                  !!availableToSubmitAdFromOwnedTokens) ||
+                  (!fromProfilePage && !!availableToSubmitAdFromOwnedTokens)) && (
                   <ResponsiveTooltip text="You can submit an ad for this item">
                     <ExclamationCircleIcon className="h-5 w-5 text-red dark:text-red" />
                   </ResponsiveTooltip>
@@ -484,8 +493,8 @@ const TokenCard = ({
                 {((!!fromProfilePage &&
                   profileAddress?.toLowerCase() === address?.toLowerCase() &&
                   !!createdOffersProposals &&
-                  isPendingAdsOnToken) ||
-                  (!fromProfilePage && !!createdOffersProposals && isPendingAdsOnToken)) && (
+                  isPendingAdsOnOffer) ||
+                  (!fromProfilePage && !!createdOffersProposals && isPendingAdsOnOffer)) && (
                   <ResponsiveTooltip text="You have 1 or more ads proposals to check on your offer">
                     <ExclamationCircleIcon className="h-5 w-5 text-red dark:text-red" />
                   </ResponsiveTooltip>
@@ -495,12 +504,21 @@ const TokenCard = ({
             ) : (
               <div className="overflow-hidden text-ellipsis whitespace-nowrap ">
                 <span className="font-display text-primaryBlack hover:text-primaryPurple text-base dark:text-white flex items-center gap-1">
-                  {availableToSubmitAd && !!availableToSubmitAdFromCreatedOffers && (
-                    <ResponsiveTooltip text="You can submit an ad for this item">
+                  {((!!fromProfilePage &&
+                    profileAddress?.toLowerCase() === address?.toLowerCase() &&
+                    availableToSubmitAd &&
+                    !!availableToSubmitAdFromCreatedOffers) ||
+                    (!fromProfilePage &&
+                      availableToSubmitAd &&
+                      !!availableToSubmitAdFromCreatedOffers)) && (
+                    <ResponsiveTooltip text="You can review the ad proposals for this item">
                       <ExclamationCircleIcon className="h-5 w-5 text-red dark:text-red" />
                     </ResponsiveTooltip>
                   )}
-                  {!!availableToSubmitAdFromOwnedTokens && (
+                  {((!!fromProfilePage &&
+                    profileAddress?.toLowerCase() === address?.toLowerCase() &&
+                    !!availableToSubmitAdFromOwnedTokens) ||
+                    (!fromProfilePage && !!availableToSubmitAdFromOwnedTokens)) && (
                     <ResponsiveTooltip text="You can submit an ad for this item">
                       <ExclamationCircleIcon className="h-5 w-5 text-red dark:text-red" />
                     </ResponsiveTooltip>
@@ -508,8 +526,8 @@ const TokenCard = ({
                   {((!!fromProfilePage &&
                     profileAddress?.toLowerCase() === address?.toLowerCase() &&
                     !!createdOffersProposals &&
-                    isPendingAdsOnToken) ||
-                    (!fromProfilePage && !!createdOffersProposals && isPendingAdsOnToken)) && (
+                    isPendingAdsOnOffer) ||
+                    (!fromProfilePage && !!createdOffersProposals && isPendingAdsOnOffer)) && (
                     <ResponsiveTooltip text="You have 1 or more ads proposals to check on your offer">
                       <ExclamationCircleIcon className="h-5 w-5 text-red dark:text-red" />
                     </ResponsiveTooltip>
