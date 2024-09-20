@@ -11,6 +11,7 @@ import { parseDate } from "@internationalized/date";
 import Input from "@/components/ui/Input";
 import TextArea from "@/components/ui/TextArea";
 import { Address } from "thirdweb";
+import { isAddress } from "ethers/lib/utils";
 import StyledWeb3Button from "@/components/ui/buttons/StyledWeb3Button";
 import { ChainObject } from "@/types/chain";
 import { cn } from "@nextui-org/react";
@@ -336,6 +337,63 @@ const UpdateOffer = ({
     setImageRatio(value);
   };
 
+  const canSubmit = () => {
+    // check if there is at least one admin
+    if (!admins || admins.length === 0) {
+      return false;
+    }
+
+    // check if all admins are valid addresses
+    if (admins.some((admin) => !isAddress(admin))) {
+      return false;
+    }
+
+    // ceck that all admins are unique
+    if (admins.length !== new Set(admins).size) {
+      return false;
+    }
+
+    //check if the ratio is correct
+    if (!isRatioCorrect()) {
+      console.log("ratio not correct");
+      return false;
+    }
+
+    return true;
+  };
+
+  const isRatioCorrect = () => {
+    let formattedRatio = imageRatio;
+    if (!formattedRatio) {
+      return false;
+    }
+
+    if (formattedRatio !== "" && formattedRatio !== "0") {
+      // If the user enters a ratio in the format "x/y", we replace the "/" with ":" to match the format "x:y"
+      if (formattedRatio.includes("/")) {
+        formattedRatio = formattedRatio.replace("/", ":");
+      }
+
+      const [width, height] = formattedRatio.split(":");
+      const length = formattedRatio.split(":").length;
+
+      // Check the number of args and that they are both numbers
+      if (length > 2) {
+        return false;
+      }
+
+      if (width === "" || height === "") {
+        return false;
+      }
+
+      if (/[^0-9]/.test(width) || /[^0-9]/.test(height)) {
+        return false;
+      }
+    }
+
+    return true;
+  };
+
   const handleUpdateOffer = async (originalMetadatas) => {
     // check image ratio
     // ratio should be "0" or "x:x" specific format with x being a number
@@ -595,35 +653,48 @@ const UpdateOffer = ({
 
         {admins &&
           admins.map((admin, index) => (
-            <div key={index} className="flex items-center gap-4 mb-2">
-              <Input
-                type="text"
-                placeholder={admin}
-                value={admin}
-                onChange={(e) => handleAdminChange(index, e.target.value)}
-              />
-              <Tippy
-                content="You can't remove the contract owner"
-                placement="top"
-                className="box-border p-2 border rounded-md bg-jacarta-300 text-jacarta-900 hover:border-2 dark:hover:border-2 hover:-m-1 duration-400 dark:hover:bg-jacarta-800 dark:border-jacarta-100 dark:border-opacity-10 border-opacity-10 border-jacarta-900 hover:bg-jacarta-800 dark:text-jacarta-100"
-                disabled={admin.toLowerCase() !== contractOwner.toLowerCase()}
-              >
-                {/* Wrap in a div because if the button is disabled the tooltip won't show */}
-                <div>
-                  <button
-                    type="button"
-                    className={cn(
-                      "px-4 py-2 text-white rounded-lg bg-red",
-                      admin.toLowerCase() === contractOwner.toLowerCase() &&
-                        "cursor-not-allowed bg-opacity-30"
-                    )}
-                    disabled={admin.toLowerCase() === contractOwner.toLowerCase()}
-                    onClick={() => handleRemoveAdmin(index)}
-                  >
-                    Remove
-                  </button>
-                </div>
-              </Tippy>
+            <div className="mb-2">
+              <div key={index} className="flex items-center gap-4 mb-1">
+                <Input
+                  type="text"
+                  placeholder={admin}
+                  value={admin}
+                  onChange={(e) => handleAdminChange(index, e.target.value)}
+                />
+                <Tippy
+                  content="You can't remove the contract owner"
+                  placement="top"
+                  className="box-border p-2 border rounded-md bg-jacarta-300 text-jacarta-900 hover:border-2 dark:hover:border-2 hover:-m-1 duration-400 dark:hover:bg-jacarta-800 dark:border-jacarta-100 dark:border-opacity-10 border-opacity-10 border-jacarta-900 hover:bg-jacarta-800 dark:text-jacarta-100"
+                  disabled={admin.toLowerCase() !== contractOwner.toLowerCase()}
+                >
+                  {/* Wrap in a div because if the button is disabled the tooltip won't show */}
+                  <div>
+                    <button
+                      type="button"
+                      className={cn(
+                        "px-4 py-2 text-white rounded-lg bg-red",
+                        admin.toLowerCase() === contractOwner.toLowerCase() &&
+                          "cursor-not-allowed bg-opacity-30"
+                      )}
+                      disabled={admin.toLowerCase() === contractOwner.toLowerCase()}
+                      onClick={() => handleRemoveAdmin(index)}
+                    >
+                      Remove
+                    </button>
+                  </div>
+                </Tippy>
+              </div>
+              {!isAddress(admin) && admin !== "" && (
+                <span className="text-xs text-red">
+                  This is not a valid address, please check it
+                </span>
+              )}
+              {
+                //check if there is already an admin with the same address that is before the current one
+                admins.slice(0, index).includes(admin) && (
+                  <span className="text-xs text-red">This address is already an admin</span>
+                )
+              }
             </div>
           ))}
 
@@ -685,6 +756,11 @@ const UpdateOffer = ({
             <span className="text-xs text-jacarta-300">
               Leave empty or put 0 if you don&apos;t want to specify an aspect ratio.
             </span>
+            {!isRatioCorrect() && (
+              <span className="text-xs text-red">
+                The ratio is not correct, it should be 0 or width:height
+              </span>
+            )}
           </div>
         </div>
       </div>
@@ -713,6 +789,7 @@ const UpdateOffer = ({
         }}
         contractAddress={config[chainId as number]?.smartContracts?.DSPONSORADMIN?.address}
         defaultText="Update Offer"
+        isDisabled={!canSubmit()}
       />
     </div>
   );
