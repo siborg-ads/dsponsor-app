@@ -178,7 +178,7 @@ const AdSubmission = ({
 
   if (adSubmission && !successFullUpload) {
     return (
-      <div className="modal-dialog max-h-[75vh] max-w-2xl md:min-w-md">
+      <div className="modal-dialog max-h-[75vh] max-w-2xl md:min-w-md overflow-auto">
         <div className="modal-content !bg-secondaryBlack">
           <div className="modal-header">
             <div className="flex items-center justify-between w-full space-x-4">
@@ -276,7 +276,7 @@ const AdSubmission = ({
 
   if (multipleAdsSubmission && !successFullUpload) {
     return (
-      <div className="modal-dialog max-h-[75vh] max-w-2xl md:min-w-md">
+      <div className="modal-dialog max-h-[75vh] max-w-2xl md:min-w-md overflow-auto">
         <div className="modal-content !bg-secondaryBlack">
           <div className="modal-header">
             <div className="flex items-center justify-between w-full space-x-4">
@@ -392,7 +392,7 @@ const AdSubmission = ({
 
   return (
     <div className="flex items-center justify-center w-full modal-dialog">
-      <div className="modal-content !bg-secondaryBlack max-w-xs md:min-w-[600px] md:max-w-2xl">
+      <div className="modal-content !bg-secondaryBlack max-w-xs md:min-w-[600px] md:max-w-2xl overflow-auto max-h-[75vh] h-full">
         <div className="modal-header">
           <h5 className="mr-8 modal-title" id="placeBidLabel">
             {!successFullUpload ? modalTitle : successFullUploadModal.title}
