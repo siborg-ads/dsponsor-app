@@ -53,6 +53,7 @@ import StyledWeb3Button from "@/components/ui/buttons/StyledWeb3Button";
 
 import ERC20ABI from "@/abi/ERC20.json";
 import { getOwnershipPeriod } from "@/utils/dates/period";
+import isUrlValid from "@/utils/misc/isUrlValid";
 
 const Token = () => {
   const router = useRouter();
@@ -831,47 +832,36 @@ const Token = () => {
       offerId: offerId as string
     });
 
+    const currentToken = offerData?.nftContract?.tokens?.find(
+      (token) => !!token?.tokenId && BigInt(token?.tokenId) === BigInt(tokenId as string)
+    );
+
     setTokenDO({
       currency:
         offerData?.nftContract?.prices[0]?.currency ??
-        offerData?.nftContract?.tokens
-          ?.find(
-            (token) => !!token?.tokenId && BigInt(token?.tokenId) === BigInt(tokenId as string)
-          )
-          ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.currency,
+        currentToken?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.currency,
       tokenId: tokenId as string,
       tokenData: tokenData as string,
 
       fee: offerData?.nftContract?.prices[0]?.protocolFeeAmount,
-      mint: offerData?.nftContract?.tokens?.find(
-        (token) => !!token?.tokenId && BigInt(token?.tokenId) === BigInt(tokenId as string)
-      )?.mint,
+      mint: currentToken.mint,
 
       price:
-        offerData?.nftContract?.tokens
-          ?.find(
-            (token) => !!token?.tokenId && BigInt(token?.tokenId) === BigInt(tokenId as string)
-          )
-          ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.pricePerToken ??
+        currentToken?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.pricePerToken ??
         offerData?.nftContract?.prices[0]?.amount,
       protocolFeeBPS: offerData?.nftContract?.prices[0]?.protocolFeeBps,
       royaltiesBPS: offerData?.nftContract?.royalty.bps,
 
       isListed:
-        offerData?.nftContract?.tokens
-          ?.find(
-            (token) => !!token?.tokenId && BigInt(token?.tokenId) === BigInt(tokenId as string)
-          )
-          ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.status === "CREATED",
-      listingId: offerData?.nftContract?.tokens
-        ?.find((token) => !!token?.tokenId && BigInt(token?.tokenId) === BigInt(tokenId as string))
-        ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.id,
-      minimalBidBps: offerData?.nftContract?.tokens
-        ?.find((token) => !!token?.tokenId && BigInt(token?.tokenId) === BigInt(tokenId as string))
-        ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.minimalBidBps,
-      buyoutPricePerToken: offerData?.nftContract?.tokens
-        ?.find((token) => !!token?.tokenId && BigInt(token?.tokenId) === BigInt(tokenId as string))
-        ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.buyoutPricePerToken
+        currentToken?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.status === "CREATED",
+      listingId: currentToken.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.id,
+      minimalBidBps: currentToken.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]
+        ?.minimalBidBps,
+      buyoutPricePerToken: currentToken.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]
+        ?.buyoutPricePerToken,
+
+      external_url:
+        currentToken?.metadata?.external_url ?? currentToken?.metadata?.external_link ?? ""
     });
 
     if (
@@ -2246,6 +2236,23 @@ const Token = () => {
                 <span className="block text-sm text-jacarta-100 ">
                   Creator <strong className="dark:text-white">{royalties}% royalties</strong>
                 </span>
+                {tokenDO?.external_url && tokenDO.external_url !== "" && (
+                  <span className="block w-full text-sm text-jacarta-100 dark:text-white">
+                    Ad Space location :{" "}
+                    {isUrlValid(tokenDO.external_url) ? (
+                      <a
+                        href={tokenDO.external_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="font-bold text-primaryPurple hover:underline"
+                      >
+                        {tokenDO.external_url}
+                      </a>
+                    ) : (
+                      <strong>{tokenDO.external_url}</strong>
+                    )}
+                  </span>
+                )}
                 <div>
                   {offerData?.nftContract?.tokens?.find(
                     (token) =>

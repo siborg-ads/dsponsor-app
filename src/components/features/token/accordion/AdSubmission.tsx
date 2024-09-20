@@ -448,7 +448,22 @@ const AdSubmission = ({
                   <div className="flex flex-col text-sm font-display text-jacarta-100">
                     <span className="text-sm">Link</span>
                     {!errors?.linkError ? (
-                      <span className="text-base dark:text-white">{link}</span>
+                      <span className="flex flex-wrap w-full pr-2 overflow-y-auto text-base dark:text-white hide-scrollbar">
+                        {isUrlValid(link.toString()) ? (
+                          <Link
+                            href={link as string}
+                            passHref
+                            target="_blank"
+                            className="text-primaryPurple hover:underline hover:text-opacity-80"
+                          >
+                            {(link as string).length > 70
+                              ? `${(link as string).slice(0, 20)}...${(link as string).slice(-20)}`
+                              : link}
+                          </Link>
+                        ) : (
+                          link
+                        )}
+                      </span>
                     ) : (
                       <span className="text-base text-red">{errors.linkError}</span>
                     )}
@@ -524,28 +539,32 @@ const AdSubmission = ({
                   ""
                 )}
                 {selectedStartingPrice || errors.startingPriceError ? (
-                  <p className="flex flex-col text-sm font-display text-jacarta-100">
-                    Bid starting price
+                  <div className="flex flex-col text-sm font-display text-jacarta-100">
+                    <div className="flex items-center gap-2">
+                      Bid starting price
+                      {helperFeesListing && <ModalHelper {...helperFeesListing} />}
+                    </div>
                     {!errors.startingPriceError ? (
                       <span className="text-base dark:text-white">{selectedStartingPrice}</span>
                     ) : (
                       <span className="text-base text-red">{errors.startingPriceError}</span>
                     )}
-                    {helperFeesListing && <ModalHelper {...helperFeesListing} />}
-                  </p>
+                  </div>
                 ) : (
                   ""
                 )}
                 {selectedUnitPrice || errors.unitPriceError ? (
-                  <p className="flex flex-col text-sm font-display text-jacarta-100">
-                    Buy Price
+                  <div className="flex flex-col text-sm font-display text-jacarta-100">
+                    <div className="flex items-center gap-2">
+                      Buy Price
+                      {helperFeesListing && <ModalHelper {...helperFeesListing} />}
+                    </div>
                     {!errors.unitPriceError ? (
                       <span className="text-base dark:text-white">{selectedUnitPrice}</span>
                     ) : (
                       <span className="text-base text-red">{errors.unitPriceError}</span>
                     )}
-                    {helperFeesListing && <ModalHelper {...helperFeesListing} />}
-                  </p>
+                  </div>
                 ) : (
                   ""
                 )}
@@ -591,7 +610,14 @@ const AdSubmission = ({
                   <p className="flex flex-col w-full text-sm font-display text-jacarta-100">
                     Terms
                     <span className="flex flex-wrap w-full pr-2 overflow-y-auto text-base dark:text-white hide-scrollbar">
-                      {terms}
+                      <Link
+                        href={terms}
+                        passHref
+                        target="_blank"
+                        className="text-primaryPurple hover:underline hover:text-opacity-80"
+                      >
+                        {terms.length > 70 ? `${terms.slice(0, 20)}...${terms.slice(-20)}` : terms}
+                      </Link>
                     </span>
                   </p>
                 )}

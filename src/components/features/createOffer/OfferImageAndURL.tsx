@@ -5,6 +5,7 @@ import { FileUploader } from "react-drag-drop-files";
 import Input from "@/components/ui/Input";
 import { useStorage } from "@thirdweb-dev/react";
 import MainButton from "@/components/ui/buttons/MainButton";
+import Link from "next/link";
 
 const fileTypes = ["JPG", "PNG", "WEBP", "GIF"];
 
@@ -171,7 +172,17 @@ const TermsPdfUploader = ({
       </p>
 
       {termsURL ? (
-        <p className="mb-3 text-center text-2xs text-green">Successfully uploaded: {termsURL}</p>
+        <div className="mb-3 text-center text-2xs text-green">
+          Successfully uploaded:{" "}
+          <Link
+            href={termsURL}
+            passHref
+            target="_blank"
+            className="text-primaryPurple hover:text-opacity-80 hover:underline"
+          >
+            {termsURL.length > 70 ? `${termsURL.slice(0, 20)}...${termsURL.slice(-20)}` : termsURL}
+          </Link>
+        </div>
       ) : (
         <p className="mb-3 dark:text-jacarta-100 text-jacarta-100 text-2xs">
           Drag or choose your file to upload
