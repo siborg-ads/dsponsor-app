@@ -925,16 +925,39 @@ const BidsModal = ({
                         )}
                       </>
                     ) : (
-                      <NormalButton
-                        onClick={async () => {
-                          try {
-                            await switchChain(Number(chainId));
-                          } catch (error) {
-                            console.error(error);
-                          }
-                        }}
-                        defaultText="Switch network"
-                      />
+                      <>
+                        {address ? (
+                          <NormalButton
+                            onClick={async () => {
+                              try {
+                                await switchChain(Number(chainId));
+                              } catch (error) {
+                                console.error(error);
+                              }
+                            }}
+                            defaultText="Switch network"
+                          />
+                        ) : (
+                          <StyledWeb3Button
+                            contractAddress={config[chainId]?.smartContracts?.DSPONSORMP?.address}
+                            onClick={async () => {
+                              await toast.promise(handleApprove, {
+                                pending: "Waiting for confirmation 🕒",
+                                success: "Approval confirmed 👌",
+                                error: "Approval rejected 🤯"
+                              });
+                            }}
+                            isDisabled={
+                              !isPriceGood ||
+                              !checkTerms ||
+                              !bidsAmount ||
+                              !allowanceTrue ||
+                              notEnoughFunds
+                            }
+                            defaultText={notEnoughFunds ? "Not enough funds" : "Approve 🔓 (1/2)"}
+                          />
+                        )}
+                      </>
                     )}
                   </div>
                   {!insufficentBalance && (

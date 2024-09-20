@@ -491,16 +491,35 @@ const BuyModal = ({
                       )}
                     </>
                   ) : (
-                    <NormalButton
-                      onClick={async () => {
-                        try {
-                          await switchChain(Number(chainId));
-                        } catch (error) {
-                          console.error("Error switching chain", error);
-                        }
-                      }}
-                      defaultText="Switch network"
-                    />
+                    <>
+                      {address ? (
+                        <NormalButton
+                          onClick={async () => {
+                            try {
+                              await switchChain(Number(chainId));
+                            } catch (error) {
+                              console.error("Error switching chain", error);
+                            }
+                          }}
+                          defaultText="Switch network"
+                        />
+                      ) : (
+                        <StyledWeb3Button
+                          contractAddress={chainConfig?.smartContracts?.DSPONSORADMIN?.address}
+                          onClick={async () => {
+                            await toast.promise(handleApprove, {
+                              pending: "Waiting for confirmation 🕒",
+                              success: "Approval confirmed 👌",
+                              error: "Approval rejected 🤯"
+                            });
+                          }}
+                          isDisabled={
+                            !validate || !finalPriceNotFormatted || !allowanceTrue || notEnoughFunds
+                          }
+                          defaultText={notEnoughFunds ? "Not enough funds" : "Approve 🔓 (1/2)"}
+                        />
+                      )}
+                    </>
                   )}
                 </div>
 
