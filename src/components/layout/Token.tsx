@@ -2141,7 +2141,7 @@ const Token = () => {
         <div className="container flex flex-col items-center justify-center mb-8 ">
           <div className="flex justify-center ">
             <h1 className="mb-6 text-5xl font-bold text-center text-jacarta-900 font-display dark:text-white md:text-left lg:text-6xl xl:text-6xl">
-              {isOwner && isValidId ? "Your Ad Space" : "Buy Ad Space"}{" "}
+              {isOwner && isValidId ? "Your Ad Space" : "Ad Space"}{" "}
             </h1>
             {/* <span className={`ml-2 text-sm font-bold ${isOwner ? (adStatut === 0 ? "text-red" : adStatut === 1 ? "text-green" : adStatut === 2 ? "text-primaryPurple" : "hidden") : "hidden"}`}>
               {adStatut === 0 ? "Rejected" : adStatut === 1 ? "Accepted" : adStatut === 2 ? "Pending" : ""}
@@ -2382,7 +2382,7 @@ const Token = () => {
 
                           <span className="text-sm dark:text-jacarta-100 text-jacarta-100">
                             Buying the ad space give you the exclusive right to submit an ad. The
-                            media still has the power to validate or reject ad assets. You re free
+                            media still has the power to validate or reject ad assets. You are free
                             to change the ad at anytime. And free to resell on the open market your
                             ad space.{" "}
                           </span>
