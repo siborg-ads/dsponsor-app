@@ -1155,7 +1155,10 @@ const Offer = () => {
                     chainConfig={chainConfig}
                     offer={offerData}
                     contractOwner={owner}
-                    onSubmit={fetchOffers}
+                    onSubmit={async () => {
+                      setOfferManagementActiveTab("integration");
+                      fetchOffers();
+                    }}
                   />
                 </TabPanel>
                 {isOwner && (

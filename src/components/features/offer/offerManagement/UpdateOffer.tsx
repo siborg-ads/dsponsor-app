@@ -39,8 +39,8 @@ const UpdateOffer = ({
   const [disabled, setDisabled] = useState<boolean>(false);
   const [validators, setValidators] = useState<string[]>([]);
   const [initialValidators, setInitialValidators] = useState<string[]>([]);
-  const [imageRatio, setImageRatio] = useState<string | null>(null);
-  const [initialImageRatio, setInitialImageRatio] = useState<string | null>(null);
+  const [imageRatio, setImageRatio] = useState<string>("");
+  const [initialImageRatio, setInitialImageRatio] = useState<string>("");
   const [name, setName] = useState<string>("");
   const [disabledLocked, setDisabledLocked] = useState<boolean>(false);
   const [initialDescription, setInitialDescription] = useState<string>("");
@@ -208,14 +208,14 @@ const UpdateOffer = ({
 
       const param = offer?.adParameters?.find((param) => param?.adParameter?.base === "imageURL");
 
-      // if variants are not present, set image ratio to null
-      // if variants length is 0, set image ratio to null
+      // if variants are not present, set image ratio to empty string
+      // if variants length is 0, set image ratio to empty string
       // if variants length is 1, set image ratio to the first element
       // if variants length is greater than 1, set image ratio to the first element + ":" + the second element
 
-      let imageRatio;
+      let imageRatio = "";
       if (!param?.adParameter?.variants || param?.adParameter?.variants.length === 0) {
-        imageRatio = null;
+        imageRatio = "";
       }
 
       if (param?.adParameter?.variants.length === 1) {
@@ -333,7 +333,7 @@ const UpdateOffer = ({
   };
 
   const handleImageRatioChange = (value) => {
-    if (value === "") {
+    if (value === null) {
       setImageRatio("");
       return;
     }
@@ -359,7 +359,6 @@ const UpdateOffer = ({
 
     //check if the ratio is correct
     if (!isRatioCorrect()) {
-      console.log("ratio not correct");
       return false;
     }
 
@@ -368,9 +367,6 @@ const UpdateOffer = ({
 
   const isRatioCorrect = () => {
     let formattedRatio = imageRatio;
-    if (!formattedRatio) {
-      return false;
-    }
 
     if (formattedRatio !== "" && formattedRatio !== "0") {
       // If the user enters a ratio in the format "x/y", we replace the "/" with ":" to match the format "x:y"
@@ -403,11 +399,6 @@ const UpdateOffer = ({
     // ratio should be "0" or "x:x" specific format with x being a number
     let formattedRatio = imageRatio;
     if (formattedRatio !== "" && formattedRatio !== "0") {
-      if (!formattedRatio) {
-        toast("Image ratio is not correct, it should be 0 or width:height", { type: "error" });
-        return;
-      }
-
       if (formattedRatio.includes("/")) {
         formattedRatio = formattedRatio.replace("/", ":");
       }
@@ -429,6 +420,8 @@ const UpdateOffer = ({
         toast("Image ratio is not correct, it should be 0 or width:height", { type: "error" });
         return;
       }
+    } else {
+      formattedRatio = "";
     }
 
     // remove empty strings from admins and validators
@@ -462,12 +455,16 @@ const UpdateOffer = ({
 
     // if the ratio is different, we need to add it to the ad parameters for add options
     if (isRatioDifferent) {
-      updatedAdParametersForAddOptions.push("imageURL-" + formattedRatio);
+      if (formattedRatio === "0" || formattedRatio === "")
+        updatedAdParametersForAddOptions.push("imageURL");
+      else updatedAdParametersForAddOptions.push("imageURL-" + formattedRatio);
     }
 
     // if the ratio is different, we need to remove it from the ad parameters for remove options
     if (isRatioDifferent) {
-      updatedAdParametersForRemoveOptions.push("imageURL-" + initialImageRatio);
+      if (initialImageRatio === "0" || initialImageRatio === "")
+        updatedAdParametersForRemoveOptions.push("imageURL");
+      else updatedAdParametersForRemoveOptions.push("imageURL-" + initialImageRatio);
     }
 
     let newMetadataUrl: string = "";
