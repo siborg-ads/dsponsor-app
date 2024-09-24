@@ -8,9 +8,11 @@ import { FileUploader } from "react-drag-drop-files";
 import Image from "next/image";
 import { DatePicker } from "@nextui-org/date-picker";
 import { parseDate } from "@internationalized/date";
+import { useAddress } from "@thirdweb-dev/react";
 import Input from "@/components/ui/Input";
 import TextArea from "@/components/ui/TextArea";
 import { Address } from "thirdweb";
+import { isAddress } from "ethers/lib/utils";
 import StyledWeb3Button from "@/components/ui/buttons/StyledWeb3Button";
 import { ChainObject } from "@/types/chain";
 import { cn } from "@nextui-org/react";
@@ -22,11 +24,13 @@ const fileTypes = ["JPG", "PNG", "WEBP", "GIF"];
 const UpdateOffer = ({
   offer,
   chainConfig,
-  contractOwner
+  contractOwner,
+  onSubmit
 }: {
   offer: any;
   chainConfig: ChainObject;
   contractOwner: Address;
+  onSubmit: () => Promise<void>;
 }) => {
   const [offerId, setOfferId] = useState<string | null>(null);
   const [metadataURL, setMetadataURL] = useState(null);
@@ -35,8 +39,8 @@ const UpdateOffer = ({
   const [disabled, setDisabled] = useState<boolean>(false);
   const [validators, setValidators] = useState<string[]>([]);
   const [initialValidators, setInitialValidators] = useState<string[]>([]);
-  const [imageRatio, setImageRatio] = useState<string | null>(null);
-  const [initialImageRatio, setInitialImageRatio] = useState<string | null>(null);
+  const [imageRatio, setImageRatio] = useState<string>("");
+  const [initialImageRatio, setInitialImageRatio] = useState<string>("");
   const [name, setName] = useState<string>("");
   const [disabledLocked, setDisabledLocked] = useState<boolean>(false);
   const [initialDescription, setInitialDescription] = useState<string>("");
@@ -57,6 +61,7 @@ const UpdateOffer = ({
 
   const chainId = chainConfig?.chainId;
   const storage = useStorage();
+  const address = useAddress();
 
   const { contract } = useContract(
     config[chainId as number]?.smartContracts?.DSPONSORADMIN?.address as Address,
@@ -203,14 +208,14 @@ const UpdateOffer = ({
 
       const param = offer?.adParameters?.find((param) => param?.adParameter?.base === "imageURL");
 
-      // if variants are not present, set image ratio to null
-      // if variants length is 0, set image ratio to null
+      // if variants are not present, set image ratio to empty string
+      // if variants length is 0, set image ratio to empty string
       // if variants length is 1, set image ratio to the first element
       // if variants length is greater than 1, set image ratio to the first element + ":" + the second element
 
-      let imageRatio;
+      let imageRatio = "";
       if (!param?.adParameter?.variants || param?.adParameter?.variants.length === 0) {
-        imageRatio = null;
+        imageRatio = "";
       }
 
       if (param?.adParameter?.variants.length === 1) {
@@ -328,36 +333,78 @@ const UpdateOffer = ({
   };
 
   const handleImageRatioChange = (value) => {
-    if (value === "") {
+    if (value === null) {
       setImageRatio("");
       return;
     }
 
-    if (value.includes("/")) {
-      const [width, height] = value.split("/");
+    setImageRatio(value);
+  };
+
+  const canSubmit = () => {
+    // check if there is at least one admin
+    if (!admins || admins.length === 0) {
+      return false;
+    }
+
+    // check if all admins are valid addresses
+    if (admins.some((admin) => !isAddress(admin))) {
+      return false;
+    }
+
+    // ceck that all admins are unique
+    if (admins.length !== new Set(admins).size) {
+      return false;
+    }
+
+    //check if the ratio is correct
+    if (!isRatioCorrect()) {
+      return false;
+    }
+
+    return true;
+  };
+
+  const isRatioCorrect = () => {
+    let formattedRatio = imageRatio;
+
+    if (formattedRatio !== "" && formattedRatio !== "0") {
+      // If the user enters a ratio in the format "x/y", we replace the "/" with ":" to match the format "x:y"
+      if (formattedRatio.includes("/")) {
+        formattedRatio = formattedRatio.replace("/", ":");
+      }
+
+      const [width, height] = formattedRatio.split(":");
+      const length = formattedRatio.split(":").length;
+
+      // Check the number of args and that they are both numbers
+      if (length > 2) {
+        return false;
+      }
 
       if (width === "" || height === "") {
-        setImageRatio("");
-        return;
+        return false;
       }
 
-      if (isNaN(width) || isNaN(height)) {
-        setImageRatio("");
-        return;
+      if (/[^0-9]/.test(width) || /[^0-9]/.test(height)) {
+        return false;
       }
-
-      setImageRatio(width + ":" + height);
-    } else {
-      setImageRatio(value);
     }
+
+    return true;
   };
 
   const handleUpdateOffer = async (originalMetadatas) => {
     // check image ratio
     // ratio should be "0" or "x:x" specific format with x being a number
-    if (imageRatio !== "" && imageRatio !== "0") {
-      const [width, height] = (imageRatio as string).split(":");
-      const length = (imageRatio as string).split(":").length;
+    let formattedRatio = imageRatio;
+    if (formattedRatio !== "" && formattedRatio !== "0") {
+      if (formattedRatio.includes("/")) {
+        formattedRatio = formattedRatio.replace("/", ":");
+      }
+
+      const [width, height] = formattedRatio.split(":");
+      const length = formattedRatio.split(":").length;
 
       if (length > 2) {
         toast("Image ratio is not correct, it should be 0 or width:height", { type: "error" });
@@ -368,6 +415,13 @@ const UpdateOffer = ({
         toast("Image ratio is not correct, it should be 0 or width:height", { type: "error" });
         return;
       }
+
+      if (/[^0-9]/.test(width) || /[^0-9]/.test(height)) {
+        toast("Image ratio is not correct, it should be 0 or width:height", { type: "error" });
+        return;
+      }
+    } else {
+      formattedRatio = "";
     }
 
     // remove empty strings from admins and validators
@@ -397,16 +451,20 @@ const UpdateOffer = ({
     // ad parameters as initial are in the format of [{adParameter: {id: string, base: string, variants: [""]}}]
     // we want to send to the blockchain an array of ad parameters that are string in the format base-variant1:variant2 (for image ratio for example)
     // so we need to check if the new image ratio is different from the initial image ratio
-    const isRatioDifferent = initialImageRatio !== imageRatio;
+    const isRatioDifferent = initialImageRatio !== formattedRatio;
 
     // if the ratio is different, we need to add it to the ad parameters for add options
     if (isRatioDifferent) {
-      updatedAdParametersForAddOptions.push("imageURL-" + imageRatio);
+      if (formattedRatio === "0" || formattedRatio === "")
+        updatedAdParametersForAddOptions.push("imageURL");
+      else updatedAdParametersForAddOptions.push("imageURL-" + formattedRatio);
     }
 
     // if the ratio is different, we need to remove it from the ad parameters for remove options
     if (isRatioDifferent) {
-      updatedAdParametersForRemoveOptions.push("imageURL-" + initialImageRatio);
+      if (initialImageRatio === "0" || initialImageRatio === "")
+        updatedAdParametersForRemoveOptions.push("imageURL");
+      else updatedAdParametersForRemoveOptions.push("imageURL-" + initialImageRatio);
     }
 
     let newMetadataUrl: string = "";
@@ -457,6 +515,8 @@ const UpdateOffer = ({
           })
         });
       }
+
+      await onSubmit();
     } catch (error) {
       console.error(error);
       throw new Error(error);
@@ -596,35 +656,59 @@ const UpdateOffer = ({
 
         {admins &&
           admins.map((admin, index) => (
-            <div key={index} className="flex items-center gap-4 mb-2">
-              <Input
-                type="text"
-                placeholder={admin}
-                value={admin}
-                onChange={(e) => handleAdminChange(index, e.target.value)}
-              />
-              <Tippy
-                content="You can't remove the contract owner"
-                placement="top"
-                className="box-border p-2 border rounded-md bg-jacarta-300 text-jacarta-900 hover:border-2 dark:hover:border-2 hover:-m-1 duration-400 dark:hover:bg-jacarta-800 dark:border-jacarta-100 dark:border-opacity-10 border-opacity-10 border-jacarta-900 hover:bg-jacarta-800 dark:text-jacarta-100"
-                disabled={admin.toLowerCase() !== contractOwner.toLowerCase()}
-              >
-                {/* Wrap in a div because if the button is disabled the tooltip won't show */}
-                <div>
-                  <button
-                    type="button"
-                    className={cn(
-                      "px-4 py-2 text-white rounded-lg bg-red",
-                      admin.toLowerCase() === contractOwner.toLowerCase() &&
-                        "cursor-not-allowed bg-opacity-30"
-                    )}
-                    disabled={admin.toLowerCase() === contractOwner.toLowerCase()}
-                    onClick={() => handleRemoveAdmin(index)}
-                  >
-                    Remove
-                  </button>
-                </div>
-              </Tippy>
+            <div className="mb-2" key={index}>
+              <div className="flex items-center gap-4 mb-1">
+                <Input
+                  type="text"
+                  placeholder={admin}
+                  value={admin}
+                  onChange={(e) => handleAdminChange(index, e.target.value)}
+                />
+                <Tippy
+                  content={
+                    admin.toLowerCase() === address?.toLowerCase()
+                      ? "You can't remove yourself as an admin"
+                      : "You can't remove the contract owner"
+                  }
+                  placement="top"
+                  className="box-border p-2 border rounded-md bg-jacarta-300 text-jacarta-900 hover:border-2 dark:hover:border-2 hover:-m-1 duration-400 dark:hover:bg-jacarta-800 dark:border-jacarta-100 dark:border-opacity-10 border-opacity-10 border-jacarta-900 hover:bg-jacarta-800 dark:text-jacarta-100"
+                  disabled={
+                    admin.toLowerCase() !== contractOwner.toLowerCase() &&
+                    admin.toLowerCase() !== address?.toLowerCase()
+                  }
+                >
+                  {/* Wrap in a div because if the button is disabled the tooltip won't show */}
+                  <div>
+                    <button
+                      type="button"
+                      className={cn(
+                        "px-4 py-2 text-white rounded-lg bg-red",
+                        (admin.toLowerCase() === contractOwner.toLowerCase() ||
+                          admin.toLowerCase() === address?.toLowerCase()) &&
+                          "cursor-not-allowed bg-opacity-30"
+                      )}
+                      disabled={
+                        admin.toLowerCase() === contractOwner.toLowerCase() ||
+                        admin.toLowerCase() === address?.toLowerCase()
+                      }
+                      onClick={() => handleRemoveAdmin(index)}
+                    >
+                      Remove
+                    </button>
+                  </div>
+                </Tippy>
+              </div>
+              {!isAddress(admin) && admin !== "" && (
+                <span className="text-xs text-red">
+                  This is not a valid address, please check it
+                </span>
+              )}
+              {
+                //check if there is already an admin with the same address that is before the current one
+                admins.slice(0, index).includes(admin) && (
+                  <span className="text-xs text-red">This address is already an admin</span>
+                )
+              }
             </div>
           ))}
 
@@ -680,12 +764,17 @@ const UpdateOffer = ({
                 type="text"
                 placeholder={imageRatio as string}
                 value={imageRatio}
-                onChange={handleImageRatioChange}
+                onChange={(e) => handleImageRatioChange(e.target.value)}
               />
             </div>
             <span className="text-xs text-jacarta-300">
               Leave empty or put 0 if you don&apos;t want to specify an aspect ratio.
             </span>
+            {!isRatioCorrect() && (
+              <span className="text-xs text-red">
+                The ratio is not correct, it should be 0 or width:height
+              </span>
+            )}
           </div>
         </div>
       </div>
@@ -714,6 +803,7 @@ const UpdateOffer = ({
         }}
         contractAddress={config[chainId as number]?.smartContracts?.DSPONSORADMIN?.address}
         defaultText="Update Offer"
+        isDisabled={!canSubmit()}
       />
     </div>
   );
