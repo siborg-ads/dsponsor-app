@@ -43,6 +43,7 @@ import { getOwnershipPeriod } from "@/utils/dates/period";
 import ERC20ABI from "@/abi/ERC20.json";
 import { ChainObject } from "@/types/chain";
 import { Address } from "thirdweb";
+import isUrlValid from "@/utils/misc/isUrlValid";
 
 const onAuctionCondition = (offer, mint, direct) => {
   return (
@@ -133,14 +134,6 @@ const Offer = () => {
     name = "DefaultName"
   } = offerData?.metadata?.offer ? offerData.metadata.offer : {};
 
-  useEffect(() => {
-    if (offerData?.metadata?.offer?.image) {
-      setImageUrl(offerData.metadata.offer.image);
-    } else {
-      setImageUrl("/images/gradients/gradient_creative.jpg");
-    }
-  }, [offerData]);
-
   const [itemProposals, setItemProposals] = useState<any | null>(null);
   const [mediaShouldValidateAnAd, setMediaShouldValidateAnAd] = useState(false);
   const [
@@ -161,8 +154,14 @@ const Offer = () => {
       setOffers(offers);
 
       const offerData = offers?.filter((offer) => Number(offer?.id) === Number(offerId))[0];
+      const external_url =
+        offerData.metadata?.offer?.external_url ??
+        offerData.metadata?.offer?.external_link ??
+        undefined;
+
       const offerDataFinal = {
         ...offerData,
+        external_url,
         chainConfig: offers?.filter((offer) => Number(offer?.id) === Number(offerId))[0]
           ?.chainConfig
       };
@@ -371,10 +370,15 @@ const Offer = () => {
       }
     };
 
-    if (imageUrl && typeof imageUrl === "string" && imageUrl.startsWith("ipfs://")) {
-      fetchImage(imageUrl);
+    const localUrl = offerData?.metadata?.offer?.image;
+    if (!localUrl) {
+      setImageUrl("/images/gradients/gradient_creative.jpg");
+    } else if (localUrl && typeof localUrl === "string" && localUrl.startsWith("ipfs://")) {
+      fetchImage(localUrl);
+    } else {
+      setImageUrl(localUrl);
     }
-  }, [imageUrl, storage]);
+  }, [storage, offerData]);
 
   useEffect(() => {
     if (chainConfig?.network) {
@@ -686,7 +690,7 @@ const Offer = () => {
                 {name}
               </h2>
 
-              <div className="flex flex-wrap items-center gap-2 mb-8 space-x-4 whitespace-nowrap">
+              <div className="flex flex-wrap items-center mb-8 gap-x-4 gap-y-2 whitespace-nowrap w-fit">
                 {offerData?.nftContract?.allowList && (
                   <span className="text-sm dark:text-jacarta-100 text-jacarta-100">
                     {offerData?.nftContract?.maxSupply -
@@ -702,6 +706,23 @@ const Offer = () => {
                 <span className="block text-sm text-jacarta-100 dark:text-white">
                   Creator <strong>{royalties}% royalties</strong>
                 </span>
+                {offerData?.external_url && (
+                  <span className="block w-full text-sm text-jacarta-100 dark:text-white">
+                    Ad Space location :{" "}
+                    {isUrlValid(offerData.external_url) ? (
+                      <a
+                        href={offerData?.external_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="font-bold text-primaryPurple hover:underline"
+                      >
+                        {offerData?.external_url}
+                      </a>
+                    ) : (
+                      <strong>{offerData?.external_url}</strong>
+                    )}
+                  </span>
+                )}
                 <div>
                   <span className="flex flex-wrap gap-1 text-sm text-jacarta-100 dark:text-white">
                     <b>
@@ -1154,7 +1175,15 @@ const Offer = () => {
                   />
                 </TabPanel>
                 <TabPanel>
-                  <UpdateOffer chainConfig={chainConfig} offer={offerData} contractOwner={owner} />
+                  <UpdateOffer
+                    chainConfig={chainConfig}
+                    offer={offerData}
+                    contractOwner={owner}
+                    onSubmit={async () => {
+                      setOfferManagementActiveTab("integration");
+                      fetchOffers();
+                    }}
+                  />
                 </TabPanel>
                 {isOwner && (
                   <TabPanel>

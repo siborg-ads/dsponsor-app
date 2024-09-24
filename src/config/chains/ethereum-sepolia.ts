@@ -1,4 +1,3 @@
-import Network from "@/utils/networks/networks";
 import contractABI from "@/abi/dsponsorAdmin.json";
 import { Sepolia } from "@thirdweb-dev/chains";
 import { ChainObject } from "@/types/chain";
@@ -7,7 +6,7 @@ const sepoliaConfig: ChainObject = {
   chainId: 11155111,
   chainName: "sepolia",
   gaslessBalanceThreshold: "1000000000000000", // 0.001 ETH
-  network: Network.ETH_SEPOLIA,
+  network: Sepolia.slug,
   chainObject: Sepolia,
   logoURL: "/images/chains/ethereum-logo.png",
   explorerBaseURL: "https://sepolia.etherscan.io",
@@ -15,6 +14,7 @@ const sepoliaConfig: ChainObject = {
     ? process.env.NEXT_PUBLIC_RELAYER_URL
     : "https://relayer.dsponsor.com",
   rpcURL: "https://ethereum-sepolia-rpc.publicnode.com",
+  forwarder: "0xD04F98C88cE1054c90022EE34d566B9237a1203C",
   smartContracts: {
     currencies: {
       WETH: {

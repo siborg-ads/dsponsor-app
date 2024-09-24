@@ -53,6 +53,7 @@ import StyledWeb3Button from "@/components/ui/buttons/StyledWeb3Button";
 
 import ERC20ABI from "@/abi/ERC20.json";
 import { getOwnershipPeriod } from "@/utils/dates/period";
+import isUrlValid from "@/utils/misc/isUrlValid";
 
 const Token = () => {
   const router = useRouter();
@@ -176,6 +177,27 @@ const Token = () => {
   const [failedCrossmintTransaction, setFailedCrossmintTransaction] = useState(false);
   const [tokenSymbol, setTokenSymbol] = useState<string | null>(null);
   const [tokenDecimals, setTokenDecimals] = useState<number | null>(null);
+  const [isMintable, setIsMintable] = useState(false);
+
+  React.useEffect(() => {
+    if (offerData) {
+      const token = offerData?.nftContract?.tokens?.find(
+        (token) =>
+          !!token?.tokenId && tokenId && BigInt(token?.tokenId) === BigInt(tokenId as string)
+      );
+
+      const nftContract = offerData?.nftContract;
+      const hasEnabledPrice = nftContract?.prices?.some((price) => price.enabled);
+      const isPermissionless = !nftContract?.allowList;
+      const isTokenInAllowList = token?.setInAllowList;
+
+      if (hasEnabledPrice && (isPermissionless || isTokenInAllowList)) {
+        setIsMintable(true);
+      } else {
+        setIsMintable(false);
+      }
+    }
+  }, [offerData, tokenId]);
 
   const { contract: currencyContract } = useContract(tokenCurrencyAddress, ERC20ABI);
   const { data: tokenSymbolData } = useContractRead(currencyContract, "symbol");
@@ -810,47 +832,36 @@ const Token = () => {
       offerId: offerId as string
     });
 
+    const currentToken = offerData?.nftContract?.tokens?.find(
+      (token) => !!token?.tokenId && BigInt(token?.tokenId) === BigInt(tokenId as string)
+    );
+
     setTokenDO({
       currency:
         offerData?.nftContract?.prices[0]?.currency ??
-        offerData?.nftContract?.tokens
-          ?.find(
-            (token) => !!token?.tokenId && BigInt(token?.tokenId) === BigInt(tokenId as string)
-          )
-          ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.currency,
+        currentToken?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.currency,
       tokenId: tokenId as string,
       tokenData: tokenData as string,
 
       fee: offerData?.nftContract?.prices[0]?.protocolFeeAmount,
-      mint: offerData?.nftContract?.tokens?.find(
-        (token) => !!token?.tokenId && BigInt(token?.tokenId) === BigInt(tokenId as string)
-      )?.mint,
+      mint: currentToken.mint,
 
       price:
-        offerData?.nftContract?.tokens
-          ?.find(
-            (token) => !!token?.tokenId && BigInt(token?.tokenId) === BigInt(tokenId as string)
-          )
-          ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.pricePerToken ??
+        currentToken?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.pricePerToken ??
         offerData?.nftContract?.prices[0]?.amount,
       protocolFeeBPS: offerData?.nftContract?.prices[0]?.protocolFeeBps,
       royaltiesBPS: offerData?.nftContract?.royalty.bps,
 
       isListed:
-        offerData?.nftContract?.tokens
-          ?.find(
-            (token) => !!token?.tokenId && BigInt(token?.tokenId) === BigInt(tokenId as string)
-          )
-          ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.status === "CREATED",
-      listingId: offerData?.nftContract?.tokens
-        ?.find((token) => !!token?.tokenId && BigInt(token?.tokenId) === BigInt(tokenId as string))
-        ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.id,
-      minimalBidBps: offerData?.nftContract?.tokens
-        ?.find((token) => !!token?.tokenId && BigInt(token?.tokenId) === BigInt(tokenId as string))
-        ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.minimalBidBps,
-      buyoutPricePerToken: offerData?.nftContract?.tokens
-        ?.find((token) => !!token?.tokenId && BigInt(token?.tokenId) === BigInt(tokenId as string))
-        ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.buyoutPricePerToken
+        currentToken?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.status === "CREATED",
+      listingId: currentToken.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.id,
+      minimalBidBps: currentToken.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]
+        ?.minimalBidBps,
+      buyoutPricePerToken: currentToken.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]
+        ?.buyoutPricePerToken,
+
+      external_url:
+        currentToken?.metadata?.external_url ?? currentToken?.metadata?.external_link ?? ""
     });
 
     if (
@@ -1923,8 +1934,8 @@ const Token = () => {
     title: "Checkout",
     body: "Congratulations, you purchased this ad space. 🎉",
     subBody: "Check your ad space in your profile page.",
-    buttonTitle: "Manage Spaces",
-    hrefButton: `/profile/${address}`
+    buttonTitle: "Profil Page",
+    hrefButton: `/profile/${address}?tab=owned`
   };
 
   const metadata = {
@@ -1945,10 +1956,7 @@ const Token = () => {
           the total amount paid by the buyer.
         </span>
 
-        {offerData?.nftContract?.tokens?.find(
-          (token) =>
-            !!token?.tokenId && tokenId && BigInt(token?.tokenId) === BigInt(tokenId as string)
-        )?.mint === null && (
+        {isMintable && (
           <div className="flex flex-col gap-2">
             <ul className="flex flex-col gap-2 text-sm list-disc" style={{ listStyleType: "disc" }}>
               <li>
@@ -1970,10 +1978,7 @@ const Token = () => {
           </div>
         )}
 
-        {offerData?.nftContract?.tokens?.find(
-          (token) =>
-            !!token?.tokenId && tokenId && BigInt(token?.tokenId) === BigInt(tokenId as string)
-        )?.mint !== null && (
+        {!isMintable && (
           <div className="flex flex-col gap-2">
             <ul className="flex flex-col gap-2 text-sm list-disc" style={{ listStyleType: "disc" }}>
               <li>
@@ -2136,7 +2141,7 @@ const Token = () => {
         <div className="container flex flex-col items-center justify-center mb-8 ">
           <div className="flex justify-center ">
             <h1 className="mb-6 text-5xl font-bold text-center text-jacarta-900 font-display dark:text-white md:text-left lg:text-6xl xl:text-6xl">
-              {isOwner && isValidId ? "Your Ad Space" : "Buy Ad Space"}{" "}
+              {isOwner && isValidId ? "Your Ad Space" : "Ad Space"}{" "}
             </h1>
             {/* <span className={`ml-2 text-sm font-bold ${isOwner ? (adStatut === 0 ? "text-red" : adStatut === 1 ? "text-green" : adStatut === 2 ? "text-primaryPurple" : "hidden") : "hidden"}`}>
               {adStatut === 0 ? "Rejected" : adStatut === 1 ? "Accepted" : adStatut === 2 ? "Pending" : ""}
@@ -2231,6 +2236,23 @@ const Token = () => {
                 <span className="block text-sm text-jacarta-100 ">
                   Creator <strong className="dark:text-white">{royalties}% royalties</strong>
                 </span>
+                {tokenDO?.external_url && tokenDO.external_url !== "" && (
+                  <span className="block w-full text-sm text-jacarta-100 dark:text-white">
+                    Ad Space location :{" "}
+                    {isUrlValid(tokenDO.external_url) ? (
+                      <a
+                        href={tokenDO.external_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="font-bold text-primaryPurple hover:underline"
+                      >
+                        {tokenDO.external_url}
+                      </a>
+                    ) : (
+                      <strong>{tokenDO.external_url}</strong>
+                    )}
+                  </span>
+                )}
                 <div>
                   {offerData?.nftContract?.tokens?.find(
                     (token) =>
@@ -2360,7 +2382,7 @@ const Token = () => {
 
                           <span className="text-sm dark:text-jacarta-100 text-jacarta-100">
                             Buying the ad space give you the exclusive right to submit an ad. The
-                            media still has the power to validate or reject ad assets. You re free
+                            media still has the power to validate or reject ad assets. You are free
                             to change the ad at anytime. And free to resell on the open market your
                             ad space.{" "}
                           </span>

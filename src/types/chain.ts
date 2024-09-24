@@ -1,6 +1,3 @@
-// src/types/ChainObject.ts
-// import { Base } from "@thirdweb-dev/chains";
-import { NetworkType } from "@/utils/networks/networks";
 import { Address } from "thirdweb";
 
 export interface ChainsConfig {
@@ -11,12 +8,13 @@ export interface ChainObject {
   chainId: number;
   chainName: string;
   gaslessBalanceThreshold?: string;
-  network: NetworkType;
+  network: string;
   chainObject: any;
   logoURL: string;
   explorerBaseURL: string;
   relayerURL: string;
   rpcURL: string;
+  forwarder: Address;
   smartContracts: {
     currencies: {
       NATIVE: {

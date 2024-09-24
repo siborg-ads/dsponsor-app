@@ -1,4 +1,3 @@
-import Network from "@/utils/networks/networks";
 import contractABI from "@/abi/dsponsorAdmin.json";
 import { Base } from "@thirdweb-dev/chains";
 import { ChainObject } from "@/types/chain";
@@ -7,7 +6,7 @@ const baseConfig: ChainObject = {
   chainId: 8453,
   chainName: "base",
   gaslessBalanceThreshold: "1000000000000000", // 0.001 ETH
-  network: Network.BASE_MAINNET,
+  network: Base.slug,
   chainObject: Base,
   logoURL: "/images/chains/base-logo.png",
   explorerBaseURL: "https://basescan.org",
@@ -15,6 +14,7 @@ const baseConfig: ChainObject = {
     ? process.env.NEXT_PUBLIC_RELAYER_URL
     : "https://relayer.dsponsor.com",
   rpcURL: "https://mainnet.base.org",
+  forwarder: "0xD04F98C88cE1054c90022EE34d566B9237a1203C",
   smartContracts: {
     currencies: {
       WETH: {

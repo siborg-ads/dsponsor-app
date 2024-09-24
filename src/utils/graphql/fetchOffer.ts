@@ -217,6 +217,24 @@ type AdOffer = {
   creationTimestamp: number;
   adParameters: AdParameterEnable[];
   nftContract: NFTContract;
+  metadata: {
+    creator: {
+      name: string;
+      image: string;
+      description: string;
+    };
+    offer: {
+      categories: string[];
+      description: string;
+      external_link: string;
+      external_url: string;
+      image: string;
+      name: string;
+      terms: string;
+      valid_from: string;
+      valid_to: string;
+    };
+  };
 };
 
 type OfferPageContainerResponse = {
