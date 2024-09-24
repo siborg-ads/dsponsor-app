@@ -39,6 +39,7 @@ const AdSubmission = ({
   selectedRoyalties,
   previewImage,
   displayedParameter,
+  imageURLSteps,
   terms = [],
   validate,
   errors,
@@ -93,6 +94,7 @@ const AdSubmission = ({
   expectedMultipleAds?: number;
 }) => {
   const [imageRatios, setImageRatios] = React.useState<any[]>([]);
+  const [allImages, setAllImages] = React.useState<any[]>([]);
 
   const { setSelectedChain } = useSwitchChainContext();
   useEffect(() => {
@@ -175,6 +177,19 @@ const AdSubmission = ({
       setImageRatios(imageRatios);
     }
   }, [imageRatioDisplay, imageUrlVariants, previewImage]);
+
+  useEffect(() => {
+    if (!previewImage) return;
+    let allImages: any[] = [];
+
+    imageURLSteps.forEach((step: any, index: number) => {
+      for (let i = 0; i < step.offerIds.length; i++) {
+        allImages.push({ image: previewImage[index], ratio: step.uniqueId });
+      }
+    });
+
+    setAllImages(allImages);
+  }, [previewImage, imageURLSteps]);
 
   if (adSubmission && !successFullUpload) {
     return (
@@ -325,25 +340,21 @@ const AdSubmission = ({
                 </div>
               )}
 
-              {(previewImage?.length as number) > 0 &&
-                Array.from({ length: expectedMultipleAds as number })?.map((_, index: number) => (
+              {(allImages?.length as number) > 0 &&
+                allImages.map((image, index: number) => (
                   <div className="flex flex-col w-full gap-2" key={index}>
                     <div className="flex items-center justify-between gap-2">
                       <span className="block dark:text-jacarta-100">
-                        Image {index + 1} - (
-                        {imageRatios[index]
-                          ? `${imageRatios[index][0]}:${imageRatios[index][1]}`
-                          : "N/A"}
-                        )
+                        Image {index + 1} - ({image.ratio ? image.ratio : "No restriction"})
                       </span>
 
                       <span className="font-semibold text-red">
-                        {!previewImage?.[index] && "No image provided"}
+                        {!image.image && "No image provided"}
                       </span>
                     </div>
                     <div className="flex flex-col items-center justify-center gap-2">
                       <Image
-                        src={previewImage?.[index] as string}
+                        src={image.image}
                         width={1600}
                         height={380}
                         className="w-full h-auto bg-jacarta-200"
@@ -351,10 +362,9 @@ const AdSubmission = ({
                         style={{
                           objectFit: "contain",
                           objectPosition: "center",
-                          aspectRatio:
-                            imageRatios?.length > 0
-                              ? `${imageRatios[index] ? imageRatios[index][0] : 1}/${imageRatios[index] ? imageRatios[index][1] : 1}`
-                              : "1/1"
+                          aspectRatio: image.ratio
+                            ? `${image.ratio.split(":")[0]}/${image.ratio.split(":")[1]}`
+                            : "auto"
                         }}
                       />
                     </div>
