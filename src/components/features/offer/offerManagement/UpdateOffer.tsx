@@ -8,6 +8,7 @@ import { FileUploader } from "react-drag-drop-files";
 import Image from "next/image";
 import { DatePicker } from "@nextui-org/date-picker";
 import { parseDate } from "@internationalized/date";
+import { useAddress } from "@thirdweb-dev/react";
 import Input from "@/components/ui/Input";
 import TextArea from "@/components/ui/TextArea";
 import { Address } from "thirdweb";
@@ -60,6 +61,7 @@ const UpdateOffer = ({
 
   const chainId = chainConfig?.chainId;
   const storage = useStorage();
+  const address = useAddress();
 
   const { contract } = useContract(
     config[chainId as number]?.smartContracts?.DSPONSORADMIN?.address as Address,
@@ -666,10 +668,17 @@ const UpdateOffer = ({
                   onChange={(e) => handleAdminChange(index, e.target.value)}
                 />
                 <Tippy
-                  content="You can't remove the contract owner"
+                  content={
+                    admin.toLowerCase() === address?.toLowerCase()
+                      ? "You can't remove yourself as an admin"
+                      : "You can't remove the contract owner"
+                  }
                   placement="top"
                   className="box-border p-2 border rounded-md bg-jacarta-300 text-jacarta-900 hover:border-2 dark:hover:border-2 hover:-m-1 duration-400 dark:hover:bg-jacarta-800 dark:border-jacarta-100 dark:border-opacity-10 border-opacity-10 border-jacarta-900 hover:bg-jacarta-800 dark:text-jacarta-100"
-                  disabled={admin.toLowerCase() !== contractOwner.toLowerCase()}
+                  disabled={
+                    admin.toLowerCase() !== contractOwner.toLowerCase() &&
+                    admin.toLowerCase() !== address?.toLowerCase()
+                  }
                 >
                   {/* Wrap in a div because if the button is disabled the tooltip won't show */}
                   <div>
@@ -677,10 +686,14 @@ const UpdateOffer = ({
                       type="button"
                       className={cn(
                         "px-4 py-2 text-white rounded-lg bg-red",
-                        admin.toLowerCase() === contractOwner.toLowerCase() &&
+                        (admin.toLowerCase() === contractOwner.toLowerCase() ||
+                          admin.toLowerCase() === address?.toLowerCase()) &&
                           "cursor-not-allowed bg-opacity-30"
                       )}
-                      disabled={admin.toLowerCase() === contractOwner.toLowerCase()}
+                      disabled={
+                        admin.toLowerCase() === contractOwner.toLowerCase() ||
+                        admin.toLowerCase() === address?.toLowerCase()
+                      }
                       onClick={() => handleRemoveAdmin(index)}
                     >
                       Remove
