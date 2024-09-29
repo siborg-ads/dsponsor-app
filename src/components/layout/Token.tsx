@@ -2775,6 +2775,9 @@ const Token = () => {
                     sponsorHasAtLeastOneRejectedProposalAndNoPending={
                       sponsorHasAtLeastOneRejectedProposalAndNoPending
                     }
+                    setSponsorHasAtLeastOneRejectedProposalAndNoPending={
+                      setSponsorHasAtLeastOneRejectedProposalAndNoPending
+                    }
                     mediaShouldValidateAnAd={mediaShouldValidateAnAd}
                     isMedia={isMedia}
                     itemTokenId={tokenId as string}
