@@ -335,16 +335,14 @@ const Token = () => {
   }, [address, chainId, fetchOffers, offerId, tokenId]);
 
   useEffect(() => {
+    // set if the user is the media or not
     if (offerData && address) {
-      // set if the user is the media or not
-      if (offerData && address) {
-        const isMedia = offerData?.admins?.includes(address.toLowerCase());
-        setIsMedia(isMedia);
+      if (offerData?.admins?.includes(address?.toLowerCase())) {
+        setAccordionActiveTab(["adValidation"]);
+        setIsMedia(true);
       } else {
         setIsMedia(false);
       }
-    } else {
-      setIsMedia(false);
     }
   }, [address, offerData]);
 
@@ -402,16 +400,17 @@ const Token = () => {
       parseFloat(
         itemProposals?.acceptedProposals?.sort(
           (a, b) => b?.creationTimestamp - a?.creationTimestamp
-        )[0]?.lastUpdateTimestamp
+        )[0]?.lastUpdateTimestamp ?? 0
       ) * 1000;
     const lastRefusedProposalTimestamp =
       parseFloat(
         itemProposals?.rejectedProposals?.sort(
           (a, b) => b?.creationTimestamp - a?.creationTimestamp
-        )[0]?.lastUpdateTimestamp
+        )[0]?.lastUpdateTimestamp ?? 0
       ) * 1000;
     const sponsorHasNoMoreRecentValidatedProposal =
-      new Date(lastAcceptedProposalTimestamp) <= new Date(lastRefusedProposalTimestamp);
+      new Date(lastAcceptedProposalTimestamp)?.getTime() <=
+      new Date(lastRefusedProposalTimestamp)?.getTime();
 
     setSponsorHasAtLeastOneRejectedProposalAndNoPending(
       sponsorHasAtLeastOneRejectedProposal &&
@@ -1200,6 +1199,12 @@ const Token = () => {
   ]);
 
   useEffect(() => {
+    if (isUserOwner?.toLowerCase() === address?.toLowerCase()) {
+      setIsOwner(true);
+    }
+  }, [isUserOwner, address]);
+
+  useEffect(() => {
     if (!isUserOwner || !marketplaceListings || !address) return;
 
     if (
@@ -1219,10 +1224,6 @@ const Token = () => {
     if (address && offerData?.admins?.includes(address?.toLowerCase())) {
       setIsOfferOwner(true);
       setIsAdmin(true);
-    }
-
-    if (isUserOwner?.toLowerCase() === address?.toLowerCase()) {
-      setIsOwner(true);
     }
   }, [
     isUserOwner,
@@ -2765,7 +2766,8 @@ const Token = () => {
                   <AdValidation
                     chainConfig={chainConfig}
                     offer={offerData}
-                    isOwner={isOfferOwner}
+                    isOwner={isOwner}
+                    fromToken={true}
                     isAdmin={isAdmin}
                     successFullRefuseModal={successFullRefuseModal}
                     setRefusedValidatedAdModal={setRefusedValidatedAdModal}

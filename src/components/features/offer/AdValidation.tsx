@@ -66,7 +66,8 @@ const AdValidation = ({
   isTokenView,
   itemTokenId,
   pendingProposalData,
-  setPendingProposalData
+  setPendingProposalData,
+  fromToken
 }: {
   chainConfig: ChainObject;
   offer: any;
@@ -88,6 +89,7 @@ const AdValidation = ({
   itemTokenId: string;
   pendingProposalData: any;
   setPendingProposalData: any;
+  fromToken?: boolean;
 }) => {
   type Proposal = {
     tokenId: string;
@@ -316,9 +318,10 @@ const AdValidation = ({
                   }
                 >
                   {sponsorHasAtLeastOneRejectedProposalAndNoPending &&
-                    isAdmin &&
+                    isOwner &&
+                    fromToken &&
                     text === "Refused" && (
-                      <ResponsiveTooltip text="You ad as been refused and you have no pending ad. Try to submit a new one.">
+                      <ResponsiveTooltip text="Your ad has been refused and you have no pending ad. Try to submit a new one.">
                         <ExclamationCircleIcon className="w-5 h-5 text-red dark:text-red" />
                       </ResponsiveTooltip>
                     )}
