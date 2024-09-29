@@ -192,7 +192,8 @@ const BidsModal = ({
 
   useEffect(() => {
     if (
-      marketplaceListings?.[0] &&
+      marketplaceListings?.[0]?.bidPriceStructure?.minimalBuyoutPerToken &&
+      marketplaceListings?.[0]?.buyoutPricePerToken &&
       parsedBidsAmount &&
       BigNumber.from(parsedBidsAmount).gt(BigNumber.from(0)) &&
       !successFullBid
@@ -385,7 +386,7 @@ const BidsModal = ({
   };
 
   useEffect(() => {
-    if (tokenEtherPriceRelayer && chainId && chainConfig) {
+    if (tokenEtherPriceRelayer?.amountInEthWithSlippage && chainId && chainConfig) {
       const parsedBuyAmount = BigNumber.from(tokenEtherPriceRelayer?.amountInEthWithSlippage);
 
       const priceLimit = chainConfig?.features?.crossmint?.config?.priceLimit?.toString();
@@ -599,7 +600,7 @@ const BidsModal = ({
                             );
                             setBidsAmount(formattedBuyoutPrice);
 
-                            const parsedBuyoutPrice = BigNumber.from(buyoutPrice);
+                            const parsedBuyoutPrice = BigNumber.from(buyoutPrice ?? "0");
                             setParsedBidsAmount(parsedBuyoutPrice);
                           }}
                         >
@@ -825,8 +826,9 @@ const BidsModal = ({
                       <>
                         {!insufficentBalance ? (
                           <>
-                            {nativeTokenBalance?.value?.gte(
-                              BigNumber.from(config[chainId]?.gaslessBalanceThreshold ?? "0")
+                            {!!config[chainId]?.gaslessBalanceThreshold &&
+                            nativeTokenBalance?.value?.gte(
+                              BigNumber.from(config[chainId]?.gaslessBalanceThreshold)
                             ) ? (
                               <StyledWeb3Button
                                 contractAddress={
@@ -863,7 +865,7 @@ const BidsModal = ({
                                   });
                                 }}
                                 isDisabled={true}
-                                defaultText={`You need more than ${formatUnits(BigNumber.from(config[chainId].gaslessBalanceThreshold), "ether")} ETH to execute this tx.`}
+                                defaultText={`You need more than ${!!config[chainId]?.gaslessBalanceThreshold && formatUnits(BigNumber.from(config[chainId].gaslessBalanceThreshold), "ether")} ETH to execute this tx.`}
                               />
                             )}
 

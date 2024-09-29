@@ -458,7 +458,7 @@ const Token = () => {
   const { mutateAsync: mintAndSubmit } = useContractWrite(DsponsorAdminContract, "mintAndSubmit");
   const { mutateAsync: submitAd } = useContractWrite(DsponsorAdminContract, "submitAdProposals");
   const { contract: tokenContract } = useContract(tokenCurrencyAddress, ERC20ABI);
-  const { data: tokenBalance } = useBalance(tokenCurrencyAddress as Address);
+  const { data: tokenBalance } = useBalance(tokenCurrencyAddress ?? "");
   const { mutateAsync: approve } = useContractWrite(tokenContract, "approve");
   const { data: owner } = useContractRead(DsponsorAdminContract, "owner");
 

@@ -138,18 +138,20 @@ const BuyModal = ({
       tokenEtherPriceRelayer?.amountInEthWithSlippage
     );
 
+    if (nativeTokenBalance?.value?.lt(amountInEthWithSlippageBN)) {
+      setCanPayWithNativeToken(false);
+    } else {
+      setCanPayWithNativeToken(true);
+    }
+
+    if (!finalPriceNotFormatted) return;
+
     const priceBN = BigNumber.from(finalPriceNotFormatted);
 
     if (currencyBalance?.value?.lt(priceBN)) {
       setInsufficentBalance(true);
     } else {
       setInsufficentBalance(false);
-    }
-
-    if (nativeTokenBalance?.value?.lt(amountInEthWithSlippageBN)) {
-      setCanPayWithNativeToken(false);
-    } else {
-      setCanPayWithNativeToken(true);
     }
   }, [
     nativeTokenBalance,
@@ -197,7 +199,12 @@ const BuyModal = ({
   }, [handleBuyModal, modalRef]);
 
   useEffect(() => {
-    if (tokenEtherPriceRelayer && chainId && chainConfig) {
+    if (
+      tokenEtherPriceRelayer &&
+      tokenEtherPriceRelayer?.amountInEthWithSlippage &&
+      chainId &&
+      chainConfig
+    ) {
       const parsedBuyAmount = BigNumber.from(tokenEtherPriceRelayer?.amountInEthWithSlippage);
       const priceLimit = chainConfig?.features?.crossmint?.config?.priceLimit?.toString();
       const parsedPriceLimit = priceLimit ? parseUnits(priceLimit, 18) : null;
@@ -390,10 +397,9 @@ const BuyModal = ({
                           <div
                             className={`grid grid-cols-1 mx-auto ${totalPrice > 0 && chainIdIsCorrect && address && "md:grid-cols-2"} gap-6 w-full`}
                           >
-                            {nativeTokenBalance?.value?.gte(
-                              BigNumber.from(
-                                config[Number(chainId)]?.gaslessBalanceThreshold ?? "0"
-                              )
+                            {config[Number(chainId)]?.gaslessBalanceThreshold &&
+                            nativeTokenBalance?.value?.gte(
+                              BigNumber.from(config[Number(chainId)]?.gaslessBalanceThreshold)
                             ) ? (
                               <React.Fragment>
                                 {totalPrice > 0 && (
@@ -433,7 +439,7 @@ const BuyModal = ({
                                   });
                                 }}
                                 isDisabled={true}
-                                defaultText={`You need more than ${formatUnits(BigNumber.from(config[Number(chainId)].gaslessBalanceThreshold), "ether")} ETH to execute this tx.`}
+                                defaultText={`You need more than ${!!config[Number(chainId)]?.gaslessBalanceThreshold && formatUnits(BigNumber.from(config[Number(chainId)].gaslessBalanceThreshold), "ether")} ETH to execute this tx.`}
                               />
                             )}
 
