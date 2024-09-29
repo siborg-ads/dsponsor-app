@@ -844,7 +844,7 @@ const Token = () => {
       tokenData: tokenData as string,
 
       fee: offerData?.nftContract?.prices[0]?.protocolFeeAmount,
-      mint: currentToken.mint,
+      mint: currentToken?.mint,
 
       price:
         currentToken?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.pricePerToken ??
@@ -854,10 +854,10 @@ const Token = () => {
 
       isListed:
         currentToken?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.status === "CREATED",
-      listingId: currentToken.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.id,
-      minimalBidBps: currentToken.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]
+      listingId: currentToken?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.id,
+      minimalBidBps: currentToken?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]
         ?.minimalBidBps,
-      buyoutPricePerToken: currentToken.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]
+      buyoutPricePerToken: currentToken?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]
         ?.buyoutPricePerToken,
 
       external_url:
