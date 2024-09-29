@@ -7,7 +7,6 @@ import Referrals from "@/components/features/profile/Referrals";
 import Tabs from "@/components/features/profile/Tabs";
 import { useAddress } from "@thirdweb-dev/react";
 import { fetchAllOffersProfile } from "@/utils/graphql/fetchAllOffersProfile";
-import { fetchAllTokensProfile } from "@/utils/graphql/fetchAllTokensProfile";
 import config from "@/config/config";
 import { getAddress } from "ethers/lib/utils";
 import { Address } from "thirdweb";
@@ -110,23 +109,66 @@ const Profile = () => {
   );
 
   const fetchCreatedData = React.useCallback(async () => {
-    if (fetchCreatedDataRef.current) {
+    if (fetchCreatedDataRef.current || fetchOwnedAdProposalsRef.current) {
       return;
     }
     fetchCreatedDataRef.current = true;
+    fetchOwnedAdProposalsRef.current = true;
 
     try {
       setIsLoadingBids(true);
+      setIsLoadingOwnedTokens(true);
+
       const offersByUserAddressArray = await fetchDataByUserAddress(fetchAllOffersProfile);
+
+      const mappedOwnedAdProposals = offersByUserAddressArray.flatMap((element) =>
+        element.nftContract.tokens
+          .filter(
+            (token) =>
+              token.owner && userAddress && token.owner.toLowerCase() === userAddress.toLowerCase()
+          )
+          .map((token) => ({
+            ...token,
+            ...(token.mint.tokenData ? { tokenData: token.mint.tokenData } : {}),
+            chainConfig: element.chainConfig,
+            adParameters: element.adParameters,
+            id: `${element.id}-${token.tokenId}`,
+            offerId: element.id,
+            admins: element.admins,
+            disable: element.disable,
+            endTime:
+              token?.marketplaceListings?.length > 0 && token?.marketplaceListings[0]?.endTime
+          }))
+      );
+
+      setMappedOwnedAdProposals(mappedOwnedAdProposals);
 
       const allUserBids: any[] = [];
       offersByUserAddressArray?.forEach((offer) => {
-        const { chainConfig } = offer;
+        const { chainConfig, id, name, disable } = offer;
+
         offer?.nftContract?.tokens?.forEach((token) => {
+          const { tokenId, metadata, mint } = token;
           token?.marketplaceListings?.forEach((listing) => {
             const { currencyDecimals, currencySymbol } = listing || {};
-            listing.token.metadata = token.metadata;
+            listing.token = {
+              tokenId,
+              nftContract: {
+                adOffers: [
+                  {
+                    id,
+                    name,
+                    disable
+                  }
+                ]
+              },
+              metadata,
+              mint
+            };
             listing?.bids?.forEach((bid) => {
+              bid.listing = {
+                token: listing.token
+              };
               if (userAddress && bid?.bidder?.toLowerCase() === userAddress?.toLowerCase()) {
                 allUserBids.push({ chainConfig, currencyDecimals, currencySymbol, ...bid });
               }
@@ -228,6 +270,9 @@ const Profile = () => {
       console.error("Error fetching created data:", error);
     } finally {
       fetchCreatedDataRef.current = false;
+
+      setIsLoadingOwnedTokens(false);
+      fetchOwnedAdProposalsRef.current = false;
     }
   }, [fetchDataByUserAddress, userAddress]);
 
@@ -321,40 +366,6 @@ const Profile = () => {
     }
   }, [userAddress]);
 
-  const fetchOwnedAdProposals = React.useCallback(async () => {
-    if (fetchOwnedAdProposalsRef.current) {
-      return;
-    }
-    fetchOwnedAdProposalsRef.current = true;
-
-    setIsLoadingOwnedTokens(true);
-
-    try {
-      const ownedAdProposalsArray = await fetchDataByUserAddress(fetchAllTokensProfile);
-
-      const mappedOwnedAdProposals = ownedAdProposalsArray.flatMap((element) =>
-        element.nftContract.tokens.map((token) => ({
-          ...token,
-          ...(token.mint.tokenData ? { tokenData: token.mint.tokenData } : {}),
-          chainConfig: element.chainConfig,
-          adParameters: element.adParameters,
-          id: `${element.id}-${token.tokenId}`,
-          offerId: element.id,
-          admins: element.admins,
-          disable: element.disable,
-          endTime: token?.marketplaceListings?.length > 0 && token?.marketplaceListings[0]?.endTime
-        }))
-      );
-
-      setMappedOwnedAdProposals(mappedOwnedAdProposals);
-    } catch (error) {
-      console.error("Error fetching owned ad proposals:", error);
-    } finally {
-      setIsLoadingOwnedTokens(false);
-      fetchOwnedAdProposalsRef.current = false;
-    }
-  }, [fetchDataByUserAddress]);
-
   useEffect(() => {
     if (userAddress) {
       const fetchAllManageData = async () => {
@@ -367,7 +378,11 @@ const Profile = () => {
 
         if (userAddress) {
           try {
-            await Promise.all([fetchProfileData(), fetchCreatedData(), fetchOwnedAdProposals()]);
+            await Promise.all([
+              fetchProfileData(),
+              fetchCreatedData()
+              //fetchOwnedAdProposals()
+            ]);
           } catch (error) {
             console.error("Error fetching manage data:", error);
           } finally {
@@ -383,7 +398,13 @@ const Profile = () => {
 
       fetchAllManageData();
     }
-  }, [userAddress, address, fetchProfileData, fetchCreatedData, fetchOwnedAdProposals]);
+  }, [
+    userAddress,
+    address,
+    fetchProfileData,
+    fetchCreatedData
+    //  fetchOwnedAdProposals
+  ]);
 
   const handleListingsStatusType = (status) => {
     switch (status) {

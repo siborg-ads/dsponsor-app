@@ -134,14 +134,6 @@ const Offer = () => {
     name = "DefaultName"
   } = offerData?.metadata?.offer ? offerData.metadata.offer : {};
 
-  useEffect(() => {
-    if (offerData?.metadata?.offer?.image) {
-      setImageUrl(offerData.metadata.offer.image);
-    } else {
-      setImageUrl("/images/gradients/gradient_creative.jpg");
-    }
-  }, [offerData]);
-
   const [itemProposals, setItemProposals] = useState<any | null>(null);
   const [mediaShouldValidateAnAd, setMediaShouldValidateAnAd] = useState(false);
   const [
@@ -378,10 +370,15 @@ const Offer = () => {
       }
     };
 
-    if (imageUrl && typeof imageUrl === "string" && imageUrl.startsWith("ipfs://")) {
-      fetchImage(imageUrl);
+    const localUrl = offerData?.metadata?.offer?.image;
+    if (!localUrl) {
+      setImageUrl("/images/gradients/gradient_creative.jpg");
+    } else if (localUrl && typeof localUrl === "string" && localUrl.startsWith("ipfs://")) {
+      fetchImage(localUrl);
+    } else {
+      setImageUrl(localUrl);
     }
-  }, [imageUrl, storage]);
+  }, [storage, offerData]);
 
   useEffect(() => {
     if (chainConfig?.network) {
@@ -1178,7 +1175,15 @@ const Offer = () => {
                   />
                 </TabPanel>
                 <TabPanel>
-                  <UpdateOffer chainConfig={chainConfig} offer={offerData} contractOwner={owner} />
+                  <UpdateOffer
+                    chainConfig={chainConfig}
+                    offer={offerData}
+                    contractOwner={owner}
+                    onSubmit={async () => {
+                      setOfferManagementActiveTab("integration");
+                      fetchOffers();
+                    }}
+                  />
                 </TabPanel>
                 {isOwner && (
                   <TabPanel>
