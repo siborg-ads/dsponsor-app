@@ -27,11 +27,11 @@ const AdBriefing = ({
       }}
       className={styles.form__step}
     >
-      <div className="pr-6 pl-2">
+      <div className="pl-2 pr-6">
         <h3 className="mb-12 !text-jacarta-100">
           Step {currentSlide + 1}/{numSteps} : Ad Description
         </h3>
-        <div className="mb-6 flex flex-col gap-4">
+        <div className="flex flex-col gap-4 mb-6">
           <div className="flex flex-col">
             <div className="flex flex-col gap-4">
               To display your ad you need to provide the following parameters:
@@ -55,7 +55,7 @@ const AdBriefing = ({
                                   ? `${parseFloat(width) * 100}x${parseFloat(height) * 100}px`
                                   : "No size";
                               })()})`
-                              : "- Format : Any format accepted"}
+                              : "- Format : No restrictions on ratio"}
                           </li>
                         </ul>
                       </div>

@@ -202,7 +202,12 @@ const CreateListing = ({
           rentalExpirationTimestamp: startTime + secondsUntilEndTime,
           listingType: selectedListingType[0]
         };
-        await createListing({ args: [args] });
+        await createListing({
+          args: [args],
+          overrides: {
+            gasLimit: 1000000
+          }
+        });
 
         const tags = [
           `${chainId}-userAddress-${address}`,
