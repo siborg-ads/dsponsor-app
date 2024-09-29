@@ -935,8 +935,9 @@ const BidsModal = ({
                                 console.error(error);
                               }
                             }}
-                            defaultText="Switch network"
-                          />
+                          >
+                            Switch network
+                          </NormalButton>
                         ) : (
                           <StyledWeb3Button
                             contractAddress={config[chainId]?.smartContracts?.DSPONSORMP?.address}
