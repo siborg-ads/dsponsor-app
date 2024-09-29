@@ -1206,20 +1206,10 @@ const Token = () => {
   ]);
 
   useEffect(() => {
-    if (address && isUserOwner?.toLowerCase() === address?.toLowerCase()) {
+    if (isUserOwner?.toLowerCase() === address?.toLowerCase()) {
       setIsOwner(true);
-    } else {
-      setIsOwner(false);
     }
   }, [isUserOwner, address]);
-
-  useEffect(() => {
-    if (offerData?.admins?.includes(address?.toLowerCase())) {
-      setIsOfferOwner(true);
-    } else {
-      setIsOfferOwner(false);
-    }
-  }, [address, offerData]);
 
   useEffect(() => {
     if (!isUserOwner || !marketplaceListings || !address) return;
@@ -1246,10 +1236,6 @@ const Token = () => {
     if (address && offerData?.admins?.includes(address?.toLowerCase())) {
       setIsOfferOwner(true);
       setIsAdmin(true);
-    }
-
-    if (isUserOwner?.toLowerCase() === address?.toLowerCase()) {
-      setIsOwner(true);
     }
   }, [
     isUserOwner,
@@ -2872,7 +2858,8 @@ const Token = () => {
                   <AdValidation
                     chainConfig={chainConfig}
                     offer={offerData}
-                    isOwner={isOfferOwner}
+                    isOwner={isOwner}
+                    fromToken={true}
                     isAdmin={isAdmin}
                     successFullRefuseModal={successFullRefuseModal}
                     setRefusedValidatedAdModal={setRefusedValidatedAdModal}
