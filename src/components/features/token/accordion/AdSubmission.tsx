@@ -743,7 +743,7 @@ const AdSubmission = ({
                   </button>
                 </Link>
               ) : (
-                <NormalButton onClick={() => handlePreviewModal()} defaultText="Close" />
+                <NormalButton onClick={() => handlePreviewModal()}>Close</NormalButton>
               )}
             </div>
           </div>

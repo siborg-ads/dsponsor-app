@@ -501,8 +501,9 @@ const BuyModal = ({
                               console.error("Error switching chain", error);
                             }
                           }}
-                          defaultText="Switch network"
-                        />
+                        >
+                          Switch network
+                        </NormalButton>
                       ) : (
                         <StyledWeb3Button
                           contractAddress={chainConfig?.smartContracts?.DSPONSORADMIN?.address}
