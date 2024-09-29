@@ -144,6 +144,14 @@ const BuyModal = ({
 
     if (!finalPriceNotFormatted) return;
 
+    if (nativeTokenBalance?.value?.lt(amountInEthWithSlippageBN)) {
+      setCanPayWithNativeToken(false);
+    } else {
+      setCanPayWithNativeToken(true);
+    }
+
+    if (!finalPriceNotFormatted) return;
+
     const priceBN = BigNumber.from(finalPriceNotFormatted);
 
     if (currencyBalance?.value?.lt(priceBN)) {
@@ -197,6 +205,12 @@ const BuyModal = ({
   }, [handleBuyModal, modalRef]);
 
   useEffect(() => {
+    if (
+      tokenEtherPriceRelayer &&
+      tokenEtherPriceRelayer?.amountInEthWithSlippage &&
+      chainId &&
+      chainConfig
+    ) {
     if (
       tokenEtherPriceRelayer &&
       tokenEtherPriceRelayer?.amountInEthWithSlippage &&

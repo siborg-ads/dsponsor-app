@@ -194,6 +194,8 @@ const BidsModal = ({
     if (
       marketplaceListings?.[0]?.bidPriceStructure?.minimalBuyoutPerToken &&
       marketplaceListings?.[0]?.buyoutPricePerToken &&
+      marketplaceListings?.[0]?.bidPriceStructure?.minimalBuyoutPerToken &&
+      marketplaceListings?.[0]?.buyoutPricePerToken &&
       parsedBidsAmount &&
       BigNumber.from(parsedBidsAmount).gt(BigNumber.from(0)) &&
       !successFullBid
@@ -386,6 +388,7 @@ const BidsModal = ({
   };
 
   useEffect(() => {
+    if (tokenEtherPriceRelayer?.amountInEthWithSlippage && chainId && chainConfig) {
     if (tokenEtherPriceRelayer?.amountInEthWithSlippage && chainId && chainConfig) {
       const parsedBuyAmount = BigNumber.from(tokenEtherPriceRelayer?.amountInEthWithSlippage);
 
@@ -600,6 +603,7 @@ const BidsModal = ({
                             );
                             setBidsAmount(formattedBuyoutPrice);
 
+                            const parsedBuyoutPrice = BigNumber.from(buyoutPrice ?? "0");
                             const parsedBuyoutPrice = BigNumber.from(buyoutPrice ?? "0");
                             setParsedBidsAmount(parsedBuyoutPrice);
                           }}
