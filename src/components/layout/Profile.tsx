@@ -66,7 +66,7 @@ const Profile = () => {
           0
       );
 
-      if (pendingOffers.length > 0) {
+      if (pendingOffers?.length > 0) {
         setIsPendingAdsOnOffer(true);
       } else {
         setIsPendingAdsOnOffer(false);

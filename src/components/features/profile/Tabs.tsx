@@ -242,6 +242,7 @@ const UserTabs = ({
           offers={offers}
           isLoading={isLoading}
           manageAddress={manageAddress}
+          isPendingAdsOnOffer={isPendingAdsOnOffer}
         />
       </TabPanel>
     </Tabs>

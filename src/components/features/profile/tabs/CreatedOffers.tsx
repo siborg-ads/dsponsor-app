@@ -10,14 +10,14 @@ import { Address } from "thirdweb";
 
 const CreatedOffers = ({
   data,
-  isPendinAdsOnOffer,
+  isPendingAdsOnOffer,
   isOwner,
   offers,
   isLoading,
   manageAddress
 }: {
   data: any;
-  isPendinAdsOnOffer?: boolean;
+  isPendingAdsOnOffer?: boolean;
   isOwner: boolean;
   offers: any;
   isLoading: boolean;
@@ -49,9 +49,10 @@ const CreatedOffers = ({
       </div>
     );
   }
+
   return (
     <>
-      {isPendinAdsOnOffer && isOwner && (
+      {isPendingAdsOnOffer && isOwner && (
         <div className="dark:bg-secondaryBlack dark:text-jacarta-100 rounded-2lg bg-white p-3 flex gap-2 justify-center items-center mb-2">
           <ExclamationCircleIcon className="h-6 w-6 text-red" />
           <span>You have 1 or more ads proposals to check on your offer </span>
