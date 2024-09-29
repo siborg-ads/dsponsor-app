@@ -2294,7 +2294,7 @@ const Token = () => {
               </div>
 
               {showEntireDescription ? (
-                <p className="mb-10 dark:text-jacarta-100">
+                <span className="mb-10 dark:text-jacarta-100">
                   {addLineBreaks(description)}{" "}
                   {description?.length > 1000 && (
                     <button
@@ -2304,10 +2304,10 @@ const Token = () => {
                       Show less
                     </button>
                   )}
-                </p>
+                </span>
               ) : (
                 <div>
-                  <p className="mb-10 dark:text-jacarta-100">
+                  <span className="mb-10 dark:text-jacarta-100">
                     {description?.length > 1000
                       ? addLineBreaks(description?.slice(0, 1000) + "...")
                       : addLineBreaks(description)}{" "}
@@ -2319,7 +2319,7 @@ const Token = () => {
                         Show more
                       </button>
                     )}
-                  </p>
+                  </span>
                 </div>
               )}
 
