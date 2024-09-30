@@ -35,6 +35,6 @@ export default function displayOrCheckKnownAddress(address: Address): string {
   if (known) {
     return `${known.name} ${address.slice(0, 6)}...${address.slice(-4)} - ✅ Identity verified by SiBorg Team`;
   } else {
-    return `${address}`;
+    return `${address.toLowerCase()}`;
   }
 }
