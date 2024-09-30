@@ -465,8 +465,6 @@ const Token = () => {
   const { contract: DsponsorNFTContract } = useContract(offerData?.nftContract?.id, DsponsorNFTABI);
   const { data: owner } = useContractRead(DsponsorNFTContract, "owner");
 
-  console.log("owner", owner);
-
   const { data: isAllowedToMint } = useContractRead<any, any, any, any, any, any>(
     DsponsorNFTContract,
     "tokenIdIsAllowedToMint",
