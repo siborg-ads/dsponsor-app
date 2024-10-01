@@ -35,12 +35,26 @@ const MarketplaceComponent = ({ auctions, setAllTokens, allTokens, isAuctionsLoa
     );
 
     if (!allTokens) {
-      tempAuctions = [...tempAuctions].filter(
-        (auction) =>
-          auction?.status === "CREATED" &&
-          new Date(auction?.startTime * 1000).getTime() < Date.now() &&
-          new Date(auction?.endTime * 1000).getTime() > Date.now()
-      );
+      if (filterOption === "On auction") {
+        tempAuctions = [...tempAuctions].filter(
+          (auction) =>
+            auction?.status === "CREATED" &&
+            new Date(auction?.startTime * 1000).getTime() < Date.now() &&
+            new Date(auction?.endTime * 1000).getTime() > Date.now()
+        );
+      }
+
+      if (filterOption === "Buy now") {
+        tempAuctions = [...tempAuctions].filter(
+          (auction) =>
+            (auction?.listingType === "Direct" &&
+              auction?.status === "CREATED" &&
+              new Date(auction?.startTime * 1000).getTime() < Date.now() &&
+              new Date(auction?.endTime * 1000).getTime() > Date.now()) ||
+            (auction?.item?.mint === null &&
+              auction?.item?.nftContract?.prices[0]?.enabled === true)
+        );
+      }
     }
 
     if (filterName && filterName.length > 0 && filterName !== "") {
@@ -143,16 +157,16 @@ const MarketplaceComponent = ({ auctions, setAllTokens, allTokens, isAuctionsLoa
 
   return (
     <div className="flex flex-col gap-7">
-      <span className="text-xl text-white font-semibold flex items-center gap-2">
+      <span className="flex items-center gap-2 text-xl font-semibold text-white">
         <Popover placement="top-start" isOpen={isInformationHovered}>
           <PopoverTrigger>
             <InformationCircleIcon
-              className="h-6 w-6 text-white cursor-pointer"
+              className="w-6 h-6 text-white cursor-pointer"
               onMouseEnter={() => setIsInformationHovered(true)}
               onMouseLeave={() => setIsInformationHovered(false)}
             />
           </PopoverTrigger>
-          <PopoverContent className="bg-secondaryBlack shadow border border-white border-opacity-10">
+          <PopoverContent className="border border-white shadow bg-secondaryBlack border-opacity-10">
             <div className="px-1 py-2">
               <div className="text-small">
                 This page highlights all ad spaces from curated offers. You will not see your tokens
@@ -192,7 +206,7 @@ const MarketplaceComponent = ({ auctions, setAllTokens, allTokens, isAuctionsLoa
                   setFilterOption("All tokens");
                   setAllTokens(true);
                 }}
-                className="hover:bg-primaryBlack p-2 rounded-lg w-full pr-12 md:pr-24"
+                className="w-full p-2 pr-12 text-left rounded-lg hover:bg-primaryBlack md:pr-24"
               >
                 All tokens
               </button>
@@ -203,9 +217,20 @@ const MarketplaceComponent = ({ auctions, setAllTokens, allTokens, isAuctionsLoa
                   setFilterOption("On auction");
                   setAllTokens(false);
                 }}
-                className="hover:bg-primaryBlack p-2 rounded-lg w-full pr-12 md:pr-24"
+                className="w-full p-2 pr-12 text-left rounded-lg hover:bg-primaryBlack md:pr-24"
               >
                 On auction
+              </button>
+            </MenuItem>
+            <MenuItem>
+              <button
+                onClick={() => {
+                  setFilterOption("Buy now");
+                  setAllTokens(false);
+                }}
+                className="w-full p-2 pr-12 text-left rounded-lg hover:bg-primaryBlack md:pr-24"
+              >
+                Buy now
               </button>
             </MenuItem>
           </MenuItems>
@@ -228,7 +253,7 @@ const MarketplaceComponent = ({ auctions, setAllTokens, allTokens, isAuctionsLoa
                 <MenuItem key={option}>
                   <button
                     onClick={() => setSortOption(option)}
-                    className="hover:bg-primaryBlack p-2 text-left rounded-lg w-full pr-12 md:pr-24"
+                    className="w-full p-2 pr-12 text-left rounded-lg hover:bg-primaryBlack md:pr-24"
                   >
                     {option}
                   </button>

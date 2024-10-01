@@ -55,6 +55,8 @@ import ERC20ABI from "@/abi/ERC20.json";
 import { getOwnershipPeriod } from "@/utils/dates/period";
 import isUrlValid from "@/utils/misc/isUrlValid";
 
+import DsponsorNFTABI from "@/abi/dsponsorNFT.json";
+
 const Token = () => {
   const router = useRouter();
   const storage = useStorage();
@@ -453,14 +455,15 @@ const Token = () => {
     chainConfig?.smartContracts?.DSPONSORADMIN?.address,
     chainConfig?.smartContracts?.DSPONSORADMIN?.abi
   );
-  const { contract: DsponsorNFTContract } = useContract(offerData?.nftContract?.id);
   const { mutateAsync: uploadToIPFS } = useStorageUpload();
   const { mutateAsync: mintAndSubmit } = useContractWrite(DsponsorAdminContract, "mintAndSubmit");
   const { mutateAsync: submitAd } = useContractWrite(DsponsorAdminContract, "submitAdProposals");
   const { contract: tokenContract } = useContract(tokenCurrencyAddress, ERC20ABI);
   const { data: tokenBalance } = useBalance(tokenCurrencyAddress as Address);
   const { mutateAsync: approve } = useContractWrite(tokenContract, "approve");
-  const { data: owner } = useContractRead(DsponsorAdminContract, "owner");
+
+  const { contract: DsponsorNFTContract } = useContract(offerData?.nftContract?.id, DsponsorNFTABI);
+  const { data: owner } = useContractRead(DsponsorNFTContract, "owner");
 
   const { data: isAllowedToMint } = useContractRead<any, any, any, any, any, any>(
     DsponsorNFTContract,
@@ -844,7 +847,7 @@ const Token = () => {
       tokenData: tokenData as string,
 
       fee: offerData?.nftContract?.prices[0]?.protocolFeeAmount,
-      mint: currentToken.mint,
+      mint: currentToken?.mint,
 
       price:
         currentToken?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.pricePerToken ??
@@ -854,10 +857,10 @@ const Token = () => {
 
       isListed:
         currentToken?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.status === "CREATED",
-      listingId: currentToken.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.id,
-      minimalBidBps: currentToken.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]
+      listingId: currentToken?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.id,
+      minimalBidBps: currentToken?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]
         ?.minimalBidBps,
-      buyoutPricePerToken: currentToken.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]
+      buyoutPricePerToken: currentToken?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]
         ?.buyoutPricePerToken,
 
       external_url:
@@ -1959,7 +1962,7 @@ const Token = () => {
           the total amount paid by the buyer.
         </span>
 
-        {isMintable && (
+        {tokenStatut === "MINTABLE" && (
           <div className="flex flex-col gap-2">
             <ul className="flex flex-col gap-2 text-sm list-disc" style={{ listStyleType: "disc" }}>
               <li>
@@ -1981,7 +1984,7 @@ const Token = () => {
           </div>
         )}
 
-        {!isMintable && (
+        {tokenStatut !== "MINTABLE" && (
           <div className="flex flex-col gap-2">
             <ul className="flex flex-col gap-2 text-sm list-disc" style={{ listStyleType: "disc" }}>
               <li>
