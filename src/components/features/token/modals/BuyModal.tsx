@@ -439,7 +439,11 @@ const BuyModal = ({
                                   });
                                 }}
                                 isDisabled={true}
-                                defaultText={`You need more than ${!!config[Number(chainId)]?.gaslessBalanceThreshold && formatUnits(BigNumber.from(config[Number(chainId)].gaslessBalanceThreshold), "ether")} ETH to execute this tx.`}
+                                defaultText={
+                                  config?.[Number(chainId)]?.gaslessBalanceThreshold
+                                    ? `You need more than ${formatUnits(BigNumber.from(config?.[Number(chainId)]?.gaslessBalanceThreshold), "ether")} ETH to execute this tx.`
+                                    : `Gasless is disabled on this network.`
+                                }
                               />
                             )}
 

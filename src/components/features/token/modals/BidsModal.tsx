@@ -865,7 +865,11 @@ const BidsModal = ({
                                   });
                                 }}
                                 isDisabled={true}
-                                defaultText={`You need more than ${!!config[chainId]?.gaslessBalanceThreshold && formatUnits(BigNumber.from(config[chainId].gaslessBalanceThreshold), "ether")} ETH to execute this tx.`}
+                                defaultText={
+                                  config?.[chainId]?.gaslessBalanceThreshold
+                                    ? `You need more than ${formatUnits(BigNumber.from(config[chainId].gaslessBalanceThreshold), "ether")} ETH to execute this tx.`
+                                    : "Gasless is disabled on this network."
+                                }
                               />
                             )}
 
