@@ -183,9 +183,7 @@ const AdSubmission = ({
     let allImages: any[] = [];
 
     imageURLSteps.forEach((step: any, index: number) => {
-      for (let i = 0; i < step.offerIds.length; i++) {
-        allImages.push({ image: previewImage[index], ratio: step.uniqueId });
-      }
+      allImages.push({ image: previewImage[index], ratio: step.uniqueId });
     });
 
     setAllImages(allImages);
