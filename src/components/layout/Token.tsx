@@ -56,6 +56,7 @@ import { getOwnershipPeriod } from "@/utils/dates/period";
 import isUrlValid from "@/utils/misc/isUrlValid";
 
 import DsponsorNFTABI from "@/abi/dsponsorNFT.json";
+import { copyFile } from "fs";
 
 const Token = () => {
   const router = useRouter();
@@ -180,6 +181,7 @@ const Token = () => {
   const [tokenSymbol, setTokenSymbol] = useState<string | null>(null);
   const [tokenDecimals, setTokenDecimals] = useState<number | null>(null);
   const [isMintable, setIsMintable] = useState(false);
+  const [shouldProvideLink, setShouldProvideLink] = useState(false);
 
   React.useEffect(() => {
     if (offerData) {
@@ -1306,6 +1308,7 @@ const Token = () => {
     setImageURLSteps([]);
     setNumSteps(2);
     const uniqueIds = new Set();
+    let shouldAddLink = false;
     for (const param of offerData.adParameters) {
       if (
         param.adParameter.id &&
@@ -1313,6 +1316,10 @@ const Token = () => {
         param.adParameter.id !== "xCreatorHandle"
       ) {
         uniqueIds.add(param.adParameter.id);
+      }
+
+      if (param.adParameter.id && param.adParameter.id.startsWith("linkURL")) {
+        shouldAddLink = true;
       }
     }
     const imageURLSteps: string[] = [];
@@ -1327,7 +1334,9 @@ const Token = () => {
         imageURLSteps.push(variant);
       });
     const numSteps = 2;
-    const totalNumSteps = numSteps + imageURLSteps.length;
+    setShouldProvideLink(shouldAddLink);
+    // If there is no linkURL, we don't need to add an extra step to submit the ad link
+    const totalNumSteps = numSteps + imageURLSteps.length - (!shouldAddLink ? 1 : 0);
 
     setImageURLSteps(imageURLSteps);
     setNumSteps(totalNumSteps);
@@ -1340,8 +1349,10 @@ const Token = () => {
       const params: any[] = [];
       const tokenIdArray: any[] = [];
       const offerIdArray: any[] = [];
+      console.log("adParameters", adParameters);
 
       for (const element of adParameters) {
+        console.log("element", element);
         params.push(element);
         tokenIdArray.push(tokenId);
         offerIdArray.push(offerId);
@@ -1594,11 +1605,14 @@ const Token = () => {
       let tokenIdParams;
       let adParams;
       let dataParams;
-      if (link && link !== "") {
+      if ((link && link !== "") || !shouldProvideLink) {
         offerIdParams = submitAdFormated?.offerId;
         tokenIdParams = submitAdFormated?.tokenId;
         adParams = submitAdFormated?.params;
-        dataParams = [uploadUrl[0], link];
+        dataParams = [uploadUrl[0]];
+        if (shouldProvideLink) {
+          dataParams.push(link);
+        }
       } else {
         offerIdParams = submitAdFormated?.offerId?.slice(0, -1);
         tokenIdParams = submitAdFormated?.tokenId?.slice(0, -1);
@@ -2890,6 +2904,7 @@ const Token = () => {
             modalTitle="Ad Space Preview"
             successFullUploadModal={successFullUploadModal}
             adSubmission={true}
+            shouldProvideLink={shouldProvideLink}
           />
         </div>
       )}

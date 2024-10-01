@@ -51,7 +51,8 @@ const AdSubmission = ({
   adSubmission,
   multipleAdsSubmission,
   createOffer,
-  expectedMultipleAds
+  expectedMultipleAds,
+  shouldProvideLink = true
 }: {
   chainConfig: ChainObject;
   approvalForAllToken?: boolean;
@@ -92,9 +93,12 @@ const AdSubmission = ({
   multipleAdsSubmission?: boolean;
   createOffer?: boolean;
   expectedMultipleAds?: number;
+  shouldProvideLink?: boolean;
 }) => {
   const [imageRatios, setImageRatios] = React.useState<any[]>([]);
   const [allImages, setAllImages] = React.useState<any[]>([]);
+
+  // const shouldHaveLink =
 
   const { setSelectedChain } = useSwitchChainContext();
   useEffect(() => {
@@ -218,21 +222,23 @@ const AdSubmission = ({
           </div>
           <div className="flex gap-4 p-6 modal-body">
             <div className="flex flex-col flex-wrap w-full gap-4 md:flex-row">
-              <div className="flex items-center justify-between w-full gap-2">
-                <span className="block dark:text-jacarta-100">Link </span>
-                <span
-                  className={cn(
-                    "font-semibold",
-                    isUrlValid(link.toString()) ? "text-green" : "text-red"
-                  )}
-                >
-                  {!link || link === ""
-                    ? "No link provided"
-                    : isUrlValid(link.toString())
-                      ? link
-                      : "Link should start with https://"}
-                </span>
-              </div>
+              {shouldProvideLink && (
+                <div className="flex items-center justify-between w-full gap-2">
+                  <span className="block dark:text-jacarta-100">Link </span>
+                  <span
+                    className={cn(
+                      "font-semibold",
+                      isUrlValid(link.toString()) ? "text-green" : "text-red"
+                    )}
+                  >
+                    {!link || link === ""
+                      ? "No link provided"
+                      : isUrlValid(link.toString())
+                        ? link
+                        : "Link should start with https://"}
+                  </span>
+                </div>
+              )}
 
               <div className="flex flex-col w-full gap-2">
                 <div className="flex items-center justify-between gap-2">
@@ -277,7 +283,7 @@ const AdSubmission = ({
                     error: "Transaction rejected 🤯"
                   });
                 }}
-                isDisabled={!validate || !isUrlValid(link.toString())}
+                isDisabled={!validate || (shouldProvideLink && !isUrlValid(link.toString()))}
                 defaultText={buttonTitle ?? "Submit"}
               />
             </div>
@@ -316,21 +322,23 @@ const AdSubmission = ({
           </div>
           <div className="flex gap-4 p-6 modal-body">
             <div className="flex flex-col flex-wrap w-full gap-4 md:flex-row">
-              <div className="flex items-center justify-between w-full gap-2">
-                <span className="block dark:text-jacarta-100">Link </span>
-                <span
-                  className={cn(
-                    "font-semibold",
-                    isUrlValid(link.toString()) ? "text-green" : "text-red"
-                  )}
-                >
-                  {!link || link === ""
-                    ? "No link provided"
-                    : isUrlValid(link.toString())
-                      ? link
-                      : "Link should start with https://"}
-                </span>
-              </div>
+              {shouldProvideLink && (
+                <div className="flex items-center justify-between w-full gap-2">
+                  <span className="block dark:text-jacarta-100">Link </span>
+                  <span
+                    className={cn(
+                      "font-semibold",
+                      isUrlValid(link.toString()) ? "text-green" : "text-red"
+                    )}
+                  >
+                    {!link || link === ""
+                      ? "No link provided"
+                      : isUrlValid(link.toString())
+                        ? link
+                        : "Link should start with https://"}
+                  </span>
+                </div>
+              )}
 
               {previewImage?.length === 0 && (
                 <div className="flex flex-col w-full gap-2">
@@ -387,7 +395,7 @@ const AdSubmission = ({
                   !validate ||
                   previewImage?.length === 0 ||
                   previewImage?.some((image) => !image) ||
-                  !isUrlValid(link.toString())
+                  (!isUrlValid(link.toString()) && shouldProvideLink)
                 }
                 defaultText={buttonTitle ?? "Submit"}
               />

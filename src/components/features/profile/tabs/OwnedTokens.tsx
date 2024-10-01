@@ -34,6 +34,7 @@ const OwnedTokens = ({ data, isOwner, isLoading, fetchCreatedData, manageAddress
   const [imageURLSteps, setImageURLSteps] = useState<any[]>([]);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [imageUrlVariants, setImageUrlVariants] = useState<any[]>([]);
+  const [shouldProvideLink, setShouldProvideLink] = useState(false);
   const stepsRef = useRef([]);
   const [numSteps, setNumSteps] = useState(2);
   const { contract: DsponsorAdminContract } = useContract(
@@ -103,6 +104,7 @@ const OwnedTokens = ({ data, isOwner, isLoading, fetchCreatedData, manageAddress
 
     const uniqueIds = new Set();
     const adDetails = {};
+    let shouldAddLink = false;
     for (const token of selectedItems) {
       for (const param of token.adParameters) {
         const paramId = param.adParameter.id;
@@ -110,6 +112,10 @@ const OwnedTokens = ({ data, isOwner, isLoading, fetchCreatedData, manageAddress
           uniqueIds.add(paramId);
           adDetails[paramId] = adDetails[paramId] || new Set();
           adDetails[paramId].add(token.id);
+        }
+
+        if (paramId && paramId.startsWith("linkURL")) {
+          shouldAddLink = true;
         }
       }
     }
@@ -132,8 +138,10 @@ const OwnedTokens = ({ data, isOwner, isLoading, fetchCreatedData, manageAddress
           offerIds: adDetails[id]
         });
       });
-
-    const totalNumSteps = numSteps + imageURLStep.length;
+    setShouldProvideLink(shouldAddLink);
+    // If there is no linkURL, we don't need to add an extra step to submit the ad link
+    const totalNumSteps = numSteps + (imageURLStep.length - (!shouldAddLink ? 1 : 0));
+    console.log("total,", totalNumSteps);
     setImageURLSteps(imageURLStep);
     setNumSteps(totalNumSteps);
   };
@@ -182,7 +190,10 @@ const OwnedTokens = ({ data, isOwner, isLoading, fetchCreatedData, manageAddress
             dataItems.push(uploadUrl[0]);
           }
         }
-        dataItems.push(link);
+
+        if (item.adParameters.some((param) => param.adParameter.id.startsWith("linkURL"))) {
+          dataItems.push(link);
+        }
       }
 
       const argsAdSubmited = {
@@ -234,7 +245,7 @@ const OwnedTokens = ({ data, isOwner, isLoading, fetchCreatedData, manageAddress
 
   if (isLoading) {
     return (
-      <div className="flex w-full justify-center">
+      <div className="flex justify-center w-full">
         <Image src="/images/loader/loading-bullet.svg" alt="icon" width={60} height={60} />
       </div>
     );
@@ -242,7 +253,7 @@ const OwnedTokens = ({ data, isOwner, isLoading, fetchCreatedData, manageAddress
   return (
     <>
       {/* <!-- Filter --> */}
-      <div className="dark:bg-secondaryBlack dark:text-jacarta-100 rounded-2lg bg-white p-3 flex gap-4 justify-center items-center mb-6">
+      <div className="flex items-center justify-center gap-4 p-3 mb-6 bg-white dark:bg-secondaryBlack dark:text-jacarta-100 rounded-2lg">
         <span>
           {" "}
           This section lists all owned tokens, either currently in a direct listing or not listed at
@@ -252,7 +263,7 @@ const OwnedTokens = ({ data, isOwner, isLoading, fetchCreatedData, manageAddress
       </div>
       {/* <!-- Grid --> */}
       {data?.length > 0 ? (
-        <div className="flex flex-col justify-center items-center ">
+        <div className="flex flex-col items-center justify-center ">
           {" "}
           {isOwner && features.canSeeSubmittedAds && (
             <div className="flex flex-col items-center justify-center">
@@ -268,7 +279,7 @@ const OwnedTokens = ({ data, isOwner, isLoading, fetchCreatedData, manageAddress
                 />
               </div>
               {isSelectionActive && (
-                <div className="dark:bg-secondaryBlack dark:text-jacarta-100 rounded-2lg bg-white p-3 flex gap-4 justify-center items-center mb-6">
+                <div className="flex items-center justify-center gap-4 p-3 mb-6 bg-white dark:bg-secondaryBlack dark:text-jacarta-100 rounded-2lg">
                   <span>
                     Here is your tokens on the current network ({chainName}). Select tokens to
                     submit an ad on
@@ -348,7 +359,7 @@ const OwnedTokens = ({ data, isOwner, isLoading, fetchCreatedData, manageAddress
           )}
         </div>
       ) : (
-        <div className="w-full flex flex-col gap-4 justify-center items-center">
+        <div className="flex flex-col items-center justify-center w-full gap-4">
           <span>No ad space yet...</span>
           <MainButton link={`/#hot-offers`} isPurple={true} text="Buy" />
         </div>
@@ -363,18 +374,18 @@ const OwnedTokens = ({ data, isOwner, isLoading, fetchCreatedData, manageAddress
                 : "animated-modalSelectedItemUp"
           }`}
         >
-          <div className="dropdown-item mb-4 font-display   block w-full rounded-xl  text-left text-sm transition-colors dark:text-white">
+          <div className="block w-full mb-4 text-sm text-left transition-colors dropdown-item font-display rounded-xl dark:text-white">
             <span className="flex items-center justify-center gap-6">
               <span className="mr-4">
                 Ad Spaces selected :{" "}
-                <span className="text-green text-md ml-1">
+                <span className="ml-1 text-green text-md">
                   {Object.values(isSelectedItem).filter((value) => value === true).length}
                 </span>{" "}
               </span>
             </span>
           </div>
 
-          <div className="flex justify-center  gap-4 flex-wrap">
+          <div className="flex flex-wrap justify-center gap-4">
             <button
               className={` !rounded-full !min-w-[100px] !py-3 !px-8 !text-center !font-semibold !text-white !transition-all !bg-green !cursor-pointer `}
               onClick={handleSliderForm}
@@ -464,6 +475,7 @@ const OwnedTokens = ({ data, isOwner, isLoading, fetchCreatedData, manageAddress
             successFullUploadModal={successFullUploadModal}
             multipleAdsSubmission={true}
             expectedMultipleAds={selectedItems?.length}
+            shouldProvideLink={shouldProvideLink}
           />
         </div>
       )}

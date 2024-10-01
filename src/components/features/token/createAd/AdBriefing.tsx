@@ -61,7 +61,9 @@ const AdBriefing = ({
                       </div>
                     );
                   })}
-                <p className="font-display">Link :</p>
+                {selectedItems.filter((id) => id.startsWith("linkURL")).length !== 0 && (
+                  <p className="font-display">Link :</p>
+                )}
                 {selectedItems
                   .filter((id) => id.startsWith("linkURL"))
                   .map((id) => {
