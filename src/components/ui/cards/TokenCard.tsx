@@ -71,7 +71,7 @@ const TokenCard = ({
   const [isLastBidder, setIsLastBidder] = useState(false);
   const [itemProposals, setItemProposals] = useState<any>(null);
   const [availableToSubmitAd, setAvailableToSubmitAd] = useState(false);
-  const [isPendingAdsOnOffer, setIsPendingAdsOnOffer] = useState(false);
+  const [isPendingAdsOnToken, setIsPendingAdsOnToken] = useState(false);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
 
   const address = useAddress();
@@ -236,17 +236,21 @@ const TokenCard = ({
 
   useEffect(() => {
     if (offer) {
-      const pendingProposals = offer?.allProposals?.filter(
+      const token = offer?.nftContract?.tokens?.find(
+        (token) => BigInt(token?.tokenId ?? 0) === BigInt(tokenId ?? 0)
+      );
+
+      const pendingProposals = token?.allProposals?.filter(
         (proposal) => proposal?.status === "CURRENT_PENDING"
       );
 
       if (pendingProposals?.length > 0) {
-        setIsPendingAdsOnOffer(true);
+        setIsPendingAdsOnToken(true);
       } else {
-        setIsPendingAdsOnOffer(false);
+        setIsPendingAdsOnToken(false);
       }
     }
-  }, [offer]);
+  }, [offer, tokenId]);
 
   function formatDate(dateIsoString: string): string {
     if (!dateIsoString) return "date not found";
@@ -522,8 +526,8 @@ const TokenCard = ({
                   {((!!fromProfilePage &&
                     profileAddress?.toLowerCase() === address?.toLowerCase() &&
                     !!createdOffersProposals &&
-                    isPendingAdsOnOffer) ||
-                    (!fromProfilePage && !!createdOffersProposals && isPendingAdsOnOffer)) && (
+                    isPendingAdsOnToken) ||
+                    (!fromProfilePage && !!createdOffersProposals && isPendingAdsOnToken)) && (
                     <ResponsiveTooltip text="You have 1 or more ads proposals to check on your offer">
                       <ExclamationCircleIcon className="h-5 w-5 text-red dark:text-red" />
                     </ResponsiveTooltip>
