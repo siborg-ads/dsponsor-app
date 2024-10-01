@@ -39,6 +39,7 @@ const AdSubmission = ({
   selectedRoyalties,
   previewImage,
   displayedParameter,
+  imageURLSteps,
   terms = [],
   validate,
   errors,
@@ -93,6 +94,7 @@ const AdSubmission = ({
   expectedMultipleAds?: number;
 }) => {
   const [imageRatios, setImageRatios] = React.useState<any[]>([]);
+  const [allImages, setAllImages] = React.useState<any[]>([]);
 
   const { setSelectedChain } = useSwitchChainContext();
   useEffect(() => {
@@ -175,6 +177,17 @@ const AdSubmission = ({
       setImageRatios(imageRatios);
     }
   }, [imageRatioDisplay, imageUrlVariants, previewImage]);
+
+  useEffect(() => {
+    if (!previewImage) return;
+    let allImages: any[] = [];
+
+    imageURLSteps.forEach((step: any, index: number) => {
+      allImages.push({ image: previewImage[index], ratio: step.uniqueId });
+    });
+
+    setAllImages(allImages);
+  }, [previewImage, imageURLSteps]);
 
   if (adSubmission && !successFullUpload) {
     return (
@@ -325,25 +338,21 @@ const AdSubmission = ({
                 </div>
               )}
 
-              {(previewImage?.length as number) > 0 &&
-                Array.from({ length: expectedMultipleAds as number })?.map((_, index: number) => (
+              {(allImages?.length as number) > 0 &&
+                allImages.map((image, index: number) => (
                   <div className="flex flex-col w-full gap-2" key={index}>
                     <div className="flex items-center justify-between gap-2">
                       <span className="block dark:text-jacarta-100">
-                        Image {index + 1} - (
-                        {imageRatios[index]
-                          ? `${imageRatios[index][0]}:${imageRatios[index][1]}`
-                          : "N/A"}
-                        )
+                        Image {index + 1} - ({image.ratio ? image.ratio : "No restriction"})
                       </span>
 
                       <span className="font-semibold text-red">
-                        {!previewImage?.[index] && "No image provided"}
+                        {!image.image && "No image provided"}
                       </span>
                     </div>
                     <div className="flex flex-col items-center justify-center gap-2">
                       <Image
-                        src={previewImage?.[index] as string}
+                        src={image.image}
                         width={1600}
                         height={380}
                         className="w-full h-auto bg-jacarta-200"
@@ -351,10 +360,9 @@ const AdSubmission = ({
                         style={{
                           objectFit: "contain",
                           objectPosition: "center",
-                          aspectRatio:
-                            imageRatios?.length > 0
-                              ? `${imageRatios[index] ? imageRatios[index][0] : 1}/${imageRatios[index] ? imageRatios[index][1] : 1}`
-                              : "1/1"
+                          aspectRatio: image.ratio
+                            ? `${image.ratio.split(":")[0]}/${image.ratio.split(":")[1]}`
+                            : "auto"
                         }}
                       />
                     </div>
@@ -413,12 +421,49 @@ const AdSubmission = ({
 
         <div className="flex items-center w-full gap-4 p-6 modal-body">
           {!successFullUpload ? (
-            <div className="flex flex-col justify-between w-full gap-8 md:gap-32 md:flex-row">
+            <div className="flex flex-col justify-between w-full gap-8">
+              {previewImage?.map((image: any, index: number) => (
+                <div className="flex flex-col items-start justify-start gap-2" key={index}>
+                  <div
+                    className="relative flex flex-col items-center justify-center max-w-md border-2 border-dashed rounded-lg dark:bg-secondaryBlack dark:border-jacarta-800 border-jacarta-100 group"
+                    style={{
+                      width:
+                        imageUrlVariants.length > 0 ? `${imageRatioDisplay(index)[0]}px` : "275px",
+                      height:
+                        imageUrlVariants.length > 0 ? `${imageRatioDisplay(index)[1]}px` : "275px",
+                      position: "relative"
+                    }}
+                  >
+                    <Image
+                      src={image ?? ""}
+                      fill={true}
+                      alt="Preview"
+                      className="object-contain h-full p-1"
+                    />
+                  </div>
+                  <label
+                    htmlFor="item-description"
+                    className="text-sm text-center text-jacarta-100"
+                  >
+                    {imageUrlVariants[index] && `( ratio ${imageUrlVariants[index]} )`} Preview
+                  </label>
+                </div>
+              ))}
+
+              {previewImage?.length === 0 && (
+                <div className="flex flex-col w-full gap-2">
+                  <span className="font-semibold text-red">No image provided</span>
+                </div>
+              )}
+
+              <Divider className="block md:hidden" />
+
               <div className="flex flex-col w-full gap-4">
                 <p className="block font-display dark:text-white">
                   {(name as string)?.length > 0 ? (
                     <span className="flex flex-col text-sm dark:text-jacarta-100 text-jacarta-100">
-                      Name<span className="text-base dark:text-white">{name}</span>
+                      Name
+                      <span className="text-base break-words dark:text-white">{name}</span>
                     </span>
                   ) : !name ? (
                     <span className="flex flex-col text-sm dark:text-jacarta-100 text-jacarta-100">
@@ -432,7 +477,7 @@ const AdSubmission = ({
                   {(description as string)?.length > 0 ? (
                     <span className="flex flex-col text-sm dark:text-jacarta-100 text-jacarta-100">
                       Description
-                      <span className="text-base dark:text-white">{description}</span>
+                      <span className="text-base break-words dark:text-white">{description}</span>
                     </span>
                   ) : !description ? (
                     <span className="flex flex-col text-sm dark:text-jacarta-100 text-jacarta-100">
@@ -454,7 +499,7 @@ const AdSubmission = ({
                             href={link as string}
                             passHref
                             target="_blank"
-                            className="text-primaryPurple hover:underline hover:text-opacity-80"
+                            className="overflow-hidden truncate text-primaryPurple hover:underline hover:text-opacity-80"
                           >
                             {(link as string).length > 70
                               ? `${(link as string).slice(0, 20)}...${(link as string).slice(-20)}`
@@ -614,7 +659,7 @@ const AdSubmission = ({
                         href={terms}
                         passHref
                         target="_blank"
-                        className="text-primaryPurple hover:underline hover:text-opacity-80"
+                        className="overflow-hidden truncate text-primaryPurple hover:underline hover:text-opacity-80"
                       >
                         {terms.length > 70 ? `${terms.slice(0, 20)}...${terms.slice(-20)}` : terms}
                       </Link>
@@ -622,42 +667,6 @@ const AdSubmission = ({
                   </p>
                 )}
               </div>
-
-              <Divider className="block md:hidden" />
-
-              {previewImage?.map((image: any, index: number) => (
-                <div className="flex flex-col items-start justify-start gap-2" key={index}>
-                  <label
-                    htmlFor="item-description"
-                    className="text-sm text-center font-display text-jacarta-100"
-                  >
-                    Image {imageUrlVariants[index] && `( ratio ${imageUrlVariants[index]} )`}{" "}
-                    preview
-                  </label>
-                  <div
-                    className="relative flex flex-col items-center justify-center max-w-md border-2 border-dashed rounded-lg dark:bg-secondaryBlack dark:border-jacarta-800 border-jacarta-100 group"
-                    style={{
-                      width:
-                        imageUrlVariants.length > 0 ? `${imageRatioDisplay(index)[0]}px` : "275px",
-                      height:
-                        imageUrlVariants.length > 0 ? `${imageRatioDisplay(index)[1]}px` : "275px",
-                      position: "relative"
-                    }}
-                  >
-                    <Image
-                      src={image ?? ""}
-                      fill={true}
-                      alt="Preview"
-                      className="object-contain h-full p-1"
-                    />
-                  </div>
-                </div>
-              ))}
-              {previewImage?.length === 0 && (
-                <div className="flex flex-col w-full gap-2">
-                  <span className="font-semibold text-red">No image provided</span>
-                </div>
-              )}
             </div>
           ) : (
             <div className="flex flex-col gap-2">
