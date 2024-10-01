@@ -327,7 +327,7 @@ const Profile = () => {
             toKeepActivities: toKeepActivities
               ? toKeepActivities.map((e) => ({ ...e, chainConfig }))
               : [],
-            activityData: activityData ? activityData : {}
+            activityData: activityData ?? {}
           };
         })
       );

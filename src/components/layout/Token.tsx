@@ -143,7 +143,6 @@ const Token = () => {
   const [airdropContainer, setAirdropContainer] = useState(true);
   const [amountInEthWithSlippage, setAmountInEthWithSlippage] = useState<BigNumber | null>(null);
   const [displayedPrice, setDisplayedPrice] = useState<number | null>(null);
-  const [isOfferOwner, setIsOfferOwner] = useState(false);
   const [directBuyPriceBN, setDirectBuyPriceBN] = useState<BigNumber | undefined>(undefined);
   const [auctionPriceBN, setAuctionPriceBN] = useState<BigNumber | undefined>(undefined);
   const [mintPriceBN, setMintPriceBN] = useState<BigNumber | undefined>(undefined);
@@ -180,27 +179,6 @@ const Token = () => {
   const [failedCrossmintTransaction, setFailedCrossmintTransaction] = useState(false);
   const [tokenSymbol, setTokenSymbol] = useState<string | null>(null);
   const [tokenDecimals, setTokenDecimals] = useState<number | null>(null);
-  const [isMintable, setIsMintable] = useState(false);
-
-  React.useEffect(() => {
-    if (offerData) {
-      const token = offerData?.nftContract?.tokens?.find(
-        (token) =>
-          !!token?.tokenId && tokenId && BigInt(token?.tokenId) === BigInt(tokenId as string)
-      );
-
-      const nftContract = offerData?.nftContract;
-      const hasEnabledPrice = nftContract?.prices?.some((price) => price.enabled);
-      const isPermissionless = !nftContract?.allowList;
-      const isTokenInAllowList = token?.setInAllowList;
-
-      if (hasEnabledPrice && (isPermissionless || isTokenInAllowList)) {
-        setIsMintable(true);
-      } else {
-        setIsMintable(false);
-      }
-    }
-  }, [offerData, tokenId]);
 
   const { contract: currencyContract } = useContract(tokenCurrencyAddress, ERC20ABI);
   const { data: tokenSymbolData } = useContractRead(currencyContract, "symbol");
@@ -647,7 +625,7 @@ const Token = () => {
       }
       setTags(toUpdateTags);
     }
-  }, [chainId, offerData, tokenId, address]);
+  }, [chainId, offerData, tokenId, address, referralAddress]);
 
   useEffect(() => {
     let bids: any[] = [];
@@ -1225,7 +1203,6 @@ const Token = () => {
     }
 
     if (address && offerData?.admins?.includes(address?.toLowerCase())) {
-      setIsOfferOwner(true);
       setIsAdmin(true);
     }
   }, [
@@ -2590,7 +2567,7 @@ const Token = () => {
                           className="w-full"
                         />
 
-                        {!isAddress(transferAddress || "") && (transferAddress || "") !== "" && (
+                        {!isAddress(transferAddress ?? "") && (transferAddress ?? "") !== "" && (
                           <span className="text-sm text-red">Invalid address</span>
                         )}
                         {transferAddress?.toLowerCase() === address.toLowerCase() && (
@@ -2627,7 +2604,7 @@ const Token = () => {
                                 error: "Transfer failed ❌"
                               });
                             }}
-                            isDisabled={!isAddress(transferAddress || "") || !isValidId}
+                            isDisabled={!isAddress(transferAddress ?? "") || !isValidId}
                             defaultText="Transfer"
                           />
                         </div>
