@@ -1234,7 +1234,6 @@ const Token = () => {
     }
 
     if (address && offerData?.admins?.includes(address?.toLowerCase())) {
-      setIsOfferOwner(true);
       setIsAdmin(true);
     }
   }, [
