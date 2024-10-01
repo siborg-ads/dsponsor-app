@@ -50,8 +50,7 @@ const AdSubmission = ({
   address,
   adSubmission,
   multipleAdsSubmission,
-  createOffer,
-  expectedMultipleAds
+  createOffer
 }: {
   chainConfig: ChainObject;
   approvalForAllToken?: boolean;
@@ -91,7 +90,6 @@ const AdSubmission = ({
   adSubmission?: boolean;
   multipleAdsSubmission?: boolean;
   createOffer?: boolean;
-  expectedMultipleAds?: number;
 }) => {
   const [imageRatios, setImageRatios] = React.useState<any[]>([]);
   const [allImages, setAllImages] = React.useState<any[]>([]);
@@ -115,7 +113,7 @@ const AdSubmission = ({
     return () => {
       window.removeEventListener("keydown", handleEscape);
     };
-  }, []);
+  }, [handlePreviewModal]);
 
   const formatDate = (date) => {
     if (!date) return "";

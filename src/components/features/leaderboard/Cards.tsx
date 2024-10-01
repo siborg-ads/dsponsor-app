@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import Link from "next/link";
 import { InformationCircleIcon } from "@heroicons/react/20/solid";
 import { Popover, PopoverTrigger, PopoverContent } from "@nextui-org/popover";
 

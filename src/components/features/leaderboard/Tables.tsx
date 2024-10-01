@@ -3,7 +3,6 @@ import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import Link from "next/link";
 import activityToTopPoints from "@/utils/tables/activityToTopPoints";
 import activityToHighestTransactions from "@/utils/tables/activityToHighestTransactions";
-import Cards from "@/components/features/leaderboard/Cards";
 import formatLongAddress from "@/utils/addresses/formatLongAddress";
 import { useAddress } from "@thirdweb-dev/react";
 import { formatUnits, getAddress } from "ethers/lib/utils";
