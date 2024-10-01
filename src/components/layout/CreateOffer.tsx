@@ -685,6 +685,8 @@ const CreateOffer = () => {
             handleLogoUpload={handleLogoUpload}
             numSteps={numSteps}
             currentSlide={currentSlide}
+            selectedParameters={selectedParameter}
+            setSelectedParameters={setSelectedParameter}
           />
 
           <OfferValidity
