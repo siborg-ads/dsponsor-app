@@ -372,13 +372,17 @@ const AdValidation = ({
         <TabPanel>
           <div className="container relative p-0 mb-12">
             {/* <!-- Filter --> */}
-            <ValidatedOrRefusedAds statut={true} proposalData={[]} isToken={false} />
+            <ValidatedOrRefusedAds
+              statut={true}
+              proposalData={validatedProposalData}
+              isToken={false}
+            />
           </div>
         </TabPanel>
         <TabPanel>
           <div className="container relative p-0 mb-12">
             {/* <!-- Filter --> */}
-            <ValidatedOrRefusedAds statut={false} proposalData={[]} />
+            <ValidatedOrRefusedAds statut={false} proposalData={refusedProposalData} />
           </div>
         </TabPanel>
         <TabPanel>
