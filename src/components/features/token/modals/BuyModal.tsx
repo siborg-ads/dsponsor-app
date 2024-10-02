@@ -397,9 +397,8 @@ const BuyModal = ({
                           <div
                             className={`grid grid-cols-1 mx-auto ${totalPrice > 0 && chainIdIsCorrect && address && "md:grid-cols-2"} gap-6 w-full`}
                           >
-                            {config[Number(chainId)]?.gaslessBalanceThreshold &&
-                            nativeTokenBalance?.value?.gte(
-                              BigNumber.from(config[Number(chainId)]?.gaslessBalanceThreshold)
+                            {nativeTokenBalance?.value?.gte(
+                              BigNumber.from(config[Number(chainId)]?.gaslessBalanceThreshold ?? 0)
                             ) ? (
                               <React.Fragment>
                                 {totalPrice > 0 && (
@@ -439,11 +438,7 @@ const BuyModal = ({
                                   });
                                 }}
                                 isDisabled={true}
-                                defaultText={
-                                  config?.[Number(chainId)]?.gaslessBalanceThreshold
-                                    ? `You need more than ${formatUnits(BigNumber.from(config?.[Number(chainId)]?.gaslessBalanceThreshold), "ether")} ETH to execute this tx.`
-                                    : `Gasless is disabled on this network.`
-                                }
+                                defaultText={`You need more than ${formatUnits(BigNumber.from(config?.[Number(chainId)]?.gaslessBalanceThreshold ?? 0), "ether")} ETH to execute this tx.`}
                               />
                             )}
 

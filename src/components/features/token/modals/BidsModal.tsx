@@ -826,9 +826,8 @@ const BidsModal = ({
                       <>
                         {!insufficentBalance ? (
                           <>
-                            {!!config[chainId]?.gaslessBalanceThreshold &&
-                            nativeTokenBalance?.value?.gte(
-                              BigNumber.from(config[chainId]?.gaslessBalanceThreshold)
+                            {nativeTokenBalance?.value?.gte(
+                              BigNumber.from(config[chainId]?.gaslessBalanceThreshold ?? 0)
                             ) ? (
                               <StyledWeb3Button
                                 contractAddress={
@@ -865,11 +864,7 @@ const BidsModal = ({
                                   });
                                 }}
                                 isDisabled={true}
-                                defaultText={
-                                  config?.[chainId]?.gaslessBalanceThreshold
-                                    ? `You need more than ${formatUnits(BigNumber.from(config[chainId].gaslessBalanceThreshold), "ether")} ETH to execute this tx.`
-                                    : "Gasless is disabled on this network."
-                                }
+                                defaultText={`You need more than ${formatUnits(BigNumber.from(config[chainId].gaslessBalanceThreshold ?? 0), "ether")} ETH to execute this tx.`}
                               />
                             )}
 
