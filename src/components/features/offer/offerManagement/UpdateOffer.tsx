@@ -642,12 +642,22 @@ const UpdateOffer = ({
       <div className="flex items-center gap-8">
         <div className="mb-4">
           <label className="block mb-2 text-sm font-semibold text-gray-700">Valid From</label>
-          <DatePicker className="max-w-md" value={validDateFrom} onChange={setValidDateFrom} />
+          <DatePicker
+            className="max-w-md"
+            value={validDateFrom}
+            onChange={setValidDateFrom}
+            showMonthAndYearPickers
+          />
         </div>
 
         <div className="mb-4">
           <label className="block mb-2 text-sm font-semibold text-gray-700">Valid To</label>
-          <DatePicker className="max-w-md" value={validDateTo} onChange={setValidDateTo} />
+          <DatePicker
+            className="max-w-md"
+            value={validDateTo}
+            onChange={setValidDateTo}
+            showMonthAndYearPickers
+          />
         </div>
       </div>
 

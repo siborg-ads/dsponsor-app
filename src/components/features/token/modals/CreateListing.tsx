@@ -3,7 +3,7 @@ import { features } from "@/data/features";
 import { useAddress, useContract, useContractWrite, useContractRead } from "@thirdweb-dev/react";
 import "react-toastify/dist/ReactToastify.css";
 import { ethers } from "ethers";
-import DatePicker from "react-datepicker";
+import { DatePicker } from "@nextui-org/react";
 import ModalHelper from "@/components/ui/modals/Helper";
 import AdSubmission from "@/components/features/token/accordion/AdSubmission";
 import Input from "@/components/ui/Input";
@@ -11,6 +11,7 @@ import { TokenContract } from "@thirdweb-dev/react";
 import { Address } from "thirdweb";
 import config from "@/config/config";
 import { Currency } from "@/components/layout/CreateOffer";
+import { getLocalTimeZone, today, parseDate, parseAbsoluteToLocal } from "@internationalized/date";
 
 import ERC20ABI from "@/abi/ERC20.json";
 
@@ -514,23 +515,30 @@ const CreateListing = ({
                                 <div className="flex flex-col items-center gap-4 mb-3 text-jacarta-900 dark:text-white">
                                   <div className="flex flex-col items-center justify-center gap-1">
                                     <DatePicker
-                                      minDate={new Date()}
-                                      selected={startDate}
+                                      minValue={today(getLocalTimeZone())}
+                                      value={parseAbsoluteToLocal(
+                                        new Date(startDate).toISOString()
+                                      )}
                                       onChange={(date) => {
-                                        if (date < new Date()) {
+                                        if (date < parseAbsoluteToLocal(new Date().toISOString())) {
                                           setStartDate(new Date());
                                         } else {
-                                          setStartDate(date);
+                                          setStartDate(
+                                            new Date(
+                                              date.year,
+                                              date.month - 1,
+                                              date.day,
+                                              date.hour,
+                                              date.minute
+                                            )
+                                          );
                                         }
                                       }}
-                                      showMonthDropdown
-                                      popperPlacement="bottom-start"
-                                      showYearDropdown
-                                      showTimeSelect
-                                      dateFormat="MMMM d, yyyy h:mm aa"
-                                      className="z-50 w-full px-3 py-3 rounded-lg dark:bg-secondaryBlack border-jacarta-100 hover:ring-primaryPurple/10 focus:ring-primaryPurple dark:border-jacarta-800 dark:placeholder:text-jacarta-100 hover:ring-2 dark:text-white"
-                                      style={{ width: "357px" }}
+                                      showMonthAndYearPickers
+                                      hideTimeZone
+                                      hourCycle={24}
                                     />
+
                                     <div className="flex items-center justify-center gap-2">
                                       <span className="text-jacarta-900 dark:text-white">
                                         Start date
@@ -540,21 +548,26 @@ const CreateListing = ({
                                   </div>
                                   <div className="flex flex-col items-center justify-center gap-1">
                                     <DatePicker
-                                      minDate={new Date()}
-                                      selected={endDate}
+                                      minValue={today(getLocalTimeZone())}
+                                      value={parseAbsoluteToLocal(new Date(endDate).toISOString())}
                                       onChange={(date) => {
-                                        if (date < new Date()) {
-                                          setEndDate(new Date());
+                                        if (date < parseAbsoluteToLocal(endDate.toISOString())) {
+                                          setEndDate(endDate);
                                         } else {
-                                          setEndDate(date);
+                                          setEndDate(
+                                            new Date(
+                                              date.year,
+                                              date.month - 1,
+                                              date.day,
+                                              date.hour,
+                                              date.minute
+                                            )
+                                          );
                                         }
                                       }}
-                                      showMonthDropdown
-                                      popperPlacement="bottom-end"
-                                      showYearDropdown
-                                      showTimeSelect
-                                      dateFormat="MMMM d, yyyy h:mm aa"
-                                      className="z-50 w-full px-3 py-3 rounded-lg dark:bg-secondaryBlack border-jacarta-100 hover:ring-primaryPurple/10 focus:ring-primaryPurple dark:border-jacarta-800 dark:placeholder:text-jacarta-100 hover:ring-2 dark:text-white"
+                                      showMonthAndYearPickers
+                                      hideTimeZone
+                                      hourCycle={24}
                                     />
                                     <div className="flex items-center justify-center gap-2">
                                       <span className="text-jacarta-900 dark:text-white">
