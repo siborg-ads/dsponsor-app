@@ -92,7 +92,7 @@ const CreateListing = ({
     return () => {
       window.removeEventListener("keydown", handleEsc);
     };
-  }, []);
+  }, [handleListingModal]);
 
   useEffect(() => {
     const currencies = Object.entries(
