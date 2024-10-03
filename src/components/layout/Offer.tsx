@@ -107,7 +107,6 @@ const Offer = () => {
 
   const [nftContractAddress, setNftContractAddress] = useState<Address | null>(null);
   const { contract } = useContract(nftContractAddress, DSponsorNFTABI);
-  console.log({ nftContractAddress, DSponsorNFTABI, contract });
   const { data: owner } = useContractRead(contract, "owner");
   /*
   const [currencyDecimals, setCurrencyDecimals] = useState<number | null>(null);

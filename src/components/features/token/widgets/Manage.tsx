@@ -149,7 +149,7 @@ const Manage = ({
     ) {
       return (
         <div className="w-full flex justify-center">
-          <NormalButton onClick={handleListingModal} defaultText="Create a listing" />
+          <NormalButton onClick={handleListingModal}>Create a listing</NormalButton>
         </div>
       );
     }
