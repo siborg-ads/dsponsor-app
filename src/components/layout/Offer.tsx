@@ -41,6 +41,7 @@ import DsponsorNftABI from "@/abi/dsponsorNFT.json";
 import { getOwnershipPeriod } from "@/utils/dates/period";
 
 import ERC20ABI from "@/abi/ERC20.json";
+import DSponsorNFTABI from "@/abi/dsponsorNFT.json";
 import { ChainObject } from "@/types/chain";
 import { Address } from "thirdweb";
 import isUrlValid from "@/utils/misc/isUrlValid";
@@ -105,7 +106,8 @@ const Offer = () => {
   const [sortOption, setSortOption] = useState<SortOptionsType>("Sort by name");
 
   const [nftContractAddress, setNftContractAddress] = useState<Address | null>(null);
-  const { contract } = useContract(nftContractAddress);
+  const { contract } = useContract(nftContractAddress, DSponsorNFTABI);
+  console.log({ nftContractAddress, DSponsorNFTABI, contract });
   const { data: owner } = useContractRead(contract, "owner");
   /*
   const [currencyDecimals, setCurrencyDecimals] = useState<number | null>(null);
