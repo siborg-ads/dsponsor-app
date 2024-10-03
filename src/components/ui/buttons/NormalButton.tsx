@@ -1,10 +1,11 @@
 import React from "react";
 
 const NormalButton = ({
+  children,
   ...props
 }: {
   isDisabled?: boolean;
-  defaultText: string;
+  children?: React.ReactNode;
   // eslint-disable-next-line no-unused-vars
   onClick: () => Promise<void> | void;
   // eslint-disable-next-line no-unused-vars
@@ -30,7 +31,7 @@ const NormalButton = ({
         props.onClick();
       }}
     >
-      {props.defaultText}
+      {children}
     </button>
   );
 };

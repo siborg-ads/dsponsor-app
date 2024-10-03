@@ -201,7 +201,9 @@ const Payments = ({ offer, chainConfig }: { offer: any; chainConfig: ChainObject
 
   const handleAddress = (
     value: string,
+    // eslint-disable-next-line no-unused-vars
     setValue: (value: SetStateAction<`0x${string}` | null | string>) => void,
+    // eslint-disable-next-line no-unused-vars
     setIsValidValue: (value: boolean) => void
   ) => {
     if (!value) {

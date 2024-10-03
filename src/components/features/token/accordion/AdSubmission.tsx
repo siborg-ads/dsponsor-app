@@ -115,7 +115,7 @@ const AdSubmission = ({
     return () => {
       window.removeEventListener("keydown", handleEscape);
     };
-  }, []);
+  }, [handlePreviewModal]);
 
   const formatDate = (date) => {
     if (!date) return "";
@@ -752,7 +752,7 @@ const AdSubmission = ({
                   </button>
                 </Link>
               ) : (
-                <NormalButton onClick={() => handlePreviewModal()} defaultText="Close" />
+                <NormalButton onClick={() => handlePreviewModal()}>Close</NormalButton>
               )}
             </div>
           </div>

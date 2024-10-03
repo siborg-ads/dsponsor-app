@@ -36,7 +36,7 @@ const ChainSelector = ({ setChainConfig }) => {
         onChange={onChange}
         className="bg-jacarta-800 border-jacarta-100 rounded-lg py-3 px-15"
       >
-        {Object.entries(config).map(([_, value], index) => (
+        {Object.entries(config).map(([, value], index) => (
           <option key={index + 1} value={value.chainName}>
             {value.chainName}
           </option>

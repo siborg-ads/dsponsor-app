@@ -164,8 +164,9 @@ const PlaceBid = ({
                 toggleBidsModal();
               }}
               isDisabled={!isValidId}
-              defaultText="Place a bid"
-            />
+            >
+              Place a bid
+            </NormalButton>
           </div>
         </div>
 
