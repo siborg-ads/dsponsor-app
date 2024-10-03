@@ -146,6 +146,7 @@ const Token = () => {
   const [directBuyPriceBN, setDirectBuyPriceBN] = useState<BigNumber | undefined>(undefined);
   const [auctionPriceBN, setAuctionPriceBN] = useState<BigNumber | undefined>(undefined);
   const [mintPriceBN, setMintPriceBN] = useState<BigNumber | undefined>(undefined);
+  const [isOfferOwner, setIsOfferOwner] = useState<boolean>(false);
   const [hasEnoughBalance, setHasEnoughBalance] = useState<boolean>(true);
   const [hasEnoughBalanceForNative, setHasEnoughBalanceForNative] = useState<boolean>(true);
   const [
@@ -1184,6 +1185,12 @@ const Token = () => {
       setIsOwner(true);
     }
   }, [isUserOwner, address]);
+
+  useEffect(() => {
+    if (offerData?.admins?.includes(address?.toLowerCase())) {
+      setIsOfferOwner(true);
+    }
+  }, [address, offerData]);
 
   useEffect(() => {
     if (!isUserOwner || !marketplaceListings || !address) return;
@@ -2746,7 +2753,7 @@ const Token = () => {
                   <AdValidation
                     chainConfig={chainConfig}
                     offer={offerData}
-                    isOwner={isOwner}
+                    isOwner={isOfferOwner}
                     fromToken={true}
                     isAdmin={isAdmin}
                     successFullRefuseModal={successFullRefuseModal}
