@@ -437,7 +437,7 @@ const Token = () => {
   const { mutateAsync: mintAndSubmit } = useContractWrite(DsponsorAdminContract, "mintAndSubmit");
   const { mutateAsync: submitAd } = useContractWrite(DsponsorAdminContract, "submitAdProposals");
   const { contract: tokenContract } = useContract(tokenCurrencyAddress, ERC20ABI);
-  const { data: tokenBalance } = useBalance(tokenCurrencyAddress as Address);
+  const { data: tokenBalance } = useBalance(tokenCurrencyAddress ?? "");
   const { mutateAsync: approve } = useContractWrite(tokenContract, "approve");
 
   const { contract: DsponsorNFTContract } = useContract(offerData?.nftContract?.id, DsponsorNFTABI);
@@ -2277,7 +2277,7 @@ const Token = () => {
               </div>
 
               {showEntireDescription ? (
-                <p className="mb-10 dark:text-jacarta-100">
+                <span className="mb-10 dark:text-jacarta-100">
                   {addLineBreaks(description)}{" "}
                   {description?.length > 1000 && (
                     <button
@@ -2287,10 +2287,10 @@ const Token = () => {
                       Show less
                     </button>
                   )}
-                </p>
+                </span>
               ) : (
                 <div>
-                  <p className="mb-10 dark:text-jacarta-100">
+                  <span className="mb-10 dark:text-jacarta-100">
                     {description?.length > 1000
                       ? addLineBreaks(description?.slice(0, 1000) + "...")
                       : addLineBreaks(description)}{" "}
@@ -2302,7 +2302,7 @@ const Token = () => {
                         Show more
                       </button>
                     )}
-                  </p>
+                  </span>
                 </div>
               )}
 
