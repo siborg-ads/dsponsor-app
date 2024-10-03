@@ -63,7 +63,7 @@ const abstractTestnetConfig: ChainObject = {
       },
       USDC: {
         address: "0xa70e901a190c5605a5137a1019c6514F5a626517",
-        decimals: 6,
+        decimals: 18,
         symbol: "USDC"
       }
     },
