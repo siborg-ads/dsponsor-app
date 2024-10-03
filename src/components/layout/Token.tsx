@@ -2753,9 +2753,9 @@ const Token = () => {
                   <AdValidation
                     chainConfig={chainConfig}
                     offer={offerData}
-                    isOwner={isOfferOwner}
+                    isOwner={isOwner}
                     fromToken={true}
-                    isAdmin={isAdmin}
+                    isAdmin={isOfferOwner}
                     successFullRefuseModal={successFullRefuseModal}
                     setRefusedValidatedAdModal={setRefusedValidatedAdModal}
                     refusedValidatedAdModal={refusedValidatedAdModal}
