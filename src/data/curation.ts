@@ -20,6 +20,7 @@ export const marketplaceOffersCuration = {
     // 1,
     2
   ],
+  11124: [1],
   34443: Array.from({ length: 50 }, (_, i) => i),
   11155111: [1, ...Array.from({ length: 50 }, (_, i) => 20 + i)]
 };
@@ -63,6 +64,7 @@ export function curationData(baseURL: string): CurationData {
         inTrending: true
       }
     ],
+    11124: [],
     11155111: [
       {
         logo: "/images/siborg-ads/siborg-ads.png",
