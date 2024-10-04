@@ -15,6 +15,7 @@ import { ChainObject } from "@/types/chain";
 import { useSwitchChainContext } from "@/providers/SwitchChain";
 import { cn } from "@/lib/utils";
 import isUrlValid from "@/utils/misc/isUrlValid";
+import { StepType } from "../../profile/tabs/OwnedTokens";
 
 const AdSubmission = ({
   chainConfig,
@@ -52,7 +53,8 @@ const AdSubmission = ({
   multipleAdsSubmission,
   createOffer,
   expectedMultipleAds,
-  shouldProvideLink = true
+  shouldProvideLink = true,
+  steps
 }: {
   chainConfig: ChainObject;
   approvalForAllToken?: boolean;
@@ -94,6 +96,7 @@ const AdSubmission = ({
   createOffer?: boolean;
   expectedMultipleAds?: number;
   shouldProvideLink?: boolean;
+  steps: StepType[];
 }) => {
   const [imageRatios, setImageRatios] = React.useState<any[]>([]);
   const [allImages, setAllImages] = React.useState<any[]>([]);
@@ -134,10 +137,12 @@ const AdSubmission = ({
   };
 
   const imageRatioDisplay = React.useCallback(
-    (id) => {
-      if (!imageUrlVariants[id]) return [];
+    (index: number) => {
+      if (!steps[index]) return [];
 
-      const ratios = imageUrlVariants[id].split(":");
+      const imageVariant = steps[index].adParameter.slice("imageURL-".length);
+
+      const ratios = imageVariant.split(":");
       const stepWidth = 250;
       let width = Number(ratios[0]);
       let height = Number(ratios[1]);
@@ -156,42 +161,49 @@ const AdSubmission = ({
 
       return ratioArray;
     },
-    [imageUrlVariants]
+    [steps]
   );
 
   useEffect(() => {
-    if (imageUrlVariants.length > 0) {
+    if (steps.length > 0) {
       let imageRatios: string[][] = [];
 
-      imageUrlVariants?.forEach((image: any, index: number) => {
-        if (index < (previewImage?.length as number)) {
-          const preSplit = image.split("-");
+      const imageUrlVariants = steps
+        .filter(({ adParameter }) => adParameter.startsWith("imageURL"))
+        .map(({ adParameter }) => adParameter.slice("imageURL-".length));
 
-          const imageRatio =
-            preSplit.length === 2 ? preSplit[1].split(":") : preSplit[0].split(":");
+      imageUrlVariants.forEach((image: any, index: number) => {
+        const preSplit = image.split("-");
 
-          if (imageRatio.length === 2) {
-            imageRatios.push(imageRatio);
-          } else {
-            imageRatios.push([imageRatio[0], imageRatio[0]]);
-          }
+        const imageRatio = preSplit.length === 2 ? preSplit[1].split(":") : preSplit[0].split(":");
+
+        if (imageRatio.length === 2) {
+          imageRatios.push(imageRatio);
+        } else {
+          imageRatios.push([imageRatio[0], imageRatio[0]]);
         }
       });
 
       setImageRatios(imageRatios);
     }
-  }, [imageRatioDisplay, imageUrlVariants, previewImage]);
+  }, [steps]);
 
   useEffect(() => {
-    if (!previewImage) return;
+    if (!steps) return;
     let allImages: any[] = [];
 
-    imageURLSteps.forEach((step: any, index: number) => {
-      allImages.push({ image: previewImage[index], ratio: step.uniqueId });
-    });
+    // imageURLSteps.forEach((step: any, index: number) => {
+    //   allImages.push({ image: previewImage[index], ratio: step.uniqueId });
+    // });
+
+    steps
+      .filter(({ adParameter, selected }) => adParameter.startsWith("imageURL") && selected)
+      .forEach((step) => {
+        allImages.push({ image: step.previewImage, ratio: step.adParameter });
+      });
 
     setAllImages(allImages);
-  }, [previewImage, imageURLSteps]);
+  }, [steps]);
 
   if (adSubmission && !successFullUpload) {
     return (
@@ -322,29 +334,26 @@ const AdSubmission = ({
           </div>
           <div className="flex gap-4 p-6 modal-body">
             <div className="flex flex-col flex-wrap w-full gap-4 md:flex-row">
-              {shouldProvideLink && (
-                <div className="flex items-center justify-between w-full gap-2">
-                  <span className="block dark:text-jacarta-100">Link </span>
-                  <span
-                    className={cn(
-                      "font-semibold",
-                      isUrlValid(link.toString()) ? "text-green" : "text-red"
-                    )}
-                  >
-                    {!link || link === ""
-                      ? "No link provided"
-                      : isUrlValid(link.toString())
-                        ? link
-                        : "Link should start with https://"}
-                  </span>
-                </div>
-              )}
-
-              {previewImage?.length === 0 && (
-                <div className="flex flex-col w-full gap-2">
-                  <span className="font-semibold text-red">No images provided</span>
-                </div>
-              )}
+              {shouldProvideLink &&
+                steps.filter(
+                  ({ adParameter, selected }) => adParameter.startsWith("linkURL") && selected
+                ).length !== 0 && (
+                  <div className="flex items-center justify-between w-full gap-2">
+                    <span className="block dark:text-jacarta-100">Link </span>
+                    <span
+                      className={cn(
+                        "font-semibold",
+                        isUrlValid(link.toString()) ? "text-green" : "text-red"
+                      )}
+                    >
+                      {!link || link === ""
+                        ? "No link provided"
+                        : isUrlValid(link.toString())
+                          ? link
+                          : "Link should start with https://"}
+                    </span>
+                  </div>
+                )}
 
               {(allImages?.length as number) > 0 &&
                 allImages.map((image, index: number) => (

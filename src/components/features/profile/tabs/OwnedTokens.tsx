@@ -13,6 +13,15 @@ import MainButton from "@/components/ui/buttons/MainButton";
 import { features } from "@/data/features";
 import config from "@/config/config";
 
+export type StepType = {
+  offerIds: string[];
+  selected: boolean;
+  adParameter: string;
+  data?: any;
+  file?: any;
+  previewImage?: any;
+};
+
 const OwnedTokens = ({ data, isOwner, isLoading, fetchCreatedData, manageAddress }) => {
   const { chainId, name: chainName } = useChain() || {};
   const currentChainObject = config[chainId as number];
@@ -35,6 +44,7 @@ const OwnedTokens = ({ data, isOwner, isLoading, fetchCreatedData, manageAddress
   const [currentSlide, setCurrentSlide] = useState(0);
   const [imageUrlVariants, setImageUrlVariants] = useState<any[]>([]);
   const [shouldProvideLink, setShouldProvideLink] = useState(false);
+  const [steps, setSteps] = useState<StepType[]>([]);
   const stepsRef = useRef([]);
   const [numSteps, setNumSteps] = useState(2);
   const { contract: DsponsorAdminContract } = useContract(
@@ -74,15 +84,27 @@ const OwnedTokens = ({ data, isOwner, isLoading, fetchCreatedData, manageAddress
     });
   };
 
-  const handleLogoUpload = (file, index, step) => {
+  const handleLogoUpload = (file: any, step: StepType) => {
     if (file) {
-      const newFiles = [...files];
-      const newPreviewImages = [...previewImages];
-      newFiles[index] = { file: file, index: index, offerIds: step.offerIds };
-      newPreviewImages[index] = URL.createObjectURL(file);
+      // const newFiles = [...files];
+      // const newPreviewImages = [...previewImages];
+      // newFiles[index] = { file: file, index: index, offerIds: step.offerIds };
+      // newPreviewImages[index] = URL.createObjectURL(file);
 
-      setFiles(newFiles);
-      setPreviewImages(newPreviewImages);
+      const newSteps = [...steps];
+
+      const newStepIndex = newSteps.findIndex((s) => s.adParameter === step.adParameter);
+
+      newSteps[newStepIndex].file = file;
+      newSteps[newStepIndex].previewImage = URL.createObjectURL(file);
+
+      console.log("newSteps,", newSteps);
+      console.log("steps,", steps);
+
+      setSteps(newSteps);
+
+      // setFiles(newFiles);
+      // setPreviewImages(newPreviewImages);
     }
   };
 
@@ -135,16 +157,39 @@ const OwnedTokens = ({ data, isOwner, isLoading, fetchCreatedData, manageAddress
         const variant = id?.slice("imageURL-".length);
         imageURLStep.push({
           uniqueId: variant,
-          offerIds: adDetails[id]
+          offerIds: adDetails[id],
+          selected: true
         });
       });
+
+    console.log("imageURLStep,", imageURLStep);
+    console.log("uniqueIdsArray,", uniqueIdsArray);
+
+    const stepsToAdd: StepType[] = [];
+
+    uniqueIdsArray.map((id) => {
+      stepsToAdd.push({
+        offerIds: adDetails[id],
+        selected: true,
+        adParameter: id
+      });
+    });
+
     setShouldProvideLink(shouldAddLink);
     // If there is no linkURL, we don't need to add an extra step to submit the ad link
     const totalNumSteps = numSteps + (imageURLStep.length - (!shouldAddLink ? 1 : 0));
     console.log("total,", totalNumSteps);
     setImageURLSteps(imageURLStep);
     setNumSteps(totalNumSteps);
+    console.log("steps,", steps);
+    setSteps(stepsToAdd);
   };
+
+  useEffect(() => {
+    const nbSelectedItems = steps.filter((step) => step.selected).length;
+    setNumSteps(nbSelectedItems + 1);
+  }, [steps]);
+
   const handleSubmit = async () => {
     if (!validate) {
       return;
@@ -233,6 +278,7 @@ const OwnedTokens = ({ data, isOwner, isLoading, fetchCreatedData, manageAddress
     setImageUrlVariants([]);
     setFiles([]);
     setNumSteps(2);
+    setSteps([]);
   };
   const successFullUploadModal = {
     title: "Submit ad",
@@ -418,40 +464,41 @@ const OwnedTokens = ({ data, isOwner, isLoading, fetchCreatedData, manageAddress
                 setImageUrlVariants={setImageUrlVariants}
                 currentSlide={currentSlide}
                 numSteps={numSteps}
+                steps={steps}
+                setSteps={setSteps}
               />
             )}
 
             <>
-              {imageURLSteps?.map((step: any, index) => (
-                <div key={step.uniqueId}>
-                  {currentSlide === index + 1 && (
-                    <AdImage
-                      key={step.uniqueId}
-                      stepsRef={stepsRef}
-                      currentStep={index + 2}
-                      id={step.uniqueId}
-                      styles={styles}
-                      file={files[index]}
-                      previewImage={previewImages[index]}
-                      handleLogoUpload={(file) => handleLogoUpload(file, index, step)}
-                      currentSlide={currentSlide}
-                      numSteps={numSteps}
-                    />
-                  )}
-                </div>
-              ))}
+              {steps
+                .filter((step) => step.selected)
+                .map((step, index) => (
+                  <div key={step.adParameter}>
+                    {currentSlide === index + 1 && step.adParameter.startsWith("imageURL") ? (
+                      <AdImage
+                        stepsRef={stepsRef}
+                        currentStep={index + 2}
+                        styles={styles}
+                        step={step}
+                        handleLogoUpload={(file) => handleLogoUpload(file, step)}
+                        currentSlide={currentSlide}
+                        numSteps={numSteps}
+                      />
+                    ) : currentSlide === index + 1 && step.adParameter.startsWith("linkURL") ? (
+                      <AdURL
+                        stepsRef={stepsRef}
+                        styles={styles}
+                        setLink={setLink}
+                        link={link}
+                        currentSlide={currentSlide}
+                        numSteps={numSteps}
+                      />
+                    ) : (
+                      <></>
+                    )}
+                  </div>
+                ))}
             </>
-
-            {currentSlide === imageURLSteps.length + 1 && (
-              <AdURL
-                stepsRef={stepsRef}
-                styles={styles}
-                setLink={setLink}
-                link={link}
-                currentSlide={currentSlide}
-                numSteps={numSteps}
-              />
-            )}
           </CarouselForm>
         </div>
       )}
@@ -476,6 +523,7 @@ const OwnedTokens = ({ data, isOwner, isLoading, fetchCreatedData, manageAddress
             multipleAdsSubmission={true}
             expectedMultipleAds={selectedItems?.length}
             shouldProvideLink={shouldProvideLink}
+            steps={steps}
           />
         </div>
       )}

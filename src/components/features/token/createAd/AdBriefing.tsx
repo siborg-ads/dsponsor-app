@@ -1,4 +1,6 @@
+import { Checkbox } from "@nextui-org/react";
 import React, { useState, useEffect } from "react";
+import { StepType } from "../../profile/tabs/OwnedTokens";
 
 const AdBriefing = ({
   stepsRef,
@@ -6,19 +8,30 @@ const AdBriefing = ({
   adParameters,
   setImageUrlVariants,
   currentSlide,
-  numSteps
+  numSteps,
+  steps,
+  setSteps
+}: {
+  stepsRef: React.MutableRefObject<any>;
+  styles: any;
+  adParameters: any;
+  setImageUrlVariants: React.Dispatch<React.SetStateAction<string[]>>;
+  currentSlide: number;
+  numSteps: number;
+  steps: StepType[];
+  setSteps: React.Dispatch<React.SetStateAction<StepType[]>>;
 }) => {
-  const [selectedItems, setSelectedItems] = useState<any[]>([]);
+  // const [selectedItems, setSelectedItems] = useState<any[]>([]);
 
-  useEffect(() => {
-    if (!adParameters) return;
-    setSelectedItems(adParameters);
-    const imageVariants = adParameters
-      .filter((id) => id.startsWith("imageURL"))
-      .map((id) => id.slice("imageURL-".length));
+  // useEffect(() => {
+  //   if (!adParameters) return;
+  //   setSelectedItems(adParameters);
+  //   const imageVariants = adParameters
+  //     .filter((id) => id.startsWith("imageURL"))
+  //     .map((id) => id.slice("imageURL-".length));
 
-    setImageUrlVariants((prev) => [...prev, ...imageVariants]);
-  }, [adParameters, setImageUrlVariants]);
+  //   setImageUrlVariants((prev) => [...prev, ...imageVariants]);
+  // }, [adParameters, setImageUrlVariants]);
 
   return (
     <div
@@ -38,40 +51,87 @@ const AdBriefing = ({
               {/* <DisplayImageIds ids={selectedItems} /> */}
               <div>
                 <p className="font-display">Image :</p>
-                {selectedItems
-                  .filter((id: string) => id.startsWith("imageURL"))
-                  .map((id: string) => {
-                    const variant = id.slice("imageURL-".length);
+                {steps
+                  .filter(({ adParameter }) => adParameter.startsWith("imageURL"))
+                  .map((step) => {
+                    const { adParameter, selected } = step;
+                    const variant = adParameter.slice("imageURL-".length);
 
                     return (
-                      <div key={id}>
+                      <div key={adParameter}>
                         <ul>
                           <li>
-                            {variant
-                              ? `- Format : ${variant} (example:
+                            <div className="flex justify-between w-3/4">
+                              {variant
+                                ? `- Format : ${variant} (example:
                               ${(() => {
                                 const [width, height] = variant.split(":");
                                 return width && height
                                   ? `${parseFloat(width) * 100}x${parseFloat(height) * 100}px`
                                   : "No size";
                               })()})`
-                              : "- Format : No restrictions on ratio"}
+                                : "- Format : No restrictions on ratio"}
+                              {/* add a checkbox to determine if the image is mandatory */}
+                              <Checkbox
+                                color="secondary"
+                                checked={selected}
+                                defaultChecked={selected}
+                                defaultSelected={selected}
+                                isSelected={selected}
+                                onChange={() => {
+                                  setSteps((prev) => {
+                                    const newSteps = prev.map((step) => {
+                                      if (step.adParameter === adParameter) {
+                                        return { ...step, selected: !step.selected };
+                                      }
+                                      return step;
+                                    });
+                                    console.log(newSteps);
+                                    return newSteps;
+                                  });
+                                }}
+                              />
+                            </div>
                           </li>
                         </ul>
                       </div>
                     );
                   })}
-                {selectedItems.filter((id) => id.startsWith("linkURL")).length !== 0 && (
+                {steps.filter((step) => step.adParameter.startsWith("linkURL")).length !== 0 && (
                   <p className="font-display">Link :</p>
                 )}
-                {selectedItems
-                  .filter((id) => id.startsWith("linkURL"))
-                  .map((id) => {
-                    const variant = id.slice("linkURL-".length);
+                {steps
+                  .filter((step) => step.adParameter.startsWith("linkURL"))
+                  .map((step) => {
+                    const { adParameter, selected } = step;
+                    const variant = adParameter.slice("linkURL-".length);
                     return (
-                      <div key={id}>
+                      <div key={adParameter}>
                         <ul>
-                          <li>{variant ? `- ${variant}` : "- Should start with https://"}</li>
+                          <li>
+                            <div className="flex justify-between w-3/4">
+                              {variant ? `- ${variant}` : "- Should start with https://"}
+                              <Checkbox
+                                color="secondary"
+                                checked={selected}
+                                defaultChecked={selected}
+                                defaultSelected={selected}
+                                isSelected={selected}
+                                onChange={() => {
+                                  setSteps((prev) => {
+                                    const newSteps = prev.map((step) => {
+                                      if (step.adParameter === adParameter) {
+                                        return { ...step, selected: !step.selected };
+                                      }
+                                      return step;
+                                    });
+                                    console.log(newSteps);
+                                    return newSteps;
+                                  });
+                                }}
+                              />
+                            </div>
+                          </li>
                         </ul>
                       </div>
                     );

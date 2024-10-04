@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import "tippy.js/dist/tippy.css";
@@ -13,8 +13,60 @@ const ValidatedOrRefusedAds = ({
   proposalData: ProposalValidation[];
   isToken?: boolean;
 }) => {
+  type Proposal = {
+    tokenId: string;
+    offerId: string;
+    tokenData: string;
+    hasImage: boolean;
+    hasLink: boolean;
+    adParametersList: {
+      aspectRatio?: string;
+      cssAspectRatio?: string;
+      "imageURL-1:1"?: string;
+      linkURL?: string;
+    };
+    reasons: string[];
+  };
+
+  console.log(proposalData);
   const [modalStates, setModalStates] = useState({});
   const [statutItem, setStatutItem] = useState<"check" | "refused" | undefined>(undefined);
+  const groupedProposals = useMemo(() => {
+    const grouped = {} as { [key: string]: Proposal };
+    proposalData.forEach((proposal) => {
+      if (!grouped[proposal.tokenId]) {
+        grouped[proposal.tokenId] = {
+          tokenId: proposal.tokenId,
+          offerId: proposal.offerId,
+          tokenData: proposal.tokenData,
+          hasImage: false,
+          hasLink: false,
+          adParametersList: {},
+          reasons: []
+        };
+      }
+
+      if (proposal.reason && !grouped[proposal.tokenId].reasons.includes(proposal.reason)) {
+        grouped[proposal.tokenId].reasons.push(proposal.reason);
+      }
+
+      grouped[proposal.tokenId].adParametersList[proposal.paramId] = proposal.data;
+
+      if (proposal.type === "image") {
+        grouped[proposal.tokenId].hasImage = true;
+        grouped[proposal.tokenId].adParametersList = {
+          ...grouped[proposal.tokenId].adParametersList,
+          aspectRatio: proposal.aspectRatio,
+          cssAspectRatio: proposal.cssAspectRatio
+        };
+      } else if (proposal.type === "link") {
+        grouped[proposal.tokenId].hasLink = true;
+      }
+    });
+
+    console.log(grouped);
+    return grouped;
+  }, [proposalData]);
 
   const openModal = (tokenId) => {
     setModalStates((prev) => ({ ...prev, [tokenId]: true }));
@@ -71,52 +123,21 @@ const ValidatedOrRefusedAds = ({
           {/* <!-- Records --> */}
 
           <div className="mb-10 space-y-5 shrink-0 basis-8/12 lg:mb-0 lg:pr-10">
-            {proposalData?.map((item) => {
-              const { tokenId, reason, tokenData, data, type, id } = item;
+            {Object.keys(groupedProposals).map((key) => {
+              const item = groupedProposals[key];
+              const { adParametersList, tokenId, reasons, tokenData } = item;
 
-              if (type === "link") {
-                return (
-                  <div
-                    key={id}
-                    className="dark:bg-secondaryBlack gap-5 p-4 dark:border-jacarta-700 transition-shadow hover:shadow-lg border-jacarta-100 rounded-2.5xl relative flex"
-                  >
-                    <div className="relative flex flex-col items-center gap-5 w-fit sm:flex-row">
-                      <div className="flex flex-col w-fit">
-                        <h3 className="text-sm text-jacarta-900 dark:text-jacarta-100">Item</h3>
-                        <span className="font-medium text-green">
-                          {tokenData ?? formatTokenId(tokenId)}
-                        </span>
-                      </div>
-
-                      <div className="flex flex-col w-fit">
-                        <h3 className="text-sm text-jacarta-900 dark:text-jacarta-100">Link</h3>
-                        <button className="flex min-w-[20px] text-green hover:text-opacity-80 hover:underline select-none overflow-ellipsis whitespace-nowrap">
-                          <Link href={data ?? ""} target="_blank">
-                            {data.length > 50 ? `${data.slice(0, 20)}...${data.slice(-20)}` : data}
-                          </Link>
-                        </button>
-                      </div>
-                      {reason && (
-                        <div className="flex flex-col w-full">
-                          <h3 className="text-sm text-jacarta-900 dark:text-jacarta-100">Reason</h3>
-                          <span className="text-white">{reason}</span>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                );
-              }
               return (
                 <div
-                  key={id}
+                  key={tokenId}
                   className="dark:bg-secondaryBlack  gap-5 p-4 dark:border-jacarta-700 transition-shadow hover:shadow-lg border-jacarta-100 rounded-2.5xl relative flex"
                 >
                   <div className="relative flex flex-col items-center w-full gap-5 sm:flex-row">
                     <figure className="self-start w-48 h-auto">
-                      <button className="w-full h-full" onClick={() => openModal(id)}>
-                        {data && (
+                      <button className="w-full h-full" onClick={() => openModal(tokenId)}>
+                        {getImageUrl(adParametersList) && item.hasImage && (
                           <Image
-                            src={data ?? ""}
+                            src={getImageUrl(adParametersList) ?? ""}
                             alt={"image title"}
                             height={300}
                             width={300}
@@ -128,32 +149,34 @@ const ValidatedOrRefusedAds = ({
                       </button>
 
                       {/* Modal */}
-                      {modalStates[id] && (
+                      {modalStates[tokenId] && (
                         <div
                           className="fixed inset-0 z-50 flex items-center justify-center w-full h-screen max-w-full max-h-screen backdrop-blur-xl"
                           onClick={(e) => {
                             if (e.target === e.currentTarget) {
-                              closeModal(id);
+                              closeModal(tokenId);
                             }
                           }}
                         >
                           <div
                             className="flex items-center justify-center max-w-full max-h-full"
                             style={{
-                              aspectRatio: item?.aspectRatio ?? "auto"
+                              aspectRatio: `${adParametersList?.aspectRatio ?? "auto"}`
                             }}
                             onClick={(e) => e.stopPropagation()} // Prevent click through to the backdrop
                           >
                             <div className="relative flex items-center justify-center w-3/4 max-w-full max-h-full h-3/4">
                               <div className="relative flex items-center justify-center h-full max-w-full max-h-full overflow-hidden bg-white border-2 border-dotted border-jacarta-100 dark:bg-jacarta-200 bg-opacity-20 backdrop-blur-xl dark:bg-opacity-20 dark:border-jacarta-100">
-                                <Image
-                                  src={data}
-                                  alt="logo"
-                                  height={1000}
-                                  width={1000}
-                                  className="object-contain object-center h-full max-w-full max-h-full"
-                                  loading="lazy"
-                                />
+                                {item.hasImage && (
+                                  <Image
+                                    src={getImageUrl(item.adParametersList) ?? ""}
+                                    alt="logo"
+                                    height={1000}
+                                    width={1000}
+                                    className="object-contain object-center h-full max-w-full max-h-full"
+                                    loading="lazy"
+                                  />
+                                )}
                               </div>
                               <button
                                 type="button"
@@ -185,10 +208,27 @@ const ValidatedOrRefusedAds = ({
                           {tokenData ?? formatTokenId(tokenId)}
                         </span>
                       </div>
-                      {reason && (
+
+                      {adParametersList.linkURL && (
+                        <div className="flex flex-col w-full">
+                          <h3 className="text-sm text-jacarta-900 dark:text-jacarta-100">Link</h3>
+                          <button className="flex min-w-[20px] text-green hover:text-opacity-80 hover:underline select-none overflow-ellipsis whitespace-nowrap">
+                            <Link href={adParametersList.linkURL} target="_blank">
+                              {adParametersList.linkURL.length > 50
+                                ? `${adParametersList.linkURL.slice(0, 20)}...${adParametersList.linkURL.slice(-20)}`
+                                : adParametersList.linkURL}
+                            </Link>
+                          </button>
+                        </div>
+                      )}
+                      {reasons.length !== 0 && (
                         <div className="flex flex-col w-full">
                           <h3 className="text-sm text-jacarta-900 dark:text-jacarta-100">Reason</h3>
-                          <span className="text-white">{reason}</span>
+                          {reasons.map((reason, i) => (
+                            <span key={i} className="text-white">
+                              {reason}
+                            </span>
+                          ))}
                         </div>
                       )}
                     </div>
