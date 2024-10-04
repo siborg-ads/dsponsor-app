@@ -544,6 +544,7 @@ const CreateOffer = () => {
           setCurrentSlide={setCurrentSlide}
         >
           <OfferType
+            selectedParameter={selectedParameter}
             setSelectedParameter={setSelectedParameter}
             selectedNumber={selectedNumber}
             setSelectedNumber={setSelectedNumber}
@@ -579,8 +580,6 @@ const CreateOffer = () => {
             handleLogoUpload={handleLogoUpload}
             numSteps={numSteps}
             currentSlide={currentSlide}
-            selectedParameters={selectedParameter}
-            setSelectedParameters={setSelectedParameter}
           />
 
           <OfferValidity

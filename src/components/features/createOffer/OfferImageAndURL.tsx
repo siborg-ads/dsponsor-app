@@ -20,9 +20,7 @@ const OfferImageAndURL = ({
   terms,
   setTerms,
   numSteps,
-  currentSlide,
-  setSelectedParameters,
-  selectedParameters
+  currentSlide
 }: {
   stepsRef: React.MutableRefObject<any>;
   styles: any;
@@ -36,8 +34,6 @@ const OfferImageAndURL = ({
   setTerms: React.Dispatch<React.SetStateAction<string>>;
   numSteps: number;
   currentSlide: number;
-  setSelectedParameters: React.Dispatch<React.SetStateAction<string[]>>;
-  selectedParameters: string[];
 }) => {
   const [isSelected, setIsSelected] = useState(true);
 
@@ -78,7 +74,6 @@ const OfferImageAndURL = ({
           termsURL={terms}
           setTermsURL={setTerms}
         />
-        <ChooseParameters parameters={selectedParameters} setParameters={setSelectedParameters} />
       </div>
     </div>
   );
@@ -309,52 +304,4 @@ const ExternalTermsInput = ({ termsURL, setTermsURL }) => (
   </div>
 );
 
-const ChooseParameters = ({
-  parameters,
-  setParameters
-}: {
-  parameters: string[];
-  setParameters: React.Dispatch<React.SetStateAction<string[]>>;
-}) => {
-  const [isSelected, setIsSelected] = useState(parameters.includes("linkURL"));
-  const onSwitchChange = (value) => {
-    setIsSelected(value);
-    if (value) {
-      setParameters((prev) => [...prev, "linkURL"]);
-    } else {
-      setParameters((prev) => prev.filter((param) => param !== "linkURL"));
-    }
-  };
-
-  return (
-    <div className="flex flex-col items-center justify-center mb-6">
-      <label className="block mb-2 font-display text-jacarta-900 dark:text-white">Link</label>
-      <p className="mb-3 dark:text-jacarta-100 text-jacarta-100 text-2xs">
-        Do you want your offer to include a link that will redirect users upon ad interaction ?
-      </p>
-      <div className="flex flex-col items-center justify-center">
-        <div className="flex flex-col items-center justify-center">
-          <div className="flex mb-4">
-            <span className="mr-3">No</span>
-            <Switch
-              isSelected={isSelected}
-              onValueChange={onSwitchChange}
-              classNames={{
-                wrapper: "p-0 h-4 overflow-visible bg-primaryPurple",
-                thumb: cn(
-                  "w-6 h-6 border-2 shadow-lg",
-                  "group-data-[hover=true]:border-primary",
-                  "group-data-[selected=true]:ml-6",
-                  "group-data-[pressed=true]:w-7",
-                  "group-data-[selected]:group-data-[pressed]:ml-4"
-                )
-              }}
-            />
-            <span className="ml-1">Yes</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
 export default OfferImageAndURL;
