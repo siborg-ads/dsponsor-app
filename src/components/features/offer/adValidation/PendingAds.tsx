@@ -9,6 +9,10 @@ import React, { useEffect, useState } from "react";
 import Input from "@/components/ui/Input";
 import StyledWeb3Button from "@/components/ui/buttons/StyledWeb3Button";
 import { ChainObject } from "@/types/chain";
+import { ProposalValidation } from "../AdValidation";
+import ResponsiveTooltip from "@/components/ui/ResponsiveTooltip";
+import { QuestionMarkCircleIcon } from "@heroicons/react/24/solid";
+import { cn } from "@/lib/utils";
 
 interface PendingAdsProps {
   chainConfig: ChainObject;
@@ -78,10 +82,28 @@ const PendingAds: React.FC<PendingAdsProps> = ({
     }
   }, [detectedRatios, expectedRatio]);
 
+  const closeModal = () => {
+    if (!tokenId) return;
+    setModalStates((prev) => ({ ...prev, [tokenId as any]: false }));
+  };
+
+  useEffect(() => {
+    const handleEsc = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        closeModal();
+      }
+    };
+    window.addEventListener("keydown", handleEsc);
+
+    return () => {
+      window.removeEventListener("keydown", handleEsc);
+    };
+  }, [closeModal]);
+
   useEffect(() => {
     const initialValidateStates = {};
-    pendingProposalData?.forEach((item) => {
-      initialValidateStates[item.tokenId] = false;
+    pendingProposalData?.forEach((item: ProposalValidation) => {
+      initialValidateStates[item.id] = false;
     });
     setValidate(initialValidateStates);
   }, [pendingProposalData]);
@@ -98,10 +120,6 @@ const PendingAds: React.FC<PendingAdsProps> = ({
   const openModal = (tokenId) => {
     setTokenId(tokenId);
     setModalStates((prev) => ({ ...prev, [tokenId]: true }));
-  };
-
-  const closeModal = () => {
-    setModalStates((prev) => ({ ...prev, [tokenId as any]: false }));
   };
 
   const handleInput = (id) => {
@@ -122,41 +140,42 @@ const PendingAds: React.FC<PendingAdsProps> = ({
     return str.slice(0, 3) + "..." + str.slice(-3);
   };
 
-  const handleSelection = (item) => {
+  const handleSelection = (item: ProposalValidation) => {
     if (!isOwner) return;
 
     setIsFirstSelection(false);
 
     setIsSelectedItem((prevState) => ({
       ...prevState,
-      [item.tokenId]: !prevState[item.tokenId]
+      [item.id]: !prevState[item.id]
     }));
 
     setSelectedItems((previousItems) => {
       if (previousItems.length === 0) {
-        return item.adParametersKeys.map((key, idx) => ({
-          offerId: item.offerId,
+        const selectedItem = {
           tokenId: item.tokenId,
-          proposalId: item.proposalIds[idx],
-          adParameter: key,
-          reason: comments?.[item.tokenId] ?? ""
-        }));
+          offerId: item.offerId,
+          proposalId: item.id,
+          adParameter: item.paramId,
+          reason: comments?.[item.id] ?? ""
+        };
+        return [selectedItem];
       }
 
-      const isAlreadySelected = previousItems.some((i) => i.tokenId === item.tokenId);
+      const isAlreadySelected = previousItems.some((i) => i.proposalId === item.id);
 
       if (isAlreadySelected) {
-        return previousItems.filter((i) => i.tokenId !== item.tokenId);
+        return previousItems.filter((i) => i.proposalId !== item.id);
       } else {
-        const newItems = item.adParametersKeys.map((key, idx) => ({
-          offerId: item.offerId,
+        const newItem = {
           tokenId: item.tokenId,
-          proposalId: item.proposalIds[idx],
-          adParameter: key,
-          reason: comments?.[item.tokenId] ?? ""
-        }));
+          offerId: item.offerId,
+          proposalId: item.id,
+          adParameter: item.paramId,
+          reason: comments?.[item.id] ?? ""
+        };
 
-        return [...previousItems, ...newItems];
+        return [...previousItems, newItem];
       }
     });
   };
@@ -177,9 +196,9 @@ const PendingAds: React.FC<PendingAdsProps> = ({
       {!isToken && (
         <div>
           {isOwner && (
-            <div className="dark:bg-secondaryBlack dark:border-jacarta-800 border-jacarta-100 rounded-2lg border bg-white p-6 mb-4">
+            <div className="p-6 mb-4 bg-white border dark:bg-secondaryBlack dark:border-jacarta-800 border-jacarta-100 rounded-2lg">
               <div className=" sm:flex sm:flex-wrap">
-                <span className="dark:text-jacarta-100 text-jacarta-100 text-sm">
+                <span className="text-sm dark:text-jacarta-100 text-jacarta-100">
                   Select an advertisement below to manage its status. If you approve an ad, it will
                   be displayed on your media platform. The owner of your ad space retains the
                   ability to submit an advertisement even if its status is Pending, Approved, or
@@ -191,11 +210,11 @@ const PendingAds: React.FC<PendingAdsProps> = ({
           <div
             className={`fixed flex flex-col items-center justify-center dark:border-jacarta-500 border z-[100] bottom-0 blury-background left-0 right-0 px-4 py-3  ${isFirstSelection ? "hidden" : selectedItems?.length === 0 ? "animated-modalSelectedItemDown" : "animated-modalSelectedItemUp"}`}
           >
-            <div className="dropdown-item mb-4 font-display   block w-full rounded-xl  text-left text-sm transition-colors dark:text-white">
+            <div className="block w-full mb-4 text-sm text-left transition-colors dropdown-item font-display rounded-xl dark:text-white">
               <span className="flex items-center justify-center gap-6">
                 <span className="mr-4">
                   I confirm that I have checked all the ads selected{" "}
-                  <span className="text-green text-md ml-1">
+                  <span className="ml-1 text-green text-md">
                     {Object.values(isSelectedItem).filter((value) => value === true).length}
                   </span>{" "}
                 </span>
@@ -209,7 +228,7 @@ const PendingAds: React.FC<PendingAdsProps> = ({
               </span>
             </div>
 
-            <div className="grid grid-cols-2 gap-4 max-w-xs">
+            <div className="grid max-w-xs grid-cols-2 gap-4">
               <StyledWeb3Button
                 contractAddress={chainConfig?.smartContracts?.DSPONSORADMIN?.address}
                 onClick={async () => {
@@ -243,23 +262,100 @@ const PendingAds: React.FC<PendingAdsProps> = ({
       )}
 
       <div className="grid grid-cols-1 gap-[1.875rem] md:grid-cols-2 lg:grid-cols-4">
-        {pendingProposalData?.map((item, itemIndex) => {
-          const { adParametersList, tokenId, tokenData } = item;
+        {pendingProposalData?.map((item: ProposalValidation, itemIndex: number) => {
+          const { tokenId, tokenData, data, id } = item;
+          if (item.type === "link") {
+            return (
+              <article key={id} onClick={() => handleSelection(item)}>
+                <div
+                  className={cn(
+                    "dark:bg-secondaryBlack hover:-translate-y-1 duration-500 cursor-pointer rounded-2xl block border bg-white p-[1.1875rem] transition-shadow hover:shadow-lg text-jacarta-100",
+                    isSelectedItem[id] && !isToken
+                      ? "border-4 border-jacarta-100 rounded-2xl"
+                      : "dark:border-jacarta-700 border-jacarta-100"
+                  )}
+                >
+                  <figure className="flex justify-center w-full">
+                    <div className="flex flex-col w-full gap-2">
+                      <div className="flex flex-col w-full gap-2">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <button
+                              onClick={() => openModal(tokenId)}
+                              className="flex items-center text-lg text-left text-bold"
+                            >
+                              Link
+                            </button>
+                            <ResponsiveTooltip text="This is a link that have been submitted for the token you can approve or reject it">
+                              <QuestionMarkCircleIcon className="w-4 h-4 text-white" />
+                            </ResponsiveTooltip>
+                          </div>
+                          <div className="flex items-center px-2 py-1 border rounded-md dark:border-primaryPink dark:border-opacity-10 border-jacarta-100 whitespace-nowrap">
+                            <span className="text-sm font-medium tracking-tight text-green">
+                              # {tokenData ?? formatTokenId(tokenId)}
+                            </span>
+                          </div>
+                        </div>
+                        <div className="flex items-center justify-between pt-3 border-t border-white border-opacity-10">
+                          <Link
+                            href={item.data ?? ""}
+                            target="_blank"
+                            className="text-sm break-all select-none font-display text-wrap text-jacarta-900 hover:text-primaryPink dark:text-white text-ellipsis whitespace-nowrap max-w-[20rem] flex"
+                          >
+                            <span className="text-sm font-medium tracking-tight text-primaryPurple hover:text-opacity-80 hover:underline">
+                              {item.data}
+                            </span>
+                          </Link>
+                        </div>
+                        <div className="flex gap-2 pt-2 border-t border-white border-opacity-10">
+                          <span
+                            className={`${!isSelectedItem[id] || isToken ? "text-primaryPink" : "text-green"} text-sm font-bold`}
+                          >
+                            <span>{isSelectedItem[id] && !isToken && "✅ "}</span>
+                            Pending
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </figure>
+                </div>
+              </article>
+            );
+          }
 
           return (
-            <article
-              key={tokenId}
-              className={`  ${isSelectedItem[tokenId] && !isToken ? "border-4 border-jacarta-100 rounded-2xl" : ""}`}
-              onClick={() => handleSelection(item)}
-            >
-              <div className="dark:bg-secondaryBlack hover:-translate-y-1 duration-500 cursor-pointer dark:border-jacarta-700 border-jacarta-100 rounded-2xl block border bg-white p-[1.1875rem] transition-shadow hover:shadow-lg text-jacarta-100">
+            <article key={tokenId} onClick={() => handleSelection(item)}>
+              <div
+                className={cn(
+                  "dark:bg-secondaryBlack hover:-translate-y-1 duration-500 cursor-pointer rounded-2xl block border bg-white p-[1.1875rem] transition-shadow hover:shadow-lg text-jacarta-100",
+                  isSelectedItem[id] && !isToken
+                    ? "border-4 border-jacarta-100 rounded-2xl"
+                    : "dark:border-jacarta-700 border-jacarta-100"
+                )}
+              >
                 <figure className="flex justify-center w-full">
-                  {getImageUrl(adParametersList) && (
-                    <div className="flex flex-col gap-2 w-full">
+                  {data && (
+                    <div className="flex flex-col w-full gap-2 ">
+                      <div className="flex items-center justify-between pb-2 border-white border-b-1 border-opacity-10">
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={() => openModal(tokenId)}
+                            className="flex items-center text-lg text-left text-bold"
+                          >
+                            Image
+                          </button>
+                          <ResponsiveTooltip text="This is an image that have been submitted for the token you can approve or reject it">
+                            <QuestionMarkCircleIcon className="w-4 h-4 text-white" />
+                          </ResponsiveTooltip>
+                        </div>
+                        <div className="flex items-center px-2 py-1 border rounded-md dark:border-primaryPink dark:border-opacity-10 border-jacarta-100 whitespace-nowrap">
+                          <span className="text-sm font-medium tracking-tight text-green">
+                            # {tokenData ?? formatTokenId(tokenId)}
+                          </span>
+                        </div>
+                      </div>
                       <Image
-                        src={
-                          getImageUrl(adParametersList) ?? "/images/gradients/gradient_light.jpg"
-                        }
+                        src={data ?? "/images/gradients/gradient_light.jpg"}
                         alt="logo"
                         height={600}
                         width={600}
@@ -291,24 +387,18 @@ const PendingAds: React.FC<PendingAdsProps> = ({
                       <div className="flex items-center justify-between">
                         <button
                           onClick={() => openModal(tokenId)}
-                          className="text-left text-xs flex items-center hover:cursor-pointer hover:underline"
+                          className="flex items-center text-xs text-left hover:cursor-pointer hover:underline"
                         >
                           Preview Image 🔎
                         </button>
-                        <div className="dark:border-primaryPink dark:border-opacity-10  border-jacarta-100 flex items-center whitespace-nowrap rounded-md border py-1 px-2">
-                          <span className="text-green text-sm font-medium tracking-tight">
-                            # {tokenData ?? formatTokenId(tokenId)}
-                          </span>
-                        </div>
                       </div>
                       {expectedRatio && (
-                        <div className="flex flex-col gap-2 border-t border-white border-opacity-10 py-2">
+                        <div className="flex flex-col gap-2 py-2 border-t border-white border-opacity-10">
                           <span className="text-xs text-jacarta-100 dark:text-jacarta-100">
-                            Expected Ratio:{" "}
-                            <span className="text-green">{adParametersList?.aspectRatio}</span>
+                            Expected Ratio: <span className="text-green">{item.aspectRatio}</span>
                           </span>
 
-                          {getImageUrl(adParametersList) && (
+                          {data && (
                             <span className="text-xs text-jacarta-100 dark:text-jacarta-100">
                               Detected Ratio:{" "}
                               <span
@@ -324,23 +414,12 @@ const PendingAds: React.FC<PendingAdsProps> = ({
                   )}
                 </figure>
 
-                <div className="flex flex-col gap-2 border-t pt-2 border-white border-opacity-10">
-                  {adParametersList && (
-                    <div className="flex items-center justify-between ">
-                      <Link
-                        href={adParametersList.linkURL ?? ""}
-                        target="_blank"
-                        className="font-display text-jacarta-900 hover:text-primaryPink text-sm dark:text-white  overflow-hidden text-ellipsis whitespace-nowrap "
-                      >
-                        <span>{adParametersList?.linkURL}</span>
-                      </Link>
-                    </div>
-                  )}
-                  <div className="text-xs flex justify-between">
+                <div className="flex flex-col gap-2 pt-2 border-t border-white border-opacity-10">
+                  <div className="flex justify-between text-xs">
                     <span
-                      className={`${!isSelectedItem[tokenId] || isToken ? "text-primaryPink" : "text-green"} text-sm font-bold`}
+                      className={`${!isSelectedItem[id] || isToken ? "text-primaryPink" : "text-green"} text-sm font-bold`}
                     >
-                      <span>{isSelectedItem[tokenId] && !isToken && "✅ "}</span>
+                      <span>{isSelectedItem[id] && !isToken && "✅ "}</span>
                       Pending
                     </span>
                   </div>
@@ -358,29 +437,30 @@ const PendingAds: React.FC<PendingAdsProps> = ({
               closeModal();
             }
           }}
-          className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-xl h-screen w-full max-h-screen max-w-full"
+          className="fixed inset-0 z-50 flex items-center justify-center w-full h-screen max-w-full max-h-screen backdrop-blur-xl"
         >
           <div
-            className="flex justify-center items-center max-w-full max-h-full"
+            className="flex items-center justify-center max-w-full max-h-full"
             style={{
-              aspectRatio: `${pendingProposalData?.find((item) => !!item?.tokenId && tokenId && BigInt(item?.tokenId) === BigInt(tokenId))?.adParametersList?.cssAspectRatio}`
+              aspectRatio: `${pendingProposalData?.find((item) => !!item?.tokenId && tokenId && BigInt(item?.tokenId) === BigInt(tokenId))?.cssAspectRatio}`
             }}
           >
-            <div className="relative flex items-center justify-center max-w-full max-h-full w-3/4 h-3/4">
-              <div className="relative flex justify-center items-center h-full max-w-full max-h-full border-2 border-dotted border-jacarta-100 bg-white dark:bg-jacarta-200 bg-opacity-20 backdrop-blur-xl dark:bg-opacity-20 dark:border-jacarta-100 overflow-hidden">
+            <div className="relative flex items-center justify-center w-3/4 max-w-full max-h-full h-3/4">
+              <div className="relative flex items-center justify-center h-full max-w-full max-h-full overflow-hidden bg-white border-2 border-dotted border-jacarta-100 dark:bg-jacarta-200 bg-opacity-20 backdrop-blur-xl dark:bg-opacity-20 dark:border-jacarta-100">
                 <Image
                   src={
-                    getImageUrl(
-                      pendingProposalData?.find(
-                        (item) =>
-                          !!item?.tokenId && tokenId && BigInt(item?.tokenId) === BigInt(tokenId)
-                      )?.adParametersList
-                    ) ?? ""
+                    pendingProposalData?.find(
+                      (item) =>
+                        !!item?.tokenId &&
+                        tokenId &&
+                        BigInt(item?.tokenId) === BigInt(tokenId) &&
+                        item?.type === "image"
+                    )?.data ?? ""
                   }
                   alt="logo"
                   height={1000}
                   width={1000}
-                  className="max-w-full max-h-full h-full object-contain object-center"
+                  className="object-contain object-center h-full max-w-full max-h-full"
                   loading="lazy"
                 />
               </div>
@@ -394,7 +474,7 @@ const PendingAds: React.FC<PendingAdsProps> = ({
                   viewBox="0 0 24 24"
                   width="24"
                   height="24"
-                  className="h-6 w-6 fill-white"
+                  className="w-6 h-6 fill-white"
                 >
                   <path fill="none" d="M0 0h24v24H0z" />
                   <path d="M12 10.586l4.95-4.95 1.414 1.414-4.95 4.95 4.95 4.95-1.414 1.414-4.95-4.95-4.95 4.95-1.414-1.414 4.95-4.95-4.95-4.95L7.05 5.636z" />

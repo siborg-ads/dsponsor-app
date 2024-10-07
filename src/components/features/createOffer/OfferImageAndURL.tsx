@@ -286,7 +286,7 @@ const TermsSection = ({
 );
 
 const ExternalTermsInput = ({ termsURL, setTermsURL }) => (
-  <div className="mb-6">
+  <div>
     <label
       htmlFor="terms-external-link"
       className="block mb-2 font-display text-jacarta-900 dark:text-white"

@@ -15,6 +15,7 @@ import { ChainObject } from "@/types/chain";
 import { useSwitchChainContext } from "@/providers/SwitchChain";
 import { cn } from "@/lib/utils";
 import isUrlValid from "@/utils/misc/isUrlValid";
+import { StepType } from "../../profile/tabs/OwnedTokens";
 
 const AdSubmission = ({
   chainConfig,
@@ -51,7 +52,9 @@ const AdSubmission = ({
   adSubmission,
   multipleAdsSubmission,
   createOffer,
-  expectedMultipleAds
+  expectedMultipleAds,
+  shouldProvideLink = true,
+  steps
 }: {
   chainConfig: ChainObject;
   approvalForAllToken?: boolean;
@@ -92,9 +95,13 @@ const AdSubmission = ({
   multipleAdsSubmission?: boolean;
   createOffer?: boolean;
   expectedMultipleAds?: number;
+  shouldProvideLink?: boolean;
+  steps: StepType[];
 }) => {
   const [imageRatios, setImageRatios] = React.useState<any[]>([]);
   const [allImages, setAllImages] = React.useState<any[]>([]);
+
+  // const shouldHaveLink =
 
   const { setSelectedChain } = useSwitchChainContext();
   useEffect(() => {
@@ -130,10 +137,12 @@ const AdSubmission = ({
   };
 
   const imageRatioDisplay = React.useCallback(
-    (id) => {
-      if (!imageUrlVariants[id]) return [];
+    (index: number) => {
+      if (!steps[index]) return [];
 
-      const ratios = imageUrlVariants[id].split(":");
+      const imageVariant = steps[index].adParameter.slice("imageURL-".length);
+
+      const ratios = imageVariant.split(":");
       const stepWidth = 250;
       let width = Number(ratios[0]);
       let height = Number(ratios[1]);
@@ -152,51 +161,161 @@ const AdSubmission = ({
 
       return ratioArray;
     },
-    [imageUrlVariants]
+    [steps]
   );
 
   useEffect(() => {
-    if (imageUrlVariants.length > 0) {
+    if (steps.length > 0) {
       let imageRatios: string[][] = [];
 
-      imageUrlVariants?.forEach((image: any, index: number) => {
-        if (index < (previewImage?.length as number)) {
-          const preSplit = image.split("-");
+      const imageUrlVariants = steps
+        .filter(({ adParameter }) => adParameter.startsWith("imageURL"))
+        .map(({ adParameter }) => adParameter.slice("imageURL-".length));
 
-          const imageRatio =
-            preSplit.length === 2 ? preSplit[1].split(":") : preSplit[0].split(":");
+      imageUrlVariants.forEach((image: any, index: number) => {
+        const preSplit = image.split("-");
 
-          if (imageRatio.length === 2) {
-            imageRatios.push(imageRatio);
-          } else {
-            imageRatios.push([imageRatio[0], imageRatio[0]]);
-          }
+        const imageRatio = preSplit.length === 2 ? preSplit[1].split(":") : preSplit[0].split(":");
+
+        if (imageRatio.length === 2) {
+          imageRatios.push(imageRatio);
+        } else {
+          imageRatios.push([imageRatio[0], imageRatio[0]]);
         }
       });
 
       setImageRatios(imageRatios);
     }
-  }, [imageRatioDisplay, imageUrlVariants, previewImage]);
+  }, [steps]);
 
   useEffect(() => {
-    if (!previewImage) return;
+    if (!steps) return;
     let allImages: any[] = [];
 
-    imageURLSteps.forEach((step: any, index: number) => {
-      allImages.push({ image: previewImage[index], ratio: step.uniqueId });
-    });
+    // imageURLSteps.forEach((step: any, index: number) => {
+    //   allImages.push({ image: previewImage[index], ratio: step.uniqueId });
+    // });
+
+    steps
+      .filter(({ adParameter, selected }) => adParameter.startsWith("imageURL") && selected)
+      .forEach((step) => {
+        allImages.push({ image: step.previewImage, ratio: step.adParameter });
+      });
 
     setAllImages(allImages);
-  }, [previewImage, imageURLSteps]);
+  }, [steps]);
 
-  if (adSubmission && !successFullUpload) {
+  // if (adSubmission && !successFullUpload) {
+  //   return (
+  //     <div className="modal-dialog max-h-[75vh] max-w-2xl md:min-w-md overflow-auto">
+  //       <div className="modal-content !bg-secondaryBlack">
+  //         <div className="modal-header">
+  //           <div className="flex items-center justify-between w-full space-x-4">
+  //             <h5 className="modal-title" id="placeBidLabel">
+  //               Preview your ad submission
+  //             </h5>
+  //             <button
+  //               type="button"
+  //               className="btn-close-preview"
+  //               onClick={() => handlePreviewModal()}
+  //             >
+  //               <svg
+  //                 xmlns="http://www.w3.org/2000/svg"
+  //                 viewBox="0 0 24 24"
+  //                 width="24"
+  //                 height="24"
+  //                 className="w-6 h-6 fill-jacarta-700 dark:fill-white"
+  //               >
+  //                 <path fill="none" d="M0 0h24v24H0z"></path>
+  //                 <path d="M12 10.586l4.95-4.95 1.414 1.414-4.95 4.95 4.95 4.95-1.414 1.414-4.95-4.95-4.95 4.95-1.414-1.414 4.95-4.95-4.95-4.95L7.05 5.636z"></path>
+  //               </svg>
+  //             </button>
+  //           </div>
+  //         </div>
+  //         <div className="flex gap-4 p-6 modal-body">
+  //           <div className="flex flex-col flex-wrap w-full gap-4 md:flex-row">
+  //             {shouldProvideLink &&
+  //               steps.filter(
+  //                 ({ adParameter, selected }) => adParameter.startsWith("linkURL") && selected
+  //               ).length !== 0 && (
+  //                 <div className="flex items-center justify-between w-full gap-2">
+  //                   <span className="block dark:text-jacarta-100">Link </span>
+  //                   <span
+  //                     className={cn(
+  //                       "font-semibold",
+  //                       isUrlValid(link.toString()) ? "text-green" : "text-red"
+  //                     )}
+  //                   >
+  //                     {!link || link === ""
+  //                       ? "No link provided"
+  //                       : isUrlValid(link.toString())
+  //                         ? link
+  //                         : "Link should start with https://"}
+  //                   </span>
+  //                 </div>
+  //               )}
+
+  //             <div className="flex flex-col w-full gap-2">
+  //               <div className="flex items-center justify-between gap-2">
+  //                 <span className="block dark:text-jacarta-100">
+  //                   Image ({imageRatios[0] ? `${imageRatios[0][0]}:${imageRatios[0][1]}` : "N/A"})
+  //                 </span>
+
+  //                 <span className="font-semibold text-red">
+  //                   {(errors.imageError || previewImage?.length === 0) && "No image provided"}
+  //                 </span>
+  //               </div>
+  //               <div className="flex flex-col items-center justify-center gap-2 border border-dashed bg-jacarta-100 bg-opacity-10">
+  //                 <Image
+  //                   src={previewImage?.[0] as string}
+  //                   width={1600}
+  //                   height={380}
+  //                   className="w-full h-auto"
+  //                   alt="Preview image"
+  //                   style={{
+  //                     objectFit: "contain",
+  //                     objectPosition: "center",
+  //                     aspectRatio:
+  //                       imageRatios?.length > 0
+  //                         ? `${imageRatios[0] ? imageRatios[0][0] : 1}/${imageRatios[0] ? imageRatios[0][1] : 1}`
+  //                         : "1/1"
+  //                   }}
+  //                 />
+  //               </div>
+  //             </div>
+  //           </div>
+  //         </div>
+
+  //         {/* submit ad button */}
+  //         <div className="modal-footer">
+  //           <div className="flex items-center justify-center space-x-4">
+  //             <StyledWeb3Button
+  //               contractAddress={chainConfig?.smartContracts?.DSPONSORADMIN?.address as Address}
+  //               onClick={async () => {
+  //                 await toast.promise(handleSubmit(true), {
+  //                   pending: "Waiting for confirmation 🕒",
+  //                   success: "Transaction confirmed 👌",
+  //                   error: "Transaction rejected 🤯"
+  //                 });
+  //               }}
+  //               isDisabled={!validate || (shouldProvideLink && !isUrlValid(link.toString()))}
+  //               defaultText={buttonTitle ?? "Submit"}
+  //             />
+  //           </div>
+  //         </div>
+  //       </div>
+  //     </div>
+  //   );
+  // }
+
+  if (!successFullUpload) {
     return (
       <div className="modal-dialog max-h-[75vh] max-w-2xl md:min-w-md overflow-auto">
         <div className="modal-content !bg-secondaryBlack">
           <div className="modal-header">
             <div className="flex items-center justify-between w-full space-x-4">
               <h5 className="modal-title" id="placeBidLabel">
-                Preview your ad submission
+                Preview your {multipleAdsSubmission ? "multiple tokens " : ""}ad submission
               </h5>
               <button
                 type="button"
@@ -218,125 +337,37 @@ const AdSubmission = ({
           </div>
           <div className="flex gap-4 p-6 modal-body">
             <div className="flex flex-col flex-wrap w-full gap-4 md:flex-row">
-              <div className="flex items-center justify-between w-full gap-2">
-                <span className="block dark:text-jacarta-100">Link </span>
-                <span
-                  className={cn(
-                    "font-semibold",
-                    isUrlValid(link.toString()) ? "text-green" : "text-red"
-                  )}
-                >
-                  {!link || link === ""
-                    ? "No link provided"
-                    : isUrlValid(link.toString())
-                      ? link
-                      : "Link should start with https://"}
-                </span>
-              </div>
-
-              <div className="flex flex-col w-full gap-2">
-                <div className="flex items-center justify-between gap-2">
-                  <span className="block dark:text-jacarta-100">
-                    Image ({imageRatios[0] ? `${imageRatios[0][0]}:${imageRatios[0][1]}` : "N/A"})
-                  </span>
-
-                  <span className="font-semibold text-red">
-                    {(errors.imageError || previewImage?.length === 0) && "No image provided"}
-                  </span>
-                </div>
-                <div className="flex flex-col items-center justify-center gap-2 border border-dashed bg-jacarta-100 bg-opacity-10">
-                  <Image
-                    src={previewImage?.[0] as string}
-                    width={1600}
-                    height={380}
-                    className="w-full h-auto"
-                    alt="Preview image"
-                    style={{
-                      objectFit: "contain",
-                      objectPosition: "center",
-                      aspectRatio:
-                        imageRatios?.length > 0
-                          ? `${imageRatios[0] ? imageRatios[0][0] : 1}/${imageRatios[0] ? imageRatios[0][1] : 1}`
-                          : "1/1"
-                    }}
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* submit ad button */}
-          <div className="modal-footer">
-            <div className="flex items-center justify-center space-x-4">
-              <StyledWeb3Button
-                contractAddress={chainConfig?.smartContracts?.DSPONSORADMIN?.address as Address}
-                onClick={async () => {
-                  await toast.promise(handleSubmit(true), {
-                    pending: "Waiting for confirmation 🕒",
-                    success: "Transaction confirmed 👌",
-                    error: "Transaction rejected 🤯"
-                  });
-                }}
-                isDisabled={!validate || !isUrlValid(link.toString())}
-                defaultText={buttonTitle ?? "Submit"}
-              />
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (multipleAdsSubmission && !successFullUpload) {
-    return (
-      <div className="modal-dialog max-h-[75vh] max-w-2xl md:min-w-md overflow-auto">
-        <div className="modal-content !bg-secondaryBlack">
-          <div className="modal-header">
-            <div className="flex items-center justify-between w-full space-x-4">
-              <h5 className="modal-title" id="placeBidLabel">
-                Preview your multiple tokens ad submission
-              </h5>
-              <button
-                type="button"
-                className="btn-close-preview"
-                onClick={() => handlePreviewModal()}
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  width="24"
-                  height="24"
-                  className="w-6 h-6 fill-jacarta-700 dark:fill-white"
-                >
-                  <path fill="none" d="M0 0h24v24H0z"></path>
-                  <path d="M12 10.586l4.95-4.95 1.414 1.414-4.95 4.95 4.95 4.95-1.414 1.414-4.95-4.95-4.95 4.95-1.414-1.414 4.95-4.95-4.95-4.95L7.05 5.636z"></path>
-                </svg>
-              </button>
-            </div>
-          </div>
-          <div className="flex gap-4 p-6 modal-body">
-            <div className="flex flex-col flex-wrap w-full gap-4 md:flex-row">
-              <div className="flex items-center justify-between w-full gap-2">
-                <span className="block dark:text-jacarta-100">Link </span>
-                <span
-                  className={cn(
-                    "font-semibold",
-                    isUrlValid(link.toString()) ? "text-green" : "text-red"
-                  )}
-                >
-                  {!link || link === ""
-                    ? "No link provided"
-                    : isUrlValid(link.toString())
-                      ? link
-                      : "Link should start with https://"}
-                </span>
-              </div>
-
-              {previewImage?.length === 0 && (
-                <div className="flex flex-col w-full gap-2">
-                  <span className="font-semibold text-red">No images provided</span>
-                </div>
-              )}
+              {shouldProvideLink &&
+                steps.filter(
+                  ({ adParameter, selected }) => adParameter.startsWith("linkURL") && selected
+                ).length !== 0 && (
+                  <div className="flex items-center justify-between w-full gap-2">
+                    <span className="block dark:text-jacarta-100">Link </span>
+                    <span
+                      className={cn(
+                        "font-semibold",
+                        isUrlValid(link.toString()) ? "text-green" : "text-red"
+                      )}
+                    >
+                      {!link || link === "" ? (
+                        "No link provided"
+                      ) : isUrlValid(link.toString()) ? (
+                        <Link
+                          href={link as string}
+                          passHref
+                          target="_blank"
+                          className="overflow-hidden truncate text-primaryPurple hover:underline hover:text-opacity-80"
+                        >
+                          {(link as string).length > 70
+                            ? `${(link as string).slice(0, 20)}...${(link as string).slice(-20)}`
+                            : link}
+                        </Link>
+                      ) : (
+                        "Link should start with https://"
+                      )}
+                    </span>
+                  </div>
+                )}
 
               {(allImages?.length as number) > 0 &&
                 allImages.map((image, index: number) => (
@@ -384,10 +415,8 @@ const AdSubmission = ({
                   });
                 }}
                 isDisabled={
-                  !validate ||
-                  previewImage?.length === 0 ||
-                  previewImage?.some((image) => !image) ||
-                  !isUrlValid(link.toString())
+                  allImages.some((image) => !image?.image) ||
+                  (!isUrlValid(link.toString()) && shouldProvideLink)
                 }
                 defaultText={buttonTitle ?? "Submit"}
               />

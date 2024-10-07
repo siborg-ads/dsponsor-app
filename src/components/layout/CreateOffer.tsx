@@ -512,23 +512,23 @@ const CreateOffer = () => {
       <Meta {...metadata} />
       {/* <!-- Create --> */}
       <section className="relative py-24">
-        <picture className="pointer-events-none absolute inset-0 -z-10 dark:hidden">
+        <picture className="absolute inset-0 pointer-events-none -z-10 dark:hidden">
           <Image
             width={1519}
             height={773}
             priority
             src="/images/gradients/gradient_light.jpg"
             alt="gradient"
-            className="h-full w-full object-cover"
+            className="object-cover w-full h-full"
           />
         </picture>
         <div className="container">
-          <h1 className="font-display text-jacarta-900 pt-16 pb-8 text-center text-3xl font-medium dark:text-white">
+          <h1 className="pt-16 pb-8 text-3xl font-medium text-center font-display text-jacarta-900 dark:text-white">
             Create ad space offer
           </h1>
 
           <div className="mx-auto max-w-[48.125rem]" style={{ maxWidth: "48.125rem" }}>
-            <p className="text-center pt- pb-12 dark:text-white">
+            <p className="pb-12 text-center pt- dark:text-white">
               Fund your activities by selling ad space tokens. Sponsors who purchase these tokens
               gain the exclusive right to propose ads on your platform, whether it&apos;s your
               website or another location of your choice. You retain full control to approve or
@@ -544,6 +544,7 @@ const CreateOffer = () => {
           setCurrentSlide={setCurrentSlide}
         >
           <OfferType
+            selectedParameter={selectedParameter}
             setSelectedParameter={setSelectedParameter}
             selectedNumber={selectedNumber}
             setSelectedNumber={setSelectedNumber}
