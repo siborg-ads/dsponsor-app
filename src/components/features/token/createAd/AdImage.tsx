@@ -1,9 +1,10 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, MutableRefObject } from "react";
 import Image from "next/image";
 import "react-datepicker/dist/react-datepicker.css";
 import ModalHelper from "@/components/ui/modals/Helper";
 import { FileUploader } from "react-drag-drop-files";
 import { StepType } from "../../profile/tabs/OwnedTokens";
+import React from "react";
 
 const AdImage = ({
   // id,
@@ -17,7 +18,7 @@ const AdImage = ({
   numSteps,
   step
 }: {
-  stepsRef: React.MutableRefObject<any>;
+  stepsRef: MutableRefObject<any>;
   styles: any;
   handleLogoUpload: (e: any) => void;
   currentStep: number;

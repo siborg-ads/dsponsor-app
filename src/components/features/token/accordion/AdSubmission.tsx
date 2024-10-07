@@ -401,9 +401,8 @@ const AdSubmission = ({
                   });
                 }}
                 isDisabled={
-                  !validate ||
-                  previewImage?.length === 0 ||
-                  previewImage?.some((image) => !image) ||
+                  allImages.length === 0 ||
+                  allImages.some((image) => !image?.image) ||
                   (!isUrlValid(link.toString()) && shouldProvideLink)
                 }
                 defaultText={buttonTitle ?? "Submit"}

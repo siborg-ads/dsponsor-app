@@ -108,19 +108,6 @@ const OwnedTokens = ({ data, isOwner, isLoading, fetchCreatedData, manageAddress
     }
   };
 
-  useEffect(() => {
-    let isValid = true;
-    let newErrors: any = {};
-
-    if (files.length < imageURLSteps.length) {
-      newErrors.imageError = "Image is missing.";
-      isValid = false;
-    }
-
-    setValidate(isValid);
-    setErrors(newErrors);
-  }, [files, imageURLSteps.length, link]);
-
   const handleSliderForm = () => {
     setShowSliderForm(!showSliderForm);
 
@@ -188,13 +175,14 @@ const OwnedTokens = ({ data, isOwner, isLoading, fetchCreatedData, manageAddress
   useEffect(() => {
     const nbSelectedItems = steps.filter((step) => step.selected).length;
     setNumSteps(nbSelectedItems + 1);
+
+    const isLinkSelected = steps.some(
+      (step) => step.adParameter.startsWith("linkURL") && step.selected
+    );
+    setShouldProvideLink(isLinkSelected);
   }, [steps]);
 
   const handleSubmit = async () => {
-    if (!validate) {
-      return;
-    }
-
     const selectedOfferIdItems: any[] = [];
     const selectedTokenIdItems: any[] = [];
     const adParametersItems: any[] = [];
@@ -203,29 +191,34 @@ const OwnedTokens = ({ data, isOwner, isLoading, fetchCreatedData, manageAddress
     let revalidateTags: string[] = [];
 
     try {
-      for (const item of selectedItems) {
-        for (const args of item.adParameters) {
-          if (args.adParameter.id !== "xSpaceId" && args.adParameter.id !== "xCreatorHandle") {
-            revalidateTags.push(`${currentChainObject?.chainId}-adOffer-${item.offerId}`);
-            revalidateTags.push(
-              `${currentChainObject?.chainId}-nftContract-${item.nftContract.id}`
-            );
-            for (const adminAddr of item.admins) {
-              revalidateTags.push(`${currentChainObject?.chainId}-userAddress-${adminAddr}`);
-            }
-
-            selectedOfferIdItems.push(item.offerId);
-            selectedTokenIdItems.push(item.tokenId);
-            adParametersItems.push(args.adParameter.id);
-          }
+      for (const item of steps) {
+        if (!item.selected) {
+          continue;
         }
 
-        for (const file of files) {
-          let uploadUrl;
-          if (file.offerIds.includes(item.id)) {
+        for (const id of item.offerIds) {
+          const [offerId, tokenId] = id.split("-");
+          const offer = selectedItems.find((i) => i.offerId === offerId && i.tokenId === tokenId);
+
+          if (item.adParameter !== "xSpaceId" && item.adParameter !== "xCreatorHandle" && offer) {
+            revalidateTags.push(`${currentChainObject?.chainId}-adOffer-${offerId}`);
+            revalidateTags.push(
+              `${currentChainObject?.chainId}-nftContract-${offer.nftContract.id}`
+            );
+
+            for (const adminAddr of offer.admins) {
+              revalidateTags.push(`${currentChainObject?.chainId}-userAddress-${adminAddr}`);
+            }
+          }
+
+          selectedOfferIdItems.push(offerId);
+          selectedTokenIdItems.push(tokenId);
+          adParametersItems.push(item.adParameter);
+          if (item.file) {
+            let uploadUrl;
             try {
               uploadUrl = await uploadToIPFS({
-                data: [file.file],
+                data: [item.file],
                 options: { uploadWithGatewayUrl: true, uploadWithoutDirectory: true }
               });
             } catch (error) {
@@ -234,10 +227,10 @@ const OwnedTokens = ({ data, isOwner, isLoading, fetchCreatedData, manageAddress
             }
             dataItems.push(uploadUrl[0]);
           }
-        }
 
-        if (item.adParameters.some((param) => param.adParameter.id.startsWith("linkURL"))) {
-          dataItems.push(link);
+          if (item.adParameter.startsWith("linkURL") && link) {
+            dataItems.push(link);
+          }
         }
       }
 
@@ -279,6 +272,7 @@ const OwnedTokens = ({ data, isOwner, isLoading, fetchCreatedData, manageAddress
     setFiles([]);
     setNumSteps(2);
     setSteps([]);
+    setLink("");
   };
   const successFullUploadModal = {
     title: "Submit ad",
