@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, Dispatch, SetStateAction } from "react";
 import ModalHelper from "@/components/ui/modals/Helper";
 import Input from "@/components/ui/Input";
 import { Switch } from "@nextui-org/react";
@@ -187,7 +187,7 @@ const ChooseParameters = ({
   setParameters
 }: {
   parameters: string[];
-  setParameters: React.Dispatch<React.SetStateAction<string[]>>;
+  setParameters: Dispatch<SetStateAction<string[]>>;
 }) => {
   const [isSelected, setIsSelected] = useState(parameters.includes("linkURL"));
   const onSwitchChange = (value) => {

@@ -82,6 +82,11 @@ const PendingAds: React.FC<PendingAdsProps> = ({
     }
   }, [detectedRatios, expectedRatio]);
 
+  const closeModal = () => {
+    if (!tokenId) return;
+    setModalStates((prev) => ({ ...prev, [tokenId as any]: false }));
+  };
+
   useEffect(() => {
     const handleEsc = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
@@ -93,7 +98,7 @@ const PendingAds: React.FC<PendingAdsProps> = ({
     return () => {
       window.removeEventListener("keydown", handleEsc);
     };
-  }, []);
+  }, [closeModal]);
 
   useEffect(() => {
     const initialValidateStates = {};
@@ -115,11 +120,6 @@ const PendingAds: React.FC<PendingAdsProps> = ({
   const openModal = (tokenId) => {
     setTokenId(tokenId);
     setModalStates((prev) => ({ ...prev, [tokenId]: true }));
-  };
-
-  const closeModal = () => {
-    if (!tokenId) return;
-    setModalStates((prev) => ({ ...prev, [tokenId as any]: false }));
   };
 
   const handleInput = (id) => {
@@ -451,7 +451,10 @@ const PendingAds: React.FC<PendingAdsProps> = ({
                   src={
                     pendingProposalData?.find(
                       (item) =>
-                        !!item?.tokenId && tokenId && BigInt(item?.tokenId) === BigInt(tokenId)
+                        !!item?.tokenId &&
+                        tokenId &&
+                        BigInt(item?.tokenId) === BigInt(tokenId) &&
+                        item?.type === "image"
                     )?.data ?? ""
                   }
                   alt="logo"

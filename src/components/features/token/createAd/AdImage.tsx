@@ -40,7 +40,6 @@ const AdImage = ({
     if (step.adParameter.includes("0-")) {
       tempId = step.adParameter.slice(2);
     }
-    console.log("tempId", tempId);
     const ratios = tempId.split(":");
     let width = Number(ratios[0]);
     let height = Number(ratios[1]);
@@ -57,8 +56,6 @@ const AdImage = ({
       setHeightRatioImage(stepWidth);
       setWidthRatioImage(stepWidth * (width / height));
     }
-
-    console.log("COUOUC");
   }, [step]);
 
   return (

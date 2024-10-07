@@ -28,7 +28,6 @@ const ValidatedOrRefusedAds = ({
     reasons: string[];
   };
 
-  console.log(proposalData);
   const [modalStates, setModalStates] = useState({});
   const [statutItem, setStatutItem] = useState<"check" | "refused" | undefined>(undefined);
   const groupedProposals = useMemo(() => {
@@ -64,7 +63,6 @@ const ValidatedOrRefusedAds = ({
       }
     });
 
-    console.log(grouped);
     return grouped;
   }, [proposalData]);
 

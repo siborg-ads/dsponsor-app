@@ -86,7 +86,6 @@ const AdBriefing = ({
                                       }
                                       return step;
                                     });
-                                    console.log(newSteps);
                                     return newSteps;
                                   });
                                 }}
@@ -125,7 +124,6 @@ const AdBriefing = ({
                                       }
                                       return step;
                                     });
-                                    console.log(newSteps);
                                     return newSteps;
                                   });
                                 }}

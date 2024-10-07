@@ -98,9 +98,6 @@ const OwnedTokens = ({ data, isOwner, isLoading, fetchCreatedData, manageAddress
       newSteps[newStepIndex].file = file;
       newSteps[newStepIndex].previewImage = URL.createObjectURL(file);
 
-      console.log("newSteps,", newSteps);
-      console.log("steps,", steps);
-
       setSteps(newSteps);
 
       // setFiles(newFiles);
@@ -149,9 +146,6 @@ const OwnedTokens = ({ data, isOwner, isLoading, fetchCreatedData, manageAddress
         });
       });
 
-    console.log("imageURLStep,", imageURLStep);
-    console.log("uniqueIdsArray,", uniqueIdsArray);
-
     const stepsToAdd: StepType[] = [];
 
     uniqueIdsArray.map((id) => {
@@ -165,10 +159,8 @@ const OwnedTokens = ({ data, isOwner, isLoading, fetchCreatedData, manageAddress
     setShouldProvideLink(shouldAddLink);
     // If there is no linkURL, we don't need to add an extra step to submit the ad link
     const totalNumSteps = numSteps + (imageURLStep.length - (!shouldAddLink ? 1 : 0));
-    console.log("total,", totalNumSteps);
     setImageURLSteps(imageURLStep);
     setNumSteps(totalNumSteps);
-    console.log("steps,", steps);
     setSteps(stepsToAdd);
   };
 
