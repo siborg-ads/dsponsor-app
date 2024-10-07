@@ -1183,12 +1183,16 @@ const Token = () => {
   useEffect(() => {
     if (isUserOwner?.toLowerCase() === address?.toLowerCase()) {
       setIsOwner(true);
+    } else {
+      setIsOwner(false);
     }
   }, [isUserOwner, address]);
 
   useEffect(() => {
     if (offerData?.admins?.includes(address?.toLowerCase())) {
       setIsOfferOwner(true);
+    } else {
+      setIsOfferOwner(false);
     }
   }, [address, offerData]);
 
@@ -1200,6 +1204,8 @@ const Token = () => {
       firstSelectedListing?.listingType !== "Direct"
     ) {
       setIsTokenInAuction(true);
+    } else {
+      setIsTokenInAuction(false);
     }
 
     if (
@@ -1207,10 +1213,14 @@ const Token = () => {
       firstSelectedListing?.status === "CREATED"
     ) {
       setIsLister(true);
+    } else {
+      setIsLister(false);
     }
 
     if (address && offerData?.admins?.includes(address?.toLowerCase())) {
       setIsAdmin(true);
+    } else {
+      setIsAdmin(false);
     }
   }, [
     isUserOwner,
