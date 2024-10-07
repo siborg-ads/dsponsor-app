@@ -1181,7 +1181,7 @@ const Token = () => {
   ]);
 
   useEffect(() => {
-    if (isUserOwner?.toLowerCase() === address?.toLowerCase()) {
+    if (address && isUserOwner?.toLowerCase() === address?.toLowerCase()) {
       setIsOwner(true);
     } else {
       setIsOwner(false);
@@ -1209,6 +1209,7 @@ const Token = () => {
     }
 
     if (
+      address &&
       address?.toLowerCase() === firstSelectedListing?.lister?.toLowerCase() &&
       firstSelectedListing?.status === "CREATED"
     ) {
@@ -1862,7 +1863,8 @@ const Token = () => {
           (token) => !!token?.tokenId && BigInt(token?.tokenId) === BigInt(tokenId as string)
         )?.mint
       );
-      const isCreator = offerData?.initialCreator?.toLowerCase() === address?.toLowerCase();
+      const isCreator =
+        address && offerData?.initialCreator?.toLowerCase() === address?.toLowerCase();
 
       const finalCondition =
         (isActive && isOwner && ((isAuction && !hasBids) || isDirect)) ||
