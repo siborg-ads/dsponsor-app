@@ -52,7 +52,7 @@ const Home = () => {
           );
         })
       );
-      const flatAllData = allData.flatMap((data) => data);
+      const flatAllData = allData.flatMap((data) => data).filter((data) => !!data);
 
       setOffers(flatAllData);
       setTempAdSpaces(flatAllData);

@@ -206,7 +206,7 @@ const CreateListing = ({
         await createListing({
           args: [args],
           overrides: {
-            gasLimit: 1000000
+            gasLimit: 10000000
           }
         });
 
