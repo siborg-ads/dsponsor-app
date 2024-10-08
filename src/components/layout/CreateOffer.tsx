@@ -636,6 +636,7 @@ const CreateOffer = () => {
             buttonTitle="Create ad space offer"
             modalTitle="Ad Space Offer "
             successFullUploadModal={successFullUploadModal}
+            steps={[]}
           />
         </div>
       )}
