@@ -1,3 +1,5 @@
+"use client";
+
 import Input from "@/components/ui/Input";
 import TextArea from "@/components/ui/TextArea";
 import React, { useEffect, useState } from "react";
@@ -31,12 +33,12 @@ const OfferName = ({
       }}
       className={styles.form__step}
     >
-      <div className="relative flex flex-col items-center gap-8 pr-6 pl-2">
+      <div className="relative flex flex-col items-center gap-8 pl-2 pr-6">
         <div className="absolute top-0 right-0">
           {currentSlide + 1}/{numSteps}
         </div>
 
-        <div className="flex flex-col items-center w-full border-b-1 border-primaryPurple shadow-2xl pb-2">
+        <div className="flex flex-col items-center w-full pb-2 shadow-2xl border-b-1 border-primaryPurple">
           <Header />
         </div>
 
@@ -80,7 +82,7 @@ const Title = ({
     <React.Fragment>
       <label
         htmlFor="item-name"
-        className="block mb-2 font-display text-center text-jacarta-900 dark:text-white"
+        className="block mb-2 text-center font-display text-jacarta-900 dark:text-white"
       >
         Title<span className="text-red">*</span>
       </label>
@@ -116,7 +118,7 @@ const Description = ({
     <React.Fragment>
       <label
         htmlFor="item-description"
-        className="block mb-2 font-display text-center text-jacarta-900 dark:text-white"
+        className="block mb-2 text-center font-display text-jacarta-900 dark:text-white"
       >
         Description<span className="text-red">*</span>
       </label>

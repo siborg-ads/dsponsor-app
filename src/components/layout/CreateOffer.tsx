@@ -1,4 +1,6 @@
-import React, { useEffect, useState, useRef, useMemo } from "react";
+"use client";
+
+import React, { useEffect, useState, useRef, useMemo, use } from "react";
 import Meta from "@/components/Meta";
 import Image from "next/image";
 import "react-datepicker/dist/react-datepicker.css";
@@ -32,7 +34,7 @@ const CreateOffer = () => {
       return {};
     }
 
-    const savedOfferFields = localStorage.getItem("savedOfferFields");
+    const savedOfferFields = localStorage.getItem("CREATE_OFFER_METADATA");
     if (savedOfferFields) {
       return JSON.parse(savedOfferFields);
     }
@@ -65,7 +67,7 @@ const CreateOffer = () => {
   const [files, setFiles] = useState<any[]>([]);
   const [name, setName] = useState(savedData?.name ?? "");
   const { mutateAsync: upload } = useStorageUpload();
-  const [currentSlide, setCurrentSlide] = useState(0);
+  const [currentSlide, setCurrentSlide] = useState(savedData?.currentSlide ?? 0);
   const [link, setLink] = useState<string | null>(savedData?.link ?? null);
   const [errors, setErrors] = useState({});
   const [description, setDescription] = useState(savedData?.description ?? "");
@@ -107,6 +109,7 @@ const CreateOffer = () => {
 
   useEffect(() => {
     const formData = {
+      currentSlide,
       name,
       description,
       terms,
@@ -128,8 +131,9 @@ const CreateOffer = () => {
       imageRatios
     };
 
-    localStorage.setItem("savedOfferFields", JSON.stringify(formData));
+    localStorage.setItem("CREATE_OFFER_METADATA", JSON.stringify(formData));
   }, [
+    currentSlide,
     name,
     description,
     link,
@@ -150,6 +154,31 @@ const CreateOffer = () => {
     displayedParameter,
     imageRatios
   ]);
+
+  useEffect(() => {
+    // check if there is an image in IndexedDB
+    if (previewImages.length > 0) {
+      return;
+    }
+
+    loadImageFromIndexedDB()
+      .then((base64String) => {
+        setPreviewImages([base64String as string]);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }, [previewImages]);
+
+  useEffect(() => {
+    const fields = localStorage.getItem("CREATE_OFFER_METADATA");
+    if (fields) {
+      const parsedFields = JSON.parse(fields);
+      if (parsedFields.currentSlide) {
+        setCurrentSlide(parsedFields.currentSlide);
+      }
+    }
+  }, []);
 
   useEffect(() => {
     setTokenAddress(currencies?.[0]?.address as Address);
@@ -292,10 +321,11 @@ const CreateOffer = () => {
     setSelectedRoyalties(value);
   };
 
-  const handleLogoUpload = (file) => {
+  const handleLogoUpload = async (file) => {
     if (file) {
       setFiles([file]);
       setPreviewImages([URL.createObjectURL(file)]);
+      saveImageToIndexedDB(file);
     }
   };
 
@@ -555,7 +585,8 @@ const CreateOffer = () => {
       setCustomTokenAddress(undefined);
       setCurrentSlide(0);
 
-      localStorage.removeItem("savedOfferFields");
+      localStorage.removeItem("CREATE_OFFER_METADATA");
+      clearIndexedDB();
     } catch (error) {
       setSuccessFullUpload(false);
       throw error;
@@ -721,3 +752,135 @@ const CreateOffer = () => {
 };
 
 export default CreateOffer;
+
+// Async function to save image to IndexedDB
+const saveImageToIndexedDB = async (file) => {
+  try {
+    const db = await openIndexedDB(); // Open the database
+    const base64String = await convertFileToBase64(file); // Convert file to base64
+    await saveToStore(db, base64String); // Save to IndexedDB
+    // console.log("Image saved to IndexedDB");
+  } catch (error) {
+    console.error("Error saving image to IndexedDB:", error);
+  }
+};
+
+// Helper function to open IndexedDB
+const openIndexedDB = () => {
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open("imagesDB", 1);
+
+    request.onupgradeneeded = () => {
+      const db = request.result;
+      if (!db.objectStoreNames.contains("images")) {
+        db.createObjectStore("images", { keyPath: "id", autoIncrement: true });
+      }
+    };
+
+    request.onsuccess = () => resolve(request.result);
+    // @ts-ignore
+    request.onerror = (event) => reject(event.target.error);
+  });
+};
+
+// Helper function to convert file to base64
+const convertFileToBase64 = (file) => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onloadend = () => resolve(reader.result); // Base64 string
+    reader.onerror = (error) => reject(error);
+    reader.readAsDataURL(file);
+  });
+};
+
+// Helper function to save base64 string to IndexedDB
+const saveToStore = (db, base64String) => {
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction("images", "readwrite");
+    const store = transaction.objectStore("images");
+    const request = store.add({ image: base64String });
+
+    request.onsuccess = () => resolve("Image saved to IndexedDB");
+    request.onerror = () => reject(request.error);
+  });
+};
+
+const loadImageFromIndexedDB = () => {
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open("imagesDB", 1);
+
+    // Ensure object store creation in case the database doesn't exist or needs an upgrade
+    request.onupgradeneeded = (event) => {
+      // @ts-ignore
+      const db = event.target.result;
+      // Create the "images" object store if it doesn't exist
+      if (!db.objectStoreNames.contains("images")) {
+        db.createObjectStore("images", { keyPath: "id", autoIncrement: true });
+      }
+    };
+
+    request.onsuccess = () => {
+      const db = request.result;
+
+      // Ensure the object store exists before accessing
+      if (!db.objectStoreNames.contains("images")) {
+        reject("Object store 'images' not found in IndexedDB");
+        return;
+      }
+
+      const transaction = db.transaction("images", "readonly");
+      const store = transaction.objectStore("images");
+      const getRequest = store.get(1); // Assuming ID 1
+
+      getRequest.onsuccess = (event) => {
+        // @ts-ignore
+        const result = event?.target?.result;
+        if (result && result.image) {
+          resolve(result.image); // Return the base64 string
+        } else {
+          reject("No image found in IndexedDB");
+        }
+      };
+
+      getRequest.onerror = () => {
+        reject("Error loading image from IndexedDB");
+      };
+    };
+
+    request.onerror = (event) => {
+      // @ts-ignore
+      console.error("Error opening IndexedDB:", event.target.error);
+      reject("Error opening IndexedDB");
+    };
+  });
+};
+
+// Function to delete everything from IndexedDB
+const clearIndexedDB = () => {
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open("imagesDB", 1);
+
+    request.onsuccess = () => {
+      const db = request.result;
+      const transaction = db.transaction("images", "readwrite");
+      const store = transaction.objectStore("images");
+      const clearRequest = store.clear(); // Clears all entries in the store
+
+      clearRequest.onsuccess = () => {
+        // console.log("All entries deleted from IndexedDB");
+        resolve("IndexedDB cleared successfully");
+      };
+
+      clearRequest.onerror = () => {
+        console.error("Error clearing IndexedDB");
+        reject("Failed to clear IndexedDB");
+      };
+    };
+
+    request.onerror = (event) => {
+      // @ts-ignore
+      console.error("Error opening IndexedDB:", event.target.error);
+      reject("Error opening IndexedDB");
+    };
+  });
+};
