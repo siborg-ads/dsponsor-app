@@ -1,6 +1,8 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, Dispatch, SetStateAction } from "react";
 import ModalHelper from "@/components/ui/modals/Helper";
 import Input from "@/components/ui/Input";
+import { Switch } from "@nextui-org/react";
+import { cn } from "@/lib/utils";
 
 const AdSpaceSelector = ({
   AdIntegrationData,
@@ -16,10 +18,10 @@ const AdSpaceSelector = ({
 }) => (
   <div className="flex flex-col gap-2">
     <div className="flex flex-col">
-      <label className="font-display text-jacarta-900 mb-2 block dark:text-white text-center">
+      <label className="block mb-2 text-center font-display text-jacarta-900 dark:text-white">
         Type of ad space for this offer <span className="text-red">*</span>
       </label>
-      <p className="dark:text-jacarta-100 text-center text-2xs mb-3">
+      <p className="mb-3 text-center dark:text-jacarta-100 text-2xs">
         Select the appropriate type.
       </p>
     </div>
@@ -35,7 +37,7 @@ const AdSpaceSelector = ({
             }}
           >
             {selectedIntegration?.includes(index) && (
-              <span className="absolute border-2 border-green rounded-2xl -right-3 text-green font-bold -bottom-2 z-30 w-6 h-6 flex justify-center items-center">
+              <span className="absolute z-30 flex items-center justify-center w-6 h-6 font-bold border-2 border-green rounded-2xl -right-3 text-green -bottom-2">
                 ✓
               </span>
             )}
@@ -106,8 +108,8 @@ const RatioSelector = ({
   handleCustomRatioInput
 }) => (
   <div className="flex flex-col items-center mt-4">
-    <div className="flex gap-2 items-center mb-2">
-      <label htmlFor={`imageRatioSelect-${index}`} className="font-display text-sm text-white">
+    <div className="flex items-center gap-2 mb-2">
+      <label htmlFor={`imageRatioSelect-${index}`} className="text-sm text-white font-display">
         Select Image Ratio <span className="text-red">*</span>
       </label>
       <ModalHelper
@@ -141,7 +143,7 @@ const RatioSelector = ({
           className={`mt-2 w-full rounded-lg py-3 px-3 ${validRatio[index] ? "border-green border-2" : "border-red"}`}
         />
         {validRatio[index] && (
-          <span className="absolute right-3 text-green font-bold top-5">✓</span>
+          <span className="absolute font-bold right-3 text-green top-5">✓</span>
         )}
       </div>
     )}
@@ -149,15 +151,15 @@ const RatioSelector = ({
 );
 
 const AdSpaceNumberSelector = ({ selectedNumber, handleNumberChange }) => (
-  <div className="mb-6 flex flex-col items-center">
-    <label className="font-display text-jacarta-900 mb-2 block dark:text-white">
+  <div className="flex flex-col items-center mb-6">
+    <label className="block mb-2 font-display text-jacarta-900 dark:text-white">
       Number of ads to display for this offer <span className="text-red">*</span>
     </label>
-    <p className="dark:text-jacarta-100 text-2xs mb-3">
+    <p className="mb-3 dark:text-jacarta-100 text-2xs">
       {/*  Warning: DSponsor works with a fixed quantity of ads per location... */}
     </p>
-    <div className="flex gap-4 justify-center items-center w-full text-jacarta-900 dark:text-white">
-      <div className="flex gap-2 items-center justify-center">
+    <div className="flex items-center justify-center w-full gap-4 text-jacarta-900 dark:text-white">
+      <div className="flex items-center justify-center gap-2">
         <label htmlFor="numberSelect">Select a number</label>
         <ModalHelper
           title="Number of ad spaces"
@@ -168,7 +170,7 @@ const AdSpaceNumberSelector = ({ selectedNumber, handleNumberChange }) => (
         id="numberSelect"
         value={selectedNumber}
         onChange={handleNumberChange}
-        className="bg-jacarta-800 border-jacarta-100 rounded-lg py-3 px-15"
+        className="py-3 rounded-lg bg-jacarta-800 border-jacarta-100 px-15"
       >
         {[...Array(25)].map((_, index) => (
           <option key={index + 1} value={index + 1}>
@@ -180,7 +182,57 @@ const AdSpaceNumberSelector = ({ selectedNumber, handleNumberChange }) => (
   </div>
 );
 
+const ChooseParameters = ({
+  parameters,
+  setParameters
+}: {
+  parameters: string[];
+  setParameters: Dispatch<SetStateAction<string[]>>;
+}) => {
+  const [isSelected, setIsSelected] = useState(parameters.includes("linkURL"));
+  const onSwitchChange = (value) => {
+    setIsSelected(value);
+    if (value) {
+      setParameters((prev) => [...prev, "linkURL"]);
+    } else {
+      setParameters((prev) => prev.filter((param) => param !== "linkURL"));
+    }
+  };
+
+  return (
+    <div className="flex flex-col items-center justify-center">
+      <label className="block mb-2 font-display text-jacarta-900 dark:text-white">Link</label>
+      <p className="mb-3 dark:text-jacarta-100 text-jacarta-100 text-2xs">
+        Do you want your offer to include a link that will redirect users upon ad interaction ?
+      </p>
+      <div className="flex flex-col items-center justify-center">
+        <div className="flex flex-col items-center justify-center">
+          <div className="flex mb-4">
+            <span className="mr-3">No</span>
+            <Switch
+              isSelected={isSelected}
+              onValueChange={onSwitchChange}
+              classNames={{
+                wrapper: "p-0 h-4 overflow-visible bg-primaryPurple",
+                thumb: cn(
+                  "w-6 h-6 border-2 shadow-lg",
+                  "group-data-[hover=true]:border-primary",
+                  "group-data-[selected=true]:ml-6",
+                  "group-data-[pressed=true]:w-7",
+                  "group-data-[selected]:group-data-[pressed]:ml-4"
+                )
+              }}
+            />
+            <span className="ml-1">Yes</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const OfferType = ({
+  selectedParameter,
   setDisplayedParameter,
   selectedNumber,
   setSelectedNumber,
@@ -331,9 +383,9 @@ const OfferType = ({
         <div className="absolute top-0 right-0">
           {currentSlide + 1}/{numSteps}
         </div>
-        <div className="flex flex-col w-full items-center border-b-1 border-primaryPurple shadow-2xl pb-2">
+        <div className="flex flex-col items-center w-full pb-2 shadow-2xl border-b-1 border-primaryPurple">
           <h3 className="mb-2 text-jacarta-100"> OFFER TYPE & AVAILABILITY</h3>
-          <p className="dark:text-white text-center">
+          <p className="text-center dark:text-white">
             Choose the type of ad space that suits your media and specify the number of tokenized
             spaces available for purchase.
           </p>
@@ -350,6 +402,7 @@ const OfferType = ({
           validRatio={validRatio}
           predefinedRatios={predefinedRatios}
         />
+        <ChooseParameters parameters={selectedParameter} setParameters={setSelectedParameter} />
         <AdSpaceNumberSelector
           selectedNumber={selectedNumber}
           handleNumberChange={handleNumberChange}

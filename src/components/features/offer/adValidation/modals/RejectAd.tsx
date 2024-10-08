@@ -5,6 +5,7 @@ import TextArea from "@/components/ui/TextArea";
 import StyledWeb3Button from "@/components/ui/buttons/StyledWeb3Button";
 import { Address } from "thirdweb";
 import { ChainObject } from "@/types/chain";
+import { ProposalValidation } from "../../AdValidation";
 
 const RejectAd = ({
   chainConfig,
@@ -44,9 +45,9 @@ const RejectAd = ({
     const itemsMap = new Map();
 
     const uniqueItems = selectedItems?.filter((item) => {
-      const alreadyExists = itemsMap?.has(item?.tokenId);
+      const alreadyExists = itemsMap?.has(item?.proposalId);
       if (!alreadyExists) {
-        itemsMap.set(item?.tokenId, true);
+        itemsMap.set(item?.proposalId, true);
         return true;
       }
       return false;
@@ -82,7 +83,7 @@ const RejectAd = ({
                 const tokenId = item?.tokenId;
 
                 return (
-                  <div key={item?.id} className="w-full mb-6 ">
+                  <div key={item?.proposalId} className="w-full mb-6 ">
                     <div className="flex justify-between">
                       <div>
                         <label
@@ -96,15 +97,21 @@ const RejectAd = ({
                       <div className="block mb-2 font-display text-jacarta-900 dark:text-white">
                         Space # <span className="text-primaryPurple">{tokenId}</span>
                       </div>
+                      <div className="block mb-2 font-display text-jacarta-900 dark:text-white">
+                        Type:{"  "}
+                        <span className="text-primaryPurple">
+                          {item?.adParameter.startsWith("imageURL") ? "Image" : "Link"}
+                        </span>
+                      </div>
                     </div>
                     <TextArea
-                      id={tokenId}
+                      id={item.proposalId}
                       className="w-full"
                       rows={4}
                       required
-                      value={comments[tokenId?.toString()] || ""}
+                      value={comments[item.proposalId?.toString()] || ""}
                       onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
-                        handleCommentChange(tokenId?.toString(), e.target.value)
+                        handleCommentChange(item.proposalId?.toString(), e.target.value)
                       }
                       placeholder="Provide a comment of your refuse. min characters 3"
                     />

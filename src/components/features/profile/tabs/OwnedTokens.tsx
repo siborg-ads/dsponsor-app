@@ -14,6 +14,15 @@ import { features } from "@/data/features";
 import config from "@/config/config";
 import { Address } from "thirdweb";
 
+export type StepType = {
+  offerIds: string[];
+  selected: boolean;
+  adParameter: string;
+  data?: any;
+  file?: any;
+  previewImage?: any;
+};
+
 const OwnedTokens = ({
   data,
   isOwner,
@@ -48,6 +57,8 @@ const OwnedTokens = ({
   const [imageURLSteps, setImageURLSteps] = useState<any[]>([]);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [imageUrlVariants, setImageUrlVariants] = useState<any[]>([]);
+  const [shouldProvideLink, setShouldProvideLink] = useState(false);
+  const [steps, setSteps] = useState<StepType[]>([]);
   const stepsRef = useRef([]);
   const [numSteps, setNumSteps] = useState(2);
   const { contract: DsponsorAdminContract } = useContract(
@@ -88,36 +99,33 @@ const OwnedTokens = ({
     });
   };
 
-  const handleLogoUpload = (file, index, step) => {
+  const handleLogoUpload = (file: any, step: StepType) => {
     if (file) {
-      const newFiles = [...files];
-      const newPreviewImages = [...previewImages];
-      newFiles[index] = { file: file, index: index, offerIds: step.offerIds };
-      newPreviewImages[index] = URL.createObjectURL(file);
+      // const newFiles = [...files];
+      // const newPreviewImages = [...previewImages];
+      // newFiles[index] = { file: file, index: index, offerIds: step.offerIds };
+      // newPreviewImages[index] = URL.createObjectURL(file);
 
-      setFiles(newFiles);
-      setPreviewImages(newPreviewImages);
+      const newSteps = [...steps];
+
+      const newStepIndex = newSteps.findIndex((s) => s.adParameter === step.adParameter);
+
+      newSteps[newStepIndex].file = file;
+      newSteps[newStepIndex].previewImage = URL.createObjectURL(file);
+
+      setSteps(newSteps);
+
+      // setFiles(newFiles);
+      // setPreviewImages(newPreviewImages);
     }
   };
-
-  useEffect(() => {
-    let isValid = true;
-    let newErrors: any = {};
-
-    if (files.length < imageURLSteps.length) {
-      newErrors.imageError = "Image is missing.";
-      isValid = false;
-    }
-
-    setValidate(isValid);
-    setErrors(newErrors);
-  }, [files, imageURLSteps.length, link]);
 
   const handleSliderForm = () => {
     setShowSliderForm(!showSliderForm);
 
     const uniqueIds = new Set();
     const adDetails = {};
+    let shouldAddLink = false;
     for (const token of selectedItems) {
       for (const param of token.adParameters) {
         const paramId = param.adParameter.id;
@@ -125,6 +133,10 @@ const OwnedTokens = ({
           uniqueIds.add(paramId);
           adDetails[paramId] = adDetails[paramId] || new Set();
           adDetails[paramId].add(token.id);
+        }
+
+        if (paramId && paramId.startsWith("linkURL")) {
+          shouldAddLink = true;
         }
       }
     }
@@ -144,19 +156,40 @@ const OwnedTokens = ({
         const variant = id?.slice("imageURL-".length);
         imageURLStep.push({
           uniqueId: variant,
-          offerIds: adDetails[id]
+          offerIds: adDetails[id],
+          selected: true
         });
       });
 
-    const totalNumSteps = numSteps + imageURLStep.length;
+    const stepsToAdd: StepType[] = [];
+
+    uniqueIdsArray.map((id) => {
+      stepsToAdd.push({
+        offerIds: adDetails[id],
+        selected: true,
+        adParameter: id
+      });
+    });
+
+    setShouldProvideLink(shouldAddLink);
+    // If there is no linkURL, we don't need to add an extra step to submit the ad link
+    const totalNumSteps = numSteps + (imageURLStep.length - (!shouldAddLink ? 1 : 0));
     setImageURLSteps(imageURLStep);
     setNumSteps(totalNumSteps);
+    setSteps(stepsToAdd);
   };
-  const handleSubmit = async () => {
-    if (!validate) {
-      return;
-    }
 
+  useEffect(() => {
+    const nbSelectedItems = steps.filter((step) => step.selected).length;
+    setNumSteps(nbSelectedItems + 1);
+
+    const isLinkSelected = steps.some(
+      (step) => step.adParameter.startsWith("linkURL") && step.selected
+    );
+    setShouldProvideLink(isLinkSelected);
+  }, [steps]);
+
+  const handleSubmit = async () => {
     const selectedOfferIdItems: any[] = [];
     const selectedTokenIdItems: any[] = [];
     const adParametersItems: any[] = [];
@@ -165,29 +198,34 @@ const OwnedTokens = ({
     let revalidateTags: string[] = [];
 
     try {
-      for (const item of selectedItems) {
-        for (const args of item.adParameters) {
-          if (args.adParameter.id !== "xSpaceId" && args.adParameter.id !== "xCreatorHandle") {
-            revalidateTags.push(`${currentChainObject?.chainId}-adOffer-${item.offerId}`);
-            revalidateTags.push(
-              `${currentChainObject?.chainId}-nftContract-${item.nftContract.id}`
-            );
-            for (const adminAddr of item.admins) {
-              revalidateTags.push(`${currentChainObject?.chainId}-userAddress-${adminAddr}`);
-            }
-
-            selectedOfferIdItems.push(item.offerId);
-            selectedTokenIdItems.push(item.tokenId);
-            adParametersItems.push(args.adParameter.id);
-          }
+      for (const item of steps) {
+        if (!item.selected) {
+          continue;
         }
 
-        for (const file of files) {
-          let uploadUrl;
-          if (file.offerIds.includes(item.id)) {
+        for (const id of item.offerIds) {
+          const [offerId, tokenId] = id.split("-");
+          const offer = selectedItems.find((i) => i.offerId === offerId && i.tokenId === tokenId);
+
+          if (item.adParameter !== "xSpaceId" && item.adParameter !== "xCreatorHandle" && offer) {
+            revalidateTags.push(`${currentChainObject?.chainId}-adOffer-${offerId}`);
+            revalidateTags.push(
+              `${currentChainObject?.chainId}-nftContract-${offer.nftContract.id}`
+            );
+
+            for (const adminAddr of offer.admins) {
+              revalidateTags.push(`${currentChainObject?.chainId}-userAddress-${adminAddr}`);
+            }
+          }
+
+          selectedOfferIdItems.push(offerId);
+          selectedTokenIdItems.push(tokenId);
+          adParametersItems.push(item.adParameter);
+          if (item.file) {
+            let uploadUrl;
             try {
               uploadUrl = await uploadToIPFS({
-                data: [file.file],
+                data: [item.file],
                 options: { uploadWithGatewayUrl: true, uploadWithoutDirectory: true }
               });
             } catch (error) {
@@ -196,8 +234,11 @@ const OwnedTokens = ({
             }
             dataItems.push(uploadUrl[0]);
           }
+
+          if (item.adParameter.startsWith("linkURL") && link) {
+            dataItems.push(link);
+          }
         }
-        dataItems.push(link);
       }
 
       const argsAdSubmited = {
@@ -237,6 +278,8 @@ const OwnedTokens = ({
     setImageUrlVariants([]);
     setFiles([]);
     setNumSteps(2);
+    setSteps([]);
+    setLink("");
   };
   const successFullUploadModal = {
     title: "Submit ad",
@@ -249,7 +292,7 @@ const OwnedTokens = ({
 
   if (isLoading) {
     return (
-      <div className="flex w-full justify-center">
+      <div className="flex justify-center w-full">
         <Image src="/images/loader/loading-bullet.svg" alt="icon" width={60} height={60} />
       </div>
     );
@@ -258,7 +301,7 @@ const OwnedTokens = ({
   return (
     <>
       {/* <!-- Filter --> */}
-      <div className="dark:bg-secondaryBlack dark:text-jacarta-100 rounded-2lg bg-white p-3 flex gap-4 justify-center items-center mb-6">
+      <div className="flex items-center justify-center gap-4 p-3 mb-6 bg-white dark:bg-secondaryBlack dark:text-jacarta-100 rounded-2lg">
         <span>
           {" "}
           This section lists all owned tokens, either currently in a direct listing or not listed at
@@ -268,7 +311,7 @@ const OwnedTokens = ({
       </div>
       {/* <!-- Grid --> */}
       {data?.length > 0 ? (
-        <div className="flex flex-col justify-center items-center ">
+        <div className="flex flex-col items-center justify-center ">
           {" "}
           {isOwner && features.canSeeSubmittedAds && (
             <div className="flex flex-col items-center justify-center">
@@ -284,7 +327,7 @@ const OwnedTokens = ({
                 />
               </div>
               {isSelectionActive && (
-                <div className="dark:bg-secondaryBlack dark:text-jacarta-100 rounded-2lg bg-white p-3 flex gap-4 justify-center items-center mb-6">
+                <div className="flex items-center justify-center gap-4 p-3 mb-6 bg-white dark:bg-secondaryBlack dark:text-jacarta-100 rounded-2lg">
                   <span>
                     Here is your tokens on the current network ({chainName}). Select tokens to
                     submit an ad on
@@ -375,7 +418,7 @@ const OwnedTokens = ({
           )}
         </div>
       ) : (
-        <div className="w-full flex flex-col gap-4 justify-center items-center">
+        <div className="flex flex-col items-center justify-center w-full gap-4">
           <span>No ad space yet...</span>
           <MainButton link={`/#hot-offers`} isPurple={true} text="Buy" />
         </div>
@@ -390,18 +433,18 @@ const OwnedTokens = ({
                 : "animated-modalSelectedItemUp"
           }`}
         >
-          <div className="dropdown-item mb-4 font-display   block w-full rounded-xl  text-left text-sm transition-colors dark:text-white">
+          <div className="block w-full mb-4 text-sm text-left transition-colors dropdown-item font-display rounded-xl dark:text-white">
             <span className="flex items-center justify-center gap-6">
               <span className="mr-4">
                 Ad Spaces selected :{" "}
-                <span className="text-green text-md ml-1">
+                <span className="ml-1 text-green text-md">
                   {Object.values(isSelectedItem).filter((value) => value === true).length}
                 </span>{" "}
               </span>
             </span>
           </div>
 
-          <div className="flex justify-center  gap-4 flex-wrap">
+          <div className="flex flex-wrap justify-center gap-4">
             <button
               className={` !rounded-full !min-w-[100px] !py-3 !px-8 !text-center !font-semibold !text-white !transition-all !bg-green !cursor-pointer `}
               onClick={handleSliderForm}
@@ -434,40 +477,41 @@ const OwnedTokens = ({
                 setImageUrlVariants={setImageUrlVariants}
                 currentSlide={currentSlide}
                 numSteps={numSteps}
+                steps={steps}
+                setSteps={setSteps}
               />
             )}
 
             <>
-              {imageURLSteps?.map((step: any, index) => (
-                <div key={step.uniqueId}>
-                  {currentSlide === index + 1 && (
-                    <AdImage
-                      key={step.uniqueId}
-                      stepsRef={stepsRef}
-                      currentStep={index + 2}
-                      id={step.uniqueId}
-                      styles={styles}
-                      file={files[index]}
-                      previewImage={previewImages[index]}
-                      handleLogoUpload={(file) => handleLogoUpload(file, index, step)}
-                      currentSlide={currentSlide}
-                      numSteps={numSteps}
-                    />
-                  )}
-                </div>
-              ))}
+              {steps
+                .filter((step) => step.selected)
+                .map((step, index) => (
+                  <div key={step.adParameter}>
+                    {currentSlide === index + 1 && step.adParameter.startsWith("imageURL") ? (
+                      <AdImage
+                        stepsRef={stepsRef}
+                        currentStep={index + 2}
+                        styles={styles}
+                        step={step}
+                        handleLogoUpload={(file) => handleLogoUpload(file, step)}
+                        currentSlide={currentSlide}
+                        numSteps={numSteps}
+                      />
+                    ) : currentSlide === index + 1 && step.adParameter.startsWith("linkURL") ? (
+                      <AdURL
+                        stepsRef={stepsRef}
+                        styles={styles}
+                        setLink={setLink}
+                        link={link}
+                        currentSlide={currentSlide}
+                        numSteps={numSteps}
+                      />
+                    ) : (
+                      <></>
+                    )}
+                  </div>
+                ))}
             </>
-
-            {currentSlide === imageURLSteps.length + 1 && (
-              <AdURL
-                stepsRef={stepsRef}
-                styles={styles}
-                setLink={setLink}
-                link={link}
-                currentSlide={currentSlide}
-                numSteps={numSteps}
-              />
-            )}
           </CarouselForm>
         </div>
       )}
@@ -491,6 +535,8 @@ const OwnedTokens = ({
             successFullUploadModal={successFullUploadModal}
             multipleAdsSubmission={true}
             expectedMultipleAds={selectedItems?.length}
+            shouldProvideLink={shouldProvideLink}
+            steps={steps}
           />
         </div>
       )}
