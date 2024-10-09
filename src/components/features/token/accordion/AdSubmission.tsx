@@ -434,7 +434,7 @@ const AdSubmission = ({
                             href={link as string}
                             passHref
                             target="_blank"
-                            className="overflow-hidden truncate text-primaryPurple hover:underline hover:text-opacity-80"
+                            className="text-primaryPurple hover:underline hover:text-opacity-80"
                           >
                             {(link as string).length > 70
                               ? `${(link as string).slice(0, 20)}...${(link as string).slice(-20)}`
@@ -594,7 +594,7 @@ const AdSubmission = ({
                         href={terms}
                         passHref
                         target="_blank"
-                        className="overflow-hidden truncate text-primaryPurple hover:underline hover:text-opacity-80"
+                        className="text-primaryPurple hover:underline hover:text-opacity-80"
                       >
                         {terms.length > 70 ? `${terms.slice(0, 20)}...${terms.slice(-20)}` : terms}
                       </Link>

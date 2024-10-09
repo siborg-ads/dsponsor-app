@@ -5,7 +5,6 @@ import TextArea from "@/components/ui/TextArea";
 import StyledWeb3Button from "@/components/ui/buttons/StyledWeb3Button";
 import { Address } from "thirdweb";
 import { ChainObject } from "@/types/chain";
-import { ProposalValidation } from "../../AdValidation";
 
 const RejectAd = ({
   chainConfig,

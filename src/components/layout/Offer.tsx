@@ -1044,13 +1044,11 @@ const Offer = () => {
                 <Accordion.Trigger
                   className={`${accordionActiveTab.includes("adValidation") && "bg-primaryPurple"} w-full flex items-center justify-center gap-4 mb-6 border border-primaryPurple hover:bg-primaryPurple cursor-pointer p-2 rounded-lg`}
                 >
-                  {/* 
                   {isOwner && sponsorHasAtLeastOneRejectedProposalAndNoPending && (
                     <ResponsiveTooltip text="You have at least one rejected proposal and no pending proposal.">
                       <ExclamationCircleIcon className="w-6 h-6 text-red" />
                     </ResponsiveTooltip>
                   )}
-                  */}
 
                   {isMedia && mediaShouldValidateAnAd && (
                     <ResponsiveTooltip text="You have at least one ad to validate or to refuse.">

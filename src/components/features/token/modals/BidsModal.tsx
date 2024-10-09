@@ -194,6 +194,8 @@ const BidsModal = ({
     if (
       marketplaceListings?.[0]?.bidPriceStructure?.minimalBuyoutPerToken &&
       marketplaceListings?.[0]?.buyoutPricePerToken &&
+      marketplaceListings?.[0]?.bidPriceStructure?.minimalBuyoutPerToken &&
+      marketplaceListings?.[0]?.buyoutPricePerToken &&
       parsedBidsAmount &&
       BigNumber.from(parsedBidsAmount).gt(BigNumber.from(0)) &&
       !successFullBid
@@ -504,8 +506,8 @@ const BidsModal = ({
 
   return (
     <div>
-      <div className="modal fade show block">
-        <div className="modal-dialog max-w-4xl mx-4">
+      <div className="block modal fade show">
+        <div className="max-w-4xl mx-4 modal-dialog">
           <div className="modal-content" ref={modalRef}>
             <div className="modal-header">
               <h5 className="modal-title" id="placeBidLabel">
@@ -517,7 +519,7 @@ const BidsModal = ({
                   viewBox="0 0 24 24"
                   width="24"
                   height="24"
-                  className="fill-jacarta-700 h-6 w-6 dark:fill-white"
+                  className="w-6 h-6 fill-jacarta-700 dark:fill-white"
                 >
                   <path fill="none" d="M0 0h24v24H0z"></path>
                   <path d="M12 10.586l4.95-4.95 1.414 1.414-4.95 4.95 4.95 4.95-1.414 1.414-4.95-4.95-4.95 4.95-1.414-1.414 4.95-4.95-4.95-4.95L7.05 5.636z"></path>
@@ -527,16 +529,16 @@ const BidsModal = ({
 
             {/* <!-- Body --> */}
             {!successFullBid ? (
-              <div className="modal-body p-6">
+              <div className="p-6 modal-body">
                 <div className="flex justify-between mb-2">
                   <div className="flex items-center justify-between">
-                    <span className="font-display flex items-center gap-4 text-jacarta-900 text-sm font-semibold dark:text-white">
+                    <span className="flex items-center gap-4 text-sm font-semibold font-display text-jacarta-900 dark:text-white">
                       Price
                     </span>
                   </div>
                   <div>
                     {tokenBalance?.displayValue && (
-                      <span className="dark:text-jacarta-100 text-sm">
+                      <span className="text-sm dark:text-jacarta-100">
                         Balance: {formatAndRoundPrice(tokenBalance?.displayValue) ?? 0}{" "}
                         {currencySymbol}
                       </span>
@@ -544,7 +546,7 @@ const BidsModal = ({
                   </div>
                 </div>
                 <div className="flex items-center gap-4">
-                  <div className="flex items-center relative w-full overflow-hidden -pr-4">
+                  <div className="relative flex items-center w-full overflow-hidden -pr-4">
                     <Input
                       type="number"
                       className="pr-20 relative w-full flex-[3] rounded-xl text-2xl py-2 font-semibold text-white"
@@ -553,7 +555,7 @@ const BidsModal = ({
                       onChange={(e) => handleBidsAmount(e)}
                       maxLength={currencyTokenDecimals}
                     />
-                    <span className="text-white font-semibold absolute right-0 px-4">
+                    <span className="absolute right-0 px-4 font-semibold text-white">
                       {currencySymbol?.substring(0, 6)}
                     </span>
                   </div>
@@ -561,21 +563,21 @@ const BidsModal = ({
                   {displayedPrice &&
                     parseFloat(displayedPrice) < 1000000 &&
                     parseFloat(displayedPrice) > 0 && (
-                      <div className="bg-jacarta-800 w-1/4 border border-jacarta-900 border-opacity-10 rounded-xl flex flex-1 justify-center self-stretch border-l">
-                        <span className="self-center px-4 text-xl text-center text-white font-semibold">
+                      <div className="flex self-stretch justify-center flex-1 w-1/4 border border-l bg-jacarta-800 border-jacarta-900 border-opacity-10 rounded-xl">
+                        <span className="self-center px-4 text-xl font-semibold text-center text-white">
                           {`$${displayedPrice}`}
                         </span>
                       </div>
                     )}
                 </div>
 
-                <div className="flex flex-col justify-center text-left md:flex-row items-center md:justify-between mb-8 mt-2 gap-2 md:gap-4">
+                <div className="flex flex-col items-center justify-center gap-2 mt-2 mb-8 text-left md:flex-row md:justify-between md:gap-4">
                   {(!!initialIntPrice || (buyoutPriceReached && buyoutPrice)) && (
                     <div className="flex flex-col gap-1">
                       {parseFloat(bidsAmount !== "" ? bidsAmount : "0") <
                         parseFloat(initialIntPrice ?? "0") && (
                         <button
-                          className="text-sm text-left md:text-base whitespace-nowrap  text-green hover:text-opacity-80"
+                          className="text-sm text-left md:text-base whitespace-nowrap text-green hover:text-opacity-80"
                           onClick={() => {
                             setBidsAmount(initialIntPrice ?? "0");
 
@@ -592,7 +594,7 @@ const BidsModal = ({
 
                       {!buyoutPriceReached && (
                         <button
-                          className="text-sm text-left md:text-base whitespace-nowrap  text-green hover:text-opacity-80"
+                          className="text-sm text-left md:text-base whitespace-nowrap text-green hover:text-opacity-80"
                           onClick={() => {
                             const formattedBuyoutPrice = ethers.utils.formatUnits(
                               BigNumber.from(buyoutPrice ?? "0"),
@@ -623,7 +625,7 @@ const BidsModal = ({
                   </span>
                 </div>
 
-                <div className="flex flex-col gap-8 py-4 items-center justify-center">
+                <div className="flex flex-col items-center justify-center gap-8 py-4">
                   {buyoutPriceReached ? (
                     <div className="flex items-center justify-center text-center">
                       Your bid is higher than the buyout price. You&apos;ll own the ad space
@@ -631,21 +633,21 @@ const BidsModal = ({
                     </div>
                   ) : (
                     <>
-                      <div className="flex flex-col gap-2 items-center text-center">
+                      <div className="flex flex-col items-center gap-2 text-center">
                         <span className="font-semibold text-white">What&apos;s next?</span>
-                        <span className="text-white text-sm">
+                        <span className="text-sm text-white">
                           If someone outbids you, you will receive your bid amount back plus an
                           additional rewards. However, if no one outbids you, you will get the ad
                           space.
                         </span>
                       </div>
                       <div className="flex flex-col gap-2">
-                        <div className="grid grid-cols-7 items-center gap-4 mx-auto w-full min-w-max">
+                        <div className="grid items-center w-full grid-cols-7 gap-4 mx-auto min-w-max">
                           <div className="bg-jacarta-800 col-span-3 duration-400 shadow p-4 rounded-xl font-semibold text-xs md:text-base text-white text-center min-w-[125px] max-w-[125px] md:min-w-[200px] md:max-w-[200px]">
                             Ad space NFT in your wallet
                           </div>
 
-                          <div className="text-center flex justify-center items-center min-w-max">
+                          <div className="flex items-center justify-center text-center min-w-max">
                             <span className="text-white mx-auto text-center flex items-center justify-center font-semibold text-sm min-w-[25px] max-w-[25px] md:min-w-[50px] md:max-w-[50px]">
                               OR
                             </span>
@@ -659,7 +661,7 @@ const BidsModal = ({
                             {currencySymbol} Reward
                           </div>
                         </div>
-                        <div className="hidden md:grid grid-cols-7 items-start gap-4 mx-auto w-full">
+                        <div className="items-start hidden w-full grid-cols-7 gap-4 mx-auto md:grid">
                           <div className="hidden w-full col-span-3 text-base text-white md:flex justify-center items-center text-center min-w-[200px] max-w-[200px]">
                             If you are still the highest bidder when the auction closes
                           </div>
@@ -676,14 +678,14 @@ const BidsModal = ({
                 </div>
 
                 {/* <!-- Terms --> */}
-                <div className="mt-8 flex items-center space-x-2">
+                <div className="flex items-center mt-8 space-x-2">
                   <Input
                     type="checkbox"
                     id="buyNowTerms"
                     onClick={handleTermService}
                     className="h-5 !w-5 mr-3 rounded border-jacarta-200 !text-primaryPurple checked:bg-primaryPurple focus:ring-primaryPurple/20 focus:ring-offset-0 dark:border-jacarta-500"
                   />
-                  <label htmlFor="buyNowTerms" className="dark:text-jacarta-200 text-sm">
+                  <label htmlFor="buyNowTerms" className="text-sm dark:text-jacarta-200">
                     By checking this box, I agree to {"SiBorg Ads's"}{" "}
                     <Link
                       href="https://docs.google.com/document/d/15um5c6mMoKc8V1rVyRJ7tcIxFDmtE8xe75mx-CdB84w"
@@ -696,7 +698,7 @@ const BidsModal = ({
                 </div>
               </div>
             ) : !buyoutPriceReached ? (
-              <div className="modal-body p-6">
+              <div className="p-6 modal-body">
                 <div className="flex flex-col gap-2">
                   <div className="flex gap-4">
                     <p>Congratulations your bid has been submit ! 🎉 </p>
@@ -709,11 +711,11 @@ const BidsModal = ({
                 <div className="flex flex-col justify-center my-8">
                   {currencySymbol === "WETH" && (
                     <div className="flex flex-col items-center gap-1">
-                      <span className="text-lg text-primaryPink font-semibold text-center">
+                      <span className="text-lg font-semibold text-center text-primaryPink">
                         You will earn {Math.floor(parseFloat(protocolFeeAmount)) ?? 0} boxes if you
                         win the auction !
                       </span>
-                      <span className="text-lg text-white font-semibold text-center">
+                      <span className="text-lg font-semibold text-center text-white">
                         Want to earn more?
                       </span>
 
@@ -728,13 +730,13 @@ const BidsModal = ({
                           }}
                           className={`bg-primaryPurple hover:bg-opacity-80 rounded-2lg text-white p-2 flex items-center justify-center text-center gap-2`}
                         >
-                          <span className="flex items-center justify-center gap-2 w-full text-center">
+                          <span className="flex items-center justify-center w-full gap-2 text-center">
                             <svg
                               xmlns="http://www.w3.org/2000/svg"
                               x="0px"
                               y="0px"
                               viewBox="0 0 50 50"
-                              className="text-white w-5 h-5 fill-white"
+                              className="w-5 h-5 text-white fill-white"
                             >
                               <path d="M 5.9199219 6 L 20.582031 27.375 L 6.2304688 44 L 9.4101562 44 L 21.986328 29.421875 L 31.986328 44 L 44 44 L 28.681641 21.669922 L 42.199219 6 L 39.029297 6 L 27.275391 19.617188 L 17.933594 6 L 5.9199219 6 z M 9.7167969 8 L 16.880859 8 L 40.203125 42 L 33.039062 42 L 9.7167969 8 z"></path>
                             </svg>
@@ -764,7 +766,7 @@ const BidsModal = ({
                             }}
                             className={`bg-primaryPurple hover:bg-opacity-80 rounded-2lg text-center flex items-center justify-center text-white p-2`}
                           >
-                            <span className="flex items-center justify-center gap-2 w-full text-center">
+                            <span className="flex items-center justify-center w-full gap-2 text-center">
                               <ClipboardIcon className="w-5 h-5" />
                               Copy
                             </span>
@@ -776,12 +778,12 @@ const BidsModal = ({
                 </div>
               </div>
             ) : (
-              <div className="modal-body p-6">
+              <div className="p-6 modal-body">
                 <div className="flex flex-col gap-2">
                   <div className="flex gap-4">
                     <p>Congratulations ! 🎉 </p>
                     <div
-                      className="dark:border-jacarta-800 bg-green   flex h-6 w-6 items-center justify-center rounded-full border-2 border-white"
+                      className="flex items-center justify-center w-6 h-6 border-2 border-white rounded-full dark:border-jacarta-800 bg-green"
                       data-tippy-content="Verified Collection"
                     >
                       <svg
@@ -801,7 +803,7 @@ const BidsModal = ({
                 <div className="flex flex-col justify-center my-8">
                   {currencySymbol === "WETH" && (
                     <div className="flex flex-col items-center gap-1">
-                      <span className="text-lg text-white font-semibold text-center">
+                      <span className="text-lg font-semibold text-center text-white">
                         Congratulations, you have increased your number of boxes by{" "}
                         {Math.floor(parseFloat(protocolFeeAmount)) ?? 0}. Check your profile page
                         and referral link to earn more.
@@ -810,15 +812,15 @@ const BidsModal = ({
                   )}
                 </div>
 
-                <div className="mt-4 flex items-center">
+                <div className="flex items-center mt-4">
                   <span>You can check the bid status at anytime in your profile page.</span>
                 </div>
               </div>
             )}
             {/* <!-- end body --> */}
             {!successFullBid && (
-              <div className="modal-footer flex items-center justify-center gap-4 p-6">
-                <div className="flex flex-col gap-6 md:gap-2 w-full justify-center items-center">
+              <div className="flex items-center justify-center gap-4 p-6 modal-footer">
+                <div className="flex flex-col items-center justify-center w-full gap-6 md:gap-2">
                   <div
                     className={`grid grid-cols-1 mx-auto ${!insufficentBalance && chainIdIsCorrect && address && "md:grid-cols-2"} gap-6 md:w-7/12`}
                   >
@@ -826,8 +828,9 @@ const BidsModal = ({
                       <>
                         {!insufficentBalance ? (
                           <>
-                            {nativeTokenBalance?.value?.gte(
-                              BigNumber.from(config[chainId]?.gaslessBalanceThreshold ?? 0)
+                            {!!config[chainId]?.gaslessBalanceThreshold &&
+                            nativeTokenBalance?.value?.gte(
+                              BigNumber.from(config[chainId]?.gaslessBalanceThreshold)
                             ) ? (
                               <StyledWeb3Button
                                 contractAddress={
@@ -864,7 +867,7 @@ const BidsModal = ({
                                   });
                                 }}
                                 isDisabled={true}
-                                defaultText={`You need more than ${formatUnits(BigNumber.from(config[chainId].gaslessBalanceThreshold ?? 0), "ether")} ETH to execute this tx.`}
+                                defaultText={`You need more than ${!!config[chainId]?.gaslessBalanceThreshold && formatUnits(BigNumber.from(config[chainId].gaslessBalanceThreshold), "ether")} ETH to execute this tx.`}
                               />
                             )}
 
@@ -966,7 +969,7 @@ const BidsModal = ({
                     <ResponsiveTooltip
                       text={`You need to approve the marketplace contract to spend your ${currencySymbol} on this transaction.`}
                     >
-                      <span className="text-xs text-center text-jacarta-100 inline-flex items-center gap-1">
+                      <span className="inline-flex items-center gap-1 text-xs text-center text-jacarta-100">
                         <InformationCircleIcon className="w-4 h-4 text-jacarta-100" />
                         Why do I have to approve ?
                       </span>
@@ -1018,7 +1021,7 @@ const BidsModal = ({
                         />
 
                         {tooHighPriceForCrossmint && (
-                          <span className="text-xs text-center text-red inline-flex items-center gap-1">
+                          <span className="inline-flex items-center gap-1 text-xs text-center text-red">
                             <InformationCircleIcon className="w-4 h-4 text-white" />
                             Amount is too high to {buyoutPriceReached ? "buy" : "bid"} with credit
                             card.

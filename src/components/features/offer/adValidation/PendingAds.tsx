@@ -5,7 +5,7 @@ import "tippy.js/dist/tippy.css";
 import Link from "next/link";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import Input from "@/components/ui/Input";
 import StyledWeb3Button from "@/components/ui/buttons/StyledWeb3Button";
 import { ChainObject } from "@/types/chain";
@@ -82,10 +82,10 @@ const PendingAds: React.FC<PendingAdsProps> = ({
     }
   }, [detectedRatios, expectedRatio]);
 
-  const closeModal = () => {
+  const closeModal = useCallback(() => {
     if (!tokenId) return;
     setModalStates((prev) => ({ ...prev, [tokenId as any]: false }));
-  };
+  }, [tokenId]);
 
   useEffect(() => {
     const handleEsc = (event: KeyboardEvent) => {
@@ -180,12 +180,12 @@ const PendingAds: React.FC<PendingAdsProps> = ({
     });
   };
 
-  const getImageUrl = (adParams) => {
-    if (!adParams) return "/";
+  //   const getImageUrl = (adParams) => {
+  //     if (!adParams) return "/";
 
-    const imageKey = Object.keys(adParams).find((key) => key.startsWith("imageURL"));
-    return imageKey ? adParams[imageKey] : "/";
-  };
+  //     const imageKey = Object.keys(adParams).find((key) => key.startsWith("imageURL"));
+  //     return imageKey ? adParams[imageKey] : "/";
+  //   };
 
   if (pendingProposalData?.length === 0) {
     return <div className="flex justify-center">No pending ads...</div>;
