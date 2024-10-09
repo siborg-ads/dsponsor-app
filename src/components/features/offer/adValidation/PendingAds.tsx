@@ -24,7 +24,7 @@ interface PendingAdsProps {
   pendingProposalData: any;
   comments?: any;
   isToken: boolean;
-  isOwner: boolean;
+  isAdmin: boolean;
   // eslint-disable-next-line no-unused-vars
   setRefusedValidatedAdModal: (value: boolean) => void;
   aspectRatio: string;
@@ -40,7 +40,7 @@ const PendingAds: React.FC<PendingAdsProps> = ({
   pendingProposalData,
   comments,
   isToken,
-  isOwner,
+  isAdmin,
   setRefusedValidatedAdModal,
   aspectRatio: expectedRatio,
   setSponsorHasAtLeastOneRejectedProposalAndNoPending
@@ -141,7 +141,7 @@ const PendingAds: React.FC<PendingAdsProps> = ({
   };
 
   const handleSelection = (item: ProposalValidation) => {
-    if (!isOwner) return;
+    if (!isAdmin) return;
 
     setIsFirstSelection(false);
 
@@ -195,7 +195,7 @@ const PendingAds: React.FC<PendingAdsProps> = ({
     <div>
       {!isToken && (
         <div>
-          {isOwner && (
+          {isAdmin && (
             <div className="p-6 mb-4 bg-white border dark:bg-secondaryBlack dark:border-jacarta-800 border-jacarta-100 rounded-2lg">
               <div className=" sm:flex sm:flex-wrap">
                 <span className="text-sm dark:text-jacarta-100 text-jacarta-100">

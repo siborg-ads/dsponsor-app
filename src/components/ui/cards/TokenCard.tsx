@@ -12,6 +12,7 @@ import { ExclamationCircleIcon } from "@heroicons/react/24/solid";
 import ResponsiveTooltip from "@/components/ui/ResponsiveTooltip";
 import { BigNumber } from "ethers";
 import React from "react";
+import { Address } from "thirdweb";
 
 const TokenCard = ({
   item,
@@ -24,6 +25,7 @@ const TokenCard = ({
   listingType,
   disableLink,
   availableToSubmitAdFromOwnedTokens,
+  availableToSubmitAdFromCreatedOffers,
   createdOffersProposals,
   offer,
   offers,
@@ -32,7 +34,9 @@ const TokenCard = ({
   currencySymbol,
   tokenId,
   usdcPriceFormatted,
-  hasBidStatus
+  hasBidStatus,
+  fromProfilePage,
+  profileAddress
 }: {
   item: any;
   url?: string;
@@ -44,6 +48,7 @@ const TokenCard = ({
   listingType?: string;
   disableLink?: boolean;
   availableToSubmitAdFromOwnedTokens?: boolean;
+  availableToSubmitAdFromCreatedOffers?: boolean;
   createdOffersProposals?: boolean;
   offer?: any;
   offers?: any;
@@ -53,6 +58,8 @@ const TokenCard = ({
   tokenId?: string;
   usdcPriceFormatted?: string;
   hasBidStatus?: boolean;
+  fromProfilePage?: boolean;
+  profileAddress?: Address;
 }) => {
   const [price, setPrice] = useState<string | null>(null);
   const [totalPrice, setTotalPrice] = useState<string | null>(null);
@@ -64,7 +71,7 @@ const TokenCard = ({
   const [isLastBidder, setIsLastBidder] = useState(false);
   const [itemProposals, setItemProposals] = useState<any>(null);
   const [availableToSubmitAd, setAvailableToSubmitAd] = useState(false);
-  const [isPendingAdsOnOffer, setIsPendingAdsOnOffer] = useState(false);
+  const [isPendingAdsOnToken, setIsPendingAdsOnToken] = useState(false);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
 
   const address = useAddress();
@@ -229,17 +236,21 @@ const TokenCard = ({
 
   useEffect(() => {
     if (offer) {
-      const pendingProposals = offer?.allProposals?.filter(
+      const token = offer?.nftContract?.tokens?.find(
+        (token) => BigInt(token?.tokenId ?? 0) === BigInt(tokenId ?? 0)
+      );
+
+      const pendingProposals = token?.allProposals?.filter(
         (proposal) => proposal?.status === "CURRENT_PENDING"
       );
 
       if (pendingProposals?.length > 0) {
-        setIsPendingAdsOnOffer(true);
+        setIsPendingAdsOnToken(true);
       } else {
-        setIsPendingAdsOnOffer(false);
+        setIsPendingAdsOnToken(false);
       }
     }
-  }, [offer]);
+  }, [offer, tokenId]);
 
   function formatDate(dateIsoString: string): string {
     if (!dateIsoString) return "date not found";
@@ -460,31 +471,67 @@ const TokenCard = ({
           <div className="mt-4 flex items-center justify-between gap-2">
             {isSelectionActive ? (
               <span className="font-display  text-primaryBlack hover:text-primaryPurple text-base dark:text-white flex items-center gap-1">
-                {availableToSubmitAd && availableToSubmitAdFromOwnedTokens && (
+                {((!!fromProfilePage &&
+                  profileAddress?.toLowerCase() === address?.toLowerCase() &&
+                  availableToSubmitAd &&
+                  !!availableToSubmitAdFromCreatedOffers) ||
+                  (!fromProfilePage &&
+                    availableToSubmitAd &&
+                    !!availableToSubmitAdFromCreatedOffers)) && (
+                  <ResponsiveTooltip text="You can review the ad proposals for this item">
+                    <ExclamationCircleIcon className="h-5 w-5 text-red dark:text-red" />
+                  </ResponsiveTooltip>
+                )}
+                {((!!fromProfilePage &&
+                  profileAddress?.toLowerCase() === address?.toLowerCase() &&
+                  !!availableToSubmitAdFromOwnedTokens) ||
+                  (!fromProfilePage && !!availableToSubmitAdFromOwnedTokens)) && (
                   <ResponsiveTooltip text="You can submit an ad for this item">
                     <ExclamationCircleIcon className="h-5 w-5 text-red dark:text-red" />
                   </ResponsiveTooltip>
                 )}
-                {createdOffersProposals && isPendingAdsOnOffer && (
+                {((!!fromProfilePage &&
+                  profileAddress?.toLowerCase() === address?.toLowerCase() &&
+                  !!createdOffersProposals &&
+                  isPendingAdsOnToken) ||
+                  (!fromProfilePage && !!createdOffersProposals && isPendingAdsOnToken)) && (
                   <ResponsiveTooltip text="You have 1 or more ads proposals to check on your offer">
                     <ExclamationCircleIcon className="h-5 w-5 text-red dark:text-red" />
                   </ResponsiveTooltip>
-                )}{" "}
+                )}
                 <ResponsiveTooltip text={name}>{name}</ResponsiveTooltip>
               </span>
             ) : (
               <div className="overflow-hidden text-ellipsis whitespace-nowrap ">
                 <span className="font-display text-primaryBlack hover:text-primaryPurple text-base dark:text-white flex items-center gap-1">
-                  {availableToSubmitAd && availableToSubmitAdFromOwnedTokens && (
+                  {((!!fromProfilePage &&
+                    profileAddress?.toLowerCase() === address?.toLowerCase() &&
+                    availableToSubmitAd &&
+                    !!availableToSubmitAdFromCreatedOffers) ||
+                    (!fromProfilePage &&
+                      availableToSubmitAd &&
+                      !!availableToSubmitAdFromCreatedOffers)) && (
+                    <ResponsiveTooltip text="You can review the ad proposals for this item">
+                      <ExclamationCircleIcon className="h-5 w-5 text-red dark:text-red" />
+                    </ResponsiveTooltip>
+                  )}
+                  {((!!fromProfilePage &&
+                    profileAddress?.toLowerCase() === address?.toLowerCase() &&
+                    !!availableToSubmitAdFromOwnedTokens) ||
+                    (!fromProfilePage && !!availableToSubmitAdFromOwnedTokens)) && (
                     <ResponsiveTooltip text="You can submit an ad for this item">
                       <ExclamationCircleIcon className="h-5 w-5 text-red dark:text-red" />
                     </ResponsiveTooltip>
                   )}
-                  {createdOffersProposals && isPendingAdsOnOffer && (
+                  {((!!fromProfilePage &&
+                    profileAddress?.toLowerCase() === address?.toLowerCase() &&
+                    !!createdOffersProposals &&
+                    isPendingAdsOnToken) ||
+                    (!fromProfilePage && !!createdOffersProposals && isPendingAdsOnToken)) && (
                     <ResponsiveTooltip text="You have 1 or more ads proposals to check on your offer">
                       <ExclamationCircleIcon className="h-5 w-5 text-red dark:text-red" />
                     </ResponsiveTooltip>
-                  )}{" "}
+                  )}
                   <ResponsiveTooltip text={name}>{name}</ResponsiveTooltip>
                 </span>
               </div>

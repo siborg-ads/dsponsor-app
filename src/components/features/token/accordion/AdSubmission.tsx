@@ -308,7 +308,7 @@ const AdSubmission = ({
   //   );
   // }
 
-  if (!successFullUpload) {
+  if (!successFullUpload && (multipleAdsSubmission || adSubmission)) {
     return (
       <div className="modal-dialog max-h-[75vh] max-w-2xl md:min-w-md overflow-auto">
         <div className="modal-content !bg-secondaryBlack">

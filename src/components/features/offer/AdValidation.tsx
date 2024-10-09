@@ -70,6 +70,7 @@ const AdValidation = ({
   refusedValidatedAdModal,
   setSelectedItems,
   selectedItems,
+  isAdmin,
   sponsorHasAtLeastOneRejectedProposalAndNoPending,
   setSponsorHasAtLeastOneRejectedProposalAndNoPending,
   mediaShouldValidateAnAd,
@@ -77,7 +78,8 @@ const AdValidation = ({
   isTokenView,
   itemTokenId,
   pendingProposalData,
-  setPendingProposalData
+  setPendingProposalData,
+  fromToken
 }: {
   chainConfig: ChainObject;
   offer: any;
@@ -94,10 +96,12 @@ const AdValidation = ({
   setSponsorHasAtLeastOneRejectedProposalAndNoPending?: any;
   mediaShouldValidateAnAd: boolean;
   isMedia: boolean;
+  isAdmin: boolean;
   isTokenView?: boolean;
   itemTokenId: string;
   pendingProposalData: any;
   setPendingProposalData: any;
+  fromToken?: boolean;
 }) => {
   const [validatedProposalData, setValidatedProposalData] = useState<ProposalValidation[]>([]);
   const [refusedProposalData, setRefusedProposalData] = useState<ProposalValidation[]>([]);
@@ -310,8 +314,9 @@ const AdValidation = ({
                 >
                   {sponsorHasAtLeastOneRejectedProposalAndNoPending &&
                     isOwner &&
+                    fromToken &&
                     text === "Refused" && (
-                      <ResponsiveTooltip text="You ad as been refused and you have no pending ad. Try to submit a new one.">
+                      <ResponsiveTooltip text="Your ad has been refused and you have no pending ad. Try to submit a new one.">
                         <ExclamationCircleIcon className="w-5 h-5 text-red dark:text-red" />
                       </ResponsiveTooltip>
                     )}
@@ -358,7 +363,7 @@ const AdValidation = ({
                 setRefusedValidatedAdModal={setRefusedValidatedAdModal}
                 pendingProposalData={pendingProposalData}
                 isToken={false}
-                isOwner={isOwner}
+                isAdmin={isAdmin}
                 handleItemSubmit={handleItemSubmit}
                 aspectRatio={aspectRatio as string}
                 setSponsorHasAtLeastOneRejectedProposalAndNoPending={
