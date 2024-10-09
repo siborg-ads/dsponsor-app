@@ -17,6 +17,8 @@ import StyledWeb3Button from "@/components/ui/buttons/StyledWeb3Button";
 import { Address } from "thirdweb";
 import { ChainObject } from "@/types/chain";
 import config from "@/config/config";
+import { useRouter } from "next/router";
+import NormalButton from "@/components/ui/buttons/NormalButton";
 
 const BuyModal = ({
   chainConfig,
