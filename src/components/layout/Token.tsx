@@ -126,6 +126,7 @@ const Token = () => {
   const [numSteps, setNumSteps] = useState(2);
   const [tokenStatut, setTokenStatut] = useState<string | null>(null);
   const [tokenCurrencyAddress, setTokenCurrencyAddress] = useState<Address | null>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [, setTokenBigIntPrice] = useState(null);
   const [successFullBid, setSuccessFullBid] = useState(false);
   const [isTokenInAuction, setIsTokenInAuction] = useState(false);
@@ -144,10 +145,10 @@ const Token = () => {
   const [airdropContainer, setAirdropContainer] = useState(true);
   const [amountInEthWithSlippage, setAmountInEthWithSlippage] = useState<BigNumber | null>(null);
   const [displayedPrice, setDisplayedPrice] = useState<number | null>(null);
-  const [isOfferOwner, setIsOfferOwner] = useState(false);
   const [directBuyPriceBN, setDirectBuyPriceBN] = useState<BigNumber | undefined>(undefined);
   const [auctionPriceBN, setAuctionPriceBN] = useState<BigNumber | undefined>(undefined);
   const [mintPriceBN, setMintPriceBN] = useState<BigNumber | undefined>(undefined);
+  const [isOfferOwner, setIsOfferOwner] = useState<boolean>(false);
   const [hasEnoughBalance, setHasEnoughBalance] = useState<boolean>(true);
   const [hasEnoughBalanceForNative, setHasEnoughBalanceForNative] = useState<boolean>(true);
   const [
@@ -340,16 +341,14 @@ const Token = () => {
   }, [address, chainId, fetchOffers, offerId, tokenId]);
 
   useEffect(() => {
+    // set if the user is the media or not
     if (offerData && address) {
-      // set if the user is the media or not
-      if (offerData && address) {
-        const isMedia = offerData?.admins?.includes(address.toLowerCase());
-        setIsMedia(isMedia);
+      if (offerData?.admins?.includes(address?.toLowerCase())) {
+        setAccordionActiveTab(["adValidation"]);
+        setIsMedia(true);
       } else {
         setIsMedia(false);
       }
-    } else {
-      setIsMedia(false);
     }
   }, [address, offerData]);
 
@@ -407,16 +406,17 @@ const Token = () => {
       parseFloat(
         itemProposals?.acceptedProposals?.sort(
           (a, b) => b?.creationTimestamp - a?.creationTimestamp
-        )[0]?.lastUpdateTimestamp
+        )[0]?.lastUpdateTimestamp ?? 0
       ) * 1000;
     const lastRefusedProposalTimestamp =
       parseFloat(
         itemProposals?.rejectedProposals?.sort(
           (a, b) => b?.creationTimestamp - a?.creationTimestamp
-        )[0]?.lastUpdateTimestamp
+        )[0]?.lastUpdateTimestamp ?? 0
       ) * 1000;
     const sponsorHasNoMoreRecentValidatedProposal =
-      new Date(lastAcceptedProposalTimestamp) <= new Date(lastRefusedProposalTimestamp);
+      new Date(lastAcceptedProposalTimestamp)?.getTime() <=
+      new Date(lastRefusedProposalTimestamp)?.getTime();
 
     setSponsorHasAtLeastOneRejectedProposalAndNoPending(
       sponsorHasAtLeastOneRejectedProposal &&
@@ -1206,6 +1206,22 @@ const Token = () => {
   ]);
 
   useEffect(() => {
+    if (address && isUserOwner?.toLowerCase() === address?.toLowerCase()) {
+      setIsOwner(true);
+    } else {
+      setIsOwner(false);
+    }
+  }, [isUserOwner, address]);
+
+  useEffect(() => {
+    if (offerData?.admins?.includes(address?.toLowerCase())) {
+      setIsOfferOwner(true);
+    } else {
+      setIsOfferOwner(false);
+    }
+  }, [address, offerData]);
+
+  useEffect(() => {
     if (!isUserOwner || !marketplaceListings || !address) return;
 
     if (
@@ -1213,21 +1229,24 @@ const Token = () => {
       firstSelectedListing?.listingType !== "Direct"
     ) {
       setIsTokenInAuction(true);
+    } else {
+      setIsTokenInAuction(false);
     }
 
     if (
+      address &&
       address?.toLowerCase() === firstSelectedListing?.lister?.toLowerCase() &&
       firstSelectedListing?.status === "CREATED"
     ) {
       setIsLister(true);
+    } else {
+      setIsLister(false);
     }
 
-    if (offerData?.admins?.includes(address?.toLowerCase())) {
-      setIsOfferOwner(true);
-    }
-
-    if (isUserOwner?.toLowerCase() === address?.toLowerCase()) {
-      setIsOwner(true);
+    if (address && offerData?.admins?.includes(address?.toLowerCase())) {
+      setIsAdmin(true);
+    } else {
+      setIsAdmin(false);
     }
   }, [
     isUserOwner,
@@ -1914,7 +1933,8 @@ const Token = () => {
           (token) => !!token?.tokenId && BigInt(token?.tokenId) === BigInt(tokenId as string)
         )?.mint
       );
-      const isCreator = offerData?.initialCreator?.toLowerCase() === address?.toLowerCase();
+      const isCreator =
+        address && offerData?.initialCreator?.toLowerCase() === address?.toLowerCase();
 
       const finalCondition =
         (isActive && isOwner && ((isAuction && !hasBids) || isDirect)) ||
@@ -2636,7 +2656,7 @@ const Token = () => {
                           className="w-full"
                         />
 
-                        {!isAddress(transferAddress || "") && (transferAddress || "") !== "" && (
+                        {!isAddress(transferAddress ?? "") && (transferAddress ?? "") !== "" && (
                           <span className="text-sm text-red">Invalid address</span>
                         )}
                         {transferAddress?.toLowerCase() === address.toLowerCase() && (
@@ -2673,7 +2693,7 @@ const Token = () => {
                                 error: "Transfer failed ❌"
                               });
                             }}
-                            isDisabled={!isAddress(transferAddress || "") || !isValidId}
+                            isDisabled={!isAddress(transferAddress ?? "") || !isValidId}
                             defaultText="Transfer"
                           />
                         </div>
@@ -2849,7 +2869,9 @@ const Token = () => {
                   <AdValidation
                     chainConfig={chainConfig}
                     offer={offerData}
-                    isOwner={isOfferOwner}
+                    isOwner={isOwner}
+                    fromToken={true}
+                    isAdmin={isOfferOwner}
                     successFullRefuseModal={successFullRefuseModal}
                     setRefusedValidatedAdModal={setRefusedValidatedAdModal}
                     refusedValidatedAdModal={refusedValidatedAdModal}
@@ -2857,6 +2879,9 @@ const Token = () => {
                     setSelectedItems={setSelectedItems}
                     sponsorHasAtLeastOneRejectedProposalAndNoPending={
                       sponsorHasAtLeastOneRejectedProposalAndNoPending
+                    }
+                    setSponsorHasAtLeastOneRejectedProposalAndNoPending={
+                      setSponsorHasAtLeastOneRejectedProposalAndNoPending
                     }
                     mediaShouldValidateAnAd={mediaShouldValidateAnAd}
                     isMedia={isMedia}

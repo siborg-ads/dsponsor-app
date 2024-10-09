@@ -333,6 +333,7 @@ const Offer = () => {
     // we check if the sponsor has only rejected proposals
     const sponsorHasAtLeastOneRejectedProposal = itemProposals?.rejectedProposals?.length > 0;
     const sponsorHasNoPendingProposal = itemProposals?.pendingProposals?.length === 0;
+    const noValidated = itemProposals?.acceptedProposals?.length === 0;
     const lastAcceptedProposalTimestamp =
       parseFloat(
         itemProposals?.acceptedProposals?.sort(
@@ -345,13 +346,13 @@ const Offer = () => {
           (a, b) => b?.creationTimestamp - a?.creationTimestamp
         )[0]?.lastUpdateTimestamp
       ) * 1000;
-    const sponsorHasNoMoreRecentValidatedProposal =
+    const refusedIsMoreRecentThanAccepted =
       new Date(lastAcceptedProposalTimestamp) <= new Date(lastRefusedProposalTimestamp);
 
     setSponsorHasAtLeastOneRejectedProposalAndNoPending(
       sponsorHasAtLeastOneRejectedProposal &&
         sponsorHasNoPendingProposal &&
-        sponsorHasNoMoreRecentValidatedProposal
+        (refusedIsMoreRecentThanAccepted || noValidated)
     );
 
     // now we check if the media should validate an ad
@@ -1043,11 +1044,14 @@ const Offer = () => {
                 <Accordion.Trigger
                   className={`${accordionActiveTab.includes("adValidation") && "bg-primaryPurple"} w-full flex items-center justify-center gap-4 mb-6 border border-primaryPurple hover:bg-primaryPurple cursor-pointer p-2 rounded-lg`}
                 >
-                  {isAdmin && sponsorHasAtLeastOneRejectedProposalAndNoPending && (
+                  {/* 
+                  {isOwner && sponsorHasAtLeastOneRejectedProposalAndNoPending && (
                     <ResponsiveTooltip text="You have at least one rejected proposal and no pending proposal.">
                       <ExclamationCircleIcon className="w-6 h-6 text-red" />
                     </ResponsiveTooltip>
                   )}
+                  */}
+
                   {isMedia && mediaShouldValidateAnAd && (
                     <ResponsiveTooltip text="You have at least one ad to validate or to refuse.">
                       <ExclamationCircleIcon className="w-6 h-6 text-red" />
@@ -1077,6 +1081,7 @@ const Offer = () => {
                   sponsorHasAtLeastOneRejectedProposalAndNoPending={
                     sponsorHasAtLeastOneRejectedProposalAndNoPending
                   }
+                  isAdmin={isAdmin}
                   setSponsorHasAtLeastOneRejectedProposalAndNoPending={
                     setSponsorHasAtLeastOneRejectedProposalAndNoPending
                   }

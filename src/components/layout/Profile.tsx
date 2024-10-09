@@ -58,15 +58,23 @@ const Profile = () => {
 
   useEffect(() => {
     if (createdOffers) {
-      // we need to check the number of pending offers on the user's offer
-      // but if there is already an accepted offer, we don't count it
-      const pendingOffers = createdOffers?.filter(
-        (offer) =>
-          offer?.allProposals?.filter((proposal) => proposal?.status === "CURRENT_PENDING").length >
-          0
-      );
+      // we need to check if there is at least one pending offer on a token from one created offer
+      let isPendingAdsOnOffer = false;
+      createdOffers?.forEach((offer) => {
+        const tokens = offer?.nftContract?.tokens;
 
-      if (pendingOffers.length > 0) {
+        tokens?.forEach((token) => {
+          const allProposals = token?.allProposals;
+
+          allProposals?.forEach((proposal) => {
+            if (proposal?.status === "CURRENT_PENDING") {
+              isPendingAdsOnOffer = true;
+            }
+          });
+        });
+      });
+
+      if (isPendingAdsOnOffer) {
         setIsPendingAdsOnOffer(true);
       } else {
         setIsPendingAdsOnOffer(false);
@@ -319,7 +327,7 @@ const Profile = () => {
             toKeepActivities: toKeepActivities
               ? toKeepActivities.map((e) => ({ ...e, chainConfig }))
               : [],
-            activityData: activityData ? activityData : {}
+            activityData: activityData ?? {}
           };
         })
       );
