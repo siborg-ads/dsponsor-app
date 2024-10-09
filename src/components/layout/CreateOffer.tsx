@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState, useRef, useMemo, use } from "react";
+import React, { useEffect, useState, useRef, useMemo } from "react";
 import Meta from "@/components/Meta";
 import Image from "next/image";
 import "react-datepicker/dist/react-datepicker.css";
@@ -21,6 +21,8 @@ import { features } from "@/data/features";
 import ERC20ABI from "@/abi/ERC20.json";
 import { ChainObject } from "@/types/chain";
 import ChainSelector from "../features/chain/ChainSelector";
+
+import { ethers } from "ethers";
 
 export type Currency = {
   address: Address | string;
@@ -80,7 +82,7 @@ const CreateOffer = () => {
   const [selectedUnitPrice, setSelectedUnitPrice] = useState(savedData?.selectedUnitPrice ?? 1);
   const [selectedRoyalties, setSelectedRoyalties] = useState(savedData?.selectedRoyalties ?? 10);
   const [validate, setValidate] = useState(true);
-  const [showPreviewModal, setShowPreviewModal] = useState(false);
+  const [showPreviewModal, setShowPreviewModal] = useState(savedData?.showPreviewModal ?? false);
   const [successFullUpload, setSuccessFullUpload] = useState(false);
   const [selectedIntegration, setSelectedIntegration] = useState(
     savedData?.selectedIntegration ?? [0]
@@ -109,6 +111,7 @@ const CreateOffer = () => {
 
   useEffect(() => {
     const formData = {
+      showPreviewModal,
       currentSlide,
       name,
       description,
@@ -133,6 +136,7 @@ const CreateOffer = () => {
 
     localStorage.setItem("CREATE_OFFER_METADATA", JSON.stringify(formData));
   }, [
+    showPreviewModal,
     currentSlide,
     name,
     description,
@@ -164,6 +168,7 @@ const CreateOffer = () => {
     loadImageFromIndexedDB()
       .then((base64String) => {
         setPreviewImages([base64String as string]);
+        setFiles([base64ImageToFile(base64String)]);
       })
       .catch((error) => {
         console.error(error);
@@ -301,7 +306,6 @@ const CreateOffer = () => {
   }, [address]);
 
   const stepsRef = useRef([]);
-  const { ethers } = require("ethers");
 
   useEffect(() => {
     if (!chainConfig) return;
@@ -424,6 +428,7 @@ const CreateOffer = () => {
 
     setValidate(isValid);
     setErrors(newErrors);
+    console.log("errors", newErrors);
   }, [
     customTokenAddress,
     description,
@@ -531,7 +536,7 @@ const CreateOffer = () => {
               parseFloat(selectedUnitPrice.toString())
                 .toFixed(tokenDecimals as number)
                 .toString(),
-              tokenDecimals
+              tokenDecimals ?? 18
             )
           ], // prices with decimals
           allowedTokenIds: Array.from({ length: selectedNumber }, (_, i) => i) // allowed token ids
@@ -567,10 +572,14 @@ const CreateOffer = () => {
       setSuccessFullUpload(true);
 
       // reset form data
+
       setName("");
       setDescription("");
       setLink("");
       setFiles([]);
+      setTerms("");
+      setImageRatios(["1:1"]);
+      setDisplayedParameter([]);
       setPreviewImages([]);
       setStartDate(new Date());
       setEndDate(new Date(new Date().setFullYear(new Date().getFullYear() + 1)));
@@ -584,6 +593,7 @@ const CreateOffer = () => {
       setTokenAddress(currencies?.[0]?.address as Address);
       setCustomTokenAddress(undefined);
       setCurrentSlide(0);
+      setShowPreviewModal(false);
 
       localStorage.removeItem("CREATE_OFFER_METADATA");
       clearIndexedDB();
@@ -886,3 +896,18 @@ const clearIndexedDB = () => {
     };
   });
 };
+
+function base64ImageToFile(base64String) {
+  const arr = base64String.split(",");
+  const mime = arr[0].match(/:(.*?);/)[1];
+  const bstr = atob(arr[1]);
+  let n = bstr.length;
+  const u8arr = new Uint8Array(n);
+  while (n--) {
+    u8arr[n] = bstr.charCodeAt(n);
+  }
+
+  const filename = `image.${mime.split("/")[1]}`;
+
+  return new File([u8arr], filename, { type: mime });
+}

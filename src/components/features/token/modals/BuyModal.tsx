@@ -144,14 +144,6 @@ const BuyModal = ({
 
     if (!finalPriceNotFormatted) return;
 
-    if (nativeTokenBalance?.value?.lt(amountInEthWithSlippageBN)) {
-      setCanPayWithNativeToken(false);
-    } else {
-      setCanPayWithNativeToken(true);
-    }
-
-    if (!finalPriceNotFormatted) return;
-
     const priceBN = BigNumber.from(finalPriceNotFormatted);
 
     if (currencyBalance?.value?.lt(priceBN)) {
@@ -205,12 +197,6 @@ const BuyModal = ({
   }, [handleBuyModal, modalRef]);
 
   useEffect(() => {
-    if (
-      tokenEtherPriceRelayer &&
-      tokenEtherPriceRelayer?.amountInEthWithSlippage &&
-      chainId &&
-      chainConfig
-    ) {
     if (
       tokenEtherPriceRelayer &&
       tokenEtherPriceRelayer?.amountInEthWithSlippage &&
@@ -454,55 +440,6 @@ const BuyModal = ({
                                 defaultText={`You need more than ${!!config[Number(chainId)]?.gaslessBalanceThreshold && formatUnits(BigNumber.from(config[Number(chainId)].gaslessBalanceThreshold), "ether")} ETH to execute this tx.`}
                               />
                             )}
-                  {!insufficentBalance ? (
-                    <React.Fragment>
-                      <div
-                        className={`grid grid-cols-1 mx-auto ${totalPrice > 0 && "md:grid-cols-2"} gap-6 w-full`}
-                      >
-                        {nativeTokenBalance?.value?.gte(
-                          BigNumber.from(config[chainId]?.gaslessBalanceThreshold ?? "0")
-                        ) ? (
-                          <React.Fragment>
-                            {totalPrice > 0 && (
-                              <StyledWeb3Button
-                                contractAddress={
-                                  chainConfig?.smartContracts?.DSPONSORADMIN?.address as Address
-                                }
-                                onClick={async () => {
-                                  await toast.promise(handleApprove, {
-                                    pending: "Waiting for confirmation 🕒",
-                                    success: "Approval confirmed 👌",
-                                    error: "Approval rejected 🤯"
-                                  });
-                                }}
-                                isDisabled={
-                                  !validate ||
-                                  !finalPriceNotFormatted ||
-                                  !allowanceTrue ||
-                                  notEnoughFunds
-                                }
-                                defaultText={
-                                  notEnoughFunds ? "Not enough funds" : "Approve 🔓 (1/2)"
-                                }
-                              />
-                            )}
-                          </React.Fragment>
-                        ) : (
-                          <StyledWeb3Button
-                            contractAddress={
-                              chainConfig?.smartContracts?.DSPONSORADMIN?.address as Address
-                            }
-                            onClick={async () => {
-                              await toast.promise(handleApprove, {
-                                pending: "Waiting for confirmation 🕒",
-                                success: "Approval confirmed 👌",
-                                error: "Approval rejected 🤯"
-                              });
-                            }}
-                            isDisabled={true}
-                            defaultText={`You need more than ${formatUnits(BigNumber.from(config[chainId].gaslessBalanceThreshold), "ether")} ETH to execute this tx.`}
-                          />
-                        )}
 
                             {/* Place Bid Button */}
                             <StyledWeb3Button

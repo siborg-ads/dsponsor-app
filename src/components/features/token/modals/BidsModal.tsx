@@ -389,7 +389,6 @@ const BidsModal = ({
 
   useEffect(() => {
     if (tokenEtherPriceRelayer?.amountInEthWithSlippage && chainId && chainConfig) {
-    if (tokenEtherPriceRelayer?.amountInEthWithSlippage && chainId && chainConfig) {
       const parsedBuyAmount = BigNumber.from(tokenEtherPriceRelayer?.amountInEthWithSlippage);
 
       const priceLimit = chainConfig?.features?.crossmint?.config?.priceLimit?.toString();
@@ -603,7 +602,6 @@ const BidsModal = ({
                             );
                             setBidsAmount(formattedBuyoutPrice);
 
-                            const parsedBuyoutPrice = BigNumber.from(buyoutPrice ?? "0");
                             const parsedBuyoutPrice = BigNumber.from(buyoutPrice ?? "0");
                             setParsedBidsAmount(parsedBuyoutPrice);
                           }}
