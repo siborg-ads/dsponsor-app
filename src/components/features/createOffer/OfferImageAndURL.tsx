@@ -8,6 +8,9 @@ import Input from "@/components/ui/Input";
 import { useStorage } from "@thirdweb-dev/react";
 import MainButton from "@/components/ui/buttons/MainButton";
 import Link from "next/link";
+import { toast } from "react-toastify";
+import { MAX_SIZE_FILE } from "@/config/config";
+import formatBytes from "@/utils/misc/formatBytes";
 
 const fileTypes = ["JPG", "PNG", "WEBP", "GIF"];
 
@@ -164,6 +167,13 @@ const TermsPdfUploader = ({
     }
 
     const file = e.target.files[0];
+    if (file.size > MAX_SIZE_FILE) {
+      toast(`File size is too big it should be less than ${formatBytes(MAX_SIZE_FILE)}`, {
+        type: "error"
+      });
+      e.target.value = "";
+      return;
+    }
     const url = await storage.upload(file);
     const finalURL = await storage.resolveScheme(url);
 
@@ -194,7 +204,7 @@ const TermsPdfUploader = ({
         </div>
       ) : (
         <p className="mb-3 dark:text-jacarta-100 text-jacarta-100 text-2xs">
-          Drag or choose your file to upload
+          Drag or choose your file to upload (max size: {formatBytes(MAX_SIZE_FILE)})
         </p>
       )}
 
@@ -227,7 +237,7 @@ const EmptyFileUploader = () => (
       <path d="M16 13l6.964 4.062-2.973.85 2.125 3.681-1.732 1-2.125-3.68-2.223 2.15L16 13zm-2-7h2v2h5a1 1 0 0 1 1 1v4h-2v-3H10v10h4v2H9a1 1 0 0 1-1-1v-5H6v-2h2V9a1 1 0 0 1 1-1h5V6zM4 14v2H2v-2h2zm0-4v2H2v-2h2zm0-4v2H2V6h2zm0-4v2H2V2h2zm4 0v2H6V2h2zm4 0v2h-2V2h2zm4 0v2h-2V2h2z" />
     </svg>
     <p className="max-w-xs mx-auto text-xs dark:text-jacarta-100">
-      JPG, PNG, WEBP, GIF Max size: 25 MB
+      {fileTypes.join(", ")} Max size: {formatBytes(MAX_SIZE_FILE)}
     </p>
   </div>
 );
@@ -245,7 +255,12 @@ const FileUploadOverlay = ({ handleChange, fileTypes }) => (
       name="file"
       types={fileTypes}
       classes="file-drag !max-w-full !min-w-[fit-content]"
-      maxSize={25}
+      maxSize={MAX_SIZE_FILE / 1e6}
+      onSizeError={() =>
+        toast(`File size is too big it should be less than ${formatBytes(MAX_SIZE_FILE)}`, {
+          type: "error"
+        })
+      }
     />
   </div>
 );
