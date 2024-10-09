@@ -6,6 +6,7 @@ import Input from "@/components/ui/Input";
 import { useStorage } from "@thirdweb-dev/react";
 import MainButton from "@/components/ui/buttons/MainButton";
 import Link from "next/link";
+import { toast } from "react-toastify";
 
 const fileTypes = ["JPG", "PNG", "WEBP", "GIF"];
 
@@ -155,6 +156,14 @@ const TermsPdfUploader = ({
     }
 
     const file = e.target.files[0];
+    console.log(file);
+    if (file.size > 300_000) {
+      toast("File size is too big it should be less than 300 KB", {
+        type: "error"
+      });
+      e.target.value = "";
+      return;
+    }
     const url = await storage.upload(file);
     const finalURL = await storage.resolveScheme(url);
 
@@ -236,7 +245,12 @@ const FileUploadOverlay = ({ handleChange, fileTypes }) => (
       name="file"
       types={fileTypes}
       classes="file-drag !max-w-full !min-w-[fit-content]"
-      maxSize={25}
+      maxSize={0.3}
+      onSizeError={() =>
+        toast("File size is too big it should be less than 300 KB", {
+          type: "error"
+        })
+      }
     />
   </div>
 );

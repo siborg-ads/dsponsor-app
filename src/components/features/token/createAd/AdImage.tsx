@@ -5,6 +5,7 @@ import ModalHelper from "@/components/ui/modals/Helper";
 import { FileUploader } from "react-drag-drop-files";
 import { StepType } from "../../profile/tabs/OwnedTokens";
 import React from "react";
+import { toast } from "react-toastify";
 
 const AdImage = ({
   // id,
@@ -139,8 +140,13 @@ const AdImage = ({
                 name="file"
                 types={fileTypes}
                 classes="file-drag"
-                maxSize={25}
+                maxSize={0.3}
                 minSize={0}
+                onSizeError={() =>
+                  toast("File size is too big it should be less than 300 KB", {
+                    type: "error"
+                  })
+                }
               />
             </div>
           </div>

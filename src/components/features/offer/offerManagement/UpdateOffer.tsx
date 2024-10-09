@@ -609,8 +609,13 @@ const UpdateOffer = ({
                 name="file"
                 types={fileTypes}
                 classes="file-drag !max-w-full !min-w-[fit-content]"
-                maxSize={25}
+                maxSize={0.3}
                 minSize={0}
+                onSizeError={() =>
+                  toast("File size is too big it should be less than 300 KB", {
+                    type: "error"
+                  })
+                }
               />
             </div>
           </div>
