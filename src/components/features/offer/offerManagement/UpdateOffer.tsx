@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import * as Switch from "@radix-ui/react-switch";
 import { useContract, useContractWrite, useStorage } from "@thirdweb-dev/react";
-import config from "@/config/config";
+import config, { MAX_SIZE_FILE } from "@/config/config";
 import { toast } from "react-toastify";
 import { features } from "@/data/features";
 import { FileUploader } from "react-drag-drop-files";
@@ -18,6 +18,7 @@ import { ChainObject } from "@/types/chain";
 import { cn } from "@nextui-org/react";
 import Tippy from "@tippyjs/react";
 import "tippy.js/dist/tippy.css";
+import formatBytes from "@/utils/misc/formatBytes";
 
 const fileTypes = ["JPG", "PNG", "WEBP", "GIF"];
 
@@ -585,7 +586,7 @@ const UpdateOffer = ({
                     <path d="M16 13l6.964 4.062-2.973.85 2.125 3.681-1.732 1-2.125-3.68-2.223 2.15L16 13zm-2-7h2v2h5a1 1 0 0 1 1 1v4h-2v-3H10v10h4v2H9a1 1 0 0 1-1-1v-5H6v-2h2V9a1 1 0 0 1 1-1h5V6zM4 14v2H2v-2h2zm0-4v2H2v-2h2zm0-4v2H2V6h2zm0-4v2H2V2h2zm4 0v2H6V2h2zm4 0v2h-2V2h2zm4 0v2h-2V2h2z" />
                   </svg>
                   <p className="max-w-xs mx-auto text-xs dark:text-jacarta-100">
-                    JPG, PNG, WEBP, GIF Max size: 25 MB
+                    {fileTypes.join(", ")} Max size: {formatBytes(MAX_SIZE_FILE)}
                   </p>
                 </div>
               ) : (
@@ -609,12 +610,15 @@ const UpdateOffer = ({
                 name="file"
                 types={fileTypes}
                 classes="file-drag !max-w-full !min-w-[fit-content]"
-                maxSize={0.3}
+                maxSize={MAX_SIZE_FILE / 1e6}
                 minSize={0}
                 onSizeError={() =>
-                  toast("File size is too big it should be less than 300 KB", {
-                    type: "error"
-                  })
+                  toast(
+                    `File size is too big it should be less than ${formatBytes(MAX_SIZE_FILE)}`,
+                    {
+                      type: "error"
+                    }
+                  )
                 }
               />
             </div>
