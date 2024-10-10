@@ -707,6 +707,7 @@ const CreateListing = ({
                   tokenDecimals={currencyDecimals as number}
                   tokenAddress={selectedCurrency?.address as Address}
                   terms={false}
+                  steps={[]}
                 />
               </div>
             )}
