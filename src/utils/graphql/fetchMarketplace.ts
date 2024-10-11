@@ -27,6 +27,9 @@ export const fetchMarketplace = async (
         id
         disable
         metadataURL
+        metadata {
+         content
+        }
         nftContract {
           royalty {
             bps

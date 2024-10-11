@@ -867,8 +867,8 @@ const Token = () => {
       buyoutPricePerToken: currentToken?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]
         ?.buyoutPricePerToken,
 
-      external_url:
-        currentToken?.metadata?.external_url ?? currentToken?.metadata?.external_link ?? ""
+      external_link:
+        currentToken?.metadata?.external_link ?? currentToken?.metadata?.external_url ?? ""
     });
 
     if (
@@ -2308,20 +2308,20 @@ const Token = () => {
                 <span className="block text-sm text-jacarta-100 ">
                   Creator <strong className="dark:text-white">{royalties}% royalties</strong>
                 </span>
-                {tokenDO?.external_url && tokenDO.external_url !== "" && (
+                {tokenDO?.external_link && tokenDO.external_link !== "" && (
                   <span className="block w-full text-sm text-jacarta-100 dark:text-white">
                     Ad Space location :{" "}
-                    {isUrlValid(tokenDO.external_url) ? (
+                    {isUrlValid(tokenDO.external_link) ? (
                       <a
-                        href={tokenDO.external_url}
+                        href={tokenDO.external_link}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="font-bold text-primaryPurple hover:underline"
                       >
-                        {tokenDO.external_url}
+                        {tokenDO.external_link}
                       </a>
                     ) : (
-                      <strong>{tokenDO.external_url}</strong>
+                      <strong>{tokenDO.external_link}</strong>
                     )}
                   </span>
                 )}

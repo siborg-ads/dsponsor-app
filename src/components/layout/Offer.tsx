@@ -155,14 +155,14 @@ const Offer = () => {
       setOffers(offers);
 
       const offerData = offers?.filter((offer) => Number(offer?.id) === Number(offerId))[0];
-      const external_url =
-        offerData.metadata?.offer?.external_url ??
+      const external_link =
         offerData.metadata?.offer?.external_link ??
+        offerData.metadata?.offer?.external_url ??
         undefined;
 
       const offerDataFinal = {
         ...offerData,
-        external_url,
+        external_link,
         chainConfig: offers?.filter((offer) => Number(offer?.id) === Number(offerId))[0]
           ?.chainConfig
       };
@@ -708,20 +708,20 @@ const Offer = () => {
                 <span className="block text-sm text-jacarta-100 dark:text-white">
                   Creator <strong>{royalties}% royalties</strong>
                 </span>
-                {offerData?.external_url && (
+                {offerData?.external_link && (
                   <span className="block w-full text-sm text-jacarta-100 dark:text-white">
                     Ad Space location :{" "}
-                    {isUrlValid(offerData.external_url) ? (
+                    {isUrlValid(offerData.external_link) ? (
                       <a
-                        href={offerData?.external_url}
+                        href={offerData?.external_link}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="font-bold text-primaryPurple hover:underline"
                       >
-                        {offerData?.external_url}
+                        {offerData?.external_link}
                       </a>
                     ) : (
-                      <strong>{offerData?.external_url}</strong>
+                      <strong>{offerData?.external_link}</strong>
                     )}
                   </span>
                 )}

@@ -52,7 +52,7 @@ const abstractTestnetConfig: ChainObject = {
   smartContracts: {
     currencies: {
       WETH: {
-        address: "0x80392dF95f8ed7F2f6299Be35A1007f31D5Fc5b6",
+        address: "0x740810c5CB6a562BC0F4F387dC7cFaDa9f3A7ebf",
         decimals: 18,
         symbol: "WETH"
       },
@@ -62,20 +62,20 @@ const abstractTestnetConfig: ChainObject = {
         symbol: "ETH"
       },
       USDC: {
-        address: "0xa70e901a190c5605a5137a1019c6514F5a626517",
+        address: "0xf374801d73f8093833aE5D38b49C97270C34AE10",
         decimals: 18,
         symbol: "USDC"
       }
     },
     UNISWAP_QUOTER: {
-      address: "0x0000000000000000000000000000000000000000"
+      address: "0x1FFBf27EBa96342A9755c4974b5F28286c41201A"
     },
     DSPONSORADMIN: {
-      address: "0xA3B2469A2a4422058F70C59Fcd63EdaA219A2571",
+      address: "0xBEA0a4E815e5A8b544712144DA3865a1aa69ECD9",
       abi: contractABI
     },
     DSPONSORMP: {
-      address: "0x747aCdC82A90cca57587F20Ee1041088F53c3b15"
+      address: "0x833721E8651682043CDFcD577Aa2DC5b3D28abC6"
     }
   },
   features: {
