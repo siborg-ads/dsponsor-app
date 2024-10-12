@@ -432,7 +432,7 @@ const CreateOffer = () => {
               tokenDecimals
             )
           ], // prices with decimals
-          allowedTokenIds: Array.from({ length: selectedNumber }, (_, i) => i) // allowed token ids
+          allowedTokenIds: Array.from({ length: selectedNumber }, (_, i) => i + 1) // allowed token ids
         }),
         JSON.stringify({
           name: name, // name
