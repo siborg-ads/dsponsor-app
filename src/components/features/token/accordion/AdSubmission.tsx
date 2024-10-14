@@ -199,7 +199,13 @@ const AdSubmission = ({
     steps
       .filter(({ adParameter, selected }) => adParameter.startsWith("imageURL") && selected)
       .forEach((step) => {
-        allImages.push({ image: step.previewImage, ratio: step.adParameter });
+        let formattedRatio = step.adParameter.slice("imageURL-".length);
+        if (!formattedRatio) {
+          formattedRatio = "any ratio accepted";
+        } else {
+          formattedRatio = `${formattedRatio} ratio`;
+        }
+        allImages.push({ image: step.previewImage, ratio: step.adParameter, formattedRatio });
       });
 
     setAllImages(allImages);
@@ -279,7 +285,7 @@ const AdSubmission = ({
                   <div className="flex flex-col w-full gap-2" key={index}>
                     <div className="flex items-center justify-between gap-2">
                       <span className="block dark:text-jacarta-100">
-                        Image {index + 1} - ({image.ratio ? image.ratio : "No restriction"})
+                        Image {index + 1} - ({image.formattedRatioha})
                       </span>
 
                       <span className="font-semibold text-red">

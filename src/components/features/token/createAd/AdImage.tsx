@@ -37,6 +37,7 @@ const AdImage = ({
   const containerElement = useRef(null);
   const [widthRatioImage, setWidthRatioImage] = useState<number | null>(null);
   const [heightRatioImage, setHeightRatioImage] = useState<number | null>(null);
+  const [formattedRatio, setFormattedRatio] = useState<string>("any ratio accepted");
   useEffect(() => {
     const stepWidth = 250;
     let tempId = step.adParameter.slice("imageURL-".length);
@@ -50,6 +51,8 @@ const AdImage = ({
     if (ratios.length !== 2) {
       width = 1;
       height = 1;
+    } else {
+      setFormattedRatio(`${width}:${height} ratio`);
     }
 
     if (width / height > 1) {
@@ -70,14 +73,13 @@ const AdImage = ({
     >
       <div className="pl-2 pr-6" ref={containerElement}>
         <h3 className="mb-12 text-jacarta-200">
-          Step {currentSlide + 1}/{numSteps} : Ad Image {step.adParameter}
+          Step {currentSlide + 1}/{numSteps} : Ad Image ({formattedRatio})
         </h3>
         {/* <!-- File Upload --> */}
         <div className="flex flex-col items-center mb-6">
           <div className="flex items-center justify-center gap-3 mb-2">
             <label className="block font-display text-jacarta-900 dark:text-white">
-              Image {step.adParameter}
-              <span className="text-red">*</span>
+              Image ({formattedRatio})<span className="text-red">*</span>
             </label>
             <ModalHelper title={modalHelper.title} body={modalHelper.body} dark={false} />
           </div>
