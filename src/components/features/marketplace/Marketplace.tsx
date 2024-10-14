@@ -21,7 +21,13 @@ const onAuctionCondition = (auction, mint, direct) => {
   );
 };
 
-const MarketplaceComponent = ({ auctions, setAllTokens, allTokens, isAuctionsLoading }) => {
+const MarketplaceComponent = ({
+  auctions,
+  setAllTokens,
+  allTokens,
+  isAuctionsLoading,
+  fetchData
+}) => {
   const [filterName, setFilterName] = useState("");
   const [sortOption, setSortOption] = useState("Price: low to high");
   const [filterOption, setFilterOption] = useState("All tokens");
@@ -61,12 +67,6 @@ const MarketplaceComponent = ({ auctions, setAllTokens, allTokens, isAuctionsLoa
               auction?.item?.nftContract?.prices[0]?.enabled === true)
         );
       }
-    }
-
-    if (filterName && filterName.length > 0 && filterName !== "") {
-      tempAuctions = [...tempAuctions].filter((auction) =>
-        auction.name?.toLowerCase().includes(filterName.toLowerCase())
-      );
     }
 
     if (filterOption === "Listed tokens") {
@@ -174,7 +174,7 @@ const MarketplaceComponent = ({ auctions, setAllTokens, allTokens, isAuctionsLoa
     }
 
     return tempAuctions;
-  }, [filterName, filterOption, sortOption, auctions, allTokens, startDate, endDate]);
+  }, [filterOption, sortOption, auctions, allTokens, startDate, endDate]);
 
   const renderDatePicker = (
     date: Date | null,
@@ -239,6 +239,11 @@ const MarketplaceComponent = ({ auctions, setAllTokens, allTokens, isAuctionsLoa
             name="search"
             value={filterName}
             onChange={(e) => setFilterName(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                fetchData(true, filterName);
+              }
+            }}
           />
         </div>
 

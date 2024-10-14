@@ -26,27 +26,27 @@ const Marketplace = () => {
   const [auctionsFetched, setAuctionsFetched] = useState<boolean>(false);
 
   const dataFetchedRef = useRef(false);
+  const fetchData = async (allTokens: any, searchTerm: string = "") => {
+    if (dataFetchedRef.current) return;
+
+    setIsLoading(true);
+
+    const allData = await Promise.all(
+      Object.keys(config).map(async (chainId) => {
+        const offerIds = marketplaceOffersCuration[chainId];
+        return fetchMarketplace(Number(chainId), allTokens, offerIds, searchTerm);
+      })
+    );
+
+    const allListedTokenWithoutFilterArray = allData.flat();
+
+    setAuctionsTemp(allListedTokenWithoutFilterArray);
+
+    setAuctionsFetched(true);
+    setIsLoading(false);
+  };
+
   useEffect(() => {
-    const fetchData = async (allTokens: any) => {
-      if (dataFetchedRef.current) return;
-
-      setIsLoading(true);
-
-      const allData = await Promise.all(
-        Object.keys(config).map(async (chainId) => {
-          const offerIds = marketplaceOffersCuration[chainId];
-          return fetchMarketplace(Number(chainId), allTokens, offerIds);
-        })
-      );
-
-      const allListedTokenWithoutFilterArray = allData.flat();
-
-      setAuctionsTemp(allListedTokenWithoutFilterArray);
-
-      setAuctionsFetched(true);
-      setIsLoading(false);
-    };
-
     if (!auctionsFetched && allTokens) {
       fetchData(allTokens);
     }
@@ -233,6 +233,7 @@ const Marketplace = () => {
           isAuctionsLoading={isLoading}
           allTokens={allTokens}
           setAllTokens={setAllTokens}
+          fetchData={fetchData}
         />
       </div>
     </>

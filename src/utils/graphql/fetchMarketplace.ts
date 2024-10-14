@@ -18,7 +18,13 @@ export const fetchMarketplace = async (
   const path = new URL(`${relayerURL}/api/${chainId}/graph`);
 
   const where = searchTerm.length
-    ? `where: { name_contains: "${searchTerm}" }`
+    ? `where: {
+          or: [
+                { name_contains: "${searchTerm}" },
+                { metadata_ : { offer_name_contains_nocase: "${searchTerm}" } },
+                { metadata_ : { offer_description_contains_nocase: "${searchTerm}" } }
+              ]
+    }`
     : `where: { id_in: [${offerIds.map((e) => `"${e}"`)}] }`;
 
   const GET_DATA = `
