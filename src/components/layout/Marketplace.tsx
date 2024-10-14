@@ -223,7 +223,7 @@ const Marketplace = () => {
       <Meta {...metadata} />
 
       <div
-        className="mt-48 px-4 max-w-6xl mx-auto flex flex-col gap-12"
+        className="flex flex-col gap-12 px-4 mx-auto mt-48 max-w-7xl"
         style={{
           marginTop: "8rem"
         }}
