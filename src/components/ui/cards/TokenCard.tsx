@@ -236,15 +236,7 @@ const TokenCard = ({
 
   useEffect(() => {
     if (offer) {
-      let tokens: any[] = [];
-
-      if (tokenId) {
-        tokens = offer?.nftContract?.tokens?.filter(
-          (token) => BigInt(token?.tokenId ?? 0) === BigInt(tokenId ?? 0)
-        );
-      } else {
-        tokens = offer?.nftContract?.tokens;
-      }
+      const tokens = offer?.nftContract?.tokens;
 
       setIsPendingAdsOnToken(false);
 
@@ -259,7 +251,7 @@ const TokenCard = ({
         }
       });
     }
-  }, [offer, tokenId]);
+  }, [offer]);
 
   function formatDate(dateIsoString: string): string {
     if (!dateIsoString) return "date not found";
