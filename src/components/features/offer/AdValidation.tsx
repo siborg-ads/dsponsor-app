@@ -332,17 +332,7 @@ const AdValidation = ({
                   <span className="ml-2 text-base font-medium font-display">
                     <div className="flex items-center">
                       <span>
-                        {text} (
-                        {text === "Pending"
-                          ? pendingProposalData?.length
-                          : text === "Validated"
-                            ? validatedProposalData?.length
-                            : text === "Refused"
-                              ? refusedProposalData?.length
-                              : text === "History"
-                                ? historyProposals?.length
-                                : 0}
-                        )
+                        {text} {text === "Pending" ? `(${pendingProposalData.length})` : ""}
                       </span>
                     </div>
                   </span>
