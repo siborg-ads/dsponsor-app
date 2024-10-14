@@ -5,6 +5,10 @@ import TokenCardSkeleton from "@/components/ui/skeletons/TokenCardSkeleton";
 import TokenCard from "@/components/ui/cards/TokenCard";
 import { Popover, PopoverTrigger, PopoverContent } from "@nextui-org/popover";
 import Input from "@/components/ui/Input";
+import { Button, DatePicker } from "@nextui-org/react";
+import { getLocalTimeZone, today, parseDate } from "@internationalized/date";
+import ModalHelper from "@/components/ui/modals/Helper";
+import { XMarkIcon } from "@heroicons/react/20/solid";
 
 const onAuctionCondition = (auction, mint, direct) => {
   return (
@@ -22,6 +26,8 @@ const MarketplaceComponent = ({ auctions, setAllTokens, allTokens, isAuctionsLoa
   const [sortOption, setSortOption] = useState("Price: low to high");
   const [filterOption, setFilterOption] = useState("All tokens");
   const [isInformationHovered, setIsInformationHovered] = useState(false);
+  const [startDate, setStartDate] = useState<Date | null>(null);
+  const [endDate, setEndDate] = useState<Date | null>(null);
 
   const filteredAuctions = useMemo(() => {
     let tempAuctions = [...auctions];
@@ -152,8 +158,55 @@ const MarketplaceComponent = ({ auctions, setAllTokens, allTokens, isAuctionsLoa
       tempAuctions = [...tempAuctions].sort((a, b) => a.name.localeCompare(b.name)); // default sort
     }
 
+    if (startDate) {
+      tempAuctions = [...tempAuctions].filter((auction) => {
+        const validFrom = new Date(auction.item.metadata.valid_from);
+        validFrom.setHours(0, 0, 0, 0);
+        return validFrom <= startDate;
+      });
+    }
+    if (endDate) {
+      tempAuctions = [...tempAuctions].filter((auction) => {
+        const validTo = new Date(auction.item.metadata.valid_to);
+        validTo.setHours(23, 59, 59, 999);
+        return validTo >= endDate;
+      });
+    }
+
     return tempAuctions;
-  }, [filterName, filterOption, sortOption, auctions, allTokens]);
+  }, [filterName, filterOption, sortOption, auctions, allTokens, startDate, endDate]);
+
+  const renderDatePicker = (
+    date: Date | null,
+    setDate: (date: Date | null) => void,
+    label: string
+  ) => (
+    <div className="flex flex-col items-center justify-center h-full gap-1">
+      <DatePicker
+        value={!date ? null : parseDate(new Date(date).toISOString().slice(0, 10))}
+        onChange={(date) => {
+          setDate(new Date(Date.UTC(date.year, date.month - 1, date.day, 0)));
+        }}
+        showMonthAndYearPickers
+        style={{ height: "100%" }}
+        labelPlacement="inside"
+        label={label}
+        startContent={
+          date && (
+            <Button
+              variant="light"
+              className="rounded-full"
+              size="sm"
+              onClick={() => setDate(null)}
+              isIconOnly
+            >
+              <XMarkIcon className="w-5 h-5" />
+            </Button>
+          )
+        }
+      />
+    </div>
+  );
 
   return (
     <div className="flex flex-col gap-7">
@@ -187,6 +240,11 @@ const MarketplaceComponent = ({ auctions, setAllTokens, allTokens, isAuctionsLoa
             value={filterName}
             onChange={(e) => setFilterName(e.target.value)}
           />
+        </div>
+
+        <div className="flex flex-wrap-reverse items-center justify-end h-12 gap-4 text-jacarta-900 dark:text-white">
+          {renderDatePicker(startDate, setStartDate, "Validity Start date")}
+          {renderDatePicker(endDate, setEndDate, "Validity End date")}
         </div>
 
         {/* Filter Menu */}
