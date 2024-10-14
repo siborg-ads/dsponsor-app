@@ -235,8 +235,9 @@ const TokenCard = ({
   }, [address, lastBidder]);
 
   useEffect(() => {
-    if (offer) {
+    if (offer && fromProfilePage) {
       const tokens = offer?.nftContract?.tokens;
+      if (!tokens) return;
 
       setIsPendingAdsOnToken(false);
 
