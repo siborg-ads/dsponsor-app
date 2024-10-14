@@ -494,7 +494,7 @@ const TokenCard = ({
                   !!createdOffersProposals &&
                   isPendingAdsOnToken) ||
                   (!fromProfilePage && !!createdOffersProposals && isPendingAdsOnToken)) && (
-                  <ResponsiveTooltip text="You have 1 or more ads proposals to check on your offer">
+                  <ResponsiveTooltip text="You have 1 or more ads proposals to check">
                     <ExclamationCircleIcon className="w-5 h-5 text-red dark:text-red" />
                   </ResponsiveTooltip>
                 )}
@@ -527,7 +527,7 @@ const TokenCard = ({
                     !!createdOffersProposals &&
                     isPendingAdsOnToken) ||
                     (!fromProfilePage && !!createdOffersProposals && isPendingAdsOnToken)) && (
-                    <ResponsiveTooltip text="You have 1 or more ads proposals to check on your offer">
+                    <ResponsiveTooltip text="You have 1 or more ads proposals to check">
                       <ExclamationCircleIcon className="w-5 h-5 text-red dark:text-red" />
                     </ResponsiveTooltip>
                   )}
