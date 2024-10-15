@@ -5,11 +5,11 @@ import Meta from "@/components/Meta";
 import Overview from "@/components/features/profile/Overview";
 import Referrals from "@/components/features/profile/Referrals";
 import Tabs from "@/components/features/profile/Tabs";
-import { useAddress } from "@thirdweb-dev/react";
 import { fetchAllOffersProfile } from "@/utils/graphql/fetchAllOffersProfile";
 import config from "@/config/config";
 import { getAddress } from "ethers/lib/utils";
 import { Address } from "thirdweb";
+import { useActiveAccount } from "thirdweb/react";
 
 const metadata = {
   title: "Profile || SiBorg Ads - The Web3 Monetization Solution",
@@ -20,7 +20,8 @@ const metadata = {
 
 const Profile = () => {
   const router = useRouter();
-  const address = useAddress();
+  const wallet = useActiveAccount();
+  const address = wallet?.address;
   const [createdData, setCreatedData] = useState<any>(null);
   const [mappedOwnedAdProposals, setMappedOwnedAdProposals] = useState<any[]>([]);
   const [listedAuctionToken, setListedAuctionToken] = useState(null);
@@ -450,7 +451,7 @@ const Profile = () => {
     <>
       <Meta {...metadata} />
 
-      <div className=" " key="5">
+      <div className="" key="5">
         <div className="max-w-5xl mx-auto" style={{ marginTop: "10rem" }}>
           <div className="flex flex-col gap-16 mx-4">
             <Overview

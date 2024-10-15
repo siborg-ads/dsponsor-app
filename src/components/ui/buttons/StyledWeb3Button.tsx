@@ -1,7 +1,8 @@
 import React from "react";
 import { Spinner } from "@nextui-org/spinner";
 import { Address } from "thirdweb";
-import { useAddress, Web3Button } from "@thirdweb-dev/react";
+import { Web3Button } from "@thirdweb-dev/react";
+import { useActiveAccount } from "thirdweb/react";
 
 /**
  * StyledWeb3Button component
@@ -41,7 +42,8 @@ const StyledWeb3Button = ({
 }) => {
   const [isLoading, setIsLoading] = React.useState(false);
 
-  const address = useAddress();
+  const wallet = useActiveAccount();
+  const address = wallet?.address;
 
   const baseClass = `!rounded-full !py-3 !px-8 !text-center !font-semibold !transition-all ${props.isFullWidth ? "!w-full" : "!w-fit"}`;
   const loadingClass = "!bg-white !bg-opacity-30 !text-opacity-30 !text-white !cursor-not-allowed";

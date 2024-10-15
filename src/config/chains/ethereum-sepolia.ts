@@ -1,13 +1,13 @@
 import contractABI from "@/abi/dsponsorAdmin.json";
-import { Sepolia } from "@thirdweb-dev/chains";
 import { ChainObject } from "@/types/chain";
+import { sepolia } from "thirdweb/chains";
 
 const sepoliaConfig: ChainObject = {
   chainId: 11155111,
   chainName: "sepolia",
   gaslessBalanceThreshold: "1000000000000000", // 0.001 ETH
-  network: Sepolia.slug,
-  chainObject: Sepolia,
+  network: "sepolia",
+  chainObject: sepolia,
   logoURL: "/images/chains/ethereum-logo.png",
   explorerBaseURL: "https://sepolia.etherscan.io",
   relayerURL: process.env.NEXT_PUBLIC_RELAYER_URL

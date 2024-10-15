@@ -5,12 +5,12 @@ import { useRouter } from "next/router";
 import { isChildrenPageActive } from "@/utils/navigation/dynamicNavigation";
 import React, { useEffect, useState } from "react";
 
-import { ConnectWallet, useAddress } from "@thirdweb-dev/react";
-import { ConnectButton } from "thirdweb/react";
+import { useActiveAccount, ConnectButton } from "thirdweb/react";
 import { client } from "@/data/services/client";
 
 import { features } from "@/data/features";
 import { useSearchParams } from "next/navigation";
+import { chains } from "@/config/config";
 
 const ConditionalCreateLi = ({
   children,
@@ -27,7 +27,8 @@ export default function Header() {
 
   const searchParams = useSearchParams();
   const tab = searchParams.get("tab");
-  const address = useAddress();
+  const wallet = useActiveAccount();
+  const address = wallet?.address;
 
   useEffect(() => {
     window.addEventListener("resize", () => {
@@ -42,20 +43,20 @@ export default function Header() {
   return (
     <>
       {/* main desktop menu sart*/}
-      <header className="js-page-header fixed top-0 z-20 w-full backdrop-blur transition-colors">
+      <header className="fixed top-0 z-20 w-full transition-colors js-page-header backdrop-blur">
         <div className="flex items-center px-6 py-6 xl:px-24 ">
           <Link className="shrink-0" href="/">
-            <div className="dark:hidden flex justify-center items-center  font-semibold">
+            <div className="flex items-center justify-center font-semibold dark:hidden">
               <Image
                 src={Logo ?? ""}
                 width={220}
                 height={50}
                 alt="SiBorg Ads | The Web3 Monetization Solution"
-                className=" h-auto "
+                className="h-auto "
               />
             </div>
 
-            <div className="hidden dark:flex justify-center items-center text-white font-semibold">
+            <div className="items-center justify-center hidden font-semibold text-white dark:flex">
               <Image
                 src={Logo ?? ""}
                 width={220}
@@ -66,9 +67,9 @@ export default function Header() {
           </Link>
           {/* End  logo */}
 
-          <div className="js-mobile-menu dark:bg-jacarta-800 invisible fixed inset-0 z-10 ml-auto items-center bg-white opacity-0 lg:visible lg:relative lg:inset-auto lg:flex lg:bg-transparent lg:opacity-100 dark:lg:bg-transparent">
-            <nav className="navbar w-full">
-              <ul className="flex flex-col lg:flex-row items-center">
+          <div className="fixed inset-0 z-10 items-center invisible ml-auto bg-white opacity-0 js-mobile-menu dark:bg-jacarta-800 lg:visible lg:relative lg:inset-auto lg:flex lg:bg-transparent lg:opacity-100 dark:lg:bg-transparent">
+            <nav className="w-full navbar">
+              <ul className="flex flex-col items-center lg:flex-row">
                 <li className="group">
                   <Link href={`/`}>
                     <button className="text-jacarta-900 font-display hover:text-primaryPurple focus:text-primaryPurple dark:hover:text-primaryPurple dark:focus:text-primaryPurple flex items-center justify-between py-3.5 text-base dark:text-white lg:px-5">
@@ -156,12 +157,25 @@ export default function Header() {
                   </li>
                 )}
 
-                <li className="group ml-4">
-                  {features?.thirdwebV5 ? (
-                    <ConnectButton client={client} />
-                  ) : (
-                    <ConnectWallet theme={"dark"} modalSize={"wide"} />
-                  )}
+                <li className="ml-4 group">
+                  <ConnectButton
+                    client={client}
+                    theme={"dark"}
+                    appMetadata={{
+                      name: "SiBorg Ads",
+                      url: "https://ads.siborg.io"
+                    }}
+                    chains={chains}
+                    connectModal={{
+                      title: "Sign in to SiBorg Ads",
+                      size: "wide"
+                    }}
+                    connectButton={{
+                      style: {
+                        height: "40px"
+                      }
+                    }}
+                  />
                 </li>
               </ul>
             </nav>
@@ -171,7 +185,7 @@ export default function Header() {
           </div>
           {/* header menu conent end for desktop */}
 
-          <div className="ml-auto flex lg:hidden">
+          <div className="flex ml-auto lg:hidden">
             <button
               className="js-mobile-toggle border-jacarta-100 hover:bg-primaryPurple dark:hover:bg-primaryPurple focus:bg-primaryPurple group ml-2 flex h-10 w-10 items-center justify-center rounded-full border bg-white transition-colors hover:border-transparent focus:border-transparent dark:border-transparent dark:bg-white/[.15]"
               aria-label="open mobile menu"
@@ -182,7 +196,7 @@ export default function Header() {
                 viewBox="0 0 24 24"
                 width={24}
                 height={24}
-                className="fill-jacarta-700 h-4 w-4 transition-colors group-hover:fill-white group-focus:fill-white dark:fill-white"
+                className="w-4 h-4 transition-colors fill-jacarta-700 group-hover:fill-white group-focus:fill-white dark:fill-white"
               >
                 <path fill="none" d="M0 0h24v24H0z" />
                 <path d="M18 18v2H6v-2h12zm3-7v2H3v-2h18zm-3-7v2H6V4h12z" />
@@ -201,14 +215,14 @@ export default function Header() {
           toggle ? "nav-menu--is-open" : "hidden"
         }`}
       >
-        <div className="t-0 dark:bg-jacarta-800 left-0 z-10 flex w-full items-center justify-between bg-white p-6 lg:hidden">
+        <div className="left-0 z-10 flex items-center justify-between w-full p-6 bg-white t-0 dark:bg-jacarta-800 lg:hidden">
           <div className="dark:hidden">
             <Image
               src={Logo ?? ""}
               height={660}
               width={150}
               alt="SiBorg Ads | The Web3 Monetization Solution"
-              className="max-h-7 h-auto "
+              className="h-auto max-h-7 "
             />
           </div>
 
@@ -230,7 +244,7 @@ export default function Header() {
               viewBox="0 0 24 24"
               width={24}
               height={24}
-              className="fill-jacarta-700 h-4 w-4 transition-colors group-hover:fill-white group-focus:fill-white dark:fill-white"
+              className="w-4 h-4 transition-colors fill-jacarta-700 group-hover:fill-white group-focus:fill-white dark:fill-white"
             >
               <path fill="none" d="M0 0h24v24H0z" />
               <path d="M12 10.586l4.95-4.95 1.414 1.414-4.95 4.95 4.95 4.95-1.414 1.414-4.95-4.95-4.95 4.95-1.414-1.414 4.95-4.95-4.95-4.95L7.05 5.636z" />
@@ -239,7 +253,7 @@ export default function Header() {
         </div>
         {/* mobile menu top header content */}
 
-        <nav className="navbar w-full">
+        <nav className="w-full navbar">
           <ul className="flex flex-col lg:flex-row">
             <li className="group">
               <Link href="/">
@@ -344,13 +358,26 @@ export default function Header() {
         </nav>
         {/* End navbar mobile menu  */}
 
-        <div className="mt-10 w-full lg:hidden">
-          {features?.thirdwebV5 ? (
-            <ConnectButton client={client} />
-          ) : (
-            <ConnectWallet theme={"dark"} modalSize={"wide"} />
-          )}
-          <hr className="dark:bg-jacarta-800 bg-jacarta-100 my-5 h-px border-0" />
+        <div className="w-full mt-10 lg:hidden">
+          <ConnectButton
+            client={client}
+            theme={"dark"}
+            appMetadata={{
+              name: "SiBorg Ads",
+              url: "https://ads.siborg.io"
+            }}
+            chains={chains}
+            connectModal={{
+              title: "Sign in to SiBorg Ads",
+              size: "wide"
+            }}
+            connectButton={{
+              style: {
+                height: "40px"
+              }
+            }}
+          />
+          <hr className="h-px my-5 border-0 dark:bg-jacarta-800 bg-jacarta-100" />
           {/*
           <div className="flex items-center justify-center space-x-5">
             <Link href="#" className="group">
@@ -359,7 +386,7 @@ export default function Header() {
                 focusable="false"
                 data-prefix="fab"
                 data-icon="facebook"
-                className="group-hover:fill-primaryPurple fill-jacarta-300 h-5 w-5 dark:group-hover:fill-white"
+                className="w-5 h-5 group-hover:fill-primaryPurple fill-jacarta-300 dark:group-hover:fill-white"
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 512 512"
               >
@@ -373,7 +400,7 @@ export default function Header() {
                 focusable="false"
                 data-prefix="fab"
                 data-icon="twitter"
-                className="group-hover:fill-primaryPurple fill-jacarta-300 h-5 w-5 dark:group-hover:fill-white"
+                className="w-5 h-5 group-hover:fill-primaryPurple fill-jacarta-300 dark:group-hover:fill-white"
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 512 512"
               >
@@ -387,7 +414,7 @@ export default function Header() {
                 focusable="false"
                 data-prefix="fab"
                 data-icon="discord"
-                className="group-hover:fill-primaryPurple fill-jacarta-300 h-5 w-5 dark:group-hover:fill-white"
+                className="w-5 h-5 group-hover:fill-primaryPurple fill-jacarta-300 dark:group-hover:fill-white"
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 640 512"
               >
@@ -401,7 +428,7 @@ export default function Header() {
                 focusable="false"
                 data-prefix="fab"
                 data-icon="instagram"
-                className="group-hover:fill-primaryPurple fill-jacarta-300 h-5 w-5 dark:group-hover:fill-white"
+                className="w-5 h-5 group-hover:fill-primaryPurple fill-jacarta-300 dark:group-hover:fill-white"
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 448 512"
               >
@@ -415,7 +442,7 @@ export default function Header() {
                 focusable="false"
                 data-prefix="fab"
                 data-icon="tiktok"
-                className="group-hover:fill-primaryPurple fill-jacarta-300 h-5 w-5 dark:group-hover:fill-white"
+                className="w-5 h-5 group-hover:fill-primaryPurple fill-jacarta-300 dark:group-hover:fill-white"
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 448 512"
               >

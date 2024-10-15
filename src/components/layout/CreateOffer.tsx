@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef, useMemo } from "react";
 import Meta from "@/components/Meta";
 import Image from "next/image";
 import "react-datepicker/dist/react-datepicker.css";
-import { useAddress, useContract, useContractWrite, useStorageUpload } from "@thirdweb-dev/react";
+import { useContract, useContractWrite, useStorageUpload } from "@thirdweb-dev/react";
 import { ThirdwebSDK } from "@thirdweb-dev/sdk";
 import styles from "@/styles/style.module.scss";
 import AdSubmission from "@/components/features/token/accordion/AdSubmission";
@@ -19,6 +19,7 @@ import { features } from "@/data/features";
 import ERC20ABI from "@/abi/ERC20.json";
 import { ChainObject } from "@/types/chain";
 import ChainSelector from "../features/chain/ChainSelector";
+import { useActiveAccount } from "thirdweb/react";
 import { BigNumber } from "ethers";
 
 export type Currency = {
@@ -183,7 +184,8 @@ const CreateOffer = () => {
     setSelectedChain(chainConfig?.network);
   }, [chainConfig, setSelectedChain]);
 
-  const address = useAddress();
+  const wallet = useActiveAccount();
+  const address = wallet?.address;
 
   const { contract: DsponsorAdminContract } = useContract(
     chainConfig?.smartContracts?.DSPONSORADMIN?.address,
