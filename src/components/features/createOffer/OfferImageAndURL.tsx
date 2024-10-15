@@ -3,12 +3,13 @@ import Image from "next/image";
 import { Switch, cn } from "@nextui-org/react";
 import { FileUploader } from "react-drag-drop-files";
 import Input from "@/components/ui/Input";
-import { useStorage } from "@thirdweb-dev/react";
+import { upload, resolveScheme } from "thirdweb/storage";
 import MainButton from "@/components/ui/buttons/MainButton";
 import Link from "next/link";
 import { toast } from "react-toastify";
 import { MAX_SIZE_FILE } from "@/config/config";
 import formatBytes from "@/utils/misc/formatBytes";
+import { client } from "@/data/services/client";
 
 const fileTypes = ["JPG", "PNG", "WEBP", "GIF"];
 
@@ -150,13 +151,7 @@ const TermsPdfUploader = ({
   termsURL: string;
   setTermsURL: React.Dispatch<React.SetStateAction<string>>;
 }) => {
-  const storage = useStorage();
-
   const handleTermsUpload = async (e) => {
-    if (!storage) {
-      throw new Error("Storage is not initialized");
-    }
-
     const file = e.target.files[0];
     if (file.size > MAX_SIZE_FILE) {
       toast(`File size is too big it should be less than ${formatBytes(MAX_SIZE_FILE)}`, {
@@ -165,8 +160,15 @@ const TermsPdfUploader = ({
       e.target.value = "";
       return;
     }
-    const url = await storage.upload(file);
-    const finalURL = await storage.resolveScheme(url);
+    const url = await upload({
+      client: client,
+      files: [file]
+    });
+
+    const finalURL = await resolveScheme({
+      client: client,
+      uri: url
+    });
 
     setTermsURL(finalURL);
   };

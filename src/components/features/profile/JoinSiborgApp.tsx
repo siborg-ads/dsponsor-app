@@ -1,17 +1,18 @@
-import { useAddress } from "@thirdweb-dev/react";
 import React, { useEffect, useState } from "react";
 import Tippy from "@tippyjs/react";
 import { ClipboardIcon } from "@heroicons/react/20/solid";
 import Link from "next/link";
 import { getAddress } from "ethers/lib/utils";
 import Input from "@/components/ui/Input";
+import { useActiveAccount } from "thirdweb/react";
 
 const JoinSiBorgApp = ({ manageAddress }) => {
   const [code, setCode] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
   const [isUserConnected, setIsUserConnected] = useState(false);
 
-  const address = useAddress();
+  const wallet = useActiveAccount();
+  const address = wallet?.address;
 
   useEffect(() => {
     if (!address || !manageAddress) {
@@ -59,7 +60,7 @@ const JoinSiBorgApp = ({ manageAddress }) => {
     <>
       {isUserConnected && (
         <>
-          <div className="mb-4 max-w-2xl text-center mx-auto">
+          <div className="max-w-2xl mx-auto mb-4 text-center">
             Ad spaces token owners from the{" "}
             <Link href={`/8453/offer/1`} className="text-primaryPurple hover:text-opacity-80">
               SiBorg Ads
@@ -75,7 +76,7 @@ const JoinSiBorgApp = ({ manageAddress }) => {
             .
           </div>
 
-          <div className="mb-4 max-w-sm text-center flex items-center justify-center mx-auto">
+          <div className="flex items-center justify-center max-w-sm mx-auto mb-4 text-center">
             <div className="relative w-full">
               <Input value={code ?? "Loading..."} readOnly type="text" />
               <Tippy content={copied ? "Copied!" : "Copy"} placement="top" trigger="click">
@@ -84,9 +85,9 @@ const JoinSiBorgApp = ({ manageAddress }) => {
                     navigator.clipboard.writeText(code as string);
                     setCopied(true);
                   }}
-                  className="absolute right-0 top-0 h-full px-4 text-white hover:text-jacarta-100 rounded-r-lg"
+                  className="absolute top-0 right-0 h-full px-4 text-white rounded-r-lg hover:text-jacarta-100"
                 >
-                  <ClipboardIcon className="h-5 w-5" />
+                  <ClipboardIcon className="w-5 h-5" />
                 </button>
               </Tippy>
             </div>
@@ -95,7 +96,7 @@ const JoinSiBorgApp = ({ manageAddress }) => {
       )}
 
       {!isUserConnected && (
-        <div className="mb-4 max-w-2xl text-center mx-auto py-24">
+        <div className="max-w-2xl py-24 mx-auto mb-4 text-center">
           To get your code to join the SiBorg App, you need to connect your wallet.
         </div>
       )}

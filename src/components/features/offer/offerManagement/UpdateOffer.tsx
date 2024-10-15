@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import * as Switch from "@radix-ui/react-switch";
-import { useContract, useContractWrite, useStorage } from "@thirdweb-dev/react";
+import { useContract, useContractWrite } from "@thirdweb-dev/react";
 import config, { MAX_SIZE_FILE } from "@/config/config";
 import { toast } from "react-toastify";
 import { features } from "@/data/features";
@@ -8,7 +8,6 @@ import { FileUploader } from "react-drag-drop-files";
 import Image from "next/image";
 import { DatePicker } from "@nextui-org/date-picker";
 import { parseDate } from "@internationalized/date";
-import { useAddress } from "@thirdweb-dev/react";
 import Input from "@/components/ui/Input";
 import TextArea from "@/components/ui/TextArea";
 import { Address } from "thirdweb";
@@ -19,6 +18,9 @@ import { cn } from "@nextui-org/react";
 import Tippy from "@tippyjs/react";
 import "tippy.js/dist/tippy.css";
 import formatBytes from "@/utils/misc/formatBytes";
+import { useActiveAccount } from "thirdweb/react";
+import { client } from "@/data/services/client";
+import { download, resolveScheme, upload } from "thirdweb/storage";
 
 const fileTypes = ["JPG", "PNG", "WEBP", "GIF"];
 
@@ -61,8 +63,8 @@ const UpdateOffer = ({
   const [initialName, setInitialName] = useState<string | null>(null);
 
   const chainId = chainConfig?.chainId;
-  const storage = useStorage();
-  const address = useAddress();
+  const wallet = useActiveAccount();
+  const address = wallet?.address;
 
   const { contract } = useContract(
     config[chainId as number]?.smartContracts?.DSPONSORADMIN?.address as Address,
@@ -78,16 +80,20 @@ const UpdateOffer = ({
   };
 
   const uploadNewMetadatas = async (originalMetadatas) => {
-    if (!storage) return;
-
     let finalMetadatas = { ...originalMetadatas };
 
     // check if image has changed, if so, upload the new image
     let newImageUrl: string | null = null;
     if (files.length > 0) {
       try {
-        const imageUri = await storage.upload(files[0]);
-        newImageUrl = await storage.resolveScheme(imageUri);
+        const imageUri = await upload({
+          client: client,
+          files: [files[0]]
+        });
+        newImageUrl = await resolveScheme({
+          client: client,
+          uri: imageUri
+        });
       } catch (error) {
         console.error(error);
         throw new Error("Error uploading the image");
@@ -146,8 +152,14 @@ const UpdateOffer = ({
     }
 
     try {
-      const jsonUri = await storage.upload(finalMetadatas);
-      const jsonUrl = await storage.resolveScheme(jsonUri);
+      const jsonUri = await upload({
+        client: client,
+        files: [finalMetadatas]
+      });
+      const jsonUrl = await resolveScheme({
+        client,
+        uri: jsonUri
+      });
       return jsonUrl;
     } catch (error) {
       console.error(error);
@@ -157,11 +169,15 @@ const UpdateOffer = ({
 
   useEffect(() => {
     const fetchMetadatas = async (metadataURL) => {
-      if (!storage) return;
-
       if (metadataURL) {
         try {
-          const initialMetadatas = await storage.downloadJSON(metadataURL);
+          //   const initialMetadatas = await download({
+          const response = await download({
+            client: client,
+            uri: metadataURL
+          });
+
+          const initialMetadatas = await response.json();
 
           // init metadatas
           setInitialDescription(initialMetadatas?.offer?.description);
@@ -232,7 +248,7 @@ const UpdateOffer = ({
 
       fetchMetadatas(offer?.metadataURL);
     }
-  }, [offer, storage]);
+  }, [offer]);
 
   useEffect(() => {
     if (initialMetadatas) {
