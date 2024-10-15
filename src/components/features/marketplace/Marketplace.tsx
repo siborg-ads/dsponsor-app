@@ -239,8 +239,10 @@ const MarketplaceComponent = ({
             name="search"
             value={filterName}
             onChange={(e) => setFilterName(e.target.value)}
+            enterKeyHint="done"
             onKeyDown={(e) => {
               if (e.key === "Enter") {
+                e.currentTarget.blur();
                 fetchData(true, filterName);
               }
             }}
