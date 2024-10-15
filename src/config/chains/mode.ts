@@ -1,13 +1,26 @@
 import contractABI from "@/abi/dsponsorAdmin.json";
-import { Mode } from "@thirdweb-dev/chains";
 import { ChainObject } from "@/types/chain";
+import { defineChain } from "thirdweb";
+
+export const mode = defineChain({
+  id: 34443,
+  name: "Mode",
+  nativeCurrency: { name: "Ether", symbol: "ETH", decimals: 18 },
+  blockExplorers: [
+    {
+      name: "Modescout",
+      url: "https://sepolia.explorer.mode.network/"
+    }
+  ],
+  testnet: true
+});
 
 const modeConfig: ChainObject = {
   chainId: 34443,
   chainName: "mode",
   // gaslessBalanceThreshold: "1000000000000000", // 0.001 ETH
-  network: Mode.slug,
-  chainObject: Mode,
+  network: "mode",
+  chainObject: mode,
   logoURL: "/images/chains/mode-logo.png",
   explorerBaseURL: "https://explorer.mode.network",
   relayerURL: process.env.NEXT_PUBLIC_RELAYER_URL

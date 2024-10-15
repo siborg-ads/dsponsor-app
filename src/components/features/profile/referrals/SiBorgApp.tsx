@@ -1,16 +1,17 @@
 import Link from "next/link";
 import React, { useState, useEffect } from "react";
-import { useAddress } from "@thirdweb-dev/react";
 import Tippy from "@tippyjs/react";
 import { ClipboardIcon } from "@heroicons/react/20/solid";
 import "tippy.js/dist/tippy.css";
 import Input from "@/components/ui/Input";
+import { useActiveAccount } from "thirdweb/react";
 
 const SiBorgApp = () => {
   const [code, setCode] = useState<string | null>(null);
   const [copied, setCopied] = useState<boolean>(false);
 
-  const address = useAddress();
+  const wallet = useActiveAccount();
+  const address = wallet?.address;
 
   useEffect(() => {
     if (!address) return;
@@ -35,14 +36,14 @@ const SiBorgApp = () => {
   }, [address]);
 
   return (
-    <div className="bg-secondaryBlack p-6 rounded-lg relative flex flex-col gap-4">
+    <div className="relative flex flex-col gap-4 p-6 rounded-lg bg-secondaryBlack">
       <div className="flex flex-col gap-4">
-        <div className="font-semibold text-xl md:text-2xl">
+        <div className="text-xl font-semibold md:text-2xl">
           <span className="text-primaryPurple">Download the SiBorg app</span>
           <span className="text-white"> & manage your ads.</span>
         </div>
 
-        <div className="text-jacarta-100 text-sm md:text-base w-3/4">
+        <div className="w-3/4 text-sm text-jacarta-100 md:text-base">
           <span>
             Ad spaces token owners from the{" "}
             <Link href={`/8453/offer/1`} className="text-primaryPurple hover:text-opacity-80">
@@ -56,7 +57,7 @@ const SiBorgApp = () => {
             <Link
               href="https://beta.siborg.io"
               target="_blank"
-              className="text-primaryPurple hover:text-opacity-80 underline"
+              className="underline text-primaryPurple hover:text-opacity-80"
             >
               join the beta
             </Link>
@@ -64,7 +65,7 @@ const SiBorgApp = () => {
           </span>
         </div>
 
-        <div className="relative md:w-2/5 w-full">
+        <div className="relative w-full md:w-2/5">
           <Input type="text" value={code ?? "Loading..."} readOnly />
           <Tippy content={copied ? "Copied!" : "Copy"} placement="top" trigger="click">
             <button
@@ -72,9 +73,9 @@ const SiBorgApp = () => {
                 navigator.clipboard.writeText(code as string);
                 setCopied(true);
               }}
-              className="absolute right-0 top-0 h-full px-4 text-white hover:text-jacarta-100 rounded-r-lg"
+              className="absolute top-0 right-0 h-full px-4 text-white rounded-r-lg hover:text-jacarta-100"
             >
-              <ClipboardIcon className="h-5 w-5" />
+              <ClipboardIcon className="w-5 h-5" />
             </button>
           </Tippy>
         </div>

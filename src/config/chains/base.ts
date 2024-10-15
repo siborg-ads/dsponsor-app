@@ -1,13 +1,13 @@
 import contractABI from "@/abi/dsponsorAdmin.json";
-import { Base } from "@thirdweb-dev/chains";
 import { ChainObject } from "@/types/chain";
+import { base } from "thirdweb/chains";
 
 const baseConfig: ChainObject = {
   chainId: 8453,
   chainName: "base",
   gaslessBalanceThreshold: "50000000000000", // 0.00005 ETH
-  network: Base.slug,
-  chainObject: Base,
+  network: "base",
+  chainObject: base,
   logoURL: "/images/chains/base-logo.png",
   explorerBaseURL: "https://basescan.org",
   relayerURL: process.env.NEXT_PUBLIC_RELAYER_URL

@@ -1,47 +1,13 @@
 import contractABI from "@/abi/dsponsorAdmin.json";
-import { Chain } from "@thirdweb-dev/chains";
 import { ChainObject } from "@/types/chain";
-
-const AbstractTestnet = {
-  chain: "ETH",
-  chainId: 11124,
-  explorers: [
-    {
-      name: "Abstract Testnet Explorer",
-      url: "https://explorer.testnet.abs.xyz",
-      standard: "none"
-    }
-  ],
-  faucets: [],
-  features: [],
-  icon: {
-    url: "ipfs://bafkreiflvmdwgymrxkmxaf2jkcbpx7spiyc6c2mr32jjs6bpg3il7okasq",
-    width: 400,
-    height: 400,
-    format: "jpg"
-  },
-  infoURL: "https://abs.xyz",
-  name: "Abstract Testnet",
-  nativeCurrency: {
-    name: "Ether",
-    symbol: "ETH",
-    decimals: 18
-  },
-  networkId: 11124,
-  redFlags: [],
-  rpc: ["https://api.testnet.abs.xyz"],
-  shortName: "abstract-testnet",
-  slug: "abstract-testnet",
-  status: "active",
-  testnet: true
-} as const satisfies Chain;
+import { abstractTestnet } from "thirdweb/chains";
 
 const abstractTestnetConfig: ChainObject = {
   chainId: 11124,
   chainName: "abstract-testnet",
   gaslessBalanceThreshold: "0", // 0 ETH
-  network: AbstractTestnet.slug,
-  chainObject: AbstractTestnet,
+  network: "abstract-testnet",
+  chainObject: abstractTestnet,
   logoURL: "/images/chains/abstract-logo.jpg",
   explorerBaseURL: "https://explorer.testnet.abs.xyz",
   relayerURL: process.env.NEXT_PUBLIC_RELAYER_URL
@@ -86,4 +52,4 @@ const abstractTestnetConfig: ChainObject = {
   }
 };
 
-export { abstractTestnetConfig, AbstractTestnet };
+export { abstractTestnetConfig };

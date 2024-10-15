@@ -1,5 +1,4 @@
 import {
-  useAddress,
   useBalance,
   useContract,
   useContractRead,
@@ -56,8 +55,8 @@ import { getOwnershipPeriod } from "@/utils/dates/period";
 import isUrlValid from "@/utils/misc/isUrlValid";
 
 import DsponsorNFTABI from "@/abi/dsponsorNFT.json";
-import { copyFile } from "fs";
 import { StepType } from "../features/profile/tabs/OwnedTokens";
+import { useActiveAccount } from "thirdweb/react";
 
 const Token = () => {
   const router = useRouter();
@@ -71,7 +70,8 @@ const Token = () => {
 
   const relayerURL = chainConfig?.relayerURL;
 
-  const address = useAddress();
+  const wallet = useActiveAccount();
+  const address = wallet?.address;
 
   const { setSelectedChain } = useSwitchChainContext();
 

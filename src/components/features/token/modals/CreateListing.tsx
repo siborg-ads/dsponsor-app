@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { features } from "@/data/features";
-import { useAddress, useContract, useContractWrite, useContractRead } from "@thirdweb-dev/react";
+import { useContract, useContractWrite, useContractRead } from "@thirdweb-dev/react";
 import "react-toastify/dist/ReactToastify.css";
 import { ethers } from "ethers";
 import { DatePicker } from "@nextui-org/react";
@@ -14,6 +14,7 @@ import { Currency } from "@/components/layout/CreateOffer";
 import { getLocalTimeZone, today, parseDate, parseAbsoluteToLocal } from "@internationalized/date";
 
 import ERC20ABI from "@/abi/ERC20.json";
+import { useActiveAccount } from "thirdweb/react";
 
 const CreateListing = ({
   chainConfig,
@@ -58,7 +59,8 @@ const CreateListing = ({
   const [validate, setValidate] = useState<boolean>(false);
   const [isCustomEnabled, setIsCustomEnabled] = useState<boolean>(false);
 
-  const address = useAddress();
+  const wallet = useActiveAccount();
+  const address = wallet?.address;
 
   const relayerURL = chainConfig?.relayerURL;
 

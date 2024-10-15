@@ -4,13 +4,7 @@ import Link from "next/link";
 import Meta from "@/components/Meta";
 import { ethers, BigNumber } from "ethers";
 import Image from "next/image";
-import {
-  useContract,
-  useContractWrite,
-  useContractRead,
-  useAddress,
-  useStorage
-} from "@thirdweb-dev/react";
+import { useContract, useContractWrite, useContractRead, useStorage } from "@thirdweb-dev/react";
 import { ThirdwebSDK } from "@thirdweb-dev/sdk";
 
 import Tippy from "@tippyjs/react";
@@ -45,6 +39,7 @@ import DSponsorNFTABI from "@/abi/dsponsorNFT.json";
 import { ChainObject } from "@/types/chain";
 import { Address } from "thirdweb";
 import isUrlValid from "@/utils/misc/isUrlValid";
+import { useActiveAccount } from "thirdweb/react";
 
 const onAuctionCondition = (offer, mint, direct) => {
   return (
@@ -80,7 +75,8 @@ const Offer = () => {
   const [pendingProposalData, setPendingProposalData] = useState([]);
   const [isOwner, setIsOwner] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
-  const address = useAddress();
+  const wallet = useActiveAccount();
+  const address = wallet?.address;
   const { contract: DsponsorAdminContract } = useContract(
     chainConfig?.smartContracts?.DSPONSORADMIN?.address,
     chainConfig?.smartContracts?.DSPONSORADMIN?.abi

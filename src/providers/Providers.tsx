@@ -1,20 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { Base, Mode, Sepolia } from "@thirdweb-dev/chains";
-import { AbstractTestnet } from "@/config/chains/abstract-testnet";
+
 import {
-  coinbaseWallet,
-  embeddedWallet,
-  localWallet,
-  metamaskWallet,
-  ThirdwebProvider as ThirdwebProviderV4,
-  useAddress,
-  useBalance,
-  useChainId,
-  walletConnect
-} from "@thirdweb-dev/react"; // v4
+  ThirdwebProvider,
+  useActiveAccount,
+  useActiveWalletChain,
+  useWalletBalance
+} from "thirdweb/react";
+
 import { SwitchChainProvider, useSwitchChainContext } from "@/providers/SwitchChain";
 import config from "@/config/config";
-import { clientId } from "@/data/services/client";
+import { client } from "@/data/services/client";
 import { Address } from "thirdweb";
 
 interface GasslessContextValue {
@@ -51,10 +46,17 @@ function GaslessProvider({ children }: Readonly<{ children: React.ReactNode }>) 
 function GaslessCollector({ children }: Readonly<{ children: React.ReactNode }>) {
   const { setBalance, setAddress, setChainId } = React.useContext(GaslessContext);
 
-  const address = useAddress();
-  const chainId = useChainId();
-  const { data: balance } = useBalance();
+  const wallet = useActiveAccount();
+  const address = wallet?.address;
 
+  const chain = useActiveWalletChain();
+  const { data: balance } = useWalletBalance({
+    address,
+    chain,
+    client
+  });
+
+  const chainId = chain?.id;
   useEffect(() => {
     if (balance && address) {
       const bigInt = BigInt(balance?.value?.toString());
@@ -124,25 +126,28 @@ function InnerProviders({ children }: Readonly<{ children: React.ReactNode }>) {
   const sdkOptionsKey = React.useMemo(() => JSON.stringify(sdkOptions), [sdkOptions]);
 
   return (
-    <ThirdwebProviderV4
-      key={sdkOptionsKey}
-      {...(sdkOptions && { sdkOptions })}
-      activeChain={chain}
-      clientId={clientId}
-      supportedChains={[Base, Mode, Sepolia, AbstractTestnet]}
-      // authConfig={{ domain: "dsponsor.com" }}
-      supportedWallets={[
-        metamaskWallet(),
-        coinbaseWallet({ recommended: true }),
-        walletConnect(),
-        localWallet(),
-        embeddedWallet({
-          auth: { options: ["email", "google", "apple", "facebook"] }
-        })
-      ]}
-    >
-      <GaslessCollector>{children}</GaslessCollector>
-    </ThirdwebProviderV4>
+    <ThirdwebProvider>
+      {/* <ThirdwebProviderV4
+        key={sdkOptionsKey}
+        {...(sdkOptions && { sdkOptions })}
+        activeChain={chain}
+        clientId={clientId}
+        supportedChains={[Base, Mode, Sepolia, AbstractTestnet]}
+        // authConfig={{ domain: "dsponsor.com" }}
+        supportedWallets={[
+          metamaskWallet(),
+          coinbaseWallet({ recommended: true }),
+          walletConnect(),
+          localWallet(),
+          embeddedWallet({
+            auth: { options: ["email", "google", "apple", "facebook"] }
+          })
+        ]}
+      >
+        <GaslessCollector>{children}</GaslessCollector>
+      </ThirdwebProviderV4> */}
+      {children}
+    </ThirdwebProvider>
   );
 }
 

@@ -1,5 +1,5 @@
-import devConfig from "@/config/config.dev";
-import prodConfig from "@/config/config.prod";
+import devConfig, { devChains } from "@/config/config.dev";
+import prodConfig, { prodChains } from "@/config/config.prod";
 import { ChainsConfig } from "@/types/chain";
 
 const config: ChainsConfig = process.env.NEXT_PUBLIC_CONFIG_MODE === "dev" ? devConfig : prodConfig;
@@ -10,3 +10,5 @@ const config: ChainsConfig = process.env.NEXT_PUBLIC_CONFIG_MODE === "dev" ? dev
 export const MAX_SIZE_FILE = 300_000;
 
 export default config;
+
+export const chains = process.env.NEXT_PUBLIC_CONFIG_MODE === "dev" ? devChains : prodChains;

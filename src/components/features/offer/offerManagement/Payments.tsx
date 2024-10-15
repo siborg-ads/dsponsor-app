@@ -1,5 +1,9 @@
 import React, { SetStateAction, useEffect, useState } from "react";
 import { useContract, useContractRead, useContractWrite } from "@thirdweb-dev/react";
+import { getContract } from "thirdweb";
+import { useActiveWalletChain, useReadContract } from "thirdweb/react";
+import {} from "thirdweb/extensions/erc20";
+
 import { toast } from "react-toastify";
 import { parseUnits, formatUnits } from "ethers/lib/utils";
 import * as Switch from "@radix-ui/react-switch";
@@ -24,6 +28,8 @@ import {
   DropdownSection,
   DropdownTrigger
 } from "@nextui-org/react";
+import { client } from "@/data/services/client";
+import { base } from "thirdweb/chains";
 
 const isDisabledMessage = (disableMint: boolean) => {
   return disableMint
@@ -59,10 +65,29 @@ const Payments = ({ offer, chainConfig }: { offer: any; chainConfig: ChainObject
   const [disabled, setDisabled] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
 
-  const { contract: currencyContract } = useContract(currency, ERC20ABI);
-  const { data: currencyDecimalsData } = useContractRead(currencyContract, "decimals");
-  const { data: currencySymbolData } = useContractRead(currencyContract, "symbol");
+  const chain = useActiveWalletChain();
 
+  //   const { contract: currencyContract } = useContract(currency, ERC20ABI);
+  const currencyContract = getContract({
+    client: client,
+    address: currency ?? "",
+    chain: chain || base
+  });
+
+  // const { data: currencyDecimalsData } = useContractRead(currencyContract, "decimals");
+  const { data: currencyDecimalsData } = useReadContract({
+    contract: currencyContract,
+    method: "decimals",
+    params: []
+  });
+  // const { data: currencySymbolData } = useContractRead(currencyContract, "symbol");
+  const { data: currencySymbolData } = useReadContract({
+    contract: currencyContract,
+    method: "symbol",
+    params: []
+  });
+
+  //TODO: V5 MIGRATION
   useEffect(() => {
     if (currencyDecimalsData) {
       setCurrencyDecimals(currencyDecimalsData);

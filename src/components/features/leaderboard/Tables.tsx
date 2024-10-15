@@ -4,25 +4,25 @@ import Link from "next/link";
 import activityToTopPoints from "@/utils/tables/activityToTopPoints";
 import activityToHighestTransactions from "@/utils/tables/activityToHighestTransactions";
 import formatLongAddress from "@/utils/addresses/formatLongAddress";
-import { useAddress } from "@thirdweb-dev/react";
 import { formatUnits, getAddress } from "ethers/lib/utils";
 import config from "@/config/config";
 import { ChainObject } from "@/types/chain";
 import ChainSelector from "../chain/ChainSelector";
 import { isAddress } from "thirdweb";
+import { useActiveAccount } from "thirdweb/react";
 
 const renderTable = (data, columns, userAddress) => {
   if (!data || data.length === 0 || !Array.isArray(data)) {
-    return <div className="text-center py-4">No data available</div>;
+    return <div className="py-4 text-center">No data available</div>;
   }
 
   return (
     <div className="w-full text-left min-w-[736px] border dark:border-primaryPink dark:border-opacity-10 dark:bg-primaryBlack dark:text-white rounded-2lg">
-      <table className="w-full rounded-2lg overflow-hidden">
-        <thead className="rounded-2lg border border-primaryPurple">
+      <table className="w-full overflow-hidden rounded-2lg">
+        <thead className="border rounded-2lg border-primaryPurple">
           <tr className="bg-jacarta-50 dark:bg-primaryPurple rounded-2lg">
             {columns.map((col, index) => (
-              <th key={index} className="py-3 px-4 font-medium">
+              <th key={index} className="px-4 py-3 font-medium">
                 {col.header}
               </th>
             ))}
@@ -37,7 +37,7 @@ const renderTable = (data, columns, userAddress) => {
               {columns.map((col, colIndex) => (
                 <td
                   key={colIndex}
-                  className="py-4 px-4"
+                  className="px-4 py-4"
                   style={{
                     maxWidth: "150px", // Set the maximum width here
                     whiteSpace: "nowrap", // Prevent text wrapping
@@ -67,7 +67,8 @@ const Tables = ({ activity }) => {
 
   const chainExplorer = chainConfig.explorerBaseURL;
 
-  const address = useAddress();
+  const wallet = useActiveAccount();
+  const address = wallet?.address;
 
   useEffect(() => {
     setLeaderboards({
@@ -185,20 +186,20 @@ const Tables = ({ activity }) => {
 
   return (
     <div className="container ">
-      <h1 className="text-4xl font-medium text-center pt-8 pb-4 mb-4 dark:text-white">
+      <h1 className="pt-8 pb-4 mb-4 text-4xl font-medium text-center dark:text-white">
         Leaderboard Rankings
       </h1>
       <ChainSelector setChainConfig={setChainConfig} />
-      <div className="mb-8 grid grid-cols-2 md:grid-cols-3 gap-4 flex-wrap items-center justify-between"></div>
+      <div className="grid flex-wrap items-center justify-between grid-cols-2 gap-4 mb-8 md:grid-cols-3"></div>
       {/*
-      <div className="mb-8 grid grid-cols-1 md:grid-cols-3 gap-4 flex-wrap items-center justify-between">
+      <div className="grid flex-wrap items-center justify-between grid-cols-1 gap-4 mb-8 md:grid-cols-3">
         <Cards activity={filteredActivity} />
       </div>
       */}
-      <div className="hide-scrollbar overflow-x-auto">
+      <div className="overflow-x-auto hide-scrollbar">
         {/* <!-- Tabs Nav --> */}
         <Tabs className="tabs hide-scrollbar">
-          <TabList className="nav nav-tabs hide-scrollbar mb-6 flex items-center justify-start  overflow-y-hidden border-b border-jacarta-100 pb-px dark:border-jacarta-800 md:justify-center">
+          <TabList className="flex items-center justify-start pb-px mb-6 overflow-y-hidden border-b nav nav-tabs hide-scrollbar border-jacarta-100 dark:border-jacarta-800 md:justify-center">
             {tabItem.map(({ id, text, icon }) => {
               return (
                 <Tab className="nav-item " key={id} onClick={() => setItemActive(id)}>
@@ -209,10 +210,10 @@ const Tables = ({ activity }) => {
                         : "nav-link hover:text-jacarta-900 text-jacarta-100 relative flex items-center whitespace-nowrap py-3 px-6 dark:hover:text-white"
                     }
                   >
-                    <svg className="icon mr-1 h-5 w-5 fill-current">
+                    <svg className="w-5 h-5 mr-1 fill-current icon">
                       <use xlinkHref={`/icons.svg#icon-${icon}`}></use>
                     </svg>
-                    <span className="font-display text-base font-medium">{text}</span>
+                    <span className="text-base font-medium font-display">{text}</span>
                   </button>
                 </Tab>
               );
@@ -221,9 +222,9 @@ const Tables = ({ activity }) => {
 
           {Object.entries(leaderboards).map(([key, data]) => (
             <TabPanel key={key}>
-              <div className="max-w-2xl text-center mx-auto">
+              <div className="max-w-2xl mx-auto text-center">
                 {key === "topPoints" && (
-                  <p className="text-jacarta-100 text-sm md:text-base mb-4">
+                  <p className="mb-4 text-sm text-jacarta-100 md:text-base">
                     Each transaction in <b>WETH</b> or <b>USDC</b> where a sale or auction is
                     completed rewards in &quot;Boxes&quot; the seller, buyer, and referrer based on
                     the amount paid. Below are the profiles with the highest rewards. The more you
@@ -233,14 +234,14 @@ const Tables = ({ activity }) => {
                 )}
                 {/*
                 {key === "topHolders" && (
-                  <p className="text-jacarta-100 text-sm md:text-base mb-4">
+                  <p className="mb-4 text-sm text-jacarta-100 md:text-base">
                     Here is the list of wallets that acquired the most tokens, along with the total
                     amount spent.
                   </p>
                 )}
 
                 {key === "topRewarded" && (
-                  <p className="text-jacarta-100 text-sm md:text-base mb-4">
+                  <p className="mb-4 text-sm text-jacarta-100 md:text-base">
                     For each outbid, the outbid bidder receives a bonus in addition to their bid.
                     Here is the list of those who received the most bonuses.
                   </p>
@@ -248,14 +249,14 @@ const Tables = ({ activity }) => {
           */}
 
                 {key === "topSpenders" && (
-                  <p className="text-jacarta-100 text-sm md:text-base mb-4">
+                  <p className="mb-4 text-sm text-jacarta-100 md:text-base">
                     Here are the transactions with the highest amounts spent in <b>WETH</b> and the
                     number of &quot;Boxes&quot; earned. The more you spend, the more
                     &quot;Boxes&quot; you earn. &quot;Boxes&quot; may be subject to an airdrop.
                   </p>
                 )}
               </div>
-              <p className="text-xs text-jacarta-100 mb-4">
+              <p className="mb-4 text-xs text-jacarta-100">
                 {/* Data is updated every 15 minutes */}
               </p>
               <div className="overflow-x-auto">{renderTable(data, columns[key], address)}</div>

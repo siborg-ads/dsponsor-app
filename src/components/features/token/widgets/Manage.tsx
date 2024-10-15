@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useAddress, useContractWrite } from "@thirdweb-dev/react";
+import { useContractWrite } from "@thirdweb-dev/react";
 import ItemManageModal from "@/components/features/token/modals/CreateListing";
 import { toast } from "react-toastify";
 import { getAddress } from "ethers/lib/utils";
@@ -7,6 +7,7 @@ import StyledWeb3Button from "@/components/ui/buttons/StyledWeb3Button";
 import { Address } from "thirdweb";
 import NormalButton from "@/components/ui/buttons/NormalButton";
 import config from "@/config/config";
+import { useActiveAccount } from "thirdweb/react";
 
 const Manage = ({
   chainId,
@@ -34,7 +35,8 @@ const Manage = ({
   );
   const { mutateAsync: closeAuctionListing } = useContractWrite(dsponsorMpContract, "closeAuction");
 
-  const address = useAddress();
+  const wallet = useActiveAccount();
+  const address = wallet?.address;
 
   useEffect(() => {
     if (marketplaceListings?.length > 0) {
@@ -105,14 +107,14 @@ const Manage = ({
       conditions?.hasBids
     ) {
       return (
-        <span className="dark:text-jacarta-100 text-jacarta-100 text-sm">
+        <span className="text-sm dark:text-jacarta-100 text-jacarta-100">
           Auction has ended, you can complete the auction by clicking the button below.
         </span>
       );
     }
     if ((!conditions?.isCreated || marketplaceListings?.length <= 0) && conditions?.isOwner) {
       return (
-        <span className="dark:text-jacarta-100 text-jacarta-100 text-sm">
+        <span className="text-sm dark:text-jacarta-100 text-jacarta-100">
           Click the button below to sell your item in auction or direct listing.
         </span>
       );
@@ -123,7 +125,7 @@ const Manage = ({
       conditions?.isCreated
     ) {
       return (
-        <span className="dark:text-jacarta-100 text-jacarta-100 text-sm">
+        <span className="text-sm dark:text-jacarta-100 text-jacarta-100">
           Click the button below to cancel the listing.
         </span>
       );
@@ -134,7 +136,7 @@ const Manage = ({
         conditions?.isListerOrOwnerAndStartDateNotPassed)
     ) {
       return (
-        <span className="dark:text-jacarta-100 text-jacarta-100 text-sm">
+        <span className="text-sm dark:text-jacarta-100 text-jacarta-100">
           Click the button below to cancel the auction.
         </span>
       );
@@ -148,7 +150,7 @@ const Manage = ({
       (conditions?.isOwner || (conditions?.isLister && conditions?.isCancelled))
     ) {
       return (
-        <div className="w-full flex justify-center">
+        <div className="flex justify-center w-full">
           <NormalButton onClick={handleListingModal}>Create a listing</NormalButton>
         </div>
       );
@@ -218,14 +220,14 @@ const Manage = ({
   return (
     <>
       {renderConditionsMessage() && (
-        <div className="dark:bg-secondaryBlack mb-2 rounded-2lg flex flex-col gap-4 bg-white p-8">
+        <div className="flex flex-col gap-4 p-8 mb-2 bg-white dark:bg-secondaryBlack rounded-2lg">
           <div className="sm:flex sm:flex-wrap">{renderConditionsMessage()}</div>
           {renderActionButton()}
         </div>
       )}
 
       {listingModal && (
-        <div className="modal fade show block">
+        <div className="block modal fade show">
           <ItemManageModal
             chainConfig={currentChainObject}
             setSuccessFullListing={setSuccessFullListing}

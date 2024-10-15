@@ -1,12 +1,13 @@
 import Link from "next/link";
 import { footerMenuList as defaultFooterMenuList } from "@/data/footer";
 import Image from "next/image";
-import { useAddress } from "@thirdweb-dev/react";
+import { useActiveAccount } from "thirdweb/react";
 import { features } from "@/data/features";
 import Logo from "@/../public/images/siborg-ads/siborg-ads.png";
 
 const Footer = () => {
-  const address = useAddress();
+  const wallet = useActiveAccount();
+  const address = wallet?.address;
 
   const footerMenuList = defaultFooterMenuList.concat(
     address !== undefined
@@ -40,12 +41,12 @@ const Footer = () => {
     <>
       {/* <!-- Footer --> */}
 
-      <footer className="dark:bg-primaryBlack page-footer bg-white">
+      <footer className="bg-white dark:bg-primaryBlack page-footer">
         <div className="container">
-          <div className="grid grid-cols-6 gap-x-7 gap-y-14 pt-24 pb-12 md:grid-cols-12">
+          <div className="grid grid-cols-6 pt-24 pb-12 gap-x-7 gap-y-14 md:grid-cols-12">
             <div className="col-span-3 md:col-span-4">
               {/* <!-- Logo --> */}
-              <Link href="/" className="mb-6 inline-block">
+              <Link href="/" className="inline-block mb-6">
                 <Image
                   width={220}
                   height={50}
@@ -55,12 +56,12 @@ const Footer = () => {
                 />
               </Link>
 
-              <Link href="/" className=" mb-6 inline-block">
+              <Link href="/" className="inline-block mb-6 ">
                 <Image
                   width={220}
                   height={50}
                   src={Logo ?? ""}
-                  className="hidden  dark:block mb-6"
+                  className="hidden mb-6 dark:block"
                   alt="SiBorg Ads | Media sponsoring Marketplace"
                 />
               </Link>
@@ -70,8 +71,8 @@ const Footer = () => {
                 {socialIcons.map((item) => {
                   const { id, href, text } = item;
                   return (
-                    <Link href={href ?? ""} key={id} target="_blank" rel="noopener noreferrer" className="group cursor-pointer">
-                      <svg className="icon group-hover:fill-primaryPurple fill-jacarta-300 h-5 w-5 dark:group-hover:fill-white">
+                    <Link href={href ?? ""} key={id} target="_blank" rel="noopener noreferrer" className="cursor-pointer group">
+                      <svg className="w-5 h-5 icon group-hover:fill-primaryPurple fill-jacarta-300 dark:group-hover:fill-white">
                         <use xlinkHref={`/icons.svg#icon-${text}`}></use>
                       </svg>
                     </Link>
@@ -85,10 +86,10 @@ const Footer = () => {
                 className={`col-span-full sm:col-span-3 md:col-span-2 ${single.diffClass}`}
                 key={single.id}
               >
-                <h3 className="font-display text-jacarta-900 mb-6 text-sm dark:text-white">
+                <h3 className="mb-6 text-sm font-display text-jacarta-900 dark:text-white">
                   {single.title}
                 </h3>
-                <ul className="dark:text-jacarta-100 flex flex-col space-y-1">
+                <ul className="flex flex-col space-y-1 dark:text-jacarta-100">
                   {single.list.map((item) => {
                     const { id, href, text, target } = item;
                     return (
@@ -108,12 +109,12 @@ const Footer = () => {
             ))}
           </div>
 
-          <div className="flex flex-col items-center justify-between space-y-2 py-8 sm:flex-row sm:space-y-0">
-            <span className="dark:text-jacarta-100 text-sm">
+          <div className="flex flex-col items-center justify-between py-8 space-y-2 sm:flex-row sm:space-y-0">
+            <span className="text-sm dark:text-jacarta-100">
               <span>© {new Date().getFullYear()} SiBorg Ads </span>
             </span>
 
-            <ul className="dark:text-jacarta-100 flex flex-wrap space-x-4 text-sm">
+            <ul className="flex flex-wrap space-x-4 text-sm dark:text-jacarta-100">
               <li>
                 <Link
                   href="https://docs.google.com/document/d/15um5c6mMoKc8V1rVyRJ7tcIxFDmtE8xe75mx-CdB84w"
