@@ -53,9 +53,9 @@ const Marketplace = () => {
   }, [allTokens, auctionsFetched]);
 
   useEffect(() => {
-    if (auctionsTemp.length === 0) return;
+    if (!Array.isArray(auctionsTemp)) return;
 
-    const auctions = auctionsTemp?.map((token) => {
+    const auctions = auctionsTemp.map((token) => {
       const name = token.metadata.name;
       const category = token.metadata.categories ? token.metadata.categories[0] : "";
       const chain = token.chainConfig.network;

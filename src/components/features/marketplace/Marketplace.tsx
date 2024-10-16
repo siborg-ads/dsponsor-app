@@ -6,9 +6,10 @@ import TokenCard from "@/components/ui/cards/TokenCard";
 import { Popover, PopoverTrigger, PopoverContent } from "@nextui-org/popover";
 import Input from "@/components/ui/Input";
 import { Button, DatePicker } from "@nextui-org/react";
-import { getLocalTimeZone, today, parseDate } from "@internationalized/date";
-import ModalHelper from "@/components/ui/modals/Helper";
+import { parseDate } from "@internationalized/date";
 import { XMarkIcon } from "@heroicons/react/20/solid";
+import { SearchIcon } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 const onAuctionCondition = (auction, mint, direct) => {
   return (
@@ -187,8 +188,8 @@ const MarketplaceComponent = ({
         onChange={(date) => {
           setDate(new Date(Date.UTC(date.year, date.month - 1, date.day, 0)));
         }}
+        className="h-12"
         showMonthAndYearPickers
-        style={{ height: "100%" }}
         labelPlacement="inside"
         label={label}
         startContent={
@@ -232,7 +233,7 @@ const MarketplaceComponent = ({
       </span>
 
       <div className="flex flex-row flex-wrap-reverse items-center justify-end gap-2 mb-4 sm:gap-4">
-        <div className="flex w-full mr-0 md:mr-auto md:max-w-[500px]">
+        <div className="flex w-full mr-0 justify-center items-center md:mr-auto md:max-w-[500px]">
           <Input
             type="text"
             placeholder="Search..."
@@ -247,9 +248,22 @@ const MarketplaceComponent = ({
               }
             }}
           />
+          <SearchIcon
+            className={cn(
+              "relative w-5 h-5 text-white cursor-pointer right-7",
+              isAuctionsLoading && "cursor-progress"
+            )}
+            onClick={(e) => {
+              if (isAuctionsLoading) {
+                e.preventDefault();
+                return;
+              }
+              fetchData(true, filterName);
+            }}
+          />
         </div>
 
-        <div className="flex flex-wrap-reverse items-center justify-end h-12 gap-4 text-jacarta-900 dark:text-white">
+        <div className="flex flex-wrap-reverse items-center justify-end gap-2 h-fit text-jacarta-900 dark:text-white">
           {renderDatePicker(startDate, setStartDate, "Validity Start date")}
           {renderDatePicker(endDate, setEndDate, "Validity End date")}
         </div>
@@ -331,8 +345,9 @@ const MarketplaceComponent = ({
 
       {/* Auction Listings */}
       <div className="grid grid-cols-2 gap-4 mb-6 md:grid-cols-3 lg:grid-cols-4">
-        {!isAuctionsLoading
-          ? filteredAuctions?.map((auction, index) => (
+        {!isAuctionsLoading ? (
+          filteredAuctions.length > 0 ? (
+            filteredAuctions?.map((auction, index) => (
               <TokenCard
                 key={index}
                 item={auction.item}
@@ -352,7 +367,19 @@ const MarketplaceComponent = ({
                 usdcPriceFormatted={auction?.usdcPriceFormatted}
               />
             ))
-          : Array.from({ length: 12 }).map((_, index) => <TokenCardSkeleton key={index} />)}
+          ) : (
+            <div
+              className="flex items-center justify-center w-full"
+              style={{
+                height: "45vh"
+              }}
+            >
+              <span className="text-lg text-white">No tokens found</span>
+            </div>
+          )
+        ) : (
+          Array.from({ length: 12 }).map((_, index) => <TokenCardSkeleton key={index} />)
+        )}
       </div>
     </div>
   );
