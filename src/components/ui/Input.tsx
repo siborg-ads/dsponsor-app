@@ -25,6 +25,8 @@ interface InputProps {
   name?: string;
   checked?: boolean;
   maxLength?: number;
+  onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
+  enterKeyHint?: "search" | "enter" | "done" | "go" | "next" | "previous" | "send" | undefined;
 }
 
 const Input = forwardRef<HTMLInputElement, InputProps>(
@@ -48,7 +50,9 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
       onClick,
       name,
       checked,
-      maxLength
+      maxLength,
+      onKeyDown,
+      enterKeyHint
     }: InputProps,
     ref: any
   ) => {
@@ -71,12 +75,14 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
         pattern={pattern}
         readOnly={readOnly}
         maxLength={maxLength}
+        onKeyDown={onKeyDown}
         className={clsx(
           "bg-jacarta-800 hover:bg-jacarta-800 border border-primaryPurple ring-0 focus:ring-0 focus:border-primaryPurple placeholder:text-jacarta-300 w-full rounded-lg py-3 px-3 text-white",
           className
         )}
         required={required}
         disabled={disabled}
+        enterKeyHint={enterKeyHint}
         onWheel={(e) => {
           if (type === "number") {
             e.currentTarget.blur();
