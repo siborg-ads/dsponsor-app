@@ -41,6 +41,7 @@ import DsponsorNftABI from "@/abi/dsponsorNFT.json";
 import { getOwnershipPeriod } from "@/utils/dates/period";
 
 import ERC20ABI from "@/abi/ERC20.json";
+import DSponsorNFTABI from "@/abi/dsponsorNFT.json";
 import { ChainObject } from "@/types/chain";
 import { Address } from "thirdweb";
 import isUrlValid from "@/utils/misc/isUrlValid";
@@ -105,7 +106,7 @@ const Offer = () => {
   const [sortOption, setSortOption] = useState<SortOptionsType>("Sort by name");
 
   const [nftContractAddress, setNftContractAddress] = useState<Address | null>(null);
-  const { contract } = useContract(nftContractAddress);
+  const { contract } = useContract(nftContractAddress, DSponsorNFTABI);
   const { data: owner } = useContractRead(contract, "owner");
   /*
   const [currencyDecimals, setCurrencyDecimals] = useState<number | null>(null);
@@ -154,14 +155,14 @@ const Offer = () => {
       setOffers(offers);
 
       const offerData = offers?.filter((offer) => Number(offer?.id) === Number(offerId))[0];
-      const external_url =
-        offerData.metadata?.offer?.external_url ??
+      const external_link =
         offerData.metadata?.offer?.external_link ??
+        offerData.metadata?.offer?.external_url ??
         undefined;
 
       const offerDataFinal = {
         ...offerData,
-        external_url,
+        external_link,
         chainConfig: offers?.filter((offer) => Number(offer?.id) === Number(offerId))[0]
           ?.chainConfig
       };
@@ -261,7 +262,7 @@ const Offer = () => {
     if (chainId) {
       fetchOffers();
     }
-  }, [chainId, offerId]);
+  }, [chainId, fetchOffers, offerId]);
 
   useEffect(() => {
     if (offerData && address) {
@@ -332,6 +333,7 @@ const Offer = () => {
     // we check if the sponsor has only rejected proposals
     const sponsorHasAtLeastOneRejectedProposal = itemProposals?.rejectedProposals?.length > 0;
     const sponsorHasNoPendingProposal = itemProposals?.pendingProposals?.length === 0;
+    const noValidated = itemProposals?.acceptedProposals?.length === 0;
     const lastAcceptedProposalTimestamp =
       parseFloat(
         itemProposals?.acceptedProposals?.sort(
@@ -344,13 +346,13 @@ const Offer = () => {
           (a, b) => b?.creationTimestamp - a?.creationTimestamp
         )[0]?.lastUpdateTimestamp
       ) * 1000;
-    const sponsorHasNoMoreRecentValidatedProposal =
+    const refusedIsMoreRecentThanAccepted =
       new Date(lastAcceptedProposalTimestamp) <= new Date(lastRefusedProposalTimestamp);
 
     setSponsorHasAtLeastOneRejectedProposalAndNoPending(
       sponsorHasAtLeastOneRejectedProposal &&
         sponsorHasNoPendingProposal &&
-        sponsorHasNoMoreRecentValidatedProposal
+        (refusedIsMoreRecentThanAccepted || noValidated)
     );
 
     // now we check if the media should validate an ad
@@ -706,20 +708,20 @@ const Offer = () => {
                 <span className="block text-sm text-jacarta-100 dark:text-white">
                   Creator <strong>{royalties}% royalties</strong>
                 </span>
-                {offerData?.external_url && (
+                {offerData?.external_link && (
                   <span className="block w-full text-sm text-jacarta-100 dark:text-white">
                     Ad Space location :{" "}
-                    {isUrlValid(offerData.external_url) ? (
+                    {isUrlValid(offerData.external_link) ? (
                       <a
-                        href={offerData?.external_url}
+                        href={offerData?.external_link}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="font-bold text-primaryPurple hover:underline"
                       >
-                        {offerData?.external_url}
+                        {offerData?.external_link}
                       </a>
                     ) : (
-                      <strong>{offerData?.external_url}</strong>
+                      <strong>{offerData?.external_link}</strong>
                     )}
                   </span>
                 )}
@@ -1042,11 +1044,14 @@ const Offer = () => {
                 <Accordion.Trigger
                   className={`${accordionActiveTab.includes("adValidation") && "bg-primaryPurple"} w-full flex items-center justify-center gap-4 mb-6 border border-primaryPurple hover:bg-primaryPurple cursor-pointer p-2 rounded-lg`}
                 >
-                  {isAdmin && sponsorHasAtLeastOneRejectedProposalAndNoPending && (
+                  {/* 
+                  {isOwner && sponsorHasAtLeastOneRejectedProposalAndNoPending && (
                     <ResponsiveTooltip text="You have at least one rejected proposal and no pending proposal.">
                       <ExclamationCircleIcon className="w-6 h-6 text-red" />
                     </ResponsiveTooltip>
                   )}
+                  */}
+
                   {isMedia && mediaShouldValidateAnAd && (
                     <ResponsiveTooltip text="You have at least one ad to validate or to refuse.">
                       <ExclamationCircleIcon className="w-6 h-6 text-red" />
@@ -1076,6 +1081,7 @@ const Offer = () => {
                   sponsorHasAtLeastOneRejectedProposalAndNoPending={
                     sponsorHasAtLeastOneRejectedProposalAndNoPending
                   }
+                  isAdmin={isAdmin}
                   setSponsorHasAtLeastOneRejectedProposalAndNoPending={
                     setSponsorHasAtLeastOneRejectedProposalAndNoPending
                   }

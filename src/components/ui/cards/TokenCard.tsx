@@ -12,6 +12,7 @@ import { ExclamationCircleIcon } from "@heroicons/react/24/solid";
 import ResponsiveTooltip from "@/components/ui/ResponsiveTooltip";
 import { BigNumber } from "ethers";
 import React from "react";
+import { Address } from "thirdweb";
 
 const TokenCard = ({
   item,
@@ -24,6 +25,7 @@ const TokenCard = ({
   listingType,
   disableLink,
   availableToSubmitAdFromOwnedTokens,
+  availableToSubmitAdFromCreatedOffers,
   createdOffersProposals,
   offer,
   offers,
@@ -32,7 +34,9 @@ const TokenCard = ({
   currencySymbol,
   tokenId,
   usdcPriceFormatted,
-  hasBidStatus
+  hasBidStatus,
+  fromProfilePage,
+  profileAddress
 }: {
   item: any;
   url?: string;
@@ -44,6 +48,7 @@ const TokenCard = ({
   listingType?: string;
   disableLink?: boolean;
   availableToSubmitAdFromOwnedTokens?: boolean;
+  availableToSubmitAdFromCreatedOffers?: boolean;
   createdOffersProposals?: boolean;
   offer?: any;
   offers?: any;
@@ -53,6 +58,8 @@ const TokenCard = ({
   tokenId?: string;
   usdcPriceFormatted?: string;
   hasBidStatus?: boolean;
+  fromProfilePage?: boolean;
+  profileAddress?: Address;
 }) => {
   const [price, setPrice] = useState<string | null>(null);
   const [totalPrice, setTotalPrice] = useState<string | null>(null);
@@ -64,7 +71,7 @@ const TokenCard = ({
   const [isLastBidder, setIsLastBidder] = useState(false);
   const [itemProposals, setItemProposals] = useState<any>(null);
   const [availableToSubmitAd, setAvailableToSubmitAd] = useState(false);
-  const [isPendingAdsOnOffer, setIsPendingAdsOnOffer] = useState(false);
+  const [isPendingAdsOnToken, setIsPendingAdsOnToken] = useState(false);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
 
   const address = useAddress();
@@ -228,16 +235,22 @@ const TokenCard = ({
   }, [address, lastBidder]);
 
   useEffect(() => {
-    if (offer) {
-      const pendingProposals = offer?.allProposals?.filter(
-        (proposal) => proposal?.status === "CURRENT_PENDING"
-      );
+    if (offer && fromProfilePage) {
+      const tokens = offer?.nftContract?.tokens;
+      if (!tokens) return;
 
-      if (pendingProposals?.length > 0) {
-        setIsPendingAdsOnOffer(true);
-      } else {
-        setIsPendingAdsOnOffer(false);
-      }
+      setIsPendingAdsOnToken(false);
+
+      tokens.some((token) => {
+        const havePendingProposals = token?.allProposals?.some(
+          (proposal) => proposal?.status === "CURRENT_PENDING"
+        );
+
+        if (havePendingProposals) {
+          setIsPendingAdsOnToken(true);
+          return true;
+        }
+      });
     }
   }, [offer]);
 
@@ -376,16 +389,14 @@ const TokenCard = ({
   const offerItemCard = (
     <article className="relative h-full ">
       {item?.isPending && isOwner && (
-        <div className="absolute -top-2 -right-2 rounded-2xl bg-red rounded-2xl dark:text-white px-2">
-          !
-        </div>
+        <div className="absolute px-2 -top-2 -right-2 rounded-2xl bg-red dark:text-white">!</div>
       )}
 
       <div
         style={{
           transitionDuration: "500ms"
         }}
-        className="dark:bg-secondaryBlack h-full cursor-pointer dark:hover:bg-opacity-80 box-border hover:border-2 duration-1000 hover:duration-1000 hover:-translate-y-1 dark:hover:border-2 dark:border-jacarta-100 dark:border-opacity-10 border-opacity-10 border-jacarta-900 relative rounded-2xl flex flex-col border bg-white p-4 transition-shadow hover:shadow-lg text-jacarta-100"
+        className="box-border relative flex flex-col h-full p-4 transition-shadow duration-1000 bg-white border cursor-pointer dark:bg-secondaryBlack dark:hover:bg-opacity-80 hover:border-2 hover:duration-1000 hover:-translate-y-1 dark:hover:border-2 dark:border-jacarta-100 dark:border-opacity-10 border-opacity-10 border-jacarta-900 rounded-2xl hover:shadow-lg text-jacarta-100"
       >
         <div className="relative">
           <figure className="h-[230px] w-full flex items-center justify-center">
@@ -396,7 +407,7 @@ const TokenCard = ({
                   alt="logo"
                   height={230}
                   width={230}
-                  className="max-h-full max-w-full object-contain"
+                  className="object-contain max-w-full max-h-full"
                   loading="lazy"
                 />
               )
@@ -408,7 +419,7 @@ const TokenCard = ({
                     alt="logo"
                     height={230}
                     width={230}
-                    className="max-w-full max-h-full object-contain rounded-lg"
+                    className="object-contain max-w-full max-h-full rounded-lg"
                     loading="lazy"
                   />
                 )}
@@ -419,7 +430,7 @@ const TokenCard = ({
           <Tippy
             content={item?.chainConfig?.network}
             placement="top"
-            className="bg-jacarta-300 text-jacarta-900 box-border hover:border-2 dark:hover:border-2 hover:-m-1 duration-400 dark:hover:bg-jacarta-800 dark:border-jacarta-100 dark:border-opacity-10 border-opacity-10 border border-jacarta-900 hover:bg-jacarta-800 dark:text-jacarta-100 rounded-md p-2"
+            className="box-border p-2 border rounded-md bg-jacarta-300 text-jacarta-900 hover:border-2 dark:hover:border-2 hover:-m-1 duration-400 dark:hover:bg-jacarta-800 dark:border-jacarta-100 dark:border-opacity-10 border-opacity-10 border-jacarta-900 hover:bg-jacarta-800 dark:text-jacarta-100"
           >
             <div
               style={{ background: "rgba(54, 58, 93, 0.7)", backdropFilter: "blur(20px)" }}
@@ -438,13 +449,13 @@ const TokenCard = ({
             <Tippy
               content={`token  # ${item?.tokenData ? item?.tokenData : item?.mint?.tokenData ? item?.mint?.tokenData : item?.tokenId}`}
               placement="top"
-              className="bg-jacarta-300 text-jacarta-900 box-border hover:border-2 dark:hover:border-2 hover:-m-1 duration-400 dark:hover:bg-jacarta-800 dark:border-jacarta-100 dark:border-opacity-10 border-opacity-10 border border-jacarta-900 hover:bg-jacarta-800 dark:text-jacarta-100 rounded-md p-2"
+              className="box-border p-2 border rounded-md bg-jacarta-300 text-jacarta-900 hover:border-2 dark:hover:border-2 hover:-m-1 duration-400 dark:hover:bg-jacarta-800 dark:border-jacarta-100 dark:border-opacity-10 border-opacity-10 border-jacarta-900 hover:bg-jacarta-800 dark:text-jacarta-100"
             >
               <div
                 style={{ background: "rgba(54, 58, 93, 0.7)", backdropFilter: "blur(20px)" }}
-                className="absolute backdrop-blur-1 -bottom-1 -right-2 dark:border-jacarta-800 border-jacarta-100 flex items-center whitespace-nowrap rounded-md border py-1 px-2"
+                className="absolute flex items-center px-2 py-1 border rounded-md backdrop-blur-1 -bottom-1 -right-2 dark:border-jacarta-800 border-jacarta-100 whitespace-nowrap"
               >
-                <span className="text-primaryPink text-sm font-medium tracking-tight">
+                <span className="text-sm font-medium tracking-tight text-primaryPink">
                   #{" "}
                   {item?.tokenData
                     ? item?.tokenData
@@ -457,34 +468,70 @@ const TokenCard = ({
           )}
         </div>
         <div className="flex flex-col flex-1">
-          <div className="mt-4 flex items-center justify-between gap-2">
+          <div className="flex items-center justify-between gap-2 mt-4">
             {isSelectionActive ? (
-              <span className="font-display  text-primaryBlack hover:text-primaryPurple text-base dark:text-white flex items-center gap-1">
-                {availableToSubmitAd && availableToSubmitAdFromOwnedTokens && (
-                  <ResponsiveTooltip text="You can submit an ad for this item">
-                    <ExclamationCircleIcon className="h-5 w-5 text-red dark:text-red" />
+              <span className="flex items-center gap-1 text-base font-display text-primaryBlack hover:text-primaryPurple dark:text-white">
+                {((!!fromProfilePage &&
+                  profileAddress?.toLowerCase() === address?.toLowerCase() &&
+                  availableToSubmitAd &&
+                  !!availableToSubmitAdFromCreatedOffers) ||
+                  (!fromProfilePage &&
+                    availableToSubmitAd &&
+                    !!availableToSubmitAdFromCreatedOffers)) && (
+                  <ResponsiveTooltip text="You can review the ad proposals for this item">
+                    <ExclamationCircleIcon className="w-5 h-5 text-red dark:text-red" />
                   </ResponsiveTooltip>
                 )}
-                {createdOffersProposals && isPendingAdsOnOffer && (
-                  <ResponsiveTooltip text="You have 1 or more ads proposals to check on your offer">
-                    <ExclamationCircleIcon className="h-5 w-5 text-red dark:text-red" />
+                {((!!fromProfilePage &&
+                  profileAddress?.toLowerCase() === address?.toLowerCase() &&
+                  !!availableToSubmitAdFromOwnedTokens) ||
+                  (!fromProfilePage && !!availableToSubmitAdFromOwnedTokens)) && (
+                  <ResponsiveTooltip text="You can submit an ad for this item">
+                    <ExclamationCircleIcon className="w-5 h-5 text-red dark:text-red" />
                   </ResponsiveTooltip>
-                )}{" "}
+                )}
+                {((!!fromProfilePage &&
+                  profileAddress?.toLowerCase() === address?.toLowerCase() &&
+                  !!createdOffersProposals &&
+                  isPendingAdsOnToken) ||
+                  (!fromProfilePage && !!createdOffersProposals && isPendingAdsOnToken)) && (
+                  <ResponsiveTooltip text="You have 1 or more ads proposals to check">
+                    <ExclamationCircleIcon className="w-5 h-5 text-red dark:text-red" />
+                  </ResponsiveTooltip>
+                )}
                 <ResponsiveTooltip text={name}>{name}</ResponsiveTooltip>
               </span>
             ) : (
               <div className="overflow-hidden text-ellipsis whitespace-nowrap ">
-                <span className="font-display text-primaryBlack hover:text-primaryPurple text-base dark:text-white flex items-center gap-1">
-                  {availableToSubmitAd && availableToSubmitAdFromOwnedTokens && (
-                    <ResponsiveTooltip text="You can submit an ad for this item">
-                      <ExclamationCircleIcon className="h-5 w-5 text-red dark:text-red" />
+                <span className="flex items-center gap-1 text-base font-display text-primaryBlack hover:text-primaryPurple dark:text-white">
+                  {((!!fromProfilePage &&
+                    profileAddress?.toLowerCase() === address?.toLowerCase() &&
+                    availableToSubmitAd &&
+                    !!availableToSubmitAdFromCreatedOffers) ||
+                    (!fromProfilePage &&
+                      availableToSubmitAd &&
+                      !!availableToSubmitAdFromCreatedOffers)) && (
+                    <ResponsiveTooltip text="You can review the ad proposals for this item">
+                      <ExclamationCircleIcon className="w-5 h-5 text-red dark:text-red" />
                     </ResponsiveTooltip>
                   )}
-                  {createdOffersProposals && isPendingAdsOnOffer && (
-                    <ResponsiveTooltip text="You have 1 or more ads proposals to check on your offer">
-                      <ExclamationCircleIcon className="h-5 w-5 text-red dark:text-red" />
+                  {((!!fromProfilePage &&
+                    profileAddress?.toLowerCase() === address?.toLowerCase() &&
+                    !!availableToSubmitAdFromOwnedTokens) ||
+                    (!fromProfilePage && !!availableToSubmitAdFromOwnedTokens)) && (
+                    <ResponsiveTooltip text="You can submit an ad for this item">
+                      <ExclamationCircleIcon className="w-5 h-5 text-red dark:text-red" />
                     </ResponsiveTooltip>
-                  )}{" "}
+                  )}
+                  {((!!fromProfilePage &&
+                    profileAddress?.toLowerCase() === address?.toLowerCase() &&
+                    !!createdOffersProposals &&
+                    isPendingAdsOnToken) ||
+                    (!fromProfilePage && !!createdOffersProposals && isPendingAdsOnToken)) && (
+                    <ResponsiveTooltip text="You have 1 or more ads proposals to check">
+                      <ExclamationCircleIcon className="w-5 h-5 text-red dark:text-red" />
+                    </ResponsiveTooltip>
+                  )}
                   <ResponsiveTooltip text={name}>{name}</ResponsiveTooltip>
                 </span>
               </div>
@@ -501,8 +548,8 @@ const TokenCard = ({
             (item?.marketplaceListings?.sort((a, b) => Number(b.id) - Number(a.id))[0]?.status ===
               "CREATED" ||
               itemStatut === "TOKENMINTABLE") ? (
-              <div className="dark:border-jacarta-800 border-jacarta-100 flex items-center whitespace-nowrap rounded-md border py-1 px-2">
-                <span className="text-green text-sm font-medium tracking-tight">
+              <div className="flex items-center px-2 py-1 border rounded-md dark:border-jacarta-800 border-jacarta-100 whitespace-nowrap">
+                <span className="text-sm font-medium tracking-tight text-green">
                   <ResponsiveTooltip
                     text={
                       !usdcPriceFormatted ||
@@ -529,7 +576,7 @@ const TokenCard = ({
               )
             )}
           </div>
-          <div className="mt-2 text-xs flex items-center justify-between gap-2 ">
+          <div className="flex items-center justify-between gap-2 mt-2 text-xs ">
             <div>
               {!isToken ? (
                 <span className="dark:text-jacarta-100 text-jacarta-100">
@@ -542,12 +589,12 @@ const TokenCard = ({
                 (item?.marketplaceListings?.sort((a, b) => Number(b.id) - Number(a.id))[0]
                   ?.status !== "CREATED" &&
                   itemStatut !== "TOKENMINTABLE") ? (
-                <div className="flex  w-full gap-2 items-center ">
+                <div className="flex items-center w-full gap-2 ">
                   <span className="text-jacarta-100">Sold</span>
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 576 512"
-                    className="h-6 w-6 fill-red"
+                    className="w-6 h-6 fill-red"
                   >
                     <path d="M253.3 35.1c6.1-11.8 1.5-26.3-10.2-32.4s-26.3-1.5-32.4 10.2L117.6 192H32c-17.7 0-32 14.3-32 32s14.3 32 32 32L83.9 463.5C91 492 116.6 512 146 512H430c29.4 0 55-20 62.1-48.5L544 256c17.7 0 32-14.3 32-32s-14.3-32-32-32H458.4L365.3 12.9C359.2 1.2 344.7-3.4 332.9 2.7s-16.3 20.6-10.2 32.4L404.3 192H171.7L253.3 35.1zM192 304v96c0 8.8-7.2 16-16 16s-16-7.2-16-16V304c0-8.8 7.2-16 16-16s16 7.2 16 16zm96-16c8.8 0 16 7.2 16 16v96c0 8.8-7.2 16-16 16s-16-7.2-16-16V304c0-8.8 7.2-16 16-16zm128 16v96c0 8.8-7.2 16-16 16s-16-7.2-16-16V304c0-8.8 7.2-16 16-16s16 7.2 16 16z" />
                   </svg>
@@ -556,8 +603,8 @@ const TokenCard = ({
                 (itemStatut === "AUCTION" ||
                   itemStatut === "DIRECT" ||
                   itemStatut === "TOKENMINTABLE") && (
-                  <div className="flex justify-between w-full items-center gap-4">
-                    <div className="flex gap-2 items-center justify-center">
+                  <div className="flex items-center justify-between w-full gap-4">
+                    <div className="flex items-center justify-center gap-2">
                       <span className="dark:text-jacarta-100 text-jacarta-100">
                         {listingType === "Auction"
                           ? "Live Auction"
@@ -578,7 +625,7 @@ const TokenCard = ({
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
                           viewBox="0 0 576 512"
-                          className="h-6 w-6 fill-orange"
+                          className="w-6 h-6 fill-orange"
                         >
                           <path d="M64 64C28.7 64 0 92.7 0 128V384c0 35.3 28.7 64 64 64H512c35.3 0 64-28.7 64-64V128c0-35.3-28.7-64-64-64H64zm64 320H64V320c35.3 0 64 28.7 64 64zM64 192V128h64c0 35.3-28.7 64-64 64zM448 384c0-35.3 28.7-64 64-64v64H448zm64-192c-35.3 0-64-28.7-64-64h64v64zM288 160a96 96 0 1 1 0 192 96 96 0 1 1 0-192z" />
                         </svg>
@@ -600,7 +647,7 @@ const TokenCard = ({
             {item?.endTime &&
               item?.marketplaceListings?.sort((a, b) => Number(b.id) - Number(a.id))[0]?.status ===
                 "CREATED" && (
-                <div className="dark:border-jacarta-800 flex items-center whitespace-nowrap rounded-md border p-1">
+                <div className="flex items-center p-1 border rounded-md dark:border-jacarta-800 whitespace-nowrap">
                   <TimerCard endTime={item.endTime} />
                 </div>
               )}

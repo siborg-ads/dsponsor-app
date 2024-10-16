@@ -14,7 +14,7 @@ const CarouselItem = ({
   buttonLink: string;
 }) => {
   return (
-    <div className="rounded-xl w-full bg-secondaryBlack h-full flex flex-col justify-between gap-8 p-6 min-h-64">
+    <div className="rounded-xl w-full bg-secondaryBlack h-full flex flex-col justify-between  p-6 min-h-64">
       <div className="flex flex-col md:grid md:grid-cols-2 gap-8 md:h-full md:grow">
         <div className="relative flex justify-center items-center h-16 md:h-full">
           <Image src={logo} fill={true} className="object-contain" alt="logo" />

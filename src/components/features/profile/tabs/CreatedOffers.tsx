@@ -6,19 +6,22 @@ import ConditionalDisplayedComponent from "@/components/ui/misc/ConditionalDispl
 import TokenCard from "@/components/ui/cards/TokenCard";
 import MainButton from "@/components/ui/buttons/MainButton";
 import { ExclamationCircleIcon } from "@heroicons/react/24/solid";
+import { Address } from "thirdweb";
 
 const CreatedOffers = ({
   data,
-  isPendinAdsOnOffer,
+  isPendingAdsOnOffer,
   isOwner,
   offers,
-  isLoading
+  isLoading,
+  manageAddress
 }: {
   data: any;
-  isPendinAdsOnOffer?: boolean;
+  isPendingAdsOnOffer?: boolean;
   isOwner: boolean;
   offers: any;
   isLoading: boolean;
+  manageAddress: Address;
 }) => {
   const [filteredData, setFilteredData] = useState(data);
 
@@ -46,9 +49,10 @@ const CreatedOffers = ({
       </div>
     );
   }
+
   return (
     <>
-      {isPendinAdsOnOffer && isOwner && (
+      {isPendingAdsOnOffer && isOwner && (
         <div className="dark:bg-secondaryBlack dark:text-jacarta-100 rounded-2lg bg-white p-3 flex gap-2 justify-center items-center mb-2">
           <ExclamationCircleIcon className="h-6 w-6 text-red" />
           <span>You have 1 or more ads proposals to check on your offer </span>
@@ -101,6 +105,9 @@ const CreatedOffers = ({
                 createdOffersProposals={true}
                 currencySymbol={currencySymbol}
                 currencyDecimals={currencyDecimals}
+                availableToSubmitAdFromCreatedOffers
+                fromProfilePage={true}
+                profileAddress={manageAddress}
               />
             );
           })}

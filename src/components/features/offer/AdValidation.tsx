@@ -45,6 +45,18 @@ function processAllProposals(token) {
 
   return groupedProposals;
 }
+export type ProposalValidation = {
+  tokenId: string;
+  offerId: string;
+  tokenData: string;
+  data: string;
+  type: string;
+  id: string;
+  paramId: string;
+  aspectRatio?: string;
+  cssAspectRatio?: string;
+  reason?: string;
+};
 
 const AdValidation = ({
   chainConfig,
@@ -58,6 +70,7 @@ const AdValidation = ({
   refusedValidatedAdModal,
   setSelectedItems,
   selectedItems,
+  isAdmin,
   sponsorHasAtLeastOneRejectedProposalAndNoPending,
   setSponsorHasAtLeastOneRejectedProposalAndNoPending,
   mediaShouldValidateAnAd,
@@ -65,7 +78,8 @@ const AdValidation = ({
   isTokenView,
   itemTokenId,
   pendingProposalData,
-  setPendingProposalData
+  setPendingProposalData,
+  fromToken
 }: {
   chainConfig: ChainObject;
   offer: any;
@@ -82,28 +96,15 @@ const AdValidation = ({
   setSponsorHasAtLeastOneRejectedProposalAndNoPending?: any;
   mediaShouldValidateAnAd: boolean;
   isMedia: boolean;
+  isAdmin: boolean;
   isTokenView?: boolean;
   itemTokenId: string;
   pendingProposalData: any;
   setPendingProposalData: any;
+  fromToken?: boolean;
 }) => {
-  type Proposal = {
-    tokenId: string;
-    offerId: string;
-    tokenData: string;
-    proposalIds: string[];
-    adParametersList: {
-      aspectRatio?: string;
-      cssAspectRatio?: string;
-      "imageURL-1:1"?: string;
-      linkURL?: string;
-    };
-    adParametersKeys: string[];
-    reason?: string;
-  };
-
-  const [validatedProposalData, setValidatedProposalData] = useState<Proposal[]>([]);
-  const [refusedProposalData, setRefusedProposalData] = useState<Proposal[]>([]);
+  const [validatedProposalData, setValidatedProposalData] = useState<ProposalValidation[]>([]);
+  const [refusedProposalData, setRefusedProposalData] = useState<ProposalValidation[]>([]);
   const [historyProposals, setHistoryProposals] = useState<HistoryProposalType[]>([]);
   const [itemActive, setItemActive] = useState<number>(1);
   const [comments, setComments] = useState({});
@@ -144,46 +145,44 @@ const AdValidation = ({
 
     function processProposal(token, element, groupedAds, statusKey) {
       if (element[statusKey] !== null) {
-        if (!groupedAds[token?.tokenId]) {
-          groupedAds[token?.tokenId] = {
-            tokenId: token?.tokenId,
-            offerId: offer?.id,
-            tokenData: token?.mint?.tokenData || null,
-            proposalIds: [],
-            adParametersList: {},
-            adParametersKeys: []
-          };
-          if (statusKey === "rejectedProposal") {
-            groupedAds[token.tokenId].reason = element[statusKey].rejectReason;
-          }
-        }
-        const adParamBase = element.adParameter.id;
+        const currProposal = element[statusKey];
+        const id = currProposal.id;
+        const adParamId = element.adParameter.id;
+        const adParamBase = element.adParameter.base;
 
-        groupedAds[token.tokenId].proposalIds.push(element[statusKey].id);
+        groupedAds[id] = {
+          tokenId: token?.tokenId,
+          offerId: offer?.id,
+          tokenData: token?.mint?.tokenData || null,
+          data: currProposal.data,
+          paramId: adParamId,
+          id
+        };
 
-        if (!groupedAds[token.tokenId].adParametersKeys.includes(adParamBase)) {
-          groupedAds[token.tokenId].adParametersKeys.push(adParamBase);
+        if (statusKey === "rejectedProposal") {
+          groupedAds[id].reason = currProposal.rejectReason;
         }
 
-        groupedAds[token.tokenId].adParametersList[adParamBase] = element[statusKey].data;
+        if (adParamBase === "imageURL") groupedAds[id].type = "image";
+        else if (adParamBase === "linkURL") groupedAds[id].type = "link";
 
-        if (adParamBase.startsWith("imageURL") && element.adParameter.variants.length > 0) {
+        if (adParamId.startsWith("imageURL") && element.adParameter.variants.length > 0) {
           // adParamBase can be imageURL-1:1 or imageURL-0-1:1 for example
           // in the first case we want aspectRatio to be "1:1" and cssAspectRatio to be "1/1"
           // in the second case we want aspectRatio to be "1:1" and cssAspectRatio to be "1/1" too
-          if (adParamBase.includes("-0")) {
-            const split = adParamBase.split("-");
+          if (adParamId.includes("-0")) {
+            const split = adParamId.split("-");
             const aspectRatio = split[2];
             const cssAspectRatio = aspectRatio?.replace(":", "/");
-            groupedAds[token.tokenId].adParametersList[`aspectRatio`] = aspectRatio;
-            groupedAds[token.tokenId].adParametersList[`cssAspectRatio`] = cssAspectRatio;
+            groupedAds[id].aspectRatio = aspectRatio;
+            groupedAds[id].cssAspectRatio = cssAspectRatio;
             setAspectRatio(aspectRatio);
           } else {
-            const split = adParamBase.split("-");
+            const split = adParamId.split("-");
             const aspectRatio = split[1];
             const cssAspectRatio = aspectRatio?.replace(":", "/");
-            groupedAds[token.tokenId].adParametersList[`aspectRatio`] = aspectRatio;
-            groupedAds[token.tokenId].adParametersList[`cssAspectRatio`] = cssAspectRatio;
+            groupedAds[id].aspectRatio = aspectRatio;
+            groupedAds[id].cssAspectRatio = cssAspectRatio;
             setAspectRatio(aspectRatio);
           }
         }
@@ -206,9 +205,9 @@ const AdValidation = ({
       });
     }
 
-    let formattedPendingAds: Proposal[] = Object.values(groupedPendingAds);
-    let formattedValidatedAds: Proposal[] = Object.values(groupedValidatedAds);
-    let formattedRefusedAds: Proposal[] = Object.values(groupedRefusedAds);
+    let formattedPendingAds: ProposalValidation[] = Object.values(groupedPendingAds);
+    let formattedValidatedAds: ProposalValidation[] = Object.values(groupedValidatedAds);
+    let formattedRefusedAds: ProposalValidation[] = Object.values(groupedRefusedAds);
     groupedHistoryProposals.sort((a, b) => b.creationTimestamp - a.creationTimestamp);
 
     if (isTokenView) {
@@ -279,17 +278,17 @@ const AdValidation = ({
     }
   };
 
-  const handleCommentChange = (tokenId: string, value: string) => {
+  const handleCommentChange = (proposalId: string, value: string) => {
     setComments((currentComments) => ({
       ...currentComments,
-      [tokenId]: value
+      [proposalId]: value
     }));
     setSelectedItems((currentItems) => {
       return currentItems.map((item) => {
         if (
-          !!item?.tokenId &&
-          !!tokenId &&
-          BigInt(item?.tokenId as string) === BigInt(tokenId as string)
+          !!item?.proposalId &&
+          !!proposalId &&
+          BigInt(item?.proposalId as string) === BigInt(proposalId as string)
         ) {
           return { ...item, reason: value };
         }
@@ -315,8 +314,9 @@ const AdValidation = ({
                 >
                   {sponsorHasAtLeastOneRejectedProposalAndNoPending &&
                     isOwner &&
+                    fromToken &&
                     text === "Refused" && (
-                      <ResponsiveTooltip text="You ad as been refused and you have no pending ad. Try to submit a new one.">
+                      <ResponsiveTooltip text="Your ad has been refused and you have no pending ad. Try to submit a new one.">
                         <ExclamationCircleIcon className="w-5 h-5 text-red dark:text-red" />
                       </ResponsiveTooltip>
                     )}
@@ -332,17 +332,7 @@ const AdValidation = ({
                   <span className="ml-2 text-base font-medium font-display">
                     <div className="flex items-center">
                       <span>
-                        {text} (
-                        {text === "Pending"
-                          ? pendingProposalData?.length
-                          : text === "Validated"
-                            ? validatedProposalData?.length
-                            : text === "Refused"
-                              ? refusedProposalData?.length
-                              : text === "History"
-                                ? historyProposals?.length
-                                : 0}
-                        )
+                        {text} {text === "Pending" ? `(${pendingProposalData.length})` : ""}
                       </span>
                     </div>
                   </span>
@@ -363,7 +353,7 @@ const AdValidation = ({
                 setRefusedValidatedAdModal={setRefusedValidatedAdModal}
                 pendingProposalData={pendingProposalData}
                 isToken={false}
-                isOwner={isOwner}
+                isAdmin={isAdmin}
                 handleItemSubmit={handleItemSubmit}
                 aspectRatio={aspectRatio as string}
                 setSponsorHasAtLeastOneRejectedProposalAndNoPending={

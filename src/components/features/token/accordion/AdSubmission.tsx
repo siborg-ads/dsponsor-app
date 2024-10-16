@@ -15,6 +15,7 @@ import { ChainObject } from "@/types/chain";
 import { useSwitchChainContext } from "@/providers/SwitchChain";
 import { cn } from "@/lib/utils";
 import isUrlValid from "@/utils/misc/isUrlValid";
+import { StepType } from "../../profile/tabs/OwnedTokens";
 
 const AdSubmission = ({
   chainConfig,
@@ -39,6 +40,7 @@ const AdSubmission = ({
   selectedRoyalties,
   previewImage,
   displayedParameter,
+  imageURLSteps,
   terms = [],
   validate,
   errors,
@@ -50,7 +52,9 @@ const AdSubmission = ({
   adSubmission,
   multipleAdsSubmission,
   createOffer,
-  expectedMultipleAds
+  expectedMultipleAds,
+  shouldProvideLink = true,
+  steps
 }: {
   chainConfig: ChainObject;
   approvalForAllToken?: boolean;
@@ -91,8 +95,14 @@ const AdSubmission = ({
   multipleAdsSubmission?: boolean;
   createOffer?: boolean;
   expectedMultipleAds?: number;
+  shouldProvideLink?: boolean;
+  steps: StepType[];
 }) => {
   const [imageRatios, setImageRatios] = React.useState<any[]>([]);
+  const [allImages, setAllImages] = React.useState<any[]>([]);
+  const [nbSteps, setNbSteps] = React.useState<number>(0);
+
+  // const shouldHaveLink =
 
   const { setSelectedChain } = useSwitchChainContext();
   useEffect(() => {
@@ -113,7 +123,7 @@ const AdSubmission = ({
     return () => {
       window.removeEventListener("keydown", handleEscape);
     };
-  }, []);
+  }, [handlePreviewModal]);
 
   const formatDate = (date) => {
     if (!date) return "";
@@ -128,10 +138,12 @@ const AdSubmission = ({
   };
 
   const imageRatioDisplay = React.useCallback(
-    (id) => {
-      if (!imageUrlVariants[id]) return [];
+    (index: number) => {
+      if (!steps[index]) return [];
 
-      const ratios = imageUrlVariants[id].split(":");
+      const imageVariant = steps[index].adParameter.slice("imageURL-".length);
+
+      const ratios = imageVariant.split(":");
       const stepWidth = 250;
       let width = Number(ratios[0]);
       let height = Number(ratios[1]);
@@ -150,40 +162,63 @@ const AdSubmission = ({
 
       return ratioArray;
     },
-    [imageUrlVariants]
+    [steps]
   );
 
   useEffect(() => {
-    if (imageUrlVariants.length > 0) {
+    if (steps.length > 0) {
       let imageRatios: string[][] = [];
 
-      imageUrlVariants?.forEach((image: any, index: number) => {
-        if (index < (previewImage?.length as number)) {
-          const preSplit = image.split("-");
+      const imageUrlVariants = steps
+        .filter(({ adParameter }) => adParameter.startsWith("imageURL"))
+        .map(({ adParameter }) => adParameter.slice("imageURL-".length));
 
-          const imageRatio =
-            preSplit.length === 2 ? preSplit[1].split(":") : preSplit[0].split(":");
+      imageUrlVariants.forEach((image: any, index: number) => {
+        const preSplit = image.split("-");
 
-          if (imageRatio.length === 2) {
-            imageRatios.push(imageRatio);
-          } else {
-            imageRatios.push([imageRatio[0], imageRatio[0]]);
-          }
+        const imageRatio = preSplit.length === 2 ? preSplit[1].split(":") : preSplit[0].split(":");
+
+        if (imageRatio.length === 2) {
+          imageRatios.push(imageRatio);
+        } else {
+          imageRatios.push([imageRatio[0], imageRatio[0]]);
         }
       });
 
       setImageRatios(imageRatios);
     }
-  }, [imageRatioDisplay, imageUrlVariants, previewImage]);
 
-  if (adSubmission && !successFullUpload) {
+    const nbSteps = steps.filter(({ selected }) => selected).length;
+    setNbSteps(nbSteps);
+  }, [steps]);
+
+  useEffect(() => {
+    if (!steps) return;
+    let allImages: any[] = [];
+
+    steps
+      .filter(({ adParameter, selected }) => adParameter.startsWith("imageURL") && selected)
+      .forEach((step) => {
+        let formattedRatio = step.adParameter.slice("imageURL-".length);
+        if (!formattedRatio) {
+          formattedRatio = "any ratio accepted";
+        } else {
+          formattedRatio = `${formattedRatio} ratio`;
+        }
+        allImages.push({ image: step.previewImage, ratio: step.adParameter, formattedRatio });
+      });
+
+    setAllImages(allImages);
+  }, [steps]);
+
+  if (!successFullUpload && (multipleAdsSubmission || adSubmission)) {
     return (
       <div className="modal-dialog max-h-[75vh] max-w-2xl md:min-w-md overflow-auto">
         <div className="modal-content !bg-secondaryBlack">
           <div className="modal-header">
             <div className="flex items-center justify-between w-full space-x-4">
               <h5 className="modal-title" id="placeBidLabel">
-                Preview your ad submission
+                Preview your {multipleAdsSubmission ? "multiple tokens " : ""}ad submission
               </h5>
               <button
                 type="button"
@@ -205,145 +240,61 @@ const AdSubmission = ({
           </div>
           <div className="flex gap-4 p-6 modal-body">
             <div className="flex flex-col flex-wrap w-full gap-4 md:flex-row">
-              <div className="flex items-center justify-between w-full gap-2">
-                <span className="block dark:text-jacarta-100">Link </span>
-                <span
-                  className={cn(
-                    "font-semibold",
-                    isUrlValid(link.toString()) ? "text-green" : "text-red"
-                  )}
-                >
-                  {!link || link === ""
-                    ? "No link provided"
-                    : isUrlValid(link.toString())
-                      ? link
-                      : "Link should start with https://"}
-                </span>
-              </div>
-
-              <div className="flex flex-col w-full gap-2">
-                <div className="flex items-center justify-between gap-2">
-                  <span className="block dark:text-jacarta-100">
-                    Image ({imageRatios[0] ? `${imageRatios[0][0]}:${imageRatios[0][1]}` : "N/A"})
-                  </span>
-
-                  <span className="font-semibold text-red">
-                    {(errors.imageError || previewImage?.length === 0) && "No image provided"}
-                  </span>
-                </div>
-                <div className="flex flex-col items-center justify-center gap-2 border border-dashed bg-jacarta-100 bg-opacity-10">
-                  <Image
-                    src={previewImage?.[0] as string}
-                    width={1600}
-                    height={380}
-                    className="w-full h-auto"
-                    alt="Preview image"
-                    style={{
-                      objectFit: "contain",
-                      objectPosition: "center",
-                      aspectRatio:
-                        imageRatios?.length > 0
-                          ? `${imageRatios[0] ? imageRatios[0][0] : 1}/${imageRatios[0] ? imageRatios[0][1] : 1}`
-                          : "1/1"
-                    }}
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* submit ad button */}
-          <div className="modal-footer">
-            <div className="flex items-center justify-center space-x-4">
-              <StyledWeb3Button
-                contractAddress={chainConfig?.smartContracts?.DSPONSORADMIN?.address as Address}
-                onClick={async () => {
-                  await toast.promise(handleSubmit(true), {
-                    pending: "Waiting for confirmation 🕒",
-                    success: "Transaction confirmed 👌",
-                    error: "Transaction rejected 🤯"
-                  });
-                }}
-                isDisabled={!validate || !isUrlValid(link.toString())}
-                defaultText={buttonTitle ?? "Submit"}
-              />
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (multipleAdsSubmission && !successFullUpload) {
-    return (
-      <div className="modal-dialog max-h-[75vh] max-w-2xl md:min-w-md overflow-auto">
-        <div className="modal-content !bg-secondaryBlack">
-          <div className="modal-header">
-            <div className="flex items-center justify-between w-full space-x-4">
-              <h5 className="modal-title" id="placeBidLabel">
-                Preview your multiple tokens ad submission
-              </h5>
-              <button
-                type="button"
-                className="btn-close-preview"
-                onClick={() => handlePreviewModal()}
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  width="24"
-                  height="24"
-                  className="w-6 h-6 fill-jacarta-700 dark:fill-white"
-                >
-                  <path fill="none" d="M0 0h24v24H0z"></path>
-                  <path d="M12 10.586l4.95-4.95 1.414 1.414-4.95 4.95 4.95 4.95-1.414 1.414-4.95-4.95-4.95 4.95-1.414-1.414 4.95-4.95-4.95-4.95L7.05 5.636z"></path>
-                </svg>
-              </button>
-            </div>
-          </div>
-          <div className="flex gap-4 p-6 modal-body">
-            <div className="flex flex-col flex-wrap w-full gap-4 md:flex-row">
-              <div className="flex items-center justify-between w-full gap-2">
-                <span className="block dark:text-jacarta-100">Link </span>
-                <span
-                  className={cn(
-                    "font-semibold",
-                    isUrlValid(link.toString()) ? "text-green" : "text-red"
-                  )}
-                >
-                  {!link || link === ""
-                    ? "No link provided"
-                    : isUrlValid(link.toString())
-                      ? link
-                      : "Link should start with https://"}
-                </span>
-              </div>
-
-              {previewImage?.length === 0 && (
+              {nbSteps === 0 && (
                 <div className="flex flex-col w-full gap-2">
-                  <span className="font-semibold text-red">No images provided</span>
+                  <span className="font-semibold text-red">
+                    You need to choose at least one parameter to submit
+                  </span>
                 </div>
               )}
 
-              {(previewImage?.length as number) > 0 &&
-                Array.from({ length: expectedMultipleAds as number })?.map((_, index: number) => (
+              {shouldProvideLink &&
+                steps.filter(
+                  ({ adParameter, selected }) => adParameter.startsWith("linkURL") && selected
+                ).length !== 0 && (
+                  <div className="flex items-center justify-between w-full gap-2">
+                    <span className="block dark:text-jacarta-100">Link </span>
+                    <span
+                      className={cn(
+                        "font-semibold",
+                        isUrlValid(link.toString()) ? "text-green" : "text-red"
+                      )}
+                    >
+                      {!link || link === "" ? (
+                        "No link provided"
+                      ) : isUrlValid(link.toString()) ? (
+                        <Link
+                          href={link as string}
+                          passHref
+                          target="_blank"
+                          className="overflow-hidden truncate text-primaryPurple hover:underline hover:text-opacity-80"
+                        >
+                          {(link as string).length > 70
+                            ? `${(link as string).slice(0, 20)}...${(link as string).slice(-20)}`
+                            : link}
+                        </Link>
+                      ) : (
+                        "Link should start with https://"
+                      )}
+                    </span>
+                  </div>
+                )}
+
+              {(allImages?.length as number) > 0 &&
+                allImages.map((image, index: number) => (
                   <div className="flex flex-col w-full gap-2" key={index}>
                     <div className="flex items-center justify-between gap-2">
                       <span className="block dark:text-jacarta-100">
-                        Image {index + 1} - (
-                        {imageRatios[index]
-                          ? `${imageRatios[index][0]}:${imageRatios[index][1]}`
-                          : "N/A"}
-                        )
+                        Image {index + 1} - ({image.formattedRatioha})
                       </span>
 
                       <span className="font-semibold text-red">
-                        {!previewImage?.[index] && "No image provided"}
+                        {!image.image && "No image provided"}
                       </span>
                     </div>
                     <div className="flex flex-col items-center justify-center gap-2">
                       <Image
-                        src={previewImage?.[index] as string}
+                        src={image.image}
                         width={1600}
                         height={380}
                         className="w-full h-auto bg-jacarta-200"
@@ -351,10 +302,9 @@ const AdSubmission = ({
                         style={{
                           objectFit: "contain",
                           objectPosition: "center",
-                          aspectRatio:
-                            imageRatios?.length > 0
-                              ? `${imageRatios[index] ? imageRatios[index][0] : 1}/${imageRatios[index] ? imageRatios[index][1] : 1}`
-                              : "1/1"
+                          aspectRatio: image.ratio
+                            ? `${image.ratio.split(":")[0]}/${image.ratio.split(":")[1]}`
+                            : "auto"
                         }}
                       />
                     </div>
@@ -376,10 +326,9 @@ const AdSubmission = ({
                   });
                 }}
                 isDisabled={
-                  !validate ||
-                  previewImage?.length === 0 ||
-                  previewImage?.some((image) => !image) ||
-                  !isUrlValid(link.toString())
+                  allImages.some((image) => !image?.image) ||
+                  (!isUrlValid(link.toString()) && shouldProvideLink) ||
+                  nbSteps === 0
                 }
                 defaultText={buttonTitle ?? "Submit"}
               />
@@ -413,12 +362,49 @@ const AdSubmission = ({
 
         <div className="flex items-center w-full gap-4 p-6 modal-body">
           {!successFullUpload ? (
-            <div className="flex flex-col justify-between w-full gap-8 md:gap-32 md:flex-row">
+            <div className="flex flex-col justify-between w-full gap-8">
+              {previewImage?.map((image: any, index: number) => (
+                <div className="flex flex-col items-start justify-start gap-2" key={index}>
+                  <div
+                    className="relative flex flex-col items-center justify-center max-w-md border-2 border-dashed rounded-lg dark:bg-secondaryBlack dark:border-jacarta-800 border-jacarta-100 group"
+                    style={{
+                      width:
+                        imageUrlVariants.length > 0 ? `${imageRatioDisplay(index)[0]}px` : "275px",
+                      height:
+                        imageUrlVariants.length > 0 ? `${imageRatioDisplay(index)[1]}px` : "275px",
+                      position: "relative"
+                    }}
+                  >
+                    <Image
+                      src={image ?? ""}
+                      fill={true}
+                      alt="Preview"
+                      className="object-contain h-full p-1"
+                    />
+                  </div>
+                  <label
+                    htmlFor="item-description"
+                    className="text-sm text-center text-jacarta-100"
+                  >
+                    {imageUrlVariants[index] && `( ratio ${imageUrlVariants[index]} )`} Preview
+                  </label>
+                </div>
+              ))}
+
+              {previewImage?.length === 0 && (
+                <div className="flex flex-col w-full gap-2">
+                  <span className="font-semibold text-red">No image provided</span>
+                </div>
+              )}
+
+              <Divider className="block md:hidden" />
+
               <div className="flex flex-col w-full gap-4">
                 <p className="block font-display dark:text-white">
                   {(name as string)?.length > 0 ? (
                     <span className="flex flex-col text-sm dark:text-jacarta-100 text-jacarta-100">
-                      Name<span className="text-base dark:text-white">{name}</span>
+                      Name
+                      <span className="text-base break-words dark:text-white">{name}</span>
                     </span>
                   ) : !name ? (
                     <span className="flex flex-col text-sm dark:text-jacarta-100 text-jacarta-100">
@@ -432,7 +418,7 @@ const AdSubmission = ({
                   {(description as string)?.length > 0 ? (
                     <span className="flex flex-col text-sm dark:text-jacarta-100 text-jacarta-100">
                       Description
-                      <span className="text-base dark:text-white">{description}</span>
+                      <span className="text-base break-words dark:text-white">{description}</span>
                     </span>
                   ) : !description ? (
                     <span className="flex flex-col text-sm dark:text-jacarta-100 text-jacarta-100">
@@ -454,7 +440,7 @@ const AdSubmission = ({
                             href={link as string}
                             passHref
                             target="_blank"
-                            className="text-primaryPurple hover:underline hover:text-opacity-80"
+                            className="overflow-hidden truncate text-primaryPurple hover:underline hover:text-opacity-80"
                           >
                             {(link as string).length > 70
                               ? `${(link as string).slice(0, 20)}...${(link as string).slice(-20)}`
@@ -614,7 +600,7 @@ const AdSubmission = ({
                         href={terms}
                         passHref
                         target="_blank"
-                        className="text-primaryPurple hover:underline hover:text-opacity-80"
+                        className="overflow-hidden truncate text-primaryPurple hover:underline hover:text-opacity-80"
                       >
                         {terms.length > 70 ? `${terms.slice(0, 20)}...${terms.slice(-20)}` : terms}
                       </Link>
@@ -622,42 +608,6 @@ const AdSubmission = ({
                   </p>
                 )}
               </div>
-
-              <Divider className="block md:hidden" />
-
-              {previewImage?.map((image: any, index: number) => (
-                <div className="flex flex-col items-start justify-start gap-2" key={index}>
-                  <label
-                    htmlFor="item-description"
-                    className="text-sm text-center font-display text-jacarta-100"
-                  >
-                    Image {imageUrlVariants[index] && `( ratio ${imageUrlVariants[index]} )`}{" "}
-                    preview
-                  </label>
-                  <div
-                    className="relative flex flex-col items-center justify-center max-w-md border-2 border-dashed rounded-lg dark:bg-secondaryBlack dark:border-jacarta-800 border-jacarta-100 group"
-                    style={{
-                      width:
-                        imageUrlVariants.length > 0 ? `${imageRatioDisplay(index)[0]}px` : "275px",
-                      height:
-                        imageUrlVariants.length > 0 ? `${imageRatioDisplay(index)[1]}px` : "275px",
-                      position: "relative"
-                    }}
-                  >
-                    <Image
-                      src={image ?? ""}
-                      fill={true}
-                      alt="Preview"
-                      className="object-contain h-full p-1"
-                    />
-                  </div>
-                </div>
-              ))}
-              {previewImage?.length === 0 && (
-                <div className="flex flex-col w-full gap-2">
-                  <span className="font-semibold text-red">No image provided</span>
-                </div>
-              )}
             </div>
           ) : (
             <div className="flex flex-col gap-2">
@@ -743,7 +693,7 @@ const AdSubmission = ({
                   </button>
                 </Link>
               ) : (
-                <NormalButton onClick={() => handlePreviewModal()} defaultText="Close" />
+                <NormalButton onClick={() => handlePreviewModal()}>Close</NormalButton>
               )}
             </div>
           </div>

@@ -26,36 +26,36 @@ const Marketplace = () => {
   const [auctionsFetched, setAuctionsFetched] = useState<boolean>(false);
 
   const dataFetchedRef = useRef(false);
+  const fetchData = async (allTokens: any, searchTerm: string = "") => {
+    if (dataFetchedRef.current) return;
+
+    setIsLoading(true);
+
+    const allData = await Promise.all(
+      Object.keys(config).map(async (chainId) => {
+        const offerIds = marketplaceOffersCuration[chainId];
+        return fetchMarketplace(Number(chainId), allTokens, offerIds, searchTerm);
+      })
+    );
+
+    const allListedTokenWithoutFilterArray = allData.flat();
+
+    setAuctionsTemp(allListedTokenWithoutFilterArray);
+
+    setAuctionsFetched(true);
+    setIsLoading(false);
+  };
+
   useEffect(() => {
-    const fetchData = async (allTokens: any) => {
-      if (dataFetchedRef.current) return;
-
-      setIsLoading(true);
-
-      const allData = await Promise.all(
-        Object.keys(config).map(async (chainId) => {
-          const offerIds = marketplaceOffersCuration[chainId];
-          return fetchMarketplace(Number(chainId), allTokens, offerIds);
-        })
-      );
-
-      const allListedTokenWithoutFilterArray = allData.flat();
-
-      setAuctionsTemp(allListedTokenWithoutFilterArray);
-
-      setAuctionsFetched(true);
-      setIsLoading(false);
-    };
-
     if (!auctionsFetched && allTokens) {
       fetchData(allTokens);
     }
   }, [allTokens, auctionsFetched]);
 
   useEffect(() => {
-    if (auctionsTemp.length === 0) return;
+    if (!Array.isArray(auctionsTemp)) return;
 
-    const auctions = auctionsTemp?.map((token) => {
+    const auctions = auctionsTemp.map((token) => {
       const name = token.metadata.name;
       const category = token.metadata.categories ? token.metadata.categories[0] : "";
       const chain = token.chainConfig.network;
@@ -223,7 +223,7 @@ const Marketplace = () => {
       <Meta {...metadata} />
 
       <div
-        className="mt-48 px-4 max-w-6xl mx-auto flex flex-col gap-12"
+        className="flex flex-col gap-12 px-4 mx-auto mt-48 max-w-7xl"
         style={{
           marginTop: "8rem"
         }}
@@ -233,6 +233,7 @@ const Marketplace = () => {
           isAuctionsLoading={isLoading}
           allTokens={allTokens}
           setAllTokens={setAllTokens}
+          fetchData={fetchData}
         />
       </div>
     </>

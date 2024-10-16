@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Base, Mode, Sepolia } from "@thirdweb-dev/chains";
+import { AbstractTestnet } from "@/config/chains/abstract-testnet";
 import {
   coinbaseWallet,
   embeddedWallet,
@@ -128,7 +129,7 @@ function InnerProviders({ children }: Readonly<{ children: React.ReactNode }>) {
       {...(sdkOptions && { sdkOptions })}
       activeChain={chain}
       clientId={clientId}
-      supportedChains={[Base, Mode, Sepolia]}
+      supportedChains={[Base, Mode, Sepolia, AbstractTestnet]}
       // authConfig={{ domain: "dsponsor.com" }}
       supportedWallets={[
         metamaskWallet(),

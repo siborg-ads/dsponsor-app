@@ -55,6 +55,10 @@ import ERC20ABI from "@/abi/ERC20.json";
 import { getOwnershipPeriod } from "@/utils/dates/period";
 import isUrlValid from "@/utils/misc/isUrlValid";
 
+import DsponsorNFTABI from "@/abi/dsponsorNFT.json";
+import { copyFile } from "fs";
+import { StepType } from "../features/profile/tabs/OwnedTokens";
+
 const Token = () => {
   const router = useRouter();
   const storage = useStorage();
@@ -122,6 +126,7 @@ const Token = () => {
   const [numSteps, setNumSteps] = useState(2);
   const [tokenStatut, setTokenStatut] = useState<string | null>(null);
   const [tokenCurrencyAddress, setTokenCurrencyAddress] = useState<Address | null>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [, setTokenBigIntPrice] = useState(null);
   const [successFullBid, setSuccessFullBid] = useState(false);
   const [isTokenInAuction, setIsTokenInAuction] = useState(false);
@@ -140,10 +145,10 @@ const Token = () => {
   const [airdropContainer, setAirdropContainer] = useState(true);
   const [amountInEthWithSlippage, setAmountInEthWithSlippage] = useState<BigNumber | null>(null);
   const [displayedPrice, setDisplayedPrice] = useState<number | null>(null);
-  const [isOfferOwner, setIsOfferOwner] = useState(false);
   const [directBuyPriceBN, setDirectBuyPriceBN] = useState<BigNumber | undefined>(undefined);
   const [auctionPriceBN, setAuctionPriceBN] = useState<BigNumber | undefined>(undefined);
   const [mintPriceBN, setMintPriceBN] = useState<BigNumber | undefined>(undefined);
+  const [isOfferOwner, setIsOfferOwner] = useState<boolean>(false);
   const [hasEnoughBalance, setHasEnoughBalance] = useState<boolean>(true);
   const [hasEnoughBalanceForNative, setHasEnoughBalanceForNative] = useState<boolean>(true);
   const [
@@ -178,6 +183,8 @@ const Token = () => {
   const [tokenSymbol, setTokenSymbol] = useState<string | null>(null);
   const [tokenDecimals, setTokenDecimals] = useState<number | null>(null);
   const [isMintable, setIsMintable] = useState(false);
+  const [shouldProvideLink, setShouldProvideLink] = useState(false);
+  const [steps, setSteps] = useState<StepType[]>([]);
 
   React.useEffect(() => {
     if (offerData) {
@@ -334,16 +341,14 @@ const Token = () => {
   }, [address, chainId, fetchOffers, offerId, tokenId]);
 
   useEffect(() => {
+    // set if the user is the media or not
     if (offerData && address) {
-      // set if the user is the media or not
-      if (offerData && address) {
-        const isMedia = offerData?.admins?.includes(address.toLowerCase());
-        setIsMedia(isMedia);
+      if (offerData?.admins?.includes(address?.toLowerCase())) {
+        setAccordionActiveTab(["adValidation"]);
+        setIsMedia(true);
       } else {
         setIsMedia(false);
       }
-    } else {
-      setIsMedia(false);
     }
   }, [address, offerData]);
 
@@ -401,16 +406,17 @@ const Token = () => {
       parseFloat(
         itemProposals?.acceptedProposals?.sort(
           (a, b) => b?.creationTimestamp - a?.creationTimestamp
-        )[0]?.lastUpdateTimestamp
+        )[0]?.lastUpdateTimestamp ?? 0
       ) * 1000;
     const lastRefusedProposalTimestamp =
       parseFloat(
         itemProposals?.rejectedProposals?.sort(
           (a, b) => b?.creationTimestamp - a?.creationTimestamp
-        )[0]?.lastUpdateTimestamp
+        )[0]?.lastUpdateTimestamp ?? 0
       ) * 1000;
     const sponsorHasNoMoreRecentValidatedProposal =
-      new Date(lastAcceptedProposalTimestamp) <= new Date(lastRefusedProposalTimestamp);
+      new Date(lastAcceptedProposalTimestamp)?.getTime() <=
+      new Date(lastRefusedProposalTimestamp)?.getTime();
 
     setSponsorHasAtLeastOneRejectedProposalAndNoPending(
       sponsorHasAtLeastOneRejectedProposal &&
@@ -453,14 +459,15 @@ const Token = () => {
     chainConfig?.smartContracts?.DSPONSORADMIN?.address,
     chainConfig?.smartContracts?.DSPONSORADMIN?.abi
   );
-  const { contract: DsponsorNFTContract } = useContract(offerData?.nftContract?.id);
   const { mutateAsync: uploadToIPFS } = useStorageUpload();
   const { mutateAsync: mintAndSubmit } = useContractWrite(DsponsorAdminContract, "mintAndSubmit");
   const { mutateAsync: submitAd } = useContractWrite(DsponsorAdminContract, "submitAdProposals");
   const { contract: tokenContract } = useContract(tokenCurrencyAddress, ERC20ABI);
-  const { data: tokenBalance } = useBalance(tokenCurrencyAddress as Address);
+  const { data: tokenBalance } = useBalance(tokenCurrencyAddress ?? "");
   const { mutateAsync: approve } = useContractWrite(tokenContract, "approve");
-  const { data: owner } = useContractRead(DsponsorAdminContract, "owner");
+
+  const { contract: DsponsorNFTContract } = useContract(offerData?.nftContract?.id, DsponsorNFTABI);
+  const { data: owner } = useContractRead(DsponsorNFTContract, "owner");
 
   const { data: isAllowedToMint } = useContractRead<any, any, any, any, any, any>(
     DsponsorNFTContract,
@@ -644,7 +651,7 @@ const Token = () => {
       }
       setTags(toUpdateTags);
     }
-  }, [chainId, offerData, tokenId, address]);
+  }, [chainId, offerData, tokenId, address, referralAddress]);
 
   useEffect(() => {
     let bids: any[] = [];
@@ -844,7 +851,7 @@ const Token = () => {
       tokenData: tokenData as string,
 
       fee: offerData?.nftContract?.prices[0]?.protocolFeeAmount,
-      mint: currentToken.mint,
+      mint: currentToken?.mint,
 
       price:
         currentToken?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.pricePerToken ??
@@ -854,14 +861,14 @@ const Token = () => {
 
       isListed:
         currentToken?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.status === "CREATED",
-      listingId: currentToken.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.id,
-      minimalBidBps: currentToken.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]
+      listingId: currentToken?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]?.id,
+      minimalBidBps: currentToken?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]
         ?.minimalBidBps,
-      buyoutPricePerToken: currentToken.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]
+      buyoutPricePerToken: currentToken?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]
         ?.buyoutPricePerToken,
 
-      external_url:
-        currentToken?.metadata?.external_url ?? currentToken?.metadata?.external_link ?? ""
+      external_link:
+        currentToken?.metadata?.external_link ?? currentToken?.metadata?.external_url ?? ""
     });
 
     if (
@@ -1199,6 +1206,22 @@ const Token = () => {
   ]);
 
   useEffect(() => {
+    if (address && isUserOwner?.toLowerCase() === address?.toLowerCase()) {
+      setIsOwner(true);
+    } else {
+      setIsOwner(false);
+    }
+  }, [isUserOwner, address]);
+
+  useEffect(() => {
+    if (offerData?.admins?.includes(address?.toLowerCase())) {
+      setIsOfferOwner(true);
+    } else {
+      setIsOfferOwner(false);
+    }
+  }, [address, offerData]);
+
+  useEffect(() => {
     if (!isUserOwner || !marketplaceListings || !address) return;
 
     if (
@@ -1206,21 +1229,24 @@ const Token = () => {
       firstSelectedListing?.listingType !== "Direct"
     ) {
       setIsTokenInAuction(true);
+    } else {
+      setIsTokenInAuction(false);
     }
 
     if (
+      address &&
       address?.toLowerCase() === firstSelectedListing?.lister?.toLowerCase() &&
       firstSelectedListing?.status === "CREATED"
     ) {
       setIsLister(true);
+    } else {
+      setIsLister(false);
     }
 
-    if (offerData?.admins?.includes(address?.toLowerCase())) {
-      setIsOfferOwner(true);
-    }
-
-    if (isUserOwner?.toLowerCase() === address?.toLowerCase()) {
-      setIsOwner(true);
+    if (address && offerData?.admins?.includes(address?.toLowerCase())) {
+      setIsAdmin(true);
+    } else {
+      setIsAdmin(false);
     }
   }, [
     isUserOwner,
@@ -1303,6 +1329,7 @@ const Token = () => {
     setImageURLSteps([]);
     setNumSteps(2);
     const uniqueIds = new Set();
+    let shouldAddLink = false;
     for (const param of offerData.adParameters) {
       if (
         param.adParameter.id &&
@@ -1310,6 +1337,10 @@ const Token = () => {
         param.adParameter.id !== "xCreatorHandle"
       ) {
         uniqueIds.add(param.adParameter.id);
+      }
+
+      if (param.adParameter.id && param.adParameter.id.startsWith("linkURL")) {
+        shouldAddLink = true;
       }
     }
     const imageURLSteps: string[] = [];
@@ -1323,12 +1354,37 @@ const Token = () => {
 
         imageURLSteps.push(variant);
       });
+
+    const stepsToAdd: StepType[] = [];
+
+    uniqueIdsArray.map((id: string) => {
+      stepsToAdd.push({
+        offerIds: [`${offerId}-${tokenId}`],
+        adParameter: id,
+        selected: true
+      });
+    });
+
+    setSteps(stepsToAdd);
+
     const numSteps = 2;
-    const totalNumSteps = numSteps + imageURLSteps.length;
+    setShouldProvideLink(shouldAddLink);
+    // If there is no linkURL, we don't need to add an extra step to submit the ad link
+    const totalNumSteps = numSteps + imageURLSteps.length - (!shouldAddLink ? 1 : 0);
 
     setImageURLSteps(imageURLSteps);
     setNumSteps(totalNumSteps);
   }, [offerData]);
+
+  useEffect(() => {
+    const nbSelectedItems = steps.filter((step) => step.selected).length;
+    setNumSteps(nbSelectedItems + 1);
+
+    const isLinkSelected = steps.some(
+      (step) => step.adParameter.startsWith("linkURL") && step.selected
+    );
+    setShouldProvideLink(isLinkSelected);
+  }, [steps]);
 
   useEffect(() => {
     if (!offerData || !adParameters) return;
@@ -1379,30 +1435,39 @@ const Token = () => {
       setRoyalties(offerData?.nftContract?.royalty.bps / 100);
   }, [offerData]);
 
-  const validateInputs = () => {
-    let isValid = true;
-    let newErrors: any = {};
+  // const validateInputs = () => {
+  //   let isValid = true;
+  //   let newErrors: any = {};
 
-    if (files.length === 0) {
-      newErrors.imageError = "Image is missing.";
-      isValid = false;
-    }
+  //   if (files.length === 0) {
+  //     newErrors.imageError = "Image is missing.";
+  //     isValid = false;
+  //   }
 
-    setValidate(isValid);
-    setErrors(newErrors);
-    return isValid;
-  };
+  //   setValidate(isValid);
+  //   setErrors(newErrors);
+  //   return isValid;
+  // };
 
-  const handleLogoUpload = (file, index) => {
+  const handleLogoUpload = (file, step: StepType) => {
     if (file) {
-      const newFiles: any[] = [...files];
-      const newPreviewImages: any[] = [...previewImages];
+      // const newFiles: any[] = [...files];
+      // const newPreviewImages: any[] = [...previewImages];
 
-      newFiles[index] = { file: file, index: index };
-      newPreviewImages[index] = URL.createObjectURL(file);
+      // newFiles[index] = { file: file, index: index };
+      // newPreviewImages[index] = URL.createObjectURL(file);
 
-      setFiles(newFiles);
-      setPreviewImages(newPreviewImages);
+      // setFiles(newFiles);
+      // setPreviewImages(newPreviewImages);
+
+      const newSteps = [...steps];
+
+      const newStepIndex = newSteps.findIndex((s) => s.adParameter === step.adParameter);
+
+      newSteps[newStepIndex].file = file;
+      newSteps[newStepIndex].previewImage = URL.createObjectURL(file);
+
+      setSteps(newSteps);
     }
   };
 
@@ -1566,61 +1631,67 @@ const Token = () => {
   };
 
   const handleSubmit = async () => {
-    if (!buyMethod) {
-      if (!validateInputs()) {
-        return;
-      }
-    }
+    // if (!buyMethod) {
+    //   // if (!validateInputs()) {
+    //   //   return;
+    //   // }
+    // }
     // IPFS upload
+    const selectedOfferIdItems: any[] = [];
+    const selectedTokenIdItems: any[] = [];
+    const adParametersItems: any[] = [];
+    const dataItems: any[] = [];
 
-    let uploadUrl: any[] = [];
-
-    if (isOwner) {
-      try {
-        uploadUrl = await uploadToIPFS({
-          data: [files[0]?.file],
-          options: { uploadWithGatewayUrl: true, uploadWithoutDirectory: true }
-        });
-      } catch (error) {
-        console.error("Erreur lors de l'upload à IPFS:", error);
-        throw new Error("Upload to IPFS failed.");
-      }
-    }
     try {
-      let offerIdParams;
-      let tokenIdParams;
-      let adParams;
-      let dataParams;
-      if (link && link !== "") {
-        offerIdParams = submitAdFormated?.offerId;
-        tokenIdParams = submitAdFormated?.tokenId;
-        adParams = submitAdFormated?.params;
-        dataParams = [uploadUrl[0], link];
-      } else {
-        offerIdParams = submitAdFormated?.offerId?.slice(0, -1);
-        tokenIdParams = submitAdFormated?.tokenId?.slice(0, -1);
-        adParams = submitAdFormated?.params?.filter((param) => param !== "linkURL");
-        dataParams = [uploadUrl[0]];
+      for (const item of steps) {
+        if (!item.selected) {
+          continue;
+        }
+
+        for (const id of item.offerIds) {
+          const [offerId, tokenId] = id.split("-");
+          const offer = selectedItems.find((i) => i.offerId === offerId && i.tokenId === tokenId);
+
+          selectedOfferIdItems.push(offerId);
+          selectedTokenIdItems.push(tokenId);
+          adParametersItems.push(item.adParameter);
+          if (item.file) {
+            let uploadUrl;
+            try {
+              uploadUrl = await uploadToIPFS({
+                data: [item.file],
+                options: { uploadWithGatewayUrl: true, uploadWithoutDirectory: true }
+              });
+            } catch (error) {
+              console.error("Erreur lors de l'upload à IPFS:", error);
+              throw new Error("Upload to IPFS failed.");
+            }
+            dataItems.push(uploadUrl[0]);
+          }
+
+          if (item.adParameter.startsWith("linkURL") && link) {
+            dataItems.push(link);
+          }
+        }
       }
 
       const argsAdSubmited = {
-        offerId: offerIdParams,
-        tokenId: tokenIdParams,
-        adParameters: adParams,
-        data: dataParams
+        offerId: selectedOfferIdItems,
+        tokenId: selectedTokenIdItems,
+        adParameters: adParametersItems,
+        data: dataItems
       };
-
-      const functionWithPossibleArgs = Object.values(argsAdSubmited);
 
       const submitAdTags = [
         `${chainId}-adOffer-${offerId}`,
         `${chainId}-userAddress-${isUserOwner}`
       ];
+
       for (const admin of offerData.admins) {
         submitAdTags.push(`${chainId}-userAddress-${admin}`);
       }
 
-      await submitAd({ args: functionWithPossibleArgs });
+      await submitAd({ args: Object.values(argsAdSubmited) });
 
       await fetch(`${relayerURL}/api/revalidate`, {
         method: "POST",
@@ -1757,7 +1828,7 @@ const Token = () => {
   const handlePreviewModal = () => {
     setSuccessFullUpload(false);
     setShowPreviewModal(!showPreviewModal);
-    validateInputs();
+    // validateInputs();
   };
 
   useEffect(() => {
@@ -1862,7 +1933,8 @@ const Token = () => {
           (token) => !!token?.tokenId && BigInt(token?.tokenId) === BigInt(tokenId as string)
         )?.mint
       );
-      const isCreator = offerData?.initialCreator?.toLowerCase() === address?.toLowerCase();
+      const isCreator =
+        address && offerData?.initialCreator?.toLowerCase() === address?.toLowerCase();
 
       const finalCondition =
         (isActive && isOwner && ((isAuction && !hasBids) || isDirect)) ||
@@ -1956,7 +2028,7 @@ const Token = () => {
           the total amount paid by the buyer.
         </span>
 
-        {isMintable && (
+        {tokenStatut === "MINTABLE" && (
           <div className="flex flex-col gap-2">
             <ul className="flex flex-col gap-2 text-sm list-disc" style={{ listStyleType: "disc" }}>
               <li>
@@ -1978,7 +2050,7 @@ const Token = () => {
           </div>
         )}
 
-        {!isMintable && (
+        {tokenStatut !== "MINTABLE" && (
           <div className="flex flex-col gap-2">
             <ul className="flex flex-col gap-2 text-sm list-disc" style={{ listStyleType: "disc" }}>
               <li>
@@ -2236,20 +2308,20 @@ const Token = () => {
                 <span className="block text-sm text-jacarta-100 ">
                   Creator <strong className="dark:text-white">{royalties}% royalties</strong>
                 </span>
-                {tokenDO?.external_url && tokenDO.external_url !== "" && (
+                {tokenDO?.external_link && tokenDO.external_link !== "" && (
                   <span className="block w-full text-sm text-jacarta-100 dark:text-white">
                     Ad Space location :{" "}
-                    {isUrlValid(tokenDO.external_url) ? (
+                    {isUrlValid(tokenDO.external_link) ? (
                       <a
-                        href={tokenDO.external_url}
+                        href={tokenDO.external_link}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="font-bold text-primaryPurple hover:underline"
                       >
-                        {tokenDO.external_url}
+                        {tokenDO.external_link}
                       </a>
                     ) : (
-                      <strong>{tokenDO.external_url}</strong>
+                      <strong>{tokenDO.external_link}</strong>
                     )}
                   </span>
                 )}
@@ -2294,7 +2366,7 @@ const Token = () => {
               </div>
 
               {showEntireDescription ? (
-                <p className="mb-10 dark:text-jacarta-100">
+                <span className="mb-10 dark:text-jacarta-100">
                   {addLineBreaks(description)}{" "}
                   {description?.length > 1000 && (
                     <button
@@ -2304,10 +2376,10 @@ const Token = () => {
                       Show less
                     </button>
                   )}
-                </p>
+                </span>
               ) : (
                 <div>
-                  <p className="mb-10 dark:text-jacarta-100">
+                  <span className="mb-10 dark:text-jacarta-100">
                     {description?.length > 1000
                       ? addLineBreaks(description?.slice(0, 1000) + "...")
                       : addLineBreaks(description)}{" "}
@@ -2319,7 +2391,7 @@ const Token = () => {
                         Show more
                       </button>
                     )}
-                  </p>
+                  </span>
                 </div>
               )}
 
@@ -2584,7 +2656,7 @@ const Token = () => {
                           className="w-full"
                         />
 
-                        {!isAddress(transferAddress || "") && (transferAddress || "") !== "" && (
+                        {!isAddress(transferAddress ?? "") && (transferAddress ?? "") !== "" && (
                           <span className="text-sm text-red">Invalid address</span>
                         )}
                         {transferAddress?.toLowerCase() === address.toLowerCase() && (
@@ -2621,7 +2693,7 @@ const Token = () => {
                                 error: "Transfer failed ❌"
                               });
                             }}
-                            isDisabled={!isAddress(transferAddress || "") || !isValidId}
+                            isDisabled={!isAddress(transferAddress ?? "") || !isValidId}
                             defaultText="Transfer"
                           />
                         </div>
@@ -2677,8 +2749,41 @@ const Token = () => {
                         setImageUrlVariants={setImageUrlVariants}
                         currentSlide={currentSlide}
                         numSteps={numSteps}
+                        setSteps={setSteps}
+                        steps={steps}
                       />
                     )}
+                    {steps
+                      .filter((step) => step.selected)
+                      .map((step, index) => (
+                        <div key={step.adParameter}>
+                          {currentSlide === index + 1 && step.adParameter.startsWith("imageURL") ? (
+                            <AdImage
+                              stepsRef={stepsRef}
+                              currentStep={index + 2}
+                              styles={styles}
+                              step={step}
+                              handleLogoUpload={(file) => handleLogoUpload(file, step)}
+                              currentSlide={currentSlide}
+                              numSteps={numSteps}
+                            />
+                          ) : currentSlide === index + 1 &&
+                            step.adParameter.startsWith("linkURL") ? (
+                            <AdURL
+                              stepsRef={stepsRef}
+                              styles={styles}
+                              setLink={setLink}
+                              link={link}
+                              currentSlide={currentSlide}
+                              numSteps={numSteps}
+                            />
+                          ) : (
+                            <></>
+                          )}
+                        </div>
+                      ))}
+                    {/**
+                     * 
                     {currentSlide === 2 && (
                       <AdURL
                         stepsRef={stepsRef}
@@ -2707,6 +2812,7 @@ const Token = () => {
                         ))}
                       </>
                     )}
+                     */}
                   </CarouselForm>
                 )}
               </Accordion.Content>
@@ -2763,7 +2869,9 @@ const Token = () => {
                   <AdValidation
                     chainConfig={chainConfig}
                     offer={offerData}
-                    isOwner={isOfferOwner}
+                    isOwner={isOwner}
+                    fromToken={true}
+                    isAdmin={isOfferOwner}
                     successFullRefuseModal={successFullRefuseModal}
                     setRefusedValidatedAdModal={setRefusedValidatedAdModal}
                     refusedValidatedAdModal={refusedValidatedAdModal}
@@ -2771,6 +2879,9 @@ const Token = () => {
                     setSelectedItems={setSelectedItems}
                     sponsorHasAtLeastOneRejectedProposalAndNoPending={
                       sponsorHasAtLeastOneRejectedProposalAndNoPending
+                    }
+                    setSponsorHasAtLeastOneRejectedProposalAndNoPending={
+                      setSponsorHasAtLeastOneRejectedProposalAndNoPending
                     }
                     mediaShouldValidateAnAd={mediaShouldValidateAnAd}
                     isMedia={isMedia}
@@ -2887,6 +2998,8 @@ const Token = () => {
             modalTitle="Ad Space Preview"
             successFullUploadModal={successFullUploadModal}
             adSubmission={true}
+            shouldProvideLink={shouldProvideLink}
+            steps={steps}
           />
         </div>
       )}

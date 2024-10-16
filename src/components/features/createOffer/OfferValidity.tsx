@@ -1,11 +1,12 @@
 import React from "react";
-import DatePicker from "react-datepicker";
+import { DatePicker } from "@nextui-org/react";
 import "react-datepicker/dist/react-datepicker.css";
 import ModalHelper from "@/components/ui/modals/Helper";
 import Input from "@/components/ui/Input";
 import { Currency } from "@/components/layout/CreateOffer";
 import { Address } from "thirdweb";
 import formatAndRoundPrice from "@/utils/prices/formatAndRound";
+import { getLocalTimeZone, today, parseDate } from "@internationalized/date";
 
 // const ConditionalRender = ({ condition, children }) => (condition ? <div>{children}</div> : null);
 
@@ -75,17 +76,16 @@ const OfferValidity = ({
   };
 
   const renderDatePicker = (date, setDate, label, helper) => (
-    <div className="flex flex-col justify-center items-center gap-1">
+    <div className="flex flex-col items-center justify-center gap-1">
       <DatePicker
-        minDate={new Date()}
-        selected={date}
-        onChange={setDate}
-        showMonthDropdown
-        popperPlacement="bottom-end"
-        showYearDropdown
-        className="bg-jacarta-800 border-jacarta-100 hover:ring-primaryPurple/10 focus:ring-primaryPurple dark:border-primaryPurple dark:placeholder:text-jacarta-100 w-full rounded-lg py-3 px-3 hover:ring-2 dark:text-white"
+        minValue={today(getLocalTimeZone())}
+        value={parseDate(new Date(date).toISOString().slice(0, 10))}
+        onChange={(date) => {
+          setDate(new Date(date.year, date.month - 1, date.day + 1));
+        }}
+        showMonthAndYearPickers
       />
-      <div className="flex gap-2 justify-center items-center">
+      <div className="flex items-center justify-center gap-2">
         <span className="text-jacarta-900 dark:text-white">{label}</span>
         <ModalHelper title={helper.title} body={helper.body} size="small" />
       </div>
@@ -101,30 +101,30 @@ const OfferValidity = ({
           }}
           className={styles.form__step}
         >
-          <div className="pr-6 pl-2 relative flex flex-col gap-8 items-center">
+          <div className="relative flex flex-col items-center gap-8 pl-2 pr-6">
             <div className="absolute top-0 right-0">
               {currentSlide + 1}/{numSteps}
             </div>
-            <div className="flex flex-col w-full items-center border-b-1 border-primaryPurple shadow-2xl pb-2 ">
+            <div className="flex flex-col items-center w-full pb-2 shadow-2xl border-b-1 border-primaryPurple ">
               <h3 className="mb-2 text-jacarta-100">Validity & Financials</h3>
-              <p className="text-center pt-2 dark:text-white">
+              <p className="pt-2 text-center dark:text-white">
                 Set offer&apos;s validity period, currency, and royalties.
               </p>
             </div>
             <div className="flex flex-col items-center">
               <label
                 htmlFor="item-description"
-                className="font-display text-jacarta-900 mb-2 block dark:text-white"
+                className="block mb-2 font-display text-jacarta-900 dark:text-white"
               >
                 Validity period<span className="text-red">*</span>
               </label>
-              <p className="dark:text-jacarta-100 text-jacarta-100 text-2xs mb-3">
+              <p className="mb-3 dark:text-jacarta-100 text-jacarta-100 text-2xs">
                 Set the validity period for your offer. During this time, the acquired NFT grants
                 the right to display an advertisement in the reserved space on your platform. The
                 duration of this period may affect the resale value of these NFTs on the secondary
                 market.
               </p>
-              <div className="flex gap-4 items-center text-jacarta-900 dark:text-white mb-3">
+              <div className="flex items-center gap-4 mb-3 text-jacarta-900 dark:text-white">
                 {renderDatePicker(startDate, setStartDate, "Start date", {
                   title: "Start date",
                   body: "You are free to choose the start date for the offer's validity. By default, it will be today's date."
@@ -135,23 +135,23 @@ const OfferValidity = ({
                 })}
               </div>
             </div>
-            <div className="mb-6 flex flex-col items-center">
+            <div className="flex flex-col items-center mb-6">
               <label
                 htmlFor="unit-price"
-                className="font-display text-jacarta-900 mb-2 block dark:text-white"
+                className="block mb-2 font-display text-jacarta-900 dark:text-white"
               >
                 Unit selling price <span className="text-red">*</span>
               </label>
               {/*
                 <ConditionalRender condition={["USDT", "USDC"].includes(selectedCurrency?.symbol)}>
-                  <p className="dark:text-jacarta-100 text-jacarta-100 text-2xs mb-3">
+                  <p className="mb-3 dark:text-jacarta-100 text-jacarta-100 text-2xs">
                     USD payment means you&apos;ll receive USD tokens (1 USDC = 1$). You&apos;ll be
                     able to cash out via wire transfer with a service like MtPelerin. You can change
                     the pricing later.
                   </p>
                 </ConditionalRender>
              */}
-              <div className="flex flex-wrap gap-4 items-center text-jacarta-900 dark:text-white">
+              <div className="flex flex-wrap items-center gap-4 text-jacarta-900 dark:text-white">
                 <Input
                   id="unit-price"
                   type="number"
@@ -161,10 +161,10 @@ const OfferValidity = ({
                   onChange={handleUnitPriceChange}
                   placeholder="Unit selling price"
                   maxLength={tokenDecimals}
-                  className="flex-grow border-jacarta-100 hover:ring-primaryPurple/10 focus:ring-primaryPurple dark:border-primaryPurple dark:placeholder:text-jacarta-100 rounded-lg py-3 px-3 hover:ring-2 dark:text-white"
+                  className="flex-grow px-3 py-3 rounded-lg border-jacarta-100 hover:ring-primaryPurple/10 focus:ring-primaryPurple dark:border-primaryPurple dark:placeholder:text-jacarta-100 hover:ring-2 dark:text-white"
                 />
 
-                <div className="flex gap-4 w-full">
+                <div className="flex w-full gap-4">
                   <select
                     id="currency"
                     value={selectedCurrency?.address ? selectedCurrency?.address : "custom"}
@@ -190,28 +190,28 @@ const OfferValidity = ({
                 </div>
               </div>
               {tokenSymbol ? (
-                <p className="dark:text-jacarta-100 text-jacarta-100 text-2xs mt-3">
+                <p className="mt-3 dark:text-jacarta-100 text-jacarta-100 text-2xs">
                   You&apos;ll earn {selectedUnitPrice} {tokenSymbol} per minted token.
                   <br /> Since the protocol charges a 4% fee, sponsors will pay{" "}
                   {formatAndRoundPrice(selectedUnitPrice * 1.04)} {tokenSymbol}.
                 </p>
               ) : (
-                <p className="text-red text-2xs mt-3">The currency is not valid.</p>
+                <p className="mt-3 text-red text-2xs">The currency is not valid.</p>
               )}
             </div>
-            <div className="mb-6 flex flex-col items-center">
+            <div className="flex flex-col items-center mb-6">
               <label
                 htmlFor="royalties"
-                className="font-display text-jacarta-900 mb-2 block dark:text-white"
+                className="block mb-2 font-display text-jacarta-900 dark:text-white"
               >
                 Royalties <span className="text-red">*</span>
               </label>
-              <p className="dark:text-jacarta-100 text-jacarta-100 text-2xs mb-3">
+              <p className="mb-3 dark:text-jacarta-100 text-jacarta-100 text-2xs">
                 Sponsors can sell ad space ownership on the marketplace. Define the fee you want to
                 receive from secondary sales. Keep in mind that sponsors may refuse to buy ad space
                 if your royalty fee is too high. You can change this value later.
               </p>
-              <div className="flex gap-4 items-center text-jacarta-900 dark:text-white">
+              <div className="flex items-center gap-4 text-jacarta-900 dark:text-white">
                 <Input
                   id="royalties"
                   type="number"
@@ -223,7 +223,7 @@ const OfferValidity = ({
                   value={selectedRoyalties}
                   onChange={handleRoyaltiesChange}
                   placeholder="Royalties"
-                  className="border-jacarta-100 hover:ring-primaryPurple/10 focus:ring-primaryPurple dark:border-primaryPurple dark:placeholder:text-jacarta-100 rounded-lg py-3 px-3 hover:ring-2 dark:text-white"
+                  className="px-3 py-3 rounded-lg border-jacarta-100 hover:ring-primaryPurple/10 focus:ring-primaryPurple dark:border-primaryPurple dark:placeholder:text-jacarta-100 hover:ring-2 dark:text-white"
                 />
                 <span>%</span>
               </div>

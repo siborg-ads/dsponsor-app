@@ -230,6 +230,9 @@ export const fetchToken = async (chainId, offerId, tokenId) => {
         # offer.name, offer.image, offer.description
         # if token_metadata: token_metadata.name,
         metadataURL
+        metadata {
+         content
+        }
         id # offerId
         disable
         admins

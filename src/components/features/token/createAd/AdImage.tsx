@@ -1,19 +1,33 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, MutableRefObject } from "react";
 import Image from "next/image";
 import "react-datepicker/dist/react-datepicker.css";
 import ModalHelper from "@/components/ui/modals/Helper";
 import { FileUploader } from "react-drag-drop-files";
+import { StepType } from "../../profile/tabs/OwnedTokens";
+import React from "react";
+import { toast } from "react-toastify";
+import { MAX_SIZE_FILE } from "@/config/config";
+import formatBytes from "@/utils/misc/formatBytes";
 
 const AdImage = ({
-  id,
+  // id,
   stepsRef,
   styles,
-  file,
+  // file,
   handleLogoUpload,
-  previewImage,
+  // previewImage,
   currentStep,
   currentSlide,
-  numSteps
+  numSteps,
+  step
+}: {
+  stepsRef: MutableRefObject<any>;
+  styles: any;
+  handleLogoUpload: (e: any) => void;
+  currentStep: number;
+  currentSlide: number;
+  numSteps: number;
+  step: StepType;
 }) => {
   const fileTypes = ["JPG", "PNG", "WEBP", "GIF"];
   const modalHelper = {
@@ -23,11 +37,12 @@ const AdImage = ({
   const containerElement = useRef(null);
   const [widthRatioImage, setWidthRatioImage] = useState<number | null>(null);
   const [heightRatioImage, setHeightRatioImage] = useState<number | null>(null);
+  const [formattedRatio, setFormattedRatio] = useState<string>("any ratio accepted");
   useEffect(() => {
     const stepWidth = 250;
-    let tempId = id;
-    if (id.includes("0-")) {
-      tempId = id.slice(2);
+    let tempId = step.adParameter.slice("imageURL-".length);
+    if (step.adParameter.includes("0-")) {
+      tempId = step.adParameter.slice(2);
     }
     const ratios = tempId.split(":");
     let width = Number(ratios[0]);
@@ -36,6 +51,8 @@ const AdImage = ({
     if (ratios.length !== 2) {
       width = 1;
       height = 1;
+    } else {
+      setFormattedRatio(`${width}:${height} ratio`);
     }
 
     if (width / height > 1) {
@@ -45,7 +62,7 @@ const AdImage = ({
       setHeightRatioImage(stepWidth);
       setWidthRatioImage(stepWidth * (width / height));
     }
-  }, [id]);
+  }, [step]);
 
   return (
     <div
@@ -56,14 +73,13 @@ const AdImage = ({
     >
       <div className="pl-2 pr-6" ref={containerElement}>
         <h3 className="mb-12 text-jacarta-200">
-          Step {currentSlide + 1}/{numSteps} : Ad Image {id}
+          Step {currentSlide + 1}/{numSteps} : Ad Image ({formattedRatio})
         </h3>
         {/* <!-- File Upload --> */}
         <div className="flex flex-col items-center mb-6">
           <div className="flex items-center justify-center gap-3 mb-2">
             <label className="block font-display text-jacarta-900 dark:text-white">
-              Image {id}
-              <span className="text-red">*</span>
+              Image ({formattedRatio})<span className="text-red">*</span>
             </label>
             <ModalHelper title={modalHelper.title} body={modalHelper.body} dark={false} />
           </div>
@@ -75,8 +91,8 @@ const AdImage = ({
             is displayed on their platform.
           </p>
 
-          {file ? (
-            <p className="mb-3 text-green text-2xs">successfully uploaded : {file.file.name}</p>
+          {step.file ? (
+            <p className="mb-3 text-green text-2xs">successfully uploaded : {step.file.name}</p>
           ) : (
             <p className="mb-3 dark:text-jacarta-100 text-2xs">
               Drag or choose your file to upload
@@ -85,14 +101,14 @@ const AdImage = ({
 
           <div
             className={`bg-jacarta-800 border-jacarta-100 group relative flex max-w-md flex-col items-center justify-center rounded-lg border-2 border-dashed border-primaryPurple w-[${widthRatioImage}px] h-[${heightRatioImage}px] text-center ${
-              !previewImage ? "px-2 py-8" : "py-1 px-1"
+              !step.previewImage ? "px-2 py-8" : "py-1 px-1"
             }`}
             style={{ width: `${widthRatioImage}px`, height: `${heightRatioImage}px` }}
           >
             <div
-              className={`relative z-10 cursor-pointer  ${!previewImage ? "px-2 py-2" : "px-0 h-full w-full"}`}
+              className={`relative z-10 cursor-pointer  ${!step.previewImage ? "px-2 py-2" : "px-0 h-full w-full"}`}
             >
-              {!previewImage ? (
+              {!step.previewImage ? (
                 <div>
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -105,7 +121,7 @@ const AdImage = ({
                     <path d="M16 13l6.964 4.062-2.973.85 2.125 3.681-1.732 1-2.125-3.68-2.223 2.15L16 13zm-2-7h2v2h5a1 1 0 0 1 1 1v4h-2v-3H10v10h4v2H9a1 1 0 0 1-1-1v-5H6v-2h2V9a1 1 0 0 1 1-1h5V6zM4 14v2H2v-2h2zm0-4v2H2v-2h2zm0-4v2H2V6h2zm0-4v2H2V2h2zm4 0v2H6V2h2zm4 0v2h-2V2h2zm4 0v2h-2V2h2z" />
                   </svg>
                   <p className="max-w-xs mx-auto text-xs dark:text-jacarta-100">
-                    JPG, PNG, WEBP, GIF Max size: 25 MB
+                    {fileTypes.join(", ")} Max size: {formatBytes(MAX_SIZE_FILE)}
                   </p>
                 </div>
               ) : (
@@ -114,7 +130,7 @@ const AdImage = ({
                   style={{ width: `${widthRatioImage}px`, height: `${heightRatioImage}px` }}
                 >
                   <Image
-                    src={previewImage ?? ""}
+                    src={step.previewImage ?? ""}
                     fill={true}
                     alt="Preview"
                     className="object-contain h-full"
@@ -128,12 +144,20 @@ const AdImage = ({
                 name="file"
                 types={fileTypes}
                 classes="file-drag"
-                maxSize={25}
+                maxSize={MAX_SIZE_FILE / 1e6}
                 minSize={0}
+                onSizeError={() =>
+                  toast(
+                    `File size is too big it should be less than ${formatBytes(MAX_SIZE_FILE)}`,
+                    {
+                      type: "error"
+                    }
+                  )
+                }
               />
             </div>
           </div>
-          {file && (
+          {step.file && (
             <p className="mt-3 text-warning text-2xs">
               ⚠️ This is how your ad will be displayed on the media plateform. Be carefull to fill
               all the dotted square.
