@@ -17,6 +17,10 @@ const siborg: Record<Address, KnownAddress> = {
   "0xAC9055cDaF2F2aC1a9e140D918135C1D3AA7aa35": {
     isKnown: true,
     name: "Cryptoast"
+  },
+  "0xFf772b57acbF21D17254bAA3e286F3F7A6b28564": {
+    isKnown: true,
+    name: "DeFi France"
   }
 };
 

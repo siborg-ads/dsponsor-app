@@ -1,4 +1,4 @@
-export type Filter = "all" | "medias" | "dapps" | "websites" | "newsletters";
+export type Filter = "all" | "medias" | "dapps" | "websites" | "newsletters" | "communities";
 
 export type CurationDataItem = {
   chainId?: number;
@@ -18,7 +18,7 @@ type CurationData = {
 export const marketplaceOffersCuration = {
   8453: [
     // 1,
-    2
+    2, 3
   ],
   11124: [1],
   34443: Array.from({ length: 50 }, (_, i) => i),
@@ -39,16 +39,27 @@ export function curationData(baseURL: string): CurationData {
         type: ["dapps"] as Filter[],
         inTrending: true
       },
-      */
 
       {
-        logo: "/images/cryptoast/cryptoast.webp",
+        logo: "/images/cryptoast/cryptoast.webp", 
         description:
           "Cryptoast is a leading French-language media outlet focused on Bitcoin, blockchain, and cryptocurrencies. Established in 2017, it aims to provide comprehensive and accessible information to both newcomers and experienced users in the crypto space.",
         offerId: 2,
         buttonText: "Own a part of the Cryptoast newsletter",
         buttonLink: `${baseURL}/${8453}/offer/${2}`,
         type: ["medias", "newsletters"] as Filter[],
+        inTrending: true
+      }
+      */
+
+      {
+        logo: "/images/curation/defifrance.png", // 2000 x 600
+        description:
+          "DeFi France is the leading French community related to the rise of Decentralized Finance. Members regularly organize meetups across France, particularly in Paris, Toulouse, Bordeaux, and Lyon.",
+        offerId: 3,
+        buttonText: "Join as a sponsor for DeFi France",
+        buttonLink: `${baseURL}/${8453}/offer/${3}`,
+        type: ["communities"] as Filter[],
         inTrending: true
       }
     ],

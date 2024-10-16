@@ -15,6 +15,7 @@ const Filters = ({
   const hasSomeDapps = data.find((d) => d.type.includes("dapps"));
   const hasSomeWebsites = data.find((d) => d.type.includes("websites"));
   const hasSomeNewsletters = data.find((d) => d.type.includes("newsletters"));
+  const hasSomeCommunities = data.find((d) => d.type.includes("communities"));
 
   return (
     <div className="flex items-center overflow-scroll md:overflow-auto md:flex-wrap gap-2 md:gap-4 hide-scrollbar">
@@ -98,6 +99,25 @@ const Filters = ({
             disabled
           >
             Newsletters
+          </button>
+        </ResponsiveTooltip>
+      )}
+
+      {hasSomeCommunities ? (
+        <button
+          className={`px-4 py-2 rounded-lg hover:bg-opacity-80 ${filter === "communities" ? "bg-white text-black" : "bg-secondaryBlack text-white"}`}
+          onClick={() => setFilter("communities")}
+        >
+          Communities
+        </button>
+      ) : (
+        <ResponsiveTooltip text="Coming soon...">
+          <button
+            className={`px-4 py-2 rounded-lg hover:bg-opacity-80 ${filter === "communities" ? "bg-white text-black" : "bg-secondaryBlack text-white"}`}
+            onClick={() => setFilter("communities")}
+            disabled
+          >
+            Communities
           </button>
         </ResponsiveTooltip>
       )}

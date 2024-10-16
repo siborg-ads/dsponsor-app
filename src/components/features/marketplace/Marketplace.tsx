@@ -223,8 +223,8 @@ const MarketplaceComponent = ({
           <PopoverContent className="border border-white shadow bg-secondaryBlack border-opacity-10">
             <div className="px-1 py-2">
               <div className="text-small">
-                This page highlights all ad spaces from curated offers. You will not see your tokens
-                below if they are not from offers curated by the SiBorg Ads team.
+                This page highlights all ad spaces from curated offers. Use the search bar to see
+                your tokens from offers that are not curated by the SiBorg Ads team.
               </div>
             </div>
           </PopoverContent>
