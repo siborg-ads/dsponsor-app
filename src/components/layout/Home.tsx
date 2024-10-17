@@ -9,6 +9,7 @@ import { Auctions } from "@/types/auctions";
 import Carousel from "@/components/features/home/Carousel";
 import Steps from "@/components/features/home/AdsSteps";
 import ClientsRedirection from "@/components/features/home/ClientsRedirection";
+import EarlyTraction from "@/components/features/home/EarlyTraction";
 import { curationData } from "@/data/curation";
 import type { Filter, CurationDataItem } from "@/data/curation";
 import config from "@/config/config";
@@ -306,6 +307,8 @@ const Home = () => {
         />
 
         <Steps />
+
+        <EarlyTraction />
 
         <ClientsRedirection />
       </div>

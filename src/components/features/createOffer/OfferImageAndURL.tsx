@@ -273,9 +273,20 @@ const TermsSection = ({
       Legal <span className="text-sm text-jacarta-100">(optional)</span>
     </label>
     <p className="mb-3 dark:text-jacarta-100 text-jacarta-100 text-2xs">
-      Provide the terms of use for the ad space you are offering. This helps to clearly define what
-      is expected of the advertisements displayed in the sold spaces and the rules that must be
-      adhered to. <br /> Import a PDF or a link.
+      Provide the terms of use for the ad space you are offering. <br />
+      This helps to clearly define what is expected of the advertisements displayed in the sold
+      spaces and the rules that must be adhered to. <br />
+      You can write them from this
+      <Link
+        href="https://docs.google.com/document/d/11OItw4GjW4gKb4jVdyAhJv18afFx-gWAh0Ng2123KvQ/edit?usp=sharing"
+        target="_blank"
+        className="text-primaryPurple hover:text-opacity-80 hover:underline"
+      >
+        {" "}
+        template
+      </Link>
+      .
+      <br /> Import a PDF or a link.
     </p>
     <div className="flex mb-4">
       <span className="mr-3">URL</span>
