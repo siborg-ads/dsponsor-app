@@ -1,20 +1,20 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { features } from "@/data/features";
-import { useContract, useContractWrite, useContractRead } from "@thirdweb-dev/react";
 import "react-toastify/dist/ReactToastify.css";
 import { ethers } from "ethers";
 import { DatePicker } from "@nextui-org/react";
 import ModalHelper from "@/components/ui/modals/Helper";
 import AdSubmission from "@/components/features/token/accordion/AdSubmission";
 import Input from "@/components/ui/Input";
-import { TokenContract } from "@thirdweb-dev/react";
-import { Address } from "thirdweb";
+import { Address, ContractOptions, getContract, prepareContractCall, readContract } from "thirdweb";
 import config from "@/config/config";
 import { Currency } from "@/components/layout/CreateOffer";
 import { getLocalTimeZone, today, parseDate, parseAbsoluteToLocal } from "@internationalized/date";
 
-import ERC20ABI from "@/abi/ERC20.json";
-import { useActiveAccount } from "thirdweb/react";
+import { useActiveAccount, useReadContract, useSendTransaction } from "thirdweb/react";
+import { client } from "@/data/services/client";
+import { ChainObject, ChainsConfig } from "@/types/chain";
+import { ERC20ABI } from "@/abi/ERC20";
 
 const CreateListing = ({
   chainConfig,
@@ -28,6 +28,18 @@ const CreateListing = ({
   tokenId,
   setListingCreated,
   fetchOffers
+}: {
+  chainConfig: ChainObject;
+  handleListingModal: () => void;
+  offerData: any;
+  setSuccessFullListing: any;
+  successFullListing: any;
+  royalties: any;
+  dsponsorNFTContract: ContractOptions;
+  dsponsorMpContract: ContractOptions;
+  tokenId: any;
+  setListingCreated: any;
+  fetchOffers: any;
 }) => {
   const chainId = chainConfig?.chainId;
 
@@ -66,23 +78,43 @@ const CreateListing = ({
 
   const [customContract, setCustomContract] = useState<Address | null>(null);
   const [tokenContract, setTokenContract] = useState<string>("");
-  const [customTokenContract, setCustomTokenContract] = useState<TokenContract | null>(null);
+  const [customTokenContract, setCustomTokenContract] = useState<any | null>(null);
   const [selectedCurrencyContract, setSelectedCurrencyContract] = useState<Address | string>(
     currencies[0].address
   );
-  const { contract: tokenContractAsync } = useContract(selectedCurrencyContract, ERC20ABI);
-  const { data: symbolContractAsync } = useContractRead(tokenContractAsync, "symbol");
-  const { data: decimalsContractAsync } = useContractRead(tokenContractAsync, "decimals");
+  //   const { contract: tokenContractAsync } = useContract(selectedCurrencyContract, ERC20ABI);
+
+  const tokenContractAsync = getContract({
+    client: client,
+    address: selectedCurrencyContract,
+    chain: chainConfig?.chainObject,
+    abi: ERC20ABI
+  });
+
+  //   const { data: symbolContractAsync } = useContractRead(tokenContractAsync, "symbol");
+  const { data: symbolContractAsync } = useReadContract({
+    contract: tokenContractAsync,
+    method: "symbol"
+  });
+
+  //   const { data: decimalsContractAsync } = useContractRead(tokenContractAsync, "decimals");
+  const { data: decimalsContractAsync } = useReadContract({
+    contract: tokenContractAsync,
+    method: "decimals"
+  });
 
   const [approvalForAllToken, setApprovalForAllToken] = useState(false);
   const [currencySymbol, setCurrencySymbol] = useState<string | null>(currencies[0].symbol);
   const [currencyDecimals, setCurrencyDecimals] = useState<number | null>(currencies[0].decimals);
 
-  const { mutateAsync: setApprovalForAll } = useContractWrite(
-    dsponsorNFTContract,
-    "setApprovalForAll"
-  );
-  const { mutateAsync: createListing } = useContractWrite(dsponsorMpContract, "createListing");
+  //   const { mutateAsync: setApprovalForAll } = useContractWrite(
+  //     dsponsorNFTContract,
+  //     "setApprovalForAll"
+  //   );
+  const { mutateAsync: setApprovalForAll } = useSendTransaction();
+
+  //   const { mutateAsync: createListing } = useContractWrite(dsponsorMpContract, "createListing");
+  const { mutateAsync: createListing } = useSendTransaction();
 
   useEffect(() => {
     const handleEsc = (event: KeyboardEvent) => {
@@ -125,7 +157,7 @@ const CreateListing = ({
 
   useEffect(() => {
     setTokenContract(selectedCurrencyContract as string);
-    setCustomTokenContract(tokenContractAsync as TokenContract);
+    setCustomTokenContract(tokenContractAsync);
   }, [
     decimalsContractAsync,
     symbolContractAsync,
@@ -154,10 +186,18 @@ const CreateListing = ({
   }, [startDate, endDate]);
 
   const handlePreviewModal = async () => {
-    const isApprovedForAll = await dsponsorNFTContract.call("isApprovedForAll", [
-      address,
-      chainConfig?.smartContracts?.DSPONSORMP?.address
-    ]);
+    // const isApprovedForAll = await dsponsorNFTContract.call("isApprovedForAll", [
+    //   address,
+    //   chainConfig?.smartContracts?.DSPONSORMP?.address
+    // ]);
+    // TODO: TEST THIS UNKNOWN BEHAVIOR
+    const isApprovedForAll = await readContract({
+      contract: dsponsorNFTContract,
+      // @ts-ignore
+      method: "isApprovedForAll",
+      args: [address, chainConfig?.smartContracts?.DSPONSORMP?.address]
+    });
+    // @ts-ignore
     setApprovalForAllToken(isApprovedForAll);
     if (successFullListing) {
       handleListingModal();
@@ -205,12 +245,21 @@ const CreateListing = ({
           rentalExpirationTimestamp: startTime + secondsUntilEndTime,
           listingType: selectedListingType[0]
         };
-        await createListing({
-          args: [args],
-          overrides: {
-            gasLimit: 10000000
-          }
+        // await createListing({
+        //   args: [args],
+        //   overrides: {
+        //     gasLimit: 10000000
+        //   }
+        // });
+
+        const tx = prepareContractCall({
+          contract: dsponsorMpContract,
+          //@ts-ignore
+          method: "createListing",
+          params: [args]
         });
+
+        await createListing(tx);
 
         const tags = [
           `${chainId}-userAddress-${address}`,
@@ -236,9 +285,18 @@ const CreateListing = ({
   };
   const handleApprove = async () => {
     try {
-      await setApprovalForAll({
-        args: [chainConfig?.smartContracts?.DSPONSORMP?.address, true]
+      //   await setApprovalForAll({
+      //     args: [chainConfig?.smartContracts?.DSPONSORMP?.address, true]
+      //   });
+      const tx = prepareContractCall({
+        contract: dsponsorNFTContract,
+        //@ts-ignore
+        method: "setApprovalForAll",
+        params: [chainConfig?.smartContracts?.DSPONSORMP?.address, true]
       });
+
+      await setApprovalForAll(tx);
+
       setApprovalForAllToken(true);
     } catch (error) {
       console.error(error);
@@ -282,7 +340,7 @@ const CreateListing = ({
     } else {
       setCustomContract(event.target.value);
       setSelectedCurrencyContract(event.target.value);
-      setCustomTokenContract(tokenContractAsync as TokenContract);
+      setCustomTokenContract(tokenContractAsync);
     }
   };
 

@@ -6,6 +6,7 @@ import { BigNumber } from "ethers";
 import { getAddress } from "ethers/lib/utils";
 import { Address } from "thirdweb";
 import NormalButton from "@/components/ui/buttons/NormalButton";
+import { GetWalletBalanceResult } from "thirdweb/dist/types/wallets/utils/getWalletBalance";
 
 const PlaceBid = ({
   setAmountToApprove,
@@ -48,13 +49,7 @@ const PlaceBid = ({
   dsponsorMpContract: any;
   marketplaceListings: any;
   currencySymbol: string;
-  tokenBalance: {
-    symbol: string;
-    value: BigNumber;
-    name: string;
-    decimals: number;
-    displayValue: string;
-  };
+  tokenBalance?: GetWalletBalanceResult;
   handleApprove: () => void;
   price: string;
   currencyTokenDecimals: number;
@@ -90,10 +85,10 @@ const PlaceBid = ({
   }, [marketplaceListings]);
 
   return (
-    <div className="rounded-2lg bg-white p-8 dark:bg-secondaryBlack">
+    <div className="p-8 bg-white rounded-2lg dark:bg-secondaryBlack">
       <div className="flex flex-col items-center justify-between gap-8">
         <div className="flex flex-col items-center justify-center w-full">
-          <div className="mb-8 grid grid-cols-9">
+          <div className="grid grid-cols-9 mb-8">
             {/* Highest bid */}
             <div className="col-span-4">
               {bids?.length > 0 && (
@@ -118,7 +113,7 @@ const PlaceBid = ({
                   </Link>
                 </div>
               )}
-              <div className="mt-3 flex">
+              <div className="flex mt-3">
                 <div>
                   <div className="flex items-center">
                     {bids?.length <= 0 ? (
@@ -141,13 +136,13 @@ const PlaceBid = ({
               </div>
             </div>
 
-            <div className="flex col-span-1 items-center justify-center">
+            <div className="flex items-center justify-center col-span-1">
               <div className="w-[1px] h-full rounded-lg sm:bg-jacarta-100 dark:bg-jacarta-800" />
             </div>
 
             {/* Countdown */}
             <div className="col-span-4">
-              <span className="js-countdown-ends-label text-sm text-jacarta-100 dark:text-jacarta-100">
+              <span className="text-sm js-countdown-ends-label text-jacarta-100 dark:text-jacarta-100">
                 Auction ends in
               </span>
               <Timer
@@ -171,7 +166,7 @@ const PlaceBid = ({
         </div>
 
         <div>
-          <span className="text-jacarta-100 block text-xs text-center">
+          <span className="block text-xs text-center text-jacarta-100">
             Auction live from{" "}
             {marketplaceListings?.sort((a, b) => Number(b?.id) - Number(a?.id))?.[0]?.startTime &&
               new Date(

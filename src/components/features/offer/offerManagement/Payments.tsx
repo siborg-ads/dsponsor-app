@@ -1,8 +1,6 @@
 import React, { SetStateAction, useEffect, useState } from "react";
-import { useContract, useContractRead, useContractWrite } from "@thirdweb-dev/react";
-import { getContract } from "thirdweb";
-import { useActiveWalletChain, useReadContract } from "thirdweb/react";
-import {} from "thirdweb/extensions/erc20";
+import { getContract, prepareContractCall } from "thirdweb";
+import { useActiveWalletChain, useReadContract, useSendTransaction } from "thirdweb/react";
 
 import { toast } from "react-toastify";
 import { parseUnits, formatUnits } from "ethers/lib/utils";
@@ -15,7 +13,9 @@ import StyledWeb3Button from "@/components/ui/buttons/StyledWeb3Button";
 import ResponsiveTooltip from "@/components/ui/ResponsiveTooltip";
 import { QuestionMarkCircleIcon } from "@heroicons/react/24/solid";
 
-import ERC20ABI from "@/abi/ERC20.json";
+import { ERC20ABI } from "@/abi/ERC20";
+import { DSPONSOR_NFT_ABI } from "@/abi/dsponsorNFT";
+
 import { ChainObject } from "@/types/chain";
 
 import { isAddress } from "ethers/lib/utils";
@@ -71,7 +71,8 @@ const Payments = ({ offer, chainConfig }: { offer: any; chainConfig: ChainObject
   const currencyContract = getContract({
     client: client,
     address: currency ?? "",
-    chain: chain || base
+    chain: chain || base,
+    abi: ERC20ABI
   });
 
   // const { data: currencyDecimalsData } = useContractRead(currencyContract, "decimals");
@@ -100,13 +101,30 @@ const Payments = ({ offer, chainConfig }: { offer: any; chainConfig: ChainObject
 
   const chainId = chainConfig?.chainId;
 
-  const { contract } = useContract(nftContractAddress);
-  const { mutateAsync: mutateDefaultMintPrice } = useContractWrite(contract, "setDefaultMintPrice");
-  const { mutateAsync: mutateTokenAsync } = useContractWrite(contract, "setMintPrice");
-  const { mutateAsync: mutateRoyalties } = useContractWrite(contract, "setRoyalty");
-  const { mutateAsync: mutateOwner } = useContractWrite(contract, "transferOwnership");
+  //   const { contract } = useContract(nftContractAddress);
+  //   const { mutateAsync: mutateDefaultMintPrice } = useContractWrite(contract, "setDefaultMintPrice");
+  //   const { mutateAsync: mutateTokenAsync } = useContractWrite(contract, "setMintPrice");
+  //   const { mutateAsync: mutateRoyalties } = useContractWrite(contract, "setRoyalty");
+  //   const { mutateAsync: mutateOwner } = useContractWrite(contract, "transferOwnership");
+  //   const { data: owner } = useContractRead(contract, "owner");
 
-  const { data: owner } = useContractRead(contract, "owner");
+  const contract = getContract({
+    client: client,
+    address: nftContractAddress ?? "",
+    chain: chain || base,
+    abi: DSPONSOR_NFT_ABI
+  });
+
+  const { mutateAsync: mutateDefaultMintPrice } = useSendTransaction();
+  const { mutateAsync: mutateTokenAsync } = useSendTransaction();
+  const { mutateAsync: mutateRoyalties } = useSendTransaction();
+  const { mutateAsync: mutateOwner } = useSendTransaction();
+
+  const { data: owner } = useReadContract({
+    contract: contract,
+    method: "owner",
+    params: []
+  });
 
   useEffect(() => {
     if (offer) {
@@ -169,10 +187,9 @@ const Payments = ({ offer, chainConfig }: { offer: any; chainConfig: ChainObject
   }, [chainConfig, currencyDecimals, initialDisabled, offer]);
 
   useEffect(() => {
-    if (owner) {
-      setCurrentOwner(owner);
-      setInitialOwner(owner);
-    }
+    if (!owner) return;
+    setCurrentOwner(owner as Address);
+    setInitialOwner(owner as Address);
   }, [owner]);
 
   const handleAmount = (value) => {
@@ -262,9 +279,18 @@ const Payments = ({ offer, chainConfig }: { offer: any; chainConfig: ChainObject
     }
 
     try {
-      await mutateDefaultMintPrice({
-        args: [currency, !disableMint, finalFormattedAmountBN]
+      //   await mutateDefaultMintPrice({
+      //     args: [currency, !disableMint, finalFormattedAmountBN]
+      //   });
+
+      const tx = prepareContractCall({
+        contract: contract,
+        method: "setDefaultMintPrice",
+        params: [currency || "", !disableMint, BigInt(finalFormattedAmountBN.toString())]
       });
+
+      // @ts-ignore
+      await mutateDefaultMintPrice(tx);
 
       const relayerURL = chainConfig?.relayerURL;
       if (relayerURL) {
@@ -295,9 +321,18 @@ const Payments = ({ offer, chainConfig }: { offer: any; chainConfig: ChainObject
     }
 
     try {
-      await mutateRoyalties({
-        args: [receiver, finalFormattedAmount]
+      //   await mutateRoyalties({
+      //     args: [receiver, finalFormattedAmount]
+      //   });
+
+      const tx = prepareContractCall({
+        contract: contract,
+        method: "setRoyalty",
+        params: [receiver || "", BigInt(finalFormattedAmount)]
       });
+
+      // @ts-ignore
+      await mutateRoyalties(tx);
 
       const relayerURL = chainConfig.relayerURL;
       if (relayerURL) {
@@ -328,9 +363,18 @@ const Payments = ({ offer, chainConfig }: { offer: any; chainConfig: ChainObject
     }
 
     try {
-      await mutateOwner({
-        args: [currentOwner]
+      //   await mutateOwner({
+      //     args: [currentOwner]
+      //   });
+
+      const tx = prepareContractCall({
+        contract: contract,
+        method: "transferOwnership",
+        params: [currentOwner]
       });
+
+      // @ts-ignore
+      await mutateOwner(tx);
 
       const relayerURL = chainConfig?.relayerURL;
       if (relayerURL) {
@@ -351,9 +395,23 @@ const Payments = ({ offer, chainConfig }: { offer: any; chainConfig: ChainObject
     if (selectedToken === null) return;
 
     try {
-      await mutateTokenAsync({
-        args: [selectedToken, currency, !disableMint, formattedAmountBN]
+      //    await mutateTokenAsync({
+      //      args: [selectedToken, currency, !disableMint, formattedAmountBN]
+      //    });
+      const tx = prepareContractCall({
+        contract: contract,
+        method: "setMintPrice",
+        params: [
+          selectedToken,
+          currency || "",
+          !disableMint,
+          BigInt(formattedAmountBN?.toString() || 0)
+        ]
       });
+
+      // @ts-ignore
+      await mutateTokenAsync(tx);
+
       const relayerURL = chainConfig?.relayerURL;
       if (relayerURL) {
         await fetch(`${relayerURL}/api/revalidate`, {

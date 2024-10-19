@@ -165,7 +165,7 @@ const TermsPdfUploader = ({
       files: [file]
     });
 
-    const finalURL = await resolveScheme({
+    const finalURL = resolveScheme({
       client: client,
       uri: url
     });

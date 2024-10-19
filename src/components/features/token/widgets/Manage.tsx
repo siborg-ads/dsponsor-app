@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { useContractWrite } from "@thirdweb-dev/react";
 import ItemManageModal from "@/components/features/token/modals/CreateListing";
 import { toast } from "react-toastify";
 import { getAddress } from "ethers/lib/utils";
 import StyledWeb3Button from "@/components/ui/buttons/StyledWeb3Button";
-import { Address } from "thirdweb";
+import { Address, ContractOptions, prepareContractCall } from "thirdweb";
 import NormalButton from "@/components/ui/buttons/NormalButton";
 import config from "@/config/config";
-import { useActiveAccount } from "thirdweb/react";
+import { useActiveAccount, useSendTransaction } from "thirdweb/react";
 
 const Manage = ({
   chainId,
@@ -22,6 +21,19 @@ const Manage = ({
   tokenId,
   setListingCreated,
   fetchOffers
+}: {
+  chainId: number;
+  successFullListing: boolean;
+  setSuccessFullListing: (value: boolean) => void;
+  offerData: any;
+  marketplaceListings: any;
+  royalties: any;
+  dsponsorNFTContract: ContractOptions;
+  dsponsorMpContract: ContractOptions;
+  conditions: any;
+  tokenId: string;
+  setListingCreated: (value: boolean) => void;
+  fetchOffers: () => void;
 }) => {
   const currentChainObject = config[chainId];
   const relayerURL = currentChainObject.relayerURL;
@@ -29,11 +41,14 @@ const Manage = ({
   const [listingModal, setListingModal] = useState(false);
   const [isLoadingButton, setIsLoadingButton] = useState(false);
   const [isLastBidder, setIsLastBidder] = useState(false);
-  const { mutateAsync: cancelDirectListing } = useContractWrite(
-    dsponsorMpContract,
-    "cancelDirectListing"
-  );
-  const { mutateAsync: closeAuctionListing } = useContractWrite(dsponsorMpContract, "closeAuction");
+  //   const { mutateAsync: cancelDirectListing } = useContractWrite(
+  //     dsponsorMpContract,
+  //     "cancelDirectListing"
+  //   );
+  const { mutateAsync: cancelDirectListing } = useSendTransaction();
+
+  //   const { mutateAsync: closeAuctionListing } = useContractWrite(dsponsorMpContract, "closeAuction");
+  const { mutateAsync: closeAuctionListing } = useSendTransaction();
 
   const wallet = useActiveAccount();
   const address = wallet?.address;
@@ -75,9 +90,26 @@ const Manage = ({
           tags.push(`${chainId}-activity`);
           tags.push(`${chainId}-userAddress-${bidder}`);
         }
-        await closeAuctionListing({ args: [id] });
+        //   await closeAuctionListing({ args: [id] });
+        const tx = prepareContractCall({
+          contract: dsponsorMpContract,
+          // @ts-ignore
+          method: "closeAuction",
+          params: [id]
+        });
+
+        await closeAuctionListing(tx);
       } else if (listingType === "Direct") {
-        await cancelDirectListing({ args: [id] });
+        // await cancelDirectListing({ args: [id] });
+
+        const tx = prepareContractCall({
+          contract: dsponsorMpContract,
+          // @ts-ignore
+          method: "cancelDirectListing",
+          params: [id]
+        });
+
+        await cancelDirectListing(tx);
       }
 
       await fetch(`${relayerURL}/api/revalidate`, {

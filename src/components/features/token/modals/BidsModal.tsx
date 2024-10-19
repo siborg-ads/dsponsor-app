@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
 import { ethers, BigNumber } from "ethers";
-import { useContractWrite, useBalance, useSwitchChain, useChainId } from "@thirdweb-dev/react";
 import { Spinner } from "@nextui-org/spinner";
 import { toast } from "react-toastify";
 import Link from "next/link";
@@ -18,10 +17,17 @@ import ResponsiveTooltip from "@/components/ui/ResponsiveTooltip";
 import Input from "@/components/ui/Input";
 import { ngrokURL } from "@/data/ngrok";
 import StyledWeb3Button from "@/components/ui/buttons/StyledWeb3Button";
-import { Address } from "thirdweb";
+import { Address, ContractOptions, prepareContractCall } from "thirdweb";
 import NormalButton from "@/components/ui/buttons/NormalButton";
-import { useActiveAccount, useActiveWalletChain, useWalletBalance } from "thirdweb/react";
+import {
+  useActiveAccount,
+  useActiveWalletChain,
+  useSendTransaction,
+  useSwitchActiveWalletChain,
+  useWalletBalance
+} from "thirdweb/react";
 import { client } from "@/data/services/client";
+import { GetWalletBalanceResult } from "thirdweb/dist/types/wallets/utils/getWalletBalance";
 
 const BidsModal = ({
   setAmountToApprove,
@@ -60,17 +66,11 @@ const BidsModal = ({
   chainId: number;
   successFullBid: boolean;
   setSuccessFullBid: any;
-  dsponsorMpContract: any;
+  dsponsorMpContract: ContractOptions;
   toggleBidsModal: any;
   marketplaceListings: any;
   currencySymbol: string;
-  tokenBalance: {
-    symbol: string;
-    value: BigNumber;
-    name: string;
-    decimals: number;
-    displayValue: string;
-  };
+  tokenBalance?: GetWalletBalanceResult;
   allowanceTrue: any;
   currencyTokenDecimals: number;
   handleApprove: any;
@@ -91,7 +91,9 @@ const BidsModal = ({
   const relayerURL = config[chainId].relayerURL;
   const [initialIntPrice, setInitialIntPrice] = useState<string | null>(null);
   const [isPriceGood, setIsPriceGood] = useState(true);
-  const { mutateAsync: auctionBids } = useContractWrite(dsponsorMpContract, "bid");
+  //   const { mutateAsync: auctionBids } = useContractWrite(dsponsorMpContract, "bid");
+  const { mutateAsync: auctionBids } = useSendTransaction();
+
   const [checkTerms, setCheckTerms] = useState(false);
   const [refundedPrice, setRefundedPrice] = useState<string | null>(null);
   const [, setEndDate] = useState<string | null>(null);
@@ -110,11 +112,11 @@ const BidsModal = ({
   const [chainIdIsCorrect, setChainIdIsCorrect] = useState(false);
 
   const chainConfig = config[chainId];
-  const switchChain = useSwitchChain();
-  const userChainId = useChainId();
+  const switchChain = useSwitchActiveWalletChain();
+  const userChainId = useActiveWalletChain();
 
   useEffect(() => {
-    if (Number(chainId) === Number(userChainId)) {
+    if (Number(chainId) === Number(userChainId?.id)) {
       setChainIdIsCorrect(true);
     } else {
       setChainIdIsCorrect(false);
@@ -140,8 +142,14 @@ const BidsModal = ({
     address: userAddr,
     chain: chain
   });
-  //TODO: V5 MIGRATION
-  const { data: currencyBalance } = useBalance(currencyContract);
+
+  //   const { data: currencyBalance } = useBalance(currencyContract);
+  const { data: currencyBalance } = useWalletBalance({
+    client: client,
+    address: userAddr,
+    chain: chain,
+    tokenAddress: currencyContract
+  });
 
   const tags = [
     `${chainId}-userAddress-${address}`,
@@ -172,7 +180,8 @@ const BidsModal = ({
 
     setInsufficentBalance(hasInsufficientBalance);
 
-    if (nativeTokenBalance?.value?.lt(amountInEthWithSlippage)) {
+    // if (nativeTokenBalance?.value?.lt(amountInEthWithSlippage)) {
+    if (nativeTokenBalance && nativeTokenBalance.value < amountInEthWithSlippage) {
       setCanPayWithNativeToken(false);
     } else {
       setCanPayWithNativeToken(true);
@@ -370,10 +379,18 @@ const BidsModal = ({
       const referralAddress = getCookie("_rid") ?? "0x5b15Cbb40Ef056F74130F0e6A1e6FD183b14Cdaf";
       tags.push(`${chainId}-userAddress-${referralAddress}`);
 
-      await auctionBids({
-        args: [marketplaceListings[0].id, parsedBidsAmount, address, referralAddress],
-        overrides: { value: amountInEthWithSlippage }
+      //   await auctionBids({
+      //     args: [marketplaceListings[0].id, parsedBidsAmount, address, referralAddress],
+      //     overrides: { value: amountInEthWithSlippage }
+      //   });
+
+      const tx = prepareContractCall({
+        contract: dsponsorMpContract,
+        // @ts-ignore
+        method: "bid",
+        param: [marketplaceListings[0].id, parsedBidsAmount, address, referralAddress]
       });
+      await auctionBids(tx);
 
       await fetch(`${relayerURL}/api/revalidate`, {
         method: "POST",
@@ -441,9 +458,17 @@ const BidsModal = ({
         tags.push(`${chainId}-userAddress-${bidder}`);
       }
 
-      await auctionBids({
-        args: [marketplaceListings?.[0]?.id, bidsBigInt, address, referralAddress]
+      //   await auctionBids({
+      //     args: [marketplaceListings?.[0]?.id, bidsBigInt, address, referralAddress]
+      //   });
+
+      const tx = prepareContractCall({
+        contract: dsponsorMpContract,
+        // @ts-ignore
+        method: "bid",
+        param: [marketplaceListings[0].id, bidsBigInt, address, referralAddress]
       });
+      await auctionBids(tx);
 
       await fetch(`${relayerURL}/api/revalidate`, {
         method: "POST",
@@ -831,47 +856,50 @@ const BidsModal = ({
                       <>
                         {!insufficentBalance ? (
                           <>
-                            {nativeTokenBalance?.value?.gte(
-                              BigNumber.from(config[chainId]?.gaslessBalanceThreshold ?? 0)
-                            ) ? (
-                              <StyledWeb3Button
-                                contractAddress={
-                                  config[chainId]?.smartContracts?.DSPONSORMP?.address
-                                }
-                                onClick={async () => {
-                                  await toast.promise(handleApprove, {
-                                    pending: "Waiting for confirmation 🕒",
-                                    success: "Approval confirmed 👌",
-                                    error: "Approval rejected 🤯"
-                                  });
-                                }}
-                                isDisabled={
-                                  !isPriceGood ||
-                                  !checkTerms ||
-                                  !bidsAmount ||
-                                  !allowanceTrue ||
-                                  notEnoughFunds
-                                }
-                                defaultText={
-                                  notEnoughFunds ? "Not enough funds" : "Approve 🔓 (1/2)"
-                                }
-                              />
-                            ) : (
-                              <StyledWeb3Button
-                                contractAddress={
-                                  chainConfig?.smartContracts?.DSPONSORADMIN?.address
-                                }
-                                onClick={async () => {
-                                  await toast.promise(handleApprove, {
-                                    pending: "Waiting for confirmation 🕒",
-                                    success: "Approval confirmed 👌",
-                                    error: "Approval rejected 🤯"
-                                  });
-                                }}
-                                isDisabled={true}
-                                defaultText={`You need more than ${formatUnits(BigNumber.from(config[chainId].gaslessBalanceThreshold ?? 0), "ether")} ETH to execute this tx.`}
-                              />
-                            )}
+                            {
+                              //   nativeTokenBalance?.value?.gte(BigNumber.from(config[chainId]?.gaslessBalanceThreshold ?? 0)
+                              nativeTokenBalance &&
+                              nativeTokenBalance?.value >=
+                                BigInt(config[chainId]?.gaslessBalanceThreshold ?? 0) ? (
+                                <StyledWeb3Button
+                                  contractAddress={
+                                    config[chainId]?.smartContracts?.DSPONSORMP?.address
+                                  }
+                                  onClick={async () => {
+                                    await toast.promise(handleApprove, {
+                                      pending: "Waiting for confirmation 🕒",
+                                      success: "Approval confirmed 👌",
+                                      error: "Approval rejected 🤯"
+                                    });
+                                  }}
+                                  isDisabled={
+                                    !isPriceGood ||
+                                    !checkTerms ||
+                                    !bidsAmount ||
+                                    !allowanceTrue ||
+                                    notEnoughFunds
+                                  }
+                                  defaultText={
+                                    notEnoughFunds ? "Not enough funds" : "Approve 🔓 (1/2)"
+                                  }
+                                />
+                              ) : (
+                                <StyledWeb3Button
+                                  contractAddress={
+                                    chainConfig?.smartContracts?.DSPONSORADMIN?.address
+                                  }
+                                  onClick={async () => {
+                                    await toast.promise(handleApprove, {
+                                      pending: "Waiting for confirmation 🕒",
+                                      success: "Approval confirmed 👌",
+                                      error: "Approval rejected 🤯"
+                                    });
+                                  }}
+                                  isDisabled={true}
+                                  defaultText={`You need more than ${formatUnits(BigNumber.from(config[chainId].gaslessBalanceThreshold ?? 0), "ether")} ETH to execute this tx.`}
+                                />
+                              )
+                            }
 
                             <StyledWeb3Button
                               contractAddress={
