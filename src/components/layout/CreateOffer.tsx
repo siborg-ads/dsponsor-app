@@ -2,8 +2,6 @@ import React, { useEffect, useState, useRef, useMemo } from "react";
 import Meta from "@/components/Meta";
 import Image from "next/image";
 import "react-datepicker/dist/react-datepicker.css";
-import { useContract, useContractWrite, useStorageUpload } from "@thirdweb-dev/react";
-import { ThirdwebSDK } from "@thirdweb-dev/sdk";
 import styles from "@/styles/style.module.scss";
 import AdSubmission from "@/components/features/token/accordion/AdSubmission";
 import OfferType from "@/components/features/createOffer/OfferType";
@@ -13,13 +11,16 @@ import OfferValidity from "@/components/features/createOffer/OfferValidity";
 import config from "@/config/config";
 import CarouselForm from "@/components/ui/misc/CarouselForm";
 import { useSwitchChainContext } from "@/providers/SwitchChain";
-import { Address } from "thirdweb";
+import { Address, getContract, prepareContractCall, readContract } from "thirdweb";
 import { features } from "@/data/features";
 
-import ERC20ABI from "@/abi/ERC20.json";
 import { ChainObject } from "@/types/chain";
 import ChainSelector from "../features/chain/ChainSelector";
-import { useActiveAccount } from "thirdweb/react";
+import { useActiveAccount, useSendTransaction } from "thirdweb/react";
+import { client } from "@/data/services/client";
+import { ERC20ABI } from "@/abi/ERC20";
+import { DSPONSOR_ADMIN_ABI } from "@/abi/dsponsorAdmin";
+import { upload } from "thirdweb/storage";
 import { BigNumber } from "ethers";
 
 export type Currency = {
@@ -51,7 +52,7 @@ const CreateOffer = () => {
     ?.filter((currency) => currency !== null);
 
   const [files, setFiles] = useState<any[]>([]);
-  const { mutateAsync: upload } = useStorageUpload();
+  //   const { mutateAsync: upload } = useStorageUpload();
   const [currentSlide, setCurrentSlide] = useState(0);
   const [link, setLink] = useState<string | null>(null);
   const [errors, setErrors] = useState({});
@@ -96,13 +97,28 @@ const CreateOffer = () => {
         let customTokenSymbol;
         let customTokenDecimals;
         try {
-          const sdk = new ThirdwebSDK(chainConfig?.network);
+          //   const sdk = new ThirdwebSDK(chainConfig?.network);
+          //   const tokenContractAsync = await sdk.getContract(tokenAddress, ERC20ABI);
 
-          const tokenContractAsync = await sdk.getContract(tokenAddress, ERC20ABI);
+          const tokenContractAsync = getContract({
+            client: client,
+            address: tokenAddress,
+            abi: ERC20ABI,
+            chain: chainConfig?.chainObject
+          });
 
           if (tokenContractAsync) {
-            customTokenSymbol = await tokenContractAsync.call("symbol");
-            customTokenDecimals = await tokenContractAsync.call("decimals");
+            // customTokenSymbol = await tokenContractAsync.call("symbol");
+            // customTokenDecimals = await tokenContractAsync.call("decimals");
+            customTokenSymbol = await readContract({
+              contract: tokenContractAsync,
+              method: "symbol"
+            });
+
+            customTokenDecimals = await readContract({
+              contract: tokenContractAsync,
+              method: "decimals"
+            });
           }
         } catch (e) {
           // console.error("error getting token symbol", e)
@@ -187,14 +203,22 @@ const CreateOffer = () => {
   const wallet = useActiveAccount();
   const address = wallet?.address;
 
-  const { contract: DsponsorAdminContract } = useContract(
-    chainConfig?.smartContracts?.DSPONSORADMIN?.address,
-    chainConfig?.smartContracts?.DSPONSORADMIN?.abi
-  );
-  const { mutateAsync: createDSponsorNFTAndOffer } = useContractWrite(
-    DsponsorAdminContract,
-    "createDSponsorNFTAndOffer"
-  );
+  //   const { contract: DsponsorAdminContract } = useContract(
+  //     chainConfig?.smartContracts?.DSPONSORADMIN?.address,
+  //     chainConfig?.smartContracts?.DSPONSORADMIN?.abi
+  //   );
+  const DsponsorAdminContract = getContract({
+    client: client,
+    address: chainConfig?.smartContracts?.DSPONSORADMIN?.address,
+    abi: DSPONSOR_ADMIN_ABI,
+    chain: chainConfig?.chainObject
+  });
+
+  //   const { mutateAsync: createDSponsorNFTAndOffer } = useContractWrite(
+  //     DsponsorAdminContract,
+  //     "createDSponsorNFTAndOffer"
+  //   );
+  const { mutateAsync: createDSponsorNFTAndOffer } = useSendTransaction();
 
   useEffect(() => {
     if (!address) return;
@@ -374,8 +398,10 @@ const CreateOffer = () => {
       let uniqueParams = [...new Set(paramsFormated)];
 
       const uploadUrl = await upload({
-        data: [files[0]],
-        options: { uploadWithGatewayUrl: true, uploadWithoutDirectory: true }
+        client: client,
+        files: [files[0]],
+        // options: { uploadWithGatewayUrl: true, uploadWithoutDirectory: true }
+        uploadWithoutDirectory: true
       });
 
       if (name && link) {
@@ -414,13 +440,17 @@ const CreateOffer = () => {
       });
 
       const jsonMetadataURL = await upload({
-        data: [jsonMetadata],
-        options: { uploadWithGatewayUrl: true, uploadWithoutDirectory: true }
+        files: [jsonMetadata],
+        client: client,
+        // options: { uploadWithGatewayUrl: true, uploadWithoutDirectory: true }
+        uploadWithoutDirectory: true
       });
 
       const jsonContractURIURL = await upload({
-        data: [jsonContractURI],
-        options: { uploadWithGatewayUrl: true, uploadWithoutDirectory: true }
+        files: [jsonContractURI],
+        client: client,
+        // options: { uploadWithGatewayUrl: true, uploadWithoutDirectory: true }
+        uploadWithoutDirectory: true
       });
 
       const jsonIpfsLinkContractURI = jsonContractURIURL[0];
@@ -462,19 +492,30 @@ const CreateOffer = () => {
 
       const preparedArgs = [Object.values(JSON.parse(args[0])), Object.values(JSON.parse(args[1]))];
 
-      const offerCreationResult = await createDSponsorNFTAndOffer({ args: preparedArgs });
+      // const offerCreationResult = await createDSponsorNFTAndOffer({ args: preparedArgs });
 
-      const receipt = offerCreationResult?.receipt as any;
-      const offerId = receipt?.events?.find((e) => e.event === "UpdateOffer")?.args?.[0];
+      const tx = await prepareContractCall({
+        contract: DsponsorAdminContract,
+        method: "createDSponsorNFTAndOffer",
+        // @ts-ignore
+        params: preparedArgs
+      });
+
+      // @ts-ignore
+      const offerCreationResult = await createDSponsorNFTAndOffer(tx);
+
+      // TODO: HANDLE RECEIPT
+      //   const receipt = offerCreationResult?.receipt as any;
+      //   const offerId = receipt?.events?.find((e) => e.event === "UpdateOffer")?.args?.[0];
 
       const tags = [
         `${chainConfig.chainId}-adOffers`,
         `${chainConfig.chainId}-userAddress-${userMinterAddress}`
       ];
 
-      if (offerId && BigNumber.isBigNumber(offerId)) {
-        tags.push(`${chainConfig.chainId}-adOffer-${offerId.toBigInt().toString()}`);
-      }
+      //   if (offerId && BigNumber.isBigNumber(offerId)) {
+      // tags.push(`${chainConfig.chainId}-adOffer-${offerId.toBigInt().toString()}`);
+      //   }
 
       const relayerURL = chainConfig?.relayerURL;
       if (relayerURL) {

@@ -1,12 +1,11 @@
 import React, { useState, useEffect, useMemo, useCallback } from "react";
-import { useRouter } from "next/router";
 import Link from "next/link";
 import Meta from "@/components/Meta";
 import { ethers, BigNumber } from "ethers";
 import Image from "next/image";
-import { useContract, useContractWrite, useContractRead, useStorage } from "@thirdweb-dev/react";
-import { ThirdwebSDK } from "@thirdweb-dev/sdk";
-
+import { getContract, prepareContractCall, readContract } from "thirdweb";
+import { useReadContract, useSendTransaction } from "thirdweb/react";
+import { resolveScheme } from "thirdweb/storage";
 import Tippy from "@tippyjs/react";
 import OfferSkeleton from "@/components/ui/skeletons/OfferSkeleton";
 import { fetchOffer } from "@/utils/graphql/fetchOffer";
@@ -31,15 +30,16 @@ import TokenCard from "@/components/ui/cards/TokenCard";
 import { addLineBreaks } from "@/utils/misc/addLineBreaks";
 import Input from "../ui/Input";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
-import DsponsorNftABI from "@/abi/dsponsorNFT.json";
 import { getOwnershipPeriod } from "@/utils/dates/period";
 
-import ERC20ABI from "@/abi/ERC20.json";
-import DSponsorNFTABI from "@/abi/dsponsorNFT.json";
+import { ERC20ABI } from "@/abi/ERC20";
+import { DSPONSOR_ADMIN_ABI } from "@/abi/dsponsorAdmin";
+import { DSPONSOR_NFT_ABI } from "@/abi/dsponsorNFT";
 import { ChainObject } from "@/types/chain";
 import { Address } from "thirdweb";
 import isUrlValid from "@/utils/misc/isUrlValid";
 import { useActiveAccount } from "thirdweb/react";
+import { client } from "@/data/services/client";
 
 const onAuctionCondition = (offer, mint, direct) => {
   return (
@@ -54,12 +54,7 @@ const onAuctionCondition = (offer, mint, direct) => {
 
 type SortOptionsType = "Price: low to high" | "Price: high to low" | "Ending soon" | "Sort by name";
 
-const Offer = () => {
-  const router = useRouter();
-  const storage = useStorage();
-
-  const offerId = router.query?.offerId;
-  const chainId = router.query?.chainId as string;
+const Offer = ({ offerId, chainId }) => {
   const chainConfig: ChainObject = config[Number(chainId)];
 
   const relayerURL = chainConfig?.relayerURL;
@@ -77,21 +72,51 @@ const Offer = () => {
   const [isAdmin, setIsAdmin] = useState(false);
   const wallet = useActiveAccount();
   const address = wallet?.address;
-  const { contract: DsponsorAdminContract } = useContract(
-    chainConfig?.smartContracts?.DSPONSORADMIN?.address,
-    chainConfig?.smartContracts?.DSPONSORADMIN?.abi
-  );
-  const { mutateAsync } = useContractWrite(DsponsorAdminContract, "reviewAdProposals");
+
+  //   const { contract: DsponsorAdminContract } = useContract(
+  // chainConfig?.smartContracts?.DSPONSORADMIN?.address,
+  //     chainConfig?.smartContracts?.DSPONSORADMIN?.abi
+  //   );
+  const DSponsorAdminContract = getContract({
+    client: client,
+    address: chainConfig?.smartContracts?.DSPONSORADMIN?.address,
+    chain: chainConfig?.chainObject,
+    abi: DSPONSOR_ADMIN_ABI
+  });
+
+  // const { mutateAsync } = useContractWrite(DsponsorAdminContract, "reviewAdProposals");
+  const { mutateAsync: reviewAdProposals } = useSendTransaction();
+
   const [urlFromChild, setUrlFromChild] = useState("");
   const [successFullRefuseModal, setSuccessFullRefuseModal] = useState(false);
   const [tokenData, setTokenData] = useState("");
   const [isWordAlreadyTaken, setIsWordAlreadyTaken] = useState(false);
-  const { contract: tokenContract } = useContract(
-    offerData?.nftContract?.prices?.[0]?.currency,
-    ERC20ABI
-  );
-  const { data: symbolContract } = useContractRead(tokenContract, "symbol");
-  const { data: decimalsContract } = useContractRead(tokenContract, "decimals");
+
+  //   const { contract: tokenContract } = useContract(
+  //     offerData?.nftContract?.prices?.[0]?.currency,
+  //     ERC20ABI
+  //   );
+  const tokenContract = getContract({
+    client: client,
+    address: offerData?.nftContract?.prices?.[0]?.currency,
+    chain: chainConfig?.chainObject,
+    abi: ERC20ABI
+  });
+
+  // const { data: symbolContract } = useContractRead(tokenContract, "symbol");
+  const { data: symbolContract } = useReadContract({
+    contract: tokenContract,
+    method: "symbol",
+    params: []
+  });
+
+  // const { data: decimalsContract } = useContractRead(tokenContract, "decimals");
+  const { data: decimalsContract } = useReadContract({
+    contract: tokenContract,
+    method: "decimals",
+    params: []
+  });
+
   const NATIVECurrency = chainConfig?.smartContracts?.currencies?.NATIVE;
   const { setSelectedChain } = useSwitchChainContext();
   const [offerManagementActiveTab, setOfferManagementActiveTab] = useState("integration");
@@ -102,8 +127,21 @@ const Offer = () => {
   const [sortOption, setSortOption] = useState<SortOptionsType>("Sort by name");
 
   const [nftContractAddress, setNftContractAddress] = useState<Address | null>(null);
-  const { contract } = useContract(nftContractAddress, DSponsorNFTABI);
-  const { data: owner } = useContractRead(contract, "owner");
+  //   const { contract } = useContract(nftContractAddress, DSponsorNFTABI);
+  const contract = getContract({
+    client: client,
+    address: nftContractAddress ?? "",
+    chain: chainConfig?.chainObject,
+    abi: DSPONSOR_NFT_ABI
+  });
+
+  // const { data: owner } = useContractRead(contract, "owner");
+  const { data: owner } = useReadContract({
+    contract: contract,
+    method: "owner",
+    params: []
+  });
+
   /*
   const [currencyDecimals, setCurrencyDecimals] = useState<number | null>(null);
   const [currencySymbol, setCurrencySymbol] = useState<string | null>(null);
@@ -120,7 +158,13 @@ const Offer = () => {
   }, [decimalsContract, symbolContract]);
 */
 
-  const { data: bps } = useContractRead(DsponsorAdminContract, "feeBps");
+  //   const { data: bps } = useContractRead(DsponsorAdminContract, "feeBps");
+  const { data: bps } = useReadContract({
+    contract: DSponsorAdminContract,
+    method: "feeBps",
+    params: []
+  });
+
   const maxBps = 10000;
 
   let tokenCurrencyAddress = offerData?.nftContract?.prices[0]?.currency;
@@ -358,10 +402,11 @@ const Offer = () => {
 
   useEffect(() => {
     const fetchImage = async (imageUrlLocal) => {
-      if (!storage) return;
-
       try {
-        const ipfsUrl = await storage.resolveScheme(imageUrlLocal);
+        const ipfsUrl = resolveScheme({
+          client: client,
+          uri: imageUrlLocal
+        });
         setImageUrl(ipfsUrl);
       } catch (error) {
         console.error("Error fetching image:", error);
@@ -376,7 +421,7 @@ const Offer = () => {
     } else {
       setImageUrl(localUrl);
     }
-  }, [storage, offerData]);
+  }, [offerData]);
 
   useEffect(() => {
     if (chainConfig?.network) {
@@ -443,17 +488,39 @@ const Offer = () => {
       for (const admin of offerData.admins) {
         tags.push(`${chainId}-userAddress-${admin}`);
       }
-      const sdk = new ThirdwebSDK(chainConfig?.network);
-      const contract = await sdk.getContract(offerData.nftContract.id, DsponsorNftABI);
+
+      const contract = getContract({
+        client: client,
+        address: offerData.nftContract.id,
+        // chain: chain || base,
+        chain: chainConfig?.chainObject,
+        abi: DSPONSOR_NFT_ABI
+      });
+      //   const sdk = new ThirdwebSDK(chainConfig?.network);
+      //   const contract = await sdk.getContract(offerData.nftContract.id, DsponsorNftABI);
 
       for (const sub of submissionArgs) {
-        const owner = await contract.call("ownerOf", [sub.tokenId]);
+        // const owner = await contract.call("ownerOf", [sub.tokenId]);
+        const owner = await readContract({
+          contract,
+          method: "ownerOf",
+          params: [sub.tokenId]
+        });
         tags.push(`${chainId}-userAddress-${owner}`);
       }
 
-      await mutateAsync({
-        args: [submissionArgs]
+      //   await reviewAdProposals({
+      //     args: [submissionArgs]
+      //   });
+
+      const tx = prepareContractCall({
+        contract: DSponsorAdminContract,
+        method: "reviewAdProposals",
+        params: [submissionArgs]
       });
+
+      // @ts-ignore
+      await reviewAdProposals(tx);
 
       await fetch(`${relayerURL}/api/revalidate`, {
         method: "POST",
@@ -646,7 +713,7 @@ const Offer = () => {
                   <div className="modal-dialog !my-0 flex items-center justify-center">
                     <div className="block modal fade show">
                       <div className="modal-dialog !my-0 flex items-center justify-center">
-                        <img
+                        <Image
                           src={imageUrl ?? "/images/gradients/gradient_creative.jpg"}
                           alt="image"
                           className="object-cover w-full h-auto rounded-2xl aspect-square"
@@ -1179,7 +1246,7 @@ const Offer = () => {
                   <UpdateOffer
                     chainConfig={chainConfig}
                     offer={offerData}
-                    contractOwner={owner}
+                    contractOwner={owner as Address}
                     onSubmit={async () => {
                       setOfferManagementActiveTab("integration");
                       fetchOffers();
@@ -1216,7 +1283,7 @@ const Offer = () => {
             <Details
               contractAddress={offerData?.nftContract?.id}
               initialCreator={offerData?.initialCreator}
-              contractOwner={owner}
+              contractOwner={owner as Address}
               isToken={false}
               offerData={offerData}
               chainId={parseFloat(chainId)}

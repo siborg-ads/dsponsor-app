@@ -1,11 +1,15 @@
+import { DSPONSOR_ADMIN_ABI } from "@/abi/dsponsorAdmin";
 import StyledWeb3Button from "@/components/ui/buttons/StyledWeb3Button";
 import Input from "@/components/ui/Input";
 import config from "@/config/config";
+import { client } from "@/data/services/client";
 import { Divider, Switch } from "@nextui-org/react";
-import { Address, useContract, useContractWrite, useStorage } from "@thirdweb-dev/react";
 import Link from "next/link";
 import React, { useEffect } from "react";
 import { toast } from "react-toastify";
+import { getContract, prepareContractCall } from "thirdweb";
+import { useSendTransaction } from "thirdweb/react";
+import { resolveScheme, download, upload } from "thirdweb/storage";
 
 const Telegram = ({
   chainId,
@@ -24,20 +28,30 @@ const Telegram = ({
   const [metadatas, setMetadatas] = React.useState<any | null>(null);
   const [isMounted, setIsMounted] = React.useState<boolean>(false);
 
-  const storage = useStorage();
+  //   const { contract } = useContract(
+  // config[chainId]?.smartContracts?.DSPONSORADMIN?.address as Address
+  //   );
 
-  const { contract } = useContract(
-    config[chainId]?.smartContracts?.DSPONSORADMIN?.address as Address
-  );
-  const { mutateAsync } = useContractWrite(contract, "updateOffer");
+  const contract = getContract({
+    client: client,
+    chain: config[chainId].chainObject,
+    address: config[chainId].smartContracts.DSPONSORADMIN.address,
+    abi: DSPONSOR_ADMIN_ABI
+  });
+
+  //   const { mutateAsync } = useContractWrite(contract, "updateOffer");
+  const { mutateAsync } = useSendTransaction();
 
   useEffect(() => {
     const fetchMetadatas = async (metadataURL) => {
-      if (!storage) return;
-
       if (metadataURL) {
         try {
-          const initialMetadatas = await storage.downloadJSON(metadataURL);
+          //   const initialMetadatas = await storage.downloadJSON(metadataURL);
+          const response = await download({
+            uri: metadataURL,
+            client: client
+          });
+          const initialMetadatas = await response.json();
 
           setMetadatas(initialMetadatas);
           setTelegramChannels(initialMetadatas?.offer?.telegramIntegration?.telegramChannels);
@@ -56,7 +70,7 @@ const Telegram = ({
     if (offerData && !isMounted) {
       fetchMetadatas(offerData?.metadataURL);
     }
-  }, [isMounted, offerData, storage]);
+  }, [isMounted, offerData]);
 
   const handleTelegramChannelsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const channels = e.target.value?.split(/[\s,]+/).map((channel) => channel.trim());
@@ -75,8 +89,6 @@ const Telegram = ({
   };
 
   const uploadNewMetadatas = async (originalMetadatas) => {
-    if (!storage) return;
-
     let finalMetadatas = { ...originalMetadatas };
 
     // make sure metadatas is a valid JSON object
@@ -100,8 +112,14 @@ const Telegram = ({
     }
 
     try {
-      const jsonUri = await storage.upload(finalMetadatas);
-      const jsonUrl = await storage.resolveScheme(jsonUri);
+      const jsonUri = await upload({
+        client: client,
+        files: [finalMetadatas]
+      });
+      const jsonUrl = resolveScheme({
+        uri: jsonUri,
+        client: client
+      });
       return jsonUrl;
     } catch (error) {
       console.error(error);
@@ -135,8 +153,30 @@ const Telegram = ({
     const offerMetadata = newMetadataUrl ?? offerData?.metadataURL;
 
     try {
-      await mutateAsync({
-        args: [
+      //   await mutateAsync({
+      //     args: [
+      //       offerId,
+      //       offerData?.disable,
+      //       offerData?.metadata?.offer?.name,
+      //       offerMetadata,
+      //       {
+      //         admins: [],
+      //         validators: [],
+      //         adParameters: []
+      //       },
+      //       {
+      //         admins: [],
+      //         validators: [],
+      //         adParameters: []
+      //       }
+      //     ]
+      //   });
+
+      const tx = prepareContractCall({
+        contract: contract,
+        method: "updateOffer",
+        params: [
+          // @ts-ignore
           offerId,
           offerData?.disable,
           offerData?.metadata?.offer?.name,
@@ -153,6 +193,9 @@ const Telegram = ({
           }
         ]
       });
+
+      // @ts-ignore
+      await mutateAsync(tx);
 
       const relayerURL = config[chainId as number]?.relayerURL;
       if (relayerURL) {
@@ -193,7 +236,7 @@ const Telegram = ({
 
       <Divider className="my-4" />
 
-      <span className="text-white text-lg font-semibold">Update your Telegram Channels</span>
+      <span className="text-lg font-semibold text-white">Update your Telegram Channels</span>
 
       <span className="dark:text-jacarta-100 text-jacarta-100">
         You can add multiple channels to your offer. The bot will automatically post the ads to the

@@ -375,7 +375,7 @@ const TokenCard = ({
     const fetchImage = async (image) => {
       // get url image instead of ipfs:// starting url
       if (image?.startsWith("ipfs://")) {
-        const ipfsUrl = await resolveScheme({
+        const ipfsUrl = resolveScheme({
           client: client,
           uri: image
         });
