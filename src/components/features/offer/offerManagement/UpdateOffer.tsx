@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import * as Switch from "@radix-ui/react-switch";
-import { useContract, useContractWrite } from "@thirdweb-dev/react";
 import config, { MAX_SIZE_FILE } from "@/config/config";
 import { toast } from "react-toastify";
 import { features } from "@/data/features";
@@ -10,7 +9,7 @@ import { DatePicker } from "@nextui-org/date-picker";
 import { parseDate } from "@internationalized/date";
 import Input from "@/components/ui/Input";
 import TextArea from "@/components/ui/TextArea";
-import { Address } from "thirdweb";
+import { Address, getContract, prepareContractCall } from "thirdweb";
 import { isAddress } from "ethers/lib/utils";
 import StyledWeb3Button from "@/components/ui/buttons/StyledWeb3Button";
 import { ChainObject } from "@/types/chain";
@@ -18,9 +17,10 @@ import { cn } from "@nextui-org/react";
 import Tippy from "@tippyjs/react";
 import "tippy.js/dist/tippy.css";
 import formatBytes from "@/utils/misc/formatBytes";
-import { useActiveAccount } from "thirdweb/react";
+import { useActiveAccount, useSendTransaction } from "thirdweb/react";
 import { client } from "@/data/services/client";
 import { download, resolveScheme, upload } from "thirdweb/storage";
+import { DSPONSOR_ADMIN_ABI } from "@/abi/dsponsorAdmin";
 
 const fileTypes = ["JPG", "PNG", "WEBP", "GIF"];
 
@@ -66,11 +66,20 @@ const UpdateOffer = ({
   const wallet = useActiveAccount();
   const address = wallet?.address;
 
-  const { contract } = useContract(
-    config[chainId as number]?.smartContracts?.DSPONSORADMIN?.address as Address,
-    config[chainId as number]?.smartContracts?.DSPONSORADMIN?.abi
-  );
-  const { mutateAsync } = useContractWrite(contract, "updateOffer");
+  //   const { contract } = useContract(
+  //     config[chainId as number]?.smartContracts?.DSPONSORADMIN?.address as Address,
+  //     config[chainId as number]?.smartContracts?.DSPONSORADMIN?.abi
+  //   );
+
+  const contract = getContract({
+    client: client,
+    address: config[chainId as number].smartContracts.DSPONSORADMIN.address,
+    chain: config[chainId as number].chainObject,
+    abi: DSPONSOR_ADMIN_ABI
+  });
+
+  //   const { mutateAsync } = useContractWrite(contract, "updateOffer");
+  const { mutateAsync } = useSendTransaction();
 
   const handleLogoUpload = (file: any) => {
     if (file) {
@@ -90,7 +99,7 @@ const UpdateOffer = ({
           client: client,
           files: [files[0]]
         });
-        newImageUrl = await resolveScheme({
+        newImageUrl = resolveScheme({
           client: client,
           uri: imageUri
         });
@@ -156,7 +165,7 @@ const UpdateOffer = ({
         client: client,
         files: [finalMetadatas]
       });
-      const jsonUrl = await resolveScheme({
+      const jsonUrl = resolveScheme({
         client,
         uri: jsonUri
       });
@@ -513,9 +522,22 @@ const UpdateOffer = ({
     };
 
     try {
-      await mutateAsync({
-        args: [
-          updatedOfferParams?.offerId,
+      //   await mutateAsync({
+      //     args: [
+      //       updatedOfferParams?.offerId,
+      //       updatedOfferParams?.disable,
+      //       updatedOfferParams?.name,
+      //       updatedOfferParams?.offerMetadata,
+      //       updatedOfferParams?.addOptions,
+      //       updatedOfferParams?.removeOptions
+      //     ]
+      //   });
+
+      const tx = prepareContractCall({
+        contract: contract,
+        method: "updateOffer",
+        params: [
+          BigInt(updatedOfferParams?.offerId),
           updatedOfferParams?.disable,
           updatedOfferParams?.name,
           updatedOfferParams?.offerMetadata,
@@ -523,6 +545,10 @@ const UpdateOffer = ({
           updatedOfferParams?.removeOptions
         ]
       });
+
+      // @ts-ignore
+      await mutateAsync(tx);
+
       const relayerURL = config[chainId as number]?.relayerURL;
       if (relayerURL) {
         await fetch(`${relayerURL}/api/revalidate`, {

@@ -1,5 +1,3 @@
-import { useChain, useContract, useContractWrite, useStorageUpload } from "@thirdweb-dev/react";
-
 import Image from "next/image";
 import React, { useEffect, useRef, useState } from "react";
 import styles from "@/styles/style.module.scss";
@@ -12,7 +10,12 @@ import AdSubmission from "@/components/features/token/accordion/AdSubmission";
 import MainButton from "@/components/ui/buttons/MainButton";
 import { features } from "@/data/features";
 import config from "@/config/config";
-import { Address } from "thirdweb";
+import { Address, getContract, prepareContractCall } from "thirdweb";
+import { useActiveWalletChain, useSendTransaction } from "thirdweb/react";
+import { client } from "@/data/services/client";
+import { DSPONSOR_ADMIN_ABI } from "@/abi/dsponsorAdmin";
+import { ChainObject } from "@/types/chain";
+import { upload } from "thirdweb/storage";
 
 export type StepType = {
   offerIds: string[];
@@ -38,8 +41,8 @@ const OwnedTokens = ({
   manageAddress: Address;
   tokenStatuses: ("pending" | "rejected" | "accepted" | null)[];
 }) => {
-  const { chainId, name: chainName } = useChain() || {};
-  const currentChainObject = config[chainId as number];
+  const activeChain = useActiveWalletChain();
+  const chainConfig: ChainObject = config[activeChain?.id || 8453];
 
   const [selectedItems, setSelectedItems] = useState<any[]>([]);
   const [isSelectedItem, setIsSelectedItem] = useState({});
@@ -61,15 +64,23 @@ const OwnedTokens = ({
   const [steps, setSteps] = useState<StepType[]>([]);
   const stepsRef = useRef([]);
   const [numSteps, setNumSteps] = useState(2);
-  const { contract: DsponsorAdminContract } = useContract(
-    currentChainObject?.smartContracts?.DSPONSORADMIN?.address,
-    currentChainObject?.smartContracts?.DSPONSORADMIN?.abi
-  );
+  //   const { contract: DsponsorAdminContract } = useContract(
+  //     currentChainObject?.smartContracts?.DSPONSORADMIN?.address,
+  //     currentChainObject?.smartContracts?.DSPONSORADMIN?.abi
+  //   );
 
-  const relayerUrl = currentChainObject?.relayerURL;
+  const DsponsorAdminContract = getContract({
+    client: client,
+    chain: chainConfig.chainObject,
+    address: chainConfig?.smartContracts?.DSPONSORADMIN?.address,
+    abi: DSPONSOR_ADMIN_ABI
+  });
 
-  const { mutateAsync: uploadToIPFS } = useStorageUpload();
-  const { mutateAsync: submitAd } = useContractWrite(DsponsorAdminContract, "submitAdProposals");
+  const relayerUrl = chainConfig?.relayerURL;
+
+  //   const { mutateAsync: uploadToIPFS } = useStorageUpload();
+  //   const { mutateAsync: submitAd } = useContractWrite(DsponsorAdminContract, "submitAdProposals");
+  const { mutateAsync: submitAd } = useSendTransaction();
 
   const handlePreviewModal = () => {
     if (successFullUpload) {
@@ -208,13 +219,11 @@ const OwnedTokens = ({
           const offer = selectedItems.find((i) => i.offerId === offerId && i.tokenId === tokenId);
 
           if (item.adParameter !== "xSpaceId" && item.adParameter !== "xCreatorHandle" && offer) {
-            revalidateTags.push(`${currentChainObject?.chainId}-adOffer-${offerId}`);
-            revalidateTags.push(
-              `${currentChainObject?.chainId}-nftContract-${offer.nftContract.id}`
-            );
+            revalidateTags.push(`${chainConfig?.chainId}-adOffer-${offerId}`);
+            revalidateTags.push(`${chainConfig?.chainId}-nftContract-${offer.nftContract.id}`);
 
             for (const adminAddr of offer.admins) {
-              revalidateTags.push(`${currentChainObject?.chainId}-userAddress-${adminAddr}`);
+              revalidateTags.push(`${chainConfig?.chainId}-userAddress-${adminAddr}`);
             }
           }
 
@@ -224,9 +233,10 @@ const OwnedTokens = ({
           if (item.file) {
             let uploadUrl;
             try {
-              uploadUrl = await uploadToIPFS({
-                data: [item.file],
-                options: { uploadWithGatewayUrl: true, uploadWithoutDirectory: true }
+              uploadUrl = await upload({
+                client: client,
+                files: [item.file],
+                uploadWithoutDirectory: true
               });
             } catch (error) {
               console.error("Erreur lors de l'upload à IPFS:", error);
@@ -248,10 +258,20 @@ const OwnedTokens = ({
         data: dataItems
       };
 
-      revalidateTags.push(`${currentChainObject?.chainId}-userAddress-${manageAddress}`);
+      revalidateTags.push(`${chainConfig?.chainId}-userAddress-${manageAddress}`);
       revalidateTags = [...new Set(revalidateTags)];
 
-      await submitAd({ args: Object.values(argsAdSubmited) });
+      //   await submitAd({ args: Object.values(argsAdSubmited) });
+      const tx = prepareContractCall({
+        contract: DsponsorAdminContract,
+        method: "submitAdProposals",
+        // @ts-ignore
+        params: Object.values(argsAdSubmited)
+      });
+
+      // @ts-ignore
+      await submitAd(tx);
+
       if (relayerUrl) {
         await fetch(`${relayerUrl}/api/revalidate`, {
           method: "POST",
@@ -329,8 +349,8 @@ const OwnedTokens = ({
               {isSelectionActive && (
                 <div className="flex items-center justify-center gap-4 p-3 mb-6 bg-white dark:bg-secondaryBlack dark:text-jacarta-100 rounded-2lg">
                   <span>
-                    Here is your tokens on the current network ({chainName}). Select tokens to
-                    submit an ad on
+                    Here is your tokens on the current network ({activeChain?.name}). Select tokens
+                    to submit an ad on
                   </span>
                 </div>
               )}
@@ -351,7 +371,7 @@ const OwnedTokens = ({
                   tokenStatuses[index] === "rejected" || tokenStatuses[index] === null;
 
                 return isSelectionActive ? (
-                  item.chainConfig.chainId === currentChainObject?.chainId && (
+                  item.chainConfig.chainId === chainConfig?.chainId && (
                     <div
                       onClick={() => handleSelection(item)}
                       key={index}
@@ -518,7 +538,7 @@ const OwnedTokens = ({
       {showPreviewModal && (
         <div className="modal fade show bloc">
           <AdSubmission
-            chainConfig={currentChainObject}
+            chainConfig={chainConfig}
             handlePreviewModal={handlePreviewModal}
             handleSubmit={handleSubmit}
             link={link}
