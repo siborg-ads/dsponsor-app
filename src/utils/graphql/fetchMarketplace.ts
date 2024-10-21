@@ -40,7 +40,7 @@ export const fetchMarketplace = async (
           royalty {
             bps
           }
-          tokens(first: 1000) {
+          tokens(first: 1000, orderBy: tokenId, orderDirection: asc) {
             tokenId
             mint {
               blockTimestamp
@@ -50,7 +50,7 @@ export const fetchMarketplace = async (
             }
             nftContract {
               id 
-              prices {
+                prices (orderBy: amount, orderDirection: desc) { # workaround cryptoast parcelles
                 currency 
                 amount 
                 enabled
@@ -211,7 +211,7 @@ export const fetchMarketplace = async (
     next: {
       tags:
         searchTerm.length || offerIds.length > 63
-          ? [`${chainId}-adOffers`]
+          ? []
           : offerIds.map((offerId) => `${chainId}-adOffer-${offerId}`)
     }
   };

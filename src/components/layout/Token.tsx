@@ -56,7 +56,6 @@ import { getOwnershipPeriod } from "@/utils/dates/period";
 import isUrlValid from "@/utils/misc/isUrlValid";
 
 import DsponsorNFTABI from "@/abi/dsponsorNFT.json";
-import { copyFile } from "fs";
 import { StepType } from "../features/profile/tabs/OwnedTokens";
 
 const Token = () => {
