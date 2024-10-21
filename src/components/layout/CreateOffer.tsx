@@ -320,6 +320,17 @@ const CreateOffer = () => {
       isValid = false;
     }
 
+    const textParameter = selectedParameter.find((param) => param.startsWith("text-markdown-"));
+    if (textParameter) {
+      console.log(textParameter);
+      const size = textParameter.split("-")[2];
+      console.log(size);
+      if (!size.match(/^\d+$/)) {
+        newErrors.textSizeError = "Text size is invalid. It should be a positive integer.";
+        isValid = false;
+      }
+    }
+
     setValidate(isValid);
     setErrors(newErrors);
   }, [

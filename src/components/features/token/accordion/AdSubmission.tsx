@@ -463,6 +463,25 @@ const AdSubmission = ({
                   ""
                 )}
 
+                {selectedParameter?.some((item) => item.startsWith("text-markdown-")) && (
+                  <span className="flex flex-col text-sm font-display text-jacarta-100">
+                    Text markdown
+                    {!errors.textSizeError ? (
+                      <span className="text-base dark:text-white">
+                        Limited to{" "}
+                        {
+                          selectedParameter
+                            .find((item) => item.startsWith("text-markdown-"))
+                            ?.split("-")[2]
+                        }{" "}
+                        characters
+                      </span>
+                    ) : (
+                      <span className="text-base text-red">{errors.textSizeError}</span>
+                    )}
+                  </span>
+                )}
+
                 <p className="flex flex-col text-sm font-display text-jacarta-100">
                   {startDate ? (
                     <span className="flex flex-col">
