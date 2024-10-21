@@ -290,7 +290,7 @@ const Home = () => {
     <React.Fragment>
       <Meta {...metadata} />
       <div
-        className="mt-32 px-4 max-w-5xl mx-auto flex flex-col gap-12 w-full"
+        className="flex flex-col w-full max-w-5xl gap-12 px-4 mx-auto mt-32"
         style={{
           marginTop: "8rem"
         }}
@@ -306,9 +306,9 @@ const Home = () => {
           curratedOfferIds={curratedOfferIds}
         />
 
-        <Steps />
-
         <EarlyTraction />
+
+        <Steps />
 
         <ClientsRedirection />
       </div>

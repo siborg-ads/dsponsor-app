@@ -2,37 +2,35 @@ import React from "react";
 
 const argumentsData: { title: string; description: string }[] = [
   {
-    title: "3+ publishers",
-    description: "Key partners in the crypto community. More to come !"
+    title: "3+ ",
+    description: "Publishers"
   },
   {
-    title: "$10k+ in ad revenue",
-    description: "Achieving consistent income since the beginning"
+    title: "$10k+",
+    description: "Sponshorship revenue"
   },
   {
-    title: "150+ transactions",
-    description: "Streamlined ad submissions and marketplace listings"
+    title: "150+",
+    description: "Transactions"
   }
 ];
 
 const EarlyTraction = () => {
   return (
     <div className="flex flex-col gap-4">
-      <span className="text-xl font-semibold text-white ">Early traction</span>
-
-      <div className="rounded-xl w-full bg-secondaryBlack flex flex-col gap-8 p-8">
-        <div className="grid md:grid-cols-3 gap-4">
+      <div className="flex flex-col w-full gap-8 p-8 rounded-xl bg-secondaryBlack">
+        <div className="grid gap-4 md:grid-cols-3">
           {argumentsData.map((argument, index) => (
             <div
-              className="flex flex-col justify-between gap-4 p-6 bg-primaryBlack rounded-lg relative w-full"
+              className="relative flex flex-col justify-between w-full gap-4 p-3 rounded-lg"
               key={index}
             >
-              <div className="gap-4 flex flex-col justify-between h-full">
-                <span className="text-white text-lg text-center font-semibold">
+              <div className="flex flex-col justify-between h-full gap-4">
+                <span className="text-5xl font-semibold text-center text-primaryPurple">
                   {argument.title}
                 </span>
 
-                <span className="text-jacarta-100 text-center text-sm">{argument.description}</span>
+                <span className="text-sm text-center text-jacarta-100">{argument.description}</span>
               </div>
             </div>
           ))}
