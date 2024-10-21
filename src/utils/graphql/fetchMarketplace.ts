@@ -20,7 +20,7 @@ export const fetchMarketplace = async (
   const where = searchTerm.length
     ? `where: {
           or: [
-                { name_contains: "${searchTerm}" },
+                { name_contains_nocase: "${searchTerm}" },
                 { metadata_ : { offer_name_contains_nocase: "${searchTerm}" } },
                 { metadata_ : { offer_description_contains_nocase: "${searchTerm}" } }
               ]
