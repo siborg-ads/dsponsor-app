@@ -186,6 +186,7 @@ const Token = () => {
   const [isMintable, setIsMintable] = useState(false);
   const [shouldProvideLink, setShouldProvideLink] = useState(false);
   const [steps, setSteps] = useState<StepType[]>([]);
+  const [privateSale, setPrivateSale] = useState<boolean>(false);
 
   React.useEffect(() => {
     if (offerData) {
@@ -263,16 +264,17 @@ const Token = () => {
                   privateSaleSettings?.nftContract != "0x0000000000000000000000000000000000000000"
                 ) {
                   isPrivateSale = true;
-                }
-
-                if (address) {
-                  const mintPriceForUser = await nftContract.call("getMintPriceForUser", [
-                    address,
-                    tokenId,
-                    price.currency
-                  ]);
-                  price.enabled = mintPriceForUser.enabled;
-                  price.amount = mintPriceForUser.amount;
+                  if (address) {
+                    const mintPriceForUser = await nftContract.call("getMintPriceForUser", [
+                      address,
+                      tokenId,
+                      price.currency
+                    ]);
+                    price.enabled = mintPriceForUser.enabled;
+                    price.amount = mintPriceForUser.amount;
+                  } else {
+                    price.enabled = false;
+                  }
                 }
               }
               return price;
@@ -292,8 +294,9 @@ const Token = () => {
               }
             });
         } catch (error) {
-          // not a private sale contract
+          // isPrivateSale = false;
         }
+        setPrivateSale(isPrivateSale);
       }
 
       setOfferData(currentOffer);
@@ -2457,6 +2460,15 @@ const Token = () => {
                       tokenId &&
                       BigInt(token?.tokenId) === BigInt(tokenId as string)
                   )?.mint === null)) && <Disable isOffer={false} />}
+
+              {privateSale && (
+                <div className="p-4 my-4 rounded-lg bg-secondaryBlack">
+                  <p className="font-semibold text-center text-white">
+                    This token is part of a private sale. Minting options and pricing may vary
+                    depending on your wallet’s holdings.
+                  </p>
+                </div>
+              )}
 
               {!conditions?.conditionsObject?.endTimeNotPassed &&
                 conditions?.conditionsObject?.isCreated &&
