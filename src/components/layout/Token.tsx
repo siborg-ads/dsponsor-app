@@ -1,4 +1,5 @@
 import {
+  ThirdwebSDK,
   useAddress,
   useBalance,
   useContract,
@@ -8,6 +9,7 @@ import {
   useStorageUpload
 } from "@thirdweb-dev/react";
 import { Address } from "thirdweb";
+
 import { ethers, BigNumber } from "ethers";
 import Image from "next/image";
 import Link from "next/link";
@@ -242,13 +244,65 @@ const Token = () => {
 
       // set offer data for the current offer
       const currentOffer = offers?.find((offer) => Number(offer?.id) === Number(offerId));
+
+      if (currentOffer?.nftContract?.id && currentOffer?.nftContract?.prices) {
+        const sdk = new ThirdwebSDK(chainConfig.network);
+
+        let isPrivateSale = false;
+        try {
+          const nftContract = await sdk.getContract(currentOffer.nftContract.id, DsponsorNFTABI);
+
+          currentOffer.nftContract.prices = await Promise.all(
+            currentOffer?.nftContract?.prices.map(async (price) => {
+              if (price.enabled && price.currency) {
+                const privateSaleSettings = await nftContract.call("privateSaleSettings", [
+                  price.currency
+                ]);
+
+                if (
+                  privateSaleSettings?.nftContract != "0x0000000000000000000000000000000000000000"
+                ) {
+                  isPrivateSale = true;
+                }
+
+                if (address) {
+                  const mintPriceForUser = await nftContract.call("getMintPriceForUser", [
+                    address,
+                    tokenId,
+                    price.currency
+                  ]);
+                  price.enabled = mintPriceForUser.enabled;
+                  price.amount = mintPriceForUser.amount;
+                }
+              }
+              return price;
+            })
+          );
+          currentOffer.nftContract.prices = currentOffer.nftContract.prices
+            .filter((price) => price.enabled)
+            .sort((a, b) => {
+              const aAmount = ethers.BigNumber.from(a.amount);
+              const bAmount = ethers.BigNumber.from(b.amount);
+              if (aAmount.gt(bAmount)) {
+                return address ? 1 : -1;
+              } else if (aAmount.lt(bAmount)) {
+                return address ? -1 : 1;
+              } else {
+                return 0;
+              }
+            });
+        } catch (error) {
+          // not a private sale contract
+        }
+      }
+
       setOfferData(currentOffer);
     } catch (error) {
       console.error("Error fetching offers:", error);
     } finally {
       fetchOffersRef.current = false;
     }
-  }, [chainId, offerId, tokenId]);
+  }, [chainId, offerId, tokenId, address, chainConfig]);
 
   useEffect(() => {
     const revalidate = async (args) => {
