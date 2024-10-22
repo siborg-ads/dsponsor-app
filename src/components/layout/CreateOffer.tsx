@@ -11,16 +11,17 @@ import OfferValidity from "@/components/features/createOffer/OfferValidity";
 import config from "@/config/config";
 import CarouselForm from "@/components/ui/misc/CarouselForm";
 import { useSwitchChainContext } from "@/providers/SwitchChain";
-import { Address, getContract, prepareContractCall, readContract } from "thirdweb";
+import { Address, getContract, prepareContractCall, readContract, sendTransaction } from "thirdweb";
 import { features } from "@/data/features";
 
 import { ChainObject } from "@/types/chain";
 import ChainSelector from "../features/chain/ChainSelector";
-import { useActiveAccount, useSendTransaction } from "thirdweb/react";
+import { useActiveAccount } from "thirdweb/react";
 import { client } from "@/data/services/client";
 import { ERC20ABI } from "@/abi/ERC20";
 import { DSPONSOR_ADMIN_ABI } from "@/abi/dsponsorAdmin";
 import { upload } from "thirdweb/storage";
+import { ethers } from "ethers";
 
 export type Currency = {
   address: Address | string;
@@ -202,23 +203,6 @@ const CreateOffer = () => {
   const wallet = useActiveAccount();
   const address = wallet?.address;
 
-  //   const { contract: DsponsorAdminContract } = useContract(
-  //     chainConfig?.smartContracts?.DSPONSORADMIN?.address,
-  //     chainConfig?.smartContracts?.DSPONSORADMIN?.abi
-  //   );
-  const DsponsorAdminContract = getContract({
-    client: client,
-    address: chainConfig?.smartContracts?.DSPONSORADMIN?.address,
-    abi: DSPONSOR_ADMIN_ABI,
-    chain: chainConfig?.chainObject
-  });
-
-  //   const { mutateAsync: createDSponsorNFTAndOffer } = useContractWrite(
-  //     DsponsorAdminContract,
-  //     "createDSponsorNFTAndOffer"
-  //   );
-  const { mutateAsync: createDSponsorNFTAndOffer } = useSendTransaction();
-
   useEffect(() => {
     if (!address) return;
     setMinterAddress(address as Address);
@@ -226,7 +210,6 @@ const CreateOffer = () => {
 
   const [name, setName] = useState("");
   const stepsRef = useRef([]);
-  const { ethers } = require("ethers");
 
   useEffect(() => {
     if (!chainConfig) return;
@@ -444,52 +427,60 @@ const CreateOffer = () => {
       const jsonIpfsLinkContractURI = jsonContractURIURL[0];
       const jsonIpfsLinkMetadata = jsonMetadataURL[0];
 
-      const args = [
-        JSON.stringify({
-          name: name, // name
-          symbol: "DSPONSORNFT", // symbol
-          baseURI: `https://relayer.dsponsor.com/api/${chainConfig.chainId}/tokenMetadata`, // baseURI
-          contractURI: jsonIpfsLinkContractURI, // contractURI from json
-          minter: userMinterAddress,
-          maxSupply: selectedNumber, // max supply
-          forwarder: chainConfig.forwarder, // forwarder
-          initialOwner: userMinterAddress, // owner
-          royaltyBps: (parseFloat(selectedRoyalties.toString()) * 100).toFixed(0).toString(), // royalties
-          currencies: [tokenAddress], // accepted token
-          prices: [
-            ethers.utils.parseUnits(
-              parseFloat(selectedUnitPrice.toString())
-                .toFixed(tokenDecimals as number)
-                .toString(),
-              tokenDecimals
-            )
-          ], // prices with decimals
-          allowedTokenIds: Array.from({ length: selectedNumber }, (_, i) => i + 1) // allowed token ids
-        }),
-        JSON.stringify({
-          name: name, // name
-          offerMetadata: jsonIpfsLinkMetadata, // rulesURI
-
-          options: {
-            admins: [userMinterAddress], // admin
-            validators: [], // validator
-            adParameters: uniqueParams // ad parameters
-          }
-        })
-      ];
-
-      const preparedArgs = [Object.values(JSON.parse(args[0])), Object.values(JSON.parse(args[1]))];
-
-      //   await createDSponsorNFTAndOffer({ args: preparedArgs });
-      const tx = await prepareContractCall({
-        contract: DsponsorAdminContract,
-        method: "createDSponsorNFTAndOffer",
-        // @ts-ignore
-        params: preparedArgs
+      const DsponsorAdminContract = getContract({
+        client: client,
+        address: chainConfig?.smartContracts?.DSPONSORADMIN?.address,
+        abi: DSPONSOR_ADMIN_ABI,
+        chain: chainConfig?.chainObject
       });
 
-      // @ts-ignore
-      await createDSponsorNFTAndOffer(tx);
+      // TODO: create offer bug
+      const tx = prepareContractCall({
+        contract: DsponsorAdminContract,
+        method: "createDSponsorNFTAndOffer",
+        params: [
+          {
+            name: name, // name
+            symbol: "DSPONSORNFT", // symbol
+            baseURI: `https://relayer.dsponsor.com/api/${chainConfig.chainId}/tokenMetadata`, // baseURI
+            contractURI: jsonIpfsLinkContractURI, // contractURI from json
+            minter: userMinterAddress,
+            maxSupply: BigInt(selectedNumber), // max supply
+            forwarder: chainConfig.forwarder, // forwarder
+            initialOwner: userMinterAddress, // owner
+            royaltyBps: BigInt(
+              (parseFloat(selectedRoyalties.toString()) * 100).toFixed(0).toString()
+            ), // royalties
+            currencies: [tokenAddress], // accepted token
+            prices: [
+              ethers.utils
+                .parseUnits(
+                  parseFloat(selectedUnitPrice.toString())
+                    .toFixed(tokenDecimals as number)
+                    .toString(),
+                  tokenDecimals as number
+                )
+                .toBigInt()
+            ], // prices with decimals
+            allowedTokenIds: Array.from({ length: selectedNumber }, (_, i) => BigInt(i + 1)) // allowed token ids
+          },
+          {
+            name: name, // name
+            offerMetadata: jsonIpfsLinkMetadata, // rulesURI
+
+            options: {
+              admins: [userMinterAddress], // admin
+              validators: [], // validator
+              adParameters: uniqueParams // ad parameters
+            }
+          }
+        ]
+      });
+
+      await sendTransaction({
+        account: wallet!,
+        transaction: tx
+      });
 
       const relayerURL = chainConfig?.relayerURL;
       if (relayerURL) {
