@@ -2461,14 +2461,20 @@ const Token = () => {
                       BigInt(token?.tokenId) === BigInt(tokenId as string)
                   )?.mint === null)) && <Disable isOffer={false} />}
 
-              {privateSale && (
-                <div className="p-4 my-4 rounded-lg bg-secondaryBlack">
-                  <p className="font-semibold text-center text-white">
-                    This token is part of a private sale. Minting options and pricing may vary
-                    depending on your wallet’s holdings.
-                  </p>
-                </div>
-              )}
+              {privateSale &&
+                offerData?.nftContract?.tokens?.find(
+                  (token) =>
+                    !!token?.tokenId &&
+                    tokenId &&
+                    BigInt(token?.tokenId) === BigInt(tokenId as string)
+                )?.mint === null && (
+                  <div className="p-4 my-4 rounded-lg bg-secondaryBlack">
+                    <p className="font-semibold text-center text-white">
+                      This token is part of a private sale. Minting options and pricing may vary
+                      depending on your wallet’s holdings.
+                    </p>
+                  </div>
+                )}
 
               {!conditions?.conditionsObject?.endTimeNotPassed &&
                 conditions?.conditionsObject?.isCreated &&
