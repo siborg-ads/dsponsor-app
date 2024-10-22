@@ -1,4 +1,5 @@
 import {
+  ThirdwebSDK,
   useAddress,
   useBalance,
   useContract,
@@ -8,6 +9,7 @@ import {
   useStorageUpload
 } from "@thirdweb-dev/react";
 import { Address } from "thirdweb";
+
 import { ethers, BigNumber } from "ethers";
 import Image from "next/image";
 import Link from "next/link";
@@ -56,7 +58,6 @@ import { getOwnershipPeriod } from "@/utils/dates/period";
 import isUrlValid from "@/utils/misc/isUrlValid";
 
 import DsponsorNFTABI from "@/abi/dsponsorNFT.json";
-import { copyFile } from "fs";
 import { StepType } from "../features/profile/tabs/OwnedTokens";
 
 const Token = () => {
@@ -185,6 +186,7 @@ const Token = () => {
   const [isMintable, setIsMintable] = useState(false);
   const [shouldProvideLink, setShouldProvideLink] = useState(false);
   const [steps, setSteps] = useState<StepType[]>([]);
+  const [privateSale, setPrivateSale] = useState<boolean>(false);
 
   React.useEffect(() => {
     if (offerData) {
@@ -243,13 +245,67 @@ const Token = () => {
 
       // set offer data for the current offer
       const currentOffer = offers?.find((offer) => Number(offer?.id) === Number(offerId));
+
+      if (currentOffer?.nftContract?.id && currentOffer?.nftContract?.prices) {
+        const sdk = new ThirdwebSDK(chainConfig.network);
+
+        let isPrivateSale = false;
+        try {
+          const nftContract = await sdk.getContract(currentOffer.nftContract.id, DsponsorNFTABI);
+
+          currentOffer.nftContract.prices = await Promise.all(
+            currentOffer?.nftContract?.prices.map(async (price) => {
+              if (price.enabled && price.currency) {
+                const privateSaleSettings = await nftContract.call("privateSaleSettings", [
+                  price.currency
+                ]);
+
+                if (
+                  privateSaleSettings?.nftContract != "0x0000000000000000000000000000000000000000"
+                ) {
+                  isPrivateSale = true;
+                  if (address) {
+                    const mintPriceForUser = await nftContract.call("getMintPriceForUser", [
+                      address,
+                      tokenId,
+                      price.currency
+                    ]);
+                    price.enabled = mintPriceForUser.enabled;
+                    price.amount = mintPriceForUser.amount;
+                  } else {
+                    price.enabled = false;
+                  }
+                }
+              }
+              return price;
+            })
+          );
+          currentOffer.nftContract.prices = currentOffer.nftContract.prices
+            .filter((price) => price.enabled)
+            .sort((a, b) => {
+              const aAmount = ethers.BigNumber.from(a.amount);
+              const bAmount = ethers.BigNumber.from(b.amount);
+              if (aAmount.gt(bAmount)) {
+                return address ? 1 : -1;
+              } else if (aAmount.lt(bAmount)) {
+                return address ? -1 : 1;
+              } else {
+                return 0;
+              }
+            });
+        } catch (error) {
+          // isPrivateSale = false;
+        }
+        setPrivateSale(isPrivateSale);
+      }
+
       setOfferData(currentOffer);
     } catch (error) {
       console.error("Error fetching offers:", error);
     } finally {
       fetchOffersRef.current = false;
     }
-  }, [chainId, offerId, tokenId]);
+  }, [chainId, offerId, tokenId, address, chainConfig]);
 
   useEffect(() => {
     const revalidate = async (args) => {
@@ -2404,6 +2460,21 @@ const Token = () => {
                       tokenId &&
                       BigInt(token?.tokenId) === BigInt(tokenId as string)
                   )?.mint === null)) && <Disable isOffer={false} />}
+
+              {privateSale &&
+                offerData?.nftContract?.tokens?.find(
+                  (token) =>
+                    !!token?.tokenId &&
+                    tokenId &&
+                    BigInt(token?.tokenId) === BigInt(tokenId as string)
+                )?.mint === null && (
+                  <div className="p-4 my-4 rounded-lg bg-secondaryBlack">
+                    <p className="font-semibold text-center text-white">
+                      This token is part of a private sale. Minting options and pricing may vary
+                      depending on your wallet’s holdings.
+                    </p>
+                  </div>
+                )}
 
               {!conditions?.conditionsObject?.endTimeNotPassed &&
                 conditions?.conditionsObject?.isCreated &&
