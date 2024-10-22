@@ -16,7 +16,7 @@ type CurationData = {
 };
 
 export const marketplaceOffersCuration = {
-  8453: [1, 2, 3],
+  8453: [1, 2, 3, 4],
   11124: [1],
   34443: Array.from({ length: 50 }, (_, i) => i),
   11155111: [1, ...Array.from({ length: 50 }, (_, i) => 20 + i)]
@@ -42,9 +42,9 @@ export function curationData(baseURL: string): CurationData {
         logo: "/images/cryptoast/cryptoast.webp",
         description:
           "Cryptoast is a leading French-language media outlet focused on Bitcoin, blockchain, and cryptocurrencies. Established in 2017, it aims to provide comprehensive and accessible information to both newcomers and experienced users in the crypto space.",
-        offerId: 2,
-        buttonText: "Sold out! New ad spaces available soon",
-        buttonLink: `${baseURL}/${8453}/offer/${2}`,
+        offerId: 4,
+        buttonText: "Own an ad on the Cryptoast newsletter",
+        buttonLink: `${baseURL}/${8453}/offer/${4}`,
         type: ["medias", "newsletters"] as Filter[],
         inTrending: true
       },
@@ -74,6 +74,7 @@ export function curationData(baseURL: string): CurationData {
     ],
     11124: [],
     11155111: [
+      /*
       {
         logo: "/images/siborg-ads/siborg-ads.png",
         description:
@@ -84,15 +85,15 @@ export function curationData(baseURL: string): CurationData {
         type: ["dapps"] as Filter[],
         inTrending: true
       },
-
+*/
       {
         logo: "/images/cryptoast/cryptoast.webp",
         description:
           "Cryptoast is a leading French-language media outlet focused on Bitcoin, blockchain, and cryptocurrencies. Established in 2017, it aims to provide comprehensive and accessible information to both newcomers and experienced users in the crypto space.",
-        offerId: 35,
-        buttonText: "Get your ads on Cryptoast",
-        buttonLink: `${baseURL}/${11155111}/offer/${35}`,
-        type: ["medias", "newsletters"] as Filter[],
+        offerId: 70,
+        buttonText: "Get your parcel on Cryptoast Journal",
+        buttonLink: `${baseURL}/${11155111}/offer/${70}`,
+        type: ["medias"] as Filter[],
         inTrending: true
       }
     ]
