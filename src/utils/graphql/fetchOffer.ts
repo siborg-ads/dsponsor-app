@@ -310,7 +310,7 @@ export const fetchOffer = async (chainId, offerId) => {
             first: 1000
             orderBy: tokenId
             orderDirection: asc
-          ) {
+          ) {            
             tokenId
             mint {
               transactionHash # if = null => not minted yet, so it's available
