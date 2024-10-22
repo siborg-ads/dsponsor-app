@@ -19,6 +19,7 @@ import { features } from "@/data/features";
 import ERC20ABI from "@/abi/ERC20.json";
 import { ChainObject } from "@/types/chain";
 import ChainSelector from "../features/chain/ChainSelector";
+import { BigNumber } from "ethers";
 
 export type Currency = {
   address: Address | string;
@@ -448,17 +449,26 @@ const CreateOffer = () => {
 
       const preparedArgs = [Object.values(JSON.parse(args[0])), Object.values(JSON.parse(args[1]))];
 
-      await createDSponsorNFTAndOffer({ args: preparedArgs });
+      const offerCreationResult = await createDSponsorNFTAndOffer({ args: preparedArgs });
+
+      const receipt = offerCreationResult?.receipt as any;
+      const offerId = receipt?.events?.find((e) => e.event === "UpdateOffer")?.args?.[0];
+
+      const tags = [
+        `${chainConfig.chainId}-adOffers`,
+        `${chainConfig.chainId}-userAddress-${userMinterAddress}`
+      ];
+
+      if (offerId && BigNumber.isBigNumber(offerId)) {
+        tags.push(`${chainConfig.chainId}-adOffer-${offerId.toBigInt().toString()}`);
+      }
 
       const relayerURL = chainConfig?.relayerURL;
       if (relayerURL) {
         await fetch(`${relayerURL}/api/revalidate`, {
           method: "POST",
           body: JSON.stringify({
-            tags: [
-              `${chainConfig.chainId}-adOffers`,
-              `${chainConfig.chainId}-userAddress-${userMinterAddress}`
-            ]
+            tags
           })
         });
       }
