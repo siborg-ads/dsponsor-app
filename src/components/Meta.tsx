@@ -21,7 +21,7 @@ const Meta = ({ title, keyword, desc }) => {
         <meta property="og:description" content={desc} />
         <meta
           property="og:image"
-          content="https://orange-elegant-swallow-161.mypinata.cloud/ipfs/QmaKVtq9B8UaraFDfkYaodti2VummZ4FvR2MZeTTV7Ycke"
+          content="https://orange-elegant-swallow-161.mypinata.cloud/ipfs/QmawNwUpC3BZhJMREZV8BfMrS8rtuq3DHsBUhBrbxyzT96"
         />
         <meta property="og:url" content="https://dsponsor-app.siborg.io" />
         <meta name="og:site_name" content={title} />
@@ -33,7 +33,7 @@ const Meta = ({ title, keyword, desc }) => {
         <meta name="twitter:description" content={desc} />
         <meta
           name="twitter:image"
-          content="https://orange-elegant-swallow-161.mypinata.cloud/ipfs/QmaKVtq9B8UaraFDfkYaodti2VummZ4FvR2MZeTTV7Ycke"
+          content="https://orange-elegant-swallow-161.mypinata.cloud/ipfs/QmawNwUpC3BZhJMREZV8BfMrS8rtuq3DHsBUhBrbxyzT96"
         />
         <script
           defer
