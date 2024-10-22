@@ -134,6 +134,43 @@ const AdBriefing = ({
                       </div>
                     );
                   })}
+                {steps.filter((step) => step.adParameter.startsWith("text-markdown-")).length !==
+                  0 && <p className="font-display">Text :</p>}
+                {steps
+                  .filter((step) => step.adParameter.startsWith("text-"))
+                  .map((step) => {
+                    const { adParameter, selected } = step;
+                    const variant = adParameter.slice("text-markdown-".length);
+                    return (
+                      <div key={adParameter}>
+                        <ul>
+                          <li>
+                            <div className="flex justify-between w-3/4">
+                              - Text in markdown format of maximum {variant} characters
+                              <Checkbox
+                                color="secondary"
+                                checked={selected}
+                                defaultChecked={selected}
+                                defaultSelected={selected}
+                                isSelected={selected}
+                                onChange={() => {
+                                  setSteps((prev) => {
+                                    const newSteps = prev.map((step) => {
+                                      if (step.adParameter === adParameter) {
+                                        return { ...step, selected: !step.selected };
+                                      }
+                                      return step;
+                                    });
+                                    return newSteps;
+                                  });
+                                }}
+                              />
+                            </div>
+                          </li>
+                        </ul>
+                      </div>
+                    );
+                  })}
               </div>
               {/* <select
                 id="adIntegrationSelect"

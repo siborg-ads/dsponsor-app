@@ -59,6 +59,7 @@ import isUrlValid from "@/utils/misc/isUrlValid";
 
 import DsponsorNFTABI from "@/abi/dsponsorNFT.json";
 import { StepType } from "../features/profile/tabs/OwnedTokens";
+import AdText from "../features/token/createAd/AdText";
 
 const Token = () => {
   const router = useRouter();
@@ -1507,15 +1508,6 @@ const Token = () => {
 
   const handleLogoUpload = (file, step: StepType) => {
     if (file) {
-      // const newFiles: any[] = [...files];
-      // const newPreviewImages: any[] = [...previewImages];
-
-      // newFiles[index] = { file: file, index: index };
-      // newPreviewImages[index] = URL.createObjectURL(file);
-
-      // setFiles(newFiles);
-      // setPreviewImages(newPreviewImages);
-
       const newSteps = [...steps];
 
       const newStepIndex = newSteps.findIndex((s) => s.adParameter === step.adParameter);
@@ -2848,42 +2840,30 @@ const Token = () => {
                               currentSlide={currentSlide}
                               numSteps={numSteps}
                             />
+                          ) : currentSlide === index + 1 && step.adParameter.startsWith("text") ? (
+                            <AdText
+                              stepsRef={stepsRef}
+                              styles={styles}
+                              currentSlide={currentSlide}
+                              numSteps={numSteps}
+                              step={step}
+                              setText={(text) => {
+                                const newSteps = steps.map((s) => {
+                                  if (s.adParameter === step.adParameter) {
+                                    return {
+                                      ...s,
+                                      data: text
+                                    };
+                                  }
+                                  return s;
+                                });
+                              }}
+                            />
                           ) : (
                             <></>
                           )}
                         </div>
                       ))}
-                    {/**
-                     * 
-                    {currentSlide === 2 && (
-                      <AdURL
-                        stepsRef={stepsRef}
-                        styles={styles}
-                        setLink={setLink}
-                        link={link}
-                        currentSlide={currentSlide}
-                        numSteps={numSteps}
-                      />
-                    )}
-                    {currentSlide === 1 && (
-                      <>
-                        {imageURLSteps.map((id, index) => (
-                          <AdImage
-                            key={id}
-                            stepsRef={stepsRef}
-                            currentStep={index + 2}
-                            id={id}
-                            styles={styles}
-                            file={files[index]}
-                            previewImage={previewImages[index]}
-                            handleLogoUpload={(file) => handleLogoUpload(file, index)}
-                            currentSlide={currentSlide}
-                            numSteps={numSteps}
-                          />
-                        ))}
-                      </>
-                    )}
-                     */}
                   </CarouselForm>
                 )}
               </Accordion.Content>

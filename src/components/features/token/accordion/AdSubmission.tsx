@@ -249,9 +249,9 @@ const AdSubmission = ({
               )}
 
               {shouldProvideLink &&
-                steps.filter(
+                steps.some(
                   ({ adParameter, selected }) => adParameter.startsWith("linkURL") && selected
-                ).length !== 0 && (
+                ) && (
                   <div className="flex items-center justify-between w-full gap-2">
                     <span className="block dark:text-jacarta-100">Link </span>
                     <span
