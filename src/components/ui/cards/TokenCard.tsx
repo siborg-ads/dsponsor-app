@@ -372,7 +372,7 @@ const TokenCard = ({
   } = itemData ?? {};
 
   useEffect(() => {
-    const fetchImage = async (image) => {
+    const fetchImage = async (image: string) => {
       // get url image instead of ipfs:// starting url
       if (image?.startsWith("ipfs://")) {
         const ipfsUrl = resolveScheme({
@@ -380,6 +380,8 @@ const TokenCard = ({
           uri: image
         });
         setImageUrl(ipfsUrl);
+      } else if (!image.includes("://")) {
+        setImageUrl("/images/gradients/gradient_creative.jpg");
       } else {
         setImageUrl(image);
       }

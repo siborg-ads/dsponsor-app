@@ -9,7 +9,8 @@ import config from "@/config/config";
 import { ChainObject } from "@/types/chain";
 import ChainSelector from "../chain/ChainSelector";
 import { isAddress } from "thirdweb";
-import { useActiveAccount } from "thirdweb/react";
+import { useActiveAccount, useActiveWalletChain } from "thirdweb/react";
+import { base } from "thirdweb/chains";
 
 const renderTable = (data, columns, userAddress) => {
   if (!data || data.length === 0 || !Array.isArray(data)) {
@@ -60,8 +61,10 @@ const Tables = ({ activity }) => {
   const [itemActive, setItemActive] = useState(1);
 
   const [leaderboards, setLeaderboards] = useState({});
+  const chain = useActiveWalletChain();
 
-  const [chainConfig, setChainConfig] = useState<ChainObject>(Object.entries(config)[0][1]);
+  //   const [chainConfig, setChainConfig] = useState<ChainObject>(Object.entries(config)[0][1]);
+  const chainConfig = config[Number(chain?.id || base.id)];
 
   const filteredActivity = activity.find((a) => Number(a.chainId) === Number(chainConfig.chainId));
 
@@ -189,7 +192,7 @@ const Tables = ({ activity }) => {
       <h1 className="pt-8 pb-4 mb-4 text-4xl font-medium text-center dark:text-white">
         Leaderboard Rankings
       </h1>
-      <ChainSelector setChainConfig={setChainConfig} />
+      <ChainSelector />
       <div className="grid flex-wrap items-center justify-between grid-cols-2 gap-4 mb-8 md:grid-cols-3"></div>
       {/*
       <div className="grid flex-wrap items-center justify-between grid-cols-1 gap-4 mb-8 md:grid-cols-3">

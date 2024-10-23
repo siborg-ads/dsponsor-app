@@ -9,7 +9,6 @@ import React, { useEffect, useMemo, useRef } from "react";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { NextUIProvider } from "@nextui-org/react";
-import Providers from "@/providers/Providers";
 import Hotjar from "@hotjar/browser";
 
 // styles
@@ -18,6 +17,7 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 import "swiper/css/scrollbar";
+import { ThirdwebProvider } from "thirdweb/react";
 
 const siteId = 5037837;
 const hotjarVersion = 6;
@@ -45,7 +45,7 @@ function MyApp({ Component, pageProps }) {
   return (
     <React.Fragment>
       <Meta {...metadata} />
-      <Providers>
+      <ThirdwebProvider>
         <Provider store={store}>
           <ThemeProvider enableSystem={true} attribute="class" defaultTheme="dark">
             <NextUIProvider>
@@ -62,7 +62,7 @@ function MyApp({ Component, pageProps }) {
             </NextUIProvider>
           </ThemeProvider>
         </Provider>
-      </Providers>
+      </ThirdwebProvider>
     </React.Fragment>
   );
 }

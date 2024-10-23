@@ -44,7 +44,7 @@ const CreatedOffers = ({
 
   if (isLoading) {
     return (
-      <div className="flex w-full justify-center">
+      <div className="flex justify-center w-full">
         <Image src="/images/loader/loading-bullet.svg" alt="icon" width={60} height={60} />
       </div>
     );
@@ -53,13 +53,13 @@ const CreatedOffers = ({
   return (
     <>
       {isPendingAdsOnOffer && isOwner && (
-        <div className="dark:bg-secondaryBlack dark:text-jacarta-100 rounded-2lg bg-white p-3 flex gap-2 justify-center items-center mb-2">
-          <ExclamationCircleIcon className="h-6 w-6 text-red" />
+        <div className="flex items-center justify-center gap-2 p-3 mb-2 bg-white dark:bg-secondaryBlack dark:text-jacarta-100 rounded-2lg">
+          <ExclamationCircleIcon className="w-6 h-6 text-red" />
           <span>You have 1 or more ads proposals to check on your offer </span>
         </div>
       )}
 
-      <div className="flex gap-4 items-center mb-6">
+      <div className="flex items-center gap-4 mb-6">
         <button
           className={`font-semibold text-jacarta-100 border border-primaryPurple rounded-md p-2 ${filter === "all" ? "bg-primaryPurple text-white" : ""}
           `}
@@ -80,6 +80,7 @@ const CreatedOffers = ({
         <div className="grid grid-cols-1 gap-[1.875rem] md:grid-cols-2 lg:grid-cols-4">
           {filteredData?.map((item, index) => {
             const offer = offers?.find((offer) => offer?.id === item?.id);
+            console.log(item);
 
             const currencyDecimals = Number(
               item?.marketplaceListings?.sort((a, b) => Number(b?.id) - Number(a?.id))[0]
@@ -114,7 +115,7 @@ const CreatedOffers = ({
         </div>
       ) : (
         <ConditionalDisplayedComponent condition={features.canCreateOffer}>
-          <div className="w-full flex flex-col gap-4 justify-center items-center">
+          <div className="flex flex-col items-center justify-center w-full gap-4">
             <span>No offers yet...</span>
             <MainButton link={`/createOffer`} isPurple={true} text="Create" />
           </div>

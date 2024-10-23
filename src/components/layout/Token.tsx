@@ -23,7 +23,6 @@ import OfferSkeleton from "@/components/ui/skeletons/OfferSkeleton";
 import AdValidation from "@/components/features/offer/AdValidation";
 import LatestBids from "@/components/features/token/accordion/LatestBids";
 import Manage from "@/components/features/token/widgets/Manage";
-import { useSwitchChainContext } from "@/providers/SwitchChain";
 import config from "@/config/config";
 import stringToUint256 from "@/utils/tokens/stringToUnit256";
 import { formatUnits, getAddress, isAddress, parseUnits } from "ethers/lib/utils";
@@ -48,6 +47,7 @@ import {
   useActiveAccount,
   useReadContract,
   useSendTransaction,
+  useSwitchActiveWalletChain,
   useWalletBalance
 } from "thirdweb/react";
 import { resolveScheme, upload } from "thirdweb/storage";
@@ -63,11 +63,11 @@ const Token = ({ chainId, offerId, tokenId }) => {
   const wallet = useActiveAccount();
   const address = wallet?.address;
 
-  const { setSelectedChain } = useSwitchChainContext();
+  const setSelectedChain = useSwitchActiveWalletChain();
 
   useEffect(() => {
     if (chainId) {
-      setSelectedChain(chainConfig?.network);
+      setSelectedChain(chainConfig?.chainObject);
     }
   }, [chainId, chainConfig, setSelectedChain]);
 

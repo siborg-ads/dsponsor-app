@@ -12,10 +12,10 @@ import StyledWeb3Button from "@/components/ui/buttons/StyledWeb3Button";
 import { Address } from "thirdweb";
 import NormalButton from "@/components/ui/buttons/NormalButton";
 import { ChainObject } from "@/types/chain";
-import { useSwitchChainContext } from "@/providers/SwitchChain";
 import { cn } from "@/lib/utils";
 import isUrlValid from "@/utils/misc/isUrlValid";
 import { StepType } from "../../profile/tabs/OwnedTokens";
+import { useSwitchActiveWalletChain } from "thirdweb/react";
 
 const AdSubmission = ({
   chainConfig,
@@ -102,12 +102,10 @@ const AdSubmission = ({
   const [allImages, setAllImages] = React.useState<any[]>([]);
   const [nbSteps, setNbSteps] = React.useState<number>(0);
 
-  // const shouldHaveLink =
-
-  const { setSelectedChain } = useSwitchChainContext();
+  const setSelectedChain = useSwitchActiveWalletChain();
   useEffect(() => {
     if (chainConfig) {
-      setSelectedChain(chainConfig?.network);
+      setSelectedChain(chainConfig.chainObject);
     }
   }, [chainConfig, setSelectedChain]);
 
