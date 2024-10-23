@@ -10,14 +10,13 @@ import OfferImageAndURL from "@/components/features/createOffer/OfferImageAndURL
 import OfferValidity from "@/components/features/createOffer/OfferValidity";
 import config from "@/config/config";
 import CarouselForm from "@/components/ui/misc/CarouselForm";
-import { useSwitchChainContext } from "@/providers/SwitchChain";
 import { Address, getContract, prepareContractCall, readContract, sendTransaction } from "thirdweb";
 import { features } from "@/data/features";
 
-import { ChainObject } from "@/types/chain";
+// import { ChainObject } from "@/types/chain";
 import ChainSelector from "../features/chain/ChainSelector";
-import { useActiveAccount } from "thirdweb/react";
-import { client } from "@/data/services/client";
+import { useActiveAccount, useSwitchActiveWalletChain, useActiveWalletChain } from "thirdweb/react";
+import { client, clientId } from "@/data/services/client";
 import { ERC20ABI } from "@/abi/ERC20";
 import { DSPONSOR_ADMIN_ABI } from "@/abi/dsponsorAdmin";
 import { upload } from "thirdweb/storage";
@@ -31,7 +30,9 @@ export type Currency = {
 };
 
 const CreateOffer = () => {
-  const [chainConfig, setChainConfig] = useState<ChainObject>(Object.entries(config)[0][1]);
+  //   const [chainConfig, setChainConfig] = useState<ChainObject>(Object.entries(config)[0][1]);
+  const chain = useActiveWalletChain() || Object.values(config)[0]?.chainObject;
+  const chainConfig = config[Number(chain?.id)];
 
   const allCurrencies = Object.values(config)
     .map((c) => c.smartContracts.currencies)
@@ -53,7 +54,6 @@ const CreateOffer = () => {
     ?.filter((currency) => currency !== null);
 
   const [files, setFiles] = useState<any[]>([]);
-  //   const { mutateAsync: upload } = useStorageUpload();
   const [currentSlide, setCurrentSlide] = useState(0);
   const [link, setLink] = useState<string | null>(null);
   const [errors, setErrors] = useState({});
@@ -195,14 +195,15 @@ const CreateOffer = () => {
     selectedCurrency
   ]);
 
-  const { setSelectedChain } = useSwitchChainContext();
-  useEffect(() => {
-    if (!chainConfig) return;
-    setSelectedChain(chainConfig?.network);
-  }, [chainConfig, setSelectedChain]);
-
   const wallet = useActiveAccount();
   const address = wallet?.address;
+
+  const setSelectedChain = useSwitchActiveWalletChain();
+
+  useEffect(() => {
+    if (!wallet || !chainConfig.chainObject) return;
+    setSelectedChain(chainConfig?.chainObject);
+  }, [chainConfig, setSelectedChain, wallet]);
 
   useEffect(() => {
     if (!address) return;
@@ -211,11 +212,6 @@ const CreateOffer = () => {
 
   const [name, setName] = useState("");
   const stepsRef = useRef([]);
-
-  useEffect(() => {
-    if (!chainConfig) return;
-    setSelectedChain(chainConfig?.network);
-  }, [chainConfig, setSelectedChain]);
 
   const handleUnitPriceChange = (e) => {
     const { value } = e.target;
@@ -369,12 +365,13 @@ const CreateOffer = () => {
       });
       let uniqueParams = [...new Set(paramsFormated)];
 
-      const uploadUrl = await upload({
+      const uploadUrlRaw = await upload({
         client: client,
         files: [files[0]],
         // options: { uploadWithGatewayUrl: true, uploadWithoutDirectory: true }
         uploadWithoutDirectory: true
       });
+      const uploadUrl = `https://${clientId}.ipfscdn.io/ipfs/${uploadUrlRaw.split("/").pop()}/`;
 
       if (name && link) {
         onUpload(name, link);
@@ -393,7 +390,7 @@ const CreateOffer = () => {
         offer: {
           name: name,
           description: description,
-          image: uploadUrl[0] ?? "",
+          image: uploadUrl ?? "",
           terms: terms,
           external_link: link,
           valid_from: startDate || "1970-01-01T00:00:00Z",
@@ -406,27 +403,26 @@ const CreateOffer = () => {
       const jsonContractURI = JSON.stringify({
         name: name,
         description: description,
-        image: uploadUrl[0] ?? "",
+        image: uploadUrl ?? "",
         external_link: link,
         collaborators: [userMinterAddress]
       });
 
-      const jsonMetadataURL = await upload({
-        files: [jsonMetadata],
-        client: client,
-        // options: { uploadWithGatewayUrl: true, uploadWithoutDirectory: true }
-        uploadWithoutDirectory: true
-      });
-
-      const jsonContractURIURL = await upload({
+      const jsonContractURIRaw = await upload({
         files: [jsonContractURI],
         client: client,
-        // options: { uploadWithGatewayUrl: true, uploadWithoutDirectory: true }
         uploadWithoutDirectory: true
       });
+      const cidContract = jsonContractURIRaw.split("/").pop();
+      const jsonContractURIURL = `https://${clientId}.ipfscdn.io/ipfs/${cidContract}/`;
 
-      const jsonIpfsLinkContractURI = jsonContractURIURL[0];
-      const jsonIpfsLinkMetadata = jsonMetadataURL[0];
+      const jsonMetadataRaw = await upload({
+        files: [jsonMetadata],
+        client: client,
+        uploadWithoutDirectory: true
+      });
+      const cidMetadata = jsonMetadataRaw.split("/").pop();
+      const jsonMetadataURL = `https://${clientId}.ipfscdn.io/ipfs/${cidMetadata}/`;
 
       const DsponsorAdminContract = getContract({
         client: client,
@@ -444,7 +440,7 @@ const CreateOffer = () => {
             name: name, // name
             symbol: "DSPONSORNFT", // symbol
             baseURI: `https://relayer.dsponsor.com/api/${chainConfig.chainId}/tokenMetadata`, // baseURI
-            contractURI: jsonIpfsLinkContractURI, // contractURI from json
+            contractURI: jsonContractURIURL, // contractURI from json
             minter: userMinterAddress,
             maxSupply: BigInt(selectedNumber), // max supply
             forwarder: chainConfig.forwarder, // forwarder
@@ -467,7 +463,7 @@ const CreateOffer = () => {
           },
           {
             name: name, // name
-            offerMetadata: jsonIpfsLinkMetadata, // rulesURI
+            offerMetadata: jsonMetadataURL, // rulesURI
 
           options: {
             admins: [userMinterAddress], // admin
@@ -585,7 +581,7 @@ const CreateOffer = () => {
               website or another location of your choice. You retain full control to approve or
               reject any ads.
             </p>
-            <ChainSelector setChainConfig={setChainConfig} />
+            <ChainSelector />
           </div>
         </div>
         <CarouselForm

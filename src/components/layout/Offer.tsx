@@ -4,7 +4,7 @@ import Meta from "@/components/Meta";
 import { ethers, BigNumber } from "ethers";
 import Image from "next/image";
 import { getContract, prepareContractCall, readContract } from "thirdweb";
-import { useReadContract, useSendTransaction } from "thirdweb/react";
+import { useReadContract, useSendTransaction, useSwitchActiveWalletChain } from "thirdweb/react";
 import { resolveScheme } from "thirdweb/storage";
 import Tippy from "@tippyjs/react";
 import OfferSkeleton from "@/components/ui/skeletons/OfferSkeleton";
@@ -19,7 +19,6 @@ import "tippy.js/dist/tippy.css";
 import AdValidation from "@/components/features/offer/AdValidation";
 import Details from "@/components/features/token/accordion/Details";
 import config from "@/config/config";
-import { useSwitchChainContext } from "@/providers/SwitchChain";
 import { features } from "@/data/features";
 import UpdateOffer from "@/components/features/offer/offerManagement/UpdateOffer";
 import Payments from "@/components/features/offer/offerManagement/Payments";
@@ -118,7 +117,7 @@ const Offer = ({ offerId, chainId }) => {
   });
 
   const NATIVECurrency = chainConfig?.smartContracts?.currencies?.NATIVE;
-  const { setSelectedChain } = useSwitchChainContext();
+  const setSelectedChain = useSwitchActiveWalletChain();
   const [offerManagementActiveTab, setOfferManagementActiveTab] = useState("integration");
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [accordionActiveTab, setAccordionActiveTab] = useState<string[]>(["tokens"]);
@@ -425,7 +424,7 @@ const Offer = ({ offerId, chainId }) => {
 
   useEffect(() => {
     if (chainConfig?.network) {
-      setSelectedChain(chainConfig?.network);
+      setSelectedChain(chainConfig?.chainObject);
     }
   }, [chainConfig, setSelectedChain]);
 
@@ -717,6 +716,8 @@ const Offer = ({ offerId, chainId }) => {
                           src={imageUrl ?? "/images/gradients/gradient_creative.jpg"}
                           alt="image"
                           className="object-cover w-full h-auto rounded-2xl aspect-square"
+                          width={1000}
+                          height={1000}
                         />
                       </div>
 
