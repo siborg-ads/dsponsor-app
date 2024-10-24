@@ -299,7 +299,7 @@ export const fetchOffer = async (chainId, offerId) => {
             receiver
             bps
           }
-          prices {
+          prices (orderBy: amount, orderDirection: desc) { # workaround cryptoast parcelles
             currency # ERC20 smart contract
             amount # wei, mind decimals() function to transform in human readable value !
             enabled
@@ -309,7 +309,8 @@ export const fetchOffer = async (chainId, offerId) => {
             # where: { and: [{ tokenId_lte: "200" }, { tokenId_lte: "100" }]
             first: 1000
             orderBy: tokenId
-          ) {
+            orderDirection: asc
+          ) {            
             tokenId
             mint {
               transactionHash # if = null => not minted yet, so it's available
@@ -326,7 +327,7 @@ export const fetchOffer = async (chainId, offerId) => {
             }
             nftContract {
               id
-              prices {
+              prices (orderBy: amount, orderDirection: desc) { # workaround cryptoast parcelles
                 currency
                 amount
               }
@@ -484,18 +485,8 @@ export const fetchOffer = async (chainId, offerId) => {
 
   const resultMappedData = response?.adOffers
     .map((element) => {
-      const sortByTokenId = element.nftContract.tokens.sort((a, b) => {
-        if (a.tokenId < b.tokenId) {
-          return -1;
-        } else if (a.tokenId > b.tokenId) {
-          return 1;
-        } else {
-          return 0;
-        }
-      });
-
       const tokenIdAllowedToMint =
-        sortByTokenId.find((token) => token.mint === null)?.tokenId || false;
+        element.nftContract.tokens.find((token) => token.mint === null)?.tokenId || false;
 
       const combinedData = {
         ...element,

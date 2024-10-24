@@ -1,4 +1,5 @@
 import {
+  ThirdwebSDK,
   useAddress,
   useBalance,
   useContract,
@@ -8,6 +9,7 @@ import {
   useStorageUpload
 } from "@thirdweb-dev/react";
 import { Address } from "thirdweb";
+
 import { ethers, BigNumber } from "ethers";
 import Image from "next/image";
 import Link from "next/link";
@@ -56,7 +58,6 @@ import { getOwnershipPeriod } from "@/utils/dates/period";
 import isUrlValid from "@/utils/misc/isUrlValid";
 
 import DsponsorNFTABI from "@/abi/dsponsorNFT.json";
-import { copyFile } from "fs";
 import { StepType } from "../features/profile/tabs/OwnedTokens";
 
 const Token = () => {
@@ -185,6 +186,7 @@ const Token = () => {
   const [isMintable, setIsMintable] = useState(false);
   const [shouldProvideLink, setShouldProvideLink] = useState(false);
   const [steps, setSteps] = useState<StepType[]>([]);
+  const [privateSale, setPrivateSale] = useState<boolean>(false);
 
   React.useEffect(() => {
     if (offerData) {
@@ -243,13 +245,67 @@ const Token = () => {
 
       // set offer data for the current offer
       const currentOffer = offers?.find((offer) => Number(offer?.id) === Number(offerId));
+
+      if (currentOffer?.nftContract?.id && currentOffer?.nftContract?.prices) {
+        const sdk = new ThirdwebSDK(chainConfig.network);
+
+        let isPrivateSale = false;
+        try {
+          const nftContract = await sdk.getContract(currentOffer.nftContract.id, DsponsorNFTABI);
+
+          currentOffer.nftContract.prices = await Promise.all(
+            currentOffer?.nftContract?.prices.map(async (price) => {
+              if (price.enabled && price.currency) {
+                const privateSaleSettings = await nftContract.call("privateSaleSettings", [
+                  price.currency
+                ]);
+
+                if (
+                  privateSaleSettings?.nftContract != "0x0000000000000000000000000000000000000000"
+                ) {
+                  isPrivateSale = true;
+                  if (address) {
+                    const mintPriceForUser = await nftContract.call("getMintPriceForUser", [
+                      address,
+                      tokenId,
+                      price.currency
+                    ]);
+                    price.enabled = mintPriceForUser.enabled;
+                    price.amount = mintPriceForUser.amount;
+                  } else {
+                    price.enabled = false;
+                  }
+                }
+              }
+              return price;
+            })
+          );
+          currentOffer.nftContract.prices = currentOffer.nftContract.prices
+            .filter((price) => price.enabled)
+            .sort((a, b) => {
+              const aAmount = ethers.BigNumber.from(a.amount);
+              const bAmount = ethers.BigNumber.from(b.amount);
+              if (aAmount.gt(bAmount)) {
+                return address ? 1 : -1;
+              } else if (aAmount.lt(bAmount)) {
+                return address ? -1 : 1;
+              } else {
+                return 0;
+              }
+            });
+        } catch (error) {
+          // isPrivateSale = false;
+        }
+        setPrivateSale(isPrivateSale);
+      }
+
       setOfferData(currentOffer);
     } catch (error) {
       console.error("Error fetching offers:", error);
     } finally {
       fetchOffersRef.current = false;
     }
-  }, [chainId, offerId, tokenId]);
+  }, [chainId, offerId, tokenId, address, chainConfig]);
 
   useEffect(() => {
     const revalidate = async (args) => {
@@ -1282,44 +1338,50 @@ const Token = () => {
   useEffect(() => {
     if (!tokenId || !offerData) return;
 
-    if (tokenId?.length > 6) {
-      let tokenData = searchParams.get("tokenData");
+    let tokenData = searchParams.get("tokenData");
+    setTokenData(tokenData);
+
+    const token = offerData.nftContract.tokens?.find(
+      (token) => !!token?.tokenId && BigInt(token?.tokenId) === BigInt(tokenId as string)
+    );
+
+    if (token?.mint?.tokenData?.length) {
+      tokenData = token.mint.tokenData;
       setTokenData(tokenData);
-
-      if (
-        offerData?.nftContract?.tokens?.find(
-          (token) => !!token?.tokenId && BigInt(token?.tokenId) === BigInt(tokenId as string)
-        )?.mint?.tokenData?.length
-      ) {
-        tokenData = offerData.nftContract.tokens?.find(
-          (token) => !!token?.tokenId && BigInt(token?.tokenId) === BigInt(tokenId as string)
-        ).mint.tokenData;
-        setTokenData(tokenData);
-      }
-
-      let tokenMetaData: { description: string; image: string; name: string } = {
-        description: "",
-        image: "",
-        name: ""
-      };
-
-      if (offerData?.metadata?.offer?.token_metadata && isValidId) {
-        tokenMetaData.description = offerData?.metadata.offer?.token_metadata.description.replace(
-          /{tokenData}/g,
-          `${tokenData}`
-        );
-        tokenMetaData.image = offerData?.metadata?.offer?.token_metadata?.image?.replace(
-          /{tokenData}/g,
-          `${tokenData}`
-        );
-        tokenMetaData.name = offerData?.metadata?.offer?.token_metadata?.name?.replace(
-          /{tokenData}/g,
-          `${tokenData}`
-        );
-      }
-
-      setTokenMetaData(tokenMetaData);
     }
+
+    let tokenMetaData: { description: string; image: string; name: string } = {
+      description: "(This token does not have a description)",
+      image: "",
+      name: "(This token does not have a name)"
+    };
+
+    if (token?.metadata) {
+      Object.assign(tokenMetaData, token.metadata);
+    } else {
+      if (offerData?.metadata?.offer?.token_metadata && isValidId) {
+        if (offerData.metadata.offer.token_metadata.description) {
+          tokenMetaData.description = offerData.metadata.offer.token_metadata.description.replace(
+            /{tokenData}/g,
+            `${tokenData}`
+          );
+        }
+        if (offerData.metadata.offer.token_metadata.image) {
+          tokenMetaData.image = offerData.metadata.offer.token_metadata.image.replace(
+            /{tokenData}/g,
+            `${tokenData}`
+          );
+        }
+        if (offerData.metadata.offer.token_metadata.name) {
+          tokenMetaData.name = offerData.metadata.offer.token_metadata.name.replace(
+            /{tokenData}/g,
+            `${tokenData}`
+          );
+        }
+      }
+    }
+
+    setTokenMetaData(tokenMetaData);
   }, [tokenId, offerData, tokenData, searchParams, isValidId]);
 
   useEffect(() => {
@@ -2404,6 +2466,21 @@ const Token = () => {
                       tokenId &&
                       BigInt(token?.tokenId) === BigInt(tokenId as string)
                   )?.mint === null)) && <Disable isOffer={false} />}
+
+              {privateSale &&
+                offerData?.nftContract?.tokens?.find(
+                  (token) =>
+                    !!token?.tokenId &&
+                    tokenId &&
+                    BigInt(token?.tokenId) === BigInt(tokenId as string)
+                )?.mint === null && (
+                  <div className="p-4 my-4 rounded-lg bg-secondaryBlack">
+                    <p className="font-semibold text-center text-white">
+                      This token is part of a private sale. Minting options and pricing may vary
+                      depending on your wallet’s holdings.
+                    </p>
+                  </div>
+                )}
 
               {!conditions?.conditionsObject?.endTimeNotPassed &&
                 conditions?.conditionsObject?.isCreated &&

@@ -254,7 +254,7 @@ export const fetchToken = async (chainId, offerId, tokenId) => {
           royalty {
             bps
           }
-          prices {
+          prices (orderBy: amount, orderDirection: desc) { # workaround cryptoast parcelles
             currency # ERC20 smart contract
             amount # wei, mind decimals() function to transform in human readable value !
             enabled
