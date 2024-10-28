@@ -256,31 +256,47 @@ const Token = ({ chainId, offerId, tokenId }) => {
       const currentOffer = offers?.find((offer) => Number(offer?.id) === Number(offerId));
 
       if (currentOffer?.nftContract?.id && currentOffer?.nftContract?.prices) {
-        const sdk = new ThirdwebSDK(chainConfig.network);
-
         let isPrivateSale = false;
         try {
-          const nftContract = await sdk.getContract(currentOffer.nftContract.id, DsponsorNFTABI);
+          const nftContract = getContract({
+            client: client,
+            address: currentOffer.nftContract.id,
+            chain: chainConfig.chainObject,
+            abi: DSPONSOR_NFT_ABI
+          });
 
           currentOffer.nftContract.prices = await Promise.all(
             currentOffer?.nftContract?.prices.map(async (price) => {
               if (price.enabled && price.currency) {
-                const privateSaleSettings = await nftContract.call("privateSaleSettings", [
-                  price.currency
-                ]);
+                // const privateSaleSettings = await nftContract.call("privateSaleSettings", [
+                //   price.currency
+                // ]);
+
+                const privateSaleSettings = await readContract({
+                  contract: nftContract,
+                  method: "privateSaleSettings",
+                  params: [price.currency]
+                });
 
                 if (
-                  privateSaleSettings?.nftContract != "0x0000000000000000000000000000000000000000"
+                  // nftContract
+                  privateSaleSettings[0] != "0x0000000000000000000000000000000000000000"
                 ) {
                   isPrivateSale = true;
                   if (address) {
-                    const mintPriceForUser = await nftContract.call("getMintPriceForUser", [
-                      address,
-                      tokenId,
-                      price.currency
-                    ]);
+                    // const mintPriceForUser = await nftContract.call("getMintPriceForUser", [
+                    //   address,
+                    //   tokenId,
+                    //   price.currency
+                    // ]);
+                    const mintPriceForUser = await readContract({
+                      contract: nftContract,
+                      method: "getMintPriceForUser",
+                      params: [address, tokenId, price.currency]
+                    });
+
                     price.enabled = mintPriceForUser.enabled;
-                    price.amount = mintPriceForUser.amount;
+                    price.amount = mintPriceForUser.amount.toString();
                   } else {
                     price.enabled = false;
                   }
