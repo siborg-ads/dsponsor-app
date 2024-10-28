@@ -1,6 +1,10 @@
 import React, { SetStateAction, useEffect, useState } from "react";
 import { getContract, prepareContractCall } from "thirdweb";
-import { useActiveWalletChain, useReadContract, useSendTransaction } from "thirdweb/react";
+import {
+  useActiveWalletChain,
+  useReadContract,
+  useSendAndConfirmTransaction
+} from "thirdweb/react";
 
 import { toast } from "react-toastify";
 import { parseUnits, formatUnits } from "ethers/lib/utils";
@@ -114,10 +118,10 @@ const Payments = ({ offer, chainConfig }: { offer: any; chainConfig: ChainObject
     abi: DSPONSOR_NFT_ABI
   });
 
-  const { mutateAsync: mutateDefaultMintPrice } = useSendTransaction();
-  const { mutateAsync: mutateTokenAsync } = useSendTransaction();
-  const { mutateAsync: mutateRoyalties } = useSendTransaction();
-  const { mutateAsync: mutateOwner } = useSendTransaction();
+  const { mutateAsync: mutateDefaultMintPrice } = useSendAndConfirmTransaction();
+  const { mutateAsync: mutateTokenAsync } = useSendAndConfirmTransaction();
+  const { mutateAsync: mutateRoyalties } = useSendAndConfirmTransaction();
+  const { mutateAsync: mutateOwner } = useSendAndConfirmTransaction();
 
   const { data: owner } = useReadContract({
     contract: contract,

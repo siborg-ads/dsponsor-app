@@ -11,7 +11,7 @@ import config from "@/config/config";
 import { Currency } from "@/components/layout/CreateOffer";
 import { getLocalTimeZone, today, parseDate, parseAbsoluteToLocal } from "@internationalized/date";
 
-import { useActiveAccount, useReadContract, useSendTransaction } from "thirdweb/react";
+import { useActiveAccount, useReadContract, useSendAndConfirmTransaction } from "thirdweb/react";
 import { client } from "@/data/services/client";
 import { ChainObject, ChainsConfig } from "@/types/chain";
 import { ERC20ABI } from "@/abi/ERC20";
@@ -111,10 +111,10 @@ const CreateListing = ({
   //     dsponsorNFTContract,
   //     "setApprovalForAll"
   //   );
-  const { mutateAsync: setApprovalForAll } = useSendTransaction();
+  const { mutateAsync: setApprovalForAll } = useSendAndConfirmTransaction();
 
   //   const { mutateAsync: createListing } = useContractWrite(dsponsorMpContract, "createListing");
-  const { mutateAsync: createListing } = useSendTransaction();
+  const { mutateAsync: createListing } = useSendAndConfirmTransaction();
 
   useEffect(() => {
     const handleEsc = (event: KeyboardEvent) => {

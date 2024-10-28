@@ -46,7 +46,7 @@ import { StepType } from "../features/profile/tabs/OwnedTokens";
 import {
   useActiveAccount,
   useReadContract,
-  useSendTransaction,
+  useSendAndConfirmTransaction,
   useSwitchActiveWalletChain,
   useWalletBalance
 } from "thirdweb/react";
@@ -56,6 +56,7 @@ import { client } from "@/data/services/client";
 import { ERC20ABI } from "@/abi/ERC20";
 import { DSPONSOR_ADMIN_ABI } from "@/abi/dsponsorAdmin";
 import { DSPONSOR_NFT_ABI } from "@/abi/dsponsorNFT";
+import { DSPONSOR_MP_ABI } from "@/abi/dsponsorMP";
 
 const Token = ({ chainId, offerId, tokenId }) => {
   const chainConfig = config[Number(chainId)];
@@ -535,9 +536,9 @@ const Token = ({ chainId, offerId, tokenId }) => {
 
   //   const { mutateAsync: uploadToIPFS } = useStorageUpload();
   //   const { mutateAsync: mintAndSubmit } = useContractWrite(DsponsorAdminContract, "mintAndSubmit");
-  const { mutateAsync: mintAndSubmit } = useSendTransaction();
+  const { mutateAsync: mintAndSubmit } = useSendAndConfirmTransaction();
   //   const { mutateAsync: submitAd } = useContractWrite(DsponsorAdminContract, "submitAdProposals");
-  const { mutateAsync: submitAd } = useSendTransaction();
+  const { mutateAsync: submitAd } = useSendAndConfirmTransaction();
 
   //   const { contract: tokenContract } = useContract(tokenCurrencyAddress, ERC20ABI);
   const tokenContract = getContract({
@@ -556,7 +557,7 @@ const Token = ({ chainId, offerId, tokenId }) => {
   });
 
   //   const { mutateAsync: approve } = useContractWrite(tokenContract, "approve");
-  const { mutateAsync: approve } = useSendTransaction();
+  const { mutateAsync: approve } = useSendAndConfirmTransaction();
 
   //   const { contract: DsponsorNFTContract } = useContract(offerData?.nftContract?.id, DsponsorNFTABI);
   const DsponsorNFTContract = getContract({
@@ -602,12 +603,12 @@ const Token = ({ chainId, offerId, tokenId }) => {
   const dsponsorMpContract = getContract({
     client: client,
     address: chainConfig?.smartContracts?.DSPONSORMP?.address,
-    chain: chainConfig.chainObject
-    //   abi: DSPONSOR_MP_ABI TODO: add ABI
+    chain: chainConfig.chainObject,
+    abi: DSPONSOR_MP_ABI //TODO: add ABI
   });
 
   //   const { mutateAsync: directBuy } = useContractWrite(dsponsorMpContract, "buy");
-  const { mutateAsync: directBuy } = useSendTransaction();
+  const { mutateAsync: directBuy } = useSendAndConfirmTransaction();
 
   const now = Math.floor(new Date().getTime() / 1000);
 
@@ -1729,52 +1730,62 @@ const Token = ({ chainId, offerId, tokenId }) => {
       }
     }
 
-    const argsMintAndSubmit = {
-      tokenId: tokenIdString,
-      to: address,
-      currency: offerData?.nftContract?.prices[0]?.currency,
-      tokenData: tokenData ?? "",
-      offerId: offerId,
-      adParameters: [],
-      adDatas: [],
-      referralAdditionalInformation: referralAddress
-    };
+    // const argsMintAndSubmit = {
+    //   tokenId: tokenIdString,
+    //   to: address,
+    //   currency: offerData?.nftContract?.prices[0]?.currency,
+    //   tokenData: tokenData ?? "",
+    //   offerId: offerId,
+    //   adParameters: [],
+    //   adDatas: [],
+    //   referralAdditionalInformation: referralAddress
+    // };
 
-    const argsdirectBuy = {
-      listingId: firstSelectedListing?.id,
-      buyFor: address,
-      quantity: 1,
-      currency: firstSelectedListing?.currency,
-      totalPrice: firstSelectedListing?.buyPriceStructure.buyoutPricePerToken,
-      referralAdditionalInformation: referralAddress
-    };
+    // const argsdirectBuy = {
+    //   listingId: firstSelectedListing?.id,
+    //   buyFor: address,
+    //   quantity: 1,
+    //   currency: firstSelectedListing?.currency,
+    //   totalPrice: firstSelectedListing?.buyPriceStructure.buyoutPricePerToken,
+    //   referralAdditionalInformation: referralAddress
+    // };
     try {
-      const tokenEtherPriceBigInt = parseUnits(
-        Number(buyTokenEtherPrice).toFixed(18).toString(),
-        18
-      );
+      //   const tokenEtherPriceBigInt = parseUnits(
+      //     Number(buyTokenEtherPrice).toFixed(18).toString(),
+      //     18
+      //   ).toBigInt();
 
-      const functionWithPossibleArgs =
-        marketplaceListings.length <= 0 ? argsMintAndSubmit : argsdirectBuy;
-      const argsWithPossibleOverrides =
-        canPayWithNativeToken && insufficentBalance && hasEnoughBalanceForNative
-          ? {
-              args: [functionWithPossibleArgs],
-              overrides: { value: tokenEtherPriceBigInt }
-            }
-          : { args: [functionWithPossibleArgs] };
+      //   const functionWithPossibleArgs =
+      //     marketplaceListings.length <= 0 ? argsMintAndSubmit : argsdirectBuy;
+      //   const argsWithPossibleOverrides =
+      //     canPayWithNativeToken && insufficentBalance && hasEnoughBalanceForNative
+      //       ? {
+      //           args: [functionWithPossibleArgs],
+      //           overrides: { value: tokenEtherPriceBigInt }
+      //         }
+      //       : { args: [functionWithPossibleArgs] };
 
       if (marketplaceListings.length <= 0) {
         // address of the minter as referral
-        argsWithPossibleOverrides.args[0].referralAdditionalInformation = referralAddress;
+        // argsWithPossibleOverrides.args[0].referralAdditionalInformation = referralAddress;
 
         // TODO: fix this
         // await mintAndSubmit(argsWithPossibleOverrides);
         const tx = prepareContractCall({
           contract: DsponsorAdminContract,
           method: "mintAndSubmit",
-          // @ts-ignore
-          params: argsWithPossibleOverrides
+          params: [
+            {
+              tokenId: BigInt(tokenIdString ?? ""),
+              to: address ?? "",
+              currency: offerData?.nftContract?.prices[0]?.currency,
+              tokenData: tokenData ?? "",
+              offerId: offerId,
+              adParameters: [],
+              adDatas: [],
+              referralAdditionalInformation: referralAddress
+            }
+          ]
         });
 
         // @ts-ignore
@@ -1795,10 +1806,17 @@ const Token = ({ chainId, offerId, tokenId }) => {
         //   await directBuy(argsWithPossibleOverrides);
         const tx = prepareContractCall({
           contract: dsponsorMpContract,
-          // @ts-ignore
           method: "buy",
-          // @ts-ignore
-          params: argsWithPossibleOverrides
+          params: [
+            {
+              listingId: firstSelectedListing?.id,
+              buyFor: address ?? "",
+              quantity: BigInt(1),
+              currency: firstSelectedListing?.currency,
+              //   totalPrice: firstSelectedListing?.buyPriceStructure.buyoutPricePerToken,
+              referralAdditionalInformation: referralAddress
+            }
+          ]
         });
 
         // @ts-ignore
@@ -2069,7 +2087,7 @@ const Token = ({ chainId, offerId, tokenId }) => {
   //     DsponsorAdminContract,
   //     "reviewAdProposals"
   //   );
-  const { mutateAsync: validationAsync } = useSendTransaction();
+  const { mutateAsync: validationAsync } = useSendAndConfirmTransaction();
 
   const handleValidationSubmit = async (submissionArgs) => {
     try {
@@ -2315,13 +2333,13 @@ const Token = ({ chainId, offerId, tokenId }) => {
   //     DsponsorNFTContract,
   //     "mint"
   //   );
-  const airdropAsync = useSendTransaction();
+  const airdropAsync = useSendAndConfirmTransaction();
 
   //   const { mutateAsync: transferAsync } = useContractWrite<any, any, any, any, any>(
   //     DsponsorNFTContract,
   //     "transferFrom"
   //   );
-  const transferAsync = useSendTransaction();
+  const transferAsync = useSendAndConfirmTransaction();
 
   const handleAirdrop = async (airdropAddress: Address, tokenData: string | null) => {
     let stringToUnit = BigInt(0);
@@ -2845,6 +2863,7 @@ const Token = ({ chainId, offerId, tokenId }) => {
                     offerData={offerData}
                     marketplaceListings={marketplaceListings}
                     royalties={royalties}
+                    // @ts-ignore
                     dsponsorMpContract={dsponsorMpContract}
                     conditions={conditions?.conditionsObject}
                     tokenId={tokenId}

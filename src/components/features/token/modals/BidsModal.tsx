@@ -22,7 +22,7 @@ import NormalButton from "@/components/ui/buttons/NormalButton";
 import {
   useActiveAccount,
   useActiveWalletChain,
-  useSendTransaction,
+  useSendAndConfirmTransaction,
   useSwitchActiveWalletChain,
   useWalletBalance
 } from "thirdweb/react";
@@ -92,7 +92,7 @@ const BidsModal = ({
   const [initialIntPrice, setInitialIntPrice] = useState<string | null>(null);
   const [isPriceGood, setIsPriceGood] = useState(true);
   //   const { mutateAsync: auctionBids } = useContractWrite(dsponsorMpContract, "bid");
-  const { mutateAsync: auctionBids } = useSendTransaction();
+  const { mutateAsync: auctionBids } = useSendAndConfirmTransaction();
 
   const [checkTerms, setCheckTerms] = useState(false);
   const [refundedPrice, setRefundedPrice] = useState<string | null>(null);

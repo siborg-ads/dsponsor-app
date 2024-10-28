@@ -6,7 +6,7 @@ import StyledWeb3Button from "@/components/ui/buttons/StyledWeb3Button";
 import { Address, ContractOptions, prepareContractCall } from "thirdweb";
 import NormalButton from "@/components/ui/buttons/NormalButton";
 import config from "@/config/config";
-import { useActiveAccount, useSendTransaction } from "thirdweb/react";
+import { useActiveAccount, useSendAndConfirmTransaction } from "thirdweb/react";
 
 const Manage = ({
   chainId,
@@ -45,10 +45,10 @@ const Manage = ({
   //     dsponsorMpContract,
   //     "cancelDirectListing"
   //   );
-  const { mutateAsync: cancelDirectListing } = useSendTransaction();
+  const { mutateAsync: cancelDirectListing } = useSendAndConfirmTransaction();
 
   //   const { mutateAsync: closeAuctionListing } = useContractWrite(dsponsorMpContract, "closeAuction");
-  const { mutateAsync: closeAuctionListing } = useSendTransaction();
+  const { mutateAsync: closeAuctionListing } = useSendAndConfirmTransaction();
 
   const wallet = useActiveAccount();
   const address = wallet?.address;
