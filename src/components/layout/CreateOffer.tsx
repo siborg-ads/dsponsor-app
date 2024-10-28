@@ -431,7 +431,6 @@ const CreateOffer = () => {
         chain: chainConfig?.chainObject
       });
 
-      // TODO: create offer bug
       const tx = prepareContractCall({
         contract: DsponsorAdminContract,
         method: "createDSponsorNFTAndOffer",

@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import "swiper/css";
 import "swiper/css/navigation";
 import Image from "next/image";
@@ -355,7 +356,11 @@ const PendingAds: React.FC<PendingAdsProps> = ({
                         </div>
                       </div>
                       <Image
-                        src={data ?? "/images/gradients/gradient_light.jpg"}
+                        src={
+                          data.startsWith("https://")
+                            ? data
+                            : "/images/gradients/gradient_light.jpg"
+                        }
                         alt="logo"
                         height={600}
                         width={600}
