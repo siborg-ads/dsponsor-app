@@ -190,7 +190,6 @@ const CreateListing = ({
     //   address,
     //   chainConfig?.smartContracts?.DSPONSORMP?.address
     // ]);
-    // TODO: TEST THIS UNKNOWN BEHAVIOR
     const isApprovedForAll = await readContract({
       contract: dsponsorNFTContract,
       // @ts-ignore

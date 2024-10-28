@@ -88,7 +88,6 @@ const Payments = ({ offer, chainConfig }: { offer: any; chainConfig: ChainObject
     params: []
   });
 
-  //TODO: V5 MIGRATION
   useEffect(() => {
     if (currencyDecimalsData) {
       setCurrencyDecimals(currencyDecimalsData);

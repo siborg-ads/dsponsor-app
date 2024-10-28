@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import "@uiw/react-md-editor/markdown-editor.css";
 import "@uiw/react-markdown-preview/markdown.css";
 import dynamic from "next/dynamic";
@@ -416,7 +417,11 @@ const PendingAds: React.FC<PendingAdsProps> = ({
                         </div>
                       </div>
                       <Image
-                        src={data ?? "/images/gradients/gradient_light.jpg"}
+                        src={
+                          data.startsWith("https://")
+                            ? data
+                            : "/images/gradients/gradient_light.jpg"
+                        }
                         alt="logo"
                         height={600}
                         width={600}

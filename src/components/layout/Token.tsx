@@ -67,6 +67,7 @@ const Token = ({ chainId, offerId, tokenId }) => {
   const setSelectedChain = useSwitchActiveWalletChain();
 
   useEffect(() => {
+    if (!wallet) return;
     if (chainId) {
       setSelectedChain(chainConfig?.chainObject);
     }
@@ -1857,11 +1858,16 @@ const Token = ({ chainId, offerId, tokenId }) => {
                 files: [item.file],
                 uploadWithoutDirectory: true
               });
+              dataItems.push(
+                resolveScheme({
+                  client: client,
+                  uri: uploadUrl
+                })
+              );
             } catch (error) {
               console.error("Erreur lors de l'upload à IPFS:", error);
               throw new Error("Upload to IPFS failed.");
             }
-            dataItems.push(uploadUrl[0]);
           } else if (item.adParameter.startsWith("linkURL") && link) {
             dataItems.push(link);
           } else if (item.data) {
