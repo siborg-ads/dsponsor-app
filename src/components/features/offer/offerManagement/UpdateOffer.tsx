@@ -17,7 +17,7 @@ import { cn } from "@nextui-org/react";
 import Tippy from "@tippyjs/react";
 import "tippy.js/dist/tippy.css";
 import formatBytes from "@/utils/misc/formatBytes";
-import { useActiveAccount, useSendTransaction } from "thirdweb/react";
+import { useActiveAccount, useSendAndConfirmTransaction } from "thirdweb/react";
 import { client } from "@/data/services/client";
 import { download, resolveScheme, upload } from "thirdweb/storage";
 import { DSPONSOR_ADMIN_ABI } from "@/abi/dsponsorAdmin";
@@ -79,7 +79,7 @@ const UpdateOffer = ({
   });
 
   //   const { mutateAsync } = useContractWrite(contract, "updateOffer");
-  const { mutateAsync } = useSendTransaction();
+  const { mutateAsync } = useSendAndConfirmTransaction();
 
   const handleLogoUpload = (file: any) => {
     if (file) {

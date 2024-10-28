@@ -4,7 +4,11 @@ import Meta from "@/components/Meta";
 import { ethers, BigNumber } from "ethers";
 import Image from "next/image";
 import { getContract, prepareContractCall, readContract } from "thirdweb";
-import { useReadContract, useSendTransaction, useSwitchActiveWalletChain } from "thirdweb/react";
+import {
+  useReadContract,
+  useSendAndConfirmTransaction,
+  useSwitchActiveWalletChain
+} from "thirdweb/react";
 import { resolveScheme } from "thirdweb/storage";
 import Tippy from "@tippyjs/react";
 import OfferSkeleton from "@/components/ui/skeletons/OfferSkeleton";
@@ -84,7 +88,7 @@ const Offer = ({ offerId, chainId }) => {
   });
 
   // const { mutateAsync } = useContractWrite(DsponsorAdminContract, "reviewAdProposals");
-  const { mutateAsync: reviewAdProposals } = useSendTransaction();
+  const { mutateAsync: reviewAdProposals } = useSendAndConfirmTransaction();
 
   const [urlFromChild, setUrlFromChild] = useState("");
   const [successFullRefuseModal, setSuccessFullRefuseModal] = useState(false);

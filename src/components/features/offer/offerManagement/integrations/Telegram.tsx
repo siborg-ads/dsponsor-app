@@ -8,7 +8,7 @@ import Link from "next/link";
 import React, { useEffect } from "react";
 import { toast } from "react-toastify";
 import { getContract, prepareContractCall } from "thirdweb";
-import { useSendTransaction } from "thirdweb/react";
+import { useSendAndConfirmTransaction } from "thirdweb/react";
 import { resolveScheme, download, upload } from "thirdweb/storage";
 
 const Telegram = ({
@@ -40,7 +40,7 @@ const Telegram = ({
   });
 
   //   const { mutateAsync } = useContractWrite(contract, "updateOffer");
-  const { mutateAsync } = useSendTransaction();
+  const { mutateAsync } = useSendAndConfirmTransaction();
 
   useEffect(() => {
     const fetchMetadatas = async (metadataURL) => {

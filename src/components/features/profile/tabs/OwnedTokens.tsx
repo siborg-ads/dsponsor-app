@@ -11,7 +11,7 @@ import MainButton from "@/components/ui/buttons/MainButton";
 import { features } from "@/data/features";
 import config from "@/config/config";
 import { Address, getContract, prepareContractCall } from "thirdweb";
-import { useActiveWalletChain, useSendTransaction } from "thirdweb/react";
+import { useActiveWalletChain, useSendAndConfirmTransaction } from "thirdweb/react";
 import { client } from "@/data/services/client";
 import { DSPONSOR_ADMIN_ABI } from "@/abi/dsponsorAdmin";
 import { ChainObject } from "@/types/chain";
@@ -80,7 +80,7 @@ const OwnedTokens = ({
 
   //   const { mutateAsync: uploadToIPFS } = useStorageUpload();
   //   const { mutateAsync: submitAd } = useContractWrite(DsponsorAdminContract, "submitAdProposals");
-  const { mutateAsync: submitAd } = useSendTransaction();
+  const { mutateAsync: submitAd } = useSendAndConfirmTransaction();
 
   const handlePreviewModal = () => {
     if (successFullUpload) {

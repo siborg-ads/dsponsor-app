@@ -10,7 +10,13 @@ import OfferImageAndURL from "@/components/features/createOffer/OfferImageAndURL
 import OfferValidity from "@/components/features/createOffer/OfferValidity";
 import config from "@/config/config";
 import CarouselForm from "@/components/ui/misc/CarouselForm";
-import { Address, getContract, prepareContractCall, readContract, sendTransaction } from "thirdweb";
+import {
+  Address,
+  getContract,
+  prepareContractCall,
+  readContract,
+  sendAndConfirmTransaction
+} from "thirdweb";
 import { features } from "@/data/features";
 
 // import { ChainObject } from "@/types/chain";
@@ -464,27 +470,20 @@ const CreateOffer = () => {
             name: name, // name
             offerMetadata: jsonMetadataURL, // rulesURI
 
-          options: {
-            admins: [userMinterAddress], // admin
-            validators: [], // validator
-            adParameters: uniqueParams // ad parameters
+            options: {
+              admins: [userMinterAddress], // admin
+              validators: [], // validator
+              adParameters: uniqueParams // ad parameters
+            }
           }
-        })
-      ];
-
-      const preparedArgs = [Object.values(JSON.parse(args[0])), Object.values(JSON.parse(args[1]))];
-
-      // const offerCreationResult = await createDSponsorNFTAndOffer({ args: preparedArgs });
-
-      const tx = await prepareContractCall({
-        contract: DsponsorAdminContract,
-        method: "createDSponsorNFTAndOffer",
-        // @ts-ignore
-        params: preparedArgs
+        ]
       });
 
       // @ts-ignore
-      const offerCreationResult = await createDSponsorNFTAndOffer(tx);
+      const offerCreationResult = await sendAndConfirmTransaction({
+        account: wallet!,
+        transaction: tx
+      });
 
       // TODO: HANDLE RECEIPT
       //   const receipt = offerCreationResult?.receipt as any;
