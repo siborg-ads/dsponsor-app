@@ -50,6 +50,7 @@ export const DSPONSOR_NFT_ABI = [
     name: "ERC2981InvalidTokenRoyaltyReceiver",
     type: "error"
   },
+  { inputs: [], name: "ERC721EnumerableForbiddenBatchMint", type: "error" },
   {
     inputs: [
       { internalType: "address", name: "sender", type: "address" },
@@ -95,6 +96,14 @@ export const DSPONSOR_NFT_ABI = [
   {
     inputs: [{ internalType: "uint256", name: "tokenId", type: "uint256" }],
     name: "ERC721NonexistentToken",
+    type: "error"
+  },
+  {
+    inputs: [
+      { internalType: "address", name: "owner", type: "address" },
+      { internalType: "uint256", name: "index", type: "uint256" }
+    ],
+    name: "ERC721OutOfBoundsIndex",
     type: "error"
   },
   { inputs: [], name: "FailedInnerCall", type: "error" },
@@ -147,6 +156,7 @@ export const DSPONSOR_NFT_ABI = [
   },
   { inputs: [], name: "UnauthorizedToMint", type: "error" },
   { inputs: [], name: "UnauthorizedUserOperation", type: "error" },
+  { inputs: [], name: "UnsupportedERC721EnumerableContract", type: "error" },
   {
     anonymous: false,
     inputs: [
@@ -215,6 +225,21 @@ export const DSPONSOR_NFT_ABI = [
       { indexed: true, internalType: "address", name: "newOwner", type: "address" }
     ],
     name: "OwnershipTransferred",
+    type: "event"
+  },
+  {
+    anonymous: false,
+    inputs: [
+      { indexed: false, internalType: "address", name: "currency", type: "address" },
+      {
+        indexed: false,
+        internalType: "contract IERC721Enumerable",
+        name: "nftContract",
+        type: "address"
+      },
+      { indexed: false, internalType: "uint256", name: "maxMintsPerToken", type: "uint256" }
+    ],
+    name: "PrivateSaleSettingsUpdated",
     type: "event"
   },
   {
@@ -297,6 +322,13 @@ export const DSPONSOR_NFT_ABI = [
     type: "function"
   },
   {
+    inputs: [{ internalType: "uint256", name: "", type: "uint256" }],
+    name: "allowedTokenIds",
+    outputs: [{ internalType: "bool", name: "", type: "bool" }],
+    stateMutability: "view",
+    type: "function"
+  },
+  {
     inputs: [],
     name: "applyTokensAllowlist",
     outputs: [{ internalType: "bool", name: "", type: "bool" }],
@@ -350,6 +382,33 @@ export const DSPONSOR_NFT_ABI = [
     outputs: [
       { internalType: "bool", name: "enabled", type: "bool" },
       { internalType: "uint256", name: "amount", type: "uint256" }
+    ],
+    stateMutability: "view",
+    type: "function"
+  },
+  {
+    inputs: [
+      { internalType: "address", name: "user", type: "address" },
+      { internalType: "uint256", name: "tokenId", type: "uint256" },
+      { internalType: "address", name: "currency", type: "address" }
+    ],
+    name: "getMintPriceForUser",
+    outputs: [
+      {
+        components: [
+          {
+            internalType: "contract IERC721Enumerable",
+            name: "privateSaleContract",
+            type: "address"
+          },
+          { internalType: "uint256", name: "privateSaleTokenId", type: "uint256" },
+          { internalType: "bool", name: "enabled", type: "bool" },
+          { internalType: "uint256", name: "amount", type: "uint256" }
+        ],
+        internalType: "struct DSponsorNFTPrivateSales.MintPriceResult",
+        name: "result",
+        type: "tuple"
+      }
     ],
     stateMutability: "view",
     type: "function"
@@ -435,6 +494,16 @@ export const DSPONSOR_NFT_ABI = [
     inputs: [{ internalType: "uint256", name: "tokenId", type: "uint256" }],
     name: "ownerOf",
     outputs: [{ internalType: "address", name: "", type: "address" }],
+    stateMutability: "view",
+    type: "function"
+  },
+  {
+    inputs: [{ internalType: "address", name: "", type: "address" }],
+    name: "privateSaleSettings",
+    outputs: [
+      { internalType: "contract IERC721Enumerable", name: "nftContract", type: "address" },
+      { internalType: "uint256", name: "maxMintsPerToken", type: "uint256" }
+    ],
     stateMutability: "view",
     type: "function"
   },
@@ -530,6 +599,17 @@ export const DSPONSOR_NFT_ABI = [
   },
   {
     inputs: [
+      { internalType: "address", name: "currency", type: "address" },
+      { internalType: "address", name: "nftContract", type: "address" },
+      { internalType: "uint256", name: "maxMintsPerToken", type: "uint256" }
+    ],
+    name: "setPrivateSaleSettings",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function"
+  },
+  {
+    inputs: [
       { internalType: "address", name: "receiver", type: "address" },
       { internalType: "uint96", name: "feeBps", type: "uint96" }
     ],
@@ -608,9 +688,36 @@ export const DSPONSOR_NFT_ABI = [
     type: "function"
   },
   {
+    inputs: [{ internalType: "uint256", name: "index", type: "uint256" }],
+    name: "tokenByIndex",
+    outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
+    stateMutability: "view",
+    type: "function"
+  },
+  {
     inputs: [{ internalType: "uint256", name: "tokenId", type: "uint256" }],
     name: "tokenIdIsAllowedToMint",
     outputs: [{ internalType: "bool", name: "", type: "bool" }],
+    stateMutability: "view",
+    type: "function"
+  },
+  {
+    inputs: [
+      { internalType: "contract IERC721Enumerable", name: "", type: "address" },
+      { internalType: "uint256", name: "", type: "uint256" }
+    ],
+    name: "tokenMintCount",
+    outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
+    stateMutability: "view",
+    type: "function"
+  },
+  {
+    inputs: [
+      { internalType: "address", name: "owner", type: "address" },
+      { internalType: "uint256", name: "index", type: "uint256" }
+    ],
+    name: "tokenOfOwnerByIndex",
+    outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
     stateMutability: "view",
     type: "function"
   },
