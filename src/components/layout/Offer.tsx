@@ -427,10 +427,11 @@ const Offer = ({ offerId, chainId }) => {
   }, [offerData]);
 
   useEffect(() => {
+    if (!wallet) return;
     if (chainConfig?.network) {
       setSelectedChain(chainConfig?.chainObject);
     }
-  }, [chainConfig, setSelectedChain]);
+  }, [chainConfig, setSelectedChain, wallet]);
 
   useEffect(() => {
     if (address && owner) {

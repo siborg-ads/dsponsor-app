@@ -485,18 +485,25 @@ const CreateOffer = () => {
         transaction: tx
       });
 
-      // TODO: HANDLE RECEIPT
-      //   const receipt = offerCreationResult?.receipt as any;
-      //   const offerId = receipt?.events?.find((e) => e.event === "UpdateOffer")?.args?.[0];
+      const receipt = offerCreationResult;
+      console.log("receipt", receipt);
+      // const offerId = receipt?.events?.find((e) => e.event === "UpdateOffer")?.args?.[0];
+
+      // TODO: make cleaner
+      // in logs we can find the offer id on the 11th log in 2nd topic
+      const offerIdhex = receipt.logs[10].topics[1]; // is in hex
+      const offerId = BigNumber.from(offerIdhex);
+      console.log("offerId", offerId.toBigInt());
 
       const tags = [
         `${chainConfig.chainId}-adOffers`,
         `${chainConfig.chainId}-userAddress-${userMinterAddress}`
       ];
 
-      //   if (offerId && BigNumber.isBigNumber(offerId)) {
-      // tags.push(`${chainConfig.chainId}-adOffer-${offerId.toBigInt().toString()}`);
-      //   }
+      if (offerId) {
+        tags.push(`${chainConfig.chainId}-adOffer-${offerId.toBigInt()}`);
+        console.log("tags", tags);
+      }
 
       const relayerURL = chainConfig?.relayerURL;
       if (relayerURL) {
