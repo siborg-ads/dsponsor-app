@@ -57,6 +57,7 @@ import { ERC20ABI } from "@/abi/ERC20";
 import { DSPONSOR_ADMIN_ABI } from "@/abi/dsponsorAdmin";
 import { DSPONSOR_NFT_ABI } from "@/abi/dsponsorNFT";
 import { DSPONSOR_MP_ABI } from "@/abi/dsponsorMP";
+import useGasless from "@/lib/useGazless";
 
 const Token = ({ chainId, offerId, tokenId }) => {
   const chainConfig = config[Number(chainId)];
@@ -1766,27 +1767,26 @@ const Token = ({ chainId, offerId, tokenId }) => {
     //   referralAdditionalInformation: referralAddress
     // };
     try {
-      //   const tokenEtherPriceBigInt = parseUnits(
-      //     Number(buyTokenEtherPrice).toFixed(18).toString(),
-      //     18
-      //   ).toBigInt();
+      const tokenEtherPriceBigInt = parseUnits(
+        Number(buyTokenEtherPrice).toFixed(18).toString(),
+        18
+      ).toBigInt();
 
-      //   const functionWithPossibleArgs =
-      //     marketplaceListings.length <= 0 ? argsMintAndSubmit : argsdirectBuy;
-      //   const argsWithPossibleOverrides =
-      //     canPayWithNativeToken && insufficentBalance && hasEnoughBalanceForNative
-      //       ? {
-      //           args: [functionWithPossibleArgs],
-      //           overrides: { value: tokenEtherPriceBigInt }
-      //         }
-      //       : { args: [functionWithPossibleArgs] };
+      // const functionWithPossibleArgs =
+      //   marketplaceListings.length <= 0 ? argsMintAndSubmit : argsdirectBuy;
+      // const argsWithPossibleOverrides =
+      //   canPayWithNativeToken && insufficentBalance && hasEnoughBalanceForNative
+      //     ? {
+      //         args: [functionWithPossibleArgs],
+      //         overrides: { value: tokenEtherPriceBigInt }
+      //       }
+      //     : { args: [functionWithPossibleArgs] };
 
       if (marketplaceListings.length <= 0) {
         // address of the minter as referral
         // argsWithPossibleOverrides.args[0].referralAdditionalInformation = referralAddress;
-
-        // TODO: fix this
         // await mintAndSubmit(argsWithPossibleOverrides);
+
         const tx = prepareContractCall({
           contract: DsponsorAdminContract,
           method: "mintAndSubmit",
@@ -1801,7 +1801,11 @@ const Token = ({ chainId, offerId, tokenId }) => {
               adDatas: [],
               referralAdditionalInformation: referralAddress
             }
-          ]
+          ],
+          value:
+            canPayWithNativeToken && insufficentBalance && hasEnoughBalanceForNative
+              ? tokenEtherPriceBigInt
+              : BigInt(0)
         });
 
         // @ts-ignore
@@ -1832,7 +1836,11 @@ const Token = ({ chainId, offerId, tokenId }) => {
               //   totalPrice: firstSelectedListing?.buyPriceStructure.buyoutPricePerToken,
               referralAdditionalInformation: referralAddress
             }
-          ]
+          ],
+          value:
+            canPayWithNativeToken && insufficentBalance && hasEnoughBalanceForNative
+              ? tokenEtherPriceBigInt
+              : BigInt(0)
         });
 
         // @ts-ignore
@@ -2103,7 +2111,8 @@ const Token = ({ chainId, offerId, tokenId }) => {
   //     DsponsorAdminContract,
   //     "reviewAdProposals"
   //   );
-  const { mutateAsync: validationAsync } = useSendAndConfirmTransaction();
+  const gasless = useGasless(chainId);
+  const { mutateAsync: validationAsync } = useSendAndConfirmTransaction({ gasless });
 
   const handleValidationSubmit = async (submissionArgs) => {
     try {
@@ -2349,13 +2358,14 @@ const Token = ({ chainId, offerId, tokenId }) => {
   //     DsponsorNFTContract,
   //     "mint"
   //   );
-  const airdropAsync = useSendAndConfirmTransaction();
+
+  const airdropAsync = useSendAndConfirmTransaction({ gasless });
 
   //   const { mutateAsync: transferAsync } = useContractWrite<any, any, any, any, any>(
   //     DsponsorNFTContract,
   //     "transferFrom"
   //   );
-  const transferAsync = useSendAndConfirmTransaction();
+  const transferAsync = useSendAndConfirmTransaction({ gasless });
 
   const handleAirdrop = async (airdropAddress: Address, tokenData: string | null) => {
     let stringToUnit = BigInt(0);

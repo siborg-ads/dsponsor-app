@@ -3,6 +3,7 @@ import StyledWeb3Button from "@/components/ui/buttons/StyledWeb3Button";
 import Input from "@/components/ui/Input";
 import config from "@/config/config";
 import { client } from "@/data/services/client";
+import useGasless from "@/lib/useGazless";
 import { Divider, Switch } from "@nextui-org/react";
 import Link from "next/link";
 import React, { useEffect } from "react";
@@ -40,7 +41,8 @@ const Telegram = ({
   });
 
   //   const { mutateAsync } = useContractWrite(contract, "updateOffer");
-  const { mutateAsync } = useSendAndConfirmTransaction();
+  const gasless = useGasless(chainId);
+  const { mutateAsync } = useSendAndConfirmTransaction({ gasless });
 
   useEffect(() => {
     const fetchMetadatas = async (metadataURL) => {

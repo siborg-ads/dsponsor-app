@@ -103,21 +103,21 @@
 //     }, [selectedChain]);
 
 //     useEffect(() => {
-//       if (chainId && address && balance !== undefined) {
-//         const OZrelayer = config?.[chainId]?.features?.openZeppelinDefender?.relayerURL;
-//         const balanceThreshold = BigInt(config?.[chainId]?.gaslessBalanceThreshold ?? "0");
-//         const gaslessBalanceCondition = balanceThreshold && balance < balanceThreshold;
+//   if (chainId && address && balance !== undefined) {
+//     const OZrelayer = config?.[chainId]?.features?.openZeppelinDefender?.relayerURL;
+//     const balanceThreshold = BigInt(config?.[chainId]?.gaslessBalanceThreshold ?? "0");
+//     const gaslessBalanceCondition = balanceThreshold && balance < balanceThreshold;
 
-//         const sdkOptions =
-//           OZrelayer && gaslessBalanceCondition
-//             ? {
-//                 gasless: {
-//                   openzeppelin: {
-//                     relayerUrl: OZrelayer
-//                   }
-//                 }
+//     const sdkOptions =
+//       OZrelayer && gaslessBalanceCondition
+//         ? {
+//             gasless: {
+//               openzeppelin: {
+//                 relayerUrl: OZrelayer
 //               }
-//             : undefined;
+//             }
+//           }
+//         : undefined;
 
 //         setSdkOptions(sdkOptions);
 //       }

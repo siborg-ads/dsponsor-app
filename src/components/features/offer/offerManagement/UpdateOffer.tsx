@@ -21,6 +21,7 @@ import { useActiveAccount, useSendAndConfirmTransaction } from "thirdweb/react";
 import { client } from "@/data/services/client";
 import { download, resolveScheme, upload } from "thirdweb/storage";
 import { DSPONSOR_ADMIN_ABI } from "@/abi/dsponsorAdmin";
+import useGasless from "@/lib/useGazless";
 
 const fileTypes = ["JPG", "PNG", "WEBP", "GIF"];
 
@@ -78,8 +79,10 @@ const UpdateOffer = ({
     abi: DSPONSOR_ADMIN_ABI
   });
 
+  const gasless = useGasless(chainId as number);
+
   //   const { mutateAsync } = useContractWrite(contract, "updateOffer");
-  const { mutateAsync } = useSendAndConfirmTransaction();
+  const { mutateAsync } = useSendAndConfirmTransaction({ gasless });
 
   const handleLogoUpload = (file: any) => {
     if (file) {
