@@ -551,7 +551,7 @@ const CreateListing = ({
                                       minValue={today(getLocalTimeZone())}
                                       value={parseAbsoluteToLocal(new Date(endDate).toISOString())}
                                       onChange={(date) => {
-                                        if (date < parseAbsoluteToLocal(endDate.toISOString())) {
+                                        if (date < parseAbsoluteToLocal(new Date().toISOString())) {
                                           setEndDate(endDate);
                                         } else {
                                           setEndDate(

@@ -1339,44 +1339,50 @@ const Token = () => {
   useEffect(() => {
     if (!tokenId || !offerData) return;
 
-    if (tokenId?.length > 6) {
-      let tokenData = searchParams.get("tokenData");
+    let tokenData = searchParams.get("tokenData");
+    setTokenData(tokenData);
+
+    const token = offerData.nftContract.tokens?.find(
+      (token) => !!token?.tokenId && BigInt(token?.tokenId) === BigInt(tokenId as string)
+    );
+
+    if (token?.mint?.tokenData?.length) {
+      tokenData = token.mint.tokenData;
       setTokenData(tokenData);
-
-      if (
-        offerData?.nftContract?.tokens?.find(
-          (token) => !!token?.tokenId && BigInt(token?.tokenId) === BigInt(tokenId as string)
-        )?.mint?.tokenData?.length
-      ) {
-        tokenData = offerData.nftContract.tokens?.find(
-          (token) => !!token?.tokenId && BigInt(token?.tokenId) === BigInt(tokenId as string)
-        ).mint.tokenData;
-        setTokenData(tokenData);
-      }
-
-      let tokenMetaData: { description: string; image: string; name: string } = {
-        description: "",
-        image: "",
-        name: ""
-      };
-
-      if (offerData?.metadata?.offer?.token_metadata && isValidId) {
-        tokenMetaData.description = offerData?.metadata.offer?.token_metadata.description.replace(
-          /{tokenData}/g,
-          `${tokenData}`
-        );
-        tokenMetaData.image = offerData?.metadata?.offer?.token_metadata?.image?.replace(
-          /{tokenData}/g,
-          `${tokenData}`
-        );
-        tokenMetaData.name = offerData?.metadata?.offer?.token_metadata?.name?.replace(
-          /{tokenData}/g,
-          `${tokenData}`
-        );
-      }
-
-      setTokenMetaData(tokenMetaData);
     }
+
+    let tokenMetaData: { description: string; image: string; name: string } = {
+      description: "(This token does not have a description)",
+      image: "",
+      name: "(This token does not have a name)"
+    };
+
+    if (token?.metadata) {
+      Object.assign(tokenMetaData, token.metadata);
+    } else {
+      if (offerData?.metadata?.offer?.token_metadata && isValidId) {
+        if (offerData.metadata.offer.token_metadata.description) {
+          tokenMetaData.description = offerData.metadata.offer.token_metadata.description.replace(
+            /{tokenData}/g,
+            `${tokenData}`
+          );
+        }
+        if (offerData.metadata.offer.token_metadata.image) {
+          tokenMetaData.image = offerData.metadata.offer.token_metadata.image.replace(
+            /{tokenData}/g,
+            `${tokenData}`
+          );
+        }
+        if (offerData.metadata.offer.token_metadata.name) {
+          tokenMetaData.name = offerData.metadata.offer.token_metadata.name.replace(
+            /{tokenData}/g,
+            `${tokenData}`
+          );
+        }
+      }
+    }
+
+    setTokenMetaData(tokenMetaData);
   }, [tokenId, offerData, tokenData, searchParams, isValidId]);
 
   useEffect(() => {

@@ -569,9 +569,16 @@ const Offer = () => {
         tempOffers = [...liveAuctions, ...notLiveAuctions];
         break;
       }
-      case "Sort by name":
-        tempOffers.sort((a, b) => a.metadata.name.localeCompare(b.metadata.name));
+      case "Sort by name": {
+        tempOffers.sort((a, b) => {
+          // replace in metadata '#{number} -' by '', to sort by id
+          const nameA = a.metadata.name.replace(/#\d+ - /g, "");
+          const nameB = b.metadata.name.replace(/#\d+ - /g, "");
+          return nameA.localeCompare(nameB);
+        });
+
         break;
+      }
     }
 
     return tempOffers;
