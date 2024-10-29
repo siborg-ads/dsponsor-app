@@ -7,6 +7,7 @@ import { StepType } from "../../profile/tabs/OwnedTokens";
 
 import * as commands from "@uiw/react-md-editor/commands";
 import { useState } from "react";
+import renderNumberToHumanString from "@/utils/misc/renderNumberToHumanString";
 
 const MDEditor = dynamic(() => import("@uiw/react-md-editor"), { ssr: false });
 
@@ -27,7 +28,7 @@ const AdText = ({
   currentSlide: number;
   numSteps: number;
 }) => {
-  const [markdownText, setMarkdownText] = useState("");
+  const [markdownText, setMarkdownText] = useState(step.data || "");
   const maxSize = parseInt(step.adParameter.split("-")[2]);
 
   return (
@@ -51,8 +52,11 @@ const AdText = ({
             markdown syntax.
           </p>
           <p className="mb-3 dark:text-jacarta-100 text-jacarta-100 text-2xs">
-            There is <span className="text-green">{maxSize - markdownText.length}</span> characters
-            remaining.
+            There is{" "}
+            <span className="text-green">
+              {renderNumberToHumanString(maxSize - markdownText.length)}
+            </span>{" "}
+            characters remaining.
           </p>
 
           <MDEditor

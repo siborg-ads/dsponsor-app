@@ -1721,10 +1721,10 @@ const Token = () => {
               throw new Error("Upload to IPFS failed.");
             }
             dataItems.push(uploadUrl[0]);
-          }
-
-          if (item.adParameter.startsWith("linkURL") && link) {
+          } else if (item.adParameter.startsWith("linkURL") && link) {
             dataItems.push(link);
+          } else if (item.data) {
+            dataItems.push(item.data);
           }
         }
       }
@@ -2863,6 +2863,7 @@ const Token = () => {
                                   }
                                   return s;
                                 });
+                                setSteps(newSteps);
                               }}
                             />
                           ) : (
