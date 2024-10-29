@@ -20,7 +20,6 @@ import { useSwitchChainContext } from "@/providers/SwitchChain";
 import { cn } from "@/lib/utils";
 import isUrlValid from "@/utils/misc/isUrlValid";
 import { StepType } from "../../profile/tabs/OwnedTokens";
-import renderPriceToHumanString from "@/utils/prices/renderPriceToHumanString";
 import renderNumberToHumanString from "@/utils/misc/renderNumberToHumanString";
 
 const MDEditor = dynamic(() => import("@uiw/react-md-editor"), { ssr: false });
