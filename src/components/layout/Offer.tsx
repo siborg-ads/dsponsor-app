@@ -43,6 +43,7 @@ import { Address } from "thirdweb";
 import isUrlValid from "@/utils/misc/isUrlValid";
 import { useActiveAccount } from "thirdweb/react";
 import { client } from "@/data/services/client";
+import useGasless from "@/lib/useGazless";
 
 const onAuctionCondition = (offer, mint, direct) => {
   return (
@@ -88,7 +89,8 @@ const Offer = ({ offerId, chainId }) => {
   });
 
   // const { mutateAsync } = useContractWrite(DsponsorAdminContract, "reviewAdProposals");
-  const { mutateAsync: reviewAdProposals } = useSendAndConfirmTransaction();
+  const gasless = useGasless(chainId);
+  const { mutateAsync: reviewAdProposals } = useSendAndConfirmTransaction({ gasless });
 
   const [urlFromChild, setUrlFromChild] = useState("");
   const [successFullRefuseModal, setSuccessFullRefuseModal] = useState(false);

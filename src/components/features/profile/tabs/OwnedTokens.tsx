@@ -16,6 +16,7 @@ import { client } from "@/data/services/client";
 import { DSPONSOR_ADMIN_ABI } from "@/abi/dsponsorAdmin";
 import { ChainObject } from "@/types/chain";
 import { upload } from "thirdweb/storage";
+import useGasless from "@/lib/useGazless";
 
 export type StepType = {
   offerIds: string[];
@@ -80,7 +81,8 @@ const OwnedTokens = ({
 
   //   const { mutateAsync: uploadToIPFS } = useStorageUpload();
   //   const { mutateAsync: submitAd } = useContractWrite(DsponsorAdminContract, "submitAdProposals");
-  const { mutateAsync: submitAd } = useSendAndConfirmTransaction();
+  const gasless = useGasless(chainConfig?.chainId);
+  const { mutateAsync: submitAd } = useSendAndConfirmTransaction({ gasless });
 
   const handlePreviewModal = () => {
     if (successFullUpload) {

@@ -34,6 +34,7 @@ import {
 } from "@nextui-org/react";
 import { client } from "@/data/services/client";
 import { base } from "thirdweb/chains";
+import useGasless from "@/lib/useGazless";
 
 const isDisabledMessage = (disableMint: boolean) => {
   return disableMint
@@ -118,10 +119,12 @@ const Payments = ({ offer, chainConfig }: { offer: any; chainConfig: ChainObject
     abi: DSPONSOR_NFT_ABI
   });
 
-  const { mutateAsync: mutateDefaultMintPrice } = useSendAndConfirmTransaction();
-  const { mutateAsync: mutateTokenAsync } = useSendAndConfirmTransaction();
-  const { mutateAsync: mutateRoyalties } = useSendAndConfirmTransaction();
-  const { mutateAsync: mutateOwner } = useSendAndConfirmTransaction();
+  const gasless = useGasless(chainId);
+
+  const { mutateAsync: mutateDefaultMintPrice } = useSendAndConfirmTransaction({ gasless });
+  const { mutateAsync: mutateTokenAsync } = useSendAndConfirmTransaction({ gasless });
+  const { mutateAsync: mutateRoyalties } = useSendAndConfirmTransaction({ gasless });
+  const { mutateAsync: mutateOwner } = useSendAndConfirmTransaction({ gasless });
 
   const { data: owner } = useReadContract({
     contract: contract,

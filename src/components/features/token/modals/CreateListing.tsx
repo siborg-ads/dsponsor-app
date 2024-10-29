@@ -15,6 +15,7 @@ import { useActiveAccount, useReadContract, useSendAndConfirmTransaction } from 
 import { client } from "@/data/services/client";
 import { ChainObject, ChainsConfig } from "@/types/chain";
 import { ERC20ABI } from "@/abi/ERC20";
+import useGasless from "@/lib/useGazless";
 
 const CreateListing = ({
   chainConfig,
@@ -107,14 +108,16 @@ const CreateListing = ({
   const [currencySymbol, setCurrencySymbol] = useState<string | null>(currencies[0].symbol);
   const [currencyDecimals, setCurrencyDecimals] = useState<number | null>(currencies[0].decimals);
 
+  const gasless = useGasless(chainConfig.chainId);
+
   //   const { mutateAsync: setApprovalForAll } = useContractWrite(
   //     dsponsorNFTContract,
   //     "setApprovalForAll"
   //   );
-  const { mutateAsync: setApprovalForAll } = useSendAndConfirmTransaction();
+  const { mutateAsync: setApprovalForAll } = useSendAndConfirmTransaction({ gasless });
 
   //   const { mutateAsync: createListing } = useContractWrite(dsponsorMpContract, "createListing");
-  const { mutateAsync: createListing } = useSendAndConfirmTransaction();
+  const { mutateAsync: createListing } = useSendAndConfirmTransaction({ gasless });
 
   useEffect(() => {
     const handleEsc = (event: KeyboardEvent) => {

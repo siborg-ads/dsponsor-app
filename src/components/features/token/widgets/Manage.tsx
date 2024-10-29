@@ -7,6 +7,7 @@ import { Address, ContractOptions, prepareContractCall } from "thirdweb";
 import NormalButton from "@/components/ui/buttons/NormalButton";
 import config from "@/config/config";
 import { useActiveAccount, useSendAndConfirmTransaction } from "thirdweb/react";
+import useGasless from "@/lib/useGazless";
 
 const Manage = ({
   chainId,
@@ -45,10 +46,12 @@ const Manage = ({
   //     dsponsorMpContract,
   //     "cancelDirectListing"
   //   );
-  const { mutateAsync: cancelDirectListing } = useSendAndConfirmTransaction();
+
+  const gasless = useGasless(chainId);
+  const { mutateAsync: cancelDirectListing } = useSendAndConfirmTransaction({ gasless });
 
   //   const { mutateAsync: closeAuctionListing } = useContractWrite(dsponsorMpContract, "closeAuction");
-  const { mutateAsync: closeAuctionListing } = useSendAndConfirmTransaction();
+  const { mutateAsync: closeAuctionListing } = useSendAndConfirmTransaction({ gasless });
 
   const wallet = useActiveAccount();
   const address = wallet?.address;

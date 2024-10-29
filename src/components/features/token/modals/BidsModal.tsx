@@ -388,7 +388,8 @@ const BidsModal = ({
         contract: dsponsorMpContract,
         // @ts-ignore
         method: "bid",
-        param: [marketplaceListings[0].id, parsedBidsAmount, address, referralAddress]
+        param: [marketplaceListings[0].id, parsedBidsAmount, address, referralAddress],
+        value: amountInEthWithSlippage
       });
       await auctionBids(tx);
 
@@ -964,7 +965,7 @@ const BidsModal = ({
                           <NormalButton
                             onClick={async () => {
                               try {
-                                await switchChain(Number(chainId));
+                                await switchChain(config[chainId]?.chainObject);
                               } catch (error) {
                                 console.error(error);
                               }
