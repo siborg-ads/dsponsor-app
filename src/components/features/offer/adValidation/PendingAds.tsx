@@ -1,3 +1,6 @@
+import "@uiw/react-md-editor/markdown-editor.css";
+import "@uiw/react-markdown-preview/markdown.css";
+import dynamic from "next/dynamic";
 import "swiper/css";
 import "swiper/css/navigation";
 import Image from "next/image";
@@ -13,6 +16,8 @@ import { ProposalValidation } from "../AdValidation";
 import ResponsiveTooltip from "@/components/ui/ResponsiveTooltip";
 import { QuestionMarkCircleIcon } from "@heroicons/react/24/solid";
 import { cn } from "@/lib/utils";
+
+const MDEditor = dynamic(() => import("@uiw/react-md-editor"), { ssr: false });
 
 interface PendingAdsProps {
   chainConfig: ChainObject;
@@ -53,6 +58,7 @@ const PendingAds: React.FC<PendingAdsProps> = ({
   const [copied, setCopied] = useState(false);
   const [detectedRatios, setDetectedRatios] = useState<string[]>([]);
   const [detectedRatiosAreGood, setDetectedRatiosAreGood] = useState<boolean[]>([]);
+  const [markdownPreview, setMarkdownPreview] = useState("");
 
   useEffect(() => {
     if (detectedRatios.length) {
@@ -90,6 +96,7 @@ const PendingAds: React.FC<PendingAdsProps> = ({
   useEffect(() => {
     const handleEsc = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
+        setMarkdownPreview("");
         closeModal();
       }
     };
@@ -280,12 +287,7 @@ const PendingAds: React.FC<PendingAdsProps> = ({
                       <div className="flex flex-col w-full gap-2">
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-2">
-                            <button
-                              onClick={() => openModal(tokenId)}
-                              className="flex items-center text-lg text-left text-bold"
-                            >
-                              Link
-                            </button>
+                            <p className="flex items-center text-lg text-left text-bold">Link</p>
                             <ResponsiveTooltip text="This is a link that have been submitted for the token you can approve or reject it">
                               <QuestionMarkCircleIcon className="w-4 h-4 text-white" />
                             </ResponsiveTooltip>
@@ -306,6 +308,62 @@ const PendingAds: React.FC<PendingAdsProps> = ({
                               {item.data}
                             </span>
                           </Link>
+                        </div>
+                        <div className="flex gap-2 pt-2 border-t border-white border-opacity-10">
+                          <span
+                            className={`${!isSelectedItem[id] || isToken ? "text-primaryPink" : "text-green"} text-sm font-bold`}
+                          >
+                            <span>{isSelectedItem[id] && !isToken && "✅ "}</span>
+                            Pending
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </figure>
+                </div>
+              </article>
+            );
+          } else if (item.type === "text") {
+            return (
+              <article key={id} onClick={() => handleSelection(item)}>
+                <div
+                  className={cn(
+                    "dark:bg-secondaryBlack hover:-translate-y-1 duration-500 cursor-pointer rounded-2xl block border bg-white p-[1.1875rem] transition-shadow hover:shadow-lg text-jacarta-100",
+                    isSelectedItem[id] && !isToken
+                      ? "border-4 border-jacarta-100 rounded-2xl"
+                      : "dark:border-jacarta-700 border-jacarta-100"
+                  )}
+                >
+                  <figure className="flex justify-center w-full">
+                    <div className="flex flex-col w-full gap-2">
+                      <div className="flex flex-col w-full gap-2">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <p className="flex items-center text-lg text-left text-bold">
+                              Text Markdown
+                            </p>
+                            <ResponsiveTooltip text="This is a text that have been submitted for the token you can approve or reject it">
+                              <QuestionMarkCircleIcon className="w-4 h-4 text-white" />
+                            </ResponsiveTooltip>
+                          </div>
+                          <div className="flex items-center px-2 py-1 border rounded-md dark:border-primaryPink dark:border-opacity-10 border-jacarta-100 whitespace-nowrap">
+                            <span className="text-sm font-medium tracking-tight text-green">
+                              # {tokenData ?? formatTokenId(tokenId)}
+                            </span>
+                          </div>
+                        </div>
+                        <div className="flex items-center justify-between pt-3 border-t border-white border-opacity-10">
+                          <div className="flex items-center justify-between">
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setMarkdownPreview(item.data);
+                              }}
+                              className="flex items-center text-left text-md hover:cursor-pointer hover:underline"
+                            >
+                              Preview Text 🔎
+                            </button>
+                          </div>
                         </div>
                         <div className="flex gap-2 pt-2 border-t border-white border-opacity-10">
                           <span
@@ -386,7 +444,10 @@ const PendingAds: React.FC<PendingAdsProps> = ({
                       />
                       <div className="flex items-center justify-between">
                         <button
-                          onClick={() => openModal(tokenId)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            openModal(tokenId);
+                          }}
                           className="flex items-center text-xs text-left hover:cursor-pointer hover:underline"
                         >
                           Preview Image 🔎
@@ -481,6 +542,41 @@ const PendingAds: React.FC<PendingAdsProps> = ({
                 </svg>
               </button>
             </div>
+          </div>
+        </button>
+      )}
+      {markdownPreview && (
+        <button
+          onClick={(e) => {
+            if (e.target === e.currentTarget) {
+              setMarkdownPreview("");
+            }
+          }}
+          className="fixed inset-0 z-50 flex items-center justify-center w-full h-screen max-w-full max-h-screen backdrop-blur-xl"
+        >
+          <div className="relative flex items-center justify-center w-1/2 max-w-full max-h-full overflow-hidden border-2 border-dotted h-1/2 border-jacarta-100 bg-opacity-20 backdrop-blur-xl dark:bg-opacity-20 dark:border-jacarta-100">
+            <button
+              type="button"
+              className="absolute top-0 right-0 z-50 -p-10"
+              onClick={() => setMarkdownPreview("")}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                width="24"
+                height="24"
+                className="w-6 h-6 fill-white"
+              >
+                <path fill="none" d="M0 0h24v24H0z" />
+                <path d="M12 10.586l4.95-4.95 1.414 1.414-4.95 4.95 4.95 4.95-1.414 1.414-4.95-4.95-4.95 4.95-1.414-1.414 4.95-4.95-4.95-4.95L7.05 5.636z" />
+              </svg>
+            </button>
+            <MDEditor
+              value={markdownPreview}
+              preview="preview"
+              className="w-full max-w-full max-h-full min-h-full"
+              hideToolbar={true}
+            />
           </div>
         </button>
       )}

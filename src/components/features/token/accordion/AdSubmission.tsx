@@ -1,3 +1,7 @@
+import "@uiw/react-md-editor/markdown-editor.css";
+import "@uiw/react-markdown-preview/markdown.css";
+import dynamic from "next/dynamic";
+
 import React, { useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
@@ -16,6 +20,9 @@ import { useSwitchChainContext } from "@/providers/SwitchChain";
 import { cn } from "@/lib/utils";
 import isUrlValid from "@/utils/misc/isUrlValid";
 import { StepType } from "../../profile/tabs/OwnedTokens";
+import renderNumberToHumanString from "@/utils/misc/renderNumberToHumanString";
+
+const MDEditor = dynamic(() => import("@uiw/react-md-editor"), { ssr: false });
 
 const AdSubmission = ({
   chainConfig,
@@ -98,8 +105,13 @@ const AdSubmission = ({
   shouldProvideLink?: boolean;
   steps: StepType[];
 }) => {
-  const [imageRatios, setImageRatios] = React.useState<any[]>([]);
   const [allImages, setAllImages] = React.useState<any[]>([]);
+  const [allTexts, setAllTexts] = React.useState<
+    {
+      text: string;
+      maxSize: number;
+    }[]
+  >([]);
   const [nbSteps, setNbSteps] = React.useState<number>(0);
 
   // const shouldHaveLink =
@@ -166,28 +178,6 @@ const AdSubmission = ({
   );
 
   useEffect(() => {
-    if (steps.length > 0) {
-      let imageRatios: string[][] = [];
-
-      const imageUrlVariants = steps
-        .filter(({ adParameter }) => adParameter.startsWith("imageURL"))
-        .map(({ adParameter }) => adParameter.slice("imageURL-".length));
-
-      imageUrlVariants.forEach((image: any, index: number) => {
-        const preSplit = image.split("-");
-
-        const imageRatio = preSplit.length === 2 ? preSplit[1].split(":") : preSplit[0].split(":");
-
-        if (imageRatio.length === 2) {
-          imageRatios.push(imageRatio);
-        } else {
-          imageRatios.push([imageRatio[0], imageRatio[0]]);
-        }
-      });
-
-      setImageRatios(imageRatios);
-    }
-
     const nbSteps = steps.filter(({ selected }) => selected).length;
     setNbSteps(nbSteps);
   }, [steps]);
@@ -195,6 +185,10 @@ const AdSubmission = ({
   useEffect(() => {
     if (!steps) return;
     let allImages: any[] = [];
+    let allTexts: {
+      text: string;
+      maxSize: number;
+    }[] = [];
 
     steps
       .filter(({ adParameter, selected }) => adParameter.startsWith("imageURL") && selected)
@@ -208,7 +202,17 @@ const AdSubmission = ({
         allImages.push({ image: step.previewImage, ratio: step.adParameter, formattedRatio });
       });
 
+    steps
+      .filter(({ adParameter, selected }) => adParameter.startsWith("text-markdown-") && selected)
+      .forEach((step) => {
+        allTexts.push({
+          text: step.data,
+          maxSize: parseInt(step.adParameter.split("-")[2])
+        });
+      });
+
     setAllImages(allImages);
+    setAllTexts(allTexts);
   }, [steps]);
 
   if (!successFullUpload && (multipleAdsSubmission || adSubmission)) {
@@ -249,9 +253,9 @@ const AdSubmission = ({
               )}
 
               {shouldProvideLink &&
-                steps.filter(
+                steps.some(
                   ({ adParameter, selected }) => adParameter.startsWith("linkURL") && selected
-                ).length !== 0 && (
+                ) && (
                   <div className="flex items-center justify-between w-full gap-2">
                     <span className="block dark:text-jacarta-100">Link </span>
                     <span
@@ -285,7 +289,7 @@ const AdSubmission = ({
                   <div className="flex flex-col w-full gap-2" key={index}>
                     <div className="flex items-center justify-between gap-2">
                       <span className="block dark:text-jacarta-100">
-                        Image {index + 1} - ({image.formattedRatioha})
+                        Image {index + 1} - ({image.formattedRatio})
                       </span>
 
                       <span className="font-semibold text-red">
@@ -293,21 +297,52 @@ const AdSubmission = ({
                       </span>
                     </div>
                     <div className="flex flex-col items-center justify-center gap-2">
-                      <Image
-                        src={image.image}
-                        width={1600}
-                        height={380}
-                        className="w-full h-auto bg-jacarta-200"
-                        alt="Preview image"
-                        style={{
-                          objectFit: "contain",
-                          objectPosition: "center",
-                          aspectRatio: image.ratio
-                            ? `${image.ratio.split(":")[0]}/${image.ratio.split(":")[1]}`
-                            : "auto"
-                        }}
-                      />
+                      {image.image && (
+                        <Image
+                          src={image.image}
+                          width={1600}
+                          height={380}
+                          className="w-full h-auto bg-jacarta-200"
+                          alt="Preview image"
+                          style={{
+                            objectFit: "contain",
+                            objectPosition: "center",
+                            aspectRatio: image.ratio
+                              ? `${image.ratio.split(":")[0]}/${image.ratio.split(":")[1]}`
+                              : "auto"
+                          }}
+                        />
+                      )}
                     </div>
+                  </div>
+                ))}
+
+              {allTexts?.length > 0 &&
+                allTexts.map((text, index: number) => (
+                  <div className="flex flex-col w-full gap-2" key={index}>
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="block dark:text-jacarta-100">
+                        Text {index + 1} - (max size: {renderNumberToHumanString(text.maxSize)})
+                      </span>
+                      <span className="font-semibold text-red">
+                        {text.text.length === 0 && "No text provided"}
+                        {text.text.length > text.maxSize && "Text exceeds max size"}
+                      </span>
+                    </div>
+                    {text.text.length > 0 && (
+                      <div className="flex flex-col items-center justify-center gap-2">
+                        <div className="w-full h-auto ">
+                          <MDEditor
+                            value={text.text}
+                            preview="preview"
+                            className="w-full h-full"
+                            toolbarBottom={false}
+                            commands={[]}
+                            hideToolbar={true}
+                          />
+                        </div>
+                      </div>
+                    )}
                   </div>
                 ))}
             </div>
@@ -328,6 +363,9 @@ const AdSubmission = ({
                 isDisabled={
                   allImages.some((image) => !image?.image) ||
                   (!isUrlValid(link.toString()) && shouldProvideLink) ||
+                  allTexts.some(
+                    (text) => text.text.length === 0 || text.text.length > text.maxSize
+                  ) ||
                   nbSteps === 0
                 }
                 defaultText={buttonTitle ?? "Submit"}
@@ -461,6 +499,25 @@ const AdSubmission = ({
                   </div>
                 ) : (
                   ""
+                )}
+
+                {selectedParameter?.some((item) => item.startsWith("text-markdown-")) && (
+                  <span className="flex flex-col text-sm font-display text-jacarta-100">
+                    Text markdown
+                    {!errors.textSizeError ? (
+                      <span className="text-base dark:text-white">
+                        Limited to{" "}
+                        {
+                          selectedParameter
+                            .find((item) => item.startsWith("text-markdown-"))
+                            ?.split("-")[2]
+                        }{" "}
+                        characters
+                      </span>
+                    ) : (
+                      <span className="text-base text-red">{errors.textSizeError}</span>
+                    )}
+                  </span>
                 )}
 
                 <p className="flex flex-col text-sm font-display text-jacarta-100">

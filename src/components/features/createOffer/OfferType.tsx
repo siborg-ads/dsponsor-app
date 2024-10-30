@@ -231,6 +231,84 @@ const ChooseParameters = ({
   );
 };
 
+const ChooseTextParameters = ({
+  parameters,
+  setParameters
+}: {
+  parameters: string[];
+  setParameters: Dispatch<SetStateAction<string[]>>;
+}) => {
+  const [isSelected, setIsSelected] = useState(
+    parameters.some((param) => param.startsWith("text-markdown-"))
+  );
+  const [size, setSize] = useState(
+    isSelected
+      ? parameters.find((param) => param.startsWith("text-markdown-"))?.split("-")[2]
+      : "100"
+  );
+
+  const onSwitchChange = (value: boolean) => {
+    setIsSelected(value);
+    if (value) {
+      setParameters((prev) => [...prev, `text-markdown-${size}`]);
+    } else {
+      setParameters((prev) => prev.filter((param) => !param.startsWith("text-markdown-")));
+    }
+  };
+
+  return (
+    <div className="flex flex-col items-center justify-center">
+      <label className="block mb-2 font-display text-jacarta-900 dark:text-white">Text</label>
+      <p className="mb-3 dark:text-jacarta-100 text-jacarta-100 text-2xs">
+        Purpose to sponsors to submit a text message as ad content.
+      </p>
+      <div className="flex flex-col items-center justify-center">
+        <div className="flex flex-col items-center justify-center">
+          <div className="flex mb-4">
+            <span className="mr-3">No</span>
+            <Switch
+              isSelected={isSelected}
+              onValueChange={onSwitchChange}
+              classNames={{
+                wrapper: "p-0 h-4 overflow-visible bg-primaryPurple",
+                thumb: cn(
+                  "w-6 h-6 border-2 shadow-lg",
+                  "group-data-[hover=true]:border-primary",
+                  "group-data-[selected=true]:ml-6",
+                  "group-data-[pressed=true]:w-7",
+                  "group-data-[selected]:group-data-[pressed]:ml-4"
+                )
+              }}
+            />
+            <span className="ml-1">Yes</span>
+          </div>
+          {isSelected && (
+            <div className="flex flex-col items-center justify-center gap-1">
+              <label htmlFor="textSizeSelect">
+                Maximum text size (characters)<span className="text-red">*</span>
+              </label>
+              <input
+                type="number"
+                min="1"
+                pattern="\d*"
+                value={size}
+                onChange={(e) => {
+                  setSize(e.target.value);
+                  setParameters((prev) => [
+                    ...prev.filter((param) => !param.startsWith("text-markdown-")),
+                    `text-markdown-${e.target.value}`
+                  ]);
+                }}
+                className="py-3 rounded-lg bg-jacarta-800 border-jacarta-100 px-15"
+              />
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const OfferType = ({
   selectedParameter,
   setDisplayedParameter,
@@ -403,6 +481,7 @@ const OfferType = ({
           predefinedRatios={predefinedRatios}
         />
         <ChooseParameters parameters={selectedParameter} setParameters={setSelectedParameter} />
+        <ChooseTextParameters parameters={selectedParameter} setParameters={setSelectedParameter} />
         <AdSpaceNumberSelector
           selectedNumber={selectedNumber}
           handleNumberChange={handleNumberChange}

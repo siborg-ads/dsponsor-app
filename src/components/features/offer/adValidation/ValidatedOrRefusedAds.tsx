@@ -1,8 +1,13 @@
+import "@uiw/react-md-editor/markdown-editor.css";
+import "@uiw/react-markdown-preview/markdown.css";
+import dynamic from "next/dynamic";
 import React, { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import "tippy.js/dist/tippy.css";
 import { ProposalValidation } from "../AdValidation";
+
+const MDEditor = dynamic(() => import("@uiw/react-md-editor"), { ssr: false });
 
 const ValidatedOrRefusedAds = ({
   statut,
@@ -19,6 +24,7 @@ const ValidatedOrRefusedAds = ({
     tokenData: string;
     hasImage: boolean;
     hasLink: boolean;
+    text: string;
     adParametersList: {
       aspectRatio?: string;
       cssAspectRatio?: string;
@@ -30,6 +36,8 @@ const ValidatedOrRefusedAds = ({
 
   const [modalStates, setModalStates] = useState({});
   const [statutItem, setStatutItem] = useState<"check" | "refused" | undefined>(undefined);
+  const [markdownPreview, setMarkdownPreview] = useState("");
+
   const groupedProposals = useMemo(() => {
     const grouped = {} as { [key: string]: Proposal };
     proposalData.forEach((proposal) => {
@@ -40,6 +48,7 @@ const ValidatedOrRefusedAds = ({
           tokenData: proposal.tokenData,
           hasImage: false,
           hasLink: false,
+          text: "",
           adParametersList: {},
           reasons: []
         };
@@ -60,6 +69,8 @@ const ValidatedOrRefusedAds = ({
         };
       } else if (proposal.type === "link") {
         grouped[proposal.tokenId].hasLink = true;
+      } else if (proposal.type === "text") {
+        grouped[proposal.tokenId].text = proposal.data;
       }
     });
 
@@ -73,6 +84,19 @@ const ValidatedOrRefusedAds = ({
   const closeModal = (tokenId) => {
     setModalStates((prev) => ({ ...prev, [tokenId]: false }));
   };
+
+  useEffect(() => {
+    const handleEsc = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setMarkdownPreview("");
+      }
+    };
+    window.addEventListener("keydown", handleEsc);
+
+    return () => {
+      window.removeEventListener("keydown", handleEsc);
+    };
+  }, []);
 
   useEffect(() => {
     if (statut) {
@@ -219,6 +243,17 @@ const ValidatedOrRefusedAds = ({
                           </button>
                         </div>
                       )}
+                      {item.text && (
+                        <div className="flex flex-col w-full">
+                          <h3 className="text-sm text-jacarta-900 dark:text-jacarta-100">Text</h3>
+                          <button
+                            className="flex min-w-20px] text-nowrap text-jacarta-100 hover:text-opacity-80 hover:underline select-none overflow-ellipsis whitespace-nowrap"
+                            onClick={() => setMarkdownPreview(item.text)}
+                          >
+                            Preview Text 🔎
+                          </button>
+                        </div>
+                      )}
                       {reasons.length !== 0 && (
                         <div className="flex flex-col w-full">
                           <h3 className="text-sm text-jacarta-900 dark:text-jacarta-100">Reason</h3>
@@ -291,6 +326,41 @@ const ValidatedOrRefusedAds = ({
             </div> 
           </aside> */}
         </div>
+        {markdownPreview && (
+          <button
+            onClick={(e) => {
+              if (e.target === e.currentTarget) {
+                setMarkdownPreview("");
+              }
+            }}
+            className="fixed inset-0 z-50 flex items-center justify-center w-full h-screen max-w-full max-h-screen backdrop-blur-xl"
+          >
+            <div className="relative flex items-center justify-center w-1/2 max-w-full max-h-full overflow-hidden border-2 border-dotted h-1/2 border-jacarta-100 bg-opacity-20 backdrop-blur-xl dark:bg-opacity-20 dark:border-jacarta-100">
+              <button
+                type="button"
+                className="absolute top-0 right-0 z-50 -p-10"
+                onClick={() => setMarkdownPreview("")}
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  width="24"
+                  height="24"
+                  className="w-6 h-6 fill-white"
+                >
+                  <path fill="none" d="M0 0h24v24H0z" />
+                  <path d="M12 10.586l4.95-4.95 1.414 1.414-4.95 4.95 4.95 4.95-1.414 1.414-4.95-4.95-4.95 4.95-1.414-1.414 4.95-4.95-4.95-4.95L7.05 5.636z" />
+                </svg>
+              </button>
+              <MDEditor
+                value={markdownPreview}
+                preview="preview"
+                className="w-full max-w-full max-h-full min-h-full"
+                hideToolbar={true}
+              />
+            </div>
+          </button>
+        )}
       </div>
     </>
   );

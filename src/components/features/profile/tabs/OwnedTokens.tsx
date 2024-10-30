@@ -13,6 +13,7 @@ import MainButton from "@/components/ui/buttons/MainButton";
 import { features } from "@/data/features";
 import config from "@/config/config";
 import { Address } from "thirdweb";
+import AdText from "../../token/createAd/AdText";
 
 export type StepType = {
   offerIds: string[];
@@ -233,10 +234,10 @@ const OwnedTokens = ({
               throw new Error("Upload to IPFS failed.");
             }
             dataItems.push(uploadUrl[0]);
-          }
-
-          if (item.adParameter.startsWith("linkURL") && link) {
+          } else if (item.adParameter.startsWith("linkURL") && link) {
             dataItems.push(link);
+          } else if (item.data) {
+            dataItems.push(item.data);
           }
         }
       }
@@ -505,6 +506,26 @@ const OwnedTokens = ({
                         link={link}
                         currentSlide={currentSlide}
                         numSteps={numSteps}
+                      />
+                    ) : currentSlide === index + 1 && step.adParameter.startsWith("text") ? (
+                      <AdText
+                        stepsRef={stepsRef}
+                        styles={styles}
+                        currentSlide={currentSlide}
+                        numSteps={numSteps}
+                        step={step}
+                        setText={(text) => {
+                          const newSteps = steps.map((s) => {
+                            if (s.adParameter === step.adParameter) {
+                              return {
+                                ...s,
+                                data: text
+                              };
+                            }
+                            return s;
+                          });
+                          setSteps(newSteps);
+                        }}
                       />
                     ) : (
                       <></>

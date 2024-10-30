@@ -100,7 +100,11 @@ const RejectAd = ({
                       <div className="block mb-2 font-display text-jacarta-900 dark:text-white">
                         Type:{"  "}
                         <span className="text-primaryPurple">
-                          {item?.adParameter.startsWith("imageURL") ? "Image" : "Link"}
+                          {item?.adParameter.startsWith("imageURL")
+                            ? "Image"
+                            : item?.adParameter.startsWith("text")
+                              ? "Text"
+                              : "Link"}
                         </span>
                       </div>
                     </div>
