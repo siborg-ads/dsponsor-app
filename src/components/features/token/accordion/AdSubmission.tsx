@@ -105,7 +105,6 @@ const AdSubmission = ({
   shouldProvideLink?: boolean;
   steps: StepType[];
 }) => {
-  const [imageRatios, setImageRatios] = React.useState<any[]>([]);
   const [allImages, setAllImages] = React.useState<any[]>([]);
   const [allTexts, setAllTexts] = React.useState<
     {
@@ -179,28 +178,6 @@ const AdSubmission = ({
   );
 
   useEffect(() => {
-    if (steps.length > 0) {
-      let imageRatios: string[][] = [];
-
-      const imageUrlVariants = steps
-        .filter(({ adParameter }) => adParameter.startsWith("imageURL"))
-        .map(({ adParameter }) => adParameter.slice("imageURL-".length));
-
-      imageUrlVariants.forEach((image: any, index: number) => {
-        const preSplit = image.split("-");
-
-        const imageRatio = preSplit.length === 2 ? preSplit[1].split(":") : preSplit[0].split(":");
-
-        if (imageRatio.length === 2) {
-          imageRatios.push(imageRatio);
-        } else {
-          imageRatios.push([imageRatio[0], imageRatio[0]]);
-        }
-      });
-
-      setImageRatios(imageRatios);
-    }
-
     const nbSteps = steps.filter(({ selected }) => selected).length;
     setNbSteps(nbSteps);
   }, [steps]);

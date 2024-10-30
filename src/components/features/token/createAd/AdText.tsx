@@ -1,12 +1,9 @@
 import "@uiw/react-md-editor/markdown-editor.css";
 import "@uiw/react-markdown-preview/markdown.css";
 import dynamic from "next/dynamic";
-
-import Input from "@/components/ui/Input";
 import { StepType } from "../../profile/tabs/OwnedTokens";
 
-import * as commands from "@uiw/react-md-editor/commands";
-import { useState } from "react";
+import React, { useState } from "react";
 import renderNumberToHumanString from "@/utils/misc/renderNumberToHumanString";
 
 const MDEditor = dynamic(() => import("@uiw/react-md-editor"), { ssr: false });
