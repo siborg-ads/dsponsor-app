@@ -14,8 +14,11 @@ import StyledWeb3Button from "@/components/ui/buttons/StyledWeb3Button";
 import { ChainObject } from "@/types/chain";
 import { ProposalValidation } from "../AdValidation";
 import ResponsiveTooltip from "@/components/ui/ResponsiveTooltip";
-import { QuestionMarkCircleIcon } from "@heroicons/react/24/solid";
+import { ClipboardIcon, QuestionMarkCircleIcon } from "@heroicons/react/24/solid";
 import { cn } from "@/lib/utils";
+import handleCopy from "@/utils/misc/handleCopy";
+import Tippy from "@tippyjs/react";
+import rehypeSanitize from "rehype-sanitize";
 
 const MDEditor = dynamic(() => import("@uiw/react-md-editor"), { ssr: false });
 
@@ -571,11 +574,34 @@ const PendingAds: React.FC<PendingAdsProps> = ({
                 <path d="M12 10.586l4.95-4.95 1.414 1.414-4.95 4.95 4.95 4.95-1.414 1.414-4.95-4.95-4.95 4.95-1.414-1.414 4.95-4.95-4.95-4.95L7.05 5.636z" />
               </svg>
             </button>
+            <button
+              type="button"
+              className="absolute top-0 z-50 right-8 -p-10"
+              onClick={() => {
+                handleCopy(markdownPreview, setCopied);
+
+                setTimeout(() => {
+                  setCopied(false);
+                }, 2000);
+              }}
+            >
+              <Tippy
+                content={`${copied ? "copied" : "copy"}`}
+                placement="top"
+                hideOnClick={false}
+                className="p-2"
+              >
+                <ClipboardIcon className="w-5 h-5 text-white cursor-pointer hover:text-jacarta-100" />
+              </Tippy>
+            </button>
             <MDEditor
               value={markdownPreview}
               preview="preview"
-              className="w-full max-w-full max-h-full min-h-full"
+              className="w-full max-w-full max-h-full min-h-full pt-6"
               hideToolbar={true}
+              previewOptions={{
+                rehypePlugins: [[rehypeSanitize]]
+              }}
             />
           </div>
         </button>

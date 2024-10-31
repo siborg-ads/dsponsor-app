@@ -12,6 +12,10 @@ import { DateRangePicker } from "@nextui-org/react";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import Input from "@/components/ui/Input";
 import renderNumberToHumanString from "@/utils/misc/renderNumberToHumanString";
+import handleCopy from "@/utils/misc/handleCopy";
+import Tippy from "@tippyjs/react";
+import { ClipboardIcon } from "@heroicons/react/24/solid";
+import rehypeSanitize from "rehype-sanitize";
 
 const MDEditor = dynamic(() => import("@uiw/react-md-editor"), { ssr: false });
 
@@ -47,6 +51,7 @@ const ProposalHistory = ({ data }: { data: HistoryProposalType[] }) => {
   const [endDate, setEndDate] = useState<Date | null>(null);
   const [filterOption, setFilterOption] = useState<FilterOptionsType>("All proposals");
   const [filterName, setFilterName] = useState("");
+  const [copied, setCopied] = useState(false);
 
   // No need to add the event when the modal opens and remove it when it closes because worst case it just remove an inexisting modal
   useEffect(() => {
@@ -399,11 +404,34 @@ const ProposalHistory = ({ data }: { data: HistoryProposalType[] }) => {
                   <path d="M12 10.586l4.95-4.95 1.414 1.414-4.95 4.95 4.95 4.95-1.414 1.414-4.95-4.95-4.95 4.95-1.414-1.414 4.95-4.95-4.95-4.95L7.05 5.636z" />
                 </svg>
               </button>
+              <button
+                type="button"
+                className="absolute top-0 z-50 right-8 -p-10"
+                onClick={() => {
+                  handleCopy(currProposal.data, setCopied);
+
+                  setTimeout(() => {
+                    setCopied(false);
+                  }, 2000);
+                }}
+              >
+                <Tippy
+                  content={`${copied ? "copied" : "copy"}`}
+                  placement="top"
+                  hideOnClick={false}
+                  className="p-2"
+                >
+                  <ClipboardIcon className="w-5 h-5 text-white cursor-pointer hover:text-jacarta-100" />
+                </Tippy>
+              </button>
               <MDEditor
                 value={currProposal.data}
                 preview="preview"
-                className="w-full max-w-full max-h-full min-h-full"
+                className="w-full max-w-full max-h-full min-h-full pt-6"
                 hideToolbar={true}
+                previewOptions={{
+                  rehypePlugins: [[rehypeSanitize]]
+                }}
               />
             </div>
           </button>

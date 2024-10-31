@@ -21,6 +21,7 @@ import { cn } from "@/lib/utils";
 import isUrlValid from "@/utils/misc/isUrlValid";
 import { StepType } from "../../profile/tabs/OwnedTokens";
 import renderNumberToHumanString from "@/utils/misc/renderNumberToHumanString";
+import rehypeSanitize from "rehype-sanitize";
 
 const MDEditor = dynamic(() => import("@uiw/react-md-editor"), { ssr: false });
 
@@ -339,6 +340,9 @@ const AdSubmission = ({
                             toolbarBottom={false}
                             commands={[]}
                             hideToolbar={true}
+                            previewOptions={{
+                              rehypePlugins: [[rehypeSanitize]]
+                            }}
                           />
                         </div>
                       </div>
