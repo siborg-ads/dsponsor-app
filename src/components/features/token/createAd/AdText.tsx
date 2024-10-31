@@ -5,6 +5,7 @@ import { StepType } from "../../profile/tabs/OwnedTokens";
 
 import React, { useState } from "react";
 import renderNumberToHumanString from "@/utils/misc/renderNumberToHumanString";
+import rehypeSanitize from "rehype-sanitize";
 
 const MDEditor = dynamic(() => import("@uiw/react-md-editor"), { ssr: false });
 
@@ -65,6 +66,9 @@ const AdText = ({
             onChange={(val) => {
               setText(val || "");
               setMarkdownText(val || "");
+            }}
+            previewOptions={{
+              rehypePlugins: [[rehypeSanitize]]
             }}
           />
         </div>

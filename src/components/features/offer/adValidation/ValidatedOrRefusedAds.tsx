@@ -6,6 +6,10 @@ import Link from "next/link";
 import Image from "next/image";
 import "tippy.js/dist/tippy.css";
 import { ProposalValidation } from "../AdValidation";
+import handleCopy from "@/utils/misc/handleCopy";
+import Tippy from "@tippyjs/react";
+import { ClipboardIcon } from "@heroicons/react/24/solid";
+import rehypeSanitize from "rehype-sanitize";
 
 const MDEditor = dynamic(() => import("@uiw/react-md-editor"), { ssr: false });
 
@@ -37,6 +41,7 @@ const ValidatedOrRefusedAds = ({
   const [modalStates, setModalStates] = useState({});
   const [statutItem, setStatutItem] = useState<"check" | "refused" | undefined>(undefined);
   const [markdownPreview, setMarkdownPreview] = useState("");
+  const [copied, setCopied] = useState(false);
 
   const groupedProposals = useMemo(() => {
     const grouped = {} as { [key: string]: Proposal };
@@ -352,11 +357,34 @@ const ValidatedOrRefusedAds = ({
                   <path d="M12 10.586l4.95-4.95 1.414 1.414-4.95 4.95 4.95 4.95-1.414 1.414-4.95-4.95-4.95 4.95-1.414-1.414 4.95-4.95-4.95-4.95L7.05 5.636z" />
                 </svg>
               </button>
+              <button
+                type="button"
+                className="absolute top-0 z-50 right-8 -p-10"
+                onClick={() => {
+                  handleCopy(markdownPreview, setCopied);
+
+                  setTimeout(() => {
+                    setCopied(false);
+                  }, 2000);
+                }}
+              >
+                <Tippy
+                  content={`${copied ? "copied" : "copy"}`}
+                  placement="top"
+                  hideOnClick={false}
+                  className="p-2"
+                >
+                  <ClipboardIcon className="w-5 h-5 text-white cursor-pointer hover:text-jacarta-100" />
+                </Tippy>
+              </button>
               <MDEditor
                 value={markdownPreview}
                 preview="preview"
-                className="w-full max-w-full max-h-full min-h-full"
+                className="w-full max-w-full max-h-full min-h-full pt-6"
                 hideToolbar={true}
+                previewOptions={{
+                  rehypePlugins: [[rehypeSanitize]]
+                }}
               />
             </div>
           </button>
