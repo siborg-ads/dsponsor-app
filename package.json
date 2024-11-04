@@ -77,5 +77,11 @@
   },
   "overrides": {
     "autoprefixer": "10.4.5"
-  }
+  },
+  "trustedDependencies": [
+    "@parcel/watcher",
+    "core-js",
+    "es5-ext",
+    "protobufjs"
+  ]
 }

@@ -18,6 +18,7 @@ import "swiper/css/navigation";
 import "swiper/css/pagination";
 import "swiper/css/scrollbar";
 import { ThirdwebProvider } from "thirdweb/react";
+import { SwitchChainProvider } from "@/providers/SwitchChain";
 
 const siteId = 5037837;
 const hotjarVersion = 6;
@@ -45,24 +46,26 @@ function MyApp({ Component, pageProps }) {
   return (
     <React.Fragment>
       <Meta {...metadata} />
-      <ThirdwebProvider>
-        <Provider store={store}>
-          <ThemeProvider enableSystem={true} attribute="class" defaultTheme="dark">
-            <NextUIProvider>
-              <UserContext.Provider value={value}>
-                {pid === "/login" ? (
-                  <Component {...pageProps} />
-                ) : (
-                  <Layout>
+      <SwitchChainProvider>
+        <ThirdwebProvider>
+          <Provider store={store}>
+            <ThemeProvider enableSystem={true} attribute="class" defaultTheme="dark">
+              <NextUIProvider>
+                <UserContext.Provider value={value}>
+                  {pid === "/login" ? (
                     <Component {...pageProps} />
-                  </Layout>
-                )}
-              </UserContext.Provider>
-              <ToastContainer position="top-right" autoClose={5000} />
-            </NextUIProvider>
-          </ThemeProvider>
-        </Provider>
-      </ThirdwebProvider>
+                  ) : (
+                    <Layout>
+                      <Component {...pageProps} />
+                    </Layout>
+                  )}
+                </UserContext.Provider>
+                <ToastContainer position="top-right" autoClose={5000} />
+              </NextUIProvider>
+            </ThemeProvider>
+          </Provider>
+        </ThirdwebProvider>
+      </SwitchChainProvider>
     </React.Fragment>
   );
 }

@@ -28,6 +28,7 @@ import { DSPONSOR_ADMIN_ABI } from "@/abi/dsponsorAdmin";
 import { upload } from "thirdweb/storage";
 import { ethers } from "ethers";
 import { BigNumber } from "ethers";
+import { useSwitchChainContext } from "@/providers/SwitchChain";
 
 export type Currency = {
   address: Address | string;
@@ -203,13 +204,6 @@ const CreateOffer = () => {
 
   const wallet = useActiveAccount();
   const address = wallet?.address;
-
-  const setSelectedChain = useSwitchActiveWalletChain();
-
-  useEffect(() => {
-    if (!wallet || !chainConfig.chainObject) return;
-    setSelectedChain(chainConfig?.chainObject);
-  }, [chainConfig, setSelectedChain, wallet]);
 
   useEffect(() => {
     if (!address) return;

@@ -47,7 +47,6 @@ import {
   useActiveAccount,
   useReadContract,
   useSendAndConfirmTransaction,
-  useSwitchActiveWalletChain,
   useWalletBalance
 } from "thirdweb/react";
 import AdText from "../features/token/createAd/AdText";
@@ -58,6 +57,7 @@ import { DSPONSOR_ADMIN_ABI } from "@/abi/dsponsorAdmin";
 import { DSPONSOR_NFT_ABI } from "@/abi/dsponsorNFT";
 import { DSPONSOR_MP_ABI } from "@/abi/dsponsorMP";
 import useGasless from "@/lib/useGazless";
+import { useSwitchChainContext } from "@/providers/SwitchChain";
 
 const Token = ({ chainId, offerId, tokenId }) => {
   const chainConfig = config[Number(chainId)];
@@ -66,12 +66,11 @@ const Token = ({ chainId, offerId, tokenId }) => {
   const wallet = useActiveAccount();
   const address = wallet?.address;
 
-  const setSelectedChain = useSwitchActiveWalletChain();
+  const { setSelectedChain } = useSwitchChainContext();
 
   useEffect(() => {
-    if (!wallet) return;
     if (chainId) {
-      setSelectedChain(chainConfig?.chainObject);
+      setSelectedChain(chainConfig);
     }
   }, [chainId, chainConfig, setSelectedChain]);
 

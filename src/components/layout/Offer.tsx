@@ -4,11 +4,7 @@ import Meta from "@/components/Meta";
 import { ethers, BigNumber } from "ethers";
 import Image from "next/image";
 import { getContract, prepareContractCall, readContract } from "thirdweb";
-import {
-  useReadContract,
-  useSendAndConfirmTransaction,
-  useSwitchActiveWalletChain
-} from "thirdweb/react";
+import { useReadContract, useSendAndConfirmTransaction } from "thirdweb/react";
 import { resolveScheme } from "thirdweb/storage";
 import Tippy from "@tippyjs/react";
 import OfferSkeleton from "@/components/ui/skeletons/OfferSkeleton";
@@ -44,6 +40,7 @@ import isUrlValid from "@/utils/misc/isUrlValid";
 import { useActiveAccount } from "thirdweb/react";
 import { client } from "@/data/services/client";
 import useGasless from "@/lib/useGazless";
+import { useSwitchChainContext } from "@/providers/SwitchChain";
 
 const onAuctionCondition = (offer, mint, direct) => {
   return (
@@ -123,7 +120,7 @@ const Offer = ({ offerId, chainId }) => {
   });
 
   const NATIVECurrency = chainConfig?.smartContracts?.currencies?.NATIVE;
-  const setSelectedChain = useSwitchActiveWalletChain();
+  const { setSelectedChain } = useSwitchChainContext();
   const [offerManagementActiveTab, setOfferManagementActiveTab] = useState("integration");
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [accordionActiveTab, setAccordionActiveTab] = useState<string[]>(["tokens"]);
@@ -429,9 +426,8 @@ const Offer = ({ offerId, chainId }) => {
   }, [offerData]);
 
   useEffect(() => {
-    if (!wallet) return;
     if (chainConfig?.network) {
-      setSelectedChain(chainConfig?.chainObject);
+      setSelectedChain(chainConfig);
     }
   }, [chainConfig, setSelectedChain, wallet]);
 

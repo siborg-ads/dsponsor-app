@@ -20,6 +20,7 @@ import { useRouter } from "next/router";
 import NormalButton from "@/components/ui/buttons/NormalButton";
 import { useActiveWalletChain, useSwitchActiveWalletChain, useWalletBalance } from "thirdweb/react";
 import { client } from "@/data/services/client";
+import { useSwitchChainContext } from "@/providers/SwitchChain";
 
 const BuyModal = ({
   chainConfig,
@@ -119,6 +120,7 @@ const BuyModal = ({
   const chainId = router?.query?.chainId;
   const switchChain = useSwitchActiveWalletChain();
   const userChainId = useActiveWalletChain();
+  const { setSelectedChain } = useSwitchChainContext();
 
   useEffect(() => {
     if (Number(chainId) === Number(userChainId?.id)) {
@@ -126,7 +128,8 @@ const BuyModal = ({
     } else {
       setChainIdIsCorrect(false);
     }
-  }, [chainId, userChainId]);
+    setSelectedChain(config[Number(chainId)]);
+  }, [chainId, userChainId, setSelectedChain]);
 
   const modalRef = useRef<any>();
 

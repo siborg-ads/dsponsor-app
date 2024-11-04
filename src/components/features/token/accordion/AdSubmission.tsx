@@ -19,7 +19,6 @@ import { ChainObject } from "@/types/chain";
 import { cn } from "@/lib/utils";
 import isUrlValid from "@/utils/misc/isUrlValid";
 import { StepType } from "../../profile/tabs/OwnedTokens";
-import { useSwitchActiveWalletChain } from "thirdweb/react";
 import renderNumberToHumanString from "@/utils/misc/renderNumberToHumanString";
 import rehypeSanitize from "rehype-sanitize";
 
@@ -115,12 +114,12 @@ const AdSubmission = ({
   >([]);
   const [nbSteps, setNbSteps] = React.useState<number>(0);
 
-  const setSelectedChain = useSwitchActiveWalletChain();
-  useEffect(() => {
-    if (chainConfig) {
-      setSelectedChain(chainConfig.chainObject);
-    }
-  }, [chainConfig, setSelectedChain]);
+  //   const { setSelectedChain } = useSwitchChainContext();
+  //   useEffect(() => {
+  //     if (chainConfig) {
+  //       setSelectedChain(chainConfig);
+  //     }
+  //   }, [chainConfig, setSelectedChain]);
 
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {

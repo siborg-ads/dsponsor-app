@@ -1,7 +1,15 @@
 import React from "react";
 import { Spinner } from "@nextui-org/spinner";
 import { Address } from "thirdweb";
-import { useActiveAccount } from "thirdweb/react";
+import {
+  useActiveAccount,
+  useActiveWalletChain,
+  useConnectModal,
+  useSwitchActiveWalletChain
+} from "thirdweb/react";
+import { ChainsConfig } from "@/types/chain";
+import { client } from "@/data/services/client";
+import { useSwitchChainContext } from "@/providers/SwitchChain";
 
 /**
  * StyledWeb3Button component
@@ -43,6 +51,10 @@ const StyledWeb3Button = ({
 
   const wallet = useActiveAccount();
   const address = wallet?.address;
+  const { connect } = useConnectModal();
+  const chain = useActiveWalletChain();
+  const { selectedChain } = useSwitchChainContext();
+  const switchActiveWalletChain = useSwitchActiveWalletChain();
 
   const baseClass = `!rounded-full !py-3 !px-8 !text-center !font-semibold !transition-all ${props.isFullWidth ? "!w-full" : "!w-fit"}`;
   const loadingClass = "!bg-white !bg-opacity-30 !text-opacity-30 !text-white !cursor-not-allowed";
@@ -51,11 +63,26 @@ const StyledWeb3Button = ({
     props.isGreen ? "!bg-green" : ""
   } ${props.isRed ? "!bg-red" : ""} ${!props.isRed && !props.isGreen ? "!bg-primaryPurple" : ""}`;
 
+  console.log("selectedChain", selectedChain);
+  console.log("chain", chain);
+
   return (
     <button
       {...props}
       className={`${baseClass} ${isLoading && address ? loadingClass : ""} ${props.isDisabled && address ? disabledClass : ""} ${(!props.isDisabled && !isLoading) || !address ? defaultClass : ""}`}
       onClick={async () => {
+        if (!address) {
+          await connect({
+            client: client
+          });
+          return;
+        }
+
+        if (chain?.id !== selectedChain.chainId) {
+          await switchActiveWalletChain(selectedChain.chainObject);
+          return;
+        }
+
         try {
           setIsLoading(true);
           await props.onClick();
@@ -66,7 +93,17 @@ const StyledWeb3Button = ({
         }
       }}
     >
-      {isLoading ? <Spinner size="sm" color="default" /> : props.defaultText}
+      {isLoading ? (
+        <Spinner size="sm" color="default" />
+      ) : address ? (
+        chain?.id === selectedChain.chainId ? (
+          props.defaultText
+        ) : (
+          "Switch Chain"
+        )
+      ) : (
+        "Connect Wallet"
+      )}
     </button>
   );
 };

@@ -29,6 +29,8 @@ import {
 import { client } from "@/data/services/client";
 import { GetWalletBalanceResult } from "thirdweb/dist/types/wallets/utils/getWalletBalance";
 
+import { useSwitchChainContext } from "@/providers/SwitchChain";
+
 const BidsModal = ({
   setAmountToApprove,
   bidsAmount,
@@ -112,16 +114,18 @@ const BidsModal = ({
   const [chainIdIsCorrect, setChainIdIsCorrect] = useState(false);
 
   const chainConfig = config[chainId];
+  const chain = useActiveWalletChain();
   const switchChain = useSwitchActiveWalletChain();
-  const userChainId = useActiveWalletChain();
+  const { setSelectedChain } = useSwitchChainContext();
 
   useEffect(() => {
-    if (Number(chainId) === Number(userChainId?.id)) {
+    if (Number(chainId) === Number(chain?.id)) {
       setChainIdIsCorrect(true);
     } else {
       setChainIdIsCorrect(false);
     }
-  }, [chainId, userChainId]);
+    setSelectedChain(config[chainId]);
+  }, [chainId, chain, setSelectedChain]);
 
   let frontURL;
   if (typeof window !== "undefined") {
@@ -130,8 +134,6 @@ const BidsModal = ({
 
   const canPayWithCrossmint = chainConfig?.features?.crossmint?.enabled;
   const modalRef: any = useRef();
-
-  const chain = useActiveWalletChain();
 
   const wallet = useActiveAccount();
   const userAddr = wallet?.address;
