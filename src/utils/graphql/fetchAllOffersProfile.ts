@@ -1,5 +1,5 @@
 import config from "@/config/config";
-import { Address } from "@thirdweb-dev/sdk";
+import { Address } from "thirdweb";
 
 /**
  * Fetches all offers profile for a given user address and chain ID.

@@ -1,5 +1,11 @@
 import React, { SetStateAction, useEffect, useState } from "react";
-import { useContract, useContractRead, useContractWrite } from "@thirdweb-dev/react";
+import { getContract, prepareContractCall } from "thirdweb";
+import {
+  useActiveWalletChain,
+  useReadContract,
+  useSendAndConfirmTransaction
+} from "thirdweb/react";
+
 import { toast } from "react-toastify";
 import { parseUnits, formatUnits } from "ethers/lib/utils";
 import * as Switch from "@radix-ui/react-switch";
@@ -11,7 +17,9 @@ import StyledWeb3Button from "@/components/ui/buttons/StyledWeb3Button";
 import ResponsiveTooltip from "@/components/ui/ResponsiveTooltip";
 import { QuestionMarkCircleIcon } from "@heroicons/react/24/solid";
 
-import ERC20ABI from "@/abi/ERC20.json";
+import { ERC20ABI } from "@/abi/ERC20";
+import { DSPONSOR_NFT_ABI } from "@/abi/dsponsorNFT";
+
 import { ChainObject } from "@/types/chain";
 
 import { isAddress } from "ethers/lib/utils";
@@ -24,6 +32,9 @@ import {
   DropdownSection,
   DropdownTrigger
 } from "@nextui-org/react";
+import { client } from "@/data/services/client";
+import { base } from "thirdweb/chains";
+import useGasless from "@/lib/useGazless";
 
 const isDisabledMessage = (disableMint: boolean) => {
   return disableMint
@@ -59,9 +70,28 @@ const Payments = ({ offer, chainConfig }: { offer: any; chainConfig: ChainObject
   const [disabled, setDisabled] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
 
-  const { contract: currencyContract } = useContract(currency, ERC20ABI);
-  const { data: currencyDecimalsData } = useContractRead(currencyContract, "decimals");
-  const { data: currencySymbolData } = useContractRead(currencyContract, "symbol");
+  const chain = useActiveWalletChain();
+
+  //   const { contract: currencyContract } = useContract(currency, ERC20ABI);
+  const currencyContract = getContract({
+    client: client,
+    address: currency ?? "",
+    chain: chain || base,
+    abi: ERC20ABI
+  });
+
+  // const { data: currencyDecimalsData } = useContractRead(currencyContract, "decimals");
+  const { data: currencyDecimalsData } = useReadContract({
+    contract: currencyContract,
+    method: "decimals",
+    params: []
+  });
+  // const { data: currencySymbolData } = useContractRead(currencyContract, "symbol");
+  const { data: currencySymbolData } = useReadContract({
+    contract: currencyContract,
+    method: "symbol",
+    params: []
+  });
 
   useEffect(() => {
     if (currencyDecimalsData) {
@@ -75,13 +105,32 @@ const Payments = ({ offer, chainConfig }: { offer: any; chainConfig: ChainObject
 
   const chainId = chainConfig?.chainId;
 
-  const { contract } = useContract(nftContractAddress);
-  const { mutateAsync: mutateDefaultMintPrice } = useContractWrite(contract, "setDefaultMintPrice");
-  const { mutateAsync: mutateTokenAsync } = useContractWrite(contract, "setMintPrice");
-  const { mutateAsync: mutateRoyalties } = useContractWrite(contract, "setRoyalty");
-  const { mutateAsync: mutateOwner } = useContractWrite(contract, "transferOwnership");
+  //   const { contract } = useContract(nftContractAddress);
+  //   const { mutateAsync: mutateDefaultMintPrice } = useContractWrite(contract, "setDefaultMintPrice");
+  //   const { mutateAsync: mutateTokenAsync } = useContractWrite(contract, "setMintPrice");
+  //   const { mutateAsync: mutateRoyalties } = useContractWrite(contract, "setRoyalty");
+  //   const { mutateAsync: mutateOwner } = useContractWrite(contract, "transferOwnership");
+  //   const { data: owner } = useContractRead(contract, "owner");
 
-  const { data: owner } = useContractRead(contract, "owner");
+  const contract = getContract({
+    client: client,
+    address: nftContractAddress ?? "",
+    chain: chain || base,
+    abi: DSPONSOR_NFT_ABI
+  });
+
+  const gasless = useGasless(chainId);
+
+  const { mutateAsync: mutateDefaultMintPrice } = useSendAndConfirmTransaction({ gasless });
+  const { mutateAsync: mutateTokenAsync } = useSendAndConfirmTransaction({ gasless });
+  const { mutateAsync: mutateRoyalties } = useSendAndConfirmTransaction({ gasless });
+  const { mutateAsync: mutateOwner } = useSendAndConfirmTransaction({ gasless });
+
+  const { data: owner } = useReadContract({
+    contract: contract,
+    method: "owner",
+    params: []
+  });
 
   useEffect(() => {
     if (offer) {
@@ -144,10 +193,9 @@ const Payments = ({ offer, chainConfig }: { offer: any; chainConfig: ChainObject
   }, [chainConfig, currencyDecimals, initialDisabled, offer]);
 
   useEffect(() => {
-    if (owner) {
-      setCurrentOwner(owner);
-      setInitialOwner(owner);
-    }
+    if (!owner) return;
+    setCurrentOwner(owner as Address);
+    setInitialOwner(owner as Address);
   }, [owner]);
 
   const handleAmount = (value) => {
@@ -237,9 +285,18 @@ const Payments = ({ offer, chainConfig }: { offer: any; chainConfig: ChainObject
     }
 
     try {
-      await mutateDefaultMintPrice({
-        args: [currency, !disableMint, finalFormattedAmountBN]
+      //   await mutateDefaultMintPrice({
+      //     args: [currency, !disableMint, finalFormattedAmountBN]
+      //   });
+
+      const tx = prepareContractCall({
+        contract: contract,
+        method: "setDefaultMintPrice",
+        params: [currency || "", !disableMint, BigInt(finalFormattedAmountBN.toString())]
       });
+
+      // @ts-ignore
+      await mutateDefaultMintPrice(tx);
 
       const relayerURL = chainConfig?.relayerURL;
       if (relayerURL) {
@@ -270,9 +327,18 @@ const Payments = ({ offer, chainConfig }: { offer: any; chainConfig: ChainObject
     }
 
     try {
-      await mutateRoyalties({
-        args: [receiver, finalFormattedAmount]
+      //   await mutateRoyalties({
+      //     args: [receiver, finalFormattedAmount]
+      //   });
+
+      const tx = prepareContractCall({
+        contract: contract,
+        method: "setRoyalty",
+        params: [receiver || "", BigInt(finalFormattedAmount)]
       });
+
+      // @ts-ignore
+      await mutateRoyalties(tx);
 
       const relayerURL = chainConfig.relayerURL;
       if (relayerURL) {
@@ -303,9 +369,18 @@ const Payments = ({ offer, chainConfig }: { offer: any; chainConfig: ChainObject
     }
 
     try {
-      await mutateOwner({
-        args: [currentOwner]
+      //   await mutateOwner({
+      //     args: [currentOwner]
+      //   });
+
+      const tx = prepareContractCall({
+        contract: contract,
+        method: "transferOwnership",
+        params: [currentOwner]
       });
+
+      // @ts-ignore
+      await mutateOwner(tx);
 
       const relayerURL = chainConfig?.relayerURL;
       if (relayerURL) {
@@ -326,9 +401,23 @@ const Payments = ({ offer, chainConfig }: { offer: any; chainConfig: ChainObject
     if (selectedToken === null) return;
 
     try {
-      await mutateTokenAsync({
-        args: [selectedToken, currency, !disableMint, formattedAmountBN]
+      //    await mutateTokenAsync({
+      //      args: [selectedToken, currency, !disableMint, formattedAmountBN]
+      //    });
+      const tx = prepareContractCall({
+        contract: contract,
+        method: "setMintPrice",
+        params: [
+          selectedToken,
+          currency || "",
+          !disableMint,
+          BigInt(formattedAmountBN?.toString() || 0)
+        ]
       });
+
+      // @ts-ignore
+      await mutateTokenAsync(tx);
+
       const relayerURL = chainConfig?.relayerURL;
       if (relayerURL) {
         await fetch(`${relayerURL}/api/revalidate`, {

@@ -1,19 +1,7 @@
-import {
-  ThirdwebSDK,
-  useAddress,
-  useBalance,
-  useContract,
-  useContractRead,
-  useContractWrite,
-  useStorage,
-  useStorageUpload
-} from "@thirdweb-dev/react";
-import { Address } from "thirdweb";
-
-import { ethers, BigNumber } from "ethers";
+import { Address, getContract, prepareContractCall, readContract } from "thirdweb";
+import { BigNumber, ethers } from "ethers";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/router";
 import React, { useEffect, useRef, useState } from "react";
 import "tippy.js/dist/tippy.css";
 import Meta from "@/components/Meta";
@@ -35,7 +23,6 @@ import OfferSkeleton from "@/components/ui/skeletons/OfferSkeleton";
 import AdValidation from "@/components/features/offer/AdValidation";
 import LatestBids from "@/components/features/token/accordion/LatestBids";
 import Manage from "@/components/features/token/widgets/Manage";
-import { useSwitchChainContext } from "@/providers/SwitchChain";
 import config from "@/config/config";
 import stringToUint256 from "@/utils/tokens/stringToUnit256";
 import { formatUnits, getAddress, isAddress, parseUnits } from "ethers/lib/utils";
@@ -52,34 +39,38 @@ import formatAndRoundPrice from "@/utils/prices/formatAndRound";
 import CrossmintFail from "@/components/features/token/modals/CrossmintFail";
 import PlaceBid from "@/components/features/token/widgets/PlaceBid";
 import StyledWeb3Button from "@/components/ui/buttons/StyledWeb3Button";
-
-import ERC20ABI from "@/abi/ERC20.json";
 import { getOwnershipPeriod } from "@/utils/dates/period";
 import isUrlValid from "@/utils/misc/isUrlValid";
 
-import DsponsorNFTABI from "@/abi/dsponsorNFT.json";
 import { StepType } from "../features/profile/tabs/OwnedTokens";
+import {
+  useActiveAccount,
+  useReadContract,
+  useSendAndConfirmTransaction,
+  useWalletBalance
+} from "thirdweb/react";
 import AdText from "../features/token/createAd/AdText";
+import { resolveScheme, upload } from "thirdweb/storage";
+import { client } from "@/data/services/client";
+import { ERC20ABI } from "@/abi/ERC20";
+import { DSPONSOR_ADMIN_ABI } from "@/abi/dsponsorAdmin";
+import { DSPONSOR_NFT_ABI } from "@/abi/dsponsorNFT";
+import { DSPONSOR_MP_ABI } from "@/abi/dsponsorMP";
+import useGasless from "@/lib/useGazless";
+import { useSwitchChainContext } from "@/providers/SwitchChain";
 
-const Token = () => {
-  const router = useRouter();
-  const storage = useStorage();
-
-  const offerId = router.query?.offerId;
-  const tokenId = router.query?.tokenId;
-
-  const chainId = router.query?.chainId;
+const Token = ({ chainId, offerId, tokenId }) => {
   const chainConfig = config[Number(chainId)];
-
   const relayerURL = chainConfig?.relayerURL;
 
-  const address = useAddress();
+  const wallet = useActiveAccount();
+  const address = wallet?.address;
 
   const { setSelectedChain } = useSwitchChainContext();
 
   useEffect(() => {
     if (chainId) {
-      setSelectedChain(chainConfig?.network);
+      setSelectedChain(chainConfig);
     }
   }, [chainId, chainConfig, setSelectedChain]);
 
@@ -145,11 +136,11 @@ const Token = () => {
   const [itemProposals, setItemProposals] = useState<any>(null);
   const [mediaShouldValidateAnAd, setMediaShouldValidateAnAd] = useState(false);
   const [airdropContainer, setAirdropContainer] = useState(true);
-  const [amountInEthWithSlippage, setAmountInEthWithSlippage] = useState<BigNumber | null>(null);
+  const [amountInEthWithSlippage, setAmountInEthWithSlippage] = useState<BigInt | null>(null);
   const [displayedPrice, setDisplayedPrice] = useState<number | null>(null);
-  const [directBuyPriceBN, setDirectBuyPriceBN] = useState<BigNumber | undefined>(undefined);
-  const [auctionPriceBN, setAuctionPriceBN] = useState<BigNumber | undefined>(undefined);
-  const [mintPriceBN, setMintPriceBN] = useState<BigNumber | undefined>(undefined);
+  const [directBuyPriceBN, setDirectBuyPriceBN] = useState<BigInt | undefined>(undefined);
+  const [auctionPriceBN, setAuctionPriceBN] = useState<BigInt | undefined>(undefined);
+  const [mintPriceBN, setMintPriceBN] = useState<BigInt | undefined>(undefined);
   const [isOfferOwner, setIsOfferOwner] = useState<boolean>(false);
   const [hasEnoughBalance, setHasEnoughBalance] = useState<boolean>(true);
   const [hasEnoughBalanceForNative, setHasEnoughBalanceForNative] = useState<boolean>(true);
@@ -209,9 +200,26 @@ const Token = () => {
     }
   }, [offerData, tokenId]);
 
-  const { contract: currencyContract } = useContract(tokenCurrencyAddress, ERC20ABI);
-  const { data: tokenSymbolData } = useContractRead(currencyContract, "symbol");
-  const { data: tokenDecimalsData } = useContractRead(currencyContract, "decimals");
+  //   const { contract: currencyContract } = useContract(tokenCurrencyAddress, ERC20ABI);
+  //   const { data: tokenSymbolData } = useContractRead(currencyContract, "symbol");
+  //   const { data: tokenDecimalsData } = useContractRead(currencyContract, "decimals");
+
+  const currencyContract = getContract({
+    client: client,
+    address: tokenCurrencyAddress || "",
+    chain: chainConfig.chainObject,
+    abi: ERC20ABI
+  });
+
+  const { data: tokenSymbolData } = useReadContract({
+    contract: currencyContract,
+    method: "symbol"
+  });
+
+  const { data: tokenDecimalsData } = useReadContract({
+    contract: currencyContract,
+    method: "decimals"
+  });
 
   useEffect(() => {
     if (tokenSymbolData) {
@@ -248,31 +256,47 @@ const Token = () => {
       const currentOffer = offers?.find((offer) => Number(offer?.id) === Number(offerId));
 
       if (currentOffer?.nftContract?.id && currentOffer?.nftContract?.prices) {
-        const sdk = new ThirdwebSDK(chainConfig.network);
-
         let isPrivateSale = false;
         try {
-          const nftContract = await sdk.getContract(currentOffer.nftContract.id, DsponsorNFTABI);
+          const nftContract = getContract({
+            client: client,
+            address: currentOffer.nftContract.id,
+            chain: chainConfig.chainObject,
+            abi: DSPONSOR_NFT_ABI
+          });
 
           currentOffer.nftContract.prices = await Promise.all(
             currentOffer?.nftContract?.prices.map(async (price) => {
               if (price.enabled && price.currency) {
-                const privateSaleSettings = await nftContract.call("privateSaleSettings", [
-                  price.currency
-                ]);
+                // const privateSaleSettings = await nftContract.call("privateSaleSettings", [
+                //   price.currency
+                // ]);
+
+                const privateSaleSettings = await readContract({
+                  contract: nftContract,
+                  method: "privateSaleSettings",
+                  params: [price.currency]
+                });
 
                 if (
-                  privateSaleSettings?.nftContract != "0x0000000000000000000000000000000000000000"
+                  // nftContract
+                  privateSaleSettings[0] != "0x0000000000000000000000000000000000000000"
                 ) {
                   isPrivateSale = true;
                   if (address) {
-                    const mintPriceForUser = await nftContract.call("getMintPriceForUser", [
-                      address,
-                      tokenId,
-                      price.currency
-                    ]);
+                    // const mintPriceForUser = await nftContract.call("getMintPriceForUser", [
+                    //   address,
+                    //   tokenId,
+                    //   price.currency
+                    // ]);
+                    const mintPriceForUser = await readContract({
+                      contract: nftContract,
+                      method: "getMintPriceForUser",
+                      params: [address, tokenId, price.currency]
+                    });
+
                     price.enabled = mintPriceForUser.enabled;
-                    price.amount = mintPriceForUser.amount;
+                    price.amount = mintPriceForUser.amount.toString();
                   } else {
                     price.enabled = false;
                   }
@@ -374,8 +398,11 @@ const Token = () => {
   useEffect(() => {
     const fetchImage = async (image) => {
       // get url image instead of ipfs:// starting url
-      if (storage && image?.startsWith("ipfs://")) {
-        const ipfsUrl = await storage.resolveScheme(image);
+      if (image?.startsWith("ipfs://")) {
+        const ipfsUrl = resolveScheme({
+          client: client,
+          uri: image
+        });
         setImageUrl(ipfsUrl);
       } else {
         setImageUrl(image);
@@ -387,7 +414,7 @@ const Token = () => {
     } else {
       setImageUrl(null);
     }
-  }, [image, storage]);
+  }, [image]);
 
   const fetchOffersRef = useRef(false);
 
@@ -512,39 +539,101 @@ const Token = () => {
     }
   }, [address, userDO]);
 
-  const { contract: DsponsorAdminContract } = useContract(
-    chainConfig?.smartContracts?.DSPONSORADMIN?.address,
-    chainConfig?.smartContracts?.DSPONSORADMIN?.abi
-  );
-  const { mutateAsync: uploadToIPFS } = useStorageUpload();
-  const { mutateAsync: mintAndSubmit } = useContractWrite(DsponsorAdminContract, "mintAndSubmit");
-  const { mutateAsync: submitAd } = useContractWrite(DsponsorAdminContract, "submitAdProposals");
-  const { contract: tokenContract } = useContract(tokenCurrencyAddress, ERC20ABI);
-  const { data: tokenBalance } = useBalance(tokenCurrencyAddress ?? "");
-  const { mutateAsync: approve } = useContractWrite(tokenContract, "approve");
+  //   const { contract: DsponsorAdminContract } = useContract(
+  //     chainConfig?.smartContracts?.DSPONSORADMIN?.address,
+  //     chainConfig?.smartContracts?.DSPONSORADMIN?.abi
+  //   );
+  const DsponsorAdminContract = getContract({
+    client: client,
+    address: chainConfig?.smartContracts?.DSPONSORADMIN?.address,
+    chain: chainConfig.chainObject,
+    abi: DSPONSOR_ADMIN_ABI
+  });
 
-  const { contract: DsponsorNFTContract } = useContract(offerData?.nftContract?.id, DsponsorNFTABI);
-  const { data: owner } = useContractRead(DsponsorNFTContract, "owner");
+  //   const { mutateAsync: uploadToIPFS } = useStorageUpload();
+  //   const { mutateAsync: mintAndSubmit } = useContractWrite(DsponsorAdminContract, "mintAndSubmit");
+  const { mutateAsync: mintAndSubmit } = useSendAndConfirmTransaction();
+  //   const { mutateAsync: submitAd } = useContractWrite(DsponsorAdminContract, "submitAdProposals");
+  const { mutateAsync: submitAd } = useSendAndConfirmTransaction();
 
-  const { data: isAllowedToMint } = useContractRead<any, any, any, any, any, any>(
-    DsponsorNFTContract,
-    "tokenIdIsAllowedToMint",
-    tokenIdString
-  );
-  const { data: isUserOwner } = useContractRead<any, any, any, any, any, any>(
-    DsponsorNFTContract,
-    "ownerOf",
-    [tokenIdString]
-  );
+  //   const { contract: tokenContract } = useContract(tokenCurrencyAddress, ERC20ABI);
+  const tokenContract = getContract({
+    client: client,
+    address: tokenCurrencyAddress || "",
+    chain: chainConfig.chainObject,
+    abi: ERC20ABI
+  });
 
-  const { contract: dsponsorMpContract } = useContract(
-    chainConfig?.smartContracts?.DSPONSORMP?.address
-  );
-  const { mutateAsync: directBuy } = useContractWrite(dsponsorMpContract, "buy");
+  //   const { data: tokenBalance } = useBalance(tokenCurrencyAddress ?? "");
+  const { data: tokenBalance } = useWalletBalance({
+    client: client,
+    address: address,
+    chain: chainConfig.chainObject,
+    tokenAddress: tokenCurrencyAddress || ""
+  });
+
+  //   const { mutateAsync: approve } = useContractWrite(tokenContract, "approve");
+  const { mutateAsync: approve } = useSendAndConfirmTransaction();
+
+  //   const { contract: DsponsorNFTContract } = useContract(offerData?.nftContract?.id, DsponsorNFTABI);
+  const DsponsorNFTContract = getContract({
+    client: client,
+    address: offerData?.nftContract?.id,
+    chain: chainConfig.chainObject,
+    abi: DSPONSOR_NFT_ABI
+  });
+  //   const { data: owner } = useContractRead(DsponsorNFTContract, "owner");
+  const { data: owner } = useReadContract({
+    contract: DsponsorNFTContract,
+    method: "owner"
+  });
+
+  //   const { data: isAllowedToMint } = useContractRead<any, any, any, any, any, any>(
+  //     DsponsorNFTContract,
+  //     "tokenIdIsAllowedToMint",
+  //     tokenIdString
+  //   );
+  const { data: isAllowedToMint } = useReadContract({
+    contract: DsponsorNFTContract,
+    method: "tokenIdIsAllowedToMint",
+    // @ts-ignore
+    params: [tokenIdString]
+  });
+
+  //   const { data: isUserOwner } = useContractRead<any, any, any, any, any, any>(
+  //     DsponsorNFTContract,
+  //     "ownerOf",
+  //     [tokenIdString]
+  //   );
+  const { data: isUserOwner } = useReadContract({
+    contract: DsponsorNFTContract,
+    method: "ownerOf",
+    // @ts-ignore
+    params: [tokenIdString]
+  });
+
+  //   const { contract: dsponsorMpContract } = useContract(
+  //     chainConfig?.smartContracts?.DSPONSORMP?.address
+  //       );
+
+  const dsponsorMpContract = getContract({
+    client: client,
+    address: chainConfig?.smartContracts?.DSPONSORMP?.address,
+    chain: chainConfig.chainObject,
+    abi: DSPONSOR_MP_ABI //TODO: add ABI
+  });
+
+  //   const { mutateAsync: directBuy } = useContractWrite(dsponsorMpContract, "buy");
+  const { mutateAsync: directBuy } = useSendAndConfirmTransaction();
 
   const now = Math.floor(new Date().getTime() / 1000);
 
-  const { data: nativeTokenBalance } = useBalance();
+  //   const { data: nativeTokenBalance } = useBalance();
+  const { data: nativeTokenBalance } = useWalletBalance({
+    client: client,
+    address: address,
+    chain: chainConfig.chainObject
+  });
 
   // referralAddress is the address of the ?_rid= parameter in the URL
   const referralAddress = getCookie("_rid") || "0x5b15Cbb40Ef056F74130F0e6A1e6FD183b14Cdaf";
@@ -599,13 +688,19 @@ const Token = () => {
       }
 
       if (tokenStatut === "DIRECT" && directBuyPriceBN) {
-        const formattedDirectBuyPrice = ethers.utils.formatUnits(directBuyPriceBN, tokenDecimals);
+        const formattedDirectBuyPrice = ethers.utils.formatUnits(
+          BigNumber.from(directBuyPriceBN),
+          tokenDecimals
+        );
 
         fetchBuyEtherPrice(formattedDirectBuyPrice);
       }
 
       if ((token?.mint === null || allowList === false) && mintPriceBN) {
-        const formattedMintPrice = ethers.utils.formatUnits(mintPriceBN, tokenDecimals);
+        const formattedMintPrice = ethers.utils.formatUnits(
+          BigNumber.from(mintPriceBN),
+          tokenDecimals
+        );
 
         fetchBuyEtherPrice(formattedMintPrice);
       }
@@ -629,9 +724,7 @@ const Token = () => {
         tokenEtherPriceRelayer?.amountInEthWithSlippage,
         18
       );
-      const amountInEthWithSlippageBN = ethers.BigNumber.from(
-        tokenEtherPriceRelayer?.amountInEthWithSlippage
-      );
+      const amountInEthWithSlippageBN = BigInt(tokenEtherPriceRelayer?.amountInEthWithSlippage);
 
       setBuyTokenEtherPrice(tokenEtherPriceDecimals);
       setAmountInEthWithSlippage(amountInEthWithSlippageBN);
@@ -953,7 +1046,7 @@ const Token = () => {
       const totalPrice = offerData?.nftContract?.prices[0]?.mintPriceStructure?.totalAmount;
       const totalPriceFormatted = parseFloat(formatUnits(totalPrice, tokenDecimals as number));
 
-      setMintPriceBN(ethers.BigNumber.from(totalPrice));
+      setMintPriceBN(BigInt(totalPrice));
 
       setTotalPrice(totalPriceFormatted);
       setFeesAmount(
@@ -1037,7 +1130,7 @@ const Token = () => {
           ?.buyPriceStructure?.buyoutPricePerToken;
         const totalPriceFormatted = parseFloat(formatUnits(totalPrice, tokenDecimals as number));
 
-        const directBuyPriceBN = ethers.BigNumber.from(totalPrice);
+        const directBuyPriceBN = BigInt(totalPrice);
         setDirectBuyPriceBN(directBuyPriceBN);
 
         setTotalPrice(totalPriceFormatted);
@@ -1189,7 +1282,7 @@ const Token = () => {
           ?.marketplaceListings?.sort((a, b) => b?.id - a?.id)[0]
           ?.bidPriceStructure?.minimalBidPerToken;
 
-        setAuctionPriceBN(ethers.BigNumber.from(finalPrice));
+        setAuctionPriceBN(BigInt(finalPrice));
 
         setAmountToApprove(
           BigInt(
@@ -1529,22 +1622,33 @@ const Token = () => {
   const checkAllowance = React.useCallback(
     async (amountToApprove: bigint) => {
       if (tokenCurrencyAddress !== "0x0000000000000000000000000000000000000000" && address) {
-        let allowance: [BigNumber] | undefined = undefined;
+        let allowance: BigInt | undefined = undefined;
 
         if (tokenStatut === "DIRECT" || tokenStatut === "AUCTION") {
-          const result = await tokenContract?.call("allowance", [
-            address,
-            chainConfig?.smartContracts?.DSPONSORMP?.address
-          ]);
+          //   const result = await tokenContract?.call("allowance", [
+          //     address,
+          //     chainConfig?.smartContracts?.DSPONSORMP?.address
+          //   ]);
+
+          const result = await readContract({
+            contract: tokenContract,
+            method: "allowance",
+            params: [address, chainConfig?.smartContracts?.DSPONSORMP?.address]
+          });
 
           if (result) {
             allowance = result;
           }
         } else {
-          const result = await tokenContract?.call("allowance", [
-            address,
-            chainConfig?.smartContracts?.DSPONSORADMIN?.address
-          ]);
+          //   const result = await tokenContract?.call("allowance", [
+          //     address,
+          //     chainConfig?.smartContracts?.DSPONSORADMIN?.address
+          //   ]);
+          const result = await readContract({
+            contract: tokenContract,
+            method: "allowance",
+            params: [address, chainConfig?.smartContracts?.DSPONSORADMIN?.address]
+          });
 
           if (result) {
             allowance = result;
@@ -1578,23 +1682,53 @@ const Token = () => {
   const handleApprove = async () => {
     try {
       if (marketplaceListings.length > 0 && tokenStatut === "DIRECT") {
-        await approve({
-          args: [chainConfig?.smartContracts?.DSPONSORMP?.address, amountToApprove]
+        // await approve({
+        //   args: [chainConfig?.smartContracts?.DSPONSORMP?.address, amountToApprove]
+        // });
+        const tx = prepareContractCall({
+          contract: tokenContract,
+          method: "approve",
+          params: [chainConfig?.smartContracts?.DSPONSORMP?.address, BigInt(amountToApprove ?? 0)]
         });
+
+        // @ts-ignore
+        await approve(tx);
       } else if (tokenStatut === "AUCTION" && marketplaceListings.length > 0) {
         const precision = bidsAmount.split(".")[1]?.length || 0;
-        const bidsBigInt = parseUnits(
-          Number(bidsAmount).toFixed(Math.min(Number(tokenDecimals), precision)),
-          Number(tokenDecimals)
+        const bidsBigInt = BigInt(
+          parseUnits(
+            Number(bidsAmount).toFixed(Math.min(Number(tokenDecimals), precision)),
+            Number(tokenDecimals)
+          ).toString()
         );
 
-        await approve({
-          args: [chainConfig?.smartContracts?.DSPONSORMP?.address, bidsBigInt.toString()]
+        // await approve({
+        //   args: [chainConfig?.smartContracts?.DSPONSORMP?.address, bidsBigInt.toString()]
+        // });
+        const tx = prepareContractCall({
+          contract: tokenContract,
+          method: "approve",
+          params: [chainConfig?.smartContracts?.DSPONSORMP?.address, BigInt(bidsBigInt.toString())]
         });
+
+        // @ts-ignore
+        await approve(tx);
       } else {
-        await approve({
-          args: [chainConfig?.smartContracts?.DSPONSORADMIN?.address, amountToApprove]
+        // await approve({
+        //   args: [chainConfig?.smartContracts?.DSPONSORADMIN?.address, amountToApprove]
+        // });
+
+        const tx = prepareContractCall({
+          contract: tokenContract,
+          method: "approve",
+          params: [
+            chainConfig?.smartContracts?.DSPONSORADMIN?.address,
+            BigInt(amountToApprove ?? 0)
+          ]
         });
+
+        // @ts-ignore
+        await approve(tx);
       }
       setAllowanceTrue(false);
     } catch (error) {
@@ -1612,46 +1746,69 @@ const Token = () => {
       }
     }
 
-    const argsMintAndSubmit = {
-      tokenId: tokenIdString,
-      to: address,
-      currency: offerData?.nftContract?.prices[0]?.currency,
-      tokenData: tokenData ?? "",
-      offerId: offerId,
-      adParameters: [],
-      adDatas: [],
-      referralAdditionalInformation: referralAddress
-    };
+    // const argsMintAndSubmit = {
+    //   tokenId: tokenIdString,
+    //   to: address,
+    //   currency: offerData?.nftContract?.prices[0]?.currency,
+    //   tokenData: tokenData ?? "",
+    //   offerId: offerId,
+    //   adParameters: [],
+    //   adDatas: [],
+    //   referralAdditionalInformation: referralAddress
+    // };
 
-    const argsdirectBuy = {
-      listingId: firstSelectedListing?.id,
-      buyFor: address,
-      quantity: 1,
-      currency: firstSelectedListing?.currency,
-      totalPrice: firstSelectedListing?.buyPriceStructure.buyoutPricePerToken,
-      referralAdditionalInformation: referralAddress
-    };
+    // const argsdirectBuy = {
+    //   listingId: firstSelectedListing?.id,
+    //   buyFor: address,
+    //   quantity: 1,
+    //   currency: firstSelectedListing?.currency,
+    //   totalPrice: firstSelectedListing?.buyPriceStructure.buyoutPricePerToken,
+    //   referralAdditionalInformation: referralAddress
+    // };
     try {
-      const tokenEtherPriceBigNumber = parseUnits(
+      const tokenEtherPriceBigInt = parseUnits(
         Number(buyTokenEtherPrice).toFixed(18).toString(),
         18
-      );
+      ).toBigInt();
 
-      const functionWithPossibleArgs =
-        marketplaceListings.length <= 0 ? argsMintAndSubmit : argsdirectBuy;
-      const argsWithPossibleOverrides =
-        canPayWithNativeToken && insufficentBalance && hasEnoughBalanceForNative
-          ? {
-              args: [functionWithPossibleArgs],
-              overrides: { value: tokenEtherPriceBigNumber }
-            }
-          : { args: [functionWithPossibleArgs] };
+      // const functionWithPossibleArgs =
+      //   marketplaceListings.length <= 0 ? argsMintAndSubmit : argsdirectBuy;
+      // const argsWithPossibleOverrides =
+      //   canPayWithNativeToken && insufficentBalance && hasEnoughBalanceForNative
+      //     ? {
+      //         args: [functionWithPossibleArgs],
+      //         overrides: { value: tokenEtherPriceBigInt }
+      //       }
+      //     : { args: [functionWithPossibleArgs] };
 
       if (marketplaceListings.length <= 0) {
         // address of the minter as referral
-        argsWithPossibleOverrides.args[0].referralAdditionalInformation = referralAddress;
+        // argsWithPossibleOverrides.args[0].referralAdditionalInformation = referralAddress;
+        // await mintAndSubmit(argsWithPossibleOverrides);
 
-        await mintAndSubmit(argsWithPossibleOverrides);
+        const tx = prepareContractCall({
+          contract: DsponsorAdminContract,
+          method: "mintAndSubmit",
+          params: [
+            {
+              tokenId: BigInt(tokenIdString ?? ""),
+              to: address ?? "",
+              currency: offerData?.nftContract?.prices[0]?.currency,
+              tokenData: tokenData ?? "",
+              offerId: offerId,
+              adParameters: [],
+              adDatas: [],
+              referralAdditionalInformation: referralAddress
+            }
+          ],
+          value:
+            canPayWithNativeToken && insufficentBalance && hasEnoughBalanceForNative
+              ? tokenEtherPriceBigInt
+              : BigInt(0)
+        });
+
+        // @ts-ignore
+        await mintAndSubmit(tx);
 
         await fetch(`${relayerURL}/api/revalidate`, {
           method: "POST",
@@ -1665,7 +1822,28 @@ const Token = () => {
         setMinted(true);
         await fetchOffers();
       } else {
-        await directBuy(argsWithPossibleOverrides);
+        //   await directBuy(argsWithPossibleOverrides);
+        const tx = prepareContractCall({
+          contract: dsponsorMpContract,
+          method: "buy",
+          params: [
+            {
+              listingId: firstSelectedListing?.id,
+              buyFor: address ?? "",
+              quantity: BigInt(1),
+              currency: firstSelectedListing?.currency,
+              //   totalPrice: firstSelectedListing?.buyPriceStructure.buyoutPricePerToken,
+              referralAdditionalInformation: referralAddress
+            }
+          ],
+          value:
+            canPayWithNativeToken && insufficentBalance && hasEnoughBalanceForNative
+              ? tokenEtherPriceBigInt
+              : BigInt(0)
+        });
+
+        // @ts-ignore
+        await directBuy(tx);
 
         await fetch(`${relayerURL}/api/revalidate`, {
           method: "POST",
@@ -1704,7 +1882,7 @@ const Token = () => {
 
         for (const id of item.offerIds) {
           const [offerId, tokenId] = id.split("-");
-          const offer = selectedItems.find((i) => i.offerId === offerId && i.tokenId === tokenId);
+          //   const offer = selectedItems.find((i) => i.offerId === offerId && i.tokenId === tokenId);
 
           selectedOfferIdItems.push(offerId);
           selectedTokenIdItems.push(tokenId);
@@ -1712,15 +1890,25 @@ const Token = () => {
           if (item.file) {
             let uploadUrl;
             try {
-              uploadUrl = await uploadToIPFS({
-                data: [item.file],
-                options: { uploadWithGatewayUrl: true, uploadWithoutDirectory: true }
+              // uploadUrl = await uploadToIPFS({
+              //   data: [item.file],
+              //   options: { uploadWithGatewayUrl: true, uploadWithoutDirectory: true }
+              // });
+              uploadUrl = await upload({
+                client: client,
+                files: [item.file],
+                uploadWithoutDirectory: true
               });
+              dataItems.push(
+                resolveScheme({
+                  client: client,
+                  uri: uploadUrl
+                })
+              );
             } catch (error) {
               console.error("Erreur lors de l'upload à IPFS:", error);
               throw new Error("Upload to IPFS failed.");
             }
-            dataItems.push(uploadUrl[0]);
           } else if (item.adParameter.startsWith("linkURL") && link) {
             dataItems.push(link);
           } else if (item.data) {
@@ -1745,7 +1933,16 @@ const Token = () => {
         submitAdTags.push(`${chainId}-userAddress-${admin}`);
       }
 
-      await submitAd({ args: Object.values(argsAdSubmited) });
+      //   await submitAd({ args: Object.values(argsAdSubmited) });
+      const tx = prepareContractCall({
+        contract: DsponsorAdminContract,
+        method: "submitAdProposals",
+        //   @ts-ignore
+        params: Object.values(argsAdSubmited)
+      });
+
+      // @ts-ignore
+      await submitAd(tx);
 
       await fetch(`${relayerURL}/api/revalidate`, {
         method: "POST",
@@ -1772,7 +1969,7 @@ const Token = () => {
   };
 
   const checkUserBalance = React.useCallback(
-    async (tokenAddressBalance: BigNumber, tokenPrice: BigNumber) => {
+    async (tokenAddressBalance: BigInt, tokenPrice: BigInt) => {
       if (Number(tokenPrice) === 0) {
         return true;
       }
@@ -1782,7 +1979,8 @@ const Token = () => {
           throw new Error("Invalid balance or price token");
         }
 
-        return tokenAddressBalance.gte(tokenPrice);
+        // return tokenAddressBalance.gte(tokenPrice);
+        return tokenAddressBalance >= tokenPrice;
       } catch (error) {
         toast.error("Error while checking user balance");
         console.error("Failed to fetch token balance:", error);
@@ -1793,7 +1991,7 @@ const Token = () => {
   );
 
   useEffect(() => {
-    const fetchTokenBalance = async (tokenBalance: BigNumber) => {
+    const fetchTokenBalance = async (tokenBalance: BigInt) => {
       if (!tokenBalance) return;
 
       const token = offerData?.nftContract?.tokens?.find(
@@ -1803,9 +2001,13 @@ const Token = () => {
       if (tokenStatut === "AUCTION") {
         if (!auctionPriceBN || !tokenDecimals || !bidsAmount) return;
 
-        const parsedBidsAmount = parseUnits(
-          Number(bidsAmount).toFixed(tokenDecimals),
-          tokenDecimals
+        // const parsedBidsAmount = parseUnits(
+        //   Number(bidsAmount).toFixed(tokenDecimals),
+        //   tokenDecimals
+        // );
+
+        const parsedBidsAmount = BigInt(
+          parseUnits(Number(bidsAmount).toFixed(tokenDecimals), tokenDecimals).toString()
         );
 
         const result = await checkUserBalance(tokenBalance, parsedBidsAmount);
@@ -1904,10 +2106,12 @@ const Token = () => {
     }
   }, [marketplaceListings, address, firstSelectedListing]);
 
-  const { mutateAsync: validationAsync } = useContractWrite(
-    DsponsorAdminContract,
-    "reviewAdProposals"
-  );
+  //   const { mutateAsync: validationAsync } = useContractWrite(
+  //     DsponsorAdminContract,
+  //     "reviewAdProposals"
+  //   );
+  const gasless = useGasless(chainId);
+  const { mutateAsync: validationAsync } = useSendAndConfirmTransaction({ gasless });
 
   const handleValidationSubmit = async (submissionArgs) => {
     try {
@@ -1919,9 +2123,18 @@ const Token = () => {
         validateAdsTags.push(`${chainId}-userAddress-${admin}`);
       }
 
-      await validationAsync({
-        args: [submissionArgs]
+      //   await validationAsync({
+      //     args: [submissionArgs]
+      //   });
+
+      const tx = prepareContractCall({
+        contract: DsponsorAdminContract,
+        method: "reviewAdProposals",
+        params: [submissionArgs]
       });
+
+      // @ts-ignore
+      await validationAsync(tx);
 
       await fetch(`${relayerURL}/api/revalidate`, {
         method: "POST",
@@ -2140,15 +2353,18 @@ const Token = () => {
     setNftContractAddress(offerData?.nftContract?.id);
   }, [offerData]);
 
-  const { mutateAsync: airdropAsync } = useContractWrite<any, any, any, any, any>(
-    DsponsorNFTContract,
-    "mint"
-  );
+  //   const { mutateAsync: airdropAsync } = useContractWrite<any, any, any, any, any>(
+  //     DsponsorNFTContract,
+  //     "mint"
+  //   );
 
-  const { mutateAsync: transferAsync } = useContractWrite<any, any, any, any, any>(
-    DsponsorNFTContract,
-    "transferFrom"
-  );
+  const airdropAsync = useSendAndConfirmTransaction({ gasless });
+
+  //   const { mutateAsync: transferAsync } = useContractWrite<any, any, any, any, any>(
+  //     DsponsorNFTContract,
+  //     "transferFrom"
+  //   );
+  const transferAsync = useSendAndConfirmTransaction({ gasless });
 
   const handleAirdrop = async (airdropAddress: Address, tokenData: string | null) => {
     let stringToUnit = BigInt(0);
@@ -2173,14 +2389,28 @@ const Token = () => {
     }
 
     try {
-      await airdropAsync({
-        args: [
-          tokenId as string,
+      //   await airdropAsync({
+      //     args: [
+      //       tokenId as string,
+      //       airdropAddress,
+      //       "0x0000000000000000000000000000000000000000",
+      //       tokenData ?? ""
+      //     ]
+      //   });
+
+      const tx = prepareContractCall({
+        contract: DsponsorNFTContract,
+        method: "mint",
+        params: [
+          tokenId,
           airdropAddress,
           "0x0000000000000000000000000000000000000000",
           tokenData ?? ""
         ]
       });
+
+      // @ts-ignore
+      await airdropAsync(tx);
 
       await fetch(`${relayerURL}/api/revalidate`, {
         method: "POST",
@@ -2220,9 +2450,18 @@ const Token = () => {
     }
 
     try {
-      await transferAsync({
-        args: [address, transferAddress, tokenId as string]
+      //   await transferAsync({
+      //     args: [address, transferAddress, tokenId as string]
+      //   });
+
+      const tx = prepareContractCall({
+        contract: DsponsorNFTContract,
+        method: "transferFrom",
+        params: [address ?? "", transferAddress, tokenId]
       });
+
+      // @ts-ignore
+      await transferAsync(tx);
 
       await fetch(`${relayerURL}/api/revalidate`, {
         method: "POST",
@@ -2644,10 +2883,12 @@ const Token = () => {
                     chainId={chainId}
                     successFullListing={successFullListing}
                     setSuccessFullListing={setSuccessFullListing}
+                    // @ts-ignore
                     dsponsorNFTContract={DsponsorNFTContract}
                     offerData={offerData}
                     marketplaceListings={marketplaceListings}
                     royalties={royalties}
+                    // @ts-ignore
                     dsponsorMpContract={dsponsorMpContract}
                     conditions={conditions?.conditionsObject}
                     tokenId={tokenId}
@@ -2672,15 +2913,7 @@ const Token = () => {
                         dsponsorMpContract={dsponsorMpContract}
                         marketplaceListings={marketplaceListings}
                         currencySymbol={tokenSymbol as string}
-                        tokenBalance={
-                          tokenBalance as {
-                            symbol: string;
-                            value: BigNumber;
-                            name: string;
-                            decimals: number;
-                            displayValue: string;
-                          }
-                        }
+                        tokenBalance={tokenBalance}
                         currencyTokenDecimals={tokenDecimals as number}
                         setSuccessFullBid={setSuccessFullBid}
                         successFullBid={successFullBid}
@@ -2698,7 +2931,7 @@ const Token = () => {
                           address: referralAddress as Address
                         }}
                         currencyContract={tokenCurrencyAddress}
-                        amountInEthWithSlippage={amountInEthWithSlippage as BigNumber}
+                        amountInEthWithSlippage={BigNumber.from(amountInEthWithSlippage)}
                         displayedPrice={(displayedPrice as number)?.toString()}
                         setDisplayedPrice={setDisplayedPrice}
                         showBidsModal={showBidsModal}
@@ -3026,12 +3259,12 @@ const Token = () => {
             <Details
               chainId={Number(chainId)}
               contractAddress={offerData?.nftContract?.id}
-              isUserOwner={isUserOwner}
+              isUserOwner={isUserOwner as Address}
               initialCreator={offerData?.initialCreator}
               status={firstSelectedListing?.status}
               listerAddress={firstSelectedListing?.lister}
               offerData={offerData}
-              contractOwner={owner}
+              contractOwner={owner as Address}
             />
           </Accordion.Content>
         </div>

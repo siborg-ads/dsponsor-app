@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import * as Switch from "@radix-ui/react-switch";
-import { useContract, useContractWrite, useStorage } from "@thirdweb-dev/react";
 import config, { MAX_SIZE_FILE } from "@/config/config";
 import { toast } from "react-toastify";
 import { features } from "@/data/features";
@@ -8,10 +7,9 @@ import { FileUploader } from "react-drag-drop-files";
 import Image from "next/image";
 import { DatePicker } from "@nextui-org/date-picker";
 import { parseDate } from "@internationalized/date";
-import { useAddress } from "@thirdweb-dev/react";
 import Input from "@/components/ui/Input";
 import TextArea from "@/components/ui/TextArea";
-import { Address } from "thirdweb";
+import { Address, getContract, prepareContractCall } from "thirdweb";
 import { isAddress } from "ethers/lib/utils";
 import StyledWeb3Button from "@/components/ui/buttons/StyledWeb3Button";
 import { ChainObject } from "@/types/chain";
@@ -19,6 +17,11 @@ import { cn } from "@nextui-org/react";
 import Tippy from "@tippyjs/react";
 import "tippy.js/dist/tippy.css";
 import formatBytes from "@/utils/misc/formatBytes";
+import { useActiveAccount, useSendAndConfirmTransaction } from "thirdweb/react";
+import { client } from "@/data/services/client";
+import { download, resolveScheme, upload } from "thirdweb/storage";
+import { DSPONSOR_ADMIN_ABI } from "@/abi/dsponsorAdmin";
+import useGasless from "@/lib/useGazless";
 
 const fileTypes = ["JPG", "PNG", "WEBP", "GIF"];
 
@@ -61,14 +64,25 @@ const UpdateOffer = ({
   const [initialName, setInitialName] = useState<string | null>(null);
 
   const chainId = chainConfig?.chainId;
-  const storage = useStorage();
-  const address = useAddress();
+  const wallet = useActiveAccount();
+  const address = wallet?.address;
 
-  const { contract } = useContract(
-    config[chainId as number]?.smartContracts?.DSPONSORADMIN?.address as Address,
-    config[chainId as number]?.smartContracts?.DSPONSORADMIN?.abi
-  );
-  const { mutateAsync } = useContractWrite(contract, "updateOffer");
+  //   const { contract } = useContract(
+  //     config[chainId as number]?.smartContracts?.DSPONSORADMIN?.address as Address,
+  //     config[chainId as number]?.smartContracts?.DSPONSORADMIN?.abi
+  //   );
+
+  const contract = getContract({
+    client: client,
+    address: config[chainId as number].smartContracts.DSPONSORADMIN.address,
+    chain: config[chainId as number].chainObject,
+    abi: DSPONSOR_ADMIN_ABI
+  });
+
+  const gasless = useGasless(chainId as number);
+
+  //   const { mutateAsync } = useContractWrite(contract, "updateOffer");
+  const { mutateAsync } = useSendAndConfirmTransaction({ gasless });
 
   const handleLogoUpload = (file: any) => {
     if (file) {
@@ -78,16 +92,20 @@ const UpdateOffer = ({
   };
 
   const uploadNewMetadatas = async (originalMetadatas) => {
-    if (!storage) return;
-
     let finalMetadatas = { ...originalMetadatas };
 
     // check if image has changed, if so, upload the new image
     let newImageUrl: string | null = null;
     if (files.length > 0) {
       try {
-        const imageUri = await storage.upload(files[0]);
-        newImageUrl = await storage.resolveScheme(imageUri);
+        const imageUri = await upload({
+          client: client,
+          files: [files[0]]
+        });
+        newImageUrl = resolveScheme({
+          client: client,
+          uri: imageUri
+        });
       } catch (error) {
         console.error(error);
         throw new Error("Error uploading the image");
@@ -146,8 +164,14 @@ const UpdateOffer = ({
     }
 
     try {
-      const jsonUri = await storage.upload(finalMetadatas);
-      const jsonUrl = await storage.resolveScheme(jsonUri);
+      const jsonUri = await upload({
+        client: client,
+        files: [finalMetadatas]
+      });
+      const jsonUrl = resolveScheme({
+        client,
+        uri: jsonUri
+      });
       return jsonUrl;
     } catch (error) {
       console.error(error);
@@ -157,11 +181,15 @@ const UpdateOffer = ({
 
   useEffect(() => {
     const fetchMetadatas = async (metadataURL) => {
-      if (!storage) return;
-
       if (metadataURL) {
         try {
-          const initialMetadatas = await storage.downloadJSON(metadataURL);
+          //   const initialMetadatas = await download({
+          const response = await download({
+            client: client,
+            uri: metadataURL
+          });
+
+          const initialMetadatas = await response.json();
 
           // init metadatas
           setInitialDescription(initialMetadatas?.offer?.description);
@@ -232,7 +260,7 @@ const UpdateOffer = ({
 
       fetchMetadatas(offer?.metadataURL);
     }
-  }, [offer, storage]);
+  }, [offer]);
 
   useEffect(() => {
     if (initialMetadatas) {
@@ -497,9 +525,22 @@ const UpdateOffer = ({
     };
 
     try {
-      await mutateAsync({
-        args: [
-          updatedOfferParams?.offerId,
+      //   await mutateAsync({
+      //     args: [
+      //       updatedOfferParams?.offerId,
+      //       updatedOfferParams?.disable,
+      //       updatedOfferParams?.name,
+      //       updatedOfferParams?.offerMetadata,
+      //       updatedOfferParams?.addOptions,
+      //       updatedOfferParams?.removeOptions
+      //     ]
+      //   });
+
+      const tx = prepareContractCall({
+        contract: contract,
+        method: "updateOffer",
+        params: [
+          BigInt(updatedOfferParams?.offerId),
           updatedOfferParams?.disable,
           updatedOfferParams?.name,
           updatedOfferParams?.offerMetadata,
@@ -507,6 +548,10 @@ const UpdateOffer = ({
           updatedOfferParams?.removeOptions
         ]
       });
+
+      // @ts-ignore
+      await mutateAsync(tx);
+
       const relayerURL = config[chainId as number]?.relayerURL;
       if (relayerURL) {
         await fetch(`${relayerURL}/api/revalidate`, {

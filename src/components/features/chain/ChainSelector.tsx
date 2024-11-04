@@ -1,29 +1,27 @@
-import React, { useState } from "react";
 import ModalHelper from "@/components/ui/modals/Helper";
 import config from "@/config/config";
-import { ChainObject } from "@/types/chain";
+import { useSwitchChainContext } from "@/providers/SwitchChain";
 
-const ChainSelector = ({ setChainConfig }) => {
-  const [chainName, setChainName] = useState<string>(Object.entries(config)[0][1].chainName);
+const ChainSelector = () => {
+  const { selectedChain, setSelectedChain } = useSwitchChainContext();
 
   const onChange = (e) => {
     const selectedChainName = e?.target?.value;
 
-    const chainConfig: ChainObject = Object.entries(config)?.find(
-      (c) => c?.[1]?.chainName === selectedChainName
+    const chainConfig = Object.entries(config)?.find(
+      (c) => c?.[1]?.chainObject.name === selectedChainName
     )?.[1];
 
     if (!chainConfig) {
       return;
     }
 
-    setChainName(selectedChainName);
-    setChainConfig(chainConfig);
+    setSelectedChain(chainConfig);
   };
 
   return (
-    <div className="flex gap-4 justify-center items-center w-full text-jacarta-900 dark:text-white">
-      <div className="flex gap-2 items-center justify-center">
+    <div className="flex items-center justify-center w-full gap-4 text-jacarta-900 dark:text-white">
+      <div className="flex items-center justify-center gap-2">
         <label htmlFor="numberSelect">Select a chain network</label>
         <ModalHelper
           title="Chain selection"
@@ -32,13 +30,13 @@ const ChainSelector = ({ setChainConfig }) => {
       </div>
       <select
         id="chainSelect"
-        value={chainName}
+        value={selectedChain.chainObject.name}
         onChange={onChange}
-        className="bg-jacarta-800 border-jacarta-100 rounded-lg py-3 px-15"
+        className="py-3 rounded-lg bg-jacarta-800 border-jacarta-100 px-15"
       >
         {Object.entries(config).map(([, value], index) => (
-          <option key={index + 1} value={value.chainName}>
-            {value.chainName}
+          <option key={index + 1} value={value.chainObject.name}>
+            {value.chainObject.name}
           </option>
         ))}
       </select>

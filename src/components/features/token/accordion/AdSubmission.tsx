@@ -16,7 +16,6 @@ import StyledWeb3Button from "@/components/ui/buttons/StyledWeb3Button";
 import { Address } from "thirdweb";
 import NormalButton from "@/components/ui/buttons/NormalButton";
 import { ChainObject } from "@/types/chain";
-import { useSwitchChainContext } from "@/providers/SwitchChain";
 import { cn } from "@/lib/utils";
 import isUrlValid from "@/utils/misc/isUrlValid";
 import { StepType } from "../../profile/tabs/OwnedTokens";
@@ -115,14 +114,12 @@ const AdSubmission = ({
   >([]);
   const [nbSteps, setNbSteps] = React.useState<number>(0);
 
-  // const shouldHaveLink =
-
-  const { setSelectedChain } = useSwitchChainContext();
-  useEffect(() => {
-    if (chainConfig) {
-      setSelectedChain(chainConfig?.network);
-    }
-  }, [chainConfig, setSelectedChain]);
+  //   const { setSelectedChain } = useSwitchChainContext();
+  //   useEffect(() => {
+  //     if (chainConfig) {
+  //       setSelectedChain(chainConfig);
+  //     }
+  //   }, [chainConfig, setSelectedChain]);
 
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {

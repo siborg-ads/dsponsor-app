@@ -6,13 +6,16 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "tippy.js/dist/tippy.css";
 import TimerCard from "../timer/TimerCard";
-import { shortenAddress, useAddress, useStorage } from "@thirdweb-dev/react";
 import { getAddress, formatUnits } from "ethers/lib/utils";
 import { ExclamationCircleIcon } from "@heroicons/react/24/solid";
 import ResponsiveTooltip from "@/components/ui/ResponsiveTooltip";
 import { BigNumber } from "ethers";
 import React from "react";
 import { Address } from "thirdweb";
+import { useActiveAccount } from "thirdweb/react";
+import { resolveScheme } from "thirdweb/storage";
+import { client } from "@/data/services/client";
+import { shortenAddress } from "@thirdweb-dev/react";
 
 const TokenCard = ({
   item,
@@ -74,8 +77,8 @@ const TokenCard = ({
   const [isPendingAdsOnToken, setIsPendingAdsOnToken] = useState(false);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
 
-  const address = useAddress();
-  const storage = useStorage();
+  const wallet = useActiveAccount();
+  const address = wallet?.address;
 
   useEffect(() => {
     if (offers) {
@@ -369,11 +372,16 @@ const TokenCard = ({
   } = itemData ?? {};
 
   useEffect(() => {
-    const fetchImage = async (image) => {
+    const fetchImage = async (image: string) => {
       // get url image instead of ipfs:// starting url
-      if (storage && image?.startsWith("ipfs://")) {
-        const ipfsUrl = await storage.resolveScheme(image);
+      if (image?.startsWith("ipfs://")) {
+        const ipfsUrl = resolveScheme({
+          client: client,
+          uri: image
+        });
         setImageUrl(ipfsUrl);
+      } else if (!image.includes("://")) {
+        setImageUrl("/images/gradients/gradient_creative.jpg");
       } else {
         setImageUrl(image);
       }
@@ -384,7 +392,7 @@ const TokenCard = ({
     } else {
       setImageUrl(null);
     }
-  }, [image, storage]);
+  }, [image]);
 
   const offerItemCard = (
     <article className="relative h-full ">

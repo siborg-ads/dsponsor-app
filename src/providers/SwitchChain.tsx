@@ -1,13 +1,14 @@
 import React, { createContext, useState, useContext, ReactNode } from "react";
 import config from "@/config/config";
+import { ChainObject } from "@/types/chain";
 
 interface SwitchChainContextType {
-  selectedChain: string;
-  setSelectedChain: React.Dispatch<React.SetStateAction<string>>;
+  selectedChain: ChainObject;
+  setSelectedChain: React.Dispatch<React.SetStateAction<ChainObject>>;
 }
 
 const SwitchChainContext = createContext<SwitchChainContextType>({
-  selectedChain: Object.values(config)[0]?.network as string,
+  selectedChain: Object.values(config)[0],
   setSelectedChain: () => {}
 });
 
@@ -16,7 +17,7 @@ interface SwitchChainProviderProps {
 }
 
 const SwitchChainProvider: React.FC<SwitchChainProviderProps> = ({ children }) => {
-  const [selectedChain, setSelectedChain] = useState<string>(Object.values(config)[0]?.network);
+  const [selectedChain, setSelectedChain] = useState<ChainObject>(Object.values(config)[0]);
 
   return (
     <SwitchChainContext.Provider
