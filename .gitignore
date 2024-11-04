@@ -37,3 +37,5 @@ yarn-error.log*
 .idea/
 
 yarn.lock
+
+bun.lockb
