@@ -1,6 +1,3 @@
-import "@uiw/react-md-editor/markdown-editor.css";
-import "@uiw/react-markdown-preview/markdown.css";
-import dynamic from "next/dynamic";
 import "swiper/css";
 import "swiper/css/navigation";
 import Image from "next/image";
@@ -18,9 +15,8 @@ import { ClipboardIcon, QuestionMarkCircleIcon } from "@heroicons/react/24/solid
 import { cn } from "@/lib/utils";
 import handleCopy from "@/utils/misc/handleCopy";
 import Tippy from "@tippyjs/react";
-import rehypeSanitize from "rehype-sanitize";
-
-const MDEditor = dynamic(() => import("@uiw/react-md-editor"), { ssr: false });
+import { MdPreview } from "md-editor-rt";
+import "md-editor-rt/lib/preview.css";
 
 interface PendingAdsProps {
   chainConfig: ChainObject;
@@ -568,7 +564,7 @@ const PendingAds: React.FC<PendingAdsProps> = ({
                 viewBox="0 0 24 24"
                 width="24"
                 height="24"
-                className="w-6 h-6 fill-white"
+                className="w-6 h-6 fill-black"
               >
                 <path fill="none" d="M0 0h24v24H0z" />
                 <path d="M12 10.586l4.95-4.95 1.414 1.414-4.95 4.95 4.95 4.95-1.414 1.414-4.95-4.95-4.95 4.95-1.414-1.414 4.95-4.95-4.95-4.95L7.05 5.636z" />
@@ -589,19 +585,15 @@ const PendingAds: React.FC<PendingAdsProps> = ({
                 content={`${copied ? "copied" : "copy"}`}
                 placement="top"
                 hideOnClick={false}
-                className="p-2"
+                className="p-2 bg-black"
               >
-                <ClipboardIcon className="w-5 h-5 text-white cursor-pointer hover:text-jacarta-100" />
+                <ClipboardIcon className="w-5 h-5 text-black cursor-pointer hover:text-black-100" />
               </Tippy>
             </button>
-            <MDEditor
+            <MdPreview
               value={markdownPreview}
-              preview="preview"
               className="w-full max-w-full max-h-full min-h-full pt-6"
-              hideToolbar={true}
-              previewOptions={{
-                rehypePlugins: [[rehypeSanitize]]
-              }}
+              language="en-US"
             />
           </div>
         </button>
