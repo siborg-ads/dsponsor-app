@@ -1,7 +1,3 @@
-import "@uiw/react-md-editor/markdown-editor.css";
-import "@uiw/react-markdown-preview/markdown.css";
-import dynamic from "next/dynamic";
-
 import React, { useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
@@ -21,9 +17,8 @@ import { cn } from "@/lib/utils";
 import isUrlValid from "@/utils/misc/isUrlValid";
 import { StepType } from "../../profile/tabs/OwnedTokens";
 import renderNumberToHumanString from "@/utils/misc/renderNumberToHumanString";
-import rehypeSanitize from "rehype-sanitize";
-
-const MDEditor = dynamic(() => import("@uiw/react-md-editor"), { ssr: false });
+import { MdPreview } from "md-editor-rt";
+import "md-editor-rt/lib/preview.css";
 
 const AdSubmission = ({
   chainConfig,
@@ -333,17 +328,7 @@ const AdSubmission = ({
                     {text.text.length > 0 && (
                       <div className="flex flex-col items-center justify-center gap-2">
                         <div className="w-full h-auto ">
-                          <MDEditor
-                            value={text.text}
-                            preview="preview"
-                            className="w-full h-full"
-                            toolbarBottom={false}
-                            commands={[]}
-                            hideToolbar={true}
-                            previewOptions={{
-                              rehypePlugins: [[rehypeSanitize]]
-                            }}
-                          />
+                          <MdPreview value={text.text} className="w-full h-full" language="en-US" />
                         </div>
                       </div>
                     )}
