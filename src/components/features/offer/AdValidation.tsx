@@ -165,6 +165,7 @@ const AdValidation = ({
 
         if (adParamBase === "imageURL") groupedAds[id].type = "image";
         else if (adParamBase === "linkURL") groupedAds[id].type = "link";
+        else if (adParamBase === "text") groupedAds[id].type = "text";
 
         if (adParamId.startsWith("imageURL") && element.adParameter.variants.length > 0) {
           // adParamBase can be imageURL-1:1 or imageURL-0-1:1 for example

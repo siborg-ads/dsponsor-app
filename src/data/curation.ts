@@ -16,7 +16,7 @@ type CurationData = {
 };
 
 export const marketplaceOffersCuration = {
-  8453: [1, 2, 3, 4],
+  8453: [3, 4, 37],
   11124: [1],
   34443: Array.from({ length: 50 }, (_, i) => i),
   11155111: [1, ...Array.from({ length: 50 }, (_, i) => 20 + i)]
@@ -42,10 +42,10 @@ export function curationData(baseURL: string): CurationData {
         logo: "/images/cryptoast/cryptoast.webp",
         description:
           "Cryptoast is a leading French-language media outlet focused on Bitcoin, blockchain, and cryptocurrencies. Established in 2017, it aims to provide comprehensive and accessible information to both newcomers and experienced users in the crypto space.",
-        offerId: 4,
-        buttonText: "Own an ad on the Cryptoast newsletter",
-        buttonLink: `${baseURL}/${8453}/offer/${4}`,
-        type: ["medias", "newsletters"] as Filter[],
+        offerId: 37,
+        buttonText: "Own a parcel on the Cryptoast Journal",
+        buttonLink: `${baseURL}/8453/offer/37`,
+        type: ["medias"] as Filter[],
         inTrending: true
       },
 

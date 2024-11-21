@@ -7,6 +7,12 @@ import { HistoryProposalType } from "../AdValidation";
 import { DateRangePicker } from "@nextui-org/react";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import Input from "@/components/ui/Input";
+import renderNumberToHumanString from "@/utils/misc/renderNumberToHumanString";
+import handleCopy from "@/utils/misc/handleCopy";
+import Tippy from "@tippyjs/react";
+import { ClipboardIcon } from "@heroicons/react/24/solid";
+import { MdPreview } from "md-editor-rt";
+import "md-editor-rt/lib/preview.css";
 
 function sanitizeType(type) {
   if (type === "linkURL") {
@@ -15,6 +21,8 @@ function sanitizeType(type) {
     const sanitizedStatus = type.replace("-0", "");
     const ratio = sanitizedStatus.split("-")[1];
     return `Image (${ratio})`;
+  } else if (type.startsWith("text")) {
+    return `Text (${renderNumberToHumanString(type.split("-")[2])} characters)`;
   } else {
     return type;
   }
@@ -38,6 +46,7 @@ const ProposalHistory = ({ data }: { data: HistoryProposalType[] }) => {
   const [endDate, setEndDate] = useState<Date | null>(null);
   const [filterOption, setFilterOption] = useState<FilterOptionsType>("All proposals");
   const [filterName, setFilterName] = useState("");
+  const [copied, setCopied] = useState(false);
 
   // No need to add the event when the modal opens and remove it when it closes because worst case it just remove an inexisting modal
   useEffect(() => {
@@ -275,7 +284,7 @@ const ProposalHistory = ({ data }: { data: HistoryProposalType[] }) => {
                             {proposal.data}
                           </Link>
                         ) : (
-                          "Preview Image 🔎"
+                          `Preview ${proposal.type.startsWith("image") ? "Image" : "Text"} 🔎`
                         )}
                       </button>
                     </td>
@@ -318,35 +327,65 @@ const ProposalHistory = ({ data }: { data: HistoryProposalType[] }) => {
         )}
       </div>
 
-      {currProposal && (
-        <div
-          onClick={(e) => {
-            if (e.target === e.currentTarget) {
-              setCurrProposal(null);
-            }
-          }}
-          className="fixed inset-0 z-50 flex items-center justify-center w-full h-screen max-w-full max-h-screen backdrop-blur-xl"
-        >
+      {currProposal &&
+        (currProposal.type.startsWith("image") ? (
           <div
-            className="flex items-center justify-center max-w-full max-h-full"
-            style={{
-              aspectRatio: `${currProposal.cssAspectRatio}`
+            onClick={(e) => {
+              if (e.target === e.currentTarget) {
+                setCurrProposal(null);
+              }
             }}
+            className="fixed inset-0 z-50 flex items-center justify-center w-full h-screen max-w-full max-h-screen backdrop-blur-xl"
           >
-            <div className="relative flex items-center justify-center w-3/4 max-w-full max-h-full h-3/4">
-              <div className="relative flex items-center justify-center h-full max-w-full max-h-full overflow-hidden bg-white border-2 border-dotted border-jacarta-100 dark:bg-jacarta-200 bg-opacity-20 backdrop-blur-xl dark:bg-opacity-20 dark:border-jacarta-100">
-                <Image
-                  src={currProposal.data}
-                  alt="logo"
-                  height={1000}
-                  width={1000}
-                  className="object-contain object-center h-full max-w-full max-h-full"
-                  loading="lazy"
-                />
+            <div
+              className="flex items-center justify-center max-w-full max-h-full"
+              style={{
+                aspectRatio: `${currProposal.cssAspectRatio}`
+              }}
+            >
+              <div className="relative flex items-center justify-center w-3/4 max-w-full max-h-full h-3/4">
+                <div className="relative flex items-center justify-center h-full max-w-full max-h-full overflow-hidden bg-white border-2 border-dotted border-jacarta-100 dark:bg-jacarta-200 bg-opacity-20 backdrop-blur-xl dark:bg-opacity-20 dark:border-jacarta-100">
+                  <Image
+                    src={currProposal.data}
+                    alt="logo"
+                    height={1000}
+                    width={1000}
+                    className="object-contain object-center h-full max-w-full max-h-full"
+                    loading="lazy"
+                  />
+                </div>
+                <button
+                  type="button"
+                  className="absolute top-0 right-0 -p-10"
+                  onClick={() => setCurrProposal(null)}
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    width="24"
+                    height="24"
+                    className="w-6 h-6 fill-white"
+                  >
+                    <path fill="none" d="M0 0h24v24H0z" />
+                    <path d="M12 10.586l4.95-4.95 1.414 1.414-4.95 4.95 4.95 4.95-1.414 1.414-4.95-4.95-4.95 4.95-1.414-1.414 4.95-4.95-4.95-4.95L7.05 5.636z" />
+                  </svg>
+                </button>
               </div>
+            </div>
+          </div>
+        ) : (
+          <button
+            onClick={(e) => {
+              if (e.target === e.currentTarget) {
+                setCurrProposal(null);
+              }
+            }}
+            className="fixed inset-0 z-50 flex items-center justify-center w-full h-screen max-w-full max-h-screen backdrop-blur-xl"
+          >
+            <div className="relative flex items-center justify-center w-1/2 max-w-full max-h-full overflow-hidden border-2 border-dotted h-1/2 border-jacarta-100 bg-opacity-20 backdrop-blur-xl dark:bg-opacity-20 dark:border-jacarta-100">
               <button
                 type="button"
-                className="absolute top-0 right-0 -p-10"
+                className="absolute top-0 right-0 z-50 -p-10"
                 onClick={() => setCurrProposal(null)}
               >
                 <svg
@@ -354,16 +393,40 @@ const ProposalHistory = ({ data }: { data: HistoryProposalType[] }) => {
                   viewBox="0 0 24 24"
                   width="24"
                   height="24"
-                  className="w-6 h-6 fill-white"
+                  className="w-6 h-6 fill-black"
                 >
                   <path fill="none" d="M0 0h24v24H0z" />
                   <path d="M12 10.586l4.95-4.95 1.414 1.414-4.95 4.95 4.95 4.95-1.414 1.414-4.95-4.95-4.95 4.95-1.414-1.414 4.95-4.95-4.95-4.95L7.05 5.636z" />
                 </svg>
               </button>
+              <button
+                type="button"
+                className="absolute top-0 z-50 right-8 -p-10"
+                onClick={() => {
+                  handleCopy(currProposal.data, setCopied);
+
+                  setTimeout(() => {
+                    setCopied(false);
+                  }, 2000);
+                }}
+              >
+                <Tippy
+                  content={`${copied ? "copied" : "copy"}`}
+                  placement="top"
+                  hideOnClick={false}
+                  className="p-2 bg-black"
+                >
+                  <ClipboardIcon className="w-5 h-5 text-black cursor-pointer hover:text-black-100" />
+                </Tippy>
+              </button>
+              <MdPreview
+                value={currProposal.data}
+                className="w-full max-w-full max-h-full min-h-full pt-6"
+                language="en-US"
+              />
             </div>
-          </div>
-        </div>
-      )}
+          </button>
+        ))}
     </div>
   );
 };
