@@ -233,7 +233,7 @@ const Token = () => {
   const bidCollectionId = chainConfig?.features.crossmint.config?.bidCollectionId;
 
   const fetchOffers = React.useCallback(async () => {
-    if (fetchOffersRef.current) return;
+    // if (fetchOffersRef.current) return;
     fetchOffersRef.current = true;
 
     try {
