@@ -1,13 +1,9 @@
-import "@uiw/react-md-editor/markdown-editor.css";
-import "@uiw/react-markdown-preview/markdown.css";
-import dynamic from "next/dynamic";
 import { StepType } from "../../profile/tabs/OwnedTokens";
 
 import React, { useState } from "react";
 import renderNumberToHumanString from "@/utils/misc/renderNumberToHumanString";
-import rehypeSanitize from "rehype-sanitize";
-
-const MDEditor = dynamic(() => import("@uiw/react-md-editor"), { ssr: false });
+import { MdEditor } from "md-editor-rt";
+import "md-editor-rt/lib/style.css";
 
 const AdText = ({
   stepsRef,
@@ -57,19 +53,31 @@ const AdText = ({
             characters remaining.
           </p>
 
-          <MDEditor
-            textareaProps={{
-              placeholder: "Please enter Markdown text",
-              maxLength: maxSize
-            }}
+          <MdEditor
             value={markdownText}
             onChange={(val) => {
               setText(val || "");
               setMarkdownText(val || "");
             }}
-            previewOptions={{
-              rehypePlugins: [[rehypeSanitize]]
-            }}
+            placeholder="Please enter Markdown text"
+            maxLength={maxSize}
+            language="en-US"
+            theme="dark"
+            toolbars={[
+              "italic",
+              "underline",
+              "bold",
+              "-",
+              "title",
+              "unorderedList",
+              "orderedList",
+              "=",
+              "pageFullscreen",
+              "fullscreen",
+              "-",
+              "preview",
+              "previewOnly"
+            ]}
           />
         </div>
       </div>
