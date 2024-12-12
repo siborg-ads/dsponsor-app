@@ -471,8 +471,8 @@ export const fetchOffer = async (chainId, offerId) => {
     offerId
   };
   const options = {
-    populate: true,
-    next: { tags: [`${chainId}-adOffer-${offerId}`] }
+    populate: true
+    // next: { tags: [`${chainId}-adOffer-${offerId}`] }
   };
   const response = (await executeQuery(
     path.href,

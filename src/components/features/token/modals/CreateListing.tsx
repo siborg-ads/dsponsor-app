@@ -220,7 +220,7 @@ const CreateListing = ({
           body: JSON.stringify({
             tags
           })
-        });
+        }).catch(console.error);
 
         setSuccessFullListing(true);
         setListingCreated(true);

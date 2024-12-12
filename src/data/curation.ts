@@ -16,7 +16,7 @@ type CurationData = {
 };
 
 export const marketplaceOffersCuration = {
-  8453: [3, 4, 37],
+  8453: [3, 4, 37, 38, 39],
   11124: [1],
   34443: Array.from({ length: 50 }, (_, i) => i),
   11155111: [1, ...Array.from({ length: 50 }, (_, i) => 20 + i)]
@@ -50,6 +50,29 @@ export function curationData(baseURL: string): CurationData {
       },
 
       {
+        logo: "/images/curation/ba.png", // 2000 x 600
+        description:
+          "Blockchain Addict est un média gratuit qui propose des interviews d'acteurs #blockchain et traite d'actualité #bitcoin et #crypto.",
+        offerId: 38,
+        buttonText: "Join as a sponsor for Blockchain Addict",
+        buttonLink: `${baseURL}/${8453}/offer/${38}`,
+        type: ["medias"] as Filter[],
+        inTrending: true
+      },
+
+      {
+        logo: "/images/curation/ba.png", // 2000 x 600
+        description:
+          "Blockchain Addict est un média gratuit qui propose des interviews d'acteurs #blockchain et traite d'actualité #bitcoin et #crypto.",
+        offerId: 39,
+        buttonText: "Join as a sponsor for Blockchain Addict",
+        buttonLink: `${baseURL}/${8453}/offer/${39}`,
+        type: ["medias"] as Filter[],
+        inTrending: true
+      }
+
+      /*
+      {
         logo: "/images/curation/defifrance.png", // 2000 x 600
         description:
           "DeFi France is the leading French community related to the rise of Decentralized Finance. Members regularly organize meetups across France, particularly in Paris, Toulouse, Bordeaux, and Lyon.",
@@ -59,6 +82,7 @@ export function curationData(baseURL: string): CurationData {
         type: ["communities"] as Filter[],
         inTrending: true
       }
+      */
     ],
     34443: [
       {

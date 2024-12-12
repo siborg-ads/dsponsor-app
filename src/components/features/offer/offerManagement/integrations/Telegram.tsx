@@ -161,7 +161,7 @@ const Telegram = ({
           body: JSON.stringify({
             tags: [`${chainId}-adOffer-${offerId}`]
           })
-        });
+        }).catch(console.error);
       }
     } catch (error) {
       console.error("Error updating offer:", error);

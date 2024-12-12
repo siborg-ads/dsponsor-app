@@ -464,7 +464,7 @@ const Offer = () => {
         body: JSON.stringify({
           tags
         })
-      });
+      }).catch(console.error);
 
       setRefusedValidatedAdModal(true);
       setSuccessFullRefuseModal(true);

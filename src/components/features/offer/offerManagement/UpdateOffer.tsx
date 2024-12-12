@@ -514,7 +514,7 @@ const UpdateOffer = ({
           body: JSON.stringify({
             tags: [`${chainId}-adOffer-${updatedOfferParams?.offerId}`]
           })
-        });
+        }).catch(console.error);
       }
 
       await onSubmit();
