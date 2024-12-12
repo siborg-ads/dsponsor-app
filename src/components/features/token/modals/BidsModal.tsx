@@ -375,7 +375,7 @@ const BidsModal = ({
         body: JSON.stringify({
           tags
         })
-      });
+      }).catch(console.error);
 
       setSuccessFullBid(true);
       await fetchOffers();
@@ -445,7 +445,7 @@ const BidsModal = ({
         body: JSON.stringify({
           tags
         })
-      });
+      }).catch(console.error);
 
       setSuccessFullBid(true);
       await fetchOffers();

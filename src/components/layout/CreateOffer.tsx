@@ -481,7 +481,7 @@ const CreateOffer = () => {
           body: JSON.stringify({
             tags
           })
-        });
+        }).catch(console.error);
       }
       setSuccessFullUpload(true);
 

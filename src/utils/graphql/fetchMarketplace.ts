@@ -207,13 +207,15 @@ export const fetchMarketplace = async (
   const chainConfig = config[chainId];
   const variables = {};
   const options = {
-    populate: true,
+    populate: true
+    /*
     next: {
       tags:
         searchTerm.length || offerIds.length > 63
           ? []
           : offerIds.map((offerId) => `${chainId}-adOffer-${offerId}`)
     }
+    */
   };
 
   const response = (await executeQuery(path.href, GET_DATA, variables, options)) as QueryType;

@@ -248,7 +248,7 @@ const Payments = ({ offer, chainConfig }: { offer: any; chainConfig: ChainObject
           body: JSON.stringify({
             tags: [`${chainId}-adOffer-${offer.id}`, `${chainId}-nftContract-${nftContractAddress}`]
           })
-        });
+        }).catch(console.error);
       }
 
       setDisabled(disableMint);
@@ -281,7 +281,7 @@ const Payments = ({ offer, chainConfig }: { offer: any; chainConfig: ChainObject
           body: JSON.stringify({
             tags: [`${chainId}-adOffer-${offer.id}`, `${chainId}-nftContract-${nftContractAddress}`]
           })
-        });
+        }).catch(console.error);
       }
 
       setDisabled(disableMint);
@@ -314,7 +314,7 @@ const Payments = ({ offer, chainConfig }: { offer: any; chainConfig: ChainObject
           body: JSON.stringify({
             tags: [`${chainId}-adOffer-${offer.id}`, `${chainId}-nftContract-${nftContractAddress}`]
           })
-        });
+        }).catch(console.error);
       }
     } catch (error) {
       console.error(error);
@@ -336,7 +336,7 @@ const Payments = ({ offer, chainConfig }: { offer: any; chainConfig: ChainObject
           body: JSON.stringify({
             tags: [`${chainId}-adOffer-${offer.id}`, `${chainId}-nftContract-${nftContractAddress}`]
           })
-        });
+        }).catch(console.error);
       }
     } catch (error) {
       console.error(error);

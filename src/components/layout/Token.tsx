@@ -315,7 +315,7 @@ const Token = () => {
         await fetch(`${relayerURL}/api/revalidate`, {
           method: "POST",
           body: JSON.stringify({ tags })
-        });
+        }).catch(console.error);
       }
       await fetchOffers();
     };
@@ -1658,7 +1658,7 @@ const Token = () => {
           body: JSON.stringify({
             tags
           })
-        });
+        }).catch(console.error);
 
         setSuccessFullUpload(true);
         setIsOwner(true);
@@ -1672,7 +1672,7 @@ const Token = () => {
           body: JSON.stringify({
             tags
           })
-        });
+        }).catch(console.error);
 
         setSuccessFullUpload(true);
         await fetchOffers();
@@ -1752,7 +1752,7 @@ const Token = () => {
         body: JSON.stringify({
           tags: submitAdTags
         })
-      });
+      }).catch(console.error);
 
       setSuccessFullUpload(true);
 
@@ -1928,7 +1928,7 @@ const Token = () => {
         body: JSON.stringify({
           tags: validateAdsTags
         })
-      });
+      }).catch(console.error);
 
       setRefusedValidatedAdModal(true);
       setSuccessFullRefuseModal(true);
@@ -2187,7 +2187,7 @@ const Token = () => {
         body: JSON.stringify({
           tags: [`${chainId}-adOffer-${offerId}`, `${chainId}-userAddress-${airdropAddress}`]
         })
-      });
+      }).catch(console.error);
 
       setAirdropContainer(false);
       await fetchOffers();
@@ -2234,7 +2234,7 @@ const Token = () => {
             `${chainId}-userAddress-${transferAddress}`
           ]
         })
-      });
+      }).catch(console.error);
 
       await fetchOffers();
     } catch (error) {

@@ -257,7 +257,7 @@ const OwnedTokens = ({
         await fetch(`${relayerUrl}/api/revalidate`, {
           method: "POST",
           body: JSON.stringify({ tags: revalidateTags })
-        });
+        }).catch(console.error);
       }
       setSuccessFullUpload(true);
 

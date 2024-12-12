@@ -421,8 +421,8 @@ export const fetchToken = async (chainId, offerId, tokenId) => {
     tokenId
   };
   const options = {
-    populate: true,
-    next: { tags: [`${chainId}-adOffer-${offerId}`] }
+    populate: true
+    //  next: { tags: [`${chainId}-adOffer-${offerId}`] }
   };
 
   const response = (await executeQuery(
