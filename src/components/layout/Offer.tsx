@@ -626,7 +626,7 @@ const Offer = () => {
                 onClick={() => setImageModal(true)}
               >
                 {imageUrl && (
-                  <Image
+                  <img
                     width={585}
                     height={726}
                     src={imageUrl ?? "/images/gradients/gradient_creative.jpg"}
@@ -847,7 +847,7 @@ const Offer = () => {
                       <figure className="mt-2">
                         <Link href={urlFromChild ?? "#"}>
                           {imageUrl && (
-                            <Image
+                            <img
                               src={imageUrl ?? ""}
                               alt="logo"
                               height={230}
