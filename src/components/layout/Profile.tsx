@@ -131,13 +131,14 @@ const Profile = () => {
 
       const mappedOwnedAdProposals = offersByUserAddressArray.flatMap((element) =>
         element.nftContract.tokens
-          .filter(
-            (token) =>
+          .filter((token) => {
+            return (
               token.owner && userAddress && token.owner.toLowerCase() === userAddress.toLowerCase()
-          )
+            );
+          })
           .map((token) => ({
             ...token,
-            ...(token.mint.tokenData ? { tokenData: token.mint.tokenData } : {}),
+            ...(token?.mint?.tokenData ? { tokenData: token.mint.tokenData } : {}),
             chainConfig: element.chainConfig,
             adParameters: element.adParameters,
             id: `${element.id}-${token.tokenId}`,
