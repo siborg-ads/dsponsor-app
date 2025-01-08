@@ -16,7 +16,7 @@ type CurationData = {
 };
 
 export const marketplaceOffersCuration = {
-  8453: [3, 4, 37, 38, 39],
+  8453: [3, 38, 39],
   11124: [1],
   34443: Array.from({ length: 50 }, (_, i) => i),
   11155111: [1, ...Array.from({ length: 50 }, (_, i) => 20 + i)]
@@ -36,7 +36,7 @@ export function curationData(baseURL: string): CurationData {
         type: ["dapps"] as Filter[],
         inTrending: true
       },
-         */
+         
 
       {
         logo: "/images/cryptoast/cryptoast.webp",
@@ -48,7 +48,7 @@ export function curationData(baseURL: string): CurationData {
         type: ["medias"] as Filter[],
         inTrending: true
       },
-
+*/
       {
         logo: "/images/curation/ba.png", // 2000 x 600
         description:
